@@ -40,8 +40,8 @@ enum class DownloadCheckResult {
 enum DownloadCheckResultReason {
   REASON_INVALID_URL = 0,
   REASON_SB_DISABLED = 1,
-  REASON_WHITELISTED_URL = 2,
-  REASON_WHITELISTED_REFERRER = 3,
+  REASON_ALLOWLISTED_URL = 2,
+  REASON_ALLOWLISTED_REFERRER = 3,
   REASON_INVALID_REQUEST_PROTO = 4,
   REASON_SERVER_PING_FAILED = 5,
   REASON_INVALID_RESPONSE_PROTO = 6,
@@ -93,11 +93,11 @@ enum SBStatsType {
   DOWNLOAD_CHECKS_MAX
 };
 
-enum WhitelistType {
-  NO_WHITELIST_MATCH,
-  URL_WHITELIST,
-  SIGNATURE_WHITELIST,
-  WHITELIST_TYPE_MAX
+enum AllowlistType {
+  NO_ALLOWLIST_MATCH,
+  URL_ALLOWLIST,
+  SIGNATURE_ALLOWLIST,
+  ALLOWLIST_TYPE_MAX
 };
 
 // Callback type which is invoked once the download request is done.
@@ -133,15 +133,15 @@ using PPAPIDownloadRequestCallbackList =
 using PPAPIDownloadRequestCallback =
     PPAPIDownloadRequestCallbackList::CallbackType;
 
-void RecordCountOfWhitelistedDownload(WhitelistType type);
+void RecordCountOfAllowlistedDownload(AllowlistType type);
 
 // Given a certificate and its immediate issuer certificate, generates the
-// list of strings that need to be checked against the download whitelist to
-// determine whether the certificate is whitelisted.
-void GetCertificateWhitelistStrings(
+// list of strings that need to be checked against the download allowlist to
+// determine whether the certificate is allowlisted.
+void GetCertificateAllowlistStrings(
     const net::X509Certificate& certificate,
     const net::X509Certificate& issuer,
-    std::vector<std::string>* whitelist_strings);
+    std::vector<std::string>* allowlist_strings);
 
 GURL GetFileSystemAccessDownloadUrl(const GURL& frame_url);
 

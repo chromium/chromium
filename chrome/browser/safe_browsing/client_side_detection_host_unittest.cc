@@ -166,7 +166,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
   MockSafeBrowsingDatabaseManager() {}
 
-  MOCK_METHOD2(CheckCsdWhitelistUrl,
+  MOCK_METHOD2(CheckCsdAllowlistUrl,
                AsyncMatch(const GURL&, SafeBrowsingDatabaseManager::Client*));
 
  protected:
@@ -308,7 +308,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
   void ExpectPreClassificationChecks(const GURL& url,
                                      const bool* is_private,
-                                     const bool* match_csd_whitelist,
+                                     const bool* match_csd_allowlist,
                                      const bool* get_valid_cached_result,
                                      const bool* is_in_cache,
                                      const bool* over_phishing_report_limit) {
@@ -316,9 +316,9 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
       EXPECT_CALL(*csd_service_, IsPrivateIPAddress(_))
           .WillOnce(Return(*is_private));
     }
-    if (match_csd_whitelist) {
-      EXPECT_CALL(*database_manager_.get(), CheckCsdWhitelistUrl(url, _))
-          .WillOnce(Return(*match_csd_whitelist ? AsyncMatch::MATCH
+    if (match_csd_allowlist) {
+      EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(url, _))
+          .WillOnce(Return(*match_csd_allowlist ? AsyncMatch::MATCH
                                                 : AsyncMatch::NO_MATCH));
     }
     if (get_valid_cached_result) {
@@ -336,7 +336,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
   }
 
   void WaitAndCheckPreClassificationChecks() {
-    // Wait for CheckCsdWhitelist and CheckCache() to be called if at all.
+    // Wait for CheckCsdAllowlist and CheckCache() to be called if at all.
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
     EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
@@ -682,7 +682,7 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckPass) {
   fake_phishing_detector_.CheckMessage(&url);
 }
 
-TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckMatchWhitelist) {
+TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckMatchAllowlist) {
   EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
   GURL url("http://host.com/");
   ExpectPreClassificationChecks(url, &kFalse, &kTrue, nullptr, nullptr,
@@ -770,7 +770,7 @@ TEST_F(ClientSideDetectionHostTest,
 TEST_F(ClientSideDetectionHostIncognitoTest,
        TestPreClassificationCheckIncognito) {
   // If the tab is incognito there should be no IPC.  Also, we shouldn't
-  // even check the csd-whitelist.
+  // even check the csd-allowlist.
   EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));
   GURL url("http://host4.com/");
   ExpectPreClassificationChecks(url, &kFalse, nullptr, nullptr, nullptr,
@@ -865,10 +865,10 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckValidCached) {
   fake_phishing_detector_.CheckMessage(nullptr);
 }
 
-TEST_F(ClientSideDetectionHostTest, TestPreClassificationWhitelistedByPolicy) {
-  // Configures enterprise whitelist.
+TEST_F(ClientSideDetectionHostTest, TestPreClassificationAllowlistedByPolicy) {
+  // Configures enterprise allowlist.
   ListPrefUpdate update(profile()->GetPrefs(),
-                        prefs::kSafeBrowsingWhitelistDomains);
+                        prefs::kSafeBrowsingAllowlistDomains);
   update->AppendString("example.com");
 
   EXPECT_CALL(*csd_service_, GetModelStr()).WillRepeatedly(Return("model_str"));

@@ -205,9 +205,9 @@ void SafeBrowsingUIManager::MaybeReportSafeBrowsingHit(
 }
 
 // Static.
-void SafeBrowsingUIManager::CreateWhitelistForTesting(
+void SafeBrowsingUIManager::CreateAllowlistForTesting(
     content::WebContents* web_contents) {
-  EnsureWhitelistCreated(web_contents);
+  EnsureAllowlistCreated(web_contents);
 }
 
 void SafeBrowsingUIManager::AddObserver(Observer* observer) {
@@ -275,9 +275,9 @@ void SafeBrowsingUIManager::OnBlockingPageDone(
   }
 }
 // Static.
-GURL SafeBrowsingUIManager::GetMainFrameWhitelistUrlForResourceForTesting(
+GURL SafeBrowsingUIManager::GetMainFrameAllowlistUrlForResourceForTesting(
     const security_interstitials::UnsafeResource& resource) {
-  return GetMainFrameWhitelistUrlForResource(resource);
+  return GetMainFrameAllowlistUrlForResource(resource);
 }
 
 BaseBlockingPage* SafeBrowsingUIManager::CreateBlockingPageForSubresource(

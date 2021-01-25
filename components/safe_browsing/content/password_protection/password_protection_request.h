@@ -70,9 +70,9 @@ using DeleteOnUIThread =
 // PasswordProtectionRequest flow:
 // Step| Thread |                    Task
 // (1) |   UI   | If incognito or !SBER, quit request.
-// (2) |   UI   | Add task to IO thread for whitelist checking.
-// (3) |   IO   | Check whitelist and return the result back to UI thread.
-// (4) |   UI   | If whitelisted, check verdict cache; else quit request.
+// (2) |   UI   | Add task to IO thread for allowlist checking.
+// (3) |   IO   | Check allowlist and return the result back to UI thread.
+// (4) |   UI   | If allowlisted, check verdict cache; else quit request.
 // (5) |   UI   | If verdict cached, quit request; else prepare request proto.
 // (6) |   UI   | Collect features related to the DOM of the page.
 // (7) |   UI   | If appropriate, compute visual features of the page.
@@ -190,16 +190,16 @@ class PasswordProtectionRequest
   friend class PasswordProtectionServiceTest;
   friend class ChromePasswordProtectionServiceTest;
 
-  // Start checking the whitelist.
-  void CheckWhitelist();
+  // Start checking the allowlist.
+  void CheckAllowlist();
 
-  static void OnWhitelistCheckDoneOnIO(
+  static void OnAllowlistCheckDoneOnIO(
       base::WeakPtr<PasswordProtectionRequest> weak_request,
-      bool match_whitelist);
+      bool match_allowlist);
 
-  // If |main_frame_url_| matches whitelist, call Finish() immediately;
+  // If |main_frame_url_| matches allowlist, call Finish() immediately;
   // otherwise call CheckCachedVerdicts().
-  void OnWhitelistCheckDone(bool match_whitelist);
+  void OnAllowlistCheckDone(bool match_allowlist);
 
   // Looks up cached verdicts. If verdict is already cached, call SendRequest();
   // otherwise call Finish().

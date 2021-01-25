@@ -99,7 +99,7 @@ class SafeBrowsingUIManagerTest : public ChromeRenderViewHostTestHarness {
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
-    SafeBrowsingUIManager::CreateWhitelistForTesting(web_contents());
+    SafeBrowsingUIManager::CreateAllowlistForTesting(web_contents());
 
     safe_browsing::TestSafeBrowsingServiceFactory sb_service_factory;
     auto* safe_browsing_service =
@@ -126,13 +126,13 @@ class SafeBrowsingUIManagerTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
-  bool IsWhitelisted(security_interstitials::UnsafeResource resource) {
-    return ui_manager_->IsWhitelisted(resource);
+  bool IsAllowlisted(security_interstitials::UnsafeResource resource) {
+    return ui_manager_->IsAllowlisted(resource);
   }
 
-  void AddToWhitelist(security_interstitials::UnsafeResource resource) {
-    ui_manager_->AddToWhitelistUrlSet(
-        SafeBrowsingUIManager::GetMainFrameWhitelistUrlForResourceForTesting(
+  void AddToAllowlist(security_interstitials::UnsafeResource resource) {
+    ui_manager_->AddToAllowlistUrlSet(
+        SafeBrowsingUIManager::GetMainFrameAllowlistUrlForResourceForTesting(
             resource),
         web_contents(), false, resource.threat_type);
   }
@@ -187,46 +187,46 @@ class SafeBrowsingUIManagerTest : public ChromeRenderViewHostTestHarness {
 
 // Leaks memory. https://crbug.com/755118
 #if defined(LEAK_SANITIZER)
-#define MAYBE_Whitelist DISABLED_Whitelist
+#define MAYBE_Allowlist DISABLED_Allowlist
 #else
-#define MAYBE_Whitelist Whitelist
+#define MAYBE_Allowlist Allowlist
 #endif
-TEST_F(SafeBrowsingUIManagerTest, MAYBE_Whitelist) {
+TEST_F(SafeBrowsingUIManagerTest, MAYBE_Allowlist) {
   security_interstitials::UnsafeResource resource =
       MakeUnsafeResourceAndStartNavigation(kBadURL);
-  AddToWhitelist(resource);
-  EXPECT_TRUE(IsWhitelisted(resource));
+  AddToAllowlist(resource);
+  EXPECT_TRUE(IsAllowlisted(resource));
 }
 
 // Leaks memory. https://crbug.com/755118
 #if defined(LEAK_SANITIZER)
-#define MAYBE_WhitelistIgnoresSitesNotAdded \
-  DISABLED_WhitelistIgnoresSitesNotAdded
+#define MAYBE_AllowlistIgnoresSitesNotAdded \
+  DISABLED_AllowlistIgnoresSitesNotAdded
 #else
-#define MAYBE_WhitelistIgnoresSitesNotAdded WhitelistIgnoresSitesNotAdded
+#define MAYBE_AllowlistIgnoresSitesNotAdded AllowlistIgnoresSitesNotAdded
 #endif
-TEST_F(SafeBrowsingUIManagerTest, MAYBE_WhitelistIgnoresSitesNotAdded) {
+TEST_F(SafeBrowsingUIManagerTest, MAYBE_AllowlistIgnoresSitesNotAdded) {
   security_interstitials::UnsafeResource resource =
       MakeUnsafeResourceAndStartNavigation(kGoodURL);
-  EXPECT_FALSE(IsWhitelisted(resource));
+  EXPECT_FALSE(IsAllowlisted(resource));
 }
 
 // Leaks memory. https://crbug.com/755118
 #if defined(LEAK_SANITIZER)
-#define MAYBE_WhitelistRemembersThreatType DISABLED_WhitelistRemembersThreatType
+#define MAYBE_AllowlistRemembersThreatType DISABLED_AllowlistRemembersThreatType
 #else
-#define MAYBE_WhitelistRemembersThreatType WhitelistRemembersThreatType
+#define MAYBE_AllowlistRemembersThreatType AllowlistRemembersThreatType
 #endif
-TEST_F(SafeBrowsingUIManagerTest, MAYBE_WhitelistRemembersThreatType) {
+TEST_F(SafeBrowsingUIManagerTest, MAYBE_AllowlistRemembersThreatType) {
   security_interstitials::UnsafeResource resource =
       MakeUnsafeResourceAndStartNavigation(kBadURL);
-  AddToWhitelist(resource);
-  EXPECT_TRUE(IsWhitelisted(resource));
+  AddToAllowlist(resource);
+  EXPECT_TRUE(IsAllowlisted(resource));
   SBThreatType threat_type;
   content::NavigationEntry* entry =
       web_contents()->GetController().GetVisibleEntry();
   ASSERT_TRUE(entry);
-  EXPECT_TRUE(ui_manager()->IsUrlWhitelistedOrPendingForWebContents(
+  EXPECT_TRUE(ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
       resource.url, resource.is_subresource, entry,
       resource.web_contents_getter.Run(), true, &threat_type));
   EXPECT_EQ(resource.threat_type, threat_type);
@@ -234,50 +234,50 @@ TEST_F(SafeBrowsingUIManagerTest, MAYBE_WhitelistRemembersThreatType) {
 
 // Leaks memory. https://crbug.com/755118
 #if defined(LEAK_SANITIZER)
-#define MAYBE_WhitelistIgnoresPath DISABLED_WhitelistIgnoresPath
+#define MAYBE_AllowlistIgnoresPath DISABLED_AllowlistIgnoresPath
 #else
-#define MAYBE_WhitelistIgnoresPath WhitelistIgnoresPath
+#define MAYBE_AllowlistIgnoresPath AllowlistIgnoresPath
 #endif
-TEST_F(SafeBrowsingUIManagerTest, MAYBE_WhitelistIgnoresPath) {
+TEST_F(SafeBrowsingUIManagerTest, MAYBE_AllowlistIgnoresPath) {
   security_interstitials::UnsafeResource resource =
       MakeUnsafeResourceAndStartNavigation(kBadURL);
-  AddToWhitelist(resource);
-  EXPECT_TRUE(IsWhitelisted(resource));
+  AddToAllowlist(resource);
+  EXPECT_TRUE(IsAllowlisted(resource));
 
   content::WebContentsTester::For(web_contents())->CommitPendingNavigation();
 
   security_interstitials::UnsafeResource resource_path =
       MakeUnsafeResourceAndStartNavigation(kBadURLWithPath);
-  EXPECT_TRUE(IsWhitelisted(resource_path));
+  EXPECT_TRUE(IsAllowlisted(resource_path));
 }
 
 // Leaks memory. https://crbug.com/755118
 #if defined(LEAK_SANITIZER)
-#define MAYBE_WhitelistIgnoresThreatType DISABLED_WhitelistIgnoresThreatType
+#define MAYBE_AllowlistIgnoresThreatType DISABLED_AllowlistIgnoresThreatType
 #else
-#define MAYBE_WhitelistIgnoresThreatType WhitelistIgnoresThreatType
+#define MAYBE_AllowlistIgnoresThreatType AllowlistIgnoresThreatType
 #endif
-TEST_F(SafeBrowsingUIManagerTest, MAYBE_WhitelistIgnoresThreatType) {
+TEST_F(SafeBrowsingUIManagerTest, MAYBE_AllowlistIgnoresThreatType) {
   security_interstitials::UnsafeResource resource =
       MakeUnsafeResourceAndStartNavigation(kBadURL);
-  AddToWhitelist(resource);
-  EXPECT_TRUE(IsWhitelisted(resource));
+  AddToAllowlist(resource);
+  EXPECT_TRUE(IsAllowlisted(resource));
 
   security_interstitials::UnsafeResource resource_phishing =
       MakeUnsafeResource(kBadURL, false /* is_subresource */);
   resource_phishing.threat_type = SB_THREAT_TYPE_URL_PHISHING;
-  EXPECT_TRUE(IsWhitelisted(resource_phishing));
+  EXPECT_TRUE(IsAllowlisted(resource_phishing));
 }
 
 // Leaks memory. https://crbug.com/755118
 #if defined(LEAK_SANITIZER)
-#define MAYBE_WhitelistWithUnrelatedPendingLoad \
-  DISABLED_WhitelistWithUnrelatedPendingLoad
+#define MAYBE_AllowlistWithUnrelatedPendingLoad \
+  DISABLED_AllowlistWithUnrelatedPendingLoad
 #else
-#define MAYBE_WhitelistWithUnrelatedPendingLoad \
-  WhitelistWithUnrelatedPendingLoad
+#define MAYBE_AllowlistWithUnrelatedPendingLoad \
+  AllowlistWithUnrelatedPendingLoad
 #endif
-TEST_F(SafeBrowsingUIManagerTest, MAYBE_WhitelistWithUnrelatedPendingLoad) {
+TEST_F(SafeBrowsingUIManagerTest, MAYBE_AllowlistWithUnrelatedPendingLoad) {
   // Commit load of landing page.
   NavigateAndCommit(GURL(kLandingURL));
   auto unrelated_navigation =
@@ -291,19 +291,19 @@ TEST_F(SafeBrowsingUIManagerTest, MAYBE_WhitelistWithUnrelatedPendingLoad) {
     // Start pending load to unrelated site.
     unrelated_navigation->Start();
 
-    // Whitelist the resource on the landing page.
-    AddToWhitelist(resource);
-    EXPECT_TRUE(IsWhitelisted(resource));
+    // Allowlist the resource on the landing page.
+    AddToAllowlist(resource);
+    EXPECT_TRUE(IsAllowlisted(resource));
   }
 
   // Commit the pending load of unrelated site.
   unrelated_navigation->Commit();
   {
-    // The unrelated site is not on the whitelist, even if the same subresource
+    // The unrelated site is not on the allowlist, even if the same subresource
     // was on it.
     security_interstitials::UnsafeResource resource =
         MakeUnsafeResource(kBadURL, true /* is_subresource */);
-    EXPECT_FALSE(IsWhitelisted(resource));
+    EXPECT_FALSE(IsAllowlisted(resource));
   }
 
   // Navigate back to the original landing url.
@@ -311,15 +311,15 @@ TEST_F(SafeBrowsingUIManagerTest, MAYBE_WhitelistWithUnrelatedPendingLoad) {
   {
     security_interstitials::UnsafeResource resource =
         MakeUnsafeResource(kBadURL, true /* is_subresource */);
-    // Original resource url is whitelisted.
-    EXPECT_TRUE(IsWhitelisted(resource));
+    // Original resource url is allowlisted.
+    EXPECT_TRUE(IsAllowlisted(resource));
   }
   {
-    // A different malware subresource on the same page is also whitelisted.
-    // (The whitelist is by the page url, not the resource url.)
+    // A different malware subresource on the same page is also allowlisted.
+    // (The allowlist is by the page url, not the resource url.)
     security_interstitials::UnsafeResource resource2 =
         MakeUnsafeResource(kAnotherBadURL, true /* is_subresource */);
-    EXPECT_TRUE(IsWhitelisted(resource2));
+    EXPECT_TRUE(IsAllowlisted(resource2));
   }
 }
 
@@ -340,7 +340,7 @@ TEST_F(SafeBrowsingUIManagerTest, MAYBE_UICallbackProceed) {
   std::vector<security_interstitials::UnsafeResource> resources;
   resources.push_back(resource);
   SimulateBlockingPageDone(resources, true);
-  EXPECT_TRUE(IsWhitelisted(resource));
+  EXPECT_TRUE(IsAllowlisted(resource));
   waiter.WaitForCallback();
   EXPECT_TRUE(waiter.callback_called());
   EXPECT_TRUE(waiter.proceed());
@@ -363,7 +363,7 @@ TEST_F(SafeBrowsingUIManagerTest, MAYBE_UICallbackDontProceed) {
   std::vector<security_interstitials::UnsafeResource> resources;
   resources.push_back(resource);
   SimulateBlockingPageDone(resources, false);
-  EXPECT_FALSE(IsWhitelisted(resource));
+  EXPECT_FALSE(IsAllowlisted(resource));
   waiter.WaitForCallback();
   EXPECT_TRUE(waiter.callback_called());
   EXPECT_FALSE(waiter.proceed());
@@ -386,7 +386,7 @@ TEST_F(SafeBrowsingUIManagerTest, MAYBE_IOCallbackProceed) {
   std::vector<security_interstitials::UnsafeResource> resources;
   resources.push_back(resource);
   SimulateBlockingPageDone(resources, true);
-  EXPECT_TRUE(IsWhitelisted(resource));
+  EXPECT_TRUE(IsAllowlisted(resource));
   waiter.WaitForCallback();
   EXPECT_TRUE(waiter.callback_called());
   EXPECT_TRUE(waiter.proceed());
@@ -409,7 +409,7 @@ TEST_F(SafeBrowsingUIManagerTest, MAYBE_IOCallbackDontProceed) {
   std::vector<security_interstitials::UnsafeResource> resources;
   resources.push_back(resource);
   SimulateBlockingPageDone(resources, false);
-  EXPECT_FALSE(IsWhitelisted(resource));
+  EXPECT_FALSE(IsAllowlisted(resource));
   waiter.WaitForCallback();
   EXPECT_TRUE(waiter.callback_called());
   EXPECT_FALSE(waiter.proceed());
@@ -541,7 +541,7 @@ TEST_F(SafeBrowsingUIManagerTest,
   waiter.WaitForCallback();
   EXPECT_TRUE(waiter.callback_called());
   EXPECT_TRUE(waiter.proceed());
-  EXPECT_TRUE(IsWhitelisted(resource));
+  EXPECT_TRUE(IsAllowlisted(resource));
 }
 
 TEST_F(SafeBrowsingUIManagerTest, ShowBlockPageNoCallback) {

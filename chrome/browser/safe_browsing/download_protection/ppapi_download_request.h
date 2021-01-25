@@ -52,7 +52,7 @@ class PPAPIDownloadRequest {
     REQUEST_DESTROYED,
     UNSUPPORTED_FILE_TYPE,
     TIMEDOUT,
-    WHITELIST_HIT,
+    ALLOWLIST_HIT,
     REQUEST_MALFORMED,
     FETCH_FAILED,
     RESPONSE_MALFORMED,
@@ -94,13 +94,13 @@ class PPAPIDownloadRequest {
 
   friend class DownloadProtectionService;
 
-  // Whitelist checking needs to the done on the IO thread.
-  static void CheckWhitelistsOnIOThread(
+  // Allowlist checking needs to the done on the IO thread.
+  static void CheckAllowlistsOnIOThread(
       const GURL& requestor_url,
       scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
       base::WeakPtr<PPAPIDownloadRequest> download_request);
 
-  void WhitelistCheckComplete(bool was_on_whitelist);
+  void AllowlistCheckComplete(bool was_on_allowlist);
 
   void SendRequest();
 

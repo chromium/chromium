@@ -19,7 +19,7 @@ const int kLookupTimeoutMS = 5000;
 }  // namespace
 
 // static
-void AllowlistCheckerClient::StartCheckCsdWhitelist(
+void AllowlistCheckerClient::StartCheckCsdAllowlist(
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
     const GURL& url,
     base::OnceCallback<void(bool)> callback_for_result) {
@@ -35,7 +35,7 @@ void AllowlistCheckerClient::StartCheckCsdWhitelist(
     return;
   }
 
-  AsyncMatch match = database_manager->CheckCsdWhitelistUrl(url, client.get());
+  AsyncMatch match = database_manager->CheckCsdAllowlistUrl(url, client.get());
   InvokeCallbackOrRelease(match, std::move(client));
 }
 
@@ -110,7 +110,7 @@ AllowlistCheckerClient::AllowlistCheckerClient(
       default_does_match_allowlist_(default_does_match_allowlist) {
   DCHECK(CurrentlyOnThread(ThreadID::IO));
 
-  // Set a timer to fail open, i.e. call it "whitelisted", if the full
+  // Set a timer to fail open, i.e. call it "allowlisted", if the full
   // check takes too long.
   auto timeout_callback = base::BindOnce(&AllowlistCheckerClient::OnTimeout,
                                          weak_factory_.GetWeakPtr());
@@ -123,7 +123,7 @@ AllowlistCheckerClient::~AllowlistCheckerClient() {
 }
 
 // SafeBrowsingDatabaseMananger::Client impl
-void AllowlistCheckerClient::OnCheckWhitelistUrlResult(
+void AllowlistCheckerClient::OnCheckAllowlistUrlResult(
     bool did_match_allowlist) {
   OnCheckUrlResult(did_match_allowlist);
 }

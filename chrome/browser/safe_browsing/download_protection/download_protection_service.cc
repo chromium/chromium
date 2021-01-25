@@ -56,8 +56,8 @@ namespace safe_browsing {
 namespace {
 
 const int64_t kDownloadRequestTimeoutMs = 7000;
-// We sample 1% of whitelisted downloads to still send out download pings.
-const double kWhitelistDownloadSampleRate = 0.01;
+// We sample 1% of allowlisted downloads to still send out download pings.
+const double kAllowlistDownloadSampleRate = 0.01;
 
 // The number of user gestures we trace back for download attribution.
 const int kDownloadAttributionUserGestureLimit = 2;
@@ -116,7 +116,7 @@ DownloadProtectionService::DownloadProtectionService(
           base::ThreadPool::CreateSequencedTaskRunner(
               {base::MayBlock(), base::TaskPriority::BEST_EFFORT})
               .get())),
-      whitelist_sample_rate_(kWhitelistDownloadSampleRate),
+      allowlist_sample_rate_(kAllowlistDownloadSampleRate),
       weak_ptr_factory_(this) {
   if (sb_service) {
     ui_manager_ = sb_service->ui_manager();
@@ -229,12 +229,12 @@ void DownloadProtectionService::CheckDownloadUrl(
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(item);
   // |web_contents| can be null in tests.
-  // Checks if this download is whitelisted by enterprise policy.
+  // Checks if this download is allowlisted by enterprise policy.
   if (web_contents) {
     Profile* profile =
         Profile::FromBrowserContext(web_contents->GetBrowserContext());
     if (profile &&
-        MatchesEnterpriseWhitelist(*profile->GetPrefs(), item->GetUrlChain())) {
+        MatchesEnterpriseAllowlist(*profile->GetPrefs(), item->GetUrlChain())) {
       // We don't return ALLOWLISTED_BY_POLICY yet, because future deep scanning
       // operations may indicate the file is unsafe.
       std::move(callback).Run(DownloadCheckResult::SAFE);
@@ -272,7 +272,7 @@ void DownloadProtectionService::CheckPPAPIDownloadRequest(
   DVLOG(1) << __func__ << " url:" << requestor_url
            << " default_file_path:" << default_file_path.value();
   if (profile &&
-      MatchesEnterpriseWhitelist(*profile->GetPrefs(),
+      MatchesEnterpriseAllowlist(*profile->GetPrefs(),
                                  {requestor_url, initiating_frame_url})) {
     std::move(callback).Run(DownloadCheckResult::ALLOWLISTED_BY_POLICY);
     return;

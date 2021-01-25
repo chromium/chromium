@@ -66,7 +66,7 @@ MaliciousContentStatus GetMaliciousContentStatus(
     case safe_browsing::SB_THREAT_TYPE_BLOCKLISTED_RESOURCE:
     case safe_browsing::SB_THREAT_TYPE_API_ABUSE:
     case safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER:
-    case safe_browsing::SB_THREAT_TYPE_CSD_WHITELIST:
+    case safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST:
     case safe_browsing::SB_THREAT_TYPE_AD_SAMPLE:
     case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_POPUP:
     case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:

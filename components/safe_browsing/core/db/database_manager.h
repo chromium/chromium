@@ -88,9 +88,9 @@ class SafeBrowsingDatabaseManager
                                           SBThreatType threat_type,
                                           const std::string& threat_hash) {}
 
-    // Called when the result of checking a whitelist is known.
-    // Currently only used for CSD whitelist.
-    virtual void OnCheckWhitelistUrlResult(bool did_match_allowlist) {}
+    // Called when the result of checking a allowlist is known.
+    // Currently only used for CSD allowlist.
+    virtual void OnCheckAllowlistUrlResult(bool did_match_allowlist) {}
 
     // Called when the result of checking the high-confidence allowlist is
     // known.
@@ -146,9 +146,9 @@ class SafeBrowsingDatabaseManager
   virtual bool CheckApiBlocklistUrl(const GURL& url, Client* client);
 
   // Check if the |url| matches any of the full-length hashes from the client-
-  // side phishing detection whitelist. The 3-state return value indicates
+  // side phishing detection allowlist. The 3-state return value indicates
   // the result or that |client| will get a callback later with the result.
-  virtual AsyncMatch CheckCsdWhitelistUrl(const GURL& url, Client* client) = 0;
+  virtual AsyncMatch CheckCsdAllowlistUrl(const GURL& url, Client* client) = 0;
 
   // Called on the IO thread to check if the given url is safe or not.  If we
   // can synchronously determine that the url is safe, CheckUrl returns true.
@@ -197,16 +197,16 @@ class SafeBrowsingDatabaseManager
   //
 
   // Check if SHA-256 hash of |str| matches any of the full-length hashes from
-  // the download whitelist.  Returns true if there was a match and false
+  // the download allowlist.  Returns true if there was a match and false
   // otherwise. To make sure we are conservative we will return true if an error
   // occurs.  This method must be called on the IO thread.
-  virtual bool MatchDownloadWhitelistString(const std::string& str) = 0;
+  virtual bool MatchDownloadAllowlistString(const std::string& str) = 0;
 
   // Check if the |url| matches any of the full-length hashes from the download
-  // whitelist.  Returns true if there was a match and false otherwise. To make
+  // allowlist.  Returns true if there was a match and false otherwise. To make
   // sure we are conservative we will return true if an error occurs.  This
   // method must be called on the IO thread.
-  virtual bool MatchDownloadWhitelistUrl(const GURL& url) = 0;
+  virtual bool MatchDownloadAllowlistUrl(const GURL& url) = 0;
 
   // Check if the given IP address (either IPv4 or IPv6) matches the malware
   // IP blocklist.

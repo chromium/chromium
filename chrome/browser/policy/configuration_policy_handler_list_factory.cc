@@ -1472,7 +1472,7 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
           policy::policy_prefs::kNativeWindowOcclusionEnabled,
           base::Value::Type::BOOLEAN)));
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kSafeBrowsingAllowlistDomains, prefs::kSafeBrowsingWhitelistDomains,
+      key::kSafeBrowsingAllowlistDomains, prefs::kSafeBrowsingAllowlistDomains,
       base::Value::Type::LIST));
   handlers->AddHandler(std::make_unique<syncer::SyncPolicyHandler>());
   handlers->AddHandler(std::make_unique<BrowsingHistoryPolicyHandler>());

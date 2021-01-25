@@ -108,7 +108,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
 
     // Don't start classification if |url_| is whitelisted by enterprise policy.
     if (host_->delegate_->GetPrefs() &&
-        IsURLWhitelistedByPolicy(url_, *host_->delegate_->GetPrefs())) {
+        IsURLAllowlistedByPolicy(url_, *host_->delegate_->GetPrefs())) {
       DontClassifyForPhishing(NO_CLASSIFY_WHITELISTED_BY_POLICY);
     }
 
@@ -203,7 +203,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
         base::BindOnce(&ClientSideDetectionHost::ShouldClassifyUrlRequest::
                            OnWhitelistCheckDoneOnIO,
                        this, url, phishing_reason);
-    AllowlistCheckerClient::StartCheckCsdWhitelist(database_manager_, url,
+    AllowlistCheckerClient::StartCheckCsdAllowlist(database_manager_, url,
                                                    std::move(result_callback));
   }
 
@@ -487,7 +487,7 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(bool is_from_cache,
           security_interstitials::GetWebContentsGetter(
               web_contents()->GetMainFrame()->GetProcess()->GetID(),
               web_contents()->GetMainFrame()->GetRoutingID());
-      if (!ui_manager_->IsWhitelisted(resource)) {
+      if (!ui_manager_->IsAllowlisted(resource)) {
         // We need to stop any pending navigations, otherwise the interstitial
         // might not get created properly.
         web_contents()->GetController().DiscardNonCommittedEntries();

@@ -138,8 +138,8 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  public:
   MockSafeBrowsingDatabaseManager() {}
 
-  MOCK_METHOD1(MatchDownloadWhitelistUrl, bool(const GURL&));
-  MOCK_METHOD1(MatchDownloadWhitelistString, bool(const std::string&));
+  MOCK_METHOD1(MatchDownloadAllowlistUrl, bool(const GURL&));
+  MOCK_METHOD1(MatchDownloadAllowlistString, bool(const std::string&));
   MOCK_METHOD2(CheckDownloadUrl,
                bool(const std::vector<GURL>& url_chain,
                     SafeBrowsingDatabaseManager::Client* client));
@@ -404,8 +404,8 @@ class DownloadProtectionServiceTestBase
     scoped_feature_list_.InitWithFeatures({}, features);
   }
 
-  void SetWhitelistedDownloadSampleRate(double target_rate) {
-    download_service_->whitelist_sample_rate_ = target_rate;
+  void SetAllowlistedDownloadSampleRate(double target_rate) {
+    download_service_->allowlist_sample_rate_ = target_rate;
   }
 
   void SetBinarySamplingProbability(double target_rate) {
@@ -596,9 +596,9 @@ class DownloadProtectionServiceTestBase
     return result;
   }
 
-  void AddDomainToEnterpriseWhitelist(const std::string& domain) {
+  void AddDomainToEnterpriseAllowlist(const std::string& domain) {
     ListPrefUpdate update(profile()->GetPrefs(),
-                          prefs::kSafeBrowsingWhitelistDomains);
+                          prefs::kSafeBrowsingAllowlistDomains);
     update.Get()->AppendString(domain);
   }
 
@@ -861,7 +861,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadNotABinary) {
 }
 
 TEST_F(DownloadProtectionServiceTest,
-       CheckClientDownloadWhitelistedUrlWithoutSampling) {
+       CheckClientDownloadAllowlistedUrlWithoutSampling) {
   // Response to any requests will be DANGEROUS.
   PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK, net::OK);
 
@@ -881,17 +881,17 @@ TEST_F(DownloadProtectionServiceTest,
 
   // We should not get whilelist checks for other URLs than specified below.
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .Times(0);
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(GURL("http://www.evil.com/bla.exe")))
+              MatchDownloadAllowlistUrl(GURL("http://www.evil.com/bla.exe")))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(GURL("http://www.google.com/a.exe")))
+              MatchDownloadAllowlistUrl(GURL("http://www.google.com/a.exe")))
       .WillRepeatedly(Return(true));
 
   // Set sample rate to 0 to prevent sampling.
-  SetWhitelistedDownloadSampleRate(0);
+  SetAllowlistedDownloadSampleRate(0);
   {
     // With no referrer and just the bad url, should be marked DANGEROUS.
     url_chain_.push_back(GURL("http://www.evil.com/bla.exe"));
@@ -908,7 +908,7 @@ TEST_F(DownloadProtectionServiceTest,
     ClearClientDownloadRequest();
   }
   {
-    // Check that the referrer is not matched against the whitelist.
+    // Check that the referrer is not matched against the allowlist.
     referrer_ = GURL("http://www.google.com/");
     RunLoop run_loop;
     download_service_->CheckClientDownload(
@@ -941,7 +941,7 @@ TEST_F(DownloadProtectionServiceTest,
     ClearClientDownloadRequest();
   }
   {
-    // Only if the final url is whitelisted should it be SAFE.
+    // Only if the final url is allowlisted should it be SAFE.
     url_chain_.push_back(GURL("http://www.google.com/a.exe"));
     RunLoop run_loop;
     download_service_->CheckClientDownload(
@@ -951,14 +951,14 @@ TEST_F(DownloadProtectionServiceTest,
     run_loop.Run();
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     // TODO(grt): Make the service produce the request even when the URL is
-    // whitelisted.
+    // allowlisted.
     EXPECT_FALSE(HasClientDownloadRequest());
   }
 }
 
 TEST_F(DownloadProtectionServiceTest,
-       CheckClientDownloadWhitelistedUrlWithSampling) {
-  // Server responses "SAFE" to every requests coming from whitelisted
+       CheckClientDownloadAllowlistedUrlWithSampling) {
+  // Server responses "SAFE" to every requests coming from allowlisted
   // download.
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
 
@@ -974,17 +974,17 @@ TEST_F(DownloadProtectionServiceTest,
               ExtractImageFeatures(
                   tmp_path_, BinaryFeatureExtractor::kDefaultOptions, _, _))
       .Times(3);
-  // Assume http://www.whitelist.com/a.exe is on the whitelist.
+  // Assume http://www.allowlist.com/a.exe is on the allowlist.
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .Times(0);
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(GURL("http://www.whitelist.com/a.exe")))
+              MatchDownloadAllowlistUrl(GURL("http://www.allowlist.com/a.exe")))
       .WillRepeatedly(Return(true));
-  url_chain_.push_back(GURL("http://www.whitelist.com/a.exe"));
+  url_chain_.push_back(GURL("http://www.allowlist.com/a.exe"));
   // Set sample rate to 1.00, so download_service_ will always send download
-  // pings for whitelisted downloads.
-  SetWhitelistedDownloadSampleRate(1.00);
+  // pings for allowlisted downloads.
+  SetAllowlistedDownloadSampleRate(1.00);
 
   {
     // Case (1): is_extended_reporting && is_incognito.
@@ -1031,7 +1031,7 @@ TEST_F(DownloadProtectionServiceTest,
   }
   {
     // Case (4): is_extended_reporting && !is_incognito &&
-    //           Download matches URL whitelist.
+    //           Download matches URL allowlist.
     //           ClientDownloadRequest should be sent.
     SetExtendedReportingPreference(true);
     content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
@@ -1048,7 +1048,7 @@ TEST_F(DownloadProtectionServiceTest,
     ClearClientDownloadRequest();
   }
 
-  // Setup trusted and whitelisted certificates for test cases (5) and (6).
+  // Setup trusted and allowlisted certificates for test cases (5) and (6).
   scoped_refptr<net::X509Certificate> test_cert(
       ReadTestCertificate("test_cn.pem"));
   ASSERT_TRUE(test_cert.get());
@@ -1057,17 +1057,17 @@ TEST_F(DownloadProtectionServiceTest,
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
       .WillRepeatedly(TrustSignature(test_cert_der));
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistString(_))
+              MatchDownloadAllowlistString(_))
       .WillRepeatedly(Return(true));
 
   {
     // Case (6): is_extended_reporting && !is_incognito &&
-    //           Download matches certificate whitelist.
+    //           Download matches certificate allowlist.
     //           ClientDownloadRequest should be sent.
     content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
     EXPECT_CALL(
         *sb_service_->mock_database_manager(),
-        MatchDownloadWhitelistUrl(GURL("http://www.whitelist.com/a.exe")))
+        MatchDownloadAllowlistUrl(GURL("http://www.allowlist.com/a.exe")))
         .WillRepeatedly(Return(false));
     RunLoop run_loop;
     download_service_->CheckClientDownload(
@@ -1083,12 +1083,12 @@ TEST_F(DownloadProtectionServiceTest,
   }
   {
     // Case (7): is_extended_reporting && !is_incognito &&
-    //           Download matches both URL and certificate whitelists.
+    //           Download matches both URL and certificate allowlists.
     //           ClientDownloadRequest should be sent.
     content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
     EXPECT_CALL(
         *sb_service_->mock_database_manager(),
-        MatchDownloadWhitelistUrl(GURL("http://www.whitelist.com/a.exe")))
+        MatchDownloadAllowlistUrl(GURL("http://www.allowlist.com/a.exe")))
         .WillRepeatedly(Return(true));
     RunLoop run_loop;
     download_service_->CheckClientDownload(
@@ -1099,8 +1099,8 @@ TEST_F(DownloadProtectionServiceTest,
     EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
     ASSERT_TRUE(HasClientDownloadRequest());
     EXPECT_TRUE(GetClientDownloadRequest()->skipped_url_whitelist());
-    // Since download matches URL whitelist and gets sampled, no need to
-    // do certificate whitelist checking and sampling.
+    // Since download matches URL allowlist and gets sampled, no need to
+    // do certificate allowlist checking and sampling.
     EXPECT_FALSE(GetClientDownloadRequest()->skipped_certificate_whitelist());
     ClearClientDownloadRequest();
   }
@@ -1212,7 +1212,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadFetchFailed) {
                            FILE_PATH_LITERAL("a.exe"));           // final_path
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
   EXPECT_CALL(*binary_feature_extractor_.get(),
@@ -1237,7 +1237,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadSuccess) {
                            FILE_PATH_LITERAL("a.exe"));           // final_path
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
       .Times(8);
@@ -1398,7 +1398,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadHTTPS) {
                            FILE_PATH_LITERAL("a.exe"));           // final_path
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
       .Times(1);
@@ -1429,7 +1429,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadBlob) {
       FILE_PATH_LITERAL("a.exe"));  // final_path
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
       .Times(1);
@@ -1463,7 +1463,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadData) {
       FILE_PATH_LITERAL("a.exe"));                        // final_path
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
       .Times(1);
@@ -1546,7 +1546,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadZip) {
                               file_contents.data(), file_contents.size()));
     ASSERT_TRUE(zip::Zip(zip_source_dir.GetPath(), tmp_path_, false));
     EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadWhitelistUrl(_))
+                MatchDownloadAllowlistUrl(_))
         .WillRepeatedly(Return(false));
     RunLoop run_loop;
     download_service_->CheckClientDownload(
@@ -1959,7 +1959,7 @@ TEST_F(DownloadProtectionServiceTest, CheckClientDownloadValidateRequest) {
   EXPECT_CALL(item, GetRemoteAddress()).WillRepeatedly(Return(remote_address));
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
 #if !defined(OS_MAC)
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
@@ -2037,7 +2037,7 @@ TEST_F(DownloadProtectionServiceTest,
   std::string remote_address = "10.11.12.13";
   EXPECT_CALL(item, GetRemoteAddress()).WillRepeatedly(Return(remote_address));
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
 #if !defined(OS_MAC)
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
@@ -2095,7 +2095,7 @@ TEST_F(DownloadProtectionServiceTest,
   EXPECT_CALL(item, GetRemoteAddress()).WillRepeatedly(Return(remote_address));
   content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
       .WillRepeatedly(SetCertificateContents("dummy cert data"));
@@ -2309,11 +2309,11 @@ TEST_F(DownloadProtectionServiceTest, TestCheckDownloadUrl) {
 }
 
 TEST_F(DownloadProtectionServiceTest,
-       TestCheckDownloadUrlOnPolicyWhitelistedDownload) {
-  AddDomainToEnterpriseWhitelist("example.com");
+       TestCheckDownloadUrlOnPolicyAllowlistedDownload) {
+  AddDomainToEnterpriseAllowlist("example.com");
 
   // Prepares download item that its download url (last url in url chain)
-  // matches enterprise whitelist.
+  // matches enterprise allowlist.
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(
       &item,
@@ -2334,7 +2334,7 @@ TEST_F(DownloadProtectionServiceTest,
   EXPECT_TRUE(IsResult(DownloadCheckResult::SAFE));
 
   // Prepares download item that other url in the url chain matches enterprise
-  // whitelist.
+  // allowlist.
   NiceMockDownloadItem item2;
   PrepareBasicDownloadItem(
       &item2, {"https://example.com/landing", "http://otherdomain.com/a.exe"},
@@ -2360,7 +2360,7 @@ TEST_F(DownloadProtectionServiceTest, TestDownloadRequestTimeout) {
                            FILE_PATH_LITERAL("a.exe"));  // final_path
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
   EXPECT_CALL(*binary_feature_extractor_.get(),
@@ -2393,11 +2393,11 @@ TEST_F(DownloadProtectionServiceTest, TestDownloadItemDestroyed) {
     GURL tab_url("http://www.google.com/tab");
     EXPECT_CALL(item, GetTabUrl()).WillRepeatedly(ReturnRef(tab_url));
     EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadWhitelistUrl(_))
+                MatchDownloadAllowlistUrl(_))
         .WillRepeatedly(Return(false));
 
     // Expects that MockDownloadItem will go out of scope while asynchronous
-    // processing is checking whitelist, and thus will return after whitelist
+    // processing is checking allowlist, and thus will return after allowlist
     // check rather than continuing to process the download, since
     // OnDownloadDestroyed will be called to terminate the processing.
     EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
@@ -2426,7 +2426,7 @@ TEST_F(DownloadProtectionServiceTest, TestDownloadItemDestroyed) {
 }
 
 TEST_F(DownloadProtectionServiceTest,
-       TestDownloadItemDestroyedDuringWhitelistCheck) {
+       TestDownloadItemDestroyedDuringAllowlistCheck) {
   std::unique_ptr<NiceMockDownloadItem> item(new NiceMockDownloadItem);
   PrepareBasicDownloadItem(item.get(),
                            {"http://www.evil.com/bla.exe"},  // url_chain
@@ -2437,7 +2437,7 @@ TEST_F(DownloadProtectionServiceTest,
   EXPECT_CALL(*item, GetTabUrl()).WillRepeatedly(ReturnRef(tab_url));
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Invoke([&item](const GURL&) {
         item.reset();
         return false;
@@ -2518,7 +2518,7 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_SupportedDefault) {
   base::FilePath default_file_path(FILE_PATH_LITERAL("/foo/bar/test.crx"));
   std::vector<base::FilePath::StringType> alternate_extensions;
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   struct {
     ClientDownloadResponse::Verdict verdict;
@@ -2557,7 +2557,7 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_SupportedAlternate) {
       FILE_PATH_LITERAL(".tmp"), FILE_PATH_LITERAL(".crx")};
   PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK, net::OK);
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   SetExtendedReportingPreference(false);
   RunLoop run_loop;
@@ -2573,11 +2573,11 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_SupportedAlternate) {
             GetClientDownloadRequest()->population().user_population());
 }
 
-TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_WhitelistedURL) {
+TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_AllowlistedURL) {
   base::FilePath default_file_path(FILE_PATH_LITERAL("/foo/bar/test.crx"));
   std::vector<base::FilePath::StringType> alternate_extensions;
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(true));
 
   RunLoop run_loop;
@@ -2597,7 +2597,7 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_FetchFailed) {
   PrepareResponse(ClientDownloadResponse::DANGEROUS, net::HTTP_OK,
                   net::ERR_FAILED);
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   RunLoop run_loop;
   download_service_->CheckPPAPIDownloadRequest(
@@ -2616,7 +2616,7 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_InvalidResponse) {
   sb_service_->test_url_loader_factory()->AddResponse(
       PPAPIDownloadRequest::GetDownloadRequestUrl().spec(), "Hello world!");
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   RunLoop run_loop;
   download_service_->CheckPPAPIDownloadRequest(
@@ -2633,7 +2633,7 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_Timeout) {
   base::FilePath default_file_path(FILE_PATH_LITERAL("/foo/bar/test.crx"));
   std::vector<base::FilePath::StringType> alternate_extensions;
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
   download_service_->download_request_timeout_ms_ = 0;
@@ -2662,7 +2662,7 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_Payload) {
       FILE_PATH_LITERAL(".txt"), FILE_PATH_LITERAL(".abc"),
       FILE_PATH_LITERAL(""), FILE_PATH_LITERAL(".sdF")};
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   PrepareResponse(ClientDownloadResponse::SAFE, net::HTTP_OK, net::OK);
   const GURL kRequestorUrl("http://example.com/foo");
@@ -2689,8 +2689,8 @@ TEST_F(DownloadProtectionServiceTest, PPAPIDownloadRequest_Payload) {
 }
 
 TEST_F(DownloadProtectionServiceTest,
-       PPAPIDownloadRequest_WhitelistedByPolicy) {
-  AddDomainToEnterpriseWhitelist("example.com");
+       PPAPIDownloadRequest_AllowlistedByPolicy) {
+  AddDomainToEnterpriseAllowlist("example.com");
   std::unique_ptr<content::WebContents> web_contents(
       content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
 
@@ -2776,15 +2776,15 @@ TEST_F(DownloadProtectionServiceTest, VerifyDangerousDownloadOpenedAPICall) {
                    OnDangerousDownloadOpened::kEventName));
 }
 
-TEST_F(DownloadProtectionServiceTest, CheckClientDownloadWhitelistedByPolicy) {
-  AddDomainToEnterpriseWhitelist("example.com");
+TEST_F(DownloadProtectionServiceTest, CheckClientDownloadAllowlistedByPolicy) {
+  AddDomainToEnterpriseAllowlist("example.com");
   NiceMockDownloadItem item;
   PrepareBasicDownloadItem(&item, {"http://example.com/a.exe"},  // url_chain
                            "http://www.google.com/",             // referrer
                            FILE_PATH_LITERAL("a.tmp"),           // tmp_path
                            FILE_PATH_LITERAL("a.exe"));          // final_path
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .Times(0);
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(_, _)).Times(0);
   EXPECT_CALL(*binary_feature_extractor_.get(),
@@ -2852,7 +2852,7 @@ TEST_F(DownloadProtectionServiceFlagTest, CheckClientDownloadOverridenByFlag) {
                            FILE_PATH_LITERAL("a.exe"));           // final_path
   EXPECT_CALL(item, GetHash()).WillRepeatedly(ReturnRef(blocklisted_hash_));
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
   EXPECT_CALL(*binary_feature_extractor_.get(),
@@ -2885,7 +2885,7 @@ TEST_F(DownloadProtectionServiceFlagTest,
       temp_dir_.GetPath().Append(FILE_PATH_LITERAL("a.zip")));  // final_path
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
 
   RunLoop run_loop;
@@ -2971,7 +2971,7 @@ TEST_F(DownloadProtectionServiceTest, DoesNotSendPingForCancelledDownloads) {
       .WillRepeatedly(Return(download::DownloadItem::CANCELLED));
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
   EXPECT_CALL(*binary_feature_extractor_.get(),
@@ -3163,7 +3163,7 @@ TEST_P(DeepScanningDownloadTest, UnsupportedFiletypeBlockedByPreference) {
       enterprise_connectors::ContentAnalysisResponse());
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
       .Times(2);
@@ -3341,7 +3341,7 @@ TEST_F(DownloadProtectionServiceTest,
       /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
   EXPECT_CALL(*binary_feature_extractor_.get(),
@@ -3364,7 +3364,7 @@ TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_Success) {
       /*final_path_literal=*/FILE_PATH_LITERAL("a.exe"));
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
       .Times(8);
@@ -3430,8 +3430,8 @@ TEST_F(DownloadProtectionServiceTest, FileSystemAccessWriteRequest_Success) {
 }
 
 TEST_F(DownloadProtectionServiceTest,
-       FileSystemAccessWriteRequest_WhitelistedByPolicy) {
-  AddDomainToEnterpriseWhitelist("example.com");
+       FileSystemAccessWriteRequest_AllowlistedByPolicy) {
+  AddDomainToEnterpriseAllowlist("example.com");
 
   auto item = PrepareBasicFileSystemAccessWriteItem(
       /*tmp_path_literal=*/FILE_PATH_LITERAL("a.txt.crswap"),
@@ -3465,7 +3465,7 @@ TEST_F(DownloadProtectionServiceTest,
   navigation->Commit();
 
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
       .WillRepeatedly(SetCertificateContents("dummy cert data"));
@@ -3620,7 +3620,7 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenForEnhancedProtectionUsers) {
                              FILE_PATH_LITERAL("a.exe"));      // final_path
 
     EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadWhitelistUrl(GURL("http://www.evil.com/bla.exe")))
+                MatchDownloadAllowlistUrl(GURL("http://www.evil.com/bla.exe")))
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
         .Times(1);
@@ -3653,7 +3653,7 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenForEnhancedProtectionUsers) {
                              FILE_PATH_LITERAL("a.exe"));      // final_path
 
     EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadWhitelistUrl(GURL("http://www.evil.com/bla.exe")))
+                MatchDownloadAllowlistUrl(GURL("http://www.evil.com/bla.exe")))
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
         .Times(1);
@@ -3697,7 +3697,7 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenOnlyWhenSignedIn) {
                              FILE_PATH_LITERAL("a.exe"));      // final_path
 
     EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadWhitelistUrl(GURL("http://www.evil.com/bla.exe")))
+                MatchDownloadAllowlistUrl(GURL("http://www.evil.com/bla.exe")))
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
         .Times(1);
@@ -3732,7 +3732,7 @@ TEST_F(EnhancedProtectionDownloadTest, AccessTokenOnlyWhenSignedIn) {
                              FILE_PATH_LITERAL("a.exe"));      // final_path
 
     EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadWhitelistUrl(GURL("http://www.evil.com/bla.exe")))
+                MatchDownloadAllowlistUrl(GURL("http://www.evil.com/bla.exe")))
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
         .Times(1);
@@ -3774,7 +3774,7 @@ TEST_F(EnhancedProtectionDownloadTest, NoAccessTokenWhileIncognito) {
                              FILE_PATH_LITERAL("a.exe"));      // final_path
 
     EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadWhitelistUrl(GURL("http://www.evil.com/bla.exe")))
+                MatchDownloadAllowlistUrl(GURL("http://www.evil.com/bla.exe")))
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _))
         .Times(1);
@@ -3836,7 +3836,7 @@ TEST_F(DownloadSeparateNetworkContextsTest,
         response.SerializeAsString());
 
     EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadWhitelistUrl(_))
+                MatchDownloadAllowlistUrl(_))
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
     EXPECT_CALL(*binary_feature_extractor_.get(),
@@ -3870,7 +3870,7 @@ TEST_F(DownloadSeparateNetworkContextsTest,
         response.SerializeAsString());
 
     EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadWhitelistUrl(_))
+                MatchDownloadAllowlistUrl(_))
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
     EXPECT_CALL(*binary_feature_extractor_.get(),
@@ -3897,7 +3897,7 @@ TEST_P(DeepScanningDownloadTest, PolicyEnabled) {
                            FILE_PATH_LITERAL("a.exe"));           // final_path
   content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
   EXPECT_CALL(*binary_feature_extractor_.get(),
@@ -3953,7 +3953,7 @@ TEST_P(DeepScanningDownloadTest, PolicyDisabled) {
                            FILE_PATH_LITERAL("a.exe"));           // final_path
   content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
   EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadWhitelistUrl(_))
+              MatchDownloadAllowlistUrl(_))
       .WillRepeatedly(Return(false));
   EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
   EXPECT_CALL(*binary_feature_extractor_.get(),
@@ -4001,7 +4001,7 @@ TEST_P(DeepScanningDownloadTest, SafeVerdictPrecedence) {
                              FILE_PATH_LITERAL("a.exe"));  // final_path
     content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
     EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadWhitelistUrl(_))
+                MatchDownloadAllowlistUrl(_))
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
     EXPECT_CALL(*binary_feature_extractor_.get(),
@@ -4072,7 +4072,7 @@ TEST_P(EnterpriseCsdDownloadTest, SkipsConsumerCsdWhenEnabled) {
 
   if (!flag_enabled()) {
     EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadWhitelistUrl(_))
+                MatchDownloadAllowlistUrl(_))
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
     EXPECT_CALL(*binary_feature_extractor_.get(),
@@ -4118,7 +4118,7 @@ TEST_P(EnterpriseCsdDownloadTest, PopulatesCsdFieldWhenEnabled) {
   content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
   if (!flag_enabled()) {
     EXPECT_CALL(*sb_service_->mock_database_manager(),
-                MatchDownloadWhitelistUrl(_))
+                MatchDownloadAllowlistUrl(_))
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(tmp_path_, _));
     EXPECT_CALL(*binary_feature_extractor_.get(),

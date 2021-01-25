@@ -73,7 +73,7 @@ extern const char kSafeBrowsingNextPasswordCaptureEventLogTime[];
 // List of domains where Safe Browsing should trust. That means Safe Browsing
 // won't check for malware/phishing/Uws on resources on these domains, or
 // trigger warnings. Used for enterprise only.
-extern const char kSafeBrowsingWhitelistDomains[];
+extern const char kSafeBrowsingAllowlistDomains[];
 
 // String indicating the URL where password protection service should send user
 // to change their password if they've been phished. Password protection service
@@ -260,7 +260,7 @@ void UpdatePrefsBeforeSecurityInterstitial(PrefService* prefs);
 base::ListValue GetSafeBrowsingPreferencesList(PrefService* prefs);
 
 // Returns a list of valid domains that Safe Browsing service trusts.
-void GetSafeBrowsingWhitelistDomainsPref(
+void GetSafeBrowsingAllowlistDomainsPref(
     const PrefService& prefs,
     std::vector<std::string>* out_canonicalized_domain_list);
 
@@ -269,21 +269,21 @@ void CanonicalizeDomainList(
     const base::ListValue& raw_domain_list,
     std::vector<std::string>* out_canonicalized_domain_list);
 
-// Helper function to determine if |url| matches Safe Browsing whitelist domains
-// (a.k. a prefs::kSafeBrowsingWhitelistDomains).
+// Helper function to determine if |url| matches Safe Browsing allowlist domains
+// (a.k. a prefs::kSafeBrowsingAllowlistDomains).
 // Called on IO thread.
-bool IsURLWhitelistedByPolicy(const GURL& url,
+bool IsURLAllowlistedByPolicy(const GURL& url,
                               StringListPrefMember* pref_member);
 
-// Helper function to determine if |url| matches Safe Browsing whitelist domains
-// (a.k. a prefs::kSafeBrowsingWhitelistDomains).
+// Helper function to determine if |url| matches Safe Browsing allowlist domains
+// (a.k. a prefs::kSafeBrowsingAllowlistDomains).
 // Called on UI thread.
-bool IsURLWhitelistedByPolicy(const GURL& url, const PrefService& pref);
+bool IsURLAllowlistedByPolicy(const GURL& url, const PrefService& pref);
 
 // Helper function to determine if any entry on the |url_chain| matches Safe
-// Browsing whitelist domains.
+// Browsing allowlist domains.
 // Called on UI thread.
-bool MatchesEnterpriseWhitelist(const PrefService& pref,
+bool MatchesEnterpriseAllowlist(const PrefService& pref,
                                 const std::vector<GURL>& url_chain);
 
 // Helper function to get the pref value of password protection login URLs.

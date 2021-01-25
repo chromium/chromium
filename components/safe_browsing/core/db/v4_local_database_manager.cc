@@ -71,6 +71,9 @@ ListInfos GetListInfos() {
   const bool kSyncOnChromeDesktopBuilds = kIsChromeBranded && kSyncOnDesktopBuilds;
   const bool kSyncAlways = true;
   const bool kSyncNever = false;
+
+  // TODO(jkarlin): Rename files on disk with 'whitelist' in them to
+  // 'allowlist'.
   return ListInfos({
       ListInfo(kSyncOnDesktopBuilds, "IpMalware.store", GetIpMalwareId(),
                SB_THREAT_TYPE_UNUSED),
@@ -85,16 +88,16 @@ ListInfos GetListInfos() {
       ListInfo(kSyncOnDesktopBuilds, "ChromeExtMalware.store",
                GetChromeExtMalwareId(), SB_THREAT_TYPE_EXTENSION),
       ListInfo(kSyncOnChromeDesktopBuilds, "CertCsdDownloadWhitelist.store",
-               GetCertCsdDownloadWhitelistId(), SB_THREAT_TYPE_UNUSED),
+               GetCertCsdDownloadAllowlistId(), SB_THREAT_TYPE_UNUSED),
       ListInfo(kSyncOnChromeDesktopBuilds, "ChromeUrlClientIncident.store",
                GetChromeUrlClientIncidentId(),
                SB_THREAT_TYPE_BLOCKLISTED_RESOURCE),
       ListInfo(kSyncAlways, "UrlBilling.store", GetUrlBillingId(),
                SB_THREAT_TYPE_BILLING),
       ListInfo(kSyncOnChromeDesktopBuilds, "UrlCsdDownloadWhitelist.store",
-               GetUrlCsdDownloadWhitelistId(), SB_THREAT_TYPE_UNUSED),
+               GetUrlCsdDownloadAllowlistId(), SB_THREAT_TYPE_UNUSED),
       ListInfo(kSyncOnChromeDesktopBuilds, "UrlCsdWhitelist.store",
-               GetUrlCsdWhitelistId(), SB_THREAT_TYPE_CSD_WHITELIST),
+               GetUrlCsdAllowlistId(), SB_THREAT_TYPE_CSD_ALLOWLIST),
       ListInfo(kSyncOnChromeDesktopBuilds, "UrlSubresourceFilter.store",
                GetUrlSubresourceFilterId(), SB_THREAT_TYPE_SUBRESOURCE_FILTER),
       ListInfo(kSyncOnChromeDesktopBuilds, "UrlSuspiciousSite.store",
@@ -448,7 +451,7 @@ AsyncMatch V4LocalDatabaseManager::CheckUrlForHighConfidenceAllowlist(
       client, ClientCallbackType::CHECK_HIGH_CONFIDENCE_ALLOWLIST,
       stores_to_check, std::vector<GURL>(1, url));
 
-  return HandleWhitelistCheck(std::move(check));
+  return HandleAllowlistCheck(std::move(check));
 }
 
 bool V4LocalDatabaseManager::CheckUrlForSubresourceFilter(const GURL& url,
@@ -468,13 +471,13 @@ bool V4LocalDatabaseManager::CheckUrlForSubresourceFilter(const GURL& url,
   return HandleCheck(std::move(check));
 }
 
-AsyncMatch V4LocalDatabaseManager::CheckCsdWhitelistUrl(const GURL& url,
+AsyncMatch V4LocalDatabaseManager::CheckCsdAllowlistUrl(const GURL& url,
                                                         Client* client) {
   DCHECK(CurrentlyOnThread(ThreadID::IO));
 
-  StoresToCheck stores_to_check({GetUrlCsdWhitelistId()});
+  StoresToCheck stores_to_check({GetUrlCsdAllowlistId()});
   if (!AreAllStoresAvailableNow(stores_to_check) || !CanCheckUrl(url)) {
-    // Fail open: Whitelist everything. Otherwise we may run the
+    // Fail open: Allowlist everything. Otherwise we may run the
     // CSD phishing/malware detector on popular domains and generate
     // undue load on the client and server, or send Password Reputation
     // requests on popular sites. This has the effect of disabling
@@ -484,20 +487,20 @@ AsyncMatch V4LocalDatabaseManager::CheckCsdWhitelistUrl(const GURL& url,
   }
 
   std::unique_ptr<PendingCheck> check = std::make_unique<PendingCheck>(
-      client, ClientCallbackType::CHECK_CSD_WHITELIST, stores_to_check,
+      client, ClientCallbackType::CHECK_CSD_ALLOWLIST, stores_to_check,
       std::vector<GURL>(1, url));
 
-  return HandleWhitelistCheck(std::move(check));
+  return HandleAllowlistCheck(std::move(check));
 }
 
-bool V4LocalDatabaseManager::MatchDownloadWhitelistString(
+bool V4LocalDatabaseManager::MatchDownloadAllowlistString(
     const std::string& str) {
   DCHECK(CurrentlyOnThread(ThreadID::IO));
 
-  StoresToCheck stores_to_check({GetCertCsdDownloadWhitelistId()});
+  StoresToCheck stores_to_check({GetCertCsdDownloadAllowlistId()});
   if (!AreAllStoresAvailableNow(stores_to_check)) {
-    // Fail close: Whitelist nothing. This may generate download-protection
-    // pings for whitelisted binaries, but that's fine.
+    // Fail close: Allowlist nothing. This may generate download-protection
+    // pings for allowlisted binaries, but that's fine.
     return false;
   }
 
@@ -505,14 +508,14 @@ bool V4LocalDatabaseManager::MatchDownloadWhitelistString(
                                  stores_to_check);
 }
 
-bool V4LocalDatabaseManager::MatchDownloadWhitelistUrl(const GURL& url) {
+bool V4LocalDatabaseManager::MatchDownloadAllowlistUrl(const GURL& url) {
   DCHECK(CurrentlyOnThread(ThreadID::IO));
 
-  StoresToCheck stores_to_check({GetUrlCsdDownloadWhitelistId()});
+  StoresToCheck stores_to_check({GetUrlCsdDownloadAllowlistId()});
 
   if (!AreAllStoresAvailableNow(stores_to_check) || !CanCheckUrl(url)) {
-    // Fail close: Whitelist nothing. This may generate download-protection
-    // pings for whitelisted domains, but that's fine.
+    // Fail close: Allowlist nothing. This may generate download-protection
+    // pings for allowlisted domains, but that's fine.
     return false;
   }
 
@@ -740,10 +743,10 @@ SBThreatType V4LocalDatabaseManager::GetSBThreatTypeForList(
   return it->sb_threat_type();
 }
 
-AsyncMatch V4LocalDatabaseManager::HandleWhitelistCheck(
+AsyncMatch V4LocalDatabaseManager::HandleAllowlistCheck(
     std::unique_ptr<PendingCheck> check) {
-  // We don't bother queuing whitelist checks since the DB will
-  // normally be available already -- whitelists are used after page load,
+  // We don't bother queuing allowlist checks since the DB will
+  // normally be available already -- allowlists are used after page load,
   // and navigations are blocked until the DB is ready and dequeues checks.
   // The caller should have already checked that the DB is ready.
   DCHECK(v4_database_);
@@ -967,13 +970,13 @@ void V4LocalDatabaseManager::RespondToClient(
                                               check->matching_full_hash);
       break;
 
-    case ClientCallbackType::CHECK_CSD_WHITELIST: {
+    case ClientCallbackType::CHECK_CSD_ALLOWLIST: {
       DCHECK_EQ(1u, check->urls.size());
       bool did_match_allowlist =
-          check->most_severe_threat_type == SB_THREAT_TYPE_CSD_WHITELIST;
+          check->most_severe_threat_type == SB_THREAT_TYPE_CSD_ALLOWLIST;
       DCHECK(did_match_allowlist ||
              check->most_severe_threat_type == SB_THREAT_TYPE_SAFE);
-      check->client->OnCheckWhitelistUrlResult(did_match_allowlist);
+      check->client->OnCheckAllowlistUrlResult(did_match_allowlist);
       break;
     }
 

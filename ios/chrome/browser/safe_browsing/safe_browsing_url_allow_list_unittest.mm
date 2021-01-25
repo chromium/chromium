@@ -185,7 +185,7 @@ TEST_F(SafeBrowsingUrlAllowListTest, DomainAllowDecisions) {
   allow_list()->AddPendingUnsafeNavigationDecision(url, kFirstThreatType);
   EXPECT_TRUE(allow_list()->IsUnsafeNavigationDecisionPending(url_with_path));
 
-  // Whitelist the URL and verify that it is allowed for other URLs from the
+  // Allowlist the URL and verify that it is allowed for other URLs from the
   // same domain.
   EXPECT_CALL(allow_list_observer_,
               ThreatPolicyUpdated(allow_list(), url, kFirstThreatType,

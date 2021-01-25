@@ -69,15 +69,15 @@ class CheckClientDownloadRequestBase {
   using ArchivedBinaries =
       google::protobuf::RepeatedPtrField<ClientDownloadRequest_ArchivedBinary>;
 
-  bool ShouldSampleWhitelistedDownload();
+  bool ShouldSampleAllowlistedDownload();
   bool ShouldSampleUnsupportedFile(const base::FilePath& filename);
   bool IsDownloadManuallyBlocklisted(const ClientDownloadRequest& request);
 
-  void OnUrlWhitelistCheckDone(bool is_whitelisted);
+  void OnUrlAllowlistCheckDone(bool is_allowlisted);
   void OnRequestBuilt(std::unique_ptr<ClientDownloadRequest> request_proto);
 
   void StartTimeout();
-  void OnCertificateWhitelistCheckDone(bool is_whitelisted);
+  void OnCertificateAllowlistCheckDone(bool is_allowlisted);
   void SendRequest();
   void OnURLLoaderComplete(std::unique_ptr<std::string> response_body);
 
@@ -129,8 +129,8 @@ class CheckClientDownloadRequestBase {
   void OnGotAccessToken(const std::string& access_token);
 
   // Called at the request start to determine if we should bailout due to the
-  // file being whitelisted by policy
-  virtual bool IsWhitelistedByPolicy() const = 0;
+  // file being allowlisted by policy
+  virtual bool IsAllowlistedByPolicy() const = 0;
 
   // For sampled unsupported file types, replaces all URLs in
   // |client_download_request_| with their origin.

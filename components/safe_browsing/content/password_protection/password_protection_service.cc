@@ -220,7 +220,7 @@ bool PasswordProtectionServiceBase::CanSendPing(
     const GURL& main_frame_url,
     ReusedPasswordAccountType password_type) {
   return IsPingingEnabled(trigger_type, password_type) &&
-         !IsURLWhitelistedForPasswordEntry(main_frame_url) &&
+         !IsURLAllowlistedForPasswordEntry(main_frame_url) &&
          !IsInExcludedCountry();
 }
 

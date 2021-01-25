@@ -192,10 +192,10 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   virtual PasswordProtectionTrigger GetPasswordProtectionWarningTriggerPref(
       ReusedPasswordAccountType password_type) const = 0;
 
-  // If |url| matches Safe Browsing whitelist domains, password protection
+  // If |url| matches Safe Browsing allowlist domains, password protection
   // change password URL, or password protection login URLs in the enterprise
   // policy.
-  virtual bool IsURLWhitelistedForPasswordEntry(const GURL& url) const = 0;
+  virtual bool IsURLAllowlistedForPasswordEntry(const GURL& url) const = 0;
 
   // Persist the phished saved password credential in the "compromised
   // credentials" table. Calls the password store to add a row for each
@@ -404,7 +404,7 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   virtual bool CanShowInterstitial(ReusedPasswordAccountType password_type,
                                    const GURL& main_frame_url) = 0;
 
-  void CheckCsdWhitelistOnIOThread(const GURL& url, bool* check_result);
+  void CheckCsdAllowlistOnIOThread(const GURL& url, bool* check_result);
 
   // Gets the type of sync account associated with current profile or
   // |NOT_SIGNED_IN|.

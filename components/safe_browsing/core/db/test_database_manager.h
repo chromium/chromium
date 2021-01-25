@@ -30,7 +30,7 @@ class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   bool CheckBrowseUrl(const GURL& url,
                       const SBThreatTypeSet& threat_types,
                       Client* client) override;
-  AsyncMatch CheckCsdWhitelistUrl(const GURL& url, Client* client) override;
+  AsyncMatch CheckCsdAllowlistUrl(const GURL& url, Client* client) override;
   bool CheckDownloadUrl(const std::vector<GURL>& url_chain,
                         Client* client) override;
   bool CheckExtensionIDs(const std::set<std::string>& extension_ids,
@@ -39,8 +39,8 @@ class TestSafeBrowsingDatabaseManager : public SafeBrowsingDatabaseManager {
   AsyncMatch CheckUrlForHighConfidenceAllowlist(const GURL& url,
                                                 Client* client) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
-  bool MatchDownloadWhitelistString(const std::string& str) override;
-  bool MatchDownloadWhitelistUrl(const GURL& url) override;
+  bool MatchDownloadAllowlistString(const std::string& str) override;
+  bool MatchDownloadAllowlistUrl(const GURL& url) override;
   bool MatchMalwareIP(const std::string& ip_address) override;
   safe_browsing::ThreatSource GetThreatSource() const override;
   bool IsDownloadProtectionEnabled() const override;

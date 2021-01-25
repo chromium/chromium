@@ -904,7 +904,7 @@ TEST_F(DeepScanningRequestTest, ShouldUploadBinary_MalwareListPolicy) {
 
   // With the old malware policy list set, the item should be uploaded since
   // DeepScanningRequest ignores that policy.
-  AddUrlToProfilePrefList(prefs::kSafeBrowsingWhitelistDomains, download_url_);
+  AddUrlToProfilePrefList(prefs::kSafeBrowsingAllowlistDomains, download_url_);
   ValidateDefaultSettings(settings());
 
   // With the new malware policy list set, the item should not be uploaded since

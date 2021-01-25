@@ -615,9 +615,9 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, UnwantedImgIgnored) {
   EXPECT_FALSE(got_hit_report());
 }
 
-// Proceeding through an interstitial should cause it to get whitelisted for
+// Proceeding through an interstitial should cause it to get allowlisted for
 // that user.
-IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MalwareWithWhitelist) {
+IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MalwareWithAllowlist) {
   GURL url = embedded_test_server()->GetURL(kEmptyPage);
 
   // After adding the URL to SafeBrowsing database and full hash cache, we
@@ -643,7 +643,7 @@ IN_PROC_BROWSER_TEST_F(V4SafeBrowsingServiceTest, MalwareWithWhitelist) {
   observer.WaitForNavigationFinished();
   EXPECT_FALSE(ShowingInterstitialPage());
 
-  // Navigate to kEmptyPage again -- should hit the whitelist this time.
+  // Navigate to kEmptyPage again -- should hit the allowlist this time.
   EXPECT_CALL(observer_, OnSafeBrowsingHit(IsUnsafeResourceFor(url))).Times(0);
   ui_test_utils::NavigateToURL(browser(), url);
   EXPECT_FALSE(ShowingInterstitialPage());

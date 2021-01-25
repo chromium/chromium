@@ -59,7 +59,7 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   bool CheckBrowseUrl(const GURL& url,
                       const SBThreatTypeSet& threat_types,
                       Client* client) override;
-  AsyncMatch CheckCsdWhitelistUrl(const GURL& url, Client* client) override;
+  AsyncMatch CheckCsdAllowlistUrl(const GURL& url, Client* client) override;
   bool CheckDownloadUrl(const std::vector<GURL>& url_chain,
                         Client* client) override;
   // TODO(vakh): |CheckExtensionIDs| in the base class accepts a set of
@@ -72,8 +72,8 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   AsyncMatch CheckUrlForHighConfidenceAllowlist(const GURL& url,
                                                 Client* client) override;
   bool CheckUrlForSubresourceFilter(const GURL& url, Client* client) override;
-  bool MatchDownloadWhitelistString(const std::string& str) override;
-  bool MatchDownloadWhitelistUrl(const GURL& url) override;
+  bool MatchDownloadAllowlistString(const std::string& str) override;
+  bool MatchDownloadAllowlistUrl(const GURL& url) override;
   bool MatchMalwareIP(const std::string& ip_address) override;
   safe_browsing::ThreatSource GetThreatSource() const override;
   bool IsDownloadProtectionEnabled() const override;
@@ -128,8 +128,8 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
     CHECK_URL_FOR_SUBRESOURCE_FILTER,
 
     // This respresents the case when we're trying to determine if a URL is
-    // part of the CSD whitelist.
-    CHECK_CSD_WHITELIST,
+    // part of the CSD allowlist.
+    CHECK_CSD_ALLOWLIST,
 
     // TODO(vakh): Explain this.
     CHECK_HIGH_CONFIDENCE_ALLOWLIST,
@@ -262,9 +262,9 @@ class V4LocalDatabaseManager : public SafeBrowsingDatabaseManager {
   // schedules a task to perform full hash check and returns false.
   bool HandleCheck(std::unique_ptr<PendingCheck> check);
 
-  // Like HandleCheck, but for whitelists that have both full-hashes and
+  // Like HandleCheck, but for allowlists that have both full-hashes and
   // partial hashes in the DB. Returns MATCH, NO_MATCH, or ASYNC.
-  AsyncMatch HandleWhitelistCheck(std::unique_ptr<PendingCheck> check);
+  AsyncMatch HandleAllowlistCheck(std::unique_ptr<PendingCheck> check);
 
   // Computes the hashes of URLs that have artificially been marked as unsafe
   // using any of the following command line flags: "mark_as_phishing",

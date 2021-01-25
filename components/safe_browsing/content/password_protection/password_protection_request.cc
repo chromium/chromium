@@ -143,50 +143,50 @@ PasswordProtectionRequest::~PasswordProtectionRequest() = default;
 
 void PasswordProtectionRequest::Start() {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
-  CheckWhitelist();
+  CheckAllowlist();
 }
 
-void PasswordProtectionRequest::CheckWhitelist() {
+void PasswordProtectionRequest::CheckAllowlist() {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
 
-  // In order to send pings for about:blank, we skip the whitelist check for
+  // In order to send pings for about:blank, we skip the allowlist check for
   // URLs with unsupported schemes.
   if (!password_protection_service_->database_manager()->CanCheckUrl(
           main_frame_url_)) {
-    OnWhitelistCheckDone(false);
+    OnAllowlistCheckDone(false);
     return;
   }
 
-  // Start a task on the IO thread to check the whitelist. It may
+  // Start a task on the IO thread to check the allowlist. It may
   // callback immediately on the IO thread or take some time if a full-hash-
   // check is required.
-  auto result_callback = base::BindOnce(&OnWhitelistCheckDoneOnIO, AsWeakPtr());
+  auto result_callback = base::BindOnce(&OnAllowlistCheckDoneOnIO, AsWeakPtr());
   tracker_.PostTask(
       GetTaskRunner(ThreadID::IO).get(), FROM_HERE,
-      base::BindOnce(&AllowlistCheckerClient::StartCheckCsdWhitelist,
+      base::BindOnce(&AllowlistCheckerClient::StartCheckCsdAllowlist,
                      password_protection_service_->database_manager(),
                      main_frame_url_, std::move(result_callback)));
 }
 
 // static
-void PasswordProtectionRequest::OnWhitelistCheckDoneOnIO(
+void PasswordProtectionRequest::OnAllowlistCheckDoneOnIO(
     base::WeakPtr<PasswordProtectionRequest> weak_request,
-    bool match_whitelist) {
+    bool match_allowlist) {
   // Don't access weak_request on IO thread. Move it back to UI thread first.
   GetTaskRunner(ThreadID::UI)
       ->PostTask(
           FROM_HERE,
-          base::BindOnce(&PasswordProtectionRequest::OnWhitelistCheckDone,
-                         weak_request, match_whitelist));
+          base::BindOnce(&PasswordProtectionRequest::OnAllowlistCheckDone,
+                         weak_request, match_allowlist));
 }
 
-void PasswordProtectionRequest::OnWhitelistCheckDone(bool match_whitelist) {
+void PasswordProtectionRequest::OnAllowlistCheckDone(bool match_allowlist) {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
-  if (match_whitelist) {
+  if (match_allowlist) {
     if (password_protection_service_->CanSendSamplePing()) {
       FillRequestProto(/*is_sampled_ping=*/true);
     }
-    Finish(RequestOutcome::MATCHED_WHITELIST, nullptr);
+    Finish(RequestOutcome::MATCHED_ALLOWLIST, nullptr);
   } else {
     // In case the request to Safe Browsing takes too long,
     // we set a timer to cancel that request and return an "unspecified verdict"

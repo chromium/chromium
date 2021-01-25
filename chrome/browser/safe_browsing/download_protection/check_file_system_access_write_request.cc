@@ -119,11 +119,11 @@ void CheckFileSystemAccessWriteRequest::NotifyRequestFinished(
   weakptr_factory_.InvalidateWeakPtrs();
 }
 
-bool CheckFileSystemAccessWriteRequest::IsWhitelistedByPolicy() const {
+bool CheckFileSystemAccessWriteRequest::IsAllowlistedByPolicy() const {
   Profile* profile = Profile::FromBrowserContext(item_->browser_context);
   if (!profile)
     return false;
-  return IsURLWhitelistedByPolicy(item_->frame_url, *profile->GetPrefs());
+  return IsURLAllowlistedByPolicy(item_->frame_url, *profile->GetPrefs());
 }
 
 }  // namespace safe_browsing

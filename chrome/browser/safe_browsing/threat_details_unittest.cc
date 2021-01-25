@@ -1647,7 +1647,7 @@ TEST_F(ThreatDetailsTest, HTTPCache) {
   VerifyResults(actual, expected);
 }
 
-// Test that only some fields of the HTTPS resource (eg: whitelisted headers)
+// Test that only some fields of the HTTPS resource (eg: allowlisted headers)
 // are reported.
 TEST_F(ThreatDetailsTest, HttpsResourceSanitization) {
   content::WebContentsTester::For(web_contents())
@@ -1707,7 +1707,7 @@ TEST_F(ThreatDetailsTest, HttpsResourceSanitization) {
   pb_response->set_remote_ip("1.2.3.4:80");
 
   // The threat URL is HTTP so the request and response are cleared (except for
-  // whitelisted headers and certain safe fields). Namely the firstline and body
+  // allowlisted headers and certain safe fields). Namely the firstline and body
   // are missing.
   pb_resource = expected.add_resources();
   pb_resource->set_id(1);

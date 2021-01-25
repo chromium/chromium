@@ -49,7 +49,7 @@ void RecordFileExtensionType(const std::string& metric_name,
       metric_name, FileTypePolicies::GetInstance()->UmaValueForFile(file));
 }
 
-bool CheckUrlAgainstWhitelist(
+bool CheckUrlAgainstAllowlist(
     const GURL& url,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -58,16 +58,16 @@ bool CheckUrlAgainstWhitelist(
     return false;
   }
 
-  return (url.is_valid() && database_manager->MatchDownloadWhitelistUrl(url));
+  return (url.is_valid() && database_manager->MatchDownloadAllowlistUrl(url));
 }
 
-bool IsCertificateChainWhitelisted(
+bool IsCertificateChainAllowlisted(
     const ClientDownloadRequest_CertificateChain& chain,
     SafeBrowsingDatabaseManager* database_manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   if (chain.element_size() < 2) {
     // We need to have both a signing certificate and its issuer certificate
-    // present to construct a whitelist entry.
+    // present to construct a allowlist entry.
     return false;
   }
   scoped_refptr<net::X509Certificate> cert =
@@ -86,13 +86,13 @@ bool IsCertificateChainWhitelisted(
     if (!issuer.get()) {
       return false;
     }
-    std::vector<std::string> whitelist_strings;
-    GetCertificateWhitelistStrings(*cert.get(), *issuer.get(),
-                                   &whitelist_strings);
-    for (size_t j = 0; j < whitelist_strings.size(); ++j) {
-      if (database_manager->MatchDownloadWhitelistString(
-              whitelist_strings[j])) {
-        DVLOG(2) << "Certificate matched whitelist, cert="
+    std::vector<std::string> allowlist_strings;
+    GetCertificateAllowlistStrings(*cert.get(), *issuer.get(),
+                                   &allowlist_strings);
+    for (size_t j = 0; j < allowlist_strings.size(); ++j) {
+      if (database_manager->MatchDownloadAllowlistString(
+              allowlist_strings[j])) {
+        DVLOG(2) << "Certificate matched allowlist, cert="
                  << cert->subject().GetDisplayName()
                  << " issuer=" << issuer->subject().GetDisplayName();
         return true;
@@ -103,7 +103,7 @@ bool IsCertificateChainWhitelisted(
   return false;
 }
 
-bool CheckCertificateChainAgainstWhitelist(
+bool CheckCertificateChainAgainstAllowlist(
     const ClientDownloadRequest_SignatureInfo& signature_info,
     scoped_refptr<SafeBrowsingDatabaseManager> database_manager) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -114,7 +114,7 @@ bool CheckCertificateChainAgainstWhitelist(
 
   if (signature_info.trusted()) {
     for (int i = 0; i < signature_info.certificate_chain_size(); ++i) {
-      if (IsCertificateChainWhitelisted(signature_info.certificate_chain(i),
+      if (IsCertificateChainAllowlisted(signature_info.certificate_chain(i),
                                         database_manager.get())) {
         return true;
       }
@@ -169,19 +169,19 @@ void CheckClientDownloadRequestBase::Start() {
   DVLOG(2) << "Starting SafeBrowsing download check for: " << source_url_;
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (IsWhitelistedByPolicy()) {
+  if (IsAllowlistedByPolicy()) {
     FinishRequest(DownloadCheckResult::ALLOWLISTED_BY_POLICY,
-                  REASON_WHITELISTED_URL);
+                  REASON_ALLOWLISTED_URL);
     return;
   }
 
-  // If whitelist check passes, FinishRequest() will be called to avoid
+  // If allowlist check passes, FinishRequest() will be called to avoid
   // analyzing file. Otherwise, AnalyzeFile() will be called to continue with
   // analysis.
   content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&CheckUrlAgainstWhitelist, source_url_, database_manager_),
-      base::BindOnce(&CheckClientDownloadRequestBase::OnUrlWhitelistCheckDone,
+      base::BindOnce(&CheckUrlAgainstAllowlist, source_url_, database_manager_),
+      base::BindOnce(&CheckClientDownloadRequestBase::OnUrlAllowlistCheckDone,
                      GetWeakPtr()));
 }
 
@@ -217,11 +217,11 @@ void CheckClientDownloadRequestBase::FinishRequest(
   // DownloadProtectionService::RequestFinished may delete us.
 }
 
-bool CheckClientDownloadRequestBase::ShouldSampleWhitelistedDownload() {
-  // We currently sample 1% whitelisted downloads from users who opted
+bool CheckClientDownloadRequestBase::ShouldSampleAllowlistedDownload() {
+  // We currently sample 1% allowlisted downloads from users who opted
   // in extended reporting and are not in incognito mode.
   return service_ && is_extended_reporting_ && !is_incognito_ &&
-         base::RandDouble() < service_->whitelist_sample_rate();
+         base::RandDouble() < service_->allowlist_sample_rate();
 }
 
 bool CheckClientDownloadRequestBase::ShouldSampleUnsupportedFile(
@@ -251,22 +251,22 @@ bool CheckClientDownloadRequestBase::IsDownloadManuallyBlocklisted(
   return false;
 }
 
-void CheckClientDownloadRequestBase::OnUrlWhitelistCheckDone(
-    bool is_whitelisted) {
+void CheckClientDownloadRequestBase::OnUrlAllowlistCheckDone(
+    bool is_allowlisted) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // If the download URL is whitelisted on the whitelist, file feature
+  // If the download URL is allowlisted on the allowlist, file feature
   // extraction and download ping are skipped.
-  if (is_whitelisted) {
-    DVLOG(2) << source_url_ << " is on the download whitelist.";
-    RecordCountOfWhitelistedDownload(URL_WHITELIST);
-    if (ShouldSampleWhitelistedDownload()) {
+  if (is_allowlisted) {
+    DVLOG(2) << source_url_ << " is on the download allowlist.";
+    RecordCountOfAllowlistedDownload(URL_ALLOWLIST);
+    if (ShouldSampleAllowlistedDownload()) {
       skipped_url_whitelist_ = true;
     } else {
       // TODO(grt): Continue processing without uploading so that
       // ClientDownloadRequest callbacks can be run even for this type of safe
       // download.
-      FinishRequest(DownloadCheckResult::SAFE, REASON_WHITELISTED_URL);
+      FinishRequest(DownloadCheckResult::SAFE, REASON_ALLOWLISTED_URL);
       return;
     }
   }
@@ -349,10 +349,10 @@ void CheckClientDownloadRequestBase::OnRequestBuilt(
 
   content::GetIOThreadTaskRunner({})->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&CheckCertificateChainAgainstWhitelist,
+      base::BindOnce(&CheckCertificateChainAgainstAllowlist,
                      client_download_request_->signature(), database_manager_),
       base::BindOnce(
-          &CheckClientDownloadRequestBase::OnCertificateWhitelistCheckDone,
+          &CheckClientDownloadRequestBase::OnCertificateAllowlistCheckDone,
           GetWeakPtr()));
 
   // We wait until after the file checks finish to start the timeout, as
@@ -377,13 +377,13 @@ void CheckClientDownloadRequestBase::StartTimeout() {
           service_->download_request_timeout_ms()));
 }
 
-void CheckClientDownloadRequestBase::OnCertificateWhitelistCheckDone(
-    bool is_whitelisted) {
+void CheckClientDownloadRequestBase::OnCertificateAllowlistCheckDone(
+    bool is_allowlisted) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (!skipped_url_whitelist_ && is_whitelisted) {
-    RecordCountOfWhitelistedDownload(SIGNATURE_WHITELIST);
-    if (ShouldSampleWhitelistedDownload()) {
+  if (!skipped_url_whitelist_ && is_allowlisted) {
+    RecordCountOfAllowlistedDownload(SIGNATURE_ALLOWLIST);
+    if (ShouldSampleAllowlistedDownload()) {
       skipped_certificate_whitelist_ = true;
     } else {
       // TODO(grt): Continue processing without uploading so that
@@ -394,7 +394,7 @@ void CheckClientDownloadRequestBase::OnCertificateWhitelistCheckDone(
     }
   }
 
-  RecordCountOfWhitelistedDownload(NO_WHITELIST_MATCH);
+  RecordCountOfAllowlistedDownload(NO_ALLOWLIST_MATCH);
 
   if (!pingback_enabled_) {
     FinishRequest(DownloadCheckResult::UNKNOWN, REASON_PING_DISABLED);
@@ -465,7 +465,7 @@ void CheckClientDownloadRequestBase::SendRequest() {
               "dangerous content, uncommon content, potentially harmful, etc)."
             trigger:
               "This request is triggered when a download is about to complete, "
-              "the download is not whitelisted, and its file extension is "
+              "the download is not allowlisted, and its file extension is "
               "supported by download protection service (e.g. executables, "
               "archives). Please refer to https://cs.chromium.org/chromium/src/"
               "chrome/browser/resources/safe_browsing/"

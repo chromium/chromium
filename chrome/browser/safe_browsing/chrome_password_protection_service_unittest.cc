@@ -125,7 +125,7 @@ constexpr struct {
   // The enum to log in the user event for that response.
   PasswordReuseLookup::LookupResult lookup_result;
 } kTestCasesWithoutVerdict[]{
-    {RequestOutcome::MATCHED_WHITELIST, PasswordReuseLookup::WHITELIST_HIT},
+    {RequestOutcome::MATCHED_ALLOWLIST, PasswordReuseLookup::WHITELIST_HIT},
     {RequestOutcome::URL_NOT_VALID_FOR_REPUTATION_COMPUTING,
      PasswordReuseLookup::URL_UNSUPPORTED},
     {RequestOutcome::CANCELED, PasswordReuseLookup::REQUEST_FAILURE},
@@ -550,42 +550,42 @@ TEST_F(ChromePasswordProtectionServiceTest,
 }
 
 TEST_F(ChromePasswordProtectionServiceTest,
-       VerifyPingingIsSkippedIfMatchEnterpriseWhitelist) {
+       VerifyPingingIsSkippedIfMatchEnterpriseAllowlist) {
   ASSERT_FALSE(
-      profile()->GetPrefs()->HasPrefPath(prefs::kSafeBrowsingWhitelistDomains));
+      profile()->GetPrefs()->HasPrefPath(prefs::kSafeBrowsingAllowlistDomains));
 
-  // If there's no whitelist, IsURLWhitelistedForPasswordEntry(_) should
+  // If there's no allowlist, IsURLAllowlistedForPasswordEntry(_) should
   // return false.
-  EXPECT_FALSE(service_->IsURLWhitelistedForPasswordEntry(
+  EXPECT_FALSE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
 
-  // Verify if match enterprise whitelist.
-  base::ListValue whitelist;
-  whitelist.AppendString("mydomain.com");
-  whitelist.AppendString("mydomain.net");
-  profile()->GetPrefs()->Set(prefs::kSafeBrowsingWhitelistDomains, whitelist);
-  EXPECT_TRUE(service_->IsURLWhitelistedForPasswordEntry(
+  // Verify if match enterprise allowlist.
+  base::ListValue allowlist;
+  allowlist.AppendString("mydomain.com");
+  allowlist.AppendString("mydomain.net");
+  profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains, allowlist);
+  EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
 
   // Verify if matches enterprise change password url.
-  profile()->GetPrefs()->ClearPref(prefs::kSafeBrowsingWhitelistDomains);
-  EXPECT_FALSE(service_->IsURLWhitelistedForPasswordEntry(
+  profile()->GetPrefs()->ClearPref(prefs::kSafeBrowsingAllowlistDomains);
+  EXPECT_FALSE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
 
   profile()->GetPrefs()->SetString(prefs::kPasswordProtectionChangePasswordURL,
                                    "https://mydomain.com/change_password.html");
-  EXPECT_TRUE(service_->IsURLWhitelistedForPasswordEntry(
+  EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://mydomain.com/change_password.html#ref?user_name=alice")));
 
   // Verify if matches enterprise login url.
-  profile()->GetPrefs()->ClearPref(prefs::kSafeBrowsingWhitelistDomains);
+  profile()->GetPrefs()->ClearPref(prefs::kSafeBrowsingAllowlistDomains);
   profile()->GetPrefs()->ClearPref(prefs::kPasswordProtectionChangePasswordURL);
-  EXPECT_FALSE(service_->IsURLWhitelistedForPasswordEntry(
+  EXPECT_FALSE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://www.mydomain.com")));
   base::ListValue login_urls;
   login_urls.AppendString("https://mydomain.com/login.html");
   profile()->GetPrefs()->Set(prefs::kPasswordProtectionLoginURLs, login_urls);
-  EXPECT_TRUE(service_->IsURLWhitelistedForPasswordEntry(
+  EXPECT_TRUE(service_->IsURLAllowlistedForPasswordEntry(
       GURL("https://mydomain.com/login.html#ref?user_name=alice")));
 }
 
@@ -663,7 +663,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyUpdateSecurityState) {
   GURL url("http://password_reuse_url.com");
   NavigateAndCommit(url);
   SBThreatType current_threat_type = SB_THREAT_TYPE_UNUSED;
-  ASSERT_FALSE(service_->ui_manager()->IsUrlWhitelistedOrPendingForWebContents(
+  ASSERT_FALSE(service_->ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
       url, false, web_contents()->GetController().GetLastCommittedEntry(),
       web_contents(), false, &current_threat_type));
   EXPECT_EQ(SB_THREAT_TYPE_UNUSED, current_threat_type);
@@ -682,7 +682,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyUpdateSecurityState) {
 
   service_->UpdateSecurityState(SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE,
                                 reused_password_type, web_contents());
-  ASSERT_TRUE(service_->ui_manager()->IsUrlWhitelistedOrPendingForWebContents(
+  ASSERT_TRUE(service_->ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
       url, false, web_contents()->GetController().GetLastCommittedEntry(),
       web_contents(), false, &current_threat_type));
   EXPECT_EQ(SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE, current_threat_type);
@@ -690,7 +690,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyUpdateSecurityState) {
   service_->UpdateSecurityState(safe_browsing::SB_THREAT_TYPE_SAFE,
                                 reused_password_type, web_contents());
   current_threat_type = SB_THREAT_TYPE_UNUSED;
-  service_->ui_manager()->IsUrlWhitelistedOrPendingForWebContents(
+  service_->ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
       url, false, web_contents()->GetController().GetLastCommittedEntry(),
       web_contents(), false, &current_threat_type);
   EXPECT_EQ(SB_THREAT_TYPE_UNUSED, current_threat_type);
@@ -717,7 +717,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
   service_->MaybeLogPasswordReuseDetectedEvent(web_contents());
   EXPECT_TRUE(GetUserEventService()->GetRecordedUserEvents().empty());
   service_->MaybeLogPasswordReuseLookupEvent(
-      web_contents(), RequestOutcome::MATCHED_WHITELIST,
+      web_contents(), RequestOutcome::MATCHED_ALLOWLIST,
       PasswordType::PRIMARY_ACCOUNT_PASSWORD, nullptr);
   EXPECT_TRUE(GetUserEventService()->GetRecordedUserEvents().empty());
 
@@ -1392,7 +1392,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetWarningDetailTextGmail) {
 TEST_F(ChromePasswordProtectionServiceTest, VerifyCanShowInterstitial) {
   // Do not show interstitial if policy not set for password_alert.
   ASSERT_FALSE(
-      profile()->GetPrefs()->HasPrefPath(prefs::kSafeBrowsingWhitelistDomains));
+      profile()->GetPrefs()->HasPrefPath(prefs::kSafeBrowsingAllowlistDomains));
   GURL trigger_url = GURL(kPhishingURL);
   ReusedPasswordAccountType reused_password_type;
   reused_password_type.set_account_type(
@@ -1450,11 +1450,11 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyCanShowInterstitial) {
                                     PASSWORD_REUSE);
   EXPECT_TRUE(service_->CanShowInterstitial(reused_password_type, trigger_url));
 
-  // Add |trigger_url| to enterprise whitelist.
-  base::ListValue whitelisted_domains;
-  whitelisted_domains.AppendString(trigger_url.host());
-  profile()->GetPrefs()->Set(prefs::kSafeBrowsingWhitelistDomains,
-                             whitelisted_domains);
+  // Add |trigger_url| to enterprise allowlist.
+  base::ListValue allowlisted_domains;
+  allowlisted_domains.AppendString(trigger_url.host());
+  profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
+                             allowlisted_domains);
   reused_password_type.set_account_type(
       ReusedPasswordAccountType::SAVED_PASSWORD);
   reused_password_type.set_is_account_syncing(false);
@@ -1513,17 +1513,17 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyGetPingNotSentReason) {
                   GURL("about:blank"), reused_password_type));
   }
   {
-    // Whitelisted by policy.
+    // Allowlisted by policy.
     ReusedPasswordAccountType reused_password_type;
     service_->ConfigService(false /*incognito*/, false /*SBER*/);
     reused_password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
     profile()->GetPrefs()->SetInteger(prefs::kPasswordProtectionWarningTrigger,
                                       PHISHING_REUSE);
-    base::ListValue whitelist;
-    whitelist.AppendString("mydomain.com");
-    whitelist.AppendString("mydomain.net");
-    profile()->GetPrefs()->Set(prefs::kSafeBrowsingWhitelistDomains, whitelist);
-    EXPECT_EQ(RequestOutcome::MATCHED_ENTERPRISE_WHITELIST,
+    base::ListValue allowlist;
+    allowlist.AppendString("mydomain.com");
+    allowlist.AppendString("mydomain.net");
+    profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains, allowlist);
+    EXPECT_EQ(RequestOutcome::MATCHED_ENTERPRISE_ALLOWLIST,
               service_->GetPingNotSentReason(
                   LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
                   GURL("https://www.mydomain.com"), reused_password_type));

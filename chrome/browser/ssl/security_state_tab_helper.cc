@@ -285,7 +285,7 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
     return security_state::MALICIOUS_CONTENT_STATUS_NONE;
   scoped_refptr<SafeBrowsingUIManager> sb_ui_manager = sb_service->ui_manager();
   safe_browsing::SBThreatType threat_type;
-  if (sb_ui_manager->IsUrlWhitelistedOrPendingForWebContents(
+  if (sb_ui_manager->IsUrlAllowlistedOrPendingForWebContents(
           entry->GetURL(), false, entry, web_contents(), false, &threat_type)) {
     switch (threat_type) {
       case safe_browsing::SB_THREAT_TYPE_UNUSED:
@@ -347,7 +347,7 @@ SecurityStateTabHelper::GetMaliciousContentStatus() const {
       case safe_browsing::SB_THREAT_TYPE_BLOCKLISTED_RESOURCE:
       case safe_browsing::SB_THREAT_TYPE_API_ABUSE:
       case safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER:
-      case safe_browsing::SB_THREAT_TYPE_CSD_WHITELIST:
+      case safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST:
       case safe_browsing::SB_THREAT_TYPE_AD_SAMPLE:
       case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_POPUP:
       case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:

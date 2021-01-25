@@ -127,9 +127,9 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingWhitelistDomains) {
   // |GetSafeBrowsingDomainsPref(..) should return empty list.
   const PrefService* const prefs = browser()->profile()->GetPrefs();
   EXPECT_FALSE(
-      prefs->FindPreference(prefs::kSafeBrowsingWhitelistDomains)->IsManaged());
+      prefs->FindPreference(prefs::kSafeBrowsingAllowlistDomains)->IsManaged());
   std::vector<std::string> canonicalized_domains;
-  safe_browsing::GetSafeBrowsingWhitelistDomainsPref(*prefs,
+  safe_browsing::GetSafeBrowsingAllowlistDomainsPref(*prefs,
                                                      &canonicalized_domains);
   EXPECT_TRUE(canonicalized_domains.empty());
 
@@ -143,8 +143,8 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingWhitelistDomains) {
                whitelist_domains.Clone(), nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(
-      prefs->FindPreference(prefs::kSafeBrowsingWhitelistDomains)->IsManaged());
-  safe_browsing::GetSafeBrowsingWhitelistDomainsPref(*prefs,
+      prefs->FindPreference(prefs::kSafeBrowsingAllowlistDomains)->IsManaged());
+  safe_browsing::GetSafeBrowsingAllowlistDomainsPref(*prefs,
                                                      &canonicalized_domains);
   EXPECT_EQ(2u, canonicalized_domains.size());
   EXPECT_EQ("mydomain.com", canonicalized_domains[0]);
@@ -158,9 +158,9 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, SafeBrowsingWhitelistDomains) {
                whitelist_domains.Clone(), nullptr);
   UpdateProviderPolicy(policies);
   EXPECT_TRUE(
-      prefs->FindPreference(prefs::kSafeBrowsingWhitelistDomains)->IsManaged());
+      prefs->FindPreference(prefs::kSafeBrowsingAllowlistDomains)->IsManaged());
   canonicalized_domains.clear();
-  safe_browsing::GetSafeBrowsingWhitelistDomainsPref(*prefs,
+  safe_browsing::GetSafeBrowsingAllowlistDomainsPref(*prefs,
                                                      &canonicalized_domains);
   EXPECT_TRUE(canonicalized_domains.empty());
 }

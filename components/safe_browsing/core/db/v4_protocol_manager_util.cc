@@ -136,7 +136,7 @@ PlatformType GetCurrentPlatformType() {
 #endif
 }
 
-ListIdentifier GetCertCsdDownloadWhitelistId() {
+ListIdentifier GetCertCsdDownloadAllowlistId() {
   return ListIdentifier(GetCurrentPlatformType(), CERT, CSD_DOWNLOAD_WHITELIST);
 }
 
@@ -166,11 +166,11 @@ ListIdentifier GetUrlBillingId() {
   return ListIdentifier(GetCurrentPlatformType(), URL, BILLING);
 }
 
-ListIdentifier GetUrlCsdDownloadWhitelistId() {
+ListIdentifier GetUrlCsdDownloadAllowlistId() {
   return ListIdentifier(GetCurrentPlatformType(), URL, CSD_DOWNLOAD_WHITELIST);
 }
 
-ListIdentifier GetUrlCsdWhitelistId() {
+ListIdentifier GetUrlCsdAllowlistId() {
   return ListIdentifier(GetCurrentPlatformType(), URL, CSD_WHITELIST);
 }
 

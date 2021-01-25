@@ -40,7 +40,7 @@ class MockPasswordProtectionService : public PasswordProtectionService {
   MOCK_CONST_METHOD1(GetSignedInNonSyncAccount,
                      AccountInfo(const std::string&));
   MOCK_CONST_METHOD1(IsOtherGaiaAccountGmail, bool(const std::string&));
-  MOCK_CONST_METHOD1(IsURLWhitelistedForPasswordEntry, bool(const GURL&));
+  MOCK_CONST_METHOD1(IsURLAllowlistedForPasswordEntry, bool(const GURL&));
 
   MOCK_METHOD0(CanSendSamplePing, bool());
   MOCK_METHOD0(IsExtendedReporting, bool());

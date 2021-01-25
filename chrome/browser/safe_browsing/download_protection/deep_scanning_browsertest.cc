@@ -814,24 +814,24 @@ IN_PROC_BROWSER_TEST_F(DownloadRestrictionsDeepScanningBrowserTest,
   EXPECT_EQ(item->GetState(), download::DownloadItem::INTERRUPTED);
 }
 
-class WhitelistedUrlDeepScanningBrowserTest
+class AllowlistedUrlDeepScanningBrowserTest
     : public DownloadDeepScanningBrowserTest {
  public:
-  WhitelistedUrlDeepScanningBrowserTest() = default;
-  ~WhitelistedUrlDeepScanningBrowserTest() override = default;
+  AllowlistedUrlDeepScanningBrowserTest() = default;
+  ~AllowlistedUrlDeepScanningBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     DownloadDeepScanningBrowserTest::SetUpOnMainThread();
 
     base::ListValue domain_list;
     domain_list.AppendString(embedded_test_server()->base_url().host_piece());
-    browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingWhitelistDomains,
+    browser()->profile()->GetPrefs()->Set(prefs::kSafeBrowsingAllowlistDomains,
                                           domain_list);
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WhitelistedUrlDeepScanningBrowserTest,
-                       WhitelistedUrlStillDoesDlp) {
+IN_PROC_BROWSER_TEST_F(AllowlistedUrlDeepScanningBrowserTest,
+                       AllowlistedUrlStillDoesDlp) {
   // The file is SAFE according to the metadata check
   ClientDownloadResponse metadata_response;
   metadata_response.set_verdict(ClientDownloadResponse::SAFE);

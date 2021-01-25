@@ -218,10 +218,10 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
   PasswordProtectionTrigger GetPasswordProtectionWarningTriggerPref(
       ReusedPasswordAccountType password_type) const override;
 
-  // If |url| matches Safe Browsing whitelist domains, password protection
+  // If |url| matches Safe Browsing allowlist domains, password protection
   // change password URL, or password protection login URLs in the enterprise
   // policy.
-  bool IsURLWhitelistedForPasswordEntry(const GURL& url) const override;
+  bool IsURLAllowlistedForPasswordEntry(const GURL& url) const override;
 
   // Persist the phished saved password credential in the "compromised
   // credentials" table. Calls the password store to add a row for each

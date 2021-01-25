@@ -169,7 +169,7 @@ class DownloadProtectionService {
   base::CallbackListSubscription RegisterPPAPIDownloadRequestCallback(
       const PPAPIDownloadRequestCallback& callback);
 
-  double whitelist_sample_rate() const { return whitelist_sample_rate_; }
+  double allowlist_sample_rate() const { return allowlist_sample_rate_; }
 
   scoped_refptr<SafeBrowsingNavigationObserverManager>
   navigation_observer_manager() {
@@ -332,8 +332,8 @@ class DownloadProtectionService {
   // Normally empty.
   std::set<std::string> manual_blocklist_hashes_;
 
-  // Rate of whitelisted downloads we sample to send out download ping.
-  double whitelist_sample_rate_;
+  // Rate of allowlisted downloads we sample to send out download ping.
+  double allowlist_sample_rate_;
 
   // DownloadReporter to send real time reports for dangerous download events.
   DownloadReporter download_reporter_;

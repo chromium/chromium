@@ -771,7 +771,7 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseLookupEvent(
     PasswordType password_type,
     const LoginReputationClientResponse* response) {
   switch (outcome) {
-    case RequestOutcome::MATCHED_WHITELIST:
+    case RequestOutcome::MATCHED_ALLOWLIST:
       MaybeLogPasswordReuseLookupResult(web_contents,
                                         PasswordReuseLookup::WHITELIST_HIT);
       break;
@@ -791,7 +791,7 @@ void ChromePasswordProtectionService::MaybeLogPasswordReuseLookupEvent(
       MaybeLogPasswordReuseLookupResult(web_contents,
                                         PasswordReuseLookup::URL_UNSUPPORTED);
       break;
-    case RequestOutcome::MATCHED_ENTERPRISE_WHITELIST:
+    case RequestOutcome::MATCHED_ENTERPRISE_ALLOWLIST:
     case RequestOutcome::MATCHED_ENTERPRISE_LOGIN_URL:
     case RequestOutcome::MATCHED_ENTERPRISE_CHANGE_PASSWORD_URL:
       MaybeLogPasswordReuseLookupResult(
@@ -1293,7 +1293,7 @@ bool ChromePasswordProtectionService::CanShowInterstitial(
       password_type.account_type() ==
           ReusedPasswordAccountType::NON_GAIA_ENTERPRISE;
   return IsInPasswordAlertMode(password_type) && is_supported_password_type &&
-         !IsURLWhitelistedForPasswordEntry(main_frame_url);
+         !IsURLAllowlistedForPasswordEntry(main_frame_url);
 }
 
 void ChromePasswordProtectionService::SetLogPasswordCaptureTimer(
@@ -1351,7 +1351,7 @@ void ChromePasswordProtectionService::UpdateSecurityState(
 
   const GURL url_with_empty_path = url.GetWithEmptyPath();
   if (threat_type == SB_THREAT_TYPE_SAFE) {
-    ui_manager_->RemoveWhitelistUrlSet(url_with_empty_path, web_contents,
+    ui_manager_->RemoveAllowlistUrlSet(url_with_empty_path, web_contents,
                                        /*from_pending_only=*/false);
     // Overrides cached verdicts.
     LoginReputationClientResponse verdict;
@@ -1367,18 +1367,18 @@ void ChromePasswordProtectionService::UpdateSecurityState(
   SBThreatType current_threat_type = SB_THREAT_TYPE_UNUSED;
   // If user already click-through interstitial warning, or if there's already
   // a dangerous security state showing, we'll override it.
-  if (ui_manager_->IsUrlWhitelistedOrPendingForWebContents(
+  if (ui_manager_->IsUrlAllowlistedOrPendingForWebContents(
           url_with_empty_path, /*is_subresource=*/false,
           web_contents->GetController().GetLastCommittedEntry(), web_contents,
-          /*whitelist_only=*/false, &current_threat_type)) {
+          /*allowlist_only=*/false, &current_threat_type)) {
     DCHECK_NE(SB_THREAT_TYPE_UNUSED, current_threat_type);
     if (current_threat_type == threat_type)
       return;
     // Resets previous threat type.
-    ui_manager_->RemoveWhitelistUrlSet(url_with_empty_path, web_contents,
+    ui_manager_->RemoveAllowlistUrlSet(url_with_empty_path, web_contents,
                                        /*from_pending_only=*/false);
   }
-  ui_manager_->AddToWhitelistUrlSet(url_with_empty_path, web_contents,
+  ui_manager_->AddToAllowlistUrlSet(url_with_empty_path, web_contents,
                                     /*is_pending=*/true, threat_type);
 }
 
@@ -1515,8 +1515,8 @@ RequestOutcome ChromePasswordProtectionService::GetPingNotSentReason(
     return RequestOutcome::TURNED_OFF_BY_ADMIN;
   }
   PrefService* prefs = profile_->GetPrefs();
-  if (IsURLWhitelistedByPolicy(url, *prefs)) {
-    return RequestOutcome::MATCHED_ENTERPRISE_WHITELIST;
+  if (IsURLAllowlistedByPolicy(url, *prefs)) {
+    return RequestOutcome::MATCHED_ENTERPRISE_ALLOWLIST;
   }
   if (MatchesPasswordProtectionChangePasswordURL(url, *prefs)) {
     return RequestOutcome::MATCHED_ENTERPRISE_CHANGE_PASSWORD_URL;
@@ -1635,11 +1635,11 @@ bool ChromePasswordProtectionService::UserClickedThroughSBInterstitial(
       static_cast<PasswordProtectionRequestContent*>(request);
   content::WebContents* web_contents = request_content->web_contents();
   SBThreatType current_threat_type;
-  if (!ui_manager_->IsUrlWhitelistedOrPendingForWebContents(
+  if (!ui_manager_->IsUrlAllowlistedOrPendingForWebContents(
           web_contents->GetLastCommittedURL().GetWithEmptyPath(),
           /*is_subresource=*/false,
           web_contents->GetController().GetLastCommittedEntry(), web_contents,
-          /*whitelist_only=*/true, &current_threat_type)) {
+          /*allowlist_only=*/true, &current_threat_type)) {
     return false;
   }
   return current_threat_type == SB_THREAT_TYPE_URL_PHISHING ||
@@ -1705,13 +1705,13 @@ ChromePasswordProtectionService::GetPasswordProtectionWarningTriggerPref(
   return is_policy_managed ? trigger_level : PHISHING_REUSE;
 }
 
-bool ChromePasswordProtectionService::IsURLWhitelistedForPasswordEntry(
+bool ChromePasswordProtectionService::IsURLAllowlistedForPasswordEntry(
     const GURL& url) const {
   if (!profile_)
     return false;
 
   PrefService* prefs = profile_->GetPrefs();
-  return IsURLWhitelistedByPolicy(url, *prefs) ||
+  return IsURLAllowlistedByPolicy(url, *prefs) ||
          MatchesPasswordProtectionChangePasswordURL(url, *prefs) ||
          MatchesPasswordProtectionLoginURL(url, *prefs);
 }

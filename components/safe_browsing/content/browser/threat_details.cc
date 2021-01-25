@@ -67,7 +67,7 @@ typedef std::unordered_set<std::string> StringSet;
 // A set of HTTPS headers that are allowed to be collected. Contains both
 // request and response headers. All entries in this list should be lower-case
 // to support case-insensitive comparison.
-struct WhitelistedHttpsHeadersTraits
+struct AllowlistedHttpsHeadersTraits
     : base::internal::DestructorAtExitLazyInstanceTraits<StringSet> {
   static StringSet* New(void* instance) {
     StringSet* headers =
@@ -79,8 +79,8 @@ struct WhitelistedHttpsHeadersTraits
     return headers;
   }
 };
-base::LazyInstance<StringSet, WhitelistedHttpsHeadersTraits>
-    g_https_headers_whitelist = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<StringSet, AllowlistedHttpsHeadersTraits>
+    g_https_headers_allowlist = LAZY_INSTANCE_INITIALIZER;
 
 // Helper function that converts SBThreatType to
 // ClientSafeBrowsingReportRequest::ReportType.
@@ -121,7 +121,7 @@ ClientSafeBrowsingReportRequest::ReportType GetReportTypeFromSBThreatType(
     case SB_THREAT_TYPE_BLOCKLISTED_RESOURCE:
     case SB_THREAT_TYPE_API_ABUSE:
     case SB_THREAT_TYPE_SUBRESOURCE_FILTER:
-    case SB_THREAT_TYPE_CSD_WHITELIST:
+    case SB_THREAT_TYPE_CSD_ALLOWLIST:
     case SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
     case DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
       // Gated by SafeBrowsingBlockingPage::ShouldReportThreatDetails.
@@ -132,17 +132,17 @@ ClientSafeBrowsingReportRequest::ReportType GetReportTypeFromSBThreatType(
 }
 
 // Clears the specified HTTPS resource of any sensitive data, only retaining
-// data that is whitelisted for collection.
+// data that is allowlisted for collection.
 void ClearHttpsResource(ClientSafeBrowsingReportRequest::Resource* resource) {
   // Make a copy of the original resource to retain all data.
   ClientSafeBrowsingReportRequest::Resource orig_resource(*resource);
 
-  // Clear the request headers and copy over any whitelisted ones.
+  // Clear the request headers and copy over any allowlisted ones.
   resource->clear_request();
   for (int i = 0; i < orig_resource.request().headers_size(); ++i) {
     ClientSafeBrowsingReportRequest::HTTPHeader* orig_header =
         orig_resource.mutable_request()->mutable_headers(i);
-    if (g_https_headers_whitelist.Get().count(
+    if (g_https_headers_allowlist.Get().count(
             base::ToLowerASCII(orig_header->name())) > 0) {
       resource->mutable_request()->add_headers()->Swap(orig_header);
     }
@@ -158,7 +158,7 @@ void ClearHttpsResource(ClientSafeBrowsingReportRequest::Resource* resource) {
   for (int i = 0; i < orig_resource.response().headers_size(); ++i) {
     ClientSafeBrowsingReportRequest::HTTPHeader* orig_header =
         orig_resource.mutable_response()->mutable_headers(i);
-    if (g_https_headers_whitelist.Get().count(
+    if (g_https_headers_allowlist.Get().count(
             base::ToLowerASCII(orig_header->name())) > 0) {
       resource->mutable_response()->add_headers()->Swap(orig_header);
     }

@@ -282,7 +282,7 @@ bool RemoteSafeBrowsingDatabaseManager::CheckUrlForSubresourceFilter(
   return false;
 }
 
-AsyncMatch RemoteSafeBrowsingDatabaseManager::CheckCsdWhitelistUrl(
+AsyncMatch RemoteSafeBrowsingDatabaseManager::CheckCsdAllowlistUrl(
     const GURL& url,
     Client* client) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -298,13 +298,13 @@ AsyncMatch RemoteSafeBrowsingDatabaseManager::CheckCsdWhitelistUrl(
   return is_match ? AsyncMatch::MATCH : AsyncMatch::NO_MATCH;
 }
 
-bool RemoteSafeBrowsingDatabaseManager::MatchDownloadWhitelistString(
+bool RemoteSafeBrowsingDatabaseManager::MatchDownloadAllowlistString(
     const std::string& str) {
   NOTREACHED();
   return true;
 }
 
-bool RemoteSafeBrowsingDatabaseManager::MatchDownloadWhitelistUrl(
+bool RemoteSafeBrowsingDatabaseManager::MatchDownloadAllowlistUrl(
     const GURL& url) {
   NOTREACHED();
   return true;

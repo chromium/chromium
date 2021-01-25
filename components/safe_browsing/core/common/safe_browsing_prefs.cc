@@ -88,7 +88,7 @@ const char kSafeBrowsingUnhandledGaiaPasswordReuses[] =
     "safebrowsing.unhandled_sync_password_reuses";
 const char kSafeBrowsingNextPasswordCaptureEventLogTime[] =
     "safebrowsing.next_password_capture_event_log_time";
-const char kSafeBrowsingWhitelistDomains[] =
+const char kSafeBrowsingAllowlistDomains[] =
     "safebrowsing.safe_browsing_whitelist_domains";
 const char kPasswordProtectionChangePasswordURL[] =
     "safebrowsing.password_protection_change_password_url";
@@ -205,7 +205,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(
       prefs::kSafeBrowsingNextPasswordCaptureEventLogTime,
       "0");  // int64 as string
-  registry->RegisterListPref(prefs::kSafeBrowsingWhitelistDomains);
+  registry->RegisterListPref(prefs::kSafeBrowsingAllowlistDomains);
   registry->RegisterStringPref(prefs::kPasswordProtectionChangePasswordURL, "");
   registry->RegisterListPref(prefs::kPasswordProtectionLoginURLs);
   registry->RegisterIntegerPref(prefs::kPasswordProtectionWarningTrigger,
@@ -274,11 +274,11 @@ base::ListValue GetSafeBrowsingPreferencesList(PrefService* prefs) {
   return preferences_list;
 }
 
-void GetSafeBrowsingWhitelistDomainsPref(
+void GetSafeBrowsingAllowlistDomainsPref(
     const PrefService& prefs,
     std::vector<std::string>* out_canonicalized_domain_list) {
   const base::ListValue* pref_value =
-      prefs.GetList(prefs::kSafeBrowsingWhitelistDomains);
+      prefs.GetList(prefs::kSafeBrowsingAllowlistDomains);
   CanonicalizeDomainList(*pref_value, out_canonicalized_domain_list);
 }
 
@@ -297,36 +297,36 @@ void CanonicalizeDomainList(
   }
 }
 
-bool IsURLWhitelistedByPolicy(const GURL& url,
+bool IsURLAllowlistedByPolicy(const GURL& url,
                               StringListPrefMember* pref_member) {
   DCHECK(CurrentlyOnThread(ThreadID::IO));
   if (!pref_member)
     return false;
 
-  std::vector<std::string> sb_whitelist_domains = pref_member->GetValue();
-  return std::find_if(sb_whitelist_domains.begin(), sb_whitelist_domains.end(),
+  std::vector<std::string> sb_allowlist_domains = pref_member->GetValue();
+  return std::find_if(sb_allowlist_domains.begin(), sb_allowlist_domains.end(),
                       [&url](const std::string& domain) {
                         return url.DomainIs(domain);
-                      }) != sb_whitelist_domains.end();
+                      }) != sb_allowlist_domains.end();
 }
 
-bool IsURLWhitelistedByPolicy(const GURL& url, const PrefService& pref) {
+bool IsURLAllowlistedByPolicy(const GURL& url, const PrefService& pref) {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
-  if (!pref.HasPrefPath(prefs::kSafeBrowsingWhitelistDomains))
+  if (!pref.HasPrefPath(prefs::kSafeBrowsingAllowlistDomains))
     return false;
-  const base::ListValue* whitelist =
-      pref.GetList(prefs::kSafeBrowsingWhitelistDomains);
-  for (const base::Value& value : whitelist->GetList()) {
+  const base::ListValue* allowlist =
+      pref.GetList(prefs::kSafeBrowsingAllowlistDomains);
+  for (const base::Value& value : allowlist->GetList()) {
     if (url.DomainIs(value.GetString()))
       return true;
   }
   return false;
 }
 
-bool MatchesEnterpriseWhitelist(const PrefService& pref,
+bool MatchesEnterpriseAllowlist(const PrefService& pref,
                                 const std::vector<GURL>& url_chain) {
   for (const GURL& url : url_chain) {
-    if (IsURLWhitelistedByPolicy(url, pref))
+    if (IsURLAllowlistedByPolicy(url, pref))
       return true;
   }
   return false;

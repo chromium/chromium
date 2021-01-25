@@ -4500,7 +4500,7 @@ ChromeContentBrowserClient::CreateURLLoaderThrottles(
       static_cast<ChromeNavigationUIData*>(navigation_ui_data);
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-  bool matches_enterprise_whitelist = safe_browsing::IsURLWhitelistedByPolicy(
+  bool matches_enterprise_whitelist = safe_browsing::IsURLAllowlistedByPolicy(
       request.url, *profile->GetPrefs());
   if (!matches_enterprise_whitelist) {
 #if BUILDFLAG(SAFE_BROWSING_DB_LOCAL)

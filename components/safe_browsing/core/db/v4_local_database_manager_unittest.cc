@@ -259,9 +259,9 @@ class TestAllowlistClient : public SafeBrowsingDatabaseManager::Client {
       : expected_sb_threat_type_(expected_sb_threat_type),
         match_expected_(match_expected) {}
 
-  void OnCheckWhitelistUrlResult(bool is_allowlisted) override {
+  void OnCheckAllowlistUrlResult(bool is_allowlisted) override {
     EXPECT_EQ(match_expected_, is_allowlisted);
-    EXPECT_EQ(SB_THREAT_TYPE_CSD_WHITELIST, expected_sb_threat_type_);
+    EXPECT_EQ(SB_THREAT_TYPE_CSD_ALLOWLIST, expected_sb_threat_type_);
     callback_called_ = true;
   }
 
@@ -515,7 +515,7 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckBrowseUrlWithFakeDbReturnsMatch) {
   WaitForTasksOnTaskRunner();
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistWithPrefixMatch) {
+TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithPrefixMatch) {
   // Setup to receive full-hash misses. We won't make URL requests.
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
   ResetLocalDatabaseManager();
@@ -525,15 +525,15 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistWithPrefixMatch) {
   FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
   const HashPrefix safe_hash_prefix(safe_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(GetUrlCsdWhitelistId(),
+  store_and_hash_prefixes.emplace_back(GetUrlCsdAllowlistId(),
                                        safe_hash_prefix);
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
 
   TestAllowlistClient client(
       /* match_expected= */ false,
-      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_WHITELIST);
+      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_ALLOWLIST);
   const GURL url_check("https://" + url_safe_no_scheme);
-  EXPECT_EQ(AsyncMatch::ASYNC, v4_local_database_manager_->CheckCsdWhitelistUrl(
+  EXPECT_EQ(AsyncMatch::ASYNC, v4_local_database_manager_->CheckCsdAllowlistUrl(
                                    url_check, &client));
 
   EXPECT_FALSE(client.callback_called());
@@ -543,31 +543,31 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistWithPrefixMatch) {
   EXPECT_TRUE(client.callback_called());
 }
 
-// This is like CsdWhitelistWithPrefixMatch, but we also verify the
+// This is like CsdAllowlistWithPrefixMatch, but we also verify the
 // full-hash-match results in an appropriate callback value.
 TEST_F(V4LocalDatabaseManagerTest,
-       TestCheckCsdWhitelistWithPrefixTheFullMatch) {
+       TestCheckCsdAllowlistWithPrefixTheFullMatch) {
   std::string url_safe_no_scheme("example.com/safe/");
   FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
 
   // Setup to receive full-hash hit. We won't make URL requests.
   FullHashInfos infos(
-      {{safe_full_hash, GetUrlCsdWhitelistId(), base::Time::Now()}});
+      {{safe_full_hash, GetUrlCsdAllowlistId(), base::Time::Now()}});
   ScopedFakeGetHashProtocolManagerFactory pin(infos);
   ResetLocalDatabaseManager();
   WaitForTasksOnTaskRunner();
 
   const HashPrefix safe_hash_prefix(safe_full_hash.substr(0, 5));
   StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(GetUrlCsdWhitelistId(),
+  store_and_hash_prefixes.emplace_back(GetUrlCsdAllowlistId(),
                                        safe_hash_prefix);
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
 
   TestAllowlistClient client(
       /* match_expected= */ true,
-      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_WHITELIST);
+      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_ALLOWLIST);
   const GURL url_check("https://" + url_safe_no_scheme);
-  EXPECT_EQ(AsyncMatch::ASYNC, v4_local_database_manager_->CheckCsdWhitelistUrl(
+  EXPECT_EQ(AsyncMatch::ASYNC, v4_local_database_manager_->CheckCsdAllowlistUrl(
                                    url_check, &client));
 
   EXPECT_FALSE(client.callback_called());
@@ -577,7 +577,7 @@ TEST_F(V4LocalDatabaseManagerTest,
   EXPECT_TRUE(client.callback_called());
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistWithFullMatch) {
+TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithFullMatch) {
   // Setup to receive full-hash misses. We won't make URL requests.
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
   ResetLocalDatabaseManager();
@@ -586,21 +586,21 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistWithFullMatch) {
   std::string url_safe_no_scheme("example.com/safe/");
   FullHash safe_full_hash(crypto::SHA256HashString(url_safe_no_scheme));
   StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(GetUrlCsdWhitelistId(), safe_full_hash);
+  store_and_hash_prefixes.emplace_back(GetUrlCsdAllowlistId(), safe_full_hash);
   ReplaceV4Database(store_and_hash_prefixes, /* stores_available= */ true);
 
   TestAllowlistClient client(
       /* match_expected= */ false,
-      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_WHITELIST);
+      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_ALLOWLIST);
   const GURL url_check("https://" + url_safe_no_scheme);
-  EXPECT_EQ(AsyncMatch::MATCH, v4_local_database_manager_->CheckCsdWhitelistUrl(
+  EXPECT_EQ(AsyncMatch::MATCH, v4_local_database_manager_->CheckCsdAllowlistUrl(
                                    url_check, &client));
 
   WaitForTasksOnTaskRunner();
   EXPECT_FALSE(client.callback_called());
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistWithNoMatch) {
+TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistWithNoMatch) {
   // Setup to receive full-hash misses. We won't make URL requests.
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
   ResetLocalDatabaseManager();
@@ -615,18 +615,18 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistWithNoMatch) {
 
   TestAllowlistClient client(
       /* match_expected= */ true,
-      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_WHITELIST);
+      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_ALLOWLIST);
   const GURL url_check("https://other.com/");
   EXPECT_EQ(
       AsyncMatch::NO_MATCH,
-      v4_local_database_manager_->CheckCsdWhitelistUrl(url_check, &client));
+      v4_local_database_manager_->CheckCsdAllowlistUrl(url_check, &client));
 
   WaitForTasksOnTaskRunner();
   EXPECT_FALSE(client.callback_called());
 }
 
 // When allowlist is unavailable, all URLS should be allowed.
-TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistUnavailable) {
+TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdAllowlistUnavailable) {
   // Setup to receive full-hash misses. We won't make URL requests.
   ScopedFakeGetHashProtocolManagerFactory pin(FullHashInfos({}));
   ResetLocalDatabaseManager();
@@ -637,9 +637,9 @@ TEST_F(V4LocalDatabaseManagerTest, TestCheckCsdWhitelistUnavailable) {
 
   TestAllowlistClient client(
       /* match_expected= */ false,
-      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_WHITELIST);
+      /* expected_sb_threat_type= */ SB_THREAT_TYPE_CSD_ALLOWLIST);
   const GURL url_check("https://other.com/");
-  EXPECT_EQ(AsyncMatch::MATCH, v4_local_database_manager_->CheckCsdWhitelistUrl(
+  EXPECT_EQ(AsyncMatch::MATCH, v4_local_database_manager_->CheckCsdAllowlistUrl(
                                    url_check, &client));
 
   WaitForTasksOnTaskRunner();
@@ -1056,52 +1056,52 @@ TEST_F(V4LocalDatabaseManagerTest, UsingWeakPtrDropsCallback) {
   WaitForTasksOnTaskRunner();
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestMatchDownloadWhitelistString) {
+TEST_F(V4LocalDatabaseManagerTest, TestMatchDownloadAllowlistString) {
   SetupFakeManager();
   const std::string good_cert = "Good Cert";
   const std::string other_cert = "Other Cert";
   FullHash good_hash(crypto::SHA256HashString(good_cert));
 
   StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(GetCertCsdDownloadWhitelistId(),
+  store_and_hash_prefixes.emplace_back(GetCertCsdDownloadAllowlistId(),
                                        good_hash);
 
   ReplaceV4Database(store_and_hash_prefixes, false /* not available */);
   // Verify it defaults to false when DB is not available.
   EXPECT_FALSE(
-      v4_local_database_manager_->MatchDownloadWhitelistString(good_cert));
+      v4_local_database_manager_->MatchDownloadAllowlistString(good_cert));
 
   ReplaceV4Database(store_and_hash_prefixes, true /* available */);
-  // Not whitelisted.
+  // Not allowlisted.
   EXPECT_FALSE(
-      v4_local_database_manager_->MatchDownloadWhitelistString(other_cert));
-  // Whitelisted.
+      v4_local_database_manager_->MatchDownloadAllowlistString(other_cert));
+  // Allowlisted.
   EXPECT_TRUE(
-      v4_local_database_manager_->MatchDownloadWhitelistString(good_cert));
+      v4_local_database_manager_->MatchDownloadAllowlistString(good_cert));
 
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
       v4_local_database_manager_));
 }
 
-TEST_F(V4LocalDatabaseManagerTest, TestMatchDownloadWhitelistUrl) {
+TEST_F(V4LocalDatabaseManagerTest, TestMatchDownloadAllowlistUrl) {
   SetupFakeManager();
   GURL good_url("http://safe.com");
   GURL other_url("http://iffy.com");
 
   StoreAndHashPrefixes store_and_hash_prefixes;
-  store_and_hash_prefixes.emplace_back(GetUrlCsdDownloadWhitelistId(),
+  store_and_hash_prefixes.emplace_back(GetUrlCsdDownloadAllowlistId(),
                                        HashForUrl(good_url));
 
   ReplaceV4Database(store_and_hash_prefixes, false /* not available */);
   // Verify it defaults to false when DB is not available.
-  EXPECT_FALSE(v4_local_database_manager_->MatchDownloadWhitelistUrl(good_url));
+  EXPECT_FALSE(v4_local_database_manager_->MatchDownloadAllowlistUrl(good_url));
 
   ReplaceV4Database(store_and_hash_prefixes, true /* available */);
-  // Not whitelisted.
+  // Not allowlisted.
   EXPECT_FALSE(
-      v4_local_database_manager_->MatchDownloadWhitelistUrl(other_url));
-  // Whitelisted.
-  EXPECT_TRUE(v4_local_database_manager_->MatchDownloadWhitelistUrl(good_url));
+      v4_local_database_manager_->MatchDownloadAllowlistUrl(other_url));
+  // Allowlisted.
+  EXPECT_TRUE(v4_local_database_manager_->MatchDownloadAllowlistUrl(good_url));
 
   EXPECT_FALSE(FakeV4LocalDatabaseManager::PerformFullHashCheckCalled(
       v4_local_database_manager_));

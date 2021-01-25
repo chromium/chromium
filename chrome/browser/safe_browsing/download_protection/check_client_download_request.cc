@@ -237,7 +237,7 @@ CheckClientDownloadRequest::ShouldUploadBinary(
   auto settings = DeepScanningRequest::ShouldUploadBinary(item_);
   if (settings && (reason == REASON_DOWNLOAD_DANGEROUS ||
                    reason == REASON_DOWNLOAD_DANGEROUS_HOST ||
-                   reason == REASON_WHITELISTED_URL)) {
+                   reason == REASON_ALLOWLISTED_URL)) {
     settings->tags.erase("malware");
     if (settings->tags.empty())
       return base::nullopt;
@@ -252,7 +252,7 @@ void CheckClientDownloadRequest::UploadBinary(
   if (reason == REASON_DOWNLOAD_DANGEROUS ||
       reason == REASON_DOWNLOAD_DANGEROUS_HOST ||
       reason == REASON_DOWNLOAD_POTENTIALLY_UNWANTED ||
-      reason == REASON_DOWNLOAD_UNCOMMON || reason == REASON_WHITELISTED_URL) {
+      reason == REASON_DOWNLOAD_UNCOMMON || reason == REASON_ALLOWLISTED_URL) {
     service()->UploadForDeepScanning(
         item_, base::BindRepeating(&MaybeOverrideScanResult, reason, callback_),
         DeepScanningRequest::DeepScanTrigger::TRIGGER_POLICY,
@@ -296,11 +296,11 @@ bool CheckClientDownloadRequest::ShouldPromptForDeepScanning(
 #endif
 }
 
-bool CheckClientDownloadRequest::IsWhitelistedByPolicy() const {
+bool CheckClientDownloadRequest::IsAllowlistedByPolicy() const {
   Profile* profile = Profile::FromBrowserContext(GetBrowserContext());
   if (!profile)
     return false;
-  return MatchesEnterpriseWhitelist(*profile->GetPrefs(), item_->GetUrlChain());
+  return MatchesEnterpriseAllowlist(*profile->GetPrefs(), item_->GetUrlChain());
 }
 
 }  // namespace safe_browsing
