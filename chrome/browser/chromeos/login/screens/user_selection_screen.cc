@@ -632,9 +632,9 @@ bool UserSelectionScreen::ShouldForceOnlineSignIn(
     return true;
   }
 
-  const base::TimeDelta offline_signin_time_limit =
+  const base::Optional<base::TimeDelta> offline_signin_time_limit =
       user_manager::known_user::GetOfflineSigninLimit(user->GetAccountId());
-  if (offline_signin_time_limit == base::TimeDelta())
+  if (!offline_signin_time_limit)
     return false;
 
   const base::Time last_gaia_signin_time =

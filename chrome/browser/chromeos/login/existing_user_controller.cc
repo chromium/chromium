@@ -534,16 +534,16 @@ bool ExistingUserController::ForceOnlineFlagChanged(
     if (!user->using_saml()) {
       continue;
     }
-    const base::TimeDelta offline_signin_limit =
+    const base::Optional<base::TimeDelta> offline_signin_limit =
         user_manager::known_user::GetOfflineSigninLimit(user->GetAccountId());
-    if (offline_signin_limit == base::TimeDelta()) {
+    if (!offline_signin_limit) {
       continue;
     }
 
     const base::Time last_online_signin =
         user_manager::known_user::GetLastOnlineSignin(user->GetAccountId());
     base::TimeDelta time_to_next_online_signin =
-        TimeToOnlineSignIn(last_online_signin, offline_signin_limit);
+        TimeToOnlineSignIn(last_online_signin, offline_signin_limit.value());
     if (time_to_next_online_signin > base::TimeDelta() &&
         time_to_next_online_signin < min_delta) {
       min_delta = time_to_next_online_signin;

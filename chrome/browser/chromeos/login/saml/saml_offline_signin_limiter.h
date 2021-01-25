@@ -67,7 +67,8 @@ class SAMLOfflineSigninLimiter
   void ForceOnlineLogin();
 
   // Stores the last online login time and offline login time limit
-  void UpdateOnlineSigninData(base::Time time, base::TimeDelta limit);
+  void UpdateOnlineSigninData(base::Time time,
+                              base::Optional<base::TimeDelta> limit);
 
   Profile* profile_;
   base::Clock* clock_;

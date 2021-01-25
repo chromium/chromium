@@ -222,6 +222,20 @@ TEST_F(ExistingUserControllerForcedOnlineAuthTest,
   EXPECT_TRUE(is_force_online_flag_set());
 }
 
+// Tests unset policy value in local state.
+TEST_F(ExistingUserControllerForcedOnlineAuthTest,
+       SamlOnlineAuthSamlPolicyNotSet) {
+  const base::Time now = base::DefaultClock::GetInstance()->Now();
+  user_manager::known_user::SetLastOnlineSignin(saml_login_account1_id_, now);
+  user_manager::known_user::SetOfflineSigninLimit(saml_login_account1_id_,
+                                                  base::nullopt);
+
+  mock_user_manager()->AddPublicAccountWithSAML(saml_login_account1_id_);
+  existing_user_controller()->Init(mock_user_manager()->GetUsers());
+  EXPECT_FALSE(screen_refresh_timer()->IsRunning());
+  EXPECT_FALSE(is_force_online_flag_set());
+}
+
 // Tests creation of password sync token checker for 2 SAML users. Only one of
 // them has local copy of password sync token.
 TEST_F(ExistingUserControllerForcedOnlineAuthTest,

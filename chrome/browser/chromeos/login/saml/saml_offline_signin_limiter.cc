@@ -66,9 +66,11 @@ void SAMLOfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
     const int saml_offline_limit =
         prefs->GetInteger(prefs::kSAMLOfflineSigninTimeLimit);
     UpdateOnlineSigninData(
-        clock_->Now(), saml_offline_limit == kSAMLOfflineSigninTimeLimitNotSet
-                           ? base::TimeDelta()
-                           : base::TimeDelta::FromSeconds(saml_offline_limit));
+        clock_->Now(),
+        saml_offline_limit == kSAMLOfflineSigninTimeLimitNotSet
+            ? base::nullopt
+            : base::make_optional<base::TimeDelta>(
+                  base::TimeDelta::FromSeconds(saml_offline_limit)));
   }
 
   // Start listening for pref changes.
@@ -138,6 +140,7 @@ void SAMLOfflineSigninLimiter::UpdateLimit() {
       prefs->GetTime(prefs::kSAMLLastGAIASignInTime);
   if (offline_signin_time_limit < base::TimeDelta() ||
       last_gaia_signin_time.is_null()) {
+    UpdateOnlineSigninData(last_gaia_signin_time, base::nullopt);
     // If no limit is in force, return.
     return;
   }
@@ -149,9 +152,9 @@ void SAMLOfflineSigninLimiter::UpdateLimit() {
     NOTREACHED();
     last_gaia_signin_time = now;
     prefs->SetTime(prefs::kSAMLLastGAIASignInTime, now);
-    UpdateOnlineSigninData(now, offline_signin_time_limit);
   }
 
+  UpdateOnlineSigninData(last_gaia_signin_time, offline_signin_time_limit);
   const base::TimeDelta time_since_last_gaia_signin =
       now - last_gaia_signin_time;
   if (time_since_last_gaia_signin >= offline_signin_time_limit) {
@@ -186,8 +189,9 @@ void SAMLOfflineSigninLimiter::ForceOnlineLogin() {
   offline_signin_limit_timer_->Stop();
 }
 
-void SAMLOfflineSigninLimiter::UpdateOnlineSigninData(base::Time time,
-                                                      base::TimeDelta limit) {
+void SAMLOfflineSigninLimiter::UpdateOnlineSigninData(
+    base::Time time,
+    base::Optional<base::TimeDelta> limit) {
   const user_manager::User* user =
       ProfileHelper::Get()->GetUserByProfile(profile_);
   if (!user) {
