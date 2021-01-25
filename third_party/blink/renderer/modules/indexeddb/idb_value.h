@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_VALUE_H_
 
 #include <memory>
+#include <utility>
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
@@ -44,6 +45,10 @@ class MODULES_EXPORT IDBValue final {
       Vector<mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken>> =
           {});
   ~IDBValue();
+
+  // Disallow copy and assign.
+  IDBValue(const IDBValue&) = delete;
+  IDBValue& operator=(const IDBValue&) = delete;
 
   size_t DataSize() const { return data_ ? data_->size() : 0; }
 
@@ -93,8 +98,6 @@ class MODULES_EXPORT IDBValue final {
       const mojom::blink::IDBReturnValuePtr& input);
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(IDBValue);
-
   friend class IDBValueUnwrapper;
 
   // Keep this private to prevent new refs because we manually bookkeep the
@@ -118,4 +121,4 @@ class MODULES_EXPORT IDBValue final {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_IDB_VALUE_H_

@@ -447,7 +447,8 @@ class DatabaseLoader final
   }
 
  private:
-  DatabaseLoader(std::unique_ptr<RequestDatabaseCallback> request_callback)
+  explicit DatabaseLoader(
+      std::unique_ptr<RequestDatabaseCallback> request_callback)
       : request_callback_(std::move(request_callback)) {}
   std::unique_ptr<RequestDatabaseCallback> request_callback_;
 };

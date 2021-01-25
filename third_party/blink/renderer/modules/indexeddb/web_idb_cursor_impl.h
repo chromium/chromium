@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/gtest_prod_util.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -25,6 +27,10 @@ class MODULES_EXPORT WebIDBCursorImpl : public WebIDBCursor {
       int64_t transaction_id,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   ~WebIDBCursorImpl() override;
+
+  // Disallow copy and assign.
+  WebIDBCursorImpl(const WebIDBCursorImpl&) = delete;
+  WebIDBCursorImpl& operator=(const WebIDBCursorImpl&) = delete;
 
   void Advance(uint32_t count, WebIDBCallbacks* callback) override;
 
@@ -92,8 +98,6 @@ class MODULES_EXPORT WebIDBCursorImpl : public WebIDBCursor {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
   base::WeakPtrFactory<WebIDBCursorImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebIDBCursorImpl);
 };
 
 }  // namespace blink

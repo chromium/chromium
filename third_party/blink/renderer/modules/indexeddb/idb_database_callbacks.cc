@@ -25,6 +25,8 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_database_callbacks.h"
 
+#include <utility>
+
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database_callbacks_impl.h"
 

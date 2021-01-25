@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_blink_mojom_traits.h"
 
+#include <utility>
+
 #include "base/stl_util.h"
 #include "mojo/public/cpp/base/string16_mojom_traits.h"
 #include "mojo/public/cpp/bindings/array_traits_wtf_vector.h"
@@ -101,7 +103,8 @@ UnionTraits<blink::mojom::IDBKeyDataView, std::unique_ptr<blink::IDBKey>>::
 
     // Not used, fall through to NOTREACHED.
     case blink::mojom::IDBKeyType::Invalid:  // Only used in blink.
-    case blink::mojom::IDBKeyType::Min:;     // Only used in the browser.
+    case blink::mojom::IDBKeyType::Min:      // Only used in the browser.
+      break;
   }
   NOTREACHED();
   return blink::mojom::IDBKeyDataView::Tag::OTHER_NONE;

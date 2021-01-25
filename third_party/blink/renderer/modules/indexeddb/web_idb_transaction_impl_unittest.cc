@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <utility>
 
 #include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -73,7 +73,8 @@ namespace {
 
 class WebIDBGetDBNamesCallbacksImpl : public WebIDBCallbacks {
  public:
-  WebIDBGetDBNamesCallbacksImpl(ScriptPromiseResolver* promise_resolver)
+  explicit WebIDBGetDBNamesCallbacksImpl(
+      ScriptPromiseResolver* promise_resolver)
       : promise_resolver_(promise_resolver) {
     probe::AsyncTaskScheduled(
         ExecutionContext::From(promise_resolver_->GetScriptState()),

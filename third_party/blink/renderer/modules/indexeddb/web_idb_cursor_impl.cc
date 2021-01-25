@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_cursor_impl.h"
 
 #include <stddef.h>
+#include <utility>
 
 #include "base/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"

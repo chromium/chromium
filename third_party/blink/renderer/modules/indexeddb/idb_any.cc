@@ -26,6 +26,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_any.h"
 
 #include <memory>
+#include <utility>
 
 #include "third_party/blink/renderer/core/dom/dom_string_list.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_cursor_with_value.h"

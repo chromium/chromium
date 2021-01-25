@@ -25,7 +25,9 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_object_store.h"
 
+#include <limits>
 #include <memory>
+#include <utility>
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"

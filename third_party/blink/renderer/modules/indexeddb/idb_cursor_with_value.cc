@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_cursor_with_value.h"
 
 #include <memory>
+#include <utility>
+
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 
 namespace blink {

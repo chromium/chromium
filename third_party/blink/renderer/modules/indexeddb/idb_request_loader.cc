@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/idb_request_loader.h"
 
+#include <algorithm>
+
 #include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"

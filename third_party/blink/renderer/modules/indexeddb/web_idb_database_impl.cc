@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database_impl.h"
 
+#include <utility>
+
 #include "base/format_macros.h"
 #include "base/memory/ptr_util.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"

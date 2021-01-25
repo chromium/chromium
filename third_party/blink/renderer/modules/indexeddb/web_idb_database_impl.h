@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_WEB_IDB_DATABASE_IMPL_H_
 
 #include <stdint.h>
+#include <memory>
 
 #include "base/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"

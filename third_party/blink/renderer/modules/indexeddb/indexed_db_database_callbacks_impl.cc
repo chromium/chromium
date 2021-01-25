@@ -70,10 +70,10 @@ void IndexedDBDatabaseCallbacksImpl::Changes(
   for (const auto& transaction_pair : changes->transaction_map) {
     // Moving an int64_t is rather silly. Sadly, std::make_pair's overloads
     // accept either two rvalue arguments, or none.
-    observer_transactions.insert(transaction_pair.key,
-                                 std::make_pair<int64_t, Vector<int64_t>>(
-                                     std::move(transaction_pair.value->id),
-                                     std::move(transaction_pair.value->scope)));
+    observer_transactions.insert(
+        transaction_pair.key,
+        std::make_pair(std::move(transaction_pair.value->id),
+                       std::move(transaction_pair.value->scope)));
   }
 
   callbacks_->OnChanges(observation_index_map, std::move(observations),
