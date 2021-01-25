@@ -85,6 +85,6 @@ deps = {
       }
     ],
     'dep_type': 'cipd',
-    'condition': '(host_os == "linux" or host_os == "windows") and checkout_reclient',
+    'condition': '(host_os == "linux" or host_os == "win") and checkout_reclient',
   },
 }
