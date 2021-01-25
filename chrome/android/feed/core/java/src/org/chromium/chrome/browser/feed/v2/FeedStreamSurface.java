@@ -39,6 +39,9 @@ import org.chromium.chrome.browser.ntp.NewTabPageUma;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.offlinepages.RequestCoordinatorBridge;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ChromeShareExtras;
+import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.share.ShareDelegateImpl.ShareOrigin;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.suggestions.NavigationRecorder;
 import org.chromium.chrome.browser.suggestions.SuggestionsConfig;
@@ -54,7 +57,6 @@ import org.chromium.chrome.browser.xsurface.SurfaceScope;
 import org.chromium.chrome.browser.xsurface.SurfaceScopeDependencyProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
 import org.chromium.components.feed.proto.FeedUiProto.SharedState;
@@ -220,8 +222,11 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
      */
     public static class ShareHelperWrapper {
         private Supplier<Tab> mTabSupplier;
-        public ShareHelperWrapper(Supplier<Tab> tabSupplier) {
+        private Supplier<ShareDelegate> mShareDelegateSupplier;
+        public ShareHelperWrapper(
+                Supplier<Tab> tabSupplier, Supplier<ShareDelegate> shareDelegateSupplier) {
             mTabSupplier = tabSupplier;
+            mShareDelegateSupplier = shareDelegateSupplier;
         }
 
         /**
@@ -230,9 +235,10 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
          */
         public void share(String url, String title) {
             ShareParams params =
-                    new ShareParams.Builder(mTabSupplier.get().getWindowAndroid(), url, title)
+                    new ShareParams.Builder(mTabSupplier.get().getWindowAndroid(), title, url)
                             .build();
-            ShareHelper.shareWithUi(params);
+            mShareDelegateSupplier.get().share(
+                    params, new ChromeShareExtras.Builder().build(), ShareOrigin.FEED);
         }
     }
 

@@ -41,6 +41,7 @@ import org.chromium.chrome.browser.ntp.SnapScrollHelper;
 import org.chromium.chrome.browser.ntp.cards.promo.enhanced_protection.EnhancedProtectionPromoController;
 import org.chromium.chrome.browser.ntp.snippets.SectionHeaderView;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -80,7 +81,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
                 SnackbarManager snackbarManager,
                 NativePageNavigationDelegate pageNavigationDelegate, UiConfig uiConfig,
                 boolean placeholderShown, BottomSheetController bottomSheetController,
-                Supplier<Tab> tabSupplier, FeedV1ActionOptions v1ActionOptions);
+                Supplier<Tab> tabSupplier, FeedV1ActionOptions v1ActionOptions,
+                Supplier<ShareDelegate> shareDelegateSupplier);
 
         /**
          * Called after the stream returned by createStream() is no longer needed.
@@ -105,6 +107,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private final BottomSheetController mBottomSheetController;
     private final FeedV1ActionOptions mV1ActionOptions;
     private final Supplier<Tab> mTabSupplier;
+    private final Supplier<ShareDelegate> mShareSupplier;
 
     private UiConfig mUiConfig;
     private FrameLayout mRootView;
@@ -211,8 +214,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
 
     /**
      * Constructs a new FeedSurfaceCoordinator.
-     *
-     * @param activity The containing {@link ChromeActivity}.
+     *  @param activity The containing {@link ChromeActivity}.
      * @param snackbarManager The {@link SnackbarManager} displaying Snackbar UI.
      * @param tabModelSelector {@link TabModelSelector} object.
      * @param tabProvider Provides the current active tab.
@@ -227,6 +229,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
      * @param profile The current user profile.
      * @param isPlaceholderShownInitially Whether the placeholder is shown initially.
      * @param bottomSheetController The bottom sheet controller, used in v2.
+     * @param shareDelegateSupplier
      */
     public FeedSurfaceCoordinator(Activity activity, SnackbarManager snackbarManager,
             TabModelSelector tabModelSelector, Supplier<Tab> tabProvider,
@@ -234,7 +237,8 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
             @Nullable SectionHeaderView sectionHeaderView, FeedV1ActionOptions actionOptions,
             boolean showDarkBackground, FeedSurfaceDelegate delegate,
             @Nullable NativePageNavigationDelegate pageNavigationDelegate, Profile profile,
-            boolean isPlaceholderShownInitially, BottomSheetController bottomSheetController) {
+            boolean isPlaceholderShownInitially, BottomSheetController bottomSheetController,
+            Supplier<ShareDelegate> shareDelegateSupplier) {
         if (FeedFeatures.isV2Enabled()) {
             mStreamWrapper = FeedV2.createStreamWrapper();
         } else {
@@ -253,6 +257,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mProfile = profile;
         mV1ActionOptions = actionOptions;
         mTabSupplier = tabProvider;
+        mShareSupplier = shareDelegateSupplier;
 
         Resources resources = mActivity.getResources();
         mDefaultMarginPixels = mStreamWrapper.defaultMarginPixels(activity);
@@ -349,7 +354,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         mStreamCreatedTimeMs = SystemClock.elapsedRealtime();
         mStream = mStreamWrapper.createStream(mProfile, mActivity, mShowDarkBackground,
                 mSnackbarManager, mPageNavigationDelegate, mUiConfig, mIsPlaceholderShownInitially,
-                mBottomSheetController, mTabSupplier, mV1ActionOptions);
+                mBottomSheetController, mTabSupplier, mV1ActionOptions, mShareSupplier);
 
         mStreamLifecycleManager = mDelegate.createStreamLifecycleManager(mStream, mActivity);
 

@@ -90,7 +90,8 @@ public class NativePageFactory {
                     mActivity.getActivityTabProvider(), mActivity.getSnackbarManager(),
                     mActivity.getLifecycleDispatcher(), mActivity.getTabModelSelector(),
                     mActivity.isTablet(), mUma.get(), ColorUtils.inNightMode(mActivity),
-                    nativePageHost, tab, mBottomSheetController);
+                    nativePageHost, tab, mBottomSheetController,
+                    mActivity.getShareDelegateSupplier());
         }
 
         protected NativePage buildBookmarksPage(Tab tab) {

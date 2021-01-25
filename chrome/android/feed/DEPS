@@ -3,6 +3,7 @@ include_rules = [
   "+chrome/browser/image_fetcher",
   "+chrome/browser/privacy/settings",
   "+chrome/browser/profiles/android/java",
+  "+chrome/browser/share/android/java",
   "+chrome/browser/tab/java",
   "+chrome/browser/ui/messages/android/java",
   "+chrome/browser/xsurface/android",
