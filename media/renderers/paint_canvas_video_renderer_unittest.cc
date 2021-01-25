@@ -11,6 +11,7 @@
 #include "base/memory/aligned_memory.h"
 #include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/skia_paint_canvas.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -1336,7 +1337,15 @@ INSTANTIATE_TEST_SUITE_P(OopRasterMode,
                          PaintCanvasVideoRendererWithGLTest,
                          testing::Bool());
 
-TEST_P(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
+// Disabled on Android (https://crbug.com/1170392).
+#if defined(OS_ANDROID)
+#define MAYBE_CopyVideoFrameYUVDataToGLTexture \
+  DISABLED_CopyVideoFrameYUVDataToGLTexture
+#else
+#define MAYBE_CopyVideoFrameYUVDataToGLTexture CopyVideoFrameYUVDataToGLTexture
+#endif
+TEST_P(PaintCanvasVideoRendererWithGLTest,
+       MAYBE_CopyVideoFrameYUVDataToGLTexture) {
   auto* destination_gl = destination_context_->ContextGL();
   DCHECK(destination_gl);
   GLenum target = GL_TEXTURE_2D;
@@ -1367,8 +1376,16 @@ TEST_P(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
   destination_gl->DeleteTextures(1, &texture);
 }
 
+// Disabled on Android (https://crbug.com/1170392).
+#if defined(OS_ANDROID)
+#define MAYBE_CopyVideoFrameYUVDataToGLTexture_FlipY \
+  DISABLED_CopyVideoFrameYUVDataToGLTexture_FlipY
+#else
+#define MAYBE_CopyVideoFrameYUVDataToGLTexture_FlipY \
+  CopyVideoFrameYUVDataToGLTexture_FlipY
+#endif
 TEST_P(PaintCanvasVideoRendererWithGLTest,
-       CopyVideoFrameYUVDataToGLTexture_FlipY) {
+       MAYBE_CopyVideoFrameYUVDataToGLTexture_FlipY) {
   auto* destination_gl = destination_context_->ContextGL();
   DCHECK(destination_gl);
   GLenum target = GL_TEXTURE_2D;
