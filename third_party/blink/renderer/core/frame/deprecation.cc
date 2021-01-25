@@ -556,11 +556,13 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
                   "RTCConfiguration.encodedInsertableStreams", kM88,
                   "6321945865879552")};
 
+    case WebFeature::kRTCConstraintEnableRtpDataChannelsFalse:
     case WebFeature::kRTCConstraintEnableRtpDataChannelsTrue:
-      return {"RTP data channel", kM88,
-              ReplacedWillBeRemoved("RTP data channels",
-                                    "standard SCTP data channels", kM90,
-                                    "6485681910054912")};
+      return {
+          "RTP data channel", kM88,
+          "RTP data channels are no longer supported. "
+          "The \"RtpDataChannels\" constraint is currently ignored, and may "
+          "cause an error at a later date."};
 
     case WebFeature::kCSSSelectorWebkitDetailsMarker:
       if (!RuntimeEnabledFeatures::SummaryListItemEnabled())

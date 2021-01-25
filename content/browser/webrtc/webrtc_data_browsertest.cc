@@ -52,29 +52,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest, CanSetupLegacyCall) {
   MakeTypicalPeerConnectionCall("callWithLegacySdp();");
 }
 
-// This test will make a PeerConnection-based call and test an unreliable text
-// dataChannel.
-// TODO(mallinath) - Remove this test after rtp based data channel is disabled.
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest, CallWithDataOnly) {
-  MakeTypicalPeerConnectionCall("callWithDataOnly();");
-}
-
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest, CallWithSctpDataOnly) {
   MakeTypicalPeerConnectionCall("callWithSctpDataOnly();");
-}
-
-// This test will make a PeerConnection-based call and test an unreliable text
-// dataChannel and audio and video tracks.
-// TODO(mallinath) - Remove this test after rtp based data channel is disabled.
-// Flaky. crbug.com/986872
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
-#define MAYBE_CallWithDataAndMedia DISABLED_CallWithDataAndMedia
-#else
-#define MAYBE_CallWithDataAndMedia CallWithDataAndMedia
-#endif
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest,
-                       MAYBE_CallWithDataAndMedia) {
-  MakeTypicalPeerConnectionCall("callWithDataAndMedia();");
 }
 
 #if defined(MEMORY_SANITIZER)
@@ -86,14 +65,6 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest,
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest,
                        MAYBE_CallWithSctpDataAndMedia) {
   MakeTypicalPeerConnectionCall("callWithSctpDataAndMedia();");
-}
-
-// This test will make a PeerConnection-based call and test an unreliable text
-// dataChannel and later add an audio and video track.
-// Doesn't work, therefore disabled: https://crbug.com/293252.
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcDataBrowserTest,
-                       DISABLED_CallWithDataAndLaterAddMedia) {
-  MakeTypicalPeerConnectionCall("callWithDataAndLaterAddMedia();");
 }
 
 }  // namespace content
