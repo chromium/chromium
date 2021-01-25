@@ -569,8 +569,8 @@ class WindowCycleView : public views::WidgetDelegateView,
     return mirror_container_->children();
   }
 
-  const views::View::Views& GetTabSliderViewsForTesting() const {
-    return tab_slider_container_->children();
+  const views::View::Views& GetTabSliderButtonsForTesting() const {
+    return tab_slider_container_->GetTabSliderButtonsForTesting();
   }
 
   const views::Label* GetNoRecentItemsLabelForTesting() const {
@@ -942,8 +942,8 @@ const views::View::Views& WindowCycleList::GetWindowCycleItemViewsForTesting()
 }
 
 const views::View::Views&
-WindowCycleList::GetWindowCycleTabSliderViewsForTesting() const {
-  return cycle_view_->GetTabSliderViewsForTesting();  // IN-TEST
+WindowCycleList::GetWindowCycleTabSliderButtonsForTesting() const {
+  return cycle_view_->GetTabSliderButtonsForTesting();  // IN-TEST
 }
 
 const views::Label*

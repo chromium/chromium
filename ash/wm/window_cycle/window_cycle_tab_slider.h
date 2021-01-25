@@ -9,6 +9,10 @@
 #include "ash/wm/window_cycle/window_cycle_tab_slider_button.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
+namespace gfx {
+class Size;
+}
+
 namespace ash {
 
 // A WindowCycleTabSlider containing two buttons to switch between
@@ -28,9 +32,19 @@ class ASH_EXPORT WindowCycleTabSlider : public views::View {
   // Updates UI when user prefs change.
   void OnModePrefsChanged();
 
-  // TODO(crbug.com/1157087): Add tab slider animation.
+  // views::View:
+  void Layout() override;
+  gfx::Size CalculatePreferredSize() const override;
+
+  const views::View::Views& GetTabSliderButtonsForTesting() const;
 
  private:
+  // The view that acts as the background for the currently active mode's
+  // button. It is animated during mode change.
+  views::View* active_button_background_;
+
+  // The view that contains the tab slider buttons.
+  views::View* buttons_container_;
 
   WindowCycleTabSliderButton* all_desks_tab_slider_button_;
   WindowCycleTabSliderButton* current_desk_tab_slider_button_;
