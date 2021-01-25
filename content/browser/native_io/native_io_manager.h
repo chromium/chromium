@@ -54,10 +54,11 @@ class CONTENT_EXPORT NativeIOManager {
   void BindReceiver(const url::Origin& origin,
                     mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver);
 
-  // Removes an origin's data and closes any open files.
-  void DeleteOriginData(
-      const url::Origin& origin,
-      storage::QuotaClient::DeleteOriginDataCallback callback);
+  // Called when a receiver disconnected from a NativeIOHost.
+  //
+  // `host` must be owned by this context. This method should only be called by
+  // NativeIOHost.
+  void OnHostReceiverDisconnect(NativeIOHost* host);
 
   // Computes the path to the directory storing an origin's NativeIO files.
   //
@@ -73,27 +74,8 @@ class CONTENT_EXPORT NativeIOManager {
       base::File::Error file_error,
       std::string message = "");
 
-  // Called when a receiver is disconnected from a NativeIOHost.
-  //
-  // `host` must be owned by this manager. This method should only be called by
-  // NativeIOHost.
-  void OnHostReceiverDisconnect(NativeIOHost* host);
-
-  // Callback function when DeleteOriginData has completed.
-  //
-  // `host` must be owned by this manager.
-  void OnDeleteOriginDataCompleted(
-      storage::QuotaClient::DeleteOriginDataCallback callback,
-      base::File::Error result,
-      NativeIOHost* host);
-
  private:
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // Deletes the NativeIOHost if it serves no further purpose.
-  //
-  // `host` must be owned by this manager.
-  void MaybeDeleteHost(NativeIOHost* host);
 
   std::map<url::Origin, std::unique_ptr<NativeIOHost>> hosts_;
 
