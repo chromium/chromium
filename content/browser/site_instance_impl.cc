@@ -55,12 +55,9 @@ WebUIDomains GetWebUIDomains(const GURL& url) {
 // chome://bar/). This will allow WebUI URLs of the above form with common TLDs
 // to share a process whilst maintaining independent SiteURLs to allow for
 // WebUIType differentiation.
-bool IsWebUIAndUsesTLDForProcessLockURL(BrowserContext* browser_context,
-                                        const GURL& url) {
-  if (!WebUIControllerFactoryRegistry::GetInstance()->UseWebUIForURL(
-          browser_context, url)) {
+bool IsWebUIAndUsesTLDForProcessLockURL(const GURL& url) {
+  if (!base::Contains(URLDataManagerBackend::GetWebUISchemes(), url.scheme()))
     return false;
-  }
 
   WebUIDomains domains = GetWebUIDomains(url);
   // This only applies to WebUI urls with two or more non-empty domains.
@@ -71,9 +68,8 @@ bool IsWebUIAndUsesTLDForProcessLockURL(BrowserContext* browser_context,
 
 // For WebUI URLs of the form chrome://foo.bar/ creates the appropriate process
 // lock URL. See comment for `IsWebUIAndUsesTLDForProcessLockURL()`.
-GURL GetProcessLockForWebUIURL(BrowserContext* browser_context,
-                               const GURL& url) {
-  DCHECK(IsWebUIAndUsesTLDForProcessLockURL(browser_context, url));
+GURL GetProcessLockForWebUIURL(const GURL& url) {
+  DCHECK(IsWebUIAndUsesTLDForProcessLockURL(url));
   WebUIDomains host_domains = GetWebUIDomains(url);
   return GURL(url.scheme() + url::kStandardSchemeSeparator +
               host_domains.back());
@@ -1276,20 +1272,6 @@ SiteInfo SiteInstanceImpl::ComputeSiteInfo(
                                           url::Origin::Create(url_info.url),
                                           url_info.origin_requests_isolation);
 
-  // For WebUI URLs of the form chrome://foo.bar/ compute SiteInfo such that
-  // WebUIType can continue to be differentiated via SiteURL but allows RPH
-  // sharing via LockURL based on the TLD (ie chrome://bar/).
-  // TODO(tluk): Remove this and replace it with SiteInstance groups once the
-  // support lands.
-  BrowserContext* browser_context =
-      isolation_context.browser_or_resource_context().ToBrowserContext();
-  DCHECK(browser_context);
-  if (IsWebUIAndUsesTLDForProcessLockURL(browser_context, url_info.url)) {
-    return SiteInfo(GetSiteForURL(isolation_context, url_info),
-                    GetProcessLockForWebUIURL(browser_context, url_info.url),
-                    is_origin_keyed, cross_origin_isolated_info);
-  }
-
   return SiteInfo(GetSiteForURL(isolation_context, url_info),
                   DetermineProcessLockURL(isolation_context, url_info),
                   is_origin_keyed, cross_origin_isolated_info);
@@ -1332,6 +1314,15 @@ ProcessLock SiteInstanceImpl::DetermineProcessLock(
 GURL SiteInstanceImpl::DetermineProcessLockURL(
     const IsolationContext& isolation_context,
     const UrlInfo& url_info) {
+  // For WebUI URLs of the form chrome://foo.bar/ compute the LockURL based on
+  // the TLD (ie chrome://bar/). This allows WebUI to continue to differentiate
+  // WebUIType via SiteURL while allowing WebUI with a shared TLD to share a
+  // RenderProcessHost.
+  // TODO(tluk): Remove this and replace it with SiteInstance groups once the
+  // support lands.
+  if (IsWebUIAndUsesTLDForProcessLockURL(url_info.url))
+    return GetProcessLockForWebUIURL(url_info.url);
+
   // For the process lock URL, convert |url| to a site without resolving |url|
   // to an effective URL.
   return SiteInstanceImpl::GetSiteForURLInternal(
