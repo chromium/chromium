@@ -11,6 +11,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
 #include "content/public/renderer/render_view_observer.h"
 #include "content/public/test/browser_test.h"
@@ -105,11 +106,10 @@ IN_PROC_BROWSER_TEST_F(VisualStateTest, DISABLED_CallbackDoesNotDeadlock) {
   // with a high level of confidence if we used a timeout, but that's
   // discouraged (see https://codereview.chromium.org/939673002).
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
-  CommitObserver observer(RenderView::FromRoutingID(shell()
-                                                        ->web_contents()
-                                                        ->GetMainFrame()
-                                                        ->GetRenderViewHost()
-                                                        ->GetRoutingID()));
+  CommitObserver observer(
+      RenderFrame::FromRoutingID(
+          shell()->web_contents()->GetMainFrame()->GetRoutingID())
+          ->GetRenderView());
 
   // Wait for the commit corresponding to the load.
 

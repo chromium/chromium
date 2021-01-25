@@ -222,11 +222,6 @@ RenderViewImpl* RenderViewImpl::FromRoutingID(int32_t routing_id) {
   return it == views->end() ? NULL : it->second;
 }
 
-/*static*/
-RenderView* RenderView::FromRoutingID(int routing_id) {
-  return RenderViewImpl::FromRoutingID(routing_id);
-}
-
 /* static */
 size_t RenderView::GetRenderViewCount() {
   return g_view_map.Get().size();
