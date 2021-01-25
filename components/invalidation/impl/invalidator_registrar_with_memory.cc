@@ -198,7 +198,7 @@ void InvalidatorRegistrarWithMemory::DispatchInvalidationsToHandlers(
     const TopicInvalidationMap& invalidation_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If we have no handlers, there's nothing to do.
-  if (!handlers_.might_have_observers()) {
+  if (handlers_.empty()) {
     return;
   }
 
