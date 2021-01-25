@@ -47,6 +47,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/image-encoders",
     "+third_party/blink/renderer/platform/instrumentation",
     "+third_party/blink/renderer/platform/json",
+    "+third_party/blink/renderer/platform/mojo_binding_context.h",
     "+third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h",
     "+third_party/blink/renderer/platform/mojo/heap_mojo_remote.h",
     "+third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h",

@@ -39,8 +39,8 @@
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/file/file_utilities.mojom-blink.h"
 #include "third_party/blink/public/platform/file_path_conversion.h"
-#include "third_party/blink/public/platform/mojo_binding_context.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/platform/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "url/gurl.h"
 

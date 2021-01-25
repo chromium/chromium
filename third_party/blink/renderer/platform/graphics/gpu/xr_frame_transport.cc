@@ -10,10 +10,10 @@
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/common/mailbox_holder.h"
 #include "mojo/public/cpp/system/platform_handle.h"
-#include "third_party/blink/public/platform/mojo_binding_context.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/platform/graphics/gpu_memory_buffer_image_copy.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/mojo_binding_context.h"
 #include "ui/gfx/gpu_fence.h"
 
 namespace blink {

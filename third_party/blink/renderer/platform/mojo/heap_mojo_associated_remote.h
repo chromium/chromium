@@ -8,11 +8,11 @@
 #include <utility>
 
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "third_party/blink/public/platform/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mojo/features.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/mojo_binding_context.h"
 
 namespace blink {
 

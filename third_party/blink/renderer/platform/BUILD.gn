@@ -1255,6 +1255,7 @@ component("platform") {
     "mojo/security_origin_mojom_traits.h",
     "mojo/string16_mojom_traits.cc",
     "mojo/string16_mojom_traits.h",
+    "mojo_binding_context.h",
     "p2p/empty_network_manager.cc",
     "p2p/empty_network_manager.h",
     "p2p/filtering_network_manager.cc",

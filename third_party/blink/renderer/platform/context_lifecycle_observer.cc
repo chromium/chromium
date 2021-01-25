@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 
-#include "third_party/blink/public/platform/mojo_binding_context.h"
+#include "third_party/blink/renderer/platform/mojo_binding_context.h"
 
 namespace blink {
 
