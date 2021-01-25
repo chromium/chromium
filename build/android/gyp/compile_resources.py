@@ -31,7 +31,6 @@ from xml.etree import ElementTree
 from util import build_utils
 from util import diff_utils
 from util import manifest_utils
-from util import md5_check
 from util import parallel
 from util import protoresources
 from util import resource_utils
