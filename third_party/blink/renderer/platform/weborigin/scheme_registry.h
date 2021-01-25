@@ -96,9 +96,6 @@ class PLATFORM_EXPORT SchemeRegistry {
   static void RegisterURLSchemeAsSupportingFetchAPI(const String& scheme);
   static bool ShouldTreatURLSchemeAsSupportingFetchAPI(const String& scheme);
 
-  // https://fetch.spec.whatwg.org/#fetch-scheme
-  static bool IsFetchScheme(const String& scheme);
-
   // https://url.spec.whatwg.org/#special-scheme
   static bool IsSpecialScheme(const String& scheme);
 

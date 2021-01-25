@@ -282,16 +282,6 @@ bool SchemeRegistry::ShouldTreatURLSchemeAsSupportingFetchAPI(
   return GetURLSchemesRegistry().fetch_api_schemes.Contains(scheme);
 }
 
-// https://fetch.spec.whatwg.org/#fetch-scheme
-bool SchemeRegistry::IsFetchScheme(const String& scheme) {
-  DCHECK_EQ(scheme, scheme.LowerASCII());
-  // "A fetch scheme is a scheme that is "about", "blob", "data", "file",
-  // "filesystem", or a network scheme." [spec text]
-  return scheme == "about" || scheme == "blob" || scheme == "data" ||
-         scheme == "file" || scheme == "filesystem" || scheme == "ftp" ||
-         scheme == "http" || scheme == "https";
-}
-
 // https://url.spec.whatwg.org/#special-scheme
 bool SchemeRegistry::IsSpecialScheme(const String& scheme) {
   DCHECK_EQ(scheme, scheme.LowerASCII());
