@@ -220,7 +220,7 @@ class SharedImageRepresentationOverlayAHB
                                       MemoryTypeTracker* tracker)
       : SharedImageRepresentationOverlay(manager, backing, tracker) {}
 
-  ~SharedImageRepresentationOverlayAHB() override { EndReadAccess(); }
+  ~SharedImageRepresentationOverlayAHB() override { EndReadAccess({}); }
 
  private:
   SharedImageBackingAHB* ahb_backing() {
@@ -232,13 +232,13 @@ class SharedImageRepresentationOverlayAHB
     NOTREACHED();
   }
 
-  bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences,
-                       std::vector<gfx::GpuFence>* release_fences) override {
+  bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) override {
     gl_image_ = ahb_backing()->BeginOverlayAccess();
     return !!gl_image_;
   }
 
-  void EndReadAccess() override {
+  void EndReadAccess(gfx::GpuFenceHandle release_fence) override {
+    DCHECK(release_fence.is_null());
     if (gl_image_) {
       ahb_backing()->EndOverlayAccess();
       gl_image_ = nullptr;

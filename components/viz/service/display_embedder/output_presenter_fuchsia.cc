@@ -19,6 +19,7 @@
 #include "components/viz/common/features.h"
 #include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
+#include "gpu/command_buffer/service/external_semaphore_pool.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
@@ -424,8 +425,17 @@ void OutputPresenterFuchsia::ScheduleOverlays(
     next_frame_ = PendingFrame();
 
   for (size_t i = 0; i < overlays.size(); ++i) {
+    auto semaphore = dependency_->GetSharedContextState()
+                         ->external_semaphore_pool()
+                         ->GetOrCreateSemaphore();
+    gfx::GpuFenceHandle fence_handle;
+    fence_handle.owned_event = semaphore.handle().TakeHandle();
+
+    accesses[i]->SetReleaseFence(fence_handle.Clone());
+    std::vector<gfx::GpuFence> release_fences;
+    release_fences.emplace_back(std::move(fence_handle));
     next_frame_->overlays.emplace_back(std::move(overlays[i]),
-                                       accesses[i]->TakeReleaseFences());
+                                       std::move(release_fences));
     // TODO(crbug.com/1144890): Enqueue overlay plane's acquire fences
     // after |supports_commit_overlay_planes| is supported. Overlay plane might
     // display the same Image more than once, which can create a fence

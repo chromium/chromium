@@ -265,8 +265,7 @@ SharedImageRepresentationOverlayImpl::~SharedImageRepresentationOverlayImpl() =
     default;
 
 bool SharedImageRepresentationOverlayImpl::BeginReadAccess(
-    std::vector<gfx::GpuFence>* acquire_fences,
-    std::vector<gfx::GpuFence>* release_fences) {
+    std::vector<gfx::GpuFence>* acquire_fences) {
   auto* gl_backing = static_cast<SharedImageBackingGLImage*>(backing());
   std::unique_ptr<gfx::GpuFence> fence = gl_backing->GetLastWriteGpuFence();
   if (fence)
@@ -274,7 +273,10 @@ bool SharedImageRepresentationOverlayImpl::BeginReadAccess(
   return true;
 }
 
-void SharedImageRepresentationOverlayImpl::EndReadAccess() {}
+void SharedImageRepresentationOverlayImpl::EndReadAccess(
+    gfx::GpuFenceHandle release_fence) {
+  DCHECK(release_fence.is_null());
+}
 
 gl::GLImage* SharedImageRepresentationOverlayImpl::GetGLImage() {
   return gl_image_.get();
