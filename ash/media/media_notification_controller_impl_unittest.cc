@@ -20,6 +20,7 @@
 #include "base/unguessable_token.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_message_center/media_notification_util.h"
+#include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "ui/message_center/message_center.h"
 
@@ -56,8 +57,9 @@ class MediaNotificationControllerImplTest : public AshTestBase {
 
   // AshTestBase
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kMediaSessionNotification);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kMediaSessionNotification},
+        {media::kGlobalMediaControlsForChromeOS});
 
     AshTestBase::SetUp();
 

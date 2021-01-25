@@ -385,7 +385,7 @@ const base::Feature kGlobalMediaControlsForCast{
 
 // Allow Global Media Controls in system tray of CrOS.
 const base::Feature kGlobalMediaControlsForChromeOS{
-    "GlobalMediaControlsForChromeOS", base::FEATURE_DISABLED_BY_DEFAULT};
+    "GlobalMediaControlsForChromeOS", base::FEATURE_ENABLED_BY_DEFAULT};
 
 constexpr base::FeatureParam<kCrosGlobalMediaControlsPinOptions>::Option
     kCrosGlobalMediaControlsParamOptions[] = {
