@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_POLICY_MESSAGING_LAYER_STORAGE_STORAGE_QUEUE_H_
 #define CHROME_BROWSER_POLICY_MESSAGING_LAYER_STORAGE_STORAGE_QUEUE_H_
 
+#include <list>
 #include <map>
 #include <memory>
 #include <string>
@@ -303,6 +304,13 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // Digest of the last written record (loaded at queue initialization, absent
   // if the new generation has just started, and no records where stored yet).
   base::Optional<std::string> last_record_digest_;
+
+  // Queue of the write context instances in the order of creation, sequencing
+  // ids and record digests. Context is always removed from this queue before
+  // being destructed. We use std::list rather than std::queue, because
+  // if the write fails, it needs to be removed from the queue regardless of
+  // whether it is at the head, tail or middle.
+  std::list<WriteContext*> write_contexts_queue_;
 
   // Next sequencing id to store (not assigned yet).
   int64_t next_sequencing_id_ = 0;

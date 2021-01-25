@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstring>
 #include <iterator>
+#include <list>
 #include <map>
 #include <memory>
 #include <string>
@@ -131,6 +132,7 @@ StorageQueue::StorageQueue(const QueueOptions& options,
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::TaskPriority::BEST_EFFORT, base::MayBlock()})) {
   DETACH_FROM_SEQUENCE(storage_queue_sequence_checker_);
+  DCHECK(write_contexts_queue_.empty());
 }
 
 StorageQueue::~StorageQueue() {
@@ -139,6 +141,8 @@ StorageQueue::~StorageQueue() {
 
   // Stop upload timer.
   upload_timer_.AbandonAndStop();
+  // Make sure no pending writes is present.
+  DCHECK(write_contexts_queue_.empty());
   // Close all opened files.
   files_.clear();
 }
@@ -1013,7 +1017,8 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
       : TaskRunnerContext<Status>(std::move(write_callback),
                                   storage_queue->sequenced_task_runner_),
         storage_queue_(storage_queue),
-        record_(std::move(record)) {
+        record_(std::move(record)),
+        in_contexts_queue_(storage_queue->write_contexts_queue_.end()) {
     DCHECK(storage_queue.get());
     DETACH_FROM_SEQUENCE(write_sequence_checker_);
   }
@@ -1021,6 +1026,23 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
  private:
   // Context can only be deleted by calling Response method.
   ~WriteContext() override {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(write_sequence_checker_);
+
+    // If still in queue, remove it (something went wrong).
+    if (in_contexts_queue_ != storage_queue_->write_contexts_queue_.end()) {
+      DCHECK_EQ(storage_queue_->write_contexts_queue_.front(), this);
+      storage_queue_->write_contexts_queue_.erase(in_contexts_queue_);
+    }
+
+    // If there is the context at the front of the queue and its buffer is
+    // filled in, schedule respective |Write| to happen now.
+    if (!storage_queue_->write_contexts_queue_.empty() &&
+        !storage_queue_->write_contexts_queue_.front()->buffer_.empty()) {
+      storage_queue_->write_contexts_queue_.front()->Schedule(
+          &WriteContext::ResumeWriteRecord,
+          base::Unretained(storage_queue_->write_contexts_queue_.front()));
+    }
+
     // If no uploader is needed, we are done.
     if (!uploader_) {
       return;
@@ -1053,6 +1075,10 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
 
     // Calculate and attach record digest.
     storage_queue_->UpdateRecordDigest(&wrapped_record);
+
+    // Add context to the end of the queue.
+    in_contexts_queue_ = storage_queue_->write_contexts_queue_.insert(
+        storage_queue_->write_contexts_queue_.end(), this);
 
     // Serialize and encrypt wrapped record on a thread pool.
     base::ThreadPool::PostTask(
@@ -1116,11 +1142,30 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
     encrypted_record_result.ValueOrDie().Clear();
 
     // Write into storage on sequntial task runner.
-    Schedule(&WriteContext::WriteRecord, base::Unretained(this), buffer);
+    Schedule(&WriteContext::WriteRecord, base::Unretained(this),
+             std::move(buffer));
   }
 
-  void WriteRecord(base::StringPiece buffer) {
+  void WriteRecord(std::string buffer) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(write_sequence_checker_);
+    buffer_.swap(buffer);
+
+    ResumeWriteRecord();
+  }
+
+  void ResumeWriteRecord() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(write_sequence_checker_);
+
+    // If we are not at the head of the queue, delay write and expect to be
+    // reactivated later.
+    DCHECK(in_contexts_queue_ != storage_queue_->write_contexts_queue_.end());
+    if (storage_queue_->write_contexts_queue_.front() != this) {
+      return;
+    }
+
+    // We are at the head of the queue, remove ourselves.
+    storage_queue_->write_contexts_queue_.pop_front();
+    in_contexts_queue_ = storage_queue_->write_contexts_queue_.end();
 
     // Prepare uploader, if need to run it after Write.
     if (storage_queue_->options_.upload_period().is_zero()) {
@@ -1134,8 +1179,9 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
       }
     }
 
+    DCHECK(!buffer_.empty());
     StatusOr<scoped_refptr<SingleFile>> assign_result =
-        storage_queue_->AssignLastFile(buffer.size());
+        storage_queue_->AssignLastFile(buffer_.size());
     if (!assign_result.ok()) {
       Response(assign_result.status());
       return;
@@ -1151,7 +1197,7 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
 
     // Write header and block.
     write_result =
-        storage_queue_->WriteHeaderAndBlock(buffer, std::move(last_file));
+        storage_queue_->WriteHeaderAndBlock(buffer_, std::move(last_file));
     if (!write_result.ok()) {
       Response(write_result);
       return;
@@ -1163,6 +1209,15 @@ class StorageQueue::WriteContext : public TaskRunnerContext<Status> {
   scoped_refptr<StorageQueue> storage_queue_;
 
   Record record_;
+
+  // Position in the |storage_queue_|->|write_contexts_queue_|.
+  // We use it in order to detect whether the context is in the queue
+  // and to remove it from the queue, when the time comes.
+  std::list<WriteContext*>::iterator in_contexts_queue_;
+
+  // Write buffer. When filled in (after encryption), |WriteRecord| can be
+  // executed. Empty until encryption is done.
+  std::string buffer_;
 
   // Upload provider (if any).
   std::unique_ptr<UploaderInterface> uploader_;
