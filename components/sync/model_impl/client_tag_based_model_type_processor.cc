@@ -269,11 +269,13 @@ void ClientTagBasedModelTypeProcessor::ClearAllMetadataAndResetStateImpl(
   }
 }
 
-bool ClientTagBasedModelTypeProcessor::IsTrackingMetadata() {
+bool ClientTagBasedModelTypeProcessor::IsTrackingMetadata() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return entity_tracker_ != nullptr;
 }
 
 std::string ClientTagBasedModelTypeProcessor::TrackedAccountId() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Returning non-empty here despite !IsTrackingMetadata() has weird semantics,
   // e.g. initial updates are being fetched but we haven't received the response
   // (i.e. prior to exercising MergeSyncData()). Let's be cautious and hide the
@@ -285,6 +287,7 @@ std::string ClientTagBasedModelTypeProcessor::TrackedAccountId() {
 }
 
 std::string ClientTagBasedModelTypeProcessor::TrackedCacheGuid() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // Returning non-empty here despite !IsTrackingMetadata() has weird semantics,
   // e.g. initial updates are being fetched but we haven't received the response
   // (i.e. prior to exercising MergeSyncData()). Let's be cautious and hide the
@@ -296,6 +299,7 @@ std::string ClientTagBasedModelTypeProcessor::TrackedCacheGuid() {
 }
 
 void ClientTagBasedModelTypeProcessor::ReportError(const ModelError& error) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ReportErrorImpl(error, ErrorSite::kBridgeInitiated);
 }
 
@@ -333,6 +337,7 @@ void ClientTagBasedModelTypeProcessor::ReportErrorImpl(const ModelError& error,
 }
 
 base::Optional<ModelError> ClientTagBasedModelTypeProcessor::GetError() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return model_error_;
 }
 

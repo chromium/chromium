@@ -63,7 +63,7 @@ class MockModelTypeChangeProcessor : public ModelTypeChangeProcessor {
               ModelReadyToSync,
               (std::unique_ptr<MetadataBatch> batch),
               (override));
-  MOCK_METHOD(bool, IsTrackingMetadata, (), (override));
+  MOCK_METHOD(bool, IsTrackingMetadata, (), (const override));
   MOCK_METHOD(std::string, TrackedAccountId, (), (override));
   MOCK_METHOD(std::string, TrackedCacheGuid, (), (override));
   MOCK_METHOD(void, ReportError, (const ModelError& error), (override));
