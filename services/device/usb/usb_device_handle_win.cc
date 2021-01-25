@@ -238,8 +238,11 @@ void UsbDeviceHandleWin::Close() {
   // Aborting requests may run or destroy callbacks holding the last reference
   // to this object so hold a reference for the rest of this method.
   scoped_refptr<UsbDeviceHandleWin> self(this);
-  for (const auto& request : requests_)
-    request->Abort();
+
+  // Avoid using an iterator here because Abort() will remove the entry from
+  // |requests_|.
+  while (!requests_.empty())
+    requests_.front()->Abort();
 
   device_ = nullptr;
 }
