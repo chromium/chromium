@@ -5,14 +5,15 @@
 #ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_BLINK_H_
 #define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_TREE_FORMATTER_BLINK_H_
 
-#include <stdint.h>
 #include <string>
 #include <vector>
 
-#include "content/browser/accessibility/browser_accessibility.h"
+#include "content/common/content_export.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
 
 namespace content {
+
+class BrowserAccessibility;
 
 class CONTENT_EXPORT AccessibilityTreeFormatterBlink
     : public ui::AXTreeFormatterBase {

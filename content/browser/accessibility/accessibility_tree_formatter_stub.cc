@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/public/browser/ax_inspect_factory.h"
