@@ -771,28 +771,6 @@ AXObject* AXObjectCacheImpl::CreateAndInit(ax::mojom::blink::Role role,
   return obj;
 }
 
-ContainerNode* FindParentTable(Node* node) {
-  ContainerNode* parent = node->parentNode();
-  while (parent && !IsA<HTMLTableElement>(*parent))
-    parent = parent->parentNode();
-  return parent;
-}
-
-void AXObjectCacheImpl::ContainingTableRowsOrColsMaybeChanged(Node* node) {
-  // Any containing table must recompute its rows and columns on insertion or
-  // removal of a <tr> or <td>.
-  // Get parent table from DOM, because AXObject/layout tree are incomplete.
-  ContainerNode* containing_table = nullptr;
-  if (IsA<HTMLTableCellElement>(node) || IsA<HTMLTableRowElement>(node))
-    containing_table = FindParentTable(node);
-
-  if (containing_table) {
-    AXObject* ax_table = Get(containing_table);
-    if (ax_table)
-      ax_table->SetNeedsToUpdateChildren();
-  }
-}
-
 void AXObjectCacheImpl::RemoveAXObjectsInLayoutSubtree(AXObject* subtree) {
   if (!subtree)
     return;
@@ -1436,10 +1414,8 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
   if (obj && !obj->IsDetached())
     obj->ChildrenChanged();
 
-  if (optional_node) {
-    ContainingTableRowsOrColsMaybeChanged(optional_node);
+  if (optional_node)
     relation_cache_->UpdateRelatedTree(optional_node, obj);
-  }
 }
 
 void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document) {

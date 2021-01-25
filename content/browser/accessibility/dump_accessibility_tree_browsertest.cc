@@ -1378,6 +1378,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityTableColumnRemove) {
+  RunHtmlTest(FILE_PATH_LITERAL("table-column-remove.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityLabelWithSelectedAriaOption) {
   RunAriaTest(FILE_PATH_LITERAL("label-with-selected-option.html"));
 }
