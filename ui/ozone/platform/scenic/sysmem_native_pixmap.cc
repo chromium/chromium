@@ -120,7 +120,7 @@ bool SysmemNativePixmap::ScheduleOverlayPlane(
     release_events.push_back(GpuFenceToZxEvent(std::move(fence)));
 
   surface->UpdateOverlayViewPosition(buffer_collection_id, plane_z_order,
-                                     display_bounds, crop_rect,
+                                     display_bounds, crop_rect, plane_transform,
                                      DuplicateZxEvents(acquire_events));
 
   overlay_view->SetBlendMode(enable_blend);
