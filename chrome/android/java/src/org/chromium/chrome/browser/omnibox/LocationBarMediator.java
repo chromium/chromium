@@ -113,6 +113,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     private final ObserverList<UrlFocusChangeListener> mUrlFocusChangeListeners =
             new ObserverList<>();
     private final Rect mRootViewBounds = new Rect();
+    private final SearchEngineLogoUtils mSearchEngineLogoUtils;
 
     private boolean mNativeInitialized;
     private boolean mUrlFocusedFromFakebox;
@@ -129,7 +130,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             @NonNull LocaleManager localeManager,
             @NonNull OneshotSupplier<TemplateUrlService> templateUrlServiceSupplier,
             @NonNull BackKeyBehaviorDelegate backKeyBehavior, @NonNull WindowAndroid windowAndroid,
-            boolean isTablet) {
+            boolean isTablet, @NonNull SearchEngineLogoUtils searchEngineLogoUtils) {
         mContext = context;
         mLocationBarLayout = locationBarLayout;
         mLocationBarDataProvider = locationBarDataProvider;
@@ -145,6 +146,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mBackKeyBehavior = backKeyBehavior;
         mWindowAndroid = windowAndroid;
         mIsTablet = isTablet;
+        mSearchEngineLogoUtils = searchEngineLogoUtils;
     }
 
     /**
@@ -603,7 +605,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mOmniboxPrerender.initializeForProfile(profile);
 
         mLocationBarLayout.setShowIconsWhenUrlFocused(
-                SearchEngineLogoUtils.shouldShowSearchEngineLogo(profile.isOffTheRecord()));
+                mSearchEngineLogoUtils.shouldShowSearchEngineLogo(profile.isOffTheRecord()));
     }
 
     private void focusCurrentTab() {
@@ -958,9 +960,9 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
         mSearchEngine = searchEngine;
         mLocationBarLayout.updateSearchEngineStatusIcon(
-                SearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
                         mLocationBarDataProvider.isIncognito()),
                 templateUrlService.isDefaultSearchEngineGoogle(),
-                SearchEngineLogoUtils.getSearchLogoUrl(templateUrlService));
+                mSearchEngineLogoUtils.getSearchLogoUrl(templateUrlService));
     }
 }

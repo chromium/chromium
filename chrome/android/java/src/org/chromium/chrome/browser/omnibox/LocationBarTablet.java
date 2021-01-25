@@ -97,11 +97,12 @@ class LocationBarTablet extends LocationBarLayout {
     @Override
     public void initialize(@NonNull AutocompleteCoordinator autocompleteCoordinator,
             @NonNull UrlBarCoordinator urlCoordinator, @NonNull StatusCoordinator statusCoordinator,
-            @NonNull LocationBarDataProvider locationBarDataProvider) {
+            @NonNull LocationBarDataProvider locationBarDataProvider,
+            @NonNull SearchEngineLogoUtils searchEngineLogoUtils) {
         super.initialize(autocompleteCoordinator, urlCoordinator, statusCoordinator,
-                locationBarDataProvider);
+                locationBarDataProvider, searchEngineLogoUtils);
         mStatusCoordinator.setShowIconsWhenUrlFocused(true);
-        if (SearchEngineLogoUtils.shouldShowSearchEngineLogo(
+        if (mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
                     mLocationBarDataProvider.isIncognito())) {
             mStatusCoordinator.setStatusIconShown(true);
         }

@@ -984,7 +984,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // handled below. See comments in LocationBar#getLocationBarOffsetForFocusAnimation() for
         // implementation details.
         boolean isIncognito = getToolbarDataProvider().isIncognito();
-        if (SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito)) {
+        if (SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(isIncognito)) {
             locationBarBaseTranslationX += getLocationBarOffsetForFocusAnimation(hasFocus());
         }
 
@@ -1028,10 +1028,10 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         // When the dse icon is enabled, the UrlBar needs additional translation to compensate for
         // the additional translation applied to the LocationBar. See comments in
         // LocationBar#getUrlBarTranslationXForToolbarAnimation() for implementation details.
-        if (SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito)) {
+        if (SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(isIncognito)) {
             mUrlBar.setTranslationX(
                     getUrlBarTranslationXForToolbarAnimation(mUrlExpansionFraction, hasFocus()));
-        } else if (SearchEngineLogoUtils.isSearchEngineLogoEnabled()) {
+        } else if (SearchEngineLogoUtils.getInstance().isSearchEngineLogoEnabled()) {
             mUrlBar.setTranslationX(0);
         }
 
@@ -1443,7 +1443,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
 
             // Offset the clip rect by a set amount to ensure the Google G is completely inside the
             // omnibox background when animating in.
-            if (SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito())
+            if (SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(isIncognito())
                     && isLocationBarShownInNTP() && urlHasFocus() && mUrlFocusChangeInProgress) {
                 if (locationBarDirection == LAYOUT_DIRECTION_RTL) {
                     locationBarClipRight -= locationBarPaddingStart;
@@ -2786,7 +2786,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         if (statusCoordinator == null) return 0;
 
         // No offset is required if the experiment is disabled.
-        if (!SearchEngineLogoUtils.shouldShowSearchEngineLogo(
+        if (!SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(
                     getToolbarDataProvider().isIncognito())) {
             return 0;
         }
@@ -2821,7 +2821,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         if (statusCoordinator == null) return 0;
 
         // No offset is required if the experiment is disabled.
-        if (!SearchEngineLogoUtils.shouldShowSearchEngineLogo(
+        if (!SearchEngineLogoUtils.getInstance().shouldShowSearchEngineLogo(
                     getToolbarDataProvider().isIncognito())) {
             return 0;
         }

@@ -20,7 +20,6 @@ import android.widget.TextView;
 import androidx.annotation.ColorRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
@@ -34,19 +33,6 @@ import org.chromium.ui.widget.Toast;
  */
 public class StatusView extends LinearLayout {
     public static final int ICON_ANIMATION_DURATION_MS = 225;
-
-    @VisibleForTesting
-    static class StatusViewDelegate {
-        /** @see {@link SearchEngineLogoUtils#shouldShowSearchEngineLogo} */
-        boolean shouldShowSearchEngineLogo(boolean isIncognito) {
-            return SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito);
-        }
-
-        /** @see {@link SearchEngineLogoUtils#isSearchEngineLogoEnabled()} */
-        boolean isSearchEngineLogoEnabled() {
-            return SearchEngineLogoUtils.isSearchEngineLogoEnabled();
-        }
-    }
 
     private @Nullable View mIncognitoBadge;
     private int mIncognitoBadgeEndPaddingWithIcon;
@@ -69,16 +55,15 @@ public class StatusView extends LinearLayout {
 
     private TouchDelegate mTouchDelegate;
     private CompositeTouchDelegate mCompositeTouchDelegate;
-    private StatusViewDelegate mDelegate;
 
     private boolean mLastTouchDelegateRtlness;
     private Rect mLastTouchDelegateRect;
 
     private LocationBarDataProvider mLocationBarDataProvider;
+    private SearchEngineLogoUtils mSearchEngineLogoUtils;
 
     public StatusView(Context context, AttributeSet attributes) {
         super(context, attributes);
-        mDelegate = new StatusViewDelegate();
     }
 
     @Override
@@ -97,12 +82,16 @@ public class StatusView extends LinearLayout {
         mLocationBarDataProvider = toolbarCommonPropertiesModel;
     }
 
+    void setSearchEngineLogoUtils(SearchEngineLogoUtils searchEngineLogoUtils) {
+        mSearchEngineLogoUtils = searchEngineLogoUtils;
+    }
+
     /**
      * @see {@link org.chromium.chrome.browser.omnibox.LocationBar#updateSearchEngineStatusIcon}.
      */
     public void updateSearchEngineStatusIcon(boolean shouldShowSearchEngineLogo,
             boolean isSearchEngineGoogle, String searchEngineUrl) {
-        if (!mDelegate.isSearchEngineLogoEnabled()) return;
+        if (!mSearchEngineLogoUtils.isSearchEngineLogoEnabled()) return;
 
         LinearLayout.LayoutParams layoutParams =
                 new LinearLayout.LayoutParams(mIconView.getLayoutParams());
@@ -151,7 +140,8 @@ public class StatusView extends LinearLayout {
         // explicitly in setStatusIconShown. The visibility should only be set here through code not
         // related to the dse icon.
         if (mLocationBarDataProvider != null
-                && mDelegate.shouldShowSearchEngineLogo(mLocationBarDataProvider.isIncognito())) {
+                && mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                        mLocationBarDataProvider.isIncognito())) {
             return;
         }
 
@@ -310,7 +300,8 @@ public class StatusView extends LinearLayout {
         // implicitly in animateStatusIcon. The visibility should only be set here through code
         // related to the dse icon.
         if (mLocationBarDataProvider != null
-                && !mDelegate.shouldShowSearchEngineLogo(mLocationBarDataProvider.isIncognito())) {
+                && !mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                        mLocationBarDataProvider.isIncognito())) {
             // Let developers know that they shouldn't use this code-path.
             assert false : "Only DSE icon code should set the status icon visibility manually.";
             return;
@@ -407,7 +398,7 @@ public class StatusView extends LinearLayout {
         if (mIncognitoBadge == null) return;
 
         int endPadding = -1;
-        if (mDelegate.isSearchEngineLogoEnabled()) {
+        if (mSearchEngineLogoUtils.isSearchEngineLogoEnabled()) {
             endPadding = 0;
         } else {
             endPadding = isIconVisible() ? mIncognitoBadgeEndPaddingWithIcon
@@ -495,9 +486,5 @@ public class StatusView extends LinearLayout {
 
     TouchDelegate getTouchDelegateForTesting() {
         return mTouchDelegate;
-    }
-
-    void setDelegateForTesting(StatusViewDelegate delegate) {
-        mDelegate = delegate;
     }
 }

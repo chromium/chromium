@@ -173,8 +173,6 @@ public class LocationBarMediatorTest {
     @Mock
     private OmniboxPrerender.Natives mPrerenderJni;
     @Mock
-    private SearchEngineLogoUtils.Delegate mSearchEngineDelegate;
-    @Mock
     private TextView mView;
     @Mock
     private OneshotSupplier<TemplateUrlService> mTemplateUrlServiceSupplier;
@@ -196,6 +194,8 @@ public class LocationBarMediatorTest {
     private View mRootView;
     @Mock
     private GSAState mGSAState;
+    @Mock
+    private SearchEngineLogoUtils mSearchEngineLogoUtils;
 
     @Captor
     private ArgumentCaptor<Runnable> mRunnableCaptor;
@@ -211,12 +211,12 @@ public class LocationBarMediatorTest {
         doReturn(mRootView).when(mLocationBarLayout).getRootView();
         mJniMocker.mock(ProfileJni.TEST_HOOKS, mProfileNativesJniMock);
         mJniMocker.mock(OmniboxPrerenderJni.TEST_HOOKS, mPrerenderJni);
-        SearchEngineLogoUtils.setDelegateForTesting(mSearchEngineDelegate);
+        SearchEngineLogoUtils.setInstanceForTesting(mSearchEngineLogoUtils);
         mMediator = new LocationBarMediator(/* context= */ RuntimeEnvironment.application,
                 mLocationBarLayout, mLocationBarDataProvider, mProfileSupplier,
                 mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate, mLocaleManager,
                 mTemplateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate, mWindowAndroid,
-                false);
+                false, mSearchEngineLogoUtils);
         mMediator.setCoordinators(mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         ObjectAnimatorShadow.setUrlAnimator(mUrlAnimator);
         GSAStateShadow.setGSAState(mGSAState);
@@ -582,29 +582,29 @@ public class LocationBarMediatorTest {
         doReturn(mNonGoogleSearchEngine)
                 .when(mTemplateUrlService)
                 .getDefaultSearchEngineTemplateUrl();
-        mMediator.registerTemplateUrlObserver();
 
+        mMediator.registerTemplateUrlObserver();
         verify(mLocationBarLayout)
-                .updateSearchEngineStatusIcon(SearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                .updateSearchEngineStatusIcon(mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
                                                       mLocationBarDataProvider.isIncognito()),
-                        false, SearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
+                        false, mSearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
 
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         doReturn(mGoogleSearchEngine).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
         mMediator.onTemplateURLServiceChanged();
 
         verify(mLocationBarLayout)
-                .updateSearchEngineStatusIcon(SearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                .updateSearchEngineStatusIcon(mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
                                                       mLocationBarDataProvider.isIncognito()),
-                        true, SearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
+                        true, mSearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
 
         // Calling onTemplateURLServiceChanged with the exact same data shouldn't trigger any calls.
         mMediator.onTemplateURLServiceChanged();
 
         verify(mLocationBarLayout, times(1))
-                .updateSearchEngineStatusIcon(SearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                .updateSearchEngineStatusIcon(mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
                                                       mLocationBarDataProvider.isIncognito()),
-                        true, SearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
+                        true, mSearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
 
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         doReturn(mNonGoogleSearchEngine)
@@ -613,9 +613,9 @@ public class LocationBarMediatorTest {
         mMediator.onTemplateURLServiceChanged();
 
         verify(mLocationBarLayout, times(2))
-                .updateSearchEngineStatusIcon(SearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                .updateSearchEngineStatusIcon(mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
                                                       mLocationBarDataProvider.isIncognito()),
-                        false, SearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
+                        false, mSearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
     }
 
     @Test
@@ -807,11 +807,11 @@ public class LocationBarMediatorTest {
                 .when(mRootView)
                 .getLocalVisibleRect(any());
 
-        LocationBarMediator tabletMediator =
-                new LocationBarMediator(RuntimeEnvironment.application, mLocationBarLayout,
-                        mLocationBarDataProvider, mProfileSupplier, mPrivacyPreferencesManager,
-                        mOverrideUrlLoadingDelegate, mLocaleManager, mTemplateUrlServiceSupplier,
-                        mOverrideBackKeyBehaviorDelegate, mWindowAndroid, true);
+        LocationBarMediator tabletMediator = new LocationBarMediator(RuntimeEnvironment.application,
+                mLocationBarLayout, mLocationBarDataProvider, mProfileSupplier,
+                mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate, mLocaleManager,
+                mTemplateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate, mWindowAndroid, true,
+                mSearchEngineLogoUtils);
         tabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         tabletMediator.addUrlFocusChangeListener(mUrlCoordinator);
@@ -830,11 +830,11 @@ public class LocationBarMediatorTest {
         doReturn(true).when(newTabPageDelegate).isCurrentlyVisible();
         doReturn(newTabPageDelegate).when(mLocationBarDataProvider).getNewTabPageDelegate();
 
-        LocationBarMediator tabletMediator =
-                new LocationBarMediator(RuntimeEnvironment.application, mLocationBarLayout,
-                        mLocationBarDataProvider, mProfileSupplier, mPrivacyPreferencesManager,
-                        mOverrideUrlLoadingDelegate, mLocaleManager, mTemplateUrlServiceSupplier,
-                        mOverrideBackKeyBehaviorDelegate, mWindowAndroid, true);
+        LocationBarMediator tabletMediator = new LocationBarMediator(RuntimeEnvironment.application,
+                mLocationBarLayout, mLocationBarDataProvider, mProfileSupplier,
+                mPrivacyPreferencesManager, mOverrideUrlLoadingDelegate, mLocaleManager,
+                mTemplateUrlServiceSupplier, mOverrideBackKeyBehaviorDelegate, mWindowAndroid, true,
+                mSearchEngineLogoUtils);
         tabletMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
         tabletMediator.addUrlFocusChangeListener(mUrlCoordinator);

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox.status;
 
+import static org.mockito.Mockito.doReturn;
+
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.graphics.Color;
@@ -15,18 +17,23 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
+import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
-import org.chromium.chrome.browser.omnibox.status.StatusView.StatusViewDelegate;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ToolbarTestUtils;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -43,27 +50,24 @@ public class StatusViewRenderTest extends DummyUiActivityTestCase {
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
+    @Rule
+    public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
+
+    @Mock
+    SearchEngineLogoUtils mSearchEngineLogoUtils;
+
     private StatusView mStatusView;
     private PropertyModel mStatusModel;
     private LocationBarModel mLocationBarModel;
-
-    /** Testing implementation that returns true for everything. */
-    static class DelegateForTesting extends StatusViewDelegate {
-        @Override
-        boolean shouldShowSearchEngineLogo(boolean isIncognito) {
-            return !isIncognito;
-        }
-
-        @Override
-        boolean isSearchEngineLogoEnabled() {
-            return true;
-        }
-    }
 
     @Override
     public void setUpTest() throws Exception {
         super.setUpTest();
         MockitoAnnotations.initMocks(this);
+
+        doReturn(true).when(mSearchEngineLogoUtils).shouldShowSearchEngineLogo(false);
 
         runOnUiThreadBlocking(() -> {
             ViewGroup view = new LinearLayout(getActivity());
@@ -78,12 +82,14 @@ public class StatusViewRenderTest extends DummyUiActivityTestCase {
                                   .inflate(org.chromium.chrome.R.layout.location_status, view, true)
                                   .findViewById(org.chromium.chrome.R.id.location_bar_status);
             mStatusView.setCompositeTouchDelegate(new CompositeTouchDelegate(view));
-            mLocationBarModel =
-                    new LocationBarModel(mStatusView.getContext(), NewTabPageDelegate.EMPTY,
-                            url -> url.getSpec(), window -> null, ToolbarTestUtils.OFFLINE_STATUS);
+            // clang-format off
+            mLocationBarModel = new LocationBarModel(mStatusView.getContext(),
+                    NewTabPageDelegate.EMPTY, url -> url.getSpec(), window -> null,
+                    ToolbarTestUtils.OFFLINE_STATUS, mSearchEngineLogoUtils);
+            // clang-format on
             mLocationBarModel.setTab(null, /*  incognito= */ false);
             mStatusView.setLocationBarDataProvider(mLocationBarModel);
-            mStatusView.setDelegateForTesting(new DelegateForTesting());
+            mStatusView.setSearchEngineLogoUtils(mSearchEngineLogoUtils);
             mStatusModel = new PropertyModel.Builder(StatusProperties.ALL_KEYS).build();
             PropertyModelChangeProcessor.create(mStatusModel, mStatusView, new StatusViewBinder());
 

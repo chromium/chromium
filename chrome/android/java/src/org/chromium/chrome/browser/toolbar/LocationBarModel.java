@@ -94,6 +94,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     private final @NonNull UrlFormatter mUrlFormatter;
     private final @NonNull ProfileProvider mProfileProvider;
     private final @NonNull OfflineStatus mOfflineStatus;
+    private final SearchEngineLogoUtils mSearchEngineLogoUtils;
 
     private Tab mTab;
     private int mPrimaryColor;
@@ -115,16 +116,19 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
      *        of URL of a distillation.
      * @param profileProvider Interface returning non-primary OTR profile.
      * @param offlineStatus Offline-related status provider.
+     * @param searchEngineLogoUtils Utils to query the state of the search engine logos feature.
      */
     public LocationBarModel(Context context, NewTabPageDelegate newTabPageDelegate,
             @NonNull UrlFormatter urlFormatter, @NonNull ProfileProvider profileProvider,
-            @NonNull OfflineStatus offlineStatus) {
+            @NonNull OfflineStatus offlineStatus,
+            @NonNull SearchEngineLogoUtils searchEngineLogoUtils) {
         mContext = context;
         mNtpDelegate = newTabPageDelegate;
         mUrlFormatter = urlFormatter;
         mProfileProvider = profileProvider;
         mOfflineStatus = offlineStatus;
         mPrimaryColor = ChromeColors.getDefaultThemeColor(context.getResources(), false);
+        mSearchEngineLogoUtils = searchEngineLogoUtils;
     }
 
     /**
@@ -529,7 +533,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
         }
 
         boolean skipIconForNeutralState =
-                !SearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito())
+                !mSearchEngineLogoUtils.shouldShowSearchEngineLogo(isIncognito())
                 || mNtpDelegate.isCurrentlyVisible();
 
         return SecurityStatusIcon.getSecurityIconResource(

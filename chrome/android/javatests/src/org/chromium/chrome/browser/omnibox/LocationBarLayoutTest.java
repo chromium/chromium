@@ -86,6 +86,8 @@ public class LocationBarLayoutTest {
 
     @Mock
     AndroidPermissionDelegate mAndroidPermissionDelegate;
+    @Mock
+    SearchEngineLogoUtils mSearchEngineLogoUtils;
 
     private TestLocationBarModel mTestLocationBarModel;
 
@@ -107,10 +109,10 @@ public class LocationBarLayoutTest {
         private String mDisplayText;
         private Integer mSecurityLevel;
 
-        public TestLocationBarModel() {
+        public TestLocationBarModel(SearchEngineLogoUtils searchEngineLogoUtils) {
             super(ContextUtils.getApplicationContext(), NewTabPageDelegate.EMPTY,
                     DomDistillerTabUtils::getFormattedUrlFromOriginalDistillerUrl,
-                    window -> null, OFFLINE_STATUS);
+                    window -> null, OFFLINE_STATUS, searchEngineLogoUtils);
             initializeWithNative();
         }
 
@@ -155,7 +157,7 @@ public class LocationBarLayoutTest {
     }
 
     private void setupModelsForCurrentTab() {
-        mTestLocationBarModel = new TestLocationBarModel();
+        mTestLocationBarModel = new TestLocationBarModel(mSearchEngineLogoUtils);
         Tab tab = mActivityTestRule.getActivity().getActivityTab();
         mTestLocationBarModel.setTab(tab, tab.isIncognito());
 
@@ -629,6 +631,9 @@ public class LocationBarLayoutTest {
     }
 
     private void updateSearchEngineLogo(LocationBarLayout locationBar, String url) {
+        doReturn(true)
+                .when(mSearchEngineLogoUtils)
+                .shouldShowSearchEngineLogo(/* incognito= */ false);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             locationBar.updateSearchEngineStatusIcon(
                     /* shouldShow= */ true, /* isGoogle= */ url.equals(GOOGLE_URL), url);

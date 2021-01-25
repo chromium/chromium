@@ -15,13 +15,16 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
+import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
 import org.chromium.chrome.browser.page_info.ChromePermissionParamsListBuilderDelegate;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.components.page_info.PageInfoController;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -50,12 +53,17 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
      * @param incognitoStateProvider Provider of incocognito-ness for the active TabModel.
      * @param modalDialogManagerSupplier A supplier for {@link ModalDialogManager} used to display a
      *         dialog.
+     * @param templateUrlServiceSupplier A supplier for {@link TemplateUrlService} used to query
+     *         the default search engine.
+     * @param searchEngineLogoUtils Utils to query the state of the search engine logos feature.
      */
     public StatusCoordinator(boolean isTablet, StatusView statusView,
             UrlBarEditingTextStateProvider urlBarEditingTextStateProvider,
             IncognitoStateProvider incognitoStateProvider,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
-            LocationBarDataProvider locationBarDataProvider) {
+            LocationBarDataProvider locationBarDataProvider,
+            Supplier<TemplateUrlService> templateUrlServiceSupplier,
+            SearchEngineLogoUtils searchEngineLogoUtils, Supplier<Profile> profileSupplier) {
         mIsTablet = isTablet;
         mStatusView = statusView;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
@@ -74,7 +82,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         };
         mMediator = new StatusMediator(mModel, mStatusView.getResources(), mStatusView.getContext(),
                 urlBarEditingTextStateProvider, isTablet, forceModelViewReconciliationRunnable,
-                incognitoStateProvider, locationBarDataProvider);
+                incognitoStateProvider, locationBarDataProvider, searchEngineLogoUtils,
+                templateUrlServiceSupplier, profileSupplier);
 
         Resources res = mStatusView.getResources();
         mMediator.setUrlMinWidth(res.getDimensionPixelSize(R.dimen.location_bar_min_url_width)
@@ -89,6 +98,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
                 res.getDimensionPixelSize(R.dimen.location_bar_min_verbose_status_text_width));
 
         mStatusView.setLocationBarDataProvider(mLocationBarDataProvider);
+        mStatusView.setSearchEngineLogoUtils(searchEngineLogoUtils);
         // Update status immediately after receiving the data provider to avoid initial presence
         // glitch on tablet devices. This glitch would be typically seen upon launch of app, right
         // before the landing page is presented to the user.

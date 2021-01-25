@@ -58,11 +58,11 @@ class LocationBarPhone extends LocationBarLayout {
                 shouldShowSearchEngineLogo, isSearchEngineGoogle, searchEngineUrl);
 
         // The search engine icon will be the first visible focused view when it's showing.
-        shouldShowSearchEngineLogo = SearchEngineLogoUtils.shouldShowSearchEngineLogo(
+        shouldShowSearchEngineLogo = mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
                 mLocationBarDataProvider.isIncognito());
 
         // This branch will be hit if the search engine logo experiment is enabled.
-        if (SearchEngineLogoUtils.isSearchEngineLogoEnabled()) {
+        if (mSearchEngineLogoUtils.isSearchEngineLogoEnabled()) {
             // Setup the padding once we're loaded, the focused padding changes will happen with
             // post-layout positioning via setTranslation. This is a byproduct of the way we do the
             // omnibox un/focus animation which is by writing a function f(x) where x ranges from
@@ -188,14 +188,13 @@ class LocationBarPhone extends LocationBarLayout {
     /** Update the status visibility according to the current state held in LocationBar. */
     @Override
     /* package */ void updateStatusVisibility() {
-        boolean incognito = mLocationBarDataProvider.isIncognito();
-        setShowIconsWhenUrlFocused(SearchEngineLogoUtils.shouldShowSearchEngineLogo(incognito));
+        boolean shouldShowLogo = mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                mLocationBarDataProvider.isIncognito());
+        setShowIconsWhenUrlFocused(shouldShowLogo);
 
-        if (!SearchEngineLogoUtils.shouldShowSearchEngineLogo(incognito)) {
-            return;
-        }
+        if (!shouldShowLogo) return;
 
-        if (SearchEngineLogoUtils.currentlyOnNTP(mLocationBarDataProvider)) {
+        if (mSearchEngineLogoUtils.currentlyOnNTP(mLocationBarDataProvider)) {
             mStatusCoordinator.setStatusIconShown(hasFocus());
         } else {
             mStatusCoordinator.setStatusIconShown(true);

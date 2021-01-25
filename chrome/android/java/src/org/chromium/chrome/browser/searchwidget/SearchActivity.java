@@ -35,6 +35,7 @@ import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -179,7 +180,7 @@ public class SearchActivity extends AsyncInitializationActivity
                     loadUrl(url, transition, postDataType, postData);
                     return true;
                 },
-                /*backKeyBehavior=*/this);
+                /*backKeyBehavior=*/this, SearchEngineLogoUtils.getInstance());
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.getFakeboxDelegate().addUrlFocusChangeListener(this);
 

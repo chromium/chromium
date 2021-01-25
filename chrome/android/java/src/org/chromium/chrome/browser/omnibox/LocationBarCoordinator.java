@@ -102,6 +102,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
      * @param activityLifecycleDispatcher Allows observation of the activity state.
      * @param overrideUrlLoadingDelegate Delegate that allows customization of url loading behavior.
      * @param backKeyBehavior Delegate that allows customization of back key behavior.
+     * @param searchEngineLogoUtils Utils to query the state of the search engine logos feature.
      */
     public LocationBarCoordinator(View locationBarLayout, View autocompleteAnchorView,
             ObservableSupplier<Profile> profileObservableSupplier,
@@ -113,7 +114,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             IncognitoStateProvider incognitoStateProvider,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             OverrideUrlLoadingDelegate overrideUrlLoadingDelegate,
-            BackKeyBehaviorDelegate backKeyBehavior) {
+            BackKeyBehaviorDelegate backKeyBehavior, SearchEngineLogoUtils searchEngineLogoUtils) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
@@ -127,7 +128,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 mLocationBarLayout, locationBarDataProvider, profileObservableSupplier,
                 PrivacyPreferencesManagerImpl.getInstance(), overrideUrlLoadingDelegate,
                 LocaleManager.getInstance(), mTemplateUrlServiceSupplier, backKeyBehavior,
-                windowAndroid, isTablet());
+                windowAndroid, isTablet(), searchEngineLogoUtils);
         mUrlCoordinator =
                 new UrlBarCoordinator((UrlBar) mUrlBar, windowDelegate, actionModeCallback,
                         mCallbackController.makeCancelable(mLocationBarMediator::onUrlFocusChange),
@@ -137,8 +138,8 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
                 activityTabProvider, shareDelegateSupplier, locationBarDataProvider);
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator = new StatusCoordinator(isTablet(), statusView, mUrlCoordinator,
-                incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider);
-
+                incognitoStateProvider, modalDialogManagerSupplier, locationBarDataProvider,
+                mTemplateUrlServiceSupplier, searchEngineLogoUtils, profileObservableSupplier);
         mLocationBarMediator.setCoordinators(
                 mUrlCoordinator, mAutocompleteCoordinator, mStatusCoordinator);
 
@@ -163,7 +164,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
 
         mLocationBarLayout.getContext().registerComponentCallbacks(mLocationBarMediator);
         mLocationBarLayout.initialize(mAutocompleteCoordinator, mUrlCoordinator, mStatusCoordinator,
-                locationBarDataProvider);
+                locationBarDataProvider, searchEngineLogoUtils);
 
         if (locationBarLayout instanceof LocationBarPhone) {
             mSubCoordinator = new LocationBarCoordinatorPhone(
