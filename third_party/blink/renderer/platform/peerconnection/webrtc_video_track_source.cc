@@ -141,9 +141,9 @@ void WebRtcVideoTrackSource::OnFrameCaptured(
     scoped_refptr<media::VideoFrame> frame) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   TRACE_EVENT0("media", "WebRtcVideoSource::OnFrameCaptured");
-  if (!(frame->IsMappable() &&
-        (frame->format() == media::PIXEL_FORMAT_I420 ||
-         frame->format() == media::PIXEL_FORMAT_I420A)) &&
+  if (!(frame->IsMappable() && (frame->format() == media::PIXEL_FORMAT_I420 ||
+                                frame->format() == media::PIXEL_FORMAT_I420A ||
+                                frame->format() == media::PIXEL_FORMAT_NV12)) &&
       !(frame->storage_type() ==
         media::VideoFrame::STORAGE_GPU_MEMORY_BUFFER) &&
       !frame->HasTextures()) {
