@@ -246,6 +246,11 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
         description.setText(listItem.getHeaderDescription());
         description.setVisibility(
                 TextUtils.isEmpty(listItem.getHeaderDescription()) ? View.GONE : View.VISIBLE);
+        if (listItem.getSectionHeaderData().topPadding > 0) {
+            title.setPaddingRelative(title.getPaddingStart(),
+                    listItem.getSectionHeaderData().topPadding, title.getPaddingEnd(),
+                    title.getPaddingBottom());
+        }
     }
 
     @Override
@@ -500,8 +505,7 @@ class BookmarkItemsAdapter extends DragReorderableListAdapter<BookmarkListEntry>
     private int getBookmarkItemEndIndex() {
         int endIndex = mElements.size() - 1;
         BookmarkItem bookmarkItem = mElements.get(endIndex).getBookmarkItem();
-        assert bookmarkItem != null;
-        if (!bookmarkItem.isMovable()) {
+        if (bookmarkItem == null || !bookmarkItem.isMovable()) {
             endIndex--;
         }
         return endIndex;

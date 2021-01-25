@@ -8,6 +8,9 @@ import static org.junit.Assert.assertEquals;
 
 import android.content.Context;
 
+import androidx.annotation.StringRes;
+
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -16,6 +19,7 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.components.bookmarks.BookmarkId;
@@ -33,11 +37,29 @@ public class ReadingListSectionHeaderTest {
         ShadowRecordHistogram.reset();
     }
 
+    private BookmarkListEntry createReadingListEntry(long id, boolean read) {
+        BookmarkId bookmarkId = new BookmarkId(id, BookmarkType.READING_LIST);
+        BookmarkItem bookmarkItem =
+                new BookmarkItem(bookmarkId, null, null, false, null, false, false, 0, read);
+        return BookmarkListEntry.createBookmarkEntry(bookmarkItem);
+    }
+
+    private void assertSectionHeader(
+            BookmarkListEntry entry, @StringRes int titleRes, int paddingTopResId) {
+        Context context = ContextUtils.getApplicationContext();
+        Assert.assertEquals(ViewType.SECTION_HEADER, entry.getViewType());
+        Assert.assertEquals(context.getString(titleRes), entry.getSectionHeaderData().headerTitle);
+        if (paddingTopResId > 0) {
+            Assert.assertEquals(context.getResources().getDimensionPixelSize(paddingTopResId),
+                    entry.getSectionHeaderData().topPadding);
+        }
+    }
+
     @Test
     public void testListWithReadUnreadItems() {
         Context context = ContextUtils.getApplicationContext();
-        String titleRead = context.getString(org.chromium.chrome.R.string.reading_list_read);
-        String titleUnread = context.getString(org.chromium.chrome.R.string.reading_list_unread);
+        String titleRead = context.getString(R.string.reading_list_read);
+        String titleUnread = context.getString(R.string.reading_list_unread);
 
         List<BookmarkListEntry> listItems = new ArrayList<>();
         listItems.add(createReadingListEntry(1, true));
@@ -72,7 +94,7 @@ public class ReadingListSectionHeaderTest {
     @Test
     public void testListWithReadUnreadAndPromoItems() {
         Context context = ContextUtils.getApplicationContext();
-        String titleRead = context.getString(org.chromium.chrome.R.string.reading_list_read);
+        String titleRead = context.getString(R.string.reading_list_read);
 
         List<BookmarkListEntry> listItems = new ArrayList<>();
         listItems.add(BookmarkListEntry.createSyncPromoHeader(ViewType.PERSONALIZED_SIGNIN_PROMO));
@@ -80,16 +102,16 @@ public class ReadingListSectionHeaderTest {
         listItems.add(createReadingListEntry(2, true));
         ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(listItems, context);
 
-        assertEquals("Incorrect number of items in the adapter", 4, listItems.size());
+        assertEquals("Incorrect number of items in the adapter", 5, listItems.size());
         assertEquals("Expected promo section header", ViewType.PERSONALIZED_SIGNIN_PROMO,
                 listItems.get(0).getViewType());
-        assertEquals("Expected read section header", ViewType.SECTION_HEADER,
-                listItems.get(1).getViewType());
-        assertEquals("Expected read title text", titleRead, listItems.get(1).getHeaderTitle());
+        assertSectionHeader(listItems.get(1), R.string.reading_list_unread, 0);
+        assertSectionHeader(listItems.get(2), R.string.reading_list_read,
+                R.dimen.bookmark_reading_list_section_header_padding_top);
         assertEquals(
-                "Expected a different item", 1, listItems.get(2).getBookmarkItem().getId().getId());
+                "Expected a different item", 1, listItems.get(3).getBookmarkItem().getId().getId());
         assertEquals(
-                "Expected a different item", 2, listItems.get(3).getBookmarkItem().getId().getId());
+                "Expected a different item", 2, listItems.get(4).getBookmarkItem().getId().getId());
     }
 
     @Test
@@ -115,38 +137,31 @@ public class ReadingListSectionHeaderTest {
     @Test
     public void testUnreadItemsOnly() {
         Context context = ContextUtils.getApplicationContext();
-        String titleUnread = context.getString(org.chromium.chrome.R.string.reading_list_unread);
+        String titleUnread = context.getString(R.string.reading_list_unread);
 
         List<BookmarkListEntry> listItems = new ArrayList<>();
         listItems.add(createReadingListEntry(1, false));
         listItems.add(createReadingListEntry(2, false));
         ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(listItems, context);
 
-        assertEquals("Incorrect number of items in the adapter", 3, listItems.size());
-        assertEquals(
-                "Expected section header", ViewType.SECTION_HEADER, listItems.get(0).getViewType());
-        assertEquals("Expected unread title text", titleUnread, listItems.get(0).getHeaderTitle());
+        assertEquals("Incorrect number of items in the adapter", 4, listItems.size());
+        assertSectionHeader(listItems.get(0), R.string.reading_list_unread, 0);
+        assertSectionHeader(listItems.get(3), R.string.reading_list_read,
+                R.dimen.bookmark_reading_list_section_header_padding_top);
     }
 
     @Test
     public void testReadItemsOnly() {
         Context context = ContextUtils.getApplicationContext();
-        String titleRead = context.getString(org.chromium.chrome.R.string.reading_list_read);
+        String titleRead = context.getString(R.string.reading_list_read);
 
         List<BookmarkListEntry> listItems = new ArrayList<>();
         listItems.add(createReadingListEntry(1, true));
         ReadingListSectionHeader.maybeSortAndInsertSectionHeaders(listItems, context);
 
-        assertEquals("Incorrect number of items in the adapter", 2, listItems.size());
-        assertEquals(
-                "Expected section header", ViewType.SECTION_HEADER, listItems.get(0).getViewType());
-        assertEquals("Expected read title text", titleRead, listItems.get(0).getHeaderTitle());
-    }
-
-    private BookmarkListEntry createReadingListEntry(long id, boolean read) {
-        BookmarkId bookmarkId = new BookmarkId(id, BookmarkType.READING_LIST);
-        BookmarkItem bookmarkItem =
-                new BookmarkItem(bookmarkId, null, null, false, null, false, false, 0, read);
-        return BookmarkListEntry.createBookmarkEntry(bookmarkItem);
+        assertEquals("Incorrect number of items in the adapter", 3, listItems.size());
+        assertSectionHeader(listItems.get(0), R.string.reading_list_unread, 0);
+        assertSectionHeader(listItems.get(1), R.string.reading_list_read,
+                R.dimen.bookmark_reading_list_section_header_padding_top);
     }
 }

@@ -385,6 +385,7 @@
     <dimen name="bookmark_minimum_dialog_size_tablet">500dp</dimen>
     <dimen name="bookmark_list_view_padding_top">64dp</dimen>
     <dimen name="bookmark_dialog_toolbar_shadow_height">4dp</dimen>
+    <dimen name="bookmark_reading_list_section_header_padding_top">15dp</dimen>
 
     <!-- Bookmark widget dimensions -->
     <dimen name="bookmark_widget_min_width">64dp</dimen>
