@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/system_menu_model_delegate.h"
 
+#include "ash/public/cpp/desks_helper.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -58,6 +59,12 @@ bool SystemMenuModelDelegate::IsCommandIdVisible(int command_id) const {
       return !is_maximized;
     case IDC_RESTORE_WINDOW:
       return is_maximized;
+  }
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (command_id == IDC_MOVE_TO_DESKS_MENU) {
+    auto* desks_helper = ash::DesksHelper::Get();
+    return desks_helper && desks_helper->GetNumberOfDesks() > 1;
   }
 #endif
   return true;

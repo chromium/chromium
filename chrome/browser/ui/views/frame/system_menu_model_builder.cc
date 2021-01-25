@@ -152,14 +152,17 @@ void SystemMenuModelBuilder::AddFrameToggleItems(ui::SimpleMenuModel* model) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void SystemMenuModelBuilder::AppendMoveToDesksMenu(ui::SimpleMenuModel* model) {
   if (ash::features::IsBentoEnabled()) {
-    model->AddSeparator(ui::NORMAL_SEPARATOR);
-    move_to_desks_model_ = std::make_unique<MoveToDesksMenuModel>(
-        &menu_delegate_,
-        views::Widget::GetWidgetForNativeWindow(
-            menu_delegate_.browser()->window()->GetNativeWindow()));
-    model->AddSubMenuWithStringId(IDC_MOVE_TO_DESKS_MENU,
-                                  IDS_MOVE_TO_DESKS_MENU,
-                                  move_to_desks_model_.get());
+    auto* desks_helper = ash::DesksHelper::Get();
+    if (desks_helper && desks_helper->GetNumberOfDesks() > 1) {
+      model->AddSeparator(ui::NORMAL_SEPARATOR);
+      move_to_desks_model_ = std::make_unique<MoveToDesksMenuModel>(
+          &menu_delegate_,
+          views::Widget::GetWidgetForNativeWindow(
+              menu_delegate_.browser()->window()->GetNativeWindow()));
+      model->AddSubMenuWithStringId(IDC_MOVE_TO_DESKS_MENU,
+                                    IDS_MOVE_TO_DESKS_MENU,
+                                    move_to_desks_model_.get());
+    }
   }
 }
 #endif
