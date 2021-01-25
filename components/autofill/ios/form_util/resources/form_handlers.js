@@ -77,8 +77,24 @@ function getFullyQualifiedUrl_(originalURL) {
 }
 
 /**
- * Focus, input, change, keyup and blur events for form elements (form and input
- * elements) are messaged to the main application for broadcast to
+ * @param {Element} A form that was reset.
+ * @return {boolean} Whether the form contains password fields that had user
+ * typed or manually filled input.
+ */
+function shouldNotifyAboutFormReset_(form) {
+  for (let i = 0; i < form.elements.length; i++) {
+    const element = form.elements[i];
+    if (element.type === 'password' &&
+        __gCrWeb.form.wasEditedByUser.get(element)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/**
+ * Focus, input, change, keyup, blur and reset events for form elements (form
+ * and input elements) are messaged to the main application for broadcast to
  * WebStateObservers.
  * Events will be included in a message to be sent in a future runloop (without
  * delay). If an event is already scheduled to be sent, it is replaced by |evt|.
@@ -87,6 +103,8 @@ function getFullyQualifiedUrl_(originalURL) {
  * replace it.
  * Only the events targeting the active element (or the previously active in
  * case of 'blur') are sent to the main application.
+ * 'reset' events are sent to the main application only if they are targeting
+ * a password form that has user input in it.
  * This is done with a single event handler for each type being added to the
  * main document element which checks the source element of the event; this
  * is much easier to manage than adding handlers to individual elements.
@@ -98,8 +116,6 @@ function formActivity_(evt) {
           target.tagName)) {
     return;
   }
-  const value = target.value || '';
-  const fieldType = target.type || '';
   if (evt.type !== 'blur') {
     lastFocusedElement = document.activeElement;
   }
@@ -107,21 +123,38 @@ function formActivity_(evt) {
       __gCrWeb.form.wasEditedByUser !== null) {
     __gCrWeb.form.wasEditedByUser.set(target, evt.isTrusted);
   }
-  if (target !== lastFocusedElement) {
+
+  // Notify FormActivityTabHelper about form reset if the form contains
+  // password fields that had user typed or manually filled input.
+  const isPasswordFormReset = target.tagName === 'FORM' &&
+      evt.type === 'reset' && shouldNotifyAboutFormReset_(target);
+
+  if (target !== lastFocusedElement && !isPasswordFormReset) {
     return;
   }
-  __gCrWeb.fill.setUniqueIDIfNeeded(target.form);
-  __gCrWeb.fill.setUniqueIDIfNeeded(target);
-  const formUniqueId = __gCrWeb.fill.getUniqueID(target.form);
-  const fieldUniqueId = __gCrWeb.fill.getUniqueID(target);
+  const form = target.tagName === 'FORM' ? target : target.form;
+  const field = target.tagName === 'FORM' ? null : target;
+
+  __gCrWeb.fill.setUniqueIDIfNeeded(form);
+  const formUniqueId = __gCrWeb.fill.getUniqueID(form);
+  __gCrWeb.fill.setUniqueIDIfNeeded(field);
+  const fieldUniqueId = __gCrWeb.fill.getUniqueID(field);
+
+  const fieldType = target.type || '';
+  const fieldValue = target.value || '';
+  const value = isPasswordFormReset ?
+      __gCrWeb.stringify(__gCrWeb.passwords.getPasswordFormData(form, window)) :
+      fieldValue;
+  const type = isPasswordFormReset ? 'password_form_cleared' : evt.type;
+
   const msg = {
     'command': 'form.activity',
-    'formName': __gCrWeb.form.getFormIdentifier(target.form),
+    'formName': __gCrWeb.form.getFormIdentifier(form),
     'uniqueFormID': formUniqueId,
-    'fieldIdentifier': __gCrWeb.form.getFieldIdentifier(target),
+    'fieldIdentifier': __gCrWeb.form.getFieldIdentifier(field),
     'uniqueFieldID': fieldUniqueId,
     'fieldType': fieldType,
-    'type': evt.type,
+    'type': type,
     'value': value,
     'hasUserGesture': evt.isTrusted
   };
@@ -178,6 +211,7 @@ function attachListeners_() {
   document.addEventListener('blur', formActivity_, true);
   document.addEventListener('change', formActivity_, true);
   document.addEventListener('input', formActivity_, true);
+  document.addEventListener('reset', formActivity_, true);
 
   /**
    * Other events are watched at the bubbling phase as this seems adequate in

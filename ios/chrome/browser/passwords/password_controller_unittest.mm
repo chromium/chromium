@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
@@ -28,6 +29,7 @@
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/password_manager/ios/js_password_manager.h"
 #import "components/password_manager/ios/password_form_helper.h"
@@ -329,12 +331,17 @@ class PasswordControllerTest : public ChromeWebTest {
     }));
   }
 
-  void SimulateFormActivityObserverSignal() {
+  void SimulateFormActivityObserverSignal(std::string type,
+                                          FormRendererId form_id,
+                                          FieldRendererId field_id,
+                                          std::string value) {
     std::string mainFrameID = web::GetMainWebFrameId(web_state());
     WebFrame* frame = web::GetWebFrameWithId(web_state(), mainFrameID);
     FormActivityParams params;
-    params.type = "form_changed";
+    params.type = type;
+    params.unique_form_id = form_id;
     params.frame_id = mainFrameID;
+    params.value = value;
     [passwordController_.sharedPasswordController webState:web_state()
                                    didRegisterFormActivity:params
                                                    inFrame:frame];
@@ -1436,7 +1443,8 @@ TEST_F(PasswordControllerTest, CheckAsyncSuggestions) {
     LoadHtml(kHtmlWithoutPasswordForm);
     ExecuteJavaScript(kAddFormDynamicallyScript);
 
-    SimulateFormActivityObserverSignal();
+    SimulateFormActivityObserverSignal("form_changed", FormRendererId(),
+                                       FieldRendererId(), std::string());
     WaitForFormManagersCreation();
 
     __block BOOL completion_handler_success = NO;
@@ -1487,7 +1495,8 @@ TEST_F(PasswordControllerTest, CheckNoAsyncSuggestionsOnNonUsernameField) {
   LoadHtml(kHtmlWithoutPasswordForm);
   ExecuteJavaScript(kAddFormDynamicallyScript);
 
-  SimulateFormActivityObserverSignal();
+  SimulateFormActivityObserverSignal("form_changed", FormRendererId(),
+                                     FieldRendererId(), std::string());
   WaitForFormManagersCreation();
 
   __block BOOL completion_handler_success = NO;
@@ -1928,7 +1937,8 @@ TEST_F(PasswordControllerTest, FindDynamicallyAddedForm2) {
   LoadHtml(kHtmlWithoutPasswordForm);
   ExecuteJavaScript(kAddFormDynamicallyScript);
 
-  SimulateFormActivityObserverSignal();
+  SimulateFormActivityObserverSignal("form_changed", FormRendererId(),
+                                     FieldRendererId(), std::string());
   WaitForFormManagersCreation();
 
   auto& form_managers = passwordController_.passwordManager->form_managers();
@@ -1955,15 +1965,8 @@ TEST_F(PasswordControllerTest, DetectSubmissionOnRemovedForm) {
   EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr)
       .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
 
-  WebFrame* frame = web::GetWebFrameWithId(web_state(), mainFrameID);
-  FormActivityParams params;
-  params.type = "password_form_removed";
-  params.unique_form_id = FormRendererId(0);
-  params.frame_id = mainFrameID;
-
-  [passwordController_.sharedPasswordController webState:web_state()
-                                 didRegisterFormActivity:params
-                                                 inFrame:frame];
+  SimulateFormActivityObserverSignal("password_form_removed", FormRendererId(0),
+                                     FieldRendererId(), std::string());
 
   auto& form_manager_check = form_manager_to_save;
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
@@ -1993,16 +1996,8 @@ TEST_F(PasswordControllerTest,
 
   EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr).Times(0);
 
-  std::string mainFrameID = web::GetMainWebFrameId(web_state());
-  WebFrame* frame = web::GetWebFrameWithId(web_state(), mainFrameID);
-  FormActivityParams params;
-  params.type = "password_form_removed";
-  params.unique_form_id = FormRendererId(0);
-  params.frame_id = mainFrameID;
-
-  [passwordController_.sharedPasswordController webState:web_state()
-                                 didRegisterFormActivity:params
-                                                 inFrame:frame];
+  SimulateFormActivityObserverSignal("password_form_removed", FormRendererId(0),
+                                     FieldRendererId(), std::string());
 }
 
 // Tests that submission is detected on removal of the form that had user input.
@@ -2375,4 +2370,63 @@ TEST_F(PasswordControllerTest, SavingPasswordsOutsideTheFormTag) {
             form_manager->GetPendingCredentials().username_value);
   EXPECT_EQ(ASCIIToUTF16("password1"),
             form_manager->GetPendingCredentials().password_value);
+}
+
+// Tests that submission is detected on change password form clearing.
+TEST_F(PasswordControllerTest, DetectSubmissionOnFormReset) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kDetectFormSubmissionOnFormClear);
+
+  PasswordForm form(
+      CreatePasswordForm("https://chromium.test/", "user", "oldpw"));
+  EXPECT_CALL(*store_, GetLogins)
+      .WillRepeatedly(WithArg<1>(InvokeConsumer(form)));
+
+  LoadHtml(@"<html><body>"
+            "<form name='change_form' id='change_form'>"
+            "  <input type='password' id='opw'>"
+            "  <input type='password' id='npw' autocomplete='new-password'>"
+            "  <input type='password' id='cpw' autocomplete='new-password'>"
+            "  <button id='submit_button' value='Submit'>"
+            "</form>"
+            "</body></html>");
+  WaitForFormManagersCreation();
+
+  std::string main_frame_id = web::GetMainWebFrameId(web_state());
+
+  SimulateUserTyping("change_form", FormRendererId(0), "opw",
+                     FieldRendererId(1), "oldpw", main_frame_id);
+  SimulateUserTyping("change_form", FormRendererId(0), "npw",
+                     FieldRendererId(2), "newpw", main_frame_id);
+  SimulateUserTyping("change_form", FormRendererId(0), "cpw",
+                     FieldRendererId(3), "newpw", main_frame_id);
+
+  std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
+  EXPECT_CALL(*weak_client_, PromptUserToSaveOrUpdatePasswordPtr)
+      .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
+
+  std::string form_data = base::SysNSStringToUTF8(ExecuteJavaScript([NSString
+      stringWithFormat:@"__gCrWeb.passwords.getPasswordFormDataAsString(%d);",
+                       0]));
+
+  // Imitiate the signal from the page resetting the form.
+  SimulateFormActivityObserverSignal("password_form_cleared", FormRendererId(0),
+                                     FieldRendererId(), form_data);
+
+  auto& form_manager_check = form_manager_to_save;
+  ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
+    return form_manager_check != nullptr;
+  }));
+  EXPECT_EQ("https://chromium.test/",
+            form_manager_to_save->GetPendingCredentials().signon_realm);
+  EXPECT_EQ(ASCIIToUTF16("user"),
+            form_manager_to_save->GetPendingCredentials().username_value);
+  EXPECT_EQ(ASCIIToUTF16("newpw"),
+            form_manager_to_save->GetPendingCredentials().password_value);
+
+  auto* form_manager =
+      static_cast<PasswordFormManager*>(form_manager_to_save.get());
+  EXPECT_TRUE(form_manager->is_submitted());
+  EXPECT_TRUE(form_manager->IsPasswordUpdate());
 }

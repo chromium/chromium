@@ -4,6 +4,9 @@
 
 #include "components/password_manager/ios/password_manager_ios_util.h"
 
+#include "base/strings/sys_string_conversions.h"
+#include "base/values.h"
+#import "components/autofill/ios/browser/autofill_util.h"
 #include "components/security_state/ios/security_state_utils.h"
 #import "ios/web/public/web_state.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
@@ -40,6 +43,17 @@ bool WebStateContentIsSecureHtml(const web::WebState* web_state) {
   security_state::SecurityLevel security_level =
       security_state::GetSecurityLevelForWebState(web_state);
   return security_state::IsSslCertificateValid(security_level);
+}
+
+bool JsonStringToFormData(NSString* json_string,
+                          autofill::FormData* form_data,
+                          GURL page_url) {
+  std::unique_ptr<base::Value> formValue = autofill::ParseJson(json_string);
+  if (!formValue)
+    return false;
+
+  return autofill::ExtractFormData(*formValue, false, base::string16(),
+                                   page_url, page_url.GetOrigin(), form_data);
 }
 
 }  // namespace password_manager

@@ -52,6 +52,10 @@ class MockPasswordManager : public PasswordManagerInterface {
               (PasswordManagerDriver*, const autofill::FormData&),
               (override));
   MOCK_METHOD(void,
+              OnPasswordFormCleared,
+              (PasswordManagerDriver*, const autofill::FormData&),
+              (override));
+  MOCK_METHOD(void,
               OnPasswordFormSubmittedNoChecksForiOS,
               (PasswordManagerDriver*, const autofill::FormData&),
               (override));

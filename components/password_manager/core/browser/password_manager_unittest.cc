@@ -3726,7 +3726,6 @@ TEST_P(PasswordManagerTest, GenerationOnChangedForm) {
   }
 }
 
-#if !defined(OS_IOS)
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedForm) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kDetectFormSubmissionOnFormClear);
@@ -3815,6 +3814,7 @@ TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedNamelessForm) {
   manager()->OnPasswordFormCleared(&driver_, form_data);
 }
 
+#if !defined(OS_IOS)
 TEST_P(PasswordManagerTest, SubmissionDetectedOnClearedFormlessFields) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kDetectFormSubmissionOnFormClear);

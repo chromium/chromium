@@ -43,6 +43,10 @@ class PasswordManagerInterface : public FormSubmissionObserver {
   virtual void OnPasswordFormSubmitted(PasswordManagerDriver* driver,
                                        const autofill::FormData& form_data) = 0;
 
+  // Handles a password form being cleared by page scripts.
+  virtual void OnPasswordFormCleared(PasswordManagerDriver* driver,
+                                     const autofill::FormData& form_data) = 0;
+
 #if defined(OS_IOS)
   // Handles a password form being submitted, assumes that submission is
   // successful and does not do any checks on success of submission. For

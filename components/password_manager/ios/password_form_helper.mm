@@ -18,6 +18,7 @@
 #include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "components/password_manager/ios/account_select_fill_data.h"
 #include "components/password_manager/ios/js_password_manager.h"
+#include "components/password_manager/ios/password_manager_ios_util.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
@@ -35,6 +36,7 @@ using base::SysNSStringToUTF16;
 using base::UTF16ToUTF8;
 using password_manager::FillData;
 using password_manager::GetPageURLAndCheckTrustLevel;
+using password_manager::JsonStringToFormData;
 using password_manager::SerializePasswordFormFillData;
 
 namespace password_manager {
@@ -423,15 +425,8 @@ constexpr char kCommandPrefix[] = "passwordForm";
   }
 
   id extractFormDataCompletionHandler = ^(NSString* jsonString) {
-    std::unique_ptr<base::Value> formValue = autofill::ParseJson(jsonString);
-    if (!formValue) {
-      completionHandler(NO, FormData());
-      return;
-    }
-
     FormData formData;
-    if (!autofill::ExtractFormData(*formValue, false, base::string16(), pageURL,
-                                   pageURL.GetOrigin(), &formData)) {
+    if (!JsonStringToFormData(jsonString, &formData, pageURL)) {
       completionHandler(NO, FormData());
       return;
     }
