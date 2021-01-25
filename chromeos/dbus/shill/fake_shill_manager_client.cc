@@ -1061,7 +1061,7 @@ void FakeShillManagerClient::CallNotifyObserversPropertyChanged(
     const std::string& property) {
   // Avoid unnecessary delayed task if we have no observers (e.g. during
   // initial setup).
-  if (!observer_list_.might_have_observers())
+  if (observer_list_.empty())
     return;
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,

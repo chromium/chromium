@@ -115,7 +115,7 @@ class ShelfAppButtonAnimation : public gfx::AnimationDelegate {
 
   void RemoveObserver(Observer* observer) {
     observers_.RemoveObserver(observer);
-    if (!observers_.might_have_observers())
+    if (observers_.empty())
       animation_.Stop();
   }
 
