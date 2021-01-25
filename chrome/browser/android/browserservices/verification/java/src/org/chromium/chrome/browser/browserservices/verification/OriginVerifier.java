@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.browserservices.verification;
 
-import android.annotation.SuppressLint;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.SystemClock;
@@ -37,16 +35,8 @@ import org.chromium.content_public.browser.BrowserStartupController;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateEncodingException;
-import java.security.cert.CertificateException;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -73,7 +63,6 @@ import dagger.Reusable;
 @JNINamespace("customtabs")
 public class OriginVerifier {
     private static final String TAG = "OriginVerifier";
-    private static final char[] HEX_CHAR_LOOKUP = "0123456789ABCDEF".toCharArray();
     private static final String USE_AS_ORIGIN = "delegate_permission/common.use_as_origin";
     private static final String HANDLE_ALL_URLS = "delegate_permission/common.handle_all_urls";
 
@@ -218,8 +207,11 @@ public class OriginVerifier {
      */
     public static boolean wasPreviouslyVerified(
             String packageName, Origin origin, @Relation int relation) {
+        PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
         return wasPreviouslyVerified(packageName,
-                getCertificateSHA256FingerprintForPackage(packageName), origin, relation);
+                PackageFingerprintCalculator.getCertificateSHA256FingerprintForPackage(
+                        pm, packageName),
+                origin, relation);
     }
 
     /**
@@ -271,7 +263,10 @@ public class OriginVerifier {
             @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils,
             MetricsListener metricsListener) {
         mPackageName = packageName;
-        mSignatureFingerprint = getCertificateSHA256FingerprintForPackage(mPackageName);
+        PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
+        mSignatureFingerprint =
+                PackageFingerprintCalculator.getCertificateSHA256FingerprintForPackage(
+                        pm, mPackageName);
         mRelation = relation;
         mWebContents = webContents;
         mExternalAuthUtils = externalAuthUtils;
@@ -393,62 +388,6 @@ public class OriginVerifier {
         if (mNativeOriginVerifier == 0) return;
         OriginVerifierJni.get().destroy(mNativeOriginVerifier, OriginVerifier.this);
         mNativeOriginVerifier = 0;
-    }
-
-    private static PackageInfo getPackageInfo(String packageName) {
-        PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
-
-        PackageInfo packageInfo = null;
-        try {
-            packageInfo = pm.getPackageInfo(packageName, PackageManager.GET_SIGNATURES);
-        } catch (PackageManager.NameNotFoundException e) {
-            // Will return null if there is no package found.
-        }
-        return packageInfo;
-    }
-
-    /**
-     * Computes the SHA256 certificate for the given package name. The app with the given package
-     * name has to be installed on device. The output will be a 30 long HEX string with : between
-     * each value.
-     * @param packageName The package name to query the signature for.
-     * @return The SHA256 certificate for the package name.
-     */
-    @SuppressLint("PackageManagerGetSignatures")
-    // https://stackoverflow.com/questions/39192844/android-studio-warning-when-using-packagemanager-get-signatures
-    public static String getCertificateSHA256FingerprintForPackage(String packageName) {
-        PackageInfo packageInfo = getPackageInfo(packageName);
-        if (packageInfo == null) return null;
-
-        InputStream input = new ByteArrayInputStream(packageInfo.signatures[0].toByteArray());
-        String hexString = null;
-        try {
-            X509Certificate certificate =
-                    (X509Certificate) CertificateFactory.getInstance("X509").generateCertificate(
-                            input);
-            hexString = byteArrayToHexString(
-                    MessageDigest.getInstance("SHA256").digest(certificate.getEncoded()));
-        } catch (CertificateEncodingException e) {
-            Log.w(TAG, "Certificate type X509 encoding failed");
-        } catch (CertificateException | NoSuchAlgorithmException e) {
-            // This shouldn't happen.
-        }
-        return hexString;
-    }
-
-    /**
-     * Converts a byte array to hex string with : inserted between each element.
-     * @param byteArray The array to be converted.
-     * @return A string with two letters representing each byte and : in between.
-     */
-    static String byteArrayToHexString(byte[] byteArray) {
-        StringBuilder hexString = new StringBuilder(byteArray.length * 3 - 1);
-        for (int i = 0; i < byteArray.length; ++i) {
-            hexString.append(HEX_CHAR_LOOKUP[(byteArray[i] & 0xf0) >>> 4]);
-            hexString.append(HEX_CHAR_LOOKUP[byteArray[i] & 0xf]);
-            if (i < (byteArray.length - 1)) hexString.append(':');
-        }
-        return hexString.toString();
     }
 
     /** Called asynchronously by OriginVerifierJni.get().verifyOrigin. */

@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifier.java",
+    "java/src/org/chromium/chrome/browser/browserservices/verification/PackageFingerprintCalculator.java",
     "java/src/org/chromium/chrome/browser/browserservices/verification/Relationship.java",
     "java/src/org/chromium/chrome/browser/browserservices/verification/VerificationResultStore.java",
   ]
@@ -35,7 +36,10 @@ generate_jni("jni_headers") {
 
 android_library("javatests") {
   testonly = true
-  sources = [ "./java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierTest.java" ]
+  sources = [
+    "./java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifierTest.java",
+    "./java/src/org/chromium/chrome/browser/browserservices/verification/PackageFingerprintCalculatorTest.java",
+  ]
 
   deps = [
     ":java",

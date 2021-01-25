@@ -88,7 +88,7 @@ https://chromium.googlesource.com/chromium/src/+/master/build/android/docs/lint.
   </issue>
   <issue id="Overdraw" severity="ignore"/>
   <issue id="PackageManagerGetSignatures">
-    <ignore regexp="chrome/browser/android/browserservices/verification/java/src/org/chromium/chrome/browser/browserservices/verification/OriginVerifier.java"/>
+    <ignore regexp="chrome/browser/android/browserservices/verification/java/src/org/chromium/chrome/browser/browserservices/verification/PackageFingerprintCalculator.java"/>
     <ignore regexp="chrome/android/webapk/libs/client/src/org/chromium/webapk/lib/client/WebApkValidator.java"/>
   </issue>
   <issue id="PluralsCandidate">

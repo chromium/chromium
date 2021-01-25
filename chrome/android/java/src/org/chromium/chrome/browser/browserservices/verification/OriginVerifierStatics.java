@@ -4,10 +4,13 @@
 
 package org.chromium.chrome.browser.browserservices.verification;
 
-import org.chromium.components.embedder_support.util.Origin;
+import android.content.pm.PackageManager;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.browser.customtabs.CustomTabsService;
+
+import org.chromium.base.ContextUtils;
+import org.chromium.components.embedder_support.util.Origin;
 
 /**
  * Adds a layer of indirection to calls to static methods on {@link OriginVerifier}. This allows us
@@ -35,8 +38,10 @@ public class OriginVerifierStatics {
         return OriginVerifier.wasPreviouslyVerified(packageName, origin, relation);
     }
 
-    /** Calls {@link OriginVerifier#getCertificateSHA256FingerprintForPackage(String)}. */
+    /** Calls {@link PackageFingerprintCalculator#getCertificateSHA256FingerprintForPackage}. */
     public static String getCertificateSHA256FingerprintForPackage(String packageName) {
-        return OriginVerifier.getCertificateSHA256FingerprintForPackage(packageName);
+        PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
+        return PackageFingerprintCalculator.getCertificateSHA256FingerprintForPackage(
+                pm, packageName);
     }
 }
