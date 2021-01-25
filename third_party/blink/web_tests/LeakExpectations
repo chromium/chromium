@@ -48,7 +48,6 @@ crbug.com/667560 [ Linux ] http/tests/devtools/console/console-search.js [ Failu
 crbug.com/835943 [ Linux ] http/tests/appcache/non-html.xhtml [ Failure Pass ]
 
 crbug.com/860117 [ Linux ] editing/pasteboard/drag-drop-iframe-refresh-crash.html [ Pass Failure ]
-crbug.com/976438 [ Linux ] external/wpt/css/selectors/focus-visible-007.html [ Pass Failure ]
 
 
 crbug.com/809609 [ Linux ] editing/pasteboard/drop-file-svg.html [ Pass Failure ]
