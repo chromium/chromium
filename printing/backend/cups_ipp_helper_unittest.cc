@@ -198,7 +198,7 @@ TEST_F(PrintBackendCupsIppHelperTest, A4PaperSupported) {
 
   PrinterSemanticCapsAndDefaults::Paper paper = caps.papers[0];
   // media display name localization is handled more fully in
-  // GetPrinterCapabilitiesOnBlockingTaskRunner().
+  // AssemblePrinterSettings().
   EXPECT_EQ("iso a4", paper.display_name);
   EXPECT_EQ("iso_a4_210x297mm", paper.vendor_id);
   EXPECT_EQ(210000, paper.size_um.width());
@@ -211,7 +211,7 @@ TEST_F(PrintBackendCupsIppHelperTest, LegalPaperDefault) {
   PrinterSemanticCapsAndDefaults caps;
   CapsAndDefaultsFromPrinter(*printer_, &caps);
   // media display name localization is handled more fully in
-  // GetPrinterCapabilitiesOnBlockingTaskRunner().
+  // AssemblePrinterSettings().
   EXPECT_EQ("na legal", caps.default_paper.display_name);
   EXPECT_EQ("na_legal_8.5x14in", caps.default_paper.vendor_id);
   EXPECT_EQ(215900, caps.default_paper.size_um.width());

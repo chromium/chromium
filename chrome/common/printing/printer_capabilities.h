@@ -5,7 +5,6 @@
 #ifndef CHROME_COMMON_PRINTING_PRINTER_CAPABILITIES_H_
 #define CHROME_COMMON_PRINTING_PRINTER_CAPABILITIES_H_
 
-#include <memory>
 #include <string>
 #include <utility>
 
@@ -25,16 +24,25 @@ std::string GetUserFriendlyName(const std::string& printer_name);
 #endif
 
 // Extracts the printer display name and description from the
-// appropriate fields in |printer| for the platform.
+// appropriate fields in `printer` for the platform.
 std::pair<std::string, std::string> GetPrinterNameAndDescription(
     const PrinterBasicInfo& printer);
 
-// Returns the JSON representing printer capabilities for the device registered
-// as |device_name| in the PrinterBackend.  The returned dictionary is suitable
-// for passage to the WebUI. The settings are obtained using |print_backend|,
-// which is required.
-// Data from |basic_info|, |user_defined_papers| and |has_secure_protocol| are
-// incorporated into the returned dictionary.
+// Returns a value containing printer capabilities and settings for the device
+// registered as `device_name` in the `PrintBackend`.  The returned value is
+// suitable for passage to the WebUI in JSON.
+// Data from `basic_info`, `user_defined_papers`, `has_secure_protocol`,
+// and `caps` are all incorporated into the returned value.
+base::Value AssemblePrinterSettings(
+    const std::string& device_name,
+    const PrinterBasicInfo& basic_info,
+    const PrinterSemanticCapsAndDefaults::Papers& user_defined_papers,
+    bool has_secure_protocol,
+    PrinterSemanticCapsAndDefaults* caps);
+
+// Returns the value from `AssemblePrinterSettings()` using the required
+// `print_backend` to obtain settings as necessary.  The returned value is
+// suitable for passage to the WebUI in JSON.
 base::Value GetSettingsOnBlockingTaskRunner(
     const std::string& device_name,
     const PrinterBasicInfo& basic_info,
