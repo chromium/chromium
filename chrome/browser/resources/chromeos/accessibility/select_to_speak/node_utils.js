@@ -552,6 +552,42 @@ export class NodeUtils {
   }
 
   /**
+   * Gets the |NodeUtils.Position| identified by the |charIndex| to the text of
+   * |nodeGroup|. If |fallbackToEnd| is true, when the |charIndex| is undefined
+   * or out of the text of |nodeGroup|, we will return the end of the
+   * |nodeGroup|. Otherwise, we fallback to the start of the |nodeGroup|.
+   * @param {!ParagraphUtils.NodeGroup} nodeGroup
+   * @param {number|undefined} charIndex
+   * @param {boolean} fallbackToEnd
+   * @return {!NodeUtils.Position}
+   */
+  static getPositionFromNodeGroup(nodeGroup, charIndex, fallbackToEnd) {
+    let node, offset;
+    if (charIndex !== undefined) {
+      ({node, offset} = ParagraphUtils.findNodeFromNodeGroupByCharIndex(
+           nodeGroup, charIndex));
+    }
+    if (node && offset !== undefined) {
+      return {node, offset};
+    }
+
+    // |charIndex| is undefined or out of the text of |nodeGroup|, fallback to
+    // the end or the start of the |nodeGroup|.
+    if (fallbackToEnd) {
+      const lastNode = nodeGroup.nodes[nodeGroup.nodes.length - 1].node;
+      const lastChildOfLastNode = NodeUtils.getLastLeafChild(lastNode);
+      node = lastChildOfLastNode || lastNode;
+      offset = ParagraphUtils.getNodeName(node).length;
+    } else {
+      const firstNode = nodeGroup.nodes[0].node;
+      const firstChildOfFirstNode = NodeUtils.getFirstLeafChild(firstNode);
+      node = firstChildOfFirstNode || firstNode;
+      offset = 0;
+    }
+    return {node, offset};
+  }
+
+  /**
    * Gets the remaining content of a paragraph with an assigned position. The
    * position is defined by the |charIndex| to the text of |nodeGroup|. If
    * |direction| is set to forward, we will look for trailing content after the
@@ -571,6 +607,37 @@ export class NodeUtils {
    * @return {!{nodes: !Array<!AutomationNode>,
    *          offset: number}}
    *    nodes: the nodes that have the remaining content.
+   *    offset: the offset for the nodes. See more details in
+   * NodeUtils.getNextNodesInParagraphFromPosition.
+   */
+  static getNextNodesInParagraphFromNodeGroup(nodeGroup, charIndex, direction) {
+    if (nodeGroup.nodes.length === 0) {
+      return {nodes: [], offset: -1};
+    }
+    // Get the current position. When searching forward, if we did not find a
+    // node for the charIndex, we fallback to the end of the current node group.
+    // This enables us to get all the content within this paragraph but after
+    // the current node group. When searching backward, if we did not find a
+    // node for the charIndex, we fallback to the start of the current node
+    // group. This enables us to get all the content before the current node
+    // group in this paragraph.
+    const fallbackToEnd = direction === constants.Dir.FORWARD;
+    const currentPosition =
+        NodeUtils.getPositionFromNodeGroup(nodeGroup, charIndex, fallbackToEnd);
+    return NodeUtils.getNextNodesInParagraphFromPosition(
+        currentPosition, direction);
+  }
+
+  /**
+   * Gets the remaining content of a paragraph with an assigned |position|. If
+   * |direction| is set to forward, we will look for trailing content after the
+   * position. Otherwise, we will get the leading content before the position.
+   * The remaining content is returned as a list of nodes with offset.
+   * @param {!NodeUtils.Position} position
+   * @param {constants.Dir} direction
+   * @return {!{nodes: !Array<!AutomationNode>,
+   *          offset: number}}
+   *    nodes: the nodes that have the remaining content.
    *    offset: the offset for the nodes. When searching forward, the offset is
    * into the name of the first node, and marks the start index of the remaining
    * content in the first node, inclusively. For example, "Hello" with an offset
@@ -579,24 +646,10 @@ export class NodeUtils {
    * content in the last node, exclusively. For example, "Hello" with an offset
    * 3 indicates that the remaining content is "Hel".
    */
-  static getNextNodesInParagraphFromNodeGroup(nodeGroup, charIndex, direction) {
-    if (nodeGroup.nodes.length === 0) {
-      return {nodes: [], offset: -1};
-    }
-    let {node: startNode, offset} =
-        ParagraphUtils.findNodeFromNodeGroupByCharIndex(nodeGroup, charIndex);
-
+  static getNextNodesInParagraphFromPosition(position, direction) {
+    const startNode = position.node;
+    const offset = position.offset;
     if (direction === constants.Dir.BACKWARD) {
-      // If we did not find a node for the charIndex, we use the first node of
-      // the current node group and set offset to 0. This enables us to get all
-      // the content before the current node group in this paragraph.
-      if (!startNode) {
-        const firstNode = nodeGroup.nodes[0].node;
-        const firstChildOfFirstNode = NodeUtils.getFirstLeafChild(firstNode);
-        startNode = firstChildOfFirstNode || firstNode;
-        offset = 0;
-      }
-
       // Gets all the nodes before the startNode. We include the start node
       // if it is not empty. Note that this is based on the assumption that
       // this function will still include nodes with overflow text.
@@ -620,18 +673,6 @@ export class NodeUtils {
         }
       }
       return {nodes: [], offset: -1};
-    }
-
-    // If we search forward, we use the start node as anchor and look for
-    // remaining content. If we did not find a node for the charIndex, we use
-    // the last node of the current node group as the starting node and set
-    // offset to the length of the node's name. This enables us to get all the
-    // content within this paragraph but after the current node group.
-    if (!startNode) {
-      const lastNode = nodeGroup.nodes[nodeGroup.nodes.length - 1].node;
-      const lastChildOfLastNode = NodeUtils.getLastLeafChild(lastNode);
-      startNode = lastChildOfLastNode || lastNode;
-      offset = ParagraphUtils.getNodeName(startNode).length;
     }
 
     // Gets all the trailing nodes after the startNode. We include the start
@@ -666,6 +707,28 @@ export class NodeUtils {
     return AutomationPredicate.leafWithText(node) &&
         !NodeUtils.shouldIgnoreNode(node, /* includeOffscreen= */ true) &&
         !NodeUtils.isNotSelectable(node);
+  }
+
+  /**
+   * @param {!NodeUtils.Position} startPosition
+   * @param {!NodeUtils.Position} endPosition
+   * @return {constants.Dir} the direction from the |startPosition| to the
+   *     |endPosition|. If the input positions are equal, we view the
+   *     |endPosition| is to the |constants.Dir.BACKWARD| of the
+   *     |startPosition|.
+   */
+  static getDirectionBetweenPositions(startPosition, endPosition) {
+    const startNode = startPosition.node;
+    const startOffset = startPosition.offset;
+    const endNode = endPosition.node;
+    const endOffset = endPosition.offset;
+    if (startNode !== endNode) {
+      return AutomationUtil.getDirection(startNode, endNode);
+    }
+    if (startOffset < endOffset) {
+      return constants.Dir.FORWARD;
+    }
+    return constants.Dir.BACKWARD;
   }
 }
 
