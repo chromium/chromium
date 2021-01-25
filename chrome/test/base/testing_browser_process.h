@@ -95,8 +95,10 @@ class TestingBrowserProcess : public BrowserProcess {
   IconManager* icon_manager() override;
   GpuModeManager* gpu_mode_manager() override;
   BackgroundModeManager* background_mode_manager() override;
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   void set_background_mode_manager_for_test(
       std::unique_ptr<BackgroundModeManager> manager) override;
+#endif
   StatusTray* status_tray() override;
   safe_browsing::SafeBrowsingService* safe_browsing_service() override;
   subresource_filter::RulesetService* subresource_filter_ruleset_service()

@@ -28,6 +28,7 @@
 #include "components/history/core/browser/history_backend_client.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_database_params.h"
+#include "components/history/core/browser/in_memory_history_backend.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/test/test_history_database.h"
 #include "content/public/browser/browser_thread.h"

@@ -261,10 +261,12 @@ BackgroundModeManager* TestingBrowserProcess::background_mode_manager() {
   return nullptr;
 }
 
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 void TestingBrowserProcess::set_background_mode_manager_for_test(
     std::unique_ptr<BackgroundModeManager> manager) {
   NOTREACHED();
 }
+#endif
 
 StatusTray* TestingBrowserProcess::status_tray() {
   return nullptr;

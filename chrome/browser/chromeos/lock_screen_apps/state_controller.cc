@@ -34,6 +34,7 @@
 #include "content/public/browser/web_contents.h"
 #include "crypto/symmetric_key.h"
 #include "extensions/browser/api/lock_screen_data/lock_screen_item_storage.h"
+#include "extensions/browser/app_window/app_delegate.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/common/extension.h"

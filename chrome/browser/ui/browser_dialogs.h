@@ -369,10 +369,12 @@ void ShowExtensionSettingsOverriddenDialog(
 // Returns a OnceClosure that client code can call to close the device chooser.
 // This OnceClosure references the actual dialog as a WeakPtr, so it's safe to
 // call at any point.
+#if defined(TOOLKIT_VIEWS)
 base::OnceClosure ShowDeviceChooserDialog(
     content::RenderFrameHost* owner,
     std::unique_ptr<ChooserController> controller);
 bool IsDeviceChooserShowingForTesting(Browser* browser);
+#endif
 
 // Show the prompt to set a window name for browser's window, optionally with
 // the given context.

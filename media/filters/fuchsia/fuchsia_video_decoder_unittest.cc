@@ -24,6 +24,7 @@
 #include "media/base/video_decoder.h"
 #include "media/base/video_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 
 namespace media {

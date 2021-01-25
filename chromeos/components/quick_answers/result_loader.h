@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/components/quick_answers/search_result_parsers/search_response_parser.h"
 
 namespace network {

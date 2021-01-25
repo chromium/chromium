@@ -204,8 +204,10 @@ class BrowserProcess {
 
   // Returns the object that manages background applications.
   virtual BackgroundModeManager* background_mode_manager() = 0;
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   virtual void set_background_mode_manager_for_test(
       std::unique_ptr<BackgroundModeManager> manager) = 0;
+#endif
 
   // Returns the StatusTray, which provides an API for displaying status icons
   // in the system status tray. Returns NULL if status icons are not supported

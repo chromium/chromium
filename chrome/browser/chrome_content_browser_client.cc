@@ -6145,9 +6145,9 @@ ChromeContentBrowserClient::CreateIdentityRequestDialogController() {
   return std::make_unique<IdentityDialogController>();
 }
 
+#if !defined(OS_ANDROID)
 void ChromeContentBrowserClient::OnKeepaliveTimerFired(
     std::unique_ptr<ScopedKeepAlive> keep_alive_handle) {
-#if !defined(OS_ANDROID)
   // TODO(crbug.com/1161996): Remove this entry once the investigation is done.
   VLOG(1) << "OnKeepaliveTimerFired";
   DCHECK(base::FeatureList::IsEnabled(features::kShutdownSupportForKeepalive));
@@ -6163,5 +6163,5 @@ void ChromeContentBrowserClient::OnKeepaliveTimerFired(
                        weak_factory_.GetWeakPtr(),
                        std::move(keep_alive_handle)));
   }
-#endif
 }
+#endif

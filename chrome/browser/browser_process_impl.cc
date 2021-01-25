@@ -958,23 +958,22 @@ DownloadRequestLimiter* BrowserProcessImpl::download_request_limiter() {
 }
 
 BackgroundModeManager* BrowserProcessImpl::background_mode_manager() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!background_mode_manager_)
     CreateBackgroundModeManager();
   return background_mode_manager_.get();
 #else
-  NOTIMPLEMENTED();
-  return NULL;
+  return nullptr;
 #endif
 }
 
+#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 void BrowserProcessImpl::set_background_mode_manager_for_test(
     std::unique_ptr<BackgroundModeManager> manager) {
-#if BUILDFLAG(ENABLE_BACKGROUND_MODE)
   background_mode_manager_ = std::move(manager);
-#endif
 }
+#endif
 
 StatusTray* BrowserProcessImpl::status_tray() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

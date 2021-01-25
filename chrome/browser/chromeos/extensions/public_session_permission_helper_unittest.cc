@@ -22,6 +22,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/permissions/api_permission.h"
+#include "extensions/common/permissions/permission_set.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using extension_test_util::LoadManifestUnchecked;

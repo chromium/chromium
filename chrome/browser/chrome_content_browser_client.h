@@ -797,8 +797,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool is_enterprise_lookup_enabled,
       bool is_consumer_lookup_enabled);
 
+#if !defined(OS_ANDROID)
   void OnKeepaliveTimerFired(
       std::unique_ptr<ScopedKeepAlive> keep_alive_handle);
+#endif
 
   // Vector of additional ChromeContentBrowserClientParts.
   // Parts are deleted in the reverse order they are added.
