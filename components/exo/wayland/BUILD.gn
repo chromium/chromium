@@ -328,6 +328,44 @@ source_set("simple") {
   }
 }
 
+source_set("client_version_test") {
+  sources = [
+    "clients/test/client_version_test.cc",
+    "clients/test/client_version_test.h",
+  ]
+
+  deps = [
+    ":client_support",
+    "//base",
+    "//third_party/wayland:wayland_client",
+    "//third_party/wayland-protocols:alpha_compositing_protocol",
+    "//third_party/wayland-protocols:cursor_shapes_protocol",
+    "//third_party/wayland-protocols:extended_drag",
+    "//third_party/wayland-protocols:gaming_input_protocol",
+    "//third_party/wayland-protocols:keyboard_configuration_protocol",
+    "//third_party/wayland-protocols:keyboard_extension_protocol",
+    "//third_party/wayland-protocols:linux_dmabuf_protocol",
+    "//third_party/wayland-protocols:notification_shell_protocol",
+    "//third_party/wayland-protocols:pointer_constraints_protocol",
+    "//third_party/wayland-protocols:pointer_gestures_protocol",
+    "//third_party/wayland-protocols:presentation_time_protocol",
+    "//third_party/wayland-protocols:relative_pointer_protocol",
+    "//third_party/wayland-protocols:remote_shell_protocol",
+    "//third_party/wayland-protocols:secure_output_protocol",
+    "//third_party/wayland-protocols:stylus_protocol",
+    "//third_party/wayland-protocols:stylus_tools_protocol",
+    "//third_party/wayland-protocols:text_input_protocol",
+    "//third_party/wayland-protocols:viewporter_protocol",
+    "//third_party/wayland-protocols:vsync_feedback_protocol",
+    "//third_party/wayland-protocols:xdg_decoration_protocol",
+    "//third_party/wayland-protocols:xdg_shell_protocol",
+  ]
+
+  if (ozone_platform_drm) {
+    configs += [ "//ui/gl:gl_config" ]
+  }
+}
+
 source_set("fullscreen_shell") {
   sources = [
     "clients/fullscreen_shell.cc",
@@ -356,6 +394,15 @@ executable("wayland_simple_client") {
   deps = [
     ":client_support",
     ":simple",
+    "//base",
+  ]
+}
+
+executable("wayland_client_version_test") {
+  sources = [ "clients/test/client_version_test_main.cc" ]
+  deps = [
+    ":client_support",
+    ":client_version_test",
     "//base",
   ]
 }
