@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/focus/widget_focus_manager.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -49,8 +48,6 @@ class AutofillPopupBaseView : public views::WidgetDelegateView,
   SkColor GetForegroundColor();
   SkColor GetSelectedBackgroundColor();
   SkColor GetSelectedForegroundColor();
-  SkColor GetHighContrastAwareColor(ui::NativeTheme::ColorId non_hc_color,
-                                    ui::NativeTheme::SystemThemeColor hc_color);
   SkColor GetFooterBackgroundColor();
   SkColor GetSeparatorColor();
   SkColor GetWarningColor();
