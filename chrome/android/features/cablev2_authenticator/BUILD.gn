@@ -66,6 +66,7 @@ android_resources("java_resources") {
     "java/res/drawable/circle_loader_animation.xml",
     "java/res/drawable/header.xml",
     "java/res/drawable/ic_lock_googblue_48dp.xml",
+    "java/res/drawable/usb_conn.xml",
     "java/res/layout/cablev2_fcm.xml",
     "java/res/layout/cablev2_qr_dialog.xml",
     "java/res/layout/cablev2_qr_scan.xml",
