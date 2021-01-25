@@ -287,12 +287,20 @@ std::unique_ptr<views::View> PaymentRequestSheetController::CreateView() {
 }
 
 void PaymentRequestSheetController::UpdateContentView() {
+  // Do not update the view if the payment request is being aborted.
+  if (!is_active_)
+    return;
+
   content_view_->RemoveAllChildViews(true);
   FillContentView(content_view_);
   RelayoutPane();
 }
 
 void PaymentRequestSheetController::UpdateHeaderView() {
+  // Do not update the view if the payment request is being aborted.
+  if (!is_active_)
+    return;
+
   header_view_->RemoveAllChildViews(true);
   PopulateSheetHeaderView(
       ShouldShowHeaderBackArrow(), CreateHeaderContentView(header_view_),
@@ -318,6 +326,10 @@ void PaymentRequestSheetController::UpdateFocus(views::View* focused_view) {
 }
 
 void PaymentRequestSheetController::RelayoutPane() {
+  // Do not update the view if the payment request is being aborted.
+  if (!is_active_)
+    return;
+
   content_view_->Layout();
   pane_->SizeToPreferredSize();
   // Now that the content and its surrounding pane are updated, force a Layout
