@@ -3754,14 +3754,14 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
   // When the device scale changes, the size and position of the popup would
   // need to be adjusted, which we can't do. Just close the popup, which is
   // also consistent with page zoom and resize behavior.
+  ScreenInfo original_screen_info = GetOriginalScreenInfo();
   if (previous_original_screen_info.device_scale_factor !=
-      screen_info.device_scale_factor) {
+      original_screen_info.device_scale_factor) {
     View()->CancelPagePopup();
   }
 
   // Propagate changes down to child local root RenderWidgets and BrowserPlugins
   // in other frame trees/processes.
-  ScreenInfo original_screen_info = GetOriginalScreenInfo();
   if (previous_original_screen_info != original_screen_info) {
     ForEachRemoteFrameControlledByWidget(WTF::BindRepeating(
         [](const ScreenInfo& original_screen_info, RemoteFrame* remote_frame) {
