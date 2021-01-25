@@ -2186,8 +2186,12 @@ TEST_P(WaylandWindowTest, SetsPropertiesOnShow) {
   // Now, propagate size constraints and title.
   base::Optional<gfx::Size> min_size(gfx::Size(1, 1));
   base::Optional<gfx::Size> max_size(gfx::Size(100, 100));
-  EXPECT_CALL(delegate, GetMinimumSizeForWindow()).WillOnce(Return(min_size));
-  EXPECT_CALL(delegate, GetMaximumSizeForWindow()).WillOnce(Return(max_size));
+  EXPECT_CALL(delegate, GetMinimumSizeForWindow())
+      .Times(2)
+      .WillRepeatedly(Return(min_size));
+  EXPECT_CALL(delegate, GetMaximumSizeForWindow())
+      .Times(2)
+      .WillRepeatedly(Return(max_size));
 
   EXPECT_CALL(*mock_xdg_toplevel,
               SetMinSize(min_size.value().width(), min_size.value().height()));
