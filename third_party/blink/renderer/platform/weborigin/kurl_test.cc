@@ -1073,19 +1073,22 @@ INSTANTIATE_TEST_SUITE_P(All,
 // namespace as where the typed test suite was defined.
 namespace url {
 
-class KURLTestTraits final : public UrlTraitsBase<blink::KURL> {
+class KURLTestTraits {
  public:
-  UrlType CreateUrlFromString(base::StringPiece s) override {
+  using UrlType = blink::KURL;
+
+  static UrlType CreateUrlFromString(base::StringPiece s) {
     return blink::KURL(String::FromUTF8(s));
   }
 
-  bool IsAboutBlank(const UrlType& url) override {
-    return url.IsAboutBlankURL();
-  }
+  static bool IsAboutBlank(const UrlType& url) { return url.IsAboutBlankURL(); }
 
-  bool IsAboutSrcdoc(const UrlType& url) override {
+  static bool IsAboutSrcdoc(const UrlType& url) {
     return url.IsAboutSrcdocURL();
   }
+
+  // Only static members.
+  KURLTestTraits() = delete;
 };
 
 INSTANTIATE_TYPED_TEST_SUITE_P(KURL, AbstractUrlTest, KURLTestTraits);

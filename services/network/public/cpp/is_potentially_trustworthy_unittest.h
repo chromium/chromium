@@ -16,51 +16,34 @@ namespace test {
 // AbstractTrustworthinessTest below abstracts away differences between
 // network::IsOriginPotentiallyTrustworthy and
 // blink::SecurityOrigin::IsPotentiallyTrustworthy by parametrizing the tests
-// with a class that has to be derived from TrustworthinessTraitsBase
-// below.
-template <typename TConcreteOriginType>
-class TrustworthinessTraitsBase
-    : public virtual url::OriginTraitsBase<TConcreteOriginType> {
- public:
-  using OriginType = TConcreteOriginType;
-  virtual bool IsOriginPotentiallyTrustworthy(const OriginType& origin) = 0;
-  virtual bool IsUrlPotentiallyTrustworthy(base::StringPiece str) = 0;
-  virtual bool IsOriginOfLocalhost(const OriginType& origin) = 0;
-};
-
-// Test suite for tests that cover both url::Origin and blink::SecurityOrigin.
+// with a class that has to expose the same members as url::UrlOriginTestTraits
+// and the following extra members:
+//   static bool IsOriginPotentiallyTrustworthy(const OriginType& origin);
+//   static bool IsUrlPotentiallyTrustworthy(base::StringPiece str);
+//   static bool IsOriginOfLocalhost(const OriginType& origin);
 template <typename TTrustworthinessTraits>
 class AbstractTrustworthinessTest
     : public url::AbstractOriginTest<TTrustworthinessTraits> {
-  static_assert(
-      std::is_base_of<TrustworthinessTraitsBase<
-                          typename TTrustworthinessTraits::OriginType>,
-                      TTrustworthinessTraits>::value,
-      "TTrustworthinessTraits needs to expose the right members.");
-
  protected:
-  // Wrappers that allow tests to ignore presence of `test_traits_`.
+  // Wrappers that help ellide away TTrustworthinessTraits.
   //
   // Note that calling the wrappers needs to be prefixed with `this->...` to
   // avoid hitting: explicit qualification required to use member 'FooBar'
   // from dependent base class.
   using OriginType = typename TTrustworthinessTraits::OriginType;
   bool IsOriginPotentiallyTrustworthy(const OriginType& origin) {
-    return trustworthiness_traits_.IsOriginPotentiallyTrustworthy(origin);
+    return TTrustworthinessTraits::IsOriginPotentiallyTrustworthy(origin);
   }
   bool IsOriginPotentiallyTrustworthy(base::StringPiece str) {
     auto origin = this->CreateOriginFromString(str);
-    return this->IsOriginPotentiallyTrustworthy(origin);
+    return TTrustworthinessTraits::IsOriginPotentiallyTrustworthy(origin);
   }
   bool IsUrlPotentiallyTrustworthy(base::StringPiece str) {
-    return trustworthiness_traits_.IsUrlPotentiallyTrustworthy(str);
+    return TTrustworthinessTraits::IsUrlPotentiallyTrustworthy(str);
   }
   bool IsOriginOfLocalhost(const OriginType& origin) {
-    return trustworthiness_traits_.IsOriginOfLocalhost(origin);
+    return TTrustworthinessTraits::IsOriginOfLocalhost(origin);
   }
-
- private:
-  TTrustworthinessTraits trustworthiness_traits_;
 };
 
 TYPED_TEST_SUITE_P(AbstractTrustworthinessTest);

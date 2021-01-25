@@ -20,54 +20,45 @@
 namespace url {
 
 // AbstractOriginTest below abstracts away differences between url::Origin and
-// blink::SecurityOrigin by parametrizing the tests with a class that has to be
-// derived from OriginTraitsBase below.
-template <typename TConcreteOriginType>
-class OriginTraitsBase {
+// blink::SecurityOrigin by parametrizing the tests with a class that has to
+// expose the same public members as UrlOriginTestTraits below.
+class UrlOriginTestTraits {
  public:
-  using OriginType = TConcreteOriginType;
-  OriginTraitsBase() = default;
+  using OriginType = Origin;
 
   // Constructing an origin.
-  virtual OriginType CreateOriginFromString(base::StringPiece s) = 0;
-  virtual OriginType CreateUniqueOpaqueOrigin() = 0;
-  virtual OriginType CreateWithReferenceOrigin(
+  static OriginType CreateOriginFromString(base::StringPiece s);
+  static OriginType CreateUniqueOpaqueOrigin();
+  static OriginType CreateWithReferenceOrigin(
       base::StringPiece url,
-      const OriginType& reference_origin) = 0;
-  virtual OriginType DeriveNewOpaqueOrigin(
-      const OriginType& reference_origin) = 0;
+      const OriginType& reference_origin);
+  static OriginType DeriveNewOpaqueOrigin(const OriginType& reference_origin);
 
   // Accessors for origin properties.
-  virtual bool IsOpaque(const OriginType& origin) = 0;
-  virtual std::string GetScheme(const OriginType& origin) = 0;
-  virtual std::string GetHost(const OriginType& origin) = 0;
-  virtual uint16_t GetPort(const OriginType& origin) = 0;
-  virtual SchemeHostPort GetTupleOrPrecursorTupleIfOpaque(
-      const OriginType& origin) = 0;
+  static bool IsOpaque(const OriginType& origin);
+  static std::string GetScheme(const OriginType& origin);
+  static std::string GetHost(const OriginType& origin);
+  static uint16_t GetPort(const OriginType& origin);
+  static SchemeHostPort GetTupleOrPrecursorTupleIfOpaque(
+      const OriginType& origin);
 
   // Wrappers for other instance methods of OriginType.
-  virtual bool IsSameOrigin(const OriginType& a, const OriginType& b) = 0;
-  virtual std::string Serialize(const OriginType& origin) = 0;
+  static bool IsSameOrigin(const OriginType& a, const OriginType& b);
+  static std::string Serialize(const OriginType& origin);
 
   // "Accessors" of URL properties.
   //
   // TODO(lukasza): Consider merging together OriginTraitsBase here and
   // UrlTraitsBase in //url/gurl_abstract_tests.h.
-  virtual bool IsValidUrl(base::StringPiece str) = 0;
+  static bool IsValidUrl(base::StringPiece str);
 
-  // This type is non-copyable and non-moveable.
-  OriginTraitsBase(const OriginTraitsBase&) = delete;
-  OriginTraitsBase& operator=(const OriginTraitsBase&) = delete;
+  // Only static members = no constructors are needed.
+  UrlOriginTestTraits() = delete;
 };
 
 // Test suite for tests that cover both url::Origin and blink::SecurityOrigin.
 template <typename TOriginTraits>
 class AbstractOriginTest : public testing::Test {
-  static_assert(
-      std::is_base_of<OriginTraitsBase<typename TOriginTraits::OriginType>,
-                      TOriginTraits>::value,
-      "TOriginTraits needs to expose the right members.");
-
  public:
   void SetUp() override {
     const char* kSchemesToRegister[] = {
@@ -97,48 +88,48 @@ class AbstractOriginTest : public testing::Test {
   }
 
  protected:
-  // Wrappers that allow tests to ignore presence of `origin_test_traits_`.
+  // Wrappers that help ellide away TOriginTraits.
   //
   // Note that calling the wrappers needs to be prefixed with `this->...` to
   // avoid hitting: explicit qualification required to use member 'IsOpaque'
   // from dependent base class.
   using OriginType = typename TOriginTraits::OriginType;
   OriginType CreateOriginFromString(base::StringPiece s) {
-    return origin_traits_.CreateOriginFromString(s);
+    return TOriginTraits::CreateOriginFromString(s);
   }
   OriginType CreateUniqueOpaqueOrigin() {
-    return origin_traits_.CreateUniqueOpaqueOrigin();
+    return TOriginTraits::CreateUniqueOpaqueOrigin();
   }
   OriginType CreateWithReferenceOrigin(base::StringPiece url,
                                        const OriginType& reference_origin) {
-    return origin_traits_.CreateWithReferenceOrigin(url, reference_origin);
+    return TOriginTraits::CreateWithReferenceOrigin(url, reference_origin);
   }
   OriginType DeriveNewOpaqueOrigin(const OriginType& reference_origin) {
-    return origin_traits_.DeriveNewOpaqueOrigin(reference_origin);
+    return TOriginTraits::DeriveNewOpaqueOrigin(reference_origin);
   }
   bool IsOpaque(const OriginType& origin) {
-    return origin_traits_.IsOpaque(origin);
+    return TOriginTraits::IsOpaque(origin);
   }
   std::string GetScheme(const OriginType& origin) {
-    return origin_traits_.GetScheme(origin);
+    return TOriginTraits::GetScheme(origin);
   }
   std::string GetHost(const OriginType& origin) {
-    return origin_traits_.GetHost(origin);
+    return TOriginTraits::GetHost(origin);
   }
   uint16_t GetPort(const OriginType& origin) {
-    return origin_traits_.GetPort(origin);
+    return TOriginTraits::GetPort(origin);
   }
   SchemeHostPort GetTupleOrPrecursorTupleIfOpaque(const OriginType& origin) {
-    return origin_traits_.GetTupleOrPrecursorTupleIfOpaque(origin);
+    return TOriginTraits::GetTupleOrPrecursorTupleIfOpaque(origin);
   }
   bool IsSameOrigin(const OriginType& a, const OriginType& b) {
-    return origin_traits_.IsSameOrigin(a, b);
+    return TOriginTraits::IsSameOrigin(a, b);
   }
   std::string Serialize(const OriginType& origin) {
-    return origin_traits_.Serialize(origin);
+    return TOriginTraits::Serialize(origin);
   }
   bool IsValidUrl(base::StringPiece str) {
-    return origin_traits_.IsValidUrl(str);
+    return TOriginTraits::IsValidUrl(str);
   }
 
 #define EXPECT_SAME_ORIGIN(a, b)                                 \
@@ -233,7 +224,6 @@ class AbstractOriginTest : public testing::Test {
   }
 
  private:
-  TOriginTraits origin_traits_;
   ScopedSchemeRegistryForTests scoped_scheme_registry_;
 };
 
@@ -498,25 +488,6 @@ REGISTER_TYPED_TEST_SUITE_P(AbstractOriginTest,
                             TupleOrigins,
                             CustomSchemes_OpaqueOrigins,
                             CustomSchemes_TupleOrigins);
-
-class UrlOriginTestTraits : public virtual OriginTraitsBase<Origin> {
- public:
-  OriginType CreateOriginFromString(base::StringPiece s) override;
-  OriginType CreateUniqueOpaqueOrigin() override;
-  OriginType CreateWithReferenceOrigin(
-      base::StringPiece url,
-      const OriginType& reference_origin) override;
-  OriginType DeriveNewOpaqueOrigin(const OriginType& reference_origin) override;
-  bool IsOpaque(const OriginType& origin) override;
-  std::string GetScheme(const OriginType& origin) override;
-  std::string GetHost(const OriginType& origin) override;
-  uint16_t GetPort(const OriginType& origin) override;
-  SchemeHostPort GetTupleOrPrecursorTupleIfOpaque(
-      const OriginType& origin) override;
-  bool IsSameOrigin(const OriginType& a, const OriginType& b) override;
-  std::string Serialize(const OriginType& origin) override;
-  bool IsValidUrl(base::StringPiece str) override;
-};
 
 }  // namespace url
 

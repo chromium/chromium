@@ -992,15 +992,16 @@ TEST(GURLTest, PortZero) {
   EXPECT_FALSE(default_port_origin.IsSameOriginWith(resolved_origin));
 }
 
-class GURLTestTraits final : public UrlTraitsBase<GURL> {
+class GURLTestTraits {
  public:
-  UrlType CreateUrlFromString(base::StringPiece s) override { return GURL(s); }
+  using UrlType = GURL;
 
-  bool IsAboutBlank(const UrlType& url) override { return url.IsAboutBlank(); }
+  static UrlType CreateUrlFromString(base::StringPiece s) { return GURL(s); }
+  static bool IsAboutBlank(const UrlType& url) { return url.IsAboutBlank(); }
+  static bool IsAboutSrcdoc(const UrlType& url) { return url.IsAboutSrcdoc(); }
 
-  bool IsAboutSrcdoc(const UrlType& url) override {
-    return url.IsAboutSrcdoc();
-  }
+  // Only static members.
+  GURLTestTraits() = delete;
 };
 
 INSTANTIATE_TYPED_TEST_SUITE_P(GURL, AbstractUrlTest, GURLTestTraits);

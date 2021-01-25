@@ -5,53 +5,33 @@
 #ifndef URL_GURL_ABSTRACT_TESTS_H_
 #define URL_GURL_ABSTRACT_TESTS_H_
 
-// AbstractUrlTest below abstracts away differences between GURL and blink::KURL
-// by parametrizing the tests with a class that has to be derived from
-// UrlTraitsBase below.
-template <typename TConcreteUrlType>
-class UrlTraitsBase {
- public:
-  using UrlType = TConcreteUrlType;
-  UrlTraitsBase() = default;
-
-  // Constructing an origin.
-  virtual UrlType CreateUrlFromString(base::StringPiece s) = 0;
-
-  // Accessors for origin properties.
-  virtual bool IsAboutBlank(const UrlType& url) = 0;
-  virtual bool IsAboutSrcdoc(const UrlType& url) = 0;
-
-  // This type is non-copyable and non-moveable.
-  UrlTraitsBase(const UrlTraitsBase&) = delete;
-  UrlTraitsBase& operator=(const UrlTraitsBase&) = delete;
-};
-
 // Test suite for tests that cover both url::Url and blink::SecurityUrl.
+//
+// AbstractUrlTest below abstracts away differences between GURL and blink::KURL
+// by parametrizing the tests with a class that has to expose the following
+// members:
+//   using UrlType = ...;
+//   static UrlType CreateUrlFromString(base::StringPiece s);
+//   static bool IsAboutBlank(const UrlType& url);
+//   static bool IsAboutSrcdoc(const UrlType& url);
 template <typename TUrlTraits>
 class AbstractUrlTest : public testing::Test {
-  static_assert(std::is_base_of<UrlTraitsBase<typename TUrlTraits::UrlType>,
-                                TUrlTraits>::value,
-                "TUrlTraits needs to expose the right members.");
-
  protected:
-  // Wrappers that allow tests to ignore presence of `url_traits_`.
+  // Wrappers that help ellide away TUrlTraits.
   //
   // Note that calling the wrappers needs to be prefixed with `this->...` to
   // avoid hitting: explicit qualification required to use member 'IsAboutBlank'
   // from dependent base class.
   using UrlType = typename TUrlTraits::UrlType;
   UrlType CreateUrlFromString(base::StringPiece s) {
-    return url_traits_.CreateUrlFromString(s);
+    return TUrlTraits::CreateUrlFromString(s);
   }
   bool IsAboutBlank(const UrlType& url) {
-    return url_traits_.IsAboutBlank(url);
+    return TUrlTraits::IsAboutBlank(url);
   }
   bool IsAboutSrcdoc(const UrlType& url) {
-    return url_traits_.IsAboutSrcdoc(url);
+    return TUrlTraits::IsAboutSrcdoc(url);
   }
-
- private:
-  TUrlTraits url_traits_;
 };
 
 TYPED_TEST_SUITE_P(AbstractUrlTest);

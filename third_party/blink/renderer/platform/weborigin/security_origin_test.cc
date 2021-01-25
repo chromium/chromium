@@ -1065,46 +1065,43 @@ TEST_F(SecurityOriginTest, PercentEncodesHost) {
 // namespace as where the typed test suite was defined.
 namespace url {
 
-class BlinkSecurityOriginTestTraits final
-    : public network::test::TrustworthinessTraitsBase<
-          scoped_refptr<blink::SecurityOrigin>> {
+class BlinkSecurityOriginTestTraits {
  public:
-  OriginType CreateOriginFromString(base::StringPiece s) override {
+  using OriginType = scoped_refptr<blink::SecurityOrigin>;
+
+  static OriginType CreateOriginFromString(base::StringPiece s) {
     return blink::SecurityOrigin::CreateFromString(String::FromUTF8(s));
   }
 
-  OriginType CreateUniqueOpaqueOrigin() override {
+  static OriginType CreateUniqueOpaqueOrigin() {
     return blink::SecurityOrigin::CreateUniqueOpaque();
   }
 
-  OriginType CreateWithReferenceOrigin(
+  static OriginType CreateWithReferenceOrigin(
       base::StringPiece url,
-      const OriginType& reference_origin) override {
+      const OriginType& reference_origin) {
     return blink::SecurityOrigin::CreateWithReferenceOrigin(
         blink::KURL(String::FromUTF8(url)), reference_origin.get());
   }
 
-  OriginType DeriveNewOpaqueOrigin(
-      const OriginType& reference_origin) override {
+  static OriginType DeriveNewOpaqueOrigin(const OriginType& reference_origin) {
     return reference_origin->DeriveNewOpaqueOrigin();
   }
 
-  bool IsOpaque(const OriginType& origin) override {
-    return origin->IsOpaque();
-  }
+  static bool IsOpaque(const OriginType& origin) { return origin->IsOpaque(); }
 
-  std::string GetScheme(const OriginType& origin) override {
+  static std::string GetScheme(const OriginType& origin) {
     return origin->Protocol().Utf8();
   }
 
-  std::string GetHost(const OriginType& origin) override {
+  static std::string GetHost(const OriginType& origin) {
     return origin->Host().Utf8();
   }
 
-  uint16_t GetPort(const OriginType& origin) override { return origin->Port(); }
+  static uint16_t GetPort(const OriginType& origin) { return origin->Port(); }
 
-  SchemeHostPort GetTupleOrPrecursorTupleIfOpaque(
-      const OriginType& origin) override {
+  static SchemeHostPort GetTupleOrPrecursorTupleIfOpaque(
+      const OriginType& origin) {
     const blink::SecurityOrigin* precursor =
         origin->GetOriginOrPrecursorOriginIfOpaque();
     if (!precursor)
@@ -1113,29 +1110,32 @@ class BlinkSecurityOriginTestTraits final
                           precursor->Host().Utf8(), precursor->Port());
   }
 
-  bool IsSameOrigin(const OriginType& a, const OriginType& b) override {
+  static bool IsSameOrigin(const OriginType& a, const OriginType& b) {
     return a->IsSameOriginWith(b.get());
   }
 
-  std::string Serialize(const OriginType& origin) override {
+  static std::string Serialize(const OriginType& origin) {
     return origin->ToString().Utf8();
   }
 
-  bool IsValidUrl(base::StringPiece str) override {
+  static bool IsValidUrl(base::StringPiece str) {
     return blink::KURL(String::FromUTF8(str)).IsValid();
   }
 
-  bool IsOriginPotentiallyTrustworthy(const OriginType& origin) override {
+  static bool IsOriginPotentiallyTrustworthy(const OriginType& origin) {
     return origin->IsPotentiallyTrustworthy();
   }
 
-  bool IsUrlPotentiallyTrustworthy(base::StringPiece str) override {
+  static bool IsUrlPotentiallyTrustworthy(base::StringPiece str) {
     return blink::SecurityOrigin::IsSecure(blink::KURL(String::FromUTF8(str)));
   }
 
-  bool IsOriginOfLocalhost(const OriginType& origin) override {
+  static bool IsOriginOfLocalhost(const OriginType& origin) {
     return origin->IsLocalhost();
   }
+
+  // Only static members = no constructors are needed.
+  BlinkSecurityOriginTestTraits() = delete;
 };
 
 INSTANTIATE_TYPED_TEST_SUITE_P(BlinkSecurityOrigin,

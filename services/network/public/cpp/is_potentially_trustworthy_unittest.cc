@@ -215,19 +215,22 @@ TEST_F(SecureOriginAllowlistTest, Canonicalization) {
   EXPECT_THAT(canonicalized, ::testing::ElementsAre("*.example.com"));
 }
 
-class TrustworthinessTestTraits final
-    : public virtual url::UrlOriginTestTraits,
-      public virtual TrustworthinessTraitsBase<url::Origin> {
+class TrustworthinessTestTraits : public url::UrlOriginTestTraits {
  public:
-  bool IsOriginPotentiallyTrustworthy(const OriginType& origin) override {
+  using OriginType = url::Origin;
+
+  static bool IsOriginPotentiallyTrustworthy(const OriginType& origin) {
     return network::IsOriginPotentiallyTrustworthy(origin);
   }
-  bool IsUrlPotentiallyTrustworthy(base::StringPiece str) override {
+  static bool IsUrlPotentiallyTrustworthy(base::StringPiece str) {
     return network::IsUrlPotentiallyTrustworthy(GURL(str));
   }
-  bool IsOriginOfLocalhost(const OriginType& origin) override {
+  static bool IsOriginOfLocalhost(const OriginType& origin) {
     return net::IsLocalhost(origin.GetURL());
   }
+
+  // Only static members = no constructors are needed.
+  TrustworthinessTestTraits() = delete;
 };
 
 INSTANTIATE_TYPED_TEST_SUITE_P(UrlOrigin,
