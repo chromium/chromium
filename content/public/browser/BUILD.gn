@@ -528,6 +528,10 @@ source_set("browser_sources") {
     ]
   }
 
+  if (use_atk) {
+    sources += [ "ax_inspect_factory_auralinux.cc" ]
+  }
+
   if (is_linux || is_chromeos) {
     sources += [ "zygote_host/zygote_host_linux.h" ]
   }

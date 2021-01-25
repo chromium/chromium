@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
+#include "content/browser/accessibility/accessibility_tree_formatter_auralinux.h"
 
-#include <atspi/atspi.h>
 #include <dbus/dbus.h>
 
-#include <iostream>
 #include <utility>
 
 #include "base/logging.h"
@@ -42,64 +40,6 @@ const char kChromiumTitle[] = "Chromium";
 const char kFirefoxTitle[] = "Firefox";
 
 namespace content {
-
-class AccessibilityTreeFormatterAuraLinux : public ui::AXTreeFormatterBase {
- public:
-  AccessibilityTreeFormatterAuraLinux();
-  ~AccessibilityTreeFormatterAuraLinux() override;
-
- private:
-  std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node) const override;
-
-  base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
-  base::Value BuildTreeForWindow(gfx::AcceleratedWidget hwnd) const override;
-  base::Value BuildTreeForSelector(
-      const AXTreeSelector& selector) const override;
-
-  AtspiAccessible* FindActiveDocument(AtspiAccessible* root) const;
-  void RecursiveBuildTree(AtspiAccessible* node,
-                          base::DictionaryValue* dict) const;
-  void RecursiveBuildTree(AtkObject*, base::DictionaryValue*) const;
-
-  void AddProperties(AtkObject*, base::DictionaryValue*) const;
-  void AddProperties(AtspiAccessible*, base::DictionaryValue*) const;
-
-  void AddTextProperties(AtkText* atk_text, base::DictionaryValue* dict) const;
-  void AddActionProperties(AtkObject* atk_object,
-                           base::DictionaryValue* dict) const;
-  void AddValueProperties(AtkObject* atk_object,
-                          base::DictionaryValue* dict) const;
-  void AddTableProperties(AtkObject* atk_object,
-                          base::DictionaryValue* dict) const;
-  void AddTableCellProperties(const ui::AXPlatformNodeAuraLinux* node,
-                              AtkObject* atk_object,
-                              base::DictionaryValue* dict) const;
-};
-
-// TODO(crbug.com/1133330): move implementation into
-// content/public/ax_inspect_factory.cc when AccessibilityTreeFormatterAuraLinux
-// is relocated under ui/accessibility/platform
-
-// static
-std::unique_ptr<ui::AXTreeFormatter>
-AXInspectFactory::CreatePlatformFormatter() {
-  return AXInspectFactory::CreateFormatter(kLinux);
-}
-
-// static
-std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
-    AXInspectFactory::Type type) {
-  switch (type) {
-    case kBlink:
-      return std::make_unique<AccessibilityTreeFormatterBlink>();
-    case kLinux:
-      return std::make_unique<AccessibilityTreeFormatterAuraLinux>();
-    default:
-      NOTREACHED() << "Unsupported formatter type " << type;
-  }
-  return nullptr;
-}
 
 AccessibilityTreeFormatterAuraLinux::AccessibilityTreeFormatterAuraLinux() {}
 
