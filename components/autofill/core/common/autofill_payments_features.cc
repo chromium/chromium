@@ -116,6 +116,11 @@ const base::Feature kAutofillSaveCardDismissOnNavigation{
 const base::Feature kAutofillSaveCardInfobarEditSupport{
     "AutofillSaveCardInfobarEditSupport", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// When enabled, suggestions with offers will be shown at the top.
+const base::Feature kAutofillSortSuggestionsBasedOnOfferPresence{
+    "AutofillSortSuggestionsBasedOnOfferPresence",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Controls offering credit card upload to Google Payments. Cannot ever be
 // ENABLED_BY_DEFAULT because the feature state depends on the user's country.
 // There are countries we simply can't turn this on for, and they change over
