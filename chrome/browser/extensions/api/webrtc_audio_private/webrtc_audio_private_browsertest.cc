@@ -75,14 +75,14 @@ void GetAudioDeviceDescriptions(bool for_input,
   std::unique_ptr<media::AudioSystem> audio_system =
       content::CreateAudioSystemForAudioService();
   audio_system->GetDeviceDescriptions(
-      for_input,
-      base::BindOnce(
-          [](base::Closure finished_callback, AudioDeviceDescriptions* result,
-             AudioDeviceDescriptions received) {
-            *result = std::move(received);
-            finished_callback.Run();
-          },
-          run_loop.QuitClosure(), device_descriptions));
+      for_input, base::BindOnce(
+                     [](base::OnceClosure finished_callback,
+                        AudioDeviceDescriptions* result,
+                        AudioDeviceDescriptions received) {
+                       *result = std::move(received);
+                       std::move(finished_callback).Run();
+                     },
+                     run_loop.QuitClosure(), device_descriptions));
   run_loop.Run();
 }
 
