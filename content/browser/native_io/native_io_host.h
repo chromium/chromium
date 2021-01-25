@@ -37,6 +37,9 @@ class NativeIOFileHost;
 // sequences, if desired.
 class NativeIOHost : public blink::mojom::NativeIOHost {
  public:
+  using DeleteAllDataCallback =
+      base::OnceCallback<void(base::File::Error result, NativeIOHost* host)>;
+
   explicit NativeIOHost(NativeIOManager* manager,
                         const url::Origin& origin,
                         base::FilePath root_path);
@@ -59,6 +62,11 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
   // The origin served by this host.
   const url::Origin& origin() const { return origin_; }
 
+  // True if this host's data is currently being deleted.
+  bool delete_all_data_in_progress() const {
+    return !delete_all_data_callbacks_.empty();
+  }
+
   // blink::mojom::NativeIOHost:
   void OpenFile(
       const std::string& name,
@@ -70,6 +78,10 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
   void RenameFile(const std::string& old_name,
                   const std::string& new_name,
                   RenameFileCallback callback) override;
+
+  // Removes all data stored for the host's origin from disk. All mojo
+  // connections for open files are closed.
+  void DeleteAllData(DeleteAllDataCallback callback);
 
   // Called when one of the open files for this origin closes.
   //
@@ -98,6 +110,14 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
                      const std::string& new_name,
                      RenameFileCallback callback,
                      blink::mojom::NativeIOErrorPtr rename_error);
+
+  // Called after the file I/O part of DeleteAllData() completed.
+  void DidDeleteAllData(base::File::Error error);
+
+  // Deletion requests issued during an ongoing deletion are coalesced with that
+  // deletion request. All coalesced callbacks are stored and invoked
+  // together.
+  std::vector<DeleteAllDataCallback> delete_all_data_callbacks_;
 
   // The directory holding all the files for this origin.
   const base::FilePath root_path_;

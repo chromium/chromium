@@ -5,12 +5,14 @@
 #include "content/browser/native_io/native_io_quota_client.h"
 
 #include "base/sequence_checker.h"
+#include "content/browser/native_io/native_io_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "url/origin.h"
 
 namespace content {
 
-NativeIOQuotaClient::NativeIOQuotaClient() = default;
+NativeIOQuotaClient::NativeIOQuotaClient(NativeIOManager* manager)
+    : manager_(manager) {}
 
 NativeIOQuotaClient::~NativeIOQuotaClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -56,8 +58,7 @@ void NativeIOQuotaClient::DeleteOriginData(const url::Origin& origin,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
 
-  // TODO(crbug.com/1137788): Implement quota accounting.
-  std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
+  manager_->DeleteOriginData(origin, std::move(callback));
 }
 
 void NativeIOQuotaClient::PerformStorageCleanup(

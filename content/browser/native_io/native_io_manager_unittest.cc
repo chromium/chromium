@@ -33,6 +33,33 @@ namespace content {
 
 namespace {
 
+// Synchronous proxies to a wrapped NativeIOManager's methods.
+class NativeIOManagerSync {
+ public:
+  // The caller must ensure that the NativeIOManager outlives this.
+  explicit NativeIOManagerSync(NativeIOManager* io_manager)
+      : io_manager_(io_manager) {}
+
+  NativeIOManagerSync(const NativeIOManagerSync&) = delete;
+  NativeIOManagerSync& operator=(const NativeIOManagerSync&) = delete;
+
+  blink::mojom::QuotaStatusCode DeleteOriginData(const url::Origin& origin) {
+    blink::mojom::QuotaStatusCode success_code;
+    base::RunLoop run_loop;
+    io_manager_->DeleteOriginData(
+        origin, base::BindLambdaForTesting(
+                    [&](blink::mojom::QuotaStatusCode returned_status) {
+                      success_code = returned_status;
+                      run_loop.Quit();
+                    }));
+    run_loop.Run();
+    return success_code;
+  }
+
+ private:
+  NativeIOManager* const io_manager_;
+};
+
 // Synchronous proxies to a wrapped NativeIOHost's methods.
 class NativeIOHostSync {
  public:
@@ -41,7 +68,7 @@ class NativeIOHostSync {
       : io_host_(io_host) {}
 
   NativeIOHostSync(const NativeIOHostSync&) = delete;
-  NativeIOHostSync operator=(const NativeIOHostSync&) = delete;
+  NativeIOHostSync& operator=(const NativeIOHostSync&) = delete;
 
   ~NativeIOHostSync() = default;
 
@@ -116,7 +143,7 @@ class NativeIOFileHostSync {
       : file_host_(file_host) {}
 
   NativeIOFileHostSync(const NativeIOFileHostSync&) = delete;
-  NativeIOFileHostSync operator=(const NativeIOFileHostSync&) = delete;
+  NativeIOFileHostSync& operator=(const NativeIOFileHostSync&) = delete;
 
   ~NativeIOFileHostSync() = default;
 
@@ -170,10 +197,13 @@ class NativeIOManagerTest : public testing::Test {
     manager_->BindReceiver(url::Origin::Create(GURL(kGoogleOrigin)),
                            google_host_remote_.BindNewPipeAndPassReceiver());
 
-    example_host_ = std::make_unique<NativeIOHostSync>(
-        std::move(example_host_remote_.get()));
-    google_host_ = std::make_unique<NativeIOHostSync>(
-        std::move(google_host_remote_.get()));
+    sync_manager_ =
+        std::make_unique<NativeIOManagerSync>(std::move(manager_.get()));
+
+    example_host_ =
+        std::make_unique<NativeIOHostSync>(example_host_remote_.get());
+    google_host_ =
+        std::make_unique<NativeIOHostSync>(google_host_remote_.get());
   }
 
   void TearDown() override {
@@ -213,6 +243,8 @@ class NativeIOManagerTest : public testing::Test {
   // The NativeIOManager is on the heap because it requires the profile path at
   // construction, and we only know the path during SetUp.
   std::unique_ptr<NativeIOManager> manager_;
+
+  std::unique_ptr<NativeIOManagerSync> sync_manager_;
 
   // Hosts for two different origins, used for isolation testing.
   mojo::Remote<blink::mojom::NativeIOHost> example_host_remote_;
@@ -487,6 +519,113 @@ TEST_F(NativeIOManagerTest, BindReceiver_UntrustworthyOrigin) {
                          insecure_host_remote_.BindNewPipeAndPassReceiver());
   EXPECT_EQ("Called NativeIO from an insecure context",
             bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(NativeIOManagerTest, DeleteOriginData_WipesDataForActiveHost) {
+  mojo::Remote<blink::mojom::NativeIOFileHost> example_host_remote;
+  base::File example_file =
+      example_host_
+          ->OpenFile("test_file",
+                     example_host_remote.BindNewPipeAndPassReceiver())
+          .first;
+  EXPECT_TRUE(example_file.IsValid());
+  EXPECT_TRUE(example_host_remote.is_connected());
+
+  mojo::Remote<blink::mojom::NativeIOFileHost> google_host_remote;
+  base::File google_file =
+      google_host_
+          ->OpenFile("test_file",
+                     google_host_remote.BindNewPipeAndPassReceiver())
+          .first;
+  EXPECT_TRUE(google_file.IsValid());
+
+  EXPECT_EQ(sync_manager_->DeleteOriginData(
+                url::Origin::Create(GURL(kExampleOrigin))),
+            blink::mojom::QuotaStatusCode::kOk);
+
+  EXPECT_FALSE(base::PathExists(
+      manager_->RootPathForOrigin(url::Origin::Create(GURL(kExampleOrigin)))));
+  EXPECT_FALSE(example_host_remote.is_connected())
+      << "Deleting an origin's data should disconnect its mojo connections.";
+  example_file.Close();
+
+  EXPECT_TRUE(base::PathExists(
+      manager_->RootPathForOrigin(url::Origin::Create(GURL(kGoogleOrigin)))));
+  EXPECT_TRUE(google_host_remote.is_connected());
+  google_file.Close();
+  NativeIOFileHostSync google_file_host(google_host_remote.get());
+  google_file_host.Close();
+}
+
+TEST_F(NativeIOManagerTest, DeleteOriginData_UnsupportedOrigin) {
+  mojo::Remote<blink::mojom::NativeIOFileHost> example_host_remote;
+  base::File example_file =
+      example_host_
+          ->OpenFile("test_file",
+                     example_host_remote.BindNewPipeAndPassReceiver())
+          .first;
+  EXPECT_TRUE(example_file.IsValid());
+  example_file.Close();
+  NativeIOFileHostSync example_file_host(example_host_remote.get());
+  example_file_host.Close();
+
+  url::Origin insecure_origin =
+      url::Origin::Create(GURL("http://insecure.com"));
+
+  EXPECT_EQ(sync_manager_->DeleteOriginData(insecure_origin),
+            blink::mojom::QuotaStatusCode::kOk);
+
+  EXPECT_TRUE(base::PathExists(
+      manager_->RootPathForOrigin(url::Origin::Create(GURL(kExampleOrigin)))));
+}
+
+TEST_F(NativeIOManagerTest, DeleteOriginData_OriginWithNoData) {
+  mojo::Remote<blink::mojom::NativeIOFileHost> example_host_remote;
+  base::File example_file =
+      example_host_
+          ->OpenFile("test_file",
+                     example_host_remote.BindNewPipeAndPassReceiver())
+          .first;
+  EXPECT_TRUE(example_file.IsValid());
+  example_file.Close();
+  NativeIOFileHostSync example_file_host(example_host_remote.get());
+  example_file_host.Close();
+
+  url::Origin origin_with_no_data =
+      url::Origin::Create(GURL("https://other.example.com"));
+
+  EXPECT_EQ(sync_manager_->DeleteOriginData(origin_with_no_data),
+            blink::mojom::QuotaStatusCode::kOk);
+
+  EXPECT_TRUE(base::PathExists(
+      manager_->RootPathForOrigin(url::Origin::Create(GURL(kExampleOrigin)))));
+}
+
+TEST_F(NativeIOManagerTest, DeleteOriginData_ConcurrentDeletion) {
+  mojo::Remote<blink::mojom::NativeIOFileHost> example_host_remote;
+  base::File example_file =
+      example_host_
+          ->OpenFile("test_file",
+                     example_host_remote.BindNewPipeAndPassReceiver())
+          .first;
+  EXPECT_TRUE(example_file.IsValid());
+  example_file.Close();
+  NativeIOFileHostSync example_file_host(example_host_remote.get());
+  example_file_host.Close();
+
+  url::Origin example_origin = url::Origin::Create(GURL(kExampleOrigin));
+
+  manager_->DeleteOriginData(
+      example_origin, base::BindLambdaForTesting(
+                          [&](blink::mojom::QuotaStatusCode returned_status) {
+                            EXPECT_EQ(returned_status,
+                                      blink::mojom::QuotaStatusCode::kOk);
+                          }));
+
+  EXPECT_EQ(sync_manager_->DeleteOriginData(example_origin),
+            blink::mojom::QuotaStatusCode::kOk);
+
+  EXPECT_TRUE(!base::PathExists(manager_->RootPathForOrigin(example_origin)));
 }
 
 }  // namespace

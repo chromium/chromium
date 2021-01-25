@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -193,6 +194,17 @@ NativeIOErrorPtr DoRenameFile(const base::FilePath& root_path,
   return NativeIOManager::FileErrorToNativeIOError(error);
 }
 
+// Performs the file I/O work in DeleteAllData().
+base::File::Error DoDeleteAllData(const base::FilePath& origin_dir) {
+  CHECK(!origin_dir.ReferencesParent())
+      << "Removing a parent directory is disallowed.";
+  bool delete_success = base::DeletePathRecursively(origin_dir);
+  if (!delete_success) {
+    return base::File::GetLastFileError();
+  }
+  return base::File::FILE_OK;
+}
+
 }  // namespace
 
 NativeIOHost::NativeIOHost(NativeIOManager* manager,
@@ -229,6 +241,13 @@ void NativeIOHost::OpenFile(
     OpenFileCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (delete_all_data_in_progress()) {
+    std::move(callback).Run(
+        base::File(), NativeIOError::New(NativeIOErrorType::kInvalidState,
+                                         "Data removal pending on origin"));
+    return;
+  }
+
   if (!IsValidNativeIOName(name)) {
     mojo::ReportBadMessage("Invalid file name");
     std::move(callback).Run(
@@ -249,9 +268,8 @@ void NativeIOHost::OpenFile(
   bool insert_success = insert_result.second;
   if (!insert_success) {
     std::move(callback).Run(
-        base::File(),
-        NativeIOError::New(NativeIOErrorType::kNoModificationAllowed,
-                           "Operation pending on file"));
+        base::File(), NativeIOError::New(NativeIOErrorType::kInvalidState,
+                                         "Data removal pending on origin"));
     return;
   }
 
@@ -264,6 +282,12 @@ void NativeIOHost::OpenFile(
 void NativeIOHost::DeleteFile(const std::string& name,
                               DeleteFileCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (delete_all_data_in_progress()) {
+    std::move(callback).Run(NativeIOError::New(
+        NativeIOErrorType::kInvalidState, "Data removal pending on origin"));
+    return;
+  }
 
   if (!IsValidNativeIOName(name)) {
     mojo::ReportBadMessage("Invalid file name");
@@ -287,6 +311,8 @@ void NativeIOHost::DeleteFile(const std::string& name,
     return;
   }
 
+  // The deletion task runs on the file_task_runner and is skipped on shutdown,
+  // as is ok for origin data deletion.
   file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&DoDeleteFile, root_path_, name),
       base::BindOnce(&NativeIOHost::DidDeleteFile, weak_factory_.GetWeakPtr(),
@@ -295,6 +321,11 @@ void NativeIOHost::DeleteFile(const std::string& name,
 
 void NativeIOHost::GetAllFileNames(GetAllFileNamesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (delete_all_data_in_progress()) {
+    std::move(callback).Run(false, {});
+    return;
+  }
 
   file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce(&DoGetAllFileNames, root_path_),
@@ -305,6 +336,12 @@ void NativeIOHost::RenameFile(const std::string& old_name,
                               const std::string& new_name,
                               RenameFileCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (delete_all_data_in_progress()) {
+    std::move(callback).Run(NativeIOError::New(
+        NativeIOErrorType::kInvalidState, "Data removal pending on origin"));
+    return;
+  }
 
   if (!IsValidNativeIOName(old_name) || !IsValidNativeIOName(new_name)) {
     mojo::ReportBadMessage("Invalid file name");
@@ -353,6 +390,22 @@ void NativeIOHost::OnFileClose(NativeIOFileHost* file_host) {
   DCHECK_EQ(open_file_hosts_[file_host->file_name()].get(), file_host);
 
   open_file_hosts_.erase(file_host->file_name());
+}
+
+void NativeIOHost::DeleteAllData(DeleteAllDataCallback callback) {
+  delete_all_data_callbacks_.push_back(std::move(callback));
+  if (delete_all_data_callbacks_.size() > 1) {
+    return;
+  }
+
+  // Clearing open file hosts informs the renderer that the file handles should
+  // not be used any longer.
+  open_file_hosts_.clear();
+
+  file_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&DoDeleteAllData, root_path_),
+      base::BindOnce(&NativeIOHost::DidDeleteAllData,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void NativeIOHost::OnReceiverDisconnect() {
@@ -415,6 +468,17 @@ void NativeIOHost::DidRenameFile(const std::string& old_name,
 
   std::move(callback).Run(std::move(rename_error));
   return;
+}
+
+void NativeIOHost::DidDeleteAllData(base::File::Error error) {
+  // Moving callbacks to a local variable to avoid race conditions if the vector
+  // is accessed concurrently.
+  std::vector<DeleteAllDataCallback> callbacks =
+      std::move(delete_all_data_callbacks_);
+  delete_all_data_callbacks_.clear();
+  for (DeleteAllDataCallback& callback : callbacks) {
+    std::move(callback).Run(error, this);
+  }
 }
 
 }  // namespace content

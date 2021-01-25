@@ -14,12 +14,14 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
+#include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "storage/common/database/database_identifier.h"
 #include "third_party/blink/public/common/native_io/native_io_utils.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom-shared.h"
 #include "url/origin.h"
 
 namespace content {
@@ -37,6 +39,9 @@ NativeIOManager::NativeIOManager(
     : root_path_(GetNativeIORootPath(profile_root)),
       special_storage_policy_(std::move(special_storage_policy)),
       quota_manager_proxy_(std::move(quota_manager_proxy)),
+      // Using a raw pointer is safe since NativeIOManager be owned by
+      // NativeIOQuotaClient and is guaranteed to outlive it.
+      quota_client_(this),
       quota_client_receiver_(&quota_client_) {
   if (quota_manager_proxy_) {
     // Quota client assumes all backends have registered.
@@ -78,8 +83,9 @@ void NativeIOManager::BindReceiver(
 
     bool insert_succeeded;
     std::tie(it, insert_succeeded) =
-        hosts_.insert({origin, std::make_unique<NativeIOHost>(
-                                   this, origin, std::move(origin_root_path))});
+        hosts_.emplace(origin, std::make_unique<NativeIOHost>(
+                                   this, origin, std::move(origin_root_path)));
+    DCHECK(insert_succeeded);
   }
 
   it->second->BindReceiver(std::move(receiver));
@@ -87,14 +93,70 @@ void NativeIOManager::BindReceiver(
 
 void NativeIOManager::OnHostReceiverDisconnect(NativeIOHost* host) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  MaybeDeleteHost(host);
+}
+
+void NativeIOManager::MaybeDeleteHost(NativeIOHost* host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(host != nullptr);
   DCHECK(hosts_.count(host->origin()) > 0);
   DCHECK_EQ(hosts_[host->origin()].get(), host);
 
-  if (!host->has_empty_receiver_set())
+  if (!host->has_empty_receiver_set() || host->delete_all_data_in_progress())
     return;
 
   hosts_.erase(host->origin());
+}
+
+void NativeIOManager::OnDeleteOriginDataCompleted(
+    storage::QuotaClient::DeleteOriginDataCallback callback,
+    base::File::Error result,
+    NativeIOHost* host) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  MaybeDeleteHost(host);
+  blink::mojom::QuotaStatusCode quota_result =
+      result == base::File::FILE_OK ? blink::mojom::QuotaStatusCode::kOk
+                                    : blink::mojom::QuotaStatusCode::kUnknown;
+  std::move(callback).Run(quota_result);
+}
+
+void NativeIOManager::DeleteOriginData(
+    const url::Origin& origin,
+    storage::QuotaClient::DeleteOriginDataCallback callback) {
+  auto it = hosts_.find(origin);
+  if (it == hosts_.end()) {
+    // TODO(rstz): Consider turning these checks into DCHECKS when NativeIO is
+    // no longer bundled with the Filesystem API during data removal.
+    if (!network::IsOriginPotentiallyTrustworthy(origin)) {
+      std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
+      return;
+    }
+    base::FilePath origin_root_path = RootPathForOrigin(origin);
+    if (origin_root_path.empty()) {
+      // NativeIO is not supported for the origin, no data can be deleted.
+      std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
+      return;
+    }
+
+    DCHECK(root_path_.IsParent(origin_root_path))
+        << "Per-origin data should be in a sub-directory of NativeIO/";
+
+    bool insert_succeeded;
+    // Create a NativeIOHost so that future API calls for the origin are queued
+    // behind the data deletion. This should not meaningfully slow down the
+    // removal process.
+    std::tie(it, insert_succeeded) =
+        hosts_.emplace(origin, std::make_unique<NativeIOHost>(
+                                   this, origin, std::move(origin_root_path)));
+    DCHECK(insert_succeeded);
+  }
+
+  // base::Unretained is safe here because this NativeIOManager owns the
+  // NativeIOHost. So, the unretained NativeIOManager is guaranteed to outlive
+  // the  NativeIOHost and the closure that it uses.
+  it->second->DeleteAllData(
+      base::BindOnce(&NativeIOManager::OnDeleteOriginDataCompleted,
+                     base::Unretained(this), std::move(callback)));
 }
 
 base::FilePath NativeIOManager::RootPathForOrigin(const url::Origin& origin) {
