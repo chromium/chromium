@@ -329,7 +329,8 @@ public class LayoutManagerChrome extends LayoutManagerImpl
 
     @Override
     protected boolean shouldDelayHideAnimation(Layout layoutBeingHidden) {
-        return mEnableAnimations && layoutBeingHidden == mOverviewLayout && mCreatingNtp;
+        return mEnableAnimations && layoutBeingHidden == mOverviewLayout && mCreatingNtp
+                && !TabUiFeatureUtilities.isGridTabSwitcherEnabled();
     }
 
     @Override
