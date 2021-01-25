@@ -69,6 +69,7 @@ from devil.android import device_utils
 from devil.android.tools import system_app
 from devil.android.tools import webview_app
 
+from pylib.local.emulator import avd
 from py_utils.tempfile_ext import NamedTemporaryDirectory
 
 
@@ -90,15 +91,7 @@ class PassThroughArgs(argparse.Action):
       cls.pass_through_args.append(arg)
 
 
-def _get_adapter(device):
-  usage = '%(prog)s --product={' + ','.join(PRODUCTS) + '} ...'
-  product_parser = argparse.ArgumentParser(
-      add_help=False, prog='run_android_wpt.py', usage=usage)
-  product_parser.add_argument(
-      '--product', action='store', required=True, choices=PRODUCTS)
-  options, _ = product_parser.parse_known_args()
-  product = options.product
-
+def _get_adapter(product, device):
   if product == ANDROID_WEBLAYER:
     return WPTWeblayerAdapter(device)
   elif product == ANDROID_WEBVIEW:
@@ -247,6 +240,7 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     parser.add_argument('--force-fieldtrial-params',
                         action=BinaryPassThroughArgs,
                         help='Force trial params for Chromium features.')
+    add_emulator_args(parser)
 
 
 class WPTWeblayerAdapter(WPTAndroidAdapter):
@@ -416,33 +410,71 @@ def no_op():
 def main_compile_targets(args):
     json.dump([], args.output)
 
+@contextlib.contextmanager
+def get_device(args):
+  instance = None
+  try:
+    if args.avd_config:
+      avd_config = avd.AvdConfig(args.avd_config)
+      logger.warning('Install emulator from ' + args.avd_config)
+      avd_config.Install()
+      instance = avd_config.CreateInstance()
+      instance.Start(writable_system=True, window=args.emulator_window)
+      device_utils.DeviceUtils(instance.serial).WaitUntilFullyBooted()
+
+    #TODO(weizhong): when choose device, make sure abi matches with target
+    devices = device_utils.DeviceUtils.HealthyDevices()
+    if devices:
+      yield devices[0]
+    else:
+      yield
+  finally:
+    if instance:
+      instance.Stop()
+
+def add_emulator_args(parser):
+  parser.add_argument(
+      '--avd-config',
+      type=os.path.realpath,
+      help='Path to the avd config textpb. '
+      '(See //tools/android/avd/proto/ for message definition'
+      ' and existing textpb files.)')
+  parser.add_argument(
+      '--emulator-window',
+      action='store_true',
+      default=False,
+      help='Enable graphical window display on the emulator.')
 
 def main():
   devil_chromium.Initialize()
-  devices = device_utils.DeviceUtils.HealthyDevices()
 
-  if not devices:
-    logger.error('There are no devices attached to this host. Exiting script.')
-    return 1
+  usage = '%(prog)s --product={' + ','.join(PRODUCTS) + '} ...'
+  product_parser = argparse.ArgumentParser(
+      add_help=False, prog='run_android_wpt.py', usage=usage)
+  product_parser.add_argument(
+      '--product', action='store', required=True, choices=PRODUCTS)
+  add_emulator_args(product_parser)
+  args, _ = product_parser.parse_known_args()
+  product = args.product
 
-  # Only 1 device is supported for Android locally, this will work well with
-  # sharding support via swarming infra.
-  device = devices[0]
+  with get_device(args) as device:
+    if not device:
+      logger.error('There are no devices attached to this host. Exiting...')
+      return
 
-  adapter = _get_adapter(device)
+    adapter = _get_adapter(product, device)
+    if adapter.options.verbose:
+      if adapter.options.verbose == 1:
+        logger.setLevel(logging.INFO)
+      else:
+        logger.setLevel(logging.DEBUG)
 
-  if adapter.options.verbose:
-    if adapter.options.verbose == 1:
-      logger.setLevel(logging.INFO)
-    else:
-      logger.setLevel(logging.DEBUG)
-
-  # WPT setup for chrome and webview requires that PATH contains adb.
-  platform_tools_path = os.path.dirname(devil_env.config.FetchPath('adb'))
-  os.environ['PATH'] = ':'.join([platform_tools_path] +
+    # WPT setup for chrome and webview requires that PATH contains adb.
+    platform_tools_path = os.path.dirname(devil_env.config.FetchPath('adb'))
+    os.environ['PATH'] = ':'.join([platform_tools_path] +
                                 os.environ['PATH'].split(':'))
 
-  return adapter.run_test()
+    return adapter.run_test()
 
 
 if __name__ == '__main__':
