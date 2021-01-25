@@ -4632,6 +4632,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "sync-compromised-credentials",
+    "owners": [ "vsemeniuk", "vasilii"],
+    "expiry_milestone": 91
+  },
+  {
     "name": "sync-setup-friendly-settings",
     "owners": [ "msalama" ],
     "expiry_milestone": 84

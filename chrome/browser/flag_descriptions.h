@@ -859,6 +859,9 @@ extern const char kNewProfilePickerDescription[];
 extern const char kSignInProfileCreationName[];
 extern const char kSignInProfileCreationDescription[];
 
+extern const char kSyncingCompromisedCredentialsName[];
+extern const char kSyncingCompromisedCredentialsDescription[];
+
 extern const char kDestroyProfileOnBrowserCloseName[];
 extern const char kDestroyProfileOnBrowserCloseDescription[];
 

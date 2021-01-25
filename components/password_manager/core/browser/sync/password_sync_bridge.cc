@@ -129,8 +129,11 @@ sync_pb::PasswordSpecifics SpecificsFromPassword(
       password_form.federation_origin.opaque()
           ? std::string()
           : password_form.federation_origin.Serialize());
-  *password_data->mutable_password_issues() =
-      PasswordIssuesFromCompromisedCredentials(compromised_credentials);
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kSyncingCompromisedCredentials)) {
+    *password_data->mutable_password_issues() =
+        PasswordIssuesFromCompromisedCredentials(compromised_credentials);
+  }
   return specifics;
 }
 
@@ -536,16 +539,19 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
                                      /*sync_time=*/time_now);
         PasswordStoreChangeList changes =
             password_store_sync_->UpdateLoginSync(form, &update_login_error);
-        // Check if compromised credentials changed before updating.
-        std::vector<CompromisedCredentials> remote_compromised_credentials =
-            CompromisedCredentialsFromEntityChange(remote_entity_change);
-        std::vector<CompromisedCredentials> local_compromised_credentials =
-            password_store_sync_->ReadSecurityIssues(
-                FormPrimaryKey(primary_key));
-        if (!base::ranges::is_permutation(remote_compromised_credentials,
-                                          local_compromised_credentials)) {
-          password_store_sync_->UpdateCompromisedCredentialsSync(
-              form, remote_compromised_credentials);
+        if (base::FeatureList::IsEnabled(
+                password_manager::features::kSyncingCompromisedCredentials)) {
+          // Check if compromised credentials changed before updating.
+          std::vector<CompromisedCredentials> remote_compromised_credentials =
+              CompromisedCredentialsFromEntityChange(remote_entity_change);
+          std::vector<CompromisedCredentials> local_compromised_credentials =
+              password_store_sync_->ReadSecurityIssues(
+                  FormPrimaryKey(primary_key));
+          if (!base::ranges::is_permutation(remote_compromised_credentials,
+                                            local_compromised_credentials)) {
+            password_store_sync_->UpdateCompromisedCredentialsSync(
+                form, remote_compromised_credentials);
+          }
         }
         DCHECK_LE(changes.size(), 1U);
         base::UmaHistogramEnumeration(
@@ -586,8 +592,11 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::MergeSyncData(
       PasswordStoreChangeList changes = password_store_sync_->AddLoginSync(
           PasswordFromEntityChange(*entity_change, /*sync_time=*/time_now),
           &add_login_error);
-      password_store_sync_->AddCompromisedCredentialsSync(
-          CompromisedCredentialsFromEntityChange(*entity_change));
+      if (base::FeatureList::IsEnabled(
+              password_manager::features::kSyncingCompromisedCredentials)) {
+        password_store_sync_->AddCompromisedCredentialsSync(
+            CompromisedCredentialsFromEntityChange(*entity_change));
+      }
       base::UmaHistogramEnumeration(
           "PasswordManager.MergeSyncData.AddLoginSyncError", add_login_error);
 
@@ -703,8 +712,11 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
           changes = password_store_sync_->AddLoginSync(
               PasswordFromEntityChange(*entity_change, /*sync_time=*/time_now),
               &add_login_error);
-          password_store_sync_->AddCompromisedCredentialsSync(
-              CompromisedCredentialsFromEntityChange(*entity_change));
+          if (base::FeatureList::IsEnabled(
+                  password_manager::features::kSyncingCompromisedCredentials)) {
+            password_store_sync_->AddCompromisedCredentialsSync(
+                CompromisedCredentialsFromEntityChange(*entity_change));
+          }
           base::UmaHistogramEnumeration(
               "PasswordManager.ApplySyncChanges.AddLoginSyncError",
               add_login_error);
@@ -762,16 +774,19 @@ base::Optional<syncer::ModelError> PasswordSyncBridge::ApplySyncChanges(
               password_store_sync_->UpdateLoginSync(form, &update_login_error);
           FormPrimaryKey primary_key =
               FormPrimaryKey(ParsePrimaryKey(entity_change->storage_key()));
-          // Check if compromised credentials changed before updating.
-          std::vector<CompromisedCredentials> remote_compromised_credentials =
-              CompromisedCredentialsFromEntityChange(*entity_change);
-          std::vector<CompromisedCredentials> local_compromised_credentials =
-              password_store_sync_->ReadSecurityIssues(
-                  FormPrimaryKey(primary_key));
-          if (!base::ranges::is_permutation(remote_compromised_credentials,
-                                            local_compromised_credentials)) {
-            password_store_sync_->UpdateCompromisedCredentialsSync(
-                form, remote_compromised_credentials);
+          if (base::FeatureList::IsEnabled(
+                  password_manager::features::kSyncingCompromisedCredentials)) {
+            // Check if compromised credentials changed before updating.
+            std::vector<CompromisedCredentials> remote_compromised_credentials =
+                CompromisedCredentialsFromEntityChange(*entity_change);
+            std::vector<CompromisedCredentials> local_compromised_credentials =
+                password_store_sync_->ReadSecurityIssues(
+                    FormPrimaryKey(primary_key));
+            if (!base::ranges::is_permutation(remote_compromised_credentials,
+                                              local_compromised_credentials)) {
+              password_store_sync_->UpdateCompromisedCredentialsSync(
+                  form, remote_compromised_credentials);
+            }
           }
           base::UmaHistogramEnumeration(
               "PasswordManager.ApplySyncChanges.UpdateLoginSyncError",

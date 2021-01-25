@@ -1439,6 +1439,11 @@ const char kSignInProfileCreationName[] = "Profile creation flow with sign-in";
 const char kSignInProfileCreationDescription[] =
     "Enables a new sign-in flow in profile creation";
 
+const char kSyncingCompromisedCredentialsName[] = "Syncing of Security Issues";
+const char kSyncingCompromisedCredentialsDescription[] =
+    "Enables syncing of Security issues which includes compromised and phished "
+    "passwords.";
+
 const char kDestroyProfileOnBrowserCloseName[] =
     "Destroy Profile on browser close";
 const char kDestroyProfileOnBrowserCloseDescription[] =
