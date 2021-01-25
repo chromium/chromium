@@ -599,14 +599,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   syncer::SyncService* syncService =
       ProfileSyncServiceFactory::GetForBrowserState(_browserState);
   return base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency) &&
-         // TODO(crbug.com/1166232): Replace with Sync specific metrics.
-         [SigninPromoViewMediator
-             shouldDisplaySigninPromoViewWithAccessPoint:
-                 signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS
-                                            browserState:_browserState] &&
-         (!syncService->IsSyncFeatureActive() &&
-          syncService->GetTransportState() !=
-              syncer::SyncService::TransportState::INITIALIZING);
+         [self shouldDisplaySigninPromo] &&
+         !syncService->IsSyncFeatureEnabled();
 }
 
 #pragma mark - Model Items

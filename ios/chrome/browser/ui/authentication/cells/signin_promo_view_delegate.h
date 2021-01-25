@@ -23,10 +23,6 @@
 // or more identities on the device.
 - (void)signinPromoViewDidTapSigninWithOtherAccount:(SigninPromoView*)view;
 
-// Called by SigninPromoView when the signed-in user taps the primary button
-// to enable syncing with the default account.
-- (void)signinPromoViewDidTapSyncWithDefaultAccount:(SigninPromoView*)view;
-
 // Called by SigninPromoView when the user taps the close button.
 - (void)signinPromoViewCloseButtonWasTapped:(SigninPromoView*)view;
 

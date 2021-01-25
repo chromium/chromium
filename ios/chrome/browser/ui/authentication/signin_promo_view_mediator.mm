@@ -682,17 +682,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
   [self showSigninWithIdentity:_defaultIdentity promoAction:promo_action];
 }
 
-- (void)signinPromoViewDidTapSyncWithDefaultAccount:
-    (SigninPromoView*)signinPromoView {
-  DCHECK(_defaultIdentity);
-  DCHECK(self.signinPromoViewVisible);
-  DCHECK(!self.invalidClosedOrNeverVisible);
-  // TODO(crbug.com/1166232): Record Sync impressions.
-  [self showSigninWithIdentity:_defaultIdentity
-                   promoAction:signin_metrics::PromoAction::
-                                   PROMO_ACTION_WITH_DEFAULT];
-}
-
 - (void)signinPromoViewDidTapSigninWithOtherAccount:
     (SigninPromoView*)signinPromoView {
   DCHECK(_defaultIdentity);

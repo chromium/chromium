@@ -274,10 +274,8 @@ const CGFloat kImageViewWidthHeight = 32;
       [_delegate signinPromoViewDidTapSigninWithNewAccount:self];
       break;
     case IdentityPromoViewModeSigninWithAccount:
-      [_delegate signinPromoViewDidTapSigninWithDefaultAccount:self];
-      break;
     case IdentityPromoViewModeSyncWithPrimaryAccount:
-      [_delegate signinPromoViewDidTapSyncWithDefaultAccount:self];
+      [_delegate signinPromoViewDidTapSigninWithDefaultAccount:self];
       break;
   }
 }
