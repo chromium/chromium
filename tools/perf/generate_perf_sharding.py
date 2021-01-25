@@ -16,6 +16,8 @@ import sys
 import tempfile
 import textwrap
 
+import cross_device_test_config
+
 from core import path_util
 path_util.AddTelemetryToPath()
 
@@ -137,10 +139,13 @@ def _GenerateShardMap(
       timing_data = json.load(f)
   benchmarks_to_shard = (
       list(builder.benchmark_configs) + list(builder.executables))
+  target_devices = cross_device_test_config.TARGET_DEVICES.get(builder.name, {})
   sharding_map = sharding_map_generator.generate_sharding_map(
-      benchmarks_to_shard, timing_data,
+      benchmarks_to_shard,
+      timing_data,
       num_shards=num_of_shards,
-      debug=debug)
+      debug=debug,
+      target_devices=target_devices)
   _DumpJson(sharding_map, output_path)
 
 
