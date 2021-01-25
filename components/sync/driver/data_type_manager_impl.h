@@ -30,6 +30,8 @@ struct DataTypeConfigurationStats;
 class DataTypeManagerImpl : public DataTypeManager,
                             public ModelLoadManagerDelegate {
  public:
+  // TODO(crbug.com/1170318): Get rid of the |initial_types| param, it doesn't
+  // seem to actually do anything.
   DataTypeManagerImpl(
       ModelTypeSet initial_types,
       const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,

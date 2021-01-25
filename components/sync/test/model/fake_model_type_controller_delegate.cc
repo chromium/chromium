@@ -19,6 +19,11 @@ FakeModelTypeControllerDelegate::FakeModelTypeControllerDelegate(ModelType type)
 
 FakeModelTypeControllerDelegate::~FakeModelTypeControllerDelegate() {}
 
+void FakeModelTypeControllerDelegate::SetModelTypeStateForActivationResponse(
+    const sync_pb::ModelTypeState& model_type_state) {
+  model_type_state_for_activation_response_ = model_type_state;
+}
+
 void FakeModelTypeControllerDelegate::EnableManualModelStart() {
   manual_model_start_enabled_ = true;
 }
@@ -26,8 +31,7 @@ void FakeModelTypeControllerDelegate::EnableManualModelStart() {
 void FakeModelTypeControllerDelegate::SimulateModelStartFinished() {
   DCHECK(manual_model_start_enabled_);
   if (start_callback_) {
-    std::move(start_callback_)
-        .Run(std::make_unique<DataTypeActivationResponse>());
+    std::move(start_callback_).Run(MakeActivationResponse());
   }
 }
 
@@ -69,7 +73,7 @@ void FakeModelTypeControllerDelegate::OnSyncStarting(
     start_callback_ = std::move(callback);
   } else {
     // Trigger completion immediately.
-    std::move(callback).Run(std::make_unique<DataTypeActivationResponse>());
+    std::move(callback).Run(MakeActivationResponse());
   }
 }
 
@@ -95,6 +99,13 @@ void FakeModelTypeControllerDelegate::GetTypeEntitiesCountForDebugging(
 base::WeakPtr<ModelTypeControllerDelegate>
 FakeModelTypeControllerDelegate::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+std::unique_ptr<DataTypeActivationResponse>
+FakeModelTypeControllerDelegate::MakeActivationResponse() const {
+  auto response = std::make_unique<DataTypeActivationResponse>();
+  response->model_type_state = model_type_state_for_activation_response_;
+  return response;
 }
 
 }  // namespace syncer

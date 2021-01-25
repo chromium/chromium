@@ -517,11 +517,6 @@ void DataTypeManagerImpl::StartNextConfiguration(
   association_types_info_->higher_priority_types_before =
       higher_priority_types_before;
 
-  // Record stats for the types that are already downloaded. The remaining types
-  // will be handled once their download finishes (which happens as part of
-  // ConfigureDataTypes).
-  RecordConfigurationStats(ready_types);
-
   // The engine's state was initially derived from the types detected to have
   // been downloaded in the database. Afterwards it is modified only by this
   // function. We expect |downloaded_types_| to remain consistent because

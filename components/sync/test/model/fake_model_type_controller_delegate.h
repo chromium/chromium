@@ -21,6 +21,9 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
   explicit FakeModelTypeControllerDelegate(ModelType type);
   ~FakeModelTypeControllerDelegate() override;
 
+  void SetModelTypeStateForActivationResponse(
+      const sync_pb::ModelTypeState& model_type_state);
+
   // By default, this delegate (model) completes startup automatically when
   // OnSyncStarting() is invoked. For tests that want to manually control the
   // completion, or mimic errors during startup, EnableManualModelStart() can
@@ -49,9 +52,12 @@ class FakeModelTypeControllerDelegate : public ModelTypeControllerDelegate {
   base::WeakPtr<ModelTypeControllerDelegate> GetWeakPtr();
 
  private:
+  std::unique_ptr<DataTypeActivationResponse> MakeActivationResponse() const;
+
   const ModelType type_;
   bool manual_model_start_enabled_ = false;
   int clear_metadata_call_count_ = 0;
+  sync_pb::ModelTypeState model_type_state_for_activation_response_;
   base::Optional<ModelError> model_error_;
   StartCallback start_callback_;
   ModelErrorHandler error_handler_;

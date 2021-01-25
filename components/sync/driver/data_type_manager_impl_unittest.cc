@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -18,7 +19,12 @@
 #include "components/sync/driver/fake_data_type_controller.h"
 #include "components/sync/engine/configure_reason.h"
 #include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/engine/data_type_debug_info_listener.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using testing::_;
+using testing::UnorderedElementsAre;
 
 namespace syncer {
 
@@ -178,10 +184,34 @@ ModelTypeSet FakeDataTypeEncryptionHandler::GetEncryptedDataTypes() const {
   return encrypted_types_;
 }
 
+class MockDebugInfoListener
+    : public DataTypeDebugInfoListener,
+      public base::SupportsWeakPtr<MockDebugInfoListener> {
+ public:
+  MockDebugInfoListener() = default;
+
+  MOCK_METHOD(void,
+              OnDataTypeConfigureComplete,
+              (const std::vector<DataTypeConfigurationStats>&),
+              (override));
+};
+
+MATCHER_P(ConfigurationStatsForType, model_type, "") {
+  return arg.model_type == model_type;
+}
+
+MATCHER_P3(ConfigurationStatsForType,
+           model_type,
+           high_prio_types_before,
+           same_prio_types_before,
+           "") {
+  return arg.model_type == model_type &&
+         arg.high_priority_types_configured_before == high_prio_types_before &&
+         arg.same_priority_types_configured_before == same_prio_types_before;
+}
+
 }  // namespace
 
-// The actual test harness class, parametrized on nigori state (i.e., tests are
-// run both configuring with nigori, and configuring without).
 class SyncDataTypeManagerImplTest : public testing::Test {
  public:
   SyncDataTypeManagerImplTest() = default;
@@ -192,8 +222,8 @@ class SyncDataTypeManagerImplTest : public testing::Test {
 
   void RecreateDataTypeManager(ModelTypeSet initial_types = ModelTypeSet()) {
     dtm_ = std::make_unique<DataTypeManagerImpl>(
-        initial_types, WeakHandle<DataTypeDebugInfoListener>(), &controllers_,
-        &encryption_handler_, &configurer_, &observer_);
+        initial_types, MakeWeakHandle(debug_info_listener_.AsWeakPtr()),
+        &controllers_, &encryption_handler_, &configurer_, &observer_);
   }
 
   void SetConfigureStartExpectation() { observer_.ExpectStart(); }
@@ -264,6 +294,7 @@ class SyncDataTypeManagerImplTest : public testing::Test {
   FakeDataTypeManagerObserver observer_;
   std::unique_ptr<DataTypeManagerImpl> dtm_;
   FakeDataTypeEncryptionHandler encryption_handler_;
+  testing::NiceMock<MockDebugInfoListener> debug_info_listener_;
 };
 
 // Set up a DTM with no controllers, configure it, finish downloading,
@@ -294,10 +325,23 @@ TEST_F(SyncDataTypeManagerImplTest, ConfigureOne) {
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
   EXPECT_EQ(ModelTypeSet(BOOKMARKS), configurer_.activated_types());
 
+  // Once configuration is finished, the debug info listener should be notified,
+  // including the implicitly-enabled NIGORI and the newly-downloaded BOOKMARKS.
+  base::RunLoop run_loop;
+  EXPECT_CALL(debug_info_listener_,
+              OnDataTypeConfigureComplete(
+                  UnorderedElementsAre(ConfigurationStatsForType(NIGORI),
+                                       ConfigurationStatsForType(BOOKMARKS))))
+      .WillOnce([&]() { run_loop.Quit(); });
+
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
   FinishDownload(ModelTypeSet(BOOKMARKS), ModelTypeSet());
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
   EXPECT_EQ(1U, configurer_.activated_types().Size());
+
+  // The debug info listener is called through a WeakHandle, which posts a task.
+  // So wait for that to actually get executed.
+  run_loop.Run();
 
   dtm_->Stop(STOP_SYNC);
   EXPECT_EQ(DataTypeManager::STOPPED, dtm_->state());
@@ -376,13 +420,34 @@ TEST_F(SyncDataTypeManagerImplTest, OneWaitingForCrypto) {
   Configure(ModelTypeSet(PASSWORDS));
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
 
+  // Once configuration is finished, the debug info listener should be notified,
+  // including the implicitly-enabled NIGORI and the newly-downloaded PASSWORDS.
+  base::RunLoop run_loop;
+  EXPECT_CALL(debug_info_listener_,
+              OnDataTypeConfigureComplete(
+                  UnorderedElementsAre(ConfigurationStatsForType(NIGORI),
+                                       ConfigurationStatsForType(PASSWORDS))))
+      .WillOnce([&]() { run_loop.Quit(); });
+
   // Step 2.
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // priority types
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
 
+  // The debug info listener is called through a WeakHandle, which posts a task.
+  // So wait for that to actually get executed.
+  run_loop.Run();
+
   // Step 3.
   FailEncryptionFor(ModelTypeSet(PASSWORDS));
+
+  // Once configuration is finished (again), the debug info listener should be
+  // notified for the remaining (non-failed) NIGORI type.
+  base::RunLoop run_loop2;
+  EXPECT_CALL(debug_info_listener_,
+              OnDataTypeConfigureComplete(
+                  UnorderedElementsAre(ConfigurationStatsForType(NIGORI))))
+      .WillOnce([&]() { run_loop2.Quit(); });
 
   // Step 4.
   SetConfigureStartExpectation();
@@ -394,6 +459,10 @@ TEST_F(SyncDataTypeManagerImplTest, OneWaitingForCrypto) {
   EXPECT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
   FinishDownload(ModelTypeSet(), ModelTypeSet());  // priority types
   EXPECT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+
+  // The debug info listener is called through a WeakHandle, which posts a task.
+  // So wait for that to actually get executed.
+  run_loop2.Run();
 
   // Step 5.
   dtm_->Stop(STOP_SYNC);
@@ -1517,6 +1586,51 @@ TEST_F(SyncDataTypeManagerImplTest,
   FinishDownload(ModelTypeSet(BOOKMARKS), ModelTypeSet());
 
   histogram_tester.ExpectTotalCount("Sync.ConfigureTime_Subsequent.OK", 1);
+}
+
+TEST_F(SyncDataTypeManagerImplTest, ProvideDebugInfo) {
+  AddController(PREFERENCES);
+  AddController(BOOKMARKS);
+
+  // Mark BOOKMARKS as already downloaded.
+  sync_pb::ModelTypeState bookmarks_state;
+  bookmarks_state.set_initial_sync_done(true);
+  GetController(BOOKMARKS)->model()->SetModelTypeStateForActivationResponse(
+      bookmarks_state);
+
+  SetConfigureStartExpectation();
+  SetConfigureDoneExpectation(DataTypeManager::OK, DataTypeStatusTable());
+
+  Configure(ModelTypeSet(PREFERENCES, BOOKMARKS));
+  ASSERT_EQ(DataTypeManager::CONFIGURING, dtm_->state());
+
+  // Once configuration is finished, the debug info listener should be notified,
+  // including the implicitly-enabled NIGORI, the already-downloaded BOOKMARKS,
+  // and the newly-downloaded PREFERENCES
+  base::RunLoop run_loop;
+  EXPECT_CALL(
+      debug_info_listener_,
+      OnDataTypeConfigureComplete(UnorderedElementsAre(
+          ConfigurationStatsForType(NIGORI,
+                                    /*high_prio_types_before=*/ModelTypeSet(),
+                                    /*same_prio_types_before=*/ModelTypeSet()),
+          ConfigurationStatsForType(
+              BOOKMARKS, /*high_prio_types_before=*/ModelTypeSet(NIGORI),
+              /*same_prio_types_before=*/ModelTypeSet()),
+          ConfigurationStatsForType(
+              PREFERENCES, /*high_prio_types_before=*/ModelTypeSet(NIGORI),
+              /*same_prio_types_before=*/ModelTypeSet(BOOKMARKS)))))
+      .WillOnce([&]() { run_loop.Quit(); });
+
+  // Because Bookmarks are already downloaded, configuration finishes as soon
+  // as preferences are downloaded.
+  FinishDownload(ModelTypeSet(), ModelTypeSet());  // control types
+  FinishDownload(ModelTypeSet(PREFERENCES), ModelTypeSet());
+  ASSERT_EQ(DataTypeManager::CONFIGURED, dtm_->state());
+
+  // The debug info listener is called through a WeakHandle, which posts a task.
+  // So wait for that to actually get executed.
+  run_loop.Run();
 }
 
 }  // namespace syncer
