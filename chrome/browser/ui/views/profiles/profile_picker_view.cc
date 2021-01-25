@@ -89,6 +89,8 @@
 namespace {
 
 ProfilePickerView* g_profile_picker_view = nullptr;
+base::OnceClosure* g_profile_picker_opened_callback_for_testing = nullptr;
+
 constexpr int kWindowWidth = 1024;
 constexpr int kWindowHeight = 758;
 constexpr float kMaxRatioOfWorkArea = 0.9;
@@ -313,6 +315,15 @@ views::View* ProfilePicker::GetToolbarForTesting() {
 }
 
 // static
+void ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
+    base::OnceClosure callback) {
+  DCHECK(!g_profile_picker_opened_callback_for_testing);
+  DCHECK(!callback.is_null());
+  g_profile_picker_opened_callback_for_testing =
+      new base::OnceClosure(std::move(callback));
+}
+
+// static
 void ProfilePicker::SetExtendedAccountInfoTimeoutForTesting(
     base::TimeDelta timeout) {
   if (g_profile_picker_view) {
@@ -445,6 +456,12 @@ void ProfilePickerView::Init(ProfilePicker::EntryPoint entry_point,
     DCHECK(!creation_time_on_startup_.is_null());
     base::UmaHistogramTimes("ProfilePicker.StartupTime.WebViewCreated",
                             base::TimeTicks::Now() - creation_time_on_startup_);
+  }
+
+  if (g_profile_picker_opened_callback_for_testing) {
+    std::move(*g_profile_picker_opened_callback_for_testing).Run();
+    delete g_profile_picker_opened_callback_for_testing;
+    g_profile_picker_opened_callback_for_testing = nullptr;
   }
 }
 
