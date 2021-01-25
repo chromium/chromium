@@ -2783,16 +2783,16 @@ views::CloseRequestResult BrowserView::OnWindowCloseRequested() {
   if (!browser_->ShouldCloseWindow())
     return views::CloseRequestResult::kCannotClose;
 
+  views::CloseRequestResult result = views::CloseRequestResult::kCanClose;
   if (!browser_->tab_strip_model()->empty()) {
     // Tab strip isn't empty.  Hide the frame (so it appears to have closed
     // immediately) and close all the tabs, allowing the renderers to shut
     // down. When the tab strip is empty we'll be called back again.
     frame_->Hide();
-    browser_->OnWindowClosing();
-    return views::CloseRequestResult::kCannotClose;
+    result = views::CloseRequestResult::kCannotClose;
   }
-
-  return views::CloseRequestResult::kCanClose;
+  browser_->OnWindowClosing();
+  return result;
 }
 
 int BrowserView::NonClientHitTest(const gfx::Point& point) {
