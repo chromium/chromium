@@ -2155,6 +2155,12 @@ void LocalFrameView::WillBeRemovedFromFrame() {
   }
 }
 
+bool LocalFrameView::IsUpdatingLifecycle() const {
+  LocalFrameView* root_view = GetFrame().LocalFrameRoot().View();
+  DCHECK(root_view);
+  return root_view->target_state_ != DocumentLifecycle::kUninitialized;
+}
+
 LocalFrameView* LocalFrameView::ParentFrameView() const {
   if (!IsAttached())
     return nullptr;

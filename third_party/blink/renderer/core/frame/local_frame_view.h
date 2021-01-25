@@ -349,9 +349,7 @@ class CORE_EXPORT LocalFrameView final
   // LocalFrame.
   void WillBeRemovedFromFrame();
 
-  bool IsUpdatingLifecycle() {
-    return target_state_ != DocumentLifecycle::kUninitialized;
-  }
+  bool IsUpdatingLifecycle() const;
 
   // Run all needed lifecycle stages. After calling this method, all frames will
   // be in the lifecycle state PaintClean.  If lifecycle throttling is allowed

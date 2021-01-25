@@ -435,6 +435,16 @@ TEST_F(LocalFrameViewTest, TogglePaintEligibility) {
   EXPECT_TRUE(child_timing.FirstEligibleToPaint().is_null());
 }
 
+TEST_F(LocalFrameViewTest, IsUpdatingLifecycle) {
+  SetBodyInnerHTML("<iframe srcdoc='Hello, world!'></iframe>>");
+  EXPECT_FALSE(GetFrame().View()->IsUpdatingLifecycle());
+  EXPECT_FALSE(ChildFrame().View()->IsUpdatingLifecycle());
+  GetFrame().View()->SetTargetStateForTest(DocumentLifecycle::kPaintClean);
+  EXPECT_TRUE(GetFrame().View()->IsUpdatingLifecycle());
+  EXPECT_TRUE(ChildFrame().View()->IsUpdatingLifecycle());
+  GetFrame().View()->SetTargetStateForTest(DocumentLifecycle::kUninitialized);
+}
+
 TEST_F(SimTest, PaintEligibilityNoSubframe) {
   SimRequest resource("https://example.com/", "text/html");
 
