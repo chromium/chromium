@@ -561,7 +561,7 @@
 <translation id="1612019740169791082">Kapsayıcınız, disk yeniden boyutlandırmalarını desteklemek üzere yapılandırılmamış. Linux için ayrılan yer miktarını düzenlemek üzere uygulamayı yedekleyip yeni bir kapsayıcıya geri yükleyin.</translation>
 <translation id="1614511179807650956">Mobil veri kullanım hakkınızı doldurmuş olabilirsiniz. Daha fazla veri satın almak için <ph name="NAME" /> etkinleştirme portalını ziyaret edin.</translation>
 <translation id="161460670679785907">Telefonunuz algılanamadı</translation>
-<translation id="1615402009686901181">Yönetici politikası ekranda gizli içerik varken ekran yakalamaya izin vermiyor</translation>
+<translation id="1615402009686901181">Yönetici politikası ekranda gizli içerik varken ekran görüntüsü almaya izin vermiyor</translation>
 <translation id="1616206807336925449">Bu uzantı herhangi bir özel izin gerektirmiyor.</translation>
 <translation id="1616298854599875024">Paylaşılan bir modül olmadığından "<ph name="IMPORT_NAME" />" uzantısı içe aktarılamıyor</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Bu verilerin, kuruluşunuzun güvenlik politikalarıyla uyumlu olup olmadığı kontrol ediliyor...}=1{Bu dosyanın, kuruluşunuzun güvenlik politikalarıyla uyumlu olup olmadığı kontrol ediliyor...}other{Bu dosyaların, kuruluşunuzun güvenlik politikalarıyla uyumlu olup olmadığı kontrol ediliyor...}}</translation>
@@ -906,7 +906,7 @@
 <translation id="1984417487208496350">Koruma yok (önerilmez)</translation>
 <translation id="1987317783729300807">Hesaplar</translation>
 <translation id="1989112275319619282">Göz at</translation>
-<translation id="1989113344093894667">İçerik yakalanamıyor</translation>
+<translation id="1989113344093894667">İçeriğin ekran görüntüsü alınamıyor</translation>
 <translation id="1990046457226896323">Canlı Altyazı dosyaları indirildi</translation>
 <translation id="1990512225220753005">Kısayolları bu sayfada gösterme</translation>
 <translation id="1992397118740194946">Ayarlanmadı</translation>
@@ -3257,7 +3257,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="4664482161435122549">PKCS #12 Dışa Aktarma Hatası</translation>
 <translation id="4665014895760275686">Üretici</translation>
 <translation id="4665446389743427678"><ph name="SITE" /> web sitesinin depoladığı tüm veriler silinecektir.</translation>
-<translation id="4666472247053585787">Telefonunuzdaki bildirimleri <ph name="DEVICE_TYPE" /> cihazınızda alın</translation>
+<translation id="4666472247053585787">Telefonunuzdaki bildirimleri <ph name="DEVICE_TYPE" /> cihazınızda görüntüleyin</translation>
 <translation id="4666911709726371538">Diğer uygulamalar</translation>
 <translation id="4668721319092543482"><ph name="PLUGIN_NAME" /> eklentisini etkinleştirmek için tıklayın</translation>
 <translation id="4670064810192446073">Sanal gerçeklik</translation>
@@ -3696,7 +3696,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5213891612754844763">Proxy ayarlarını göster</translation>
 <translation id="5215502535566372932">Ülke seçin</translation>
 <translation id="521582610500777512">Fotoğraf silindi</translation>
-<translation id="5217189792977407501">Masaya ata</translation>
 <translation id="5222403284441421673">Güvenli olmayan indirme işlemi engellendi</translation>
 <translation id="5222676887888702881">Çıkış</translation>
 <translation id="52232769093306234">Paketleme başarısız oldu.</translation>
@@ -3772,6 +3771,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="5300287940468717207">Site izinleri sıfırlansın mı?</translation>
 <translation id="5300589172476337783">Göster</translation>
 <translation id="5300719150368506519">Ziyaret ettiğim sayfaların URL'lerini Google'a gönder</translation>
+<translation id="5300814202279832142">Pencereyi masaya taşı</translation>
 <translation id="5301751748813680278">Misafir olarak giriliyor.</translation>
 <translation id="5301954838959518834">Tamam, anladım</translation>
 <translation id="5302048478445481009">Dil</translation>
@@ -7081,7 +7081,7 @@ Atamayı kaldırmak için atanmış anahtara basın.</translation>
 <translation id="9057354806206861646">Programı güncelle</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />. ila <ph name="ERROR_LINE_END" />. satır arasında hata</translation>
-<translation id="9063800855227801443">Gizli içerik yakalanamaz</translation>
+<translation id="9063800855227801443">Gizli içeriklerin ekran görüntüsü alınamaz</translation>
 <translation id="9064275926664971810">Formları tek bir tıklamayla doldurmak için Otomatik Doldur özelliğini etkinleştirir</translation>
 <translation id="9065203028668620118">Düzenle</translation>
 <translation id="9065512565307033593">Kimliğinizi doğrulayamazsanız ağ erişiminiz devre dışı bırakılacaktır.</translation>

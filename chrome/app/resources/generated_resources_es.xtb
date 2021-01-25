@@ -1588,7 +1588,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2751739896257479635">Autenticación de fase 2 EAP</translation>
 <translation id="2753677631968972007">Controlar manualmente los permisos de sitios.</translation>
 <translation id="2755349111255270002">Restablecer <ph name="DEVICE_TYPE" /></translation>
-<translation id="2755367719610958252">Gestionar las funciones de accesibilidad</translation>
+<translation id="2755367719610958252">Gestionar funciones de accesibilidad</translation>
 <translation id="275662540872599901">pantalla apagada</translation>
 <translation id="2757338480560142065">La contraseña que guardes debe coincidir con tu contraseña de <ph name="WEBSITE" />.</translation>
 <translation id="2762441749940182211">Cámara bloqueada</translation>
@@ -3695,7 +3695,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5213891612754844763">Mostrar configuración de proxy</translation>
 <translation id="5215502535566372932">Selecciona un país</translation>
 <translation id="521582610500777512">Se ha descartado la foto</translation>
-<translation id="5217189792977407501">Asignar al escritorio</translation>
 <translation id="5222403284441421673">Se ha bloqueado una descarga no segura</translation>
 <translation id="5222676887888702881">Cerrar sesión</translation>
 <translation id="52232769093306234">No se ha podido comprimir.</translation>
@@ -3771,6 +3770,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5300287940468717207">¿Quieres restablecer los permisos de los sitios?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5300719150368506519">Enviar las URL de las páginas que visitas a Google</translation>
+<translation id="5300814202279832142">Mover ventana al escritorio</translation>
 <translation id="5301751748813680278">Iniciando sesión de invitado</translation>
 <translation id="5301954838959518834">Entendido</translation>
 <translation id="5302048478445481009">Idioma</translation>

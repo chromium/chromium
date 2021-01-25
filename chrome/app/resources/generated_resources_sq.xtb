@@ -3693,7 +3693,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5213891612754844763">Shfaq cilësimet e përfaqësuesit</translation>
 <translation id="5215502535566372932">Zgjidh vendin</translation>
 <translation id="521582610500777512">Fotografia u hoq</translation>
-<translation id="5217189792977407501">Caktuar te tavolina e punës</translation>
 <translation id="5222403284441421673">Një shkarkim i pasigurt u bllokua</translation>
 <translation id="5222676887888702881">Dil</translation>
 <translation id="52232769093306234">Paketimi dështoi.</translation>
@@ -3769,6 +3768,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5300287940468717207">Të rivendosen autorizimet e sajtit?</translation>
 <translation id="5300589172476337783">Shfaq</translation>
 <translation id="5300719150368506519">Dërgo te Google URL-të e faqeve që ti viziton</translation>
+<translation id="5300814202279832142">Zhvendose dritaren te tavolina e punës</translation>
 <translation id="5301751748813680278">Po hyn si vizitor.</translation>
 <translation id="5301954838959518834">Në rregull, kuptova.</translation>
 <translation id="5302048478445481009">Gjuha</translation>
@@ -7251,7 +7251,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="969096075394517431">Ndrysho gjuhët</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 skedë}other{# skeda}}</translation>
 <translation id="971774202801778802">Shëno URL-në</translation>
-<translation id="972996901592717370">Prek butonin e energjisë me gishtin tënd. Të dhënat e tua ruhen në mënyrë të sigurt dhe asnjëherë nuk largohen nga pajisja jote <ph name="DEVICE_TYPE" />.</translation>
+<translation id="972996901592717370">Prek butonin e energjisë me gisht. Të dhënat e tua ruhen në mënyrë të sigurt dhe asnjëherë nuk largohen nga pajisja jote <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Dil</translation>
 <translation id="975893173032473675">Gjuha në të cilën do të përkthehet</translation>
 <translation id="976499800099896273">Dialogu i zhbërjes së korrigjimit automatik shfaqet për <ph name="TYPED_WORD" /> të korrigjuar në <ph name="CORRECTED_WORD" />.  Shtyp shigjetën lart për t'iu qasur, Escape për ta shpërfillur.</translation>

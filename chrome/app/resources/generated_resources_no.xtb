@@ -1373,7 +1373,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">Glem Bluetooth-enheten</translation>
 <translation id="2513396635448525189">Påloggingsbilde</translation>
-<translation id="2514326558286966059">Lås opp raskere med fingeravtrykket ditt</translation>
+<translation id="2514326558286966059">Lås opp raskere med fingeravtrykk</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Skann</translation>
 <translation id="2518024842978892609">Bruk klientsertifikatene dine</translation>
@@ -3691,7 +3691,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5213891612754844763">Vis innstillingene for proxy-tjener</translation>
 <translation id="5215502535566372932">Velg land</translation>
 <translation id="521582610500777512">Bildet er forkastet</translation>
-<translation id="5217189792977407501">Tilordne skrivebord</translation>
 <translation id="5222403284441421673">En usikker nedlasting er blokkert</translation>
 <translation id="5222676887888702881">Logg av</translation>
 <translation id="52232769093306234">Pakkingen mislyktes.</translation>
@@ -3767,6 +3766,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5300287940468717207">Vil du tilbakestille nettstedstillatelsene?</translation>
 <translation id="5300589172476337783">Vis</translation>
 <translation id="5300719150368506519">Send Google nettadressene til sider du besøker</translation>
+<translation id="5300814202279832142">Flytt vindu til skrivebord</translation>
 <translation id="5301751748813680278">Går inn som gjest.</translation>
 <translation id="5301954838959518834">Greit</translation>
 <translation id="5302048478445481009">Språk</translation>
@@ -5733,7 +5733,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7576690715254076113">I rekkefølge</translation>
 <translation id="7576976045740938453">Det oppsto et problem med kontoen for demomodus.</translation>
 <translation id="7578137152457315135">Innstillinger for fingeravtrykk</translation>
-<translation id="7578692661782707876">Oppgi bekreftelseskoden.</translation>
+<translation id="7578692661782707876">Skriv inn bekreftelseskoden.</translation>
 <translation id="7580671184200851182">Spill den samme lyden på alle høyttalere (monolyd)</translation>
 <translation id="7581462281756524039">Et opprydningsverktøy</translation>
 <translation id="7582582252461552277">Foretrekk dette nettverket</translation>

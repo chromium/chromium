@@ -574,7 +574,7 @@
 <translation id="1623132449929929218">Actualmente as imaxes non están dispoñibles. Volve conectarte a Internet para ver as coleccións de fondos de pantalla.</translation>
 <translation id="1623723619460186680">Redución da luz azul</translation>
 <translation id="1624012933569991823">Configuración</translation>
-<translation id="1624599281783425761">Deixarás de ver a cesta de <ph name="MERCHANT" /></translation>
+<translation id="1624599281783425761">Deixarás de ver o carro de <ph name="MERCHANT" /></translation>
 <translation id="1627276047960621195">Descritores de ficheiro</translation>
 <translation id="1627408615528139100">O ficheiro xa se descargou.</translation>
 <translation id="1628948239858170093">Queres analizar o ficheiro antes de abrilo?</translation>
@@ -2218,7 +2218,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3482719661246593752"><ph name="ORIGIN" /> pode ver os seguintes ficheiros</translation>
 <translation id="3484273680291419129">Eliminando software daniño...</translation>
 <translation id="3484869148456018791">Obter novo certificado</translation>
-<translation id="3484991308207164042">Ocultar estas cestas</translation>
+<translation id="3484991308207164042">Ocultar estes carros</translation>
 <translation id="3487007233252413104">función anónima</translation>
 <translation id="348780365869651045">Esperando por AppCache...</translation>
 <translation id="3488065109653206955">Activado parcialmente</translation>
@@ -2576,7 +2576,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="3866249974567520381">Descrición</translation>
 <translation id="3867134342671430205">Para mover unha pantalla, arrástraa ou utiliza as teclas das frechas</translation>
 <translation id="3867944738977021751">Campos de certificado</translation>
-<translation id="3868847547183917201">Non volverás ver as túas cestas nesta páxina</translation>
+<translation id="3868847547183917201">Non volverás ver os teus carros nesta páxina</translation>
 <translation id="3869917919960562512">Índice incorrecto.</translation>
 <translation id="3870931306085184145">Non hai contrasinais gardados para <ph name="DOMAIN" /></translation>
 <translation id="3871350334636688135">Despois de 24 horas, o administrador levará a cabo unha actualización única que eliminará os teus datos locais cando reinicies o dispositivo. Garda todos os datos locais que precises no almacenamento na nube no prazo de 24 horas.</translation>
@@ -2982,7 +2982,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4364567974334641491"><ph name="APP_NAME" /> está compartindo unha ventá.</translation>
 <translation id="4364830672918311045">Mostrar notificacións</translation>
 <translation id="437004882363131692">Recibe consellos sobre <ph name="DEVICE_TYPE" />, mantente ao tanto das novidades e das ofertas, e envíanos os teus comentarios. Podes cancelar a subscrición en calquera momento.</translation>
-<translation id="4370425812909262207">Ocultáronse as cestas. Mostraranse de novo cando fagas algún cambio.</translation>
+<translation id="4370425812909262207">Ocultáronse os carros. Mostraranse de novo cando fagas algún cambio.</translation>
 <translation id="4370975561335139969">O correo electrónico e o contrasinal inseridos non coinciden</translation>
 <translation id="4374831787438678295">Instalador de Linux</translation>
 <translation id="4375035964737468845">Abrir ficheiros descargados</translation>
@@ -3044,7 +3044,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="443475966875174318">Actualizar e eliminar aplicacións incompatibles</translation>
 <translation id="4436063104263971834">Non hai perfís SIM dispoñibles. Podes <ph name="BEGIN_LINK" />configurar un novo<ph name="END_LINK" />.</translation>
 <translation id="4438043733494739848">Transparente</translation>
-<translation id="4438639467177774583">O contrasinal (<ph name="MASKED_PASSWORD" />) de <ph name="USERNAME" /> gardarase na túa Conta de Google (<ph name="ACCOUNT" />)</translation>
+<translation id="4438639467177774583">Na túa Conta de Google (<ph name="ACCOUNT" />) gardarase <ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /></translation>
 <translation id="4439427728133035643">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, intensidade do sinal do <ph name="SIGNAL_STRENGTH" /> %, conectar</translation>
 <translation id="4441124369922430666">Queres que se inicie automaticamente esta aplicación cando se acenda o equipo?</translation>
 <translation id="4441147046941420429">Para continuar, quita a chave de seguranza do teu dispositivo, volve inserila e toca o botón de activación</translation>
@@ -3091,7 +3091,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="4488257340342212116">Sitios que poden usar a cámara</translation>
 <translation id="4488502501195719518">Queres borrar todos os datos?</translation>
 <translation id="449232563137139956">Os sitios adoitan mostrar imaxes (por exemplo, fotos de tendas en liña ou de artigos de noticias)</translation>
-<translation id="4492698018379445570">Consulta os artigos que engadiches ás cestas e procesa as compras cando o teñas todo listo</translation>
+<translation id="4492698018379445570">Consulta os artigos que engadiches aos carros e procesa as compras cando o teñas todo listo</translation>
 <translation id="4493468155686877504">Recomendado (<ph name="INSTALL_SIZE" />)</translation>
 <translation id="4495419450179050807">Non mostrar nesta páxina</translation>
 <translation id="4496054781541092778">bloqueouse automaticamente o permiso: <ph name="PERMISSION" /></translation>
@@ -3356,7 +3356,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="4808667324955055115">Ventás emerxentes bloqueadas:</translation>
 <translation id="4809079943450490359">Instrucións do administrador do teu dispositivo:</translation>
 <translation id="480990236307250886">Abre a páxina de inicio</translation>
-<translation id="4810383437107234249">Non mostrar cestas nunca</translation>
+<translation id="4810383437107234249">Non mostrar carros nunca</translation>
 <translation id="4811212958317149293">Exploración automática de teclados de acceso con interruptores</translation>
 <translation id="4811503964269049987">Agrupar a pestana seleccionada</translation>
 <translation id="4813136279048157860">As miñas imaxes</translation>
@@ -3695,7 +3695,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5213891612754844763">Mostrar configuración de proxy</translation>
 <translation id="5215502535566372932">Seleccionar país</translation>
 <translation id="521582610500777512">Descartouse a foto</translation>
-<translation id="5217189792977407501">Asignar ao escritorio</translation>
 <translation id="5222403284441421673">Bloqueouse unha descarga non segura</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="52232769093306234">Produciuse un erro na compresión.</translation>
@@ -3771,6 +3770,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5300287940468717207">Queres restablecer os permisos dos sitios?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
 <translation id="5300719150368506519">Enviar a Google os URL das páxinas que visitas</translation>
+<translation id="5300814202279832142">Mover ventá a escritorio</translation>
 <translation id="5301751748813680278">Entrando como invitado.</translation>
 <translation id="5301954838959518834">Entendido</translation>
 <translation id="5302048478445481009">Idioma</translation>

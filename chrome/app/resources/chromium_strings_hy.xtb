@@ -57,7 +57,7 @@
 <translation id="2847479871509788944">Հեռացնել Chromium-ից...</translation>
 <translation id="2885378588091291677">Task Manager</translation>
 <translation id="2910007522516064972">&amp;Chromium-ի մասին</translation>
-<translation id="2942419255987443909">Chromium OS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա, ինչպիսին է <ph name="BEGIN_LINK_LINUX_OSS" />Լինուքսի մշակման միջավայրը (փորձնական)<ph name="END_LINK_LINUX_OSS" />։</translation>
+<translation id="2942419255987443909">Chromium OS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա, ինչպիսին է <ph name="BEGIN_LINK_LINUX_OSS" />Լինուքսի մշակման միջավայրը (բետա)<ph name="END_LINK_LINUX_OSS" />։</translation>
 <translation id="2977470724722393594">Chromium-ը թարմացված է</translation>
 <translation id="2983934633046890458">Chromium-ը փորձում է փոխել գաղտնաբառերը:</translation>
 <translation id="3032706164202344641">Chromium-ը չի կարող ստուգել ձեր գաղտնաբառերը։ Փորձեք ավելի ուշ։</translation>
@@ -95,7 +95,7 @@
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
 <translation id="388648406173476553">Chromium-ի կարգավորման և կառավարման համար անհրաժեշտ է ձեր ուշադրությունը։ Սեղմեք՝ մանրամասներին ծանոթանալու համար։</translation>
 <translation id="3889543394854987837">Սեղմեք ձեր անվան վրա՝ Chromium-ը բացելու համար:</translation>
-<translation id="390528597099634151"><ph name="EXISTING_USER" />-ն արդեն մտել է հաշիվ Chromium-ի պրոֆիլով։ Ձեր դիտարկումներն առանձին պահելու համար կարող եք Chromium-ի առանձին պրոֆիլ ստեղծել։</translation>
+<translation id="390528597099634151"><ph name="EXISTING_USER" />-ն արդեն մուտք է գործել Chromium-ի այս պրոֆիլը։ Ձեր դիտարկումների պատմությունն առանձին պահելու համար կարող եք Chromium-ի առանձին պրոֆիլ ստեղծել։</translation>
 <translation id="3945058413678539331">Chromium-ը փորձում է պատճենել գաղտնաբառերը: Թույլատրելու համար մուտքագրեք Windows-ի ձեր գաղտնաբառը:</translation>
 <translation id="4036079820698952681">Օգնեք կատարելագործել Chromium-ը՝ հաղորդելով <ph name="BEGIN_LINK" />ընթացիկ կարգավորումների<ph name="END_LINK" /> մասին</translation>
 <translation id="4050175100176540509">Վերջին տարբերակում առկա են անվտանգության կարևոր բարելավումներ և նոր գործառույթներ:</translation>
@@ -180,7 +180,7 @@
 <translation id="6457450909262716557">{SECONDS,plural, =1{Chromium-ը կվերագործարկվի 1 վայրկյանից}one{Chromium-ը կվերագործարկվի # վայրկյանից}other{Chromium-ը կվերագործարկվի # վայրկյանից}}</translation>
 <translation id="6475912303565314141">Այն նաև վերահսկում է, թե որ էջը ցուցադրվի Chromium-ը մեկնարկելիս:</translation>
 <translation id="6510925080656968729">Ապատեղադրել Chromium-ը</translation>
-<translation id="6542839706527980775">Յուրաքանչյուր պրոֆիլում պահվում են Chromium-ի անհատական տվյալները, օրինակ՝ էջանիշները, պատմությունը, գաղտնաբառերը և այլն</translation>
+<translation id="6542839706527980775">Յուրաքանչյուր պրոֆիլում առանձին պահվում են Chromium-ի օգտատերերի տվյալները, օրինակ՝ էջանիշները, պատմությունը, գաղտնաբառերը և այլն</translation>
 <translation id="6570579332384693436">Ուղղագրական սխալները շտկելու համար Chromium-ը Google-ին է ուղարկում տեքստային դաշտերում ձեր մուտքագրած տեքստը</translation>
 <translation id="6598877126913850652">Անցնել Chromium-ի ծանուցումների կարգավորումներ</translation>
 <translation id="6613594504749178791">Փոփոխություններն ուժի մեջ կմտնեն Chromium-ը հաջորդ անգամ գործարկելիս:</translation>
@@ -190,7 +190,7 @@
 Որոշ գործառույթներ մատչելի չեն լինի: Հատկորոշեք այլ պրոֆիլի գրացուցակ կամ օգտվեք Chromium-ի ավելի նոր տարբերակից:</translation>
 <translation id="6734080038664603509">Թարմացնել &amp;Chromium-ը</translation>
 <translation id="6734291798041940871">Chromium-ն արդեն տեղադրված է ձեր համակարգչում բոլոր օգտատերերի համար:</translation>
-<translation id="673636774878526923">Chromium-ի ձեր տվյալները ձեր բոլոր սարքերում օգտագործելու համար մտեք հաշիվ և միացրեք համաժամացումը։</translation>
+<translation id="673636774878526923">Chromium-ի ձեր տվյալները ձեր բոլոր սարքերում օգտագործելու համար մուտք գործեք և միացրեք համաժամացումը։</translation>
 <translation id="6774082503108938489">Ձեր ծնողն անջատել է «Թույլտվություններ կայքերի, հավելվածների և ընդլայնումների համար» պարամետրը Chromium-ում։ Այս <ph name="EXTENSION_TYPE_PARAMETER" />ն արգելափակված է և չի կարող միացվել։</translation>
 <translation id="6847869444787758381">Chromium-ը ձեզ տեղյակ կպահի, եթե ձեր գաղտնաբառերի անվտագությանը սպառնալիք լինի</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>

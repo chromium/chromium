@@ -33,7 +33,7 @@
 <translation id="122699739164161391">Close All Tabs</translation>
 <translation id="1229222343402087523">Search ${searchPhrase} in Chrome</translation>
 <translation id="1231733316453485619">Turn on sync?</translation>
-<translation id="1254117744268754948">Choose Folder</translation>
+<translation id="1254117744268754948">Choose folder</translation>
 <translation id="1265739287306757398">Learn How</translation>
 <translation id="1272079795634619415">Stop</translation>
 <translation id="1283524564873030414">Last 24 hours</translation>
@@ -261,7 +261,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="359441731697487922">You can open links in Chrome automatically by making it your default browser app.
       
 Follow the steps below:</translation>
-<translation id="3603009562372709545">Copy Link URL</translation>
+<translation id="3603009562372709545">Copy link URL</translation>
 <translation id="3607167657931203000">Auto-fill Data</translation>
 <translation id="3609785682760573515">Syncing...</translation>
 <translation id="3638472932233958418">Pre-load Web Pages</translation>

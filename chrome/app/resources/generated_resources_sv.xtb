@@ -241,7 +241,7 @@
 <translation id="1263231323834454256">Läslista</translation>
 <translation id="1263490604593716556">Kontot hanteras av <ph name="FIRST_PARENT_EMAIL" /> och <ph name="SECOND_PARENT_EMAIL" />. Klicka på klockan på skärmen om du vill logga ut från det primära kontot på den här enheten. Klicka på Logga ut i menyn som visas.</translation>
 <translation id="1263733306853729545">Använd tangenterna <ph name="MINUS" /> och <ph name="EQUAL" /> om du vill söka i en kandidatlista</translation>
-<translation id="126387934568812801">Ta med den här skärmdumpen och namnet på öppna flikar</translation>
+<translation id="126387934568812801">Ta med den här skärmbilden och namnet på öppna flikar</translation>
 <translation id="1264337193001759725">Du hittar loggar för nätverksgränssnittet här: <ph name="DEVICE_LOG_LINK" /></translation>
 <translation id="126710816202626562">Översättningsspråk:</translation>
 <translation id="126768002343224824">16x</translation>
@@ -413,7 +413,7 @@
 <translation id="144518587530125858">Det gick inte att läsa in <ph name="IMAGE_PATH" /> för temat.</translation>
 <translation id="1451375123200651445">Webbsida, en enda fil</translation>
 <translation id="1451917004835509682">Lägg till kontrollerad person</translation>
-<translation id="1454223536435069390">T&amp;a en skärmdump</translation>
+<translation id="1454223536435069390">T&amp;a en skärmbild</translation>
 <translation id="145432137617179457">Språk för stavningskontroll</translation>
 <translation id="1459693405370120464">Väder</translation>
 <translation id="1459967076783105826">Sökmotorer som lagts till av tilläggsprogram</translation>
@@ -561,7 +561,7 @@
 <translation id="1612019740169791082">Behållaren har inte konfigurerats för att ändra storlek på disken. Om du vill justera hur mycket utrymme som reserverats för Linux gör du en säkerhetskopia och återställer den i en ny behållare.</translation>
 <translation id="1614511179807650956">Du kan ha använt din tillåtna mängd mobildata. Besök aktiveringsportalen <ph name="NAME" /> om du vill köpa mer data</translation>
 <translation id="161460670679785907">Mobilen hittades inte</translation>
-<translation id="1615402009686901181">Skärmdumpar inaktiveras av en administratörspolicy när konfidentiellt innehåll är synligt</translation>
+<translation id="1615402009686901181">Skärmbilder inaktiveras av en administratörspolicy när konfidentiellt innehåll är synligt</translation>
 <translation id="1616206807336925449">Det här tillägget kräver inga särskilda behörigheter.</translation>
 <translation id="1616298854599875024">Det gick inte att importera tillägget <ph name="IMPORT_NAME" /> eftersom det inte är en delad modul</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Data kontrolleras utifrån organisationens säkerhetspolicy …}=1{Filen kontrolleras utifrån organisationens säkerhetspolicy …}other{Filerna kontrolleras utifrån organisationens säkerhetspolicy …}}</translation>
@@ -1684,7 +1684,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2861941300086904918">Native Client säkerhetshanterare</translation>
 <translation id="2862815659905780618">Ta bort utvecklingsmiljön för Linux</translation>
 <translation id="2864601841139725659">Ange profilbild</translation>
-<translation id="2865919525181940183">Skärmdump av program som visas på skärmen</translation>
+<translation id="2865919525181940183">Skärmbild av program som visas på skärmen</translation>
 <translation id="286674810810214575">Kontrollerar strömkällor …</translation>
 <translation id="2867768963760577682">Öppna som en fast flik</translation>
 <translation id="2868746137289129307">Tillägget är inaktuellt och inaktiverat av företagspolicyn. Det kan aktiveras automatiskt när en ny version blir tillgänglig.</translation>
@@ -2450,7 +2450,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3738632186060045350">Data på <ph name="DEVICE_TYPE" /> raderas inom 24 timmar</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
 <translation id="3739254215541673094">Vill du öppna <ph name="APPLICATION" />?</translation>
-<translation id="3742055079367172538">Skärmdumpen har tagits</translation>
+<translation id="3742055079367172538">Skärmbilden har tagits</translation>
 <translation id="3742666961763734085">Ingen organisationsenhet med det namnet hittades. Försök igen.</translation>
 <translation id="3744111561329211289">Synkronisering i bakgrunden</translation>
 <translation id="3746127522257263495">Det finns inte stöd för att lägga till G Suite for Education-konton i Android-appar.</translation>
@@ -2892,7 +2892,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4249248555939881673">Väntar på nätverksanslutning ...</translation>
 <translation id="4249373718504745892">Den här sidan har blockerats och kan inte komma åt kameran och mikrofonen.</translation>
 <translation id="424963718355121712">Appar måste visas från värden de är kopplade till</translation>
-<translation id="4250229828105606438">Skärmdump</translation>
+<translation id="4250229828105606438">Skärmbild</translation>
 <translation id="4250680216510889253">Nej</translation>
 <translation id="4252035718262427477">Webbsida, en enda fil (Web Bundle)</translation>
 <translation id="4252852543720145436">Identifierare för skyddat innehåll</translation>
@@ -3696,7 +3696,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5213891612754844763">Visa proxyinställningar</translation>
 <translation id="5215502535566372932">Välj land</translation>
 <translation id="521582610500777512">Bilden togs bort</translation>
-<translation id="5217189792977407501">Tilldela till skrivbordet</translation>
 <translation id="5222403284441421673">En osäker nedladdning blockerades</translation>
 <translation id="5222676887888702881">Logga ut</translation>
 <translation id="52232769093306234">Komprimeringen misslyckades.</translation>
@@ -3772,6 +3771,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5300287940468717207">Vill du återställa webbplatsernas behörigheter?</translation>
 <translation id="5300589172476337783">Visa</translation>
 <translation id="5300719150368506519">Skicka webbadresser till sidor du besöker till Google.</translation>
+<translation id="5300814202279832142">Flytta fönstret till ett skrivbord</translation>
 <translation id="5301751748813680278">Loggar in som gäst.</translation>
 <translation id="5301954838959518834">Ok, jag förstår</translation>
 <translation id="5302048478445481009">Språk</translation>
@@ -4057,7 +4057,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="561698261642843490">Stäng Firefox</translation>
 <translation id="5618333180342767515">(det kan ta några minuter)</translation>
 <translation id="56197088284879152">Anslutningen till fjärrenheten <ph name="DEVICE_NAME" /> är överbelastad.</translation>
-<translation id="5619862035903135339">Skärmdump inaktiveras av en administratörspolicy</translation>
+<translation id="5619862035903135339">Skärmbild inaktiveras av en administratörspolicy</translation>
 <translation id="5620568081365989559">DevTools kräver fullständig åtkomst till <ph name="FOLDER_PATH" />. Lämna inte ut känsliga uppgifter.</translation>
 <translation id="5620612546311710611">användningsstatistik</translation>
 <translation id="5620655347161642930">Exportera lösenord …</translation>
@@ -4624,7 +4624,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6273677812470008672">Kvalitet</translation>
 <translation id="6276210637549544171">Proxyservern <ph name="PROXY_SERVER" /> kräver användarnamn och lösenord.</translation>
 <translation id="6277105963844135994">Tidsgräns för nätverket</translation>
-<translation id="6277518330158259200">T&amp;a en skärmdump</translation>
+<translation id="6277518330158259200">T&amp;a en skärmbild</translation>
 <translation id="6278057325678116358">Använd GTK+</translation>
 <translation id="6278068827862345700">Webbplatser som stängts nyligen får fortsätta att skicka och ta emot data (rekommenderas)</translation>
 <translation id="6278428485366576908">Tema</translation>
@@ -7229,7 +7229,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="936801553271523408">Systemets diagnostikresultat</translation>
 <translation id="93766956588638423">Reparera tillägg</translation>
 <translation id="938470336146445890">Installera ett användarcertifikat.</translation>
-<translation id="939252827960237676">Det gick inte att spara skärmdumpen</translation>
+<translation id="939252827960237676">Det gick inte att spara skärmbilden</translation>
 <translation id="939598580284253335">Ange lösenfras</translation>
 <translation id="939736085109172342">Ny mapp</translation>
 <translation id="941070664607309480">Klicka här om du vill göra dig själv synlig så att den kan dela med dig</translation>

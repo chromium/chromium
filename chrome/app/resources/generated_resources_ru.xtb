@@ -1515,7 +1515,7 @@
 <translation id="2673135533890720193">Чтение истории просмотров</translation>
 <translation id="2673589024369449924">Создать ярлык этого профиля на рабочем столе</translation>
 <translation id="2674764818721168631">Отключено</translation>
-<translation id="2676518761349096749">Для воспроизведения защищенного видео и аудиоконтента самого высокого качества домен <ph name="DOMAIN" /> запрашивает уникальный код устройства.</translation>
+<translation id="2676518761349096749">Для воспроизведения защищенного видео- и аудиоконтента самого высокого качества домен <ph name="DOMAIN" /> запрашивает уникальный код устройства.</translation>
 <translation id="2678063897982469759">Включить снова</translation>
 <translation id="268053382412112343">&amp;История</translation>
 <translation id="2682498795777673382">Ваш родитель изменил настройки</translation>
@@ -3697,7 +3697,6 @@
 <translation id="5213891612754844763">Показать настройки прокси-сервера</translation>
 <translation id="5215502535566372932">Выберите страну</translation>
 <translation id="521582610500777512">Фотография удалена.</translation>
-<translation id="5217189792977407501">Назначить для Desk</translation>
 <translation id="5222403284441421673">Незащищенное скачивание заблокировано</translation>
 <translation id="5222676887888702881">Выйти</translation>
 <translation id="52232769093306234">Не удалось выполнить сжатие.</translation>
@@ -3773,6 +3772,7 @@
 <translation id="5300287940468717207">Сбросить все разрешения сайтов?</translation>
 <translation id="5300589172476337783">Показать</translation>
 <translation id="5300719150368506519">Отправлять в Google URL страниц, которые вы посещаете</translation>
+<translation id="5300814202279832142">Переместить окно на рабочий стол</translation>
 <translation id="5301751748813680278">Вы входите как гость.</translation>
 <translation id="5301954838959518834">ОК</translation>
 <translation id="5302048478445481009">Язык</translation>
@@ -6232,7 +6232,7 @@
 <translation id="809792523045608178">В <ph name="IDS_SHORT_PRODUCT_NAME" /> используются настройки прокси-сервера из расширения.</translation>
 <translation id="8097959162767603171">Сначала администратор должен принять Условия использования, которые можно найти на странице со списком устройств Chrome в консоли администратора.</translation>
 <translation id="810068641062493918">Выбранный язык: <ph name="LANGUAGE" />. Чтобы отменить выбор, нажмите клавиши Поиск + Пробел.</translation>
-<translation id="810185532889603849">Дополнительные цвета</translation>
+<translation id="810185532889603849">Свои цвета</translation>
 <translation id="8101987792947961127">При следующей перезагрузке устройства необходимо выполнить Powerwash</translation>
 <translation id="8102139037507939978">Удалять из файла system_logs.txt информацию, позволяющую идентифицировать личность</translation>
 <translation id="8102159139658438129">Чтобы открыть параметры подключенного телефона, перейдите в <ph name="LINK_BEGIN" />Настройки<ph name="LINK_END" />.</translation>

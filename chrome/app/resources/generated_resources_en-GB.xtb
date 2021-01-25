@@ -260,7 +260,7 @@
 <translation id="1285484354230578868">Store data in your Google Drive account</translation>
 <translation id="1285625592773741684">Current data usage setting is mobile data</translation>
 <translation id="1288037062697528143">Night Light will turn on automatically at sunset</translation>
-<translation id="1288300545283011870">Speech Properties</translation>
+<translation id="1288300545283011870">Speech properties</translation>
 <translation id="1291119821938122630"><ph name="MANAGER" /> Terms of Service</translation>
 <translation id="1292849930724124745">Insert smart card to stay signed in</translation>
 <translation id="1293264513303784526">USB-C device (left port)</translation>
@@ -1302,7 +1302,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2442916515643169563">Text shadow</translation>
 <translation id="2444469058037141906">Just say or type what you need</translation>
 <translation id="2445081178310039857">Extension root directory is required.</translation>
-<translation id="2445484935443597917">Create a New Profile</translation>
+<translation id="2445484935443597917">Create a new profile</translation>
 <translation id="2448312741937722512">Types</translation>
 <translation id="2448810255793562605">Switch access auto-scan</translation>
 <translation id="2450223707519584812">You will not be able to add users because Google API keys are missing. See <ph name="DETAILS_URL" /> for details.</translation>
@@ -1713,7 +1713,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2893168226686371498">Default browser</translation>
 <translation id="2893917546370257247">{COUNT,plural, =1{1 text}other{# texts}}</translation>
 <translation id="2894757982205307093">New tab in group</translation>
-<translation id="289644616180464099">SIM Card is locked</translation>
+<translation id="289644616180464099">SIM card is locked</translation>
 <translation id="289695669188700754">Key ID: <ph name="KEY_ID" /></translation>
 <translation id="2897878306272793870">Are you sure that you want to open <ph name="TAB_COUNT" /> tabs?</translation>
 <translation id="290105521672621980">File uses unsupported features</translation>
@@ -1907,7 +1907,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3118654181216384296">Please try to start Linux again in a few moments.</translation>
 <translation id="3120430004221004537">Insufficient encryption for a given operation on: "<ph name="DEVICE_NAME" />".</translation>
 <translation id="3122464029669770682">CPU</translation>
-<translation id="3122496702278727796">Failed To Create Data Directory</translation>
+<translation id="3122496702278727796">Failed to create data directory</translation>
 <translation id="3124111068741548686">USER handles</translation>
 <translation id="3126026824346185272">Ctrl</translation>
 <translation id="3127156390846601284">This will delete any data stored on your device for all the sites shown. Do you want to continue?</translation>
@@ -3696,7 +3696,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5213891612754844763">Show proxy settings</translation>
 <translation id="5215502535566372932">Select country</translation>
 <translation id="521582610500777512">Photo was discarded</translation>
-<translation id="5217189792977407501">Assign to desk</translation>
 <translation id="5222403284441421673">Insecure download blocked</translation>
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="52232769093306234">Packing failed.</translation>
@@ -3772,6 +3771,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5300287940468717207">Reset site permissions?</translation>
 <translation id="5300589172476337783">Show</translation>
 <translation id="5300719150368506519">Send URLs of pages that you visit to Google</translation>
+<translation id="5300814202279832142">Move window to desk</translation>
 <translation id="5301751748813680278">Entering as Guest.</translation>
 <translation id="5301954838959518834">OK, got it</translation>
 <translation id="5302048478445481009">Language</translation>
@@ -5350,7 +5350,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7115361495406486998">No reachable contacts</translation>
 <translation id="7117228822971127758">Please try again later</translation>
 <translation id="7117247127439884114">Sign in Again...</translation>
-<translation id="711840821796638741">Show Managed Bookmarks</translation>
+<translation id="711840821796638741">Show managed bookmarks</translation>
 <translation id="711902386174337313">Read the list of your signed-in devices</translation>
 <translation id="7120865473764644444">Couldn't connect to the sync server. Retrying...</translation>
 <translation id="7121362699166175603">Clears history and auto-completions in the address bar. Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>

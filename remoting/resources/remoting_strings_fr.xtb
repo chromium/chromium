@@ -174,7 +174,7 @@ Si la case "<ph name="SERVICE_SCRIPT_NAME" />" est déjà cochée, décochez-la,
 <translation id="8743328882720071828">Souhaitez-vous autoriser <ph name="CLIENT_USERNAME" /> à voir et contrôler votre ordinateur ?</translation>
 <translation id="8747048596626351634">La session a planté ou n'a pas réussi à démarrer. Si ~/.chrome-remote-desktop-session est présent sur l'ordinateur à distance, assurez-vous qu'il lance un processus long au premier plan, tel qu'un environnement de bureau ou un gestionnaire de fenêtres.</translation>
 <translation id="8804164990146287819">Règles de confidentialité</translation>
-<translation id="8906511416443321782">L'accès au micro est nécessaire pour capturer l'audio et le diffuser en streaming dans le client du bureau à distance Chrome.</translation>
+<translation id="8906511416443321782">L'accès au micro est nécessaire pour capturer l'audio et le diffuser en streaming sur le client du Bureau à distance Chrome.</translation>
 <translation id="9111855907838866522">Vous êtes connecté à votre appareil à distance. Pour ouvrir le menu, veuillez appuyer sur l'écran avec quatre doigts.</translation>
 <translation id="9126115402994542723">Ne plus demander de code d'accès en cas de connexion à cet hôte depuis cet appareil</translation>
 <translation id="916856682307586697">Lance la session XSession par défaut</translation>

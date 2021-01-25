@@ -146,7 +146,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="225680501294068881">Recherche d'appareils…</translation>
 <translation id="2268130516524549846">Bluetooth désactivé</translation>
 <translation id="2268813581635650749">Déconnecter les util.</translation>
-<translation id="2269016722240250274">Une application utilise votre micro.</translation>
+<translation id="2269016722240250274">Une application utilise le micro</translation>
 <translation id="2277103315734023688">Avance rapide</translation>
 <translation id="2292698582925480719">Échelle d'affichage</translation>
 <translation id="229397294990920565">Désactivation des données mobiles…</translation>
@@ -231,7 +231,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3033545621352269033">Activé</translation>
 <translation id="3036649622769666520">Ouvrir les fichiers</translation>
 <translation id="3038571455154067151">Pour vous connecter, saisissez le code d'accès parental Family Link</translation>
-<translation id="3039939407102840004">Le niveau de charge des piles du stylet est de <ph name="PERCENTAGE" /> pour cent.</translation>
+<translation id="3039939407102840004">Le stylet est chargé à <ph name="PERCENTAGE" /> %.</translation>
 <translation id="3045488863354895414">Bonjour,</translation>
 <translation id="3051128274746680507">Votre profil d'utilisateur supervisé sera bientôt supprimé. Connectez-vous pour en savoir plus.</translation>
 <translation id="3055162170959710888">Vous avez utilisé l'appareil pendant <ph name="USED_TIME" /> aujourd'hui</translation>
@@ -322,7 +322,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3773700760453577392">Un administrateur a désactivé la connexion multicompte pour <ph name="USER_EMAIL" />. Tous les utilisateurs doivent se déconnecter pour continuer.</translation>
 <translation id="3783640748446814672">alt</translation>
 <translation id="3784455785234192852">Verrouiller</translation>
-<translation id="3796746699333205839">Une application utilise votre caméra et votre micro</translation>
+<translation id="3796746699333205839">Une application utilise la caméra et le micro</translation>
 <translation id="3798670284305777884">Haut-parleur (interne)</translation>
 <translation id="3799080171973636491">Vous avez appuyé sur le raccourci clavier de la loupe plein écran. Voulez-vous l'activer ?</translation>
 <translation id="380165613292957338">Bonjour, comment puis-je vous aider ?</translation>
@@ -720,7 +720,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="742594950370306541">La caméra est en cours d'utilisation.</translation>
 <translation id="742608627846767349">Bonjour,</translation>
 <translation id="743058460480092004">La caméra et le micro sont en cours d'utilisation.</translation>
-<translation id="7452560014878697800">Une application utilise votre caméra</translation>
+<translation id="7452560014878697800">Une application utilise la caméra</translation>
 <translation id="7461924472993315131">Épingler</translation>
 <translation id="746232733191930409">Mode d'enregistrement d'écran</translation>
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>
@@ -796,7 +796,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8036504271468642248">Phrase précédente</translation>
 <translation id="8042893070933512245">Ouvrir le menu des paramètres d'accessibilité</translation>
 <translation id="8048123526339889627">Paramètres Bluetooth</translation>
-<translation id="8052898407431791827">Le contenu a été copié dans le presse-papiers.</translation>
+<translation id="8052898407431791827">Copié dans le presse-papiers</translation>
 <translation id="8054466585765276473">Calcul de l'autonomie de la batterie en cours…</translation>
 <translation id="8061464966246066292">Contraste élevé</translation>
 <translation id="8098591350844501178">Arrêter de diffuser l'écran sur "<ph name="RECEIVER_NAME" />"</translation>
@@ -868,7 +868,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Chargeur de faible puissance connecté</translation>
 <translation id="8683506306463609433">Suivi des performances actif</translation>
-<translation id="8703634754197148428">Démarrez l'enregistrement. Une fois l'enregistrement démarré, appuyez sur Alt+Maj+L pour accéder à l'étagère et trouver le bouton pour arrêter l'enregistrement.</translation>
+<translation id="8703634754197148428">Démarrez l'enregistrement. Une fois l'enregistrement démarré, appuyez sur Alt+Maj+L pour aller à la barre d'accès et trouver le bouton pour arrêter l'enregistrement.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Pour gérer cette fonctionnalité, utilisez les flèches vers la gauche ou vers la droite.</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8721053961083920564">Activer/désactiver le volume. <ph name="STATE_TEXT" /></translation>

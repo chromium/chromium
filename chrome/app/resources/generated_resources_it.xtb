@@ -3695,7 +3695,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5213891612754844763">Mostra impostazioni proxy</translation>
 <translation id="5215502535566372932">Seleziona il paese</translation>
 <translation id="521582610500777512">La foto è stata eliminata</translation>
-<translation id="5217189792977407501">Assegna alla scrivania</translation>
 <translation id="5222403284441421673">Download non sicuro bloccato</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="52232769093306234">Compressione non riuscita.</translation>
@@ -3771,6 +3770,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5300287940468717207">Vuoi reimpostare le autorizzazioni dei siti?</translation>
 <translation id="5300589172476337783">Mostra</translation>
 <translation id="5300719150368506519">Invia a Google gli URL delle pagine che visiti</translation>
+<translation id="5300814202279832142">Sposta finestra nella scrivania</translation>
 <translation id="5301751748813680278">Accesso come Ospite.</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">Lingua</translation>
@@ -6484,7 +6484,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8398877366907290961">Procedi comunque</translation>
 <translation id="8400146488506985033">Gestisci utenti</translation>
 <translation id="8401432541486058167">Specifica il PIN associato alla tua smart card.</translation>
-<translation id="8403562727702715619">Recentemente da Google Drive</translation>
+<translation id="8403562727702715619">Attività recenti su Google Drive</translation>
 <translation id="8407199357649073301">Livello di log:</translation>
 <translation id="8408068190360279472">Rete <ph name="NETWORK_TYPE" />, collegamento in corso</translation>
 <translation id="8410775397654368139">Google Play</translation>

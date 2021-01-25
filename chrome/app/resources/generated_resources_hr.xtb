@@ -562,7 +562,7 @@
 <translation id="1612019740169791082">Vaš spremnik nije konfiguriran za podržavanje promjena veličine diska. Da biste prilagodili količinu prostora koji je rezerviran za Linux, izradite sigurnosnu kopiju i vratite je u novom spremniku.</translation>
 <translation id="1614511179807650956">Vjerojatno ste potrošili dopuštenu količinu mobilnih podataka. Posjetite aktivacijski portal <ph name="NAME" /> kako biste platili dodatni prijenos podataka.</translation>
 <translation id="161460670679785907">Nije moguće otkriti vaš telefon</translation>
-<translation id="1615402009686901181">Administratorsko pravilo onemogućuje snimanje zaslona ako je vidljiv povjerljiv sadržaj</translation>
+<translation id="1615402009686901181">Administratorska pravila onemogućuju snimanje zaslona ako je vidljiv povjerljiv sadržaj</translation>
 <translation id="1616206807336925449">To proširenje ne zahtijeva nikakva posebna dopuštenja.</translation>
 <translation id="1616298854599875024">Nije moguće uvesti proširenje "<ph name="IMPORT_NAME" />" jer nije dijeljeni modul</translation>
 <translation id="1617765145568323981">{NUM_FILES,plural, =0{Provjeravamo jesu li ti podaci u skladu sa sigurnosnim pravilima vaše organizacije...}=1{Provjeravamo je li ta datoteka u skladu sa sigurnosnim pravilima vaše organizacije...}one{Provjeravamo jesu li te datoteke u skladu sa sigurnosnim pravilima vaše organizacije...}few{Provjeravamo jesu li te datoteke u skladu sa sigurnosnim pravilima vaše organizacije...}other{Provjeravamo jesu li te datoteke u skladu sa sigurnosnim pravilima vaše organizacije...}}</translation>
@@ -575,7 +575,7 @@
 <translation id="1623132449929929218">Slike trenutačno nisu dostupne. Ponovo se povežite s internetom da biste pregledali zbirke pozadina.</translation>
 <translation id="1623723619460186680">Redukcija plavog svjetla</translation>
 <translation id="1624012933569991823">Postavke</translation>
-<translation id="1624599281783425761">Nećete više vidjeti tvrtku <ph name="MERCHANT" /></translation>
+<translation id="1624599281783425761">Nećete više vidjeti trgovca <ph name="MERCHANT" /></translation>
 <translation id="1627276047960621195">Deskriptori datoteke</translation>
 <translation id="1627408615528139100">Već je preuzeto</translation>
 <translation id="1628948239858170093">Pregledati datoteku prije otvaranja?</translation>
@@ -732,7 +732,7 @@
 <translation id="1790194216133135334">Pošalji vezu na <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Ukloni pristup</translation>
 <translation id="1792619191750875668">Prošireni zaslon</translation>
-<translation id="1794051631868188691">Nikad nemoj prikazivati tvrtku <ph name="MERCHANT" /></translation>
+<translation id="1794051631868188691">Nikad nemoj prikazivati trgovca <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Pošaljite povratne informacije da biste nam pomogli riješiti taj problem.</translation>
 <translation id="1795214765651529549">Koristi klasičnu</translation>
 <translation id="1799071797295057738">Proširenje "<ph name="EXTENSION_NAME" />" automatski je onemogućeno.</translation>
@@ -3696,7 +3696,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="5213891612754844763">Prikaži postavke proxyja</translation>
 <translation id="5215502535566372932">Odaberite zemlju</translation>
 <translation id="521582610500777512">Fotografija je odbačena</translation>
-<translation id="5217189792977407501">Dodijeli radnoj površini</translation>
 <translation id="5222403284441421673">Nesigurno preuzimanje blokirano</translation>
 <translation id="5222676887888702881">Odjava</translation>
 <translation id="52232769093306234">Pakiranje nije uspjelo.</translation>
@@ -3772,6 +3771,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="5300287940468717207">Želite li poništiti dopuštenja za web-lokacije?</translation>
 <translation id="5300589172476337783">Prikaži</translation>
 <translation id="5300719150368506519">Slanje URL-ova posjećenih stranica Googleu</translation>
+<translation id="5300814202279832142">Premjesti prozor na radnu površinu</translation>
 <translation id="5301751748813680278">Ulazite kao Gost.</translation>
 <translation id="5301954838959518834">U redu, shvaćam</translation>
 <translation id="5302048478445481009">Jezik</translation>
@@ -4057,7 +4057,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="561698261642843490">Zatvaranje Firefoxa</translation>
 <translation id="5618333180342767515">(može potrajati nekoliko minuta)</translation>
 <translation id="56197088284879152">Preopterećena je veza prema udaljenom uređaju: "<ph name="DEVICE_NAME" />".</translation>
-<translation id="5619862035903135339">Administratorsko pravilo onemogućuje snimku zaslona</translation>
+<translation id="5619862035903135339">Administratorska pravila onemogućuju snimku zaslona</translation>
 <translation id="5620568081365989559">DevTools zahtijevaju puni pristup do <ph name="FOLDER_PATH" />. Ne otkrivajte nikakve osjetljive podatke.</translation>
 <translation id="5620612546311710611">statistika upotrebe</translation>
 <translation id="5620655347161642930">Izvoz zaporki...</translation>
@@ -5672,7 +5672,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="7503191893372251637">Vrsta Netscape certifikata</translation>
 <translation id="7503985202154027481">Na sigurnosnom ključu zadržat će se evidencija vašeg posjeta toj web-lokaciji.</translation>
 <translation id="750509436279396091">Otvori mapu preuzimanja</translation>
-<translation id="7505717542095249632">Sakrij tvrtku <ph name="MERCHANT" /></translation>
+<translation id="7505717542095249632">Sakrij trgovca <ph name="MERCHANT" /></translation>
 <translation id="7506093026325926984">Zaporka će se spremiti na ovom uređaju</translation>
 <translation id="7506130076368211615">Postavite novu mrežu</translation>
 <translation id="7506242536428928412">Za upotrebu novog sigurnosnog ključa postavite novi PIN</translation>

@@ -119,7 +119,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">مرحبًا، <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">إدخال نصي</translation>
-<translation id="1989113344093894667">يتعذّر التقاط المحتوى</translation>
+<translation id="1989113344093894667">لا يمكن تصوير المحتوى</translation>
 <translation id="1993072747612765854">مزيد من المعلومات حول آخر تحديث لتطبيق <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">إيقاف التشغيل</translation>
 <translation id="1998100899771863792">سطح المكتب الحالي</translation>
@@ -146,7 +146,7 @@
 <translation id="225680501294068881">جارٍ البحث عن أجهزة...</translation>
 <translation id="2268130516524549846">تم إيقاف البلوتوث</translation>
 <translation id="2268813581635650749">خروج من كل الحسابات</translation>
-<translation id="2269016722240250274">أحد التطبيقات يستخدم الميكروفون الخاص بك.</translation>
+<translation id="2269016722240250274">أحد التطبيقات يستخدم الميكروفون.</translation>
 <translation id="2277103315734023688">الانتقال إلى الأمام</translation>
 <translation id="2292698582925480719">مقياس العرض</translation>
 <translation id="229397294990920565">جارٍ إيقاف بيانات الجوّال...</translation>
@@ -204,7 +204,7 @@
 <translation id="2727977024730340865">تمّ توصيل شاحن منخفض الطاقة. لذا قد لا تكون عملية شحن البطارية جديرة بالثقة.</translation>
 <translation id="2778650143428714839">تتم إدارة <ph name="DEVICE_TYPE" /> من خلال <ph name="MANAGER" /></translation>
 <translation id="2792498699870441125">‏Alt+مفتاح البحث</translation>
-<translation id="2814448776515246190">التقاط جزئي</translation>
+<translation id="2814448776515246190">تصوير جزئي</translation>
 <translation id="2819276065543622893">سيتم تسجيل خروجك الآن.</translation>
 <translation id="28232023175184696">تعذَّر الاتصال بالإنترنت. يُرجى النقر لإعادة المحاولة.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> غير متوافق مع <ph name="SPECIFIED_RESOLUTION" />. تم تغيير درجة الدقة إلى <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -241,7 +241,7 @@
 <translation id="3090989381251959936">تبديل <ph name="FEATURE_NAME" />. <ph name="STATE_TEXT" /></translation>
 <translation id="309749186376891736">نقل المؤشر</translation>
 <translation id="3098580329624789136">احصل على <ph name="INTENT" /> لطلب البحث "<ph name="QUERY" />"</translation>
-<translation id="3100274880412651815">إغلاق وضع الالتقاط</translation>
+<translation id="3100274880412651815">إغلاق وضع تصوير الشاشة</translation>
 <translation id="3105917916468784889">أخذ لقطة شاشة</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (بلوتوث)</translation>
 <translation id="3126069444801937830">إعادة التشغيل للتحديث</translation>
@@ -582,7 +582,7 @@
 <translation id="6062360702481658777">سيتم تسجيل خروجك تلقائيًا في غضون <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">إيقاف التسجيل</translation>
 <translation id="607652042414456612">يمكن لأجهزة بلوتوث القريبة اكتشاف جهاز الكمبيوتر وسيظهر كـ "<ph name="NAME" />" بالعنوان <ph name="ADDRESS" /></translation>
-<translation id="6094290315941448991">تحظر سياسة المشرف ميزة "مسجّل الشاشة" عند عرض محتوى سري.</translation>
+<translation id="6094290315941448991">تحظر سياسة المشرف ميزة تسجيل الشاشة عند عرض محتوى سري.</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
 <translation id="612734058257491180">‏لا يتوفر "مساعد Google" في جلسة ضيف.</translation>
 <translation id="6137566720514957455">فتح مربع الحوار لإزالة الحساب <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -897,7 +897,7 @@
 <translation id="8877788021141246043">ضبط تذكير</translation>
 <translation id="8878886163241303700">توسيع الشاشة</translation>
 <translation id="8883473964424809116">‏انقر لفتح إعدادات "مساعد Google".</translation>
-<translation id="8884537526797090108">يتعذّر تسجيل المحتوى السري</translation>
+<translation id="8884537526797090108">لا يمكن تسجيل الشاشة بسبب المحتوى السري</translation>
 <translation id="890616557918890486">تغيير المصدر</translation>
 <translation id="8909138438987180327">مستوى طاقة البطارية عند <ph name="PERCENTAGE" /> في المئة.</translation>
 <translation id="8913384980486163186">المظهر (التلقائي)</translation>
@@ -913,7 +913,7 @@
 <translation id="9017320285115481645">‏يُرجى إدخال رمز الدخول المخصّص للوالدين في Family Link.</translation>
 <translation id="9047624247355796468">فتح الإعدادات للشبكة <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">‏سيتم إعادة النسخة السابقة من نظام التشغيل Chrome إلى جهازك.</translation>
-<translation id="9063800855227801443">يتعذّر التقاط المحتوى السري</translation>
+<translation id="9063800855227801443">لا يمكن تصوير الشاشة بسبب المحتوى السري</translation>
 <translation id="9065203028668620118">تعديل</translation>
 <translation id="9070640332319875144">إعدادات المساعد</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> حتى تصبح البطارية فارغة.</translation>

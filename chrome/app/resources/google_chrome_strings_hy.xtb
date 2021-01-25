@@ -42,7 +42,7 @@
 <translation id="1874309113135274312">Google Chrome Բետա (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome-ը հնացած է</translation>
 <translation id="1919130412786645364">Թույլատրել մուտքը Chrome-ում</translation>
-<translation id="2018528049276128029">Յուրաքանչյուր պրոֆիլում պահվում են Chrome-ի անհատական տվյալները, օրինակ՝ էջանիշները, պատմությունը, գաղտնաբառերը և այլն</translation>
+<translation id="2018528049276128029">Յուրաքանչյուր պրոֆիլում առանձին պահվում են Chrome-ի օգտատերերի տվյալները, օրինակ՝ էջանիշները, պատմությունը, գաղտնաբառերը և այլն</translation>
 <translation id="2063848847527508675">Թարմացումը կիրառելու համար հարկավոր է վերագործարկել Chrome OS-ը:</translation>
 <translation id="2094919256425865063">Փակե՞լ Chrome-ը։</translation>
 <translation id="2120620239521071941"><ph name="ITEMS_COUNT" /> տարր ձեր սարքից կջնջվի: Հետագայում ձեր տվյալներն առբերելու համար մուտք գործեք Chrome <ph name="USER_EMAIL" /> հաշվով:</translation>
@@ -56,11 +56,11 @@
 <translation id="234869673307233423">Chrome-ը չի կարող ստուգել ձեր գաղտնաբառերը։ Փորձեք ավելի ուշ։</translation>
 <translation id="235650106824528204">Աշխատանքային պրոֆիլի ադմինիստրատորը կարող է ջնջել Chrome-ի բոլոր տվյալները, որոնք ստեղծվում են այս պրոֆիլի օգտագործման ընթացքում (օրինակ՝ էջանիշներ, պատմություն, գաղտնաբառեր և այլ կարգավորումներ)։ <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">Google Chrome-ը չկարողացավ համաժամացնել ձեր տվյալները, քանի որ Sync ծառայությունը մատչելի չէ ձեր տիրույթի համար:</translation>
-<translation id="245659736593643560">Chrome OS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա, ինչպիսին է <ph name="BEGIN_LINK_LINUX_OSS" />Լինուքսի մշակման միջավայրը (փորձնական)<ph name="END_LINK_LINUX_OSS" />։</translation>
+<translation id="245659736593643560">Chrome OS-ը ստեղծվել է <ph name="BEGIN_LINK_CROS_OSS" />բաց կոդով ծրագրակազմի<ph name="END_LINK_CROS_OSS" /> հիման վրա, ինչպիսին է <ph name="BEGIN_LINK_LINUX_OSS" />Լինուքսի մշակման միջավայրը (բետա)<ph name="END_LINK_LINUX_OSS" />։</translation>
 <translation id="2467438592969358367">Google Chrome-ն ուզում է արտահանել ձեր գաղտնաբառերը: Թույլատրելու համար մուտքագրեք Windows-ի ձեր գաղտնաբառը:</translation>
 <translation id="2485422356828889247">Ապատեղադրել</translation>
 <translation id="2534507159460261402">Google Pay (պատճենվել է Chrome-ում)</translation>
-<translation id="2574930892358684005"><ph name="EXISTING_USER" /> օգտատերն արդեն մտել է հաշիվ իր Chrome-ի պրոֆիլով։ Ձեր դիտարկումներն առանձին պահելու համար կարող եք Chrome-ի առանձին պրոֆիլ ստեղծել։</translation>
+<translation id="2574930892358684005"><ph name="EXISTING_USER" /> օգտատերն արդեն մուտք է գործել Chrome-ի այս պրոֆիլը։ Ձեր դիտարկումների պատմությունն առանձին պահելու համար կարող եք Chrome-ի առանձին պրոֆիլ ստեղծել։</translation>
 <translation id="2580411288591421699">Հնարավոր չէ տեղադրել Google Chrome-ի նույն տարբերակը, որն արդեն աշխատում է: Փակեք Google Chrome-ը և նորից փորձեք:</translation>
 <translation id="2586406160782125153">Ձեր այցելությունների պատմությունը կջնջվի այս սարքից: Հետագայում ձեր տվյալներն առբերելու համար մուտք գործեք Chrome <ph name="USER_EMAIL" /> հաշվով:</translation>
 <translation id="2588634262982826227">Chrome OS-ը յուրաքանչյուր վերագործարկումից հետո կարող է վերականգնել ձեր հավելվածներն ու էջերը։</translation>

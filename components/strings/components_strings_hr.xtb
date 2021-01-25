@@ -327,7 +327,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="2164510882479075877">Provjerite sadrži li naziv <ph name="HOST_NAME" /> pravopisnu pogrešku.</translation>
 <translation id="2166049586286450108">Potpuni administratorski pristup</translation>
 <translation id="2166378884831602661">Web-lokacija ne može pružiti sigurnu vezu</translation>
-<translation id="2168151236314517198">Administratorsko pravilo blokira ispis tog sadržaja</translation>
+<translation id="2168151236314517198">Administratorska pravila blokiraju ispis tog sadržaja</translation>
 <translation id="2169984857010174799">Kaku2 (omotnica)</translation>
 <translation id="2181821976797666341">Pravila</translation>
 <translation id="2183608646556468874">Telefonski broj</translation>
@@ -1362,7 +1362,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6290238015253830360">Ovdje će se prikazivati predloženi članci</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Zaustavljanje Google asistenta u Chromeu</translation>
-<translation id="6304463939629872728">Završite kupnju karticom</translation>
+<translation id="6304463939629872728">Završite kupnju koristeći</translation>
 <translation id="6305205051461490394">Web-lokacija <ph name="URL" /> nije dostupna.</translation>
 <translation id="6312113039770857350">Web-stranica nije dostupna</translation>
 <translation id="6321917430147971392">Provjerite postavke DNS-a</translation>

@@ -119,7 +119,7 @@
 <translation id="1128128132059598906">EAP – TTLS</translation>
 <translation id="1128591060186966949">Змінити пошукову систему</translation>
 <translation id="1129850422003387628">Керувати додатками</translation>
-<translation id="113050636487300043">Щоб відрізняти профілі, виберіть назву та кольорову тему</translation>
+<translation id="113050636487300043">Щоб відрізняти профілі, виберіть назву та колірну тему</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> – частина групи "<ph name="GROUP_NAME" />"</translation>
 <translation id="1134009406053225289">Відкрити в анонімному вікні</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> з <ph name="EMOJI_COUNT" />.</translation>
@@ -909,7 +909,7 @@
 <translation id="1984417487208496350">Захист вимкнено (не рекомендовано)</translation>
 <translation id="1987317783729300807">Облікові записи</translation>
 <translation id="1989112275319619282">Переглянути</translation>
-<translation id="1989113344093894667">Не вдається зняти контент</translation>
+<translation id="1989113344093894667">Не вдається записати контент</translation>
 <translation id="1990046457226896323">Файли живих субтитрів завантажено</translation>
 <translation id="1990512225220753005">Не показувати ярлики на цій сторінці</translation>
 <translation id="1992397118740194946">Не налаштовано</translation>
@@ -2570,7 +2570,7 @@
 <translation id="3855676282923585394">Імпорт закладок і налаштувань...</translation>
 <translation id="3856096718352044181">Підтвердьте, що цей постачальник активний, або повторіть спробу пізніше</translation>
 <translation id="3856800405688283469">Виберіть часовий пояс</translation>
-<translation id="3857807444929313943">Підніміть і знову торкніться</translation>
+<translation id="3857807444929313943">Підніміть і опустіть палець</translation>
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: синхронізацію призупинено</translation>
 <translation id="3861638017150647085">Ім'я користувача "<ph name="USERNAME" />" недоступне</translation>
 <translation id="3861977424605124250">Показувати під час запуску</translation>
@@ -3048,7 +3048,7 @@
 <translation id="443475966875174318">Оновити або видалити несумісні додатки</translation>
 <translation id="4436063104263971834">Немає профілів SIM. Налаштуйте новий профіль <ph name="BEGIN_LINK" />тут<ph name="END_LINK" />.</translation>
 <translation id="4438043733494739848">Прозоро</translation>
-<translation id="4438639467177774583">Пароль <ph name="MASKED_PASSWORD" /> користувача <ph name="USERNAME" /> буде збережено в обліковому записі <ph name="ACCOUNT" /></translation>
+<translation id="4438639467177774583">Пароль <ph name="MASKED_PASSWORD" /> користувача <ph name="USERNAME" /> буде збережено в обліковому записі Google <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Підключитися</translation>
 <translation id="4441124369922430666">Запускати цю програму автоматично під час увімкнення комп’ютера?</translation>
 <translation id="4441147046941420429">Щоб продовжити, вийміть і знову вставте ключ безпеки, а потім торкніться його</translation>
@@ -3699,7 +3699,6 @@
 <translation id="5213891612754844763">Показати налаштування проксі</translation>
 <translation id="5215502535566372932">Вибрати країну</translation>
 <translation id="521582610500777512">Фотографію відхилено</translation>
-<translation id="5217189792977407501">Призначити робочому столу</translation>
 <translation id="5222403284441421673">Незахищене завантаження заблоковано</translation>
 <translation id="5222676887888702881">Вийти</translation>
 <translation id="52232769093306234">Помилка пакування.</translation>
@@ -3775,6 +3774,7 @@
 <translation id="5300287940468717207">Скинути дозволи сайту?</translation>
 <translation id="5300589172476337783">Показати</translation>
 <translation id="5300719150368506519">Надсилати в Google URL-адреси відвіданих сторінок</translation>
+<translation id="5300814202279832142">Перемістити вікно на робочий стіл</translation>
 <translation id="5301751748813680278">Вхід у режимі гостя.</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">Мова</translation>
@@ -4514,7 +4514,7 @@
 <translation id="6143186082490678276">Довідка</translation>
 <translation id="6143366292569327983">Виберіть, з якої мови потрібно перекласти сторінку</translation>
 <translation id="6144938890088808325">Допоможіть нам покращити Chromebook</translation>
-<translation id="6147020289383635445">Помилка версії для друку.</translation>
+<translation id="6147020289383635445">Помилка попереднього перегляду друку.</translation>
 <translation id="6148576794665275391">Відкрити зараз</translation>
 <translation id="6149015141270619212">Не вдається під'єднати пристрій до Інтернету</translation>
 <translation id="6150278227694566734">Деякі контакти</translation>
@@ -4895,7 +4895,7 @@
 <translation id="6590458744723262880">Перейменувати папку</translation>
 <translation id="6592267180249644460">Журнал WebRTC створено: <ph name="WEBRTC_LOG_CAPTURE_TIME" /></translation>
 <translation id="6592808042417736307">Відбиток пальця відскановано</translation>
-<translation id="6594011207075825276">Пошук серійних пристроїв…</translation>
+<translation id="6594011207075825276">Пошук пристроїв із послідовними портами…</translation>
 <translation id="6595187330192059106">Завжди блокувати сайту <ph name="HOST" /> доступ до повного контролю над пристроями MIDI.</translation>
 <translation id="6596325263575161958">Параметри шифрування</translation>
 <translation id="6596816719288285829">ІР-адреса</translation>
@@ -5479,7 +5479,7 @@
 <translation id="7258697411818564379">PIN-код додано</translation>
 <translation id="7262004276116528033">Ця служба входу в обліковий запис зареєстрована в домені <ph name="SAML_DOMAIN" /></translation>
 <translation id="7267044199012331848">Не вдалося встановити віртуальну машину. Повторіть спробу або зв'яжіться з адміністратором. Код помилки: <ph name="ERROR_CODE" />.</translation>
-<translation id="7267875682732693301">Піднімайте палець, щоб додати різні частини відбитка</translation>
+<translation id="7267875682732693301">Піднімайте й знов опускайте палець, щоб повністю відсканувати відбиток</translation>
 <translation id="7268127947535186412">Цим налаштуванням керує власник пристрою.</translation>
 <translation id="7269736181983384521">Використання трафіку функцією "Передавання поблизу"</translation>
 <translation id="7270858098575133036">Запитувати, коли сайт хоче використовувати виключні повідомлення системи, щоб отримувати доступ до пристроїв MIDI</translation>
@@ -5866,7 +5866,7 @@
 <translation id="7707922173985738739">Використовувати мобільне передавання даних</translation>
 <translation id="7709152031285164251">Помилка – <ph name="INTERRUPT_REASON" /></translation>
 <translation id="7710568461918838723">&amp;Транслювати…</translation>
-<translation id="7712739869553853093">Вікно попереднього перегляду версії для друку</translation>
+<translation id="7712739869553853093">Вікно попереднього перегляду друку</translation>
 <translation id="7712836429117959503">Невідоме розширення з ідентифікатором <ph name="EXTENSION_ID" /></translation>
 <translation id="7714307061282548371">Файли cookie із сайту <ph name="DOMAIN" /> дозволено</translation>
 <translation id="7714464543167945231">Сертифікат</translation>

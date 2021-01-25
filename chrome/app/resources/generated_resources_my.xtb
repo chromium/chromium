@@ -1976,7 +1976,7 @@
 <translation id="3201422919974259695">အသုံးပြုနိုင်သော USB စက်ပစ္စည်းများကို ဤနေရာတွင် တွေ့ရပါမည်။</translation>
 <translation id="3202131003361292969">လမ်းကြောင်း</translation>
 <translation id="3202173864863109533">ဤ တဘ်၏ အသံကို ပိတ်ထား၏။</translation>
-<translation id="3202218848974251205">ကိုယ်ရေးလုံခြုံမှု သဲဖြည့်ပုံး</translation>
+<translation id="3202218848974251205">ပုဂ္ဂိုလ်ရေးဆိုင်ရာ လုံခြုံသည့်နေရာ</translation>
 <translation id="3208321278970793882">အက်ပ်</translation>
 <translation id="3208584281581115441">ယခု စစ်ကြည့်ရန်</translation>
 <translation id="3208703785962634733">အတည်မပြုသေး</translation>
@@ -3696,7 +3696,6 @@
 <translation id="5213891612754844763">ပရောက်စီ ဆက်တင်များကို ပြရန်</translation>
 <translation id="5215502535566372932">နိုင်ငံ ရွေးပါ</translation>
 <translation id="521582610500777512">ဓာတ်ပုံကို လွှင့်ပစ်လိုက်ပါပြ</translation>
-<translation id="5217189792977407501">မျက်နှာပြင်နေရာသို့ သတ်မှတ်ရန်</translation>
 <translation id="5222403284441421673">လုံခြုံမှုမရှိသည့် ဒေါင်းလုဒ်ကို ပိတ်ထားခြင်း</translation>
 <translation id="5222676887888702881">ထွက်ခွာရန်</translation>
 <translation id="52232769093306234">ထုပ်ပိုးခြင်း မအောင်မြင်ပါ။</translation>
@@ -3772,6 +3771,7 @@
 <translation id="5300287940468717207">ဝဘ်ဆိုက် ခွင့်ပြုချက်များကို ပြင်ဆင်သတ်မှတ်လိုသလား။</translation>
 <translation id="5300589172476337783">ပြရန်</translation>
 <translation id="5300719150368506519">သင်ဝင်ကြည့်သည့် စာမျက်နှာများ၏ URL များကို Google သို့ ပို့ရန်</translation>
+<translation id="5300814202279832142">ဝင်းဒိုးကို မျက်နှာပြင်နေရာသို့ ရွှေ့ရန်</translation>
 <translation id="5301751748813680278">ဧည့်သည် အဖြစ်ဝင်ရန်</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">ဘာသာစကား</translation>
@@ -6305,7 +6305,7 @@
 <translation id="8186609076106987817">ဆာဗာမှ ဖိုင်ကိုရှာမတွေ့ပါ။</translation>
 <translation id="8188389033983459049">ဆက်လုပ်ရန် သင့်စက်ပစ္စည်း ဆက်တင်များကို စစ်ဆေးပြီး ဖွင့်ပါ</translation>
 <translation id="8189306097519446565">ကျောင်းအကောင့်များ</translation>
-<translation id="8189750580333936930">ကိုယ်ရေးလုံခြုံမှု သဲဖြည့်ပုံး</translation>
+<translation id="8189750580333936930">ပုဂ္ဂိုလ်ရေးဆိုင်ရာ လုံခြုံသည့်နေရာ</translation>
 <translation id="8190193592390505034"><ph name="PROVIDER_NAME" />သို့ ချိတ်ဆက်​နေ</translation>
 <translation id="8191230140820435481">သင်၏ အက်ပ်များ၊ တိုးချဲ့မှုများ၊ နှင့် အပြင်အဆင်များကို စီမံကွပ်ကဲရန်</translation>
 <translation id="8195027750202970175">ဖိုင်အရွယ်အစား</translation>
@@ -6972,7 +6972,7 @@
 <translation id="8948939328578167195"><ph name="WEBSITE" /> က သင့်လုံခြုံရေးကီး ထုတ်လုပ်သူနှင့် မော်ဒယ်ကို သိလိုပါသည်</translation>
 <translation id="895054485242522631">ဝဘ်ဆိုက်များက လှုပ်ရှားမှု အာရုံခံစနစ်များ သုံးနိုင်သည်</translation>
 <translation id="8951256747718668828">အမှားအယွင်းတစ်ခုကြောင့် ပြန်ယူခြင်းကို အပြီးသတ်၍မရပါ</translation>
-<translation id="8951465597020890363">မည်သို့ပင်ဖြစ်စေ ဧည့်သည်မုဒ်မှ ထွက်လိုပါသလား။</translation>
+<translation id="8951465597020890363">မည်သို့ပင်ဖြစ်စေ ဧည့်သည်သုံးခွင့်မုဒ်မှ ထွက်လိုပါသလား။</translation>
 <translation id="8952831374766033534">စီစဉ်သတ်မှတ်ခြင်း ရွေးချယ်စရာကို ပံ့ပိုးမထားပါ- <ph name="ERROR_LINE" /></translation>
 <translation id="8953476467359856141">အားသွင်းနေစဉ်</translation>
 <translation id="895347679606913382">စတင်နေ...</translation>

@@ -3694,7 +3694,6 @@
 <translation id="5213891612754844763">顯示 Proxy 設定</translation>
 <translation id="5215502535566372932">選取國家/地區</translation>
 <translation id="521582610500777512">已捨棄相片</translation>
-<translation id="5217189792977407501">指派至桌面</translation>
 <translation id="5222403284441421673">已封鎖不安全的下載內容</translation>
 <translation id="5222676887888702881">登出</translation>
 <translation id="52232769093306234">封裝失敗。</translation>
@@ -3770,6 +3769,7 @@
 <translation id="5300287940468717207">要重設網站權限嗎？</translation>
 <translation id="5300589172476337783">顯示</translation>
 <translation id="5300719150368506519">將你造訪的網頁網址傳送給 Google</translation>
+<translation id="5300814202279832142">將視窗移至桌面</translation>
 <translation id="5301751748813680278">正在以訪客身分登入。</translation>
 <translation id="5301954838959518834">好，我知道了</translation>
 <translation id="5302048478445481009">語言</translation>

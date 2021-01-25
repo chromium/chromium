@@ -729,7 +729,7 @@
 <translation id="1790194216133135334">Сілтемені <ph name="DEVICE_NAME" /> құрылғысына жіберу</translation>
 <translation id="1790976235243700817">Кіру рұқсатын өшіру</translation>
 <translation id="1792619191750875668">Кеңейтілген дисплей</translation>
-<translation id="1794051631868188691"><ph name="MERCHANT" /> ешқашан көрсетілмесін.</translation>
+<translation id="1794051631868188691"><ph name="MERCHANT" /> ешқашан көрсетілмесін</translation>
 <translation id="1794791083288629568">Бұл мәселені шешуімізге көмектесу үшін пікір жіберіңіз.</translation>
 <translation id="1795214765651529549">Классикалық тақырыпты пайдалану</translation>
 <translation id="1799071797295057738">"<ph name="EXTENSION_NAME" />" кеңейтімі автоматты түрде өшірілген.</translation>
@@ -3065,7 +3065,7 @@
 <translation id="4462159676511157176">Реттелетін атау серверлері</translation>
 <translation id="4465236939126352372"><ph name="APP_NAME" /> қолданбасы үшін шектелген уақыт: <ph name="TIME" /></translation>
 <translation id="4465725236958772856"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> желі, <ph name="NETWORK_NAME" />, әкімші басқарады, мазмұн</translation>
-<translation id="4466068638972170851">Дауыстап оқылатын мазмұнды бөлектеп, "Іздеу + S" пернелерін басыңыз. Іздеу пернесін басып тұрыңыз немесе күй науасының жанындағы Select-to-Speak белгішесін түртіп, таңдау жасаңыз.</translation>
+<translation id="4466068638972170851">Дауыстап оқылатын мазмұнды бөлектеп, "Іздеу + S" пернелерін басыңыз. Іздеу пернесін басып тұрыңыз немесе күй науасының жанындағы "Select-to-Speak" белгішесін түртіп, таңдау жасаңыз.</translation>
 <translation id="4469477701382819144">Мазалайтын немесе жалған ақпаратты жарнамалар көрсететін сайттарда бөгелген</translation>
 <translation id="4469762931504673593"><ph name="ORIGIN" /> <ph name="FOLDERNAME" /> қалтасындағы файлдарды өңдей алады.</translation>
 <translation id="4470957202018033307">Сыртқы жад параметрлері</translation>
@@ -3693,7 +3693,6 @@
 <translation id="5213891612754844763">Прокси-сервер параметрлерін көрсету</translation>
 <translation id="5215502535566372932">Елді таңдаңыз</translation>
 <translation id="521582610500777512">Фотосурет алып тасталды</translation>
-<translation id="5217189792977407501">Жұмыс үстеліне тағайындау</translation>
 <translation id="5222403284441421673">Қорғалмаған жүктеп алу әрекеті бөгелді</translation>
 <translation id="5222676887888702881">Шығу</translation>
 <translation id="52232769093306234">Қысу сәтсіз болды.</translation>
@@ -3769,6 +3768,7 @@
 <translation id="5300287940468717207">Сайт рұқсаттары бастапқы қалпына қайтарылсын ба?</translation>
 <translation id="5300589172476337783">Көрсету</translation>
 <translation id="5300719150368506519">Кірген беттердің URL мекенжайларын Google-ға жіберу</translation>
+<translation id="5300814202279832142">Терезені жұмыс үстеліне жылжыту</translation>
 <translation id="5301751748813680278">Қонақ ретінде кіруде.</translation>
 <translation id="5301954838959518834">Жарайды, түсінікті</translation>
 <translation id="5302048478445481009">Тіл</translation>
@@ -6324,7 +6324,7 @@
 <translation id="8213449224684199188">Фото режимі қосылды</translation>
 <translation id="8214489666383623925">Файлды ашу…</translation>
 <translation id="8214962590150211830">Бұл тұлғаны өшіру</translation>
-<translation id="8215129063232901118">Телефоныңыздың мүмкіндіктеріне <ph name="DEVICE_TYPE" /> құрылғысынан пайдалану</translation>
+<translation id="8215129063232901118">Телефоныңыздың мүмкіндіктерін <ph name="DEVICE_TYPE" /> құрылғысынан пайдалану</translation>
 <translation id="8216351761227087153">Қарау</translation>
 <translation id="8217399928341212914">Бірнеше файлды автоматты жүктеуге салынған тыйымды сақтау</translation>
 <translation id="8218847192766059983">Тілдерді енгізіңіз немесе тізімнің ретін өзгертіңіз. <ph name="BEGIN_LINK" />Толығырақ<ph name="END_LINK" /></translation>

@@ -23,7 +23,7 @@
 <translation id="169515659049020177">Maj</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Ajouter "www." et ".com" à votre saisie dans la barre d'adresse et ouvrir la page</translation>
-<translation id="1768987374400973299">Faire une capture d'écran/un enregistrement</translation>
+<translation id="1768987374400973299">Capturer/Enregistrer l'écran</translation>
 <translation id="1872219238824176091">Supprimer le bureau actuel</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, puis <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> ou <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Accéder à l'onglet suivant</translation>
@@ -111,7 +111,7 @@
 <translation id="4801989101741319327">Atteindre la fin du mot suivant</translation>
 <translation id="4866066940972151697">Activer le bureau à droite</translation>
 <translation id="4916163929714267752">Ouvrir le lien dans une nouvelle fenêtre</translation>
-<translation id="492453977506755176">Clé du mode de capture</translation>
+<translation id="492453977506755176">Touche du mode de capture</translation>
 <translation id="5030659775136592441">Afficher le gestionnaire de favoris</translation>
 <translation id="5034421018520995080">Accéder au haut de la page</translation>
 <translation id="5042305953558921026">Touche du mode de présentation</translation>
@@ -134,7 +134,7 @@
 <translation id="5899919361772749550">Afficher ou masquer la console des outils pour les développeurs</translation>
 <translation id="5919628958418675842">Activer/Désactiver l'écran de confidentialité</translation>
 <translation id="5921745308587794300">Faire pivoter la fenêtre</translation>
-<translation id="5926306472221400972">Prendre une capture en plein écran</translation>
+<translation id="5926306472221400972">Faire une capture plein écran</translation>
 <translation id="6022924867608035986">Effacer le texte de la zone de recherche</translation>
 <translation id="6045998054441862242">Activer le mode Contraste élevé</translation>
 <translation id="6052614013050385269">Faire un clic droit sur un lien</translation>
@@ -152,7 +152,7 @@
 <translation id="6445033640292336367">Replacer l'onglet à sa position initiale</translation>
 <translation id="6474744297082284761">Zoom arrière (lorsque l'appareil est installé sur la station d'accueil OU lorsque la loupe en mode plein écran est activée)</translation>
 <translation id="649811797655257835">Sélectionnez le fichier, puis appuyez sur <ph name="SPACE" /></translation>
-<translation id="6551886416582667425">Effectuer une capture d'écran ou un enregistrement partiels</translation>
+<translation id="6551886416582667425">Capturer/Enregistrer une partie de l'écran</translation>
 <translation id="6556040137485212400">Ouvrir la fenêtre inutilisée depuis le plus longtemps</translation>
 <translation id="666343722268997814">Ouvrir le menu pop-up correspondant aux éléments mis en surbrillance</translation>
 <translation id="6671538777808758331">Accéder à la correspondance suivante du terme recherché</translation>
@@ -179,7 +179,7 @@
 <translation id="7611271430932669992">Passer aux fenêtres pop-up et aux boîtes de dialogue</translation>
 <translation id="7635348532214572995">Déplacer une icône d'application sur la grille d'applications</translation>
 <translation id="766326951329901120">Coller le contenu du presse-papiers en texte brut</translation>
-<translation id="7673453620027697230">Réaliser une capture d'écran ou un enregistrement de la fenêtre</translation>
+<translation id="7673453620027697230">Capturer/Enregistrer la fenêtre</translation>
 <translation id="7703010453515335249">crochet gauche</translation>
 <translation id="7724603315864178912">Couper</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, puis <ph name="SPACE" /> ou <ph name="ENTER" /></translation>

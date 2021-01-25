@@ -307,7 +307,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3621202678540785336">Intrări</translation>
 <translation id="3621712662352432595">Setări audio</translation>
 <translation id="3626281679859535460">Luminozitate</translation>
-<translation id="3630697955794050612">dezactivat</translation>
+<translation id="3630697955794050612">dezactivată</translation>
 <translation id="3631369015426612114">Permite notificările de la</translation>
 <translation id="3638400994746983214">Activează/dezactivează ecranul de confidențialitate. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733">Utilizatorul gestionat <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -524,7 +524,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="5619862035903135339">Politica implementată de administrator dezactivează capturarea ecranului</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mufă pentru microfon</translation>
-<translation id="5662709761327382534">Înregistrează microfonul <ph name="CURRENT_STATE" />, Apasă pe Enter pentru a activa / dezactiva înregistrarea microfonului <ph name="NEW_STATE" /></translation>
+<translation id="5662709761327382534">Înregistrare audio <ph name="CURRENT_STATE" />, Apasă pe Enter pentru înregistrare audio <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Se activează</translation>
 <translation id="5673434351075758678">Din „<ph name="FROM_LOCALE" />” în „<ph name="TO_LOCALE" />” după sincronizarea setărilor.</translation>
 <translation id="5677928146339483299">Blocat</translation>
@@ -572,7 +572,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
 <translation id="6030495522958826102">Meniul a fost mutat în colțul din stânga jos al ecranului.</translation>
 <translation id="6032620807120418574">Dă clic oriunde pentru a înregistra ecranul complet</translation>
-<translation id="6040071906258664830">Înregistrează microfonul <ph name="STATE" /></translation>
+<translation id="6040071906258664830">Înregistrare audio <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Închide</translation>
 <translation id="6043212731627905357">Monitorul nu funcționează cu <ph name="DEVICE_TYPE" /> (monitorul nu este compatibil).</translation>
 <translation id="6043994281159824495">Deconectați-vă acum</translation>
@@ -766,7 +766,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7842569679327885685">Avertisment: funcție experimentală</translation>
 <translation id="7846634333498149051">Tastatură</translation>
 <translation id="7860671499921112077">Glisează cu trei degete în sus pentru a intra în modul Prezentare generală</translation>
-<translation id="7866482334467279021">activat</translation>
+<translation id="7866482334467279021">activată</translation>
 <translation id="7868900307798234037">Deblochează cu amprenta</translation>
 <translation id="7872786842639831132">Dezactivat</translation>
 <translation id="7875575368831396199">Se pare că funcția Bluetooth este dezactivată pe <ph name="DEVICE_TYPE" />. Activează Bluetooth pentru a folosi Phone Hub.</translation>

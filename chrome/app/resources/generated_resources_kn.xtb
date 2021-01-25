@@ -577,7 +577,7 @@
 <translation id="1623132449929929218">ಚಿತ್ರಗಳು ಪ್ರಸ್ತುತ ಲಭ್ಯವಿಲ್ಲ. ವಾಲ್‌ಪೇಪರ್ ಸಂಗ್ರಹಗಳನ್ನು ನೋಡಲು ದಯವಿಟ್ಟು ಇಂಟರ್ನೆಟ್‌ಗೆ ಮರುಸಂಪರ್ಕಿಸಿ.</translation>
 <translation id="1623723619460186680">ನೀಲಿ ಲೈಟ್ ಕಡಿಮೆಗೊಳಿಸುವಿಕೆ</translation>
 <translation id="1624012933569991823">ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
-<translation id="1624599281783425761">ನೀವು ಪುನಃ <ph name="MERCHANT" /> ಅನ್ನು ನೋಡುವುದಿಲ್ಲ</translation>
+<translation id="1624599281783425761">ನಿಮಗೆ ಪುನಃ <ph name="MERCHANT" /> ಕಾಣಿಸುವುದಿಲ್ಲ</translation>
 <translation id="1627276047960621195">ಫೈಲ್ ವಿವರಣೆಗಳು</translation>
 <translation id="1627408615528139100">ಈಗಾಗಲೇ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1628948239858170093">ಫೈಲ್ ತೆರೆಯುವ ಮೊದಲು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ?</translation>
@@ -3698,7 +3698,6 @@
 <translation id="5213891612754844763">ಪ್ರಾಕ್ಸಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="5215502535566372932">ದೇಶವನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="521582610500777512">ಫೋಟೋವನ್ನು ತ್ಯಜಿಸಲಾಗಿದೆ</translation>
-<translation id="5217189792977407501">ಡೆಸ್ಕ್‌ಗೆ ನಿಯೋಜಿಸಿ</translation>
 <translation id="5222403284441421673">ಅಸುರಕ್ಷಿತ ಡೌನ್‌ಲೋಡ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
 <translation id="5222676887888702881">ಸೈನ್ ಔಟ್</translation>
 <translation id="52232769093306234">ಪ್ಯಾಕಿಂಗ್ ವಿಫಲವಾಗಿದೆ.</translation>
@@ -3774,6 +3773,7 @@
 <translation id="5300287940468717207">ಸೈಟ್ ಅನುಮತಿಗಳನ್ನು ಮರುಹೊಂದಿಸುವುದೇ?</translation>
 <translation id="5300589172476337783">ತೋರಿಸಿ</translation>
 <translation id="5300719150368506519">ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳ URL ಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಿ</translation>
+<translation id="5300814202279832142">ವಿಂಡೋವನ್ನು ಡೆಸ್ಕ್‌ಗೆ ಸರಿಸಿ</translation>
 <translation id="5301751748813680278">ಅತಿಥಿಯಾಗಿ ಪ್ರವೇಶಿಸಲಾಗಿದೆ.</translation>
 <translation id="5301954838959518834">ಸರಿ, ಅರ್ಥವಾಯಿತು</translation>
 <translation id="5302048478445481009">ಭಾಷೆ</translation>

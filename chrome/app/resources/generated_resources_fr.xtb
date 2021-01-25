@@ -733,7 +733,7 @@
 <translation id="1790194216133135334">Envoyer le lien sur <ph name="DEVICE_NAME" /></translation>
 <translation id="1790976235243700817">Supprimer l'accès</translation>
 <translation id="1792619191750875668">Affichage étendu</translation>
-<translation id="1794051631868188691">Ne jamais afficher ces informations : <ph name="MERCHANT" /></translation>
+<translation id="1794051631868188691">Ne jamais afficher <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Envoyer des commentaires pour nous aider à résoudre ce problème.</translation>
 <translation id="1795214765651529549">Utiliser le thème classique</translation>
 <translation id="1799071797295057738">L'extension "<ph name="EXTENSION_NAME" />" a été désactivée automatiquement.</translation>
@@ -1377,7 +1377,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2509566264613697683">8x</translation>
 <translation id="2510988373360790637">Supprimer l'appareil Bluetooth</translation>
 <translation id="2513396635448525189">Image de connexion</translation>
-<translation id="2514326558286966059">Déverrouiller l'appareil plus rapidement avec votre empreinte digitale</translation>
+<translation id="2514326558286966059">Déverrouiller l'appareil plus rapidement avec votre empreinte</translation>
 <translation id="2515586267016047495">Alt</translation>
 <translation id="2517472476991765520">Rechercher</translation>
 <translation id="2518024842978892609">Utiliser vos certificats client</translation>
@@ -3046,7 +3046,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="443475966875174318">Mettre à jour ou supprimer des applications incompatibles</translation>
 <translation id="4436063104263971834">Aucun profil SIM n'est disponible. Configurez un nouveau profil <ph name="BEGIN_LINK" />via ce lien<ph name="END_LINK" />.</translation>
 <translation id="4438043733494739848">Transparent</translation>
-<translation id="4438639467177774583">Les identifiants <ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> seront enregistrés dans votre compte Google, <ph name="ACCOUNT" /></translation>
+<translation id="4438639467177774583">Le mot de passe <ph name="MASKED_PASSWORD" /> de <ph name="USERNAME" /> sera enregistré dans votre compte Google, <ph name="ACCOUNT" /></translation>
 <translation id="4439427728133035643">Réseau <ph name="NETWORK_INDEX" /> sur <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, force du signal : <ph name="SIGNAL_STRENGTH" /> %, connexion</translation>
 <translation id="4441124369922430666">Voulez-vous démarrer automatiquement cette application à la mise sous tension de l'ordinateur ?</translation>
 <translation id="4441147046941420429">Pour continuer, retirez la clé de sécurité de votre appareil, puis réinsérez-la et appuyez dessus</translation>
@@ -3697,7 +3697,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5213891612754844763">Afficher les paramètres de proxy</translation>
 <translation id="5215502535566372932">Sélectionnez un pays</translation>
 <translation id="521582610500777512">La photo a été supprimée.</translation>
-<translation id="5217189792977407501">Attribuer au bureau</translation>
 <translation id="5222403284441421673">Téléchargement non sécurisé bloqué</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="52232769093306234">Échec de la compression.</translation>
@@ -3773,6 +3772,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5300287940468717207">Réinitialiser les autorisations des sites ?</translation>
 <translation id="5300589172476337783">Afficher</translation>
 <translation id="5300719150368506519">Envoyer à Google les URL des pages que vous consultez</translation>
+<translation id="5300814202279832142">Déplacer la fenêtre sur le bureau</translation>
 <translation id="5301751748813680278">Entrée en tant qu'invité.</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">Langue</translation>
@@ -5183,7 +5183,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6935286146439255109">Bac à papier manquant</translation>
 <translation id="693807610556624488">L'opération d'écriture dépasse la longueur maximale de l'attribut sur l'appareil <ph name="DEVICE_NAME" />.</translation>
 <translation id="6938386202199793006">Vous avez 1 imprimante enregistrée.</translation>
-<translation id="6938606182859551396">Pour recevoir les notifications de votre téléphone sur votre <ph name="DEVICE_TYPE" />, suivez les instructions sur votre téléphone pour autoriser les service Google Play à accéder à ces notifications.</translation>
+<translation id="6938606182859551396">Pour recevoir sur votre <ph name="DEVICE_TYPE" /> les notifications de votre téléphone, suivez les instructions à l'écran afin d'autoriser les services Google Play à y accéder.</translation>
 <translation id="6938789263968032501">Personnes</translation>
 <translation id="6939815295902433669">Examiner les logiciels de l'appareil</translation>
 <translation id="6941937518557314510">Connectez-vous à <ph name="TOKEN_NAME" /> pour vous authentifier auprès de <ph name="HOST_NAME" /> avec votre certificat.</translation>
@@ -5478,7 +5478,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7258697411818564379">Votre code a bien été ajouté</translation>
 <translation id="7262004276116528033">Ce service de connexion est hébergé par <ph name="SAML_DOMAIN" />.</translation>
 <translation id="7267044199012331848">Impossible d'installer la machine virtuelle. Veuillez réessayer ou contacter votre administrateur. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
-<translation id="7267875682732693301">Effectuez cette opération plusieurs fois pour ajouter les différentes parties de votre empreinte digitale</translation>
+<translation id="7267875682732693301">Répétez cette opération pour ajouter les différentes parties de votre empreinte</translation>
 <translation id="7268127947535186412">Ce paramètre est géré par le propriétaire de l'appareil.</translation>
 <translation id="7269736181983384521">Consommation des données pour le partage à proximité</translation>
 <translation id="7270858098575133036">Demander lorsqu'un site souhaite utiliser des messages spécifiques au système pour accéder aux appareils MIDI</translation>
@@ -5957,7 +5957,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7805768142964895445">État</translation>
 <translation id="7807067443225230855">Recherche et Assistant</translation>
 <translation id="7807711621188256451">Toujours autoriser <ph name="HOST" /> à accéder à votre caméra</translation>
-<translation id="7809278638132552546">Environnement de développement (bêta)</translation>
+<translation id="7809278638132552546">Environnement de développement Linux (bêta)</translation>
 <translation id="7810202088502699111">Des fenêtres pop-up ont été bloquées sur cette page.</translation>
 <translation id="781167124805380294">Caster <ph name="FILE_NAME" /></translation>
 <translation id="7814277578404816512">Découvrez les nouveautés sur votre <ph name="DEVICE_TYPE" /></translation>
@@ -6131,7 +6131,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7986295104073916105">Consulter et modifier les paramètres relatifs aux mots de passe enregistrés</translation>
 <translation id="7987814697832569482">Toujours se connecter via ce VPN</translation>
 <translation id="7988355189918024273">Activer les fonctionnalités d'accessibilité</translation>
-<translation id="7990197569510003844">Les identifiants <ph name="USERNAME" /> <ph name="MASKED_PASSWORD" /> seront enregistrés dans le compte <ph name="ACCOUNT" /></translation>
+<translation id="7990197569510003844">Le mot de passe <ph name="MASKED_PASSWORD" /> de <ph name="USERNAME" /> sera enregistré dans <ph name="ACCOUNT" /></translation>
 <translation id="7991296728590311172">Paramètres de Switch Access</translation>
 <translation id="7994702968232966508">Méthode EAP</translation>
 <translation id="7997826902155442747">Priorité de traitement</translation>
@@ -6555,7 +6555,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8487678622945914333">Zoom avant</translation>
 <translation id="8489156414266187072">Les suggestions personnelles ne sont affichées que sur votre compte</translation>
 <translation id="8490896350101740396">Les applications kiosque "<ph name="UPDATED_APPS" />" ont bien été mises à jour. Veuillez redémarrer l'appareil afin de terminer la procédure.</translation>
-<translation id="8492685019009920170">Appuyez sur le lecteur d'empreinte digitale. Les données sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />.</translation>
+<translation id="8492685019009920170">Appuyez sur le lecteur d'empreinte. Les données sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8492822722330266509">Les sites peuvent afficher des pop-ups et utiliser des redirections</translation>
 <translation id="8492972329130824181">Le réseau domestique n'est pas disponible. Pour vous y connecter, vous devez activer l'itinérance des données mobiles.</translation>
 <translation id="8493236660459102203">Micro :</translation>
@@ -7260,7 +7260,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="969096075394517431">Modifier les langues</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{1 onglet}one{# onglet}other{# onglets}}</translation>
 <translation id="971774202801778802">URL du favori</translation>
-<translation id="972996901592717370">Appuyez sur le bouton Marche/Arrêt avec votre doigt. Les données sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />.</translation>
+<translation id="972996901592717370">Appuyez sur le bouton Marche/Arrêt avec le doigt. Les données sont stockées de façon sécurisée et ne quittent jamais votre <ph name="DEVICE_TYPE" />.</translation>
 <translation id="973473557718930265">Quitter</translation>
 <translation id="975893173032473675">Langue cible</translation>
 <translation id="976499800099896273">Le mot "<ph name="TYPED_WORD" />" a été remplacé automatiquement par "<ph name="CORRECTED_WORD" />". Dans la boîte de dialogue qui s'affiche, appuyez sur la flèche vers le haut pour accepter cette correction ou sur la touche Échap pour l'ignorer.</translation>

@@ -3696,7 +3696,6 @@
 <translation id="5213891612754844763">プロキシ設定を表示</translation>
 <translation id="5215502535566372932">国を選択</translation>
 <translation id="521582610500777512">写真を破棄しました</translation>
-<translation id="5217189792977407501">デスクに割り当て</translation>
 <translation id="5222403284441421673">安全でないダウンロードがブロックされました</translation>
 <translation id="5222676887888702881">ログアウト</translation>
 <translation id="52232769093306234">圧縮できませんでした。</translation>
@@ -3772,6 +3771,7 @@
 <translation id="5300287940468717207">サイトの権限をリセットしますか。</translation>
 <translation id="5300589172476337783">表示</translation>
 <translation id="5300719150368506519">アクセスしたページの URL を Google に送信</translation>
+<translation id="5300814202279832142">ウィンドウをデスクに移動</translation>
 <translation id="5301751748813680278">ゲストとしてログインしています。</translation>
 <translation id="5301954838959518834">OK</translation>
 <translation id="5302048478445481009">言語</translation>
@@ -7081,7 +7081,7 @@
 <translation id="9057354806206861646">更新スケジュール</translation>
 <translation id="9062468308252555888">14 倍</translation>
 <translation id="9063208415146866933"><ph name="ERROR_LINE_START" />～<ph name="ERROR_LINE_END" /> 行目にエラーがあります</translation>
-<translation id="9063800855227801443">機密コンテンツをキャプチャできません</translation>
+<translation id="9063800855227801443">機密コンテンツはキャプチャできません</translation>
 <translation id="9064275926664971810">フォームにワンクリックで自動入力できるようにします</translation>
 <translation id="9065203028668620118">編集</translation>
 <translation id="9065512565307033593">確認に失敗した場合、ネットワーク アクセスは無効になります。</translation>

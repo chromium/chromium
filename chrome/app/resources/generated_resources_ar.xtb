@@ -119,7 +119,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1128591060186966949">تعديل محرّك البحث</translation>
 <translation id="1129850422003387628">إدارة التطبيقات</translation>
-<translation id="113050636487300043">اختَر اسمًا ومظهرًا ملوّنًا لإضفاء طابع خاص على كل ملف شخصي.</translation>
+<translation id="113050636487300043">اختَر اسمًا ومظهرًا ملوّنًا لكل ملف شخصي للتمييز بينها.</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - جزء من مجموعة <ph name="GROUP_NAME" /></translation>
 <translation id="1134009406053225289">فتح في نافذة للتصفح المتخفي</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />. <ph name="EMOJI_INDEX" /> من أصل <ph name="EMOJI_COUNT" /></translation>
@@ -910,7 +910,7 @@
 <translation id="1984417487208496350">بلا حماية (غير مُستحسَن)</translation>
 <translation id="1987317783729300807">حسابات</translation>
 <translation id="1989112275319619282">تصفّح</translation>
-<translation id="1989113344093894667">يتعذّر التقاط المحتوى</translation>
+<translation id="1989113344093894667">لا يمكن تصوير المحتوى</translation>
 <translation id="1990046457226896323">تم تنزيل ملفات ميزة "النسخ النصي التلقائي".</translation>
 <translation id="1990512225220753005">عدم إظهار الاختصارات في هذه الصفحة</translation>
 <translation id="1992397118740194946">لم يتم تعيينه</translation>
@@ -3071,7 +3071,7 @@
 <translation id="4462159676511157176">خوادم أسماء مخصصة</translation>
 <translation id="4465236939126352372">تم ضبط الحد الأقصى المسموح به لاستخدام تطبيق <ph name="APP_NAME" /> على <ph name="TIME" />.</translation>
 <translation id="4465725236958772856">الشبكة <ph name="NETWORK_INDEX" /> من <ph name="NETWORK_COUNT" />، الشبكة <ph name="NETWORK_NAME" />، يديرها المشرف، الاتصال</translation>
-<translation id="4466068638972170851">‏حدّد النص الذي تريد سماعه، ثم اضغط على مفتاح البحث + S. ويمكنك أيضًا الضغط مع الاستمرار على مفتاح البحث أو النقر على رمز "سماع الاختيار" بالقرب من شريط الحالة لتحديد النص.</translation>
+<translation id="4466068638972170851">‏حدِّد النص الذي تريد سماعه، ثم اضغط على مفتاح البحث + S. ويمكنك أيضًا الضغط مع الاستمرار على مفتاح البحث أو النقر على رمز "سماع الاختيار" بالقرب من شريط الحالة لتحديد النص.</translation>
 <translation id="4469477701382819144">تم حظر الإعلانات على المواقع الإلكترونية التي تعرض إعلانات مضلِّلة أو غير مرغوب فيها</translation>
 <translation id="4469762931504673593">بإمكان <ph name="ORIGIN" /> تعديل الملفات في <ph name="FOLDERNAME" />.</translation>
 <translation id="4470957202018033307">الإعدادات المفضلة لمساحة التخزين الخارجية</translation>
@@ -3699,7 +3699,6 @@
 <translation id="5213891612754844763">عرض إعدادات الخادم الوكيل</translation>
 <translation id="5215502535566372932">اختيار البلد</translation>
 <translation id="521582610500777512">تم تجاهل الصورة</translation>
-<translation id="5217189792977407501">الإسناد إلى سطح المكتب</translation>
 <translation id="5222403284441421673">تم حظر عملية تنزيل غير آمنة.</translation>
 <translation id="5222676887888702881">تسجيل الخروج</translation>
 <translation id="52232769093306234">تعذرت التعبئة.</translation>
@@ -3775,6 +3774,7 @@
 <translation id="5300287940468717207">هل تريد إعادة ضبط أذونات المواقع الإلكترونية هذه؟</translation>
 <translation id="5300589172476337783">عرض</translation>
 <translation id="5300719150368506519">‏إرسال عناوين URL الخاصة بالصفحات التي تزورها إلى Google</translation>
+<translation id="5300814202279832142">نقل النافذة إلى سطح المكتب</translation>
 <translation id="5301751748813680278">جارٍ تسجيل الدخول كضيف.</translation>
 <translation id="5301954838959518834">حسنًا</translation>
 <translation id="5302048478445481009">اللغة</translation>
@@ -6334,7 +6334,7 @@
 <translation id="8213449224684199188">تم الدخول إلى وضع الصور</translation>
 <translation id="8214489666383623925">فتح ملف...</translation>
 <translation id="8214962590150211830">إزالة هذا الشخص</translation>
-<translation id="8215129063232901118">يمكنك استخدام <ph name="DEVICE_TYPE" /> في الاستفادة من إمكانيات هاتفك.</translation>
+<translation id="8215129063232901118">يمكنك استخدام <ph name="DEVICE_TYPE" /> للاستفادة من إمكانيات هاتفك.</translation>
 <translation id="8216351761227087153">مشاهدة</translation>
 <translation id="8217399928341212914">متابعة حظر عمليات التنزيل التلقائية لعدة ملفات</translation>
 <translation id="8218847192766059983">يمكنك إضافة اللغات أو إعادة ترتيب القائمة. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
@@ -6558,7 +6558,7 @@
 <translation id="8487678622945914333">تكبير</translation>
 <translation id="8489156414266187072">لا يتم عرض الاقتراحات الشخصية إلّا على حسابك.</translation>
 <translation id="8490896350101740396">‏تم تحديث تطبيقات kiosk التالية "<ph name="UPDATED_APPS" />". يُرجى إعادة تشغيل الجهاز لإكمال عملية الإعادة تحميل.</translation>
-<translation id="8492685019009920170">يُرجى لمس مستشعر بصمات الإصبع بإصبعك. يتم تخزين بيانات بصمة الإصبع بشكل آمن ولن تغادر أبدًا <ph name="DEVICE_TYPE" /> الخاص بك.</translation>
+<translation id="8492685019009920170">يُرجى لمس مستشعر بصمات الإصبع بإصبعك. يتم تخزين بيانات بصمة الإصبع بشكل آمن وستبقى محفوظة على جهاز <ph name="DEVICE_TYPE" /> الخاص بك.</translation>
 <translation id="8492822722330266509">السماح للمواقع الإلكترونية بإرسال النوافذ المنبثقة واستخدام عمليات إعادة التوجيه</translation>
 <translation id="8492972329130824181">الشبكة المنزلية غير متوفّرة. وللاتصال بالشبكة، يجب تفعيل ميزة تجوال بيانات الجوَّال.</translation>
 <translation id="8493236660459102203">الميكروفون:</translation>
@@ -7090,7 +7090,7 @@
 <translation id="9057354806206861646">تعديل الجدول الزمني</translation>
 <translation id="9062468308252555888">14 ضعفًا</translation>
 <translation id="9063208415146866933">خطأ من السطر رقم <ph name="ERROR_LINE_START" /> إلى <ph name="ERROR_LINE_END" /></translation>
-<translation id="9063800855227801443">يتعذّر التقاط المحتوى السري</translation>
+<translation id="9063800855227801443">لا يمكن تصوير الشاشة بسبب المحتوى السري</translation>
 <translation id="9064275926664971810">تفعيل الملء التلقائي لملء النماذج بنقرة واحدة</translation>
 <translation id="9065203028668620118">تعديل</translation>
 <translation id="9065512565307033593">‏إذا تعذّر عليك تأكيد رمز PUK، سيتم إيقاف إمكانية الوصول إلى الشبكة.</translation>
@@ -7266,7 +7266,7 @@
 <translation id="969096075394517431">تغيير اللغات</translation>
 <translation id="970047733946999531">{NUM_TABS,plural, =1{علامة تبويب واحدة}zero{# من علامات التبويب}two{علامتا تبويب (#)}few{# علامات تبويب}many{# علامة تبويب}other{# من علامات التبويب}}</translation>
 <translation id="971774202801778802">‏عنوان URL للإشارة</translation>
-<translation id="972996901592717370">المس "زر التشغيل" بإصبعك. يتم تخزين بيانات بصمة الإصبع بشكل آمن ولن تغادر أبدًا <ph name="DEVICE_TYPE" /> الخاص بك.</translation>
+<translation id="972996901592717370">المس "زر التشغيل" بإصبعك. يتم تخزين بيانات بصمة الإصبع بشكل آمن وستبقى محفوظة على جهاز <ph name="DEVICE_TYPE" /> الخاص بك.</translation>
 <translation id="973473557718930265">إنهاء</translation>
 <translation id="975893173032473675">اللغة التي تريد الترجمة إليها</translation>
 <translation id="976499800099896273">‏يُظهر مربّع الحوار إمكانية التراجع عن التصحيح التلقائي لكلمة <ph name="TYPED_WORD" /> التي تم تصحيحها بكلمة <ph name="CORRECTED_WORD" />.  اضغط على مفتاح السهم المتّجه للأعلى للتراجع عن التصحيح التلقائي، أو اضغط على مفتاح escape للتجاهل.</translation>

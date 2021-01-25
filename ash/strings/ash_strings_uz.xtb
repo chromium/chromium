@@ -189,7 +189,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2596078834055697711">Oynadan skrinshot olish</translation>
 <translation id="2617342710774726426">SIM karta qulflangan</translation>
 <translation id="2621713457727696555">Himoyalangan</translation>
-<translation id="2653019840645008922">Oynani suratga olish</translation>
+<translation id="2653019840645008922">Oynani tasvirga olish</translation>
 <translation id="2653659639078652383">Yuborish</translation>
 <translation id="2658778018866295321">Bosib torting</translation>
 <translation id="2678852583403169292">Teginib tinglash menyusi</translation>
@@ -307,7 +307,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3621202678540785336">Kirish</translation>
 <translation id="3621712662352432595">Audio sozlamalari</translation>
 <translation id="3626281679859535460">Yorqinlik</translation>
-<translation id="3630697955794050612">yoʻq</translation>
+<translation id="3630697955794050612">oʻchiq</translation>
 <translation id="3631369015426612114">Quyidagilardan bildirishnomalar ko‘rsatilsin</translation>
 <translation id="3638400994746983214">Maxfiylik ekraniga kirish/chiqish. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> boshqariladigan hisob</translation>
@@ -796,7 +796,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="8036504271468642248">Avvalgi gap</translation>
 <translation id="8042893070933512245">Maxsus imkoniyatlar sozlamalari menyusini ochish</translation>
 <translation id="8048123526339889627">Bluetooth sozlamalari</translation>
-<translation id="8052898407431791827">Vaqtincha nusxalandi</translation>
+<translation id="8052898407431791827">Vaqtinchalik xotiraga nusxalandi</translation>
 <translation id="8054466585765276473">Batareyadan ishlash mumkin bo‘lgan vaqt hisoblanmoqda.</translation>
 <translation id="8061464966246066292">Yuqori kontrast</translation>
 <translation id="8098591350844501178">Ekranni “<ph name="RECEIVER_NAME" />” qurilmasiga translatsiya qilishni to‘xtatish</translation>
@@ -912,7 +912,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="9017320285115481645">Family Link ota-ona kodini kiriting.</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> sozlamalarini ochish</translation>
 <translation id="9056839673611986238">Qurilma rejadagi versiyaga qaytariladi</translation>
-<translation id="9063800855227801443">Maxfiy kontent tasvirga olinmadi</translation>
+<translation id="9063800855227801443">Maxfiy kontentni tasvirga olish imkonsiz</translation>
 <translation id="9065203028668620118">O‘zgartirish</translation>
 <translation id="9070640332319875144">Google Assistent sozlamalari</translation>
 <translation id="9072519059834302790">Batareya quvvati tugashigacha qolgan vaqt: <ph name="TIME_LEFT" />.</translation>

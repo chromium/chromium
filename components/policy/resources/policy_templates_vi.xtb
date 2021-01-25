@@ -2651,7 +2651,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="4703402283970867140">Bật mô hình giảm độ sáng thông minh để kéo dài thời gian cho đến khi màn hình tối đi</translation>
 <translation id="4715026656747891013">Danh sách các chế độ cài đặt dịch vụ Chrome Enterprise Connectors sẽ áp dụng cho Trình kết nối <ph name="ON_SECURITY_EVENT_ENTERPRISE_CONNECTOR" /> của Enterprise. Trình kết nối này chạy khi một sự kiện bảo mật xảy ra trong Chrome. Sự kiện này bao gồm kết quả phủ định từ các Trình kết nối phân tích của Enterprise, hoạt động sử dụng lại mật khẩu, các lượt truy cập vào trang không an toàn và những hành động nhạy cảm khác của người dùng liên quan đến vấn đề bảo mật.
 
-      Trường <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> xác định nhà cung cấp dịch vụ báo cáo nào tương ứng với các chế độ cài đặt và trường <ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> xác định những sự kiện được bật cho nhà cung cấp này.
+      Trường <ph name="ENTERPRISE_CONNECTOR_SERVICE_PROVIDER_FIELD" /> xác định các chế độ cài đặt này tương ứng với nhà cung cấp dịch vụ báo cáo nào và trường <ph name="ENTERPRISE_CONNECTOR_ENABLED_EVENT_NAMES_FIELD" /> xác định những sự kiện được bật cho nhà cung cấp này.
 
       Bạn chỉ có thể đặt chính sách này trên Bảng điều khiển dành cho quản trị viên của Google.</translation>
 <translation id="4722122254122249791">Bật chính sách Cô lập trang web cho các nguồn gốc đã xác định</translation>
