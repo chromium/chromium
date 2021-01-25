@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -345,6 +346,7 @@ class WebAppIntegrationBrowserTest
   // Test Framework
   void ParseParams() {
     std::string action_strings = GetParam();
+    LOG(ERROR) << "Test case: " << action_strings;
     testing_actions_ = base::SplitString(
         action_strings, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
   }
@@ -352,13 +354,18 @@ class WebAppIntegrationBrowserTest
   // Non-assert actions implemented before assert actions. Implemented in
   // alphabetical order.
   void ExecuteAction(const std::string& action_string) {
+    if (base::EndsWith(action_string, "site_b")) {
+      FAIL() << "site_b actions not yet supported: " << action_string;
+    }
+
     if (!IsInspectionAction(action_string)) {
       before_action_state_ = std::move(after_action_state_);
     }
 
-    if (action_string == "add_policy_app_internal_tabbed") {
+    if (base::StartsWith(action_string, "add_policy_app_internal_tabbed")) {
       AddPolicyAppInternal(base::Value(kDefaultLaunchContainerTabValue));
-    } else if (action_string == "add_policy_app_internal_windowed") {
+    } else if (base::StartsWith(action_string,
+                                "add_policy_app_internal_windowed")) {
       AddPolicyAppInternal(base::Value(kDefaultLaunchContainerWindowValue));
     } else if (action_string == "close_pwa") {
       ClosePWA();
@@ -366,11 +373,13 @@ class WebAppIntegrationBrowserTest
       InstallCreateShortcutTabbed();
     } else if (action_string == "install_omnibox_or_menu") {
       InstallOmniboxOrMenu();
-    } else if (action_string == "launch_internal") {
+    } else if (base::StartsWith(action_string, "install_internal_windowed")) {
+      InstallOmniboxOrMenu();
+    } else if (base::StartsWith(action_string, "launch_internal")) {
       LaunchInternal();
     } else if (action_string == "list_apps_internal") {
       ListAppsInternal();
-    } else if (action_string == "navigate_browser_in_scope") {
+    } else if (base::StartsWith(action_string, "navigate_browser_in_scope")) {
       NavigateToSite(browser(), GetInScopeURL());
     } else if (base::StartsWith(action_string, "navigate_installable")) {
       NavigateToSite(browser(), GetInstallableAppURL());
@@ -380,15 +389,15 @@ class WebAppIntegrationBrowserTest
       RemovePolicyApp();
     } else if (base::StartsWith(action_string, "set_open_in_tab_internal")) {
       SetOpenInTabInternal();
-    } else if (action_string == "set_open_in_window_internal") {
+    } else if (base::StartsWith(action_string, "set_open_in_window_internal")) {
       SetOpenInWindowInternal();
     } else if (action_string == "uninstall_from_menu") {
       UninstallFromMenu();
-    } else if (action_string == "uninstall_internal") {
+    } else if (base::StartsWith(action_string, "uninstall_internal")) {
       UninstallInternal();
     } else if (action_string == "assert_app_in_list_not_windowed") {
       AssertAppInListNotWindowed();
-    } else if (action_string == "assert_app_not_in_list") {
+    } else if (base::StartsWith(action_string, "assert_app_not_in_list")) {
       AssertAppNotInList();
     } else if (action_string == "assert_display_mode_standalone_internal") {
       AssertDisplayModeInternal(DisplayMode::kStandalone);
@@ -666,13 +675,19 @@ class WebAppIntegrationBrowserTest
   }
 
   void AssertLaunchIconShown() {
-    EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
-              kEnabled);
+    DCHECK(after_action_state_);
+    base::Optional<BrowserState> browser_state =
+        GetStateForBrowser(after_action_state_->browsers, browser());
+    ASSERT_TRUE(browser_state.has_value());
+    EXPECT_TRUE(browser_state->launch_icon_shown);
   }
 
   void AssertLaunchIconNotShown() {
-    EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, browser()),
-              kNotPresent);
+    DCHECK(after_action_state_);
+    base::Optional<BrowserState> browser_state =
+        GetStateForBrowser(after_action_state_->browsers, browser());
+    ASSERT_TRUE(browser_state.has_value());
+    EXPECT_FALSE(browser_state->launch_icon_shown);
   }
 
   void AssertTabCreated() {
