@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/core/events/mouse_event.h"
+
 #include <limits>
 #include <tuple>
 
-#include "third_party/blink/renderer/core/events/mouse_event.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
-
-#include "third_party/blink/renderer/core/events/mouse_event_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mouse_event_init.h"
 #include "third_party/blink/renderer/platform/geometry/double_point.h"
 #include "third_party/blink/renderer/platform/geometry/int_point.h"
 

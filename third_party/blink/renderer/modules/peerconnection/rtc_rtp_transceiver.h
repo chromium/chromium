@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_codec_capability.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_rtp_transceiver_init.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_header_extension_capability.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -23,6 +22,7 @@
 namespace blink {
 
 class RTCPeerConnection;
+class RTCRtpHeaderExtensionCapability;
 class RTCRtpReceiver;
 class RTCRtpSender;
 

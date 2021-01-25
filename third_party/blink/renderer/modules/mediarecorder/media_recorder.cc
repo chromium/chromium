@@ -65,8 +65,8 @@ String BitrateModeToString(AudioTrackRecorder::BitrateMode bitrateMode) {
 AudioTrackRecorder::BitrateMode GetBitrateModeFromOptions(
     const MediaRecorderOptions* const options) {
   if (options->hasAudioBitrateMode()) {
-    if (!CodeUnitCompareIgnoringASCIICase(options->audioBitrateMode(),
-                                          "constant"))
+    if (!WTF::CodeUnitCompareIgnoringASCIICase(options->audioBitrateMode(),
+                                               "constant"))
       return AudioTrackRecorder::BitrateMode::CONSTANT;
   }
 

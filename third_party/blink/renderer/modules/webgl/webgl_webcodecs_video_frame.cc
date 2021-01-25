@@ -8,7 +8,12 @@
 #include "build/chromeos_buildflags.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/video/gpu_memory_buffer_video_frame_pool.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_color_space_matrix_id.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_color_space_primary_id.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_color_space_range_id.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_color_space_transfer_id.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_color_space.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_webcodecs_texture_info.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_webgl_webcodecs_video_frame_handle.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.h"
@@ -36,143 +41,178 @@ const char kRequiredExtension[] = "";
 void FillVideoColorSpace(VideoColorSpace* video_color_space,
                          gfx::ColorSpace& gfx_color_space) {
   gfx::ColorSpace::PrimaryID primaries = gfx_color_space.GetPrimaryID();
+  base::Optional<V8ColorSpacePrimaryID> primary_id;
   switch (primaries) {
     case gfx::ColorSpace::PrimaryID::BT709:
-      video_color_space->setPrimaryID("BT709");
+      primary_id = V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kBT709);
       break;
     case gfx::ColorSpace::PrimaryID::BT470M:
-      video_color_space->setPrimaryID("BT470M");
+      primary_id = V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kBT470M);
       break;
     case gfx::ColorSpace::PrimaryID::BT470BG:
-      video_color_space->setPrimaryID("BT470BG");
+      primary_id = V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kBT470BG);
       break;
     case gfx::ColorSpace::PrimaryID::SMPTE170M:
-      video_color_space->setPrimaryID("SMPTE170M");
+      primary_id =
+          V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kSMPTE170M);
       break;
     case gfx::ColorSpace::PrimaryID::SMPTE240M:
-      video_color_space->setPrimaryID("SMPTE240M");
+      primary_id =
+          V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kSMPTE240M);
       break;
     case gfx::ColorSpace::PrimaryID::FILM:
-      video_color_space->setPrimaryID("FILM");
+      primary_id = V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kFILM);
       break;
     case gfx::ColorSpace::PrimaryID::BT2020:
-      video_color_space->setPrimaryID("BT2020");
+      primary_id = V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kBT2020);
       break;
     case gfx::ColorSpace::PrimaryID::SMPTEST428_1:
-      video_color_space->setPrimaryID("SMPTEST428_1");
+      primary_id =
+          V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kSmptest4281);
       break;
     case gfx::ColorSpace::PrimaryID::SMPTEST431_2:
-      video_color_space->setPrimaryID("SMPTEST431_2");
+      primary_id =
+          V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kSmptest4312);
       break;
     case gfx::ColorSpace::PrimaryID::SMPTEST432_1:
-      video_color_space->setPrimaryID("SMPTEST432_1");
+      primary_id =
+          V8ColorSpacePrimaryID(V8ColorSpacePrimaryID::Enum::kSmptest4321);
       break;
     // TODO(jie.a.chen@intel.com): Need to check EBU_3213_E.
     default:;
   }
+  if (primary_id) {
+    video_color_space->setPrimaryID(*primary_id);
+  }
 
   gfx::ColorSpace::TransferID transfer = gfx_color_space.GetTransferID();
+  base::Optional<V8ColorSpaceTransferID> transfer_id;
   switch (transfer) {
     case gfx::ColorSpace::TransferID::BT709:
 #if defined(OS_MAC)
     // TODO(jie.a.chen@intel.com): BT709_APPLE is not available in WebCodecs.
     case gfx::ColorSpace::TransferID::BT709_APPLE:
 #endif
-      video_color_space->setTransferID("BT709");
+      transfer_id =
+          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kBT709);
       break;
     case gfx::ColorSpace::TransferID::GAMMA22:
-      video_color_space->setTransferID("GAMMA22");
+      transfer_id =
+          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kGAMMA22);
       break;
     case gfx::ColorSpace::TransferID::GAMMA28:
-      video_color_space->setTransferID("GAMMA28");
+      transfer_id =
+          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kGAMMA28);
       break;
     case gfx::ColorSpace::TransferID::SMPTE170M:
-      video_color_space->setTransferID("SMPTE170M");
+      transfer_id =
+          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kSMPTE170M);
       break;
     case gfx::ColorSpace::TransferID::SMPTE240M:
-      video_color_space->setTransferID("SMPTE240M");
+      transfer_id =
+          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kSMPTE240M);
       break;
     case gfx::ColorSpace::TransferID::LINEAR:
-      video_color_space->setTransferID("LINEAR");
+      transfer_id =
+          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kLINEAR);
       break;
     case gfx::ColorSpace::TransferID::LOG:
-      video_color_space->setTransferID("LOG");
+      transfer_id = V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kLOG);
       break;
     case gfx::ColorSpace::TransferID::LOG_SQRT:
-      video_color_space->setTransferID("LOG_SQRT");
+      transfer_id =
+          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kLogSqrt);
       break;
     case gfx::ColorSpace::TransferID::IEC61966_2_4:
-      video_color_space->setTransferID("IEC61966_2_4");
+      transfer_id =
+          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kIec6196624);
       break;
     case gfx::ColorSpace::TransferID::BT1361_ECG:
-      video_color_space->setTransferID("BT1361_ECG");
+      transfer_id =
+          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kBt1361Ecg);
       break;
     case gfx::ColorSpace::TransferID::IEC61966_2_1:
-      video_color_space->setTransferID("IEC61966_2_1");
+      transfer_id =
+          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kIec6196621);
       break;
     case gfx::ColorSpace::TransferID::BT2020_10:
-      video_color_space->setTransferID("BT2020_10");
+      transfer_id =
+          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kBt202010);
       break;
 
     case gfx::ColorSpace::TransferID::BT2020_12:
-      video_color_space->setTransferID("BT2020_12");
+      transfer_id =
+          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kBt202012);
       break;
     case gfx::ColorSpace::TransferID::SMPTEST2084:
-      video_color_space->setTransferID("SMPTEST2084");
+      transfer_id =
+          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kSMPTEST2084);
       break;
     case gfx::ColorSpace::TransferID::SMPTEST428_1:
-      video_color_space->setTransferID("SMPTEST428_1");
+      transfer_id =
+          V8ColorSpaceTransferID(V8ColorSpaceTransferID::Enum::kSmptest4281);
       break;
     default:;
+  }
+  if (transfer_id) {
+    video_color_space->setTransferID(*transfer_id);
   }
 
   gfx::ColorSpace::MatrixID matrix = gfx_color_space.GetMatrixID();
+  base::Optional<V8ColorSpaceMatrixID> matrix_id;
   switch (matrix) {
     case gfx::ColorSpace::MatrixID::RGB:
-      video_color_space->setMatrixID("RGB");
+      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kRGB);
       break;
     case gfx::ColorSpace::MatrixID::BT709:
-      video_color_space->setMatrixID("BT709");
+      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kBT709);
       break;
     case gfx::ColorSpace::MatrixID::FCC:
-      video_color_space->setMatrixID("FCC");
+      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kFCC);
       break;
     case gfx::ColorSpace::MatrixID::BT470BG:
-      video_color_space->setMatrixID("BT470BG");
+      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kBT470BG);
       break;
     case gfx::ColorSpace::MatrixID::SMPTE170M:
-      video_color_space->setMatrixID("SMPTE170M");
+      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kSMPTE170M);
       break;
     case gfx::ColorSpace::MatrixID::SMPTE240M:
-      video_color_space->setMatrixID("SMPTE240M");
+      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kSMPTE240M);
       break;
     case gfx::ColorSpace::MatrixID::YCOCG:
-      video_color_space->setMatrixID("YCOCG");
+      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kYCOCG);
       break;
     case gfx::ColorSpace::MatrixID::BT2020_NCL:
-      video_color_space->setMatrixID("BT2020_NCL");
+      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kBt2020Ncl);
       break;
     case gfx::ColorSpace::MatrixID::BT2020_CL:
-      video_color_space->setMatrixID("BT2020_CL");
+      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kBt2020Cl);
       break;
     case gfx::ColorSpace::MatrixID::YDZDX:
-      video_color_space->setMatrixID("YDZDX");
+      matrix_id = V8ColorSpaceMatrixID(V8ColorSpaceMatrixID::Enum::kYDZDX);
       break;
     default:;
   }
+  if (matrix_id) {
+    video_color_space->setMatrixID(*matrix_id);
+  }
 
   gfx::ColorSpace::RangeID range = gfx_color_space.GetRangeID();
+  base::Optional<V8ColorSpaceRangeID> range_id;
   switch (range) {
     case gfx::ColorSpace::RangeID::LIMITED:
-      video_color_space->setRangeID("LIMITED");
+      range_id = V8ColorSpaceRangeID(V8ColorSpaceRangeID::Enum::kLIMITED);
       break;
     case gfx::ColorSpace::RangeID::FULL:
-      video_color_space->setRangeID("FULL");
+      range_id = V8ColorSpaceRangeID(V8ColorSpaceRangeID::Enum::kFULL);
       break;
     case gfx::ColorSpace::RangeID::DERIVED:
-      video_color_space->setRangeID("DERIVED");
+      range_id = V8ColorSpaceRangeID(V8ColorSpaceRangeID::Enum::kDERIVED);
       break;
     default:;
+  }
+  if (range_id) {
+    video_color_space->setRangeID(*range_id);
   }
 }
 
@@ -354,8 +394,10 @@ WebGLWebCodecsVideoFrameHandle* WebGLWebCodecsVideoFrame::importVideoFrame(
     video_frame_handle->setRequiredExtension(kRequiredExtension);
   }
   // Remove "PIXEL_FORMAT_" prefix
-  video_frame_handle->setPixelFormat(
-      &VideoPixelFormatToString(pixel_format)[13]);
+  auto&& video_pixel_format =
+      V8VideoPixelFormat::Create(&VideoPixelFormatToString(pixel_format)[13]);
+  DCHECK(video_pixel_format);
+  video_frame_handle->setPixelFormat(*video_pixel_format);
 
   // TODO(jie.a.chen@intel.com): Is the colorspace/flip-y/pre-alpha of video
   // frame specific to OS only? For the same OS, does it vary for different
@@ -396,10 +438,10 @@ bool WebGLWebCodecsVideoFrame::releaseVideoFrame(
     WebGLWebCodecsVideoFrameHandle* handle,
     ExceptionState& exception_state) {
   DCHECK(handle);
-  DCHECK(handle->hasTextureInfoArrayNonNull());
+  DCHECK(handle->hasTextureInfoArray());
   WebGLExtensionScopedContext scoped(this);
   auto* gl = scoped.Context()->ContextGL();
-  auto& info_array = handle->textureInfoArrayNonNull();
+  auto& info_array = handle->textureInfoArray();
   GLuint tex0 = info_array[0]->texture()->Object();
   auto frame = tex0_to_video_frame_map_.Take(tex0);
   for (wtf_size_t i = 0; i < info_array.size(); ++i) {
