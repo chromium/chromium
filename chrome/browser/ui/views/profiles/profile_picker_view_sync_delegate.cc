@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/profiles/profile_picker_view_sync_delegate.h"
 
 #include "base/logging.h"
+#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
@@ -13,6 +14,50 @@
 #include "chrome/common/webui_url_constants.h"
 
 namespace {
+
+void MaybeRecordEnterpriseRejectionAndRunCallback(
+    DiceTurnSyncOnHelper::SigninChoiceCallback callback,
+    DiceTurnSyncOnHelper::SigninChoice choice) {
+  if (choice == DiceTurnSyncOnHelper::SIGNIN_CHOICE_CANCEL) {
+    // If the user decides to not link the profile, the flow stops here.
+    ProfileMetrics::LogProfileAddSignInFlowOutcome(
+        ProfileMetrics::ProfileAddSignInFlowOutcome::
+            kEnterpriseSigninOnlyNotLinked);
+  }
+  std::move(callback).Run(choice);
+}
+
+void RecordSyncOutcomeAndRunCallback(
+    base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
+        callback,
+    bool enterprise_confirmation_shown,
+    LoginUIService::SyncConfirmationUIClosedResult result) {
+  switch (result) {
+    case LoginUIService::SYNC_WITH_DEFAULT_SETTINGS:
+      ProfileMetrics::LogProfileAddSignInFlowOutcome(
+          enterprise_confirmation_shown
+              ? ProfileMetrics::ProfileAddSignInFlowOutcome::kEnterpriseSync
+              : ProfileMetrics::ProfileAddSignInFlowOutcome::kConsumerSync);
+      break;
+    case LoginUIService::CONFIGURE_SYNC_FIRST:
+      ProfileMetrics::LogProfileAddSignInFlowOutcome(
+          enterprise_confirmation_shown
+              ? ProfileMetrics::ProfileAddSignInFlowOutcome::
+                    kEnterpriseSyncSettings
+              : ProfileMetrics::ProfileAddSignInFlowOutcome::
+                    kConsumerSyncSettings);
+      break;
+    case LoginUIService::ABORT_SYNC:
+      ProfileMetrics::LogProfileAddSignInFlowOutcome(
+          enterprise_confirmation_shown
+              ? ProfileMetrics::ProfileAddSignInFlowOutcome::
+                    kEnterpriseSigninOnly
+              : ProfileMetrics::ProfileAddSignInFlowOutcome::
+                    kConsumerSigninOnly);
+      break;
+  }
+  std::move(callback).Run(result);
+}
 
 void OpenSettingsInBrowser(Browser* browser) {
   chrome::ShowSettingsSubPage(browser, chrome::kSyncSetupSubPage);
@@ -41,6 +86,9 @@ ProfilePickerViewSyncDelegate::~ProfilePickerViewSyncDelegate() = default;
 void ProfilePickerViewSyncDelegate::ShowLoginError(
     const std::string& email,
     const std::string& error_message) {
+  ProfileMetrics::LogProfileAddSignInFlowOutcome(
+      ProfileMetrics::ProfileAddSignInFlowOutcome::kLoginError);
+
   // Open the browser and when it's done, show the login error.
   // TODO(crbug.com/1126913): In some cases, the current behavior is not ideal
   // because it is not designed with profile creation in mind. Concretely, for
@@ -66,11 +114,14 @@ void ProfilePickerViewSyncDelegate::ShowEnterpriseAccountConfirmation(
     const std::string& email,
     DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
   enterprise_confirmation_shown_ = true;
+  // If the user rejects the confirmation, record the outcome.
+  DiceTurnSyncOnHelper::SigninChoiceCallback wrapped_callback = base::BindOnce(
+      &MaybeRecordEnterpriseRejectionAndRunCallback, std::move(callback));
   // Open the browser and when it's done, show the confirmation dialog.
   std::move(open_browser_callback_)
       .Run(base::BindOnce(&DiceTurnSyncOnHelper::Delegate::
                               ShowEnterpriseAccountConfirmationForBrowser,
-                          email, std::move(callback)),
+                          email, std::move(wrapped_callback)),
            /*enterprise_sync_consent_needed=*/true);
 }
 
@@ -78,7 +129,10 @@ void ProfilePickerViewSyncDelegate::ShowSyncConfirmation(
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
   DCHECK(callback);
-  sync_confirmation_callback_ = std::move(callback);
+  // Record the outcome once the user responds.
+  sync_confirmation_callback_ =
+      base::BindOnce(&RecordSyncOutcomeAndRunCallback, std::move(callback),
+                     enterprise_confirmation_shown_);
   DCHECK(!scoped_login_ui_service_observation_.IsObserving());
   scoped_login_ui_service_observation_.Observe(
       LoginUIServiceFactory::GetForProfile(profile_));
@@ -96,6 +150,10 @@ void ProfilePickerViewSyncDelegate::ShowSyncDisabledConfirmation(
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
   DCHECK(callback);
+  // Record the outcome, the decision of the user is not relevant for the
+  // metric.
+  ProfileMetrics::LogProfileAddSignInFlowOutcome(
+      ProfileMetrics::ProfileAddSignInFlowOutcome::kEnterpriseSyncDisabled);
   sync_confirmation_callback_ = std::move(callback);
   DCHECK(!scoped_login_ui_service_observation_.IsObserving());
   scoped_login_ui_service_observation_.Observe(

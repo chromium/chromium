@@ -61526,6 +61526,27 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="7" label="Add new signed-in profile from the Profile picker"/>
 </enum>
 
+<enum name="ProfileAddSignInFlowOutcome">
+  <int value="0" label="A consumer account is added and syncing"/>
+  <int value="1" label="A consumer account is added without sync"/>
+  <int value="2"
+      label="A consumer account is added with sync manually configured"/>
+  <int value="3" label="An enterprise account is added and syncing"/>
+  <int value="4" label="An enterprise account is added without sync"/>
+  <int value="5"
+      label="An enterprise account is added with no link data consent"/>
+  <int value="6"
+      label="An enterprise account is added with sync manually configured"/>
+  <int value="7" label="An enterprise account is added but sync is disabled"/>
+  <int value="8" label="An account is added with some login error">
+    This includes the case that the account is already syncing in another
+    profile.
+  </int>
+  <int value="9" label="The SAML sign-in flow stated (with unclear outcome)."/>
+  <int value="10" label="The flow got aborted before successful sign-in."/>
+  <int value="11" label="The flow got aborted after successful sign-in."/>
+</enum>
+
 <enum name="ProfileAllAccountsCategories">
   <int value="0" label="Either consumer or enterprise, not both"/>
   <int value="1" label="Both consumer and enterprise (no sync)"/>
