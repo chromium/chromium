@@ -180,6 +180,7 @@ fontVariantLigatures
 fontVariantNumeric
 fontVariationSettings
 fontWeight
+forcedColorAdjust
 gap
 getPropertyPriority
 getPropertyValue
