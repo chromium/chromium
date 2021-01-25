@@ -19,6 +19,12 @@ namespace media {
 
 class DecoderBuffer;
 
+// Creates mojo::DataPipe and sets `producer_handle` and `consumer_handle`.
+// Returns true on success. Otherwise returns false and reset the handles.
+bool CreateDataPipe(uint32_t capacity,
+                    mojo::ScopedDataPipeProducerHandle* producer_handle,
+                    mojo::ScopedDataPipeConsumerHandle* consumer_handle);
+
 // Returns the default capacity to be used with MojoDecoderBufferReader and
 // MojoDecoderBufferWriter for |type|.
 uint32_t GetDefaultDecoderBufferConverterCapacity(DemuxerStream::Type type);

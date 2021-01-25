@@ -32,12 +32,14 @@ class MojoDecoderBufferConverter {
  public:
   MojoDecoderBufferConverter(
       uint32_t data_pipe_capacity_bytes = kDefaultDataPipeCapacityBytes) {
-    mojo::DataPipe data_pipe(data_pipe_capacity_bytes);
-
-    writer = std::make_unique<MojoDecoderBufferWriter>(
-        std::move(data_pipe.producer_handle));
-    reader = std::make_unique<MojoDecoderBufferReader>(
-        std::move(data_pipe.consumer_handle));
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    EXPECT_TRUE(CreateDataPipe(data_pipe_capacity_bytes, &producer_handle,
+                               &consumer_handle));
+    writer =
+        std::make_unique<MojoDecoderBufferWriter>(std::move(producer_handle));
+    reader =
+        std::make_unique<MojoDecoderBufferReader>(std::move(consumer_handle));
   }
 
   void ConvertAndVerify(scoped_refptr<DecoderBuffer> media_buffer) {
@@ -397,6 +399,38 @@ TEST(MojoDecoderBufferConverterTest, FlushDuringConcurrentReads) {
   reader->ReadDecoderBuffer(std::move(mojo_buffer3), mock_read_cb3.Get());
   reader->Flush(mock_flush_cb.Get());
   // No ReadDecoderBuffer() can be called during pending reset.
+
+  run_loop.Run();
+}
+
+TEST(MojoDecoderBufferConverterTest, WriterWithInvalidHandle) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  const uint8_t kData[] = "Hello, world";
+  auto media_buffer = DecoderBuffer::CopyFrom(kData, base::size(kData));
+
+  auto writer = std::make_unique<MojoDecoderBufferWriter>(
+      mojo::ScopedDataPipeProducerHandle());
+  EXPECT_FALSE(writer->WriteDecoderBuffer(media_buffer));
+}
+
+TEST(MojoDecoderBufferConverterTest, ReaderWithInvalidHandle) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::RunLoop run_loop;
+
+  // Write a real buffer for testing.
+  const uint8_t kData[] = "Hello, world";
+  auto media_buffer = DecoderBuffer::CopyFrom(kData, base::size(kData));
+  MojoDecoderBufferConverter converter;
+  auto mojo_buffer = converter.writer->WriteDecoderBuffer(media_buffer);
+  DCHECK(mojo_buffer);
+
+  // Read with an invalid handle.
+  base::MockCallback<MojoDecoderBufferReader::ReadCB> mock_cb;
+  EXPECT_CALL(mock_cb, Run(testing::IsNull()))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  auto reader = std::make_unique<MojoDecoderBufferReader>(
+      mojo::ScopedDataPipeConsumerHandle());
+  reader->ReadDecoderBuffer(std::move(mojo_buffer), mock_cb.Get());
 
   run_loop.Run();
 }
