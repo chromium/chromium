@@ -25,7 +25,7 @@ void HTMLPopupElement::hide() {
 }
 
 void HTMLPopupElement::ScheduleHideEvent() {
-  Event* event = Event::Create(event_type_names::kClose);
+  Event* event = Event::Create(event_type_names::kHide);
   event->SetTarget(this);
   GetDocument().EnqueueAnimationFrameEvent(event);
 }
