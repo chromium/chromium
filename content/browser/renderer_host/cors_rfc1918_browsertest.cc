@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -19,6 +20,7 @@
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
+#include "content/test/test_content_browser_client.h"
 #include "net/base/ip_address.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -154,6 +156,47 @@ std::unique_ptr<content::URLLoaderInterceptor> InterceptorWithFakeEndpoint(
   return std::make_unique<content::URLLoaderInterceptor>(
       base::BindRepeating(&MaybeInterceptWithFakeEndpoint, url, endpoint));
 }
+
+// A |ContentBrowserClient| implementation that allows modifying the return
+// value of |ShouldAllowInsecurePrivateNetworkRequests()| at will.
+class PolicyTestContentBrowserClient : public TestContentBrowserClient {
+ public:
+  PolicyTestContentBrowserClient() = default;
+
+  PolicyTestContentBrowserClient(const PolicyTestContentBrowserClient&) =
+      delete;
+  PolicyTestContentBrowserClient& operator=(
+      const PolicyTestContentBrowserClient&) = delete;
+
+  ~PolicyTestContentBrowserClient() override = default;
+
+  void SetAllowInsecurePrivateNetworkRequests(bool value) {
+    allow_insecure_private_network_requests_ = value;
+  }
+
+  bool ShouldAllowInsecurePrivateNetworkRequests(
+      content::BrowserContext* browser_context,
+      const GURL& url) override {
+    return allow_insecure_private_network_requests_;
+  }
+
+ private:
+  bool allow_insecure_private_network_requests_ = false;
+};
+
+// RAII wrapper for |SetContentBrowserClientForTesting()|.
+class ContentBrowserClientRegistration {
+ public:
+  explicit ContentBrowserClientRegistration(ContentBrowserClient* client)
+      : old_client_(SetBrowserClientForTesting(client)) {}
+
+  ~ContentBrowserClientRegistration() {
+    SetBrowserClientForTesting(old_client_);
+  }
+
+ private:
+  ContentBrowserClient* const old_client_;
+};
 
 }  // namespace
 
@@ -2029,23 +2072,49 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestNoBlocking,
             EvalJs(root_frame_host(), FetchSubresourceScript("image.jpg")));
 }
 
-// This test verifies that when the right feature is enabled but the policy
-// disables it, requests:
+// This test verifies that by default, the private network request policy used
+// by RenderFrameHostImpl for requests is set to block insecure requests.
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       PrivateNetworkPolicyIsBlockByDefault) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::
+                kBlockFromInsecureToMorePrivate);
+}
+
+// This test verifies that when the right feature is enabled but the content
+// browser client overrides it, requests:
 //  - from an insecure page with the "treat-as-public-address" CSP directive
 //  - to a local IP address
 // are not blocked.
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     FromInsecureTreatAsPublicToLocalWithPolicySetToAllowIsNotBlocked) {
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequests(true);
+
+  // Register the client before we navigate, so that the navigation commits the
+  // correct PrivateNetworkRequestPolicy.
+  ContentBrowserClientRegistration registration(&client);
+
   EXPECT_TRUE(NavigateToURL(
       shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
 
-  // TODO(crbug.com/986744): Disable policy and fix test expectation once
-  // policies are correctly wired up to the code under test.
+  const network::mojom::ClientSecurityStatePtr security_state =
+      root_frame_host()->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
 
   // Check that the page can load a local resource.
-  // TODO(crbug.com/986744): Expect true once policy wiring is fixed.
-  EXPECT_EQ(false,
+  EXPECT_EQ(true,
             EvalJs(root_frame_host(), FetchSubresourceScript("image.jpg")));
 }
 
