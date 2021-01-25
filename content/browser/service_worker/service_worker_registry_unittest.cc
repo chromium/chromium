@@ -1831,6 +1831,43 @@ TEST_F(ServiceWorkerRegistryTest, RetryInflightCalls_ApplyPolicyUpdates) {
   EXPECT_TRUE(registry()->ShouldPurgeOnShutdown(kOrigin));
 }
 
+// Regression test for https://crbug.com/1165784.
+// Tests that callbacks of ServiceWorkerRegistry are always called. Calls
+// ServiceWorkerRegistry methods and destroys the instance immediately by
+// simulating restarts.
+TEST_F(ServiceWorkerRegistryTest, DestroyRegistryDuringInflightCall) {
+  {
+    base::RunLoop loop;
+    registry()->GetRegisteredOrigins(base::BindLambdaForTesting(
+        [&](const std::vector<url::Origin>& origins) {
+          EXPECT_TRUE(origins.empty());
+          loop.Quit();
+        }));
+    SimulateRestart();
+    loop.Run();
+  }
+
+  {
+    base::RunLoop loop;
+    registry()->GetStorageUsageForOrigin(
+        url::Origin::Create(GURL("https://example.com/")),
+        base::BindLambdaForTesting(
+            [&](blink::ServiceWorkerStatusCode status, int64_t usage) {
+              EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kErrorFailed);
+              loop.Quit();
+            }));
+    SimulateRestart();
+    loop.Run();
+  }
+
+  {
+    base::RunLoop loop;
+    registry()->PerformStorageCleanup(loop.QuitClosure());
+    SimulateRestart();
+    loop.Run();
+  }
+}
+
 class ServiceWorkerRegistryOriginTrialsTest : public ServiceWorkerRegistryTest {
  public:
   ServiceWorkerRegistryOriginTrialsTest() {

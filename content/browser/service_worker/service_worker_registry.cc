@@ -21,6 +21,7 @@
 #include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
@@ -354,10 +355,13 @@ void ServiceWorkerRegistry::GetStorageUsageForOrigin(
     const url::Origin& origin,
     GetStorageUsageForOriginCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), blink::ServiceWorkerStatusCode::kErrorFailed, 0);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::GetUsageForOrigin,
       base::BindRepeating(&ServiceWorkerRegistry::DidGetStorageUsageForOrigin,
-                          weak_factory_.GetWeakPtr(), base::Passed(&callback)),
+                          weak_factory_.GetWeakPtr(),
+                          base::Passed(&wrapped_callback)),
       origin);
 }
 
@@ -734,18 +738,24 @@ void ServiceWorkerRegistry::GetUserDataForAllRegistrationsByKeyPrefix(
 void ServiceWorkerRegistry::GetRegisteredOrigins(
     GetRegisteredOriginsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), std::vector<url::Origin>());
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::GetRegisteredOrigins,
       base::BindRepeating(&ServiceWorkerRegistry::DidGetRegisteredOrigins,
-                          weak_factory_.GetWeakPtr(), base::Passed(&callback)));
+                          weak_factory_.GetWeakPtr(),
+                          base::Passed(&wrapped_callback)));
 }
 
 void ServiceWorkerRegistry::PerformStorageCleanup(base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto wrapped_callback =
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(std::move(callback));
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::PerformStorageCleanup,
       base::BindRepeating(&ServiceWorkerRegistry::DidPerformStorageCleanup,
-                          weak_factory_.GetWeakPtr(), base::Passed(&callback)));
+                          weak_factory_.GetWeakPtr(),
+                          base::Passed(&wrapped_callback)));
 }
 
 void ServiceWorkerRegistry::PrepareForDeleteAndStartOver() {
