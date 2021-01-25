@@ -352,14 +352,4 @@ class BaseTestTriggerer(object):
     parser.add_argument('--shard-index', type=int, default=None,
                         help='Which shard to trigger. Duplicated from the '
                              '`swarming.py trigger` command.')
-    BaseTestTriggerer.add_use_swarming_go_arg(parser)
     return parser
-
-  @staticmethod
-  def add_use_swarming_go_arg(parser):
-    # TODO(crbug.com/1127205): remove this.
-    parser.add_argument(
-        '--use-swarming-go',
-        default=False,
-        action='store_true',
-        help='Uses swarming Go CLI to trigger tasks.')

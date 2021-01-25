@@ -73,7 +73,7 @@ class UnitTest(fake_filesystem_unittest.TestCase):
       argparse.ArgumentParser())
     dump_json = 'dump.json'
     args, remaining = parser.parse_known_args([
-      '--multiple-dimension-script-verbose', 'True', '--use-swarming-go',
+      '--multiple-dimension-script-verbose', 'True',
       'trigger', '--shards', '1', '--dump-json', dump_json
     ])
     triggerer = base_test_triggerer.BaseTestTriggerer()
