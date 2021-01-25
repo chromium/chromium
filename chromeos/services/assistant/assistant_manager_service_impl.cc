@@ -48,6 +48,7 @@
 #include "chromeos/services/assistant/public/shared/utils.h"
 #include "chromeos/services/assistant/service_context.h"
 #include "chromeos/services/assistant/utils.h"
+#include "chromeos/services/libassistant/public/mojom/android_app_info.mojom.h"
 #include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "libassistant/shared/internal_api/alarm_timer_manager.h"
@@ -167,8 +168,13 @@ bool ShouldPutLogsInHomeDirectory() {
 
 libassistant::mojom::AndroidAppInfoPtr ToAndroidAppInfoPtr(
     const AndroidAppInfo& app_info) {
-  return libassistant::mojom::AndroidAppInfo::New(
-      app_info.package_name, app_info.version, app_info.localized_app_name);
+  auto result = libassistant::mojom::AndroidAppInfo::New();
+
+  result->package_name = app_info.package_name;
+  result->version = app_info.version;
+  result->localized_app_name = app_info.localized_app_name;
+
+  return result;
 }
 
 }  // namespace
