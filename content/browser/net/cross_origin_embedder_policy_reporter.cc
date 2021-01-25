@@ -46,11 +46,8 @@ void CrossOriginEmbedderPolicyReporter::QueueCorpViolationReport(
     network::mojom::RequestDestination destination,
     bool report_only) {
   GURL url_to_pass = StripUsernameAndPassword(blocked_url);
-  // We're migrating from "blocked-url" to "blockedURL".
-  // TODO(crbug.com/1119676): Remove "blocked-url" in M90.
   QueueAndNotify(
       {std::make_pair("type", "corp"),
-       std::make_pair("blocked-url", url_to_pass.spec()),
        std::make_pair("blockedURL", url_to_pass.spec()),
        std::make_pair("destination",
                       network::RequestDestinationToString(destination))},
@@ -66,10 +63,7 @@ void CrossOriginEmbedderPolicyReporter::QueueNavigationReport(
     const GURL& blocked_url,
     bool report_only) {
   GURL url_to_pass = StripUsernameAndPassword(blocked_url);
-  // We're migrating from "blocked-url" to "blockedURL".
-  // TODO(crbug.com/1119676): Remove "blocked-url" in M90.
   QueueAndNotify({std::make_pair("type", "navigation"),
-                  std::make_pair("blocked-url", url_to_pass.spec()),
                   std::make_pair("blockedURL", url_to_pass.spec())},
                  report_only);
 }

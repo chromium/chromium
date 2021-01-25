@@ -32,7 +32,7 @@ if (location.protocol == 'http') {
     assert_equals(reports[0].type, 'coep');
     assert_equals(reports[0].url, frame.src);
     assert_equals(reports[0].body.type, 'corp');
-    assert_equals(reports[0].body['blocked-url'], url);
+    assert_equals(reports[0].body['blockedURL'], url);
   }, 'COEP reports made by DedicatedWorker is reported to the owner document');
 }
 </script>

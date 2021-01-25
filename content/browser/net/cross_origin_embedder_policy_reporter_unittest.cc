@@ -143,7 +143,6 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
       RequestDestination destination,
       base::StringPiece disposition) const {
     return {std::make_pair("type", "corp"),
-            std::make_pair("blocked-url", blocked_url.as_string()),
             std::make_pair("blockedURL", blocked_url.as_string()),
             std::make_pair("destination",
                            network::RequestDestinationToString(destination)),
@@ -154,7 +153,6 @@ class CrossOriginEmbedderPolicyReporterTest : public testing::Test {
   CreateBodyForNavigationInternal(base::StringPiece blocked_url,
                                   base::StringPiece disposition) const {
     return {std::make_pair("type", "navigation"),
-            std::make_pair("blocked-url", blocked_url.as_string()),
             std::make_pair("blockedURL", blocked_url.as_string()),
             std::make_pair("disposition", disposition.as_string())};
   }
