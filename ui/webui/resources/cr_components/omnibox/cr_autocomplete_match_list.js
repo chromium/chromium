@@ -16,11 +16,14 @@
  */
 let AutocompleteMatch;
 
+const staticHtmlPolicy = trustedTypes.createPolicy(
+    'cr-autocomplete-match', {createHTML: () => `{__html_template__}`});
+
 class AutocompleteMatchElement extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({mode: 'open'});
-    this.shadowRoot.innerHTML = `{__html_template__}`;
+    this.shadowRoot.innerHTML = staticHtmlPolicy.createHTML('');
   }
 
   /** @param {!AutocompleteMatch} match */
@@ -47,8 +50,8 @@ export class AutocompleteMatchListElement extends HTMLElement {
 
   /** @param {!Array<!AutocompleteMatch>} matches */
   updateMatches(matches) {
-    for (let i = 0; i < matches.length; i++) {
-      const shadowRoot = /** @type {!ParentNode} */ (this.shadowRoot);
+    const shadowRoot = /** @type {!ParentNode} */ (this.shadowRoot);
+    for (let i = 0; i < matches.length && i < shadowRoot.children.length; i++) {
       shadowRoot.children[i].updateMatch(matches[i]);
     }
   }
