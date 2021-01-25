@@ -312,18 +312,6 @@ class CorsURLLoaderTest : public testing::Test {
         mojom::CorsOriginAccessMatchPriority::kHighPriority);
   }
 
-  void AddFactoryBoundAllowListEntryForOrigin(
-      const url::Origin& source_origin,
-      const std::string& protocol,
-      const std::string& domain,
-      const mojom::CorsDomainMatchMode mode) {
-    factory_bound_allow_patterns_.push_back(mojom::CorsOriginPattern::New(
-        protocol, domain, /*port=*/0, mode,
-        mojom::CorsPortMatchMode::kAllowAnyPort,
-        mojom::CorsOriginAccessMatchPriority::kDefaultPriority));
-    ResetFactory(source_origin, kRendererProcessId);
-  }
-
   static net::RedirectInfo CreateRedirectInfo(
       int status_code,
       base::StringPiece method,
@@ -357,16 +345,6 @@ class CorsURLLoaderTest : public testing::Test {
     auto factory_params = network::mojom::URLLoaderFactoryParams::New();
     if (initiator) {
       factory_params->request_initiator_origin_lock = *initiator;
-      if (!initiator->opaque()) {
-        factory_params->factory_bound_access_patterns =
-            network::mojom::CorsOriginAccessPatterns::New();
-        factory_params->factory_bound_access_patterns->source_origin =
-            *initiator;
-        for (const auto& item : factory_bound_allow_patterns_) {
-          factory_params->factory_bound_access_patterns->allow_patterns
-              .push_back(item.Clone());
-        }
-      }
     }
     factory_params->is_trusted = is_trusted;
     factory_params->process_id = process_id;
@@ -411,9 +389,6 @@ class CorsURLLoaderTest : public testing::Test {
   // CorsURLLoaderFactory instance under tests.
   std::unique_ptr<mojom::URLLoaderFactory> cors_url_loader_factory_;
   mojo::Remote<mojom::URLLoaderFactory> cors_url_loader_factory_remote_;
-
-  // Factory bound origin access list for testing.
-  std::vector<mojom::CorsOriginPatternPtr> factory_bound_allow_patterns_;
 
   std::unique_ptr<TestURLLoaderFactory> test_url_loader_factory_;
   std::unique_ptr<mojo::Receiver<mojom::URLLoaderFactory>>
@@ -1600,60 +1575,6 @@ TEST_F(CorsURLLoaderTest, OriginAccessList_Blocked) {
   AddAllowListEntryForOrigin(url::Origin::Create(origin), url.scheme(),
                              url.host(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);
-  AddBlockListEntryForOrigin(url::Origin::Create(origin), url.scheme(),
-                             url.host(),
-                             mojom::CorsDomainMatchMode::kDisallowSubdomains);
-
-  CreateLoaderAndStart(origin, url, mojom::RequestMode::kCors);
-  RunUntilCreateLoaderAndStartCalled();
-
-  NotifyLoaderClientOnReceiveResponse();
-
-  RunUntilComplete();
-
-  EXPECT_TRUE(IsNetworkLoaderStarted());
-  EXPECT_FALSE(client().has_received_redirect());
-  EXPECT_FALSE(client().has_received_response());
-  EXPECT_TRUE(client().has_received_completion());
-  EXPECT_EQ(net::ERR_FAILED, client().completion_status().error_code);
-}
-
-// CorsURLLoader manages two lists, per-NetworkContext list and
-// per-URLLoaderFactory list. This test verifies if per-URLLoaderFactory list
-// works.
-TEST_F(CorsURLLoaderTest, OriginAccessList_AllowedByFactoryList) {
-  const GURL origin("https://example.com");
-  const GURL url("http://other.example.com/foo.png");
-
-  AddFactoryBoundAllowListEntryForOrigin(
-      url::Origin::Create(origin), url.scheme(), url.host(),
-      mojom::CorsDomainMatchMode::kDisallowSubdomains);
-
-  CreateLoaderAndStart(origin, url, mojom::RequestMode::kCors);
-  RunUntilCreateLoaderAndStartCalled();
-
-  NotifyLoaderClientOnReceiveResponse();
-  NotifyLoaderClientOnComplete(net::OK);
-
-  RunUntilComplete();
-
-  EXPECT_TRUE(IsNetworkLoaderStarted());
-  EXPECT_FALSE(client().has_received_redirect());
-  EXPECT_TRUE(client().has_received_response());
-  EXPECT_EQ(network::mojom::FetchResponseType::kBasic,
-            client().response_head()->response_type);
-  EXPECT_TRUE(client().has_received_completion());
-  EXPECT_EQ(net::OK, client().completion_status().error_code);
-}
-
-// Checks if CorsURLLoader can respect the per-NetworkContext block list.
-TEST_F(CorsURLLoaderTest, OriginAccessList_AllowedByFactoryListButBlocked) {
-  const GURL origin("https://example.com");
-  const GURL url("http://other.example.com/foo.png");
-
-  AddFactoryBoundAllowListEntryForOrigin(
-      url::Origin::Create(origin), url.scheme(), url.host(),
-      mojom::CorsDomainMatchMode::kDisallowSubdomains);
   AddBlockListEntryForOrigin(url::Origin::Create(origin), url.scheme(),
                              url.host(),
                              mojom::CorsDomainMatchMode::kDisallowSubdomains);

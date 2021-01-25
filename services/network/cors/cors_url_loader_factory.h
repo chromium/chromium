@@ -126,10 +126,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   // it's safe.
   const OriginAccessList* const origin_access_list_;
 
-  // Owns factory bound OriginAccessList that to have factory specific
-  // additional allowed access list.
-  std::unique_ptr<OriginAccessList> factory_bound_origin_access_list_;
-
   static bool allow_external_preflights_for_testing_;
 
   DISALLOW_COPY_AND_ASSIGN(CorsURLLoaderFactory);

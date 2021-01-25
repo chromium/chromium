@@ -649,11 +649,6 @@ struct URLLoaderFactoryParams {
   // impact because of the extra process hops, so use should be minimized.
   pending_remote<TrustedURLLoaderHeaderClient>? header_client;
 
-  // |factory_bound_access_patterns| are used for CORS checks in addition to
-  // the per-context allow patterns that is managed via NetworkContext
-  // interface. This still respects the per-context block lists.
-  CorsOriginAccessPatterns? factory_bound_access_patterns;
-
   // Information used restrict access to identity information (like SameSite
   // cookies) and to shard network resources, like the cache. If set, takes
   // precedence over ResourceRequest::TrustedParams::IsolationInfo field
