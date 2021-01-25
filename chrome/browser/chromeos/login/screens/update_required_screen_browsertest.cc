@@ -236,9 +236,10 @@ IN_PROC_BROWSER_TEST_F(UpdateRequiredScreenTest, TestCaptivePortal) {
   EXPECT_EQ(UpdateRequiredView::kScreenId.AsId(),
             error_screen_->GetParentScreen());
   test::OobeJS().ExpectVisible("error-message");
-  test::OobeJS().ExpectVisible("error-message-md");
-  test::OobeJS().ExpectHasClass("ui-state-update", {"error-message"});
-  test::OobeJS().ExpectHasClass("error-state-portal", {"error-message"});
+  test::OobeJS().ExpectVisiblePath(
+      {"error-message", "captive-portal-message-text"});
+  test::OobeJS().ExpectVisiblePath(
+      {"error-message", "captive-portal-proxy-message-text"});
 
   // If network goes back online, the error screen should be hidden and update
   // process should start.

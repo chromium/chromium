@@ -150,6 +150,9 @@ const char kTimezoneResponseBody[] =
 
 const char kDisabledMessage[] = "This device has been disabled.";
 
+const test::UIPath kGuestSessionLink = {"error-message",
+                                        "error-guest-signin-fix-network"};
+
 // Matches on the mode parameter of an EnrollmentConfig object.
 MATCHER_P(EnrollmentModeMatches, mode, "") {
   return arg.mode == mode;
@@ -1297,16 +1300,14 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
   EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
             GetErrorScreen()->GetParentScreen());
 
-  constexpr char guest_session_link_display[] =
-      "window.getComputedStyle($('error-guest-signin-fix-network')).display";
   if (IsFREExplicitlyRequired()) {
     // Check that guest sign-in is not allowed on the network error screen
     // (because the check_enrollment VPD key was set to "1", making FRE
     // explicitly required).
-    EXPECT_EQ("none", JSExecuteStringExpression(guest_session_link_display));
+    test::OobeJS().ExpectHiddenPath(kGuestSessionLink);
   } else {
     // Check that guest sign-in is allowed if FRE was not explicitly required.
-    EXPECT_EQ("block", JSExecuteStringExpression(guest_session_link_display));
+    test::OobeJS().ExpectVisiblePath(kGuestSessionLink);
   }
   EXPECT_EQ(0,
             FakeCryptohomeClient::Get()
@@ -1398,13 +1399,10 @@ IN_PROC_BROWSER_TEST_P(WizardControllerDeviceStateExplicitRequirementTest,
     EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
               GetErrorScreen()->GetParentScreen());
 
-    constexpr char guest_session_link_display[] =
-        "window.getComputedStyle($('error-guest-signin-fix-network'))."
-        "display";
     // Check that guest sign-in is not allowed on the network error screen
     // (because the check_enrollment VPD key was set to "1", making FRE
     // explicitly required).
-    EXPECT_EQ("none", JSExecuteStringExpression(guest_session_link_display));
+    test::OobeJS().ExpectHiddenPath(kGuestSessionLink);
 
     base::DictionaryValue device_state;
     device_state.SetString(policy::kDeviceStateMode,
@@ -1628,12 +1626,9 @@ IN_PROC_BROWSER_TEST_F(WizardControllerDeviceStateWithInitialEnrollmentTest,
   EXPECT_EQ(AutoEnrollmentCheckScreenView::kScreenId.AsId(),
             GetErrorScreen()->GetParentScreen());
 
-  constexpr char guest_session_link_display[] =
-      "window.getComputedStyle($('error-guest-signin-fix-network'))."
-      "display";
   // Check that guest sign-in is allowed on the network error screen for initial
   // enrollment.
-  EXPECT_EQ("block", JSExecuteStringExpression(guest_session_link_display));
+  test::OobeJS().ExpectVisiblePath(kGuestSessionLink);
 
   base::DictionaryValue device_state;
   device_state.SetString(policy::kDeviceStateMode,
@@ -2023,13 +2018,14 @@ IN_PROC_BROWSER_TEST_F(WizardControllerBrokenLocalStateTest,
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
 
   // Checks visibility of the error message and powerwash button.
-  test::OobeJS().ExpectVisible({"error-message"});
-  test::OobeJS().ExpectHasClass("ui-state-local-state-error",
-                                {"error-message"});
+  test::OobeJS().ExpectVisible("error-message");
+  test::OobeJS().ExpectVisiblePath({"error-message", "powerwashButton"});
+  test::OobeJS().ExpectVisiblePath({"error-message", "localStateErrorText"});
+  test::OobeJS().ExpectVisiblePath({"error-message", "guestSessionText"});
 
   // Emulates user click on the "Restart and Powerwash" button.
   ASSERT_EQ(0, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
-  test::OobeJS().TapOn("error-message-md-powerwash-button");
+  test::OobeJS().TapOnPath({"error-message", "powerwashButton"});
   ASSERT_EQ(1, FakeSessionManagerClient::Get()->start_device_wipe_call_count());
 }
 

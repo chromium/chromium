@@ -137,6 +137,8 @@ namespace {
 const test::UIPath kConfigNetwork = {"app-launch-splash", "configNetwork"};
 const test::UIPath kAutolaunchConfirmButton = {"autolaunch", "confirmButton"};
 const test::UIPath kAutolaunchCancelButton = {"autolaunch", "cancelButton"};
+const test::UIPath kErrorMessageContinueButton = {"error-message",
+                                                  "continueButton"};
 
 // This is a simple test app that creates an app window and immediately closes
 // it again. Webstore data json is in
@@ -1049,13 +1051,13 @@ IN_PROC_BROWSER_TEST_F(KioskDeviceOwnedTest,
   ASSERT_TRUE(GetKioskLaunchController()->showing_network_dialog());
 
   // Continue button should be visible since we are online.
-  test::OobeJS().ExpectVisible("error-message-md-continue-button");
+  test::OobeJS().ExpectVisiblePath(kErrorMessageContinueButton);
 
   // Let app launching resume.
   BlockAppLaunch(false);
 
   // Click on [Continue] button.
-  test::OobeJS().TapOn("error-message-md-continue-button");
+  test::OobeJS().TapOnPath(kErrorMessageContinueButton);
 
   WaitForAppLaunchSuccess();
 }

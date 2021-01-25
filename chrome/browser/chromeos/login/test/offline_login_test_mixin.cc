@@ -27,7 +27,8 @@ namespace chromeos {
 
 namespace {
 
-const test::UIPath kOfflineLoginLink = {"error-offline-login-link"};
+const test::UIPath kOfflineLoginLink = {"error-message",
+                                        "error-offline-login-link"};
 
 const char kOfflineLoginDialog[] = "offline-login";
 

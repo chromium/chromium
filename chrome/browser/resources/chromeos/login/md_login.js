@@ -21,8 +21,6 @@
 // <include src="cr_ui.js">
 // <include src="oobe_select.js">
 
-// <include src="screen_error_message.js">
-
 // <include src="../../gaia_auth_host/authenticator.js">
 
 /**
@@ -46,7 +44,6 @@ HTMLImports.whenReady(() => {
       initialize() {
         cr.ui.login.DisplayManager.initialize();
         login.AccountPickerScreen.register();
-        login.ErrorMessageScreen.register();
 
         cr.ui.Bubble.decorate($('bubble-persistent'));
         $('bubble-persistent').persistent = true;

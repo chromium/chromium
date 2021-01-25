@@ -49,6 +49,8 @@ class MockErrorScreenView : public ErrorScreenView {
   MOCK_METHOD1(SetShowConnectingIndicator, void(bool value));
   MOCK_METHOD1(SetUIState, void(NetworkError::UIState ui_state));
   MOCK_METHOD1(SetIsPersistentError, void(bool is_persistent));
+  MOCK_METHOD0(OnCancelButtonClicked, void());
+  MOCK_METHOD0(OnReloadGaiaClicked, void());
 
  private:
   ErrorScreen* screen_ = nullptr;

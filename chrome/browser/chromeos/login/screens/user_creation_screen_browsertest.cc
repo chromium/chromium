@@ -183,7 +183,8 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenTest, NetworkOffline) {
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_OFFLINE);
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-  test::OobeJS().ExpectVisiblePath({"error-guest-signin-link"});
+  test::OobeJS().ExpectVisiblePath(
+      {"error-message", "error-guest-signin-link"});
 
   network_portal_detector_.SimulateDefaultNetworkState(
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);

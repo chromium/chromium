@@ -51,6 +51,9 @@ constexpr char kTestKioskAccountId[] = "enterprise-kiosk-app@localhost";
 constexpr char kWifiServiceName[] = "stub_wifi";
 constexpr char kWifiNetworkName[] = "wifi-test-network";
 
+const test::UIPath kErrorMessageGuestSigninLink = {"error-message",
+                                                   "error-guest-signin-link"};
+
 ErrorScreen* GetScreen() {
   return static_cast<ErrorScreen*>(
       WizardController::default_controller()->GetScreen(
@@ -83,6 +86,7 @@ class NetworkErrorScreenTest : public InProcessBrowserTest {
     GetScreen()->Show(wizard_context_.get());
 
     // Wait until network list adds the wifi test network.
+    OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
     test::OobeJS()
         .CreateWaiter(WifiElementSelector(kWifiNetworkName) + " != null")
         ->Wait();
@@ -95,10 +99,9 @@ class NetworkErrorScreenTest : public InProcessBrowserTest {
 
  protected:
   std::string WifiElementSelector(const std::string& wifi_network_name) {
-    return base::StrCat(
-        {"$('offline-network-control').$$('#networkSelect')"
-         ".getNetworkListItemByNameForTest('",
-         wifi_network_name, "')"});
+    return test::GetOobeElementPath(
+               {"error-message", "offline-network-control", "networkSelect"}) +
+           ".getNetworkListItemByNameForTest('" + wifi_network_name + "')";
   }
 
   void ClickOnWifiNetwork(const std::string& wifi_network_name) {
@@ -230,13 +233,13 @@ IN_PROC_BROWSER_TEST_F(GuestErrorScreenTest, PRE_GuestLogin) {
   GetScreen()->Show(wizard_context_.get());
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-  test::OobeJS().ExpectVisiblePath({"error-guest-signin-link"});
+  test::OobeJS().ExpectVisiblePath(kErrorMessageGuestSigninLink);
 
   base::RunLoop restart_job_waiter;
   FakeSessionManagerClient::Get()->set_restart_job_callback(
       restart_job_waiter.QuitClosure());
 
-  test::OobeJS().ClickOnPath({"error-guest-signin-link"});
+  test::OobeJS().ClickOnPath(kErrorMessageGuestSigninLink);
   restart_job_waiter.Run();
 }
 
@@ -338,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest, OpenCertificateConfig) {
   DialogWindowWaiter waiter(
       l10n_util::GetStringUTF16(IDS_CERTIFICATE_MANAGER_TITLE));
 
-  test::OobeJS().TapOnPath({"error-message-md-configure-certs-button"});
+  test::OobeJS().TapOnPath({"error-message", "configureCertsButton"});
   waiter.Wait();
 }
 

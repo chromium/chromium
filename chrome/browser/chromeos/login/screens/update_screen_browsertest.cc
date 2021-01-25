@@ -600,18 +600,18 @@ IN_PROC_BROWSER_TEST_F(UpdateScreenTest, TestTwoOfflineNetworks) {
   error_screen_waiter.Wait();
 
   test::OobeJS().ExpectVisiblePath(kErrorMessage);
-  test::OobeJS().ExpectVisible("error-message-md");
-  test::OobeJS().ExpectHasClass("ui-state-update", kErrorMessage);
-  test::OobeJS().ExpectHasClass("error-state-portal", kErrorMessage);
+  test::OobeJS().ExpectVisiblePath(
+      {"error-message", "captive-portal-message-text"});
+  test::OobeJS().ExpectVisiblePath(
+      {"error-message", "captive-portal-proxy-message-text"});
 
   // Change active network to the wifi behind proxy.
   network_portal_detector_.SetDefaultNetwork(
       kStubWifiGuid,
       NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED);
 
-  test::OobeJS()
-      .CreateHasClassWaiter(true, "error-state-proxy", kErrorMessage)
-      ->Wait();
+  test::OobeJS().ExpectVisiblePath(
+      {"error-message", "update-proxy-message-text"});
 
   EXPECT_FALSE(last_screen_result_.has_value());
   histogram_tester_.ExpectTotalCount("OOBE.UpdateScreen.UpdateDownloadingTime",
@@ -645,10 +645,7 @@ IN_PROC_BROWSER_TEST_F(UpdateScreenTest, TestVoidNetwork) {
   error_screen_waiter.Wait();
 
   test::OobeJS().ExpectVisiblePath(kErrorMessage);
-  test::OobeJS().ExpectVisible("error-message-md");
-
-  test::OobeJS().ExpectHasClass("ui-state-update", kErrorMessage);
-  test::OobeJS().ExpectHasClass("error-state-offline", kErrorMessage);
+  test::OobeJS().ExpectVisiblePath({"error-message", "offlineMessageBody"});
 
   EXPECT_FALSE(last_screen_result_.has_value());
   histogram_tester_.ExpectTotalCount("OOBE.UpdateScreen.UpdateDownloadingTime",

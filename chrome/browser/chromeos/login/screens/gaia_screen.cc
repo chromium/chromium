@@ -50,6 +50,8 @@ void GaiaScreen::SetView(GaiaView* view) {
 }
 
 void GaiaScreen::LoadOnline(const AccountId& account) {
+  if (!view_)
+    return;
   auto gaia_path = GaiaView::GaiaPath::kDefault;
   if (!account.empty() && features::IsGaiaReauthEndpointEnabled()) {
     auto* user = user_manager::UserManager::Get()->FindUser(account);
@@ -62,11 +64,15 @@ void GaiaScreen::LoadOnline(const AccountId& account) {
 }
 
 void GaiaScreen::LoadOnlineForChildSignup() {
+  if (!view_)
+    return;
   view_->SetGaiaPath(GaiaView::GaiaPath::kChildSignup);
   view_->LoadGaiaAsync(EmptyAccountId());
 }
 
 void GaiaScreen::LoadOnlineForChildSignin() {
+  if (!view_)
+    return;
   view_->SetGaiaPath(GaiaView::GaiaPath::kChildSignin);
   view_->LoadGaiaAsync(EmptyAccountId());
 }

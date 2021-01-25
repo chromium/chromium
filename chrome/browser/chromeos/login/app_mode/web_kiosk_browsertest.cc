@@ -39,8 +39,8 @@ namespace {
 const char kAppInstallUrl[] = "https://app.com/install";
 const char kAppLaunchUrl[] = "https://app.com/launch";
 const char kAppTitle[] = "title.";
-const test::UIPath kNetworkConfigureScreenContinueButton = {
-    "error-message-md-continue-button"};
+const test::UIPath kNetworkConfigureScreenContinueButton = {"error-message",
+                                                            "continueButton"};
 
 }  // namespace
 

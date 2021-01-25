@@ -1,173 +1,196 @@
 <link rel="import" href="chrome://oobe/custom_elements.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
 
 <link rel="import" href="/components/oobe_dialog.html">
+<link rel="import" href="/components/oobe_i18n_behavior.html">
 
-<div id="error-message" class="step hidden show-offline-error" hidden>
+<dom-module id="error-message-element">
+  <template>
+    <style include="oobe-common action-link">
+      .scrollable {
+        overflow: auto;
+      }
 
-  <iron-iconset-svg name="error-message-24" size="24">
-    <svg>
-      <defs>
-        <g id="dialog-icon"><path d="M12 3C6.95 3 3.15 4.85 0 7.23L12 22 24 7.25C20.85 4.87 17.05 3 12 3zm1 13h-2v-6h2v6zm-2-8V6h2v2h-2z"></path></g>
-      </defs>
-    </svg>
-  </iron-iconset-svg>
+      #offline-network-control {
+        margin-bottom: 20px;
+        min-height: 200px;
+      }
 
-  <oobe-dialog role="dialog" id="error-message-md" has-buttons>
-    <iron-icon icon="error-message-24:dialog-icon" slot="oobe-icon">
-    </iron-icon>
-    <h1 id="error-message-md-header" slot="title">
-      <div id="error-header-id" class="error-header" aria-live="assertive">
-        <img alt class="error-icon"
-            src="chrome://theme/IDR_ERROR_NETWORK_OFFLINE">
-        <div id="captive-portal-title" i18n-content="captivePortalTitle"
-            class="error-title
-                   show-with-error-state-portal
-                   show-with-error-state-offline"></div>
-        <div id="login-error-title" i18n-content="loginErrorTitle"
-            class="error-title
-                   show-with-error-state-proxy
-                   show-with-error-state-auth-ext-timeout
-                   show-with-ui-state-local-state-error">
+      @keyframes connecting-indicator-ellipsis {
+        0% {
+          opacity: 0;
+        }
+        10% {
+          opacity: 1;
+        }
+        50% {
+          opacity: .8;
+        }
+        100% {
+          opacity: 0;
+        }
+      }
+
+      #connecting-indicator-ellipsis-1 {
+        animation: connecting-indicator-ellipsis 3s 0s infinite;
+      }
+
+      #connecting-indicator-ellipsis-2 {
+        animation: connecting-indicator-ellipsis 3s 500ms infinite;
+      }
+
+      #connecting-indicator-ellipsis-3 {
+        animation: connecting-indicator-ellipsis 3s 1s infinite;
+      }
+    </style>
+    <oobe-dialog role="dialog" id="dialog" has-buttons>
+      <iron-icon icon="oobe-24:perm-scan-wifi" slot="oobe-icon">
+      </iron-icon>
+      <h1 slot="title">
+        <div class="error-header" aria-live="assertive">
+          [[getDialogTitle_(locale, errorState_, uiState_)]]
         </div>
-        <div id="kiosk-online-title" i18n-content="kioskOnlineTitle"
-            class="error-title
-                   show-with-error-state-kiosk-online">
+      </h1>
+      <div slot="subtitle">
+        <div hidden="[[!isOneOf_(errorState_, 'kiosk-online')]]">
+          [[i18nDynamic(locale, 'kioskOnlineMessageBody')]]
         </div>
-        <div id="rollback-error-title" i18n-content="rollbackErrorTitle"
-            class="error-title
-                   show-with-ui-state-rollback-error">
+        <div id="offlineMessageBody" hidden="[[!isOneOf_(errorState_,
+            'offline', 'auth-ext-timeout')]]">
+          <span hidden="[[!isOneOf_(uiState_, 'ui-state-update')]]">
+            [[i18nDynamic(locale, 'updateOfflineMessageBody')]]
+          </span>
+          <span hidden="[[!isOneOf_(uiState_,
+              'ui-state-signin', 'ui-state-supervised')]]">
+            [[i18nDynamic(locale, 'signinOfflineMessageBody')]]
+          </span>
+          <span hidden="[[!isOneOf_(uiState_, 'ui-state-kiosk-mode')]]">
+            [[i18nDynamic(locale, 'kioskOfflineMessageBody')]]
+          </span>
+          <span id="auto-enrollment-offline-message-text"
+              hidden="[[!isOneOf_(uiState_,
+                  'ui-state-auto-enrollment-error')]]">
+          </span>
         </div>
-      </div>
-    </h1>
-    <div id="error-message-md-subtitle" slot="subtitle">
-      <div id="kiosk-online-message-body"
-          class="show-with-error-state-kiosk-online">
-        <span i18n-content="kioskOnlineMessageBody"
-            class="show-with-error-state-kiosk-online"></span>
-      </div>
-      <div id="offline-message-body"
-          class="show-with-error-state-offline
-                 show-with-error-state-auth-ext-timeout">
-        <span id="update-offline-message-text"
-            i18n-content="updateOfflineMessageBody"
-            class="show-with-ui-state-update"></span>
-        <span id="signin-offline-message-text"
-            i18n-content="signinOfflineMessageBody"
-            class="show-with-ui-state-signin
-                   show-with-ui-state-supervised"></span>
-        <span id="kiosk-offline-message-text"
-            i18n-content="kioskOfflineMessageBody"
-            class="show-with-ui-state-kiosk-mode"></span>
-        <span id="auto-enrollment-offline-message-text"
-            class="show-with-ui-state-auto-enrollment-error"></span>
-      </div>
-      <div id="captive-portal-message-body"
-          class="show-with-error-state-portal">
-        <span id="captive-portal-message-text"
-            class="show-with-ui-state-update
-                   show-with-ui-state-signin
-                   show-with-ui-state-supervised
-                   show-with-ui-state-kiosk-mode
-                   show-with-ui-state-auto-enrollment-error"></span>
-      </div>
-      <div id="captive-portal-proxy-message-body"
-          class="show-with-error-state-portal
-                 show-with-error-state-auth-ext-timeout">
-        <span id="captive-portal-proxy-message-text"
-            class="show-with-ui-state-update
-                   show-with-ui-state-signin
-                   show-with-ui-state-supervised
-                   show-with-ui-state-kiosk-mode
-                   show-with-ui-state-auto-enrollment-error"></span>
-      </div>
-      <div id="proxy-message-body"
-          class="show-with-error-state-proxy">
-        <span id="update-proxy-message-text"
-            class="show-with-ui-state-update
-                   show-with-ui-state-auto-enrollment-error"></span>
-        <span id="signin-proxy-message-text"
-            class="show-with-ui-state-signin
-                   show-with-ui-state-supervised
-                   show-with-ui-state-kiosk-mode"></span>
-      </div>
-      <div id="local-state-error-body"
-          class="show-with-ui-state-local-state-error">
-        <div i18n-content="localStateErrorText0">
+        <div hidden="[[!isOneOf_(errorState_, 'portal')]]">
+          <span id="captive-portal-message-text"
+              hidden="[[!isOneOf_(uiState_,
+                  'ui-state-update',
+                  'ui-state-signin',
+                  'ui-state-supervised',
+                  'ui-state-kiosk-mode',
+                  'ui-state-auto-enrollment-error')]]">
+          </span>
         </div>
-        <div i18n-content="localStateErrorText1">
+        <div hidden="[[!isOneOf_(errorState_,
+            'portal',
+            'auth-ext-timeout')]]">
+          <span id="captive-portal-proxy-message-text"
+              hidden="[[!isOneOf_(uiState_,
+                  'ui-state-update',
+                  'ui-state-signin',
+                  'ui-state-supervised',
+                  'ui-state-kiosk-mode',
+                  'ui-state-auto-enrollment-error')]]">
+          </span>
         </div>
-      </div>
-      <div id="rollback-error-message-body"
-          class="show-with-ui-state-rollback-error">
-        <span i18n-content="rollbackErrorMessageBody"
-            class="show-with-ui-state-rollback-error"></span>
-      </div>
-      <div class="show-with-ui-state-update
-                  show-with-ui-state-signin
-                  show-with-ui-state-supervised
-                  show-with-ui-state-kiosk-mode
-                  show-with-ui-local-state-error">
-        <span id="error-guest-signin"
-            class="guest-signin"></span>
-      </div>
-      <div class="show-with-ui-state-auto-enrollment-error">
-        <span id="error-guest-signin-fix-network"
-            class="guest-signin"></span>
-      </div>
-      <div id="error-offline-login"
-          class="error-offline-login"></div>
-      <div id="connecting-indicator"
-          class="connecting-indicator">
-      </div>
-    </div>
-    <div id="error-message-md-footer" slot="footer"
-        class="flex layout vertical">
-      <div id="error-body-id" class="error-body" aria-live="assertive">
-        <div id="offline-network-control-body"
-            class="show-with-ui-state-update
-                   show-with-ui-state-signin
-                   show-with-ui-state-supervised
-                   show-with-ui-state-kiosk-mode
-                   show-with-ui-state-auto-enrollment-error
-                   scrollable">
-          <network-select-login id="offline-network-control"
-              class="layout vertical flex" configure-connected>
-          </network-select-login>
+        <div hidden="[[!isOneOf_(errorState_, 'proxy')]]">
+          <span id="update-proxy-message-text"
+              hidden="[[!isOneOf_(uiState_,
+                  'ui-state-update',
+                  'ui-state-auto-enrollment-error')]]">
+          </span>
+          <span id="signin-proxy-message-text"
+              hidden="[[!isOneOf_(uiState_,
+                  'ui-state-signin',
+                  'ui-state-supervised',
+                  'ui-state-kiosk-mode')]]">
+          </span>
+        </div>
+        <div id="localStateErrorText" hidden="[[!isOneOf_(uiState_,
+            'ui-state-local-state-error')]]">
+          [[i18nDynamic(locale, 'localStateErrorText0')]]
+          [[i18nDynamic(locale, 'localStateErrorText1')]]
+        </div>
+        <div hidden="[[!isOneOf_(uiState_, 'ui-state-rollback-error')]]">
+          [[i18nDynamic(locale, 'rollbackErrorMessageBody')]]
+        </div>
+        <div id="guestSessionText" hidden="[[!isOneOf_(uiState_,
+            'ui-state-update',
+            'ui-state-signin',
+            'ui-state-supervised',
+            'ui-state-kiosk-mode',
+            'ui-state-local-state-error')]]">
+          <span id="error-guest-signin" hidden="[[!guestSessionAllowed_]]">
+          </span>
+        </div>
+        <div hidden="[[!isOneOf_(uiState_, 'ui-state-auto-enrollment-error')]]">
+          <span id="error-guest-signin-fix-network"
+              hidden="[[!guestSessionAllowed_]]">
+          </span>
+        </div>
+        <div id="error-offline-login" hidden="[[!offlineLoginAllowed_]]">
+        </div>
+        <div hidden="[[!connectingIndicatorShown_]]">
+          [[i18nDynamic(locale, 'connectingIndicatorText')]]
+          <span id="connecting-indicator-ellipsis-1">.</span>
+          <span id="connecting-indicator-ellipsis-2">.</span>
+          <span id="connecting-indicator-ellipsis-3">.</span>
         </div>
       </div>
-    </div>
-    <div slot="back-navigation">
-      <oobe-back-button id="error-message-back-button"></oobe-back-button>
-    </div>
-    <div slot="bottom-buttons">
-      <div id="buttons" class="layout horizontal">
-        <oobe-text-button id="error-message-md-reboot-button"
-            text-key="rebootButton"
-            class="show-with-ui-state-kiosk-mode">
-        </oobe-text-button>
-        <oobe-text-button id="error-message-md-diagnose-button"
-            text-key="diagnoseButton"
-            class="show-with-ui-state-kiosk-mode">
-        </oobe-text-button>
-        <oobe-text-button
-            id="error-message-md-configure-certs-button"
-            text-key="configureCertsButton"
-            class="show-with-ui-state-kiosk-mode">
-        </oobe-text-button>
-        <oobe-text-button id="error-message-md-continue-button"
-            text-key="continueButton"
-            class="show-with-error-state-kiosk-online">
-        </oobe-text-button>
-        <oobe-text-button id="error-message-md-ok-button"
-            text-key="okButton"
-            class="show-with-ui-state-rollback-error">
-        </oobe-text-button>
-        <oobe-text-button id="error-message-md-powerwash-button"
-            text-key="localStateErrorPowerwashButton"
-            class="show-with-ui-state-local-state-error">
-        </oobe-text-button>
+      <div slot="footer" class="flex layout vertical">
+        <div class="error-body" aria-live="assertive">
+          <div hidden="[[!isOneOf_(uiState_,
+              'ui-state-update',
+              'ui-state-signin',
+              'ui-state-supervised',
+              'ui-state-kiosk-mode',
+              'ui-state-auto-enrollment-error')]]" class="scrollable">
+            <network-select-login id="offline-network-control"
+                class="layout vertical flex" configure-connected
+                on-selected-network-connected="onNetworkConnected_">
+            </network-select-login>
+          </div>
+        </div>
       </div>
-    </div>
-  </oobe-dialog>
-</div>
+      <div slot="back-navigation">
+        <oobe-back-button id="backButton" on-click="cancel">
+        </oobe-back-button>
+      </div>
+      <div slot="bottom-buttons">
+        <div class="layout horizontal">
+          <oobe-text-button on-click="rebootButtonClicked"
+              text-key="rebootButton"
+              hidden="[[!isOneOf_(uiState_, 'ui-state-kiosk-mode')]]">
+          </oobe-text-button>
+          <oobe-text-button on-click="diagnoseButtonClicked"
+              text-key="diagnoseButton"
+              hidden="[[!isOneOf_(uiState_, 'ui-state-kiosk-mode')]]">
+          </oobe-text-button>
+          <oobe-text-button id="configureCertsButton"
+              on-click="configureCertsButtonClicked"
+              text-key="configureCertsButton"
+              hidden="[[!isOneOf_(uiState_, 'ui-state-kiosk-mode')]]">
+          </oobe-text-button>
+          <oobe-text-button id="continueButton"
+              on-click="continueButtonClicked"
+              text-key="continueButton"
+              hidden="[[!isOneOf_(errorState_, 'kiosk-online')]]">
+          </oobe-text-button>
+          <oobe-text-button id="okButton"
+              on-click="okButtonClicked"
+              text-key="okButton"
+              hidden="[[!isOneOf_(uiState_, 'ui-state-rollback-error')]]">
+          </oobe-text-button>
+          <oobe-text-button id="powerwashButton"
+              on-click="powerwashButtonClicked"
+              text-key="localStateErrorPowerwashButton"
+              hidden="[[!isOneOf_(uiState_, 'ui-state-local-state-error')]]">
+          </oobe-text-button>
+        </div>
+      </div>
+    </oobe-dialog>
+  </template>
+</dom-module>

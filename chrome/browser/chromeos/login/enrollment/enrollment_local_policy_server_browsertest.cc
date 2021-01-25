@@ -645,7 +645,9 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentNoStateKeys, FREExplicitlyRequired) {
   OobeScreenWaiter(AutoEnrollmentCheckScreenView::kScreenId).Wait();
 
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
-  test::OobeJS().ExpectHasNoClass("allow-guest-signin", {"error-message"});
+  test::OobeJS().ExpectHiddenPath({"error-message", "error-guest-signin"});
+  test::OobeJS().ExpectHiddenPath(
+      {"error-message", "error-guest-signin-fix-network"});
 }
 
 // FRE not explicitly required and the state keys are missing. Should proceed to

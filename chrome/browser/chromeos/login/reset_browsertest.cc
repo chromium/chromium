@@ -468,7 +468,7 @@ IN_PROC_BROWSER_TEST_F(ResetFirstAfterBootTestWithRollback,
   // Clicking 'ok' on the error screen will either show the previous OOBE screen
   // or show the login screen. Here login screen should appear because there's
   // no previous screen.
-  test::OobeJS().TapOnPath({"error-message-md-ok-button"});
+  test::OobeJS().TapOnPath({"error-message", "okButton"});
 
   OobeWindowVisibilityWaiter(false).Wait();
 }

@@ -89,6 +89,14 @@ void ErrorScreenHandler::SetUIState(NetworkError::UIState ui_state) {
   CallJS("login.ErrorMessageScreen.setUIState", static_cast<int>(ui_state));
 }
 
+void ErrorScreenHandler::OnCancelButtonClicked() {
+  CallJS("cr.ui.Oobe.showUserPods");
+}
+
+void ErrorScreenHandler::OnReloadGaiaClicked() {
+  CallJS("login.GaiaSigninScreen.doReload");
+}
+
 void ErrorScreenHandler::RegisterMessages() {
   AddCallback("hideCaptivePortal",
               &ErrorScreenHandler::HandleHideCaptivePortal);

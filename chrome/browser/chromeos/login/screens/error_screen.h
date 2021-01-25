@@ -38,6 +38,9 @@ class ErrorScreen : public BaseScreen,
   static const char kUserActionRebootButtonClicked[];
   static const char kUserActionShowCaptivePortalClicked[];
   static const char kUserActionNetworkConnected[];
+  static const char kUserActionReloadGaia[];
+  static const char kUserActionCancelReset[];
+  static const char kUserActionCancel[];
 
   explicit ErrorScreen(ErrorScreenView* view);
   ~ErrorScreen() override;
@@ -148,6 +151,12 @@ class ErrorScreen : public BaseScreen,
 
   // Handle uses action to reboot device.
   void OnRebootButtonClicked();
+
+  // Handle user action to cancel the screen and return to user pods.
+  void OnCancelButtonClicked();
+
+  // Handle user action to reload gaia.
+  void OnReloadGaiaClicked();
 
   // Handles the response of an ownership check and starts the guest session if
   // applicable.

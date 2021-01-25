@@ -76,6 +76,9 @@ constexpr const char ErrorScreen::kUserActionShowCaptivePortalClicked[] =
     "show-captive-portal";
 constexpr const char ErrorScreen::kUserActionNetworkConnected[] =
     "network-connected";
+constexpr const char ErrorScreen::kUserActionReloadGaia[] = "reload-gaia";
+constexpr const char ErrorScreen::kUserActionCancelReset[] = "cancel-reset";
+constexpr const char ErrorScreen::kUserActionCancel[] = "cancel";
 
 ErrorScreen::ErrorScreen(ErrorScreenView* view)
     : BaseScreen(ErrorScreenView::kScreenId, OobeScreenPriority::DEFAULT),
@@ -263,22 +266,28 @@ void ErrorScreen::HideImpl() {
 }
 
 void ErrorScreen::OnUserAction(const std::string& action_id) {
-  if (action_id == kUserActionShowCaptivePortalClicked)
+  if (action_id == kUserActionShowCaptivePortalClicked) {
     ShowCaptivePortal();
-  else if (action_id == kUserActionConfigureCertsButtonClicked)
+  } else if (action_id == kUserActionConfigureCertsButtonClicked) {
     OnConfigureCerts();
-  else if (action_id == kUserActionDiagnoseButtonClicked)
+  } else if (action_id == kUserActionDiagnoseButtonClicked) {
     OnDiagnoseButtonClicked();
-  else if (action_id == kUserActionLaunchOobeGuestSessionClicked)
+  } else if (action_id == kUserActionLaunchOobeGuestSessionClicked) {
     OnLaunchOobeGuestSession();
-  else if (action_id == kUserActionLocalStateErrorPowerwashButtonClicked)
+  } else if (action_id == kUserActionLocalStateErrorPowerwashButtonClicked) {
     OnLocalStateErrorPowerwashButtonClicked();
-  else if (action_id == kUserActionRebootButtonClicked)
+  } else if (action_id == kUserActionRebootButtonClicked) {
     OnRebootButtonClicked();
-  else if (action_id == kUserActionNetworkConnected)
+  } else if (action_id == kUserActionCancel) {
+    OnCancelButtonClicked();
+  } else if (action_id == kUserActionReloadGaia) {
+    OnReloadGaiaClicked();
+  } else if (action_id == kUserActionNetworkConnected ||
+             action_id == kUserActionCancelReset) {
     Hide();
-  else
+  } else {
     BaseScreen::OnUserAction(action_id);
+  }
 }
 
 void ErrorScreen::OnAuthFailure(const AuthFailure& error) {
@@ -365,6 +374,17 @@ void ErrorScreen::OnLocalStateErrorPowerwashButtonClicked() {
 void ErrorScreen::OnRebootButtonClicked() {
   chromeos::PowerManagerClient::Get()->RequestRestart(
       power_manager::REQUEST_RESTART_FOR_USER, "login error screen");
+}
+
+void ErrorScreen::OnCancelButtonClicked() {
+  if (view_)
+    view_->OnCancelButtonClicked();
+  Hide();
+}
+
+void ErrorScreen::OnReloadGaiaClicked() {
+  if (view_)
+    view_->OnReloadGaiaClicked();
 }
 
 void ErrorScreen::ConnectToNetworkRequested(const std::string& service_path) {

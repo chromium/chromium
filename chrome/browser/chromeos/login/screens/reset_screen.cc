@@ -303,7 +303,8 @@ void ResetScreen::OnUserAction(const std::string& action_id) {
 }
 
 void ResetScreen::OnCancel() {
-  if (view_ && view_->GetScreenState() == ResetView::State::kRevertPromise) {
+  if (is_hidden() ||
+      (view_ && view_->GetScreenState() == ResetView::State::kRevertPromise)) {
     return;
   }
   // Hide Rollback view for the next show.
@@ -422,6 +423,8 @@ void ResetScreen::UpdateStatusChanged(
     view_->SetScreenState(ResetView::State::kError);
     // Show error screen.
     error_screen_->SetUIState(NetworkError::UI_STATE_ROLLBACK_ERROR);
+    error_screen_->SetHideCallback(
+        base::BindOnce(&ResetScreen::OnCancel, weak_ptr_factory_.GetWeakPtr()));
     error_screen_->Show(nullptr);
   } else if (status.current_operation() ==
              update_engine::Operation::UPDATED_NEED_REBOOT) {

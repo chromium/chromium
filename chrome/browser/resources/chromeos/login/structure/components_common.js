@@ -54,6 +54,7 @@ function loadCommonComponents() {
 // <include src="../parental_handoff.js">
 // <include src="../screen_app_launch_splash.js">
 // <include src="../oobe_screen_autolaunch.js">
+// <include src="../screen_error_message.js">
 
 // <include src="components_[OOBE].js">
 // TODO(crbug.com/1111387) - Remove excessive logging.
