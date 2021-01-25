@@ -697,7 +697,6 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   } else if (IsIncognitoModeDisabled(prefService)) {
     // When incognito mode is disabled.
     startInIncognito = NO;
-    [self clearIOSSpecificIncognitoData];
   } else {
     // Make sure the launch mode is correct and consistent with the mode used
     // when the application was terminated. It is possible for the incognito

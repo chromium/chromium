@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#import "ios/chrome/browser/prefs/prefs_util.h"
 #include "ios/chrome/browser/sync/sync_setup_service.h"
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
@@ -1110,6 +1111,12 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   [self.contextMenuCoordinator addItemWithTitle:openInNewIncognitoTabTitle
                                          action:openInNewIncognitoTabAction
                                           style:UIAlertActionStyleDefault];
+
+  if (IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
+    // Disable the "Open in New Incognito Tab" option if the incognito mode is
+    // disabled.
+    self.contextMenuCoordinator.alertController.actions[2].enabled = NO;
+  }
 
   // Add "Copy URL" option.
   NSString* copyURLTitle =

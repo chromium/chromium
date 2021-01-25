@@ -8,8 +8,10 @@
 #include "components/history/core/browser/browsing_history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/sync/driver/sync_service.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/prefs/prefs_util.h"
 #include "ios/chrome/browser/sync/profile_sync_service_factory.h"
 #import "ios/chrome/browser/ui/activity_services/activity_params.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
@@ -213,14 +215,17 @@
                                          [weakSelf onOpenedURLInNewTab];
                                        }]];
 
-    [menuElements
-        addObject:
-            [actionFactory
-                actionToOpenInNewIncognitoTabWithURL:item.URL
-                                          completion:^{
-                                            [weakSelf
-                                                onOpenedURLInNewIncognitoTab];
-                                          }]];
+    UIAction* incognitoAction = [actionFactory
+        actionToOpenInNewIncognitoTabWithURL:item.URL
+                                  completion:^{
+                                    [weakSelf onOpenedURLInNewIncognitoTab];
+                                  }];
+    if (IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
+      // Disable the "Open in Incognito" option if the incognito mode is
+      // disabled.
+      incognitoAction.attributes = UIMenuElementAttributesDisabled;
+    }
+    [menuElements addObject:incognitoAction];
 
     if (base::ios::IsMultipleScenesSupported()) {
       [menuElements
