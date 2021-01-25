@@ -8352,7 +8352,7 @@
   "ProfilePickerOnStartupAvailability": {
     "os": ["win", "linux", "mac"],
     "can_be_recommended": false,
-    "policy_pref_mapping_test": [
+    "policy_pref_mapping_tests": [
       {
         "policies": { "ProfilePickerOnStartupAvailability": 2 },
         "prefs": {
