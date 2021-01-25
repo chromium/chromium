@@ -740,8 +740,13 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
         ContextCreationAttribs(), use_passthrough_decoder);
 
     // Only skip validation if the GLContext will be used exclusively by the
-    // SharedContextState.
+    // SharedContextState and dcheck is off.
+#if DCHECK_IS_ON()
+    attribs.can_skip_validation = false;
+#else
     attribs.can_skip_validation = !use_virtualized_gl_contexts;
+#endif
+
     context =
         gl::init::CreateGLContext(share_group.get(), surface.get(), attribs);
     if (!context) {

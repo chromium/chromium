@@ -112,6 +112,14 @@ void OutputSurfaceProviderWebView::InitializeContext() {
     // For ANGLE EGL, we need to create ANGLE context from the current native
     // EGL context.
     attribs.angle_create_from_external_context = is_angle;
+
+    // Skip validation when dcheck is off.
+#if DCHECK_IS_ON()
+    attribs.can_skip_validation = false;
+#else
+    attribs.can_skip_validation = true;
+#endif
+
     auto gl_context = gl::init::CreateGLContext(share_group.get(),
                                                 gl_surface_.get(), attribs);
     gl_context->MakeCurrent(gl_surface_.get());
