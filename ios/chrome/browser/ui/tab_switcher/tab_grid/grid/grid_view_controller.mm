@@ -130,6 +130,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   collectionView.backgroundView = [[UIView alloc] init];
   collectionView.backgroundView.backgroundColor =
       [UIColor colorNamed:kGridBackgroundColor];
+  // For thumb strip, the horizontal layout should bounce horizontal. In the
+  // grid layout, the scrolling between tabs will take priority over this
+  // bouncing.
+  if (IsThumbStripEnabled()) {
+    collectionView.alwaysBounceHorizontal = YES;
+  }
   // CollectionView, in contrast to TableView, doesn’t inset the
   // cell content to the safe area guide by default. We will just manage the
   // collectionView contentInset manually to fit in the safe area instead.
