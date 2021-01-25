@@ -2793,6 +2793,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.QuicSession.ConnectionMigrationProbeSuccess"
     enum="BooleanSuccess" expires_after="2021-07-11">
+  <obsolete>
+    The histogram was marked obsolete Jan 2021, in favor of the new histogram
+    Net.QuicConnection.PathValidationSuccess.
+  </obsolete>
   <owner>fayang@chromium.org</owner>
   <owner>zhongyi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
@@ -3408,6 +3412,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The time taken to Write() a QUIC packet to the socket. Recorded for each
     packet when it is sent. The suffix specifies if the write completed
     synchonously or asynchronously.
+  </summary>
+</histogram>
+
+<histogram name="Net.QuicSession.PathValidationSuccess" enum="BooleanSuccess"
+    expires_after="2021-07-11">
+  <owner>renjietang@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    The result of path validation according to different migration causes.
   </summary>
 </histogram>
 

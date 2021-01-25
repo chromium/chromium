@@ -3379,6 +3379,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Net.QuicSession.ConnectionMigrationProbeSuccess"/>
   <affected-histogram
       name="Net.QuicSession.HandshakeStatusOnConnectionMigration"/>
+  <affected-histogram name="Net.QuicSession.PathValidationSuccess"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ConnectivityDetectorProbe" separator=".">

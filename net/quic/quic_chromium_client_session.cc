@@ -310,11 +310,9 @@ base::Value NetLogQuicPushPromiseReceivedParams(
 
 // TODO(fayang): Remove this when necessary data is collected.
 void LogProbeResultToHistogram(MigrationCause cause, bool success) {
-  UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.ConnectionMigrationProbeSuccess",
-                        success);
+  UMA_HISTOGRAM_BOOLEAN("Net.QuicSession.PathValidationSuccess", success);
   const std::string histogram_name =
-      "Net.QuicSession.ConnectionMigrationProbeSuccess." +
-      MigrationCauseToString(cause);
+      "Net.QuicSession.PathValidationSuccess." + MigrationCauseToString(cause);
   STATIC_HISTOGRAM_POINTER_GROUP(
       histogram_name, cause, MIGRATION_CAUSE_MAX, AddBoolean(success),
       base::BooleanHistogram::FactoryGet(
