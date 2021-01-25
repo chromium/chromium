@@ -220,7 +220,9 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     }
 
     public boolean waitForDeferredStartup() {
-        CriteriaHelper.pollUiThread(() -> getActivity().deferredStartupPostedForTesting());
+        CriteriaHelper.pollUiThread(() -> {
+            getActivity().deferredStartupPostedForTesting();
+        }, ScalableTimeout.scaleTimeout(20000L), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         return DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
                 ScalableTimeout.scaleTimeout(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL));
     }
