@@ -206,6 +206,29 @@ class SpeechRecognitionObserverWrapper
       it.OnSpeechLevelUpdated(speech_level_in_decibels);
   }
 
+  void OnSpeechRecognitionStart() override {
+    for (auto& it : interaction_subscribers_)
+      it.OnSpeechRecognitionStarted();
+  }
+
+  void OnIntermediateResult(const std::string& high_confidence_text,
+                            const std::string& low_confidence_text) override {
+    for (auto& it : interaction_subscribers_) {
+      it.OnSpeechRecognitionIntermediateResult(high_confidence_text,
+                                               low_confidence_text);
+    }
+  }
+
+  void OnSpeechRecognitionEnd() override {
+    for (auto& it : interaction_subscribers_)
+      it.OnSpeechRecognitionEndOfUtterance();
+  }
+
+  void OnFinalResult(const std::string& recognized_text) override {
+    for (auto& it : interaction_subscribers_)
+      it.OnSpeechRecognitionFinalResult(recognized_text);
+  }
+
  private:
   // Owned by our parent, |AssistantManagerServiceImpl|.
   const base::ObserverList<AssistantInteractionSubscriber>&
@@ -943,40 +966,6 @@ void AssistantManagerServiceImpl::OnMediaControlAction(
     return;
   }
   // TODO(llin): Handle media.SEEK_RELATIVE.
-}
-
-void AssistantManagerServiceImpl::OnRecognitionStateChanged(
-    assistant_client::ConversationStateListener::RecognitionState state,
-    const assistant_client::ConversationStateListener::RecognitionResult&
-        recognition_result) {
-  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnRecognitionStateChanged,
-                     state, recognition_result);
-
-  switch (state) {
-    case assistant_client::ConversationStateListener::RecognitionState::STARTED:
-      for (auto& it : interaction_subscribers_)
-        it.OnSpeechRecognitionStarted();
-      break;
-    case assistant_client::ConversationStateListener::RecognitionState::
-        INTERMEDIATE_RESULT:
-      for (auto& it : interaction_subscribers_) {
-        it.OnSpeechRecognitionIntermediateResult(
-            recognition_result.high_confidence_text,
-            recognition_result.low_confidence_text);
-      }
-      break;
-    case assistant_client::ConversationStateListener::RecognitionState::
-        END_OF_UTTERANCE:
-      for (auto& it : interaction_subscribers_)
-        it.OnSpeechRecognitionEndOfUtterance();
-      break;
-    case assistant_client::ConversationStateListener::RecognitionState::
-        FINAL_RESULT:
-      for (auto& it : interaction_subscribers_) {
-        it.OnSpeechRecognitionFinalResult(recognition_result.recognized_speech);
-      }
-      break;
-  }
 }
 
 void AssistantManagerServiceImpl::OnRespondingStarted(bool is_error_response) {

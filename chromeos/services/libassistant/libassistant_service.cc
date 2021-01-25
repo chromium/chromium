@@ -12,6 +12,7 @@
 #include "chromeos/services/assistant/public/cpp/migration/cros_platform_api.h"
 #include "chromeos/services/libassistant/audio_input_controller.h"
 #include "chromeos/services/libassistant/conversation_controller.h"
+#include "chromeos/services/libassistant/conversation_state_listener_impl.h"
 #include "chromeos/services/libassistant/display_controller.h"
 #include "chromeos/services/libassistant/platform_api.h"
 #include "chromeos/services/libassistant/service_controller.h"
@@ -25,28 +26,39 @@ LibassistantService::LibassistantService(
     assistant::AssistantManagerServiceDelegate* delegate)
     : receiver_(this, std::move(receiver)),
       platform_api_(std::make_unique<PlatformApi>()),
-      display_controller_(
-          std::make_unique<DisplayController>(&speech_recognition_observers_)),
       service_controller_(
           std::make_unique<ServiceController>(delegate, platform_api_.get())),
+      audio_input_controller_(std::make_unique<AudioInputController>()),
       conversation_controller_(
           std::make_unique<ConversationController>(service_controller_.get())),
-      audio_input_controller_(std::make_unique<AudioInputController>()) {
+      conversation_state_listener_(
+          std::make_unique<ConversationStateListenerImpl>(
+              &speech_recognition_observers_)),
+      display_controller_(
+          std::make_unique<DisplayController>(&speech_recognition_observers_)) {
   service_controller_->AddAndFireAssistantManagerObserver(
       display_controller_.get());
+  service_controller_->AddAndFireAssistantManagerObserver(
+      conversation_state_listener_.get());
 
-  platform_api_
-      ->SetAudioInputProvider(&audio_input_controller_->audio_input_provider())
-      .SetAudioOutputProvider(&platform_api->GetAudioOutputProvider())
-      .SetAuthProvider(&platform_api->GetAuthProvider())
-      .SetFileProvider(&platform_api->GetFileProvider())
-      .SetNetworkProvider(&platform_api->GetNetworkProvider())
-      .SetSystemProvider(&platform_api->GetSystemProvider());
+  // |platform_api| can be null during unittests.
+  if (platform_api) {
+    platform_api_
+        ->SetAudioInputProvider(
+            &audio_input_controller_->audio_input_provider())
+        .SetAudioOutputProvider(&platform_api->GetAudioOutputProvider())
+        .SetAuthProvider(&platform_api->GetAuthProvider())
+        .SetFileProvider(&platform_api->GetFileProvider())
+        .SetNetworkProvider(&platform_api->GetNetworkProvider())
+        .SetSystemProvider(&platform_api->GetSystemProvider());
+  }
 }
 
 LibassistantService::~LibassistantService() {
   service_controller_->RemoveAssistantManagerObserver(
       display_controller_.get());
+  service_controller_->RemoveAssistantManagerObserver(
+      conversation_state_listener_.get());
 }
 
 void LibassistantService::Bind(

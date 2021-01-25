@@ -48,6 +48,8 @@ source_set("internal") {
     "chromium_http_connection.h",
     "conversation_controller.cc",
     "conversation_controller.h",
+    "conversation_state_listener_impl.cc",
+    "conversation_state_listener_impl.h",
     "display_connection_impl.cc",
     "display_connection_impl.h",
     "display_controller.cc",
@@ -98,24 +100,46 @@ source_set("fake_input_device") {
   ]
 }
 
-source_set("unit_tests") {
+source_set("test_support") {
   testonly = true
+
   sources = [
-    "audio_input_controller_unittest.cc",
-    "service_controller_unittest.cc",
+    "test_support/libassistant_service_tester.cc",
+    "test_support/libassistant_service_tester.h",
   ]
 
   deps = [
     ":internal",
     ":libassistant",
+    "//chromeos/services/assistant/public/cpp/migration",
+    "//chromeos/services/assistant/public/cpp/migration:test_support",
+    "//chromeos/services/libassistant/public/mojom",
+    "//services/network:test_support",
+  ]
+}
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "audio_input_controller_unittest.cc",
+    "service_controller_unittest.cc",
+    "speech_recognition_observer_unittest.cc",
+  ]
+
+  deps = [
+    ":internal",
+    ":libassistant",
+    ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chromeos/assistant/internal",
     "//chromeos/assistant/internal:test_support",
+    "//chromeos/assistant/internal/proto/google3",
     "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/cpp/migration",
     "//chromeos/services/assistant/public/cpp/migration:test_support",
     "//chromeos/services/libassistant/public/mojom",
     "//libassistant/shared/internal_api:assistant_manager_internal",
+    "//libassistant/shared/internal_api/c:api_wrappers",
     "//services/audio/public/cpp:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",

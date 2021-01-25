@@ -196,10 +196,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void OnConversationTurnFinished(
       assistant_client::ConversationStateListener::Resolution resolution)
       override;
-  void OnRecognitionStateChanged(
-      assistant_client::ConversationStateListener::RecognitionState state,
-      const assistant_client::ConversationStateListener::RecognitionResult&
-          recognition_result) override;
   void OnRespondingStarted(bool is_error_response) override;
 
   // AssistantManagerDelegate overrides:

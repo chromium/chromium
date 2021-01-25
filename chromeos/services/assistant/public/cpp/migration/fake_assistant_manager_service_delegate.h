@@ -13,6 +13,7 @@ namespace chromeos {
 namespace assistant {
 
 class FakeAssistantManager;
+class FakeAssistantManagerInternal;
 
 // Implementation of |AssistantManagerServiceDelegate| that returns fake
 // instances for all of the member methods. Used during unittests.
@@ -24,6 +25,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE_MIGRATION_TEST_SUPPORT)
   ~FakeAssistantManagerServiceDelegate() override;
 
   FakeAssistantManager* assistant_manager();
+  FakeAssistantManagerInternal* assistant_manager_internal();
 
   // AssistantManagerServiceDelegate implementation:
   std::unique_ptr<AudioInputHost> CreateAudioInputHost(

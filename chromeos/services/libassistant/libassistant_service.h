@@ -32,6 +32,7 @@ namespace libassistant {
 
 class AudioInputController;
 class ConversationController;
+class ConversationStateListenerImpl;
 class DisplayController;
 class PlatformApi;
 class ServiceController;
@@ -53,9 +54,6 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
 
   void SetInitializeCallback(InitializeCallback callback);
 
- private:
-  ServiceController& service_controller() { return *service_controller_; }
-
   // mojom::LibassistantService implementation:
   void Bind(
       mojo::PendingReceiver<mojom::AudioInputController> audio_input_controller,
@@ -69,16 +67,20 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
   void AddSpeechRecognitionObserver(
       mojo::PendingRemote<mojom::SpeechRecognitionObserver> observer) override;
 
+ private:
+  ServiceController& service_controller() { return *service_controller_; }
+
   mojo::Receiver<mojom::LibassistantService> receiver_;
 
   mojo::RemoteSet<mojom::SpeechRecognitionObserver>
       speech_recognition_observers_;
 
   std::unique_ptr<PlatformApi> platform_api_;
-  std::unique_ptr<DisplayController> display_controller_;
   std::unique_ptr<ServiceController> service_controller_;
-  std::unique_ptr<ConversationController> conversation_controller_;
   std::unique_ptr<AudioInputController> audio_input_controller_;
+  std::unique_ptr<ConversationController> conversation_controller_;
+  std::unique_ptr<ConversationStateListenerImpl> conversation_state_listener_;
+  std::unique_ptr<DisplayController> display_controller_;
 };
 
 }  // namespace libassistant

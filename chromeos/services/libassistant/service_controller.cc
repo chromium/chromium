@@ -106,6 +106,7 @@ void ServiceController::Start() {
     return;
 
   DCHECK(IsInitialized()) << "Initialize() must be called before Start()";
+  DVLOG(1) << "Starting Libassistant service";
 
   if (initialize_callback_) {
     std::move(initialize_callback_)
@@ -123,12 +124,15 @@ void ServiceController::Start() {
     observer.OnAssistantManagerStarted(assistant_manager(),
                                        assistant_manager_internal());
   }
+
+  DVLOG(1) << "Started Libassistant service";
 }
 
 void ServiceController::Stop() {
   if (state_ == ServiceState::kStopped)
     return;
 
+  DVLOG(1) << "Stopping Libassistant service";
   SetStateAndInformObservers(ServiceState::kStopped);
 
   for (auto& observer : assistant_manager_observers_) {
@@ -140,6 +144,8 @@ void ServiceController::Stop() {
   assistant_manager_ = nullptr;
   assistant_manager_internal_ = nullptr;
   chromium_api_delegate_ = nullptr;
+
+  DVLOG(1) << "Stopped Libassistant service";
 }
 
 void ServiceController::AddAndFireStateObserver(

@@ -91,5 +91,10 @@ FakeAssistantManager* FakeAssistantManagerServiceDelegate::assistant_manager() {
   return pending_assistant_manager_.get();
 }
 
+FakeAssistantManagerInternal*
+FakeAssistantManagerServiceDelegate::assistant_manager_internal() {
+  return &assistant_manager()->assistant_manager_internal();
+}
+
 }  // namespace assistant
 }  // namespace chromeos
