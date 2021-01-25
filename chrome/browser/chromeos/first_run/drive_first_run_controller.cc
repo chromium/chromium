@@ -84,13 +84,13 @@ class DriveWebContentsManager : public content::WebContentsObserver,
                                 public content::WebContentsDelegate,
                                 public BackgroundContentsServiceObserver {
  public:
-  typedef base::Callback<
-      void(bool, DriveFirstRunController::UMAOutcome)> CompletionCallback;
+  using CompletionCallback =
+      base::OnceCallback<void(bool, DriveFirstRunController::UMAOutcome)>;
 
   DriveWebContentsManager(Profile* profile,
                           const std::string& app_id,
                           const std::string& endpoint_url,
-                          const CompletionCallback& completion_callback);
+                          CompletionCallback completion_callback);
   ~DriveWebContentsManager() override;
 
   // Start loading the WebContents for the endpoint in the context of the Drive
@@ -154,11 +154,11 @@ DriveWebContentsManager::DriveWebContentsManager(
     Profile* profile,
     const std::string& app_id,
     const std::string& endpoint_url,
-    const CompletionCallback& completion_callback)
+    CompletionCallback completion_callback)
     : profile_(profile),
       app_id_(app_id),
       endpoint_url_(endpoint_url),
-      completion_callback_(completion_callback) {
+      completion_callback_(std::move(completion_callback)) {
   DCHECK(!completion_callback_.is_null());
   BackgroundContentsServiceFactory::GetForProfile(profile)->AddObserver(this);
 }
@@ -207,7 +207,7 @@ void DriveWebContentsManager::OnOfflineInit(
 void DriveWebContentsManager::RunCompletionCallback(
     bool success,
     DriveFirstRunController::UMAOutcome outcome) {
-  completion_callback_.Run(success, outcome);
+  std::move(completion_callback_).Run(success, outcome);
 }
 
 void DriveWebContentsManager::DidFinishNavigation(
@@ -338,11 +338,9 @@ void DriveFirstRunController::EnableOfflineMode() {
   }
 
   web_contents_manager_.reset(new DriveWebContentsManager(
-      profile_,
-      drive_hosted_app_id_,
-      drive_offline_endpoint_url_,
-      base::Bind(&DriveFirstRunController::OnOfflineInit,
-                 base::Unretained(this))));
+      profile_, drive_hosted_app_id_, drive_offline_endpoint_url_,
+      base::BindOnce(&DriveFirstRunController::OnOfflineInit,
+                     base::Unretained(this))));
   web_contents_manager_->StartLoad();
   web_contents_timer_.Start(
       FROM_HERE,
