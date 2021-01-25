@@ -28,8 +28,6 @@
 #include "chrome/browser/ui/ash/wallpaper_controller_client.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover/discover_manager.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover/modules/discover_module_pin_setup.h"
 #include "chrome/browser/ui/webui/chromeos/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/locale_switch_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/supervision_transition_screen_handler.h"
@@ -368,9 +366,8 @@ void LoginDisplayHostCommon::SetAuthSessionForOnboarding(
     const UserContext& user_context) {
   if (PinSetupScreen::ShouldSkipBecauseOfPolicy())
     return;
-  chromeos::DiscoverManager::Get()
-      ->GetModule<chromeos::DiscoverModulePinSetup>()
-      ->SetPrimaryUserPassword(user_context.GetPasswordKey()->GetSecret());
+  WizardController::default_controller()->SetAuthSessionForOnboarding(
+      user_context);
 }
 
 void LoginDisplayHostCommon::StartEncryptionMigration(

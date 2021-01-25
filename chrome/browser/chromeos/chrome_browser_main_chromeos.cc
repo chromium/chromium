@@ -139,7 +139,6 @@
 #include "chrome/browser/ui/ash/image_downloader_impl.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_dialog.h"
-#include "chrome/browser/ui/webui/chromeos/login/discover/discover_manager.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -633,8 +632,6 @@ void ChromeBrowserMainPartsChromeos::PreMainMessageLoopRun() {
       new FastTransitionObserver(g_browser_process->local_state()));
   network_throttling_observer_.reset(
       new NetworkThrottlingObserver(g_browser_process->local_state()));
-
-  discover_manager_ = std::make_unique<DiscoverManager>();
 
   g_browser_process->platform_part()->InitializeSchedulerConfigurationManager();
   arc_service_launcher_ = std::make_unique<arc::ArcServiceLauncher>(

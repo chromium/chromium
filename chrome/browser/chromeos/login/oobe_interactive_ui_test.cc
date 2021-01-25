@@ -198,14 +198,9 @@ void RunFingerprintScreenChecks() {
 }
 
 void RunPinSetupScreenChecks() {
-  test::OobeJS().ExpectVisible("discover");
-  test::OobeJS().ExpectVisible("discover-impl");
-  test::OobeJS().ExpectVisiblePath({"discover-impl", "pin-setup-impl"});
-  test::OobeJS().ExpectVisiblePath(
-      {"discover-impl", "pin-setup-impl", "setup"});
-  test::OobeJS()
-      .CreateFocusWaiter({"discover-impl", "pin-setup-impl", "pinKeyboard"})
-      ->Wait();
+  test::OobeJS().ExpectVisible("pin-setup");
+  test::OobeJS().ExpectVisiblePath({"pin-setup", "setup"});
+  test::OobeJS().CreateFocusWaiter({"pin-setup", "pinKeyboard"})->Wait();
 
   EXPECT_FALSE(ash::LoginScreenTestApi::IsShutdownButtonShown());
   EXPECT_FALSE(ash::LoginScreenTestApi::IsGuestButtonShown());
@@ -427,34 +422,6 @@ std::unique_ptr<RecommendAppsFetcher> CreateRecommendAppsFetcher(
     RecommendAppsFetcherDelegate* delegate) {
   return std::make_unique<FakeRecommendAppsFetcher>(delegate);
 }
-
-class ScopedQuickUnlockPrivateGetAuthTokenFunctionObserver
-    : public extensions::QuickUnlockPrivateGetAuthTokenFunction::TestObserver {
- public:
-  ScopedQuickUnlockPrivateGetAuthTokenFunctionObserver() {
-    extensions::QuickUnlockPrivateGetAuthTokenFunction::SetTestObserver(this);
-  }
-
-  ~ScopedQuickUnlockPrivateGetAuthTokenFunctionObserver() {
-    extensions::QuickUnlockPrivateGetAuthTokenFunction::SetTestObserver(
-        nullptr);
-  }
-
-  // extensions::QuickUnlockPrivateGetAuthTokenFunction::TestObserver:
-  void OnGetAuthTokenCalled(const std::string& password) override {
-    get_auth_token_password_ = password;
-  }
-
-  const base::Optional<std::string>& get_auth_token_password() const {
-    return get_auth_token_password_;
-  }
-
- private:
-  base::Optional<std::string> get_auth_token_password_;
-
-  DISALLOW_COPY_AND_ASSIGN(
-      ScopedQuickUnlockPrivateGetAuthTokenFunctionObserver);
-};
 
 // Observes an `aura::Window` to see if the window was visible at some point in
 // time.
@@ -680,9 +647,7 @@ class OobeInteractiveUITest : public OobeBaseTest,
   }
 
   void PerformStepsBeforeEnrollmentCheck();
-  void PerformSessionSignInSteps(
-      const ScopedQuickUnlockPrivateGetAuthTokenFunctionObserver&
-          get_auth_token_observer);
+  void PerformSessionSignInSteps();
 
   void SimpleEndToEnd();
 
@@ -717,9 +682,7 @@ void OobeInteractiveUITest::PerformStepsBeforeEnrollmentCheck() {
   test::ExitUpdateScreenNoUpdate();
 }
 
-void OobeInteractiveUITest::PerformSessionSignInSteps(
-    const ScopedQuickUnlockPrivateGetAuthTokenFunctionObserver&
-        get_auth_token_observer) {
+void OobeInteractiveUITest::PerformSessionSignInSteps() {
   if (features::IsChildSpecificSigninEnabled()) {
     test::WaitForUserCreationScreen();
     test::TapUserCreationNext();
@@ -740,12 +703,7 @@ void OobeInteractiveUITest::PerformSessionSignInSteps(
   if (test_setup()->is_tablet()) {
     test::WaitForPinSetupScreen();
     RunPinSetupScreenChecks();
-
-    EXPECT_TRUE(get_auth_token_observer.get_auth_token_password().has_value());
-    EXPECT_EQ(get_auth_token_observer.get_auth_token_password().value(),
-              FakeGaiaMixin::kFakeUserPassword);
-
-    test::ExitDiscoverPinSetupScreen();
+    test::ExitPinSetupScreen();
   }
 
   if (test_setup()->arc_state() != ArcState::kNotAvailable) {
@@ -768,9 +726,8 @@ void OobeInteractiveUITest::PerformSessionSignInSteps(
 }
 
 void OobeInteractiveUITest::SimpleEndToEnd() {
-  ScopedQuickUnlockPrivateGetAuthTokenFunctionObserver get_auth_token_observer;
   PerformStepsBeforeEnrollmentCheck();
-  PerformSessionSignInSteps(get_auth_token_observer);
+  PerformSessionSignInSteps();
 
   WaitForLoginDisplayHostShutdown();
 }
@@ -841,8 +798,6 @@ class OobeZeroTouchInteractiveUITest : public OobeInteractiveUITest {
 void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
   policy_server_.SetupZeroTouchForcedEnrollment();
 
-  ScopedQuickUnlockPrivateGetAuthTokenFunctionObserver get_auth_token_observer;
-
   PerformStepsBeforeEnrollmentCheck();
 
   test::WaitForEnrollmentScreen();
@@ -854,7 +809,7 @@ void OobeZeroTouchInteractiveUITest::ZeroTouchEndToEnd() {
   enrollment_ui_.LeaveSuccessScreen();
   login_screen_waiter->Wait();
 
-  PerformSessionSignInSteps(get_auth_token_observer);
+  PerformSessionSignInSteps();
 
   WaitForLoginDisplayHostShutdown();
 }
@@ -1066,8 +1021,6 @@ class EphemeralUserOobeTest : public MixinBasedInProcessBrowserTest,
 
 // TODO(crbug.com/1004561) Disabled due to flake.
 IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, DISABLED_RegularEphemeralUser) {
-  ScopedQuickUnlockPrivateGetAuthTokenFunctionObserver get_auth_token_observer;
-
   WaitForGaiaSignInScreen(test_setup()->arc_state() != ArcState::kNotAvailable);
   LogInAsRegularUser();
 
@@ -1084,11 +1037,7 @@ IN_PROC_BROWSER_TEST_P(EphemeralUserOobeTest, DISABLED_RegularEphemeralUser) {
   if (test_setup()->is_tablet()) {
     test::WaitForPinSetupScreen();
     RunPinSetupScreenChecks();
-
-    EXPECT_TRUE(get_auth_token_observer.get_auth_token_password().has_value());
-    EXPECT_EQ("", get_auth_token_observer.get_auth_token_password().value());
-
-    test::ExitDiscoverPinSetupScreen();
+    test::ExitPinSetupScreen();
   }
 
   if (test_setup()->arc_state() != ArcState::kNotAvailable) {

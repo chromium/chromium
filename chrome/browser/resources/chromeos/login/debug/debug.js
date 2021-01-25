@@ -784,9 +784,7 @@ cr.define('cr.ui.login.debug', function() {
       ],
     },
     {
-      id: 'discover',
-      // TODO: remove once screen stops crashing
-      skipScreenshots: true,
+      id: 'pin-setup',
       kind: ScreenKind.NORMAL,
     },
     {

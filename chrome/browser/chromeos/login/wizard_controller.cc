@@ -1922,6 +1922,12 @@ void WizardController::SimulateDemoModeSetupForTesting(
     demo_setup_controller_->set_demo_config(*demo_config);
 }
 
+void WizardController::SetAuthSessionForOnboarding(
+    const UserContext& auth_session) {
+  wizard_context_->extra_factors_auth_session =
+      std::make_unique<UserContext>(auth_session);
+}
+
 void WizardController::ShowErrorScreen() {
   SetCurrentScreen(GetScreen(ErrorScreenView::kScreenId));
 }

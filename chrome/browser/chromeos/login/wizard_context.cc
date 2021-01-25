@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 #include "chrome/browser/chromeos/login/wizard_context.h"
 
+#include "chromeos/login/auth/user_context.h"
+
 namespace chromeos {
 
 WizardContext::WizardContext() = default;

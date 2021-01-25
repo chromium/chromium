@@ -50,6 +50,7 @@ js_type_check("closure_compile_local") {
     ":oobe_update",
     ":oobe_welcome",
     ":parental_handoff",
+    ":pin_setup",
     ":recommend_apps",
     ":saml_confirm_password",
     ":sync_consent",
@@ -337,6 +338,17 @@ js_library("parental_handoff") {
     "components:oobe_dialog_host_behavior",
     "components/oobe_dialog:oobe_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
+  ]
+}
+
+js_library("pin_setup") {
+  deps = [
+    "components:login_screen_behavior",
+    "components:multi_step_behavior",
+    "components:oobe_dialog_host_behavior",
+    "components:oobe_types",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
+    "//ui/webui/resources/cr_components/chromeos/quick_unlock:setup_pin_keyboard",
   ]
 }
 

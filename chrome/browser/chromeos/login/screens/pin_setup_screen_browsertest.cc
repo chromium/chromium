@@ -33,14 +33,12 @@ using ::testing::ElementsAre;
 namespace chromeos {
 namespace {
 
-const test::UIPath kBackButton = {"discover-impl", "pin-setup-impl",
-                                  "backButton"};
-const test::UIPath kNextButton = {"discover-impl", "pin-setup-impl",
-                                  "nextButton"};
-const test::UIPath kSkipButton = {"discover-impl", "pin-setup-impl",
-                                  "setupSkipButton"};
-const test::UIPath kDoneButton = {"discover-impl", "pin-setup-impl",
-                                  "doneButton"};
+const test::UIPath kBackButton = {"pin-setup", "backButton"};
+const test::UIPath kNextButton = {"pin-setup", "nextButton"};
+const test::UIPath kSkipButton = {"pin-setup", "setupSkipButton"};
+const test::UIPath kDoneButton = {"pin-setup", "doneButton"};
+const test::UIPath kPinKeyboardInput = {"pin-setup", "pinKeyboard",
+                                        "pinKeyboard", "pinInput"};
 
 }  // namespace
 
@@ -100,13 +98,13 @@ class PinSetupScreenTest
     }
   }
 
-  void EnterPin() {
-    test::OobeJS().TypeIntoPath(
-        "199405", {"discover-impl", "pin-setup-impl", "pinKeyboard",
-                   "pinKeyboard", "pinInput"});
-  }
+  void EnterPin() { test::OobeJS().TypeIntoPath("654321", kPinKeyboardInput); }
 
   void ShowPinSetupScreen() {
+    // Force the sync screen to be shown so that we don't jump to PIN setup
+    // screen (consuming auth session) in unbranded build
+    auto autoreset = WizardController::ForceBrandedBuildForTesting(true);
+
     LogIn();
     OobeScreenExitWaiter(GetFirstSigninScreen()).Wait();
     if (!screen_exited_) {
@@ -165,8 +163,8 @@ IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, Skipped) {
   WaitForScreenExit();
   EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NOT_APPLICABLE);
   histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Discover.Next", 0);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Discover", 0);
+      "OOBE.StepCompletionTimeByExitReason.Pin-setup.Done", 0);
+  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 0);
 }
 
 IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, SkipOnStart) {
@@ -177,10 +175,10 @@ IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, SkipOnStart) {
   test::OobeJS().TapOnPath(kSkipButton);
 
   WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NEXT);
+  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::USER_SKIP);
   histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Discover.Next", 1);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Discover", 1);
+      "OOBE.StepCompletionTimeByExitReason.Pin-setup.Skipped", 1);
+  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 1);
   EXPECT_THAT(
       histogram_tester_.GetAllSamples("OOBE.PinSetupScreen.UserActions"),
       ElementsAre(base::Bucket(
@@ -201,10 +199,10 @@ IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, SkipInFlow) {
   test::OobeJS().TapOnPath(kSkipButton);
 
   WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NEXT);
+  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::USER_SKIP);
   histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Discover.Next", 1);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Discover", 1);
+      "OOBE.StepCompletionTimeByExitReason.Pin-setup.Skipped", 1);
+  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 1);
   EXPECT_THAT(
       histogram_tester_.GetAllSamples("OOBE.PinSetupScreen.UserActions"),
       ElementsAre(base::Bucket(
@@ -229,10 +227,10 @@ IN_PROC_BROWSER_TEST_P(PinSetupScreenTest, FinishedFlow) {
   test::OobeJS().TapOnPath(kDoneButton);
 
   WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NEXT);
+  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::DONE);
   histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Discover.Next", 1);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Discover", 1);
+      "OOBE.StepCompletionTimeByExitReason.Pin-setup.Done", 1);
+  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 1);
   EXPECT_THAT(
       histogram_tester_.GetAllSamples("OOBE.PinSetupScreen.UserActions"),
       ElementsAre(base::Bucket(
@@ -281,10 +279,10 @@ IN_PROC_BROWSER_TEST_P(PinForLoginSetupScreenTest, ClamshellMode) {
     test::OobeJS().TapOnPath(kDoneButton);
 
     WaitForScreenExit();
-    EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NEXT);
+    EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::DONE);
     histogram_tester_.ExpectTotalCount(
-        "OOBE.StepCompletionTimeByExitReason.Discover.Next", 1);
-    histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Discover", 1);
+        "OOBE.StepCompletionTimeByExitReason.Pin-setup.Done", 1);
+    histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 1);
     EXPECT_THAT(
         histogram_tester_.GetAllSamples("OOBE.PinSetupScreen.UserActions"),
         ElementsAre(base::Bucket(
@@ -294,8 +292,8 @@ IN_PROC_BROWSER_TEST_P(PinForLoginSetupScreenTest, ClamshellMode) {
     WaitForScreenExit();
     EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NOT_APPLICABLE);
     histogram_tester_.ExpectTotalCount(
-        "OOBE.StepCompletionTimeByExitReason.Discover.Next", 0);
-    histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Discover", 0);
+        "OOBE.StepCompletionTimeByExitReason.Pin-setup.Done", 0);
+    histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 0);
   }
 }
 
@@ -318,10 +316,10 @@ IN_PROC_BROWSER_TEST_P(PinForLoginSetupScreenTest, TabletMode) {
   test::OobeJS().TapOnPath(kDoneButton);
 
   WaitForScreenExit();
-  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::NEXT);
+  EXPECT_EQ(screen_result_.value(), PinSetupScreen::Result::DONE);
   histogram_tester_.ExpectTotalCount(
-      "OOBE.StepCompletionTimeByExitReason.Discover.Next", 1);
-  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Discover", 1);
+      "OOBE.StepCompletionTimeByExitReason.Pin-setup.Done", 1);
+  histogram_tester_.ExpectTotalCount("OOBE.StepCompletionTime.Pin-setup", 1);
   EXPECT_THAT(
       histogram_tester_.GetAllSamples("OOBE.PinSetupScreen.UserActions"),
       ElementsAre(base::Bucket(

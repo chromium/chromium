@@ -23,7 +23,6 @@
 // <include src="oobe_select.js">
 
 // <include src="screen_error_message.js">
-// <include src="screen_discover.js">
 
 // <include src="../../gaia_auth_host/authenticator.js">
 // <include src="multi_tap_detector.js">
@@ -40,7 +39,6 @@ HTMLImports.whenReady(() => {
         cr.ui.login.DisplayManager.initialize();
         login.AccountPickerScreen.register();
         login.ErrorMessageScreen.register();
-        login.DiscoverScreen.register();
 
         cr.ui.Bubble.decorate($('bubble-persistent'));
         $('bubble-persistent').persistent = true;

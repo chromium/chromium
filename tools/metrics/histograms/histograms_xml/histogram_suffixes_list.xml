@@ -11972,7 +11972,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Demo-preferences" label=""/>
   <suffix name="Demo-setup" label=""/>
   <suffix name="Device-disabled" label=""/>
-  <suffix name="Discover" label=""/>
+  <suffix name="Discover" label="">
+    <obsolete>
+      Replaced by Pin-setup in M90.
+    </obsolete>
+  </suffix>
   <suffix name="Edu-coexistence-login" label=""/>
   <suffix name="Encryption-migration" label=""/>
   <suffix name="Enroll" label=""/>
@@ -11998,6 +12002,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Offline-login" label=""/>
   <suffix name="Packaged-license" label=""/>
   <suffix name="Parental-handoff" label=""/>
+  <suffix name="Pin-setup" label=""/>
   <suffix name="Recommend-apps" label=""/>
   <suffix name="Reset" label=""/>
   <suffix name="Supervision-transition" label=""/>
@@ -12030,7 +12035,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Demo-preferences.Completed" label=""/>
   <suffix name="Demo-setup.Completed" label=""/>
   <suffix name="Device-disabled.Canceled" label=""/>
-  <suffix name="Discover.Next" label=""/>
+  <suffix name="Discover.Next" label="">
+    <obsolete>
+      Replaced by Pin-setup.Done in M90.
+    </obsolete>
+  </suffix>
   <suffix name="Edu-coexistence-login.Done" label=""/>
   <suffix name="Eula.AcceptedWithoutStats" label=""/>
   <suffix name="Eula.AcceptedWithStats" label=""/>
@@ -12078,6 +12087,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Packaged-license.DontEnroll" label=""/>
   <suffix name="Packaged-license.Enroll" label=""/>
   <suffix name="Parental-Handoff.Done" label=""/>
+  <suffix name="Pin-setup.Done" label=""/>
+  <suffix name="Pin-setup.Skipped" label=""/>
+  <suffix name="Pin-setup.TimedOut" label=""/>
   <suffix name="Recommend-apps.Selected" label=""/>
   <suffix name="Recommend-apps.Skipped" label=""/>
   <suffix name="Reset.Cancel" label=""/>

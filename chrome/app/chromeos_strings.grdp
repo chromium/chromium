@@ -1195,12 +1195,6 @@
   <message name="IDS_DISCOVER_PIN_SETUP" desc="A label on the button that leads to Pin Unlock feature set up.">
     Pin setup
   </message>
-  <message name="IDS_DISCOVER_PIN_SETUP_PASSWORD_TITLE" desc="A title of the dialog that starts 'PIN-unlock' setup process, and asks user to type their password first.">
-    Confirm your password
-  </message>
-  <message name="IDS_DISCOVER_PIN_SETUP_PASSWORD_SUBTITLE" desc="A sub-title of the dialog that starts 'PIN-unlock' setup process, and asks user to type their password first.">
-    Enter your password to configure security and sign-in
-  </message>
   <message name="IDS_DISCOVER_PIN_SETUP_DONE" desc="Label for the done button on the success screen in 'PIN-unlock' setup dialog.">
     Done
   </message>

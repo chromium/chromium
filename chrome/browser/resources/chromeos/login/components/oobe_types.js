@@ -100,6 +100,14 @@ OobeTypes.TimezoneDsc;
 OobeTypes.OobeConfiguration;
 
 /**
+ * Parameters passed to show PIN setup screen
+ * @typedef {{
+ *   auth_token: string,
+ * }}
+ */
+OobeTypes.PinSetupScreenParameters;
+
+/**
  * Specifies the type of the information that is requested by the security token
  * PIN dialog.
  * Must be kept in sync with chromeos/constants/security_token_pin_types.h.

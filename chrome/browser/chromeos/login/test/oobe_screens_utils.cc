@@ -105,13 +105,11 @@ void WaitForPinSetupScreen() {
   WaitFor(PinSetupScreenView::kScreenId);
 }
 
-void ExitDiscoverPinSetupScreen() {
+void ExitPinSetupScreen() {
   // This might be the last step in flow. Synchronous execute gets stuck as
   // WebContents may be destroyed in the process. So it may never return.
   // So we use ExecuteAsync() here.
-  test::OobeJS().ExecuteAsync(
-      "$('discover-impl').root.querySelector('discover-pin-setup-module')."
-      "$.setupSkipButton.click()");
+  test::OobeJS().ExecuteAsync("$('pin-setup').$.setupSkipButton.click()");
   WaitForExit(PinSetupScreenView::kScreenId);
 }
 

@@ -156,6 +156,10 @@ class WizardController {
   void SimulateDemoModeSetupForTesting(
       base::Optional<DemoSession::DemoModeConfig> demo_config = base::nullopt);
 
+  // Stores authorization data that will be used to configure extra auth factors
+  // during user onboarding.
+  void SetAuthSessionForOnboarding(const UserContext& auth_session);
+
   // Advances to login/update screen. Should be used in for testing only.
   void SkipToLoginForTesting();
   void SkipToUpdateForTesting();

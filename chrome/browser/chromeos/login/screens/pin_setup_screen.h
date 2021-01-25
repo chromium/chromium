@@ -11,15 +11,17 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 
 namespace chromeos {
 
 class PinSetupScreenView;
+class WizardContext;
 
 class PinSetupScreen : public BaseScreen {
  public:
-  enum class Result { NEXT, NOT_APPLICABLE };
+  enum class Result { DONE, USER_SKIP, NOT_APPLICABLE, TIMED_OUT };
 
   // This enum is tied directly to a UMA enum defined in
   // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
@@ -60,8 +62,6 @@ class PinSetupScreen : public BaseScreen {
   void OnUserAction(const std::string& action_id) override;
 
  private:
-  void OnHasLoginSupport(bool has_login_support);
-
   // Inticates whether the device supports usage of PIN for login.
   // This information is retrived in an async way and will not be available
   // immediately.
@@ -69,6 +69,12 @@ class PinSetupScreen : public BaseScreen {
 
   PinSetupScreenView* const view_;
   ScreenExitCallback exit_callback_;
+
+  base::OneShotTimer token_lifetime_timeout_;
+
+  void ClearAuthData(WizardContext* context);
+  void OnHasLoginSupport(bool login_available);
+  void OnTokenTimedOut();
 
   base::WeakPtrFactory<PinSetupScreen> weak_ptr_factory_{this};
 

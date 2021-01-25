@@ -21,7 +21,7 @@ void ExitUpdateScreenNoUpdate();
 void WaitForFingerprintScreen();
 void ExitFingerprintPinSetupScreen();
 void WaitForPinSetupScreen();
-void ExitDiscoverPinSetupScreen();
+void ExitPinSetupScreen();
 void SkipToEnrollmentOnRecovery();
 void WaitForEnrollmentScreen();
 void WaitForUserCreationScreen();

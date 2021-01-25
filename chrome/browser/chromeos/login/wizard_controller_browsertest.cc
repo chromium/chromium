@@ -2879,8 +2879,6 @@ IN_PROC_BROWSER_TEST_F(HIDDetectionScreenDisabledAfterRestartTest,
 
 // TODO(rsgingerrs): Add tests for Recommend Apps UI.
 
-// TODO(alemate): Add tests for Discover UI.
-
 // TODO(alemate): Add tests for Marketing Opt-In.
 
 // TODO(khorimoto): Add tests for MultiDevice Setup UI.

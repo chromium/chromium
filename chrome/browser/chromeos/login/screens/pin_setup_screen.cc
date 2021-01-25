@@ -4,23 +4,28 @@
 
 #include "chrome/browser/chromeos/login/screens/pin_setup_screen.h"
 
+#include <memory>
+
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "chrome/browser/chromeos/login/quick_unlock/auth_token.h"
 #include "chrome/browser/chromeos/login/quick_unlock/pin_backend.h"
+#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_factory.h"
+#include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_storage.h"
 #include "chrome/browser/chromeos/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/browser/chromeos/login/users/chrome_user_manager_util.h"
+#include "chrome/browser/chromeos/login/wizard_context.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/pin_setup_screen_handler.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
+#include "chromeos/login/auth/user_context.h"
 #include "components/prefs/pref_service.h"
 
 namespace chromeos {
 
 namespace {
-
-constexpr char kFinished[] = "finished";
 
 constexpr const char kUserActionDoneButtonClicked[] = "done-button";
 constexpr const char kUserActionSkipButtonClickedOnStart[] =
@@ -69,8 +74,12 @@ void RecordUserAction(const std::string& action_id) {
 // static
 std::string PinSetupScreen::GetResultString(Result result) {
   switch (result) {
-    case Result::NEXT:
-      return "Next";
+    case Result::DONE:
+      return "Done";
+    case Result::USER_SKIP:
+      return "Skipped";
+    case Result::TIMED_OUT:
+      return "TimedOut";
     case Result::NOT_APPLICABLE:
       return BaseScreen::kNotApplicable;
   }
@@ -109,6 +118,7 @@ PinSetupScreen::~PinSetupScreen() {
 
 bool PinSetupScreen::MaybeSkip(WizardContext* context) {
   if (ShouldSkipBecauseOfPolicy()) {
+    ClearAuthData(context);
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
   }
@@ -125,36 +135,78 @@ bool PinSetupScreen::MaybeSkip(WizardContext* context) {
   if (!ash::TabletMode::Get()->InTabletMode() &&
       !switches::ShouldOobeUseTabletModeFirstRun() &&
       !show_for_family_link_user) {
+    ClearAuthData(context);
     exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
+  }
+  // Just a precaution:
+  if (!context->extra_factors_auth_session) {
+    exit_callback_.Run(Result::TIMED_OUT);
     return true;
   }
   return false;
 }
 
 void PinSetupScreen::ShowImpl() {
+  token_lifetime_timeout_.Start(
+      FROM_HERE,
+      base::TimeDelta::FromSeconds(
+          chromeos::quick_unlock::AuthToken::kTokenExpirationSeconds),
+      base::BindOnce(&PinSetupScreen::OnTokenTimedOut,
+                     weak_ptr_factory_.GetWeakPtr()));
+  chromeos::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
+      chromeos::quick_unlock::QuickUnlockFactory::GetForProfile(
+          ProfileManager::GetActiveUserProfile());
+  quick_unlock_storage->MarkStrongAuth();
+  std::unique_ptr<UserContext> user_context =
+      std::move(context()->extra_factors_auth_session);
+  const std::string token =
+      quick_unlock_storage->CreateAuthToken(*user_context);
+
   if (view_)
-    view_->Show();
+    view_->Show(token);
+
+  chromeos::quick_unlock::PinBackend::GetInstance()->HasLoginSupport(
+      base::BindOnce(&PinSetupScreen::OnHasLoginSupport,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PinSetupScreen::HideImpl() {
   view_->Hide();
-}
-
-void PinSetupScreen::OnHasLoginSupport(bool has_login_support) {
-  has_login_support_ = has_login_support;
+  token_lifetime_timeout_.Stop();
+  ClearAuthData(context());
 }
 
 void PinSetupScreen::OnUserAction(const std::string& action_id) {
-  // Only honor finish if discover is currently being shown.
-  if (action_id == kFinished) {
-    exit_callback_.Run(Result::NEXT);
+  if (action_id == kUserActionDoneButtonClicked) {
+    RecordUserAction(action_id);
+    token_lifetime_timeout_.Stop();
+    exit_callback_.Run(Result::DONE);
     return;
   }
-  if (IsPinSetupUserAction(action_id)) {
+  if (action_id == kUserActionSkipButtonClickedOnStart ||
+      action_id == kUserActionSkipButtonClickedInFlow) {
     RecordUserAction(action_id);
+    token_lifetime_timeout_.Stop();
+    exit_callback_.Run(Result::USER_SKIP);
     return;
   }
   BaseScreen::OnUserAction(action_id);
+}
+
+void PinSetupScreen::ClearAuthData(WizardContext* context) {
+  context->extra_factors_auth_session.reset();
+}
+
+void PinSetupScreen::OnHasLoginSupport(bool login_available) {
+  if (view_)
+    view_->SetLoginSupportAvailable(login_available);
+  has_login_support_ = login_available;
+}
+
+void PinSetupScreen::OnTokenTimedOut() {
+  ClearAuthData(context());
+  exit_callback_.Run(Result::TIMED_OUT);
 }
 
 }  // namespace chromeos
