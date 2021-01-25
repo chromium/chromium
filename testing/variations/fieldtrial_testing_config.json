@@ -7657,6 +7657,21 @@
             ]
         }
     ],
+    "XsurfaceMetricsReporting": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "XsurfaceMetricsReporting"
+                    ]
+                }
+            ]
+        }
+    ],
     "libvpx_for_vp8": [
         {
             "platforms": [
