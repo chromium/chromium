@@ -9,6 +9,8 @@
 #include <string>
 
 #include "base/optional.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/services/sharing/nearby/platform/bluetooth_device.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -55,6 +57,8 @@ class BluetoothClassicMedium : public api::BluetoothClassicMedium,
   void DeviceChanged(bluetooth::mojom::DeviceInfoPtr device) override;
   void DeviceRemoved(bluetooth::mojom::DeviceInfoPtr device) override;
 
+  void RemoveStaleBluetoothDevices();
+
   mojo::SharedRemote<bluetooth::mojom::Adapter> adapter_;
 
   // |adapter_observer_| is only set and bound during active discovery so that
@@ -65,8 +69,13 @@ class BluetoothClassicMedium : public api::BluetoothClassicMedium,
   base::Optional<DiscoveryCallback> discovery_callback_;
   mojo::Remote<bluetooth::mojom::DiscoverySession> discovery_session_;
 
+  // This is a mapping of MAC addresses to discovered Bluetooth devices.
   std::map<std::string, chrome::BluetoothDevice>
       discovered_bluetooth_devices_map_;
+
+  // Used to periodically remove devices that haven't produced any Bluetooth
+  // events for N minutes.
+  base::RepeatingTimer stale_bluetooth_device_timer_;
 };
 
 }  // namespace chrome
