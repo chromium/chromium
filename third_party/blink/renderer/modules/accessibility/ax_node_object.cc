@@ -3724,6 +3724,9 @@ void AXNodeObject::ChildrenChanged() {
   if (!GetNode() && !GetLayoutObject())
     return;
 
+  DCHECK(!IsDetached()) << "Avoid ChildrenChanged() on detached node: "
+                        << ToString(true, true);
+
   // When children changed on a <map> that means we need to forward the
   // children changed to the <img> that parents the <area> elements.
   // TODO(accessibility) Consider treating <img usemap> as aria-owns so that
@@ -3766,9 +3769,12 @@ void AXNodeObject::ChildrenChanged() {
   if (!CanHaveChildren() || LastKnownIsDescendantOfLeafNode())
     return;
 
-  // Calling CanHaveChildren(), above, can occasionally detach |this|.
-  if (IsDetached())
+  // TODO(aleventhal) Consider removing.
+  if (IsDetached()) {
+    NOTREACHED() << "None of the above calls should be able to detach |this|: "
+                 << ToString(true, true);
     return;
+  }
 
   AXObjectCache().PostNotification(this,
                                    ax::mojom::blink::Event::kChildrenChanged);
