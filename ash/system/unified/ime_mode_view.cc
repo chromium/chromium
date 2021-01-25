@@ -13,7 +13,10 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/color_palette.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 
@@ -99,6 +102,12 @@ void ImeModeView::Update() {
   label()->SetText(ime_controller->current_ime().short_name);
   label()->SetEnabledColor(
       TrayIconColor(Shell::Get()->session_controller()->GetSessionState()));
+
+  // TODO(crbug.com/1168355): Remove before enabling kImeMojoDecoder by default.
+  if (base::FeatureList::IsEnabled(chromeos::features::kImeMojoDecoder)) {
+    label()->SetEnabledColor(gfx::kGoogleYellow500);
+  }
+
   base::string16 description =
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_INDICATOR_IME_TOOLTIP,
                                  ime_controller->current_ime().name);
