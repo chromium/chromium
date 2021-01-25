@@ -233,7 +233,7 @@ base::Time OmniboxFieldTrial::GetLocalHistoryZeroSuggestAgeThreshold() {
   // integer, return the default value.
   unsigned int param_value_as_int = 0;
   if (!base::StringToUint(param_value, &param_value_as_int)) {
-    return history::AutocompleteAgeThreshold();
+    param_value_as_int = 7;
   }
 
   return (base::Time::Now() - base::TimeDelta::FromDays(param_value_as_int));

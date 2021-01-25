@@ -434,28 +434,11 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Ranking) {
        /*age_in_seconds=*/original_query_age},
   });
 
-  // With frecency ranking disabled, more recent searches are ranked higher.
-  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  scoped_feature_list_->InitWithFeatures(
-      {omnibox::kLocalHistoryZeroSuggest},  // Enables the provider on iOS.
-      {omnibox::kOmniboxLocalZeroSuggestFrecencyRanking});
-
+  // More recent searches are ranked higher when searches are just as frequent.
   StartProviderAndWaitUntilDone();
   ExpectMatches({{"more recent search", 500}, {"less recent search", 499}});
 
-  // With frecency ranking enabled, more recent searches are ranked higher when
-  // searches are just as frequent.
-  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  scoped_feature_list_->InitWithFeatures(
-      {omnibox::kLocalHistoryZeroSuggest,  // Enables the provider on iOS.
-       omnibox::kOmniboxLocalZeroSuggestFrecencyRanking},
-      {});
-
-  StartProviderAndWaitUntilDone();
-  ExpectMatches({{"more recent search", 500}, {"less recent search", 499}});
-
-  // With frecency ranking enabled, more frequent searches are ranked higher
-  // when searches are nearly as old.
+  // More frequent searches are ranked higher when searches are nearly as old.
   LoadURLs({
       // Issued far enough from the original query; won't be ignored:
       {default_search_provider(), "less recent search", "&foo=bar4",
@@ -466,27 +449,11 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Ranking) {
   ExpectMatches({{"less recent search", 500}, {"more recent search", 499}});
 }
 
-// Tests that suggestions are created from fresh search histories only and that
-// the freshness threshold can be adjusted.
+// Tests that suggestions are created from fresh search histories only.
 TEST_F(LocalHistoryZeroSuggestProviderTest, Freshness) {
-  // Verify the default age threshold.
   base::Time age_threshold = GetLocalHistoryZeroSuggestAgeThreshold();
-  EXPECT_EQ(history::kLowQualityMatchAgeLimitInDays,
-            base::TimeDelta(base::Time::Now() - age_threshold).InDays());
-
-  // Override the age threshold to 7 days.
-  scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
-  scoped_feature_list_->InitWithFeaturesAndParameters(
-
-      {{omnibox::kLocalHistoryZeroSuggest, {}},  // Enables the provider on iOS.
-       {omnibox::kOmniboxLocalZeroSuggestAgeThreshold,
-        {{OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam, "7"}}}},
-      {});
-  base::Time new_age_threshold = GetLocalHistoryZeroSuggestAgeThreshold();
-  EXPECT_EQ(7, base::TimeDelta(base::Time::Now() - new_age_threshold).InDays());
-
-  int fresh = (Time::Now() - new_age_threshold).InSeconds() - 60;
-  int stale = (Time::Now() - new_age_threshold).InSeconds() + 60;
+  int fresh = (Time::Now() - age_threshold).InSeconds() - 60;
+  int stale = (Time::Now() - age_threshold).InSeconds() + 60;
   LoadURLs({
       {default_search_provider(), "stale search", "&foo=bar", stale},
       {default_search_provider(), "fresh search", "&foo=bar", fresh},

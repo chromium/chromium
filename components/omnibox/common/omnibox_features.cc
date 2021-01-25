@@ -186,8 +186,8 @@ const base::Feature kClobberTriggersContextualWebZeroSuggest{
 
 // Used to adjust the age threshold since the last visit in order to consider a
 // normalized keyword search term as a zero-prefix suggestion. If disabled, the
-// default value of history::kLowQualityMatchAgeLimitInDays is used. If enabled,
-// the age threshold is determined by this feature's companion parameter,
+// default value of 7 days is used. If enabled, the age threshold is determined
+// by this feature's companion parameter,
 // OmniboxFieldTrial::kOmniboxLocalZeroSuggestAgeThresholdParam.
 const base::Feature kOmniboxLocalZeroSuggestAgeThreshold{
     "OmniboxLocalZeroSuggestAgeThreshold", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -202,8 +202,7 @@ const base::Feature kOmniboxLocalZeroSuggestForAuthenticatedUsers{
 // If enabled, ranks the local zero-prefix suggestions based on frecency
 // (combined frequency and recency).
 const base::Feature kOmniboxLocalZeroSuggestFrecencyRanking{
-    "OmniboxLocalZeroSuggestFrecencyRanking",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    "OmniboxLocalZeroSuggestFrecencyRanking", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Used to force enable/disable trending zero-prefix suggestions on the NTP
 // (Omnibox and NTP realbox). This feature triggers a server-side behavior only

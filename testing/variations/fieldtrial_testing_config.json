@@ -4398,7 +4398,6 @@
                         "MaxZeroSuggestMatches": "10",
                         "OmniboxDynamicMaxAutocompleteIncreasedLimit": "10",
                         "OmniboxDynamicMaxAutocompleteUrlCutoff": "2",
-                        "OmniboxLocalZeroSuggestAgeThreshold": "7",
                         "OmniboxMaxURLMatches": "7",
                         "RichAutocompletionAutocompleteNonPrefixAll": "true",
                         "RichAutocompletionAutocompleteTitles": "true",
@@ -4410,8 +4409,6 @@
                         "OmniboxDynamicMaxAutocomplete",
                         "OmniboxEntitySuggestionsReduceLatency",
                         "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
-                        "OmniboxLocalZeroSuggestAgeThreshold",
-                        "OmniboxLocalZeroSuggestFrecencyRanking",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
                         "OmniboxOnFocusSuggestionsContextualWebOnContent",
@@ -4440,7 +4437,6 @@
                 {
                     "name": "AndroidExperiments",
                     "params": {
-                        "OmniboxLocalZeroSuggestAgeThreshold": "7",
                         "OmniboxMaxURLMatches": "7",
                         "OmniboxMaxZeroSuggestMatches": "15",
                         "UIMaxAutocompleteMatches": "8",
@@ -4450,8 +4446,6 @@
                         "OmniboxAdaptiveSuggestionsCount",
                         "OmniboxCompactSuggestions",
                         "OmniboxHistoryQuickProviderAblateInMemoryURLIndexCacheFile",
-                        "OmniboxLocalZeroSuggestAgeThreshold",
-                        "OmniboxLocalZeroSuggestFrecencyRanking",
                         "OmniboxMaxURLMatches",
                         "OmniboxMaxZeroSuggestMatches",
                         "OmniboxOnFocusSuggestionsContextualWebOnContent",
