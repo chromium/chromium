@@ -217792,6 +217792,14 @@
        "8c55d6063b3b5252abe30f47f5e30e1d9aca85ed",
        []
       ],
+      "gb18030-decoder.any-expected.txt": [
+       "8c55d6063b3b5252abe30f47f5e30e1d9aca85ed",
+       []
+      ],
+      "gb18030-decoder.any.worker-expected.txt": [
+       "8c55d6063b3b5252abe30f47f5e30e1d9aca85ed",
+       []
+      ],
       "resources": {
        "ranges.js": [
         "5bbd553dc01b538e3559e5ea4dc497d483ae30a7",
@@ -217801,6 +217809,14 @@
      },
      "gbk": {
       "gbk-decoder-expected.txt": [
+       "acabbf261646ca769326ea69f873aaad6d82afce",
+       []
+      ],
+      "gbk-decoder.any-expected.txt": [
+       "acabbf261646ca769326ea69f873aaad6d82afce",
+       []
+      ],
+      "gbk-decoder.any.worker-expected.txt": [
        "acabbf261646ca769326ea69f873aaad6d82afce",
        []
       ],
@@ -320765,11 +320781,29 @@
     },
     "legacy-mb-schinese": {
      "gb18030": {
-      "gb18030-decoder.html": [
-       "b8fb0d04c44ee7e1f868ec5fe1faf59fd2c3b556",
+      "gb18030-decoder.any.js": [
+       "99a0253ba6b680e387e13d1bc97c1d94459bc97f",
        [
-        null,
-        {}
+        "encoding/legacy-mb-schinese/gb18030/gb18030-decoder.any.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "./resources/ranges.js"
+          ]
+         ]
+        }
+       ],
+       [
+        "encoding/legacy-mb-schinese/gb18030/gb18030-decoder.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "./resources/ranges.js"
+          ]
+         ]
+        }
        ]
       ],
       "gb18030-encoder.html": [
@@ -320781,10 +320815,14 @@
       ]
      },
      "gbk": {
-      "gbk-decoder.html": [
-       "8c45683180070ef80e6797a4d61fffb32aeaef6e",
+      "gbk-decoder.any.js": [
+       "c0221480da156dde0068454edd635e92458da6cb",
        [
-        null,
+        "encoding/legacy-mb-schinese/gbk/gbk-decoder.any.html",
+        {}
+       ],
+       [
+        "encoding/legacy-mb-schinese/gbk/gbk-decoder.any.worker.html",
         {}
        ]
       ],
