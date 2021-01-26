@@ -65,6 +65,7 @@ class ConfigChangeDetector {
       const gfx::Rect& container_visible_rect) const = 0;
   virtual VideoColorSpace current_color_space(
       const VideoColorSpace& container_color_space) const = 0;
+  virtual bool IsYUV420() const;
   bool config_changed() const { return config_changed_; }
 
  protected:
@@ -152,7 +153,7 @@ class MEDIA_GPU_EXPORT DXVAVideoDecodeAccelerator
     // update this to be the last one.
     kMaxValue = BIND
   };
-  
+
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   enum class DXVALifetimeProgression {
