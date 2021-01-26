@@ -820,7 +820,7 @@ TEST_F(DocumentTest,
   // clean compositing inputs as well.
   GetDocument().EnsurePaintLocationDataValidForNode(
       GetDocument().getElementById("sticky"), DocumentUpdateReason::kTest);
-  EXPECT_EQ(DocumentLifecycle::kCompositingInputsClean,
+  EXPECT_EQ(DocumentLifecycle::kLayoutClean,
             GetDocument().Lifecycle().GetState());
 
   // Dirty layout.
@@ -830,7 +830,7 @@ TEST_F(DocumentTest,
 
   GetDocument().EnsurePaintLocationDataValidForNode(
       GetDocument().getElementById("stickyChild"), DocumentUpdateReason::kTest);
-  EXPECT_EQ(DocumentLifecycle::kCompositingInputsClean,
+  EXPECT_EQ(DocumentLifecycle::kLayoutClean,
             GetDocument().Lifecycle().GetState());
 }
 

@@ -72,11 +72,12 @@ TEST_F(ElementTest,
   // Requesting the bounding client rect should cause both layout and
   // compositing inputs clean to be run, and the sticky result shouldn't change.
   bounding_client_rect = sticky->getBoundingClientRect();
-  EXPECT_EQ(DocumentLifecycle::kCompositingInputsClean,
-            document.Lifecycle().GetState());
-  EXPECT_FALSE(sticky->GetLayoutBoxModelObject()
-                   ->Layer()
-                   ->NeedsCompositingInputsUpdate());
+  EXPECT_EQ(DocumentLifecycle::kLayoutClean, document.Lifecycle().GetState());
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_TRUE(sticky->GetLayoutBoxModelObject()
+                    ->Layer()
+                    ->NeedsCompositingInputsUpdate());
+  }
   EXPECT_EQ(0, bounding_client_rect->top());
   EXPECT_EQ(25, bounding_client_rect->left());
 }
@@ -116,11 +117,12 @@ TEST_F(ElementTest, OffsetTopAndLeftCorrectForStickyElementsAfterInsertion) {
   // Requesting either offset should cause both layout and compositing inputs
   // clean to be run, and the sticky result shouldn't change.
   EXPECT_EQ(scroller->scrollTop(), sticky->OffsetTop());
-  EXPECT_EQ(DocumentLifecycle::kCompositingInputsClean,
-            document.Lifecycle().GetState());
-  EXPECT_FALSE(sticky->GetLayoutBoxModelObject()
-                   ->Layer()
-                   ->NeedsCompositingInputsUpdate());
+  EXPECT_EQ(DocumentLifecycle::kLayoutClean, document.Lifecycle().GetState());
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_TRUE(sticky->GetLayoutBoxModelObject()
+                    ->Layer()
+                    ->NeedsCompositingInputsUpdate());
+  }
 
   // Dirty layout again, since |OffsetTop| will have cleaned it.
   writer->setInnerHTML("<div style='height: 100px; width: 700px;'></div>");
@@ -129,11 +131,12 @@ TEST_F(ElementTest, OffsetTopAndLeftCorrectForStickyElementsAfterInsertion) {
 
   // Again requesting an offset should cause layout and compositing to be clean.
   EXPECT_EQ(scroller->scrollLeft() + 25, sticky->OffsetLeft());
-  EXPECT_EQ(DocumentLifecycle::kCompositingInputsClean,
-            document.Lifecycle().GetState());
-  EXPECT_FALSE(sticky->GetLayoutBoxModelObject()
-                   ->Layer()
-                   ->NeedsCompositingInputsUpdate());
+  EXPECT_EQ(DocumentLifecycle::kLayoutClean, document.Lifecycle().GetState());
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_TRUE(sticky->GetLayoutBoxModelObject()
+                    ->Layer()
+                    ->NeedsCompositingInputsUpdate());
+  }
 }
 
 TEST_F(ElementTest, BoundsInViewportCorrectForStickyElementsAfterInsertion) {
@@ -172,11 +175,12 @@ TEST_F(ElementTest, BoundsInViewportCorrectForStickyElementsAfterInsertion) {
   // Requesting the bounds in viewport should cause both layout and compositing
   // inputs clean to be run, and the sticky result shouldn't change.
   bounds_in_viewport = sticky->BoundsInViewport();
-  EXPECT_EQ(DocumentLifecycle::kCompositingInputsClean,
-            document.Lifecycle().GetState());
-  EXPECT_FALSE(sticky->GetLayoutBoxModelObject()
-                   ->Layer()
-                   ->NeedsCompositingInputsUpdate());
+  EXPECT_EQ(DocumentLifecycle::kLayoutClean, document.Lifecycle().GetState());
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    EXPECT_TRUE(sticky->GetLayoutBoxModelObject()
+                    ->Layer()
+                    ->NeedsCompositingInputsUpdate());
+  }
   EXPECT_EQ(0, bounds_in_viewport.Y());
   EXPECT_EQ(25, bounds_in_viewport.X());
 }

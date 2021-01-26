@@ -563,12 +563,14 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
   if (offset.IsPercentOrCalc() && box && layout_object->IsPositioned()) {
     LayoutUnit containing_block_size;
     if (layout_object->IsStickyPositioned()) {
-      const LayoutBox& enclosing_scrollport_box = box->EnclosingScrollportBox();
-      bool use_inline_size = is_horizontal_property ==
-                             enclosing_scrollport_box.IsHorizontalWritingMode();
+      const LayoutBox* enclosing_scrollport_box = box->EnclosingScrollportBox();
+      DCHECK(enclosing_scrollport_box);
+      bool use_inline_size =
+          is_horizontal_property ==
+          enclosing_scrollport_box->IsHorizontalWritingMode();
       containing_block_size =
-          use_inline_size ? enclosing_scrollport_box.ContentLogicalWidth()
-                          : enclosing_scrollport_box.ContentLogicalHeight();
+          use_inline_size ? enclosing_scrollport_box->ContentLogicalWidth()
+                          : enclosing_scrollport_box->ContentLogicalHeight();
     } else {
       containing_block_size =
           is_horizontal_property ==

@@ -42,7 +42,6 @@ class CompositingInputsUpdater {
     // layer. This variable stores the squashing composited layer for the
     // nearest PaintLayer ancestor which is squashed.
     PaintLayer* enclosing_squashing_composited_layer = nullptr;
-    PaintLayer* last_scroll_container_layer = nullptr;
 
     PaintLayer* clip_chain_parent_for_absolute = nullptr;
     PaintLayer* clip_chain_parent_for_fixed = nullptr;

@@ -1435,6 +1435,16 @@ const LayoutBlock* LayoutObject::InclusiveContainingBlock() const {
   return layout_block ? layout_block : ContainingBlock();
 }
 
+const LayoutBlock* LayoutObject::EnclosingScrollportBox() const {
+  NOT_DESTROYED();
+  const LayoutBlock* ancestor = ContainingBlock();
+  for (; ancestor; ancestor = ancestor->ContainingBlock()) {
+    if (ancestor->IsScrollContainer())
+      return ancestor;
+  }
+  return ancestor;
+}
+
 LayoutBlock* LayoutObject::ContainingBlock(AncestorSkipInfo* skip_info) const {
   NOT_DESTROYED();
   if (!IsTextOrSVGChild()) {

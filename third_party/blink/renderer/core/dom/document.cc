@@ -2838,38 +2838,6 @@ void Document::EnsurePaintLocationDataValidForNode(
   // For all nodes we must have up-to-date style and have performed layout to do
   // any location-based calculation.
   UpdateStyleAndLayout(reason);
-
-  // The location of elements that are position: sticky is not known until
-  // compositing inputs are cleaned. Therefore, for any elements that are either
-  // sticky or are in a sticky sub-tree (e.g. are affected by a sticky element),
-  // we need to also clean compositing inputs.
-  if (View() && node->GetLayoutObject() &&
-      node->GetLayoutObject()->StyleRef().SubtreeIsSticky()) {
-    bool success = false;
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      // In CAP, compositing inputs are cleaned as part of PrePaint.
-      success = View()->UpdateAllLifecyclePhasesExceptPaint(reason);
-    } else {
-      success = View()->UpdateLifecycleToCompositingInputsClean(reason);
-    }
-    // The lifecycle update should always succeed, because forced lifecycles
-    // from script are never throttled.
-    DCHECK(success);
-  }
-}
-
-bool Document::IsPaintLocationDataValidForNode(const Node* node) const {
-  DocumentLifecycle::LifecycleState required_state =
-      DocumentLifecycle::kLayoutClean;
-  if (View() && node->GetLayoutObject() &&
-      node->GetLayoutObject()->StyleRef().SubtreeIsSticky()) {
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      required_state = DocumentLifecycle::kCompositingAssignmentsClean;
-    } else {
-      required_state = DocumentLifecycle::kCompositingInputsClean;
-    }
-  }
-  return Lifecycle().GetState() >= required_state;
 }
 
 bool Document::IsPageBoxVisible(uint32_t page_index) {

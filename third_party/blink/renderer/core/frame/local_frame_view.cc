@@ -4538,9 +4538,6 @@ bool LocalFrameView::ShouldThrottleRendering() const {
   auto* local_frame_root_view = GetFrame().LocalFrameRoot().View();
   if (local_frame_root_view->IsUpdatingLifecycle() &&
       intersection_observation_state_ == kRequired && !IsDisplayLocked()) {
-    // Pre-paint guarantees that sticky positioning is finalized and hit testing
-    // is available (needed for HitTestForOcclusion, called from
-    // IntersectionGeometry).
     return Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean;
   }
 

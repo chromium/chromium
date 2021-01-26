@@ -2245,6 +2245,8 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
 
   const LayoutBlock* InclusiveContainingBlock() const;
 
+  const LayoutBlock* EnclosingScrollportBox() const;
+
   bool CanContainAbsolutePositionObjects() const {
     NOT_DESTROYED();
     return style_->CanContainAbsolutePositionObjects() ||

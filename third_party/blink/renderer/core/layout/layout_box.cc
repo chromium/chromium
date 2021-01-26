@@ -7185,17 +7185,6 @@ PaintLayer* LayoutBox::EnclosingFloatPaintingLayer() const {
   return nullptr;
 }
 
-const LayoutBlock& LayoutBox::EnclosingScrollportBox() const {
-  NOT_DESTROYED();
-  const LayoutBlock* ancestor = ContainingBlock();
-  for (; ancestor; ancestor = ancestor->ContainingBlock()) {
-    if (ancestor->IsScrollContainer())
-      return *ancestor;
-  }
-  NOTREACHED();
-  return *ancestor;
-}
-
 LayoutRect LayoutBox::LogicalVisualOverflowRectForPropagation() const {
   NOT_DESTROYED();
   LayoutRect rect = VisualOverflowRectForPropagation();

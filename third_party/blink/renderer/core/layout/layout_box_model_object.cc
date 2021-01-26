@@ -327,7 +327,6 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
       CreateLayerAfterStyleChange();
     }
   } else if (Layer() && Layer()->Parent()) {
-    PaintLayer* parent_layer = Layer()->Parent();
     // Either a transform wasn't specified or the object doesn't support
     // transforms, so just null out the bit.
     SetHasTransformRelatedProperty(false);
@@ -343,10 +342,6 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
         had_non_initial_backdrop_filter) {
       SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
           layout_invalidation_reason::kStyleChange);
-    }
-    if (!NeedsLayout()) {
-      // FIXME: We should call a specialized version of this function.
-      parent_layer->UpdateLayerPositionsAfterLayout();
     }
   }
 
@@ -450,36 +445,20 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
     bool old_style_is_sticky =
         old_style && old_style->HasStickyConstrainedPosition();
 
-    if (new_style_is_sticky != old_style_is_sticky) {
-      if (new_style_is_sticky) {
-        // During compositing inputs update we'll have the scroll ancestor
-        // without having to walk up the tree and can compute the sticky
-        // position constraints then.
-        if (Layer())
-          Layer()->SetNeedsCompositingInputsUpdate();
+    if (old_style_is_sticky && !new_style_is_sticky) {
+      // This may get re-added to viewport constrained objects if the object
+      // went from sticky to fixed.
+      frame_view->RemoveViewportConstrainedObject(
+          *this, LocalFrameView::ViewportConstrainedType::kSticky);
 
-        // TODO(pdr): When CompositeAfterPaint is enabled, we will need to
-        // invalidate the scroll paint property subtree for this so main thread
-        // scroll reasons are recomputed.
-      } else {
-        // This may get re-added to viewport constrained objects if the object
-        // went from sticky to fixed.
-        frame_view->RemoveViewportConstrainedObject(
-            *this, LocalFrameView::ViewportConstrainedType::kSticky);
-
-        // Remove sticky constraints for this layer.
-        if (Layer()) {
-          if (const PaintLayer* ancestor_scroll_container_layer =
-                  Layer()->AncestorScrollContainerLayer()) {
-            if (PaintLayerScrollableArea* scrollable_area =
-                    ancestor_scroll_container_layer->GetScrollableArea())
-              scrollable_area->InvalidateStickyConstraintsFor(Layer());
-          }
+      // Remove sticky constraints for this layer.
+      if (Layer()) {
+        if (const PaintLayer* ancestor_scroll_container_layer =
+                Layer()->AncestorScrollContainerLayer()) {
+          if (PaintLayerScrollableArea* scrollable_area =
+                  ancestor_scroll_container_layer->GetScrollableArea())
+            scrollable_area->InvalidateStickyConstraintsFor(Layer());
         }
-
-        // TODO(pdr): When CompositeAfterPaint is enabled, we will need to
-        // invalidate the scroll paint property subtree for this so main thread
-        // scroll reasons are recomputed.
       }
     }
 

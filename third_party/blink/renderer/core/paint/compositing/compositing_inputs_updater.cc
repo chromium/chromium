@@ -103,9 +103,6 @@ void CompositingInputsUpdater::ApplyAncestorInfoToSelfAndAncestorsRecursively(
   if (!RuntimeEnabledFeatures::CompositingOptimizationsEnabled())
     geometry_map_->PushMappingsToAncestor(layer, layer->Parent());
   UpdateAncestorInfo(layer, update_type, info);
-  if (layer != compositing_inputs_root_ &&
-      layer->GetLayoutObject().IsScrollContainer())
-    info.last_scroll_container_layer = layer;
 }
 
 void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
@@ -113,44 +110,6 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
     UpdateType update_type,
     AncestorInfo info) {
   LayoutBoxModelObject& layout_object = layer->GetLayoutObject();
-  const ComputedStyle& style = layout_object.StyleRef();
-
-  const PaintLayer* previous_scroll_container_layer =
-      layer->AncestorScrollContainerLayer();
-  layer->UpdateAncestorScrollContainerLayer(info.last_scroll_container_layer);
-  if (info.last_scroll_container_layer &&
-      layer->NeedsCompositingInputsUpdate() &&
-      style.HasStickyConstrainedPosition()) {
-    if (info.last_scroll_container_layer != previous_scroll_container_layer) {
-      // Old ancestor scroller should no longer have these constraints.
-      DCHECK(!previous_scroll_container_layer ||
-             !previous_scroll_container_layer->GetScrollableArea() ||
-             !previous_scroll_container_layer->GetScrollableArea()
-                  ->GetStickyConstraintsMap()
-                  .Contains(layer));
-
-      // If our ancestor scroller has changed and the previous one was the
-      // root layer, we are no longer viewport constrained.
-      if (previous_scroll_container_layer &&
-          previous_scroll_container_layer->IsRootLayer()) {
-        layout_object.View()->GetFrameView()->RemoveViewportConstrainedObject(
-            layout_object, LocalFrameView::ViewportConstrainedType::kSticky);
-      }
-    }
-
-    if (info.last_scroll_container_layer->IsRootLayer()) {
-      layout_object.View()->GetFrameView()->AddViewportConstrainedObject(
-          layout_object, LocalFrameView::ViewportConstrainedType::kSticky);
-    }
-    layout_object.UpdateStickyPositionConstraints();
-
-    // Sticky position constraints and ancestor overflow scroller affect
-    // the sticky layer position, so we need to update it again here.
-    // TODO(flackr): This should be refactored in the future to be clearer
-    // (i.e. update layer position and ancestor inputs updates in the
-    // same walk)
-    layer->UpdateLayerPosition();
-  }
 
   // geometry_map_ has been already updated in ApplyAncestorInfo() and
   // UpdateAncestorInfo has been already computed in ApplyAncestorInfo() for
@@ -160,8 +119,6 @@ void CompositingInputsUpdater::UpdateSelfAndDescendantsRecursively(
       geometry_map_->PushMappingsToAncestor(layer, layer->Parent());
     UpdateAncestorInfo(layer, update_type, info);
   }
-  if (layout_object.IsScrollContainer())
-    info.last_scroll_container_layer = layer;
 
   PaintLayerCompositor* compositor =
       layer->GetLayoutObject().View()->Compositor();

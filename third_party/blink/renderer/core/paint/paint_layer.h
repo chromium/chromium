@@ -1181,7 +1181,7 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
 
   bool HasOverflowControls() const;
 
-  void UpdateLayerPositionRecursive();
+  void UpdateLayerPositionRecursive(const PaintLayer* enclosing_scroller);
 
   void SetNextSibling(PaintLayer* next) { next_ = next; }
   void SetPreviousSibling(PaintLayer* prev) { previous_ = prev; }

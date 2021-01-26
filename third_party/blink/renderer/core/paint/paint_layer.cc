@@ -357,12 +357,15 @@ void PaintLayer::UpdateLayerPositionsAfterLayout() {
       RuntimeCallStats::CounterId::kUpdateLayerPositionsAfterLayout);
 
   ClearClipRects();
-  UpdateLayerPositionRecursive();
-
+  const LayoutBlock* enclosing_scrollport_box =
+      GetLayoutObject().EnclosingScrollportBox();
+  UpdateLayerPositionRecursive(
+      enclosing_scrollport_box ? enclosing_scrollport_box->Layer() : nullptr);
   UpdatePaginationRecursive(EnclosingPaginationLayer());
 }
 
-void PaintLayer::UpdateLayerPositionRecursive() {
+void PaintLayer::UpdateLayerPositionRecursive(
+    const PaintLayer* enclosing_scroller) {
   auto old_location = location_without_position_offset_;
   auto old_offset_for_in_flow_rel_position = OffsetForInFlowRelPosition();
   UpdateLayerPosition();
@@ -378,6 +381,45 @@ void PaintLayer::UpdateLayerPositionRecursive() {
       SetNeedsCompositingInputsUpdate();
   }
 
+  const PaintLayer* previous_enclosing_scroller =
+      AncestorScrollContainerLayer();
+  UpdateAncestorScrollContainerLayer(enclosing_scroller);
+  if (enclosing_scroller &&
+      GetLayoutObject().StyleRef().HasStickyConstrainedPosition() &&
+      (NeedsCompositingInputsUpdate() ||
+       GetLayoutObject().NeedsPaintPropertyUpdate())) {
+    if (enclosing_scroller != previous_enclosing_scroller) {
+      // Old ancestor scroller should no longer have these constraints.
+      DCHECK(!previous_enclosing_scroller ||
+             !previous_enclosing_scroller->GetScrollableArea() ||
+             !previous_enclosing_scroller->GetScrollableArea()
+                  ->GetStickyConstraintsMap()
+                  .Contains(this));
+
+      // If our ancestor scroller has changed and the previous one was the
+      // root layer, we are no longer viewport constrained.
+      if (previous_enclosing_scroller &&
+          previous_enclosing_scroller->IsRootLayer()) {
+        GetLayoutObject()
+            .View()
+            ->GetFrameView()
+            ->RemoveViewportConstrainedObject(
+                GetLayoutObject(),
+                LocalFrameView::ViewportConstrainedType::kSticky);
+      }
+    }
+
+    if (enclosing_scroller->IsRootLayer()) {
+      GetLayoutObject().View()->GetFrameView()->AddViewportConstrainedObject(
+          GetLayoutObject(), LocalFrameView::ViewportConstrainedType::kSticky);
+    }
+    GetLayoutObject().UpdateStickyPositionConstraints();
+
+    // Sticky position constraints and ancestor overflow scroller affect
+    // the sticky layer position, so we need to update it again here.
+    UpdateLayerPosition();
+  }
+
   // Display-locked elements always have a PaintLayer, meaning that the
   // PaintLayer traversal won't skip locked elements. Thus, we don't have to do
   // an ancestor check, and simply skip iterating children when this element is
@@ -385,8 +427,10 @@ void PaintLayer::UpdateLayerPositionRecursive() {
   if (GetLayoutObject().ChildLayoutBlockedByDisplayLock())
     return;
 
+  if (GetLayoutObject().IsScrollContainer())
+    enclosing_scroller = this;
   for (PaintLayer* child = FirstChild(); child; child = child->NextSibling())
-    child->UpdateLayerPositionRecursive();
+    child->UpdateLayerPositionRecursive(enclosing_scroller);
 }
 
 bool PaintLayer::SticksToScroller() const {
@@ -1440,12 +1484,6 @@ void PaintLayer::RemoveOnlyThisLayerAfterStyleChange(
     PaintLayer* next = current->NextSibling();
     RemoveChild(current);
     parent_->AddChild(current, next_sib);
-
-    // TODO(crbug.com/1150472): UpdateLayerPositionsAfterLayout() is computing
-    // uncached pseudo styles (for ::first-line) for descendants, which is
-    // problematic since we are called from style recalc. We should call a
-    // specialized version of this function.
-    current->UpdateLayerPositionsAfterLayout();
     current = next;
   }
 

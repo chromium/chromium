@@ -75,9 +75,8 @@ TEST_F(CompositingInputsUpdaterTest,
       ->SetInlineStyleProperty(CSSPropertyID::kOverflow, "scroll");
 
   // Before we update compositing inputs, validate that the current ancestor
-  // overflow no longer has a scrollable area.
-  GetDocument().View()->UpdateLifecycleToLayoutClean(
-      DocumentUpdateReason::kTest);
+  // overflow no longer has a scrollable area after style update.
+  GetDocument().UpdateStyleAndLayoutTree();
   EXPECT_FALSE(
       sticky->Layer()->AncestorScrollContainerLayer()->GetScrollableArea());
   EXPECT_EQ(sticky->Layer()->AncestorScrollContainerLayer(),

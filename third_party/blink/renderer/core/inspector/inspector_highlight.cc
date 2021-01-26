@@ -348,7 +348,8 @@ std::unique_ptr<protocol::DictionaryValue> BuildElementInfo(Element* element) {
   // layoutObject the getBoundingClientRect() data in the tooltip
   // to be consistent with the rulers (see http://crbug.com/262338).
 
-  DCHECK(element->GetDocument().IsPaintLocationDataValidForNode(element));
+  DCHECK(element->GetDocument().Lifecycle().GetState() >=
+         DocumentLifecycle::kLayoutClean);
   FloatRect bounding_box = element->GetBoundingClientRectNoLifecycleUpdate();
   element_info->setString("nodeWidth", String::Number(bounding_box.Width()));
   element_info->setString("nodeHeight", String::Number(bounding_box.Height()));

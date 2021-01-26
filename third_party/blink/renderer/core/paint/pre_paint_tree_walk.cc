@@ -439,15 +439,6 @@ void PrePaintTreeWalk::UpdateAuxiliaryObjectProperties(
   paint_layer->UpdateAncestorScrollContainerLayer(
       context.ancestor_scroll_container_paint_layer);
 
-  if (object.StyleRef().HasStickyConstrainedPosition()) {
-    paint_layer->GetLayoutObject().UpdateStickyPositionConstraints();
-
-    // Sticky position constraints and ancestor overflow scroller affect the
-    // sticky layer position, so we need to update it again here.
-    // TODO(flackr): This should be refactored in the future to be clearer (i.e.
-    // update layer position and ancestor inputs updates in the same walk).
-    paint_layer->UpdateLayerPosition();
-  }
   if (object.IsScrollContainer())
     context.ancestor_scroll_container_paint_layer = paint_layer;
 }

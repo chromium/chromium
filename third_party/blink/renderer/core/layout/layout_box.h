@@ -1611,8 +1611,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   PaintLayer* EnclosingFloatPaintingLayer() const;
 
-  const LayoutBlock& EnclosingScrollportBox() const;
-
   virtual LayoutUnit FirstLineBoxBaseline() const {
     NOT_DESTROYED();
     return LayoutUnit(-1);
