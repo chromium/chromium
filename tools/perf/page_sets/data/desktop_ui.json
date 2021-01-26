@@ -1,40 +1,31 @@
 {
     "archives": {
-        "tab_search:clean_slate": {
-            "DEFAULT": "desktop_ui_1b410a96cc.wprgo"
-        },
         "tab_search:close_and_open:2020": {
-            "DEFAULT": "desktop_ui_1b410a96cc.wprgo"
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
         },
         "tab_search:close_and_open:loading:2020": {
-            "DEFAULT": "desktop_ui_5284f907bd.wprgo"
-        },
-        "tab_search:measure_memory:after": {
-            "DEFAULT": "desktop_ui_1b410a96cc.wprgo"
-        },
-        "tab_search:measure_memory:before": {
-            "DEFAULT": "desktop_ui_1b410a96cc.wprgo"
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
         },
         "tab_search:scroll_up_and_down:2020": {
-            "DEFAULT": "desktop_ui_0c9707c535.wprgo"
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
         },
         "tab_search:top100:2020": {
-            "DEFAULT": "desktop_ui_1b410a96cc.wprgo"
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
         },
         "tab_search:top100:loading:2020": {
-            "DEFAULT": "desktop_ui_1b410a96cc.wprgo"
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
         },
         "tab_search:top10:2020": {
-            "DEFAULT": "desktop_ui_1b410a96cc.wprgo"
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
         },
         "tab_search:top10:loading:2020": {
-            "DEFAULT": "desktop_ui_1b410a96cc.wprgo"
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
         },
         "tab_search:top50:2020": {
-            "DEFAULT": "desktop_ui_1b410a96cc.wprgo"
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
         },
         "tab_search:top50:loading:2020": {
-            "DEFAULT": "desktop_ui_1b410a96cc.wprgo"
+            "DEFAULT": "desktop_ui_ea9951736b.wprgo"
         }
     },
     "description": "Describes the Web Page Replay archives for a story set. Don't edit by hand! Use record_wpr for updating.",
