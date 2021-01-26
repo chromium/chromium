@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "ash/capture_mode/capture_mode_metrics.h"
-#include "ash/capture_mode/capture_mode_notification_view.h"
 #include "ash/capture_mode/capture_mode_session.h"
 #include "ash/capture_mode/capture_mode_util.h"
 #include "ash/capture_mode/video_recording_watcher.h"
@@ -50,7 +49,6 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
-#include "ui/message_center/views/message_view_factory.h"
 #include "ui/snapshot/snapshot.h"
 
 namespace ash {
@@ -68,8 +66,6 @@ constexpr char kScreenCaptureNotificationId[] = "capture_mode_notification";
 constexpr char kScreenCaptureStoppedNotificationId[] =
     "capture_mode_stopped_notification";
 constexpr char kScreenCaptureNotifierId[] = "ash.capture_mode_controller";
-constexpr char kScreenCaptureNotificationType[] =
-    "capture_mode_notification_type";
 
 // The format strings of the file names of captured images.
 // TODO(afakhry): Discuss with UX localizing "Screenshot" and "Screen
@@ -173,7 +169,7 @@ void ShowNotification(
     const gfx::VectorIcon& notification_icon = kCaptureModeIcon) {
   const auto type = optional_fields.image.IsEmpty()
                         ? message_center::NOTIFICATION_TYPE_SIMPLE
-                        : message_center::NOTIFICATION_TYPE_CUSTOM;
+                        : message_center::NOTIFICATION_TYPE_IMAGE;
   std::unique_ptr<message_center::Notification> notification =
       CreateSystemNotification(
           type, notification_id, l10n_util::GetStringUTF16(title_id),
@@ -184,8 +180,6 @@ void ShowNotification(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kScreenCaptureNotifierId),
           optional_fields, delegate, notification_icon, warning_level);
-  if (type == message_center::NOTIFICATION_TYPE_CUSTOM)
-    notification->set_custom_view_type(kScreenCaptureNotificationType);
 
   // Remove the previous notification before showing the new one if there is
   // any.
@@ -302,12 +296,6 @@ CaptureModeController::CaptureModeController(
       base::BindRepeating(
           &CaptureModeController::RecordAndResetScreenshotsTakenInLastWeek,
           weak_ptr_factory_.GetWeakPtr()));
-
-  DCHECK(!message_center::MessageViewFactory::HasCustomNotificationViewFactory(
-      kScreenCaptureNotificationType));
-  message_center::MessageViewFactory::SetCustomNotificationViewFactory(
-      kScreenCaptureNotificationType,
-      base::BindRepeating(&CaptureModeNotificationView::Create));
 
   Shell::Get()->session_controller()->AddObserver(this);
   chromeos::PowerManagerClient::Get()->AddObserver(this);
