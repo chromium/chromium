@@ -17287,7 +17287,7 @@ regressions. -->
 </histogram>
 
 <histogram name="VoiceInteraction.UnexpectedResultSource"
-    enum="VoiceInteractionEventSource" expires_after="2021-01-24">
+    enum="VoiceInteractionEventSource" expires_after="2021-05-30">
   <owner>wylieb@chromium.org</owner>
   <owner>tedchoc@chromium.org</owner>
   <summary>
