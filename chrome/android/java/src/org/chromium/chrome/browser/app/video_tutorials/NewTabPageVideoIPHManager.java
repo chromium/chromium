@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.app.video_tutorials;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Handler;
 import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
@@ -39,13 +38,6 @@ import java.util.List;
  * dismissed.
  */
 public class NewTabPageVideoIPHManager {
-    /**
-     * Delay between user tapping a card and card being dismissed, so that the card doesn't dismiss
-     * before the video player activity launches.
-     */
-    private static final int CARD_HIDE_ANIMATION_DURATION_MS = 500;
-
-    private final Handler mHandler = new Handler();
     private Context mContext;
     private Tracker mTracker;
     private VideoIPHCoordinator mVideoIPHCoordinator;
@@ -106,8 +98,6 @@ public class NewTabPageVideoIPHManager {
             launchTutorialListActivity();
         } else {
             launchVideoPlayer(tutorial);
-            mHandler.postDelayed(
-                    mVideoIPHCoordinator::hideVideoIPH, CARD_HIDE_ANIMATION_DURATION_MS);
         }
     }
 
