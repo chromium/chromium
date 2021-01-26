@@ -99,14 +99,15 @@ ViewElement::GetCustomPropertiesForMatchedStyle() const {
     // Check if type is SkColor and add "--" to property name so that DevTools
     // frontend will interpret this field as a color. Also convert SkColor value
     // to rgba string.
+    auto flags = (*member)->GetPropertyFlags();
     if ((*member)->member_type() == "SkColor") {
       SkColor color;
       if (base::StringToUint(
               base::UTF16ToUTF8((*member)->GetValueAsString(view_)), &color))
         class_properties.emplace_back("--" + (*member)->member_name(),
                                       color_utils::SkColorToRgbaString(color));
-    } else if (!!((*member)->GetPropertyFlags() &
-                  views::metadata::PropertyFlags::kSerializable)) {
+    } else if (!!(flags & views::metadata::PropertyFlags::kSerializable) ||
+               !!(flags & views::metadata::PropertyFlags::kReadOnly)) {
       class_properties.emplace_back(
           (*member)->member_name(),
           base::UTF16ToUTF8((*member)->GetValueAsString(view_)));
@@ -176,8 +177,10 @@ bool ViewElement::SetPropertiesFromString(const std::string& text) {
       continue;
     }
 
-    DCHECK(!!(member->GetPropertyFlags() &
-              views::metadata::PropertyFlags::kSerializable));
+    auto property_flags = member->GetPropertyFlags();
+    if (!!(property_flags & views::metadata::PropertyFlags::kReadOnly))
+      continue;
+    DCHECK(!!(property_flags & views::metadata::PropertyFlags::kSerializable));
     member->SetValueAsString(view_, base::UTF8ToUTF16(property_value));
     property_set = true;
   }

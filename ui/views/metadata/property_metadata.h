@@ -34,20 +34,21 @@ class ClassPropertyReadOnlyMetaData : public MemberMetaDataBase {
   ~ClassPropertyReadOnlyMetaData() override = default;
 
   base::string16 GetValueAsString(View* obj) const override {
-    if (!kIsSerializable)
+    if (!kTypeIsSerializable && !kTypeIsReadOnly)
       return base::string16();
     return TypeConverter<TValue>::ToString((static_cast<TClass*>(obj)->*Get)());
   }
 
   PropertyFlags GetPropertyFlags() const override {
-    return kIsSerializable
+    return kTypeIsSerializable
                ? (PropertyFlags::kReadOnly | PropertyFlags::kSerializable)
                : PropertyFlags::kReadOnly;
   }
 
  private:
-  static constexpr bool kIsSerializable =
+  static constexpr bool kTypeIsSerializable =
       TypeConverter<TValue>::is_serializable;
+  static constexpr bool kTypeIsReadOnly = TypeConverter<TValue>::is_read_only;
 
   DISALLOW_COPY_AND_ASSIGN(ClassPropertyReadOnlyMetaData);
 };
@@ -71,7 +72,7 @@ class ClassPropertyMetaData
   ~ClassPropertyMetaData() override = default;
 
   void SetValueAsString(View* obj, const base::string16& new_value) override {
-    if (!kIsSerializable)
+    if (!kTypeIsSerializable || kTypeIsReadOnly)
       return;
     if (base::Optional<TValue> result =
             TypeConverter<TValue>::FromString(new_value)) {
@@ -80,20 +81,24 @@ class ClassPropertyMetaData
   }
 
   MemberMetaDataBase::ValueStrings GetValidValues() const override {
-    if (!kIsSerializable)
+    if (!kTypeIsSerializable)
       return {};
     return TypeConverter<TValue>::GetValidStrings();
   }
 
   PropertyFlags GetPropertyFlags() const override {
-    return kIsSerializable
-               ? (PropertyFlags::kEmpty | PropertyFlags::kSerializable)
-               : PropertyFlags::kEmpty;
+    PropertyFlags flags = PropertyFlags::kEmpty;
+    if (kTypeIsSerializable)
+      flags = flags | PropertyFlags::kSerializable;
+    if (kTypeIsReadOnly)
+      flags = flags | PropertyFlags::kReadOnly;
+    return flags;
   }
 
  private:
-  static constexpr bool kIsSerializable =
+  static constexpr bool kTypeIsSerializable =
       TypeConverter<TValue>::is_serializable;
+  static constexpr bool kTypeIsReadOnly = TypeConverter<TValue>::is_read_only;
 
   DISALLOW_COPY_AND_ASSIGN(ClassPropertyMetaData);
 };

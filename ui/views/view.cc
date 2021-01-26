@@ -1166,6 +1166,10 @@ void View::SetBackground(std::unique_ptr<Background> b) {
   SchedulePaint();
 }
 
+Background* View::GetBackground() const {
+  return background_.get();
+}
+
 void View::SetBorder(std::unique_ptr<Border> b) {
   const gfx::Rect old_contents_bounds = GetContentsBounds();
   border_ = std::move(b);
@@ -1181,6 +1185,10 @@ void View::SetBorder(std::unique_ptr<Border> b) {
     InvalidateLayout();
 
   SchedulePaint();
+}
+
+Border* View::GetBorder() const {
+  return border_.get();
 }
 
 const ui::ThemeProvider* View::GetThemeProvider() const {
@@ -3216,6 +3224,8 @@ DEFINE_ENUM_CONVERTERS(View::FocusBehavior,
 // This block requires the existence of METADATA_HEADER(View) in the class
 // declaration for View.
 BEGIN_METADATA_BASE(View)
+ADD_PROPERTY_METADATA(std::unique_ptr<Background>, Background)
+ADD_PROPERTY_METADATA(std::unique_ptr<Border>, Border)
 ADD_READONLY_PROPERTY_METADATA(const char*, ClassName)
 ADD_PROPERTY_METADATA(bool, Enabled)
 ADD_PROPERTY_METADATA(View::FocusBehavior, FocusBehavior)

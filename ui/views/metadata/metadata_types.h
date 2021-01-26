@@ -23,12 +23,15 @@ enum class PropertyFlags : uint32_t {
   // By default, properties are read/write. This flag indicates that the given
   // property metadata instance needs no special attention.
   kEmpty = 0x00,
-  // Property metadata instance should be treated as read-only. Calling
-  // SetValueAsString() will trigger a NOTREACHED() error under debug.
+  // Property metadata instance should be treated as read-only. SetValueAsString
+  // should not be called since there may not be a conversion from a string for
+  // the type of the property. (see kIsSerializable below for additional info).
+  // Calling SetValueAsString() may trigger a NOTREACHED() error under debug.
   kReadOnly = 0x01,
   // Property metadata can be serialized to or from a string. Needs to make sure
   // this flag is set to have meaningful SetValueAsString() and
-  // GetValueFromString().
+  // GetValueFromString(). This is ultimately a signal indicating the underlying
+  // TypeConverter is able to convert the value to/from a string.
   kSerializable = 0x100,
 };
 

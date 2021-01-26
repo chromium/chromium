@@ -13,9 +13,8 @@
 #include "ui/views/metadata/type_conversion.h"
 
 template <>
-struct views::metadata::TypeConverter<TabStyle::TabColors> {
-  static constexpr bool is_serializable = true;
-  static bool IsSerializable() { return is_serializable; }
+struct views::metadata::TypeConverter<TabStyle::TabColors>
+    : BaseTypeConverter<true> {
   static base::string16 ToString(
       views::metadata::ArgType<TabStyle::TabColors> source_value);
   static base::Optional<TabStyle::TabColors> FromString(

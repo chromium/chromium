@@ -54,10 +54,12 @@ using ArgType =
                               const T&>::type;
 
 // General Type Conversion Template Functions ---------------------------------
-template <bool serializable>
+template <bool serializable, bool read_only = false>
 struct BaseTypeConverter {
   static constexpr bool is_serializable = serializable;
+  static constexpr bool is_read_only = read_only;
   static bool IsSerializable() { return is_serializable; }
+  static bool IsReadOnly() { return is_read_only; }
 };
 
 template <typename T>
@@ -141,6 +143,8 @@ VIEWS_EXPORT base::Optional<SkColor> RgbaPiecesToSkColor(
     const std::vector<base::StringPiece16>& pieces,
     size_t start_piece);
 
+VIEWS_EXPORT base::string16 PointerToString(const void* pointer_val);
+
 #define DECLARE_CONVERSIONS(T)                                               \
   template <>                                                                \
   struct VIEWS_EXPORT TypeConverter<T> : BaseTypeConverter<true> {           \
@@ -207,11 +211,30 @@ struct TypeConverter<base::Optional<T>>
 };
 
 template <typename T>
-struct TypeConverter<std::unique_ptr<T>> : BaseTypeConverter<false> {
-  static base::string16 ToString(const std::unique_ptr<T>& source_value);
-  static base::string16 ToString(const T* source_value);
+struct TypeConverter<std::unique_ptr<T>> : BaseTypeConverter<false, true> {
+  static base::string16 ToString(const std::unique_ptr<T>& source_value) {
+    return PointerToString(source_value.get());
+  }
+  static base::string16 ToString(const T* source_value) {
+    return PointerToString(source_value);
+  }
   static base::Optional<std::unique_ptr<T>> FromString(
-      const base::string16& source_value);
+      const base::string16& source_value) {
+    DCHECK(false) << "Type converter cannot convert from string.";
+    return base::nullopt;
+  }
+  static ValidStrings GetValidStrings() { return {}; }
+};
+
+template <typename T>
+struct TypeConverter<T*> : BaseTypeConverter<false, true> {
+  static base::string16 ToString(ArgType<T*> source_value) {
+    return PointerToString(source_value);
+  }
+  static base::Optional<T*> FromString(const base::string16& source_value) {
+    DCHECK(false) << "Type converter cannot convert from string.";
+    return base::nullopt;
+  }
   static ValidStrings GetValidStrings() { return {}; }
 };
 

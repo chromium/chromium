@@ -879,11 +879,13 @@ class VIEWS_EXPORT View : public ui::LayerDelegate,
 
   // The background object may be null.
   void SetBackground(std::unique_ptr<Background> b);
+  Background* GetBackground() const;
   const Background* background() const { return background_.get(); }
   Background* background() { return background_.get(); }
 
   // The border object may be null.
   virtual void SetBorder(std::unique_ptr<Border> b);
+  Border* GetBorder() const;
   const Border* border() const { return border_.get(); }
   Border* border() { return border_.get(); }
 

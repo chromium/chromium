@@ -40,6 +40,11 @@ base::Optional<SkColor> RgbaPiecesToSkColor(
              : base::nullopt;
 }
 
+base::string16 PointerToString(const void* pointer_val) {
+  return pointer_val ? base::ASCIIToUTF16("(assigned)")
+                     : base::ASCIIToUTF16("(not assigned)");
+}
+
 const base::string16& GetNullOptStr() {
   static const base::NoDestructor<base::string16> kNullOptStr(
       base::ASCIIToUTF16("<Empty>"));
