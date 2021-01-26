@@ -98,8 +98,12 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // Confirms acceptance of the records up to |sequencing_id| (inclusively).
   // All records with sequencing ids <= this one can be removed from
   // the StorageQueue, and can no longer be uploaded.
+  // If |force| is false (which is used in most cases), |sequencing_id| is
+  // only accepted if no higher ids were confirmed before; otherwise it is
+  // accepted unconditionally.
   // Helper methods: RemoveConfirmedData.
-  void Confirm(int64_t sequencing_id,
+  void Confirm(base::Optional<int64_t> sequencing_id,
+               bool force,
                base::OnceCallback<void(Status)> completion_cb);
 
   // Initiates upload of collected records. Called periodically by timer, based

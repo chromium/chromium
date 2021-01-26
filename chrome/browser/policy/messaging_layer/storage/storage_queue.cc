@@ -1269,12 +1269,14 @@ StorageQueue::CollectFilesForUpload(int64_t sequencing_id) const {
 
 class StorageQueue::ConfirmContext : public TaskRunnerContext<Status> {
  public:
-  ConfirmContext(int64_t sequencing_id,
+  ConfirmContext(base::Optional<int64_t> sequencing_id,
+                 bool force,
                  base::OnceCallback<void(Status)> end_callback,
                  scoped_refptr<StorageQueue> storage_queue)
       : TaskRunnerContext<Status>(std::move(end_callback),
                                   storage_queue->sequenced_task_runner_),
         sequencing_id_(sequencing_id),
+        force_(force),
         storage_queue_(storage_queue) {
     DCHECK(storage_queue.get());
     DETACH_FROM_SEQUENCE(confirm_sequence_checker_);
@@ -1286,20 +1288,31 @@ class StorageQueue::ConfirmContext : public TaskRunnerContext<Status> {
 
   void OnStart() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(confirm_sequence_checker_);
-    Response(storage_queue_->RemoveConfirmedData(sequencing_id_));
+    if (force_) {
+      storage_queue_->first_unconfirmed_sequencing_id_ =
+          sequencing_id_.has_value() ? (sequencing_id_.value() + 1) : 0;
+      Response(Status::StatusOK());
+    } else {
+      Response(sequencing_id_.has_value()
+                   ? storage_queue_->RemoveConfirmedData(sequencing_id_.value())
+                   : Status::StatusOK());
+    }
   }
 
   // Confirmed sequencing id.
-  int64_t sequencing_id_;
+  base::Optional<int64_t> sequencing_id_;
+
+  bool force_;
 
   scoped_refptr<StorageQueue> storage_queue_;
 
   SEQUENCE_CHECKER(confirm_sequence_checker_);
 };
 
-void StorageQueue::Confirm(int64_t sequencing_id,
+void StorageQueue::Confirm(base::Optional<int64_t> sequencing_id,
+                           bool force,
                            base::OnceCallback<void(Status)> completion_cb) {
-  Start<ConfirmContext>(sequencing_id, std::move(completion_cb), this);
+  Start<ConfirmContext>(sequencing_id, force, std::move(completion_cb), this);
 }
 
 Status StorageQueue::RemoveConfirmedData(int64_t sequencing_id) {

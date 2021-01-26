@@ -199,7 +199,8 @@ class SingleDecryptionContext {
   base::OnceCallback<void(StatusOr<base::StringPiece>)> response_;
 };
 
-class MockUploadClient : public Storage::UploaderInterface {
+class MockUploadClient
+    : public ::testing::NiceMock<Storage::UploaderInterface> {
  public:
   // Mapping of <generation id, sequencing id> to matching record digest.
   // Whenever a record is uploaded and includes last record digest, this map
@@ -208,7 +209,7 @@ class MockUploadClient : public Storage::UploaderInterface {
   using LastRecordDigestMap = std::map<std::tuple<Priority,
                                                   int64_t /*generation id*/,
                                                   int64_t /*sequencing id*/>,
-                                       std::string /*digest*/>;
+                                       base::Optional<std::string /*digest*/>>;
 
   explicit MockUploadClient(
       LastRecordDigestMap* last_record_digest_map,
@@ -252,21 +253,56 @@ class MockUploadClient : public Storage::UploaderInterface {
         ->Start();
   }
 
-  void ProcessGap(SequencingInformation start,
+  void ProcessGap(SequencingInformation sequencing_information,
                   uint64_t count,
                   base::OnceCallback<void(bool)> processed_cb) override {
-    LOG(FATAL) << "Gap not implemented yet";
+    // Verify generation match.
+    if (generation_id_.has_value() &&
+        generation_id_.value() != sequencing_information.generation_id()) {
+      std::move(processed_cb)
+          .Run(UploadRecordFailure(
+              sequencing_information.priority(),
+              sequencing_information.sequencing_id(),
+              Status(
+                  error::DATA_LOSS,
+                  base::StrCat(
+                      {"Generation id mismatch, expected=",
+                       base::NumberToString(generation_id_.value()), " actual=",
+                       base::NumberToString(
+                           sequencing_information.generation_id())}))));
+      return;
+    }
+    if (!generation_id_.has_value()) {
+      generation_id_ = sequencing_information.generation_id();
+    }
+
+    last_record_digest_map_->emplace(
+        std::make_tuple(sequencing_information.priority(),
+                        sequencing_information.sequencing_id(),
+                        sequencing_information.generation_id()),
+        base::nullopt);
+
+    for (uint64_t c = 0; c < count; ++c) {
+      EncounterSeqId(
+          sequencing_information.priority(),
+          sequencing_information.sequencing_id() + static_cast<int64_t>(c));
+    }
+    std::move(processed_cb)
+        .Run(UploadGap(sequencing_information.priority(),
+                       sequencing_information.sequencing_id(), count));
   }
 
   void Completed(bool need_encryption_key, Status status) override {
     UploadComplete(need_encryption_key, status);
   }
 
+  MOCK_METHOD(void, EncounterSeqId, (Priority, int64_t), (const));
   MOCK_METHOD(bool,
               UploadRecord,
               (Priority, int64_t, base::StringPiece),
               (const));
-  MOCK_METHOD(bool, UploadRecordFailure, (Status), (const));
+  MOCK_METHOD(bool, UploadRecordFailure, (Priority, int64_t, Status), (const));
+  MOCK_METHOD(bool, UploadGap, (Priority, int64_t, uint64_t), (const));
   MOCK_METHOD(void, UploadComplete, (bool, Status), (const));
 
   // Helper class for setting up mock client expectations of a successful
@@ -277,13 +313,14 @@ class MockUploadClient : public Storage::UploaderInterface {
         : priority_(priority), client_(client) {}
 
     ~SetUp() {
-      EXPECT_CALL(*client_, UploadRecordFailure(_))
+      EXPECT_CALL(*client_, UploadRecordFailure(_, _, _))
           .Times(0)
           .InSequence(client_->test_upload_sequence_);
       EXPECT_CALL(*client_, UploadComplete(/*need_encryption_key=*/false,
                                            Eq(Status::StatusOK())))
           .Times(1)
-          .InSequence(client_->test_upload_sequence_);
+          .InSequence(client_->test_upload_sequence_,
+                      client_->test_encounter_sequence_);
     }
 
     SetUp& Required(int64_t sequencing_id, base::StringPiece value) {
@@ -303,6 +340,33 @@ class MockUploadClient : public Storage::UploaderInterface {
       return *this;
     }
 
+    SetUp& PossibleGap(int64_t sequence_number, uint64_t count) {
+      EXPECT_CALL(*client_,
+                  UploadGap(Eq(priority_), Eq(sequence_number), Eq(count)))
+          .Times(Between(0, 1))
+          .InSequence(client_->test_upload_sequence_)
+          .WillRepeatedly(Return(true));
+      return *this;
+    }
+
+    // The following two expectations refer to the fact that specific
+    // sequencing ids have been encountered, regardless of whether they
+    // belonged to records or gaps. The expectations are set on a separate
+    // test sequence.
+    SetUp& RequiredSeqId(int64_t sequence_number) {
+      EXPECT_CALL(*client_, EncounterSeqId(Eq(priority_), Eq(sequence_number)))
+          .Times(1)
+          .InSequence(client_->test_encounter_sequence_);
+      return *this;
+    }
+
+    SetUp& PossibleSeqId(int64_t sequence_number) {
+      EXPECT_CALL(*client_, EncounterSeqId(Eq(priority_), Eq(sequence_number)))
+          .Times(Between(0, 1))
+          .InSequence(client_->test_encounter_sequence_);
+      return *this;
+    }
+
    private:
     Priority priority_;
     MockUploadClient* const client_;
@@ -316,7 +380,7 @@ class MockUploadClient : public Storage::UploaderInterface {
 
     ~SetEmpty() {
       EXPECT_CALL(*client_, UploadRecord(Eq(priority_), _, _)).Times(0);
-      EXPECT_CALL(*client_, UploadRecordFailure(_)).Times(0);
+      EXPECT_CALL(*client_, UploadRecordFailure(_, _, _)).Times(0);
       EXPECT_CALL(*client_, UploadComplete(/*need_encryption_key=*/false,
                                            Property(&Status::error_code,
                                                     Eq(error::OUT_OF_RANGE))))
@@ -336,7 +400,7 @@ class MockUploadClient : public Storage::UploaderInterface {
 
     ~SetKeyDelivery() {
       EXPECT_CALL(*client_, UploadRecord(Eq(priority_), _, _)).Times(0);
-      EXPECT_CALL(*client_, UploadRecordFailure(_)).Times(0);
+      EXPECT_CALL(*client_, UploadRecordFailure(_, _, _)).Times(0);
       EXPECT_CALL(*client_, UploadComplete(/*need_encryption_key=*/true,
                                            Eq(Status::StatusOK())))
           .Times(1);
@@ -365,13 +429,16 @@ class MockUploadClient : public Storage::UploaderInterface {
     if (generation_id_.has_value() &&
         generation_id_.value() != sequencing_information.generation_id()) {
       std::move(processed_cb)
-          .Run(UploadRecordFailure(Status(
-              error::DATA_LOSS,
-              base::StrCat({"Generation id mismatch, expected=",
-                            base::NumberToString(generation_id_.value()),
-                            " actual=",
-                            base::NumberToString(
-                                sequencing_information.generation_id())}))));
+          .Run(UploadRecordFailure(
+              sequencing_information.priority(),
+              sequencing_information.sequencing_id(),
+              Status(
+                  error::DATA_LOSS,
+                  base::StrCat(
+                      {"Generation id mismatch, expected=",
+                       base::NumberToString(generation_id_.value()), " actual=",
+                       base::NumberToString(
+                           sequencing_information.generation_id())}))));
       return;
     }
     if (!generation_id_.has_value()) {
@@ -389,6 +456,8 @@ class MockUploadClient : public Storage::UploaderInterface {
       if (record_digest != wrapped_record.record_digest()) {
         std::move(processed_cb)
             .Run(UploadRecordFailure(
+                sequencing_information.priority(),
+                sequencing_information.sequencing_id(),
                 Status(error::DATA_LOSS, "Record digest mismatch")));
         return;
       }
@@ -401,6 +470,8 @@ class MockUploadClient : public Storage::UploaderInterface {
             it->second != wrapped_record.last_record_digest()) {
           std::move(processed_cb)
               .Run(UploadRecordFailure(
+                  sequencing_information.priority(),
+                  sequencing_information.sequencing_id(),
                   Status(error::DATA_LOSS, "Last record digest mismatch")));
           return;
         }
@@ -412,6 +483,8 @@ class MockUploadClient : public Storage::UploaderInterface {
           record_digest);
     }
 
+    EncounterSeqId(sequencing_information.priority(),
+                   sequencing_information.sequencing_id());
     std::move(processed_cb)
         .Run(UploadRecord(sequencing_information.priority(),
                           sequencing_information.sequencing_id(),
@@ -424,6 +497,7 @@ class MockUploadClient : public Storage::UploaderInterface {
 
   const scoped_refptr<Decryptor> decryptor_;
 
+  Sequence test_encounter_sequence_;
   Sequence test_upload_sequence_;
 };
 
@@ -537,9 +611,11 @@ class StorageTest
     ASSERT_OK(write_result) << write_result;
   }
 
-  void ConfirmOrDie(Priority priority, std::int64_t sequencing_id) {
+  void ConfirmOrDie(Priority priority,
+                    base::Optional<std::int64_t> sequencing_id,
+                    bool force = false) {
     TestEvent<Status> c;
-    storage_->Confirm(priority, sequencing_id, c.cb());
+    storage_->Confirm(priority, sequencing_id, force, c.cb());
     const Status c_result = c.result();
     ASSERT_OK(c_result) << c_result;
   }
@@ -1019,6 +1095,77 @@ TEST_P(StorageTest, WriteEncryptFailure) {
   const Status result = WriteString(FAST_BATCH, "TEST_MESSAGE");
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNKNOWN);
+}
+
+TEST_P(StorageTest, ForceConfirm) {
+  CreateTestStorageOrDie(BuildTestStorageOptions());
+
+  WriteStringOrDie(FAST_BATCH, kData[0]);
+  WriteStringOrDie(FAST_BATCH, kData[1]);
+  WriteStringOrDie(FAST_BATCH, kData[2]);
+
+  // Set uploader expectations.
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(Eq(FAST_BATCH), NotNull()))
+      .WillOnce(
+          Invoke([](Priority priority, MockUploadClient* mock_upload_client) {
+            MockUploadClient::SetUp(FAST_BATCH, mock_upload_client)
+                .Required(0, kData[0])
+                .Required(1, kData[1])
+                .Required(2, kData[2]);
+          }));
+  // Forward time to trigger upload
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Confirm #1 and forward time again, possibly removing records #0 and #1
+  ConfirmOrDie(FAST_BATCH, /*sequencing_id=*/1);
+  // Set uploader expectations.
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(Eq(FAST_BATCH), NotNull()))
+      .WillOnce(
+          Invoke([](Priority priority, MockUploadClient* mock_upload_client) {
+            MockUploadClient::SetUp(FAST_BATCH, mock_upload_client)
+                .Required(2, kData[2]);
+          }));
+  // Forward time to trigger upload
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Now force confirm #0 and forward time again.
+  ConfirmOrDie(FAST_BATCH, /*sequencing_id=*/base::nullopt, /*force=*/true);
+  // Set uploader expectations: #0 and #1 could be returned as Gaps
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(Eq(FAST_BATCH), NotNull()))
+      .WillOnce(
+          Invoke([](Priority priority, MockUploadClient* mock_upload_client) {
+            MockUploadClient::SetUp(FAST_BATCH, mock_upload_client)
+                .RequiredSeqId(0)
+                .RequiredSeqId(1)
+                .RequiredSeqId(2)
+                // 0-2 must have been encountered, but actual contents
+                // can be different:
+                .Possible(0, kData[0])
+                .PossibleGap(0, 1)
+                .PossibleGap(0, 2)
+                .Possible(1, kData[1])
+                .Required(2, kData[2]);
+          }));
+  // Forward time to trigger upload
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Force confirm #0 and forward time again.
+  ConfirmOrDie(FAST_BATCH, /*sequencing_id=*/0, /*force=*/true);
+  // Set uploader expectations: #0 and #1 could be returned as Gaps
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(Eq(FAST_BATCH), NotNull()))
+      .WillOnce(
+          Invoke([](Priority priority, MockUploadClient* mock_upload_client) {
+            MockUploadClient::SetUp(FAST_BATCH, mock_upload_client)
+                .RequiredSeqId(1)
+                .RequiredSeqId(2)
+                // 0-2 must have been encountered, but actual contents
+                // can be different:
+                .PossibleGap(1, 1)
+                .Possible(1, kData[1])
+                .Required(2, kData[2]);
+          }));
+  // Forward time to trigger upload
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
 INSTANTIATE_TEST_SUITE_P(

@@ -587,13 +587,14 @@ void Storage::Write(Priority priority,
 }
 
 void Storage::Confirm(Priority priority,
-                      int64_t seq_number,
+                      base::Optional<int64_t> seq_number,
+                      bool force,
                       base::OnceCallback<void(Status)> completion_cb) {
   // Note: queues_ never change after initialization is finished, so there is
   // no need to protect or serialize access to it.
   ASSIGN_OR_ONCE_CALLBACK_AND_RETURN(scoped_refptr<StorageQueue> queue,
                                      completion_cb, GetQueue(priority));
-  queue->Confirm(seq_number, std::move(completion_cb));
+  queue->Confirm(seq_number, force, std::move(completion_cb));
 }
 
 Status Storage::Flush(Priority priority) {

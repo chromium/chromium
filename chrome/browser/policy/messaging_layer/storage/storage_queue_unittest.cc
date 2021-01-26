@@ -78,7 +78,8 @@ class TestEvent {
   ResType result_;
 };
 
-class MockUploadClient : public StorageQueue::UploaderInterface {
+class MockUploadClient
+    : public ::testing::NiceMock<StorageQueue::UploaderInterface> {
  public:
   // Mapping of <generation id, sequencing id> to matching record digest.
   // Whenever a record is uploaded and includes last record digest, this map
@@ -155,6 +156,7 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
       }
     }
 
+    EncounterSeqId(sequencing_information.sequencing_id());
     std::move(processed_cb)
         .Run(UploadRecord(sequencing_information.sequencing_id(),
                           wrapped_record.record().data()));
@@ -187,6 +189,10 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
                        sequencing_information.generation_id()),
         base::nullopt);
 
+    for (uint64_t c = 0; c < count; ++c) {
+      EncounterSeqId(sequencing_information.sequencing_id() +
+                     static_cast<int64_t>(c));
+    }
     std::move(processed_cb)
         .Run(UploadGap(sequencing_information.sequencing_id(), count));
   }
@@ -195,6 +201,7 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
     UploadComplete(need_encryption_key, status);
   }
 
+  MOCK_METHOD(void, EncounterSeqId, (int64_t), (const));
   MOCK_METHOD(bool, UploadRecord, (int64_t, base::StringPiece), (const));
   MOCK_METHOD(bool, UploadRecordFailure, (int64_t, Status), (const));
   MOCK_METHOD(bool, UploadGap, (int64_t, uint64_t), (const));
@@ -208,7 +215,8 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
     ~SetUp() {
       EXPECT_CALL(*client_, UploadComplete(_, Eq(Status::StatusOK())))
           .Times(1)
-          .InSequence(client_->test_upload_sequence_);
+          .InSequence(client_->test_upload_sequence_,
+                      client_->test_encounter_sequence_);
     }
 
     SetUp& Required(int64_t sequence_number, base::StringPiece value) {
@@ -250,6 +258,24 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
       return *this;
     }
 
+    // The following two expectations refer to the fact that specific
+    // sequencing ids have been encountered, regardless of whether they
+    // belonged to records or gaps. The expectations are set on a separate
+    // test sequence.
+    SetUp& RequiredSeqId(int64_t sequence_number) {
+      EXPECT_CALL(*client_, EncounterSeqId(Eq(sequence_number)))
+          .Times(1)
+          .InSequence(client_->test_encounter_sequence_);
+      return *this;
+    }
+
+    SetUp& PossibleSeqId(int64_t sequence_number) {
+      EXPECT_CALL(*client_, EncounterSeqId(Eq(sequence_number)))
+          .Times(Between(0, 1))
+          .InSequence(client_->test_encounter_sequence_);
+      return *this;
+    }
+
    private:
     MockUploadClient* const client_;
   };
@@ -258,6 +284,7 @@ class MockUploadClient : public StorageQueue::UploaderInterface {
   base::Optional<int64_t> generation_id_;
   LastRecordDigestMap* const last_record_digest_map_;
 
+  Sequence test_encounter_sequence_;
   Sequence test_upload_sequence_;
 };
 
@@ -296,8 +323,8 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     storage_queue_.reset();
   }
 
-  void InjectFailures(std::initializer_list<int64_t> seq_numbers) {
-    storage_queue_->TestInjectBlockReadErrors(seq_numbers);
+  void InjectFailures(std::initializer_list<int64_t> sequencing_ids) {
+    storage_queue_->TestInjectBlockReadErrors(sequencing_ids);
   }
 
   QueueOptions BuildStorageQueueOptionsImmediate() const {
@@ -339,9 +366,10 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     ASSERT_OK(write_result) << write_result;
   }
 
-  void ConfirmOrDie(std::int64_t seq_number) {
+  void ConfirmOrDie(base::Optional<std::int64_t> sequencing_id,
+                    bool force = false) {
     TestEvent<Status> c;
-    storage_queue_->Confirm(seq_number, c.cb());
+    storage_queue_->Confirm(sequencing_id, force, c.cb());
     const Status c_result = c.result();
     ASSERT_OK(c_result) << c_result;
   }
@@ -658,7 +686,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // Confirm #0 and forward time again, removing record #0
-  ConfirmOrDie(/*seq_number=*/0);
+  ConfirmOrDie(/*sequencing_id=*/0);
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
@@ -670,7 +698,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // Confirm #1 and forward time again, removing record #1
-  ConfirmOrDie(/*seq_number=*/1);
+  ConfirmOrDie(/*sequencing_id=*/1);
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
@@ -696,7 +724,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmations) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // Confirm #2 and forward time again, removing record #2
-  ConfirmOrDie(/*seq_number=*/2);
+  ConfirmOrDie(/*sequencing_id=*/2);
 
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
@@ -729,7 +757,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // Confirm #0 and forward time again, removing record #0
-  ConfirmOrDie(/*seq_number=*/0);
+  ConfirmOrDie(/*sequencing_id=*/0);
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
@@ -741,7 +769,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // Confirm #1 and forward time again, removing record #1
-  ConfirmOrDie(/*seq_number=*/1);
+  ConfirmOrDie(/*sequencing_id=*/1);
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
@@ -772,7 +800,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyUploadWithConfirmationsAndReopen) {
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // Confirm #2 and forward time again, removing record #2
-  ConfirmOrDie(/*seq_number=*/2);
+  ConfirmOrDie(/*sequencing_id=*/2);
 
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
@@ -806,7 +834,7 @@ TEST_P(StorageQueueTest,
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // Confirm #0 and forward time again, removing record #0
-  ConfirmOrDie(/*seq_number=*/0);
+  ConfirmOrDie(/*sequencing_id=*/0);
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
@@ -818,7 +846,7 @@ TEST_P(StorageQueueTest,
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // Confirm #1 and forward time again, removing record #1
-  ConfirmOrDie(/*seq_number=*/1);
+  ConfirmOrDie(/*sequencing_id=*/1);
   // Set uploader expectations.
   EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
       .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
@@ -854,7 +882,7 @@ TEST_P(StorageQueueTest,
   task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 
   // Confirm #2 and forward time again, removing record #2
-  ConfirmOrDie(/*seq_number=*/2);
+  ConfirmOrDie(/*sequencing_id=*/2);
 
   // Reset simulated failures.
   InjectFailures({});
@@ -935,7 +963,7 @@ TEST_P(StorageQueueTest, WriteAndRepeatedlyImmediateUploadWithConfirmations) {
   WriteStringOrDie(kData[2]);
 
   // Confirm #1, removing data #0 and #1
-  ConfirmOrDie(/*seq_number=*/1);
+  ConfirmOrDie(/*sequencing_id=*/1);
 
   // Add more data and verify that #2 and new data are returned.
   // Upload is initiated asynchronously, so it may happen after the next
@@ -981,6 +1009,72 @@ TEST_P(StorageQueueTest, WriteEncryptFailure) {
   const Status result = WriteString("TEST_MESSAGE");
   EXPECT_FALSE(result.ok());
   EXPECT_EQ(result.error_code(), error::UNKNOWN);
+}
+
+TEST_P(StorageQueueTest, ForceConfirm) {
+  CreateTestStorageQueueOrDie(BuildStorageQueueOptionsPeriodic());
+
+  WriteStringOrDie(kData[0]);
+  WriteStringOrDie(kData[1]);
+  WriteStringOrDie(kData[2]);
+
+  // Set uploader expectations.
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
+        MockUploadClient::SetUp(mock_upload_client)
+            .Required(0, kData[0])
+            .Required(1, kData[1])
+            .Required(2, kData[2]);
+      }));
+  // Forward time to trigger upload
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Confirm #1 and forward time again, possibly removing records #0 and #1
+  ConfirmOrDie(/*sequencing_id=*/1);
+  // Set uploader expectations.
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
+        MockUploadClient::SetUp(mock_upload_client).Required(2, kData[2]);
+      }));
+  // Forward time to trigger upload
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Now force confirm the very beginning and forward time again.
+  ConfirmOrDie(/*sequencing_id=*/base::nullopt, /*force=*/true);
+  // Set uploader expectations: #0 and #1 could be returned as Gaps
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
+        MockUploadClient::SetUp(mock_upload_client)
+            .RequiredSeqId(0)
+            .RequiredSeqId(1)
+            .RequiredSeqId(2)
+            // 0-2 must have been encountered, but actual contents
+            // can be different:
+            .Possible(0, kData[0])
+            .PossibleGap(0, 1)
+            .PossibleGap(0, 2)
+            .Possible(1, kData[1])
+            .Required(2, kData[2]);
+      }));
+  // Forward time to trigger upload
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+
+  // Force confirm #0 and forward time again.
+  ConfirmOrDie(/*sequencing_id=*/0, /*force=*/true);
+  // Set uploader expectations: #0 and #1 could be returned as Gaps
+  EXPECT_CALL(set_mock_uploader_expectations_, Call(NotNull()))
+      .WillOnce(Invoke([](MockUploadClient* mock_upload_client) {
+        MockUploadClient::SetUp(mock_upload_client)
+            .RequiredSeqId(1)
+            .RequiredSeqId(2)
+            // 0-2 must have been encountered, but actual contents
+            // can be different:
+            .PossibleGap(1, 1)
+            .Possible(1, kData[1])
+            .Required(2, kData[2]);
+      }));
+  // Forward time to trigger upload
+  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
 }
 
 INSTANTIATE_TEST_SUITE_P(VaryingFileSize,
