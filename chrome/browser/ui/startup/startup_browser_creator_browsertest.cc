@@ -2186,8 +2186,9 @@ INSTANTIATE_TEST_SUITE_P(
                            /*switch_name=*/base::nullopt,
                            /*switch_value_ascii=*/base::nullopt,
                            /*url_arg=*/GURL("https://www.foo.com/")},
-        // Picker should also not be shown in session restore.
-        ProfilePickerSetup{/*expected_to_show=*/false,
+        // Regression test for http://crbug.com/1166192
+        // Picker should be shown even in case of session restore.
+        ProfilePickerSetup{/*expected_to_show=*/true,
                            /*switch_name=*/base::nullopt,
                            /*switch_value_ascii=*/base::nullopt,
                            /*url_arg=*/base::nullopt,
