@@ -852,8 +852,7 @@ void XWindow::MoveCursorTo(const gfx::Point& location_in_pixels) {
 void XWindow::ResetWindowRegion() {
   std::unique_ptr<std::vector<x11::Rectangle>> xregion;
   if (!use_custom_shape() && !IsMaximized() && !IsFullscreen()) {
-    SkPath window_mask;
-    GetWindowMaskForXWindow(bounds().size(), &window_mask);
+    SkPath window_mask = GetWindowMaskForXWindow();
     // Some frame views define a custom (non-rectangular) window mask. If
     // so, use it to define the window shape. If not, fall through.
     if (window_mask.countPoints() > 0)

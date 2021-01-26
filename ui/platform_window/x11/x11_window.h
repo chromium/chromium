@@ -153,8 +153,7 @@ class X11_WINDOW_EXPORT X11Window : public PlatformWindow,
   void OnXWindowDragDropEvent(const x11::ClientMessageEvent& xev) override;
   base::Optional<gfx::Size> GetMinimumSizeForXWindow() override;
   base::Optional<gfx::Size> GetMaximumSizeForXWindow() override;
-  void GetWindowMaskForXWindow(const gfx::Size& size,
-                               SkPath* window_mask) override;
+  SkPath GetWindowMaskForXWindow() override;
 
  private:
   // PlatformEventDispatcher:

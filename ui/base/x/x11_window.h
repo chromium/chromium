@@ -260,8 +260,7 @@ class COMPONENT_EXPORT(UI_BASE_X) XWindow {
   virtual void OnXWindowDragDropEvent(const x11::ClientMessageEvent& xev) = 0;
   virtual base::Optional<gfx::Size> GetMinimumSizeForXWindow() = 0;
   virtual base::Optional<gfx::Size> GetMaximumSizeForXWindow() = 0;
-  virtual void GetWindowMaskForXWindow(const gfx::Size& size,
-                                       SkPath* window_mask) = 0;
+  virtual SkPath GetWindowMaskForXWindow() = 0;
 
   // The display and the native X window hosting the root window.
   x11::Connection* const connection_;

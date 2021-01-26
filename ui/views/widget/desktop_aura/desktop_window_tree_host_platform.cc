@@ -569,9 +569,9 @@ bool DesktopWindowTreeHostPlatform::ShouldUseNativeFrame() const {
 
 bool DesktopWindowTreeHostPlatform::ShouldWindowContentsBeTransparent() const {
   return platform_window()->ShouldWindowContentsBeTransparent() ||
-         const_cast<DesktopWindowTreeHostPlatform*>(this)
-             ->GetWindowMaskForWindowShape(GetBoundsInPixels().size())
-             .has_value();
+         !const_cast<DesktopWindowTreeHostPlatform*>(this)
+              ->GetWindowMaskForWindowShapeInPixels()
+              .isEmpty();
 }
 
 void DesktopWindowTreeHostPlatform::FrameTypeChanged() {
@@ -751,18 +751,16 @@ DesktopWindowTreeHostPlatform::GetMaximumSizeForWindow() {
       .size();
 }
 
-base::Optional<SkPath>
-DesktopWindowTreeHostPlatform::GetWindowMaskForWindowShape(
-    const gfx::Size& size_in_pixels) {
-  if (GetWidget()->non_client_view()) {
-    SkPath window_mask;
-    // Some frame views define a custom (non-rectanguar) window mask.
-    // If so, use it to define the window shape. If not, fall through.
-    GetWidget()->non_client_view()->GetWindowMask(size_in_pixels, &window_mask);
-    if (!window_mask.isEmpty())
-      return window_mask;
-  }
-  return base::nullopt;
+SkPath DesktopWindowTreeHostPlatform::GetWindowMaskForWindowShapeInPixels() {
+  if (!GetWidget()->non_client_view())
+    return SkPath();
+
+  SkPath window_mask;
+  // Some frame views define a custom (non-rectanguar) window mask.
+  // If so, use it to define the window shape. If not, fall through.
+  GetWidget()->non_client_view()->GetWindowMask(GetBoundsInPixels().size(),
+                                                &window_mask);
+  return window_mask;
 }
 
 void DesktopWindowTreeHostPlatform::OnWorkspaceChanged() {

@@ -763,12 +763,8 @@ base::Optional<gfx::Size> X11Window::GetMaximumSizeForXWindow() {
   return platform_window_delegate_->GetMaximumSizeForWindow();
 }
 
-void X11Window::GetWindowMaskForXWindow(const gfx::Size& size,
-                                        SkPath* window_mask) {
-  base::Optional<SkPath> path =
-      platform_window_delegate_->GetWindowMaskForWindowShape(size);
-  if (path.has_value())
-    *window_mask = path.value();
+SkPath X11Window::GetWindowMaskForXWindow() {
+  return platform_window_delegate_->GetWindowMaskForWindowShapeInPixels();
 }
 
 void X11Window::DispatchHostWindowDragMovement(

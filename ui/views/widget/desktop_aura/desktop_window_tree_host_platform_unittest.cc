@@ -182,19 +182,14 @@ TEST_F(DesktopWindowTreeHostPlatformTest, UpdateWindowShapeFromWindowMask) {
   ASSERT_TRUE(content_window);
   // alpha_shape for the layer of content window is updated from the
   // |NonClientView::GetWindowMask|.
-  EXPECT_TRUE(host_platform
-                  ->GetWindowMaskForWindowShape(content_window->bounds().size())
-                  .has_value());
+  EXPECT_FALSE(host_platform->GetWindowMaskForWindowShapeInPixels().isEmpty());
   EXPECT_TRUE(content_window->layer()->alpha_shape());
 
   // When fullscreen mode, alpha_shape is set to empty since there is no
   // |NonClientView::GetWindowMask|.
   host_platform->SetFullscreen(true);
   widget->SetBounds(gfx::Rect(800, 800));
-  EXPECT_FALSE(
-      host_platform
-          ->GetWindowMaskForWindowShape(content_window->bounds().size())
-          .has_value());
+  EXPECT_TRUE(host_platform->GetWindowMaskForWindowShapeInPixels().isEmpty());
   EXPECT_FALSE(content_window->layer()->alpha_shape());
 }
 

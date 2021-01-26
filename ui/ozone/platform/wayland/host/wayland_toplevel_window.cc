@@ -443,15 +443,14 @@ void WaylandToplevelWindow::UpdateWindowMask() {
 void WaylandToplevelWindow::UpdateWindowShape() {
   // Create |window_shape_in_dips_| using the window mask of
   // PlatformWindowDelegate otherwise resets it.
-  base::Optional<SkPath> window_mask_in_pixels =
-      delegate()->GetWindowMaskForWindowShape(
-          gfx::Size(GetBounds().width(), GetBounds().height()));
-  if (!window_mask_in_pixels.has_value()) {
+  SkPath window_mask_in_pixels =
+      delegate()->GetWindowMaskForWindowShapeInPixels();
+  if (window_mask_in_pixels.isEmpty()) {
     window_shape_in_dips_.reset();
     return;
   }
   SkPath window_mask_in_dips =
-      wl::ConvertPathToDIP(window_mask_in_pixels.value(), buffer_scale());
+      wl::ConvertPathToDIP(window_mask_in_pixels, buffer_scale());
   window_shape_in_dips_ = wl::CreateRectsFromSkPath(window_mask_in_dips);
 }
 

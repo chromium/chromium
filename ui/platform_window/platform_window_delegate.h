@@ -65,10 +65,10 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   virtual base::Optional<gfx::Size> GetMinimumSizeForWindow();
   virtual base::Optional<gfx::Size> GetMaximumSizeForWindow();
 
-  // Returns a mask to be used to clip the window for the given
-  // size. This is used to create the non-rectangular window shape.
-  virtual base::Optional<SkPath> GetWindowMaskForWindowShape(
-      const gfx::Size& size_in_pixels);
+  // Returns a mask to be used to clip the window for the size of
+  // |WindowTreeHost::GetBoundsInPixels|.
+  // This is used to create the non-rectangular window shape.
+  virtual SkPath GetWindowMaskForWindowShapeInPixels();
 
   // Called when the location of mouse pointer entered the window.  This is
   // different from ui::ET_MOUSE_ENTERED which may not be generated when mouse

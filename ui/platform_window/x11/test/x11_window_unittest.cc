@@ -73,11 +73,10 @@ class TestPlatformWindowDelegate : public PlatformWindowDelegate {
   }
   void OnActivationChanged(bool active) override {}
   void OnMouseEnter() override {}
-  base::Optional<SkPath> GetWindowMaskForWindowShape(
-      const gfx::Size& size_in_pixels) override {
+  SkPath GetWindowMaskForWindowShapeInPixels() override {
     SkPath window_mask;
-    int right = size_in_pixels.width();
-    int bottom = size_in_pixels.height();
+    int right = changed_bounds_.width();
+    int bottom = changed_bounds_.height();
 
     window_mask.moveTo(0, 0);
     window_mask.lineTo(0, bottom);
@@ -259,6 +258,8 @@ TEST_F(X11WindowTest, Shape) {
   const x11::Window x11_window = window->window();
   ASSERT_TRUE(x11_window != x11::Window::None);
 
+  // Force PlatformWindowDelegate::OnBoundsChanged.
+  window->SetBounds(bounds);
   // Force update the window region.
   window->ResetWindowRegion();
 
@@ -278,6 +279,8 @@ TEST_F(X11WindowTest, Shape) {
 
   // Changing window's size should update the shape.
   window->SetBounds(gfx::Rect(100, 100, 200, 200));
+  // Force update the window region.
+  window->ResetWindowRegion();
   connection->DispatchAll();
 
   if (window->GetBounds().width() == 200) {

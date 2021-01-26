@@ -123,8 +123,7 @@ class VIEWS_EXPORT DesktopWindowTreeHostPlatform
   void OnActivationChanged(bool active) override;
   base::Optional<gfx::Size> GetMinimumSizeForWindow() override;
   base::Optional<gfx::Size> GetMaximumSizeForWindow() override;
-  base::Optional<SkPath> GetWindowMaskForWindowShape(
-      const gfx::Size& size_in_pixels) override;
+  SkPath GetWindowMaskForWindowShapeInPixels() override;
 
   // ui::WorkspaceExtensionDelegate:
   void OnWorkspaceChanged() override;

@@ -21,9 +21,8 @@ base::Optional<gfx::Size> PlatformWindowDelegate::GetMaximumSizeForWindow() {
   return base::nullopt;
 }
 
-base::Optional<SkPath> PlatformWindowDelegate::GetWindowMaskForWindowShape(
-    const gfx::Size& size_in_pixels) {
-  return base::nullopt;
+SkPath PlatformWindowDelegate::GetWindowMaskForWindowShapeInPixels() {
+  return SkPath();
 }
 
 }  // namespace ui
