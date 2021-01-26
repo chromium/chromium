@@ -63,6 +63,7 @@ constexpr char kAssistantOptInId[] = "assistant-optin-flow";
 constexpr char kAssistantOptInFlowCard[] = "card";
 constexpr char kLoading[] = "loading";
 constexpr char kValueProp[] = "valueProp";
+constexpr char kRelatedInfo[] = "relatedInfo";
 constexpr char kVoiceMatch[] = "voiceMatch";
 constexpr char kThirdParty[] = "thirdParty";
 constexpr char kGetMore[] = "getMore";
@@ -78,6 +79,13 @@ const test::UIPath kValuePropNextButton = {
     kAssistantOptInId, kAssistantOptInFlowCard, kValueProp, "next-button"};
 const test::UIPath kValuePropSkipButton = {
     kAssistantOptInId, kAssistantOptInFlowCard, kValueProp, "skip-button"};
+
+const test::UIPath kAssistantRelatedInfo = {
+    kAssistantOptInId, kAssistantOptInFlowCard, kRelatedInfo};
+const test::UIPath kRelatedInfoNextButton = {
+    kAssistantOptInId, kAssistantOptInFlowCard, kRelatedInfo, "next-button"};
+const test::UIPath kRelatedInfoSkipButton = {
+    kAssistantOptInId, kAssistantOptInFlowCard, kRelatedInfo, "skip-button"};
 
 const test::UIPath kAssistantVoiceMatch = {
     kAssistantOptInId, kAssistantOptInFlowCard, kVoiceMatch};
@@ -103,8 +111,6 @@ const test::UIPath kAssistantGetMore = {kAssistantOptInId,
                                         kAssistantOptInFlowCard, kGetMore};
 const test::UIPath kGetMoreNextButton = {
     kAssistantOptInId, kAssistantOptInFlowCard, kGetMore, "next-button"};
-const test::UIPath kGetMoreToggleContext = {
-    kAssistantOptInId, kAssistantOptInFlowCard, kGetMore, "toggle-context"};
 const test::UIPath kGetMoreToggleEmail = {
     kAssistantOptInId, kAssistantOptInFlowCard, kGetMore, "toggle-email"};
 
@@ -353,7 +359,10 @@ class ScopedAssistantSettings : public chromeos::assistant::AssistantSettings {
 
 class AssistantOptInFlowTest : public OobeBaseTest {
  public:
-  AssistantOptInFlowTest() = default;
+  AssistantOptInFlowTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        assistant::features::kEnableBetterAssistant);
+  }
   ~AssistantOptInFlowTest() override = default;
 
   void RegisterAdditionalRequestHandlers() override {
@@ -448,6 +457,9 @@ class AssistantOptInFlowTest : public OobeBaseTest {
   // request..
   bool fail_next_value_prop_url_request_ = false;
 
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
     auto response = std::make_unique<BasicHttpResponse>();
@@ -479,6 +491,15 @@ class AssistantOptInFlowTest : public OobeBaseTest {
   LoginManagerMixin login_manager_{&mixin_host_};
 };
 
+class AssistantOptInFlowNewLayoutDisabledTest : public AssistantOptInFlowTest {
+ public:
+  AssistantOptInFlowNewLayoutDisabledTest() {
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndDisableFeature(
+        assistant::features::kEnableBetterAssistant);
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, Basic) {
   auto force_lib_assistant_enabled =
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
@@ -495,16 +516,11 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, Basic) {
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
   TapWhenEnabled(kValuePropNextButton);
 
-  test::OobeJS().CreateVisibilityWaiter(true, kAssistantThirdParty)->Wait();
-  TapWhenEnabled(kThirdPartyNextButton);
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
+  TapWhenEnabled(kRelatedInfoNextButton);
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantVoiceMatch)->Wait();
   TapWhenEnabled(kVoiceMatchAgreeButton);
-
-  test::OobeJS().CreateVisibilityWaiter(true, kAssistantGetMore)->Wait();
-  test::OobeJS().ExpectVisiblePath(kGetMoreToggleContext);
-
-  TapWhenEnabled(kGetMoreNextButton);
 
   WaitForScreenExit();
 
@@ -536,18 +552,11 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, DisableScreenContext) {
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
   TapWhenEnabled(kValuePropNextButton);
 
-  test::OobeJS().CreateVisibilityWaiter(true, kAssistantThirdParty)->Wait();
-  TapWhenEnabled(kThirdPartyNextButton);
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
+  TapWhenEnabled(kRelatedInfoSkipButton);
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantVoiceMatch)->Wait();
   TapWhenEnabled(kVoiceMatchAgreeButton);
-
-  test::OobeJS().CreateVisibilityWaiter(true, kAssistantGetMore)->Wait();
-
-  test::OobeJS().ExpectVisiblePath(kGetMoreToggleContext);
-  test::OobeJS().ClickOnPath(kGetMoreToggleContext);
-
-  TapWhenEnabled(kGetMoreNextButton);
 
   WaitForScreenExit();
 
@@ -579,14 +588,11 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, AssistantStateUpdateAfterShow) {
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
   TapWhenEnabled(kValuePropNextButton);
 
-  test::OobeJS().CreateVisibilityWaiter(true, kAssistantThirdParty)->Wait();
-  TapWhenEnabled(kThirdPartyNextButton);
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
+  TapWhenEnabled(kRelatedInfoNextButton);
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantVoiceMatch)->Wait();
   TapWhenEnabled(kVoiceMatchAgreeButton);
-
-  test::OobeJS().CreateVisibilityWaiter(true, kAssistantGetMore)->Wait();
-  TapWhenEnabled(kGetMoreNextButton);
 
   WaitForScreenExit();
 
@@ -625,14 +631,11 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, RetryOnWebviewLoadFail) {
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantValueProp)->Wait();
   TapWhenEnabled(kValuePropNextButton);
 
-  test::OobeJS().CreateVisibilityWaiter(true, kAssistantThirdParty)->Wait();
-  TapWhenEnabled(kThirdPartyNextButton);
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
+  TapWhenEnabled(kRelatedInfoNextButton);
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantVoiceMatch)->Wait();
   TapWhenEnabled(kVoiceMatchAgreeButton);
-
-  test::OobeJS().CreateVisibilityWaiter(true, kAssistantGetMore)->Wait();
-  TapWhenEnabled(kGetMoreNextButton);
 
   WaitForScreenExit();
 
@@ -678,7 +681,8 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, RejectValueProp) {
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, AskEmailOptIn_NotChecked) {
+IN_PROC_BROWSER_TEST_F(AssistantOptInFlowNewLayoutDisabledTest,
+                       AskEmailOptIn_NotChecked) {
   auto force_lib_assistant_enabled =
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
   assistant_settings_->set_consent_ui_flags(
@@ -723,7 +727,8 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, AskEmailOptIn_NotChecked) {
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, AskEmailOptIn_Accepted) {
+IN_PROC_BROWSER_TEST_F(AssistantOptInFlowNewLayoutDisabledTest,
+                       AskEmailOptIn_Accepted) {
   auto force_lib_assistant_enabled =
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
   assistant_settings_->set_consent_ui_flags(
@@ -784,14 +789,11 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, SkipShowingValueProp) {
   screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
-  test::OobeJS().CreateVisibilityWaiter(true, kAssistantThirdParty)->Wait();
-  TapWhenEnabled(kThirdPartyNextButton);
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
+  TapWhenEnabled(kRelatedInfoNextButton);
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantVoiceMatch)->Wait();
   TapWhenEnabled(kVoiceMatchAgreeButton);
-
-  test::OobeJS().CreateVisibilityWaiter(true, kAssistantGetMore)->Wait();
-  TapWhenEnabled(kGetMoreNextButton);
 
   WaitForScreenExit();
 
@@ -807,7 +809,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, SkipShowingValueProp) {
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest,
+IN_PROC_BROWSER_TEST_F(AssistantOptInFlowNewLayoutDisabledTest,
                        SkipShowingValuePropAndThirdPartyDisclosure) {
   auto force_lib_assistant_enabled =
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
@@ -849,8 +851,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, SpeakerIdEnrollment) {
   auto force_lib_assistant_enabled =
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
   assistant_settings_->set_consent_ui_flags(
-      ScopedAssistantSettings::CONSENT_UI_FLAG_SKIP_ACTIVITY_CONTROL |
-      ScopedAssistantSettings::CONSENT_UI_FLAG_SKIP_THIRD_PARTY_DISCLOSURE);
+      ScopedAssistantSettings::CONSENT_UI_FLAG_SKIP_ACTIVITY_CONTROL);
   assistant_settings_->set_speaker_id_enrollment_mode(
       ScopedAssistantSettings::SpeakerIdEnrollmentMode::STEP_BY_STEP);
 
@@ -863,6 +864,9 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, SpeakerIdEnrollment) {
   OobeScreenWaiter screen_waiter(AssistantOptInFlowScreenView::kScreenId);
   screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
+
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
+  TapWhenEnabled(kRelatedInfoNextButton);
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantVoiceMatch)->Wait();
   TapWhenEnabled(kVoiceMatchAgreeButton);
@@ -899,9 +903,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest, SpeakerIdEnrollment) {
   ASSERT_TRUE(assistant_settings_->AdvanceSpeakerIdEnrollmentState());
   EXPECT_FALSE(assistant_settings_->IsSpeakerIdEnrollmentActive());
 
-  test::OobeJS().CreateVisibilityWaiter(true, kAssistantGetMore)->Wait();
-  TapWhenEnabled(kGetMoreNextButton);
-
   WaitForScreenExit();
 
   ExpectCollectedOptIns({});
@@ -921,8 +922,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest,
   auto force_lib_assistant_enabled =
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
   assistant_settings_->set_consent_ui_flags(
-      ScopedAssistantSettings::CONSENT_UI_FLAG_SKIP_ACTIVITY_CONTROL |
-      ScopedAssistantSettings::CONSENT_UI_FLAG_SKIP_THIRD_PARTY_DISCLOSURE);
+      ScopedAssistantSettings::CONSENT_UI_FLAG_SKIP_ACTIVITY_CONTROL);
   assistant_settings_->set_speaker_id_enrollment_mode(
       ScopedAssistantSettings::SpeakerIdEnrollmentMode::STEP_BY_STEP);
 
@@ -936,6 +936,9 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest,
   screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
+  TapWhenEnabled(kRelatedInfoNextButton);
+
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantVoiceMatch)->Wait();
   TapWhenEnabled(kVoiceMatchAgreeButton);
 
@@ -948,9 +951,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest,
 
   test::OobeJS().TapOnPath(kVoiceMatchLaterButton);
   EXPECT_FALSE(assistant_settings_->IsSpeakerIdEnrollmentActive());
-
-  test::OobeJS().CreateVisibilityWaiter(true, kAssistantGetMore)->Wait();
-  TapWhenEnabled(kGetMoreNextButton);
 
   WaitForScreenExit();
 
@@ -971,8 +971,7 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest,
   auto force_lib_assistant_enabled =
       AssistantOptInFlowScreen::ForceLibAssistantEnabledForTesting(true);
   assistant_settings_->set_consent_ui_flags(
-      ScopedAssistantSettings::CONSENT_UI_FLAG_SKIP_ACTIVITY_CONTROL |
-      ScopedAssistantSettings::CONSENT_UI_FLAG_SKIP_THIRD_PARTY_DISCLOSURE);
+      ScopedAssistantSettings::CONSENT_UI_FLAG_SKIP_ACTIVITY_CONTROL);
   assistant_settings_->set_speaker_id_enrollment_mode(
       ScopedAssistantSettings::SpeakerIdEnrollmentMode::STEP_BY_STEP);
 
@@ -986,6 +985,10 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest,
   screen_waiter.set_assert_next_screen();
   screen_waiter.Wait();
 
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantRelatedInfo)->Wait();
+  TapWhenEnabled(kRelatedInfoNextButton);
+
+  test::OobeJS().CreateVisibilityWaiter(true, kAssistantVoiceMatch)->Wait();
   TapWhenEnabled(kVoiceMatchAgreeButton);
 
   ASSERT_TRUE(assistant_settings_->AdvanceSpeakerIdEnrollmentState());
@@ -1006,9 +1009,6 @@ IN_PROC_BROWSER_TEST_F(AssistantOptInFlowTest,
 
   test::OobeJS().CreateVisibilityWaiter(true, kAssistantVoiceMatch)->Wait();
   TapWhenEnabled(kVoiceMatchAgreeButton);
-
-  test::OobeJS().CreateVisibilityWaiter(true, kAssistantGetMore)->Wait();
-  TapWhenEnabled(kGetMoreNextButton);
 
   WaitForScreenExit();
 
