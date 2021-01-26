@@ -154,6 +154,14 @@ class PLATFORM_EXPORT HeapAllocator {
         TraceCollectionIfEnabled<WTF::kNoWeakHandling, T, Traits>::Trace);
   }
 
+  static bool DeferTraceToMutatorThreadIfConcurrent(Visitor* visitor,
+                                                    const void* object,
+                                                    TraceCallback callback,
+                                                    size_t deferred_size) {
+    return visitor->DeferredTraceIfConcurrent({object, callback},
+                                              deferred_size);
+  }
+
  private:
   static void BackingFree(void*);
   static bool BackingExpand(void*, size_t);

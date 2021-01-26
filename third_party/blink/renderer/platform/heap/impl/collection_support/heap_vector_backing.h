@@ -10,8 +10,8 @@
 #include "third_party/blink/renderer/platform/heap/impl/finalizer_traits.h"
 #include "third_party/blink/renderer/platform/heap/impl/gc_info.h"
 #include "third_party/blink/renderer/platform/heap/impl/threading_traits.h"
-#include "third_party/blink/renderer/platform/heap/impl/trace_traits.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/trace_traits.h"
 #include "third_party/blink/renderer/platform/wtf/conditional_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -139,8 +139,9 @@ struct TraceTrait<HeapVectorBacking<T, Traits>> {
 
 namespace WTF {
 
-// This trace method is used only for on-stack HeapVectors found in
-// conservative scanning. On-heap HeapVectors are traced by Vector::trace.
+// This trace method is used for all HeapVectorBacking objects. On-stack objects
+// are found and dispatched using conservative stack scanning. HeapVector (i.e.
+// Vector) dispatches all regular on-heap backings to this method.
 template <typename T, typename Traits>
 struct TraceInCollectionTrait<kNoWeakHandling,
                               blink::HeapVectorBacking<T, Traits>,

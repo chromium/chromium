@@ -15,6 +15,13 @@ namespace blink {
 // indices of all custom spaces form a sequence starting at 0. See
 // `cppgc::CustomSpace` for details.
 
+class HeapVectorBackingSpace
+    : public cppgc::CustomSpace<HeapVectorBackingSpace> {
+ public:
+  static constexpr cppgc::CustomSpaceIndex kSpaceIndex = 0;
+  static constexpr bool kSupportsCompaction = true;
+};
+
 class NodeSpace : public cppgc::CustomSpace<NodeSpace> {
  public:
   static constexpr cppgc::CustomSpaceIndex kSpaceIndex = 2;

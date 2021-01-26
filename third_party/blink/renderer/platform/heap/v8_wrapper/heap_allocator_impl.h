@@ -97,6 +97,13 @@ class PLATFORM_EXPORT HeapAllocator {
     // TODO(1056170): Implement.
   }
 
+  template <typename Traits>
+  static bool CanReuseHashTableDeletedBucket() {
+    if (Traits::kEmptyValueIsZero || !Traits::kCanTraceConcurrently)
+      return true;
+    return !IsIncrementalMarking();
+  }
+
   template <typename T>
   static void BackingWriteBarrier(T**) {
     // TODO(1056170): Implement.
@@ -155,6 +162,14 @@ class PLATFORM_EXPORT HeapAllocator {
     visitor->TraceWeakContainer(
         reinterpret_cast<const HeapHashTableBacking<HashTable>*>(backing),
         callback, parameter);
+  }
+
+  static bool DeferTraceToMutatorThreadIfConcurrent(Visitor* visitor,
+                                                    const void* object,
+                                                    TraceCallback callback,
+                                                    size_t deferred_size) {
+    return visitor->DeferTraceToMutatorThreadIfConcurrent(object, callback,
+                                                          deferred_size);
   }
 };
 

@@ -170,11 +170,6 @@ struct IsTraceable<T,
                 "Trace methods should be marked as const.");
 };
 
-template <typename T, typename U>
-struct IsTraceable<std::pair<T, U>>
-    : std::integral_constant<bool,
-                             IsTraceable<T>::value || IsTraceable<U>::value> {};
-
 template <typename T>
 class IsGarbageCollectedTypeInternal {
   typedef char YesType;
@@ -236,6 +231,11 @@ struct IsMemberType : std::integral_constant<
 };
 
 #endif  // !USE_V8_OILPAN
+
+template <typename T, typename U>
+struct IsTraceable<std::pair<T, U>>
+    : std::integral_constant<bool,
+                             IsTraceable<T>::value || IsTraceable<U>::value> {};
 
 // Convenience template wrapping the IsTraceableInCollection template in
 // Collection Traits. It helps make the code more readable.
