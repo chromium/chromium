@@ -61,23 +61,15 @@
       'linux-pgo': 'official_goma_linux_pgo',
       'linux-pgo-beta': 'official_goma_linux_pgo',
       'linux-pgo-stable': 'official_goma_linux_pgo',
-      # TODO(https://crbug.com/1169257) Remove this once linux-pgo is spun up
-      'linux-pgo-trunk': 'official_goma_linux_pgo',
       'mac-pgo': 'official_goma_mac_pgo',
       'mac-pgo-beta': 'official_goma_mac_pgo',
       'mac-pgo-stable': 'official_goma_mac_pgo',
-      # TODO(https://crbug.com/1169257) Remove this once mac-pgo is spun up
-      'mac-pgo-trunk': 'official_goma_mac_pgo',
       'win32-pgo': 'official_goma_x86_pgo',
       'win32-pgo-beta': 'official_goma_x86_pgo',
       'win32-pgo-stable': 'official_goma_x86_pgo',
-      # TODO(https://crbug.com/1169257) Remove this once win32-pgo is spun up
-      'win32-pgo-trunk': 'official_goma_x86_pgo',
       'win64-pgo': 'official_goma_x64_pgo',
       'win64-pgo-beta': 'official_goma_x64_pgo',
       'win64-pgo-stable': 'official_goma_x64_pgo',
-      # TODO(https://crbug.com/1169257) Remove this once win64-pgo is spun up
-      'win64-pgo-trunk': 'official_goma_x64_pgo',
     },
     # Take care when changing any of these builders to ensure that you do not
     # include a configuration with 'chrome_with_codecs' since these builders
@@ -877,17 +869,9 @@
 
     'tryserver.chrome.pgo': {
       'linux-pgo': 'official_goma_linux_pgo',
-      # TODO(https://crbug.com/1169257) Remove this once linux-pgo is spun up
-      'linux-pgo-trunk': 'official_goma_linux_pgo',
       'mac-pgo': 'official_goma_mac_pgo',
-      # TODO(https://crbug.com/1169257) Remove this once mac-pgo is spun up
-      'mac-pgo-trunk': 'official_goma_mac_pgo',
       'win32-pgo': 'official_goma_x86_pgo',
-      # TODO(https://crbug.com/1169257) Remove this once win32-pgo is spun up
-      'win32-pgo-trunk': 'official_goma_x86_pgo',
       'win64-pgo': 'official_goma_x64_pgo',
-      # TODO(https://crbug.com/1169257) Remove this once win64-pgo is spun up
-      'win64-pgo-trunk': 'official_goma_x64_pgo',
     },
 
     'tryserver.chromium.chromiumos': {
