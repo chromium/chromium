@@ -15,7 +15,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-// import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountUtils;
@@ -24,10 +23,9 @@ import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
-/** Tests for ProfileOAuth2TokenServiceDelegate. */
+/** Tests for {@link ProfileOAuth2TokenServiceDelegate}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ProfileOAuth2TokenServiceDelegateTest {
-
     private FakeAccountManagerFacade mAccountManagerFacade;
 
     private ProfileOAuth2TokenServiceDelegate mProfileOAuth2TokenServiceDelegate;
@@ -36,7 +34,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
      * Class handling GetAccessToken callbacks and providing a blocking {@link
      * #getToken()}.
      */
-    class GetAccessTokenCallbackForTest
+    private static class GetAccessTokenCallbackForTest
             implements ProfileOAuth2TokenServiceDelegate.GetAccessTokenCallback {
         private String mToken;
         final CountDownLatch mTokenRetrievedCountDown = new CountDownLatch(1);
@@ -140,7 +138,23 @@ public class ProfileOAuth2TokenServiceDelegateTest {
             mProfileOAuth2TokenServiceDelegate.getAccessToken(account, scope, callback);
         });
 
-        Assert.assertEquals(
-                mAccountManagerFacade.getAccessToken(account, scope), callback.getToken());
+        Assert.assertEquals(mAccountManagerFacade.getAccessToken(account, scope).getToken(),
+                callback.getToken());
+    }
+
+    @Test
+    @SmallTest
+    public void testHasOAuth2RefreshTokenWhenAccountIsNotOnDevice() {
+        mAccountManagerFacade.addAccount(AccountUtils.createAccountFromName("test1@gmail.com"));
+        Assert.assertFalse(
+                mProfileOAuth2TokenServiceDelegate.hasOAuth2RefreshToken("test2@gmail.com"));
+    }
+
+    @Test
+    @SmallTest
+    public void testHasOAuth2RefreshTokenWhenAccountIsOnDevice() {
+        final String accountEmail = "test1@gmail.com";
+        mAccountManagerFacade.addAccount(AccountUtils.createAccountFromName(accountEmail));
+        Assert.assertTrue(mProfileOAuth2TokenServiceDelegate.hasOAuth2RefreshToken(accountEmail));
     }
 }

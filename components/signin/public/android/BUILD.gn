@@ -55,11 +55,10 @@ android_library("javatests") {
     "//components/signin/core/browser/android:signin_java_test_support",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//third_party/android_deps:androidx_test_runner_java",
-    "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/junit",
   ]
 
-  sources = [ "javatests/src/org/chromium/components/signin/identitymanager/ProfileOAuth2TokenServiceDelegateTest.java" ]
+  sources = [ "java/src/org/chromium/components/signin/identitymanager/ProfileOAuth2TokenServiceDelegateTest.java" ]
 }

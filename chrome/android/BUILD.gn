@@ -1227,6 +1227,7 @@ android_library("chrome_test_java") {
     "//components/signin/core/browser/android:signin_java_test_support",
     "//components/signin/core/browser/android:signin_javatests",
     "//components/signin/public/android:java",
+    "//components/signin/public/android:javatests",
     "//components/site_engagement/content/android:java",
     "//components/strictmode/android:javatests",
     "//components/sync/android:sync_java",

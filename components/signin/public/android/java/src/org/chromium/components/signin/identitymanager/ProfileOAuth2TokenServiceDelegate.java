@@ -263,8 +263,9 @@ public final class ProfileOAuth2TokenServiceDelegate
     /**
      * Called by native to check whether the account has an OAuth2 refresh token.
      */
+    @VisibleForTesting
     @CalledByNative
-    private boolean hasOAuth2RefreshToken(String accountName) {
+    boolean hasOAuth2RefreshToken(String accountName) {
         if (!mAccountManagerFacade.isCachePopulated()) {
             return false;
         }

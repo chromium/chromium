@@ -204,11 +204,11 @@ bool ProfileOAuth2TokenServiceDelegateAndroid::RefreshTokenIsAvailable(
     return false;
   }
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_account_id =
+  ScopedJavaLocalRef<jstring> j_account_name =
       ConvertUTF8ToJavaString(env, account_name);
   jboolean refresh_token_is_available =
       signin::Java_ProfileOAuth2TokenServiceDelegate_hasOAuth2RefreshToken(
-          env, java_ref_, j_account_id);
+          env, java_ref_, j_account_name);
   return refresh_token_is_available == JNI_TRUE;
 }
 
