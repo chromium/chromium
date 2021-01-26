@@ -61,7 +61,7 @@ function sanityCheck(storage) {
   checkEqual(0, storage.length,
              "storage.length != 0 after clear");
 
-  var tooLarge =  makeLargeString((5 * 1024 * 1024) + 1);
+  var tooLarge = "X".repeat((5 * 1024 * 1024) + 1);
   try {
     storage.setItem("tooLarge", tooLarge);
     throw "failed to throw exception for very large value";
@@ -81,8 +81,4 @@ function sanityCheck(storage) {
 function checkEqual(lhs, rhs, errorMessage) {
   if (lhs !== rhs)
     throw errorMessage;
-}
-
-function makeLargeString(minimumSize) {
-  return Array(minimumSize).join("X");
 }
