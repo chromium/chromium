@@ -148,6 +148,7 @@ os_settings_auto_imports = settings_auto_imports +
                              "ui/webui/resources/cr_elements/cr_slider/cr_slider.html|SliderTick",
                              "ui/webui/resources/html/assert.html|assert,assertNotReached",
                              "ui/webui/resources/html/cr.html|sendWithPromise,removeWebUIListener,addWebUIListener,WebUIListener",
+                             "ui/webui/resources/cr_elements/policy/cr_policy_indicator_behavior.html|CrPolicyIndicatorType",
                              "ui/webui/resources/html/icon.html|getImage",
                              "ui/webui/resources/html/list_property_update_behavior.html|ListPropertyUpdateBehavior",
                              "ui/webui/resources/html/parse_html_subset.html|parseHtmlSubset",

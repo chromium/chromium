@@ -22,12 +22,18 @@ Polymer({
     this.$.dialog.showModal();
   },
 
-  /** @override */
+  /**
+   * @private
+   * @return {boolean}
+   */
   isEnabling_() {
     return this.action === 'enable';
   },
 
-  /** @override */
+  /**
+   * @private
+   * @return {boolean}
+   */
   isDisabling_() {
     return this.action === 'disable';
   },
