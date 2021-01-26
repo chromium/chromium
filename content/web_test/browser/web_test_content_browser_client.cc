@@ -561,17 +561,20 @@ void WebTestContentBrowserClient::BindWebTestControlHost(
 }
 
 #if defined(OS_WIN)
-bool WebTestContentBrowserClient::PreSpawnRenderer(
+bool WebTestContentBrowserClient::PreSpawnChild(
     sandbox::TargetPolicy* policy,
-    RendererSpawnFlags flags) {
-  // Add sideloaded font files for testing. See also DIR_WINDOWS_FONTS
-  // addition in |StartSandboxedProcess|.
-  std::vector<std::string> font_files = switches::GetSideloadFontFiles();
-  for (std::vector<std::string>::const_iterator i(font_files.begin());
-       i != font_files.end(); ++i) {
-    policy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
-                    sandbox::TargetPolicy::FILES_ALLOW_READONLY,
-                    base::UTF8ToWide(*i).c_str());
+    sandbox::policy::SandboxType sandbox_type,
+    ChildSpawnFlags flags) {
+  if (sandbox_type == sandbox::policy::SandboxType::kRenderer) {
+    // Add sideloaded font files for testing. See also DIR_WINDOWS_FONTS
+    // addition in |StartSandboxedProcess|.
+    std::vector<std::string> font_files = switches::GetSideloadFontFiles();
+    for (std::vector<std::string>::const_iterator i(font_files.begin());
+         i != font_files.end(); ++i) {
+      policy->AddRule(sandbox::TargetPolicy::SUBSYS_FILES,
+                      sandbox::TargetPolicy::FILES_ALLOW_READONLY,
+                      base::UTF8ToWide(*i).c_str());
+    }
   }
   return true;
 }

@@ -7,6 +7,8 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/sandbox_type.h"
@@ -112,18 +114,21 @@ bool UtilitySandboxedProcessLauncherDelegate::ShouldLaunchElevated() {
 
 bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     sandbox::TargetPolicy* policy) {
-  if (sandbox_type_ == sandbox::policy::SandboxType::kNetwork)
-    return NetworkPreSpawnTarget(policy, cmd_line_);
+  if (sandbox_type_ == sandbox::policy::SandboxType::kNetwork) {
+    if (!NetworkPreSpawnTarget(policy, cmd_line_))
+      return false;
+  }
 
-  if (sandbox_type_ == sandbox::policy::SandboxType::kAudio)
-    return AudioPreSpawnTarget(policy);
+  if (sandbox_type_ == sandbox::policy::SandboxType::kAudio) {
+    if (!AudioPreSpawnTarget(policy))
+      return false;
+  }
 
   if (sandbox_type_ == sandbox::policy::SandboxType::kProxyResolver) {
     sandbox::MitigationFlags flags = policy->GetDelayedProcessMitigations();
     flags |= sandbox::MITIGATION_DYNAMIC_CODE_DISABLE;
     if (sandbox::SBOX_ALL_OK != policy->SetDelayedProcessMitigations(flags))
       return false;
-    return true;
   }
 
   if (sandbox_type_ == sandbox::policy::SandboxType::kSpeechRecognition) {
@@ -200,7 +205,8 @@ bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
       return false;
   }
 
-  return true;
+  return GetContentClient()->browser()->PreSpawnChild(
+      policy, sandbox_type_, ContentBrowserClient::ChildSpawnFlags::NONE);
 }
 
 }  // namespace content

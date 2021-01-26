@@ -3930,42 +3930,69 @@ base::string16 ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
   }
 }
 
-bool ChromeContentBrowserClient::PreSpawnRenderer(sandbox::TargetPolicy* policy,
-                                                  RendererSpawnFlags flags) {
-// Does not work under component build because all the component DLLs would need
-// to be manually added and maintained. Does not work under ASAN build because
-// ASAN has not yet fully initialized its instrumentation by the time the CIG
-// intercepts run.
+// Note: Only use sparingly to add Chrome specific sandbox functionality here.
+// Other code should reside in the content layer. Changes to this function
+// should be reviewed by the security team.
+bool ChromeContentBrowserClient::PreSpawnChild(
+    sandbox::TargetPolicy* policy,
+    sandbox::policy::SandboxType sandbox_type,
+    ChildSpawnFlags flags) {
+  switch (sandbox_type) {
+    case sandbox::policy::SandboxType::kRenderer: {
+      // Does not work under component build because all the component DLLs
+      // would need to be manually added and maintained. Does not work under
+      // ASAN build because ASAN has not yet fully initialized its
+      // instrumentation by the time the CIG intercepts run.
 #if !defined(COMPONENT_BUILD) && !defined(ADDRESS_SANITIZER)
-  if ((flags & RendererSpawnFlags::RENDERER_CODE_INTEGRITY) == 0)
-    return true;
-  if (!base::FeatureList::IsEnabled(kRendererCodeIntegrity))
-    return true;
+      if ((flags & ChildSpawnFlags::RENDERER_CODE_INTEGRITY) == 0)
+        return true;
+      if (!base::FeatureList::IsEnabled(kRendererCodeIntegrity))
+        return true;
 
-  // Only enable signing mitigation if launching from chrome.exe.
-  base::FilePath exe_path;
-  if (!base::PathService::Get(base::FILE_EXE, &exe_path))
-    return true;
-  if (chrome::kBrowserProcessExecutableName != exe_path.BaseName().value())
-    return true;
+      // Only enable signing mitigation if launching from chrome.exe.
+      base::FilePath exe_path;
+      if (!base::PathService::Get(base::FILE_EXE, &exe_path))
+        return true;
+      if (chrome::kBrowserProcessExecutableName != exe_path.BaseName().value())
+        return true;
 
-  sandbox::MitigationFlags mitigations = policy->GetProcessMitigations();
-  mitigations |= sandbox::MITIGATION_FORCE_MS_SIGNED_BINS;
-  sandbox::ResultCode result = policy->SetProcessMitigations(mitigations);
-  if (result != sandbox::SBOX_ALL_OK)
-    return false;
+      sandbox::MitigationFlags mitigations = policy->GetProcessMitigations();
+      mitigations |= sandbox::MITIGATION_FORCE_MS_SIGNED_BINS;
+      sandbox::ResultCode result = policy->SetProcessMitigations(mitigations);
+      if (result != sandbox::SBOX_ALL_OK)
+        return false;
 
-  // Allow loading Chrome's DLLs.
-  for (const auto* dll : {chrome::kBrowserResourcesDll, chrome::kElfDll}) {
-    result = policy->AddRule(sandbox::TargetPolicy::SUBSYS_SIGNED_BINARY,
-                             sandbox::TargetPolicy::SIGNED_ALLOW_LOAD,
-                             GetModulePath(dll).value().c_str());
-    if (result != sandbox::SBOX_ALL_OK)
-      return false;
-  }
+      // Allow loading Chrome's DLLs.
+      for (const auto* dll : {chrome::kBrowserResourcesDll, chrome::kElfDll}) {
+        result = policy->AddRule(sandbox::TargetPolicy::SUBSYS_SIGNED_BINARY,
+                                 sandbox::TargetPolicy::SIGNED_ALLOW_LOAD,
+                                 GetModulePath(dll).value().c_str());
+        if (result != sandbox::SBOX_ALL_OK)
+          return false;
+      }
+      return true;
 #endif  // !defined(COMPONENT_BUILD) && !defined(ADDRESS_SANITIZER)
-
-  return true;
+      return true;
+    }
+    case sandbox::policy::SandboxType::kNetwork:
+    case sandbox::policy::SandboxType::kUtility:
+    case sandbox::policy::SandboxType::kGpu:
+    case sandbox::policy::SandboxType::kPpapi:
+    case sandbox::policy::SandboxType::kNoSandbox:
+    case sandbox::policy::SandboxType::kNoSandboxAndElevatedPrivileges:
+    case sandbox::policy::SandboxType::kXrCompositing:
+    case sandbox::policy::SandboxType::kCdm:
+    case sandbox::policy::SandboxType::kPrintCompositor:
+    case sandbox::policy::SandboxType::kAudio:
+    case sandbox::policy::SandboxType::kSpeechRecognition:
+    case sandbox::policy::SandboxType::kProxyResolver:
+    case sandbox::policy::SandboxType::kPdfConversion:
+    case sandbox::policy::SandboxType::kSharingService:
+    case sandbox::policy::SandboxType::kVideoCapture:
+    case sandbox::policy::SandboxType::kIconReader:
+    case sandbox::policy::SandboxType::kMediaFoundationCdm:
+      return true;
+  }
 }
 
 bool ChromeContentBrowserClient::IsRendererCodeIntegrityEnabled() {

@@ -1193,17 +1193,20 @@ class CONTENT_EXPORT ContentBrowserClient {
 #endif  // defined(OS_POSIX) && !defined(OS_MAC) || defined(OS_FUCHSIA)
 
 #if defined(OS_WIN)
-  // Defines flags that can be passed to PreSpawnRenderer.
-  enum RendererSpawnFlags {
+  // Defines flags that can be passed to PreSpawnChild.
+  enum ChildSpawnFlags {
     NONE = 0,
     RENDERER_CODE_INTEGRITY = 1 << 0,
   };
 
-  // This is called on the PROCESS_LAUNCHER thread before the renderer process
-  // is launched. It gives the embedder a chance to add loosen the sandbox
-  // policy.
-  virtual bool PreSpawnRenderer(sandbox::TargetPolicy* policy,
-                                RendererSpawnFlags flags);
+  // This may be called on the PROCESS_LAUNCHER thread before the child process
+  // is launched. It gives the embedder a chance to add modify the sandbox
+  // policy. Returns false if child should not spawn.
+  // Only use this for embedder-specific policies, since the bulk of sandbox
+  // policies should go inside the relevant SandboxedProcessLauncherDelegate.
+  virtual bool PreSpawnChild(sandbox::TargetPolicy* policy,
+                             sandbox::policy::SandboxType sandbox_type,
+                             ChildSpawnFlags flags);
 
   // Returns the AppContainer SID for the specified sandboxed process type, or
   // empty string if this sandboxed process type does not support living inside
