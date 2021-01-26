@@ -6,9 +6,9 @@
 #define CHROME_BROWSER_CHROMEOS_LOGIN_SIGNIN_TOKEN_HANDLE_UTIL_H_
 
 #include <string>
-#include <unordered_map>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -93,7 +93,7 @@ class TokenHandleUtil {
   void OnValidationComplete(const std::string& token);
 
   // Map of pending check operations.
-  std::unordered_map<std::string, std::unique_ptr<TokenDelegate>>
+  base::flat_map<std::string, std::unique_ptr<TokenDelegate>>
       validation_delegates_;
 
   base::WeakPtrFactory<TokenHandleUtil> weak_factory_{this};
