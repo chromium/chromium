@@ -14,9 +14,10 @@ include_rules = [
   # Limit what we include from nacl.
   "-native_client",
 
-  # The subdirectories in chrome/ will manually allow their own include
-  # directories in chrome/ so we disallow all of them.
+  # Individual subdirectories of chrome/ must explicitly declare their
+  # dependencies on other subdirectories of chrome/.
   "-chrome",
+
   "+chrome/common",
   "+chrome/test",
   "+components/content_settings/common",
