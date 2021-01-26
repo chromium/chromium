@@ -23,9 +23,9 @@
 #include "chrome/renderer/chromeos_delayed_callback_group.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-namespace blink {
-class WebResourceRequestSenderDelegate;
-}  // namespace blink
+namespace content {
+class ResourceDispatcherDelegate;
+}
 
 namespace visitedlink {
 class VisitedLinkReader;
@@ -121,8 +121,7 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
           receiver);
 
   static bool is_incognito_process_;
-  std::unique_ptr<blink::WebResourceRequestSenderDelegate>
-      resource_request_sender_delegate_;
+  std::unique_ptr<content::ResourceDispatcherDelegate> resource_delegate_;
   RendererContentSettingRules content_setting_rules_;
 
   std::unique_ptr<visitedlink::VisitedLinkReader> visited_link_reader_;

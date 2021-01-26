@@ -38,6 +38,7 @@ class WebFrameRequestBlocker;
 
 namespace content {
 
+class ResourceDispatcher;
 class ServiceWorkerProviderContext;
 class URLLoaderThrottleProvider;
 class WebSocketHandshakeThrottleProvider;
@@ -283,6 +284,9 @@ class CONTENT_EXPORT WebWorkerFetchContextImpl
   // dedicated workers are not yet service worker clients, it is the parent
   // document's id in that case). Passed to ControllerServiceWorkerConnector.
   std::string client_id_;
+
+  // Initialized on the worker thread when InitializeOnWorkerThread() is called.
+  std::unique_ptr<ResourceDispatcher> resource_dispatcher_;
 
   // Initialized on the worker thread when InitializeOnWorkerThread() is called.
   // |loader_factory_| is used for regular loading by the worker. In

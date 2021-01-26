@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "extensions/common/message_bundle.h"
@@ -53,7 +52,7 @@ class MockIpcMessageSender : public IPC::Sender {
         .WillByDefault(DoAll(Invoke(MessageDeleter), Return(true)));
   }
 
-  ~MockIpcMessageSender() override = default;
+  ~MockIpcMessageSender() override {}
 
   MOCK_METHOD1(Send, bool(IPC::Message* message));
 
@@ -66,6 +65,7 @@ class MockRequestPeer : public blink::WebRequestPeer {
   MockRequestPeer()
       : body_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC) {
   }
+  ~MockRequestPeer() override {}
 
   MOCK_METHOD2(OnUploadProgress, void(uint64_t position, uint64_t size));
   MOCK_METHOD3(OnReceivedRedirect,
@@ -102,8 +102,6 @@ class MockRequestPeer : public blink::WebRequestPeer {
   }
 
  private:
-  friend class testing::StrictMock<MockRequestPeer>;
-
   void OnReadable(MojoResult, const mojo::HandleSignalsState&) {
     uint32_t available_bytes = 64 * 1024;
     std::vector<char> buffer(available_bytes);
@@ -126,8 +124,6 @@ class MockRequestPeer : public blink::WebRequestPeer {
     body_.append(buffer.begin(), buffer.end());
   }
 
-  ~MockRequestPeer() override = default;
-
   std::string body_;
   mojo::SimpleWatcher body_watcher_;
   mojo::ScopedDataPipeConsumerHandle body_handle_;
@@ -146,14 +142,14 @@ class ExtensionLocalizationPeerTest : public testing::Test {
 
   void SetUpExtensionLocalizationPeer(const std::string& mime_type,
                                       const GURL& request_url) {
-    original_peer_ =
-        base::MakeRefCounted<testing::StrictMock<MockRequestPeer>>();
-
-    scoped_refptr<blink::WebRequestPeer> peer =
+    auto original_peer =
+        std::make_unique<testing::StrictMock<MockRequestPeer>>();
+    original_peer_ = original_peer.get();
+    auto extension_peer =
         ExtensionLocalizationPeer::CreateExtensionLocalizationPeer(
-            original_peer_, sender_.get(), mime_type, request_url);
-    filter_peer_ = base::WrapRefCounted(
-        static_cast<ExtensionLocalizationPeer*>(peer.get()));
+            std::move(original_peer), sender_.get(), mime_type, request_url);
+    filter_peer_.reset(
+        static_cast<ExtensionLocalizationPeer*>(extension_peer.release()));
   }
 
   std::string GetData() { return filter_peer_->data_; }
@@ -183,12 +179,12 @@ class ExtensionLocalizationPeerTest : public testing::Test {
 
   base::test::TaskEnvironment scoped_environment_;
   std::unique_ptr<MockIpcMessageSender> sender_;
-  scoped_refptr<MockRequestPeer> original_peer_;
-  scoped_refptr<ExtensionLocalizationPeer> filter_peer_;
+  MockRequestPeer* original_peer_;
+  std::unique_ptr<ExtensionLocalizationPeer> filter_peer_;
 };
 
 TEST_F(ExtensionLocalizationPeerTest, CreateWithWrongMimeType) {
-  scoped_refptr<blink::WebRequestPeer> peer =
+  std::unique_ptr<blink::WebRequestPeer> peer =
       ExtensionLocalizationPeer::CreateExtensionLocalizationPeer(
           nullptr, sender_.get(), "text/html", GURL(kExtensionUrl_1));
   EXPECT_EQ(nullptr, peer);

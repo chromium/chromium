@@ -70,8 +70,8 @@ class MockRenderThread : public RenderThread {
   void RemoveFilter(IPC::MessageFilter* filter) override;
   void AddObserver(RenderThreadObserver* observer) override;
   void RemoveObserver(RenderThreadObserver* observer) override;
-  void SetResourceRequestSenderDelegate(
-      blink::WebResourceRequestSenderDelegate* delegate) override;
+  void SetResourceDispatcherDelegate(
+      ResourceDispatcherDelegate* delegate) override;
   void RecordAction(const base::UserMetricsAction& action) override;
   void RecordComputedAction(const std::string& action) override;
   void RegisterExtension(std::unique_ptr<v8::Extension> extension) override;

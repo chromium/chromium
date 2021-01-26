@@ -23,7 +23,6 @@ class WaitableEvent;
 }
 
 namespace blink {
-class WebResourceRequestSenderDelegate;
 struct UserAgentMetadata;
 
 namespace scheduler {
@@ -43,6 +42,7 @@ class Extension;
 
 namespace content {
 class RenderThreadObserver;
+class ResourceDispatcherDelegate;
 
 class CONTENT_EXPORT RenderThread : virtual public ChildThread {
  public:
@@ -85,11 +85,9 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
   virtual void AddObserver(RenderThreadObserver* observer) = 0;
   virtual void RemoveObserver(RenderThreadObserver* observer) = 0;
 
-  // Set the WebResourceRequestSender delegate object for this process.
-  // This does not take the ownership of the delegate. It is expected that the
-  // delegate is kept alive while a request may be dispatched.
-  virtual void SetResourceRequestSenderDelegate(
-      blink::WebResourceRequestSenderDelegate* delegate) = 0;
+  // Set the ResourceDispatcher delegate object for this process.
+  virtual void SetResourceDispatcherDelegate(
+      ResourceDispatcherDelegate* delegate) = 0;
 
   // Registers the given V8 extension with WebKit.
   virtual void RegisterExtension(std::unique_ptr<v8::Extension> extension) = 0;

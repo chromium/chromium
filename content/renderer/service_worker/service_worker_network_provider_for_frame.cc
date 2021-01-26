@@ -145,8 +145,7 @@ ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
   // Create our own SubresourceLoader to route the request to the controller
   // ServiceWorker.
   return std::make_unique<WebURLLoaderImpl>(
-      RenderThreadImpl::current()->cors_exempt_header_list(),
-      /*terminate_sync_load_event=*/nullptr,
+      RenderThreadImpl::current()->resource_dispatcher(),
       std::move(freezable_task_runner_handle),
       std::move(unfreezable_task_runner_handle),
       context()->GetSubresourceLoaderFactory(), std::move(keep_alive_handle));

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/loader/fetch/url_loader/sync_load_context.h"
+#include "content/renderer/loader/sync_load_context.h"
 
 #include <string>
 
@@ -20,9 +20,8 @@
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/platform/resource_load_info_notifier_wrapper.h"
 #include "third_party/blink/public/platform/sync_load_response.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
-namespace blink {
+namespace content {
 
 // An inner helper class to manage the SyncLoadContext's events and timeouts,
 // so that we can stop or resumse all of them at once.
@@ -97,37 +96,39 @@ void SyncLoadContext::StartAsyncWithWaitableEvent(
     uint32_t loader_options,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
-    std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
-    SyncLoadResponse* response,
+    std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
+    blink::SyncLoadResponse* response,
     SyncLoadContext** context_for_redirect,
     base::WaitableEvent* redirect_or_response_event,
     base::WaitableEvent* abort_event,
     base::TimeDelta timeout,
-    mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
+    mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
     const std::vector<std::string>& cors_exempt_header_list,
-    std::unique_ptr<ResourceLoadInfoNotifierWrapper>
+    std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper) {
   auto* context = new SyncLoadContext(
       request.get(), std::move(pending_url_loader_factory), response,
       context_for_redirect, redirect_or_response_event, abort_event, timeout,
-      std::move(download_to_blob_registry), loading_task_runner);
-  context->resource_request_sender_->SendAsync(
+      std::move(download_to_blob_registry), loading_task_runner,
+      cors_exempt_header_list);
+  context->request_id_ = context->resource_dispatcher_->StartAsync(
       std::move(request), routing_id, std::move(loading_task_runner),
-      traffic_annotation, loader_options, cors_exempt_header_list,
-      base::WrapRefCounted(context), context->url_loader_factory_,
-      std::move(throttles), std::move(resource_load_info_notifier_wrapper));
+      traffic_annotation, loader_options, base::WrapUnique(context),
+      context->url_loader_factory_, std::move(throttles),
+      std::move(resource_load_info_notifier_wrapper));
 }
 
 SyncLoadContext::SyncLoadContext(
     network::ResourceRequest* request,
     std::unique_ptr<network::PendingSharedURLLoaderFactory> url_loader_factory,
-    SyncLoadResponse* response,
+    blink::SyncLoadResponse* response,
     SyncLoadContext** context_for_redirect,
     base::WaitableEvent* redirect_or_response_event,
     base::WaitableEvent* abort_event,
     base::TimeDelta timeout,
-    mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    const std::vector<std::string>& cors_exempt_header_list)
     : response_(response),
       context_for_redirect_(context_for_redirect),
       body_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
@@ -143,16 +144,13 @@ SyncLoadContext::SyncLoadContext(
   url_loader_factory_ =
       network::SharedURLLoaderFactory::Create(std::move(url_loader_factory));
 
-  // Constructs a new WebResourceRequestSender specifically for this request.
-  resource_request_sender_ = std::make_unique<WebResourceRequestSender>();
+  // Constructs a new ResourceDispatcher specifically for this request.
+  resource_dispatcher_ = std::make_unique<ResourceDispatcher>();
+  resource_dispatcher_->SetCorsExemptHeaderList(cors_exempt_header_list);
 
   // Initialize the final URL with the original request URL. It will be
-  // overwritten on redirects. Make a deep copy to pass it back to the main
-  // thread.
-  // TODO(https://crbug.com/860403): Remove the deep copy when SyncLoadResponse
-  // is moved to third_party/blink/renderer/platform/loader/fetch/url_loader/,
-  // where the url could be a GURL.
-  response_->url = KURL(request->url).Copy();
+  // overwritten on redirects.
+  response_->url = request->url;
 }
 
 SyncLoadContext::~SyncLoadContext() {}
@@ -167,25 +165,22 @@ bool SyncLoadContext::OnReceivedRedirect(
   if (removed_headers) {
     // TODO(yoav): Get the actual FeaturePolicy here to support selective
     // removal for sync XHR.
-    FindClientHintsToRemove(nullptr /* feature_policy */, redirect_info.new_url,
-                            removed_headers);
+    blink::FindClientHintsToRemove(nullptr /* feature_policy */,
+                                   redirect_info.new_url, removed_headers);
   }
 
-  // TODO(https://crbug.com/860403): Remove the deep copy when SyncLoadResponse
-  // is moved to third_party/blink/renderer/platform/loader/fetch/url_loader/,
-  // where the url could be a GURL.
-  response_->url = KURL(redirect_info.new_url).Copy();
+  response_->url = redirect_info.new_url;
   response_->head = std::move(head);
   response_->redirect_info = redirect_info;
   *context_for_redirect_ = this;
-  resource_request_sender_->SetDefersLoading(
-      WebURLLoader::DeferType::kDeferred);
+  resource_dispatcher_->SetDefersLoading(
+      request_id_, blink::WebURLLoader::DeferType::kDeferred);
   signals_->SignalRedirectOrResponseComplete();
   return true;
 }
 
 void SyncLoadContext::EvictFromBackForwardCache(
-    mojom::RendererEvictionReason reason) {
+    blink::mojom::RendererEvictionReason reason) {
   return;
 }
 
@@ -204,8 +199,8 @@ void SyncLoadContext::FollowRedirect() {
   response_->redirect_info = net::RedirectInfo();
   *context_for_redirect_ = nullptr;
 
-  resource_request_sender_->SetDefersLoading(
-      WebURLLoader::DeferType::kNotDeferred);
+  resource_dispatcher_->SetDefersLoading(
+      request_id_, blink::WebURLLoader::DeferType::kNotDeferred);
 }
 
 void SyncLoadContext::CancelRedirect() {
@@ -275,7 +270,8 @@ void SyncLoadContext::OnCompletedRequest(
   CompleteRequest();
 }
 
-void SyncLoadContext::OnFinishCreatingBlob(mojom::SerializedBlobPtr blob) {
+void SyncLoadContext::OnFinishCreatingBlob(
+    blink::mojom::SerializedBlobPtr blob) {
   DCHECK(!Completed());
   blob_finished_ = true;
   response_->downloaded_blob = std::move(blob);
@@ -340,7 +336,7 @@ void SyncLoadContext::CompleteRequest() {
   response_ = nullptr;
 
   // This will indirectly cause this object to be deleted.
-  resource_request_sender_->DeletePendingRequest(task_runner_);
+  resource_dispatcher_->RemovePendingRequest(request_id_, task_runner_);
 }
 
 bool SyncLoadContext::Completed() const {
@@ -348,4 +344,4 @@ bool SyncLoadContext::Completed() const {
   return !response_;
 }
 
-}  // namespace blink
+}  // namespace content

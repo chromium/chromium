@@ -41,6 +41,7 @@
 #include "content/public/common/webplugininfo.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/media/audio_decoder.h"
 #include "content/renderer/media/batching_media_log.h"
@@ -219,20 +220,18 @@ RendererBlinkPlatformImpl::WrapURLLoaderFactory(
     blink::CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
         url_loader_factory) {
   return std::make_unique<WebURLLoaderFactoryImpl>(
+      RenderThreadImpl::current()->resource_dispatcher()->GetWeakPtr(),
       base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
           mojo::PendingRemote<network::mojom::URLLoaderFactory>(
-              std::move(url_loader_factory))),
-      RenderThreadImpl::current()->cors_exempt_header_list(),
-      /*terminate_sync_load_event=*/nullptr);
+              std::move(url_loader_factory))));
 }
 
 std::unique_ptr<blink::WebURLLoaderFactory>
 RendererBlinkPlatformImpl::WrapSharedURLLoaderFactory(
     scoped_refptr<network::SharedURLLoaderFactory> factory) {
   return std::make_unique<WebURLLoaderFactoryImpl>(
-      std::move(factory),
-      RenderThreadImpl::current()->cors_exempt_header_list(),
-      /*terminate_sync_load_event=*/nullptr);
+      RenderThreadImpl::current()->resource_dispatcher()->GetWeakPtr(),
+      std::move(factory));
 }
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -352,16 +351,6 @@ bool RendererBlinkPlatformImpl::IsRedirectSafe(const GURL& from_url,
   return IsSafeRedirectTarget(from_url, to_url) &&
          (!GetContentClient()->renderer() ||  // null in unit tests.
           GetContentClient()->renderer()->IsSafeRedirectTarget(to_url));
-}
-
-blink::WebResourceRequestSenderDelegate*
-RendererBlinkPlatformImpl::GetResourceRequestSenderDelegate() {
-  auto* render_thread = RenderThreadImpl::current();
-
-  // RenderThreadImpl is null in some tests.
-  if (!render_thread)
-    return nullptr;
-  return render_thread->GetResourceRequestSenderDelegate();
 }
 
 void RendererBlinkPlatformImpl::CacheMetadataInCacheStorage(

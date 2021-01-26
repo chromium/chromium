@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
@@ -34,8 +33,7 @@ namespace blink {
 // These callbacks mirror net::URLRequest::Delegate and the order and
 // conditions in which they will be called are identical. See url_request.h
 // for more information.
-class BLINK_PLATFORM_EXPORT WebRequestPeer
-    : public base::RefCounted<WebRequestPeer> {
+class BLINK_PLATFORM_EXPORT WebRequestPeer {
  public:
   // Called as upload progress is made.
   // note: only for requests with upload progress enabled.
@@ -84,9 +82,7 @@ class BLINK_PLATFORM_EXPORT WebRequestPeer
 
   virtual bool CanContinueBufferingWhileInBackForwardCache() = 0;
 
-  virtual ~WebRequestPeer() = default;
-
-  friend class base::RefCounted<WebRequestPeer>;
+  virtual ~WebRequestPeer() {}
 };
 
 }  // namespace blink

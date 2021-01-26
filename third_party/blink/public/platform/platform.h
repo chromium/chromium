@@ -125,7 +125,6 @@ class WebGraphicsContext3DProvider;
 class WebLocalFrame;
 class WebMediaCapabilitiesClient;
 class WebPublicSuffixList;
-class WebResourceRequestSenderDelegate;
 class WebSandboxSupport;
 class WebSecurityOrigin;
 class WebThemeEngine;
@@ -345,11 +344,6 @@ class BLINK_PLATFORM_EXPORT Platform {
   // Determines whether it is safe to redirect from |from_url| to |to_url|.
   virtual bool IsRedirectSafe(const GURL& from_url, const GURL& to_url) {
     return false;
-  }
-
-  // Returns the WebResourceRequestSenderDelegate of this renderer.
-  virtual WebResourceRequestSenderDelegate* GetResourceRequestSenderDelegate() {
-    return nullptr;
   }
 
   // Public Suffix List --------------------------------------------------

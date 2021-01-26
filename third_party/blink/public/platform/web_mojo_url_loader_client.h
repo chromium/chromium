@@ -43,6 +43,7 @@ class BLINK_PLATFORM_EXPORT WebMojoURLLoaderClient final
     : public network::mojom::URLLoaderClient {
  public:
   WebMojoURLLoaderClient(
+      int request_id,
       WebMojoURLLoaderClientObserver* url_loader_client_observer,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
       bool bypass_redirect_checks,
@@ -101,6 +102,7 @@ class BLINK_PLATFORM_EXPORT WebMojoURLLoaderClient final
   std::unique_ptr<BodyBuffer> body_buffer_;
   base::OneShotTimer back_forward_cache_eviction_timer_;
   base::TimeDelta back_forward_cache_timeout_;
+  const int request_id_;
   bool has_received_response_head_ = false;
   bool has_received_response_body_ = false;
   bool has_received_complete_ = false;
@@ -114,6 +116,10 @@ class BLINK_PLATFORM_EXPORT WebMojoURLLoaderClient final
 
   // For UMA.
   base::TimeTicks on_receive_response_time_;
+
+  mojo::Remote<network::mojom::URLLoader> url_loader_;
+  mojo::Receiver<network::mojom::URLLoaderClient> url_loader_client_receiver_{
+      this};
 
   base::WeakPtrFactory<WebMojoURLLoaderClient> weak_factory_{this};
 };

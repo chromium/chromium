@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -20,6 +19,7 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "content/public/common/content_switches.h"
+#include "content/renderer/loader/resource_dispatcher.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/host_port_pair.h"
@@ -40,7 +40,6 @@
 #include "third_party/blink/public/platform/sync_load_response.h"
 #include "third_party/blink/public/platform/web_data.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
-#include "third_party/blink/public/platform/web_resource_request_sender.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_error.h"
@@ -60,13 +59,15 @@ const char kTestURL[] = "http://foo";
 const char kTestHTTPSURL[] = "https://foo";
 const char kTestData[] = "blah!";
 
-class MockResourceRequestSender : public blink::WebResourceRequestSender {
+class TestResourceDispatcher : public ResourceDispatcher {
  public:
-  MockResourceRequestSender() = default;
-  ~MockResourceRequestSender() override = default;
+  TestResourceDispatcher() : canceled_(false), defers_loading_(false) {}
 
-  // WebResourceRequestSender implementation:
-  void SendSync(
+  ~TestResourceDispatcher() override {}
+
+  // TestDispatcher implementation:
+
+  void StartSync(
       std::unique_ptr<network::ResourceRequest> request,
       int routing_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
@@ -75,23 +76,20 @@ class MockResourceRequestSender : public blink::WebResourceRequestSender {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
       base::TimeDelta timeout,
-      const std::vector<std::string>& cors_exempt_header_list,
-      base::WaitableEvent* terminate_sync_load_event,
       mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
-      scoped_refptr<blink::WebRequestPeer> peer,
+      std::unique_ptr<blink::WebRequestPeer> peer,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper) override {
     *response = std::move(sync_load_response_);
   }
 
-  int SendAsync(
+  int StartAsync(
       std::unique_ptr<network::ResourceRequest> request,
       int routing_id,
       scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
-      const std::vector<std::string>& cors_exempt_header_list,
-      scoped_refptr<blink::WebRequestPeer> peer,
+      std::unique_ptr<blink::WebRequestPeer> peer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
@@ -105,12 +103,10 @@ class MockResourceRequestSender : public blink::WebResourceRequestSender {
   }
 
   void Cancel(
+      int request_id,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
     EXPECT_FALSE(canceled_);
     canceled_ = true;
-
-    // Reset `peer_` will indirectly cause this object to be deleted.
-    peer_.reset();
   }
 
   blink::WebRequestPeer* peer() { return peer_.get(); }
@@ -120,7 +116,8 @@ class MockResourceRequestSender : public blink::WebResourceRequestSender {
   const GURL& url() { return url_; }
   const GURL& stream_url() { return stream_url_; }
 
-  void SetDefersLoading(blink::WebURLLoader::DeferType value) override {
+  void SetDefersLoading(int request_id,
+                        blink::WebURLLoader::DeferType value) override {
     defers_loading_ = (value != blink::WebURLLoader::DeferType::kNotDeferred);
   }
   bool defers_loading() const { return defers_loading_; }
@@ -130,14 +127,14 @@ class MockResourceRequestSender : public blink::WebResourceRequestSender {
   }
 
  private:
-  scoped_refptr<blink::WebRequestPeer> peer_;
-  bool canceled_ = false;
-  bool defers_loading_ = false;
+  std::unique_ptr<blink::WebRequestPeer> peer_;
+  bool canceled_;
+  bool defers_loading_;
   GURL url_;
   GURL stream_url_;
   blink::SyncLoadResponse sync_load_response_;
 
-  DISALLOW_COPY_AND_ASSIGN(MockResourceRequestSender);
+  DISALLOW_COPY_AND_ASSIGN(TestResourceDispatcher);
 };
 
 class FakeURLLoaderFactory final : public network::mojom::URLLoaderFactory {
@@ -167,10 +164,9 @@ class FakeURLLoaderFactory final : public network::mojom::URLLoaderFactory {
 
 class TestWebURLLoaderClient : public blink::WebURLLoaderClient {
  public:
-  TestWebURLLoaderClient()
+  TestWebURLLoaderClient(ResourceDispatcher* dispatcher)
       : loader_(new WebURLLoaderImpl(
-            /*cors_exempt_header_list=*/std::vector<std::string>(),
-            /*terminate_sync_load_event=*/nullptr,
+            dispatcher,
             blink::scheduler::WebResourceLoadingTaskRunnerHandle::
                 CreateUnprioritized(
                     blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
@@ -304,10 +300,8 @@ class TestWebURLLoaderClient : public blink::WebURLLoaderClient {
 
 class WebURLLoaderImplTest : public testing::Test {
  public:
-  WebURLLoaderImplTest() : client_(std::make_unique<TestWebURLLoaderClient>()) {
-    auto sender = std::make_unique<MockResourceRequestSender>();
-    sender_ = sender.get();
-    client_->loader()->SetResourceRequestSenderForTesting(std::move(sender));
+  WebURLLoaderImplTest() {
+    client_.reset(new TestWebURLLoaderClient(&dispatcher_));
   }
 
   ~WebURLLoaderImplTest() override = default;
@@ -401,14 +395,14 @@ class WebURLLoaderImplTest : public testing::Test {
   }
 
   TestWebURLLoaderClient* client() { return client_.get(); }
-  MockResourceRequestSender* sender() { return sender_; }
-  blink::WebRequestPeer* peer() { return sender_->peer(); }
+  TestResourceDispatcher* dispatcher() { return &dispatcher_; }
+  blink::WebRequestPeer* peer() { return dispatcher()->peer(); }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
+  TestResourceDispatcher dispatcher_;
   mojo::ScopedDataPipeProducerHandle body_handle_;
   std::unique_ptr<TestWebURLLoaderClient> client_;
-  MockResourceRequestSender* sender_ = nullptr;
 };
 
 TEST_F(WebURLLoaderImplTest, Success) {
@@ -416,7 +410,7 @@ TEST_F(WebURLLoaderImplTest, Success) {
   DoReceiveResponse();
   DoStartLoadingResponseBody();
   DoCompleteRequest();
-  EXPECT_FALSE(sender()->canceled());
+  EXPECT_FALSE(dispatcher()->canceled());
   EXPECT_TRUE(client()->did_receive_response_body());
 }
 
@@ -426,7 +420,7 @@ TEST_F(WebURLLoaderImplTest, Redirect) {
   DoReceiveResponse();
   DoStartLoadingResponseBody();
   DoCompleteRequest();
-  EXPECT_FALSE(sender()->canceled());
+  EXPECT_FALSE(dispatcher()->canceled());
   EXPECT_TRUE(client()->did_receive_response_body());
 }
 
@@ -435,7 +429,7 @@ TEST_F(WebURLLoaderImplTest, Failure) {
   DoReceiveResponse();
   DoStartLoadingResponseBody();
   DoFailRequest();
-  EXPECT_FALSE(sender()->canceled());
+  EXPECT_FALSE(dispatcher()->canceled());
 }
 
 // The client may delete the WebURLLoader during any callback from the loader.
@@ -471,9 +465,9 @@ TEST_F(WebURLLoaderImplTest, DeleteOnFail) {
 TEST_F(WebURLLoaderImplTest, DefersLoadingBeforeStart) {
   client()->loader()->SetDefersLoading(
       blink::WebURLLoader::DeferType::kDeferred);
-  EXPECT_FALSE(sender()->defers_loading());
+  EXPECT_FALSE(dispatcher()->defers_loading());
   DoStartAsyncRequest();
-  EXPECT_TRUE(sender()->defers_loading());
+  EXPECT_TRUE(dispatcher()->defers_loading());
 }
 
 TEST_F(WebURLLoaderImplTest, ResponseIPEndpoint) {
@@ -671,7 +665,7 @@ TEST_F(WebURLLoaderImplTest, SyncLengths) {
   ASSERT_EQ(17u, sync_load_response.data.size());
   sync_load_response.head->encoded_body_length = kEncodedBodyLength;
   sync_load_response.head->encoded_data_length = kEncodedDataLength;
-  sender()->set_sync_load_response(std::move(sync_load_response));
+  dispatcher()->set_sync_load_response(std::move(sync_load_response));
 
   blink::WebURLResponse response;
   base::Optional<blink::WebURLError> error;
