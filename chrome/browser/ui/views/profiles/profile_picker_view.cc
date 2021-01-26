@@ -568,9 +568,13 @@ void ProfilePickerView::OnProfileForSigninCreated(
 
   // Make sure the web contents used for sign-in has proper background to match
   // the toolbar (for dark mode).
+  SkColor background_color =
+      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR);
   views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
-      new_profile_contents_.get(),
-      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR));
+      new_profile_contents_.get(), background_color);
+  // On Mac, the WebContents is initially transparent. Set the color for the
+  // main view as well.
+  SetBackground(views::CreateSolidBackground(background_color));
 
   UpdateToolbarColor();
 
