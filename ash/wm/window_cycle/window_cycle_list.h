@@ -72,6 +72,8 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
     user_did_accept_ = user_did_accept;
   }
 
+  bool HasWindowTargeter() { return !!window_targeter_; }
+
  private:
   friend class WindowCycleControllerTest;
   friend class MultiUserWindowCycleControllerTest;
