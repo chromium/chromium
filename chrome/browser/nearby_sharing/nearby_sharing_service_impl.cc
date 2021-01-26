@@ -1053,14 +1053,14 @@ void NearbySharingServiceImpl::OnLockStateChanged(bool locked) {
 void NearbySharingServiceImpl::AdapterPresentChanged(
     device::BluetoothAdapter* adapter,
     bool present) {
-  NS_LOG(VERBOSE) << "Bluetooth present changed: " << present;
+  NS_LOG(VERBOSE) << __func__ << ": Bluetooth present changed: " << present;
   InvalidateSurfaceState();
 }
 
 void NearbySharingServiceImpl::AdapterPoweredChanged(
     device::BluetoothAdapter* adapter,
     bool powered) {
-  NS_LOG(VERBOSE) << "Bluetooth powered changed: " << powered;
+  NS_LOG(VERBOSE) << __func__ << ": Bluetooth powered changed: " << powered;
   InvalidateSurfaceState();
 }
 
@@ -1200,18 +1200,18 @@ void NearbySharingServiceImpl::OnStartFastInitiationAdvertising() {
   // TODO(hansenmichael): Do not invoke
   // |register_send_surface_callback_| until Nearby Connections
   // scanning is kicked off.
-  NS_LOG(VERBOSE) << "Started advertising FastInitiation.";
+  NS_LOG(VERBOSE) << __func__ << ": Started advertising FastInitiation.";
 }
 
 void NearbySharingServiceImpl::OnStartFastInitiationAdvertisingError() {
   fast_initiation_manager_.reset();
-  NS_LOG(ERROR) << "Failed to start FastInitiation advertising.";
+  NS_LOG(ERROR) << __func__ << ": Failed to start FastInitiation advertising.";
 }
 
 void NearbySharingServiceImpl::StopFastInitiationAdvertising() {
   if (!fast_initiation_manager_) {
-    NS_LOG(VERBOSE)
-        << "Can't stop advertising FastInitiation. Not advertising.";
+    NS_LOG(VERBOSE) << __func__
+                    << ": Not advertising FastInitiation, ignoring.";
     return;
   }
 
@@ -1222,7 +1222,7 @@ void NearbySharingServiceImpl::StopFastInitiationAdvertising() {
 
 void NearbySharingServiceImpl::OnStopFastInitiationAdvertising() {
   fast_initiation_manager_.reset();
-  NS_LOG(VERBOSE) << "Stopped advertising FastInitiation";
+  NS_LOG(VERBOSE) << __func__ << ": Stopped advertising FastInitiation";
 
   // TODO(crbug/1147652): The call to update the advertising interval is
   // removed to prevent a Bluez crash. We need to either reduce the global
@@ -1236,7 +1236,7 @@ void NearbySharingServiceImpl::OnOutgoingAdvertisementDecoded(
     sharing::mojom::AdvertisementPtr advertisement) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!advertisement) {
-    NS_LOG(VERBOSE) << __func__
+    NS_LOG(WARNING) << __func__
                     << ": Failed to parse discovered advertisement.";
     return;
   }
@@ -1530,8 +1530,7 @@ void NearbySharingServiceImpl::InvalidateFastInitiationAdvertising() {
   }
 
   if (fast_initiation_manager_) {
-    NS_LOG(VERBOSE)
-        << "Failed to advertise FastInitiation. Already advertising.";
+    NS_LOG(VERBOSE) << __func__ << ": Already advertising fast init, ignoring.";
     return;
   }
 
@@ -1650,12 +1649,10 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
   DataUsage data_usage = settings_.GetDataUsage();
   if (advertising_power_level_ != PowerLevel::kUnknown) {
     if (power_level == advertising_power_level_) {
-      NS_LOG(VERBOSE)
-          << __func__
-          << ": Failed to advertise because we're already advertising with "
-             "power level "
-          << PowerLevelToString(advertising_power_level_)
-          << " and data usage preference " << data_usage;
+      NS_LOG(VERBOSE) << __func__
+                      << ": Ignoring, already advertising with power level "
+                      << PowerLevelToString(advertising_power_level_)
+                      << " and data usage preference " << data_usage;
       return;
     }
 
@@ -1718,9 +1715,7 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
 void NearbySharingServiceImpl::StopAdvertising() {
   SetInHighVisibility(false);
   if (advertising_power_level_ == PowerLevel::kUnknown) {
-    NS_LOG(VERBOSE)
-        << __func__
-        << ": Failed to stop advertising because we weren't advertising";
+    NS_LOG(VERBOSE) << __func__ << ": Not currently advertising, ignoring.";
     return;
   }
 
@@ -1746,8 +1741,7 @@ void NearbySharingServiceImpl::StartScanning() {
   DCHECK(!foreground_send_transfer_callbacks_.empty());
 
   if (is_scanning_) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Failed to scan because we're currently scanning.";
+    NS_LOG(VERBOSE) << __func__ << ": We're currently scanning, ignoring.";
     return;
   }
 
@@ -1772,8 +1766,7 @@ void NearbySharingServiceImpl::StartScanning() {
 
 NearbySharingService::StatusCodes NearbySharingServiceImpl::StopScanning() {
   if (!is_scanning_) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Failed to stop scanning because weren't scanning.";
+    NS_LOG(VERBOSE) << __func__ << ": Not currently scanning, ignoring.";
     return StatusCodes::kStatusAlreadyStopped;
   }
 
@@ -1944,12 +1937,15 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::SendPayloads(
                   << share_target.id;
   ShareTargetInfo* info = GetShareTargetInfo(share_target);
   if (!info || !info->connection()) {
-    NS_LOG(WARNING) << "Failed to send payload due to missing connection.";
+    NS_LOG(WARNING) << __func__
+                    << ": Failed to send payload due to missing connection.";
     return StatusCodes::kOutOfOrderApiCall;
   }
   if (!info->transfer_update_callback()) {
-    NS_LOG(WARNING) << "Failed to send payload due to missing transfer update "
-                       "callback. Disconnecting.";
+    NS_LOG(WARNING)
+        << __func__
+        << ": Failed to send payload due to missing transfer update "
+           "callback. Disconnecting.";
     info->connection()->Close();
     return StatusCodes::kOutOfOrderApiCall;
   }
@@ -1967,7 +1963,8 @@ NearbySharingService::StatusCodes NearbySharingServiceImpl::SendPayloads(
                           .set_status(TransferMetadata::Status::kFailed)
                           .build());
     info->connection()->Close();
-    NS_LOG(WARNING) << "Failed to send payload due to missing endpoint id.";
+    NS_LOG(WARNING) << __func__
+                    << ": Failed to send payload due to missing endpoint id.";
     return StatusCodes::kOutOfOrderApiCall;
   }
 
@@ -2437,14 +2434,14 @@ void NearbySharingServiceImpl::OnIncomingAdvertisementDecoded(
     sharing::mojom::AdvertisementPtr advertisement) {
   NearbyConnection* connection = GetConnection(placeholder_share_target);
   if (!connection) {
-    NS_LOG(VERBOSE) << __func__ << ": Invalid connection for endoint id - "
+    NS_LOG(WARNING) << __func__ << ": Invalid connection for endoint id - "
                     << endpoint_id;
     return;
   }
 
   if (!advertisement) {
-    NS_LOG(VERBOSE) << __func__
-                    << "Failed to parse incoming connection from endpoint - "
+    NS_LOG(WARNING) << __func__
+                    << ": Failed to parse incoming connection from endpoint - "
                     << endpoint_id << ", disconnecting.";
     connection->Close();
     return;
@@ -2578,14 +2575,14 @@ void NearbySharingServiceImpl::OnIncomingDecryptedCertificate(
       endpoint_id, advertisement, std::move(certificate), /*is_incoming=*/true);
 
   if (!share_target) {
-    NS_LOG(VERBOSE) << __func__
-                    << "Failed to convert advertisement to share target for "
+    NS_LOG(WARNING) << __func__
+                    << ": Failed to convert advertisement to share target for "
                        "incoming connection, disconnecting";
     connection->Close();
     return;
   }
 
-  NS_LOG(VERBOSE) << __func__ << "Received incoming connection from "
+  NS_LOG(VERBOSE) << __func__ << ": Received incoming connection from "
                   << share_target->id;
 
   ShareTargetInfo* share_target_info = GetShareTargetInfo(*share_target);
@@ -3632,10 +3629,12 @@ void NearbySharingServiceImpl::OnStartAdvertisingResult(
 
   if (status == NearbyConnectionsManager::ConnectionsStatus::kSuccess) {
     NS_LOG(VERBOSE)
-        << "StartAdvertising over Nearby Connections was successful.";
+        << __func__
+        << ": StartAdvertising over Nearby Connections was successful.";
     SetInHighVisibility(used_device_name);
   } else {
-    NS_LOG(ERROR) << "StartAdvertising over Nearby Connections failed: "
+    NS_LOG(ERROR) << __func__
+                  << ": StartAdvertising over Nearby Connections failed: "
                   << NearbyConnectionsManager::ConnectionsStatusToString(
                          status);
     SetInHighVisibility(false);
