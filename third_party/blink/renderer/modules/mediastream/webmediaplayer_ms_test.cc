@@ -1374,7 +1374,7 @@ TEST_P(WebMediaPlayerMSTest, RequestVideoFrameCallback) {
   Vector<int> timestamps({0, 33, kTestBrake, 66, 100, 133, 166});
   provider->QueueFrames(timestamps);
 
-  // Verify a basic call to RAF.
+  // Verify a basic call to rVFC
   player_->RequestVideoFrameCallback();
   EXPECT_CALL(*this, OnRequestVideoFrameCallback()).Times(1);
   message_loop_controller_.RunAndWaitForStatus(
@@ -1386,7 +1386,8 @@ TEST_P(WebMediaPlayerMSTest, RequestVideoFrameCallback) {
   EXPECT_GE(metadata->expected_display_time, metadata->presentation_time);
   testing::Mock::VerifyAndClearExpectations(this);
 
-  // Make sure multiple calls to RAF only result in one call per frame to OnRAF.
+  // Make sure multiple calls to rVFC only result in one call per frame to
+  // OnRVFC.
   player_->RequestVideoFrameCallback();
   player_->RequestVideoFrameCallback();
   player_->RequestVideoFrameCallback();
@@ -1429,12 +1430,12 @@ TEST_P(WebMediaPlayerMSTest, GetVideoFramePresentationMetadata) {
   Vector<int> timestamps({0, kTestBrake, 33, kTestBrake, 66, kTestBrake});
   provider->QueueFrames(timestamps);
 
-  // Chain calls to video.rAF.
+  // Chain calls to video.rVFC.
   int num_frames = 3;
   player_->RequestVideoFrameCallback();
 
   // Verify that the presentation frame counter is monotonically increasing.
-  // Queue up a rAF call immediately after each frame.
+  // Queue up a rVFC call immediately after each frame.
   int last_frame_counter = -1;
   EXPECT_CALL(*this, OnRequestVideoFrameCallback())
       .Times(num_frames)

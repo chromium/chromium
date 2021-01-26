@@ -255,7 +255,7 @@ class MEDIA_BLINK_EXPORT VideoFrameCompositor : public VideoRendererSink,
   OnNewProcessedFrameCB new_processed_frame_cb_;
   cc::UpdateSubmissionStateCB update_submission_state_callback_;
 
-  // Callback used to satisfy video.rAF requests.
+  // Callback used to satisfy video.rVFC requests.
   // Set on the main thread, fired on the compositor thread.
   OnNewFramePresentedCB new_presented_frame_cb_ GUARDED_BY(current_frame_lock_);
 

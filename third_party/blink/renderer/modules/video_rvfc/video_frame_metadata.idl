@@ -47,6 +47,6 @@ dictionary VideoFrameMetadata {
 
     // The RTP timestamp associated with this video frame.
     //
-    // https://w3c.github.io/webrtc-pc/#dom-rtcrtpcontributingsource
+    // https://w3c.github.io/webrtc-pc/#dom-rtcrtpcontributingsource-rtptimestamp
     unsigned long rtpTimestamp;
 };

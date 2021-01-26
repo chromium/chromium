@@ -260,7 +260,7 @@ TEST_F(VideoFrameCallbackRequesterImplTest, VerifyRequestVideoFrameCallback) {
 
   auto* function = MockFunction::Create(scope.GetScriptState());
 
-  // Queuing up a video.rAF call should propagate to the WebMediaPlayer.
+  // Queuing up a video.rVFC call should propagate to the WebMediaPlayer.
   EXPECT_CALL(*media_player(), RequestVideoFrameCallback()).Times(1);
   vfc_requester().requestVideoFrameCallback(GetCallback(function));
 

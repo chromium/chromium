@@ -27,7 +27,7 @@ class MODULES_EXPORT VideoFrameRequestCallbackCollection final
 
   using CallbackId = int;
 
-  // Abstract class that generalizes a video.rAF callback.
+  // Abstract class that generalizes a video.rVFC callback.
   class MODULES_EXPORT VideoFrameCallback
       : public GarbageCollected<VideoFrameCallback>,
         public NameClient {
