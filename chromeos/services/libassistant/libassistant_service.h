@@ -13,6 +13,7 @@
 #include "chromeos/services/libassistant/public/mojom/service.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 
 namespace assistant_client {
 class AssistantManager;
@@ -30,6 +31,7 @@ namespace chromeos {
 namespace libassistant {
 
 class ConversationController;
+class DisplayController;
 class PlatformApi;
 class ServiceController;
 
@@ -60,11 +62,19 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
           audio_stream_factory_delegate,
       mojo::PendingReceiver<mojom::ConversationController>
           conversation_controller,
+      mojo::PendingReceiver<mojom::DisplayController> display_controller,
       mojo::PendingReceiver<mojom::ServiceController> service_controller)
       override;
+  void AddSpeechRecognitionObserver(
+      mojo::PendingRemote<mojom::SpeechRecognitionObserver> observer) override;
 
   mojo::Receiver<mojom::LibassistantService> receiver_;
+
+  mojo::RemoteSet<mojom::SpeechRecognitionObserver>
+      speech_recognition_observers_;
+
   std::unique_ptr<PlatformApi> platform_api_;
+  std::unique_ptr<DisplayController> display_controller_;
   std::unique_ptr<ServiceController> service_controller_;
   std::unique_ptr<ConversationController> conversation_controller_;
 };

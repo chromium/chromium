@@ -21,6 +21,7 @@
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -47,6 +48,7 @@
 #include "chromeos/services/assistant/public/shared/utils.h"
 #include "chromeos/services/assistant/service_context.h"
 #include "chromeos/services/assistant/utils.h"
+#include "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "libassistant/shared/internal_api/alarm_timer_manager.h"
 #include "libassistant/shared/internal_api/alarm_timer_types.h"
@@ -163,8 +165,49 @@ bool ShouldPutLogsInHomeDirectory() {
   return !redirect_logging;
 }
 
+libassistant::mojom::AndroidAppInfoPtr ToAndroidAppInfoPtr(
+    const AndroidAppInfo& app_info) {
+  return libassistant::mojom::AndroidAppInfo::New(
+      app_info.package_name, app_info.version, app_info.localized_app_name);
+}
+
 }  // namespace
 
+// Observer that will receive all speech recognition related events,
+// and forwards them to all |AssistantInteractionSubscriber|.
+class SpeechRecognitionObserverWrapper
+    : public libassistant::mojom::SpeechRecognitionObserver {
+ public:
+  explicit SpeechRecognitionObserverWrapper(
+      const base::ObserverList<AssistantInteractionSubscriber>* observers)
+      : interaction_subscribers_(*observers) {
+    DCHECK(observers);
+  }
+  SpeechRecognitionObserverWrapper(const SpeechRecognitionObserverWrapper&) =
+      delete;
+  SpeechRecognitionObserverWrapper& operator=(
+      const SpeechRecognitionObserverWrapper&) = delete;
+  ~SpeechRecognitionObserverWrapper() override = default;
+
+  mojo::PendingRemote<chromeos::libassistant::mojom::SpeechRecognitionObserver>
+  BindNewPipeAndPassRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  // libassistant::mojom::SpeechRecognitionObserver implementation:
+  void OnSpeechLevelUpdated(float speech_level_in_decibels) override {
+    for (auto& it : interaction_subscribers_)
+      it.OnSpeechLevelUpdated(speech_level_in_decibels);
+  }
+
+ private:
+  // Owned by our parent, |AssistantManagerServiceImpl|.
+  const base::ObserverList<AssistantInteractionSubscriber>&
+      interaction_subscribers_;
+
+  mojo::Receiver<chromeos::libassistant::mojom::SpeechRecognitionObserver>
+      receiver_{this};
+};
 AssistantManagerServiceImpl::AssistantManagerServiceImpl(
     ServiceContext* context,
     std::unique_ptr<AssistantManagerServiceDelegate> delegate,
@@ -184,6 +227,9 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
       assistant_proxy_(std::make_unique<AssistantProxy>()),
       context_(context),
       delegate_(std::move(delegate)),
+      speech_recognition_observer_(
+          std::make_unique<SpeechRecognitionObserverWrapper>(
+              &interaction_subscribers_)),
       bootup_config_(ServiceControllerProxy::BootupConfig::New(
           s3_server_uri_override,
           device_id_override,
@@ -208,6 +254,9 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
   // constructor.
   // To solve this chicken-and-egg problem, we need a separe Initialize() call.
   assistant_proxy_->Initialize(libassistant_service_host_.get());
+
+  assistant_proxy_->AddSpeechRecognitionObserver(
+      speech_recognition_observer_->BindNewPipeAndPassRemote());
 
   audio_input_host_ = delegate_->CreateAudioInputHost();
 
@@ -382,7 +431,7 @@ void AssistantManagerServiceImpl::EnableHotword(bool enable) {
 void AssistantManagerServiceImpl::SetArcPlayStoreEnabled(bool enable) {
   DCHECK(GetState() == State::RUNNING);
   if (assistant::features::IsAppSupportEnabled())
-    display_connection()->SetArcPlayStoreEnabled(enable);
+    display_controller().SetArcPlayStoreEnabled(enable);
 }
 
 void AssistantManagerServiceImpl::SetAssistantContextEnabled(bool enable) {
@@ -395,7 +444,7 @@ void AssistantManagerServiceImpl::SetAssistantContextEnabled(bool enable) {
     ResetMediaState();
   }
 
-  display_connection()->SetAssistantContextEnabled(enable);
+  display_controller().SetRelatedInfoEnabled(enable);
 }
 
 AssistantSettings* AssistantManagerServiceImpl::GetAssistantSettings() {
@@ -963,15 +1012,6 @@ void AssistantManagerServiceImpl::OnRespondingStarted(bool is_error_response) {
     it.OnTtsStarted(is_error_response);
 }
 
-void AssistantManagerServiceImpl::OnSpeechLevelUpdated(
-    const float speech_level) {
-  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnSpeechLevelUpdated,
-                     speech_level);
-
-  for (auto& it : interaction_subscribers_)
-    it.OnSpeechLevelUpdated(speech_level);
-}
-
 void AssistantManagerServiceImpl::OnModifyDeviceSetting(
     const api::client_op::ModifySettingArgs& modify_setting_args) {
   ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnModifyDeviceSetting,
@@ -1028,8 +1068,7 @@ void AssistantManagerServiceImpl::InitAssistant(
       action_module_.get(), &chromium_api_delegate_,
       /*assistant_manager_delegate=*/this,
       /*conversation_state_listener=*/this,
-      /*device_state_listener=*/this,
-      /*event_observer=*/this, std::move(bootup_config_), locale,
+      /*device_state_listener=*/this, std::move(bootup_config_), locale,
       GetLocaleOrDefault(assistant_state()->locale().value()),
       spoken_feedback_enabled_, ToAuthTokensOrEmpty(user),
       base::BindOnce(&AssistantManagerServiceImpl::PostInitAssistant,
@@ -1110,15 +1149,15 @@ void AssistantManagerServiceImpl::OnStartFinished() {
 
 void AssistantManagerServiceImpl::OnAndroidAppListRefreshed(
     const std::vector<AndroidAppInfo>& apps_info) {
-  std::vector<AndroidAppInfo> filtered_apps_info;
+  std::vector<libassistant::mojom::AndroidAppInfoPtr> filtered_apps_info;
   for (const auto& app_info : apps_info) {
     // TODO(b/146355799): Remove the special handling for Android settings app.
     if (app_info.package_name == kAndroidSettingsAppPackage)
       continue;
 
-    filtered_apps_info.emplace_back(app_info);
+    filtered_apps_info.emplace_back(ToAndroidAppInfoPtr(app_info));
   }
-  display_connection()->OnAndroidAppListRefreshed(filtered_apps_info);
+  display_controller().SetAndroidAppList(std::move(filtered_apps_info));
 }
 
 void AssistantManagerServiceImpl::OnPlaybackStateChange(
@@ -1217,7 +1256,7 @@ void AssistantManagerServiceImpl::OnDeviceAppsEnabled(bool enabled) {
   if (GetState() != State::RUNNING)
     return;
 
-  display_connection()->SetDeviceAppsEnabled(enabled);
+  display_controller().SetDeviceAppsEnabled(enabled);
   action_module_->SetAppSupportEnabled(
       assistant::features::IsAppSupportEnabled() && enabled);
 }
@@ -1421,8 +1460,9 @@ AssistantManagerServiceImpl::main_task_runner() {
   return context_->main_task_runner();
 }
 
-CrosDisplayConnection* AssistantManagerServiceImpl::display_connection() {
-  return service_controller().display_connection();
+AssistantProxy::DisplayController&
+AssistantManagerServiceImpl::display_controller() {
+  return assistant_proxy_->display_controller();
 }
 
 assistant_client::AssistantManager*

@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_ASSISTANT_PROXY_SERVICE_CONTROLLER_PROXY_H_
 #define CHROMEOS_SERVICES_ASSISTANT_PROXY_SERVICE_CONTROLLER_PROXY_H_
 
-#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -30,8 +29,6 @@ class FuchsiaApiDelegate;
 namespace chromeos {
 namespace assistant {
 
-class AssistantEventObserver;
-class CrosDisplayConnection;
 class LibassistantServiceHost;
 
 // Component managing the lifecycle of Libassistant,
@@ -52,12 +49,6 @@ class ServiceControllerProxy : private libassistant::mojom::StateObserver {
   ServiceControllerProxy& operator=(ServiceControllerProxy&) = delete;
   ~ServiceControllerProxy() override;
 
-  // Can not be invoked before Start() has finished.
-  CrosDisplayConnection* display_connection() {
-    DCHECK(display_connection_);
-    return display_connection_.get();
-  }
-
   // Initialize the |AssistantManager| and all related objects.
   // Will signal the objects exist and can be accessed by calling the
   // |done_callback|.
@@ -69,7 +60,6 @@ class ServiceControllerProxy : private libassistant::mojom::StateObserver {
       assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
       assistant_client::ConversationStateListener* conversation_state_listener,
       assistant_client::DeviceStateListener* device_state_listener,
-      AssistantEventObserver* event_observer,
       BootupConfigPtr bootup_config,
       const std::string& locale,
       const std::string& locale_override,
@@ -132,11 +122,6 @@ class ServiceControllerProxy : private libassistant::mojom::StateObserver {
   // Callback passed to Start(). Will be invoked once the Libassistant service
   // has started.
   base::Optional<base::OnceClosure> on_start_done_callback_;
-
-  std::unique_ptr<CrosDisplayConnection> display_connection_;
-  // Populated when we're starting but not started yet, so after Start() has
-  // been called but before the mojom service signalled it has started.
-  std::unique_ptr<CrosDisplayConnection> pending_display_connection_;
 
   base::WeakPtrFactory<ServiceControllerProxy> weak_factory_{this};
 };

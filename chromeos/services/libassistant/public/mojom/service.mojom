@@ -6,7 +6,9 @@ module chromeos.libassistant.mojom;
 
 import "chromeos/services/libassistant/public/mojom/audio_input_controller.mojom";
 import "chromeos/services/libassistant/public/mojom/conversation_controller.mojom";
+import "chromeos/services/libassistant/public/mojom/display_controller.mojom";
 import "chromeos/services/libassistant/public/mojom/service_controller.mojom";
+import "chromeos/services/libassistant/public/mojom/speech_recognition_observer.mojom";
 
 // The main interface to the Libassistant service on ChromeOS.
 // Libassistant provides access to the Google Assistant.
@@ -21,6 +23,12 @@ interface LibassistantService {
     pending_receiver<AudioInputController> audio_input_controller,
     pending_remote<AudioStreamFactoryDelegate> audio_stream_factory_delegate,
     pending_receiver<ConversationController> conversation_controller,
+    pending_receiver<DisplayController> display_controller,
     pending_receiver<ServiceController> service_controller
   );
+
+  // Add a speech recognition observer, which will be informed of all speech
+  // recognition related updates.
+  AddSpeechRecognitionObserver(pending_remote<SpeechRecognitionObserver>
+    observer);
 };

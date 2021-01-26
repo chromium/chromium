@@ -29,6 +29,8 @@ class ServiceControllerProxy;
 // access point to the entire Assistant API.
 class AssistantProxy {
  public:
+  using DisplayController = chromeos::libassistant::mojom::DisplayController;
+
   AssistantProxy();
   AssistantProxy(AssistantProxy&) = delete;
   AssistantProxy& operator=(AssistantProxy&) = delete;
@@ -43,9 +45,18 @@ class AssistantProxy {
   // Returns the controller that manages conversations with Libassistant.
   ConversationControllerProxy& conversation_controller_proxy();
 
+  // Returns the controller that manages display related settings.
+  DisplayController& display_controller();
+
   // The background thread is temporary exposed until the entire Libassistant
   // API is hidden behind this proxy API.
   base::Thread& background_thread() { return background_thread_; }
+
+  // Add an observer that will be informed of all speech recognition related
+  // updates.
+  void AddSpeechRecognitionObserver(
+      mojo::PendingRemote<
+          chromeos::libassistant::mojom::SpeechRecognitionObserver> observer);
 
  private:
   using AudioInputControllerMojom =
@@ -54,6 +65,8 @@ class AssistantProxy {
       chromeos::libassistant::mojom::AudioStreamFactoryDelegate;
   using ConversationControllerMojom =
       chromeos::libassistant::mojom::ConversationController;
+  using DisplayControllerMojom =
+      chromeos::libassistant::mojom::DisplayController;
   using LibassistantServiceMojom =
       chromeos::libassistant::mojom::LibassistantService;
   using ServiceControllerMojom =
@@ -72,6 +85,7 @@ class AssistantProxy {
   // Owned by |AssistantManagerServiceImpl|.
   LibassistantServiceHost* libassistant_service_host_ = nullptr;
   mojo::Remote<LibassistantServiceMojom> libassistant_service_remote_;
+  mojo::Remote<DisplayControllerMojom> display_controller_remote_;
 
   std::unique_ptr<ServiceControllerProxy> service_controller_proxy_;
   std::unique_ptr<ConversationControllerProxy> conversation_controller_proxy_;

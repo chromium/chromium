@@ -88,6 +88,7 @@ void AssistantProxy::BindControllers(LibassistantServiceHost* host) {
       pending_audio_input_controller_remote.InitWithNewPipeAndPassReceiver(),
       std::move(pending_audio_stream_factory_delegate_remote),
       pending_conversation_controller_remote.InitWithNewPipeAndPassReceiver(),
+      display_controller_remote_.BindNewPipeAndPassReceiver(),
       pending_service_controller_remote.InitWithNewPipeAndPassReceiver());
 
   service_controller_proxy_ = std::make_unique<ServiceControllerProxy>(
@@ -110,6 +111,18 @@ ServiceControllerProxy& AssistantProxy::service_controller() {
 ConversationControllerProxy& AssistantProxy::conversation_controller_proxy() {
   DCHECK(conversation_controller_proxy_);
   return *conversation_controller_proxy_;
+}
+
+AssistantProxy::DisplayController& AssistantProxy::display_controller() {
+  DCHECK(display_controller_remote_.is_bound());
+  return *display_controller_remote_.get();
+}
+
+void AssistantProxy::AddSpeechRecognitionObserver(
+    mojo::PendingRemote<
+        chromeos::libassistant::mojom::SpeechRecognitionObserver> observer) {
+  libassistant_service_remote_->AddSpeechRecognitionObserver(
+      std::move(observer));
 }
 
 }  // namespace assistant

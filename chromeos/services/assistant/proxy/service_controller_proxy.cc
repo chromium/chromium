@@ -8,7 +8,6 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/optional.h"
-#include "chromeos/assistant/internal/cros_display_connection.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/proxy/libassistant_service_host.h"
@@ -49,7 +48,6 @@ struct StartArguments {
   assistant_client::AssistantManagerDelegate* assistant_manager_delegate;
   assistant_client::ConversationStateListener* conversation_state_listener;
   assistant_client::DeviceStateListener* device_state_listener;
-  CrosDisplayConnection* display_connection;
 };
 
 void FillServerExperimentIds(std::vector<std::string>* server_experiment_ids) {
@@ -82,8 +80,6 @@ void InitializeAssistantManager(
     StartArguments arguments,
     assistant_client::AssistantManager* assistant_manager,
     assistant_client::AssistantManagerInternal* assistant_manager_internal) {
-  assistant_manager_internal->SetDisplayConnection(
-      arguments.display_connection);
   assistant_manager_internal->RegisterActionModule(arguments.action_module);
   assistant_manager_internal->SetAssistantManagerDelegate(
       arguments.assistant_manager_delegate);
@@ -129,7 +125,6 @@ void ServiceControllerProxy::Start(
     assistant_client::AssistantManagerDelegate* assistant_manager_delegate,
     assistant_client::ConversationStateListener* conversation_state_listener,
     assistant_client::DeviceStateListener* device_state_listener,
-    AssistantEventObserver* event_observer,
     BootupConfigPtr bootup_config,
     const std::string& locale,
     const std::string& locale_override,
@@ -139,10 +134,6 @@ void ServiceControllerProxy::Start(
   // Start can only be called once (unless Stop() was called).
   DCHECK_EQ(state_, State::kStopped);
   state_ = State::kStarting;
-
-  pending_display_connection_ = std::make_unique<CrosDisplayConnection>(
-      event_observer, /*feedback_ui_enabled=*/true,
-      assistant::features::IsMediaSessionIntegrationEnabled());
 
   // The mojom service will create the |AssistantManager|.
   service_controller_remote_->Initialize(std::move(bootup_config));
@@ -159,7 +150,6 @@ void ServiceControllerProxy::Start(
   arguments.assistant_manager_delegate = assistant_manager_delegate;
   arguments.conversation_state_listener = conversation_state_listener;
   arguments.device_state_listener = device_state_listener;
-  arguments.display_connection = pending_display_connection_.get();
 
   host_->SetInitializeCallback(
       base::BindOnce(InitializeAssistantManager, std::move(arguments)));
@@ -205,7 +195,6 @@ void ServiceControllerProxy::OnStateChanged(ServiceState new_state) {
       NOTIMPLEMENTED();
       break;
     case ServiceState::kStopped:
-      display_connection_ = nullptr;
       break;
   }
 }
@@ -229,15 +218,12 @@ void ServiceControllerProxy::FinishCreatingAssistant() {
     // This means the |AssistantManager| could be destroyed at any second,
     // so we simply clean up and bail out.
     on_start_done_callback_.reset();
-    pending_display_connection_ = nullptr;
     return;
   }
 
   DCHECK(on_start_done_callback_.has_value());
-  DCHECK_NE(pending_display_connection_, nullptr);
 
   state_ = State::kStarted;
-  display_connection_ = std::move(pending_display_connection_);
   std::move(on_start_done_callback_.value()).Run();
 }
 

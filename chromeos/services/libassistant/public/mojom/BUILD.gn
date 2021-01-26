@@ -6,10 +6,12 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
-    "conversation_controller.mojom",
     "audio_input_controller.mojom",
+    "conversation_controller.mojom",
+    "display_controller.mojom",
     "service.mojom",
     "service_controller.mojom",
+    "speech_recognition_observer.mojom",
   ]
 
   deps = [ "//services/audio/public/mojom" ]

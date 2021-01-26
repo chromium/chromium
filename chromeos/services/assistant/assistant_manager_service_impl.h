@@ -19,7 +19,6 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
 #include "chromeos/assistant/internal/action/cros_action_module.h"
-#include "chromeos/assistant/internal/cros_display_connection.h"
 #include "chromeos/assistant/internal/internal_util.h"
 #include "chromeos/services/assistant/assistant_manager_service.h"
 #include "chromeos/services/assistant/assistant_settings_impl.h"
@@ -70,6 +69,7 @@ class AudioInputHost;
 class CrosPlatformApi;
 class ServiceContext;
 class ServiceControllerProxy;
+class SpeechRecognitionObserverWrapper;
 
 // Enumeration of Assistant query response type, also recorded in histograms.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -105,7 +105,6 @@ enum class AssistantQueryResponseType {
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
     : public AssistantManagerService,
       public ::chromeos::assistant::action::AssistantActionObserver,
-      public AssistantEventObserver,
       public assistant_client::ConversationStateListener,
       public assistant_client::AssistantManagerDelegate,
       public assistant_client::DeviceStateListener,
@@ -193,9 +192,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void OnGetDeviceSettings(
       int interaction_id,
       const ::assistant::api::client_op::GetDeviceSettingsArgs& args) override;
-
-  // AssistantEventObserver overrides:
-  void OnSpeechLevelUpdated(float speech_level) override;
 
   // assistant_client::ConversationStateListener overrides:
   void OnConversationTurnFinished(
@@ -307,7 +303,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   scoped_refptr<base::SequencedTaskRunner> main_task_runner();
 
   ConversationControllerProxy& conversation_controller_proxy();
-  CrosDisplayConnection* display_connection();
+  AssistantProxy::DisplayController& display_controller();
   ServiceControllerProxy& service_controller();
   const ServiceControllerProxy& service_controller() const;
   base::Thread& background_thread();
@@ -336,6 +332,8 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   std::unique_ptr<AssistantManagerServiceDelegate> delegate_;
   std::unique_ptr<LibassistantServiceHost> libassistant_service_host_;
   std::unique_ptr<AssistantDeviceSettingsDelegate> settings_delegate_;
+  std::unique_ptr<SpeechRecognitionObserverWrapper>
+      speech_recognition_observer_;
 
   bool spoken_feedback_enabled_ = false;
 

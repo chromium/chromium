@@ -33,6 +33,8 @@ void FakeLibassistantService::Bind(
         audio_stream_factory_delegate,
     mojo::PendingReceiver<libassistant::mojom::ConversationController>
         conversation_controller,
+    mojo::PendingReceiver<libassistant::mojom::DisplayController>
+        display_controller,
     mojo::PendingReceiver<libassistant::mojom::ServiceController>
         service_controller) {
   service_controller_.Bind(std::move(service_controller));
