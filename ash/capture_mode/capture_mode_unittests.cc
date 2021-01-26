@@ -498,6 +498,8 @@ TEST_F(CaptureModeTest, VideoRecordingUiBehavior) {
   // Hit Enter to begin recording.
   auto* event_generator = GetEventGenerator();
   SendKey(ui::VKEY_RETURN, event_generator);
+  EXPECT_EQ(ui::mojom::CursorType::kPointer,
+            Shell::Get()->cursor_manager()->GetCursor().type());
   WaitForCountDownToFinish();
   EXPECT_FALSE(controller->IsActive());
   EXPECT_TRUE(controller->is_recording_in_progress());
@@ -1146,6 +1148,9 @@ TEST_F(CaptureModeTest, RegionCursorStates) {
   original_cursor_type = cursor_manager->GetCursor().type();
   event_generator->ClickLeftButton();
   EXPECT_TRUE(cursor_manager->IsCursorLocked());
+  EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
+  // Tests that clicking on the button again doesn't change the cursor.
+  event_generator->ClickLeftButton();
   EXPECT_EQ(CursorType::kPointer, cursor_manager->GetCursor().type());
   event_generator->MoveMouseTo(gfx::Point(50, 50));
   EXPECT_EQ(CursorType::kCell, cursor_manager->GetCursor().type());

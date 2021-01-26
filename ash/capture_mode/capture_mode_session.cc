@@ -613,6 +613,9 @@ void CaptureModeSession::StartCountDown(
   label_view->StartCountDown(std::move(countdown_finished_callback));
   UpdateCaptureLabelWidgetBounds(/*animate=*/true);
 
+  UpdateCursor(display::Screen::GetScreen()->GetCursorScreenPoint(),
+               /*is_touch=*/false);
+
   // Fade out the capture bar.
   ui::Layer* capture_bar_layer = capture_mode_bar_widget_->GetLayer();
   ui::ScopedLayerAnimationSettings capture_bar_settings(
@@ -921,6 +924,9 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     event->StopPropagation();
     return;
   }
+
+  if (event->type() == ui::ET_MOUSE_CAPTURE_CHANGED)
+    return;
 
   gfx::Point screen_location = event->location();
   aura::Window* event_target = static_cast<aura::Window*>(event->target());
@@ -1580,6 +1586,11 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
   if (tablet_mode_controller->InTabletMode() &&
       !tablet_mode_controller->IsInDevTabletMode()) {
     cursor_setter_->HideCursor();
+    return;
+  }
+
+  if (IsInCountDownAnimation()) {
+    cursor_setter_->UpdateCursor(ui::mojom::CursorType::kPointer);
     return;
   }
 
