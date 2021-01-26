@@ -9283,7 +9283,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSBookmarkManagerCloseWithSwipe">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <description>
     Recorded when a user closes bookmark manager by swiping down. iOS-only.
@@ -9387,7 +9387,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSHistoryCloseWithSwipe">
-  <owner>eugenebut@google.com</owner>
+  <owner>rohitrao@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <description>
     Recorded when a user closes History using swipe down gesture. iOS-only.
@@ -9395,7 +9395,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSInspectPageVisited">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>
   <description>
     Recorded when the user loads the chrome://inspect page on iOS.
@@ -9452,7 +9452,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOSReadingListCloseWithSwipe">
-  <owner>eugenebut@google.com</owner>
+  <owner>rohitrao@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>
     Recorded when a user closes Reading List with swipe down gesture. iOS-only.
@@ -13887,7 +13887,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileHistoryClose">
-  <owner>eugenebut@google.com</owner>
+  <owner>rohitrao@chromium.org</owner>
   <owner>sczs@chromium.org</owner>
   <description>Recorded when a user closes History on iOS.</description>
 </action>
@@ -14810,7 +14810,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileReadingListClose">
-  <owner>eugenebut@google.com</owner>
+  <owner>rohitrao@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <description>Recorded when a user closes Reading List on iOS.</description>
 </action>
@@ -14947,7 +14947,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileReportAnIssueClosed">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
   <owner>sdefresne@chromium.org</owner>
   <description>
     The user dismissed Report An Issue screen by cancelling or submitting

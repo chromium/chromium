@@ -363,7 +363,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="IOS.FormInputAccessory.ExecuteFormAssistActionException"
     enum="FormInputAccessoryAction" expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
   <summary>
     Reports exceptions when trying to send a form input accessory action to the
     virtual keyboard.
@@ -593,7 +593,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="IOS.NSString.stringByReplacingCharactersInRange.NilArgument"
     enum="Boolean" expires_after="2021-12-11">
   <owner>javierrobles@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
   <summary>
     NSString API: stringByReplacingCharactersInRange:withString: was invoked
     with a nil argument.
@@ -845,14 +845,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.Spotlight.Action" enum="IOSSpotlightAction"
     expires_after="2021-05-16">
-  <owner>eugenebut@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
   <summary>The Spotlight Action pressed by the user.</summary>
 </histogram>
 
 <histogram name="IOS.Spotlight.Availability" enum="IOSSpotlightAvailability"
     expires_after="2021-07-11">
-  <owner>eugenebut@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
     Tracks the availability of the Spotlight indexation on the device. It is
@@ -863,22 +863,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="IOS.Spotlight.BookmarksIndexingDuration" units="ms"
     expires_after="2021-07-11">
-  <owner>eugenebut@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
   <summary>Time spent in Spotlight initial indexation of bookmarks.</summary>
 </histogram>
 
 <histogram name="IOS.Spotlight.BookmarksInitialIndexSize" units="units"
     expires_after="2021-07-11">
-  <owner>eugenebut@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
   <summary>Number of bookmarks indexed during initial indexation.</summary>
 </histogram>
 
 <histogram name="IOS.Spotlight.Origin" enum="IOSSpotlightOrigin"
     expires_after="2021-05-02">
-  <owner>eugenebut@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
   <summary>
     This event is recorded each time a Chrome Spotlight entry is selected by the
     user. The enumeration indicates the nature of the Spotlight entry.
@@ -888,7 +888,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="IOS.StoreKit.ITunesURLsHandlingResult"
     enum="IOSITunesURLsStoreKitHandlingResult" expires_after="2021-06-23">
   <owner>mrefaat@chromium.org</owner>
-  <owner>eugenebut@chromium.org</owner>
+  <owner>rohitrao@chromium.org</owner>
   <summary>
     The result of StoreKit handling for a specific iTunes URL. Not Handled will
     be logged when the LinksHandler didn't handle a specific URL on purpose (not
