@@ -1172,6 +1172,15 @@
       ]
      ]
     },
+    "crashtests": {
+     "firefox-bug-1688293.html": [
+      "9ab1a88312683a66798cb52693c2ba4389222ff4",
+      [
+       null,
+       {}
+      ]
+     ]
+    },
     "extensibility": {
      "foreignObject": {
       "foreign-object-circular-filter-reference-crash.html": [
@@ -308012,7 +308021,7 @@
       ]
      ],
      "focus-visible-007.html": [
-      "3b7abf7646222134e80c5ecf3f518d0a5cf80abf",
+      "0fc196cbecdf1b198a5badce3694b1ec7cc95d4f",
       [
        null,
        {
@@ -308062,7 +308071,7 @@
       ]
      ],
      "focus-visible-013.html": [
-      "11cf4d7216a61bc833e4788975252c5829dfc884",
+      "a259a1cc73430e6fcee682e56e459dd6161dced6",
       [
        null,
        {
