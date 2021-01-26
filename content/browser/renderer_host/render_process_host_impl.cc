@@ -920,11 +920,10 @@ class SiteProcessCountTracker : public base::SupportsUserData::Data,
 // potential for process reuse (crbug.com/894253).
 const void* const kRecentlyDestroyedHostTrackerKey =
     "RecentlyDestroyedHostTrackerKey";
-// Information about recently destroyed processes is stored for 7 seconds, about
-// a second more than the longest time from process destruction to recreation
-// observed in local tests.
+// Storage time for information about recently destroyed processes. Intended to
+// be long enough to capture a large portion of the process-reuse opportunity.
 static constexpr base::TimeDelta kRecentlyDestroyedTimeout =
-    base::TimeDelta::FromSeconds(7);
+    base::TimeDelta::FromSeconds(10);
 // Sentinel value indicating that no recently destroyed process matches the
 // host currently seeking a process. Changing this invalidates the histogram.
 static constexpr base::TimeDelta kRecentlyDestroyedNotFoundSentinel =
