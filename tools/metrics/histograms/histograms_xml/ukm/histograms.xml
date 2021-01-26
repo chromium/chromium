@@ -203,7 +203,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UKM.ProtoCompressionRatio" units="%"
-    expires_after="2021-02-07">
+    expires_after="2021-07-01">
   <owner>rkaplow@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
@@ -255,7 +255,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UKM.Sources.SerializedCount2{UkmSourceIdTypes}"
-    units="sources" expires_after="2021-02-14">
+    units="sources" expires_after="2021-07-01">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
