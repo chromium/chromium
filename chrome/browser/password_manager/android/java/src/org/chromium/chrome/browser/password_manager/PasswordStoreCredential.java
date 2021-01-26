@@ -45,4 +45,13 @@ public class PasswordStoreCredential {
     public String getPassword() {
         return mPassword;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PasswordStoreCredential that = (PasswordStoreCredential) o;
+        return mUrl.equals(that.mUrl) && mUsername.equals(that.mUsername)
+                && mPassword.equals(that.mPassword);
+    }
 }
