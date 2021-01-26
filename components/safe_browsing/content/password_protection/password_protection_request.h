@@ -164,6 +164,13 @@ class PasswordProtectionRequest
       RequestOutcome outcome,
       const LoginReputationClientResponse* response) = 0;
 
+  // Subclasses may override this method to add pings to the WebUI.
+  virtual void MaybeAddPingToWebUI() {}
+
+  // Subclasses may override this method to add responses to the WebUI.
+  virtual void MaybeAddResponseToWebUI(
+      const LoginReputationClientResponse& response) {}
+
   // The PasswordProtectionServiceBase instance owns |this|.
   // Can only be accessed on UI thread.
   PasswordProtectionServiceBase* password_protection_service() {
@@ -270,9 +277,6 @@ class PasswordProtectionRequest
 
   // Whether there is a modal warning triggered by this request.
   bool is_modal_warning_showing_;
-
-  // If a request is sent, this is the token returned by the WebUI.
-  int web_ui_token_;
 };
 
 class PasswordProtectionRequestContent : public PasswordProtectionRequest {
@@ -322,6 +326,11 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
       RequestOutcome outcome,
       const LoginReputationClientResponse* response) override;
 
+  void MaybeAddPingToWebUI() override;
+
+  void MaybeAddResponseToWebUI(
+      const LoginReputationClientResponse& response) override;
+
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // Extracts DOM features.
   void GetDomFeatures() override;
@@ -364,6 +373,9 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
   // lifetime. These throttles are owned by their corresponding
   // NavigationHandler instances.
   std::set<PasswordProtectionNavigationThrottle*> throttles_;
+
+  // If a request is sent, this is the token returned by the WebUI.
+  int web_ui_token_;
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // When we start extracting visual features.

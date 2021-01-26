@@ -341,8 +341,7 @@ void PasswordProtectionRequest::FillRequestProto(bool is_sampled_ping) {
 void PasswordProtectionRequest::SendRequest() {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
 
-  web_ui_token_ =
-      WebUIInfoSingleton::GetInstance()->AddToPGPings(*request_proto_);
+  MaybeAddPingToWebUI();
 
   std::string serialized_request;
   // TODO(crbug.com/1158582): Return early if request serialization fails.
@@ -433,8 +432,7 @@ void PasswordProtectionRequest::OnURLLoaderComplete(
   DCHECK(response_body);
   url_loader_.reset();  // We don't need it anymore.
   if (response_body && response->ParseFromString(*response_body)) {
-    WebUIInfoSingleton::GetInstance()->AddToPGResponses(web_ui_token_,
-                                                        *response);
+    MaybeAddResponseToWebUI(*response);
     set_request_outcome(RequestOutcome::SUCCEEDED);
     Finish(RequestOutcome::SUCCEEDED, std::move(response));
   } else {
@@ -538,6 +536,18 @@ void PasswordProtectionRequestContent::MaybeLogPasswordReuseLookupEvent(
     const LoginReputationClientResponse* response) {
   password_protection_service()->MaybeLogPasswordReuseLookupEvent(
       web_contents_, outcome, password_type(), response);
+}
+
+void PasswordProtectionRequestContent::MaybeAddPingToWebUI() {
+  web_ui_token_ =
+      WebUIInfoSingleton::GetInstance()->AddToPGPings(*request_proto_);
+  DCHECK(web_ui_token_);
+}
+
+void PasswordProtectionRequestContent::MaybeAddResponseToWebUI(
+    const LoginReputationClientResponse& response) {
+  DCHECK(web_ui_token_);
+  WebUIInfoSingleton::GetInstance()->AddToPGResponses(web_ui_token_, response);
 }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
