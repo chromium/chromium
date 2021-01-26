@@ -8,15 +8,18 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/chromeos/login/configuration_keys.h"
+#include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/login/wizard_context.h"
 #include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -71,6 +74,7 @@ std::string HIDDetectionScreen::GetResultString(Result result) {
     case Result::START_DEMO:
       return "StartDemo";
     case Result::SKIP:
+    case Result::SKIPPED_FOR_TESTS:
       return BaseScreen::kNotApplicable;
   }
 }
@@ -117,12 +121,12 @@ void HIDDetectionScreen::OnContinueButtonClicked() {
                             scenario_type, CONTINUE_SCENARIO_TYPE_SIZE);
 
   CleanupOnExit();
-  exit_callback_.Run(Result::NEXT);
+  Exit(Result::NEXT);
 }
 
 void HIDDetectionScreen::OnShouldStartDemoMode() {
   CleanupOnExit();
-  exit_callback_.Run(Result::START_DEMO);
+  Exit(Result::START_DEMO);
 }
 
 void HIDDetectionScreen::CleanupOnExit() {
@@ -157,9 +161,17 @@ bool HIDDetectionScreen::MaybeSkip(WizardContext* context) {
   const bool skip_screen = skip_screen_key && skip_screen_key->GetBool();
 
   if (skip_screen) {
-    exit_callback_.Run(Result::SKIP);
+    Exit(Result::SKIP);
     return true;
   }
+
+  if (chromeos::StartupUtils::IsHIDDetectionScreenDisabledForTests() ||
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          chromeos::switches::kDisableHIDDetectionOnOOBEForTesting)) {
+    Exit(Result::SKIPPED_FOR_TESTS);
+    return true;
+  }
+
   return false;
 }
 
@@ -413,6 +425,11 @@ void HIDDetectionScreen::SetKeyboardDeviceName(const std::string& name) {
 
 void HIDDetectionScreen::SetPointingDeviceName(const std::string& name) {
   pointing_device_name_ = name;
+}
+
+void HIDDetectionScreen::Exit(Result result) {
+  exit_result_for_testing_ = result;
+  exit_callback_.Run(result);
 }
 
 void HIDDetectionScreen::DeviceAdded(device::BluetoothAdapter* adapter,

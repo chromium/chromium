@@ -7,15 +7,19 @@
 #include "base/macros.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
+#include "chrome/browser/chromeos/login/startup_utils.h"
 #include "chrome/browser/chromeos/login/test/device_state_mixin.h"
 #include "chrome/browser/chromeos/login/test/hid_controller_mixin.h"
 #include "chrome/browser/chromeos/login/test/oobe_base_test.h"
 #include "chrome/browser/chromeos/login/test/oobe_screen_waiter.h"
 #include "chrome/browser/chromeos/login/test/oobe_screens_utils.h"
+#include "chrome/browser/chromeos/login/wizard_controller.h"
 #include "chrome/browser/ui/webui/chromeos/login/hid_detection_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/network_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/welcome_screen_handler.h"
+#include "chromeos/constants/chromeos_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_launcher.h"
 
 using testing::_;
 
@@ -40,6 +44,14 @@ class HidDetectionTest : public OobeBaseTest {
   ~HidDetectionTest() override = default;
 
  protected:
+  HIDDetectionScreen* GetScreen() {
+    return WizardController::default_controller()
+        ->GetScreen<HIDDetectionScreen>();
+  }
+
+  const base::Optional<HIDDetectionScreen::Result>& GetExitResult() {
+    return GetScreen()->get_exit_result_for_testing();
+  }
   void ConnectDevices() {
     hid_controller_.AddUsbMouse(test::HIDControllerMixin::kMouseId);
     hid_controller_.AddUsbKeyboard(test::HIDControllerMixin::kKeyboardId);
@@ -60,10 +72,12 @@ class HidDetectionSkipTest : public HidDetectionTest {
 
 IN_PROC_BROWSER_TEST_F(HidDetectionTest, NoDevicesConnected) {
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
+  EXPECT_FALSE(GetExitResult().has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(HidDetectionSkipTest, BothDevicesPreConnected) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
+  EXPECT_FALSE(GetExitResult().has_value());
 }
 
 // Start without devices, connect them and proceed to the network screen.
@@ -74,6 +88,7 @@ IN_PROC_BROWSER_TEST_F(HidDetectionTest, PRE_ResumableScreen) {
   ConnectDevices();
   test::OobeJS().CreateEnabledWaiter(true, hid_continue_button)->Wait();
   test::OobeJS().TapOnPath(hid_continue_button);
+  EXPECT_EQ(GetExitResult(), HIDDetectionScreen::Result::NEXT);
 
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
   test::TapWelcomeNext();
@@ -88,6 +103,7 @@ IN_PROC_BROWSER_TEST_F(HidDetectionTest, ResumableScreen) {
   test::OobeJS().CreateEnabledWaiter(true, hid_continue_button)->Wait();
   test::OobeJS().TapOnPath(hid_continue_button);
   OobeScreenWaiter(NetworkScreenView::kScreenId).Wait();
+  EXPECT_EQ(GetExitResult(), HIDDetectionScreen::Result::NEXT);
 }
 
 class HidDetectionDeviceOwnedTest : public HidDetectionTest {
@@ -108,6 +124,41 @@ class HidDetectionOobeCompletedUnowned : public HidDetectionTest {
 
 IN_PROC_BROWSER_TEST_F(HidDetectionOobeCompletedUnowned, ShowScreen) {
   OobeScreenWaiter(HIDDetectionView::kScreenId).Wait();
+}
+
+class HidDetectionScreenDisabledAfterRestartTest : public HidDetectionTest {
+ public:
+  HidDetectionScreenDisabledAfterRestartTest() = default;
+  // HidDetectionTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    HidDetectionTest::SetUpCommandLine(command_line);
+    // Emulating Chrome restart without the flag.
+    if (content::IsPreTest()) {
+      command_line->AppendSwitch(
+          switches::kDisableHIDDetectionOnOOBEForTesting);
+    }
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HidDetectionScreenDisabledAfterRestartTest,
+                       PRE_SkipToUpdate) {
+  // Pref should be false by default.
+  EXPECT_FALSE(StartupUtils::IsHIDDetectionScreenDisabledForTests());
+
+  WizardController::default_controller()->SkipToUpdateForTesting();
+  // SkipToUpdateForTesting should set the pref when
+  // switches::kDisableHIDDetectionOnOOBEForTesting is passed.
+  EXPECT_TRUE(StartupUtils::IsHIDDetectionScreenDisabledForTests());
+
+  EXPECT_EQ(GetExitResult(), HIDDetectionScreen::Result::SKIPPED_FOR_TESTS);
+}
+
+IN_PROC_BROWSER_TEST_F(HidDetectionScreenDisabledAfterRestartTest,
+                       SkipToUpdate) {
+  // The pref should persist restart.
+  EXPECT_TRUE(StartupUtils::IsHIDDetectionScreenDisabledForTests());
+
+  EXPECT_EQ(GetExitResult(), HIDDetectionScreen::Result::SKIPPED_FOR_TESTS);
 }
 
 }  // namespace chromeos

@@ -16,6 +16,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/optional.h"
 #include "chrome/browser/chromeos/login/demo_mode/demo_mode_detector.h"
 #include "chrome/browser/chromeos/login/screens/base_screen.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -42,7 +43,7 @@ class HIDDetectionScreen : public BaseScreen,
   using InputDeviceInfoPtr = device::mojom::InputDeviceInfoPtr;
   using DeviceMap = std::map<std::string, InputDeviceInfoPtr>;
 
-  enum class Result { NEXT, START_DEMO, SKIP };
+  enum class Result { NEXT, START_DEMO, SKIP, SKIPPED_FOR_TESTS };
 
   using ScreenExitCallback = base::RepeatingCallback<void(Result result)>;
 
@@ -65,6 +66,10 @@ class HIDDetectionScreen : public BaseScreen,
       mojo::PendingReceiver<device::mojom::InputDeviceManager>)>;
   static void OverrideInputDeviceManagerBinderForTesting(
       InputDeviceManagerBinder binder);
+
+  const base::Optional<Result>& get_exit_result_for_testing() const {
+    return exit_result_for_testing_;
+  }
 
  private:
   friend class HIDDetectionScreenTest;
@@ -214,12 +219,15 @@ class HIDDetectionScreen : public BaseScreen,
   void SetKeyboardDeviceName(const std::string& name);
   void SetPointingDeviceName(const std::string& name);
 
+  void Exit(Result result);
+
   scoped_refptr<device::BluetoothAdapter> GetAdapterForTesting();
   void SetAdapterInitialPoweredForTesting(bool powered);
 
   HIDDetectionView* view_;
 
   const ScreenExitCallback exit_callback_;
+  base::Optional<Result> exit_result_for_testing_;
 
   std::unique_ptr<DemoModeDetector> demo_mode_detector_;
 

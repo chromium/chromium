@@ -102,7 +102,6 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "content/public/test/test_launcher.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/spawned_test_server/spawned_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -2827,37 +2826,6 @@ IN_PROC_BROWSER_TEST_F(WizardControllerOobeConfigurationTest,
   base::Value* configuration = screen->GetConfigurationForTesting();
   ASSERT_NE(configuration, nullptr);
   EXPECT_FALSE(configuration->DictEmpty());
-}
-
-class HIDDetectionScreenDisabledAfterRestartTest : public OobeBaseTest {
- public:
-  HIDDetectionScreenDisabledAfterRestartTest() = default;
-  // OobeBaseTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    OobeBaseTest::SetUpCommandLine(command_line);
-    // Emulating Chrome restart without the flag.
-    if (content::IsPreTest()) {
-      command_line->AppendSwitch(
-          switches::kDisableHIDDetectionOnOOBEForTesting);
-    }
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(HIDDetectionScreenDisabledAfterRestartTest,
-                       PRE_SkipToUpdate) {
-  // Pref should be false by default.
-  EXPECT_FALSE(StartupUtils::IsHIDDetectionScreenDisabledForTests());
-
-  WizardController::default_controller()->SkipToUpdateForTesting();
-  // SkipToUpdateForTesting should set the pref when
-  // switches::kDisableHIDDetectionOnOOBEForTesting is passed.
-  EXPECT_TRUE(StartupUtils::IsHIDDetectionScreenDisabledForTests());
-}
-
-IN_PROC_BROWSER_TEST_F(HIDDetectionScreenDisabledAfterRestartTest,
-                       SkipToUpdate) {
-  // The pref should persist restart.
-  EXPECT_TRUE(StartupUtils::IsHIDDetectionScreenDisabledForTests());
 }
 
 // TODO(nkostylev): Add test for WebUI accelerators http://crosbug.com/22571
