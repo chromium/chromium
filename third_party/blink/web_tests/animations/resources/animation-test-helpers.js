@@ -332,3 +332,58 @@ function runTransitionTest(expected, trigger, callbacks, doPixelTest, disablePau
     isTransitionsTest = true;
     runAnimationTest(expected, callbacks, trigger, disablePauseAnimationAPI, doPixelTest);
 }
+
+/*
+ * Creates one or more animations that are effectively frozen at 50% progress
+ * due to the duration of the animation and timing function. The test finishes
+ * once all ready promises are resolved and property values have been validated.
+ *
+ * @param {array<{ string: id, string: keyframes}>} animation_list
+ * @param {string} reference Id of reference element.
+ * @param {string} property  Name of the property, which may be longhand or
+ *     shorthand.
+ * @param {number} tolerance Numerical tolerance. For non-numerical property
+ *     values, the tolerance is applied to each functional argument or list
+ *     member within the expression.
+ */
+function runAnimationMidpointTest(animation_list, reference, property,
+                                  tolerance) {
+  const duration = 100000;
+  const promises = [];
+  useResultElement = true;
+  animation_list.forEach(options => {
+    const element = document.getElementById(options.id);
+    element.style.animationName = options.keyframes;
+    element.style.animationDuration = `${duration}s`;
+    element.style.animationDelay = `${-duration/2}s`;
+    // This timing function has a zero slope at the midpoint.
+    element.style.animationTimingFunction = 'cubic-bezier(0, 1, 1, 0)';
+    // The getAnimations call forces a style update, which in turn will create
+    // the CSS animation.
+    const animation = element.getAnimations()[0];
+    // By waiting on the ready promise, we ensure that the client agent and the
+    // animation are in sync.
+    promises.push(animation.ready);
+  });
+  Promise.all(promises).then(() => {
+    animation_list.forEach(options => {
+        const element = options.id;
+        const computedValue = getPropertyValue(property, element);
+        const expectedValue = getPropertyValue(property, reference);
+        if (comparePropertyValue(computedValue, expectedValue, tolerance)) {
+            result += "PASS - \"" + property + "\" property for \"" +
+                      element + "\" and \"" + reference +
+                      "\" elements are close enough to each other" + "<br>";
+        } else {
+            result += "FAIL - \"" + property + "\" property for \"" +
+                      element  + "\" and \"" + reference +
+                      "\" elements saw: \"" + computedValue +
+                      "\" and \"" + expectedValue +
+                      "\" which are not close enough to each other" + "<br>";
+        }
+    });
+    endTest();
+  });
+  if (window.testRunner)
+    testRunner.waitUntilDone();
+}

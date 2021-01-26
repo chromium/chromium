@@ -8,7 +8,6 @@
         height: 100px;
         width: 100px;
         background-color: red;
-        animation: anim 1s linear infinite;
     }
     #boxShorthand {
         position: absolute;
@@ -17,7 +16,6 @@
         height: 100px;
         width: 100px;
         background-color: red;
-        animation: animShorthand 1s linear infinite;
     }
     #boxStatic {
         position: absolute;
@@ -39,15 +37,16 @@
   </style>
   <script src="resources/animation-test-helpers.js" type="text/javascript" charset="utf-8"></script>
   <script type="text/javascript" charset="utf-8">
-    const expectedValues = [
-      // [time, element-id, property, expected-value, tolerance]
-      [2.5, ["box", "boxStatic"], "backgroundImage", 0.5, 0.05],
-      [2.5, ["boxShorthand", "boxStatic"], "backgroundImage", 0.5, 0.05],
-    ];
-
-    var doPixelTest = true;
-    var disablePauseAPI = false;
-    runAnimationTest(expectedValues, null, undefined, disablePauseAPI, doPixelTest);
+    window.onload = () => {
+      const animations = [
+        { id: 'box', keyframes: 'anim' },
+        { id: 'boxShorthand', keyframes: 'animShorthand' }
+      ];
+      const reference = 'boxStatic';
+      const property = 'backgroundImage';
+      const tolerance = 0.05;
+      runAnimationMidpointTest(animations, reference, property, tolerance);
+    };
   </script>
 </head>
 <body>
