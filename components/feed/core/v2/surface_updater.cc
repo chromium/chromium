@@ -248,7 +248,7 @@ int SurfaceUpdater::GetSliceIndexFromSliceId(const std::string& slice_id) {
 }
 
 bool SurfaceUpdater::HasSurfaceAttached() const {
-  return surfaces_.might_have_observers();
+  return !surfaces_.empty();
 }
 
 void SurfaceUpdater::SetLoadingMore(bool is_loading) {
