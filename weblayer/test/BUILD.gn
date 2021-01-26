@@ -26,6 +26,8 @@ if (is_android) {
     sources = [
       "../shell/android/browsertests_apk/src/org/chromium/weblayer_browsertests_apk/WebLayerBrowserTestsActivity.java",
       "../shell/android/browsertests_apk/src/org/chromium/weblayer_browsertests_apk/WebLayerBrowserTestsApplication.java",
+      "../shell/android/browsertests_apk/src/org/chromium/weblayer_private/AccessTokenFetchTestBridge.java",
+      "../shell/android/browsertests_apk/src/org/chromium/weblayer_private/GoogleAccountAccessTokenFetcherTestStub.java",
       "../shell/android/browsertests_apk/src/org/chromium/weblayer_private/MetricsTestHelper.java",
       "../shell/android/browsertests_apk/src/org/chromium/weblayer_private/TranslateTestBridge.java",
     ]
@@ -46,7 +48,9 @@ if (is_android) {
       "//third_party/android_deps:androidx_core_core_java",
       "//ui/android:ui_java",
       "//weblayer/browser/java",
+      "//weblayer/browser/java:base_module_interfaces_java",
       "//weblayer/browser/java:gms_bridge_java",
+      "//weblayer/browser/java:interfaces_java",
       "//weblayer/public/java",
       "//weblayer/public/javatestutil:test_java",
     ]
@@ -57,6 +61,8 @@ if (is_android) {
 
   generate_jni("weblayer_browsertests_jni") {
     sources = [
+      "../shell/android/browsertests_apk/src/org/chromium/weblayer_private/AccessTokenFetchTestBridge.java",
+      "../shell/android/browsertests_apk/src/org/chromium/weblayer_private/GoogleAccountAccessTokenFetcherTestStub.java",
       "../shell/android/browsertests_apk/src/org/chromium/weblayer_private/MetricsTestHelper.java",
       "../shell/android/browsertests_apk/src/org/chromium/weblayer_private/TranslateTestBridge.java",
     ]
@@ -189,6 +195,7 @@ test("weblayer_browsertests") {
 
   if (is_android) {
     sources += [
+      "../browser/android/access_token_fetch_browsertest.cc",
       "../browser/android/metrics/metrics_browsertest.cc",
       "../browser/android/metrics/metrics_test_helper.cc",
       "../browser/android/metrics/metrics_test_helper.h",

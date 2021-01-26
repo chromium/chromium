@@ -55,8 +55,8 @@ public final class ProfileImpl
     private boolean mBeingDeleted;
     private boolean mDownloadsInitialized;
     private DownloadCallbackProxy mDownloadCallbackProxy;
+    private GoogleAccountAccessTokenFetcherProxy mAccessTokenFetcherProxy;
     private IUserIdentityCallbackClient mUserIdentityCallbackClient;
-    private IGoogleAccountAccessTokenFetcherClient mGoogleAccountAccessTokenFetcherClient;
     private List<Intent> mDownloadNotificationIntents = new ArrayList<>();
 
     private IProfileClient mClient;
@@ -85,12 +85,18 @@ public final class ProfileImpl
                 ProfileImplJni.get().getPrerenderController(mNativeProfile));
         mOnDestroyCallback = onDestroyCallback;
         mDownloadCallbackProxy = new DownloadCallbackProxy(this);
+        mAccessTokenFetcherProxy = new GoogleAccountAccessTokenFetcherProxy(this);
     }
 
     private void destroyDependentJavaObjects() {
         if (mDownloadCallbackProxy != null) {
             mDownloadCallbackProxy.destroy();
             mDownloadCallbackProxy = null;
+        }
+
+        if (mAccessTokenFetcherProxy != null) {
+            mAccessTokenFetcherProxy.destroy();
+            mAccessTokenFetcherProxy = null;
         }
 
         if (mCookieManager != null) {
@@ -218,11 +224,7 @@ public final class ProfileImpl
     public void setGoogleAccountAccessTokenFetcherClient(
             IGoogleAccountAccessTokenFetcherClient client) {
         StrictModeWorkaround.apply();
-        mGoogleAccountAccessTokenFetcherClient = client;
-    }
-
-    public IGoogleAccountAccessTokenFetcherClient getGoogleAccountAccessTokenFetcherClient() {
-        return mGoogleAccountAccessTokenFetcherClient;
+        mAccessTokenFetcherProxy.setClient(client);
     }
 
     @Override
@@ -387,10 +389,10 @@ public final class ProfileImpl
         return ProfileImplJni.get().getBooleanSetting(mNativeProfile, type);
     }
 
-    public void fetchAccessTokenForTesting(IObjectWrapper scopes, IObjectWrapper onTokenFetched)
-            throws RemoteException {
-        // Before invoking this method the test should have set the fetcher.
-        mGoogleAccountAccessTokenFetcherClient.fetchAccessToken(scopes, onTokenFetched);
+    public void fetchAccessTokenForTesting(IObjectWrapper scopesWrapper,
+            IObjectWrapper onTokenFetchedWrapper) throws RemoteException {
+        mAccessTokenFetcherProxy.fetchAccessToken(ObjectWrapper.unwrap(scopesWrapper, Set.class),
+                ObjectWrapper.unwrap(onTokenFetchedWrapper, ValueCallback.class));
     }
 
     @NativeMethods

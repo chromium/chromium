@@ -314,6 +314,11 @@ void ProfileImpl::SetDownloadDelegate(DownloadDelegate* delegate) {
   download_delegate_ = delegate;
 }
 
+void ProfileImpl::SetGoogleAccountAccessTokenFetchDelegate(
+    GoogleAccountAccessTokenFetchDelegate* delegate) {
+  access_token_fetch_delegate_ = delegate;
+}
+
 CookieManager* ProfileImpl::GetCookieManager() {
   if (!cookie_manager_)
     cookie_manager_ = std::make_unique<CookieManagerImpl>(GetBrowserContext());
