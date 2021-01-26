@@ -31,6 +31,7 @@ namespace ash {
 
 class CaptureModeBarView;
 class CaptureModeController;
+class CaptureModeSettingsView;
 class CaptureWindowObserver;
 class WindowDimmer;
 
@@ -75,6 +76,12 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // Called when either the capture source or type changes.
   void OnCaptureSourceChanged(CaptureModeSource new_source);
   void OnCaptureTypeChanged(CaptureModeType new_type);
+
+  // Called when the settings menu is toggled.
+  void SetSettingsMenuShown(bool shown);
+
+  // Called when the record microphone setting is toggled.
+  void OnMicrophoneChanged(bool microphone_enabled);
 
   // Called when the user performs a capture. Records histograms related to this
   // session.
@@ -134,9 +141,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // Handles updating the select region UI.
   void OnLocatedEventPressed(const gfx::Point& location_in_root,
                              bool is_touch,
-                             bool is_event_on_capture_bar);
+                             bool is_event_on_capture_bar_or_menu);
   void OnLocatedEventDragged(const gfx::Point& location_in_root);
-  void OnLocatedEventReleased(bool is_event_on_capture_bar,
+  void OnLocatedEventReleased(bool is_event_on_capture_bar_or_menu,
                               bool region_intersects_capture_bar);
 
   // Updates the capture region and the capture region widgets depending on the
@@ -219,7 +226,7 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
 
   // Ends a region selection. Cleans up internal state and updates the cursor,
   // capture bar opacity and magnifier glass.
-  void EndSelection(bool is_event_on_capture_bar,
+  void EndSelection(bool is_event_on_capture_bar_or_menu,
                     bool region_intersects_capture_bar);
 
   // Schedules a paint on the region and enough inset around it so that the
@@ -235,6 +242,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   void UpdateRegionHorizontally(bool left, bool is_shift_down);
   void UpdateRegionVertically(bool up, bool is_shift_down);
 
+  // Returns true if the event is on a visible settings menu.
+  bool IsEventOnSettingsWidget(const gfx::Point& location_in_screen);
+
   CaptureModeController* const controller_;
 
   // The current root window on which the capture session is active, which may
@@ -246,6 +256,11 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
 
   // The content view of the above widget and owned by its views hierarchy.
   CaptureModeBarView* capture_mode_bar_view_ = nullptr;
+
+  views::UniqueWidgetPtr capture_mode_settings_widget_;
+
+  // The content view of the above widget and owned by its views hierarchy.
+  CaptureModeSettingsView* capture_mode_settings_view_ = nullptr;
 
   // Widget which displays capture region size during a region capture session.
   views::UniqueWidgetPtr dimensions_label_widget_;

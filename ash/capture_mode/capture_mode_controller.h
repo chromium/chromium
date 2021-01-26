@@ -59,6 +59,7 @@ class ASH_EXPORT CaptureModeController
     return capture_mode_session_.get();
   }
   gfx::Rect user_capture_region() const { return user_capture_region_; }
+  bool enable_audio_recording() const { return enable_audio_recording_; }
   bool is_recording_in_progress() const { return is_recording_in_progress_; }
 
   // Returns true if a capture mode session is currently active.
@@ -68,6 +69,11 @@ class ASH_EXPORT CaptureModeController
   // session (if any), or to a future capture session when Start() is called.
   void SetSource(CaptureModeSource source);
   void SetType(CaptureModeType type);
+
+  // Sets the audio recording flag, which will be applied to any future
+  // recordings (cannot be set mid recording), or to a future capture mode
+  // session when Start() is called.
+  void EnableAudioRecording(bool enable_audio_recording);
 
   // Starts a new capture session with the most-recently used |type_| and
   // |source_|. Also records what |entry_type| that started capture mode.
@@ -309,8 +315,10 @@ class ASH_EXPORT CaptureModeController
 
   std::unique_ptr<CaptureModeSession> capture_mode_session_;
 
-  // Whether the service should record audio.
-  bool enable_audio_recording_ = true;
+  // Remember the user selected audio preference of whether to record audio or
+  // not for a video, between sessions. Initially, this value is set to false,
+  // ensuring that this is an opt-in feature.
+  bool enable_audio_recording_ = false;
 
   // True when video recording is in progress.
   bool is_recording_in_progress_ = false;

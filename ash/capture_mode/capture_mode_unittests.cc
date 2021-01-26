@@ -10,6 +10,8 @@
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_metrics.h"
 #include "ash/capture_mode/capture_mode_session.h"
+#include "ash/capture_mode/capture_mode_settings_entry_view.h"
+#include "ash/capture_mode/capture_mode_settings_view.h"
 #include "ash/capture_mode/capture_mode_source_view.h"
 #include "ash/capture_mode/capture_mode_toggle_button.h"
 #include "ash/capture_mode/capture_mode_type_view.h"
@@ -137,6 +139,14 @@ class CaptureModeSessionTestApi {
     return session_->capture_mode_bar_widget_.get();
   }
 
+  CaptureModeSettingsView* capture_mode_settings_view() const {
+    return session_->capture_mode_settings_view_;
+  }
+
+  views::Widget* capture_mode_settings_widget() const {
+    return session_->capture_mode_settings_widget_.get();
+  }
+
   views::Widget* capture_label_widget() const {
     return session_->capture_label_widget_.get();
   }
@@ -184,6 +194,18 @@ class CaptureModeTest : public AshTestBase {
     return CaptureModeSessionTestApi(session).capture_mode_bar_widget();
   }
 
+  CaptureModeSettingsView* GetCaptureModeSettingsView() const {
+    auto* session = CaptureModeController::Get()->capture_mode_session();
+    DCHECK(session);
+    return CaptureModeSessionTestApi(session).capture_mode_settings_view();
+  }
+
+  views::Widget* GetCaptureModeSettingsWidget() const {
+    auto* session = CaptureModeController::Get()->capture_mode_session();
+    DCHECK(session);
+    return CaptureModeSessionTestApi(session).capture_mode_settings_widget();
+  }
+
   CaptureModeToggleButton* GetImageToggleButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
@@ -220,10 +242,25 @@ class CaptureModeTest : public AshTestBase {
         ->window_toggle_button();
   }
 
+  CaptureModeToggleButton* GetSettingsButton() const {
+    auto* controller = CaptureModeController::Get();
+    DCHECK(controller->IsActive());
+    return GetCaptureModeBarView()->settings_button();
+  }
+
   CaptureModeButton* GetCloseButton() const {
     auto* controller = CaptureModeController::Get();
     DCHECK(controller->IsActive());
     return GetCaptureModeBarView()->close_button_for_testing();
+  }
+
+  views::ToggleButton* GetMicrophoneToggle() const {
+    auto* controller = CaptureModeController::Get();
+    DCHECK(controller->IsActive());
+    DCHECK(GetCaptureModeSettingsView());
+    return GetCaptureModeSettingsView()
+        ->microphone_view_for_testing()
+        ->toggle_button_view();
   }
 
   aura::Window* GetDimensionsLabelWindow() const {
@@ -2544,6 +2581,159 @@ TEST_F(CaptureModeTest, CannotDoMultipleRecordings) {
   EXPECT_FALSE(GetImageToggleButton()->GetToggled());
   EXPECT_TRUE(GetVideoToggleButton()->GetToggled());
   EXPECT_TRUE(GetVideoToggleButton()->GetEnabled());
+}
+
+// Tests the basic settings menu functionality.
+TEST_F(CaptureModeTest, SettingsMenuVisibilityBasic) {
+  auto* event_generator = GetEventGenerator();
+  auto* controller = StartImageRegionCapture();
+  EXPECT_TRUE(controller->IsActive());
+
+  // Session starts with settings menu not initialized.
+  EXPECT_FALSE(GetCaptureModeSettingsWidget());
+
+  // Test clicking the settings button toggles the button as well as
+  // opens/closes the settings menu.
+  ClickOnView(GetSettingsButton(), event_generator);
+  EXPECT_TRUE(GetCaptureModeSettingsWidget());
+  EXPECT_TRUE(GetSettingsButton()->GetToggled());
+  ClickOnView(GetSettingsButton(), event_generator);
+  EXPECT_FALSE(GetCaptureModeSettingsWidget());
+  EXPECT_FALSE(GetSettingsButton()->GetToggled());
+}
+
+// Tests how interacting with the rest of the screen (i.e. clicking outside of
+// the bar/menu, on other buttons) affects whether the settings menu should
+// close or not.
+TEST_F(CaptureModeTest, SettingsMenuVisibilityClicking) {
+  UpdateDisplay("800x800");
+
+  auto* event_generator = GetEventGenerator();
+  auto* controller = StartImageRegionCapture();
+  EXPECT_TRUE(controller->IsActive());
+
+  // Test clicking on the settings menu and toggling settings doesn't close the
+  // settings menu.
+  ClickOnView(GetSettingsButton(), event_generator);
+  ClickOnView(GetCaptureModeSettingsView(), event_generator);
+  EXPECT_TRUE(GetCaptureModeSettingsWidget());
+  EXPECT_TRUE(GetSettingsButton()->GetToggled());
+  ClickOnView(GetMicrophoneToggle(), event_generator);
+  EXPECT_TRUE(GetCaptureModeSettingsWidget());
+  EXPECT_TRUE(GetSettingsButton()->GetToggled());
+
+  // Test clicking on the capture bar closes the settings menu.
+  event_generator->MoveMouseTo(
+      GetCaptureModeBarView()->GetBoundsInScreen().top_center() +
+      gfx::Vector2d(0, 2));
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(GetCaptureModeSettingsWidget());
+  EXPECT_FALSE(GetSettingsButton()->GetToggled());
+
+  // Test clicking on a different source closes the settings menu.
+  ClickOnView(GetSettingsButton(), event_generator);
+  ClickOnView(GetFullscreenToggleButton(), event_generator);
+  EXPECT_FALSE(GetCaptureModeSettingsWidget());
+
+  // Test clicking on a different type closes the settings menu.
+  ClickOnView(GetSettingsButton(), event_generator);
+  ClickOnView(GetVideoToggleButton(), event_generator);
+  EXPECT_FALSE(GetCaptureModeSettingsWidget());
+
+  // Exit the capture session with the settings menu open, and test to make sure
+  // the new session starts with the settings menu hidden.
+  ClickOnView(GetSettingsButton(), event_generator);
+  SendKey(ui::VKEY_ESCAPE, event_generator);
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kImage);
+  EXPECT_FALSE(GetCaptureModeSettingsWidget());
+
+  // Take a screenshot with the settings menu open, and test to make sure the
+  // new session starts with the settings menu hidden.
+  ClickOnView(GetSettingsButton(), event_generator);
+  // Take screenshot.
+  SendKey(ui::VKEY_RETURN, event_generator);
+  StartImageRegionCapture();
+  EXPECT_FALSE(GetCaptureModeSettingsWidget());
+}
+
+// Tests the settings menu functionality when in region mode.
+TEST_F(CaptureModeTest, SettingsMenuVisibilityDrawingRegion) {
+  UpdateDisplay("800x800");
+
+  auto* event_generator = GetEventGenerator();
+  auto* controller = StartImageRegionCapture();
+  EXPECT_TRUE(controller->IsActive());
+
+  // Test the settings menu is hidden when the user clicks to start selecting a
+  // region.
+  ClickOnView(GetSettingsButton(), event_generator);
+  EXPECT_TRUE(GetCaptureModeSettingsWidget());
+  const gfx::Rect target_region(gfx::BoundingRect(
+      gfx::Point(0, 0),
+      GetCaptureModeBarView()->GetBoundsInScreen().top_right() +
+          gfx::Vector2d(0, -50)));
+  event_generator->MoveMouseTo(target_region.origin());
+  event_generator->PressLeftButton();
+  EXPECT_FALSE(GetCaptureModeSettingsWidget());
+  event_generator->MoveMouseTo(target_region.bottom_right());
+  event_generator->ReleaseLeftButton();
+  EXPECT_FALSE(GetCaptureModeSettingsWidget());
+
+  // Test that the settings menu is hidden when we drag a region. This drags a
+  // region that overlapps the capture bar for later steps of testing.
+  ClickOnView(GetSettingsButton(), event_generator);
+  event_generator->MoveMouseTo(target_region.origin() + gfx::Vector2d(50, 50));
+  event_generator->PressLeftButton();
+  EXPECT_FALSE(GetCaptureModeSettingsWidget());
+  event_generator->MoveMouseTo(target_region.bottom_center());
+  event_generator->ReleaseLeftButton();
+
+  // With an overlapping region (as dragged to above), the capture bar opacity
+  // is changed based on hover. If the settings menu is open/visible, we close
+  // it when we hide the capture bar. Capture bar starts off opaque.
+  ui::Layer* capture_bar_layer = GetCaptureModeBarWidget()->GetLayer();
+  event_generator->MoveMouseTo(target_region.origin());
+  EXPECT_EQ(0.1f, capture_bar_layer->GetTargetOpacity());
+  ClickOnView(GetSettingsButton(), event_generator);
+  EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
+  // Move mouse onto the settings menu, confirm the capture bar is still
+  // visible.
+  event_generator->MoveMouseTo(
+      GetCaptureModeSettingsView()->GetBoundsInScreen().CenterPoint());
+  EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
+  // Move the mouse off both the capture bar and the settings menu, and confirm
+  // that both bars are visible.
+  event_generator->MoveMouseTo(
+      GetCaptureModeSettingsView()->GetBoundsInScreen().top_center() +
+      gfx::Vector2d(0, -50));
+  EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
+  EXPECT_TRUE(GetCaptureModeSettingsWidget());
+}
+
+// Tests that toggling the microphone setting updates the state in the
+// controller, and persists between sessions.
+TEST_F(CaptureModeTest, AudioRecordingSetting) {
+  auto* controller = StartImageRegionCapture();
+  auto* event_generator = GetEventGenerator();
+
+  // Test that the audio recording preference is defaulted to false, so the
+  // toggle should start in the off position.
+  EXPECT_FALSE(controller->enable_audio_recording());
+
+  // Test that toggling on the micophone updates the preference in the
+  // controller, as well as displaying the toggle as on.
+  ClickOnView(GetSettingsButton(), event_generator);
+  EXPECT_FALSE(GetMicrophoneToggle()->GetIsOn());
+  ClickOnView(GetMicrophoneToggle(), event_generator);
+  EXPECT_TRUE(controller->enable_audio_recording());
+  EXPECT_TRUE(GetMicrophoneToggle()->GetIsOn());
+
+  // Test that the user selected audio preference for audio recording is
+  // remembered between sessions.
+  SendKey(ui::VKEY_ESCAPE, event_generator);
+  EXPECT_TRUE(controller->enable_audio_recording());
+  StartImageRegionCapture();
+  EXPECT_TRUE(controller->enable_audio_recording());
 }
 
 }  // namespace ash

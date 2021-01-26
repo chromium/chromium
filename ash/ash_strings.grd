@@ -3374,6 +3374,12 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_ALERT_RECORDING_STOPPED" desc="Alert spoken by screen readers when recording stops.">
         Screen recording completed
       </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SETTINGS" desc="Tooltip of the settings button.">
+        Settings
+      </message>
+      <message name="IDS_ASH_SCREEN_CAPTURE_LABEL_MICROPHONE" desc="The capture label message for toggling microphone recording, found in the settings menu.">
+        Record microphone
+      </message>
 
       <!-- Switch Between TABLET/LAPTOP MODE-->
       <message name="IDS_ASH_SWITCH_TO_TABLET_MODE" desc="Alert of switching to tablet mode.">

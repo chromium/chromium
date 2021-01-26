@@ -31,6 +31,9 @@ constexpr int kBetweenChildSpacing = 16;
 constexpr int kArrowKeyboardRegionChangeDp = 1;
 constexpr int kShiftArrowKeyboardRegionChangeDp = 10;
 
+// Blur quality applied to the capture bar and settings menu backdrop.
+constexpr float kBlurQuality = 0.33f;
+
 }  // namespace capture_mode
 
 }  // namespace ash
