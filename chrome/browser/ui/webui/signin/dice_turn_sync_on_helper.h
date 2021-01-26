@@ -39,6 +39,8 @@ class DiceTurnSyncOnHelper
       public policy::PolicyService::ProviderUpdateObserver {
  public:
   // Behavior when the signin is aborted (by an error or cancelled by the user).
+  // The mode has no effect on the sync-is-disabled flow where cancelling always
+  // implies removing the account.
   enum class SigninAbortedMode {
     // The token is revoked and the account is signed out of the web.
     REMOVE_ACCOUNT,

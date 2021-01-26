@@ -92,7 +92,7 @@ class TestDiceTurnSyncOnHelperDelegate : public DiceTurnSyncOnHelper::Delegate {
           callback) override;
   void ShowSyncDisabledConfirmation(
       base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
-          callback) override {}
+          callback) override;
   void ShowSyncSettings() override;
   void SwitchToProfile(Profile* new_profile) override;
 
@@ -346,6 +346,13 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
             Return(syncer::SyncService::TransportState::INITIALIZING));
   }
 
+  void SetExpectationsForSyncDisabled(Profile* profile) {
+    syncer::MockSyncService* mock_sync_service = GetMockSyncService(profile);
+    ON_CALL(*mock_sync_service, GetDisableReasons())
+        .WillByDefault(Return(syncer::SyncService::DisableReasonSet(
+            syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)));
+  }
+
   void CheckDelegateCalls() {
     EXPECT_EQ(expected_login_error_email_, login_error_email_);
     EXPECT_EQ(expected_login_error_message_, login_error_message_);
@@ -355,6 +362,8 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
               enterprise_confirmation_email_);
     EXPECT_EQ(expected_switched_to_new_profile_, switched_to_new_profile_);
     EXPECT_EQ(expected_sync_confirmation_shown_, sync_confirmation_shown_);
+    EXPECT_EQ(expected_sync_disabled_confirmation_shown_,
+              sync_disabled_confirmation_shown_);
     EXPECT_EQ(expected_sync_settings_shown_, sync_settings_shown_);
   }
 
@@ -404,6 +413,16 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
     EXPECT_FALSE(sync_confirmation_shown_)
         << "Sync confirmation should be shown only once.";
     sync_confirmation_shown_ = true;
+    if (run_delegate_callbacks_)
+      std::move(callback).Run(sync_confirmation_result_);
+  }
+
+  void OnShowSyncDisabledConfirmation(
+      base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
+          callback) {
+    EXPECT_FALSE(sync_disabled_confirmation_shown_)
+        << "Sync disabled confirmation should be shown only once.";
+    sync_disabled_confirmation_shown_ = true;
     if (run_delegate_callbacks_)
       std::move(callback).Run(sync_confirmation_result_);
   }
@@ -471,6 +490,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   std::string expected_merge_data_new_email_;
   bool expected_switched_to_new_profile_ = false;
   bool expected_sync_confirmation_shown_ = false;
+  bool expected_sync_disabled_confirmation_shown_ = false;
   bool expected_sync_settings_shown_ = false;
 
  private:
@@ -499,6 +519,7 @@ class DiceTurnSyncOnHelperTest : public testing::Test {
   std::string merge_data_new_email_;
   bool switched_to_new_profile_ = false;
   bool sync_confirmation_shown_ = false;
+  bool sync_disabled_confirmation_shown_ = false;
   bool sync_settings_shown_ = false;
 };
 
@@ -535,6 +556,12 @@ void TestDiceTurnSyncOnHelperDelegate::ShowSyncConfirmation(
     base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
         callback) {
   test_fixture_->OnShowSyncConfirmation(std::move(callback));
+}
+
+void TestDiceTurnSyncOnHelperDelegate::ShowSyncDisabledConfirmation(
+    base::OnceCallback<void(LoginUIService::SyncConfirmationUIClosedResult)>
+        callback) {
+  test_fixture_->OnShowSyncDisabledConfirmation(std::move(callback));
 }
 
 void TestDiceTurnSyncOnHelperDelegate::ShowSyncSettings() {
@@ -583,6 +610,69 @@ TEST_F(DiceTurnSyncOnHelperTest, CanOfferSigninErrorRemoveAccount) {
   // Check expectations.
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
   EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
+  CheckDelegateCalls();
+}
+
+// Tests that the sync disabled message is displayed and that the account is
+// removed upon the ABORT_SYNC action.
+TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledAbortRemoveAccount) {
+  // Set expectations.
+  expected_sync_disabled_confirmation_shown_ = true;
+  SetExpectationsForSyncDisabled(profile());
+  // Configure the test.
+  sync_confirmation_result_ =
+      LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC;
+
+  // Signin flow.
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  CreateDiceTurnOnSyncHelper(
+      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  base::RunLoop().RunUntilIdle();
+  // Check expectations.
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
+  CheckDelegateCalls();
+}
+
+// Tests that the sync disabled message is displayed and that the account is
+// removed upon the ABORT_SYNC action (despite SigninAbortedMode::KEEP_ACCOUNT).
+TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledAbortKeepAccount) {
+  // Set expectations.
+  expected_sync_disabled_confirmation_shown_ = true;
+  SetExpectationsForSyncDisabled(profile());
+  // Configure the test.
+  sync_confirmation_result_ =
+      LoginUIService::SyncConfirmationUIClosedResult::ABORT_SYNC;
+
+  // Signin flow.
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  CreateDiceTurnOnSyncHelper(
+      DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+  base::RunLoop().RunUntilIdle();
+  // Check expectations.
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  EXPECT_FALSE(identity_manager()->HasAccountWithRefreshToken(account_id()));
+  CheckDelegateCalls();
+}
+
+// Tests that the sync disabled message is displayed and that the account is
+// kept upon the SYNC_WITH_DEFAULT_SETTINGS action.
+TEST_F(DiceTurnSyncOnHelperTest, SyncDisabledContinueKeepAccount) {
+  // Set expectations.
+  expected_sync_disabled_confirmation_shown_ = true;
+  SetExpectationsForSyncDisabled(profile());
+  // Configure the test.
+  sync_confirmation_result_ = LoginUIService::SyncConfirmationUIClosedResult::
+      SYNC_WITH_DEFAULT_SETTINGS;
+
+  // Signin flow.
+  EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
+  CreateDiceTurnOnSyncHelper(
+      DiceTurnSyncOnHelper::SigninAbortedMode::REMOVE_ACCOUNT);
+  base::RunLoop().RunUntilIdle();
+  // Check expectations.
+  EXPECT_TRUE(identity_manager()->HasPrimaryAccount());
+  EXPECT_TRUE(identity_manager()->HasAccountWithRefreshToken(account_id()));
   CheckDelegateCalls();
 }
 
