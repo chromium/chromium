@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_RENDERER_LOADER_SYNC_LOAD_CONTEXT_H_
-#define CONTENT_RENDERER_LOADER_SYNC_LOAD_CONTEXT_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_CONTEXT_H_
+#define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_CONTEXT_H_
 
 #include "base/macros.h"
 #include "base/optional.h"
 #include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event_watcher.h"
 #include "base/timer/timer.h"
-#include "content/common/content_export.h"
-#include "content/renderer/loader/resource_dispatcher.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
@@ -19,6 +17,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
 #include "third_party/blink/public/platform/web_request_peer.h"
+#include "third_party/blink/public/platform/web_resource_request_sender.h"
 
 namespace base {
 class WaitableEvent;
@@ -32,9 +31,6 @@ namespace blink {
 class ResourceLoadInfoNotifierWrapper;
 class URLLoaderThrottle;
 struct SyncLoadResponse;
-}
-
-namespace content {
 
 // This class owns the context necessary to perform an asynchronous request
 // while the main thread is blocked so that it appears to be synchronous.
@@ -44,7 +40,7 @@ namespace content {
 //   2) kBlob: body is received on a data pipe passed on
 //      OnStartLoadingResponseBody(), and wraps the data pipe with a
 //      SerializedBlobPtr.
-class CONTENT_EXPORT SyncLoadContext : public blink::WebRequestPeer {
+class SyncLoadContext : public WebRequestPeer {
  public:
   // Begins a new asynchronous request on whatever sequence this method is
   // called on. |completed_event| will be signalled when the request is complete
@@ -66,15 +62,15 @@ class CONTENT_EXPORT SyncLoadContext : public blink::WebRequestPeer {
       uint32_t loader_options,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           pending_url_loader_factory,
-      std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
-      blink::SyncLoadResponse* response,
+      std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
+      SyncLoadResponse* response,
       SyncLoadContext** context_for_redirect,
       base::WaitableEvent* completed_event,
       base::WaitableEvent* abort_event,
       base::TimeDelta timeout,
-      mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
+      mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
       const std::vector<std::string>& cors_exempt_header_list,
-      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+      std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper);
 
   ~SyncLoadContext() override;
@@ -89,15 +85,14 @@ class CONTENT_EXPORT SyncLoadContext : public blink::WebRequestPeer {
       network::ResourceRequest* request,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
           url_loader_factory,
-      blink::SyncLoadResponse* response,
+      SyncLoadResponse* response,
       SyncLoadContext** context_for_redirect,
       base::WaitableEvent* completed_event,
       base::WaitableEvent* abort_event,
       base::TimeDelta timeout,
-      mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      const std::vector<std::string>& cors_exempt_header_list);
-  // blink::WebRequestPeer implementation:
+      mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  // WebRequestPeer implementation:
   void OnUploadProgress(uint64_t position, uint64_t size) override;
   bool OnReceivedRedirect(const net::RedirectInfo& redirect_info,
                           network::mojom::URLResponseHeadPtr head,
@@ -112,7 +107,7 @@ class CONTENT_EXPORT SyncLoadContext : public blink::WebRequestPeer {
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
   bool CanContinueBufferingWhileInBackForwardCache() override;
 
-  void OnFinishCreatingBlob(blink::mojom::SerializedBlobPtr blob);
+  void OnFinishCreatingBlob(mojom::SerializedBlobPtr blob);
 
   void OnBodyReadable(MojoResult, const mojo::HandleSignalsState&);
 
@@ -125,7 +120,7 @@ class CONTENT_EXPORT SyncLoadContext : public blink::WebRequestPeer {
   // This raw pointer will remain valid for the lifetime of this object because
   // it remains on the stack until |event_| is signaled.
   // Set to null after CompleteRequest() is called.
-  blink::SyncLoadResponse* response_;
+  SyncLoadResponse* response_;
 
   // This raw pointer will be set to `this` when receiving redirects on
   // independent thread and set to nullptr in `FollowRedirect()` or
@@ -142,15 +137,13 @@ class CONTENT_EXPORT SyncLoadContext : public blink::WebRequestPeer {
 
   // State necessary to run a request on an independent thread.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  std::unique_ptr<ResourceDispatcher> resource_dispatcher_;
+  std::unique_ptr<WebResourceRequestSender> resource_request_sender_;
 
   // State for downloading to a blob.
-  mojo::Remote<blink::mojom::BlobRegistry> download_to_blob_registry_;
+  mojo::Remote<mojom::BlobRegistry> download_to_blob_registry_;
   bool blob_response_started_ = false;
   bool blob_finished_ = false;
   bool request_completed_ = false;
-
-  int request_id_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
@@ -160,6 +153,6 @@ class CONTENT_EXPORT SyncLoadContext : public blink::WebRequestPeer {
   DISALLOW_COPY_AND_ASSIGN(SyncLoadContext);
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_RENDERER_LOADER_SYNC_LOAD_CONTEXT_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_URL_LOADER_SYNC_LOAD_CONTEXT_H_

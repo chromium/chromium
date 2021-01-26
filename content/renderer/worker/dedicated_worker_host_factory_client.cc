@@ -5,7 +5,6 @@
 #include "content/renderer/worker/dedicated_worker_host_factory_client.h"
 
 #include <utility>
-#include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/loader/web_worker_fetch_context_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
@@ -104,7 +103,6 @@ DedicatedWorkerHostFactoryClient::CreateWorkerFetchContext(
           subresource_loader_factory_bundle_->CloneWithoutAppCacheFactory(),
           std::move(pending_subresource_loader_updater_),
           RenderThreadImpl::current()
-              ->resource_dispatcher()
               ->cors_exempt_header_list(),
           std::move(pending_resource_load_info_notifier));
   return worker_fetch_context;

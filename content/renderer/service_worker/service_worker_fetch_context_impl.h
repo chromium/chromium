@@ -21,7 +21,6 @@ class InternetDisconnectedWebURLLoaderFactory;
 }
 
 namespace content {
-class ResourceDispatcher;
 class URLLoaderThrottleProvider;
 class WebSocketHandshakeThrottleProvider;
 
@@ -107,9 +106,6 @@ class CONTENT_EXPORT ServiceWorkerFetchContextImpl final
   // being loaded in the browser process and went through throttles there. It's
   // valid only once and set to invalid GURL once the script is served.
   GURL script_url_to_skip_throttling_;
-
-  // Initialized on the worker thread when InitializeOnWorkerThread() is called.
-  std::unique_ptr<ResourceDispatcher> resource_dispatcher_;
 
   // Responsible for regular loads from the service worker (i.e., Fetch API).
   std::unique_ptr<blink::WebURLLoaderFactory> web_url_loader_factory_;

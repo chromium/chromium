@@ -38,14 +38,11 @@ class MockWebURLLoaderClientObserver
   MockWebURLLoaderClientObserver() : context_(new Context()) {}
   ~MockWebURLLoaderClientObserver() override = default;
 
-  void OnUploadProgress(int request_id,
-                        int64_t position,
-                        int64_t size) override {
+  void OnUploadProgress(int64_t position, int64_t size) override {
     EXPECT_FALSE(context_->complete);
   }
 
   void OnReceivedRedirect(
-      int request_id,
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr head,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override {
@@ -59,8 +56,7 @@ class MockWebURLLoaderClientObserver
     }
   }
 
-  void OnReceivedResponse(int request_id,
-                          network::mojom::URLResponseHeadPtr head) override {
+  void OnReceivedResponse(network::mojom::URLResponseHeadPtr head) override {
     EXPECT_FALSE(context_->cancelled);
     EXPECT_FALSE(context_->received_response);
     EXPECT_FALSE(context_->complete);
@@ -71,7 +67,6 @@ class MockWebURLLoaderClientObserver
   }
 
   void OnStartLoadingResponseBody(
-      int request_id,
       mojo::ScopedDataPipeConsumerHandle body) override {
     if (context_->cancelled)
       return;
@@ -80,7 +75,7 @@ class MockWebURLLoaderClientObserver
     context_->body_handle = std::move(body);
   }
 
-  void OnTransferSizeUpdated(int request_id, int transfer_size_diff) override {
+  void OnTransferSizeUpdated(int transfer_size_diff) override {
     EXPECT_TRUE(context_->received_response);
     EXPECT_FALSE(context_->complete);
     if (context_->cancelled)
@@ -92,8 +87,7 @@ class MockWebURLLoaderClientObserver
     }
   }
 
-  void OnReceivedCachedMetadata(int request_id,
-                                mojo_base::BigBuffer data) override {
+  void OnReceivedCachedMetadata(mojo_base::BigBuffer data) override {
     EXPECT_TRUE(context_->received_response);
     EXPECT_FALSE(context_->complete);
     if (context_->cancelled)
@@ -102,7 +96,6 @@ class MockWebURLLoaderClientObserver
   }
 
   void OnRequestComplete(
-      int request_id,
       const network::URLLoaderCompletionStatus& status) override {
     if (context_->cancelled)
       return;
@@ -112,15 +105,12 @@ class MockWebURLLoaderClientObserver
     context_->completion_status = status;
   }
 
-  void EvictFromBackForwardCache(mojom::RendererEvictionReason reason,
-                                 int request_id) override {}
+  void EvictFromBackForwardCache(
+      mojom::RendererEvictionReason reason) override {}
 
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes,
-                                            int request_id) override {}
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override {}
 
-  bool CanContinueBufferingWhileInBackForwardCache(int request_id) override {
-    return true;
-  }
+  bool CanContinueBufferingWhileInBackForwardCache() override { return true; }
 
   Context* context() { return context_.get(); }
 
@@ -205,7 +195,7 @@ class WebMojoURLLoaderClientTest : public ::testing::Test,
         blink::scheduler::GetSingleThreadTaskRunnerForTesting();
 
     client_ = std::make_unique<WebMojoURLLoaderClient>(
-        request_id_, url_loader_client_observer_.get(), loading_task_runner,
+        url_loader_client_observer_.get(), loading_task_runner,
         url_loader_factory->BypassRedirectChecks(), request->url);
     context_ = url_loader_client_observer_->context();
     context_->url_laoder_client = client_.get();

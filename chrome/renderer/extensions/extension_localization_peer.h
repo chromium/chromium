@@ -46,10 +46,8 @@ class Sender;
 // OnReceivedResponse().
 class ExtensionLocalizationPeer : public blink::WebRequestPeer {
  public:
-  ~ExtensionLocalizationPeer() override;
-
-  static std::unique_ptr<blink::WebRequestPeer> CreateExtensionLocalizationPeer(
-      std::unique_ptr<blink::WebRequestPeer> peer,
+  static scoped_refptr<blink::WebRequestPeer> CreateExtensionLocalizationPeer(
+      scoped_refptr<blink::WebRequestPeer> peer,
       IPC::Sender* message_sender,
       const std::string& mime_type,
       const GURL& request_url);
@@ -73,7 +71,7 @@ class ExtensionLocalizationPeer : public blink::WebRequestPeer {
   friend class ExtensionLocalizationPeerTest;
 
   // Use CreateExtensionLocalizationPeer to create an instance.
-  ExtensionLocalizationPeer(std::unique_ptr<blink::WebRequestPeer> peer,
+  ExtensionLocalizationPeer(scoped_refptr<blink::WebRequestPeer> peer,
                             IPC::Sender* message_sender,
                             const GURL& request_url);
 
@@ -87,8 +85,10 @@ class ExtensionLocalizationPeer : public blink::WebRequestPeer {
 
   void CompleteRequest();
 
+  ~ExtensionLocalizationPeer() override;
+
   // Original peer that handles the request once we are done processing data_.
-  std::unique_ptr<blink::WebRequestPeer> original_peer_;
+  scoped_refptr<blink::WebRequestPeer> original_peer_;
 
   // We just pass though the response info. This holds the copy of the original.
   network::mojom::URLResponseHeadPtr response_head_;

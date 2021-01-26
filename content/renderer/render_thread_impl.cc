@@ -76,7 +76,6 @@
 #include "content/renderer/browser_exposed_renderer_interfaces.h"
 #include "content/renderer/categorized_worker_pool.h"
 #include "content/renderer/effective_connection_type_helper.h"
-#include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/media/gpu/gpu_video_accelerator_factories_impl.h"
 #include "content/renderer/media/media_interface_factory.h"
 #include "content/renderer/media/render_media_client.h"
@@ -592,8 +591,6 @@ void RenderThreadImpl::Init() {
   BindHostReceiver(remote_gpu.InitWithNewPipeAndPassReceiver());
   gpu_ = viz::Gpu::Create(std::move(remote_gpu), GetIOTaskRunner());
 
-  resource_dispatcher_.reset(new ResourceDispatcher());
-
   // NOTE: Do not add interfaces to |binders| within this method. Instead,
   // modify the definition of |ExposeRendererInterfacesToBrowser()| to ensure
   // security review coverage.
@@ -880,9 +877,9 @@ void RenderThreadImpl::RemoveObserver(RenderThreadObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void RenderThreadImpl::SetResourceDispatcherDelegate(
-    ResourceDispatcherDelegate* delegate) {
-  resource_dispatcher_->set_delegate(delegate);
+void RenderThreadImpl::SetResourceRequestSenderDelegate(
+    blink::WebResourceRequestSenderDelegate* delegate) {
+  resource_request_sender_delegate_ = delegate;
 }
 
 void RenderThreadImpl::InitializeCompositorThread() {
@@ -1671,7 +1668,7 @@ void RenderThreadImpl::SetUserAgentMetadata(
 
 void RenderThreadImpl::SetCorsExemptHeaderList(
     const std::vector<std::string>& list) {
-  resource_dispatcher_->SetCorsExemptHeaderList(list);
+  cors_exempt_header_list_ = list;
 }
 
 void RenderThreadImpl::UpdateScrollbarTheme(

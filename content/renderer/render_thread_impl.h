@@ -66,6 +66,7 @@
 class SkBitmap;
 
 namespace blink {
+class WebResourceRequestSenderDelegate;
 class WebVideoCaptureImplManager;
 }
 
@@ -106,7 +107,6 @@ class MediaInterfaceFactory;
 class RenderFrameImpl;
 class RenderThreadObserver;
 class RendererBlinkPlatformImpl;
-class ResourceDispatcher;
 class VariationsRenderThreadObserver;
 
 #if defined(OS_ANDROID)
@@ -176,8 +176,11 @@ class CONTENT_EXPORT RenderThreadImpl
   void RemoveFilter(IPC::MessageFilter* filter) override;
   void AddObserver(RenderThreadObserver* observer) override;
   void RemoveObserver(RenderThreadObserver* observer) override;
-  void SetResourceDispatcherDelegate(
-      ResourceDispatcherDelegate* delegate) override;
+  void SetResourceRequestSenderDelegate(
+      blink::WebResourceRequestSenderDelegate* delegate) override;
+  blink::WebResourceRequestSenderDelegate* GetResourceRequestSenderDelegate() {
+    return resource_request_sender_delegate_;
+  }
   void RegisterExtension(std::unique_ptr<v8::Extension> extension) override;
   int PostTaskToAllWebWorkers(base::RepeatingClosure closure) override;
   base::WaitableEvent* GetShutdownEvent() override;
@@ -251,8 +254,8 @@ class CONTENT_EXPORT RenderThreadImpl
     return compositor_task_runner_;
   }
 
-  ResourceDispatcher* resource_dispatcher() const {
-    return resource_dispatcher_.get();
+  const std::vector<std::string> cors_exempt_header_list() const {
+    return cors_exempt_header_list_;
   }
 
   URLLoaderThrottleProvider* url_loader_throttle_provider() const {
@@ -479,8 +482,9 @@ class CONTENT_EXPORT RenderThreadImpl
   // These objects live solely on the render thread.
   std::unique_ptr<blink::scheduler::WebThreadScheduler> main_thread_scheduler_;
   std::unique_ptr<RendererBlinkPlatformImpl> blink_platform_impl_;
-  std::unique_ptr<ResourceDispatcher> resource_dispatcher_;
   std::unique_ptr<URLLoaderThrottleProvider> url_loader_throttle_provider_;
+
+  std::vector<std::string> cors_exempt_header_list_;
 
   // Used on the render thread.
   std::unique_ptr<blink::WebVideoCaptureImplManager> vc_manager_;
@@ -585,6 +589,10 @@ class CONTENT_EXPORT RenderThreadImpl
   // this member.
   mojo::Receiver<viz::mojom::CompositingModeWatcher>
       compositing_mode_watcher_receiver_{this};
+
+  // Delegate is expected to live as long as requests may be sent.
+  blink::WebResourceRequestSenderDelegate* resource_request_sender_delegate_ =
+      nullptr;
 
   base::WeakPtrFactory<RenderThreadImpl> weak_factory_{this};
 

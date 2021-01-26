@@ -23,7 +23,6 @@
 #include "content/public/common/resource_usage_reporter.mojom.h"
 #include "content/public/common/resource_usage_reporter_type_converters.h"
 #include "content/public/renderer/content_renderer_client.h"
-#include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/service_worker/embedded_worker_instance_client_impl.h"
@@ -151,11 +150,10 @@ void CreateEmbeddedWorker(
         receiver) {
   initiator_task_runner->PostTask(
       FROM_HERE,
-      base::BindOnce(
-          &EmbeddedWorkerInstanceClientImpl::CreateForRequest,
-          initiator_task_runner,
-          render_thread->resource_dispatcher()->cors_exempt_header_list(),
-          std::move(receiver)));
+      base::BindOnce(&EmbeddedWorkerInstanceClientImpl::CreateForRequest,
+                     initiator_task_runner,
+                     render_thread->cors_exempt_header_list(),
+                     std::move(receiver)));
 }
 
 }  // namespace

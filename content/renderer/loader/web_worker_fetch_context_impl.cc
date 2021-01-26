@@ -19,7 +19,6 @@
 #include "content/public/renderer/content_renderer_client.h"
 #include "content/public/renderer/url_loader_throttle_provider.h"
 #include "content/public/renderer/websocket_handshake_throttle_provider.h"
-#include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/service_worker/controller_service_worker_connector.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
@@ -80,10 +79,12 @@ void WebWorkerFetchContextImpl::InstallRewriteURLFunction(
 // intercepted by the service worker.
 class WebWorkerFetchContextImpl::Factory : public blink::WebURLLoaderFactory {
  public:
-  Factory(base::WeakPtr<ResourceDispatcher> resource_dispatcher,
-          scoped_refptr<network::SharedURLLoaderFactory> loader_factory)
-      : resource_dispatcher_(std::move(resource_dispatcher)),
-        loader_factory_(std::move(loader_factory)) {}
+  Factory(scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+          const std::vector<std::string>& cors_exempt_header_list,
+          base::WaitableEvent* terminate_sync_load_event)
+      : loader_factory_(std::move(loader_factory)),
+        cors_exempt_header_list_(cors_exempt_header_list),
+        terminate_sync_load_event_(terminate_sync_load_event) {}
   ~Factory() override = default;
 
   std::unique_ptr<blink::WebURLLoader> CreateURLLoader(
@@ -96,19 +97,20 @@ class WebWorkerFetchContextImpl::Factory : public blink::WebURLLoaderFactory {
           keep_alive_handle) override {
     DCHECK(freezable_task_runner_handle);
     DCHECK(unfreezable_task_runner_handle);
-    DCHECK(resource_dispatcher_);
 
     if (CanCreateServiceWorkerURLLoader(request)) {
       // Create our own URLLoader to route the request to the controller service
       // worker.
       return std::make_unique<WebURLLoaderImpl>(
-          resource_dispatcher_.get(), std::move(freezable_task_runner_handle),
+          cors_exempt_header_list_, terminate_sync_load_event_,
+          std::move(freezable_task_runner_handle),
           std::move(unfreezable_task_runner_handle),
           service_worker_loader_factory_, std::move(keep_alive_handle));
     }
 
     return std::make_unique<WebURLLoaderImpl>(
-        resource_dispatcher_.get(), std::move(freezable_task_runner_handle),
+        cors_exempt_header_list_, terminate_sync_load_event_,
+        std::move(freezable_task_runner_handle),
         std::move(unfreezable_task_runner_handle), loader_factory_,
         std::move(keep_alive_handle));
   }
@@ -156,9 +158,10 @@ class WebWorkerFetchContextImpl::Factory : public blink::WebURLLoaderFactory {
     return true;
   }
 
-  base::WeakPtr<ResourceDispatcher> resource_dispatcher_;
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> service_worker_loader_factory_;
+  const std::vector<std::string> cors_exempt_header_list_;
+  base::WaitableEvent* terminate_sync_load_event_ = nullptr;
   base::WeakPtrFactory<Factory> weak_ptr_factory_{this};
   DISALLOW_COPY_AND_ASSIGN(Factory);
 };
@@ -376,13 +379,8 @@ WebWorkerFetchContextImpl::CloneForNestedWorker(
 
 void WebWorkerFetchContextImpl::InitializeOnWorkerThread(
     blink::AcceptLanguagesWatcher* watcher) {
-  DCHECK(!resource_dispatcher_);
   DCHECK(!receiver_.is_bound());
   DCHECK(!preference_watcher_receiver_.is_bound());
-  resource_dispatcher_ = std::make_unique<ResourceDispatcher>();
-  resource_dispatcher_->SetCorsExemptHeaderList(cors_exempt_header_list_);
-  resource_dispatcher_->set_terminate_sync_load_event(
-      terminate_sync_load_event_);
 
   loader_factory_ = network::SharedURLLoaderFactory::Create(
       std::move(pending_loader_factory_));
@@ -422,7 +420,7 @@ void WebWorkerFetchContextImpl::InitializeOnWorkerThread(
   DCHECK(loader_factory_);
   DCHECK(!web_loader_factory_);
   web_loader_factory_ = std::make_unique<Factory>(
-      resource_dispatcher_->GetWeakPtr(), loader_factory_);
+      loader_factory_, cors_exempt_header_list_, terminate_sync_load_event_);
 
   ResetServiceWorkerURLLoaderFactory();
 }
@@ -436,9 +434,9 @@ WebWorkerFetchContextImpl::WrapURLLoaderFactory(
     blink::CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
         url_loader_factory) {
   return std::make_unique<WebURLLoaderFactoryImpl>(
-      resource_dispatcher_->GetWeakPtr(),
       base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
-          std::move(url_loader_factory)));
+          std::move(url_loader_factory)),
+      cors_exempt_header_list_, terminate_sync_load_event_);
 }
 
 std::unique_ptr<blink::WebCodeCacheLoader>
@@ -665,7 +663,7 @@ void WebWorkerFetchContextImpl::UpdateSubresourceLoaderFactories(
   fallback_factory_ = network::SharedURLLoaderFactory::Create(
       subresource_loader_factory_bundle->CloneWithoutAppCacheFactory());
   web_loader_factory_ = std::make_unique<Factory>(
-      resource_dispatcher_->GetWeakPtr(), loader_factory_);
+      loader_factory_, cors_exempt_header_list_, terminate_sync_load_event_);
   ResetServiceWorkerURLLoaderFactory();
 }
 

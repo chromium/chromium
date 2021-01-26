@@ -101,6 +101,8 @@ class CONTENT_EXPORT RendererBlinkPlatformImpl : public BlinkPlatformImpl {
                            bool report_security_info,
                            int request_id) override;
   bool IsRedirectSafe(const GURL& from_url, const GURL& to_url) override;
+  blink::WebResourceRequestSenderDelegate* GetResourceRequestSenderDelegate()
+      override;
   blink::WebString DefaultLocale() override;
   void SuddenTerminationChanged(bool enabled) override;
   blink::WebString DatabaseCreateOriginIdentifier(
