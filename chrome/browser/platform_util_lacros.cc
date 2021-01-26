@@ -63,12 +63,8 @@ void ShowItemInFolder(Profile* profile, const base::FilePath& full_path) {
   auto* service = chromeos::LacrosChromeServiceImpl::Get();
   int interface_version =
       service->GetInterfaceVersion(crosapi::mojom::FileManager::Uuid_);
-  if (interface_version < 0) {
-    DLOG(ERROR) << "Unsupported ash version.";
-    return;
-  }
   if (interface_version < 1) {
-    service->file_manager_remote()->DeprecatedShowItemInFolder(full_path);
+    DLOG(ERROR) << "Unsupported ash version.";
     return;
   }
   service->file_manager_remote()->ShowItemInFolder(

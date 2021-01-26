@@ -7,27 +7,14 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/notreached.h"
 #include "chrome/browser/chromeos/file_manager/open_util.h"
-#include "chrome/browser/chromeos/file_manager/path_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
 
 namespace crosapi {
 namespace {
-
-// Lacros does not support multi-signin. Lacros uses /home/chronos/user as the
-// base for all system-level directories but the file manager expects the raw
-// profile path with the /home/chronos/u-{hash} prefix. Clean up the path.
-// TODO(https://crbug.com/1150702): Delete this function after all Lacros
-// clients are on M89. Lacros is switching to use the raw profile path.
-base::FilePath ExpandPath(Profile* primary_profile,
-                          const base::FilePath& path) {
-  return file_manager::util::ReplacePathPrefix(
-      path, base::FilePath(crosapi::kHomeChronosUserPath),
-      primary_profile->GetPath());
-}
 
 // Adapts a platform_util::OpenOperationResult to a crosapi::mojom::OpenResult
 // when running a |callback|.
@@ -59,9 +46,8 @@ void OpenItem(const base::FilePath& path,
               platform_util::OpenItemType item_type,
               base::OnceCallback<void(mojom::OpenResult)> callback) {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  base::FilePath full_path = ExpandPath(primary_profile, path);
   file_manager::util::OpenItem(
-      primary_profile, full_path, item_type,
+      primary_profile, path, item_type,
       base::BindOnce(&RunWithOpenResult, std::move(callback)));
 }
 
@@ -77,21 +63,15 @@ void FileManagerAsh::BindReceiver(
 }
 
 void FileManagerAsh::DeprecatedShowItemInFolder(const base::FilePath& path) {
-  Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  base::FilePath final_path = ExpandPath(primary_profile, path);
-  // NOTE: This will show error dialogs for files and paths that cannot be
-  // opened, but the dialogs are modal to an ash-chrome window, not the
-  // lacros-chrome window that opened the file. That's why this version is
-  // deprecated.
-  platform_util::ShowItemInFolder(primary_profile, final_path);
+  // As of OS M89 all lacros clients now use ShowItemInFolder() below.
+  NOTIMPLEMENTED();
 }
 
 void FileManagerAsh::ShowItemInFolder(const base::FilePath& path,
                                       ShowItemInFolderCallback callback) {
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
-  base::FilePath full_path = ExpandPath(primary_profile, path);
   file_manager::util::ShowItemInFolder(
-      primary_profile, full_path,
+      primary_profile, path,
       base::BindOnce(&RunWithOpenResult, std::move(callback)));
 }
 

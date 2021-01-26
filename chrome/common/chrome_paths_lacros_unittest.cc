@@ -9,7 +9,6 @@
 #include "base/test/scoped_path_override.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/crosapi/cpp/crosapi_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome {
@@ -22,7 +21,7 @@ TEST(ChromePaths, UserDataDirectoryIsInsideEncryptedPartition) {
   ASSERT_TRUE(GetDefaultUserDataDirectory(&user_data_dir));
   // The Lacros user data directory contains profile information, including
   // credentials. It must be inside the encrypted system user partition.
-  base::FilePath home_chronos_user(crosapi::kHomeChronosUserPath);
+  base::FilePath home_chronos_user("/home/chronos/user");
   EXPECT_TRUE(home_chronos_user.IsParent(user_data_dir));
 }
 
