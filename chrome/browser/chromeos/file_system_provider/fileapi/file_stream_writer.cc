@@ -51,8 +51,8 @@ class FileStreamWriter::OperationRunner
     file_system_ = parser.file_system()->GetWeakPtr();
     file_opener_.reset(new ScopedFileOpener(
         parser.file_system(), parser.file_path(), OPEN_FILE_MODE_WRITE,
-        base::Bind(&OperationRunner::OnOpenFileCompletedOnUIThread, this,
-                   base::Passed(&callback))));
+        base::BindOnce(&OperationRunner::OnOpenFileCompletedOnUIThread, this,
+                       base::Passed(&callback))));
   }
 
   // Requests writing bytes to the file. In case of either success or a failure

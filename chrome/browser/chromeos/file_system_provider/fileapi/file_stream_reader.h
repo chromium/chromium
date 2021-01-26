@@ -22,18 +22,11 @@ namespace chromeos {
 namespace file_system_provider {
 
 struct EntryMetadata;
-class ProvidedFileSystemInterface;
 
 // Implements a streamed file reader. It is lazily initialized by the first call
 // to Read().
 class FileStreamReader : public storage::FileStreamReader {
  public:
-  typedef base::Callback<
-      void(base::WeakPtr<ProvidedFileSystemInterface> file_system,
-           const base::FilePath& file_path,
-           int file_handle,
-           base::File::Error result)> OpenFileCompletedCallback;
-
   FileStreamReader(storage::FileSystemContext* context,
                    const storage::FileSystemURL& url,
                    int64_t initial_offset,

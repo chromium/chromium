@@ -31,8 +31,8 @@ namespace operations {
 // Base class for operation bridges between fileapi and providing extensions.
 class Operation : public RequestManager::HandlerInterface {
  public:
-  typedef base::Callback<bool(std::unique_ptr<extensions::Event> event)>
-      DispatchEventImplCallback;
+  using DispatchEventImplCallback =
+      base::RepeatingCallback<bool(std::unique_ptr<extensions::Event> event)>;
 
   Operation(extensions::EventRouter* event_router,
             const ProvidedFileSystemInfo& file_system_info);

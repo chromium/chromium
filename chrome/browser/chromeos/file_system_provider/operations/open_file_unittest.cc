@@ -92,11 +92,11 @@ TEST_F(FileSystemProviderOperationsOpenFileTest, Execute) {
 
   OpenFile open_file(NULL, file_system_info_, base::FilePath(kFilePath),
                      OPEN_FILE_MODE_READ,
-                     base::Bind(&CallbackLogger::OnOpenFile,
-                                base::Unretained(&callback_logger)));
+                     base::BindOnce(&CallbackLogger::OnOpenFile,
+                                    base::Unretained(&callback_logger)));
   open_file.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(open_file.Execute(kRequestId));
 
@@ -126,11 +126,11 @@ TEST_F(FileSystemProviderOperationsOpenFileTest, Execute_NoListener) {
 
   OpenFile open_file(NULL, file_system_info_, base::FilePath(kFilePath),
                      OPEN_FILE_MODE_READ,
-                     base::Bind(&CallbackLogger::OnOpenFile,
-                                base::Unretained(&callback_logger)));
+                     base::BindOnce(&CallbackLogger::OnOpenFile,
+                                    base::Unretained(&callback_logger)));
   open_file.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(open_file.Execute(kRequestId));
 }
@@ -148,11 +148,11 @@ TEST_F(FileSystemProviderOperationsOpenFileTest, Execute_ReadOnly) {
   {
     OpenFile open_file(NULL, read_only_file_system_info,
                        base::FilePath(kFilePath), OPEN_FILE_MODE_READ,
-                       base::Bind(&CallbackLogger::OnOpenFile,
-                                  base::Unretained(&callback_logger)));
-    open_file.SetDispatchEventImplForTesting(
-        base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                   base::Unretained(&dispatcher)));
+                       base::BindOnce(&CallbackLogger::OnOpenFile,
+                                      base::Unretained(&callback_logger)));
+    open_file.SetDispatchEventImplForTesting(base::BindRepeating(
+        &util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+        base::Unretained(&dispatcher)));
 
     EXPECT_TRUE(open_file.Execute(kRequestId));
   }
@@ -161,11 +161,11 @@ TEST_F(FileSystemProviderOperationsOpenFileTest, Execute_ReadOnly) {
   {
     OpenFile open_file(NULL, read_only_file_system_info,
                        base::FilePath(kFilePath), OPEN_FILE_MODE_WRITE,
-                       base::Bind(&CallbackLogger::OnOpenFile,
-                                  base::Unretained(&callback_logger)));
-    open_file.SetDispatchEventImplForTesting(
-        base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                   base::Unretained(&dispatcher)));
+                       base::BindOnce(&CallbackLogger::OnOpenFile,
+                                      base::Unretained(&callback_logger)));
+    open_file.SetDispatchEventImplForTesting(base::BindRepeating(
+        &util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+        base::Unretained(&dispatcher)));
 
     EXPECT_FALSE(open_file.Execute(kRequestId));
   }
@@ -177,11 +177,11 @@ TEST_F(FileSystemProviderOperationsOpenFileTest, OnSuccess) {
 
   OpenFile open_file(NULL, file_system_info_, base::FilePath(kFilePath),
                      OPEN_FILE_MODE_READ,
-                     base::Bind(&CallbackLogger::OnOpenFile,
-                                base::Unretained(&callback_logger)));
+                     base::BindOnce(&CallbackLogger::OnOpenFile,
+                                    base::Unretained(&callback_logger)));
   open_file.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(open_file.Execute(kRequestId));
 
@@ -200,11 +200,11 @@ TEST_F(FileSystemProviderOperationsOpenFileTest, OnError) {
 
   OpenFile open_file(NULL, file_system_info_, base::FilePath(kFilePath),
                      OPEN_FILE_MODE_READ,
-                     base::Bind(&CallbackLogger::OnOpenFile,
-                                base::Unretained(&callback_logger)));
+                     base::BindOnce(&CallbackLogger::OnOpenFile,
+                                    base::Unretained(&callback_logger)));
   open_file.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(open_file.Execute(kRequestId));
 

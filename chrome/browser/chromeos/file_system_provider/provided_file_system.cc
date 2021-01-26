@@ -45,29 +45,28 @@ class IOBuffer;
 namespace chromeos {
 namespace file_system_provider {
 
-AutoUpdater::AutoUpdater(const base::Closure& update_callback)
-    : update_callback_(update_callback),
+AutoUpdater::AutoUpdater(base::OnceClosure update_callback)
+    : update_callback_(std::move(update_callback)),
       created_callbacks_(0),
-      pending_callbacks_(0) {
-}
+      pending_callbacks_(0) {}
 
-base::Closure AutoUpdater::CreateCallback() {
+base::OnceClosure AutoUpdater::CreateCallback() {
   ++created_callbacks_;
   ++pending_callbacks_;
-  return base::Bind(&AutoUpdater::OnPendingCallback, this);
+  return base::BindOnce(&AutoUpdater::OnPendingCallback, this);
 }
 
 void AutoUpdater::OnPendingCallback() {
   DCHECK_LT(0, pending_callbacks_);
   if (--pending_callbacks_ == 0)
-    update_callback_.Run();
+    std::move(update_callback_).Run();
 }
 
 AutoUpdater::~AutoUpdater() {
   // If no callbacks are created, then we need to invoke updating in the
   // destructor.
   if (!created_callbacks_)
-    update_callback_.Run();
+    std::move(update_callback_).Run();
   else if (pending_callbacks_)
     LOG(ERROR) << "Not all callbacks called. This may happen on shutdown.";
 }
@@ -168,83 +167,80 @@ void ProvidedFileSystem::SetNotificationManagerForTesting(
 
 AbortCallback ProvidedFileSystem::RequestUnmount(
     storage::AsyncFileUtil::StatusCallback callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       REQUEST_UNMOUNT,
       std::make_unique<operations::Unmount>(event_router_, file_system_info_,
-                                            copyable_callback));
+                                            std::move(split_callback.first)));
   if (!request_id) {
-    copyable_callback.Run(base::File::FILE_ERROR_SECURITY);
+    std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
   }
 
-  return base::Bind(
-      &ProvidedFileSystem::Abort, weak_ptr_factory_.GetWeakPtr(), request_id);
+  return base::BindOnce(&ProvidedFileSystem::Abort,
+                        weak_ptr_factory_.GetWeakPtr(), request_id);
 }
 
 AbortCallback ProvidedFileSystem::GetMetadata(const base::FilePath& entry_path,
                                               MetadataFieldMask fields,
                                               GetMetadataCallback callback) {
-  // Create |copyable_callback| which is copyable, though it can still only be
-  // called at most once.  This is safe, because RequestManager::CreateRequest()
-  // is guaranteed not to call |callback| if it signals an error (by returning
-  // request_id == 0).
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  // Create two callbacks of which only one will be called because
+  // RequestManager::CreateRequest() is guaranteed not to call |callback| if it
+  // signals an error (by returning request_id == 0).
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
-      GET_METADATA,
-      std::unique_ptr<RequestManager::HandlerInterface>(
-          new operations::GetMetadata(event_router_, file_system_info_,
-                                      entry_path, fields, copyable_callback)));
+      GET_METADATA, std::make_unique<operations::GetMetadata>(
+                        event_router_, file_system_info_, entry_path, fields,
+                        std::move(split_callback.first)));
   if (!request_id) {
-    copyable_callback.Run(base::WrapUnique<EntryMetadata>(NULL),
-                          base::File::FILE_ERROR_SECURITY);
+    std::move(split_callback.second)
+        .Run(base::WrapUnique<EntryMetadata>(NULL),
+             base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
   }
 
-  return base::Bind(
-      &ProvidedFileSystem::Abort, weak_ptr_factory_.GetWeakPtr(), request_id);
+  return base::BindOnce(&ProvidedFileSystem::Abort,
+                        weak_ptr_factory_.GetWeakPtr(), request_id);
 }
 
 AbortCallback ProvidedFileSystem::GetActions(
     const std::vector<base::FilePath>& entry_paths,
     GetActionsCallback callback) {
-  // Create |copyable_callback| which is copyable, though it can still only be
-  // called at most once.  This is safe, because RequestManager::CreateRequest()
-  // is guaranteed not to call |callback| if it signals an error (by returning
-  // request_id == 0).
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  // Create two callbacks of which only one will be called because
+  // RequestManager::CreateRequest() is guaranteed not to call |callback| if it
+  // signals an error (by returning request_id == 0).
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
-      GET_ACTIONS,
-      std::unique_ptr<RequestManager::HandlerInterface>(
-          new operations::GetActions(event_router_, file_system_info_,
-                                     entry_paths, copyable_callback)));
+      GET_ACTIONS, std::make_unique<operations::GetActions>(
+                       event_router_, file_system_info_, entry_paths,
+                       std::move(split_callback.first)));
   if (!request_id) {
     // If the provider doesn't listen for GetActions requests, treat it as
     // having no actions.
-    copyable_callback.Run(Actions(), base::File::FILE_OK);
+    std::move(split_callback.second).Run(Actions(), base::File::FILE_OK);
     return AbortCallback();
   }
 
-  return base::Bind(&ProvidedFileSystem::Abort, weak_ptr_factory_.GetWeakPtr(),
-                    request_id);
+  return base::BindOnce(&ProvidedFileSystem::Abort,
+                        weak_ptr_factory_.GetWeakPtr(), request_id);
 }
 
 AbortCallback ProvidedFileSystem::ExecuteAction(
     const std::vector<base::FilePath>& entry_paths,
     const std::string& action_id,
     storage::AsyncFileUtil::StatusCallback callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       EXECUTE_ACTION, std::make_unique<operations::ExecuteAction>(
                           event_router_, file_system_info_, entry_paths,
-                          action_id, copyable_callback));
+                          action_id, std::move(split_callback.first)));
   if (!request_id) {
-    copyable_callback.Run(base::File::FILE_ERROR_SECURITY);
+    std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
   }
 
-  return base::Bind(&ProvidedFileSystem::Abort, weak_ptr_factory_.GetWeakPtr(),
-                    request_id);
+  return base::BindOnce(&ProvidedFileSystem::Abort,
+                        weak_ptr_factory_.GetWeakPtr(), request_id);
 }
 
 AbortCallback ProvidedFileSystem::ReadDirectory(
@@ -252,9 +248,8 @@ AbortCallback ProvidedFileSystem::ReadDirectory(
     storage::AsyncFileUtil::ReadDirectoryCallback callback) {
   const int request_id = request_manager_->CreateRequest(
       READ_DIRECTORY,
-      std::unique_ptr<RequestManager::HandlerInterface>(
-          new operations::ReadDirectory(event_router_, file_system_info_,
-                                        directory_path, callback)));
+      std::make_unique<operations::ReadDirectory>(
+          event_router_, file_system_info_, directory_path, callback));
   if (!request_id) {
     callback.Run(base::File::FILE_ERROR_SECURITY,
                  storage::AsyncFileUtil::EntryList(),
@@ -262,8 +257,8 @@ AbortCallback ProvidedFileSystem::ReadDirectory(
     return AbortCallback();
   }
 
-  return base::Bind(
-      &ProvidedFileSystem::Abort, weak_ptr_factory_.GetWeakPtr(), request_id);
+  return base::BindOnce(&ProvidedFileSystem::Abort,
+                        weak_ptr_factory_.GetWeakPtr(), request_id);
 }
 
 AbortCallback ProvidedFileSystem::ReadFile(int file_handle,
@@ -274,10 +269,9 @@ AbortCallback ProvidedFileSystem::ReadFile(int file_handle,
   TRACE_EVENT1(
       "file_system_provider", "ProvidedFileSystem::ReadFile", "length", length);
   const int request_id = request_manager_->CreateRequest(
-      READ_FILE, base::WrapUnique<RequestManager::HandlerInterface>(
-                     new operations::ReadFile(event_router_, file_system_info_,
-                                              file_handle, buffer, offset,
-                                              length, callback)));
+      READ_FILE, std::make_unique<operations::ReadFile>(
+                     event_router_, file_system_info_, file_handle, buffer,
+                     offset, length, callback));
   if (!request_id) {
     callback.Run(0 /* chunk_length */,
                  false /* has_more */,
@@ -285,122 +279,122 @@ AbortCallback ProvidedFileSystem::ReadFile(int file_handle,
     return AbortCallback();
   }
 
-  return base::Bind(
-      &ProvidedFileSystem::Abort, weak_ptr_factory_.GetWeakPtr(), request_id);
+  return base::BindOnce(&ProvidedFileSystem::Abort,
+                        weak_ptr_factory_.GetWeakPtr(), request_id);
 }
 
 AbortCallback ProvidedFileSystem::OpenFile(const base::FilePath& file_path,
                                            OpenFileMode mode,
                                            OpenFileCallback callback) {
-  // Create |copyable_callback| which is copyable, though it can still only be
-  // called at most once.  This is safe, because RequestManager::CreateRequest()
-  // is guaranteed not to call |callback| if it signals an error (by returning
-  // request_id == 0).
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  // Create two callbacks of which only one will be called because
+  // RequestManager::CreateRequest() is guaranteed not to call |callback| if it
+  // signals an error (by returning request_id == 0).
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
-      OPEN_FILE, std::unique_ptr<RequestManager::HandlerInterface>(
-                     new operations::OpenFile(
-                         event_router_, file_system_info_, file_path, mode,
-                         base::Bind(&ProvidedFileSystem::OnOpenFileCompleted,
+      OPEN_FILE, std::make_unique<operations::OpenFile>(
+                     event_router_, file_system_info_, file_path, mode,
+                     base::BindOnce(&ProvidedFileSystem::OnOpenFileCompleted,
                                     weak_ptr_factory_.GetWeakPtr(), file_path,
-                                    mode, copyable_callback))));
+                                    mode, std::move(split_callback.first))));
   if (!request_id) {
-    copyable_callback.Run(0 /* file_handle */, base::File::FILE_ERROR_SECURITY);
+    std::move(split_callback.second)
+        .Run(0 /* file_handle */, base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
   }
 
-  return base::Bind(&ProvidedFileSystem::Abort, weak_ptr_factory_.GetWeakPtr(),
-                    request_id);
+  return base::BindOnce(&ProvidedFileSystem::Abort,
+                        weak_ptr_factory_.GetWeakPtr(), request_id);
 }
 
 AbortCallback ProvidedFileSystem::CloseFile(
     int file_handle,
     storage::AsyncFileUtil::StatusCallback callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
-      CLOSE_FILE, std::make_unique<operations::CloseFile>(
-                      event_router_, file_system_info_, file_handle,
-                      base::Bind(&ProvidedFileSystem::OnCloseFileCompleted,
-                                 weak_ptr_factory_.GetWeakPtr(), file_handle,
-                                 copyable_callback)));
+      CLOSE_FILE,
+      std::make_unique<operations::CloseFile>(
+          event_router_, file_system_info_, file_handle,
+          base::BindOnce(&ProvidedFileSystem::OnCloseFileCompleted,
+                         weak_ptr_factory_.GetWeakPtr(), file_handle,
+                         std::move(split_callback.first))));
   if (!request_id) {
-    copyable_callback.Run(base::File::FILE_ERROR_SECURITY);
+    std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
   }
 
-  return base::Bind(
-      &ProvidedFileSystem::Abort, weak_ptr_factory_.GetWeakPtr(), request_id);
+  return base::BindOnce(&ProvidedFileSystem::Abort,
+                        weak_ptr_factory_.GetWeakPtr(), request_id);
 }
 
 AbortCallback ProvidedFileSystem::CreateDirectory(
     const base::FilePath& directory_path,
     bool recursive,
     storage::AsyncFileUtil::StatusCallback callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       CREATE_DIRECTORY, std::make_unique<operations::CreateDirectory>(
                             event_router_, file_system_info_, directory_path,
-                            recursive, copyable_callback));
+                            recursive, std::move(split_callback.first)));
   if (!request_id) {
-    copyable_callback.Run(base::File::FILE_ERROR_SECURITY);
+    std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
   }
 
-  return base::Bind(
-      &ProvidedFileSystem::Abort, weak_ptr_factory_.GetWeakPtr(), request_id);
+  return base::BindOnce(&ProvidedFileSystem::Abort,
+                        weak_ptr_factory_.GetWeakPtr(), request_id);
 }
 
 AbortCallback ProvidedFileSystem::DeleteEntry(
     const base::FilePath& entry_path,
     bool recursive,
     storage::AsyncFileUtil::StatusCallback callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       DELETE_ENTRY, std::make_unique<operations::DeleteEntry>(
                         event_router_, file_system_info_, entry_path, recursive,
-                        copyable_callback));
+                        std::move(split_callback.first)));
   if (!request_id) {
-    copyable_callback.Run(base::File::FILE_ERROR_SECURITY);
+    std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
   }
 
-  return base::Bind(
-      &ProvidedFileSystem::Abort, weak_ptr_factory_.GetWeakPtr(), request_id);
+  return base::BindOnce(&ProvidedFileSystem::Abort,
+                        weak_ptr_factory_.GetWeakPtr(), request_id);
 }
 
 AbortCallback ProvidedFileSystem::CreateFile(
     const base::FilePath& file_path,
     storage::AsyncFileUtil::StatusCallback callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
-      CREATE_FILE,
-      std::make_unique<operations::CreateFile>(event_router_, file_system_info_,
-                                               file_path, copyable_callback));
+      CREATE_FILE, std::make_unique<operations::CreateFile>(
+                       event_router_, file_system_info_, file_path,
+                       std::move(split_callback.first)));
   if (!request_id) {
-    copyable_callback.Run(base::File::FILE_ERROR_SECURITY);
+    std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
   }
 
-  return base::Bind(
-      &ProvidedFileSystem::Abort, weak_ptr_factory_.GetWeakPtr(), request_id);
+  return base::BindOnce(&ProvidedFileSystem::Abort,
+                        weak_ptr_factory_.GetWeakPtr(), request_id);
 }
 
 AbortCallback ProvidedFileSystem::CopyEntry(
     const base::FilePath& source_path,
     const base::FilePath& target_path,
     storage::AsyncFileUtil::StatusCallback callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       COPY_ENTRY, std::make_unique<operations::CopyEntry>(
                       event_router_, file_system_info_, source_path,
-                      target_path, copyable_callback));
+                      target_path, std::move(split_callback.first)));
   if (!request_id) {
-    copyable_callback.Run(base::File::FILE_ERROR_SECURITY);
+    std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
   }
 
-  return base::Bind(
-      &ProvidedFileSystem::Abort, weak_ptr_factory_.GetWeakPtr(), request_id);
+  return base::BindOnce(&ProvidedFileSystem::Abort,
+                        weak_ptr_factory_.GetWeakPtr(), request_id);
 }
 
 AbortCallback ProvidedFileSystem::WriteFile(
@@ -413,55 +407,55 @@ AbortCallback ProvidedFileSystem::WriteFile(
                "ProvidedFileSystem::WriteFile",
                "length",
                length);
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
-      WRITE_FILE,
-      std::make_unique<operations::WriteFile>(
-          event_router_, file_system_info_, file_handle,
-          base::WrapRefCounted(buffer), offset, length, copyable_callback));
+      WRITE_FILE, std::make_unique<operations::WriteFile>(
+                      event_router_, file_system_info_, file_handle,
+                      base::WrapRefCounted(buffer), offset, length,
+                      std::move(split_callback.first)));
   if (!request_id) {
-    copyable_callback.Run(base::File::FILE_ERROR_SECURITY);
+    std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
   }
 
-  return base::Bind(
-      &ProvidedFileSystem::Abort, weak_ptr_factory_.GetWeakPtr(), request_id);
+  return base::BindOnce(&ProvidedFileSystem::Abort,
+                        weak_ptr_factory_.GetWeakPtr(), request_id);
 }
 
 AbortCallback ProvidedFileSystem::MoveEntry(
     const base::FilePath& source_path,
     const base::FilePath& target_path,
     storage::AsyncFileUtil::StatusCallback callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       MOVE_ENTRY, std::make_unique<operations::MoveEntry>(
                       event_router_, file_system_info_, source_path,
-                      target_path, copyable_callback));
+                      target_path, std::move(split_callback.first)));
   if (!request_id) {
-    copyable_callback.Run(base::File::FILE_ERROR_SECURITY);
+    std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
   }
 
-  return base::Bind(
-      &ProvidedFileSystem::Abort, weak_ptr_factory_.GetWeakPtr(), request_id);
+  return base::BindOnce(&ProvidedFileSystem::Abort,
+                        weak_ptr_factory_.GetWeakPtr(), request_id);
 }
 
 AbortCallback ProvidedFileSystem::Truncate(
     const base::FilePath& file_path,
     int64_t length,
     storage::AsyncFileUtil::StatusCallback callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
       TRUNCATE, std::make_unique<operations::Truncate>(
                     event_router_, file_system_info_, file_path, length,
-                    copyable_callback));
+                    std::move(split_callback.first)));
   if (!request_id) {
-    copyable_callback.Run(base::File::FILE_ERROR_SECURITY);
+    std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
     return AbortCallback();
   }
 
-  return base::Bind(
-      &ProvidedFileSystem::Abort, weak_ptr_factory_.GetWeakPtr(), request_id);
+  return base::BindOnce(&ProvidedFileSystem::Abort,
+                        weak_ptr_factory_.GetWeakPtr(), request_id);
 }
 
 AbortCallback ProvidedFileSystem::AddWatcher(
@@ -539,22 +533,22 @@ void ProvidedFileSystem::Notify(
 
 void ProvidedFileSystem::Configure(
     storage::AsyncFileUtil::StatusCallback callback) {
-  auto copyable_callback = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   const int request_id = request_manager_->CreateRequest(
-      CONFIGURE, std::make_unique<operations::Configure>(
-                     event_router_, file_system_info_, copyable_callback));
+      CONFIGURE,
+      std::make_unique<operations::Configure>(event_router_, file_system_info_,
+                                              std::move(split_callback.first)));
   if (!request_id)
-    copyable_callback.Run(base::File::FILE_ERROR_SECURITY);
+    std::move(split_callback.second).Run(base::File::FILE_ERROR_SECURITY);
 }
 
 void ProvidedFileSystem::Abort(int operation_request_id) {
   if (!request_manager_->CreateRequest(
-          ABORT, std::unique_ptr<RequestManager::HandlerInterface>(
-                     new operations::Abort(
-                         event_router_, file_system_info_, operation_request_id,
-                         base::BindOnce(&ProvidedFileSystem::OnAbortCompleted,
-                                        weak_ptr_factory_.GetWeakPtr(),
-                                        operation_request_id))))) {
+          ABORT, std::make_unique<operations::Abort>(
+                     event_router_, file_system_info_, operation_request_id,
+                     base::BindOnce(&ProvidedFileSystem::OnAbortCompleted,
+                                    weak_ptr_factory_.GetWeakPtr(),
+                                    operation_request_id)))) {
     // If the aborting event is not handled, then the operation should simply
     // be not aborted. Instead we'll wait until it completes.
     LOG(ERROR) << "Failed to create an abort request.";
@@ -605,20 +599,19 @@ AbortCallback ProvidedFileSystem::AddWatcherInQueue(
     return AbortCallback();
   }
 
-  auto copyable_callback =
-      base::AdaptCallbackForRepeating(std::move(args.callback));
+  auto split_callback = base::SplitOnceCallback(std::move(args.callback));
   const int request_id = request_manager_->CreateRequest(
       ADD_WATCHER,
       std::make_unique<operations::AddWatcher>(
           event_router_, file_system_info_, args.entry_path, args.recursive,
-          base::Bind(&ProvidedFileSystem::OnAddWatcherInQueueCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), args.token,
-                     args.entry_path, args.recursive, subscriber,
-                     copyable_callback)));
+          base::BindOnce(&ProvidedFileSystem::OnAddWatcherInQueueCompleted,
+                         weak_ptr_factory_.GetWeakPtr(), args.token,
+                         args.entry_path, args.recursive, subscriber,
+                         std::move(split_callback.first))));
 
   if (!request_id) {
     OnAddWatcherInQueueCompleted(args.token, args.entry_path, args.recursive,
-                                 subscriber, copyable_callback,
+                                 subscriber, std::move(split_callback.second),
                                  base::File::FILE_ERROR_SECURITY);
   }
 
@@ -655,9 +648,10 @@ AbortCallback ProvidedFileSystem::RemoveWatcherInQueue(
       REMOVE_WATCHER,
       std::make_unique<operations::RemoveWatcher>(
           event_router_, file_system_info_, entry_path, recursive,
-          base::Bind(&ProvidedFileSystem::OnRemoveWatcherInQueueCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), token, origin, key,
-                     base::Passed(&callback), true /* extension_response */)));
+          base::BindOnce(&ProvidedFileSystem::OnRemoveWatcherInQueueCompleted,
+                         weak_ptr_factory_.GetWeakPtr(), token, origin, key,
+                         base::Passed(&callback),
+                         true /* extension_response */)));
 
   return AbortCallback();
 }
@@ -690,10 +684,10 @@ AbortCallback ProvidedFileSystem::NotifyInQueue(
   const ProvidedFileSystemObserver::Changes& changes_ref = *args->changes.get();
   const storage::WatcherManager::ChangeType change_type = args->change_type;
 
-  scoped_refptr<AutoUpdater> auto_updater(
-      new AutoUpdater(base::Bind(&ProvidedFileSystem::OnNotifyInQueueCompleted,
-                                 weak_ptr_factory_.GetWeakPtr(),
-                                 base::Passed(&args), base::File::FILE_OK)));
+  scoped_refptr<AutoUpdater> auto_updater(new AutoUpdater(
+      base::BindOnce(&ProvidedFileSystem::OnNotifyInQueueCompleted,
+                     weak_ptr_factory_.GetWeakPtr(), base::Passed(&args),
+                     base::File::FILE_OK)));
 
   // Call all notification callbacks (if any).
   for (const auto& subscriber_it : watcher_it->second.subscribers) {

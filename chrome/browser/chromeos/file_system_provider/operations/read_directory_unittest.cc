@@ -123,13 +123,13 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, Execute) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   CallbackLogger callback_logger;
 
-  ReadDirectory read_directory(NULL, file_system_info_,
-                               base::FilePath(kDirectoryPath),
-                               base::Bind(&CallbackLogger::OnReadDirectory,
-                                          base::Unretained(&callback_logger)));
+  ReadDirectory read_directory(
+      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      base::BindRepeating(&CallbackLogger::OnReadDirectory,
+                          base::Unretained(&callback_logger)));
   read_directory.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(read_directory.Execute(kRequestId));
 
@@ -156,13 +156,13 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, Execute_NoListener) {
   util::LoggingDispatchEventImpl dispatcher(false /* dispatch_reply */);
   CallbackLogger callback_logger;
 
-  ReadDirectory read_directory(NULL, file_system_info_,
-                               base::FilePath(kDirectoryPath),
-                               base::Bind(&CallbackLogger::OnReadDirectory,
-                                          base::Unretained(&callback_logger)));
+  ReadDirectory read_directory(
+      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      base::BindRepeating(&CallbackLogger::OnReadDirectory,
+                          base::Unretained(&callback_logger)));
   read_directory.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(read_directory.Execute(kRequestId));
 }
@@ -171,13 +171,13 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, OnSuccess) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   CallbackLogger callback_logger;
 
-  ReadDirectory read_directory(NULL, file_system_info_,
-                               base::FilePath(kDirectoryPath),
-                               base::Bind(&CallbackLogger::OnReadDirectory,
-                                          base::Unretained(&callback_logger)));
+  ReadDirectory read_directory(
+      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      base::BindRepeating(&CallbackLogger::OnReadDirectory,
+                          base::Unretained(&callback_logger)));
   read_directory.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(read_directory.Execute(kRequestId));
 
@@ -218,13 +218,13 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest,
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   CallbackLogger callback_logger;
 
-  ReadDirectory read_directory(NULL, file_system_info_,
-                               base::FilePath(kDirectoryPath),
-                               base::Bind(&CallbackLogger::OnReadDirectory,
-                                          base::Unretained(&callback_logger)));
+  ReadDirectory read_directory(
+      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      base::BindRepeating(&CallbackLogger::OnReadDirectory,
+                          base::Unretained(&callback_logger)));
   read_directory.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(read_directory.Execute(kRequestId));
 
@@ -261,13 +261,13 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, OnError) {
   util::LoggingDispatchEventImpl dispatcher(true /* dispatch_reply */);
   CallbackLogger callback_logger;
 
-  ReadDirectory read_directory(NULL, file_system_info_,
-                               base::FilePath(kDirectoryPath),
-                               base::Bind(&CallbackLogger::OnReadDirectory,
-                                          base::Unretained(&callback_logger)));
+  ReadDirectory read_directory(
+      NULL, file_system_info_, base::FilePath(kDirectoryPath),
+      base::BindRepeating(&CallbackLogger::OnReadDirectory,
+                          base::Unretained(&callback_logger)));
   read_directory.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(read_directory.Execute(kRequestId));
 

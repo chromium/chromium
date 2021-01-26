@@ -315,13 +315,13 @@ void ProviderAsyncFileUtil::CreateOrOpen(
       (file_flags & base::File::FLAG_CREATE_ALWAYS) ||
       (file_flags & base::File::FLAG_OPEN_TRUNCATED)) {
     std::move(callback).Run(base::File(base::File::FILE_ERROR_ACCESS_DENIED),
-                            base::Closure());
+                            base::OnceClosure());
     return;
   }
 
   NOTIMPLEMENTED();
   std::move(callback).Run(base::File(base::File::FILE_ERROR_INVALID_OPERATION),
-                          base::Closure());
+                          base::OnceClosure());
 }
 
 void ProviderAsyncFileUtil::EnsureFileExists(
@@ -359,7 +359,7 @@ void ProviderAsyncFileUtil::GetFileInfo(
       FROM_HERE,
       base::BindOnce(
           &GetFileInfoOnUIThread, std::move(context), url, fields,
-          base::Bind(&OnGetFileInfo, fields, base::Passed(&callback))));
+          base::BindOnce(&OnGetFileInfo, fields, base::Passed(&callback))));
 }
 
 void ProviderAsyncFileUtil::ReadDirectory(

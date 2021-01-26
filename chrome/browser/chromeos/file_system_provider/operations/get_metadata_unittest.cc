@@ -231,8 +231,8 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, Execute) {
       base::BindOnce(&CallbackLogger::OnGetMetadata,
                      base::Unretained(&callback_logger)));
   get_metadata.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(get_metadata.Execute(kRequestId));
 
@@ -266,8 +266,8 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, Execute_NoListener) {
       base::BindOnce(&CallbackLogger::OnGetMetadata,
                      base::Unretained(&callback_logger)));
   get_metadata.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_FALSE(get_metadata.Execute(kRequestId));
 }
@@ -287,8 +287,8 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, OnSuccess) {
       base::BindOnce(&CallbackLogger::OnGetMetadata,
                      base::Unretained(&callback_logger)));
   get_metadata.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(get_metadata.Execute(kRequestId));
 
@@ -347,8 +347,8 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, OnSuccess_InvalidMetadata) {
       base::BindOnce(&CallbackLogger::OnGetMetadata,
                      base::Unretained(&callback_logger)));
   get_metadata.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(get_metadata.Execute(kRequestId));
 
@@ -396,8 +396,8 @@ TEST_F(FileSystemProviderOperationsGetMetadataTest, OnError) {
       base::BindOnce(&CallbackLogger::OnGetMetadata,
                      base::Unretained(&callback_logger)));
   get_metadata.SetDispatchEventImplForTesting(
-      base::Bind(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
-                 base::Unretained(&dispatcher)));
+      base::BindRepeating(&util::LoggingDispatchEventImpl::OnDispatchEventImpl,
+                          base::Unretained(&dispatcher)));
 
   EXPECT_TRUE(get_metadata.Execute(kRequestId));
 
