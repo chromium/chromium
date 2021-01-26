@@ -116,6 +116,13 @@ bool VerifyClipboardTextData(const std::initializer_list<std::string>& texts) {
   return true;
 }
 
+void WaitForOperationConfirmed() {
+  base::RunLoop run_loop;
+  GetClipboardHistoryController()->set_confirmed_operation_callback_for_test(
+      run_loop.QuitClosure());
+  run_loop.Run();
+}
+
 }  // namespace
 
 // Verify clipboard history's features in the multiprofile environment.
@@ -156,6 +163,13 @@ class ClipboardHistoryWithMultiProfileBrowserTest
     base::RunLoop run_loop;
     context_menu->set_item_removal_callback_for_test(run_loop.QuitClosure());
     run_loop.Run();
+  }
+
+  void PasteFromClipboardHistoryMenuAndWait() {
+    ASSERT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
+    ShowContextMenuViaAccelerator(/*wait_for_selection=*/true);
+    PressAndRelease(ui::VKEY_RETURN);
+    WaitForOperationConfirmed();
   }
 
   void ShowContextMenuViaAccelerator(bool wait_for_selection) {
@@ -710,6 +724,27 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
       second_menu_item_view->GetBoundsInScreen().CenterPoint());
   EXPECT_FALSE(GetClipboardHistoryController()->IsMenuShowing());
   EXPECT_EQ("A", base::UTF16ToUTF8(textfield_->GetText()));
+}
+
+// Verifies that the metric to record the count of the consecutive pastes from
+// the clipboard history menu works as expected.
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryTextfieldBrowserTest,
+                       VerifyConsecutivePasteMetric) {
+  base::HistogramTester histogram_tester;
+
+  SetClipboardText("A");
+  WaitForOperationConfirmed();
+
+  PasteFromClipboardHistoryMenuAndWait();
+  PasteFromClipboardHistoryMenuAndWait();
+
+  SetClipboardText("B");
+  WaitForOperationConfirmed();
+
+  histogram_tester.ExpectTotalCount("Ash.ClipboardHistory.ConsecutivePastes",
+                                    /*count=*/1);
+  histogram_tester.ExpectUniqueSample("Ash.ClipboardHistory.ConsecutivePastes",
+                                      /*sample=*/2, /*count=*/1);
 }
 
 // Verifies that the delete button should show after its host item view is under
