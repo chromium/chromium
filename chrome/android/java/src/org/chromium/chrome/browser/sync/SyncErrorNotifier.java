@@ -46,11 +46,22 @@ public class SyncErrorNotifier implements ProfileSyncService.SyncStateChangedLis
     private final ProfileSyncService mProfileSyncService;
     private boolean mTrustedVaultNotificationShownOrCreating;
 
-    public SyncErrorNotifier() {
+    private static SyncErrorNotifier sInstance;
+
+    public static SyncErrorNotifier get() {
+        ThreadUtils.assertOnUiThread();
+        if (sInstance == null) {
+            sInstance = new SyncErrorNotifier();
+        }
+        return sInstance;
+    }
+
+    private SyncErrorNotifier() {
         mNotificationManager =
                 new NotificationManagerProxyImpl(ContextUtils.getApplicationContext());
         mProfileSyncService = ProfileSyncService.get();
         assert mProfileSyncService != null;
+        mProfileSyncService.addSyncStateChangedListener(this);
     }
 
     /**

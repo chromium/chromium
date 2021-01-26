@@ -53,7 +53,6 @@ public class SyncController
     private static boolean sInitialized;
 
     private final ProfileSyncService mProfileSyncService;
-    private final SyncErrorNotifier mSyncErrorNotifier;
 
     private SyncController() {
         AndroidSyncSettings.get().setDelegate(this);
@@ -61,10 +60,6 @@ public class SyncController
         mProfileSyncService.addSyncStateChangedListener(this);
 
         setSessionsId();
-
-        // Create the SyncErrorNotifier.
-        mSyncErrorNotifier = new SyncErrorNotifier();
-        mProfileSyncService.addSyncStateChangedListener(mSyncErrorNotifier);
 
         updateSyncStateFromAndroid();
     }
@@ -156,13 +151,6 @@ public class SyncController
     @Override
     public void androidSyncSettingsChanged() {
         updateSyncStateFromAndroid();
-    }
-
-    /**
-     * Returns the SyncErrorNotifier.
-     */
-    public SyncErrorNotifier getSyncErrorNotifier() {
-        return mSyncErrorNotifier;
     }
 
     /**
