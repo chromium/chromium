@@ -60,6 +60,15 @@ void OnEmailConfirmation(DiceTurnSyncOnHelper::SigninChoiceCallback callback,
   NOTREACHED();
 }
 
+void OnProfileCheckComplete(const std::string& email,
+                            DiceTurnSyncOnHelper::SigninChoiceCallback callback,
+                            Browser* browser,
+                            bool prompt_for_new_profile) {
+  DiceTurnSyncOnHelper::Delegate::ShowEnterpriseAccountConfirmationForBrowser(
+      email, /*prompt_for_new_profile=*/prompt_for_new_profile,
+      std::move(callback), browser);
+}
+
 }  // namespace
 
 DiceTurnSyncOnHelperDelegateImpl::DiceTurnSyncOnHelperDelegateImpl(
@@ -85,8 +94,11 @@ void DiceTurnSyncOnHelperDelegateImpl::ShowEnterpriseAccountConfirmation(
     const std::string& email,
     DiceTurnSyncOnHelper::SigninChoiceCallback callback) {
   browser_ = EnsureBrowser(browser_, profile_);
-  DiceTurnSyncOnHelper::Delegate::ShowEnterpriseAccountConfirmationForBrowser(
-      email, std::move(callback), browser_);
+  // Checking whether to show the prompt for a new profile is sometimes
+  // asynchronous.
+  ui::CheckShouldPromptForNewProfile(
+      profile_, base::BindOnce(&OnProfileCheckComplete, email,
+                               std::move(callback), browser_));
 }
 
 void DiceTurnSyncOnHelperDelegateImpl::ShowSyncConfirmation(

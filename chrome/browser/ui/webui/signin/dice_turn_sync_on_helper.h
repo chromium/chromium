@@ -106,7 +106,6 @@ class DiceTurnSyncOnHelper
     // Informs the delegate that the flow is switching to a new profile.
     virtual void SwitchToProfile(Profile* new_profile) = 0;
 
-   protected:
     // Shows the login error with `error_message` and `email` for `browser`.
     // This helper is static because in some cases it needs to be called
     // after this object gets destroyed.
@@ -115,11 +114,13 @@ class DiceTurnSyncOnHelper
                                          Browser* browser);
 
     // Shows the enterprise account confirmation dialog with `email` for
-    // `browser` and returns the result via `callback`. This helper is static
+    // `browser` and returns the result via `callback`. The variant of the
+    // dialog is based on `prompt_for_new_profile`. This helper is static
     // because in some cases it needs to be called after this object gets
     // destroyed.
     static void ShowEnterpriseAccountConfirmationForBrowser(
         const std::string& email,
+        bool prompt_for_new_profile,
         DiceTurnSyncOnHelper::SigninChoiceCallback callback,
         Browser* browser);
   };
