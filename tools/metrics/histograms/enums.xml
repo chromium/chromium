@@ -60340,6 +60340,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="6" label="PreviewPageRendered with no metafile (Deprecated)"/>
   <int value="7" label="Received bad printer settings"/>
   <int value="8" label="Capture metadata failed (Deprecated)"/>
+  <int value="9" label="Got empty printer settings"/>
 </enum>
 
 <enum name="PrintPreviewFontTypeType">

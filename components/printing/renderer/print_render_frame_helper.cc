@@ -2196,6 +2196,14 @@ bool PrintRenderFrameHelper::UpdatePrintSettings(
   bool canceled = false;
   GetPrintManagerHost()->UpdatePrintSettings(cookie, job_settings->Clone(),
                                              &settings, &canceled);
+
+  // If mojom::PrintManagerHost is disconnected in the browser after calling
+  // UpdatePrintSettings(), |settings| could be null.
+  if (!settings) {
+    print_preview_context_.set_error(PREVIEW_ERROR_EMPTY_PRINTER_SETTINGS);
+    return false;
+  }
+
   if (canceled) {
     notify_browser_of_print_failure_ = false;
     return false;
