@@ -4,7 +4,6 @@
 
 import './elements/viewer-error-screen.js';
 import './elements/viewer-password-dialog.js';
-import './elements/viewer-pdf-toolbar.js';
 import './elements/viewer-properties-dialog.js';
 import './elements/shared-vars.js';
 // <if expr="chromeos">
@@ -360,19 +359,10 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   }
 
   /**
-   * @return {!ViewerPdfToolbarElement}
-   * @private
-   */
-  getToolbar_() {
-    return /** @type {!ViewerPdfToolbarElement} */ (this.$$('#toolbar'));
-  }
-
-  /**
    * @return {!ViewerPdfToolbarNewElement}
    * @private
    */
-  getToolbarNew_() {
-    assert(this.pdfViewerUpdateEnabled_);
+  getToolbar_() {
     return /** @type {!ViewerPdfToolbarNewElement} */ (this.$$('#toolbar'));
   }
 
@@ -428,19 +418,11 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   handleToolbarKeyEvent_(e) {
     if (this.pdfViewerUpdateEnabled_) {
       if (e.key === '\\' && e.ctrlKey) {
-        this.getToolbarNew_().fitToggle();
+        this.getToolbar_().fitToggle();
       }
       // TODO: Add handling for additional relevant hotkeys for the new unified
       // toolbar.
       return;
-    }
-
-    switch (e.key) {
-      case 'g':
-        if (this.toolbarEnabled_ && (e.ctrlKey || e.metaKey) && e.altKey) {
-          this.getToolbar_().selectPageNumber();
-        }
-        return;
     }
   }
 
@@ -911,7 +893,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
   /** @override */
   forceFit(view) {
-    this.getToolbarNew_().forceFit(view);
+    this.getToolbar_().forceFit(view);
   }
 
   /** @override */

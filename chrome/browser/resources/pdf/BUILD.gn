@@ -61,12 +61,10 @@ preprocess_if_expr("preprocess_generated") {
     "elements/viewer-page-selector.js",
     "elements/viewer-password-dialog.js",
     "elements/viewer-pdf-sidenav.js",
-    "elements/viewer-pdf-toolbar.js",
     "elements/viewer-pdf-toolbar-new.js",
     "elements/viewer-properties-dialog.js",
     "elements/viewer-thumbnail-bar.js",
     "elements/viewer-thumbnail.js",
-    "elements/viewer-toolbar-dropdown.js",
     "pdf_viewer.js",
     "pdf_viewer_shared_style.js",
   ]
@@ -77,6 +75,7 @@ preprocess_if_expr("preprocess_generated") {
       "elements/viewer-form-warning.js",
       "elements/viewer-ink-host.js",
       "elements/viewer-pen-options.js",
+      "elements/viewer-toolbar-dropdown.js",
     ]
   }
 }
@@ -316,7 +315,6 @@ js_library("pdf_viewer") {
     "elements:viewer-error-screen",
     "elements:viewer-password-dialog",
     "elements:viewer-pdf-sidenav",
-    "elements:viewer-pdf-toolbar",
     "elements:viewer-pdf-toolbar-new",
     "elements:viewer-properties-dialog",
     "//ui/webui/resources/js:assert.m",

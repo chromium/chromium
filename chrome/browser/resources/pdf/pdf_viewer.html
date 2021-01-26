@@ -8,9 +8,16 @@
     --pdf-toolbar-text-color: rgb(241, 241, 241);
   }
 
-  viewer-pdf-toolbar,
   viewer-pdf-toolbar-new {
     --active-button-bg: rgba(255, 255, 255, 0.24);
+    z-index: 1;
+  }
+
+  @media(max-width: 200px),
+  (max-height: 250px) {
+    viewer-pdf-toolbar-new {
+      display: none;
+    }
   }
 
   #sidenav-container {
@@ -45,36 +52,13 @@
     z-index: 5;
   }
 
-  viewer-pdf-toolbar {
-    position: fixed;
-    width: 100%;
-    z-index: 4;
-  }
-
   viewer-ink-host {
     height: 100%;
     position: absolute;
     width: 100%;
   }
 
-  @media(max-height: 250px) {
-    viewer-pdf-toolbar {
-      display: none;
-    }
-  }
-
   /* Styles only applying when the pdfViewerUpdateEnabled flag is on. */
-
-  viewer-pdf-toolbar-new {
-    z-index: 1;
-  }
-
-  @media(max-width: 200px),
-  (max-height: 250px) {
-    viewer-pdf-toolbar-new {
-      display: none;
-    }
-  }
 
   :host-context([pdf-viewer-update-enabled]):host {
     display: flex;
@@ -135,32 +119,7 @@
   }
 </style>
 
-<template is="dom-if" if="[[!pdfViewerUpdateEnabled_]]">
-  <viewer-pdf-toolbar id="toolbar" strings="[[strings]]"
-      bookmarks="[[bookmarks_]]" doc-title="[[title_]]"
-      has-edits="[[hasEdits_]]"
-      has-entered-annotation-mode="[[hasEnteredAnnotationMode_]]"
-      printing-enabled="[[printingEnabled_]]"
-      is-form-field-focused="[[isFormFieldFocused_]]"
-      doc-length="[[docLength_]]" page-no="[[pageNo_]]"
-      load-progress="[[loadProgress_]]"
-<if expr="chromeos">
-      annotation-available="[[annotationAvailable_]]"
-      pdf-annotations-enabled="[[pdfAnnotationsEnabled_]]"
-</if>
-      on-change-page-and-xy="onChangePageAndXy_"
-      on-change-page="onChangePage_"
-      on-dropdown-opened="onDropdownOpened_"
-      on-navigate="onNavigate_"
-      on-save="onToolbarSave_" on-print="onPrint_"
-<if expr="chromeos">
-      on-annotation-mode-toggled="onAnnotationModeToggled_"
-</if>
-      on-rotate-right="rotateClockwise" hidden>
-  </viewer-pdf-toolbar>
-</template>
-<template is="dom-if" if="[[pdfViewerUpdateEnabled_]]">
-  <viewer-pdf-toolbar-new id="toolbar"
+<viewer-pdf-toolbar-new id="toolbar"
     annotation-mode="[[annotationMode_]]"
     doc-title="[[title_]]" doc-length="[[docLength_]]" page-no="[[pageNo_]]"
     load-progress="[[loadProgress_]]" has-edits="[[hasEdits_]]"
@@ -192,32 +151,25 @@
     on-annotation-mode-toggled="onAnnotationModeToggled_"
 </if>
     on-print="onPrint_" on-save="onToolbarSave_" hidden>
-  </viewer-pdf-toolbar-new>
-</template>
+</viewer-pdf-toolbar-new>
 
-<template is="dom-if" if="[[pdfViewerUpdateEnabled_]]">
-  <div id="container">
-    <div id="sidenav-container" closed$="[[sidenavCollapsed_]]"
-        hidden$="[[!toolbarEnabled_]]">
-      <viewer-pdf-sidenav id="sidenav"
-          active-page="[[pageNo_]]" bookmarks="[[bookmarks_]]"
-          clockwise-rotations="[[clockwiseRotations_]]"
-          doc-length="[[docLength_]]" on-change-page="onChangePage_"
-          on-change-page-and-xy="onChangePageAndXy_" on-navigate="onNavigate_">
-      </viewer-pdf-sidenav>
-    </div>
-    <div id="main">
-      <div id="scroller" on-scroll="onScroll_">
-        <div id="sizer"></div>
-        <div id="content"></div>
-      </div>
-    <div>
+<div id="container">
+  <div id="sidenav-container" closed$="[[sidenavCollapsed_]]"
+      hidden$="[[!toolbarEnabled_]]">
+    <viewer-pdf-sidenav id="sidenav"
+        active-page="[[pageNo_]]" bookmarks="[[bookmarks_]]"
+        clockwise-rotations="[[clockwiseRotations_]]"
+        doc-length="[[docLength_]]" on-change-page="onChangePage_"
+        on-change-page-and-xy="onChangePageAndXy_" on-navigate="onNavigate_">
+    </viewer-pdf-sidenav>
   </div>
-</template>
-
-<template is="dom-if" if="[[!pdfViewerUpdateEnabled_]]">
-  <div id="sizer"></div>
-</template>
+  <div id="main">
+    <div id="scroller" on-scroll="onScroll_">
+      <div id="sizer"></div>
+      <div id="content"></div>
+    </div>
+  <div>
+</div>
 
 <template is="dom-if" if="[[showPasswordDialog_]]" restamp>
   <viewer-password-dialog id="password-dialog" on-close="onPasswordDialogClose_"
@@ -237,9 +189,5 @@
 <if expr="chromeos">
 <viewer-form-warning id="form-warning"></viewer-form-warning>
 </if>
-
-<template is="dom-if" if="[[!pdfViewerUpdateEnabled_]]">
-  <div id="content"></div>
-</template>
 
 <div id="content-focus-rectangle" hidden$="[[!documentHasFocus_]]"></div>
