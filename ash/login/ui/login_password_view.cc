@@ -17,7 +17,6 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/bind.h"
-#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/timer.h"
@@ -193,9 +192,7 @@ IconBundle GetEasyUnlockResources(EasyUnlockIconId id) {
 // An observer that swaps two views' visibilities at each animation cycle.
 class AnimationCycleEndObserver : public ui::LayerAnimationObserver {
  public:
-  explicit AnimationCycleEndObserver(ui::LayerAnimator* animator) {
-    observation_.Observe(animator);
-  }
+  AnimationCycleEndObserver() {}
   ~AnimationCycleEndObserver() override = default;
   AnimationCycleEndObserver(const AnimationCycleEndObserver&) = delete;
   AnimationCycleEndObserver& operator=(const AnimationCycleEndObserver&) =
@@ -225,8 +222,6 @@ class AnimationCycleEndObserver : public ui::LayerAnimationObserver {
   }
 
  private:
-  base::ScopedObservation<ui::LayerAnimator, ui::LayerAnimationObserver>
-      observation_{this};
   views::View* shown_now_;
   views::View* shown_after_;
 };
@@ -551,13 +546,14 @@ class LoginPasswordView::AlternateIconsView : public views::View {
   AlternateIconsView() {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-
-    observer_ =
-        std::make_unique<AnimationCycleEndObserver>(layer()->GetAnimator());
   }
   AlternateIconsView(const AlternateIconsView&) = delete;
   AlternateIconsView& operator=(const AlternateIconsView&) = delete;
-  ~AlternateIconsView() override = default;
+  ~AlternateIconsView() override {
+    // TODO(crbug.com/1166246): Check that the crashes were due to layer
+    // animator was destroyed before the observer.
+    DCHECK(layer());
+  }
 
   void ScheduleAnimation(views::View* shown_now, views::View* shown_after) {
     DCHECK(layer());
@@ -569,10 +565,13 @@ class LoginPasswordView::AlternateIconsView : public views::View {
     if (Shell::Get()->accessibility_controller()->spoken_feedback().enabled())
       return;
 
-    observer_->SetDisplayOrder(shown_now, shown_after);
-
     std::unique_ptr<ui::LayerAnimationSequence> opacity_sequence =
         std::make_unique<ui::LayerAnimationSequence>();
+    observer_ = std::make_unique<AnimationCycleEndObserver>();
+    observer_->SetDisplayOrder(shown_now, shown_after);
+    // The observer will be removed automatically from the sequence whenever
+    // the layer animator or the observer is destroyed.
+    opacity_sequence->AddObserver(observer_.get());
     opacity_sequence->set_is_cyclic(true);
     for (size_t i = 0; i < base::size(kAlternateAnimationSequencesOpacities);
          ++i) {
