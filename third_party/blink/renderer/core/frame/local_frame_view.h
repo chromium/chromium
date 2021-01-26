@@ -75,7 +75,6 @@ class AXObjectCache;
 class ChromeClient;
 class CompositorAnimationTimeline;
 class DocumentLifecycle;
-class FloatRect;
 class FloatSize;
 class FragmentAnchor;
 class Frame;
@@ -499,11 +498,6 @@ class CORE_EXPORT LocalFrameView final
   // StyleChanged whenever window focus is changed.
   void RemoveScrollbar(Scrollbar*);
   void AddScrollbar(Scrollbar*);
-
-  // Clips the provided rect to the visible content area. For this purpose, we
-  // also query the chrome client for any active overrides to the visible area
-  // (e.g. DevTool's viewport override).
-  void ClipPaintRect(FloatRect*) const;
 
   // Indicates the root layer's scroll offset changed since the last frame
   void SetRootLayerDidScroll() { root_layer_did_scroll_ = true; }

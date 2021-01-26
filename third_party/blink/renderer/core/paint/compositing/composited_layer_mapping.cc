@@ -1596,38 +1596,26 @@ IntRect CompositedLayerMapping::RecomputeInterestRect(
   while (root_view->GetFrame()->OwnerLayoutObject())
     root_view = root_view->GetFrame()->OwnerLayoutObject()->View();
 
-  auto root_view_contents_state =
-      root_view->FirstFragment().ContentsProperties();
-  auto root_view_border_box_state =
-      root_view->FirstFragment().LocalBorderBoxProperties();
+  auto root_view_state = root_view->FirstFragment().LocalBorderBoxProperties();
 
   // 1. Move into local transform space.
   mapping_rect.MoveBy(FloatPoint(graphics_layer->GetOffsetFromTransformNode()));
-  // 2. Map into contents space of the root LayoutView.
-  GeometryMapper::LocalToAncestorVisualRect(
-      source_state, root_view_contents_state, mapping_rect);
+  // 2. Map into visible space of the root LayoutView.
+  GeometryMapper::LocalToAncestorVisualRect(source_state, root_view_state,
+                                            mapping_rect);
 
   FloatRect visible_content_rect(EnclosingIntRect(mapping_rect.Rect()));
-
-  // 3. Move into local border box transform space of the root LayoutView.
-  // Note that the overflow clip has *not* been applied.
-  GeometryMapper::SourceToDestinationRect(
-      root_view_contents_state.Transform(),
-      root_view_border_box_state.Transform(), visible_content_rect);
-
-  // 4. Apply overflow clip, or adjusted version if necessary.
-  root_view->GetFrameView()->ClipPaintRect(&visible_content_rect);
 
   FloatRect local_interest_rect;
   // If the visible content rect is empty, then it makes no sense to map it back
   // since there is nothing to map.
   if (!visible_content_rect.IsEmpty()) {
     local_interest_rect = visible_content_rect;
-    // 5. Map the visible content rect from root view space to local graphics
+    // 3. Map the visible content rect from root view space to local graphics
     // layer space.
-    GeometryMapper::SourceToDestinationRect(
-        root_view_border_box_state.Transform(), source_state.Transform(),
-        local_interest_rect);
+    GeometryMapper::SourceToDestinationRect(root_view_state.Transform(),
+                                            source_state.Transform(),
+                                            local_interest_rect);
     local_interest_rect.MoveBy(
         -FloatPoint(graphics_layer->GetOffsetFromTransformNode()));
 

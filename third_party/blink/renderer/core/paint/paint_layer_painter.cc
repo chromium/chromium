@@ -167,16 +167,14 @@ static bool IsUnclippedLayoutView(const PaintLayer& layer) {
     const auto* frame = layer.GetLayoutObject().GetFrame();
     if (frame && frame->IsMainFrame() && !frame->ClipsContent())
       return true;
-    // True regardless whether this is the main frame when painting a preview.
-    if (frame && frame->GetDocument()->IsPaintingPreview())
-      return true;
   }
   return false;
 }
 
 bool PaintLayerPainter::ShouldUseInfiniteCullRect(
     GlobalPaintFlags global_flags) {
-  if (IsUnclippedLayoutView(paint_layer_))
+  bool is_printing = paint_layer_.GetLayoutObject().GetDocument().Printing();
+  if (IsUnclippedLayoutView(paint_layer_) && !is_printing)
     return true;
 
   // Cull rects and clips can't be propagated across a filter which moves
@@ -192,7 +190,7 @@ bool PaintLayerPainter::ShouldUseInfiniteCullRect(
       // TODO(crbug.com/1098995): For now we don't adjust cull rect for clips.
       // When we do, we need to check if we are painting under a real clip.
       // This won't be a problem when we use block fragments for printing.
-      !paint_layer_.GetLayoutObject().GetDocument().Printing())
+      !is_printing)
     return true;
 
   // Cull rect mapping doesn't work under perspective in some cases.
@@ -211,7 +209,7 @@ bool PaintLayerPainter::ShouldUseInfiniteCullRect(
       paint_layer_.PaintsWithTransform(global_flags) &&
       // The reasons don't apply for printing though, because when we enter and
       // leaving printing mode, full invalidations occur.
-      !paint_layer_.GetLayoutObject().GetDocument().Printing())
+      !is_printing)
     return true;
 
   return false;
