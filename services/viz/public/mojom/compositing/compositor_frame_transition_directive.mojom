@@ -1,0 +1,39 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module viz.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+enum CompositorFrameTransitionDirectiveType {
+  kSave,
+  kAnimate
+};
+
+enum CompositorFrameTransitionDirectiveEffect {
+  kNone,
+  kCoverDown,
+  kCoverLeft,
+  kCoverRight,
+  kCoverUp,
+  kExplode,
+  kFade,
+  kImplode,
+  kRevealDown,
+  kRevealLeft,
+  kRevealRight,
+  kRevealUp
+};
+
+// See components/viz/common/quads/compositor_frame_transition_directive.h
+// for a description of this struct.
+struct CompositorFrameTransitionDirective {
+  uint32 sequence_id;
+
+  CompositorFrameTransitionDirectiveType type;
+
+  CompositorFrameTransitionDirectiveEffect effect;
+
+  mojo_base.mojom.TimeDelta duration;
+};

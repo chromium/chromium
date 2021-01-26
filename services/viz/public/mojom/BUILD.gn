@@ -14,6 +14,7 @@ mojom("mojom") {
     "compositing/compositor_frame.mojom",
     "compositing/compositor_frame_metadata.mojom",
     "compositing/compositor_frame_sink.mojom",
+    "compositing/compositor_frame_transition_directive.mojom",
     "compositing/compositor_render_pass.mojom",
     "compositing/compositor_render_pass_id.mojom",
     "compositing/copy_output_request.mojom",
@@ -217,6 +218,18 @@ mojom("mojom") {
         "//components/viz/common",
         "//services/viz/public/cpp:crash_keys",
       ]
+    },
+    {
+      types = [
+        {
+          mojom = "viz.mojom.CompositorFrameTransitionDirective"
+          cpp = "::viz::CompositorFrameTransitionDirective"
+          move_only = true
+        },
+      ]
+      traits_sources = [ "//services/viz/public/cpp/compositing/compositor_frame_transition_directive_mojom_traits.cc" ]
+      traits_headers = [ "//services/viz/public/cpp/compositing/compositor_frame_transition_directive_mojom_traits.h" ]
+      traits_public_deps = [ "//components/viz/common" ]
     },
     {
       types = [

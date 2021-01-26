@@ -45,6 +45,8 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   static constexpr base::TimeDelta kMaxDuration =
       base::TimeDelta::FromMilliseconds(500);
 
+  CompositorFrameTransitionDirective();
+
   // Constructs a new directive. Note that if type is `kSave`, the effect and
   // duration should be specified for a desired effect. These are ignored for
   // the `kAnimate` type.
@@ -68,11 +70,11 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   Effect effect() const { return effect_; }
 
  private:
-  uint32_t sequence_id_;
+  uint32_t sequence_id_ = 0;
 
-  Type type_;
+  Type type_ = Type::kSave;
 
-  Effect effect_;
+  Effect effect_ = Effect::kNone;
 
   base::TimeDelta duration_;
 };

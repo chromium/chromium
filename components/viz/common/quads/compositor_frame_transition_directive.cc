@@ -10,6 +10,9 @@ namespace viz {
 
 constexpr base::TimeDelta CompositorFrameTransitionDirective::kMaxDuration;
 
+CompositorFrameTransitionDirective::CompositorFrameTransitionDirective() =
+    default;
+
 CompositorFrameTransitionDirective::CompositorFrameTransitionDirective(
     uint32_t sequence_id,
     Type type,
