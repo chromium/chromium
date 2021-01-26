@@ -9608,7 +9608,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="NewPagePendingEntryMatches"
       label="new page navigation which found a pending entry"/>
   <suffix name="NewSubFrame" label="new subframe navigation"/>
-  <suffix name="SamePage" label="same page navigation"/>
+  <suffix name="SamePage" label="same page navigation">
+    <obsolete>
+      Deprecated 01/2021 in favor of ExistingPageSameDocumentIntendedAsNew and
+      ExistingPageDifferentDocumentIntendedAsNew.
+    </obsolete>
+  </suffix>
   <affected-histogram name="Navigation.SecureSchemeHasSSLStatus"/>
 </histogram_suffixes>
 

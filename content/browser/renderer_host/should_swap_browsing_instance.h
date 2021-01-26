@@ -27,7 +27,7 @@ enum class ShouldSwapBrowsingInstance {
   kYes_CrossSiteProactiveSwap = 12,
   kYes_SameSiteProactiveSwap = 13,
   kNo_SameDocumentNavigation = 14,
-  kNo_SamePageNavigation = 15,
+  kNo_SameUrlNavigation = 15,
   kNo_WillReplaceEntry = 16,
   kNo_Reload = 17,
   kNo_Guest = 18,

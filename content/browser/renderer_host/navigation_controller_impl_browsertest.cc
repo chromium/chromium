@@ -2049,10 +2049,10 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   }
 }
 
-// Verify that navigations for NAVIGATION_TYPE_SAME_ENTRY are correctly
-// classified.
+// Verify that navigations to the same URL are correctly classified as
+// EXISTING_ENTRY.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       NavigationTypeClassification_SameEntry) {
+                       NavigationTypeClassification_ExistingEntrySameURL) {
   GURL url1(embedded_test_server()->GetURL(
       "/navigation_controller/simple_page_1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url1));
@@ -2062,15 +2062,16 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                             ->root();
 
   {
-    // Simple load.
+    // Simple load of the same URL.
     FrameNavigateParamsCapturer capturer(root);
-    GURL frame_url(embedded_test_server()->GetURL(
-        "/navigation_controller/simple_page_1.html"));
-    NavigateFrameToURL(root, frame_url);
+    NavigateFrameToURL(root, url1);
     capturer.Wait();
     EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
         capturer.transition(), ui::PAGE_TRANSITION_LINK));
-    EXPECT_EQ(NAVIGATION_TYPE_SAME_ENTRY, capturer.navigation_type());
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+
+    // Ensure the pending entry was cleared after commit.
+    EXPECT_FALSE(shell()->web_contents()->GetController().GetPendingEntry());
   }
 }
 
@@ -2154,7 +2155,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_FLOAT_EQ(expected_window_scroll_y, window_scroll_y);
 }
 
-// Verify that empty GURL navigations are not classified as SAME_ENTRY.
+// Verify that empty GURL navigations are not classified as EXISTING_ENTRY.
 // See https://crbug.com/534980.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        NavigationTypeClassification_EmptyGURL) {
@@ -2168,7 +2169,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   {
     // Load an (invalid) empty GURL.  Blink will treat this as an inert commit,
-    // but we don't want it to show up as SAME_ENTRY.
+    // but we don't want it to show up as EXISTING_ENTRY.
     FrameNavigateParamsCapturer capturer(root);
     NavigateFrameToURL(root, GURL());
     capturer.Wait();
@@ -7621,12 +7622,12 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_EQ(0U, root->child_count());
 }
 
-// Test that navigations classified as SAME_ENTRY properly update all the
-// members of FrameNavigationEntry. If not, it is possible to get a mismatch
-// between the origin and URL of a document as seen in
-// https://crbug.com/630103.
+// Test that converted reload navigations classified as EXISTING_ENTRY properly
+// update all the members of FrameNavigationEntry if they redirect. If not, it
+// is possible to get a mismatch between the origin and URL of a document as
+// seen in https://crbug.com/630103.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
-                       EnsureSamePageNavigationUpdatesFrameNavigationEntry) {
+                       EnsureSameURLNavigationUpdatesFrameNavigationEntry) {
   WebContentsImpl* web_contents =
       static_cast<WebContentsImpl*>(shell()->web_contents());
   FrameTreeNode* root = web_contents->GetFrameTree()->root();
@@ -7661,8 +7662,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     observer.Wait();
   }
 
-  // Prior to fixing the issue, the above omnibox navigation (which is
-  // classified as SAME_ENTRY) was leaving the FrameNavigationEntry with the
+  // Prior to fixing the issue, the above omnibox navigation (which is now
+  // classified as EXISTING_ENTRY) was leaving the FrameNavigationEntry with the
   // same document sequence number as the previous entry but updates the URL.
   // Doing a back session history navigation now will cause the browser to
   // consider it as same document because of this matching document sequence

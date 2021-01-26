@@ -1153,10 +1153,6 @@ bool NavigationControllerImpl::RendererDidNavigate(
                                          was_restored, navigation_request,
                                          keep_pending_entry);
       break;
-    case NAVIGATION_TYPE_SAME_ENTRY:
-      RendererDidNavigateToSameEntry(rfh, params, details->is_same_document,
-                                     navigation_request);
-      break;
     case NAVIGATION_TYPE_NEW_SUBFRAME:
       RendererDidNavigateNewSubframe(
           rfh, params, details->is_same_document, details->did_replace_entry,
@@ -1370,22 +1366,22 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
       // didn't do a new navigation (params.did_create_new_entry). First check
       // to make sure Blink didn't treat a new cross-process navigation as
       // inert, and thus set params.did_create_new_entry to false. In that case,
-      // we must treat it as NEW since the SiteInstance doesn't match the entry.
+      // we must treat it as NEW rather than the converted reload case below,
+      // since the new SiteInstance doesn't match the last committed entry.
       if (!GetLastCommittedEntry() ||
           GetLastCommittedEntry()->site_instance() != rfh->GetSiteInstance()) {
-        trace_return.set_return_reason("no pending, new entry");
+        trace_return.set_return_reason("new pending, new entry");
         return NAVIGATION_TYPE_NEW_ENTRY;
       }
 
       // Otherwise, this happens when you press enter in the URL bar to reload.
-      // We will create a pending entry, but Blink will convert it to a reload
-      // since it's the same page and not create a new entry for it (the user
-      // doesn't want to have a new back/forward entry when they do this).
-      // Therefore we want to just ignore the pending entry and go back to where
-      // we were (the "existing entry").
-      // TODO(creis,avi): Eliminate SAME_ENTRY in https://crbug.com/536102.
-      trace_return.set_return_reason("no pending, same entry");
-      return NAVIGATION_TYPE_SAME_ENTRY;
+      // We will create a pending entry, but NavigateWithoutEntry will convert
+      // it to a reload since it's the same page and not create a new entry for
+      // it. (The user doesn't want to have a new back/forward entry when they
+      // do this.) Therefore we want to just ignore the pending entry and go
+      // back to where we were (the "existing entry").
+      trace_return.set_return_reason("new pending, existing (same) entry");
+      return NAVIGATION_TYPE_EXISTING_ENTRY;
     }
   }
 
@@ -1400,7 +1396,7 @@ NavigationType NavigationControllerImpl::ClassifyNavigation(
     // This was intended to be a navigation to a new entry but the pending entry
     // got cleared in the meanwhile. Classify as EXISTING_ENTRY because we may
     // or may not have a pending entry.
-    trace_return.set_return_reason("indented as new entry, existing entry");
+    trace_return.set_return_reason("intended as new entry, existing entry");
     return NAVIGATION_TYPE_EXISTING_ENTRY;
   }
 
@@ -1644,19 +1640,50 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
   // We should only get here for main frame navigations.
   DCHECK(!rfh->GetParent());
 
-  NavigationEntryImpl* entry;
+  NavigationEntryImpl* entry = nullptr;
   if (params.intended_as_new_entry) {
-    // This was intended as a new entry but the pending entry was lost in the
-    // meanwhile and no new entry was created. We are stuck at the last
-    // committed entry.
+    // We're guaranteed to have a last committed entry if intended_as_new_entry
+    // is true.
     entry = GetLastCommittedEntry();
-    // If this is a same document navigation, then there's no SSLStatus in the
+    DCHECK(entry);
+
+    // If the NavigationRequest matches a new pending entry and is classified as
+    // EXISTING_ENTRY, then it is a navigation to the same URL that was
+    // converted to a reload, such as a user pressing enter in the omnibox.
+    if (pending_entry_ && pending_entry_index_ == -1 &&
+        pending_entry_->GetUniqueID() ==
+            request->commit_params().nav_entry_id) {
+      // Note: The pending entry will usually have a real ReloadType here, but
+      // it can still be ReloadType::NONE in cases that
+      // ShouldTreatNavigationAsReload returns false (e.g., POST, view-source).
+
+      // If we classified this correctly, the SiteInstance should not have
+      // changed.
+      CHECK_EQ(entry->site_instance(), rfh->GetSiteInstance());
+
+      // For converted reloads, we assign the entry's unique ID to be that of
+      // the new one. Since this is always the result of a user action, we want
+      // to dismiss infobars, etc. like a regular user-initiated navigation.
+      entry->set_unique_id(pending_entry_->GetUniqueID());
+
+      // The extra headers may have changed due to reloading with different
+      // headers.
+      entry->set_extra_headers(pending_entry_->extra_headers());
+    }
+    // Otherwise, this was intended as a new entry but the pending entry was
+    // lost in the meantime and no new entry was created. We are stuck at the
+    // last committed entry.
+
+    // Even if this is a converted reload from pressing enter in the omnibox,
+    // the server could redirect, requiring an update to the SSL status. If this
+    // is a same document navigation, though, there's no SSLStatus in the
     // NavigationRequest so don't overwrite the existing entry's SSLStatus.
-    if (!is_same_document)
+    if (!is_same_document) {
       entry->GetSSL() =
           SSLStatus(request->GetSSLInfo().value_or(net::SSLInfo()));
+    }
 
-    if (params.url.SchemeIs(url::kHttpsScheme) && !rfh->GetParent() &&
+    if (params.url.SchemeIs(url::kHttpsScheme) &&
         request->GetNetErrorCode() == net::OK) {
       bool has_cert = !!entry->GetSSL().certificate;
       if (is_same_document) {
@@ -1809,71 +1836,6 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
 
   // Update the last committed index to reflect the committed entry.
   last_committed_entry_index_ = GetIndexOfEntry(entry);
-}
-
-void NavigationControllerImpl::RendererDidNavigateToSameEntry(
-    RenderFrameHostImpl* rfh,
-    const mojom::DidCommitProvisionalLoadParams& params,
-    bool is_same_document,
-    NavigationRequest* request) {
-  // This classification says that we have a pending entry that's the same as
-  // the last committed entry. This entry is guaranteed to exist by
-  // ClassifyNavigation. All we need to do is update the existing entry.
-  NavigationEntryImpl* existing_entry = GetLastCommittedEntry();
-
-  // If we classified this correctly, the SiteInstance should not have changed.
-  CHECK_EQ(existing_entry->site_instance(), rfh->GetSiteInstance());
-
-  // We assign the entry's unique ID to be that of the new one. Since this is
-  // always the result of a user action, we want to dismiss infobars, etc. like
-  // a regular user-initiated navigation.
-  DCHECK_EQ(pending_entry_->GetUniqueID(),
-            request->commit_params().nav_entry_id);
-  existing_entry->set_unique_id(pending_entry_->GetUniqueID());
-
-  // The URL may have changed due to redirects.
-  existing_entry->set_page_type(params.url_is_unreachable ? PAGE_TYPE_ERROR
-                                                          : PAGE_TYPE_NORMAL);
-  if (existing_entry->update_virtual_url_with_url())
-    UpdateVirtualURLToURL(existing_entry, params.url);
-  existing_entry->SetURL(params.url);
-
-  // If a user presses enter in the omnibox and the server redirects, the URL
-  // might change (but it's still considered a SAME_ENTRY navigation), so we
-  // must update the SSL status if we perform a network request (e.g. a
-  // non-same-document navigation). Requests that don't result in a network
-  // request do not have a valid SSL status, but since the document didn't
-  // change, the previous SSLStatus is still valid.
-  if (!is_same_document)
-    existing_entry->GetSSL() =
-        SSLStatus(request->GetSSLInfo().value_or(net::SSLInfo()));
-
-  if (existing_entry->GetURL().SchemeIs(url::kHttpsScheme) &&
-      !rfh->GetParent() && request->GetNetErrorCode() == net::OK) {
-    UMA_HISTOGRAM_BOOLEAN("Navigation.SecureSchemeHasSSLStatus.SamePage",
-                          !!existing_entry->GetSSL().certificate);
-  }
-
-  // The extra headers may have changed due to reloading with different headers.
-  existing_entry->set_extra_headers(pending_entry_->extra_headers());
-
-  // Update the existing FrameNavigationEntry to ensure all of its members
-  // reflect the parameters coming from the renderer process.
-  const base::Optional<url::Origin>& initiator_origin =
-      request->common_params().initiator_origin;
-  existing_entry->AddOrUpdateFrameEntry(
-      rfh->frame_tree_node(), params.item_sequence_number,
-      params.document_sequence_number, rfh->GetSiteInstance(), nullptr,
-      params.url, GetCommittedOriginForFrameEntry(params),
-      Referrer(*params.referrer), initiator_origin, params.redirects,
-      params.page_state, params.method, params.post_id,
-      nullptr /* blob_url_loader_factory */,
-      request->web_bundle_navigation_info()
-          ? request->web_bundle_navigation_info()->Clone()
-          : nullptr,
-      ComputeDocumentPoliciesForFrameEntry(rfh, is_same_document, request));
-
-  DiscardNonCommittedEntries();
 }
 
 void NavigationControllerImpl::RendererDidNavigateNewSubframe(
@@ -3262,8 +3224,8 @@ NavigationControllerImpl::CreateNavigationEntryFromLoadParams(
         params.redirect_chain, blink::PageState(), "GET", -1,
         blob_url_loader_factory, nullptr /* web_bundle_navigation_info */,
         // If in NavigateWithoutEntry we later determine that this navigation is
-        // a SAME_ENTRY conversion of a new navigation into a reload, we will
-        // set the right document policies there.
+        // a conversion of a new navigation into a reload, we will set the right
+        // document policies there.
         nullptr /* document_policies */);
   } else {
     // Otherwise, create a pending entry for the main frame.

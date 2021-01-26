@@ -530,8 +530,9 @@ TEST_F(WebOTPServiceTest, RecordMetricsForSamePage) {
 
   reload.Run();
 
-  ExpectDestroyedReasonCount(WebOTPServiceDestroyedReason::kNavigateSamePage,
-                             1);
+  // Such converted reloads are classified as NAVIGATION_TYPE_EXISTING_ENTRY.
+  ExpectDestroyedReasonCount(
+      WebOTPServiceDestroyedReason::kNavigateExistingPage, 1);
 }
 
 // Following tests exercise parts of sms service logic that depend on user

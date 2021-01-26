@@ -20,13 +20,10 @@ enum NavigationType {
   NAVIGATION_TYPE_NEW_ENTRY,
 
   // Navigating to an existing navigation entry. This is the case for session
-  // history navigations, reloads, and history.replaceState().
+  // history navigations, reloads, and history.replaceState(). It also includes
+  // reloads as a result of the user requesting a navigation to the same URL
+  // (e.g., pressing Enter in the URL bar).
   NAVIGATION_TYPE_EXISTING_ENTRY,
-
-  // The same entry has been reloaded as a result of the user requesting
-  // navigation to that same page (like pressing Enter in the URL bar). There
-  // will be a pending entry for the load, which is unused.
-  NAVIGATION_TYPE_SAME_ENTRY,
 
   // A new subframe was manually navigated by the user. We will create a new
   // NavigationEntry so they can go back to the previous subframe content

@@ -7,14 +7,16 @@
 
 namespace blink {
 
-// This enum describes the reason for desruction of the WebOTPService.
+// This enum describes the reason for destruction of the WebOTPService.
 enum class WebOTPServiceDestroyedReason {
   // Don't change the meaning of these values because they are being recorded
   // in a metric.
   kNavigateNewPage = 0,
   kNavigateExistingPage = 1,
-  kNavigateSamePage = 2,
-  kMaxValue = kNavigateSamePage
+  // As of M90, kNavigateSamePage is no longer reported, and such "load the same
+  // URL" cases are reported in the kNavigateExistingPage group instead.
+  kNavigateSamePage_DEPRECATED = 2,
+  kMaxValue = kNavigateSamePage_DEPRECATED
 };
 
 }  // namespace blink

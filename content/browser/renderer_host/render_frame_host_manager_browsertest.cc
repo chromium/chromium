@@ -6874,10 +6874,9 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteCoopTest,
             site_instance_2_history_nav->GetProcess());
 }
 
-// If the navigation is classified as NAVIGATION_TYPE_SAME_ENTRY, or is a same
-// document navigation, we should not do a proactive BrowsingInstance swap.
-// TODO(crbug.com/536102): NAVIGATION_TYPE_SAME_ENTRY will be removed in the
-// future, so we should update this test.
+// If the navigation is same-document or ends up using the same NavigationEntry
+// (e.g., enter in omnibox converted to a reload), we should not do a proactive
+// BrowsingInstance swap.
 IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
                        SameEntryAndSameDocumentNavigationDoesNotSwap) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -6892,7 +6891,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
           web_contents->GetMainFrame()->GetSiteInstance());
 
   // 2) Navigate from title1.html#foo to title1.html.
-  // This is a different-document, same-entry navigation.
+  // This is a same-document, different-entry navigation.
   EXPECT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   scoped_refptr<SiteInstanceImpl> site_instance_2 =
@@ -6925,7 +6924,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   EXPECT_EQ(site_instance_3, site_instance_4);
 
   // 5) Navigate from title1.html#foo to title1.html#foo.
-  // This is a different-document, same page navigation.
+  // This is a different-document, same-entry navigation.
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL("/title1.html#foo")));
   scoped_refptr<SiteInstanceImpl> site_instance_5 =
@@ -6947,7 +6946,7 @@ IN_PROC_BROWSER_TEST_P(ProactivelySwapBrowsingInstancesSameSiteTest,
   EXPECT_EQ(site_instance_5, site_instance_6);
 
   // 7) Do a history navigation from title1.html#bar to title1.html#foo.
-  // This is a different-document, same-entry history navigation.
+  // This is a same-document, different-entry history navigation.
   shell()->web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   scoped_refptr<SiteInstanceImpl> site_instance_7 =

@@ -6191,7 +6191,7 @@ others/histograms.xml -->
   <int value="10" label="Renderer debug URL"/>
   <int value="11" label="Not enabled and not needed for back-forward cache"/>
   <int value="14" label="Same-document navigation"/>
-  <int value="15" label="Same-page navigation"/>
+  <int value="15" label="Same-URL navigation"/>
   <int value="16" label="The current history entry will get replaced"/>
   <int value="17" label="Reload"/>
   <int value="18" label="Guest"/>
@@ -78759,7 +78759,7 @@ others/histograms.xml -->
 <enum name="WebOTPServiceDestroyedReason">
   <int value="0" label="Navigated to new page"/>
   <int value="1" label="Navigated to existing page"/>
-  <int value="2" label="Nagivated to same page"/>
+  <int value="2" label="(Deprecated) Nagivated to same page"/>
 </enum>
 
 <enum name="WebOTPServiceInfobarAction">

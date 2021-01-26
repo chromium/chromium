@@ -1672,7 +1672,8 @@ TEST_F(NavigationControllerTest, Forward_GeneratesNewPage) {
 }
 
 // Two consecutive navigations for the same URL entered in should be considered
-// as SAME_ENTRY navigation even when we are redirected to some other page.
+// as EXISTING_ENTRY reload navigations even when we are redirected to some
+// other page.
 TEST_F(NavigationControllerTest, Redirect) {
   NavigationControllerImpl& controller = controller_impl();
 
@@ -1711,7 +1712,7 @@ TEST_F(NavigationControllerTest, Redirect) {
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
 
-  EXPECT_EQ(NAVIGATION_TYPE_SAME_ENTRY, observer.navigation_type());
+  EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, observer.navigation_type());
   EXPECT_EQ(controller.GetEntryCount(), 1);
   EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
   EXPECT_TRUE(controller.GetLastCommittedEntry());
@@ -1766,7 +1767,7 @@ TEST_F(NavigationControllerTest, PostThenRedirect) {
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
 
-  EXPECT_EQ(NAVIGATION_TYPE_SAME_ENTRY, observer.navigation_type());
+  EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, observer.navigation_type());
   EXPECT_EQ(controller.GetEntryCount(), 1);
   EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
   EXPECT_TRUE(controller.GetLastCommittedEntry());
@@ -1825,7 +1826,7 @@ TEST_F(NavigationControllerTest, ImmediateRedirect) {
 // This test is about what happens in such a race when that pending entry
 // replacement happens. If it happens, and the first load had the same URL as
 // the page before it, we must make sure that the replacement of the pending
-// entry correctly turns a SAME_ENTRY classification into an EXISTING_ENTRY one.
+// entry correctly results in an EXISTING_ENTRY classification.
 //
 // (This is a unit test rather than a browser test because it's not currently
 // possible to force this sequence of events with a browser test.)

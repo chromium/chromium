@@ -517,11 +517,6 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
       bool was_restored,
       NavigationRequest* request,
       bool keep_pending_entry);
-  void RendererDidNavigateToSameEntry(
-      RenderFrameHostImpl* rfh,
-      const mojom::DidCommitProvisionalLoadParams& params,
-      bool is_same_document,
-      NavigationRequest* request);
   void RendererDidNavigateNewSubframe(
       RenderFrameHostImpl* rfh,
       const mojom::DidCommitProvisionalLoadParams& params,

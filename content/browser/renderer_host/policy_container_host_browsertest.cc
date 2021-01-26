@@ -366,8 +366,8 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForMainFrame) {
   ASSERT_EQ(2, controller.GetEntryCount());
   NavigationEntryImpl* entry2 = controller.GetEntryAtIndex(1);
 
-  // Check that RendererDidNavigateToNewPage stored the correct policy container
-  // in the FrameNavigationEntry.
+  // Check that RendererDidNavigateToNewEntry stored the correct policy
+  // container in the FrameNavigationEntry.
   ASSERT_EQ(network::mojom::ReferrerPolicy::kNever, entry2->root_node()
                                                         ->frame_entry.get()
                                                         ->document_policies()
@@ -400,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForMainFrame) {
   ASSERT_EQ(network::mojom::ReferrerPolicy::kNever,
             current_frame_host()->policy_container_host()->referrer_policy());
 
-  // The function RendererDidNavigateToExistingPage should not have changed
+  // The function RendererDidNavigateToExistingEntry should not have changed
   // anything.
   ASSERT_EQ(network::mojom::ReferrerPolicy::kNever, entry3->root_node()
                                                         ->frame_entry.get()
@@ -415,14 +415,14 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForMainFrame) {
   ASSERT_EQ(network::mojom::ReferrerPolicy::kNever,
             current_frame_host()->policy_container_host()->referrer_policy());
 
-  // The function RendererDidNavigateToExistingPage should not have changed
+  // The function RendererDidNavigateToExistingEntry should not have changed
   // anything.
   ASSERT_EQ(network::mojom::ReferrerPolicy::kNever, entry2->root_node()
                                                         ->frame_entry.get()
                                                         ->document_policies()
                                                         ->referrer_policy);
 
-  // Same page navigation.
+  // Same URL navigation, which gets converted to a reload.
   ASSERT_TRUE(NavigateFrameToURL(current_frame_host()->frame_tree_node(),
                                  GURL("about:blank")));
   ASSERT_EQ(network::mojom::ReferrerPolicy::kNever,
@@ -430,8 +430,8 @@ IN_PROC_BROWSER_TEST_F(PolicyContainerHostBrowserTest, HistoryForMainFrame) {
 
   ASSERT_EQ(4, controller.GetEntryCount());
 
-  // Check that after RendererDidNavigateToSamePage the policy container in the
-  // FrameNavigationEntry is still correct.
+  // Check that after RendererDidNavigateToExistingEntry the policy container in
+  // the FrameNavigationEntry is still correct.
   ASSERT_EQ(network::mojom::ReferrerPolicy::kNever, entry2->root_node()
                                                         ->frame_entry.get()
                                                         ->document_policies()

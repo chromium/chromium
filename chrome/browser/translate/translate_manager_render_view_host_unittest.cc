@@ -909,12 +909,12 @@ TEST_F(TranslateManagerRenderViewHostTest, ReloadFromLocationBar) {
       ->SendNavigateWithTransition(pending_id, false, url,
                                    ui::PAGE_TRANSITION_TYPED);
 
-  // Test that we are really getting a same entry navigation, the test would be
-  // useless if it was not the case.
+  // Test that we are really getting a converted reload / existing entry
+  // navigation. The test would be useless if it was not the case.
   const content::LoadCommittedDetails& nav_details =
       nav_observer.load_committed_details();
   EXPECT_TRUE(nav_details.entry != NULL);  // There was a navigation.
-  EXPECT_EQ(content::NAVIGATION_TYPE_SAME_ENTRY, nav_details.type);
+  EXPECT_EQ(content::NAVIGATION_TYPE_EXISTING_ENTRY, nav_details.type);
 
   // The TranslateManager class processes the navigation entry committed
   // notification in a posted task; process that task.

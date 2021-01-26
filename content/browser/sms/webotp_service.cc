@@ -253,9 +253,6 @@ void WebOTPService::NavigationEntryCommitted(
       RecordDestroyedReason(
           WebOTPServiceDestroyedReason::kNavigateExistingPage);
       break;
-    case NavigationType::NAVIGATION_TYPE_SAME_ENTRY:
-      RecordDestroyedReason(WebOTPServiceDestroyedReason::kNavigateSamePage);
-      break;
     default:
       // Ignore cases we don't care about.
       break;

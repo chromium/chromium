@@ -1507,15 +1507,15 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
   if (should_replace_current_entry)
     return ShouldSwapBrowsingInstance::kNo_WillReplaceEntry;
   // Navigations where we will reuse the history entry:
-  // 2) Different-document but same-page navigations. These navigations are
+  // 2) Different-document but same URL navigations. These navigations are
   // not classified as same-document (which got filtered earlier) so they will
-  // use a different document, but they will later on be classified as
-  // SAME_PAGE and will reuse the history entry.
-  // TODO(crbug.com/536102): When the SAME_PAGE navigation type gets removed,
-  // we should remove this part as well.
-  bool is_same_page = current_url.EqualsIgnoringRef(destination_url_info.url);
-  if (is_same_page)
-    return ShouldSwapBrowsingInstance::kNo_SamePageNavigation;
+  // use a different document, but they will reuse the history entry in
+  // RendererDidNavigateToExistingEntry. They will usually be converted to a
+  // reload (and would be handled below), but not always (e.g., POSTs to the
+  // same URL use the same entry but aren't considered reloads).
+  bool is_same_url = current_url.EqualsIgnoringRef(destination_url_info.url);
+  if (is_same_url)
+    return ShouldSwapBrowsingInstance::kNo_SameUrlNavigation;
   // 3) Reloads. Note that most reloads will not actually reach this part, as
   // ShouldSwapBrowsingInstancesForNavigation will return early if the reload
   // has a destination SiteInstance. Reloads that don't have a destination
