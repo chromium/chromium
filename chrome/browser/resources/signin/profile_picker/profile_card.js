@@ -47,17 +47,21 @@ Polymer({
   /** @override */
   attached() {
     this.addNameInputTooltipListeners_();
+    this.addGaiaNameTooltipListeners_();
   },
 
   /** @private */
   addNameInputTooltipListeners_() {
     const showTooltip = () => {
+      const inputElement =
+          /** @type {!HTMLInputElement} */ (this.$.tooltip.target.inputElement);
       // Disable tooltip if the local name editing is in progress.
-      if (this.$.nameInput.hasAttribute('focused_')) {
-        this.$.tooltip.hide();
-      } else {
+      if (this.isNameTruncated_(inputElement) &&
+          !this.$.nameInput.hasAttribute('focused_')) {
         this.$.tooltip.show();
+        return;
       }
+      this.$.tooltip.hide();
     };
     const hideTooltip = () => this.$.tooltip.hide();
     const target = this.$.tooltip.target;
@@ -66,6 +70,34 @@ Polymer({
     target.addEventListener('mouseleave', hideTooltip);
     target.addEventListener('click', hideTooltip);
     this.$.tooltip.addEventListener('mouseenter', hideTooltip);
+  },
+
+  /** @private */
+  addGaiaNameTooltipListeners_() {
+    const showTooltip = () => {
+      if (this.isNameTruncated_(this.$.gaiaName)) {
+        this.$.gaiaNameTooltip.show();
+        return;
+      }
+      this.$.gaiaNameTooltip.hide();
+    };
+    const hideTooltip = () => this.$.gaiaNameTooltip.hide();
+    const target = this.$.gaiaNameTooltip.target;
+    target.addEventListener('mouseenter', showTooltip);
+    target.addEventListener('focus', showTooltip);
+    target.addEventListener('mouseleave', hideTooltip);
+    target.addEventListener('blur', hideTooltip);
+    target.addEventListener('tap', hideTooltip);
+    this.$.gaiaNameTooltip.addEventListener('mouseenter', hideTooltip);
+  },
+
+  /**
+   * @param {!Element} element
+   * @return {boolean}
+   * @private
+   */
+  isNameTruncated_(element) {
+    return !!element && element.scrollWidth > element.offsetWidth;
   },
 
   /** @private */
