@@ -49,7 +49,12 @@ public class LongScreenshotsCompositor {
             String directoryKey, PaintPreviewProto response, Rect rect,
             Callback<Bitmap> bitmapCallback, Callback<Integer> errorCallback) {
         mBitmapCallback = bitmapCallback;
-        mRect = rect;
+
+        // Set the top and left coordinates to 0 because it is relative to the capture and we want
+        // to composite the entire capture.
+        // TODO(tgupta): Change the logic to capture large parts of the webpage and composite
+        // parts of it as needed.
+        mRect = new Rect(0, 0, rect.right, rect.bottom);
         mErrorCallback = errorCallback;
 
         mDelegate = new PlayerCompositorDelegateImpl(nativePaintPreviewServiceProvider, response,

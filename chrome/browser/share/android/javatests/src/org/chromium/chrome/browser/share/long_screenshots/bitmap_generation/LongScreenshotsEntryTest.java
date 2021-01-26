@@ -97,7 +97,7 @@ public class LongScreenshotsEntryTest {
 
     @Test
     public void testSuccessfulEntry() {
-        LongScreenshotsEntry entry = new LongScreenshotsEntry(mContext, mTab, 0, 1000);
+        LongScreenshotsEntry entry = new LongScreenshotsEntry(mContext, mTab, 0, 1000, false);
         TestEntryListener entryListener = new TestEntryListener();
         entry.setListener(entryListener);
 
@@ -112,7 +112,7 @@ public class LongScreenshotsEntryTest {
 
     @Test
     public void testCompositorError() {
-        LongScreenshotsEntry entry = new LongScreenshotsEntry(mContext, mTab, 0, 1000);
+        LongScreenshotsEntry entry = new LongScreenshotsEntry(mContext, mTab, 0, 1000, false);
         TestEntryListener entryListener = new TestEntryListener();
         entry.setListener(entryListener);
 
@@ -132,7 +132,7 @@ public class LongScreenshotsEntryTest {
 
     @Test
     public void testCaptureError() {
-        LongScreenshotsEntry entry = new LongScreenshotsEntry(mContext, mTab, 0, 1000);
+        LongScreenshotsEntry entry = new LongScreenshotsEntry(mContext, mTab, 0, 1000, false);
         TestEntryListener entryListener = new TestEntryListener();
         entry.setListener(entryListener);
 

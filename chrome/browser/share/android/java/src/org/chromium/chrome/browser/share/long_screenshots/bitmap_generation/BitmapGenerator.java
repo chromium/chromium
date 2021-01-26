@@ -69,7 +69,7 @@ public class BitmapGenerator implements LongScreenshotsTabService.CaptureProcess
         mContext = context;
         mTab = tab;
         mGeneratorCallback = callback;
-        mRect = rect;
+        mRect = new Rect(rect.left, rect.top, rect.width(), rect.height());
     }
 
     /**

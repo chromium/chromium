@@ -26,7 +26,6 @@ import java.lang.annotation.RetentionPolicy;
  * <li>3. Tracks the status of the generation.</li>
  * <li>4. Stores the generated bitmap.</li>
  * </ul>
- *
  * Callers of this class should provide a {@link LongScreenshotsEntry.EntryListener} which returns
  * the status of the generation. Upon receiving the BITMAP_GENERATED success code, callers can call
  * {@link getBitmap} to retrieve the generated bitmap.
@@ -50,11 +49,12 @@ public class LongScreenshotsEntry {
         int INSUFFICIENT_MEMORY = 1;
         int GENERATION_ERROR = 2;
         int BITMAP_GENERATED = 3;
+        int IN_PROGRESS = 4;
     }
 
     /**
-     * Users of the {@link LongScreenshotsEntry} class should implement and pass the listener
-     * to the entry to be aware of bitmap generation status updates.
+     * Users of the {@link LongScreenshotsEntry} class should implement and pass the listener to the
+     * entry to be aware of bitmap generation status updates.
      */
     public interface EntryListener {
         /**
@@ -67,13 +67,16 @@ public class LongScreenshotsEntry {
     /**
      * @param context An instance of current Android {@link Context}.
      * @param tab The tab to capture the results for.
-     * @param startYAxis Top coordinate to start capture from.
+     * @param yAxisRef Y-axis reference used to calculate the coordinates of the bitmap to generate.
      * @param clipHeight Height of the capture.
+     * @param generatingAbove Whether to use the yAxisRef as the top (generatingAbove = false) or
+     * bottom yAxis coordinate (generatingAbove = true);
      */
-    public LongScreenshotsEntry(Context context, Tab tab, int startYAxis, int clipHeight) {
+    public LongScreenshotsEntry(
+            Context context, Tab tab, int yAxisRef, int clipHeight, boolean generatingAbove) {
         mContext = context;
         mTab = tab;
-        calculateClipBounds(startYAxis, clipHeight);
+        calculateClipBounds(yAxisRef, clipHeight, generatingAbove);
     }
 
     public void generateBitmap() {
@@ -82,8 +85,14 @@ public class LongScreenshotsEntry {
                     new BitmapGenerator(mContext, mTab, mRect, createBitmapGeneratorCallback());
         }
         mGenerator.captureScreenshot();
+        // We don't call updateStatus here as this is a silent status that should only be
+        // returned if the owner of this class wants to pull for an update.
+        mCurrentStatus = EntryStatus.IN_PROGRESS;
     }
 
+    /**
+     * @param listener listens for the status update.
+     */
     public void setListener(EntryListener listener) {
         mEntryListener = listener;
     }
@@ -95,6 +104,14 @@ public class LongScreenshotsEntry {
      */
     public int getId() {
         return mRect.top;
+    }
+
+    /**
+     * The end Y axis of the composited screenshot. Used to calculate the bounds of other entries.
+     * @return End Y axis of the composited screenshot.
+     */
+    int getEndYAxis() {
+        return mRect.bottom;
     }
 
     private void updateStatus(@EntryStatus int status) {
@@ -124,16 +141,33 @@ public class LongScreenshotsEntry {
      * Defines the bounds of the capture and compositing. Only the starting height and the height of
      * the clip is needed. The entire width is always captured.
      *
-     * @param startYAxis Where on the scrolled page the capture and compositing should start.
+     * @param yAxisRef Where on the scrolled page the capture and compositing should start.
      * @param clipHeight The length of the webpage that should be captured.
+     * @param generatingAbove Whether to use the yAxisRef as the top (generatingAbove = false) or
+     * bottom yAxis coordinate (generatingAbove = true);
      */
-    private void calculateClipBounds(int startYAxis, int clipHeight) {
+    private void calculateClipBounds(int yAxisRef, int clipHeight, boolean generatingAbove) {
         RenderCoordinates coords = RenderCoordinates.fromWebContents(mTab.getWebContents());
 
-        int endYAxis = (int) Math.floor(startYAxis + (clipHeight * coords.getPageScaleFactor()));
-        int endXAxis =
+        int startYAxis;
+        int endYAxis;
+        int clipHeightScaled = (int) (clipHeight * coords.getPageScaleFactor());
+        if (generatingAbove) {
+            endYAxis = yAxisRef;
+            startYAxis = yAxisRef - clipHeightScaled;
+            startYAxis = startYAxis < 0 ? 0 : startYAxis;
+        } else {
+            startYAxis = yAxisRef;
+            // TODO(tgupta): Address the case where the Y axis supersedes the length of the page.
+            endYAxis = startYAxis + clipHeightScaled;
+        }
+
+        int clipWidth =
                 (int) Math.floor(coords.getContentWidthPixInt() / coords.getPageScaleFactor());
-        mRect = new Rect(0, startYAxis, endXAxis, endYAxis);
+
+        // TODO(tgupta) Change the clipWidth to 0 to capture the entire document once cr/2644865
+        // is submitted.
+        mRect = new Rect(0, startYAxis, clipWidth, endYAxis);
     }
 
     @VisibleForTesting

@@ -9,6 +9,7 @@ import android.app.Activity;
 import org.chromium.chrome.browser.paint_preview.PaintPreviewCompositorUtils;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry;
+import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry.EntryStatus;
 import org.chromium.chrome.browser.share.screenshot.ScreenshotCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
@@ -52,10 +53,14 @@ public class LongScreenshotsCoordinator extends ScreenshotCoordinator {
         LongScreenshotsEntry entry = entryManager.generateInitialEntry();
         entry.setListener(new LongScreenshotsEntry.EntryListener() {
             @Override
-            public void onResult(int status) {
-                mScreenshot = entry.getBitmap();
-                mMediator = new LongScreenshotsMediator(mActivity, entryManager);
-                mMediator.showAreaSelectionDialog();
+            public void onResult(@EntryStatus int status) {
+                if (status == EntryStatus.BITMAP_GENERATED) {
+                    mScreenshot = entry.getBitmap();
+                    mMediator = new LongScreenshotsMediator(mActivity, entryManager);
+                    mMediator.showAreaSelectionDialog();
+                } else {
+                    // TODO(tgupta/kmilka): Handle the error case correctly.
+                }
             }
         });
     }
