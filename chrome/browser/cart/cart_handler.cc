@@ -25,7 +25,7 @@ void CartHandler::GetMerchantCarts(GetMerchantCartsCallback callback) {
         base::BindOnce(&CartHandler::GetCartDataCallback,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
-    cart_service_->LoadAllCarts(
+    cart_service_->LoadAllActiveCarts(
         base::BindOnce(&CartHandler::GetCartDataCallback,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -47,16 +47,24 @@ void CartHandler::RestoreRemovedCartModule() {
   cart_service_->RestoreRemoved();
 }
 
-void CartHandler::HideCart(const GURL& cart_url, HideCartCallback callback) {}
+void CartHandler::HideCart(const GURL& cart_url, HideCartCallback callback) {
+  cart_service_->HideCart(cart_url, std::move(callback));
+}
 
 void CartHandler::RestoreHiddenCart(const GURL& cart_url,
-                                    RestoreHiddenCartCallback callback) {}
+                                    RestoreHiddenCartCallback callback) {
+  cart_service_->RestoreHiddenCart(cart_url, std::move(callback));
+}
 
 void CartHandler::RemoveCart(const GURL& cart_url,
-                             RemoveCartCallback callback) {}
+                             RemoveCartCallback callback) {
+  cart_service_->RemoveCart(cart_url, std::move(callback));
+}
 
 void CartHandler::RestoreRemovedCart(const GURL& cart_url,
-                                     RestoreRemovedCartCallback callback) {}
+                                     RestoreRemovedCartCallback callback) {
+  cart_service_->RestoreRemovedCart(cart_url, std::move(callback));
+}
 
 void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
                                       bool success,

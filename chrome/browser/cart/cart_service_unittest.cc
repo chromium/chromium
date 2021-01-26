@@ -23,10 +23,10 @@ cart_db::ChromeCartContentProto BuildProto(const char* domain,
 }
 
 constexpr char kFakeDataPrefix[] = "Fake:";
-const char kMockMerchantA[] = "A_merchant";
-const char kMockMerchantURLA[] = "www.foo.com";
-const char kMockMerchantB[] = "B_merchant";
-const char kMockMerchantURLB[] = "www.bar.com";
+const char kMockMerchantA[] = "foo.com";
+const char kMockMerchantURLA[] = "https://www.foo.com";
+const char kMockMerchantB[] = "bar.com";
+const char kMockMerchantURLB[] = "https://www.bar.com";
 const cart_db::ChromeCartContentProto kMockProtoA =
     BuildProto(kMockMerchantA, kMockMerchantURLA);
 const cart_db::ChromeCartContentProto kMockProtoB =
@@ -36,8 +36,10 @@ const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
 const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
     kExpectedB = {{kMockMerchantB, kMockProtoB}};
 const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
-    kExpectedAB = {{kMockMerchantA, kMockProtoA},
-                   {kMockMerchantB, kMockProtoB}};
+    kExpectedAB = {
+        {kMockMerchantB, kMockProtoB},
+        {kMockMerchantA, kMockProtoA},
+};
 const std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
     kEmptyExpected = {};
 }  // namespace
@@ -86,6 +88,28 @@ class CartServiceTest : public testing::Test {
     for (CartDB::KeyAndValue proto_pair : found) {
       EXPECT_EQ(proto_pair.second.key().rfind(kFakeDataPrefix, 0), 0U);
     }
+    std::move(closure).Run();
+  }
+
+  void GetEvaluationCartHiddenStatus(
+      base::OnceClosure closure,
+      bool isHidden,
+      bool result,
+      std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
+          found) {
+    EXPECT_EQ(1U, found.size());
+    EXPECT_EQ(isHidden, found[0].second.is_hidden());
+    std::move(closure).Run();
+  }
+
+  void GetEvaluationCartRemovedStatus(
+      base::OnceClosure closure,
+      bool isRemoved,
+      bool result,
+      std::vector<ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
+          found) {
+    EXPECT_EQ(1U, found.size());
+    EXPECT_EQ(isRemoved, found[0].second.is_removed());
     std::move(closure).Run();
   }
 
@@ -190,17 +214,17 @@ TEST_F(CartServiceTest, TestLoadCart) {
   run_loop[2].Run();
 }
 
-// Tests loading all carts from the service.
-TEST_F(CartServiceTest, TestLoadAllCarts) {
+// Tests loading all active carts from the service.
+TEST_F(CartServiceTest, TestLoadAllActiveCarts) {
   CartDB* cart_db_ = service_->GetDB();
-  base::RunLoop run_loop[4];
+  base::RunLoop run_loop[8];
   cart_db_->AddCart(
       kMockMerchantA, kMockProtoA,
       base::BindOnce(&CartServiceTest::OperationEvaluation,
                      base::Unretained(this), run_loop[0].QuitClosure(), true));
   run_loop[0].Run();
 
-  service_->LoadAllCarts(base::BindOnce(
+  service_->LoadAllActiveCarts(base::BindOnce(
       &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
       run_loop[1].QuitClosure(), kExpectedA));
   run_loop[1].Run();
@@ -211,10 +235,32 @@ TEST_F(CartServiceTest, TestLoadAllCarts) {
                      base::Unretained(this), run_loop[2].QuitClosure(), true));
   run_loop[2].Run();
 
-  service_->LoadAllCarts(base::BindOnce(
+  service_->LoadAllActiveCarts(base::BindOnce(
       &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
       run_loop[3].QuitClosure(), kExpectedAB));
   run_loop[3].Run();
+
+  service_->HideCart(
+      GURL(kMockMerchantURLB),
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[4].QuitClosure(), true));
+  run_loop[4].Run();
+
+  service_->LoadAllActiveCarts(base::BindOnce(
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
+      run_loop[5].QuitClosure(), kExpectedA));
+  run_loop[5].Run();
+
+  service_->RemoveCart(
+      GURL(kMockMerchantURLA),
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[6].QuitClosure(), true));
+  run_loop[6].Run();
+
+  service_->LoadAllActiveCarts(base::BindOnce(
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
+      run_loop[7].QuitClosure(), kEmptyExpected));
+  run_loop[7].Run();
 }
 
 // Verifies the database is cleared when detected history deletion.
@@ -269,4 +315,121 @@ TEST_F(CartServiceTest, TestFakeData) {
       &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
       run_loop[1].QuitClosure(), kEmptyExpected));
   run_loop[1].Run();
+}
+
+// Tests hiding a single cart and undoing the hide.
+TEST_F(CartServiceTest, TestHideCart) {
+  CartDB* cart_db_ = service_->GetDB();
+  base::RunLoop run_loop[6];
+  cart_db_->AddCart(
+      kMockMerchantA, kMockProtoA,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  service_->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationCartHiddenStatus,
+                     base::Unretained(this), run_loop[1].QuitClosure(), false));
+  run_loop[1].Run();
+
+  service_->HideCart(
+      GURL(kMockMerchantURLA),
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[2].QuitClosure(), true));
+  run_loop[2].Run();
+
+  service_->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationCartHiddenStatus,
+                     base::Unretained(this), run_loop[3].QuitClosure(), true));
+  run_loop[3].Run();
+
+  service_->RestoreHiddenCart(
+      GURL(kMockMerchantURLA),
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[4].QuitClosure(), true));
+  run_loop[4].Run();
+
+  service_->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationCartHiddenStatus,
+                     base::Unretained(this), run_loop[5].QuitClosure(), false));
+  run_loop[5].Run();
+}
+
+// Tests removing a single cart and undoing the remove.
+TEST_F(CartServiceTest, TestRemoveCart) {
+  CartDB* cart_db_ = service_->GetDB();
+  base::RunLoop run_loop[6];
+  cart_db_->AddCart(
+      kMockMerchantA, kMockProtoA,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  service_->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationCartRemovedStatus,
+                     base::Unretained(this), run_loop[1].QuitClosure(), false));
+  run_loop[1].Run();
+
+  service_->RemoveCart(
+      GURL(kMockMerchantURLA),
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[2].QuitClosure(), true));
+  run_loop[2].Run();
+
+  service_->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationCartRemovedStatus,
+                     base::Unretained(this), run_loop[3].QuitClosure(), true));
+  run_loop[3].Run();
+
+  service_->RestoreRemovedCart(
+      GURL(kMockMerchantURLA),
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[4].QuitClosure(), true));
+  run_loop[4].Run();
+
+  service_->LoadCart(
+      kMockMerchantA,
+      base::BindOnce(&CartServiceTest::GetEvaluationCartRemovedStatus,
+                     base::Unretained(this), run_loop[5].QuitClosure(), false));
+  run_loop[5].Run();
+}
+
+// Tests removed cart entries are deleted from database after service shutdown.
+TEST_F(CartServiceTest, TestRemovedCartsDeleted) {
+  CartDB* cart_db_ = service_->GetDB();
+  base::RunLoop run_loop[5];
+  cart_db_->AddCart(
+      kMockMerchantA, kMockProtoA,
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[0].QuitClosure(), true));
+  run_loop[0].Run();
+
+  service_->RemoveCart(
+      GURL(kMockMerchantURLA),
+      base::BindOnce(&CartServiceTest::OperationEvaluation,
+                     base::Unretained(this), run_loop[1].QuitClosure(), true));
+  run_loop[1].Run();
+
+  cart_db_->LoadAllCarts(base::BindOnce(
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
+      run_loop[2].QuitClosure(), kExpectedA));
+  run_loop[2].Run();
+
+  service_->LoadAllActiveCarts(base::BindOnce(
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
+      run_loop[3].QuitClosure(), kEmptyExpected));
+  run_loop[3].Run();
+
+  service_->Shutdown();
+  task_environment_.RunUntilIdle();
+
+  cart_db_->LoadAllCarts(base::BindOnce(
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
+      run_loop[4].QuitClosure(), kEmptyExpected));
+  run_loop[4].Run();
 }

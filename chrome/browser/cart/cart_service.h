@@ -41,8 +41,8 @@ class CartService : public history::HistoryServiceObserver,
   CartDB* GetDB();
   // Load the cart for a domain.
   void LoadCart(const std::string& domain, CartDB::LoadCallback callback);
-  // Load all carts in this service.
-  void LoadAllCarts(CartDB::LoadCallback callback);
+  // Load all active carts in this service.
+  void LoadAllActiveCarts(CartDB::LoadCallback callback);
   // Add a cart to the cart service.
   void AddCart(const std::string& domain,
                const cart_db::ChromeCartContentProto& proto);
@@ -50,6 +50,16 @@ class CartService : public history::HistoryServiceObserver,
   void DeleteCart(const std::string& domain);
   // Only load carts with fake data in the database.
   void LoadCartsWithFakeData(CartDB::LoadCallback callback);
+  // Gets called when a single cart in module is temporarily hidden.
+  void HideCart(const GURL& cart_url, CartDB::OperationCallback callback);
+  // Gets called when restoring the temporarily hidden single cart.
+  void RestoreHiddenCart(const GURL& cart_url,
+                         CartDB::OperationCallback callback);
+  // Gets called when a single cart in module is permanently removed.
+  void RemoveCart(const GURL& cart_url, CartDB::OperationCallback callback);
+  // Gets called when restoring the permanently removed single cart.
+  void RestoreRemovedCart(const GURL& cart_url,
+                          CartDB::OperationCallback callback);
   // history::HistoryServiceObserver:
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
@@ -64,10 +74,31 @@ class CartService : public history::HistoryServiceObserver,
   explicit CartService(Profile* profile);
   // Callback when a database operation (e.g. insert or delete) is finished.
   void OnOperationFinished(bool success);
+  // Callback when a database operation (e.g. insert or delete) is finished.
+  // A callback will be passed in to notify whether the operation is successful.
+  void OnOperationFinishedWithCallback(CartDB::OperationCallback callback,
+                                       bool success);
   // Add carts with fake data to database.
   void AddCartsWithFakeData();
   // Delete carts with fake data from database.
   void DeleteCartsWithFakeData();
+  // Delete carts that are removed from database.
+  void DeleteRemovedCarts(bool success,
+                          std::vector<CartDB::KeyAndValue> proto_pairs);
+  // A callback to filter out inactive carts for cart data loading.
+  void onLoadCarts(CartDB::LoadCallback callback,
+                   bool success,
+                   std::vector<CartDB::KeyAndValue> proto_pairs);
+  // A callback to set the hidden status of a cart.
+  void SetCartHiddenStatus(bool isHidden,
+                           CartDB::OperationCallback callback,
+                           bool success,
+                           std::vector<CartDB::KeyAndValue> proto_pairs);
+  // A callback to set the removed status of a cart.
+  void SetCartRemovedStatus(bool isRemoved,
+                            CartDB::OperationCallback callback,
+                            bool success,
+                            std::vector<CartDB::KeyAndValue> proto_pairs);
 
   Profile* profile_;
   std::unique_ptr<CartDB> cart_db_;
