@@ -43,12 +43,15 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.CleanExitBeaconConsistency" enum="UmaCleanExitConsistency"
-    expires_after="M85">
+    expires_after="2021-07-22">
   <owner>asvitkine@chromium.org</owner>
+  <owner>justincohen@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
   <summary>
     Reports the combined state of distinct clean exit beacons stored in Local
-    State and the Windows registry. They are normally expected to be identical.
+    State and the Windows registry (or NSUserDefaults on iOS). They are normally
+    expected to be identical.
   </summary>
 </histogram>
 
