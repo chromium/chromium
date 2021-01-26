@@ -14,7 +14,7 @@ vars = {
   #
 
   # GN CIPD package version.
-  'gn_version': 'git_revision:d62642c920e6a0d1756316d225a90fd6faa9e21e',
+  'gn_version': 'git_revision:55ad154c961d8326315b1c8147f4e504cd95e9e6',
 
   # By default, do not checkout the re-client binaries.
   'checkout_reclient': False,
