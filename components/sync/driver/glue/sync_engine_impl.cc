@@ -309,13 +309,13 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
   // Initialize active devices count.
   OnActiveDevicesChanged();
 
-  host_->OnEngineInitialized(initial_types, js_backend, debug_info_listener,
-                             birthday, bag_of_chips, /*success=*/true);
+  host_->OnEngineInitialized(js_backend, debug_info_listener, birthday,
+                             bag_of_chips, /*success=*/true);
 }
 
 void SyncEngineImpl::HandleInitializationFailureOnFrontendLoop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  host_->OnEngineInitialized(ModelTypeSet(), WeakHandle<JsBackend>(),
+  host_->OnEngineInitialized(WeakHandle<JsBackend>(),
                              WeakHandle<DataTypeDebugInfoListener>(),
                              /*birthday=*/"", /*bag_of_chips=*/"",
                              /*success=*/false);

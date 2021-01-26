@@ -220,10 +220,10 @@ class SyncDataTypeManagerImplTest : public testing::Test {
  protected:
   void SetUp() override { RecreateDataTypeManager(); }
 
-  void RecreateDataTypeManager(ModelTypeSet initial_types = ModelTypeSet()) {
+  void RecreateDataTypeManager() {
     dtm_ = std::make_unique<DataTypeManagerImpl>(
-        initial_types, MakeWeakHandle(debug_info_listener_.AsWeakPtr()),
-        &controllers_, &encryption_handler_, &configurer_, &observer_);
+        MakeWeakHandle(debug_info_listener_.AsWeakPtr()), &controllers_,
+        &encryption_handler_, &configurer_, &observer_);
   }
 
   void SetConfigureStartExpectation() { observer_.ExpectStart(); }
@@ -1278,9 +1278,8 @@ TEST_F(SyncDataTypeManagerImplTest, ErrorBeforeStartup) {
 
 // Test that sync configures properly if all types are ready.
 TEST_F(SyncDataTypeManagerImplTest, AllTypesReady) {
-  // Mark PRIORITY_PREFERENCES and BOOKMARKS as already downloaded.
-  RecreateDataTypeManager(/*initial_types=*/{PRIORITY_PREFERENCES, BOOKMARKS});
-
+  // TODO(crbug.com/1170318): Mark PRIORITY_PREFERENCES and BOOKMARKS as already
+  // downloaded.
   AddController(PRIORITY_PREFERENCES);
   AddController(BOOKMARKS);
 

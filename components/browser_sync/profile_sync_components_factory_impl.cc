@@ -399,16 +399,15 @@ ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers(
 
 std::unique_ptr<DataTypeManager>
 ProfileSyncComponentsFactoryImpl::CreateDataTypeManager(
-    syncer::ModelTypeSet initial_types,
     const syncer::WeakHandle<syncer::DataTypeDebugInfoListener>&
         debug_info_listener,
     const DataTypeController::TypeMap* controllers,
     const syncer::DataTypeEncryptionHandler* encryption_handler,
     syncer::ModelTypeConfigurer* configurer,
     DataTypeManagerObserver* observer) {
-  return std::make_unique<DataTypeManagerImpl>(
-      initial_types, debug_info_listener, controllers, encryption_handler,
-      configurer, observer);
+  return std::make_unique<DataTypeManagerImpl>(debug_info_listener, controllers,
+                                               encryption_handler, configurer,
+                                               observer);
 }
 
 std::unique_ptr<syncer::SyncEngine>

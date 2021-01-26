@@ -35,7 +35,6 @@ class SyncEngineHost {
   // initialized only if |success| is true.
 
   virtual void OnEngineInitialized(
-      ModelTypeSet initial_types,
       const WeakHandle<JsBackend>& js_backend,
       const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
       const std::string& birthday,

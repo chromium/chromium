@@ -25,8 +25,7 @@ class SyncApiComponentFactoryMock : public SyncApiComponentFactory {
   ~SyncApiComponentFactoryMock() override;
   MOCK_METHOD(std::unique_ptr<DataTypeManager>,
               CreateDataTypeManager,
-              (ModelTypeSet,
-               const WeakHandle<DataTypeDebugInfoListener>&,
+              (const WeakHandle<DataTypeDebugInfoListener>&,
                const DataTypeController::TypeMap*,
                const DataTypeEncryptionHandler*,
                ModelTypeConfigurer*,

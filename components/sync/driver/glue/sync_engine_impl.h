@@ -107,9 +107,8 @@ class SyncEngineImpl : public SyncEngine,
   // InvalidationsListener implementation.
   void OnInvalidationReceived(const std::string& payload) override;
 
- protected:
-  // The types and functions below are protected so that test
-  // subclasses can use them.
+ private:
+  friend class SyncEngineBackend;
 
   // Called when the syncer has finished performing a configuration.
   void FinishConfigureDataTypesOnFrontendLoop(
@@ -142,9 +141,6 @@ class SyncEngineImpl : public SyncEngine,
       const std::map<ModelType, int64_t>& invalidation_versions);
 
   void HandleSyncStatusChanged(const SyncStatus& status);
-
- private:
-  friend class SyncEngineBackend;
 
   // Handles backend initialization failure.
   void HandleInitializationFailureOnFrontendLoop();

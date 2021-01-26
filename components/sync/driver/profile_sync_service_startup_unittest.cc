@@ -719,7 +719,7 @@ TEST_F(ProfileSyncServiceStartupTest, FullStartupSequenceFirstTime) {
   // for the user to finish the initial configuration (choosing data types etc.)
   // before actually syncing data.
   ON_CALL(*sync_engine, IsInitialized()).WillByDefault(Return(true));
-  sync_service()->OnEngineInitialized(ModelTypeSet(), WeakHandle<JsBackend>(),
+  sync_service()->OnEngineInitialized(WeakHandle<JsBackend>(),
                                       WeakHandle<DataTypeDebugInfoListener>(),
                                       "test-birthday", "test-bag-of-chips",
                                       /*success=*/true);
@@ -800,7 +800,7 @@ TEST_F(ProfileSyncServiceStartupTest, FullStartupSequenceNthTime) {
   // will get configured, since initial setup is already done.
   EXPECT_CALL(*data_type_manager, Configure);
   ON_CALL(*sync_engine, IsInitialized()).WillByDefault(Return(true));
-  sync_service()->OnEngineInitialized(ModelTypeSet(), WeakHandle<JsBackend>(),
+  sync_service()->OnEngineInitialized(WeakHandle<JsBackend>(),
                                       WeakHandle<DataTypeDebugInfoListener>(),
                                       "test-birthday", "test-bag-of-chips",
                                       /*success=*/true);
