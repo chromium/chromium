@@ -124,14 +124,9 @@
         margin-block-end: 12px;
       }
 
-      #zeroStateInfoContainer {
-        align-items: center;
-        display: flex;
-      }
-
-      #zeroStateIcon {
-        color: var(--cr-secondary-text-color);
-        margin-inline-end: 8px;
+      #zeroStateHelpLink {
+        color: var(--google-blue-600);
+        text-decoration: none;
       }
 
       #contactsPending {
@@ -168,6 +163,7 @@
         display: flex;
         font-size: 11px;
         margin-block-end: 8px;
+        margin-inline-end: 12px;
       }
 
       .padded-icon {
@@ -291,16 +287,8 @@
             </iron-icon>
           </div>
           <div id="zeroStateTextContainer">
-            <div id="zeroStateText" class="cr-title-text">
-              $i18n{nearbyShareContactVisibilityZeroStateText}
-            </div>
-            <div id="zeroStateInfoContainer">
-              <iron-icon id="zeroStateIcon" icon="cr:info"></iron-icon>
-              <div class="cr-secondary-text">
-                <a href="$i18n{nearbyShareLearnMoreLink}" target="_blank">
-                  $i18n{nearbyShareContactVisibilityZeroStateInfo}
-                </a>
-              </div>
+            <div id="zeroStateText" class="cr-title-text"
+                inner-h-t-m-l="[[getAriaLabelledZeroStateText_()]]">
             </div>
           </div>
         </div>

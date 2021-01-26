@@ -413,7 +413,7 @@ Polymer({
    * and should be generalized in the future. We do this here because the div
    * doesn't exist when the dialog loads, only once the template is added to the
    * DOM.
-   * TODO(crbug.com/1154718): Extract this logic into a general method.
+   * TODO(crbug.com/1170849): Extract this logic into a general method.
    *
    * @private
    */
@@ -470,6 +470,67 @@ Polymer({
       event.preventDefault();
       this.downloadContacts_();
     });
+  },
+
+  /**
+   * Builds the html for the zero state help text, applying the appropriate aria
+   * labels, and setting the href of the link. This function is largely copied
+   * from getAriaLabelledContent_ in <settings-localized-link>, which can't be
+   * used directly because this is Polymer element is used outside settings.
+   * TODO(crbug.com/1170849): Extract this logic into a general method.
+   * @return {string}
+   * @private
+   */
+  getAriaLabelledZeroStateText_() {
+    const tempEl = document.createElement('div');
+    const localizedString =
+        this.i18nAdvanced('nearbyShareContactVisibilityZeroStateText');
+    const linkUrl = this.i18n('nearbyShareLearnMoreLink');
+    tempEl.innerHTML = localizedString;
+
+    const ariaLabelledByIds = [];
+    tempEl.childNodes.forEach((node, index) => {
+      // Text nodes should be aria-hidden and associated with an element id
+      // that the anchor element can be aria-labelledby.
+      if (node.nodeType == Node.TEXT_NODE) {
+        const spanNode = document.createElement('span');
+        spanNode.textContent = node.textContent;
+        spanNode.id = `zeroStateText${index}`;
+        ariaLabelledByIds.push(spanNode.id);
+        spanNode.setAttribute('aria-hidden', true);
+        node.replaceWith(spanNode);
+        return;
+      }
+      // The single element node with anchor tags should also be aria-labelledby
+      // itself in-order with respect to the entire string.
+      if (node.nodeType == Node.ELEMENT_NODE && node.nodeName == 'A') {
+        node.id = `zeroStateHelpLink`;
+        ariaLabelledByIds.push(node.id);
+        return;
+      }
+
+      // Only text and <a> nodes are allowed.
+      assertNotReached(
+          'nearbyShareContactVisibilityZeroStateText has invalid node types');
+    });
+
+    const anchorTags = tempEl.getElementsByTagName('a');
+    // In the event the localizedString contains only text nodes, populate the
+    // contents with the localizedString.
+    if (anchorTags.length == 0) {
+      return localizedString;
+    }
+
+    assert(
+        anchorTags.length == 1,
+        'nearbyShareContactVisibilityZeroStateText should contain exactly' +
+            ' one anchor tag');
+    const anchorTag = anchorTags[0];
+    anchorTag.setAttribute('aria-labelledby', ariaLabelledByIds.join(' '));
+    anchorTag.href = linkUrl;
+    anchorTag.target = '_blank';
+
+    return tempEl.innerHTML;
   },
 
   /**

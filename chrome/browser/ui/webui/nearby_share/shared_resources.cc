@@ -54,8 +54,6 @@ void RegisterNearbySharedStrings(content::WebUIDataSource* data_source) {
       {"nearbyShareContactVisibilityUnknown", IDS_NEARBY_VISIBLITY_UNKNOWN},
       {"nearbyShareContactVisibilityUnknownDescription",
        IDS_NEARBY_VISIBLITY_UNKNOWN_DESCRIPTION},
-      {"nearbyShareContactVisibilityZeroStateInfo",
-       IDS_NEARBY_CONTACT_VISIBILITY_ZERO_STATE_INFO},
       {"nearbyShareContactVisibilityZeroStateText",
        IDS_NEARBY_CONTACT_VISIBILITY_ZERO_STATE_TEXT},
       {"nearbyShareDeviceNameEmptyError", IDS_NEARBY_DEVICE_NAME_EMPTY_ERROR},

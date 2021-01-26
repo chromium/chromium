@@ -358,7 +358,7 @@ Polymer({
    * and setting the href of the link. This function is largely
    * copied from getAriaLabelledContent_ in <settings-localized-link>, which
    * can't be used directly because this isn't part of settings.
-   * TODO(crbug.com/1154718): Extract this logic into a general method.
+   * TODO(crbug.com/1170849): Extract this logic into a general method.
    * @return {string}
    * @private
    */
