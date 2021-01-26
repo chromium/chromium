@@ -57,7 +57,6 @@
       <include name="IDR_CONTEXT_MENUS_CUSTOM_BINDINGS_JS" file="context_menus_custom_bindings.js" type="BINDATA" />
       <include name="IDR_CONTEXT_MENUS_HANDLERS_JS" file="context_menus_handlers.js" type="BINDATA" />
       <include name="IDR_DECLARATIVE_WEBREQUEST_CUSTOM_BINDINGS_JS" file="declarative_webrequest_custom_bindings.js" type="BINDATA" />
-      <include name="IDR_DISPLAY_SOURCE_CUSTOM_BINDINGS_JS" file="display_source_custom_bindings.js" type="BINDATA" />
       <include name="IDR_FILE_ENTRY_BINDING_UTIL_JS" file="file_entry_binding_util.js" type="BINDATA" />
       <include name="IDR_FILE_SYSTEM_CUSTOM_BINDINGS_JS" file="file_system_custom_bindings.js" type="BINDATA" />
       <include name="IDR_GREASEMONKEY_API_JS" file="greasemonkey_api.js" type="BINDATA" />

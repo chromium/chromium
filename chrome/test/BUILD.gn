@@ -3157,16 +3157,6 @@ if (!is_android) {
       ]
     }
 
-    if (use_aura) {
-      if (enable_wifi_display) {
-        sources += [
-          "../../extensions/browser/api/display_source/display_source_apitestbase.cc",
-          "../../extensions/browser/api/display_source/display_source_apitestbase.h",
-          "../browser/extensions/api/display_source/display_source_wifi_display_apitest.cc",
-        ]
-      }
-    }
-
     if (is_chromeos_ash || ((is_linux || is_chromeos_lacros) && use_dbus)) {
       sources += [ "../browser/extensions/api/bluetooth_low_energy/bluetooth_low_energy_apitest.cc" ]
     }

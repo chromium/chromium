@@ -240,7 +240,7 @@ class APIPermission {
     kEnterpriseDeviceAttributes = 196,
     kCertificateProvider = 197,
     kResourcesPrivate = 198,
-    kDisplaySource = 199,
+    kDeleted_DisplaySource = 199,
     kClipboard = 200,
     kNetworkingOnc = 201,
     kVirtualKeyboard = 202,

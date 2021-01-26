@@ -160,10 +160,6 @@
     "extension_types": ["platform_app"],
     "contexts": ["blessed_extension"]
   },
-  "displaySource": {
-    "dependencies": ["permission:displaySource"],
-    "contexts": ["blessed_extension"]
-  },
   "dns": {
     "dependencies": ["permission:dns"],
     "contexts": ["blessed_extension"]

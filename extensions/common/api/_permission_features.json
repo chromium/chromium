@@ -230,10 +230,6 @@
       ]
     }
   ],
-  "displaySource": {
-    "channel": "dev",
-    "extension_types": ["extension", "platform_app"]
-  },
   "dns": [
     {
       "channel": "dev",

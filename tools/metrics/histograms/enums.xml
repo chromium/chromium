@@ -24417,7 +24417,7 @@ Called by update_extension_histograms.py.-->
       label="DELETED_EASY_UNLOCK_PRIVATE_ON_CONNECTION_STATUS_CHANGED"/>
   <int value="390" label="DELETED_EASY_UNLOCK_PRIVATE_ON_DATA_RECEIVED"/>
   <int value="391" label="DELETED_EASY_UNLOCK_PRIVATE_ON_SEND_COMPLETED"/>
-  <int value="392" label="DISPLAY_SOURCE_ON_SINKS_UPDATED"/>
+  <int value="392" label="DELETED_DISPLAY_SOURCE_ON_SINKS_UPDATED"/>
   <int value="393" label="INPUT_IME_ON_COMPOSITION_BOUNDS_CHANGED"/>
   <int value="394" label="INPUT_METHOD_PRIVATE_ON_IME_MENU_ACTIVATION_CHANGED"/>
   <int value="395" label="INPUT_METHOD_PRIVATE_ON_IME_MENU_LIST_CHANGED"/>
@@ -25670,8 +25670,8 @@ Called by update_extension_histograms.py.-->
   <int value="1095" label="SETTINGSPRIVATE_SETDEFAULTZOOMFUNCTION"/>
   <int value="1096" label="BLUETOOTHPRIVATE_CONNECT"/>
   <int value="1097" label="BLUETOOTHPRIVATE_FORGETDEVICE"/>
-  <int value="1098" label="DISPLAYSOURCE_GETAVAILABLESINKS"/>
-  <int value="1099" label="DISPLAYSOURCE_REQUESTAUTHENTICATION"/>
+  <int value="1098" label="DELETED_DISPLAYSOURCE_GETAVAILABLESINKS"/>
+  <int value="1099" label="DELETED_DISPLAYSOURCE_REQUESTAUTHENTICATION"/>
   <int value="1100" label="WEBRTCLOGGINGPRIVATE_STARTAUDIODEBUGRECORDINGS"/>
   <int value="1101" label="WEBRTCLOGGINGPRIVATE_STOPAUDIODEBUGRECORDINGS"/>
   <int value="1102" label="TERMINALPRIVATE_ACKOUTPUT"/>
@@ -26702,7 +26702,7 @@ Called by update_extension_permission.py.-->
   <int value="196" label="kEnterpriseDeviceAttributes"/>
   <int value="197" label="kCertificateProvider"/>
   <int value="198" label="kResourcesPrivate"/>
-  <int value="199" label="kDisplaySource"/>
+  <int value="199" label="kDeleted_DisplaySource"/>
   <int value="200" label="kClipboard"/>
   <int value="201" label="kNetworkingOnc"/>
   <int value="202" label="kVirtualKeyboard"/>

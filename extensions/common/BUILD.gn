@@ -47,10 +47,6 @@ if (enable_extensions) {
       "mojom/renderer.mojom",
     ]
 
-    if (proprietary_codecs && enable_wifi_display) {
-      sources += [ "mojo/wifi_display_session_service.mojom" ]
-    }
-
     public_deps = [
       "//content/public/common:interfaces",
       "//extensions/common/api:mojom",

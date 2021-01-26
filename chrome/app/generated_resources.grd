@@ -4200,9 +4200,6 @@ are declared in tools/grit/grit_rule.gni.
         <message name="IDS_EXTENSION_PROMPT_WARNING_USERS_PRIVATE" desc="Permission string for access to user accounts.">
           Read and change allowlisted users
         </message>
-        <message name="IDS_EXTENSION_PROMPT_WARNING_DISPLAY_SOURCE" desc="Permission string for access to Display Source API.">
-          Send audio and video to displays on the local network
-        </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_NEW_TAB_PAGE_OVERRIDE" desc="Permission string for extensions that override the new tab page.">
           Replace the page you see when opening a new tab
         </message>

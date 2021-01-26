@@ -472,9 +472,6 @@ source_set("browser_tests") {
     # crbug.com/650835.
     "api/bluetooth/bluetooth_appshell_test.cc",
     "api/bluetooth_socket/bluetooth_socket_apitest.cc",
-    "api/display_source/display_source_apitest.cc",
-    "api/display_source/display_source_apitestbase.cc",
-    "api/display_source/display_source_apitestbase.h",
     "api/dns/dns_apitest.cc",
     "api/feedback_private/feedback_private_apitest.cc",
     "api/hid/hid_apitest.cc",

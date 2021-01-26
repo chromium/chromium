@@ -21,7 +21,6 @@ extensions_api_schema_files_ = [
   "cec_private.idl",
   "clipboard.idl",
   "declarative_net_request.idl",
-  "display_source.idl",
   "dns.idl",
   "events.json",
   "extension_options_internal.idl",
