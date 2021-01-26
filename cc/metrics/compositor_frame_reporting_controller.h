@@ -119,6 +119,12 @@ class CC_EXPORT CompositorFrameReportingController {
       const viz::BeginFrameId& id);
   CompositorFrameReporter::SmoothThread GetSmoothThread() const;
 
+  // Checks whether there are reporters containing updates from the main
+  // thread, and returns a weak-ptr to that reporter (if any). Otherwise returns
+  // null.
+  base::WeakPtr<CompositorFrameReporter> HasOutstandingUpdatesFromMain(
+      const viz::BeginFrameId& id) const;
+
   // If the display-compositor skips over some frames (e.g. when the gpu is
   // busy, or the client is non-responsive), then it will not issue any
   // |BeginFrameArgs| for those frames. However, |CompositorFrameReporter|
