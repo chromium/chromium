@@ -1805,12 +1805,8 @@ TEST_P(CacheStorageManagerTestP, GetAllOriginsUsageDifferentOwners) {
 }
 
 // TODO(crbug.com/760687): Flaky on Fuchsia.
-#if defined(OS_FUCHSIA)
-#define MAYBE_GetAllOriginsUsageWithOldIndex DISABLED_GetAllOriginsUsageWithOldIndex
-#else
-#define MAYBE_GetAllOriginsUsageWithOldIndex GetAllOriginsUsageWithOldIndex
-#endif
-TEST_F(CacheStorageManagerTest, MAYBE_GetAllOriginsUsageWithOldIndex) {
+// TODO(crbug.com/1170905): Failing on multiple platforms.
+TEST_F(CacheStorageManagerTest, DISABLED_GetAllOriginsUsageWithOldIndex) {
   // Write a single value (V1) to the cache.
   const GURL kFooURL = origin1_.GetURL().Resolve("foo");
   const std::string kCacheName = "foo";
@@ -1890,12 +1886,8 @@ TEST_F(CacheStorageManagerTest, MAYBE_GetAllOriginsUsageWithOldIndex) {
 }
 
 // TODO(crbug.com/760687): Flaky on Fuchsia.
-#if defined(OS_FUCHSIA)
-#define MAYBE_GetOriginSizeWithOldIndex DISABLED_GetOriginSizeWithOldIndex
-#else
-#define MAYBE_GetOriginSizeWithOldIndex GetOriginSizeWithOldIndex
-#endif
-TEST_F(CacheStorageManagerTest, MAYBE_GetOriginSizeWithOldIndex) {
+// TODO(crbug.com/1170905): Failing on multiple platforms.
+TEST_F(CacheStorageManagerTest, DISABLED_GetOriginSizeWithOldIndex) {
   // Write a single value (V1) to the cache.
   const GURL kFooURL = origin1_.GetURL().Resolve("foo");
   const std::string kCacheName = "foo";
