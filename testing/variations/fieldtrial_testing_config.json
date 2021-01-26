@@ -819,8 +819,7 @@
                 {
                     "name": "AllEnabledFeatures",
                     "enable_features": [
-                        "AutofillFixFillableFieldTypes",
-                        "AutofillUseNewSectioningMethod"
+                        "AutofillFixFillableFieldTypes"
                     ]
                 }
             ]
