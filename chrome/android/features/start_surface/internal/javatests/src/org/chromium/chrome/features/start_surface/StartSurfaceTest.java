@@ -1698,6 +1698,8 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @DisableIf.Build(sdk_is_less_than = P, message = "https://crbug.com/1170553")
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1170553")
     @CommandLineFlags.Add({BASE_PARAMS + "/single/omnibox_focused_on_new_tab/true"})
     public void testOmnibox_FocusedOnNewTabInSingleSurface() {
         if (!mImmediateReturn) {
@@ -1763,6 +1765,8 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Feature({"StartSurface"})
+    @DisableIf.Build(sdk_is_less_than = P, message = "https://crbug.com/1170553")
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1170553")
     @CommandLineFlags.Add({BASE_PARAMS + "/single/omnibox_focused_on_new_tab/true"})
     public void testOmnibox_FocusedOnNewTabInSingleSurface_WithBackButton() {
         if (!mImmediateReturn) {
