@@ -855,6 +855,15 @@ void Tab::SetTabNeedsAttention(bool attention) {
   SchedulePaint();
 }
 
+void Tab::SetFreezingVoteToken(
+    std::unique_ptr<performance_manager::freezing::FreezingVoteToken> token) {
+  freezing_token_ = std::move(token);
+}
+
+void Tab::ReleaseFreezingVoteToken() {
+  freezing_token_.reset();
+}
+
 // static
 base::string16 Tab::GetTooltipText(const base::string16& title,
                                    base::Optional<TabAlertState> alert_state) {
