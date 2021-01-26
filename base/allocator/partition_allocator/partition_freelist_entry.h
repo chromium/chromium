@@ -14,9 +14,9 @@
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
 
-// DCHECK_IS_ON() only for now, as it causes issues on some tests.
+// DCHECK_IS_ON() only on Windows, as it causes issues on some tests.
 // TODO(lizeb): Enable in as many configurations as possible.
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() || !defined(OS_WIN)
 #define PA_HAS_FREELIST_HARDENING
 #endif
 
