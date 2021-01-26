@@ -4,11 +4,16 @@
 
 #include "chrome/browser/autofill/manual_filling_controller_impl.h"
 
+#include <numeric>
 #include <utility>
 
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/trace_event/memory_allocator_dump.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_usage_estimator.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "chrome/browser/autofill/address_accessory_controller.h"
 #include "chrome/browser/autofill/credit_card_accessory_controller.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller.h"
@@ -54,7 +59,10 @@ FillingSource GetSourceForTab(const AccessorySheetData& accessory_sheet) {
 
 }  // namespace
 
-ManualFillingControllerImpl::~ManualFillingControllerImpl() = default;
+ManualFillingControllerImpl::~ManualFillingControllerImpl() {
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
+}
 
 // static
 base::WeakPtr<ManualFillingController> ManualFillingController::GetOrCreate(
@@ -223,6 +231,9 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
         CreditCardAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
     DCHECK(cc_controller_);
   }
+
+  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+      this, "ManualFillingCache", base::ThreadTaskRunnerHandle::Get());
 }
 
 ManualFillingControllerImpl::ManualFillingControllerImpl(
@@ -235,7 +246,22 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
       pwd_controller_for_testing_(std::move(pwd_controller)),
       address_controller_(std::move(address_controller)),
       cc_controller_(std::move(cc_controller)),
-      view_(std::move(view)) {}
+      view_(std::move(view)) {
+  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+      this, "ManualFillingCache", base::ThreadTaskRunnerHandle::Get());
+}
+
+bool ManualFillingControllerImpl::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* process_memory_dump) {
+  auto* dump = process_memory_dump->CreateAllocatorDump(
+      base::StringPrintf("passwords/manual_filling_controller/0x%" PRIXPTR,
+                         reinterpret_cast<uintptr_t>(this)));
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  base::trace_event::EstimateMemoryUsage(available_sheets_));
+  return true;
+}
 
 bool ManualFillingControllerImpl::ShouldShowAccessory() const {
   // If we only provide password fallbacks (== accessory V1), show them for

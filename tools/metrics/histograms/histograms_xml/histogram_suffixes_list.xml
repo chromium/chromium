@@ -14662,6 +14662,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Malloc.AllocatedObjects"
       label="Only counting objects allocated using the malloc allocator. The
              measurement is only accurate on Linux and MacOS."/>
+  <suffix name="ManualFillingCache"
+      label="Only counting memory used by the password manager fallbacks."/>
   <suffix name="PartitionAlloc"
       label="Only counting memory used by Partition allocator."/>
   <suffix name="PartitionAlloc.AllocatedObjects"

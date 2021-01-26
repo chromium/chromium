@@ -264,6 +264,8 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     {"partition_alloc/partitions/layout", "PartitionAlloc.Partitions.Layout",
      MetricSize::kLarge, kSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetPartitionAlloc_Partitions_Layout},
+    {"passwords", "ManualFillingCache", MetricSize::kSmall, kEffectiveSize,
+     EmitTo::kSizeInUmaOnly, nullptr},
     {"site_storage", "SiteStorage", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetSiteStorage},
     {"site_storage/blob_storage", "SiteStorage.BlobStorage", MetricSize::kLarge,

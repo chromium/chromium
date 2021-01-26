@@ -56,12 +56,19 @@ class UserInfo {
 
     bool operator==(const UserInfo::Field& field) const;
 
+    // Estimates dynamic memory usage.
+    // See base/trace_event/memory_usage_estimator.h for more info.
+    size_t EstimateMemoryUsage() const;
+
    private:
+    // IMPORTANT(https://crbug.com/1169167): Add the size of newly added strings
+    // to the memory estimation member!
     base::string16 display_text_;
     base::string16 a11y_description_;
     std::string id_;  // Optional, if needed to complete filling.
     bool is_obfuscated_;
     bool selectable_;
+    size_t estimated_memory_use_by_strings_ = 0;
   };
 
   using IsPslMatch =
@@ -78,7 +85,10 @@ class UserInfo {
   UserInfo& operator=(const UserInfo& user_info);
   UserInfo& operator=(UserInfo&& user_info);
 
-  void add_field(Field field) { fields_.push_back(std::move(field)); }
+  void add_field(Field field) {
+    estimated_dynamic_memory_use_ += field.EstimateMemoryUsage();
+    fields_.push_back(std::move(field));
+  }
 
   const std::vector<Field>& fields() const { return fields_; }
   const std::string& origin() const { return origin_; }
@@ -86,10 +96,17 @@ class UserInfo {
 
   bool operator==(const UserInfo& user_info) const;
 
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
+
  private:
+  // IMPORTANT(https://crbug.com/1169167): Add the size of newly added strings
+  // to the memory estimation member!
   std::string origin_;
   IsPslMatch is_psl_match_{false};
   std::vector<Field> fields_;
+  size_t estimated_dynamic_memory_use_ = 0;
 };
 
 std::ostream& operator<<(std::ostream& out, const UserInfo::Field& field);
@@ -115,9 +132,16 @@ class FooterCommand {
 
   bool operator==(const FooterCommand& fc) const;
 
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
+
  private:
+  // IMPORTANT(https://crbug.com/1169167): Add the size of newly added strings
+  // to the memory estimation member!
   base::string16 display_text_;
   autofill::AccessoryAction accessory_action_;
+  size_t estimated_memory_use_by_strings_ = 0;
 };
 
 std::ostream& operator<<(std::ostream& out, const FooterCommand& fc);
@@ -147,10 +171,17 @@ class OptionToggle {
 
   bool operator==(const OptionToggle& option_toggle) const;
 
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
+
  private:
+  // IMPORTANT(https://crbug.com/1169167): Add the size of newly added strings
+  // to the memory estimation member!
   base::string16 display_text_;
   bool enabled_;
   autofill::AccessoryAction accessory_action_;
+  size_t estimated_memory_use_by_strings_ = 0;
 };
 
 // Represents the contents of a bottom sheet tab below the keyboard accessory,
@@ -203,6 +234,10 @@ class AccessorySheetData {
   }
 
   bool operator==(const AccessorySheetData& data) const;
+
+  // Estimates dynamic memory usage.
+  // See base/trace_event/memory_usage_estimator.h for more info.
+  size_t EstimateMemoryUsage() const;
 
  private:
   AccessoryTabType sheet_type_;
