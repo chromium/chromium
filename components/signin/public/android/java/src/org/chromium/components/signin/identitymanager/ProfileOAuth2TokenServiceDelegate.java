@@ -195,40 +195,6 @@ public final class ProfileOAuth2TokenServiceDelegate
     }
 
     /**
-     * Invalidates the old token (if non-null/non-empty) and asynchronously generates a new one.
-     *
-     * @deprecated Use invalidateAccessToken and getAccessToken instead. crbug.com/1002894: This
-     *         method is needed by InvalidationClientService which is not necessary anymore.
-     *
-     * @param account the account to get the access token for.
-     * @param oldToken The old token to be invalidated or null.
-     * @param scope The scope to get an auth token for (with Android-style 'oauth2:' prefix).
-     * @param callback called on successful and unsuccessful fetching of auth token.
-     */
-    @Deprecated
-    static void getNewAccessTokenWithFacade(AccountManagerFacade accountManagerFacade,
-            Account account, @Nullable String oldToken, String scope,
-            GetAccessTokenCallback callback) {
-        ConnectionRetry.runAuthTask(new AuthTask<AccessTokenData>() {
-            @Override
-            public AccessTokenData run() throws AuthException {
-                if (!TextUtils.isEmpty(oldToken)) {
-                    accountManagerFacade.invalidateAccessToken(oldToken);
-                }
-                return accountManagerFacade.getAccessToken(account, scope);
-            }
-            @Override
-            public void onSuccess(AccessTokenData token) {
-                callback.onGetTokenSuccess(token);
-            }
-            @Override
-            public void onFailure(boolean isTransientError) {
-                callback.onGetTokenFailure(isTransientError);
-            }
-        });
-    }
-
-    /**
      * Called by the native method
      * ProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailable
      * to check whether the account has an OAuth2 refresh token.

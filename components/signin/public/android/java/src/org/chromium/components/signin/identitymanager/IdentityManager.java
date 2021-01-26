@@ -13,7 +13,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ObserverList;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
@@ -196,26 +195,6 @@ public class IdentityManager {
 
         // TODO(crbug.com/934688) The following should call a JNI method instead.
         mProfileOAuth2TokenServiceDelegate.invalidateAccessToken(accessToken);
-    }
-
-    /**
-     * Invalidates the old token (if non-null/non-empty) and asynchronously generates a new one.
-     *
-     * @deprecated Use invalidateAccessToken and getAccessToken instead. TODO(crbug.com/1002894):
-     *         This method is needed by InvalidationClientService which is not necessary anymore.
-     *
-     * @param accountManagerFacade AccountManagerFacade to request the access token from.
-     * @param account the account to get the access token for.
-     * @param oldToken The old token to be invalidated or null.
-     * @param scope The scope to get an auth token for (with Android-style 'oauth2:' prefix).
-     * @param callback called on successful and unsuccessful fetching of auth token.
-     */
-    @Deprecated
-    public static void getNewAccessTokenWithFacade(AccountManagerFacade accountManagerFacade,
-            Account account, @Nullable String oldToken, String scope,
-            GetAccessTokenCallback callback) {
-        ProfileOAuth2TokenServiceDelegate.getNewAccessTokenWithFacade(
-                accountManagerFacade, account, oldToken, scope, callback);
     }
 
     @NativeMethods
