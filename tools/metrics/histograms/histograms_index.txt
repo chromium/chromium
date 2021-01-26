@@ -30,7 +30,6 @@ tools/metrics/histograms/histograms_xml/dev/histograms.xml
 tools/metrics/histograms/histograms_xml/diagnostics/histograms.xml
 tools/metrics/histograms/histograms_xml/direct/histograms.xml
 tools/metrics/histograms/histograms_xml/disk/histograms.xml
-tools/metrics/histograms/histograms_xml/dom/histograms.xml
 tools/metrics/histograms/histograms_xml/download/histograms.xml
 tools/metrics/histograms/histograms_xml/enterprise/histograms.xml
 tools/metrics/histograms/histograms_xml/event/histograms.xml
