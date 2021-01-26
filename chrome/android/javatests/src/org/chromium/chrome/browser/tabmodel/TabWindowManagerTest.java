@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tabmodel;
 
 import android.app.Activity;
+import android.util.Pair;
 
 import androidx.test.filters.SmallTest;
 
@@ -71,9 +72,10 @@ public class TabWindowManagerTest {
         ApplicationStatus.onStateChangeForTesting(a, ActivityState.DESTROYED);
     }
 
-    private MockTabModelSelector requestSelector(ChromeActivity activity, int requestedIndex) {
+    private Pair<Integer, TabModelSelector> requestSelector(
+            ChromeActivity activity, int requestedIndex) {
         final TabWindowManager manager = TabWindowManagerSingleton.getInstance();
-        return (MockTabModelSelector) manager.requestSelector(
+        return manager.requestSelector(
                 activity, activity, () -> NextTabPolicy.HIERARCHICAL, requestedIndex);
     }
 
@@ -98,8 +100,10 @@ public class TabWindowManagerTest {
         final TabWindowManager manager = TabWindowManagerSingleton.getInstance();
 
         ChromeActivity activity0 = buildActivity();
-        TabModelSelector selector0 = requestSelector(activity0, 0);
+        Pair<Integer, TabModelSelector> assignment0 = requestSelector(activity0, 0);
 
+        Assert.assertEquals(0, assignment0.first.intValue());
+        TabModelSelector selector0 = assignment0.second;
         Assert.assertNotNull("Was not able to build the TabModelSelector", selector0);
         Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity0));
     }
@@ -117,11 +121,13 @@ public class TabWindowManagerTest {
 
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();
-        TabModelSelector selector0 = requestSelector(activity0, 0);
-        TabModelSelector selector1 = requestSelector(activity1, 1);
+        Pair<Integer, TabModelSelector> assignment0 = requestSelector(activity0, 0);
+        Pair<Integer, TabModelSelector> assignment1 = requestSelector(activity1, 1);
 
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector0);
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector1);
+        Assert.assertEquals(0, assignment0.first.intValue());
+        Assert.assertEquals(1, assignment1.first.intValue());
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
         Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity0));
         Assert.assertEquals("Unexpected model index", 1, manager.getIndexForWindow(activity1));
     }
@@ -160,12 +166,14 @@ public class TabWindowManagerTest {
 
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();
-        TabModelSelector selector0 = requestSelector(activity0, 0);
+        Pair<Integer, TabModelSelector> assignment0 = requestSelector(activity0, 0);
         // Request 0 again, but should get 1 instead.
-        TabModelSelector selector1 = requestSelector(activity1, 0);
+        Pair<Integer, TabModelSelector> assignment1 = requestSelector(activity1, 0);
 
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector0);
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector1);
+        Assert.assertEquals(0, assignment0.first.intValue());
+        Assert.assertEquals(1, assignment1.first.intValue());
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
         Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity0));
         Assert.assertEquals("Unexpected model index", 1, manager.getIndexForWindow(activity1));
     }
@@ -185,12 +193,14 @@ public class TabWindowManagerTest {
 
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();
-        TabModelSelector selector0 = requestSelector(activity0, 2);
+        Pair<Integer, TabModelSelector> assignment0 = requestSelector(activity0, 2);
         // Request 2 again, but should get 0 instead.
-        TabModelSelector selector1 = requestSelector(activity1, 2);
+        Pair<Integer, TabModelSelector> assignment1 = requestSelector(activity1, 2);
 
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector0);
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector1);
+        Assert.assertEquals(2, assignment0.first.intValue());
+        Assert.assertEquals(0, assignment1.first.intValue());
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
         Assert.assertEquals("Unexpected model index", 2, manager.getIndexForWindow(activity0));
         Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity1));
     }
@@ -207,9 +217,10 @@ public class TabWindowManagerTest {
         final TabWindowManager manager = TabWindowManagerSingleton.getInstance();
 
         ChromeActivity activity0 = buildActivity();
-        TabModelSelector selector0 = requestSelector(activity0, 0);
+        Pair<Integer, TabModelSelector> assignment0 = requestSelector(activity0, 0);
 
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector0);
+        Assert.assertEquals(0, assignment0.first.intValue());
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
         Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity0));
 
         destroyActivity(activity0);
@@ -230,9 +241,10 @@ public class TabWindowManagerTest {
         final TabWindowManager manager = TabWindowManagerSingleton.getInstance();
 
         ChromeActivity activity0 = buildActivity();
-        TabModelSelector selector0 = requestSelector(activity0, 0);
+        Pair<Integer, TabModelSelector> assignment0 = requestSelector(activity0, 0);
 
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector0);
+        Assert.assertEquals(0, assignment0.first.intValue());
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
         Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity0));
 
         destroyActivity(activity0);
@@ -241,9 +253,10 @@ public class TabWindowManagerTest {
                 manager.getIndexForWindow(activity0));
 
         ChromeActivity activity1 = buildActivity();
-        TabModelSelector selector1 = requestSelector(activity1, 0);
+        Pair<Integer, TabModelSelector> assignment1 = requestSelector(activity1, 0);
 
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector1);
+        Assert.assertEquals(0, assignment1.first.intValue());
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
         Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity1));
     }
 
@@ -263,11 +276,13 @@ public class TabWindowManagerTest {
 
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();
-        TabModelSelector selector0 = requestSelector(activity0, 0);
-        TabModelSelector selector1 = requestSelector(activity1, 1);
+        Pair<Integer, TabModelSelector> assignment0 = requestSelector(activity0, 0);
+        Pair<Integer, TabModelSelector> assignment1 = requestSelector(activity1, 1);
 
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector0);
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector1);
+        Assert.assertEquals(0, assignment0.first.intValue());
+        Assert.assertEquals(1, assignment1.first.intValue());
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment0.second);
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment1.second);
         Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity0));
         Assert.assertEquals("Unexpected model index", 1, manager.getIndexForWindow(activity1));
 
@@ -277,9 +292,10 @@ public class TabWindowManagerTest {
                 manager.getIndexForWindow(activity1));
 
         ChromeActivity activity2 = buildActivity();
-        TabModelSelector selector2 = requestSelector(activity2, 1);
+        Pair<Integer, TabModelSelector> assignment2 = requestSelector(activity2, 1);
 
-        Assert.assertNotNull("Was not able to build the TabModelSelector", selector2);
+        Assert.assertEquals(1, assignment2.first.intValue());
+        Assert.assertNotNull("Was not able to build the TabModelSelector", assignment2.second);
         Assert.assertEquals("Unexpected model index", 0, manager.getIndexForWindow(activity0));
         Assert.assertEquals("Unexpected model index", 1, manager.getIndexForWindow(activity2));
     }
@@ -296,8 +312,10 @@ public class TabWindowManagerTest {
 
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();
-        MockTabModelSelector selector0 = requestSelector(activity0, 0);
-        MockTabModelSelector selector1 = requestSelector(activity1, 1);
+        Pair<Integer, TabModelSelector> assignment0 = requestSelector(activity0, 0);
+        Pair<Integer, TabModelSelector> assignment1 = requestSelector(activity1, 1);
+        MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
+        MockTabModelSelector selector1 = (MockTabModelSelector) assignment1.second;
         Tab tab1 = selector0.addMockTab();
         Tab tab2 = selector1.addMockIncognitoTab();
 
@@ -332,8 +350,10 @@ public class TabWindowManagerTest {
 
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();
-        MockTabModelSelector selector0 = requestSelector(activity0, 0);
-        MockTabModelSelector selector1 = requestSelector(activity1, 1);
+        Pair<Integer, TabModelSelector> assignment0 = requestSelector(activity0, 0);
+        Pair<Integer, TabModelSelector> assignment1 = requestSelector(activity1, 1);
+        MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
+        MockTabModelSelector selector1 = (MockTabModelSelector) assignment1.second;
         Tab tab1 = selector0.addMockTab();
         Tab tab2 = selector1.addMockIncognitoTab();
 
@@ -368,8 +388,10 @@ public class TabWindowManagerTest {
 
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();
-        MockTabModelSelector selector0 = requestSelector(activity0, 0);
-        MockTabModelSelector selector1 = requestSelector(activity1, 1);
+        Pair<Integer, TabModelSelector> assignment0 = requestSelector(activity0, 0);
+        Pair<Integer, TabModelSelector> assignment1 = requestSelector(activity1, 1);
+        MockTabModelSelector selector0 = (MockTabModelSelector) assignment0.second;
+        MockTabModelSelector selector1 = (MockTabModelSelector) assignment1.second;
         Tab tab1 = selector0.addMockTab();
         Tab tab2 = selector1.addMockTab();
         Tab tab3 = selector0.addMockIncognitoTab();

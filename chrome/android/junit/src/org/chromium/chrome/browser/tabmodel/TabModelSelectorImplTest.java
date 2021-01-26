@@ -8,8 +8,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import android.app.Activity;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,7 +15,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -38,8 +35,6 @@ import org.chromium.ui.base.WindowAndroid;
 @Config(manifest = Config.NONE)
 public class TabModelSelectorImplTest {
     @Mock
-    TabPersistencePolicy mMockTabPersistencePolicy;
-    @Mock
     TabModelFilterFactory mMockTabModelFilterFactory;
     @Mock
     TabContentManager mMockTabContentManager;
@@ -50,16 +45,10 @@ public class TabModelSelectorImplTest {
 
     private TabModelSelectorImpl mTabModelSelector;
     private MockTabCreatorManager mTabCreatorManager;
-    private Activity mActivity;
 
     @Before
     public void setUp() {
-        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         MockitoAnnotations.initMocks(this);
-
-        doReturn(TabPersistentStore.SAVED_STATE_FILE_PREFIX)
-                .when(mMockTabPersistencePolicy)
-                .getStateFileName();
 
         doReturn(mock(TabModelFilter.class))
                 .when(mMockTabModelFilterFactory)
@@ -67,10 +56,11 @@ public class TabModelSelectorImplTest {
         mTabCreatorManager = new MockTabCreatorManager();
         AsyncTabParamsManager realAsyncTabParamsManager =
                 AsyncTabParamsManagerFactory.createAsyncTabParamsManager();
-        mTabModelSelector = new TabModelSelectorImpl(mActivity, null, mTabCreatorManager,
-                mMockTabPersistencePolicy, mMockTabModelFilterFactory, mNextTabPolicySupplier,
-                realAsyncTabParamsManager, /*supportUndo=*/false,
+        mTabModelSelector = new TabModelSelectorImpl(null, mTabCreatorManager,
+                mMockTabModelFilterFactory, mNextTabPolicySupplier, realAsyncTabParamsManager,
+                /*supportUndo=*/false,
                 /*isTabbedActivity=*/false, /*startIncognito=*/false);
+        mTabModelSelector.setTabPersistentStoreSupplier(() -> null);
         mTabCreatorManager.initialize(mTabModelSelector);
         mTabModelSelector.onNativeLibraryReadyInternal(mMockTabContentManager,
                 new MockTabModel(false, null), new MockTabModel(true, null));

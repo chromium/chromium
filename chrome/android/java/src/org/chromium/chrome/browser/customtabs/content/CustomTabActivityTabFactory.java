@@ -15,6 +15,8 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabmodel.ChromeTabModelFilterFactory;
+import org.chromium.chrome.browser.app.tabmodel.CustomTabsTabModelOrchestrator;
+import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabTabPersistencePolicy;
@@ -26,7 +28,6 @@ import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.AsyncTabParamsManager;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
-import org.chromium.chrome.browser.tabmodel.NextTabPolicy;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterFactory;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -56,7 +57,7 @@ public class CustomTabActivityTabFactory {
     private final Lazy<AsyncTabParamsManager> mAsyncTabParamsManager;
 
     @Nullable
-    private TabModelSelectorImpl mTabModelSelector;
+    private CustomTabsTabModelOrchestrator mTabModelOrchestrator;
 
     @Inject
     public CustomTabActivityTabFactory(ChromeActivity<?> activity,
@@ -77,21 +78,35 @@ public class CustomTabActivityTabFactory {
         mAsyncTabParamsManager = asyncTabParamsManager;
     }
 
-    /** Creates a {@link TabModelSelector} for the custom tab. */
-    public TabModelSelectorImpl createTabModelSelector() {
-        mTabModelSelector = new TabModelSelectorImpl(mActivity, mActivityWindowAndroid::get,
-                mActivity, mPersistencePolicy, mTabModelFilterFactory,
-                () -> NextTabPolicy.LOCATIONAL, mAsyncTabParamsManager.get(), false, false, false);
-        return mTabModelSelector;
+    /** Creates a {@link TabModelOrchestrator} for the custom tab. */
+    public TabModelOrchestrator createTabModelOrchestrator() {
+        mTabModelOrchestrator = new CustomTabsTabModelOrchestrator();
+        return mTabModelOrchestrator;
+    }
+
+    public void destroyTabModelOrchestrator() {
+        if (mTabModelOrchestrator != null) {
+            mTabModelOrchestrator.destroy();
+        }
+    }
+
+    /** Calls the {@link TabModelOrchestrator} to create TabModels and TabPersistentStore. */
+    public void createTabModels() {
+        mTabModelOrchestrator.createTabModels(mActivityWindowAndroid::get, mActivity,
+                mTabModelFilterFactory, mPersistencePolicy, mAsyncTabParamsManager.get());
     }
 
     /** Returns the previously created {@link TabModelSelector}. */
     public TabModelSelectorImpl getTabModelSelector() {
-        if (mTabModelSelector == null) {
+        if (mTabModelOrchestrator == null) {
             assert false;
-            return createTabModelSelector();
+            createTabModelOrchestrator();
         }
-        return mTabModelSelector;
+        if (mTabModelOrchestrator.getTabModelSelector() == null) {
+            assert false;
+            createTabModels();
+        }
+        return mTabModelOrchestrator.getTabModelSelector();
     }
 
     /** Creates a {@link ChromeTabCreator}s for the custom tab. */
