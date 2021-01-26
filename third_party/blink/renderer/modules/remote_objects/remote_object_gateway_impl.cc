@@ -32,7 +32,8 @@ void RemoteObjectGatewayImpl::InjectNamed(const WTF::String& object_name,
   if (context.IsEmpty())
     return;
 
-  RemoteObject* object = new RemoteObject(isolate, this, object_id);
+  remote_objects_.erase(object_id);
+  RemoteObject* object = GetRemoteObject(isolate, object_id);
 
   v8::Context::Scope context_scope(context);
   v8::Local<v8::Object> global = context->Global();
@@ -112,7 +113,25 @@ void RemoteObjectGatewayImpl::BindRemoteObjectReceiver(
 }
 
 void RemoteObjectGatewayImpl::ReleaseObject(int32_t object_id) {
+  auto iter = remote_objects_.find(object_id);
+  DCHECK(iter != remote_objects_.end());
+  remote_objects_.erase(iter);
   object_host_->ReleaseObject(object_id);
+}
+
+RemoteObject* RemoteObjectGatewayImpl::GetRemoteObject(v8::Isolate* isolate,
+                                                       int32_t object_id) {
+  auto iter = remote_objects_.find(object_id);
+  if (iter != remote_objects_.end()) {
+    // Decrease a reference count in the browser side when we reuse RemoteObject
+    // getting from the map.
+    object_host_->ReleaseObject(object_id);
+    return iter->value;
+  }
+
+  auto* remote_object = new RemoteObject(isolate, this, object_id);
+  remote_objects_.insert(object_id, remote_object);
+  return remote_object;
 }
 
 // static

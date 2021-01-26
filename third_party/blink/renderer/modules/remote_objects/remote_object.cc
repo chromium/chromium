@@ -355,11 +355,8 @@ void RemoteObject::RemoteObjectInvokeCallback(
     return;
 
   if (result->value->is_object_id()) {
-    // TODO(crbug.com/794320): need to check whether an object with this id has
-    // already been injected
-    RemoteObject* object_result =
-        new RemoteObject(info.GetIsolate(), remote_object->gateway_,
-                         result->value->get_object_id());
+    RemoteObject* object_result = remote_object->gateway_->GetRemoteObject(
+        info.GetIsolate(), result->value->get_object_id());
     gin::Handle<RemoteObject> controller =
         gin::CreateHandle(isolate, object_result);
     if (controller.IsEmpty())

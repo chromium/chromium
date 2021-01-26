@@ -21,6 +21,7 @@
 namespace blink {
 
 class LocalFrame;
+class RemoteObject;
 
 class MODULES_EXPORT RemoteObjectGatewayImpl
     : public GarbageCollected<RemoteObjectGatewayImpl>,
@@ -57,6 +58,7 @@ class MODULES_EXPORT RemoteObjectGatewayImpl
       int32_t object_id,
       mojo::PendingReceiver<mojom::blink::RemoteObject>);
   void ReleaseObject(int32_t object_id);
+  RemoteObject* GetRemoteObject(v8::Isolate* isolate, int32_t object_id);
 
  private:
   // mojom::blink::RemoteObjectGateway
@@ -66,6 +68,11 @@ class MODULES_EXPORT RemoteObjectGatewayImpl
   void InjectNamed(const WTF::String& object_name, int32_t object_id);
 
   HashMap<String, int32_t> named_objects_;
+  HashMap<int32_t,
+          RemoteObject*,
+          WTF::IntHash<int32_t>,
+          WTF::UnsignedWithZeroKeyHashTraits<int32_t>>
+      remote_objects_;
 
   HeapMojoReceiver<mojom::blink::RemoteObjectGateway,
                    RemoteObjectGatewayImpl,

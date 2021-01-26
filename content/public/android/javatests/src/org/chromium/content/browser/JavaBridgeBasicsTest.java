@@ -575,7 +575,7 @@ public class JavaBridgeBasicsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Android-JavaBridge"})
-    @UseMethodParameter(JavaBridgeActivityTestRule.LegacyTestParams.class)
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
     public void testSameReturnedObjectUsesSameWrapper(boolean useMojo) throws Throwable {
         class InnerObject {
         }
@@ -592,6 +592,49 @@ public class JavaBridgeBasicsTest {
         Assert.assertEquals("object", executeJavaScriptAndGetStringResult("typeof inner1"));
         Assert.assertEquals("object", executeJavaScriptAndGetStringResult("typeof inner2"));
         Assert.assertEquals("true", executeJavaScriptAndGetStringResult("inner1 === inner2"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Android-JavaBridge"})
+    @CommandLineFlags.Add("js-flags=--expose-gc")
+    @UseMethodParameter(JavaBridgeActivityTestRule.MojoTestParams.class)
+    public void testSameWrapperObjectsAreGarbageCollected(boolean useMojo) throws Throwable {
+        class InnerObject {}
+        class TestObject {
+            @JavascriptInterface
+            public InnerObject getInnerObject() {
+                if (mWeakForInnerObject == null) {
+                    InnerObject innerObject = new InnerObject();
+                    mWeakForInnerObject = new WeakReference<InnerObject>(innerObject);
+                    return innerObject;
+                }
+                return mWeakForInnerObject.get();
+            }
+            // A weak reference is used to check InnerObject instance reachability.
+            WeakReference<InnerObject> mWeakForInnerObject;
+        };
+        final TestObject injectedTestObject = new TestObject();
+
+        mActivityTestRule.injectObjectAndReload(injectedTestObject, "injectedTestObject");
+        mActivityTestRule.executeJavaScript("inner1 = injectedTestObject.getInnerObject()");
+        mActivityTestRule.executeJavaScript("inner2 = injectedTestObject.getInnerObject()");
+        Assert.assertEquals("object", executeJavaScriptAndGetStringResult("typeof inner1"));
+        Assert.assertEquals("object", executeJavaScriptAndGetStringResult("typeof inner2"));
+
+        Assert.assertTrue(injectedTestObject.mWeakForInnerObject.get() != null);
+        Runtime.getRuntime().gc();
+        Assert.assertTrue(injectedTestObject.mWeakForInnerObject.get() != null);
+
+        // Now dereference the inner object in JS and run GC to collect the interface object.
+        Assert.assertEquals("true",
+                executeJavaScriptAndGetStringResult("(function() { "
+                        + "delete inner1; delete inner2; gc(); "
+                        + "return (typeof inner1 == 'undefined'); })()"));
+        // Force GC on the Java side again. The bridge had to release the inner object, so it must
+        // be collected this time.
+        Runtime.getRuntime().gc();
+        Assert.assertEquals(null, injectedTestObject.mWeakForInnerObject.get());
     }
 
     @Test
