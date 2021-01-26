@@ -23,7 +23,9 @@
 /android_system_sdk/*.jar
 /android_tools_internal/
 /android_webview_glue/src
-/androidx/lib/
+/androidx/BUILD.gn
+/androidx/additional_readme_paths.json
+/androidx/libs/
 /angle
 /angle_dx11
 /apache-portable-runtime/src
