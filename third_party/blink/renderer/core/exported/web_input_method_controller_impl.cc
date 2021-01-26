@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/exported/web_input_method_controller_impl.h"
 
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_plugin.h"

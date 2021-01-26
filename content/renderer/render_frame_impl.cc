@@ -272,7 +272,6 @@ using blink::WebNode;
 using blink::WebPluginDocument;
 using blink::WebPluginParams;
 using blink::WebRange;
-using blink::WebRect;
 using blink::WebScriptSource;
 using blink::WebSearchableFormData;
 using blink::WebSecurityOrigin;

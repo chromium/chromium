@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 
 #include "content/renderer/accessibility/blink_ax_action_target.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/skia/include/core/SkMatrix44.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 using blink::WebAXObject;
-using blink::WebRect;
 
 namespace content {
 
@@ -129,8 +127,8 @@ bool BlinkAXActionTarget::ScrollToMakeVisibleWithSubFocus(
     ax::mojom::ScrollAlignment vertical_scroll_alignment,
     ax::mojom::ScrollBehavior scroll_behavior) const {
   return web_ax_object_.ScrollToMakeVisibleWithSubFocus(
-      WebRect(rect.x(), rect.y(), rect.width(), rect.height()),
-      horizontal_scroll_alignment, vertical_scroll_alignment, scroll_behavior);
+      rect, horizontal_scroll_alignment, vertical_scroll_alignment,
+      scroll_behavior);
 }
 
 bool BlinkAXActionTarget::ScrollToGlobalPoint(const gfx::Point& point) const {

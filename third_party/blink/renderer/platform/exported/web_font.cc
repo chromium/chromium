@@ -5,7 +5,6 @@
 #include "third_party/blink/public/platform/web_font.h"
 
 #include "third_party/blink/public/platform/web_font_description.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_text_run.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"

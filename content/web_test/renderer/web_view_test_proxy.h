@@ -18,7 +18,6 @@
 #include "content/web_test/renderer/accessibility_controller.h"
 #include "content/web_test/renderer/text_input_controller.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_dom_message_event.h"

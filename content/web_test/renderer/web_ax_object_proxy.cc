@@ -13,7 +13,6 @@
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gin/handle.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -99,8 +98,8 @@ gfx::RectF BoundsForObject(const blink::WebAXObject& object) {
   return computed_bounds;
 }
 
-blink::WebRect BoundsForCharacter(const blink::WebAXObject& object,
-                                  int character_index) {
+gfx::Rect BoundsForCharacter(const blink::WebAXObject& object,
+                             int character_index) {
   DCHECK_EQ(object.Role(), ax::mojom::Role::kStaticText);
   int end = 0;
   for (unsigned i = 0; i < object.ChildCount(); i++) {
@@ -118,7 +117,7 @@ blink::WebRect BoundsForCharacter(const blink::WebAXObject& object,
     blink::WebVector<int> character_offsets;
     inline_text_box.CharacterOffsets(character_offsets);
     if (character_offsets.size() != name.length())
-      return blink::WebRect();
+      return gfx::Rect();
 
     switch (inline_text_box.GetTextDirection()) {
       case ax::mojom::WritingDirection::kLtr: {
@@ -127,12 +126,11 @@ blink::WebRect BoundsForCharacter(const blink::WebAXObject& object,
               inline_text_box_rect.x() + character_offsets[local_index - 1];
           int width = character_offsets[local_index] -
                       character_offsets[local_index - 1];
-          return blink::WebRect(left, inline_text_box_rect.y(), width,
-                                inline_text_box_rect.height());
+          return gfx::Rect(left, inline_text_box_rect.y(), width,
+                           inline_text_box_rect.height());
         }
-        return blink::WebRect(inline_text_box_rect.x(),
-                              inline_text_box_rect.y(), character_offsets[0],
-                              inline_text_box_rect.height());
+        return gfx::Rect(inline_text_box_rect.x(), inline_text_box_rect.y(),
+                         character_offsets[0], inline_text_box_rect.height());
       }
       case ax::mojom::WritingDirection::kRtl: {
         int right = inline_text_box_rect.x() + inline_text_box_rect.width();
@@ -141,13 +139,12 @@ blink::WebRect BoundsForCharacter(const blink::WebAXObject& object,
           int left = right - character_offsets[local_index];
           int width = character_offsets[local_index] -
                       character_offsets[local_index - 1];
-          return blink::WebRect(left, inline_text_box_rect.y(), width,
-                                inline_text_box_rect.height());
+          return gfx::Rect(left, inline_text_box_rect.y(), width,
+                           inline_text_box_rect.height());
         }
         int left = right - character_offsets[0];
-        return blink::WebRect(left, inline_text_box_rect.y(),
-                              character_offsets[0],
-                              inline_text_box_rect.height());
+        return gfx::Rect(left, inline_text_box_rect.y(), character_offsets[0],
+                         inline_text_box_rect.height());
       }
       case ax::mojom::WritingDirection::kTtb: {
         if (local_index) {
@@ -155,12 +152,11 @@ blink::WebRect BoundsForCharacter(const blink::WebAXObject& object,
               inline_text_box_rect.y() + character_offsets[local_index - 1];
           int height = character_offsets[local_index] -
                        character_offsets[local_index - 1];
-          return blink::WebRect(inline_text_box_rect.x(), top,
-                                inline_text_box_rect.width(), height);
+          return gfx::Rect(inline_text_box_rect.x(), top,
+                           inline_text_box_rect.width(), height);
         }
-        return blink::WebRect(
-            inline_text_box_rect.x(), inline_text_box_rect.y(),
-            inline_text_box_rect.width(), character_offsets[0]);
+        return gfx::Rect(inline_text_box_rect.x(), inline_text_box_rect.y(),
+                         inline_text_box_rect.width(), character_offsets[0]);
       }
       case ax::mojom::WritingDirection::kBtt: {
         int bottom = inline_text_box_rect.y() + inline_text_box_rect.height();
@@ -169,22 +165,21 @@ blink::WebRect BoundsForCharacter(const blink::WebAXObject& object,
           int top = bottom - character_offsets[local_index];
           int height = character_offsets[local_index] -
                        character_offsets[local_index - 1];
-          return blink::WebRect(inline_text_box_rect.x(), top,
-                                inline_text_box_rect.width(), height);
+          return gfx::Rect(inline_text_box_rect.x(), top,
+                           inline_text_box_rect.width(), height);
         }
         int top = bottom - character_offsets[0];
-        return blink::WebRect(inline_text_box_rect.x(), top,
-                              inline_text_box_rect.width(),
-                              character_offsets[0]);
+        return gfx::Rect(inline_text_box_rect.x(), top,
+                         inline_text_box_rect.width(), character_offsets[0]);
       }
       default:
         NOTREACHED();
-        return blink::WebRect();
+        return gfx::Rect();
     }
   }
 
   DCHECK(false);
-  return blink::WebRect();
+  return gfx::Rect();
 }
 
 std::vector<std::string> GetMisspellings(const blink::WebAXObject& object) {
@@ -1255,19 +1250,20 @@ std::string WebAXObjectProxy::BoundsForRange(int start, int end) {
 
   // Get the bounds for each character and union them into one large rectangle.
   // This is just for testing so it doesn't need to be efficient.
-  blink::WebRect bounds = BoundsForCharacter(accessibility_object_, start);
+  gfx::Rect bounds = BoundsForCharacter(accessibility_object_, start);
   for (int i = 1; i < len; i++) {
-    blink::WebRect next = BoundsForCharacter(accessibility_object_, start + i);
-    int right = std::max(bounds.x + bounds.width, next.x + next.width);
-    int bottom = std::max(bounds.y + bounds.height, next.y + next.height);
-    bounds.x = std::min(bounds.x, next.x);
-    bounds.y = std::min(bounds.y, next.y);
-    bounds.width = right - bounds.x;
-    bounds.height = bottom - bounds.y;
+    gfx::Rect next = BoundsForCharacter(accessibility_object_, start + i);
+    int right = std::max(bounds.x() + bounds.width(), next.x() + next.width());
+    int bottom =
+        std::max(bounds.y() + bounds.height(), next.y() + next.height());
+    bounds.set_x(std::min(bounds.x(), next.x()));
+    bounds.set_y(std::min(bounds.y(), next.y()));
+    bounds.set_width(right - bounds.x());
+    bounds.set_height(bottom - bounds.y());
   }
 
-  return base::StringPrintf("{x: %d, y: %d, width: %d, height: %d}", bounds.x,
-                            bounds.y, bounds.width, bounds.height);
+  return base::StringPrintf("{x: %d, y: %d, width: %d, height: %d}", bounds.x(),
+                            bounds.y(), bounds.width(), bounds.height());
 }
 
 v8::Local<v8::Object> WebAXObjectProxy::ChildAtIndex(int index) {
@@ -1449,7 +1445,7 @@ void WebAXObjectProxy::ScrollToMakeVisibleWithSubFocus(int x,
                                                        int height) {
   UpdateLayout();
   accessibility_object_.ScrollToMakeVisibleWithSubFocus(
-      blink::WebRect(x, y, width, height));
+      gfx::Rect(x, y, width, height));
 }
 
 void WebAXObjectProxy::ScrollToGlobalPoint(int x, int y) {

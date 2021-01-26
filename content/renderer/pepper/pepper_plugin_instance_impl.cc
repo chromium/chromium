@@ -98,7 +98,6 @@
 #include "third_party/blink/public/common/input/web_pointer_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/public/platform/url_conversion.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -2430,15 +2429,14 @@ void PepperPluginInstanceImpl::SetTickmarks(PP_Instance instance,
   if (!render_frame_ || !render_frame_->GetWebFrame())
     return;
 
-  blink::WebVector<blink::WebRect> tickmarks_converted(
-      static_cast<size_t>(count));
+  blink::WebVector<gfx::Rect> tickmarks_converted(static_cast<size_t>(count));
   for (uint32_t i = 0; i < count; ++i) {
     gfx::RectF tickmark(tickmarks[i].point.x,
                         tickmarks[i].point.y,
                         tickmarks[i].size.width,
                         tickmarks[i].size.height);
     tickmark.Scale(1 / viewport_to_dip_scale_);
-    tickmarks_converted[i] = blink::WebRect(gfx::ToEnclosedRect(tickmark));
+    tickmarks_converted[i] = gfx::ToEnclosedRect(tickmark);
   }
 
   WebLocalFrame* frame = render_frame_->GetWebFrame();

@@ -11,7 +11,6 @@
 #include "base/trace_event/trace_event.h"
 #include "media/base/limits.h"
 #include "third_party/blink/public/platform/web_media_player.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/platform/mediastream/webrtc_uma_histograms.h"

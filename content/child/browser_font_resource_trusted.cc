@@ -22,7 +22,6 @@
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/platform/web_font.h"
 #include "third_party/blink/public/platform/web_font_description.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_text_run.h"
 #include "third_party/icu/source/common/unicode/ubidi.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -33,7 +32,6 @@ using ppapi::thunk::EnterResourceNoLock;
 using ppapi::thunk::PPB_ImageData_API;
 using blink::WebFont;
 using blink::WebFontDescription;
-using blink::WebRect;
 using blink::WebTextRun;
 
 namespace content {

@@ -57,7 +57,6 @@ using blink::WebDocument;
 using blink::WebElement;
 using blink::WebLocalFrame;
 using blink::WebNode;
-using blink::WebRect;
 using blink::WebSettings;
 using blink::WebView;
 
@@ -309,7 +308,7 @@ void RenderAccessibilityImpl::HitTest(
     // Remote frames don't have access to the information from the visual
     // viewport regarding the visual viewport offset, so we adjust the
     // coordinates before sending them to the remote renderer.
-    WebRect rect = ax_object.GetBoundsInFrameCoordinates();
+    gfx::Rect rect = ax_object.GetBoundsInFrameCoordinates();
     // The following transformation of the input point is naive, but works
     // fairly well. It will fail with CSS transforms that rotate or shear.
     // https://crbug.com/981959.
@@ -317,7 +316,7 @@ void RenderAccessibilityImpl::HitTest(
     gfx::PointF viewport_offset = web_view->VisualViewportOffset();
     transformed_point +=
         gfx::Vector2d(viewport_offset.x(), viewport_offset.y()) -
-        gfx::Rect(rect).OffsetFromOrigin();
+        rect.OffsetFromOrigin();
   }
 
   std::move(callback).Run(mojom::HitTestResponse::New(

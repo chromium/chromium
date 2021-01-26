@@ -716,12 +716,12 @@ bool GpuBenchmarking::GestureSourceTypeSupported(int gesture_source_type) {
 // SmoothScrollByXY in telemetry/internal/actions/scroll.js.
 bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
   GpuBenchmarkingContext context(render_frame_.get());
-  blink::WebRect rect = context.frame_widget()->ViewRect();
+  gfx::Rect rect = context.frame_widget()->ViewRect();
 
   float pixels_to_scroll = 0;
   v8::Local<v8::Function> callback;
-  float start_x = rect.width / 2;
-  float start_y = rect.height / 2;
+  float start_x = rect.width() / 2;
+  float start_y = rect.height() / 2;
   int gesture_source_type = SyntheticGestureParams::DEFAULT_INPUT;
   std::string direction = "down";
   float speed_in_pixels_s = 800;
@@ -788,13 +788,13 @@ bool GpuBenchmarking::SmoothScrollBy(gin::Arguments* args) {
 // scroll left.
 bool GpuBenchmarking::SmoothScrollByXY(gin::Arguments* args) {
   GpuBenchmarkingContext context(render_frame_.get());
-  blink::WebRect rect = context.frame_widget()->ViewRect();
+  gfx::Rect rect = context.frame_widget()->ViewRect();
 
   float pixels_to_scroll_x = 0;
   float pixels_to_scroll_y = 0;
   v8::Local<v8::Function> callback;
-  float start_x = rect.width / 2;
-  float start_y = rect.height / 2;
+  float start_x = rect.width() / 2;
+  float start_y = rect.height() / 2;
   int gesture_source_type = SyntheticGestureParams::DEFAULT_INPUT;
   float speed_in_pixels_s = 800;
   bool precise_scrolling_deltas = true;
@@ -896,13 +896,13 @@ bool GpuBenchmarking::SmoothDrag(gin::Arguments* args) {
 // should change this to match with SmoothScrollBy or SmoothScrollByXY.
 bool GpuBenchmarking::Swipe(gin::Arguments* args) {
   GpuBenchmarkingContext context(render_frame_.get());
-  blink::WebRect rect = context.frame_widget()->ViewRect();
+  gfx::Rect rect = context.frame_widget()->ViewRect();
 
   std::string direction = "up";
   float pixels_to_scroll = 0;
   v8::Local<v8::Function> callback;
-  float start_x = rect.width / 2;
-  float start_y = rect.height / 2;
+  float start_x = rect.width() / 2;
+  float start_y = rect.height() / 2;
   float speed_in_pixels_s = 800;
   float fling_velocity = 0;
   int gesture_source_type = SyntheticGestureParams::TOUCH_INPUT;
@@ -946,15 +946,15 @@ bool GpuBenchmarking::Swipe(gin::Arguments* args) {
 
 bool GpuBenchmarking::ScrollBounce(gin::Arguments* args) {
   GpuBenchmarkingContext context(render_frame_.get());
-  blink::WebRect content_rect = context.frame_widget()->ViewRect();
+  gfx::Rect content_rect = context.frame_widget()->ViewRect();
 
   std::string direction = "down";
   float distance_length = 0;
   float overscroll_length = 0;
   int repeat_count = 1;
   v8::Local<v8::Function> callback;
-  float start_x = content_rect.width / 2;
-  float start_y = content_rect.height / 2;
+  float start_x = content_rect.width() / 2;
+  float start_y = content_rect.height() / 2;
   float speed_in_pixels_s = 800;
 
   if (!GetOptionalArg(args, &direction) ||
