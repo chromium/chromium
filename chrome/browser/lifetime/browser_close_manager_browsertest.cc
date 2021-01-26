@@ -29,7 +29,9 @@
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -1196,10 +1198,13 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerWithBackgroundModeBrowserTest,
                        CloseAllBrowsersWithBackgroundMode) {
   EXPECT_FALSE(IsBackgroundModeSuspended());
   std::unique_ptr<ScopedKeepAlive> tmp_keep_alive;
+  std::unique_ptr<ScopedProfileKeepAlive> tmp_profile_keep_alive;
   Profile* profile = browser()->profile();
   {
     tmp_keep_alive.reset(new ScopedKeepAlive(KeepAliveOrigin::PANEL_VIEW,
                                              KeepAliveRestartOption::DISABLED));
+    tmp_profile_keep_alive.reset(new ScopedProfileKeepAlive(
+        profile, ProfileKeepAliveOrigin::kBrowserWindow));
     chrome::CloseAllBrowsers();
     ui_test_utils::WaitForBrowserToClose();
   }
@@ -1211,6 +1216,7 @@ IN_PROC_BROWSER_TEST_F(BrowserCloseManagerWithBackgroundModeBrowserTest,
   chrome::NewEmptyWindow(profile);
   ui_test_utils::WaitForBrowserToOpen();
   tmp_keep_alive.reset();
+  tmp_profile_keep_alive.reset();
   EXPECT_FALSE(IsBackgroundModeSuspended());
 
   // Background mode should not be suspended when quitting.
@@ -1241,6 +1247,8 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(IsBackgroundModeSuspended());
   ScopedKeepAlive tmp_keep_alive(KeepAliveOrigin::PANEL_VIEW,
                                  KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive tmp_profile_keep_alive(
+      browser()->profile(), ProfileKeepAliveOrigin::kBrowserWindow);
   browser()->window()->Close();
   ui_test_utils::WaitForBrowserToClose();
   EXPECT_FALSE(browser_shutdown::IsTryingToQuit());
