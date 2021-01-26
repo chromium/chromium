@@ -55,6 +55,7 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) CdmFactoryDaemonProxy
   void GetOutputProtection(mojo::PendingReceiver<cdm::mojom::OutputProtection>
                                output_protection) override;
   void GetHwConfigData(GetHwConfigDataCallback callback) override;
+  void GetScreenResolutions(GetScreenResolutionsCallback callback) override;
 
  private:
   void SendDBusRequest(base::ScopedFD fd, base::OnceClosure callback);

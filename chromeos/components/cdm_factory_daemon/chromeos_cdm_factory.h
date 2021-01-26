@@ -59,6 +59,12 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) ChromeOsCdmFactory
   // for setting up decrypt+decode in the GPU.
   static void GetHwConfigData(GetHwConfigDataCB callback);
 
+  using GetScreenResolutionsCB =
+      base::OnceCallback<void(const std::vector<gfx::Size>& resolutions)>;
+  // Used to get screen resolutions from the browser process so we can optimize
+  // our decode target size.
+  static void GetScreenResolutions(GetScreenResolutionsCB callback);
+
  private:
   void OnVerifiedAccessEnabled(
       const std::string& key_system,

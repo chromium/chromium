@@ -4,6 +4,7 @@
 
 #include "chromeos/components/cdm_factory_daemon/cdm_factory_daemon_proxy.h"
 
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
@@ -18,6 +19,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "ui/display/manager/display_manager.h"
 
 namespace chromeos {
 namespace {
@@ -110,6 +112,17 @@ void CdmFactoryDaemonProxy::GetHwConfigData(GetHwConfigDataCallback callback) {
   EstablishDaemonConnection(
       base::BindOnce(&CdmFactoryDaemonProxy::ProxyGetHwConfigData,
                      base::Unretained(this), std::move(callback)));
+}
+
+void CdmFactoryDaemonProxy::GetScreenResolutions(
+    GetScreenResolutionsCallback callback) {
+  const std::vector<display::DisplaySnapshot*>& displays =
+      ash::Shell::Get()->display_manager()->configurator()->cached_displays();
+  std::vector<gfx::Size> resolutions;
+  for (display::DisplaySnapshot* display : displays)
+    resolutions.emplace_back(display->native_mode()->size());
+
+  std::move(callback).Run(std::move(resolutions));
 }
 
 void CdmFactoryDaemonProxy::SendDBusRequest(base::ScopedFD fd,

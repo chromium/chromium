@@ -9,7 +9,7 @@
 // interface can also be used to connect directly to the OEMCrypto
 // implementation for ARC.
 
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 module chromeos.cdm.mojom;
 
@@ -18,6 +18,7 @@ import "chromeos/components/cdm_factory_daemon/mojom/content_decryption_module.m
 import "chromeos/components/cdm_factory_daemon/mojom/output_protection.mojom";
 import "components/arc/mojom/oemcrypto.mojom";
 import "components/arc/mojom/protected_buffer_manager.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // Next Method ID: 2
 interface CdmFactory {
@@ -41,7 +42,7 @@ interface CdmFactory {
               pending_associated_receiver<ContentDecryptionModule> cdm);
 };
 
-// Next Method ID: 5
+// Next Method ID: 6
 // Used for bootstrapping the connection between Chrome and the daemon, then
 // methods can be invoked to obtain interfaces to perform CDM or OEMCrypto
 // operations.
@@ -76,4 +77,8 @@ interface CdmFactoryDaemon {
   // Otherwise |success| will be false and |config_data| should not be used.
   [MinVersion=2]
   GetHwConfigData@4() => (bool success, array<uint8> config_data);
+
+  // Returns an array of the screen resolutions of all the connected displays.
+  [MinVersion=4]
+  GetScreenResolutions@5() => (array<gfx.mojom.Size> resolutions);
 };

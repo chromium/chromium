@@ -113,6 +113,17 @@ void ChromeOsCdmFactory::GetHwConfigData(GetHwConfigDataCB callback) {
   GetCdmFactoryDaemonRemote()->GetHwConfigData(std::move(callback));
 }
 
+// static
+void ChromeOsCdmFactory::GetScreenResolutions(GetScreenResolutionsCB callback) {
+  if (!GetFactoryTaskRunner()->RunsTasksInCurrentSequence()) {
+    GetFactoryTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(&ChromeOsCdmFactory::GetScreenResolutions,
+                                  std::move(callback)));
+    return;
+  }
+  GetCdmFactoryDaemonRemote()->GetScreenResolutions(std::move(callback));
+}
+
 void ChromeOsCdmFactory::OnVerifiedAccessEnabled(
     const std::string& key_system,
     const media::CdmConfig& cdm_config,
