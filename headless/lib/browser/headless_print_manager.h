@@ -100,6 +100,11 @@ class HeadlessPrintManager
                      ScriptedPrintCallback callback) override;
   void ShowInvalidPrinterSettingsError() override;
   void PrintingFailed(int32_t cookie) override;
+#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
+  void CheckForCancel(int32_t preview_ui_id,
+                      int32_t request_id,
+                      CheckForCancelCallback callback) override;
+#endif
 
   void Reset();
   void ReleaseJob(PrintResult result);

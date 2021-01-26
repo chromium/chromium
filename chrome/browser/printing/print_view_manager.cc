@@ -351,6 +351,13 @@ void PrintViewManager::RequestPrintPreview(
                                    *params);
 }
 
+void PrintViewManager::CheckForCancel(int32_t preview_ui_id,
+                                      int32_t request_id,
+                                      CheckForCancelCallback callback) {
+  std::move(callback).Run(
+      PrintPreviewUI::ShouldCancelRequest(preview_ui_id, request_id));
+}
+
 void PrintViewManager::OnScriptedPrintPreviewReply(IPC::Message* reply_msg) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   print_preview_rfh_->Send(reply_msg);

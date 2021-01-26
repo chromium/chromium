@@ -2484,8 +2484,11 @@ bool PrintRenderFrameHelper::CheckForCancel() {
   const mojom::PrintParams& print_params = *print_pages_params_->params;
   bool cancel = false;
 
-  if (preview_ui_)
-    preview_ui_->CheckForCancel(print_params.preview_request_id, &cancel);
+  if (!GetPrintManagerHost()->CheckForCancel(print_params.preview_ui_id,
+                                             print_params.preview_request_id,
+                                             &cancel)) {
+    cancel = true;
+  }
 
   if (cancel)
     notify_browser_of_print_failure_ = false;

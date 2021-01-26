@@ -59,6 +59,9 @@ class PrintManager : public content::WebContentsObserver,
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   void ShowScriptedPrintPreview(bool source_is_modifiable) override;
   void RequestPrintPreview(mojom::RequestPrintPreviewParamsPtr params) override;
+  void CheckForCancel(int32_t preview_ui_id,
+                      int32_t request_id,
+                      CheckForCancelCallback callback) override;
 #endif
 
  protected:
