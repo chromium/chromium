@@ -10,8 +10,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 
-import androidx.fragment.app.Fragment;
-
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.R;
@@ -24,7 +22,9 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 
 import java.util.List;
 
-/** A {@link Fragment} to handle sign-in within the first run experience. */
+/**
+ * Implementation of {@link SigninFragmentBase} for the first run experience.
+ */
 public class SigninFirstRunFragment extends SigninFragmentBase implements FirstRunFragment {
     // Per-page parameters:
     // TODO(crbug/1168516): Remove CHILD_ACCOUNT_STATUS

@@ -32,7 +32,7 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
-/** This fragment implements sign-in screen for {@link SigninActivity}. */
+/** Implementation of {@link SigninFragmentBase} for {@link SigninActivity}. */
 public class SigninFragment extends SigninFragmentBase {
     private static final String TAG = "SigninFragment";
 

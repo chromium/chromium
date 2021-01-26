@@ -16,7 +16,8 @@ import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 
 /**
- * Allows user to pick an account and sign in. Started from Settings and various sign-in promos.
+ * Allows the user to pick an account, sign in and enable sync. Started from Settings and various
+ * sign-in promos. For more details see {@link SigninFragmentBase}.
  */
 // TODO(https://crbug.com/820491): extend AsyncInitializationActivity.
 public class SigninActivity extends ChromeBaseAppCompatActivity {

@@ -65,8 +65,12 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * This fragment implements sign-in screen with account picker and descriptions of signin-related
- * features. Configuration for this fragment is provided {@link #getArguments}.
+ * Contains the common logic of fragments used to sign in and enable sync.
+ * The account to sync is selected among the list of Google Accounts present on
+ * the device. A new account can also be added to the list, e.g. if there was
+ * none at first.
+ * Derived classes must implement {@link #onSigninAccepted}/{@link #onSigninRefused} to define
+ * what happens after the signin flow.
  */
 public abstract class SigninFragmentBase
         extends Fragment implements AccountPickerCoordinator.Listener {
