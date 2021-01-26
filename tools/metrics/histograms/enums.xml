@@ -77146,6 +77146,9 @@ Full version information for the fingerprint enum values:
 </enum>
 
 <enum name="VideoCaptureEvent">
+  <obsolete>
+    Expired in M82; removed in M90.
+  </obsolete>
   <int value="0" label="Starting video capture"/>
   <int value="1" label="Stopping video capture normally"/>
   <int value="2" label="Stopping video capture due to error"/>

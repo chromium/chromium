@@ -4108,8 +4108,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Measures the time taken for VideoCaptureManager::</summary>
 </histogram>
 
+<histogram name="Media.VideoCaptureManager.DeviceSessionWasLocked"
+    enum="Boolean" expires_after="M95">
+  <owner>dalecurtis@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <summary>
+    Indicates if a device capture session encountered a screen lock during its
+    lifetime. An entry is recorded once upon session closure.
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCaptureManager.Event" enum="VideoCaptureEvent"
     expires_after="M82">
+  <obsolete>
+    Expired in M82.
+  </obsolete>
   <owner>chfremer@chromium.org</owner>
   <owner>mcasas@chromium.org</owner>
   <summary>
