@@ -309,16 +309,16 @@ public class TabSelectionEditorTest {
     // clang-format off
     @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.O_MR1, supported_abis_includes = "x86",
         message = "https://crbug.com/1075548")
-    public void testShowTabsWithPreSelectedTabs_10Tabs() {
+    public void testShowTabsWithPreSelectedTabs_6Tabs() {
         // clang-format on
-        prepareBlankTab(11, false);
-        int preSelectedTabCount = 10;
+        prepareBlankTab(7, false);
+        int preSelectedTabCount = 6;
         List<Tab> tabs = getTabsInCurrentTabModel();
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mTabSelectionEditorController.show(tabs, preSelectedTabCount));
 
-        mRobot.resultRobot.verifyToolbarSelectionText("10 selected")
+        mRobot.resultRobot.verifyToolbarSelectionText("6 selected")
                 .verifyHasItemViewTypeAtAdapterPosition(
                         preSelectedTabCount, TabProperties.UiType.DIVIDER)
                 .verifyDividerAlwaysStartsAtTheEdgeOfScreenAtPosition(preSelectedTabCount);
@@ -352,7 +352,7 @@ public class TabSelectionEditorTest {
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
 
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
-        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view");
+        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_0.85");
     }
 
     @Test
@@ -373,7 +373,7 @@ public class TabSelectionEditorTest {
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
 
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
-        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_one_selected_tab");
+        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_one_selected_tab_0.85");
     }
 
     @Test
@@ -394,7 +394,7 @@ public class TabSelectionEditorTest {
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
 
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
-        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_one_pre_selected_tab");
+        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_one_pre_selected_tab_0.85");
     }
 
     @Test
@@ -415,7 +415,7 @@ public class TabSelectionEditorTest {
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
 
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
-        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_two_pre_selected_tab");
+        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_two_pre_selected_tab_0.85");
     }
 
     @Test
@@ -436,7 +436,7 @@ public class TabSelectionEditorTest {
         mRobot.resultRobot.verifyTabSelectionEditorIsVisible();
 
         ChromeRenderTestRule.sanitize(mTabSelectionEditorLayout);
-        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_all_pre_selected_tab");
+        mRenderTestRule.render(mTabSelectionEditorLayout, "grid_view_all_pre_selected_tab_0.85");
     }
 
     @Test
