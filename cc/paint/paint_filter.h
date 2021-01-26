@@ -17,10 +17,6 @@
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "third_party/skia/include/core/SkPoint3.h"
 #include "third_party/skia/include/core/SkRegion.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
-#include "third_party/skia/include/effects/SkDisplacementMapEffect.h"
-#include "third_party/skia/include/effects/SkDropShadowImageFilter.h"
-#include "third_party/skia/include/effects/SkMatrixConvolutionImageFilter.h"
 
 namespace viz {
 class GLRenderer;
