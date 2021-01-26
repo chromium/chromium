@@ -128,7 +128,9 @@ FlocIdProviderImpl::FlocIdProviderImpl(
   MaybeTriggerImmediateComputation();
 }
 
-FlocIdProviderImpl::~FlocIdProviderImpl() = default;
+FlocIdProviderImpl::~FlocIdProviderImpl() {
+  g_browser_process->floc_sorting_lsh_clusters_service()->RemoveObserver(this);
+}
 
 std::string FlocIdProviderImpl::GetInterestCohortForJsApi(
     const GURL& url,
