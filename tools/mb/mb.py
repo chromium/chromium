@@ -694,18 +694,26 @@ class MetaBuildWrapper(object):
         return ret
       task_json = self.ReadFile(json_file)
       task_id = json.loads(task_json)["tasks"][0]['task_id']
+      collect_output = self.PathJoin(json_dir, 'collect_output.json')
+      cmd = [
+          self.PathJoin('tools', 'luci-go', 'swarming'),
+          'collect',
+          '-server',
+          swarming_server,
+          '-task-output-stdout=console',
+          '-task-summary-json',
+          collect_output,
+          task_id,
+      ]
+      ret, _, _ = self.Run(cmd, force_verbose=True, buffer_output=False)
+      if ret != 0:
+        return ret
+      collect_json = json.loads(self.ReadFile(collect_output))
+      # The exit_code field is not included if the task was successful.
+      ret = collect_json.get(task_id, {}).get('results', {}).get('exit_code', 0)
     finally:
       if json_dir:
         self.RemoveDirectory(json_dir)
-    cmd = [
-        self.PathJoin('tools', 'luci-go', 'swarming'),
-        'collect',
-        '-server',
-        swarming_server,
-        '-task-output-stdout=console',
-        task_id,
-    ]
-    ret, _, _ = self.Run(cmd, force_verbose=True, buffer_output=False)
     return ret
 
   def _RunLocallyIsolated(self, build_dir, target):

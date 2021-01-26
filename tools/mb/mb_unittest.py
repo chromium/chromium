@@ -724,9 +724,11 @@ class UnitTest(unittest.TestCase):
     }
 
     task_json = json.dumps({'tasks': [{'task_id': '00000'}]})
+    collect_json = json.dumps({'00000': {'results': {}}})
 
     mbw = self.fake_mbw(files=files)
     mbw.files[mbw.PathJoin(mbw.TempDir(), 'task.json')] = task_json
+    mbw.files[mbw.PathJoin(mbw.TempDir(), 'collect_output.json')] = collect_json
     original_impl = mbw.ToSrcRelPath
 
     def to_src_rel_path_stub(path):
@@ -740,9 +742,56 @@ class UnitTest(unittest.TestCase):
                 'base_unittests'], mbw=mbw, ret=0)
     mbw = self.fake_mbw(files=files)
     mbw.files[mbw.PathJoin(mbw.TempDir(), 'task.json')] = task_json
+    mbw.files[mbw.PathJoin(mbw.TempDir(), 'collect_output.json')] = collect_json
     mbw.ToSrcRelPath = to_src_rel_path_stub
     self.check(['run', '-s', '-c', 'debug_goma', '-d', 'os', 'Win7',
                 '//out/Default', 'base_unittests'], mbw=mbw, ret=0)
+
+  def test_run_swarmed_task_failure(self):
+    files = {
+        '/fake_src/testing/buildbot/gn_isolate_map.pyl':
+        ("{'base_unittests': {"
+         "  'label': '//base:base_unittests',"
+         "  'type': 'console_test_launcher',"
+         "}}\n"),
+        '/fake_src/out/Default/base_unittests.runtime_deps':
+        ("base_unittests\n"),
+        '/fake_src/out/Default/base_unittests.archive.json':
+        ("{\"base_unittests\":\"fake_hash\"}"),
+        '/fake_src/third_party/depot_tools/cipd_manifest.txt':
+        ("# vpython\n"
+         "/some/vpython/pkg  git_revision:deadbeef\n"),
+    }
+
+    task_json = json.dumps({'tasks': [{'task_id': '00000'}]})
+    collect_json = json.dumps({'00000': {'results': {'exit_code': 1}}})
+
+    mbw = self.fake_mbw(files=files)
+    mbw.files[mbw.PathJoin(mbw.TempDir(), 'task.json')] = task_json
+    mbw.files[mbw.PathJoin(mbw.TempDir(), 'collect_output.json')] = collect_json
+    original_impl = mbw.ToSrcRelPath
+
+    def to_src_rel_path_stub(path):
+      if path.endswith('base_unittests.archive.json'):
+        return 'base_unittests.archive.json'
+      return original_impl(path)
+
+    mbw.ToSrcRelPath = to_src_rel_path_stub
+
+    self.check(
+        ['run', '-s', '-c', 'debug_goma', '//out/Default', 'base_unittests'],
+        mbw=mbw,
+        ret=1)
+    mbw = self.fake_mbw(files=files)
+    mbw.files[mbw.PathJoin(mbw.TempDir(), 'task.json')] = task_json
+    mbw.files[mbw.PathJoin(mbw.TempDir(), 'collect_output.json')] = collect_json
+    mbw.ToSrcRelPath = to_src_rel_path_stub
+    self.check([
+        'run', '-s', '-c', 'debug_goma', '-d', 'os', 'Win7', '//out/Default',
+        'base_unittests'
+    ],
+               mbw=mbw,
+               ret=1)
 
   def test_lookup(self):
     self.check(['lookup', '-c', 'debug_goma'], ret=0,
