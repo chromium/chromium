@@ -143,8 +143,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Android.BackgroundTaskScheduler.ExactTaskCreated"
-    enum="BackgroundTaskId" expires_after="M91">
-  <owner>ioanastefan@chromium.org</owner>
+    enum="BackgroundTaskId" expires_after="2021-12-01">
+  <owner>fgorski@chromium.org</owner>
   <owner>nator@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -178,7 +178,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.BackgroundTaskScheduler.TaskCreated.WithExpiration"
     enum="BackgroundTaskId" expires_after="2021-12-01">
-  <owner>ioanastefan@chromium.org</owner>
+  <owner>fgorski@chromium.org</owner>
   <owner>nator@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -189,7 +189,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.BackgroundTaskScheduler.TaskCreated.WithoutExpiration"
     enum="BackgroundTaskId" expires_after="2021-12-01">
-  <owner>ioanastefan@chromium.org</owner>
+  <owner>fgorski@chromium.org</owner>
   <owner>nator@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
@@ -200,7 +200,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.BackgroundTaskScheduler.TaskExpired"
     enum="BackgroundTaskId" expires_after="2021-12-01">
-  <owner>ioanastefan@chromium.org</owner>
+  <owner>fgorski@chromium.org</owner>
   <owner>nator@chromium.org</owner>
   <owner>knollr@chromium.org</owner>
   <summary>
