@@ -3647,7 +3647,6 @@ test("unit_tests") {
     "../browser/policy/messaging_layer/public/report_queue_configuration_unittest.cc",
     "../browser/policy/messaging_layer/public/report_queue_unittest.cc",
     "../browser/policy/messaging_layer/storage/resources/resource_interface_unittest.cc",
-    "../browser/policy/messaging_layer/storage/storage_queue_stress_test.cc",
     "../browser/policy/messaging_layer/storage/storage_queue_unittest.cc",
     "../browser/policy/messaging_layer/storage/storage_unittest.cc",
     "../browser/policy/messaging_layer/storage/test_storage_module.cc",
