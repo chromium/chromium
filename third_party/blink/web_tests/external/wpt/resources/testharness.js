@@ -1189,7 +1189,7 @@ policies and contribution forms [3].
                 if (settings.debug) {
                     console.debug("ASSERT", name, tests.current_test.name, args);
                 }
-                if (settings.output) {
+                if (tests.output) {
                     tests.set_assert(name, ...args);
                 }
                 rv = f(...args);
@@ -1204,10 +1204,10 @@ policies and contribution forms [3].
                  }
                 throw e;
             } finally {
-                if (settings.output && !stack) {
+                if (tests.output && !stack) {
                     stack = get_stack();
                 }
-                if (settings.output) {
+                if (tests.output) {
                     tests.set_assert_status(status, stack);
                 }
             }
@@ -2780,6 +2780,7 @@ policies and contribution forms [3].
 
         this.current_test = null;
         this.asserts_run = [];
+        this.output = settings.output;
 
         this.status = new TestsStatus();
 
@@ -2828,6 +2829,8 @@ policies and contribution forms [3].
                     }
                 } else if (p == "hide_test_state") {
                     this.hide_test_state = value;
+                } else if (p == "output") {
+                    this.output = value;
                 }
             }
         }
