@@ -510,7 +510,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   // contents.
   virtual void RequestToLockMouse(WebContents* web_contents,
                                   bool user_gesture,
-                                  bool last_unlocked_by_target);
+                                  bool last_unlocked_by_target) {}
 
   // Notification that the page has lost the mouse lock.
   virtual void LostMouseLock() {}
@@ -518,7 +518,7 @@ class CONTENT_EXPORT WebContentsDelegate {
   // Requests keyboard lock. Once the request is approved or rejected,
   // GotResponseToKeyboardLockRequest() will be called on |web_contents|.
   virtual void RequestKeyboardLock(WebContents* web_contents,
-                                   bool esc_key_locked);
+                                   bool esc_key_locked) {}
 
   // Notification that the keyboard lock request has been canceled.
   virtual void CancelKeyboardLockRequest(WebContents* web_contents) {}
