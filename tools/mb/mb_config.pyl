@@ -710,7 +710,7 @@
       'chromeos-betty-arc-r-chrome': 'chromeos_betty-arc-r_include_unwind_tables_official_use_fake_dbus_clients',
       'chromeos-betty-pi-arc-chrome-dchecks': 'chromeos_betty-pi-arc_dchecks',
       'chromeos-eve-arc-r-chrome': 'chromeos_eve-arc-r_include_unwind_tables_official',
-      'chromeos-amd64-generic-lacros-chrome': 'chromeos_amd64-generic_lacros_official',
+      'chromeos-amd64-generic-lacros-chrome-fyi': 'chromeos_amd64-generic_lacros_official',
     },
 
     'internal.client.kitchensync': {

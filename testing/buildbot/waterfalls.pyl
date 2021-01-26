@@ -6255,7 +6255,7 @@
     'name': 'internal.chromeos.fyi',
     'mixins': ['chrome-tester-service-account'],
     'machines': {
-      'chromeos-amd64-generic-lacros-chrome': {
+      'chromeos-amd64-generic-lacros-chrome-fyi': {
         'additional_compile_targets': [
           'chrome',
         ],

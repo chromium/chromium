@@ -1,5 +1,5 @@
 {
-  "chromeos-amd64-generic-lacros-chrome": {
+  "chromeos-amd64-generic-lacros-chrome-fyi": {
     "args_file": "//build/args/chromeos/amd64-generic.gni",
     "gn_args": {
       "chromeos_is_browser_only": true,
