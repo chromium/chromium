@@ -52,6 +52,11 @@ _GN_ARG_PRESETS = {
     'incremental_install': _COMMON_ARGS + ['incremental_install=true'],
 }
 
+_TARGETS = {
+    'bundle': 'chrome_modern_public_bundle',
+    'apk': 'chrome_public_apk',
+}
+
 _BENCHMARKS = {
     'all_incremental': {
         'suite': [
@@ -70,49 +75,42 @@ _BENCHMARKS = {
     },
     'chrome_java_nosig': {
         'kind': 'incremental',
-        'target': 'chrome_public_apk',
         'from_string': '"Url',
         'to_string': '"Url1',
         'change_file': _URL_BAR,
     },
     'chrome_java_sig': {
         'kind': 'incremental',
-        'target': 'chrome_public_apk',
         'from_string': 'UrlBar";',
         'to_string': 'UrlBar";public void NewInterfaceMethod(){}',
         'change_file': _URL_BAR,
     },
     'chrome_java_res': {
         'kind': 'incremental',
-        'target': 'chrome_public_apk',
         'from_string': '14181C',
         'to_string': '14181D',
         'change_file': 'chrome/android/java/res/values/colors.xml',
     },
     'base_java_nosig': {
         'kind': 'incremental',
-        'target': 'chrome_public_apk',
         'from_string': '"SysUtil',
         'to_string': '"SysUtil1',
         'change_file': 'base/android/java/src/org/chromium/base/SysUtils.java',
     },
     'base_java_sig': {
         'kind': 'incremental',
-        'target': 'chrome_public_apk',
         'from_string': 'SysUtils";',
         'to_string': 'SysUtils";public void NewInterfaceMethod(){}',
         'change_file': 'base/android/java/src/org/chromium/base/SysUtils.java',
     },
     'turbine_headers': {
         'kind': 'incremental',
-        'target': 'chrome_public_apk',
         'from_string': '# found in the LICENSE file.',
         'to_string': '#temporary_edit_for_benchmark.py',
         'change_file': 'build/android/gyp/turbine.py',
     },
     'compile_java': {
         'kind': 'incremental',
-        'target': 'chrome_public_apk',
         'from_string': '# found in the LICENSE file.',
         'to_string': '#temporary_edit_for_benchmark.py',
         'change_file': 'build/android/gyp/compile_java.py',
@@ -207,7 +205,7 @@ def _parse_benchmarks(benchmarks):
             yield benchmark, info
 
 
-def run_benchmarks(benchmarks, gn_args, output_directory, repeat):
+def run_benchmarks(benchmarks, gn_args, output_directory, target, repeat):
     out_dir = os.path.relpath(output_directory, _SRC_ROOT)
     args_gn_path = os.path.join(out_dir, 'args.gn')
     with _backup_file(args_gn_path):
@@ -221,7 +219,9 @@ def run_benchmarks(benchmarks, gn_args, output_directory, repeat):
             time_taken = []
             for run_num in range(repeat):
                 logging.info(f'Run number: {run_num + 1}')
-                for elapsed in _run_benchmark(out_dir=out_dir, **info):
+                for elapsed in _run_benchmark(out_dir=out_dir,
+                                              target=target,
+                                              **info):
                     logging.info(f'Time: {elapsed:.1f}s')
                     time_taken.append(elapsed)
             logging.info(f'Completed {name}')
@@ -250,6 +250,9 @@ def main():
                         choices=_GN_ARG_PRESETS.keys(),
                         default='fast_local_dev',
                         help='The set of GN args to use for these benchmarks.')
+    parser.add_argument('--bundle',
+                        action='store_true',
+                        help='Switch the default target from apk to bundle.')
     parser.add_argument('-r',
                         '--repeat',
                         type=int,
@@ -280,11 +283,18 @@ def main():
     logging.basicConfig(
         level=level, format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
+    if args.bundle:
+        target = _TARGETS['bundle']
+    else:
+        target = _TARGETS['apk']
+
     gn_args = _GN_ARG_PRESETS[args.args]
-    results = run_benchmarks(args.benchmark, gn_args, out_dir, args.repeat)
+    results = run_benchmarks(args.benchmark, gn_args, out_dir, target,
+                             args.repeat)
 
     print('Summary')
     print(f'gn args: {" ".join(gn_args)}')
+    print(f'target: {target}')
     for name, result in results:
         print(f'{name}: {_format_result(result)}')
 
