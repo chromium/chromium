@@ -12,7 +12,7 @@ android_library("chrome_java_test_pagecontroller") {
     "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/PageController.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/android/PermissionDialog.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/first_run/DataSaverController.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/first_run/SyncController.java",
+    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/first_run/SyncConfirmationViewPageController.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/first_run/TOSController.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/notifications/DownloadNotificationController.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/ntp/ChromeMenu.java",
