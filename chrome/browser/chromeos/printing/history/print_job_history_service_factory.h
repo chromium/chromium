@@ -11,7 +11,11 @@
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
+
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 
 namespace chromeos {
 
@@ -37,6 +41,8 @@ class PrintJobHistoryServiceFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  void RegisterProfilePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
 
   DISALLOW_COPY_AND_ASSIGN(PrintJobHistoryServiceFactory);
 };

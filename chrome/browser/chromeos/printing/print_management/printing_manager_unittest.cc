@@ -10,15 +10,16 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/chromeos/printing/cups_print_job.h"
+#include "chrome/browser/chromeos/printing/history/print_job_history_service.h"
 #include "chrome/browser/chromeos/printing/history/print_job_history_service_impl.h"
 #include "chrome/browser/chromeos/printing/history/test_print_job_database.h"
-#include "chrome/browser/chromeos/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/chromeos/printing/test_cups_print_job_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -85,7 +86,8 @@ class PrintingManagerTest : public ::testing::Test {
   PrintingManagerTest() {
     test_prefs_.SetInitializationCompleted();
     PrintJobHistoryService::RegisterProfilePrefs(test_prefs_.registry());
-    PrintingManagerFactory::RegisterProfilePrefs(test_prefs_.registry());
+    test_prefs_.registry()->RegisterBooleanPref(
+        prefs::kDeletePrintJobHistoryAllowed, true);
 
     print_job_manager_ = std::make_unique<TestCupsPrintJobManager>(&profile_);
     auto print_job_database = std::make_unique<TestPrintJobDatabase>();

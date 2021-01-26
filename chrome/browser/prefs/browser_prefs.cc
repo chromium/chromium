@@ -19,7 +19,6 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/chromeos/policy/adb_sideloading_allowance_mode_policy_handler.h"
 #include "chrome/browser/chromeos/policy/tpm_auto_update_mode_policy_handler.h"
-#include "chrome/browser/chromeos/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/chromeos/scheduler_configuration_manager.h"
 #include "chrome/browser/component_updater/component_updater_prefs.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
@@ -323,7 +322,6 @@
 #include "chrome/browser/chromeos/preferences.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/enterprise_printers_provider.h"
-#include "chrome/browser/chromeos/printing/history/print_job_history_service.h"
 #include "chrome/browser/chromeos/release_notes/release_notes_storage.h"
 #include "chrome/browser/chromeos/settings/device_settings_cache.h"
 #include "chrome/browser/chromeos/system/automatic_reboot_manager.h"
@@ -1037,9 +1035,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::quick_unlock::FingerprintStorage::RegisterProfilePrefs(registry);
   chromeos::quick_unlock::PinStoragePrefs::RegisterProfilePrefs(registry);
   chromeos::Preferences::RegisterProfilePrefs(registry);
-  chromeos::printing::print_management::PrintingManagerFactory ::
-      RegisterProfilePrefs(registry);
-  chromeos::PrintJobHistoryService::RegisterProfilePrefs(registry);
   chromeos::EnterprisePrintersProvider::RegisterProfilePrefs(registry);
   chromeos::parent_access::ParentAccessService::RegisterProfilePrefs(registry);
   chromeos::quick_answers::prefs::RegisterProfilePrefs(registry);
