@@ -513,6 +513,10 @@ bool Controller::ShouldShowWarning() {
          state_ == AutofillAssistantState::PROMPT;
 }
 
+void Controller::SetShowFeedbackChip(bool show_feedback_chip) {
+  show_feedback_chip_on_graceful_shutdown_ = show_feedback_chip;
+}
+
 void Controller::AddNavigationListener(
     ScriptExecutorDelegate::NavigationListener* listener) {
   navigation_listeners_.AddObserver(listener);
@@ -1137,7 +1141,8 @@ void Controller::OnScriptExecuted(const std::string& script_path,
 
     case ScriptExecutor::SHUTDOWN_GRACEFULLY:
       if (!tracking_) {
-        EnterStoppedState(/*show_feedback_chip=*/false);
+        EnterStoppedState(
+            /*show_feedback_chip=*/show_feedback_chip_on_graceful_shutdown_);
         RecordDropOutOrShutdown(Metrics::DropOutReason::SCRIPT_SHUTDOWN);
         return;
       }

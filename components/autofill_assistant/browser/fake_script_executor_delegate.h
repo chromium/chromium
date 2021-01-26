@@ -100,6 +100,7 @@ class FakeScriptExecutorDelegate : public ScriptExecutorDelegate {
   void SetOverlayBehavior(
       ConfigureUiStateProto::OverlayBehavior overlay_behavior) override;
   void SetBrowseModeInvisible(bool invisible) override;
+  void SetShowFeedbackChip(bool show_feedback_chip) override;
 
   bool ShouldShowWarning() override;
 
