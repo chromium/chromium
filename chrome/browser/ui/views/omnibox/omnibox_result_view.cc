@@ -428,15 +428,17 @@ bool OmniboxResultView::GetMatchSelected() const {
              OmniboxPopupModel::FOCUSED_BUTTON_HEADER;
 }
 
-views::Button* OmniboxResultView::GetSecondaryButton() {
-  if (suggestion_tab_switch_button_->GetVisible())
-    return suggestion_tab_switch_button_;
-
-  if (remove_suggestion_button_->GetVisible())
+views::Button* OmniboxResultView::GetActiveAuxiliaryButtonForAccessibility() {
+  if (popup_contents_view_->model()->selected_line_state() ==
+      OmniboxPopupModel::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
     return remove_suggestion_button_;
+  }
 
   if (OmniboxFieldTrial::IsSuggestionButtonRowEnabled()) {
     return button_row_->GetActiveButton();
+  } else if (popup_contents_view_->model()->selected_line_state() ==
+             OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH) {
+    return suggestion_tab_switch_button_;
   }
 
   return nullptr;

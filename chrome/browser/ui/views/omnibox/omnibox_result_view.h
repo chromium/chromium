@@ -80,9 +80,8 @@ class OmniboxResultView : public views::View,
   // false if this line's header is selected (instead of the match itself).
   bool GetMatchSelected() const;
 
-  // Returns the visible (and keyboard-focusable) secondary button, or nullptr
-  // if none exists for this suggestion.
-  views::Button* GetSecondaryButton();
+  // Returns the focused button or nullptr if none exists for this suggestion.
+  views::Button* GetActiveAuxiliaryButtonForAccessibility();
 
   OmniboxPartState GetThemeState() const;
 

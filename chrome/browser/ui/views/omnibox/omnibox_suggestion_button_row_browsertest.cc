@@ -127,15 +127,23 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
     OmniboxPopupContentsView* popup_view =
         GetOmniboxViewViews()->GetPopupContentsViewForTesting();
 
+    popup_view->model()->SetSelection(
+        OmniboxPopupModel::Selection(0, OmniboxPopupModel::KEYWORD_MODE));
     if (!VerifyActiveButtonText(popup_view->result_view_at(0), "Search"))
       return false;
 
+    popup_view->model()->SetSelection(OmniboxPopupModel::Selection(
+        1, OmniboxPopupModel::FOCUSED_BUTTON_TAB_SWITCH));
     if (!VerifyActiveButtonText(popup_view->result_view_at(1), "Switch"))
       return false;
 
+    popup_view->model()->SetSelection(OmniboxPopupModel::Selection(
+        2, OmniboxPopupModel::FOCUSED_BUTTON_PEDAL));
     if (!VerifyActiveButtonText(popup_view->result_view_at(2), "Clear"))
       return false;
 
+    popup_view->model()->SetSelection(
+        OmniboxPopupModel::Selection(3, OmniboxPopupModel::KEYWORD_MODE));
     if (!VerifyActiveButtonText(popup_view->result_view_at(3), "Search"))
       return false;
 
@@ -158,8 +166,8 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
 
   bool VerifyActiveButtonText(OmniboxResultView* result_view,
                               std::string text) {
-    views::LabelButton* button =
-        static_cast<views::LabelButton*>(result_view->GetSecondaryButton());
+    views::LabelButton* button = static_cast<views::LabelButton*>(
+        result_view->GetActiveAuxiliaryButtonForAccessibility());
     return button->GetText().find(base::ASCIIToUTF16(text)) !=
            std::string::npos;
   }

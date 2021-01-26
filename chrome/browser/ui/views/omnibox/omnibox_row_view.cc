@@ -358,9 +358,7 @@ views::View* OmniboxRowView::GetActiveAuxiliaryButtonForAccessibility() const {
     return header_view_->header_toggle_button();
   }
 
-  // TODO(tommycli): This needs to be updated to properly support the
-  // suggestion button row. The name would need to be updated too.
-  return result_view_->GetSecondaryButton();
+  return result_view_->GetActiveAuxiliaryButtonForAccessibility();
 }
 
 gfx::Insets OmniboxRowView::GetInsets() const {

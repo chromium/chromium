@@ -219,25 +219,15 @@ void OmniboxSuggestionButtonRowView::OnOmniboxBackgroundChange(
 }
 
 views::Button* OmniboxSuggestionButtonRowView::GetActiveButton() const {
-  std::vector<OmniboxSuggestionRowButton*> visible_buttons;
-  if (keyword_button_->GetVisible())
-    visible_buttons.push_back(keyword_button_);
-  if (tab_switch_button_->GetVisible())
-    visible_buttons.push_back(tab_switch_button_);
-  if (pedal_button_->GetVisible())
-    visible_buttons.push_back(pedal_button_);
+  std::vector<OmniboxSuggestionRowButton*> buttons{
+      keyword_button_, tab_switch_button_, pedal_button_};
 
-  if (visible_buttons.empty())
-    return nullptr;
-
-  // Find first visible button that matches model selection.
-  auto selected_button =
-      std::find_if(visible_buttons.begin(), visible_buttons.end(),
-                   [=](OmniboxSuggestionRowButton* button) {
-                     return model()->selection() == button->selection();
-                   });
-  return selected_button == visible_buttons.end() ? visible_buttons.front()
-                                                  : *selected_button;
+  // Find the button that matches model selection.
+  auto selected_button = std::find_if(
+      buttons.begin(), buttons.end(), [=](OmniboxSuggestionRowButton* button) {
+        return model()->selection() == button->selection();
+      });
+  return selected_button == buttons.end() ? nullptr : *selected_button;
 }
 
 const OmniboxPopupModel* OmniboxSuggestionButtonRowView::model() const {
