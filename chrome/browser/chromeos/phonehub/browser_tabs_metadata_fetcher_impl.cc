@@ -8,6 +8,7 @@
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/sync_sessions/synced_session.h"
+#include "components/ukm/scheme_constants.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -35,9 +36,17 @@ GetSortedMetadataWithoutFavicons(const sync_sessions::SyncedSession* session) {
 
       GURL tab_url = current_navigation.virtual_url();
 
-      // If the url is incorrectly formatted, or is empty, do not proceed with
-      // storing its metadata.
-      if (!tab_url.is_valid())
+      // URLs with certain schemes should be ignored because they are
+      // platform specific and may behave differently on CrOS; it could
+      // provide a bad experience to display any of them as synced tabs.
+      bool should_be_omitted = tab_url.SchemeIs(ukm::kChromeUIScheme) ||
+                               tab_url.SchemeIs(ukm::kAppScheme) ||
+                               tab_url.SchemeIs(ukm::kExtensionScheme);
+
+      // If the url is incorrectly formatted, is empty, or has a
+      // scheme that should be omitted, do not proceed with storing its
+      // metadata.
+      if (!tab_url.is_valid() || should_be_omitted)
         continue;
 
       const base::string16& title = current_navigation.title();
