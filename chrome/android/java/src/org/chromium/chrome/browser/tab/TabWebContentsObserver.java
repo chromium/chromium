@@ -296,8 +296,8 @@ public class TabWebContentsObserver extends TabWebContentsUserData {
             if (navigation.errorCode() != NetError.OK) {
                 if (navigation.isInMainFrame()) mTab.didFailPageLoad(navigation.errorCode());
 
-                recordErrorInPolicyAuditor(navigation.getUrlString(), navigation.errorDescription(),
-                        navigation.errorCode());
+                recordErrorInPolicyAuditor(navigation.getUrl().getSpec(),
+                        navigation.errorDescription(), navigation.errorCode());
             }
             mLastUrl = navigation.getUrl();
 

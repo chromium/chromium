@@ -83,17 +83,6 @@ public class NavigationHandle {
     /**
      * The URL the frame is navigating to.  This may change during the navigation when encountering
      * a server redirect.
-     *
-     * @deprecated Please use {@link #getUrl} instead.
-     */
-    @Deprecated
-    public String getUrlString() {
-        return mUrl.getPossiblyInvalidSpec();
-    }
-
-    /**
-     * The URL the frame is navigating to.  This may change during the navigation when encountering
-     * a server redirect.
      */
     public GURL getUrl() {
         return mUrl;

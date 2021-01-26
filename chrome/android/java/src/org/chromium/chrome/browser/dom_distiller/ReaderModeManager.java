@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.SystemClock;
-import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
@@ -82,7 +81,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
             "org.chromium.chrome.browser.dom_distiller.EXTRA_READER_MODE_PARENT";
 
     /** The url of the last page visited if the last page was reader mode page.  Otherwise null. */
-    private String mReaderModePageUrl;
+    private GURL mReaderModePageUrl;
 
     /** Whether the fact that the current web page was distillable or not has been recorded. */
     private boolean mIsUmaRecorded;
@@ -101,7 +100,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
      * The URL that distiller is using for this tab. This is used to check if a result comes back
      * from distiller and the user has already loaded a new URL.
      */
-    private String mDistillerUrl;
+    private GURL mDistillerUrl;
 
     /** Used to flag the the infobar was shown and recorded by UMA. */
     private boolean mShowInfoBarRecorded;
@@ -194,12 +193,11 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         if (mIsDismissed) return;
 
         mDistillationStatus = DistillationStatus.NOT_POSSIBLE;
-        mDistillerUrl = shownTab.getUrlString();
+        mDistillerUrl = shownTab.getUrl();
 
         if (mDistillabilityObserver == null) setDistillabilityObserver(shownTab);
 
-        if (DomDistillerUrlUtils.isDistilledPage(shownTab.getUrlString())
-                && !mIsViewingReaderModePage) {
+        if (DomDistillerUrlUtils.isDistilledPage(shownTab.getUrl()) && !mIsViewingReaderModePage) {
             onStartedReaderMode();
         }
 
@@ -250,18 +248,18 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     public void onContentChanged(Tab tab) {
         // If the content change was because of distiller switching web contents or Reader Mode has
         // already been dismissed for this tab do nothing.
-        if (mIsDismissed && !DomDistillerUrlUtils.isDistilledPage(tab.getUrlString())) return;
+        if (mIsDismissed && !DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) return;
 
         // If the tab state already existed, only reset the relevant data. Things like view duration
         // need to be preserved.
         mDistillationStatus = DistillationStatus.NOT_POSSIBLE;
-        mDistillerUrl = tab.getUrlString();
+        mDistillerUrl = tab.getUrl();
 
         if (tab.getWebContents() != null) {
             mWebContentsObserver = createWebContentsObserver();
-            if (DomDistillerUrlUtils.isDistilledPage(tab.getUrlString())) {
+            if (DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
                 mDistillationStatus = DistillationStatus.STARTED;
-                mReaderModePageUrl = tab.getUrlString();
+                mReaderModePageUrl = tab.getUrl();
             }
         }
     }
@@ -322,10 +320,10 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
                 if (mIsDestroyed) return;
 
-                mDistillerUrl = navigation.getUrlString();
-                if (DomDistillerUrlUtils.isDistilledPage(navigation.getUrlString())) {
+                mDistillerUrl = navigation.getUrl();
+                if (DomDistillerUrlUtils.isDistilledPage(navigation.getUrl())) {
                     mDistillationStatus = DistillationStatus.STARTED;
-                    mReaderModePageUrl = navigation.getUrlString();
+                    mReaderModePageUrl = navigation.getUrl();
                 }
             }
 
@@ -349,9 +347,10 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                 if (mIsDestroyed) return;
 
                 mDistillationStatus = DistillationStatus.POSSIBLE;
-                if (!TextUtils.equals(navigation.getUrlString(),
-                            DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(
-                                    mReaderModePageUrl))) {
+                if (mReaderModePageUrl == null
+                        || !navigation.getUrl().equals(
+                                DomDistillerUrlUtils.getOriginalUrlFromDistillerUrl(
+                                        mReaderModePageUrl))) {
                     mDistillationStatus = DistillationStatus.NOT_POSSIBLE;
                     mIsUmaRecorded = false;
                 }
@@ -373,7 +372,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
                 }
                 mShowInfoBarRecorded = false;
 
-                if (mTab != null && !DomDistillerUrlUtils.isDistilledPage(mTab.getUrlString())
+                if (mTab != null && !DomDistillerUrlUtils.isDistilledPage(mTab.getUrl())
                         && mIsViewingReaderModePage) {
                     long timeMs = onExitReaderMode();
                     recordReaderModeViewDuration(timeMs);
@@ -501,7 +500,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     private void setDistillabilityObserver(final Tab tabToObserve) {
         mDistillabilityObserver = (tab, isDistillable, isLast, isMobileOptimized) -> {
             // Make sure the page didn't navigate while waiting for a response.
-            if (!tab.getUrlString().equals(mDistillerUrl)) return;
+            if (!tab.getUrl().equals(mDistillerUrl)) return;
 
             if (isDistillable
                     && !(isMobileOptimized
