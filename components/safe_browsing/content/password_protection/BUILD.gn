@@ -12,6 +12,8 @@ source_set("password_protection") {
       "password_protection_navigation_throttle.h",
       "password_protection_request.cc",
       "password_protection_request.h",
+      "password_protection_request_content.cc",
+      "password_protection_request_content.h",
       "password_protection_service.cc",
       "password_protection_service.h",
       "request_canceler_content.cc",

@@ -8,7 +8,7 @@
 
 #include "base/test/bind.h"
 #include "components/safe_browsing/content/password_protection/mock_password_protection_service.h"
-#include "components/safe_browsing/content/password_protection/password_protection_request.h"
+#include "components/safe_browsing/content/password_protection/password_protection_request_content.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents_observer.h"

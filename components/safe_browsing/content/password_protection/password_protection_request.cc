@@ -7,34 +7,19 @@
 #include <cstddef>
 
 #include "base/bind.h"
-#include "base/containers/flat_set.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/thread_pool.h"
-#include "components/safe_browsing/content/password_protection/password_protection_navigation_throttle.h"
-#include "components/safe_browsing/content/web_ui/safe_browsing_ui.h"
+#include "components/safe_browsing/content/password_protection/password_protection_service.h"
 #include "components/safe_browsing/core/common/thread_utils.h"
 #include "components/safe_browsing/core/db/allowlist_checker_client.h"
 #include "components/safe_browsing/core/db/database_manager.h"
 #include "components/safe_browsing/core/features.h"
 #include "components/url_formatter/url_formatter.h"
-#include "content/public/browser/navigation_throttle.h"
 #include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE) || BUILDFLAG(FULL_SAFE_BROWSING)
-#include "content/public/browser/web_contents.h"
-#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE) || BUILDFLAG(FULL_SAFE_BROWSING)
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-#include "components/safe_browsing/core/common/visual_utils.h"
-#include "components/zoom/zoom_controller.h"
-#include "content/public/browser/render_widget_host_view.h"
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
 namespace safe_browsing {
 
@@ -46,27 +31,6 @@ namespace {
 // Cap on how many reused domains can be included in a report, to limit
 // the size of the report. UMA suggests 99.9% will have < 200 domains.
 const int kMaxReusedDomains = 200;
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-// The maximum time to wait for DOM features to be collected, in milliseconds.
-const int kDomFeatureTimeoutMs = 3000;
-#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-// Parameters chosen to ensure privacy is preserved by visual features.
-const int kMinWidthForVisualFeatures = 576;
-const int kMinHeightForVisualFeatures = 576;
-const float kMaxZoomForVisualFeatures = 2.0;
-
-std::unique_ptr<VisualFeatures> ExtractVisualFeatures(
-    const SkBitmap& screenshot) {
-  auto features = std::make_unique<VisualFeatures>();
-  visual_utils::GetHistogramForImage(screenshot,
-                                     features->mutable_color_histogram());
-  visual_utils::GetBlurredImage(screenshot, features->mutable_image());
-  return features;
-}
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
 
 std::vector<std::string> GetMatchingDomains(
     const std::vector<password_manager::MatchingReusedCredential>&
@@ -478,226 +442,5 @@ void PasswordProtectionRequest::Cancel(bool timed_out) {
   Finish(timed_out ? RequestOutcome::TIMEDOUT : RequestOutcome::CANCELED,
          nullptr);
 }
-
-PasswordProtectionRequestContent::PasswordProtectionRequestContent(
-    content::WebContents* web_contents,
-    const GURL& main_frame_url,
-    const GURL& password_form_action,
-    const GURL& password_form_frame_url,
-    const std::string& mime_type,
-    const std::string& username,
-    PasswordType password_type,
-    const std::vector<password_manager::MatchingReusedCredential>&
-        matching_reused_credentials,
-    LoginReputationClientRequest::TriggerType type,
-    bool password_field_exists,
-    PasswordProtectionServiceBase* pps,
-    int request_timeout_in_ms)
-    : PasswordProtectionRequest(main_frame_url,
-                                password_form_action,
-                                password_form_frame_url,
-                                mime_type,
-                                username,
-                                password_type,
-                                matching_reused_credentials,
-                                type,
-                                password_field_exists,
-                                pps,
-                                request_timeout_in_ms),
-      web_contents_(web_contents) {
-  request_canceler_ =
-      RequestCanceler::CreateRequestCanceler(AsWeakPtr(), web_contents);
-}
-
-PasswordProtectionRequestContent::~PasswordProtectionRequestContent() = default;
-
-void PasswordProtectionRequestContent::Cancel(bool timed_out) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
-  // If request is canceled because |password_protection_service_| is shutting
-  // down, ignore all these deferred navigations.
-  if (!timed_out) {
-    throttles_.clear();
-  }
-  PasswordProtectionRequest::Cancel(timed_out);
-}
-
-void PasswordProtectionRequestContent::HandleDeferredNavigations() {
-  for (auto* throttle : throttles_) {
-    if (is_modal_warning_showing())
-      throttle->CancelNavigation(content::NavigationThrottle::CANCEL);
-    else
-      throttle->ResumeNavigation();
-  }
-  throttles_.clear();
-}
-
-void PasswordProtectionRequestContent::MaybeLogPasswordReuseLookupEvent(
-    RequestOutcome outcome,
-    const LoginReputationClientResponse* response) {
-  password_protection_service()->MaybeLogPasswordReuseLookupEvent(
-      web_contents_, outcome, password_type(), response);
-}
-
-void PasswordProtectionRequestContent::MaybeAddPingToWebUI() {
-  web_ui_token_ =
-      WebUIInfoSingleton::GetInstance()->AddToPGPings(*request_proto_);
-  DCHECK(web_ui_token_);
-}
-
-void PasswordProtectionRequestContent::MaybeAddResponseToWebUI(
-    const LoginReputationClientResponse& response) {
-  DCHECK(web_ui_token_);
-  WebUIInfoSingleton::GetInstance()->AddToPGResponses(web_ui_token_, response);
-}
-
-#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-void PasswordProtectionRequestContent::GetDomFeatures() {
-  content::RenderFrameHost* rfh = web_contents_->GetMainFrame();
-  password_protection_service()->GetPhishingDetector(rfh->GetRemoteInterfaces(),
-                                                     &phishing_detector_);
-  dom_features_collection_complete_ = false;
-  phishing_detector_->StartPhishingDetection(
-      main_frame_url(),
-      base::BindRepeating(&PasswordProtectionRequestContent::OnGetDomFeatures,
-                          AsWeakPtr()));
-  GetTaskRunner(ThreadID::UI)
-      ->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(
-              &PasswordProtectionRequestContent::OnGetDomFeatureTimeout,
-              AsWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kDomFeatureTimeoutMs));
-  dom_feature_start_time_ = base::TimeTicks::Now();
-}
-
-void PasswordProtectionRequestContent::OnGetDomFeatures(
-    mojom::PhishingDetectorResult result,
-    const std::string& verdict) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
-  if (dom_features_collection_complete_)
-    return;
-
-  UMA_HISTOGRAM_ENUMERATION("PasswordProtection.RendererDomFeatureResult",
-                            result);
-
-  if (result != mojom::PhishingDetectorResult::SUCCESS &&
-      result != mojom::PhishingDetectorResult::INVALID_SCORE)
-    return;
-
-  dom_features_collection_complete_ = true;
-  ClientPhishingRequest dom_features_request;
-  if (dom_features_request.ParseFromString(verdict)) {
-    for (const ClientPhishingRequest::Feature& feature :
-         dom_features_request.feature_map()) {
-      DomFeatures::Feature* new_feature =
-          request_proto_->mutable_dom_features()->add_feature_map();
-      new_feature->set_name(feature.name());
-      new_feature->set_value(feature.value());
-    }
-
-    for (const ClientPhishingRequest::Feature& feature :
-         dom_features_request.non_model_feature_map()) {
-      DomFeatures::Feature* new_feature =
-          request_proto_->mutable_dom_features()->add_feature_map();
-      new_feature->set_name(feature.name());
-      new_feature->set_value(feature.value());
-    }
-
-    request_proto_->mutable_dom_features()->mutable_shingle_hashes()->Swap(
-        dom_features_request.mutable_shingle_hashes());
-    request_proto_->mutable_dom_features()->set_model_version(
-        dom_features_request.model_version());
-  }
-
-  UMA_HISTOGRAM_TIMES("PasswordProtection.DomFeatureExtractionDuration",
-                      base::TimeTicks::Now() - dom_feature_start_time_);
-
-  MaybeCollectVisualFeatures();
-}
-
-void PasswordProtectionRequestContent::OnGetDomFeatureTimeout() {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
-  if (!dom_features_collection_complete_) {
-    dom_features_collection_complete_ = true;
-    MaybeCollectVisualFeatures();
-  }
-}
-
-void PasswordProtectionRequestContent::MaybeCollectVisualFeatures() {
-#if BUILDFLAG(SAFE_BROWSING_DB_REMOTE)
-  SendRequest();
-#else
-  // Once the DOM features are collected, either collect visual features, or go
-  // straight to sending the ping.
-  if (trigger_type() == LoginReputationClientRequest::UNFAMILIAR_LOGIN_PAGE &&
-      password_protection_service()->IsExtendedReporting() &&
-      zoom::ZoomController::GetZoomLevelForWebContents(web_contents_) <=
-          kMaxZoomForVisualFeatures &&
-      request_proto_->content_area_width() >= kMinWidthForVisualFeatures &&
-      request_proto_->content_area_height() >= kMinHeightForVisualFeatures) {
-    CollectVisualFeatures();
-  } else {
-    SendRequest();
-  }
-#endif  // BUILDFLAG(SAFE_BROWSING_DB_REMOTE)
-}
-#endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-
-#if BUILDFLAG(FULL_SAFE_BROWSING)
-void PasswordProtectionRequestContent::CollectVisualFeatures() {
-  content::RenderWidgetHostView* view =
-      web_contents_ ? web_contents_->GetRenderWidgetHostView() : nullptr;
-
-  if (!view) {
-    SendRequest();
-    return;
-  }
-
-  visual_feature_start_time_ = base::TimeTicks::Now();
-
-  view->CopyFromSurface(
-      gfx::Rect(), gfx::Size(),
-      base::BindOnce(&PasswordProtectionRequestContent::OnScreenshotTaken,
-                     AsWeakPtr()));
-}
-
-void PasswordProtectionRequestContent::OnScreenshotTaken(
-    const SkBitmap& screenshot) {
-  // Do the feature extraction on a worker thread, to avoid blocking the UI.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-      base::BindOnce(&ExtractVisualFeatures, screenshot),
-      base::BindOnce(
-          &PasswordProtectionRequestContent::OnVisualFeatureCollectionDone,
-          AsWeakPtr()));
-}
-
-void PasswordProtectionRequestContent::OnVisualFeatureCollectionDone(
-    std::unique_ptr<VisualFeatures> visual_features) {
-  DCHECK(CurrentlyOnThread(ThreadID::UI));
-
-  request_proto_->mutable_visual_features()->Swap(visual_features.get());
-
-  UMA_HISTOGRAM_TIMES("PasswordProtection.VisualFeatureExtractionDuration",
-                      base::TimeTicks::Now() - visual_feature_start_time_);
-
-  SendRequest();
-}
-#endif  // BUILDFLAG(FULL_SAFE_BROWSING)
-
-#if defined(OS_ANDROID)
-void PasswordProtectionRequestContent::SetReferringAppInfo() {
-  LoginReputationClientRequest::ReferringAppInfo referring_app_info =
-      password_protection_service()->GetReferringAppInfo(web_contents_);
-  UMA_HISTOGRAM_ENUMERATION(
-      "PasswordProtection.RequestReferringAppSource",
-      referring_app_info.referring_app_source(),
-      LoginReputationClientRequest::ReferringAppInfo::ReferringAppSource_MAX +
-          1);
-  *request_proto_->mutable_referring_app_info() = std::move(referring_app_info);
-}
-#endif  // defined(OS_ANDROID)
 
 }  // namespace safe_browsing

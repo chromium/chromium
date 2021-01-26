@@ -6,7 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_PASSWORD_PROTECTION_PASSWORD_PROTECTION_TEST_UTIL_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "components/safe_browsing/content/password_protection/password_protection_request.h"
+#include "components/safe_browsing/content/password_protection/password_protection_request_content.h"
 
 namespace content {
 class WebContents;
