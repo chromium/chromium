@@ -31,6 +31,24 @@ def _include_branding_code_in_app(dist):
     return dist.package_as_dmg or not dist.package_as_pkg
 
 
+def _binary_architectures(binary_path):
+    """Returns a comma-separated list of architectures of a binary.
+
+    Args:
+        binary_path: The path to the binary on disk.
+
+    Returns:
+        A comma-separated string of architectures.
+    """
+
+    command = ['lipo', '-archs', binary_path]
+    output = commands.run_command_output(command)
+    output = output.strip()
+    output = output.replace(' ', ',')
+
+    return output
+
+
 def _customize_and_sign_chrome(paths, dist_config, dest_dir, signed_frameworks):
     """Does channel customization and signing of a Chrome distribution. The
     resulting app bundle is moved into |dest_dir|.
@@ -197,7 +215,7 @@ def _component_property_path(paths, dist_config):
 def _productbuild_distribution_path(app_paths, pkg_paths, dist_config,
                                     component_pkg_path):
     """Creates a distribution XML file for use by `productbuild`. This copies
-    the OS requirement from the copy of Chrome being packaged.
+    the OS and architecture requirements from the copy of Chrome being packaged.
 
     Args:
         app_paths: A |model.Paths| object for the app.
@@ -211,6 +229,8 @@ def _productbuild_distribution_path(app_paths, pkg_paths, dist_config,
     distribution_path = os.path.join(pkg_paths.work,
                                      '{}.dist'.format(dist_config.app_product))
 
+    app_binary_path = os.path.join(app_paths.work, dist_config.app_dir,
+                                   'Contents', 'MacOS', dist_config.app_product)
     app_plist_path = os.path.join(app_paths.work, dist_config.app_dir,
                                   'Contents', 'Info.plist')
     with commands.PlistContext(app_plist_path) as app_plist:
@@ -221,7 +241,7 @@ def _productbuild_distribution_path(app_paths, pkg_paths, dist_config,
 
     <!-- Top-level info about the distribution. -->
     <title>{app_product}</title>
-    <options customize="never" require-scripts="false"/>
+    <options customize="never" require-scripts="false" hostArchitectures="{host_architectures}"/>
     <domains enable_anywhere="false" enable_currentUserHome="false" enable_localSystem="true"/>
     <volume-check>
         <allowed-os-versions>
@@ -252,6 +272,7 @@ def _productbuild_distribution_path(app_paths, pkg_paths, dist_config,
 </installer-gui-script>""".format(
             app_product=dist_config.app_product,
             bundle_id=dist_config.base_bundle_id,
+            host_architectures=_binary_architectures(app_binary_path),
             minimum_system=app_plist['LSMinimumSystemVersion'],
             component_pkg_filename=os.path.basename(component_pkg_path),
             version=dist_config.version)

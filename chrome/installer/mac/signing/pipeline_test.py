@@ -46,6 +46,10 @@ def _last_written_plist():
     return _write_plist.contents
 
 
+def _run_command_output_lipo(b):
+    return 'x86_64,arm64'
+
+
 def _read_file(p):
     if p == '/$I/Product Packaging/pkg_postinstall.in':
         return """app dir is '@APP_DIR@'
@@ -347,6 +351,7 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
         }])
 
     @mock.patch('signing.commands.plistlib.readPlist', _read_plist)
+    @mock.patch('signing.commands.run_command_output', _run_command_output_lipo)
     def test_productbuild_distribution_path(self, **kwargs):
         manager = mock.Mock()
         for attr in kwargs:
