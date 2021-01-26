@@ -143,6 +143,7 @@ void BookmarkAllTabs(Browser* browser);
 bool CanBookmarkAllTabs(const Browser* browser);
 bool CanMoveActiveTabToReadLater(Browser* browser);
 bool MoveCurrentTabToReadLater(Browser* browser);
+bool MoveTabToReadLater(Browser* browser, content::WebContents* web_contents);
 bool MarkCurrentTabAsReadInReadLater(Browser* browser);
 bool IsCurrentTabUnreadInReadLater(Browser* browser);
 void MaybeShowBookmarkBarForReadLater(Browser* browser);
