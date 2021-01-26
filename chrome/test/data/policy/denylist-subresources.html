@@ -5,7 +5,7 @@ var imageLoadResult = 'N/A';
 var iframeLoadResult = 'N/A';
 
 function imageLoaded() {
-  var image = document.getElementById('blacklisted_image');
+  var image = document.getElementById('denylist_image');
   // Additional sanity check to make sure the image is indeed loaded.
   // Not strictly needed.
   if (image.height == 1 && image.width == 1) {
@@ -26,7 +26,7 @@ function iframeLoaded() {
   // an error page showing in the iframe, in which case it's treated as a
   // cross-domain iframe.
   try {
-    document.getElementById('blacklisted_iframe').contentDocument.title;
+    document.getElementById('denylist_iframe').contentDocument.title;
     iframeLoadResult = "success";
   } catch (err) {
     iframeLoadResult = "error";
@@ -38,6 +38,6 @@ function iframeError() {
 }
 
 </script>
-<img id="blacklisted_image" src="pixel.png" onload="imageLoaded()" onerror="imageError()"></img>
-<iframe id="blacklisted_iframe" src="blank.html" onload="iframeLoaded()" onerror="iframeError()"></iframe>
+<img id="denylist_image" src="pixel.png" onload="imageLoaded()" onerror="imageError()"></img>
+<iframe id="denylist_iframe" src="blank.html" onload="iframeLoaded()" onerror="iframeError()"></iframe>
 </html>

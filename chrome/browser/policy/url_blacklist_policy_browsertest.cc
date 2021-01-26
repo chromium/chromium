@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistSubresources) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL main_url =
-      embedded_test_server()->GetURL("/policy/blacklist-subresources.html");
+      embedded_test_server()->GetURL("/policy/denylist-subresources.html");
   GURL image_url = embedded_test_server()->GetURL("/policy/pixel.png");
   GURL subframe_url = embedded_test_server()->GetURL("/policy/blank.html");
 
@@ -252,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistClientRedirect) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL redirected_url =
-      embedded_test_server()->GetURL("/policy/blacklist-redirect.html");
+      embedded_test_server()->GetURL("/policy/denylist-redirect.html");
   GURL first_url = embedded_test_server()->GetURL("/client-redirect?" +
                                                   redirected_url.spec());
 
@@ -283,7 +283,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, URLBlacklistServerRedirect) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL redirected_url =
-      embedded_test_server()->GetURL("/policy/blacklist-redirect.html");
+      embedded_test_server()->GetURL("/policy/denylist-redirect.html");
   GURL first_url = embedded_test_server()->GetURL("/server-redirect?" +
                                                   redirected_url.spec());
 
