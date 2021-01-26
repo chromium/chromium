@@ -87,5 +87,10 @@ public class AsyncTabParamsManagerImpl implements AsyncTabParamsManager {
                 }
             }
         }
+
+        @Override
+        public boolean isActiveModel() {
+            return false;
+        }
     }
 }

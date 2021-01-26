@@ -13,4 +13,7 @@ public interface IncognitoTabHost {
 
     /** Close all incognito tabs. */
     void closeAllIncognitoTabs();
+
+    /** Whether there is any active incognito session at the moment.*/
+    boolean isActiveModel();
 }
