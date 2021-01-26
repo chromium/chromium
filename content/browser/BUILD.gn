@@ -2477,6 +2477,7 @@ source_set("browser") {
   if (is_android) {
     sources += [
       "accessibility/accessibility_tree_formatter_android.cc",
+      "accessibility/accessibility_tree_formatter_android.h",
       "accessibility/browser_accessibility_android.cc",
       "accessibility/browser_accessibility_android.h",
       "accessibility/browser_accessibility_manager_android.cc",

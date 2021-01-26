@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
+#include "content/browser/accessibility/accessibility_tree_formatter_android.h"
 
 #include <string>
 
@@ -78,55 +78,6 @@ const char* const INT_ATTRIBUTES[] = {
 };
 // clang-format on
 }  // namespace
-
-class AccessibilityTreeFormatterAndroid : public ui::AXTreeFormatterBase {
- public:
-  AccessibilityTreeFormatterAndroid();
-  ~AccessibilityTreeFormatterAndroid() override;
-
-  base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
-  base::Value BuildTreeForWindow(gfx::AcceleratedWidget widget) const override;
-  base::Value BuildTreeForSelector(
-      const AXTreeSelector& selector) const override;
-
- protected:
-  void AddDefaultFilters(
-      std::vector<AXPropertyFilter>* property_filters) override;
-
- private:
-  void RecursiveBuildTree(const BrowserAccessibility& node,
-                          base::DictionaryValue* dict) const;
-
-  void AddProperties(const BrowserAccessibility& node,
-                     base::DictionaryValue* dict) const;
-
-  std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node) const override;
-};
-
-// TODO(crbug.com/1133330): move implementation into
-// content/public/ax_inspect_factory.cc when AccessibilityTreeFormatterAndroid
-// is relocated under ui/accessibility/platform
-
-// static
-std::unique_ptr<ui::AXTreeFormatter>
-AXInspectFactory::CreatePlatformFormatter() {
-  return AXInspectFactory::CreateFormatter(kAndroid);
-}
-
-// static
-std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
-    AXInspectFactory::Type type) {
-  switch (type) {
-    case kAndroid:
-      return std::make_unique<AccessibilityTreeFormatterAndroid>();
-    case kBlink:
-      return std::make_unique<AccessibilityTreeFormatterBlink>();
-    default:
-      NOTREACHED() << "Unsupported formatter type " << type;
-  }
-  return nullptr;
-}
 
 AccessibilityTreeFormatterAndroid::AccessibilityTreeFormatterAndroid() {}
 
