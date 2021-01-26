@@ -13,7 +13,6 @@ FieldDataManager::FieldDataManager() = default;
 
 void FieldDataManager::ClearData() {
   field_value_and_properties_map_.clear();
-  autofilled_values_map_.clear();
 }
 
 bool FieldDataManager::HasFieldData(FieldRendererId id) const {
@@ -84,30 +83,6 @@ bool FieldDataManager::DidUserType(FieldRendererId id) const {
 bool FieldDataManager::WasAutofilledOnUserTrigger(FieldRendererId id) const {
   return HasFieldData(id) && (GetFieldPropertiesMask(id) &
                               FieldPropertiesFlags::kAutofilledOnUserTrigger);
-}
-
-bool FieldDataManager::WasAutofilledOnPageLoad(FieldRendererId id) const {
-  return HasFieldData(id) && (GetFieldPropertiesMask(id) &
-                              FieldPropertiesFlags::kAutofilledOnPageLoad);
-}
-
-void FieldDataManager::UpdateFieldDataWithAutofilledValue(
-    FieldRendererId id,
-    const base::string16& value,
-    FieldPropertiesMask mask) {
-  // Typed value has no interest once it is rewritten with an autofilled value.
-  if (HasFieldData(id))
-    field_value_and_properties_map_.at(id).first.reset();
-  UpdateFieldDataMapWithNullValue(id, mask);
-  autofilled_values_map_[id] = value;
-}
-
-base::Optional<base::string16> FieldDataManager::GetAutofilledValue(
-    FieldRendererId id) const {
-  if (autofilled_values_map_.count(id))
-    return base::Optional<base::string16>(autofilled_values_map_.at(id));
-  else
-    return base::nullopt;
 }
 
 FieldDataManager::~FieldDataManager() = default;

@@ -2071,10 +2071,10 @@ TEST_P(PasswordFormManagerTest, iOSUsingFieldDataManagerData) {
   field_data_manager->UpdateFieldDataMap(
       observed_form_.fields[1].unique_renderer_id,
       base::UTF8ToUTF16("typed_username"), FieldPropertiesFlags::kUserTyped);
-  field_data_manager->UpdateFieldDataWithAutofilledValue(
+  field_data_manager->UpdateFieldDataMap(
       observed_form_.fields[2].unique_renderer_id,
       base::UTF8ToUTF16("autofilled_pw"),
-      FieldPropertiesFlags::kAutofilledOnPageLoad);
+      FieldPropertiesFlags::kAutofilledOnUserTrigger);
 
   form_manager_->UpdateObservedFormDataWithFieldDataManagerInfo(
       field_data_manager.get());
@@ -2084,10 +2084,10 @@ TEST_P(PasswordFormManagerTest, iOSUsingFieldDataManagerData) {
   EXPECT_EQ(form_manager_->observed_form()->fields[1].properties_mask,
             FieldPropertiesFlags::kUserTyped);
 
-  EXPECT_EQ(form_manager_->observed_form()->fields[2].value,
+  EXPECT_EQ(form_manager_->observed_form()->fields[2].typed_value,
             base::UTF8ToUTF16("autofilled_pw"));
   EXPECT_EQ(form_manager_->observed_form()->fields[2].properties_mask,
-            FieldPropertiesFlags::kAutofilledOnPageLoad);
+            FieldPropertiesFlags::kAutofilledOnUserTrigger);
 }
 
 #endif  // defined(OS_IOS)

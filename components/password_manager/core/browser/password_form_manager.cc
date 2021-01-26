@@ -582,8 +582,6 @@ void PasswordFormManager::UpdateObservedFormDataWithFieldDataManagerInfo(
     field.typed_value = field_data_manager->GetUserTypedValue(field_id);
     field.properties_mask =
         field_data_manager->GetFieldPropertiesMask(field_id);
-    field.value =
-        field_data_manager->GetAutofilledValue(field_id).value_or(field.value);
   }
 }
 #endif  // defined(OS_IOS)
