@@ -12,7 +12,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
-import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
@@ -261,24 +260,17 @@ public final class ProfileOAuth2TokenServiceDelegate
     }
 
     /**
-     * Called by native to check whether the account has an OAuth2 refresh token.
+     * Called by the native method
+     * ProfileOAuth2TokenServiceDelegate::RefreshTokenIsAvailable
+     * to check whether the account has an OAuth2 refresh token.
      */
     @VisibleForTesting
     @CalledByNative
     boolean hasOAuth2RefreshToken(String accountName) {
-        if (!mAccountManagerFacade.isCachePopulated()) {
-            return false;
-        }
-
-        // Temporarily allowing disk read while fixing. TODO: http://crbug.com/618096.
-        // This function is called in RefreshTokenIsAvailable of
-        // ProfileOAuth2TokenServiceDelegate which is expected to be called in the UI thread
-        // synchronously.
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return AccountUtils.findAccountByName(
+        return mAccountManagerFacade.isCachePopulated()
+                && AccountUtils.findAccountByName(
                            mAccountManagerFacade.tryGetGoogleAccounts(), accountName)
-                    != null;
-        }
+                != null;
     }
 
     /**
