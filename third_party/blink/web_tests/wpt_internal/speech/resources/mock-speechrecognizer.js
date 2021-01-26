@@ -1,11 +1,13 @@
-'use strict';
+import {SpeechAudioErrorDetails} from '/gen/third_party/blink/public/mojom/speech/speech_recognition_error.mojom.m.js';
+import {SpeechRecognitionErrorCode} from '/gen/third_party/blink/public/mojom/speech/speech_recognition_error_code.mojom.m.js';
+import {SpeechRecognitionSessionReceiver, SpeechRecognizer, SpeechRecognizerReceiver} from '/gen/third_party/blink/public/mojom/speech/speech_recognizer.mojom.m.js';
 
-// MockSpeechRecognizer is a mock implementation of mojom::SpeechRecognizer and
-// the browser speech recognition service. Mock results can be set using
+// MockSpeechRecognizer is a mock implementation of blink.mojom.SpeechRecognizer
+// and the browser speech recognition service. Mock results can be set using
 // addMockSpeechRecognitionResult, and setMockSpeechRecognitionError can be used
 // to simulate an error state. If no mock results are set, a NoMatch error is
 // sent to the client.
-class MockSpeechRecognizer {
+export class MockSpeechRecognizer {
   constructor() {
     this.results_ = [];
     this.session_ = null;
@@ -15,20 +17,16 @@ class MockSpeechRecognizer {
 
     this.task_queue_ = [];
 
-    this.binding_ = new mojo.Binding(blink.mojom.SpeechRecognizer, this);
+    this.receiver_ = new SpeechRecognizerReceiver(this);
     this.interceptor_ =
-        new MojoInterfaceInterceptor(blink.mojom.SpeechRecognizer.name);
-    this.interceptor_.oninterfacerequest = e => {
-      this.binding_.bind(e.handle);
-      this.binding_.setConnectionErrorHandler(() => {
-        this.reset();
-      });
-    };
+        new MojoInterfaceInterceptor(SpeechRecognizer.$interfaceName);
+    this.interceptor_.oninterfacerequest =
+        e => this.receiver_.$.bindHandle(e.handle);
     this.interceptor_.start();
   }
 
   reset() {
-    this.binding_.close();
+    this.receiver_.closeBindings();
     this.results_ = [];
     this.session_ = null;
     this.session_client_ = null;
@@ -36,29 +34,20 @@ class MockSpeechRecognizer {
   }
 
   addMockSpeechRecognitionResult(transcript, confidence) {
-    let toString16 = function(string) {
-      let array = new Array(string.length);
-      for (var i = 0; i < string.length; ++i) {
-        array[i] = string.charCodeAt(i);
+    const toString16 = function(string) {
+      const data = new Array(string.length);
+      for (let i = 0; i < string.length; ++i) {
+        data[i] = string.charCodeAt(i);
       }
-      return { data: array };
+      return {data};
     }
-    var hypothesis = new blink.mojom.SpeechRecognitionHypothesis({
-      utterance: toString16(transcript),
-      confidence: confidence
-    });
-    var result = new blink.mojom.SpeechRecognitionResult({
-      hypotheses: [hypothesis],
-      is_provisional: false
-    });
-    this.results_.push(result);
+    const hypothesis =
+        {utterance: toString16(transcript), confidence: confidence};
+    this.results_.push({hypotheses: [hypothesis], isProvisional: false});
   }
 
   setMockSpeechRecognitionError(errorCode) {
-    this.error_ = new blink.mojom.SpeechRecognitionError({
-      code: errorCode,
-      details: blink.mojom.SpeechAudioErrorDetails.kNone
-    });
+    this.error_ = {code: errorCode, details: SpeechAudioErrorDetails.kNone};
   }
 
   dispatchError() {
@@ -78,11 +67,10 @@ class MockSpeechRecognizer {
       });
       this.results_ = [];
     } else {
-      var error = new blink.mojom.SpeechRecognitionError({
-        code: blink.mojom.SpeechRecognitionErrorCode.kNoMatch,
-        details: blink.mojom.SpeechAudioErrorDetails.kNone
+      this.session_client_.errorOccurred({
+        code: SpeechRecognitionErrorCode.kNoMatch,
+        details: SpeechAudioErrorDetails.kNone
       });
-      this.session_client_.errorOccurred(error);
     }
     this.session_client_.soundEnded();
     this.session_client_.audioEnded();
@@ -103,18 +91,13 @@ class MockSpeechRecognizer {
   }
 }
 
-let mockSpeechRecognizer = new MockSpeechRecognizer();
-
 class MockSpeechRecognitionSession {
   constructor(request, recognizer) {
-    this.binding_ = new mojo.Binding(blink.mojom.SpeechRecognitionSession, this, request);
-    this.binding_.setConnectionErrorHandler(() => {
-      this.binding_.close();
-    });
+    this.receiver_ = new SpeechRecognitionSessionReceiver(this);
+    this.receiver_.$.bindHandle(request.handle);
     this.recognizer_ = recognizer;
   }
 
-  stop() {}
-
   abort() {}
+  stopCapture() {}
 }

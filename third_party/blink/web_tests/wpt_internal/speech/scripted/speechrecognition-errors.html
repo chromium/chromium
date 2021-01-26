@@ -2,25 +2,25 @@
 <title>Test Speech JavaScript API errors</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="/gen/third_party/blink/public/mojom/speech/speech_recognizer.mojom.js"></script>
-<script src="../resources/mock-speechrecognizer.js"></script>
-<script>
+<script type="module">
+import {MockSpeechRecognizer} from '../resources/mock-speechrecognizer.js';
+import {SpeechRecognitionErrorCode} from '/gen/third_party/blink/public/mojom/speech/speech_recognition_error_code.mojom.m.js';
+
+const mock = new MockSpeechRecognizer();
 
 async_test(t => {
-  var r = new webkitSpeechRecognition();
+  const r = new webkitSpeechRecognition();
 
-  for (var prop in r) {
+  for (const prop in r) {
     if (prop.match('^on')) {
       r[prop] = function() {
         assert_unreached('unexpected ' + event.type + ' event!');
       }
     }
   }
-  var count = 0;
+  let count = 0;
   r.start();
-  mockSpeechRecognizer.setMockSpeechRecognitionError(
-    blink.mojom.SpeechRecognitionErrorCode.kNotAllowed);
+  mock.setMockSpeechRecognitionError(SpeechRecognitionErrorCode.kNotAllowed);
 
   // Check that we get an error event.
   r.onerror = t.step_func(event => {
