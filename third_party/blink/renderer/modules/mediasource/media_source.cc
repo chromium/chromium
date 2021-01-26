@@ -10,6 +10,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/logging_override_if_enabled.h"
+#include "media/base/mime_util.h"
+#include "media/base/supported_types.h"
 #include "media/base/video_decoder_config.h"
 #include "media/media_buildflags.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -192,8 +194,7 @@ SourceBuffer* MediaSource::addSourceBuffer(const String& type,
 
   // 2. If type contains a MIME type that is not supported ..., then throw a
   // NotSupportedError exception and abort these steps.
-  // TODO(crbug.com/535738): Increase relaxation of codec-specificity beyond
-  // initial special-casing.
+  // TODO(crbug.com/535738): Actually relax codec-specificity.
   if (!IsTypeSupportedInternal(
           GetExecutionContext(), type,
           false /* Allow underspecified codecs in |type| */)) {
@@ -527,11 +528,10 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
     return false;
   }
 
-  ContentType content_type(type);
-  String codecs = content_type.Parameter("codecs");
-
   // 2. If type does not contain a valid MIME type string, then return false.
-  if (content_type.GetType().IsEmpty()) {
+  ContentType content_type(type);
+  String mime_type = content_type.GetType();
+  if (mime_type.IsEmpty()) {
     DVLOG(1) << __func__ << "(" << type << ", "
              << (enforce_codec_specificity ? "true" : "false")
              << ") -> false (invalid mime type)";
@@ -542,8 +542,58 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // HTMLMediaElement.canPlayType() will return "maybe" or "probably" since it
   // does not make sense for a MediaSource to support a type the
   // HTMLMediaElement knows it cannot play.
-  if (HTMLMediaElement::GetSupportsType(content_type) ==
-      MIMETypeRegistry::kIsNotSupported) {
+  String codecs = content_type.Parameter("codecs");
+  MIMETypeRegistry::SupportsType get_supports_type_result;
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+  // Here, we special-case for HEVC on ChromeOS, which is only supported if
+  // encrypted. isTypeSupported(fully qualified type with hevc codec) should say
+  // false on such platform (except if kEnableClearHevcForTesting cmdline switch
+  // is used, enabling GetSupportsType success), but addSourceBuffer(same) and
+  // changeType(same) shouldn't fail just due to having HEVC codec. We use
+  // |enforce_codec_specificity| to understand if we are servicing iTS (if true)
+  // versus aSB (if false). If servicing aSB or cT, we'll remove any detected
+  // hevc codec from the codecs we use in the GetSupportsType() query.
+  if (!enforce_codec_specificity) {
+    // Remove any detected HEVC codec from the query to GetSupportsType.
+    std::string filtered_codecs;
+    std::vector<std::string> parsed_codec_ids;
+    media::SplitCodecs(codecs.Ascii(), &parsed_codec_ids);
+    bool first = true;
+    for (const auto& codec_id : parsed_codec_ids) {
+      bool is_codec_ambiguous;
+      media::VideoCodec video_codec = media::kUnknownVideoCodec;
+      media::VideoCodecProfile profile;
+      uint8_t level = 0;
+      media::VideoColorSpace color_space;
+      if (media::ParseVideoCodecString(mime_type.Ascii(), codec_id,
+                                       &is_codec_ambiguous, &video_codec,
+                                       &profile, &level, &color_space) &&
+          !is_codec_ambiguous && video_codec == media::VideoCodec::kCodecHEVC) {
+        continue;
+      }
+      if (first)
+        first = false;
+      else
+        filtered_codecs += ",";
+      filtered_codecs += codec_id;
+    }
+
+    std::string filtered_type =
+        mime_type.Ascii() + "; codecs=\"" + filtered_codecs + "\"";
+    DVLOG(1) << __func__ << " filtered_type=" << filtered_type;
+    get_supports_type_result = HTMLMediaElement::GetSupportsType(
+        ContentType(String::FromUTF8(filtered_type.c_str())));
+  } else {
+    // Even on ChromeOS with HEVC support, don't filter out HEVC codec when
+    // servicing isTypeSupported().
+    get_supports_type_result = HTMLMediaElement::GetSupportsType(content_type);
+  }
+#else
+  get_supports_type_result = HTMLMediaElement::GetSupportsType(content_type);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) &&
+        // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+
+  if (get_supports_type_result == MIMETypeRegistry::kIsNotSupported) {
     DVLOG(1) << __func__ << "(" << type << ", "
              << (enforce_codec_specificity ? "true" : "false")
              << ") -> false (not supported by HTMLMediaElement)";
@@ -565,28 +615,10 @@ bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
   // Relaxed codec specificity following similar non-normative guidance is
   // allowed for addSourceBuffer and changeType methods, but this strict codec
   // specificity is and will be retained for isTypeSupported.
+  // TODO(crbug.com/535738): Actually relax the codec-specifity for aSB() and
+  // cT() (which is when |enforce_codec_specificity| is false).
   MIMETypeRegistry::SupportsType supported =
-      MIMETypeRegistry::SupportsMediaSourceMIMEType(content_type.GetType(),
-                                                    codecs);
-
-#if BUILDFLAG(ENABLE_PLATFORM_HEVC) && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  if (supported == MIMETypeRegistry::kMayBeSupported &&
-      !enforce_codec_specificity && type == "video/mp4") {
-    // kMayBeSupported here indicates format is supported, but is lacking
-    // codec-specificity.
-
-    // TODO(crbug.com/535738): Increase actual relaxation of codec-specificity
-    // for addSourceBuffer and changeType usage beyond this initial
-    // special-casing for just HEVC-EME-CrOS. For now, precisely "video/mp4"
-    // with underspecified codecs string is assumed to be supported if the build
-    // supports EME+HEVC on ChromeOS. The underlying Chromium code will require
-    // precisely one track, encrypted HEVC, to exist when processing
-    // initialization segments on behalf of a SourceBuffer created with
-    // addSourceBuffer(|type|) (or currently resulting from changeType(|type|).
-    supported = MIMETypeRegistry::kIsSupported;
-  }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC) &&
-        // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
+      MIMETypeRegistry::SupportsMediaSourceMIMEType(mime_type, codecs);
 
   bool result = supported == MIMETypeRegistry::kIsSupported;
 

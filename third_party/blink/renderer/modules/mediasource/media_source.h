@@ -100,8 +100,7 @@ class MediaSource final : public EventTargetWithInlineData,
   // Set |enforce_codec_specificity| true to require fully specified mime and
   // codecs, false otherwise.
   // TODO(https://crbug.com/535738): When |enforce_codec_specificity| is set to
-  // false, then fully relax requirements beyond initial special casing for HEVC
-  // on ChromeOS with EME in mp4.
+  // false, then fully relax codec requirements.
   static bool IsTypeSupportedInternal(ExecutionContext* context,
                                       const String& type,
                                       bool enforce_codec_specificity);
