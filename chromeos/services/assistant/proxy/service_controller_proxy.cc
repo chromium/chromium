@@ -135,13 +135,6 @@ void ServiceControllerProxy::Start(
   DCHECK_EQ(state_, State::kStopped);
   state_ = State::kStarting;
 
-  // The mojom service will create the |AssistantManager|.
-  service_controller_remote_->Initialize(std::move(bootup_config));
-  service_controller_remote_->SetLocaleOverride(locale_override);
-  UpdateInternalOptions(locale, spoken_feedback_enabled);
-  SetAuthTokens(auth_tokens);
-  service_controller_remote_->Start();
-
   // We need to initialize the |AssistantManager| once it's created and before
   // it's started, so we register a callback to do just that.
   StartArguments arguments;
@@ -150,9 +143,15 @@ void ServiceControllerProxy::Start(
   arguments.assistant_manager_delegate = assistant_manager_delegate;
   arguments.conversation_state_listener = conversation_state_listener;
   arguments.device_state_listener = device_state_listener;
-
   host_->SetInitializeCallback(
       base::BindOnce(InitializeAssistantManager, std::move(arguments)));
+
+  // The mojom service will create the |AssistantManager|.
+  service_controller_remote_->Initialize(std::move(bootup_config));
+  service_controller_remote_->SetLocaleOverride(locale_override);
+  UpdateInternalOptions(locale, spoken_feedback_enabled);
+  SetAuthTokens(auth_tokens);
+  service_controller_remote_->Start();
 
   on_start_done_callback_ = std::move(done_callback);
 }

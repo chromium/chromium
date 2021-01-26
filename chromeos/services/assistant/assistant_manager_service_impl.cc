@@ -1068,7 +1068,7 @@ void AssistantManagerServiceImpl::InitAssistant(
       action_module_.get(), &chromium_api_delegate_,
       /*assistant_manager_delegate=*/this,
       /*conversation_state_listener=*/this,
-      /*device_state_listener=*/this, std::move(bootup_config_), locale,
+      /*device_state_listener=*/this, bootup_config_.Clone(), locale,
       GetLocaleOrDefault(assistant_state()->locale().value()),
       spoken_feedback_enabled_, ToAuthTokensOrEmpty(user),
       base::BindOnce(&AssistantManagerServiceImpl::PostInitAssistant,
