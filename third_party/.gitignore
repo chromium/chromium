@@ -243,7 +243,6 @@
 /vulkan_memory_allocator
 /wayland/src
 /wayland-protocols/src
-/wds/src
 /webdriver/pylib
 /webdriver/python/selenium
 /webgl
