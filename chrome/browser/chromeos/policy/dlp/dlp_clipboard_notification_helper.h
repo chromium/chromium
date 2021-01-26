@@ -48,12 +48,17 @@ class DlpClipboardNotificationHelper : public views::WidgetObserver,
   // views::WidgetObserver
   void OnWidgetClosing(views::Widget* widget) override;
   void OnWidgetDestroyed(views::Widget* widget) override;
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
 
   // ui::ClipboardObserver
   void OnClipboardDataChanged() override;
 
+  void InitWidget();
+
   void ResizeAndShowWidget(const gfx::Size& bubble_size,
                            int timeout_duration_ms);
+
+  void CloseWidget(views::Widget* widget, views::Widget::ClosedReason reason);
 
   views::UniqueWidgetPtr widget_;
 };

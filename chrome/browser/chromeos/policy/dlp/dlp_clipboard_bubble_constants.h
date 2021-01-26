@@ -20,7 +20,7 @@ constexpr char kClipboardDlpPluginVmToastId[] = "clipboard_dlp_block_plugin_vm";
 constexpr int kClipboardDlpBlockDurationMs = 2500;
 
 // The duration of the clipboard warning shown before paste.
-constexpr int kClipboardDlpWarnDurationMs = 20000;
+constexpr int kClipboardDlpWarnDurationMs = 16000;
 
 }  // namespace policy
 

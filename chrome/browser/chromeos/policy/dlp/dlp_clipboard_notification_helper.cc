@@ -345,8 +345,8 @@ void CalculateAndSetWidgetBounds(views::Widget* widget,
 views::Widget::InitParams GetWidgetInitParams() {
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
-  params.z_order = ui::ZOrderLevel::kFloatingWindow;
-  params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+  params.z_order = ui::ZOrderLevel::kNormal;
+  params.activatable = views::Widget::InitParams::ACTIVATABLE_YES;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.name = kBubbleName;
   params.layer_type = ui::LAYER_NOT_DRAWN;
@@ -363,6 +363,8 @@ DlpClipboardNotificationHelper::DlpClipboardNotificationHelper() {
 
 DlpClipboardNotificationHelper::~DlpClipboardNotificationHelper() {
   ui::ClipboardMonitor::GetInstance()->RemoveObserver(this);
+  if (widget_)
+    widget_->RemoveObserver(this);
 }
 
 void DlpClipboardNotificationHelper::NotifyBlockedPaste(
@@ -431,15 +433,15 @@ void DlpClipboardNotificationHelper::WarnOnPaste(
 
 void DlpClipboardNotificationHelper::ShowClipboardBlockBubble(
     const base::string16& text) {
-  widget_ = std::make_unique<views::Widget>();
-  widget_->Init(GetWidgetInitParams());
+  InitWidget();
+  DCHECK(widget_);
 
   ClipboardBlockBubble* block_bubble =
       widget_->SetContentsView(std::make_unique<ClipboardBlockBubble>(text));
 
-  block_bubble->SetDismissCallback(
-      base::BindRepeating(&DlpClipboardNotificationHelper::OnWidgetClosing,
-                          base::Unretained(this), widget_.get()));
+  block_bubble->SetDismissCallback(base::BindRepeating(
+      &DlpClipboardNotificationHelper::CloseWidget, base::Unretained(this),
+      widget_.get(), views::Widget::ClosedReason::kCancelButtonClicked));
 
   ResizeAndShowWidget(block_bubble->GetBubbleSize(),
                       kClipboardDlpBlockDurationMs);
@@ -456,15 +458,15 @@ void DlpClipboardNotificationHelper::ShowClipboardBlockToast(
 
 void DlpClipboardNotificationHelper::ShowClipboardWarnBubble(
     const base::string16& text) {
-  widget_ = std::make_unique<views::Widget>();
-  widget_->Init(GetWidgetInitParams());
+  InitWidget();
+  DCHECK(widget_);
 
   ClipboardWarnBubble* warn_bubble =
       widget_->SetContentsView(std::make_unique<ClipboardWarnBubble>(text));
 
-  warn_bubble->SetDismissCallback(
-      base::BindRepeating(&DlpClipboardNotificationHelper::OnWidgetClosing,
-                          base::Unretained(this), widget_.get()));
+  warn_bubble->SetDismissCallback(base::BindRepeating(
+      &DlpClipboardNotificationHelper::CloseWidget, base::Unretained(this),
+      widget_.get(), views::Widget::ClosedReason::kCancelButtonClicked));
   // TODO(crbug.com/1168106): Set proceed callback.
 
   ResizeAndShowWidget(warn_bubble->GetBubbleSize(),
@@ -481,8 +483,22 @@ void DlpClipboardNotificationHelper::OnWidgetDestroyed(views::Widget* widget) {
     widget_.reset();
 }
 
+void DlpClipboardNotificationHelper::OnWidgetActivationChanged(
+    views::Widget* widget,
+    bool active) {
+  if (widget_.get() == widget && !active)
+    CloseWidget(widget, views::Widget::ClosedReason::kLostFocus);
+}
+
 void DlpClipboardNotificationHelper::OnClipboardDataChanged() {
-  OnWidgetClosing(widget_.get());
+  if (widget_)
+    widget_->Close();
+}
+
+void DlpClipboardNotificationHelper::InitWidget() {
+  widget_ = std::make_unique<views::Widget>();
+  widget_->Init(GetWidgetInitParams());
+  widget_->AddObserver(this);
 }
 
 void DlpClipboardNotificationHelper::ResizeAndShowWidget(
@@ -496,11 +512,19 @@ void DlpClipboardNotificationHelper::ResizeAndShowWidget(
 
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&DlpClipboardNotificationHelper::OnWidgetClosing,
+      base::BindOnce(&DlpClipboardNotificationHelper::CloseWidget,
                      base::Unretained(this),
-                     widget_.get()),  // Safe as DlpClipboardNotificationHelper
-                                      // owns `widget_` and outlives it.
+                     widget_.get(),  // Safe as DlpClipboardNotificationHelper
+                                     // owns `widget_` and outlives it.
+                     views::Widget::ClosedReason::kUnspecified),
       base::TimeDelta::FromMilliseconds(timeout_duration_ms));
+}
+
+void DlpClipboardNotificationHelper::CloseWidget(
+    views::Widget* widget,
+    views::Widget::ClosedReason reason) {
+  if (widget == widget_.get())
+    widget->CloseWithReason(reason);
 }
 
 }  // namespace policy
