@@ -16421,12 +16421,14 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="TouchScreen.MissedTOUCHEVENTF_UP" enum="BooleanHit"
-    expires_after="M77">
-  <owner>nzolghadr@chromium.org</owner>
+    expires_after="M95">
+  <owner>girard@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
-    The touch device driver failed to send a TOUCHEVENTF_UP, and chromium
-    generated a simulated event to maintain consistency/correctness.
+    Recorded when a touch event excludes an active touch (a touch-id/dwId that
+    previously generated a TOUCHEVENTF_DOWN, and has not since generated a
+    TOUCHEVENTF_UP). Chromium generates a simulated event to maintain
+    consistency/correctness. Only recorded on Windows.
 
     This workaround will be removed once usage drops off. See
     https://crbug.com/811273 for details.
