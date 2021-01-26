@@ -4,13 +4,6 @@
 
 import("//build/config/linux/pkg_config.gni")
 
-if (default_toolchain == "//build/toolchain/cros:target") {
-  pkg_config("libffi") {
-    packages = [ "libffi" ]
-  }
-} else {
-  # On Linux, make sure we link against libffi version 6.
-  config("libffi") {
-    libs = [ ":libffi.so.6" ]
-  }
+pkg_config("libffi") {
+  packages = [ "libffi" ]
 }

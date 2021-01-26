@@ -14,16 +14,13 @@ DIST=sid
 # like libc6 would take precedence over the sid (released) versions.  While this
 # may be useful for certain kinds of development, the standard sysroots should
 # continue to be shipped only with released packages.
-# Also keep "stretch" before "sid".  For now, it's needed to bring back
-# libgnome-keyring-dev which has since been deprecated and removed from sid.
-# It will be needed until gnome keyring is removed (http://crbug.com/466975 and
-# http://crbug.com/355223).
-# Finally, keep "buster" before "sid".  For now, it's needed to bring back
-# libpipewire2, which was removed from sid.
+# Also keep "stretch" before "sid" and "experimental".  For now, it's needed to
+# bring back libgnome-keyring-dev which has since been deprecated and removed
+# from sid.  It will be needed until gnome keyring is removed
+# (http://crbug.com/466975 and http://crbug.com/355223).
 ARCHIVE_URL="https://snapshot.debian.org/archive/debian"
-ARCHIVE_TIMESTAMP=20210115T203459Z
+ARCHIVE_TIMESTAMP=20191212T145612Z
 APT_SOURCES_LIST="${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ stretch main
-${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ buster main
 ${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ experimental main
 ${ARCHIVE_URL}/${ARCHIVE_TIMESTAMP}/ sid main"
 
@@ -66,7 +63,6 @@ DEBIAN_PACKAGES="\
   libblkid1
   libbluetooth-dev
   libbluetooth3
-  libbrotli-dev
   libbrotli1
   libbsd0
   libc6
@@ -84,7 +80,6 @@ DEBIAN_PACKAGES="\
   libcups2-dev
   libcupsimage2
   libcupsimage2-dev
-  libdatrie-dev
   libdatrie1
   libdb5.3
   libdbus-1-3
@@ -94,13 +89,11 @@ DEBIAN_PACKAGES="\
   libdbusmenu-glib4
   libdbusmenu-gtk3-4
   libdbusmenu-gtk4
-  libdeflate0
   libdrm-amdgpu1
   libdrm-dev
   libdrm-nouveau2
   libdrm-radeon1
   libdrm2
-  libegl-dev
   libegl1
   libegl1-mesa
   libegl1-mesa-dev
@@ -118,33 +111,30 @@ DEBIAN_PACKAGES="\
   libffi7
   libflac-dev
   libflac8
-  libfontconfig-dev
   libfontconfig1
-  libfreetype-dev
+  libfontconfig1-dev
   libfreetype6
+  libfreetype-dev
   libfribidi-dev
   libfribidi0
   libgbm-dev
   libgbm1
-  libgcc-10-dev
+  libgcc-7-dev
   libgcc1
   libgcrypt20
   libgcrypt20-dev
-  libgdk-pixbuf-2.0-0
-  libgdk-pixbuf-2.0-dev
-  libgl-dev
+  libgdk-pixbuf2.0-0
+  libgdk-pixbuf2.0-dev
   libgl1
   libgl1-mesa-dev
   libgl1-mesa-glx
   libglapi-mesa
-  libgles-dev
   libgles1
   libgles2
   libglib2.0-0
   libglib2.0-dev
   libglvnd-dev
   libglvnd0
-  libglx-dev
   libglx0
   libgmp10
   libgnome-keyring-dev
@@ -173,27 +163,27 @@ DEBIAN_PACKAGES="\
   libharfbuzz-gobject0
   libharfbuzz-icu0
   libharfbuzz0b
-  libhogweed6
+  libhogweed5
   libice6
   libicu-le-hb0
-  libicu67
+  libicu63
   libidl-2-0
   libidn11
   libidn2-0
   libindicator3-7
   libindicator7
-  libinput-dev
   libinput10
+  libinput-dev
   libjbig0
   libjpeg62-turbo
   libjpeg62-turbo-dev
   libjson-glib-1.0-0
   libjsoncpp-dev
-  libjsoncpp24
+  libjsoncpp1
   libk5crypto3
-  libkadm5clnt-mit12
-  libkadm5srv-mit12
-  libkdb5-10
+  libkadm5clnt-mit11
+  libkadm5srv-mit11
+  libkdb5-9
   libkeyutils1
   libkrb5-3
   libkrb5-dev
@@ -208,16 +198,15 @@ DEBIAN_PACKAGES="\
   libmount-dev
   libmount1
   libmtdev1
-  libncurses-dev
-  libncurses6
-  libncursesw6
-  libnettle8
-  libnsl2
+  libnettle7
   libnspr4
   libnspr4-dev
   libnss-db
   libnss3
   libnss3-dev
+  libncurses-dev
+  libncurses6
+  libncursesw6
   libogg-dev
   libogg0
   libopengl0
@@ -248,8 +237,6 @@ DEBIAN_PACKAGES="\
   libpcrecpp0v5
   libpipewire-0.2-1
   libpipewire-0.2-dev
-  libpipewire-0.3-0
-  libpipewire-0.3-dev
   libpixman-1-0
   libpixman-1-dev
   libpng-dev
@@ -259,35 +246,32 @@ DEBIAN_PACKAGES="\
   libpulse-dev
   libpulse-mainloop-glib0
   libpulse0
-  libre2-9
+  libre2-5
   libre2-dev
   librest-0.7-0
-  libselinux1
   libselinux1-dev
-  libsepol1
+  libselinux1
   libsepol1-dev
+  libsepol1
   libsm6
   libsnappy-dev
   libsnappy1v5
   libsndfile1
   libsoup-gnome2.4-1
   libsoup2.4-1
-  libspa-0.2-dev
   libspa-lib-0.1-dev
   libspeechd-dev
   libspeechd2
   libsqlite3-0
   libssl-dev
   libssl1.1
-  libstdc++-10-dev
+  libstdc++-7-dev
   libstdc++6
   libsystemd0
   libtasn1-6
-  libthai-dev
   libthai0
   libtiff5
   libtinfo6
-  libtirpc3
   libudev-dev
   libudev1
   libunbound8
@@ -328,8 +312,8 @@ DEBIAN_PACKAGES="\
   libxcb-dri3-dev
   libxcb-glx0
   libxcb-glx0-dev
-  libxcb-present-dev
   libxcb-present0
+  libxcb-present-dev
   libxcb-render0
   libxcb-render0-dev
   libxcb-shm0
@@ -350,7 +334,6 @@ DEBIAN_PACKAGES="\
   libxext6
   libxfixes-dev
   libxfixes3
-  libxft-dev
   libxft2
   libxi-dev
   libxi6
@@ -405,27 +388,28 @@ DEBIAN_PACKAGES_AMD64="
 "
 
 DEBIAN_PACKAGES_X86="
-  libasan6
+  libasan4
   libcilkrts5
   libdrm-intel1
   libitm1
   libmpx2
   libquadmath0
-  libubsan1
+  libubsan0
 "
 
 DEBIAN_PACKAGES_ARM="
-  libasan6
+  libasan4
+  libcilkrts5
   libdrm-etnaviv1
   libdrm-exynos1
   libdrm-freedreno1
   libdrm-omap1
   libdrm-tegra0
-  libubsan1
+  libubsan0
 "
 
 DEBIAN_PACKAGES_ARM64="
-  libasan6
+  libasan4
   libdrm-etnaviv1
   libdrm-freedreno1
   libdrm-tegra0
@@ -434,16 +418,17 @@ DEBIAN_PACKAGES_ARM64="
   liblsan0
   libthai0
   libtsan0
-  libubsan1
+  libubsan0
 "
 
 DEBIAN_PACKAGES_ARMEL="
-  libasan6
+  libasan4
+  libcilkrts5
   libdrm-exynos1
   libdrm-freedreno1
   libdrm-omap1
   libdrm-tegra0
-  libubsan1
+  libubsan0
 "
 
 DEBIAN_PACKAGES_MIPS64EL="
