@@ -1629,6 +1629,7 @@ component("platform") {
     "//third_party/blink/renderer/platform/loader",
     "//third_party/blink/renderer/platform/network",
     "//third_party/blink/renderer/platform/scheduler",
+    "//third_party/blink/renderer/platform/wtf:buildflags",
     "//third_party/pffft:pffft",
     "//ui/gfx",
   ]
@@ -1664,7 +1665,6 @@ component("platform") {
     "//third_party/blink/public/common",
     "//third_party/blink/public/strings",
     "//third_party/blink/renderer/platform/wtf",
-    "//third_party/blink/renderer/platform/wtf:buildflags",
     "//third_party/ced",
     "//third_party/emoji-segmenter",
     "//third_party/harfbuzz-ng:hb_scoped_util",

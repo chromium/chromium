@@ -36,6 +36,8 @@
 #include "third_party/blink/renderer/core/dom/tree_scope.h"
 #include "third_party/blink/renderer/core/scroll/scroll_customization.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/heap/custom_spaces.h"
+#include "third_party/blink/renderer/platform/wtf/buildflags.h"
 
 // This needs to be here because element.cc also depends on it.
 #define DUMP_NODE_STATISTICS 0
@@ -166,6 +168,7 @@ class CORE_EXPORT Node : public EventTarget {
     kDocumentPositionImplementationSpecific = 0x20,
   };
 
+#if !BUILDFLAG(USE_V8_OILPAN)
   template <typename T>
   static void* AllocateObject(size_t size) {
     ThreadState* state =
@@ -175,6 +178,7 @@ class CORE_EXPORT Node : public EventTarget {
         state, size, BlinkGC::kNodeArenaIndex,
         GCInfoTrait<GCInfoFoldedType<T>>::Index(), type_name);
   }
+#endif  // !BUILDFLAG(USE_V8_OILPAN)
 
   static void DumpStatistics();
 
@@ -1116,5 +1120,15 @@ void showNode(const blink::Node*);
 void showTree(const blink::Node*);
 void showNodePath(const blink::Node*);
 #endif
+
+#if BUILDFLAG(USE_V8_OILPAN)
+namespace cppgc {
+// Assign Node to be allocated on custom NodeSpace.
+template <typename T>
+struct SpaceTrait<T, std::enable_if_t<std::is_base_of<blink::Node, T>::value>> {
+  using Space = blink::NodeSpace;
+};
+}  // namespace cppgc
+#endif  // !USE_V8_OILPAN
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_NODE_H_
