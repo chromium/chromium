@@ -16,16 +16,17 @@ class MockFileSystemAccessPermissionGrant
  public:
   MockFileSystemAccessPermissionGrant();
 
-  MOCK_METHOD0(GetStatus, PermissionStatus());
-  MOCK_METHOD0(GetPath, base::FilePath());
+  MOCK_METHOD(PermissionStatus, GetStatus, (), (override));
+  MOCK_METHOD(base::FilePath, GetPath, (), (override));
   void RequestPermission(
       GlobalFrameRoutingId frame_id,
       UserActivationState user_activation_state,
       base::OnceCallback<void(PermissionRequestOutcome)> callback) override;
-  MOCK_METHOD3(RequestPermission_,
-               void(GlobalFrameRoutingId frame_id,
-                    UserActivationState user_activation_state,
-                    base::OnceCallback<void(PermissionRequestOutcome)>&));
+  MOCK_METHOD(void,
+              RequestPermission_,
+              (GlobalFrameRoutingId frame_id,
+               UserActivationState user_activation_state,
+               base::OnceCallback<void(PermissionRequestOutcome)>&));
 
   using FileSystemAccessPermissionGrant::NotifyPermissionStatusChanged;
 

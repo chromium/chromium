@@ -17,19 +17,21 @@ class MockFileSystemAccessPermissionContext
   MockFileSystemAccessPermissionContext();
   ~MockFileSystemAccessPermissionContext() override;
 
-  MOCK_METHOD4(GetReadPermissionGrant,
-               scoped_refptr<FileSystemAccessPermissionGrant>(
-                   const url::Origin& origin,
-                   const base::FilePath& path,
-                   HandleType handle_type,
-                   FileSystemAccessPermissionContext::UserAction user_action));
+  MOCK_METHOD(scoped_refptr<FileSystemAccessPermissionGrant>,
+              GetReadPermissionGrant,
+              (const url::Origin& origin,
+               const base::FilePath& path,
+               HandleType handle_type,
+               FileSystemAccessPermissionContext::UserAction user_action),
+              (override));
 
-  MOCK_METHOD4(GetWritePermissionGrant,
-               scoped_refptr<FileSystemAccessPermissionGrant>(
-                   const url::Origin& origin,
-                   const base::FilePath& path,
-                   HandleType handle_type,
-                   FileSystemAccessPermissionContext::UserAction user_action));
+  MOCK_METHOD(scoped_refptr<FileSystemAccessPermissionGrant>,
+              GetWritePermissionGrant,
+              (const url::Origin& origin,
+               const base::FilePath& path,
+               HandleType handle_type,
+               FileSystemAccessPermissionContext::UserAction user_action),
+              (override));
 
   void ConfirmSensitiveDirectoryAccess(
       const url::Origin& origin,
@@ -38,35 +40,49 @@ class MockFileSystemAccessPermissionContext
       HandleType handle_type,
       GlobalFrameRoutingId frame_id,
       base::OnceCallback<void(SensitiveDirectoryResult)> callback) override;
-  MOCK_METHOD6(
-      ConfirmSensitiveDirectoryAccess_,
-      void(const url::Origin& origin,
-           PathType path_type,
-           const base::FilePath& path,
-           HandleType handle_type,
-           GlobalFrameRoutingId frame_id,
-           base::OnceCallback<void(SensitiveDirectoryResult)>& callback));
+  MOCK_METHOD(void,
+              ConfirmSensitiveDirectoryAccess_,
+              (const url::Origin& origin,
+               PathType path_type,
+               const base::FilePath& path,
+               HandleType handle_type,
+               GlobalFrameRoutingId frame_id,
+               base::OnceCallback<void(SensitiveDirectoryResult)>& callback));
 
   void PerformAfterWriteChecks(
       std::unique_ptr<FileSystemAccessWriteItem> item,
       GlobalFrameRoutingId frame_id,
       base::OnceCallback<void(AfterWriteCheckResult)> callback) override;
-  MOCK_METHOD3(PerformAfterWriteChecks_,
-               void(FileSystemAccessWriteItem* item,
-                    GlobalFrameRoutingId frame_id,
-                    base::OnceCallback<void(AfterWriteCheckResult)>& callback));
+  MOCK_METHOD(void,
+              PerformAfterWriteChecks_,
+              (FileSystemAccessWriteItem * item,
+               GlobalFrameRoutingId frame_id,
+               base::OnceCallback<void(AfterWriteCheckResult)>& callback));
 
-  MOCK_METHOD1(CanObtainReadPermission, bool(const url::Origin& origin));
-  MOCK_METHOD1(CanObtainWritePermission, bool(const url::Origin& origin));
+  MOCK_METHOD(bool,
+              CanObtainReadPermission,
+              (const url::Origin& origin),
+              (override));
+  MOCK_METHOD(bool,
+              CanObtainWritePermission,
+              (const url::Origin& origin),
+              (override));
 
-  MOCK_METHOD3(SetLastPickedDirectory,
-               void(const url::Origin& origin,
-                    const base::FilePath& path,
-                    const PathType type));
-  MOCK_METHOD1(GetLastPickedDirectory, PathInfo(const url::Origin& origin));
+  MOCK_METHOD(void,
+              SetLastPickedDirectory,
+              (const url::Origin& origin,
+               const base::FilePath& path,
+               const PathType type),
+              (override));
+  MOCK_METHOD(PathInfo,
+              GetLastPickedDirectory,
+              (const url::Origin& origin),
+              (override));
 
-  MOCK_METHOD1(GetCommonDirectoryPath,
-               base::FilePath(blink::mojom::CommonDirectory directory));
+  MOCK_METHOD(base::FilePath,
+              GetCommonDirectoryPath,
+              (blink::mojom::CommonDirectory directory),
+              (override));
 };
 
 }  // namespace content
