@@ -5,6 +5,7 @@ rootWebArea
 ++++++++dialog ignored invisible
 ++++++++popUpButton collapsed ignored invisible value='This should be pruned out of the tree.'
 ++++++++++menuListPopup ignored invisible
+++++++++++++menuListOption ignored name='This should be pruned out of the tree.' selected=true
 ++++++button ignored invisible name='This button should not be in the tree.'
 ++++++dialog ignored invisible
 ++++++dialog

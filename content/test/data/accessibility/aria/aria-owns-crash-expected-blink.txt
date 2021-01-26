@@ -10,5 +10,5 @@ rootWebArea name='done'
 ++++++++++++++listItem ignored invisible
 ++++++++++++++++listMarker ignored invisible name='• '
 ++++++++++++++++++staticText ignored name='• '
+++++++++++++++++++++inlineTextBox ignored name='• '
 ++++++++genericContainer ignored invisible
-

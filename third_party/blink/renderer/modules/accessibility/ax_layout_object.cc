@@ -612,6 +612,7 @@ bool AXLayoutObject::ComputeAccessibilityIsIgnored(
   // Ignore continuations, since those are essentially duplicate copies
   // of inline nodes with blocks inside.
   if (layout_object_->IsElementContinuation()) {
+    NOTREACHED() << "DOM tree walking handles all element continuations";
     if (ignored_reasons)
       ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
     return true;

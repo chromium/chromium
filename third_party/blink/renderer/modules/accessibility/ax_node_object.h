@@ -214,6 +214,8 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Set is_from_aria_owns to true if the child is being added because it was
   // pointed to from aria-owns.
   void AddChild(AXObject*, bool is_from_aria_owns = false);
+  // Add a child that must be included in tree, enforced via DCHECK.
+  void AddChildAndCheckIncluded(AXObject*, bool is_from_aria_owns = false);
   // If node is non-null, GetOrCreate an AXObject for it and add as a child.
   void AddNodeChild(Node*);
   // Set is_from_aria_owns to true if the child is being insert because it was
@@ -308,6 +310,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsHtmlTable() const;
   void AddTableChildren();
   void AddValidationMessageChild();
+  void AddAccessibleNodeChildren();
   void AddOwnedChildren();
 
   ax::mojom::blink::Dropeffect ParseDropeffect(String& dropeffect) const;

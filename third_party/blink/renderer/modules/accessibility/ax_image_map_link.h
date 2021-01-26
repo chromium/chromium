@@ -52,6 +52,12 @@ class AXImageMapLink final : public AXNodeObject {
 
   ax::mojom::blink::Role DetermineAccessibilityRole() override;
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
+  bool CanHaveChildren() const override {
+    // If the area has child nodes, those will be rendered, and the combination
+    // of Role::kGenericContainer and CanHaveChildren() = true allows for those
+    // children to show in the AX hierarchy.
+    return RoleValue() == ax::mojom::blink::Role::kGenericContainer;
+  }
 
   Element* AnchorElement() const override;
   Element* ActionElement() const override;

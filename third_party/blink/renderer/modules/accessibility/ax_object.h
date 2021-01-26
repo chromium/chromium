@@ -913,9 +913,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // accessibility tree.
   const AXObjectVector& ChildrenIncludingIgnored() const;
   const AXObjectVector& ChildrenIncludingIgnored();
-  const AXObjectVector& CachedChildrenIncludingIgnored() const {
-    return children_;
-  }
 
   // Returns the node's unignored descendants that are one level deeper than
   // this node, after removing all accessibility ignored nodes from the tree.
@@ -1095,7 +1092,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   virtual void SetNeedsToUpdateChildren() {}
   virtual void ClearChildren();
   void DetachFromParent() { parent_ = nullptr; }
-  void AddAccessibleNodeChildren();
   virtual void SelectedOptions(AXObjectVector&) const {}
 
   // Properties of the object's owning document or page.
@@ -1249,6 +1245,8 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
 
  protected:
   AXID id_;
+  // Any parent, regardless of whether it's ignored or not included in the tree.
+  mutable Member<AXObject> parent_;
   // Only children that are included in tree, maybe rename to children_in_tree_.
   AXObjectVector children_;
   mutable bool have_children_;
@@ -1309,9 +1307,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   AXObjectVector TableCellChildren() const;
   const AXObject* TableRowParent() const;
   const AXObject* TableParent() const;
-
-  // Any parent, regardless of whether it's ignored or not included in the tree.
-  mutable Member<AXObject> parent_;
 
   // Helpers for serialization.
   void SerializeStyleAttributes(ui::AXNodeData* node_data);

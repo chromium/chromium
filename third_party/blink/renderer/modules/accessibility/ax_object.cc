@@ -581,11 +581,11 @@ unsigned AXObject::number_of_live_ax_objects_ = 0;
 
 AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
     : id_(0),
+      parent_(nullptr),
       have_children_(false),
       role_(ax::mojom::blink::Role::kUnknown),
       aria_role_(ax::mojom::blink::Role::kUnknown),
       explicit_container_id_(0),
-      parent_(nullptr),
       last_modification_count_(-1),
       cached_is_ignored_(false),
       cached_is_ignored_but_included_in_tree_(false),
@@ -640,7 +640,7 @@ void AXObject::Detach() {
          "accessibility properties.";
 #endif
 
-  // Clear any children and call detachFromParent on them so that
+  // Clear any children and call DetachFromParent() on them so that
   // no children are left with dangling pointers to their parent.
   ClearChildren();
 
@@ -2077,14 +2077,34 @@ bool AXObject::ComputeAccessibilityIsIgnoredButIncludedInTree() const {
     return true;
   }
 
-  if (!GetNode())
-    return false;
+  if (!GetNode()) {
+    if (GetLayoutObject()) {
+      // All AXObjects created for anonymous layout objects are included.
+      // See IsLayoutObjectRelevantForAccessibility() in
+      // ax_object_cache_impl.cc.
+      // - Visible content, such as text, images and quotes (can't have
+      // children).
+      // - Any containers inside of pseudo-elements.
+      DCHECK(GetLayoutObject()->IsAnonymous())
+          << "Object has layout object but no node and is not anonymous: "
+          << GetLayoutObject();
+    } else {
+      // Include ignored mock objects, virtual objects and inline text boxes.
+      DCHECK(IsMockObject() || IsVirtualObject() ||
+             RoleValue() == ax::mojom::blink::Role::kInlineTextBox)
+          << "Nodeless, layout-less object found with role " << RoleValue();
+    }
+    // By including all of these objects in the tree, it is ensured that
+    // ClearChildren() will be able to find these children and detach them
+    // from their parent.
+    return true;
+  }
 
   // Use a flag to control whether or not the <html> element is included
   // in the accessibility tree. Either way it's always marked as "ignored",
   // but eventually we want to always include it in the tree to simplify
   // some logic.
-  if (GetNode() && IsA<HTMLHtmlElement>(GetNode()))
+  if (IsA<HTMLHtmlElement>(GetNode()))
     return RuntimeEnabledFeatures::AccessibilityExposeHTMLElementEnabled();
 
   // If the node is part of the user agent shadow dom, or has the explicit
@@ -3646,8 +3666,12 @@ bool AXObject::ShouldUseLayoutObjectTraversalForChildren() const {
   // If no node, this may be an anonymous layout object, e.g. an anonymous block
   // that is inserted to enforce the rule that all children are blocks or all
   // children are inlines. Anonymous blocks have a layout object but no node.
-  if (!GetNode())
+  // Note: anonymous containers are only added within pseudo elements.
+  // See AXObjectCacheImpl::IsLayoutObjectRelevantForAccessibility().
+  if (!GetNode()) {
+    DCHECK(GetLayoutObject()->IsAnonymous());
     return true;
+  }
 
   // The only other case for using layout builder traversal is for a pseudo
   // element, such as ::before. Pseudo element child text and images are not
@@ -3668,38 +3692,45 @@ void AXObject::ClearChildren() {
   // Parent (this)
   //   Child not included in tree  (immediate child)
   //     Child included in tree (an item in |children_|)
-  // Therefore, for each child in |children_|, we may need to go up one or
-  // more ancestors to find the actual immediate child. This is accomplished via
-  // an additional inner loop.
-  // TODO(accessibility) This ugly extra inner loop can be removed if we remove
-  // "not included in tree" holes from the tree, and there will no longer be
-  // any difference between children_ and immediate children.
+  // These situations only occur for children that were backed by a DOM node.
+  // Therefore, in addition to looping through |children_|, we must also loop
+  // through any unincluded children associated with any DOM children;
+  // TODO(accessibility) Try to remove ugly second loop when we transition to
+  // AccessibilityExposeIgnoredNodes().
+
+  // Loop through AXObject children.
+
+  if (!have_children_) {
+    DCHECK_EQ(children_.size(), 0U);
+    return;
+  }
+
   for (const auto& child : children_) {
-    AXObject* immediate_child = child;
-    while (immediate_child) {
-      if (immediate_child->parent_ == this) {
-        immediate_child->parent_ = nullptr;
-        break;
+    if (child->CachedParentObject() == this)
+      child->DetachFromParent();
+  }
+
+  if (GetNode()) {
+    // Only direct AXObjects for direct DOM children can be unincluded.
+    // If they were unincluded, then they couldn't detach from parent in the
+    // first loop above, because they aren't in children_.
+    for (Node* child_node = LayoutTreeBuilderTraversal::FirstChild(*GetNode());
+         child_node;
+         child_node = LayoutTreeBuilderTraversal::NextSibling(*child_node)) {
+      AXObject* ax_child_from_node = AXObjectCache().Get(child_node);
+      if (ax_child_from_node &&
+          ax_child_from_node->CachedParentObject() == this) {
+        // Child was not cleared from first loop.
+        // It must have been an unincluded node who's parent is this,
+        // although it may now be included since the children were last updated.
+        // Check current parent first. It may be owned by another node.
+        ax_child_from_node->DetachFromParent();
       }
-      immediate_child = immediate_child->parent_;
     }
   }
 
   children_.clear();
   have_children_ = false;
-}
-
-void AXObject::AddAccessibleNodeChildren() {
-  Element* element = GetElement();
-  if (!element)
-    return;
-
-  AccessibleNode* accessible_node = element->ExistingAccessibleNode();
-  if (!accessible_node)
-    return;
-
-  for (const auto& child : accessible_node->GetChildren())
-    children_.push_back(AXObjectCache().GetOrCreate(child, this));
 }
 
 Element* AXObject::GetElement() const {

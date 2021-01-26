@@ -3154,8 +3154,10 @@ void AXNodeObject::AddInlineTextBoxChildren(bool force) {
 }
 
 void AXNodeObject::AddValidationMessageChild() {
-  if (IsWebArea())
-    AddChild(AXObjectCache().ValidationMessageObjectIfInvalid());
+  if (IsWebArea()) {
+    AddChildAndCheckIncluded(
+        AXObjectCache().ValidationMessageObjectIfInvalid());
+  }
 }
 
 void AXNodeObject::AddImageMapChildren() {
@@ -3169,8 +3171,8 @@ void AXNodeObject::AddImageMapChildren() {
 
   for (HTMLAreaElement& area :
        Traversal<HTMLAreaElement>::DescendantsOf(*map)) {
-    // add an <area> element for this child if it has a link
-    AddChild(AXObjectCache().GetOrCreate(&area, this));
+    // Add an <area> element for this child if it has a link and is visible.
+    AddChildAndCheckIncluded(AXObjectCache().GetOrCreate(&area, this));
   }
 }
 
@@ -3178,21 +3180,23 @@ void AXNodeObject::AddPopupChildren() {
   if (!AXObjectCache().UseAXMenuList()) {
     auto* html_select_element = DynamicTo<HTMLSelectElement>(GetNode());
     if (html_select_element && html_select_element->UsesMenuList())
-      AddChild(html_select_element->PopupRootAXObject());
+      AddChildAndCheckIncluded(html_select_element->PopupRootAXObject());
     return;
   }
 
   auto* html_input_element = DynamicTo<HTMLInputElement>(GetNode());
   if (!html_input_element)
     return;
-  AddChild(html_input_element->PopupRootAXObject());
+  AddChildAndCheckIncluded(html_input_element->PopupRootAXObject());
 }
 
 void AXNodeObject::AddLayoutChildren() {
+  // Children are added this way in very rare cases.
+  // See ShouldUseLayoutObjectTraversalForChildren().
   DCHECK(GetLayoutObject());
   LayoutObject* child = GetLayoutObject()->SlowFirstChild();
   while (child) {
-    AddChild(AXObjectCache().GetOrCreate(child, this));
+    AddChildAndCheckIncluded(AXObjectCache().GetOrCreate(child, this));
     child = child->NextSibling();
   }
 }
@@ -3221,14 +3225,26 @@ void AXNodeObject::AddNodeChildren() {
   }
 }
 
+void AXNodeObject::AddAccessibleNodeChildren() {
+  Element* element = GetElement();
+  if (!element)
+    return;
+
+  AccessibleNode* accessible_node = element->ExistingAccessibleNode();
+  if (!accessible_node)
+    return;
+
+  for (const auto& child : accessible_node->GetChildren())
+    AddChildAndCheckIncluded(AXObjectCache().GetOrCreate(child, this));
+}
+
 void AXNodeObject::AddOwnedChildren() {
   AXObjectVector owned_children;
   AXObjectCache().GetAriaOwnedChildren(this, owned_children);
 
-  for (const auto& owned_child : owned_children) {
-    owned_child->SetParent(this);
-    AddChild(owned_child, true);
-  }
+  // Always include owned children.
+  for (const auto& owned_child : owned_children)
+    AddChildAndCheckIncluded(owned_child, true);
 }
 
 void AXNodeObject::AddChildren() {
@@ -3250,6 +3266,13 @@ void AXNodeObject::AddChildren() {
   DCHECK(!have_children_);
   have_children_ = true;
 
+  if (RoleValue() == ax::mojom::blink::Role::kStaticText ||
+      RoleValue() == ax::mojom::blink::Role::kLineBreak) {
+    AddInlineTextBoxChildren();
+    CHECK_ATTACHED();
+    return;
+  }
+
   if (IsHtmlTable())
     AddTableChildren();
   else if (ShouldUseLayoutObjectTraversalForChildren())
@@ -3262,9 +3285,6 @@ void AXNodeObject::AddChildren() {
   CHECK_ATTACHED();
 
   AddImageMapChildren();
-  CHECK_ATTACHED();
-
-  AddInlineTextBoxChildren();
   CHECK_ATTACHED();
 
   AddValidationMessageChild();
@@ -3299,6 +3319,16 @@ void AXNodeObject::AddChild(AXObject* child, bool is_from_aria_owns) {
 
   unsigned int index = children_.size();
   InsertChild(child, index, is_from_aria_owns);
+}
+
+void AXNodeObject::AddChildAndCheckIncluded(AXObject* child,
+                                            bool is_from_aria_owns) {
+  if (!child)
+    return;
+  DCHECK(child->AccessibilityIsIncludedInTree())
+      << "A parent " << ToString(true, true) << "\n    ... tried to add child "
+      << child->ToString(true, true);
+  AddChild(child, is_from_aria_owns);
 }
 
 void AXNodeObject::InsertChild(AXObject* child,

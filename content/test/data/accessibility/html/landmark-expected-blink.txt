@@ -68,6 +68,7 @@ rootWebArea
 ++++++++++++inlineTextBox name='This should NOT have banner role.'
 ++++++details
 ++++++++disclosureTriangle name='Details'
+++++++++++staticText ignored name='▸ '
 ++++++++++staticText name='Details'
 ++++++++++++inlineTextBox name='Details'
 ++++++group
@@ -115,6 +116,7 @@ rootWebArea
 ++++++++++++++inlineTextBox name='This should NOT have banner role.'
 ++++++details
 ++++++++disclosureTriangle name='Details'
+++++++++++staticText ignored name='▸ '
 ++++++++++staticText name='Details'
 ++++++++++++inlineTextBox name='Details'
 ++++++group
@@ -161,6 +163,7 @@ rootWebArea
 ++++++++++++inlineTextBox name='This should NOT have footer role.'
 ++++++details
 ++++++++disclosureTriangle name='Details'
+++++++++++staticText ignored name='▸ '
 ++++++++++staticText name='Details'
 ++++++++++++inlineTextBox name='Details'
 ++++++group
@@ -208,6 +211,7 @@ rootWebArea
 ++++++++++++++inlineTextBox name='This should NOT have footer role.'
 ++++++details
 ++++++++disclosureTriangle name='Details'
+++++++++++staticText ignored name='▸ '
 ++++++++++staticText name='Details'
 ++++++++++++inlineTextBox name='Details'
 ++++++group
