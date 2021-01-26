@@ -681,9 +681,6 @@
     <message name="IDS_PROFILE_PICKER_PROFILE_CARD_LABEL" desc="Label for a profile card button that opens a new profile">
       Open <ph name="PROFILE_NAME">$1<ex>User</ex></ph> profile
     </message>
-    <message name="IDS_PROFILE_PICKER_PROFILE_MENU_BUTTON_NAME" desc="Text to be spoken when the focus is set to the menu button of the profile card on the picker main screen or shown on hover.">
-      Customize your profile, including its name
-    </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_MENU_REMOVE_TEXT" desc="Text of the remove button in profile card menu.">
       Delete
     </message>
