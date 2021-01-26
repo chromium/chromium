@@ -141,13 +141,6 @@ public class IdentityManager {
         return IdentityManagerJni.get().getAccountsWithRefreshTokens(mNativeIdentityManager);
     }
 
-    // TODO(https://crbug.com/1046746): Remove this after migrating internal usages.
-    /** @deprecated Use {@link #getPrimaryAccountInfo(int)} instead. */
-    @Deprecated
-    public @Nullable CoreAccountInfo getPrimaryAccountInfo() {
-        return getPrimaryAccountInfo(ConsentLevel.SYNC);
-    }
-
     /**
      * Provides access to the core information of the user's primary account.
      * Returns non-null if the primary account was set AND the required consent level was granted,
