@@ -41,12 +41,6 @@ if (!use_system_minigbm) {
     if (use_intel_minigbm) {
       defines += [ "DRV_I915" ]
     }
-    if (use_marvell_minigbm) {
-      defines += [ "DRV_MARVELL" ]
-    }
-    if (use_mediatek_minigbm) {
-      defines += [ "DRV_MEDIATEK" ]
-    }
     if (use_meson_minigbm) {
       defines += [ "DRV_MESON" ]
     }
@@ -59,12 +53,6 @@ if (!use_system_minigbm) {
     if (use_rockchip_minigbm) {
       defines += [ "DRV_ROCKCHIP" ]
     }
-    if (use_synaptics_minigbm) {
-      defines += [ "DRV_SYNAPTICS" ]
-    }
-    if (use_tegra_minigbm) {
-      defines += [ "DRV_TEGRA" ]
-    }
     if (use_vc4_minigbm) {
       defines += [ "DRV_VC4" ]
     }
@@ -75,25 +63,18 @@ if (!use_system_minigbm) {
       "src/amdgpu.c",
       "src/dri.c",
       "src/drv.c",
-      "src/evdi.c",
+      "src/dumb_driver.c",
       "src/exynos.c",
       "src/gbm.c",
       "src/gbm_helpers.c",
       "src/helpers.c",
       "src/helpers_array.c",
       "src/i915.c",
-      "src/marvell.c",
       "src/mediatek.c",
-      "src/meson.c",
       "src/msm.c",
-      "src/nouveau.c",
-      "src/radeon.c",
       "src/rockchip.c",
-      "src/synaptics.c",
       "src/tegra.c",
-      "src/udl.c",
       "src/vc4.c",
-      "src/vgem.c",
       "src/virtio_gpu.c",
     ]
 
