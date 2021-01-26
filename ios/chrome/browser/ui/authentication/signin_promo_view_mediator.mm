@@ -444,14 +444,14 @@ const char* AlreadySeenSigninViewPreferenceKey(
     return [[SigninPromoViewConfigurator alloc]
         initWithIdentityPromoViewMode:viewMode
                             userEmail:_defaultIdentity.userEmail
-                         userFullName:_defaultIdentity.userFullName
+                        userGivenName:_defaultIdentity.userGivenName
                             userImage:self.identityAvatar
                        hasCloseButton:hasCloseButton];
   }
   return [[SigninPromoViewConfigurator alloc]
       initWithIdentityPromoViewMode:IdentityPromoViewModeNoAccounts
                           userEmail:nil
-                       userFullName:nil
+                      userGivenName:nil
                           userImage:nil
                      hasCloseButton:hasCloseButton];
 }

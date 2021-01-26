@@ -20,7 +20,7 @@
 // been added to the device.
 - (instancetype)initWithIdentityPromoViewMode:(IdentityPromoViewMode)viewMode
                                     userEmail:(NSString*)userEmail
-                                 userFullName:(NSString*)userFullName
+                                userGivenName:(NSString*)userGivenName
                                     userImage:(UIImage*)userImage
                                hasCloseButton:(BOOL)hasCloseButton
     NS_DESIGNATED_INITIALIZER;

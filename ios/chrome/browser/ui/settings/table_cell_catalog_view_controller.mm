@@ -502,7 +502,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   signinPromo.configurator = [[SigninPromoViewConfigurator alloc]
       initWithIdentityPromoViewMode:IdentityPromoViewModeSigninWithAccount
                           userEmail:@"jonhdoe@example.com"
-                       userFullName:@"John Doe"
+                      userGivenName:@"John Doe"
                           userImage:nil
                      hasCloseButton:NO];
   signinPromo.text = @"Signin promo text example";

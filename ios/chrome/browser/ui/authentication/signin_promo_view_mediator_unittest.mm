@@ -190,8 +190,8 @@ class SigninPromoViewMediatorTest : public PlatformTest {
           image_view_profile_image_ = value;
           return YES;
         }]]);
-    NSString* name = expected_default_identity_.userFullName.length
-                         ? expected_default_identity_.userFullName
+    NSString* name = expected_default_identity_.userGivenName.length
+                         ? expected_default_identity_.userGivenName
                          : expected_default_identity_.userEmail;
     base::string16 name16 = SysNSStringToUTF16(name);
     NSString* accessibilityLabel =
@@ -278,7 +278,7 @@ TEST_F(SigninPromoViewMediatorTest, SigninWithAccountConfigureSigninPromoView) {
 // Tests signin promo view and its configurator with an identity
 // without full name.
 TEST_F(SigninPromoViewMediatorTest,
-       SigninWithAccountConfigureSigninPromoViewWithoutFullName) {
+       SigninWithAccountConfigureSigninPromoViewWithoutName) {
   user_full_name_ = nil;
   CreateMediator(signin_metrics::AccessPoint::ACCESS_POINT_RECENT_TABS);
   TestSigninPromoWithAccount();

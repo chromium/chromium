@@ -24,11 +24,11 @@ using l10n_util::GetNSStringF;
 @interface SigninPromoViewConfigurator ()
 
 // User email used for the secondary button, and also for the primary button if
-// there is no userFullName.
+// there is no userGivenName.
 @property(nonatomic) NSString* userEmail;
 
 // User full name used fro the primary button.
-@property(nonatomic) NSString* userFullName;
+@property(nonatomic) NSString* userGivenName;
 
 // User profile image.
 @property(nonatomic) UIImage* userImage;
@@ -45,14 +45,14 @@ using l10n_util::GetNSStringF;
 
 - (instancetype)initWithIdentityPromoViewMode:(IdentityPromoViewMode)viewMode
                                     userEmail:(NSString*)userEmail
-                                 userFullName:(NSString*)userFullName
+                                userGivenName:(NSString*)userGivenName
                                     userImage:(UIImage*)userImage
                                hasCloseButton:(BOOL)hasCloseButton {
   self = [super init];
   if (self) {
-    DCHECK(userEmail || (!userEmail && !userFullName && !userImage));
+    DCHECK(userEmail || (!userEmail && !userGivenName && !userImage));
     _identityPromoViewMode = viewMode;
-    _userFullName = [userFullName copy];
+    _userGivenName = [userGivenName copy];
     _userEmail = [userEmail copy];
     _userImage = [userImage copy];
     _hasCloseButton = hasCloseButton;
@@ -65,7 +65,7 @@ using l10n_util::GetNSStringF;
   signinPromoView.mode = self.identityPromoViewMode;
 
   NSString* name =
-      self.userFullName.length ? self.userFullName : self.userEmail;
+      self.userGivenName.length ? self.userGivenName : self.userEmail;
   base::string16 name16 = SysNSStringToUTF16(name);
   switch (self.identityPromoViewMode) {
     case IdentityPromoViewModeNoAccounts: {

@@ -80,7 +80,7 @@ SigninNotificationInfoBarDelegate::SigninNotificationInfoBarDelegate(
           signin::kSigninNotificationInfobarUsernameInTitle)) {
     title_ = base::SysNSStringToUTF16(l10n_util::GetNSStringF(
         IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE_WITH_USERNAME,
-        base::SysNSStringToUTF16(identity.userFullName)));
+        base::SysNSStringToUTF16(identity.userGivenName)));
   } else {
     title_ = base::SysNSStringToUTF16(
         l10n_util::GetNSString(IDS_IOS_SIGNIN_ACCOUNT_NOTIFICATION_TITLE));
