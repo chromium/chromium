@@ -32,6 +32,7 @@
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/protocol/wifi_configuration_specifics.pb.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace chromeos {
@@ -349,6 +350,12 @@ void WifiConfigurationBridge::OnReadAllMetadata(
     return;
   }
   change_processor()->ModelReadyToSync(std::move(metadata_batch));
+
+  // Sync pending updates.
+  for (auto const& it : networks_to_sync_when_ready_) {
+    SaveNetworkToSync(it.second);
+  }
+  networks_to_sync_when_ready_.clear();
 }
 
 void WifiConfigurationBridge::OnCommit(
@@ -428,6 +435,14 @@ void WifiConfigurationBridge::OnNetworkUpdate(
 void WifiConfigurationBridge::SaveNetworkToSync(
     base::Optional<sync_pb::WifiConfigurationSpecifics> proto) {
   if (!proto) {
+    return;
+  }
+
+  // If the sync backend hasn't finished initializing the bridge, then store
+  // this update to be processed later.
+  if (!store_ || !change_processor()->IsTrackingMetadata()) {
+    networks_to_sync_when_ready_.insert_or_assign(
+        NetworkIdentifier::FromProto(*proto), *proto);
     return;
   }
 

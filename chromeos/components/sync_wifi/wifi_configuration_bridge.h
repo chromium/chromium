@@ -139,6 +139,12 @@ class WifiConfigurationBridge : public syncer::ModelTypeSyncBridge,
   base::flat_map<std::string, std::unique_ptr<base::OneShotTimer>>
       network_guid_to_timer_map_;
 
+  // Map of network_id to proto which tracks networks that should be synced once
+  // the service is ready.  This is keyed on network_id to ensure that the most
+  // recent change is kept if there are multiple changes to the same network.
+  base::flat_map<NetworkIdentifier, sync_pb::WifiConfigurationSpecifics>
+      networks_to_sync_when_ready_;
+
   // The on disk store of WifiConfigurationSpecifics protos that mirrors what
   // is on the sync server.  This gets updated when changes are received from
   // the server and after local changes have been committed to the server.
