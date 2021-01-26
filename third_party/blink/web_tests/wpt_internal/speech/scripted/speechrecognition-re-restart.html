@@ -1,0 +1,20 @@
+<!doctype html>
+<title>Verify that multiple overlapping start() calls is well-behaved.</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/third_party/blink/public/mojom/speech/speech_recognizer.mojom.js"></script>
+<script src="../resources/mock-speechrecognizer.js"></script>
+<script>
+
+async_test(t => {
+  var r1 = new webkitSpeechRecognition();
+  r1.onend = () => r1.start();
+  r1.start();
+
+  var r2 = new webkitSpeechRecognition();
+  r2.onend = () => setTimeout(() => t.done());
+  r2.start();
+});
+
+</script>

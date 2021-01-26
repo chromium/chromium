@@ -721,8 +721,6 @@ fast/shapes/crash-caused-by-dirtying-a-shape-while-computing-it-requires-a-long-
 fast/shapes/parsing/parsing-shape-property-aliases.html
 fast/shapes/shape-outside-floats/shape-outside-floats-ellipse-margin-right.html
 fast/shapes/shape-outside-floats/shape-outside-negative-height-crash-width.html
-fast/speech/scripted/speechrecognition-re-restart.html
-fast/speech/scripted/speechrecognition-restart-onend.html
 fast/speechsynthesis/speech-synthesis-cancel.html
 fast/speechsynthesis/speech-synthesis-utterance-basics.html
 fast/speechsynthesis/speech-synthesis-voices-changed.html
@@ -988,3 +986,5 @@ webexposed/web-animations-api.html
 wpt_internal/geolocation-api/enabled.html
 wpt_internal/presentation/presentationconnectionavailableevent-ctor-mock.html
 wpt_internal/webmidi/permission.html
+wpt_internal/speech/scripted/speechrecognition-re-restart.html
+wpt_internal/speech/scripted/speechrecognition-restart-onend.html

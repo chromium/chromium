@@ -4404,9 +4404,6 @@ crbug.com/1022816 external/wpt/resource-timing/crossorigin-sandwich-TAO.sub.html
 # MHT works only when loaded from local FS (file://..).
 crbug.com/778467 [ Fuchsia ] mhtml/mhtml_in_iframe.html [ Failure ]
 
-# These tests load resources from file:///gen/... .
-crbug.com/919639 [ Fuchsia ] fast/speech/scripted/speechrecognition-re-restart.html [ Failure ]
-
 # These tests timeout when using Scenic ozone platform.
 crbug.com/1067477 [ Fuchsia ] fast/media/matchmedium-query-api.html [ Skip ]
 crbug.com/1067477 [ Fuchsia ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoom-gesture-touchscreen.html [ Skip ]
@@ -4433,7 +4430,7 @@ crbug.com/1047176 [ Win7 ] fast/forms/suggestion-picker/week-suggestion-picker-m
 crbug.com/818076 http/tests/devtools/oopif/oopif-elements-navigate-in.js [ Failure Pass ]
 
 # Sheriff 2018-03-05
-crbug.com/818650 [ Linux ] fast/speech/scripted/speechrecognition-restart-onend.html [ Crash Pass ]
+crbug.com/818650 [ Linux ] wpt_internal/speech/scripted/speechrecognition-restart-onend.html [ Crash Pass ]
 
 # Prefetching Signed Exchange DevTools tests are flaky.
 crbug.com/851363 http/tests/devtools/sxg/sxg-prefetch-fail.js [ Pass Failure ]
@@ -5327,10 +5324,10 @@ crbug.com/1059645 external/wpt/pointerevents/pointerevent_coalesced_events_attri
 
 # Failing on Fuchsia due to dependency on FuchsiaMediaResourceProvider, which is not implemented in content_shell.
 crbug.com/1061226 [ Fuchsia ] fast/mediastream/MediaStream-onactive-oninactive.html [ Skip ]
-crbug.com/1061226 [ Fuchsia ] fast/speech/scripted/speechrecognition-restart-onend.html [ Skip ]
 crbug.com/1061226 [ Fuchsia ] external/wpt/mediacapture-streams/MediaStream-idl.https.html [ Skip ]
 crbug.com/1061226 [ Fuchsia ] external/wpt/webaudio/the-audio-api/the-audioworklet-interface/baseaudiocontext-audioworklet.https.html [ Skip ]
 crbug.com/1061226 [ Fuchsia ] external/wpt/webaudio/the-audio-api/the-pannernode-interface/panner-equalpower-stereo.html [ Skip ]
+crbug.com/1061226 [ Fuchsia ] wpt_internal/speech/scripted/speechrecognition-restart-onend.html [ Skip ]
 
 # Sheriff 2020-03-13
 crbug.com/1061159 [ Fuchsia ] fast/inspector-support/cssURLQuotes.html [ Pass Failure ]
