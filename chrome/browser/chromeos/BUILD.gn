@@ -317,6 +317,7 @@ source_set("chromeos") {
     "//components/sync_sessions",
     "//components/tracing:startup_tracing",
     "//components/translate/core/browser",
+    "//components/ukm",
     "//components/ukm/content",
     "//components/unified_consent",
     "//components/user_manager",

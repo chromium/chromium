@@ -5,6 +5,7 @@
 #include "chrome/browser/chromeos/phonehub/browser_tabs_metadata_fetcher_impl.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/favicon/core/history_ui_favicon_request_handler.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
@@ -278,7 +279,7 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, ExceedMaximumNumberOfTabs) {
   const GURL kUrlD = GURL("http://d.com");
 
   const base::string16 kTitleE = base::UTF8ToUTF16("E");
-  const GURL kUrlE = GURL("http://e.com");
+  const GURL kUrlE = GURL(chrome::kChromeUINewTabURL);
 
   auto synced_session_window =
       std::make_unique<sync_sessions::SyncedSessionWindow>();
@@ -290,16 +291,17 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, ExceedMaximumNumberOfTabs) {
   AddWindow(std::move(synced_session_window));
 
   ExpectFaviconUrlFetchAttempt(kUrlD);
-  ExpectFaviconUrlFetchAttempt(kUrlE);
+  ExpectFaviconUrlFetchAttempt(kUrlC);
 
   AttemptFetch();
   InvokeNextFaviconCallbacks(/*num_successful_fetches=*/2);
 
-  // Tab A is not present because it has the oldest timestamp, and the maximum
-  // number of BrowserTabMetadata has been met.
+  // Tab A and Tab B are not present because they have the oldest timestamps,
+  // and the maximum number of BrowserTabMetadata has been met. Tab E is not
+  // present because it has a banned scheme.
   CheckIsExpectedMetadata(std::vector<BrowserTabMetadata>({
-      BrowserTabMetadata(kUrlE, kTitleE, kTimeE, GetDummyImage()),
       BrowserTabMetadata(kUrlD, kTitleD, kTimeD, GetDummyImage()),
+      BrowserTabMetadata(kUrlC, kTitleC, kTimeC, GetDummyImage()),
   }));
 }
 
