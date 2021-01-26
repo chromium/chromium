@@ -43,6 +43,8 @@ class TestRequestPeer : public blink::WebRequestPeer {
   void OnCompletedRequest(
       const network::URLLoaderCompletionStatus& status) override;
   void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason) override;
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
+  bool CanContinueBufferingWhileInBackForwardCache() override;
 
   struct Context final {
     Context();

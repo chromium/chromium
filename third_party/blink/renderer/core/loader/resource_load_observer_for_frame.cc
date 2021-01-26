@@ -282,6 +282,20 @@ void ResourceLoadObserverForFrame::EvictFromBackForwardCache(
   frame->EvictFromBackForwardCache(reason);
 }
 
+void ResourceLoadObserverForFrame::DidBufferLoadWhileInBackForwardCache(
+    size_t num_bytes) {
+  LocalFrame* frame = document_->GetFrame();
+  DCHECK(frame);
+  frame->DidBufferLoadWhileInBackForwardCache(num_bytes);
+}
+
+bool ResourceLoadObserverForFrame::
+    CanContinueBufferingWhileInBackForwardCache() {
+  LocalFrame* frame = document_->GetFrame();
+  DCHECK(frame);
+  return frame->CanContinueBufferingWhileInBackForwardCache();
+}
+
 void ResourceLoadObserverForFrame::Trace(Visitor* visitor) const {
   visitor->Trace(document_loader_);
   visitor->Trace(document_);

@@ -421,6 +421,24 @@ void ResourceDispatcher::EvictFromBackForwardCache(
   return request_info->peer->EvictFromBackForwardCache(reason);
 }
 
+void ResourceDispatcher::DidBufferLoadWhileInBackForwardCache(size_t num_bytes,
+                                                              int request_id) {
+  PendingRequestInfo* request_info = GetPendingRequestInfo(request_id);
+  if (!request_info)
+    return;
+
+  request_info->peer->DidBufferLoadWhileInBackForwardCache(num_bytes);
+}
+
+bool ResourceDispatcher::CanContinueBufferingWhileInBackForwardCache(
+    int request_id) {
+  PendingRequestInfo* request_info = GetPendingRequestInfo(request_id);
+  if (!request_info)
+    return true;
+
+  return request_info->peer->CanContinueBufferingWhileInBackForwardCache();
+}
+
 void ResourceDispatcher::SetCorsExemptHeaderList(
     const std::vector<std::string>& list) {
   cors_exempt_header_list_ = list;

@@ -78,6 +78,10 @@ class BLINK_PLATFORM_EXPORT WebRequestPeer {
   // entry.
   virtual void EvictFromBackForwardCache(mojom::RendererEvictionReason) = 0;
 
+  virtual void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) = 0;
+
+  virtual bool CanContinueBufferingWhileInBackForwardCache() = 0;
+
   virtual ~WebRequestPeer() {}
 };
 

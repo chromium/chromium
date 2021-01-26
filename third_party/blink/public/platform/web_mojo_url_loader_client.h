@@ -70,6 +70,8 @@ class BLINK_PLATFORM_EXPORT WebMojoURLLoaderClient final
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason reason);
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
+  bool CanContinueBufferingWhileInBackForwardCache();
   bool IsDeferredWithBackForwardCache() {
     return deferred_state_ ==
            blink::WebURLLoader::DeferType::kDeferredWithBackForwardCache;

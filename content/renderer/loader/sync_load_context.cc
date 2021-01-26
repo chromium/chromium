@@ -184,6 +184,12 @@ void SyncLoadContext::EvictFromBackForwardCache(
   return;
 }
 
+void SyncLoadContext::DidBufferLoadWhileInBackForwardCache(size_t num_bytes) {}
+
+bool SyncLoadContext::CanContinueBufferingWhileInBackForwardCache() {
+  return true;
+}
+
 void SyncLoadContext::FollowRedirect() {
   if (!signals_->RestartAfterRedirect()) {
     CancelRedirect();

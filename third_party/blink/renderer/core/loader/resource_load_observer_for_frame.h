@@ -60,6 +60,8 @@ class CORE_EXPORT ResourceLoadObserverForFrame final
                       int64_t encoded_data_length,
                       IsInternalRequest) override;
   void EvictFromBackForwardCache(mojom::blink::RendererEvictionReason) override;
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
+  bool CanContinueBufferingWhileInBackForwardCache() override;
   void Trace(Visitor*) const override;
 
  private:

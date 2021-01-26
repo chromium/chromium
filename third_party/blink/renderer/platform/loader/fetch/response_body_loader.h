@@ -128,12 +128,12 @@ class PLATFORM_EXPORT ResponseBodyLoader final
   void DidFailLoadingBody() override;
   void DidCancelLoadingBody() override;
   void EvictFromBackForwardCache(mojom::blink::RendererEvictionReason) override;
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
+  bool CanContinueBufferingWhileInBackForwardCache() override;
 
   // BytesConsumer::Client implementation.
   void OnStateChange() override;
   String DebugName() const override { return "ResponseBodyLoader"; }
-  // When |buffer_data_while_suspended_for_bfcache_| is true, we'll save the
-  // response body read when suspended.
   Member<Buffer> body_buffer_;
   Member<BytesConsumer> bytes_consumer_;
   Member<DelegatingBytesConsumer> delegating_bytes_consumer_;

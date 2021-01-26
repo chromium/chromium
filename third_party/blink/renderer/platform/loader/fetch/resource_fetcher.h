@@ -311,6 +311,8 @@ class PLATFORM_EXPORT ResourceFetcher
   bool ShouldBeLoadedFromWebBundle(const KURL&) const;
 
   void EvictFromBackForwardCache(mojom::RendererEvictionReason reason);
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
+  bool CanContinueBufferingWhileInBackForwardCache();
 
  private:
   friend class ResourceCacheValidationSuppressor;

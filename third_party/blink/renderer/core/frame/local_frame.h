@@ -206,7 +206,18 @@ class CORE_EXPORT LocalFrame final
       Frame* child) override;
   void DidFocus() override;
 
+  // Triggers eviction of this frame by notifying the browser side.
   void EvictFromBackForwardCache(mojom::blink::RendererEvictionReason reason);
+  // Called when a network request buffered an additional `num_bytes` while the
+  // frame is in back-forward cache. Updates the total amount of bytes buffered
+  // for back-forward cache in the frame and in the process. Note that
+  // `num_bytes` is the amount of additional bytes that are newly buffered, on
+  // top of any previously buffered bytes for this frame.
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes);
+  // Returns true if the total amount of bytes buffered while in back-forward
+  // cache in the whole renderer process is still under the per-process limit,
+  // false otherwise.
+  bool CanContinueBufferingWhileInBackForwardCache();
 
   void DidChangeThemeColor();
   void DidChangeBackgroundColor(SkColor background_color, bool color_adjust);
@@ -869,6 +880,11 @@ class CORE_EXPORT LocalFrame final
 
   float page_zoom_factor_;
   float text_zoom_factor_;
+
+  // The total bytes buffered by all network requests in this frame while frozen
+  // due to back-forward cache. This number gets reset when the frame gets out
+  // of the back-forward cache.
+  size_t total_bytes_buffered_while_in_back_forward_cache_ = 0;
 
   Member<CoreProbeSink> probe_sink_;
   scoped_refptr<InspectorTaskRunner> inspector_task_runner_;
