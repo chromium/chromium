@@ -285,14 +285,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   void OnProcessLaunched() override;
   void OnProcessLaunchFailed(int error_code) override;
 
-  // Update the total and low priority count as indicated by the previous and
-  // new priorities of the underlying document.  The nullopt option is used when
-  // there is no previous/subsequent navigation (when the frame is added/removed
-  // from the RenderProcessHostImpl).
-  void UpdateFrameWithPriority(
-      base::Optional<FramePriority> previous_priority,
-      base::Optional<FramePriority> new_priority) override;
-
   // Call this function when it is evident that the child process is actively
   // performing some operation, for example if we just received an IPC message.
   void mark_child_process_activity_time() {
@@ -411,17 +403,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
     kSpareTaken = 4,
     kRefusedBySiteInstance = 5,
     kMaxValue = kRefusedBySiteInstance
-  };
-
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused. Must agree with FramePrioritiesSeen
-  // in enums.xml.
-  enum class FramePrioritiesSeen {
-    kNoFramesSeen = 0,
-    kMixedPrioritiesSeen = 1,
-    kOnlyLowPrioritiesSeen = 2,
-    kOnlyNormalPrioritiesSeen = 3,
-    kMaxValue = kOnlyNormalPrioritiesSeen
   };
 
   static scoped_refptr<base::SingleThreadTaskRunner>
@@ -565,10 +546,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   FileSystemManagerImpl* GetFileSystemManagerForTesting() {
     return file_system_manager_impl_.get();
   }
-
-  // Sets the internal clock to the one specified, and also updates the
-  // appropriate initialization times appropriately.
-  void SetClockForTesting(base::TickClock* clock);
 
   // Binds |receiver| to the RestrictedCookieManager instance owned by
   // |storage_partition_impl_|, and is used by a service worker via
@@ -725,11 +702,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   RenderProcessHostImpl(BrowserContext* browser_context,
                         StoragePartitionImpl* storage_partition_impl,
                         bool is_for_guests_only);
-
-  // True if this ChildProcessLauncher has a non-zero number of frames attached
-  // to it and they're all low priority.  Note: This will always return false
-  // unless features::kUseFramePriorityInProcessHost is enabled.
-  bool HasOnlyLowPriorityFrames();
 
   // Initializes a new IPC::ChannelProxy in |channel_|, which will be
   // connected to the next child process launched for this host, if any.
@@ -971,12 +943,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // widgets the lowest depth of all hidden clients. Initialized to max depth
   // when there are no clients.
   unsigned int frame_depth_ = kMaxFrameDepthForPriority;
-  // Tracks the number of low priority frames currently hosted in this process.
-  // Always 0 unless features::kUseFramePriorityInProcessHost is enabled.
-  unsigned int low_priority_frames_ = 0;
-  // Tracks the total number of frames currently hosted in this process.
-  // Always 0 unless features::kUseFramePriorityInProcessHost is enabled.
-  unsigned int total_frames_ = 0;
   // |intersects_viewport_| similar to |frame_depth_| can be used to rank
   // processes of same visibility. It indicates process has frames that
   // intersect with the viewport.
@@ -996,27 +962,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // and the process will stay foreground priority; set to false and it will
   // stay background priority.
   base::Optional<bool> priority_override_;
-
-  // Track whether a low/normal priority frame (respectively) has been attached
-  // to the host at any point during its lifetime.  Used for UMA metrics
-  // recorded in destructor.
-  bool low_priority_frames_seen_ = false;
-  bool normal_priority_frames_seen_ = false;
-
-  // Used for tracking how much time out of the total time the process spent in
-  // the background.  For this, we track if the process |is_backgrounded_|
-  // currently as well as the |background_duration_| for the process so far and
-  // the last |background_status_update_time_| for the process as observed in
-  // UpdateProcessPriority.  Total time is obtained by looking at the current
-  // time upon deletion relative to |init_time_|.
-  bool is_backgrounded_ = false;
-  base::TimeTicks background_status_update_time_;
-  base::TimeDelta background_duration_;
-
-  // The tick clock used to get the current time.  Used for determining
-  // |init_time_| and |background_status_update_time_| for metrics.  Can be
-  // replaced by tests.
-  const base::TickClock* clock_;
 
   // Used to allow a RenderWidgetHost to intercept various messages on the
   // IO thread.

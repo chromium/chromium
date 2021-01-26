@@ -33108,6 +33108,10 @@ Called by update_feature_policy_enum.py.-->
 </enum>
 
 <enum name="FramePrioritiesSeen">
+  <obsolete>
+    Obsoleted on 2021-01-22 as corresponding experiment code was removed and the
+    experiment wrapped up.
+  </obsolete>
   <int value="0" label="No frames seen."/>
   <int value="1" label="Low and normal priority frames seen."/>
   <int value="2" label="Only low priority frames seen."/>

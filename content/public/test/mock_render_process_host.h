@@ -88,9 +88,6 @@ class MockRenderProcessHost : public RenderProcessHost {
   void RemoveObserver(RenderProcessHostObserver* observer) override;
   void ShutdownForBadMessage(CrashReportMode crash_report_mode) override;
   void UpdateClientPriority(PriorityClient* client) override;
-  void UpdateFrameWithPriority(
-      base::Optional<FramePriority> previous_priority,
-      base::Optional<FramePriority> new_priority) override;
   int VisibleClientCount() override;
   unsigned int GetFrameDepth() override;
   bool GetIntersectsViewport() override;

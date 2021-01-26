@@ -91,10 +91,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
  public:
   using iterator = base::IDMap<RenderProcessHost*>::iterator;
 
-  // The priority of a frame added to the RenderProcessHost.
-  // TODO(ericrobinson): Move to RenderProcessHostImpl after Mock refactor.
-  enum class FramePriority { kLow, kNormal };
-
   // Priority (or on Android, the importance) that a client contributes to this
   // RenderProcessHost. Eg a RenderProcessHost with a visible client has higher
   // priority / importance than a RenderProcessHost with hidden clients only.
@@ -168,15 +164,6 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   // Recompute Priority state. PriorityClient should call this when their
   // individual priority changes.
   virtual void UpdateClientPriority(PriorityClient* client) = 0;
-
-  // Update the total and low priority count as indicated by the previous and
-  // new priorities of the underlying document.  The nullopt option is used when
-  // there is no previous/subsequent navigation (when the frame is added/removed
-  // from the RenderProcessHost).
-  // TODO(ericrobinson): Move to RenderProcessHostImpl after Mock refactor.
-  virtual void UpdateFrameWithPriority(
-      base::Optional<FramePriority> previous_priority,
-      base::Optional<FramePriority> new_priority) = 0;
 
   // Number of visible (ie |!is_hidden|) PriorityClients.
   virtual int VisibleClientCount() = 0;

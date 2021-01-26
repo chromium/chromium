@@ -1620,7 +1620,6 @@ RenderProcessHostImpl::RenderProcessHostImpl(
       priority_(!blink::kLaunchingProcessIsBackgrounded,
                 false /* has_media_stream */,
                 false /* has_foreground_service_worker */,
-                false /* all_low_priority_frames */,
                 frame_depth_,
                 false /* intersects_viewport */,
                 true /* boost_for_pending_views */
@@ -1629,7 +1628,6 @@ RenderProcessHostImpl::RenderProcessHostImpl(
                 ChildProcessImportance::NORMAL
 #endif
                 ),
-      clock_(base::DefaultTickClock::GetInstance()),
       id_(ChildProcessHostImpl::GenerateChildProcessUniqueId()),
       browser_context_(browser_context),
       storage_partition_impl_(storage_partition_impl),
@@ -1779,35 +1777,6 @@ RenderProcessHostImpl::~RenderProcessHostImpl() {
   if (cleanup_network_service_plugin_exceptions_upon_destruction_)
     RemoveNetworkServicePluginExceptions(GetID());
 
-  // Do reporting here for the priority of the frames seen by the host.
-  FramePrioritiesSeen report = FramePrioritiesSeen::kNoFramesSeen;
-  if (normal_priority_frames_seen_ && low_priority_frames_seen_) {
-    report = FramePrioritiesSeen::kMixedPrioritiesSeen;
-  } else if (normal_priority_frames_seen_) {
-    report = FramePrioritiesSeen::kOnlyNormalPrioritiesSeen;
-  } else if (low_priority_frames_seen_) {
-    report = FramePrioritiesSeen::kOnlyLowPrioritiesSeen;
-  }
-  UMA_HISTOGRAM_ENUMERATION("BrowserRenderProcessHost.FramePrioritiesSeen",
-                            report);
-
-  // Report the histograms if the time is nonzero.  Note that LONG_TIMES records
-  // times in exponential bins up to an hour, so it should sufficiently catch
-  // most cases.
-  if (!background_status_update_time_.is_null()) {
-    base::TimeTicks current_time = clock_->NowTicks();
-    base::TimeDelta total_duration = current_time - init_time_;
-
-    // Only record for durations greater than zero.
-    if (total_duration.InMicroseconds() > 0) {
-      if (is_backgrounded_)
-        background_duration_ += current_time - background_status_update_time_;
-      UMA_HISTOGRAM_LONG_TIMES("BrowserRenderProcessHost.TotalTime",
-                               total_duration);
-      UMA_HISTOGRAM_LONG_TIMES("BrowserRenderProcessHost.BackgroundTime",
-                               background_duration_);
-    }
-  }
   TRACE_EVENT_NESTABLE_ASYNC_END2("shutdown", "Cleanup in progress", this,
                                   "render_process_host", this,
                                   "browser_context", browser_context_);
@@ -1945,18 +1914,13 @@ bool RenderProcessHostImpl::Init() {
     shutdown_requested_ = false;
   }
 
-  init_time_ = clock_->NowTicks();
-  background_status_update_time_ = init_time_;
+  init_time_ = base::TimeTicks::Now();
   return true;
 }
 
 void RenderProcessHostImpl::EnableSendQueue() {
   if (!channel_)
     InitializeChannelProxy();
-}
-
-bool RenderProcessHostImpl::HasOnlyLowPriorityFrames() {
-  return (low_priority_frames_ > 0) && (total_frames_ == low_priority_frames_);
 }
 
 void RenderProcessHostImpl::InitializeChannelProxy() {
@@ -2123,12 +2087,6 @@ void RenderProcessHostImpl::BindNativeIOHost(
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
   storage_partition->GetNativeIOContext()->BindReceiver(origin,
                                                         std::move(receiver));
-}
-
-void RenderProcessHostImpl::SetClockForTesting(base::TickClock* clock) {
-  clock_ = clock;
-  init_time_ = clock_->NowTicks();
-  background_status_update_time_ = init_time_;
 }
 
 void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(
@@ -2917,36 +2875,6 @@ void RenderProcessHostImpl::UpdateClientPriority(PriorityClient* client) {
   DCHECK(client);
   DCHECK_EQ(1u, priority_clients_.count(client));
   UpdateProcessPriorityInputs();
-}
-
-void RenderProcessHostImpl::UpdateFrameWithPriority(
-    base::Optional<FramePriority> previous_priority,
-    base::Optional<FramePriority> new_priority) {
-  // Record the priority of the frames seens so we know for reporting what
-  // combination of normal and low priority frames have been seen.
-  if (new_priority) {
-    if (new_priority == FramePriority::kNormal) {
-      normal_priority_frames_seen_ = true;
-    } else {
-      low_priority_frames_seen_ = true;
-    }
-  }
-
-  // If we're not using frame priorities, return after recording.
-  if (!base::FeatureList::IsEnabled(
-          features::kUseFramePriorityInRenderProcessHost)) {
-    return;
-  }
-
-  const bool previous_all_low_priority_frames = HasOnlyLowPriorityFrames();
-  total_frames_ =
-      total_frames_ - (previous_priority ? 1 : 0) + (new_priority ? 1 : 0);
-  low_priority_frames_ =
-      low_priority_frames_ -
-      (previous_priority && previous_priority == FramePriority::kLow ? 1 : 0) +
-      (new_priority && new_priority == FramePriority::kLow ? 1 : 0);
-  if (previous_all_low_priority_frames != HasOnlyLowPriorityFrames())
-    UpdateProcessPriority();
 }
 
 int RenderProcessHostImpl::VisibleClientCount() {
@@ -4794,7 +4722,7 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
       visible_clients_ > 0 || base::CommandLine::ForCurrentProcess()->HasSwitch(
                                   switches::kDisableRendererBackgrounding),
       media_stream_count_ > 0, foreground_service_worker_count_ > 0,
-      HasOnlyLowPriorityFrames(), frame_depth_, intersects_viewport_,
+      frame_depth_, intersects_viewport_,
       !!pending_views_ /* boost_for_pending_views */
 #if defined(OS_ANDROID)
       ,
@@ -4811,7 +4739,6 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
         foregrounded, /* is_visible */
         foregrounded, /* has_media_stream */
         foregrounded, /* has_foreground_service_worker */
-        false,        /* has_only_low_priority_frames */
         0,            /* frame_depth */
         foregrounded, /* intersects_viewport */
         false         /* boost_for_pending_views */
@@ -4851,23 +4778,6 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
         "pid", child_process_launcher_->GetProcess().Pid(),
         "priority_is_background", priority.is_background());
     child_process_launcher_->SetProcessPriority(priority_);
-  }
-
-  // When switching in/out of the background, update the time spent in the
-  // background so the time spent backgrounded vs overall can be reported.
-  if (background_state_changed) {
-    is_backgrounded_ = priority_.is_background();
-    // Don't update backgrounding metrics until the render process finishes
-    // initializing, at which point it will set |background_status_update_time_|
-    // to the current time.
-    if (!background_status_update_time_.is_null()) {
-      base::TimeTicks update_time = clock_->NowTicks();
-      base::TimeDelta update_duration =
-          update_time - background_status_update_time_;
-      background_status_update_time_ = update_time;
-      if (!is_backgrounded_)
-        background_duration_ += update_duration;
-    }
   }
 
   // Notify the child process of the change in state.

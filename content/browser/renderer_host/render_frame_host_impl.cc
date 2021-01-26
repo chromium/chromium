@@ -1231,10 +1231,6 @@ RenderFrameHostImpl::~RenderFrameHostImpl() {
   ClearWebUI();
 
   SetLastCommittedSiteInfo(GURL());
-  if (last_committed_document_priority_) {
-    GetProcess()->UpdateFrameWithPriority(last_committed_document_priority_,
-                                          base::nullopt);
-  }
 
   g_token_frame_map.Get().erase(frame_token_);
 
@@ -3079,18 +3075,6 @@ void RenderFrameHostImpl::ResetChildren() {
 
 void RenderFrameHostImpl::SetLastCommittedUrl(const GURL& url) {
   last_committed_url_ = url;
-}
-
-void RenderFrameHostImpl::UpdateRenderProcessHostFramePriorities() {
-  const auto new_committed_document_priority =
-      delegate_->IsFrameLowPriority(this)
-          ? RenderProcessHostImpl::FramePriority::kLow
-          : RenderProcessHostImpl::FramePriority::kNormal;
-  if (last_committed_document_priority_ != new_committed_document_priority) {
-    GetProcess()->UpdateFrameWithPriority(last_committed_document_priority_,
-                                          new_committed_document_priority);
-    last_committed_document_priority_ = new_committed_document_priority;
-  }
 }
 
 void RenderFrameHostImpl::Detach() {
@@ -8913,8 +8897,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
                                            NavigationGestureUser);
 
   UpdateSiteURL(params->url, params->url_is_unreachable);
-  if (!is_same_document_navigation)
-    UpdateRenderProcessHostFramePriorities();
 
   // TODO(arthursonzogni): Updating this flag for same-document or bfcache
   // navigation isn't right. This should be moved to DidCommitNewDocument().

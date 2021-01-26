@@ -346,12 +346,6 @@ bool WebContentsDelegate::ShouldShowStaleContentOnEviction(
   return false;
 }
 
-bool WebContentsDelegate::IsFrameLowPriority(
-    WebContents* web_contents,
-    RenderFrameHost* render_frame_host) {
-  return false;
-}
-
 WebContents* WebContentsDelegate::GetResponsibleWebContents(
     WebContents* web_contents) {
   return web_contents;

@@ -155,11 +155,6 @@ RenderFrameHostDelegate::GetRecordAggregateWatchTimeCallback() {
   return base::NullCallback();
 }
 
-bool RenderFrameHostDelegate::IsFrameLowPriority(
-    RenderFrameHost* render_frame_host) {
-  return false;
-}
-
 void RenderFrameHostDelegate::IsClipboardPasteAllowed(
     const GURL& url,
     const ui::ClipboardFormatType& data_type,

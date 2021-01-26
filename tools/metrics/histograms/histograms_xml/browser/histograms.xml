@@ -482,6 +482,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="BrowserRenderProcessHost.BackgroundTime" units="ms"
     expires_after="2021-04-04">
+  <obsolete>
+    Obsoleted on 2021-01-22 as corresponding experiment code was removed and the
+    experiment wrapped up.
+  </obsolete>
   <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -555,6 +559,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="BrowserRenderProcessHost.FramePrioritiesSeen"
     enum="FramePrioritiesSeen" expires_after="2021-06-13">
+  <obsolete>
+    Obsoleted on 2021-01-22 as corresponding experiment code was removed and the
+    experiment wrapped up.
+  </obsolete>
   <owner>csharrison@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>
@@ -588,6 +596,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="BrowserRenderProcessHost.TotalTime" units="ms"
     expires_after="2021-06-06">
+  <obsolete>
+    Obsoleted on 2021-01-22 as corresponding experiment code was removed and the
+    experiment wrapped up.
+  </obsolete>
   <owner>johnidel@chromium.org</owner>
   <owner>chrome-ads-histograms@google.com</owner>
   <summary>

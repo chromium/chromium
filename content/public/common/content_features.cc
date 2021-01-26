@@ -699,13 +699,6 @@ const base::Feature kTouchpadOverscrollHistoryNavigation {
 const base::Feature kTrustedDOMTypes{"TrustedDOMTypes",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether the RenderProcessHost uses its frames' priorities for
-// determining if it should be backgrounded. When all frames associated with a
-// RenderProcessHost are low priority, that process may be backgrounded even if
-// those frames are visible.
-const base::Feature kUseFramePriorityInRenderProcessHost{
-    "UseFramePriorityInRenderProcessHost", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Allows user activation propagation to all frames having the same origin as
 // the activation notifier frame.  This is an intermediate measure before we
 // have an iframe attribute to declaratively allow user activation propagation

@@ -2084,9 +2084,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       RenderFrameHostOrProxy child_frame_or_proxy,
       bad_message::BadMessageReason reason);
 
-  // Update the RenderProcessHost priority when a navigation occurs.
-  void UpdateRenderProcessHostFramePriorities();
-
   // IPC Message handlers.
   void OnContextMenu(const blink::UntrustworthyContextMenuParams& params);
   void OnForwardResourceTimingToParent(
@@ -2726,11 +2723,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Track this frame's last committed URL.
   GURL last_committed_url_;
-
-  // Track the frame priority of the last committed document, which is nullopt
-  // prior to the first commit.
-  base::Optional<RenderProcessHostImpl::FramePriority>
-      last_committed_document_priority_;
 
   // Track this frame's last committed origin.
   url::Origin last_committed_origin_;

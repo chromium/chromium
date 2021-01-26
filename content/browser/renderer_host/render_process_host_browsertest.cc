@@ -7,9 +7,6 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
-#include "base/test/simple_test_tick_clock.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -174,17 +171,6 @@ class RenderProcessHostTest : public ContentBrowserTest,
  public:
   RenderProcessHostTest() = default;
 
-  void SetUp() override {
-    if (use_frame_priority_) {
-      feature_list_.InitAndEnableFeature(
-          features::kUseFramePriorityInRenderProcessHost);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          features::kUseFramePriorityInRenderProcessHost);
-    }
-    ContentBrowserTest::SetUp();
-  }
-
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(
         switches::kAutoplayPolicy,
@@ -234,8 +220,6 @@ class RenderProcessHostTest : public ContentBrowserTest,
   int process_exits_ = 0;
   int host_destructions_ = 0;
   base::OnceClosure process_exit_callback_;
-  bool use_frame_priority_ = false;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 // A mock ContentBrowserClient that only considers a spare renderer to be a
@@ -1266,27 +1250,6 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, TooManyKeepaliveRequests) {
   EXPECT_EQ(title, watcher.WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, LowPriorityFramesDisabled) {
-  // RenderProcessHostImpl::UpdateProcessPriority has an early check of
-  // run_renderer_in_process and exits for RenderProcessHosts without a child
-  // process launcher.  In order to skip initializing that here and the layer of
-  // indirection, we explicitly run in-process, which we must also disable once
-  // the test has finished to prevent crashing on exit.
-  RenderProcessHost::SetRunRendererInProcess(true);
-  RenderProcessHostImpl* process = static_cast<RenderProcessHostImpl*>(
-      RenderProcessHostImpl::CreateRenderProcessHost(
-          ShellContentBrowserClient::Get()->browser_context(), nullptr));
-  // It starts off as normal priority.
-  EXPECT_FALSE(process->IsProcessBackgrounded());
-  // With the feature off it stays low priority when adding low priority frames.
-  process->UpdateFrameWithPriority(base::nullopt,
-                                   RenderProcessHostImpl::FramePriority::kLow);
-  process->UpdateFrameWithPriority(base::nullopt,
-                                   RenderProcessHostImpl::FramePriority::kLow);
-  EXPECT_FALSE(process->IsProcessBackgrounded());
-  RenderProcessHost::SetRunRendererInProcess(false);
-}
-
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, PriorityOverride) {
   // RenderProcessHostImpl::UpdateProcessPriority has an early check of
   // run_renderer_in_process and exits for RenderProcessHosts without a child
@@ -1371,236 +1334,6 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, FastShutdownForStartingProcess) {
   process->Init();
   EXPECT_TRUE(process->FastShutdownIfPossible());
   process->Cleanup();
-}
-
-class RenderProcessHostFramePriorityTest : public RenderProcessHostTest {
- public:
-  // Initialize the clock and set the fixture to use frame priority feature.
-  RenderProcessHostFramePriorityTest() {
-    clock_ = std::make_unique<base::SimpleTestTickClock>();
-    use_frame_priority_ = true;
-  }
-
-  // Check the histograms at TearDown.
-  void TearDown() override {
-    RenderProcessHostTest::TearDown();
-    // TODO(crbug/1045958): Check the histograms directly in the tests.
-    CheckHistograms();
-  }
-
-  // Set the expected frame priorities seen and set TearDown check variable.
-  void SetFramePrioritiesExpected(bool low, bool normal) {
-    low_priority_frames_expected_ = low;
-    normal_priority_frames_expected_ = normal;
-    check_frame_priorities_ = true;
-  }
-
-  // Set the times expected at low priority and overall.
-  void SetPriorityTimesExpected(base::TimeDelta low_time,
-                                base::TimeDelta total_time) {
-    low_priority_time_expected_ = low_time;
-    total_time_expected_ = total_time;
-  }
-
-  // Advance the internal clock for the RenderProcessHost.
-  void AdvanceClock(base::TimeDelta time) { clock_->Advance(time); }
-
-  // Create the process with the test clock, initialize, and return it.
-  RenderProcessHostImpl* CreateAndInitializeProcess() {
-    // RenderProcessHostImpl::UpdateProcessPriority has an early check of
-    // run_renderer_in_process and exits for RenderProcessHosts without a child
-    // process launcher.  In order to skip initializing that here and the layer
-    // of indirection, we explicitly run in-process, which we must also disable
-    // once the test has finished to prevent crashing on exit.
-    RenderProcessHostImpl::SetRunRendererInProcess(true);
-    // Initialize the clock's value to the current time.
-    clock_->SetNowTicks(base::TimeTicks::Now());
-    // Create the process itself.
-    process_ = static_cast<RenderProcessHostImpl*>(
-        RenderProcessHostImpl::CreateRenderProcessHost(
-            ShellContentBrowserClient::Get()->browser_context(), nullptr));
-    // For these tests, assume something is always visible.
-    SetVisibleClients(process_, 1);
-    // Any advancement before Init is ignored.
-    AdvanceClock(base::TimeDelta::FromSeconds(10));
-    // Don't start an actual process, just initialize times.
-    process_->SetClockForTesting(clock_.get());
-    // When no frames are attached, it's not low priority.
-    EXPECT_FALSE(process_->IsProcessBackgrounded());
-    // Return it so it can be used by tests.
-    return process_;
-  }
-
-  // Shut down the created process.
-  void ShutDownAndCleanUpProcess() {
-    RenderProcessHostImpl::SetRunRendererInProcess(false);
-  }
-
- private:
-  // Check the histograms related to frame priority and backgrounding.
-  void CheckHistograms() {
-    if (total_time_expected_ != base::TimeDelta()) {
-      histogram_tester_.ExpectUniqueSample(
-          "BrowserRenderProcessHost.TotalTime",
-          total_time_expected_.InMilliseconds(), 1);
-      histogram_tester_.ExpectUniqueSample(
-          "BrowserRenderProcessHost.BackgroundTime",
-          low_priority_time_expected_.InMilliseconds(), 1);
-    }
-
-    if (!check_frame_priorities_)
-      return;
-
-    if (low_priority_frames_expected_ && normal_priority_frames_expected_) {
-      histogram_tester_.ExpectBucketCount(
-          "BrowserRenderProcessHost.FramePrioritiesSeen",
-          RenderProcessHostImpl::FramePrioritiesSeen::kMixedPrioritiesSeen, 1);
-    } else if (low_priority_frames_expected_) {
-      histogram_tester_.ExpectBucketCount(
-          "BrowserRenderProcessHost.FramePrioritiesSeen",
-          RenderProcessHostImpl::FramePrioritiesSeen::kOnlyLowPrioritiesSeen,
-          1);
-    } else if (normal_priority_frames_expected_) {
-      histogram_tester_.ExpectBucketCount(
-          "BrowserRenderProcessHost.FramePrioritiesSeen",
-          RenderProcessHostImpl::FramePrioritiesSeen::kOnlyNormalPrioritiesSeen,
-          1);
-    } else {
-      // Two are expected here because tests using this create their own
-      // process, meaning the default process is never used/has no frames
-      // attached.
-      histogram_tester_.ExpectBucketCount(
-          "BrowserRenderProcessHost.FramePrioritiesSeen",
-          RenderProcessHostImpl::FramePrioritiesSeen::kNoFramesSeen, 2);
-    }
-  }
-
-  // The process that is created to add frames with various priorities.
-  RenderProcessHostImpl* process_;
-  // The histogram tester, to check backgrounding and priority histograms.
-  base::HistogramTester histogram_tester_;
-  // Whether frames with low priority have been attached to the process.
-  bool low_priority_frames_expected_ = false;
-  // Whether frames with normal priority have been attached to the process.
-  bool normal_priority_frames_expected_ = false;
-  // Whether we should check the frame priority histograms.
-  bool check_frame_priorities_ = false;
-  // The expected time a process hosts only low priority frames.
-  base::TimeDelta low_priority_time_expected_;
-  // The expected time a process hosts frames overall.
-  base::TimeDelta total_time_expected_;
-  // The clock that is used by the RenderProcessHost.
-  std::unique_ptr<base::SimpleTestTickClock> clock_;
-};
-
-IN_PROC_BROWSER_TEST_F(RenderProcessHostFramePriorityTest,
-                       NoFramesSeenPriorityTest) {
-  RenderProcessHostImpl* process = CreateAndInitializeProcess();
-  DCHECK(process);
-  ShutDownAndCleanUpProcess();
-  SetFramePrioritiesExpected(false, false);
-}
-
-IN_PROC_BROWSER_TEST_F(RenderProcessHostFramePriorityTest,
-                       LowPriorityFramesEnabled) {
-  // When the process is first created with no frames, it's not low priority.
-  RenderProcessHostImpl* process = CreateAndInitializeProcess();
-  EXPECT_FALSE(process->IsProcessBackgrounded());
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
-  // When all frames added are low priority, it's low priority.
-  process->UpdateFrameWithPriority(base::nullopt,
-                                   RenderProcessHostImpl::FramePriority::kLow);
-  process->UpdateFrameWithPriority(base::nullopt,
-                                   RenderProcessHostImpl::FramePriority::kLow);
-  EXPECT_TRUE(process->IsProcessBackgrounded());
-  AdvanceClock(base::TimeDelta::FromSeconds(2));
-  // When all the low priority frames are removed, it's not low priority.
-  process->UpdateFrameWithPriority(RenderProcessHostImpl::FramePriority::kLow,
-                                   base::nullopt);
-  process->UpdateFrameWithPriority(RenderProcessHostImpl::FramePriority::kLow,
-                                   base::nullopt);
-  EXPECT_FALSE(process->IsProcessBackgrounded());
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
-  // When a low priority frame is added back in, it's low priority.
-  process->UpdateFrameWithPriority(base::nullopt,
-                                   RenderProcessHostImpl::FramePriority::kLow);
-  EXPECT_TRUE(process->IsProcessBackgrounded());
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
-  // As soon as a non-low priority frame is added, it's not low priority.
-  process->UpdateFrameWithPriority(
-      base::nullopt, RenderProcessHostImpl::FramePriority::kNormal);
-  EXPECT_FALSE(process->IsProcessBackgrounded());
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
-  // It remains not low priority even if we add more low priority frames.
-  process->UpdateFrameWithPriority(base::nullopt,
-                                   RenderProcessHostImpl::FramePriority::kLow);
-  EXPECT_FALSE(process->IsProcessBackgrounded());
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
-  // As soon as the non-low priority frame is removed, it becomes low priority.
-  process->UpdateFrameWithPriority(
-      RenderProcessHostImpl::FramePriority::kNormal, base::nullopt);
-  EXPECT_TRUE(process->IsProcessBackgrounded());
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
-  // Add a non-low priority frame, but then transition it to low, the process
-  // should go from unbackgrounded to backgrounded.
-  process->UpdateFrameWithPriority(
-      base::nullopt, RenderProcessHostImpl::FramePriority::kNormal);
-  EXPECT_FALSE(process->IsProcessBackgrounded());
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
-  process->UpdateFrameWithPriority(
-      RenderProcessHostImpl::FramePriority::kNormal,
-      RenderProcessHostImpl::FramePriority::kLow);
-  EXPECT_TRUE(process->IsProcessBackgrounded());
-  AdvanceClock(base::TimeDelta::FromSeconds(2));
-  // Transition the frame back to normal priority, it becomes normal priority.
-  process->UpdateFrameWithPriority(
-      RenderProcessHostImpl::FramePriority::kLow,
-      RenderProcessHostImpl::FramePriority::kNormal);
-  EXPECT_FALSE(process->IsProcessBackgrounded());
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
-
-  // This process has had low and normal priority frames attached to it.
-  ShutDownAndCleanUpProcess();
-  SetFramePrioritiesExpected(true, true);
-  SetPriorityTimesExpected(base::TimeDelta::FromSeconds(6),
-                           base::TimeDelta::FromSeconds(12));
-}
-
-IN_PROC_BROWSER_TEST_F(RenderProcessHostFramePriorityTest,
-                       LowPriorityFramesEnabledOnlyLowPriority) {
-  RenderProcessHostImpl* process = CreateAndInitializeProcess();
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
-  // When all frames added are low priority, it's low priority.
-  process->UpdateFrameWithPriority(base::nullopt,
-                                   RenderProcessHostImpl::FramePriority::kLow);
-  process->UpdateFrameWithPriority(base::nullopt,
-                                   RenderProcessHostImpl::FramePriority::kLow);
-  EXPECT_TRUE(process->IsProcessBackgrounded());
-  AdvanceClock(base::TimeDelta::FromSeconds(2));
-
-  // This process has had only low priority frames attached to it.
-  ShutDownAndCleanUpProcess();
-  SetFramePrioritiesExpected(true, false);
-  SetPriorityTimesExpected(base::TimeDelta::FromSeconds(2),
-                           base::TimeDelta::FromSeconds(3));
-}
-
-IN_PROC_BROWSER_TEST_F(RenderProcessHostFramePriorityTest,
-                       LowPriorityFramesEnabledOnlyNormalPriority) {
-  RenderProcessHostImpl* process = CreateAndInitializeProcess();
-  AdvanceClock(base::TimeDelta::FromSeconds(1));
-  // When all frames added are normal priority, it's not low priority.
-  process->UpdateFrameWithPriority(
-      base::nullopt, RenderProcessHostImpl::FramePriority::kNormal);
-  process->UpdateFrameWithPriority(
-      base::nullopt, RenderProcessHostImpl::FramePriority::kNormal);
-  EXPECT_FALSE(process->IsProcessBackgrounded());
-  AdvanceClock(base::TimeDelta::FromSeconds(2));
-
-  // This process has had only normal priority frames attached to it.
-  ShutDownAndCleanUpProcess();
-  SetFramePrioritiesExpected(false, true);
-  SetPriorityTimesExpected(base::TimeDelta(), base::TimeDelta::FromSeconds(3));
 }
 
 }  // namespace content

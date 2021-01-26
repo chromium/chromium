@@ -183,7 +183,6 @@
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
-#include "components/subresource_filter/content/browser/content_subresource_filter_throttle_manager.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/user_manager/user_manager.h"
 #include "components/viz/common/surfaces/surface_id.h"
@@ -1519,14 +1518,6 @@ bool Browser::ShouldShowStaleContentOnEviction(content::WebContents* source) {
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-}
-
-bool Browser::IsFrameLowPriority(content::WebContents* web_contents,
-                                 content::RenderFrameHost* render_frame_host) {
-  const auto* throttle_manager = subresource_filter::
-      ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
-  return throttle_manager &&
-         throttle_manager->IsFrameTaggedAsAd(render_frame_host);
 }
 
 void Browser::MediaWatchTimeChanged(
