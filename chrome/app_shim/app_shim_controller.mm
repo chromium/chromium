@@ -160,7 +160,6 @@ void AppShimController::FindOrLaunchChrome() {
   base::FilePath chrome_bundle_path = base::mac::OuterBundlePath();
   LOG(INFO) << "Launching " << chrome_bundle_path.value();
   base::CommandLine browser_command_line(base::CommandLine::NO_PROGRAM);
-  browser_command_line.AppendSwitch(switches::kSilentLaunch);
   browser_command_line.AppendSwitchPath(switches::kUserDataDir,
                                         params_.user_data_dir);
   if (app_command_line->HasSwitch(switches::kEnableFeatures)) {
