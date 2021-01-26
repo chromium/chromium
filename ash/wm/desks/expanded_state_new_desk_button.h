@@ -38,6 +38,9 @@ class ExpandedStateNewDeskButton : public views::View {
   // Updates |new_desk_button_|'s state on current desks state.
   void UpdateButtonState();
 
+  // Updates the |label_|'s color on DesksController::CanCreateDesks.
+  void UpdateLabelColor();
+
   DeskButtonBase* new_desk_button() { return new_desk_button_; }
 
  private:
