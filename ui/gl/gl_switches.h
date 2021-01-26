@@ -98,6 +98,7 @@ GL_EXPORT extern const base::Feature kDirectCompositionLowLatencyPresentation;
 GL_EXPORT extern const base::Feature kDirectCompositionSoftwareOverlays;
 GL_EXPORT extern const base::Feature kDefaultANGLEOpenGL;
 GL_EXPORT extern const base::Feature kDefaultANGLEMetal;
+GL_EXPORT extern const base::Feature kDefaultANGLEVulkan;
 GL_EXPORT extern const base::Feature kTrackCurrentShaders;
 }  // namespace features
 
