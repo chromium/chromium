@@ -253,9 +253,13 @@
         hidden$="[[!oneGoogleBarLoaded_]]">
     </ntp-iframe>
   </template>
+  <!-- TODO(crbug.com/1168361): Instead of hidden$="[[!logoEnabled_]]" it would
+       be nicer to use a dom-if. However, that breaks
+       StartupBrowserCreatorPickerNoParamsTest.ShowPickerWhenAlreadyLaunched on
+       the msan builder. See crbug.com/1169070. -->
   <ntp-logo id="logo" doodle-allowed$="[[doodleAllowed_]]"
       single-colored$="[[singleColoredLogo_]]" dark="[[theme_.isDark]]"
-      background-color="[[backgroundColor_]]">
+      background-color="[[backgroundColor_]]" hidden$="[[!logoEnabled_]]">
   </ntp-logo>
   <ntp-fakebox id="fakebox" on-open-voice-search="onOpenVoiceSearch_"
       hidden$="[[realboxEnabled_]]">

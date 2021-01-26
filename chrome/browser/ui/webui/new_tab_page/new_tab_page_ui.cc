@@ -100,6 +100,8 @@ content::WebUIDataSource* CreateNewTabPageUiHtmlSource(Profile* profile) {
       base::FeatureList::IsEnabled(ntp_features::kWebUIThemeModeDoodles));
   source->AddBoolean("shortcutsEnabled",
                      base::FeatureList::IsEnabled(ntp_features::kNtpShortcuts));
+  source->AddBoolean("logoEnabled",
+                     base::FeatureList::IsEnabled(ntp_features::kNtpLogo));
   source->AddBoolean(
       "middleSlotPromoEnabled",
       base::FeatureList::IsEnabled(ntp_features::kNtpMiddleSlotPromo));
