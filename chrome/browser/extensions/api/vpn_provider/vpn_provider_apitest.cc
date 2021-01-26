@@ -187,7 +187,7 @@ class VpnProviderApiTest : public extensions::ExtensionApiTest {
   void TriggerInternalRemove() {
     NetworkHandler::Get()->network_configuration_handler()->RemoveConfiguration(
         GetSingleServicePath(), /*remove_confirmer=*/base::nullopt,
-        base::DoNothing(), base::Bind(DoNothingFailureCallback));
+        base::DoNothing(), base::BindOnce(DoNothingFailureCallback));
   }
 
   bool HasService(const std::string& service_path) const {
@@ -350,8 +350,8 @@ IN_PROC_BROWSER_TEST_F(VpnProviderApiTest, ConfigPersistence) {
   NetworkHandler::Get()
       ->network_configuration_handler()
       ->CreateShillConfiguration(properties,
-                                 base::Bind(DoNothingSuccessCallback),
-                                 base::Bind(DoNothingFailureCallback));
+                                 base::BindOnce(DoNothingSuccessCallback),
+                                 base::BindOnce(DoNothingFailureCallback));
   content::RunAllPendingInMessageLoop();
   EXPECT_TRUE(DoesConfigExist(kTestConfig));
 }
