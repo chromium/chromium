@@ -534,7 +534,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
       // continue on this path. The only downside is possibly endless recursion
       // if the OOM handler allocates and fails to use UncheckedMalloc() or
       // equivalent, but that's violating the contract of
-      // base::OnNoMemoryInternal().
+      // base::TerminateBecauseOutOfMemory().
       ScopedUnlockGuard<thread_safe> unlock{root->lock_};
       PartitionExcessiveAllocationSize(raw_size);
       IMMEDIATE_CRASH();  // Not required, kept as documentation.

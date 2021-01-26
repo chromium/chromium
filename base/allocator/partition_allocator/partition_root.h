@@ -1345,8 +1345,9 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocFlags(
   if (requested_size < size) {
     if (flags & PartitionAllocReturnNull)
       return nullptr;
-    // OutOfMemoryDeathTest.AlignedAlloc requires base::OnNoMemoryInternal
-    // (invoked by PartitionExcessiveAllocationSize).
+    // OutOfMemoryDeathTest.AlignedAlloc requires
+    // base::TerminateBecauseOutOfMemory (invoked by
+    // PartitionExcessiveAllocationSize).
     internal::PartitionExcessiveAllocationSize(size);
     // internal::PartitionExcessiveAllocationSize(size) causes OOM_CRASH.
     NOTREACHED();

@@ -25,28 +25,12 @@
 
 namespace base {
 
-size_t g_oom_size = 0U;
-
 namespace {
-
-void OnNoMemorySize(size_t size) {
-  g_oom_size = size;
-
-  if (size != 0)
-    LOG(FATAL) << "Out of memory, size = " << size;
-  LOG(FATAL) << "Out of memory.";
-}
-
-// NOINLINE as base::`anonymous namespace`::OnNoMemory() is recognized by the
-// crash server.
-NOINLINE void OnNoMemory() {
-  OnNoMemorySize(0);
-}
 
 void ReleaseReservationOrTerminate() {
   if (internal::ReleaseAddressSpaceReservation())
     return;
-  OnNoMemory();
+  TerminateBecauseOutOfMemory(0);
 }
 
 }  // namespace

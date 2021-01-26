@@ -23,9 +23,13 @@
 
 namespace base {
 
+size_t g_oom_size = 0U;
+
 namespace internal {
 
+// Crash server classifies base::internal::OnNoMemoryInternal as OOM.
 NOINLINE void OnNoMemoryInternal(size_t size) {
+  g_oom_size = size;
 #if defined(OS_WIN)
   // Kill the process. This is important for security since most of code
   // does not check the result of memory allocation.
@@ -54,24 +58,9 @@ NOINLINE void OnNoMemoryInternal(size_t size) {
 
 }  // namespace internal
 
-// Defined in memory_win.cc for Windows.
-#if !defined(OS_WIN)
-
-namespace {
-
-// Breakpad server classifies base::`anonymous namespace'::OnNoMemory as
-// out-of-memory crash.
-NOINLINE void OnNoMemory(size_t size) {
+void TerminateBecauseOutOfMemory(size_t size) {
   internal::OnNoMemoryInternal(size);
 }
-
-}  // namespace
-
-void TerminateBecauseOutOfMemory(size_t size) {
-  OnNoMemory(size);
-}
-
-#endif  // !defined(OS_WIN)
 
 // Defined in memory_mac.mm for Mac.
 #if !defined(OS_APPLE)

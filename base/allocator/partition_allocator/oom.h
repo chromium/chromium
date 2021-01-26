@@ -20,7 +20,7 @@ namespace {
 // NOT_TAIL_CALLED to ensure that its parent function stays on the stack.
 [[noreturn]] NOINLINE void NOT_TAIL_CALLED OnNoMemory(size_t size) {
   base::internal::RunPartitionAllocOomCallback();
-  base::internal::OnNoMemoryInternal(size);
+  base::TerminateBecauseOutOfMemory(size);
   IMMEDIATE_CRASH();
 }
 }  // namespace
