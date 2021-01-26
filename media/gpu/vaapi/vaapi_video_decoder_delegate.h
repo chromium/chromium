@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/decryptor.h"
 #include "media/base/encryption_scheme.h"
