@@ -11535,6 +11535,11 @@ histogram as enum -->
   <int value="3" label="File"/>
 </enum>
 
+<enum name="ClipboardHistoryOperation">
+  <int value="0" label="Copy"/>
+  <int value="1" label="Paste (from clipboard and clipboard history)"/>
+</enum>
+
 <enum name="ClipboardHistoryPlaceholderStringType">
   <int value="0" label="Bitmap"/>
   <int value="1" label="Html"/>
