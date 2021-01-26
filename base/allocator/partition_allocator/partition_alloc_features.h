@@ -6,11 +6,11 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_FEATURES_H_
 
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/base_export.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -20,7 +20,7 @@
 #include <VersionHelpers.h>
 #endif
 
-#if defined(PA_HAS_64_BITS_POINTERS) && !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#if defined(PA_HAS_64_BITS_POINTERS) && !BUILDFLAG(USE_BACKUP_REF_PTR)
 #define ALLOW_PCSCAN 1
 #else
 #define ALLOW_PCSCAN 0

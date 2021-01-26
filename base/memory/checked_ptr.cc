@@ -4,9 +4,10 @@
 
 #include "base/memory/checked_ptr.h"
 
-#if ENABLE_BACKUP_REF_PTR_IMPL
-
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/partition_alloc_buildflags.h"
+
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 
 namespace base {
 
@@ -32,4 +33,4 @@ bool BackupRefPtrImpl::IsPointeeAlive(void* ptr) {
 
 }  // namespace base
 
-#endif  // ENABLE_BACKUP_REF_PTR_IMPL
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)

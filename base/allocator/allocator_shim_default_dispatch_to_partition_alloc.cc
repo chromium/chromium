@@ -6,7 +6,6 @@
 
 #include "base/allocator/allocator_shim_internals.h"
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
@@ -16,6 +15,7 @@
 #include "base/bits.h"
 #include "base/no_destructor.h"
 #include "base/numerics/checked_math.h"
+#include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -93,15 +93,18 @@ base::ThreadSafePartitionRoot* Allocator() {
 
   auto* new_root = new (g_allocator_buffer) base::ThreadSafePartitionRoot({
     base::PartitionOptions::Alignment::kRegular,
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && !DISABLE_REF_COUNT_IN_RENDERER
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    !BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
         base::PartitionOptions::ThreadCache::kEnabled,
 #else
         // Other tests, such as the ThreadCache tests create a thread cache, and
         // only one is supported at a time.
         //
-        // Also, with DISABLE_REF_COUNT_IN_RENDERER, this partition is only
-        // temporary until we determine what type of process we're running in.
-        // Leave the ability to have a thread cache to the main partition.
+        // Also, with ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL, this partition is
+        // only temporary until BackupRefPtr is re-configured at run-time. Leave
+        // the ability to have a thread cache to the main partition. (Note that
+        // ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL implies that USE_BACKUP_REF_PTR
+        // is true.)
         base::PartitionOptions::ThreadCache::kDisabled,
 #endif
         base::PartitionOptions::PCScan::kDisabledByDefault,
@@ -311,6 +314,9 @@ void EnablePartitionAllocMemoryReclaimer() {
       AlignedAllocator());
 }
 
+// Note that ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL implies that
+// USE_BACKUP_REF_PTR is true.
+#if BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
 alignas(base::ThreadSafePartitionRoot) uint8_t
     g_allocator_buffer_for_ref_count_config[sizeof(
         base::ThreadSafePartitionRoot)];
@@ -333,6 +339,7 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
       });
   g_root_.store(new_root, std::memory_order_release);
 }
+#endif  // BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
 
 #if ALLOW_PCSCAN
 void EnablePCScan() {

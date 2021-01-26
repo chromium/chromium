@@ -10,6 +10,7 @@
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/random.h"
+#include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
@@ -17,7 +18,7 @@
 #endif
 
 #define PARTITION_EXTRAS_REQUIRED \
-  (DCHECK_IS_ON() || ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR)
+  (DCHECK_IS_ON() || BUILDFLAG(USE_BACKUP_REF_PTR))
 
 namespace base {
 

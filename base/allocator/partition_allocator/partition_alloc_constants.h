@@ -10,7 +10,6 @@
 
 #include <algorithm>
 
-#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "build/build_config.h"
 

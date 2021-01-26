@@ -30,7 +30,6 @@
 
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 
-#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/memory_reclaimer.h"
 #include "base/allocator/partition_allocator/oom.h"
 #include "base/allocator/partition_allocator/page_allocator.h"

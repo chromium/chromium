@@ -72,7 +72,9 @@ declare_args() {
   build_base_unittests = true
 
   # Set to true to use BackupRefPtr as the implementation of CheckedPtr.
+  # Optionally can be disabled in Renderer.
   use_backup_ref_ptr = false
+  enable_runtime_backup_ref_ptr_control = false
 }
 
 # Mutex priority inheritance is disabled by default due to security
@@ -82,6 +84,11 @@ declare_args() {
 # so it is safe to use mutex priority inheritance on Chromecast platform.
 assert(!enable_mutex_priority_inheritance || is_chromecast,
        "Do not enable PI mutexes without consulting the security team")
+
+# enable_runtime_backup_ref_ptr_control can only be used if use_backup_ref_ptr
+# is true.
+assert(use_backup_ref_ptr || !enable_runtime_backup_ref_ptr_control,
+       "Can't control BackupRefPtr at run-time if it isn't enabled at all")
 
 # Determines whether libevent should be dep.
 dep_libevent =
@@ -1779,7 +1786,6 @@ component("base") {
         "allocator/partition_allocator/address_pool_manager_types.h",
         "allocator/partition_allocator/address_space_randomization.cc",
         "allocator/partition_allocator/address_space_randomization.h",
-        "allocator/partition_allocator/checked_ptr_support.h",
         "allocator/partition_allocator/extended_api.cc",
         "allocator/partition_allocator/extended_api.h",
         "allocator/partition_allocator/memory_reclaimer.cc",
@@ -2333,13 +2339,18 @@ buildflag_header("anchor_functions_buildflags") {
   ]
 }
 
+should_use_backup_ref_ptr = use_backup_ref_ptr && !is_nacl
+should_enable_runtime_backup_ref_ptr_control =
+    enable_runtime_backup_ref_ptr_control && !is_nacl
+
 buildflag_header("partition_alloc_buildflags") {
   header = "partition_alloc_buildflags.h"
   header_dir = "base"
 
   flags = [
     "USE_PARTITION_ALLOC=$use_partition_alloc",
-    "USE_BACKUP_REF_PTR=$use_backup_ref_ptr",
+    "USE_BACKUP_REF_PTR=$should_use_backup_ref_ptr",
+    "ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL=$should_enable_runtime_backup_ref_ptr_control",
   ]
 }
 

@@ -49,6 +49,7 @@
 #include "base/allocator/partition_allocator/thread_cache.h"
 #include "base/bits.h"
 #include "base/optional.h"
+#include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 
 // If set to 1, enables zeroing memory on Free() with roughly 1% probability.
@@ -328,7 +329,7 @@ struct BASE_EXPORT PartitionRoot {
 
   bool UsesGigaCage() const {
     return features::IsPartitionAllocGigaCageEnabled()
-#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
            && allow_ref_count
 #endif
         ;
@@ -718,7 +719,7 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
       bucket->slot_size * bucket->GetSlotNumber(offset_in_slot_span));
 }
 
-#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 // TODO(glazunov): Simplify the function once the non-thread-safe PartitionRoot
 // is no longer used.
 ALWAYS_INLINE void PartitionAllocFreeForRefCounting(void* slot_start) {
@@ -746,7 +747,7 @@ ALWAYS_INLINE void PartitionAllocFreeForRefCounting(void* slot_start) {
   non_thread_safe_root->RawFreeWithThreadCache(slot_start,
                                                non_thread_safe_slot_span);
 }
-#endif  // ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
 }  // namespace internal
@@ -842,7 +843,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
     // TODO(lizeb): Make this a PA_CHECK() at least temporarily to detect
     // potential issues in the wild as well.
 #if defined(OS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+    !BUILDFLAG(USE_BACKUP_REF_PTR)
   PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(ptr) ||
             IsManagedByPartitionAllocDirectMap(ptr));
 #endif
@@ -895,12 +896,11 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   // Note: ref-count and cookies can be 0-sized.
   //
   // For more context, see the other "Layout inside the slot" comment below.
-#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR || DCHECK_IS_ON() || \
-    ZERO_RANDOMLY_ON_FREE
+#if BUILDFLAG(USE_BACKUP_REF_PTR) || DCHECK_IS_ON() || ZERO_RANDOMLY_ON_FREE
   const size_t utilized_slot_size = slot_span->GetUtilizedSlotSize();
 #endif
 
-#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR || DCHECK_IS_ON()
+#if BUILDFLAG(USE_BACKUP_REF_PTR) || DCHECK_IS_ON()
   const size_t usable_size = AdjustSizeForExtrasSubtract(utilized_slot_size);
 #endif
   void* slot_start = AdjustPointerForExtrasSubtract(ptr);
@@ -915,7 +915,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   }
 #endif
 
-#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (allow_ref_count) {
     if (LIKELY(!slot_span->bucket->is_direct_mapped())) {
       auto* ref_count = internal::PartitionRefCountPointer(slot_start);
@@ -929,7 +929,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
         return;
     }
   }
-#endif  // ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 #if DCHECK_IS_ON()
   memset(slot_start, kFreedByte, utilized_slot_size);
@@ -1157,7 +1157,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   // 3. Handle cookies/ref-count, zero allocation if required
 
   size_t raw_size = requested_size;
-#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   // Without the size adjustment below, |Alloc()| returns a pointer past the end
   // of a slot (most of the time a pointer to the beginning of the next slot)
   // for zero-sized allocations when |PartitionRefCount| is used. The returned
@@ -1165,7 +1165,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   // bitwise operations on pointers, e.g., |PartitionAllocGetSlotOffset()|.
   if (UNLIKELY(raw_size == 0))
     raw_size = 1;
-#endif  // ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   raw_size = AdjustSizeForExtrasAdd(raw_size);
   PA_CHECK(raw_size >= requested_size);  // check for overflows
 
@@ -1289,14 +1289,14 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
     memset(ret, 0, usable_size);
   }
 
-#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   bool is_direct_mapped = raw_size > kMaxBucketed;
   // LIKELY: Direct mapped allocations are large and rare.
   if (allow_ref_count && LIKELY(!is_direct_mapped)) {
     new (internal::PartitionRefCountPointer(slot_start))
         internal::PartitionRefCount();
   }
-#endif  // ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
   return ret;
 }

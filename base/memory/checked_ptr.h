@@ -18,22 +18,9 @@
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
-#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
-#endif
-
-#if BUILDFLAG(USE_BACKUP_REF_PTR) && !defined(OS_NACL)
-#define ENABLE_BACKUP_REF_PTR_IMPL 1
-#else
-#define ENABLE_BACKUP_REF_PTR_IMPL 0
-#endif
-
-#if ENABLE_BACKUP_REF_PTR_IMPL
-static_assert(ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR,
-              "BackupRefPtrImpl can only by used if PartitionRefCount is "
-              "enabled");
 #endif
 
 namespace base {
@@ -109,7 +96,7 @@ struct CheckedPtrNoOpImpl {
   static ALWAYS_INLINE void IncrementSwapCountForTest() {}
 };
 
-#if ENABLE_BACKUP_REF_PTR_IMPL
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 
 struct BackupRefPtrImpl {
   // Note that `BackupRefPtrImpl` itself is not thread-safe. If multiple threads
@@ -209,7 +196,7 @@ struct BackupRefPtrImpl {
   static BASE_EXPORT NOINLINE bool IsPointeeAlive(void* ptr);
 };
 
-#endif  // ENABLE_BACKUP_REF_PTR_IMPL
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 }  // namespace internal
 
@@ -228,18 +215,14 @@ struct BackupRefPtrImpl {
 //    we aren't striving to maximize compatibility with raw pointers, merely
 //    adding support for cases encountered so far).
 template <typename T,
-#if BUILDFLAG(USE_PARTITION_ALLOC)
-#if ENABLE_BACKUP_REF_PTR_IMPL
+#if BUILDFLAG(USE_PARTITION_ALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR)
           typename Impl = internal::BackupRefPtrImpl>
 #else
           typename Impl = internal::CheckedPtrNoOpImpl>
 #endif
-#else  // BUILDFLAG(USE_PARTITION_ALLOC)
-          typename Impl = internal::CheckedPtrNoOpImpl>
-#endif
 class CheckedPtr {
  public:
-#if ENABLE_BACKUP_REF_PTR_IMPL
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 
   // BackupRefPtr requires a non-trivial default constructor, destructor, etc.
   constexpr ALWAYS_INLINE CheckedPtr() noexcept
@@ -276,7 +259,7 @@ class CheckedPtr {
     wrapped_ptr_ = Impl::GetWrappedNullPtr();
   }
 
-#else  // ENABLE_BACKUP_REF_PTR_IMPL
+#else  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
   // CheckedPtr can be trivially default constructed (leaving |wrapped_ptr_|
   // uninitialized).  This is needed for compatibility with raw pointers.
@@ -297,7 +280,7 @@ class CheckedPtr {
 
   ~CheckedPtr() = default;
 
-#endif  // ENABLE_BACKUP_REF_PTR_IMPL
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
   // Deliberately implicit, because CheckedPtr is supposed to resemble raw ptr.
   // NOLINTNEXTLINE(runtime/explicit)
@@ -325,7 +308,7 @@ class CheckedPtr {
   // NOLINTNEXTLINE(google-explicit-constructor)
   ALWAYS_INLINE CheckedPtr(CheckedPtr<U, Impl>&& ptr) noexcept
       : wrapped_ptr_(Impl::template Upcast<T, U>(ptr.wrapped_ptr_)) {
-#if ENABLE_BACKUP_REF_PTR_IMPL
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
     ptr.wrapped_ptr_ = Impl::GetWrappedNullPtr();
 #endif
   }
@@ -363,7 +346,7 @@ class CheckedPtr {
            reinterpret_cast<uintptr_t>(&ptr));
     Impl::ReleaseWrappedPtr(wrapped_ptr_);
     wrapped_ptr_ = Impl::template Upcast<T, U>(ptr.wrapped_ptr_);
-#if ENABLE_BACKUP_REF_PTR_IMPL
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
     ptr.wrapped_ptr_ = Impl::GetWrappedNullPtr();
 #endif
     return *this;

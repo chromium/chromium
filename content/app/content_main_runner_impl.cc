@@ -17,7 +17,6 @@
 #include "base/allocator/allocator_extension.h"
 #include "base/allocator/allocator_shim.h"
 #include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
@@ -34,6 +33,7 @@
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_base.h"
+#include "base/partition_alloc_buildflags.h"
 #include "base/path_service.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_device_source.h"
@@ -49,6 +49,7 @@
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/hang_watcher.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "content/app/mojo/mojo_init.h"
@@ -269,7 +270,10 @@ void EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
 // Furthermore, since the function has to allocate a new partition, it must
 // only run once.
 void ConfigurePartitionRefCountSupportIfNeeded(bool enable_ref_count) {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && DISABLE_REF_COUNT_IN_RENDERER
+// Note that ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL implies that
+// USE_BACKUP_REF_PTR is true.
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
+    BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
   base::allocator::ConfigurePartitionRefCountSupport(enable_ref_count);
 #endif
 }

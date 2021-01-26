@@ -10,7 +10,6 @@
 #include <type_traits>
 #include <utility>
 
-#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/logging.h"
@@ -28,7 +27,7 @@ static_assert(sizeof(CheckedPtr<int>) == sizeof(int*),
 static_assert(sizeof(CheckedPtr<std::string>) == sizeof(std::string*),
               "CheckedPtr shouldn't add memory overhead");
 
-#if !ENABLE_BACKUP_REF_PTR_IMPL
+#if !BUILDFLAG(USE_BACKUP_REF_PTR)
 // |is_trivially_copyable| assertion means that arrays/vectors of CheckedPtr can
 // be copied by memcpy.
 static_assert(std::is_trivially_copyable<CheckedPtr<void>>::value,
@@ -57,7 +56,7 @@ static_assert(std::is_trivially_default_constructible<CheckedPtr<int>>::value,
 static_assert(
     std::is_trivially_default_constructible<CheckedPtr<std::string>>::value,
     "CheckedPtr should be trivially default constructible");
-#endif  // !ENABLE_BACKUP_REF_PTR_IMPL
+#endif  // !BUILDFLAG(USE_BACKUP_REF_PTR)
 
 // Don't use base::internal for testing CheckedPtr API, to test if code outside
 // this namespace calls the correct functions from this namespace.
@@ -708,12 +707,13 @@ TEST_F(CheckedPtrTest, AssignmentFromNullptr) {
 namespace base {
 namespace internal {
 
+#if BUILDFLAG(USE_PARTITION_ALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR) && \
+    !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+
 void HandleOOM(size_t unused_size) {
   LOG(FATAL) << "Out of memory";
 }
 
-#if BUILDFLAG(USE_PARTITION_ALLOC) && ENABLE_BACKUP_REF_PTR_IMPL && \
-    !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 TEST(BackupRefPtrImpl, Basic) {
   // This test works only if GigaCage is enabled. Bail out otherwise.
   if (!features::IsPartitionAllocGigaCageEnabled())
@@ -813,7 +813,8 @@ TEST(BackupRefPtrImpl, EndPointer) {
   }
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && ENABLE_BACKUP_REF_PTR_IMPL &&
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+
 }  // namespace internal
 }  // namespace base

@@ -7,20 +7,20 @@
 
 #include <atomic>
 
-#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_cookie.h"
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/partition_alloc_buildflags.h"
 #include "build/build_config.h"
 
 namespace base {
 
 namespace internal {
 
-#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 
 // Special-purpose atomic reference count class used by BackupRefPtrImpl.
 // The least significant bit of the count is reserved for tracking the liveness
@@ -108,11 +108,11 @@ ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* slot_start) {
   return reinterpret_cast<PartitionRefCount*>(slot_start);
 }
 
-#else  // ENABLE_REF_COUNTER_FOR_BACKUP_REF_PTR
+#else  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 static constexpr size_t kInSlotRefCountBufferSize = 0;
 
-#endif  // ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 constexpr size_t kPartitionRefCountSizeAdjustment = kInSlotRefCountBufferSize;
 constexpr size_t kPartitionRefCountOffsetAdjustment = kInSlotRefCountBufferSize;

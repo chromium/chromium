@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
-#include "base/allocator/partition_allocator/checked_ptr_support.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
@@ -24,6 +23,7 @@
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/bits.h"
 #include "base/logging.h"
+#include "base/partition_alloc_buildflags.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
 #include "base/system/sys_info.h"
@@ -1272,7 +1272,7 @@ TEST_F(PartitionAllocTest, MAYBE_PartialPageFreelists) {
 
   size_t very_small_size = (kExtraAllocSize <= 32) ? (32 - kExtraAllocSize) : 0;
   size_t very_small_size_raw_size = very_small_size;
-#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   // Zero-sized allocations are adjusted to a size of 1.
   if (very_small_size == 0)
     very_small_size_raw_size = 1;
@@ -2608,10 +2608,10 @@ TEST_F(PartitionAllocTest, Alignment) {
     // cookie.
     expected_alignment = std::min(expected_alignment, kCookieSize);
 #endif
-#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
-    // When ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR is on, kInSlotRefCountBufferSize
-    // is added before rounding up the allocation size. The returned pointer
-    // points after the ref-count.
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+    // When BackupRefPtr is enabled, kInSlotRefCountBufferSize is added before
+    // rounding up the allocation size. The returned pointer points after the
+    // ref-count.
     expected_alignment =
         std::min({expected_alignment, kInSlotRefCountBufferSize});
 #endif
@@ -2850,7 +2850,7 @@ TEST_F(PartitionAllocTest, MAYBE_Bookkeeping) {
   }
 }
 
-#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 
 TEST_F(PartitionAllocTest, RefCountBasic) {
   constexpr uint64_t kCookie = 0x1234567890ABCDEF;
