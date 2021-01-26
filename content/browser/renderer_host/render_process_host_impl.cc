@@ -930,24 +930,6 @@ static constexpr base::TimeDelta kRecentlyDestroyedNotFoundSentinel =
     base::TimeDelta::FromSeconds(20);
 class RecentlyDestroyedHosts : public base::SupportsUserData::Data {
  public:
-  static base::WeakPtr<RecentlyDestroyedHosts> GetInstance(
-      BrowserContext* browser_context) {
-    DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-    RecentlyDestroyedHosts* recently_destroyed_hosts =
-        static_cast<RecentlyDestroyedHosts*>(
-            browser_context->GetUserData(kRecentlyDestroyedHostTrackerKey));
-    if (recently_destroyed_hosts)
-      return recently_destroyed_hosts->GetWeakPtr();
-
-    // Using WrapUnique() to access private constructor.
-    auto owned = base::WrapUnique(new RecentlyDestroyedHosts);
-    auto weak_ptr = owned->GetWeakPtr();
-    browser_context->SetUserData(kRecentlyDestroyedHostTrackerKey,
-                                 std::move(owned));
-    return weak_ptr;
-  }
-
   RecentlyDestroyedHosts(const RecentlyDestroyedHosts& other) = delete;
   RecentlyDestroyedHosts& operator=(const RecentlyDestroyedHosts& other) =
       delete;
@@ -955,21 +937,25 @@ class RecentlyDestroyedHosts : public base::SupportsUserData::Data {
   // If a host matching |process_lock| was recently destroyed, records the time
   // between its destruction and |reusable_host_lookup_time|. If not, records a
   // sentinel value.
-  void RecordMetricIfReusableHostRecentlyDestroyed(
+  static void RecordMetricIfReusableHostRecentlyDestroyed(
       const base::TimeTicks& reusable_host_lookup_time,
-      const ProcessLock& process_lock) {
-    if (map_.count(process_lock) == 1) {
-      RecordMetric(reusable_host_lookup_time - map_[process_lock]);
+      const ProcessLock& process_lock,
+      BrowserContext* browser_context) {
+    auto* instance = GetInstance(browser_context);
+    instance->RemoveExpiredEntries();
+    const auto iter = instance->map_.find(process_lock);
+    if (iter != instance->map_.end()) {
+      instance->RecordMetric(reusable_host_lookup_time - iter->second);
       return;
     }
-    RecordMetric(kRecentlyDestroyedNotFoundSentinel);
+    instance->RecordMetric(kRecentlyDestroyedNotFoundSentinel);
   }
 
   // Adds |host|'s process lock to the list of recently destroyed hosts, or
-  // updates its time if it's already present. Posts a task to remove it after
-  // |kRecentlyDestroyedTimeout|.
-  void Add(RenderProcessHost* host,
-           const base::TimeDelta& time_spent_in_delayed_shutdown) {
+  // updates its time if it's already present.
+  static void Add(RenderProcessHost* host,
+                  const base::TimeDelta& time_spent_in_delayed_shutdown,
+                  BrowserContext* browser_context) {
     if (time_spent_in_delayed_shutdown > kRecentlyDestroyedTimeout)
       return;
 
@@ -987,22 +973,35 @@ class RecentlyDestroyedHosts : public base::SupportsUserData::Data {
     // spent running unload handlers from the metric. This makes it consistent
     // across processes that were delayed by DelayProcessShutdownForUnload(),
     // and those that weren't.
-    map_[process_lock] =
+    auto* instance = GetInstance(browser_context);
+    instance->map_[process_lock] =
         base::TimeTicks::Now() - time_spent_in_delayed_shutdown;
-    GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&RecentlyDestroyedHosts::Remove, GetWeakPtr(),
-                       process_lock),
-        kRecentlyDestroyedTimeout - time_spent_in_delayed_shutdown);
-  }
 
-  base::WeakPtr<RecentlyDestroyedHosts> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
+    // Clean up list of recently destroyed hosts if it's getting large. This is
+    // a fallback in case a subframe process hasn't been created in a long time
+    // (which would clean up |map_|), e.g., on low-memory Android where site
+    // isolation is not used.
+    if (instance->map_.size() > 20)
+      instance->RemoveExpiredEntries();
   }
 
  private:
-  // Private constructor to ensure this class is only created via GetInstance().
   RecentlyDestroyedHosts() = default;
+
+  static RecentlyDestroyedHosts* GetInstance(BrowserContext* browser_context) {
+    DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+    RecentlyDestroyedHosts* recently_destroyed_hosts =
+        static_cast<RecentlyDestroyedHosts*>(
+            browser_context->GetUserData(kRecentlyDestroyedHostTrackerKey));
+    if (recently_destroyed_hosts)
+      return recently_destroyed_hosts;
+
+    recently_destroyed_hosts = new RecentlyDestroyedHosts;
+    browser_context->SetUserData(kRecentlyDestroyedHostTrackerKey,
+                                 base::WrapUnique(recently_destroyed_hosts));
+    return recently_destroyed_hosts;
+  }
 
   void RecordMetric(base::TimeDelta value) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
@@ -1012,19 +1011,19 @@ class RecentlyDestroyedHosts : public base::SupportsUserData::Data {
         kRecentlyDestroyedNotFoundSentinel, 50);
   }
 
-  // Removes |process_lock| from the list of recently destroyed hosts if
-  // |kRecentlyDestroyedTimeout| has elapsed since a matching host was last
-  // destroyed. If not, the same process lock was re-added to the list since
-  // this task was posted, so a later task is waiting to remove it.
-  void Remove(const ProcessLock& process_lock) {
-    if (base::TimeTicks::Now() - map_[process_lock] >=
-        kRecentlyDestroyedTimeout) {
-      map_.erase(process_lock);
+  void RemoveExpiredEntries() {
+    const auto expired_cutoff_time =
+        base::TimeTicks::Now() - kRecentlyDestroyedTimeout;
+    for (auto iter = map_.begin(); iter != map_.end();) {
+      if (iter->second < expired_cutoff_time) {
+        iter = map_.erase(iter);
+      } else {
+        ++iter;
+      }
     }
   }
 
   std::map<ProcessLock, base::TimeTicks> map_;
-  base::WeakPtrFactory<RecentlyDestroyedHosts> weak_ptr_factory_{this};
 };
 
 bool ShouldUseSiteProcessTracking(BrowserContext* browser_context,
@@ -3763,8 +3762,8 @@ void RenderProcessHostImpl::Cleanup() {
       NOTIFICATION_RENDERER_PROCESS_TERMINATED, Source<RenderProcessHost>(this),
       NotificationService::NoDetails());
 
-  RecentlyDestroyedHosts::GetInstance(browser_context_)
-      ->Add(this, time_spent_in_delayed_shutdown_);
+  RecentlyDestroyedHosts::Add(this, time_spent_in_delayed_shutdown_,
+                              browser_context_);
 
 #ifndef NDEBUG
   is_self_deleted_ = true;
@@ -4299,9 +4298,9 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
           "SiteIsolation.ReusePendingOrCommittedSite.CouldReuse",
           render_process_host != nullptr);
       if (!render_process_host) {
-        RecentlyDestroyedHosts::GetInstance(site_instance->GetBrowserContext())
-            ->RecordMetricIfReusableHostRecentlyDestroyed(
-                reusable_host_lookup_time, site_instance->GetProcessLock());
+        RecentlyDestroyedHosts::RecordMetricIfReusableHostRecentlyDestroyed(
+            reusable_host_lookup_time, site_instance->GetProcessLock(),
+            site_instance->GetBrowserContext());
       }
       if (render_process_host)
         is_unmatched_service_worker = false;
