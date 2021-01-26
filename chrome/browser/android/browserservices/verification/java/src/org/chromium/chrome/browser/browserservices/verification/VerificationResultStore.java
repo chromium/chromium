@@ -18,33 +18,48 @@ import java.util.Set;
 /**
  * Stores the results of Digital Asset Link verifications performed by {@link OriginVerifier}.
  *
- * Lifecycle: This is a utility class with static methods, it won't be instantiated.
+ * There are two types of results stored - proper relationships that are stored in SharedPreferences
+ * (and therefore persisted across Chrome launches) and overrides that are stored in a static
+ * variable (and therefore not persisted across Chrome launches). Ideally, we will be able to get
+ * rid of the overrides in the future, they're just here now for legacy reasons.
+ *
+ * Lifecycle: This class is a singleton, however you should constructor inject the singleton
+ * instance to your classes where possible to make testing easier.
  * Thread safety: Methods can be called on any thread.
  */
 public class VerificationResultStore {
-    static void addRelationship(Relationship relationship) {
+    // If we constructed this lazily (creating a new instance in getInstance, that would open us
+    // up to a possible race condition if getInstance is called on multiple threads. We could solve
+    // this with an AtomicReference, but it seems simpler to just eagerly create the instance.
+    private static final VerificationResultStore sInstance = new VerificationResultStore();
+
+    static VerificationResultStore getInstance() {
+        return sInstance;
+    }
+
+    void addRelationship(Relationship relationship) {
         Set<String> savedLinks = getRelationships();
         savedLinks.add(relationship.toString());
         setRelationships(savedLinks);
     }
 
-    static void removeRelationship(Relationship relationship) {
+    void removeRelationship(Relationship relationship) {
         Set<String> savedLinks = getRelationships();
         savedLinks.remove(relationship.toString());
         setRelationships(savedLinks);
     }
 
-    static boolean isRelationshipSaved(Relationship relationship) {
+    boolean isRelationshipSaved(Relationship relationship) {
         return getRelationships().contains(relationship.toString());
     }
 
-    static void clearStoredRelationships() {
+    void clearStoredRelationships() {
         ThreadUtils.assertOnUiThread();
         setRelationships(Collections.emptySet());
     }
 
     @VisibleForTesting
-    static Set<String> getRelationships() {
+    Set<String> getRelationships() {
         // In case we're called on the UI thread and Preferences haven't been read before.
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             // From the official docs, modifying the result of a SharedPreferences.getStringSet can
@@ -55,10 +70,8 @@ public class VerificationResultStore {
     }
 
     @VisibleForTesting
-    static void setRelationships(Set<String> relationships) {
+    void setRelationships(Set<String> relationships) {
         SharedPreferencesManager.getInstance().writeStringSet(
                 ChromePreferenceKeys.VERIFIED_DIGITAL_ASSET_LINKS, relationships);
     }
-
-    private VerificationResultStore() {}
 }

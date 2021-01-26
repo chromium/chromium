@@ -26,8 +26,8 @@ public class OriginVerifierFactoryImpl implements OriginVerifierFactory {
     public OriginVerifier create(String packageName, @CustomTabsService.Relation int relation,
             @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils,
             OriginVerifier.MetricsListener metricsListener) {
-        return new OriginVerifier(
-                packageName, relation, webContents, externalAuthUtils, metricsListener);
+        return new OriginVerifier(packageName, relation, webContents, externalAuthUtils,
+                metricsListener, VerificationResultStore.getInstance());
     }
 
     @Override
