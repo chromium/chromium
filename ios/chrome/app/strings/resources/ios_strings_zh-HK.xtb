@@ -257,6 +257,7 @@
 <translation id="3533436815740441613">新分頁</translation>
 <translation id="3551320343578183772">關閉分頁</translation>
 <translation id="3581564640715911333">詢問是否將網頁內容翻譯成其他語言</translation>
+<translation id="3588492282865875287">要登出嗎？</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
 <translation id="359441731697487922">將 Chrome 設為「預設瀏覽器應用程式」，即可自動以 Chrome 開啟連結。
       
@@ -410,6 +411,7 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5339316356165661760">開啟同步處理功能</translation>
+<translation id="5351284593342054342">從這部裝置清除</translation>
 <translation id="5388358297987318779">開啟圖片</translation>
 <translation id="5407969256130905701">捨棄變更</translation>
 <translation id="5409365236829784218">未安裝可開啟這個檔案的應用程式。</translation>
@@ -465,6 +467,7 @@
 <translation id="5948291296578561264">這樣您便可將相片儲存至相片庫。</translation>
 <translation id="5955891643922670672">正在查看離線版本</translation>
 <translation id="5957613098218939406">更多選項</translation>
+<translation id="5961521066940389233">存放在此裝置中</translation>
 <translation id="5964480694698977962">新增無痕式分頁。</translation>
 <translation id="5965679971710331625">您已登入</translation>
 <translation id="5979837087407522202">搜尋密碼</translation>
@@ -479,6 +482,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">請在這裡控制您的報導和活動</translation>
 <translation id="6066301408025741299">輕觸即可取消。</translation>
+<translation id="6085282545406522838">已同步處理的資料會繼續保留在你的 Google 帳戶中。</translation>
 <translation id="6108923351542677676">設定中…</translation>
 <translation id="6119050551270742952">目前的網頁已處於無痕模式</translation>
 <translation id="6122191549521593678">線上</translation>
@@ -629,6 +633,7 @@
 <translation id="7514365320538308">下載</translation>
 <translation id="7537586195939242955">很抱歉，目前無法將您的通行票證加到 Passbook。</translation>
 <translation id="7554791636758816595">新分頁</translation>
+<translation id="7558943807639707687">你打算如何處理這部裝置上的書籤、歷史記錄和其他資料？</translation>
 <translation id="7561196759112975576">永遠使用</translation>
 <translation id="7583004045319035904">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕式分頁。</translation>
 <translation id="7600965453749440009">永遠不要翻譯<ph name="LANGUAGE" /></translation>

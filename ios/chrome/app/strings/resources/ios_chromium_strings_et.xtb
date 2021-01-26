@@ -71,6 +71,7 @@
 <translation id="7890287942691234100">Alustage Chromiumi skanneri kasutamist</translation>
 <translation id="8013573822802650211">Selleks et näha vahelehti kõikjalt, kus Chromiumi kasutate, logige kõigisse oma seadmetesse sisse</translation>
 <translation id="8073677936375100957">Kas kustutada sellest seadmest Chromiumi andmed?</translation>
+<translation id="8097322092271030751">Kuna teie kontot haldab domeen <ph name="HOSTED_DOMAIN" />, kustutatakse teie Chromiumi andmed väljalogimisel sellest seadmest. Teie sünkroonitud andmed jäävad teie Google'i kontole.</translation>
 <translation id="8175055321229419309">Nõuanne: <ph name="BEGIN_LINK" />lisage Chromium dokki<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Chromiumi vaikebrauseriks määramiseks avage Seaded, puudutage valikut Vaikebrauserirakendus ja valige Chromium.</translation>
 <translation id="8240981428553046115">Chromium ei saanud värskendusi otsida. Proovige hiljem uuesti.</translation>

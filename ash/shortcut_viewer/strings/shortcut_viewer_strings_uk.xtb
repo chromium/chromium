@@ -23,7 +23,7 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">Додати www. та .com до тексту в адресному рядку й відкрити сторінку</translation>
-<translation id="1768987374400973299">Зробити знімок екрана або запис</translation>
+<translation id="1768987374400973299">Зробити знімок або запис екрана</translation>
 <translation id="1872219238824176091">Видалити поточний робочий стіл</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, а тоді <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> або <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">Перейти на наступну вкладку</translation>
@@ -152,7 +152,7 @@
 <translation id="6445033640292336367">Повернути вкладку на початкове місце</translation>
 <translation id="6474744297082284761">Віддаляє (коли ввімкнено закріплену лупу чи лупу для всього екрана)</translation>
 <translation id="649811797655257835">Виберіть файл і натисніть <ph name="SPACE" /></translation>
-<translation id="6551886416582667425">Зробити частковий знімок екрана або запис</translation>
+<translation id="6551886416582667425">Зробити знімок або запис частини екрана</translation>
 <translation id="6556040137485212400">Відкрити вікно, яке не використовувалося найдовше</translation>
 <translation id="666343722268997814">Відкрити контекстне меню виділеного елемента</translation>
 <translation id="6671538777808758331">Перейти до наступного збігу в результатах пошуку</translation>
@@ -179,7 +179,7 @@
 <translation id="7611271430932669992">Виділити спливаючі або діалогові вікна</translation>
 <translation id="7635348532214572995">Перемістити значок додатка по сітці</translation>
 <translation id="766326951329901120">Вставити вміст із буфера обміну як простий текст</translation>
-<translation id="7673453620027697230">Зробити знімок екрана або запис вікна</translation>
+<translation id="7673453620027697230">Зробити знімок або запис вікна</translation>
 <translation id="7703010453515335249">ліва квадратна дужка</translation>
 <translation id="7724603315864178912">Вирізати</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, а тоді <ph name="SPACE" /> або <ph name="ENTER" /></translation>

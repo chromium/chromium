@@ -464,7 +464,6 @@
 <translation id="2734544361860335147">यी सुविधाहरू सक्षम पारेर तपाईं ब्राउजरसम्बन्धी डेटा गुमाउन वा आफ्नो सुरक्षा वा
     गोपनीयतालाई जोखिममा पार्न सक्नुहुन्छ। सक्षम पारिएका सुविधाहरू यो ब्राउजरका
     सबै प्रयोगकर्ताहरूमा लागू हुन्छन्।</translation>
-<translation id="2735043616039983645">यस नीतिमा परस्पर विरोधी मान भएका एक भन्दा बढी स्रोत विद्यमान छन्!</translation>
 <translation id="2738330467931008676">पिकअप गर्ने ठेगाना छनौट गर्नुहोस्</translation>
 <translation id="2740531572673183784">ठिक छ</translation>
 <translation id="2742870351467570537">चयन गरिएका वस्तुहरू हटाउनुहोस्</translation>
@@ -931,10 +930,12 @@
 <translation id="4600854749408232102">C6/C5 (Envelope)</translation>
 <translation id="4628948037717959914">तस्बिर</translation>
 <translation id="4631649115723685955">यो कार्डमार्फत भुक्तानी गर्दा क्यासब्याक पाइन्छ</translation>
+<translation id="4636930964841734540">जानकारी</translation>
 <translation id="464342062220857295">खोजसम्बन्धी सुविधाहरू</translation>
 <translation id="4644670975240021822">विपरीत क्रम तर तलतिर फर्काएर</translation>
 <translation id="4646534391647090355">मलाई अहिले नै त्यहाँ लैजानुहोस्</translation>
 <translation id="4658638640878098064">सिरानको बायाँपट्टि स्टिच</translation>
+<translation id="4660119392514473465">तपाईं अब गोप्य रूपमा ब्राउज गर्न सक्नुहुन्छ र यो यन्त्र चलाउने अन्य मान्छेहरू तपाईंका गतिविधि देख्ने छैनन्। तर डाउनलोड गरिएका सामग्री, बुकमार्क र पछि पढ्न सुरक्षित गरिएका वेबपेजको सूचीमा हालिएका वस्तुहरू भने सुरक्षित गरिने छन्।</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">भर्चुअल रियालिटी</translation>
 <translation id="4675657451653251260">तपाईं गेस्ट मोडमा Chrome प्रोफाइलको कुनै पनि जानकारी देख्नु हुने छैन। तपाईं पासवर्ड तथा भुक्तानी विधि जस्ता Google खातामा भएका आफ्ना जानकारी प्रयोग गर्न <ph name="LINK_BEGIN" />साइन इन<ph name="LINK_END" /> गर्न सक्नुहुन्छ।</translation>
@@ -1437,7 +1438,6 @@
 <translation id="6626291197371920147">कार्डको मान्य नम्बर थप्नुहोस्</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> खोज</translation>
 <translation id="6630809736994426279"><ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> मा रहेका आक्रमणकारीहरूले तपाईंको Mac मा तपाईंको जानकारी (उदाहरणका लागि तस्बिर, पासवर्ड, सन्देश र क्रेडिट कार्डहरू) चोर्न वा मेट्नसक्ने खतरनाक कार्यक्रमहरू स्थापना गर्ने प्रयास गर्नसक्छन्। <ph name="BEGIN_LEARN_MORE_LINK" />थप जान्नुहोस्<ph name="END_LEARN_MORE_LINK" /></translation>
-<translation id="6631202559048444592">यो नीतिका लागि एक भन्दा बढी स्रोत उपलब्ध छन् तर मानहरू उही नै छन्।</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">खालि गर्नुहोस्</translation>
 <translation id="6645291930348198241">कुकीहरू र साइटको डेटा प्रयोग गर्न।</translation>
@@ -1589,7 +1589,6 @@
 <translation id="7300012071106347854">कोबाल्ट निलो</translation>
 <translation id="7302712225291570345">"<ph name="TEXT" />"</translation>
 <translation id="7304030187361489308">उच्च</translation>
-<translation id="7313965965371928911"><ph name="BEGIN_LINK" />सुरक्षित ब्राउजिङसम्बन्धी<ph name="END_LINK" /> चेतावनीहरू</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">जडानसम्बन्धी मद्दत</translation>
 <translation id="7323804146520582233">"<ph name="SECTION" />" खण्ड लुकाइयोस्</translation>
@@ -2087,6 +2086,7 @@
 <translation id="936474030629450166">Super-B</translation>
 <translation id="936602727769022409">तपाईं आफ्नो Google खातामाथिको पहुँच गुमाउन सक्नुहुन्छ। Chromium तपाईंलाई आफ्नो पासवर्ड अहिले नै परिवर्तन गर्न सिफारिस गर्छ। तपाईंलाई साइन इन गर्न लगाइने छ।</translation>
 <translation id="939736085109172342">नयाँ फोल्डर</translation>
+<translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="945855313015696284">तल दिइएको जानकारीको जाँच गर्नुहोस् र सबै अमान्य कार्ड मेट्नुहोस्</translation>
 <translation id="950736567201356821">सिरानमा तीन प्वाल</translation>
 <translation id="961663415146723894">फेदको बाइन्ड</translation>

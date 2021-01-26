@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">閘道</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">依掃瞄區大小自動調整</translation>
+<translation id="1387854245479784695">這是所有核心的匯總值</translation>
 <translation id="1397738625398125236">可連線偵測的閘道</translation>
 <translation id="1398634363027580500">HTTPS 延遲時間非常長</translation>
 <translation id="1413240736185167732">失敗 - 篩選器發生錯誤</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">失敗 - 不明錯誤</translation>
 <translation id="357889014807611375">按用量收費的 Wi-Fi</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網絡</translation>
+<translation id="3712633734921637892">目前 CPU 速度已受到限制，目的是節省電池電量或降低溫度</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> 個評論)</translation>
 <translation id="3748026146096797577">尚未連線</translation>
 <translation id="3749289110408117711">檔案名稱</translation>
@@ -230,6 +232,7 @@
 <translation id="6146993107019042706">如要完成變更，請輸入您的新密碼</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
+<translation id="6189418609903030344">電池電量會隨使用時間而減少</translation>
 <translation id="6191293864534840972">域名伺服器格式錯誤</translation>
 <translation id="6232017090690406397">電池</translation>
 <translation id="6325525973963619867">失敗</translation>
@@ -327,6 +330,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">預設</translation>
 <translation id="8798441408945964110">供應商名稱</translation>
+<translation id="880791622116642296">這是電池經過的完整充電循環次數</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">取得說明</translation>
 <translation id="8881098542468797602">已通過測試</translation>

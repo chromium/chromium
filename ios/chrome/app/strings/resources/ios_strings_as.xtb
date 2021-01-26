@@ -257,6 +257,7 @@
 <translation id="3533436815740441613">নতুন টেব</translation>
 <translation id="3551320343578183772">টেব বন্ধ কৰক</translation>
 <translation id="3581564640715911333">অন্য ভাষাত পৃষ্ঠাসমূহ অনুবাদ কৰাৰ সুবিধা দিয়ক</translation>
+<translation id="3588492282865875287">ছাইন আউট কৰিবনে?</translation>
 <translation id="3588820906588687999">প্ৰতিচ্ছবি নতুন টেবত খোলক</translation>
 <translation id="359441731697487922">আপুনি Chromeক আপোনাৰ ডিফ’ল্ট ব্ৰাউজাৰ এপ্‌ বনাই তাত স্বয়ংক্ৰিয়ভাৱে লিংকসমূহ খুলিব পাৰে।
       
@@ -410,6 +411,7 @@
 <translation id="5317780077021120954">ছেভ কৰক</translation>
 <translation id="5327248766486351172">নাম</translation>
 <translation id="5339316356165661760">ছিংক অন কৰক</translation>
+<translation id="5351284593342054342">এই ডিভাইচটোৰ পৰা পৰিষ্কাৰ কৰক</translation>
 <translation id="5388358297987318779">প্ৰতিচ্ছবি খোলক</translation>
 <translation id="5407969256130905701">সালসলনিবোৰ অগ্ৰাহ্য কৰক</translation>
 <translation id="5409365236829784218">এই ফাইলটো খুলিব পৰা কোনো এপ্লিকেশ্বন ইনষ্টল কৰা নাই।</translation>
@@ -465,6 +467,7 @@
 <translation id="5948291296578561264">ইয়াৰ জৰিয়তে আপুনি ফট’ লাইব্ৰেৰীত ফট’ ছেভ কৰিব পাৰে।</translation>
 <translation id="5955891643922670672">অফলাইন সংস্কৰণ চোৱাৰ সুবিধা</translation>
 <translation id="5957613098218939406">অধিক বিকল্প</translation>
+<translation id="5961521066940389233">এই ডিভাইচটোত ৰাখক</translation>
 <translation id="5964480694698977962">নতুন ইনক'গনিট' টেব সৃষ্টি কৰক</translation>
 <translation id="5965679971710331625">আপুনি ছাইন ইন কৰিলে</translation>
 <translation id="5979837087407522202">পাছৱর্ডসমূহ সন্ধান কৰক</translation>
@@ -479,6 +482,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">আপোনাৰ কাহিনীসমূহ আৰু কাৰ্যকলাপ ইয়াত নিয়ন্ত্ৰণ কৰক</translation>
 <translation id="6066301408025741299">বাতিল কৰিবলৈ টিপক।</translation>
+<translation id="6085282545406522838">আপোনাৰ ছিংক কৰা ডেটা আপোনাৰ Google একাউণ্টত থাকিব।</translation>
 <translation id="6108923351542677676">ছেট আপ প্ৰক্ৰিয়া চলি আছে…</translation>
 <translation id="6119050551270742952">বৰ্তমানৰ ৱেবপৃষ্ঠাটো ইনক’গনিট’ত আছে</translation>
 <translation id="6122191549521593678">অনলাইন</translation>
@@ -630,6 +634,7 @@
 <translation id="7514365320538308">ডাউনল'ড কৰক</translation>
 <translation id="7537586195939242955">দুঃখিত, এই সময়ত আপোনাৰ পাছ Passbookত ইনষ্টল কৰিব নোৱাৰি।</translation>
 <translation id="7554791636758816595">নতুন টেব</translation>
+<translation id="7558943807639707687">আপুনি এই ডিভাইচটোত আপোনাৰ বুকমাৰ্ক, ইতিহাস আৰু অন্য ডেটাৰ জৰিয়তে কি কৰিবলৈ বিচাৰে?</translation>
 <translation id="7583004045319035904">আপোনাৰ ইনক’গনিট’ টেবসমূহ আনলক কৰিবলৈ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ব্যৱহাৰ কৰক।</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> কেতিয়াও অনুবাদ নকৰিব</translation>
 <translation id="7607521702806708809">পাছৱৰ্ড মচক</translation>

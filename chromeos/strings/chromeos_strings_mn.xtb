@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Гэйтвэй</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Скан хийх хэсэгт тааруулах</translation>
+<translation id="1387854245479784695">Энэ нь бүх цөмийн хуримтлал юм</translation>
 <translation id="1397738625398125236">Гэйтвэйд пин илгээх боломжтой</translation>
 <translation id="1398634363027580500">Маш өндөр HTTPS хоцролт</translation>
 <translation id="1413240736185167732">Амжилтгүй болсон - Шүүж чадсангүй</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Амжилтгүй болсон - Үл мэдэгдэх алдаа</translation>
 <translation id="357889014807611375">хязгаартай Wi-Fi</translation>
 <translation id="360565022852130722">WiFi сүлжээ WEP 802.1x-н сул протоколоор хамгаалагдсан байна</translation>
+<translation id="3712633734921637892">Төв процессорын нэгжийн хурдыг одоогоор батарей хэмнэх эсвэл температурыг буулгахын тулд хязгаарласан байна</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> шүүмж)</translation>
 <translation id="3748026146096797577">Холбогдоогүй</translation>
 <translation id="3749289110408117711">Файлын нэр</translation>
@@ -230,6 +232,7 @@
 <translation id="6146993107019042706">Дуусгахын тулд шинэ нууц үгээ оруулна уу</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Нэмэлт мэдээлэл авах</translation>
+<translation id="6189418609903030344">Батарейн хүчин чадлыг ашиглалт бууруулдаг</translation>
 <translation id="6191293864534840972">DNS алдаатай байна</translation>
 <translation id="6232017090690406397">Баттерей</translation>
 <translation id="6325525973963619867">Амжилтгүй боллоо</translation>
@@ -327,6 +330,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Гэрээ үл биелүүлэх</translation>
 <translation id="8798441408945964110">Үйлчилгээ үзүүлэгчийн нэр</translation>
+<translation id="880791622116642296">Энэ нь таны батарейн бүтэн цэнэглэлийн мөчлөгт орсон тоо юм</translation>
 <translation id="8814190375133053267">Утасгүй интернет</translation>
 <translation id="8845001906332463065">Тусламж авах</translation>
 <translation id="8881098542468797602">Туршилт амжилттай боллоо</translation>

@@ -668,6 +668,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6818242057446442178">Back by word</translation>
 <translation id="6820676911989879663">Take a break!</translation>
 <translation id="6850010208275816200">Your current app is full screen. If the app asks for your password, exit full screen first.</translation>
+<translation id="6852052252232534364">Click to activate</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sec</translation>
 <translation id="6857811139397017780">Activate <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{One digit remaining}other{# digits remaining}}</translation>
@@ -728,6 +729,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="742594950370306541">Camera is in use.</translation>
 <translation id="742608627846767349">Good morning,</translation>
 <translation id="743058460480092004">Camera and microphone are in use.</translation>
+<translation id="7434543979546293336">Marked as a key idea</translation>
 <translation id="7452560014878697800">An application is using your camera</translation>
 <translation id="7456049842111127849">Capture mode, default is <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Pin</translation>

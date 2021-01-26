@@ -257,6 +257,7 @@
 <translation id="3533436815740441613">ផ្ទាំងថ្មី</translation>
 <translation id="3551320343578183772">បិទផ្ទាំង</translation>
 <translation id="3581564640715911333">ផ្តល់ជូន​ការ​បកប្រែ​ទំព័រ​ជាភាសា​ផ្សេងទៀត</translation>
+<translation id="3588492282865875287">ចេញ​មែនទេ?</translation>
 <translation id="3588820906588687999">បើករូបភាពនៅក្នុងផ្ទាំងថ្មី</translation>
 <translation id="359441731697487922">អ្នកអាចបើកតំណនៅក្នុង Chrome ដោយស្វ័យប្រវត្តិ ដោយកំណត់វាជា​កម្មវិធីរុករកតាម​អ៊ីនធឺណិតលំនាំដើម​របស់អ្នក។
       
@@ -410,6 +411,7 @@
 <translation id="5317780077021120954">រក្សាទុក</translation>
 <translation id="5327248766486351172">ឈ្មោះ</translation>
 <translation id="5339316356165661760">បើក​សមកាលកម្ម</translation>
+<translation id="5351284593342054342">សម្អាតពី​ឧបករណ៍នេះ</translation>
 <translation id="5388358297987318779">បើករូបភាព</translation>
 <translation id="5407969256130905701">លុបចោល​ការផ្លាស់ប្ដូរ</translation>
 <translation id="5409365236829784218">គ្មានកម្មវិធីដែលបានដំឡើងណាអាចបើកឯកសារនេះបានទេ។</translation>
@@ -465,6 +467,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="5948291296578561264">វា​អនុញ្ញាត​ឱ្យអ្នក​រក្សាទុក​រូបថត​ទៅក្នុងបណ្ណាល័យរូបថត​របស់អ្នក។</translation>
 <translation id="5955891643922670672">កំពុង​មើល​កំណែ​គ្មាន​អ៊ីនធឺណិត</translation>
 <translation id="5957613098218939406">ជម្រើសច្រើនទៀត</translation>
+<translation id="5961521066940389233">រក្សាទុកនៅលើ​ឧបករណ៍នេះ</translation>
 <translation id="5964480694698977962">បង្កើតផ្ទាំងអនាមិកថ្មី</translation>
 <translation id="5965679971710331625">អ្នកបានចូលគណនីហើយ</translation>
 <translation id="5979837087407522202">ស្វែងរកពាក្យសម្ងាត់</translation>
@@ -479,6 +482,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="605721222689873409">ឆ្នាំ</translation>
 <translation id="6059830886158432458">គ្រប់គ្រង​អត្ថបទ និង​សកម្មភាព​របស់អ្នក​នៅទីនេះ</translation>
 <translation id="6066301408025741299">ប៉ះដើម្បីបោះបង់</translation>
+<translation id="6085282545406522838">ទិន្នន័យ​ដែលអ្នកបានធ្វើសមកាលកម្ម​នឹងនៅតែមាននៅក្នុងគណនី Google របស់អ្នកដដែល។</translation>
 <translation id="6108923351542677676">ការដំឡើងកំពុងដំណើរការ…</translation>
 <translation id="6119050551270742952">ទំព័របណ្ដាញ​បច្ចុប្បន្ន​ស្ថិតនៅក្នុងមុខងារឯកជន</translation>
 <translation id="6122191549521593678">លើអ៊ីនធឺណិត</translation>
@@ -631,6 +635,7 @@ Handoff ត្រូវបើកដំណើរការនៅក្នុងផ
 <translation id="7514365320538308">ទាញយក</translation>
 <translation id="7537586195939242955">សូមទោស Pass របស់អ្នកមិនអាចដំឡើងទៅកាន់ Passbook បានទេនៅពេលនេះ។</translation>
 <translation id="7554791636758816595">ផ្ទាំងថ្មី</translation>
+<translation id="7558943807639707687">តើអ្នកចង់​ធ្វើអ្វីជាមួយនឹង​ចំណាំ ប្រវត្តិ និង​ទិន្នន័យផ្សេងទៀត​របស់អ្នក​នៅលើ​ឧបករណ៍នេះ?</translation>
 <translation id="7561196759112975576">ជានិច្ច</translation>
 <translation id="7583004045319035904">ប្រើ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ដើម្បីដោះសោផ្ទាំងឯកជនរបស់អ្នក។</translation>
 <translation id="7600965453749440009">មិនបកប្រែភាសា <ph name="LANGUAGE" /> ទៀតឡើយ</translation>

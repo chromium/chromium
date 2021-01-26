@@ -458,7 +458,6 @@
 <translation id="2728127805433021124">Le certificat du serveur a été signé avec un algorithme de signature faible.</translation>
 <translation id="2730326759066348565"><ph name="BEGIN_LINK" />d'exécuter Connectivity Diagnostics<ph name="END_LINK" /></translation>
 <translation id="2734544361860335147">En activant ces fonctionnalités, vous risquez de perdre les données du navigateur ou de compromettre votre sécurité ou votre confidentialité. Les fonctionnalités activées s'appliquent à tous les utilisateurs de ce navigateur.</translation>
-<translation id="2735043616039983645">Il existe plusieurs sources avec des valeurs en conflit pour cette politique!</translation>
 <translation id="2738330467931008676">Choisir une adresse de ramassage</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742870351467570537">Supprimer les éléments sélectionnés</translation>
@@ -924,10 +923,12 @@
 <translation id="4600854749408232102">Enveloppe C6/C5</translation>
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4631649115723685955">Avec remise en argent</translation>
+<translation id="4636930964841734540">Renseignements</translation>
 <translation id="464342062220857295">Rechercher des fonctionnalités</translation>
 <translation id="4644670975240021822">Ordre inversé, face vers le bas</translation>
 <translation id="4646534391647090355">Y accéder maintenant</translation>
 <translation id="4658638640878098064">Agrafe en haut à gauche</translation>
+<translation id="4660119392514473465">Vous pouvez maintenant naviguer de façon privée, et les autres personnes qui utilisent cet appareil ne verront pas votre activité. Cependant, les téléchargements, les favoris et les éléments de la liste de lecture seront enregistrés.</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Réalité virtuelle</translation>
 <translation id="4675657451653251260">En mode Invité, vous ne verrez aucun renseignement sur le profil dans Chrome. Vous pouvez <ph name="LINK_BEGIN" />vous connecter<ph name="LINK_END" /> pour accéder aux données de votre compte Google, comme vos mots de passe et vos modes de paiement.</translation>
@@ -1430,7 +1431,6 @@
 <translation id="6626291197371920147">Ajouter un numéro de carte valide</translation>
 <translation id="6628463337424475685">Recherche <ph name="ENGINE" /></translation>
 <translation id="6630809736994426279">Les cyberpirates actuellement à l'œuvre sur le site <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> peuvent essayer d'installer des programmes dangereux sur votre Mac qui volent ou suppriment vos renseignements (par exemple, des photos, des mots de passe, des messages et des numéros de carte de crédit). <ph name="BEGIN_LEARN_MORE_LINK" />En savoir plus<ph name="END_LEARN_MORE_LINK" /></translation>
-<translation id="6631202559048444592">Il existe plusieurs sources pour cette politique, mais les valeurs sont identiques.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6645291930348198241">Accéder aux témoins et aux données relatives aux sites.</translation>
@@ -1582,7 +1582,6 @@ Détails supplémentaires :
 <translation id="7300012071106347854">Cobalt</translation>
 <translation id="7302712225291570345">« <ph name="TEXT" /> »</translation>
 <translation id="7304030187361489308">Élevée</translation>
-<translation id="7313965965371928911">Avertissements pour la <ph name="BEGIN_LINK" />navigation sécurisée<ph name="END_LINK" /></translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Aide pour la connexion</translation>
 <translation id="7323804146520582233">Masquer la section « <ph name="SECTION" /> »</translation>
@@ -2080,6 +2079,7 @@ Détails supplémentaires :
 <translation id="936474030629450166">Super B</translation>
 <translation id="936602727769022409">Vous risquez de perdre l'accès à votre compte Google. Chromium recommande de modifier votre mot de passe immédiatement. Vous serez invité à vous connecter.</translation>
 <translation id="939736085109172342">Nouveau dossier</translation>
+<translation id="945522503751344254">Envoyer un commentaire à Google</translation>
 <translation id="945855313015696284">Vérifiez les renseignements ci-dessous et supprimez les cartes incorrectes</translation>
 <translation id="950736567201356821">Triple perforation en haut</translation>
 <translation id="961663415146723894">Reliure en bas</translation>

@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Adatta ad area di scansione</translation>
+<translation id="1387854245479784695">Si tratta di un valore aggregato di tutti i core</translation>
 <translation id="1397738625398125236">È possibile inviare un ping al gateway</translation>
 <translation id="1398634363027580500">Latenza HTTPS molto elevata</translation>
 <translation id="1413240736185167732">Operazione non riuscita - Errore del filtro</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Operazione non riuscita - Errore sconosciuto</translation>
 <translation id="357889014807611375">Wi-Fi a consumo</translation>
 <translation id="360565022852130722">la rete Wi-Fi è protetta con un protocollo WEP 802.1x inefficace</translation>
+<translation id="3712633734921637892">Al momento la velocità della CPU è limitata per risparmiare batteria o ridurre la temperatura</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioni)</translation>
 <translation id="3748026146096797577">Non connesso</translation>
 <translation id="3749289110408117711">Nome file</translation>
@@ -230,6 +232,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6146993107019042706">Per terminare, inserisci la nuova password</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Ulteriori informazioni</translation>
+<translation id="6189418609903030344">La capacità della batteria si riduce con l'utilizzo</translation>
 <translation id="6191293864534840972">formato dei server dei nomi non valido</translation>
 <translation id="6232017090690406397">Batteria</translation>
 <translation id="6325525973963619867">Non riuscito</translation>
@@ -327,6 +330,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predefinito</translation>
 <translation id="8798441408945964110">Nome provider</translation>
+<translation id="880791622116642296">Si tratta del numero di cicli di ricarica completi della batteria</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Richiedi assistenza</translation>
 <translation id="8881098542468797602">Test effettuato correttamente</translation>

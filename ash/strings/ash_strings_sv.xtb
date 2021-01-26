@@ -4,7 +4,7 @@
 <translation id="1012876632442809908">USB-C-enhet (främre port)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> har ändrats till <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klicka på bekräfta om du vill behålla ändringarna. De gamla inställningarna återställs om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Ange den här pinkoden på den enheten: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Skärmdump av en del av skärmen har valts</translation>
+<translation id="1024261588257374085">Skärmbild av en del av skärmen har valts</translation>
 <translation id="1032891413405719768">Batteriet håller på att ta slut i e-pennan</translation>
 <translation id="1036672894875463507">Jag är Google-assistenten och jag kan hjälpa dig under hela dagen.
 Det här är några saker du kan testa för att komma igång.</translation>
@@ -51,7 +51,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1302880136325416935">Visa Bluetooth-inställningar. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Signalstyrka <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Visa alltid hyllan</translation>
-<translation id="1316811122439383437">Tote: De senaste skärmdumparna och nedladdningarna samt fästa filer</translation>
+<translation id="1316811122439383437">Tote: De senaste skärmbilderna och nedladdningarna samt fästa filer</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> har anslutits</translation>
 <translation id="1341651618736211726">Fler alternativ</translation>
 <translation id="1346748346194534595">Höger</translation>
@@ -80,7 +80,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1570871743947603115">Aktivera och inaktivera Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
 <translation id="1611993646327628135">På</translation>
-<translation id="1615402009686901181">Skärmdumpar inaktiveras av en administratörspolicy när konfidentiellt innehåll är synligt</translation>
+<translation id="1615402009686901181">Skärmbilder inaktiveras av en administratörspolicy när konfidentiellt innehåll är synligt</translation>
 <translation id="1632985212731562677">Brytarstyrning kan inaktiveras under Inställningar &gt; Tillgänglighet</translation>
 <translation id="1654477262762802994">Säg en sökfråga</translation>
 <translation id="1667964833127753507">I det neutrala färgläget ersätts färger från bakgrunden med en uppsättning ljusa eller mörka nyanser i neutrala toner.</translation>
@@ -161,7 +161,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2302092602801625023">Det här kontot hanteras av Family Link</translation>
 <translation id="2303600792989757991">Växla fönsteröversikt</translation>
 <translation id="2322173485024759474">Bakåt tecken för tecken</translation>
-<translation id="2339073806695260576">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmdump eller använda laserpekaren eller förstoringsglaset.</translation>
+<translation id="2339073806695260576">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda laserpekaren eller förstoringsglaset.</translation>
 <translation id="2341729377289034582">Låst i stående läge</translation>
 <translation id="2352467521400612932">Inställningar för e-penna</translation>
 <translation id="2354174487190027830">Aktiverar <ph name="NAME" /></translation>
@@ -177,7 +177,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2427507373259914951">Vänsterklicka</translation>
 <translation id="2429753432712299108">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Innan du godkänner bekräftar du att den här lösenordsnyckeln visas på den enheten: <ph name="PASSKEY" /></translation>
 <translation id="2435457462613246316">Visa lösenord</translation>
-<translation id="2450205753526923158">Skärmdumpsläge</translation>
+<translation id="2450205753526923158">Skärmbildsläge</translation>
 <translation id="2473177541599297363">Bekräfta upplösningen</translation>
 <translation id="2475982808118771221">Det uppstod ett fel</translation>
 <translation id="2482878487686419369">Aviseringar</translation>
@@ -191,7 +191,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2575685495496069081">Multiinloggning har inaktiverats</translation>
 <translation id="2582112259361606227">Starta om för att uppdatera</translation>
 <translation id="2595239820337756193">5 km i miles</translation>
-<translation id="2596078834055697711">Ta en skärmdump av fönstret</translation>
+<translation id="2596078834055697711">Ta en skärmbild av fönstret</translation>
 <translation id="2617342710774726426">SIM-kortet är låst</translation>
 <translation id="2621713457727696555">Skyddat</translation>
 <translation id="2653019840645008922">Skärmbild/skärminspelning av fönster</translation>
@@ -248,7 +248,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="309749186376891736">Flytta muspekaren</translation>
 <translation id="3098580329624789136"><ph name="INTENT" /> <ph name="QUERY" /></translation>
 <translation id="3100274880412651815">Stäng läget för skärmbild/skärminspelning</translation>
-<translation id="3105917916468784889">Ta en skärmdump</translation>
+<translation id="3105917916468784889">Ta en skärmbild</translation>
 <translation id="3105990244222795498"><ph name="DEVICE_NAME" /> (Bluetooth)</translation>
 <translation id="3126069444801937830">Starta om för att uppdatera</translation>
 <translation id="3139942575505304791">Skrivbord 1</translation>
@@ -275,8 +275,8 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan ändå logga in igen senare.</translation>
 <translation id="3321628682574733415">Felaktig föräldrakod</translation>
 <translation id="332587331255250389">Byt batteri</translation>
-<translation id="3341303451326249809">Skärmdumpen har tagits</translation>
-<translation id="334252345105450327">Ta en skärmdump</translation>
+<translation id="3341303451326249809">Skärmbilden har tagits</translation>
+<translation id="334252345105450327">Ta en skärmbild</translation>
 <translation id="3351879221545518001">Skärmen castas.</translation>
 <translation id="3364721542077212959">Verktyg för e-penna</translation>
 <translation id="3368922792935385530">Ansluten</translation>
@@ -323,7 +323,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="370665806235115550">Läser in...</translation>
 <translation id="3712407551474845318">Ta bild av skärmområde</translation>
 <translation id="371370241367527062">Mikrofonen på framsidan</translation>
-<translation id="3742055079367172538">Skärmdumpen har tagits</translation>
+<translation id="3742055079367172538">Skärmbilden har tagits</translation>
 <translation id="3771549900096082774">Högkontrastläge</translation>
 <translation id="3773700760453577392">En administratör har förbjudit multiinloggning för <ph name="USER_EMAIL" />. Alla användare måste logga ut för att fortsätta.</translation>
 <translation id="3783640748446814672">alt</translation>
@@ -378,7 +378,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4217571870635786043">Diktering</translation>
 <translation id="4221957499226645091"><ph name="APP_NAME" />, installerad app, pausad</translation>
 <translation id="4239069858505860023">GPRS</translation>
-<translation id="4250229828105606438">Skärmdump</translation>
+<translation id="4250229828105606438">Skärmbild</translation>
 <translation id="425364040945105958">Inget SIM-kort</translation>
 <translation id="4261870227682513959">Visa aviseringsinställningar. Aviseringar har inaktiverats</translation>
 <translation id="4269883910223712419">Enhetens administratör kan</translation>
@@ -415,7 +415,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4513946894732546136">Feedback</translation>
 <translation id="4527045527269911712">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling.</translation>
 <translation id="453661520163887813"><ph name="TIME" /> tills batteriet är fullt</translation>
-<translation id="4538824937723742295">Ta en skärmdump av hela skärmen</translation>
+<translation id="4538824937723742295">Ta en skärmbild av hela skärmen</translation>
 <translation id="4544483149666270818">Välj ett fönster att spela in</translation>
 <translation id="4560576029703263363">På</translation>
 <translation id="4561267230861221837">3G</translation>
@@ -428,7 +428,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4596144739579517758">Mörkt tema är av</translation>
 <translation id="4623167406982293031">Verifiera konto</translation>
 <translation id="4628757576491864469">Enheter</translation>
-<translation id="4642092649622328492">Ta en skärmdump av en del av skärmen</translation>
+<translation id="4642092649622328492">Ta en skärmbild av en del av skärmen</translation>
 <translation id="4659419629803378708">ChromeVox har aktiverats</translation>
 <translation id="4665114317261903604">Aktivera och inaktivera Stör ej. <ph name="STATE_TEXT" /></translation>
 <translation id="4696813013609194136">Lås upp enheten med föräldrakod</translation>
@@ -528,7 +528,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="5597451508971090205"><ph name="SHORT_WEEKDAY" />, <ph name="DATE" /></translation>
 <translation id="5600837773213129531">Inaktivera talad feedback genom att trycka på Ctrl + Alt + Z.</translation>
 <translation id="5601503069213153581">Pinkod</translation>
-<translation id="5619862035903135339">Skärmdump inaktiveras av en administratörspolicy</translation>
+<translation id="5619862035903135339">Skärmbild inaktiveras av en administratörspolicy</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Mikrofonuttag</translation>
 <translation id="5662709761327382534">Inspelning med mikrofon <ph name="CURRENT_STATE" />, Tryck på Retur för att slå <ph name="NEW_STATE" /> mikrofoninspelning</translation>
@@ -646,7 +646,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6650933572246256093">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Ange denna lösenordsnyckel på den enheten: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Lösenord</translation>
 <translation id="6665545700722362599">Ge webbplatser, appar och tillägg behörighet att använda platstjänster, enhetens mikrofon, kamera eller andra funktioner</translation>
-<translation id="6667908387435388584">Anslut till telefonens surfzon, stäng av ljudet för och hitta din enhet, samt visa de senaste Chrome-flikarna som öppnats på telefonen</translation>
+<translation id="6667908387435388584">Anslut till telefonens surfzon, stäng av ljudet på och hitta din enhet, samt visa de senaste Chrome-flikarna som öppnats på telefonen</translation>
 <translation id="6670153871843998651">Skrivbord 3</translation>
 <translation id="6671495933530132209">Kopiera bild</translation>
 <translation id="6691659475504239918">Sök+Skift+H</translation>
@@ -668,6 +668,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6818242057446442178">Bakåt ord för ord</translation>
 <translation id="6820676911989879663">Ta en paus!</translation>
 <translation id="6850010208275816200">Den aktuella appen visas i helskärmsläge. Om du blir ombedd att ange ditt lösenord måste du först stänga helskärmsläget.</translation>
+<translation id="6852052252232534364">Aktivera</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="6857811139397017780">Aktivera <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{En siffra kvar}other{# siffror kvar}}</translation>
@@ -696,7 +697,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7076293881109082629">Logga in</translation>
 <translation id="7088960765736518739">Brytarstyrning</translation>
 <translation id="7098389117866926363">USB-C-enhet (vänstra porten på baksidan)</translation>
-<translation id="7118268675952955085">skärmdump</translation>
+<translation id="7118268675952955085">skärmbild</translation>
 <translation id="7131634465328662194">Du loggas ut automatiskt.</translation>
 <translation id="7143207342074048698">Ansluter</translation>
 <translation id="7144878232160441200">Försök igen</translation>
@@ -728,16 +729,17 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="742594950370306541">Kameran används.</translation>
 <translation id="742608627846767349">Hej!</translation>
 <translation id="743058460480092004">Kameran och mikrofonen används.</translation>
+<translation id="7434543979546293336">Markerat som nyckelbegrepp</translation>
 <translation id="7452560014878697800">Kameran används av en app</translation>
 <translation id="7456049842111127849">Läge för skärmbild/skärminspelning, standard är <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Fäst</translation>
-<translation id="746232733191930409">Skärmimspelningsläge</translation>
+<translation id="746232733191930409">Skärminspelningsläge</translation>
 <translation id="7466449121337984263">Tryck på sensorn</translation>
 <translation id="7477793887173910789">Styr uppspelningen av musik, videor med mera</translation>
 <translation id="7483025031359818980">Markeringsområdet är inställt på helskärm</translation>
 <translation id="7497767806359279797">Välj språk och tangentbord</translation>
 <translation id="7509246181739783082">Verifiera din identitet</translation>
-<translation id="7513622367902644023">Skärmdumpsläget har valts</translation>
+<translation id="7513622367902644023">Skärmbildsläget har valts</translation>
 <translation id="7526573455193969409">Nätverket kan vara övervakat</translation>
 <translation id="7536035074519304529">IP-adress: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Läggdags</translation>
@@ -769,7 +771,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7749443890790263709">Det högsta tillåtna antalet skrivbord har uppnåtts.</translation>
 <translation id="776344839111254542">Klicka här om du vill se mer information om uppdateringen</translation>
 <translation id="7780159184141939021">Rotera skärmen</translation>
-<translation id="7796353162336583443">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmdump eller använda Google Assistent, laserpekaren eller förstoringsglaset.</translation>
+<translation id="7796353162336583443">När du har tryckt på e-pennan på hyllan kan du anteckna, ta en skärmbild eller använda Google Assistent, laserpekaren eller förstoringsglaset.</translation>
 <translation id="7798302898096527229">Avbryt genom att trycka på söktangenten eller Skift.</translation>
 <translation id="7814236020522506259"><ph name="HOUR" /> och <ph name="MINUTE" /></translation>
 <translation id="7829386189513694949">stark signal</translation>
@@ -880,7 +882,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Laddare med låg effekt ansluten</translation>
 <translation id="8683506306463609433">Prestandaspårning är aktiv</translation>
-<translation id="8703634754197148428">Starta inspelning. När inspelningen har startats kan du navigera till hyllan och leta reda knappen för att stoppa inspelningen med hjälp av Alt + Skift + L</translation>
+<translation id="8703634754197148428">Starta inspelning. När inspelningen har startats trycker du på Alt + Skift + L för att navigera till hyllan där du hittar knappen för att stoppa inspelningen</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Hantera den här funktionen med tangenterna vänster- och högerpil.</translation>
 <translation id="8712637175834984815">Uppfattat</translation>
 <translation id="8721053961083920564">Ljud på/av. <ph name="STATE_TEXT" /></translation>

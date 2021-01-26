@@ -669,6 +669,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6818242057446442178">Sõna võrra tagasi</translation>
 <translation id="6820676911989879663">Tehke paus!</translation>
 <translation id="6850010208275816200">Praegune rakendus on kuvatud täisekraanil. Kui rakendus küsib teie parooli, väljuge esmalt täisekraanilt.</translation>
+<translation id="6852052252232534364">Klõpsake aktiveerimiseks</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780">Aktiveeri <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Üks number on jäänud}other{# numbrit on jäänud}}</translation>
@@ -729,6 +730,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="742594950370306541">Kaamera on kasutusel.</translation>
 <translation id="742608627846767349">Tere hommikust!</translation>
 <translation id="743058460480092004">Kaamera ja mikrofon on kasutusel.</translation>
+<translation id="7434543979546293336">Märgitud oluliseks ideeks</translation>
 <translation id="7452560014878697800">Rakendus kasutab teie kaamerat</translation>
 <translation id="7456049842111127849">Jäädvustusrežiim, vaikeseade on <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Kinnita</translation>

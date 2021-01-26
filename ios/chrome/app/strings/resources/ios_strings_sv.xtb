@@ -257,6 +257,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="3533436815740441613">Ny flik</translation>
 <translation id="3551320343578183772">Stäng flik</translation>
 <translation id="3581564640715911333">Erbjud översättning av sidor till andra språk</translation>
+<translation id="3588492282865875287">Vill du logga ut?</translation>
 <translation id="3588820906588687999">Öppna bild på ny flik</translation>
 <translation id="359441731697487922">Du kan öppna länkar i Chrome automatiskt genom att ställa in den som standardwebbläsarapp.
       
@@ -410,6 +411,7 @@ Din data har krypterats med lösenfrasen för synkronisering. Ange den om du vil
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5327248766486351172">Namn</translation>
 <translation id="5339316356165661760">Aktivera synkronisering</translation>
+<translation id="5351284593342054342">Ta bort från den här enheten</translation>
 <translation id="5388358297987318779">Öppna bild</translation>
 <translation id="5407969256130905701">Ignorera ändringar</translation>
 <translation id="5409365236829784218">Det finns inga installerade appar som kan öppna filen.</translation>
@@ -465,6 +467,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5948291296578561264">Gör så att du kan spara foton i fotobiblioteket.</translation>
 <translation id="5955891643922670672">Offlineversionen visas</translation>
 <translation id="5957613098218939406">Fler alternativ</translation>
+<translation id="5961521066940389233">Spara på den här enheten</translation>
 <translation id="5964480694698977962">Skapa en ny inkognitoflik.</translation>
 <translation id="5965679971710331625">Du är inloggad</translation>
 <translation id="5979837087407522202">Sök efter lösenord</translation>
@@ -479,6 +482,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="605721222689873409">ÅÅ</translation>
 <translation id="6059830886158432458">Styr dina berättelser och din aktivitet här</translation>
 <translation id="6066301408025741299">Avbryt genom att trycka här.</translation>
+<translation id="6085282545406522838">Din synkroniserade data finns kvar i Google-kontot.</translation>
 <translation id="6108923351542677676">Konfigurationen pågår ...</translation>
 <translation id="6119050551270742952">Webbsidan är i inkognitoläge</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -631,6 +635,7 @@ Sträva efter att använda ett unikt lösenord för varje webbplats.</translatio
 <translation id="7514365320538308">Ladda ned</translation>
 <translation id="7537586195939242955">Det går tyvärr inte att installera det här objektet i Passbook just nu.</translation>
 <translation id="7554791636758816595">Ny flik</translation>
+<translation id="7558943807639707687">Vad vill du göra med bokmärken, historik och annan data på den här enheten?</translation>
 <translation id="7561196759112975576">Alltid</translation>
 <translation id="7583004045319035904">Lås upp inkognitoflikarna med <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7600965453749440009">Översätt aldrig från <ph name="LANGUAGE" /></translation>

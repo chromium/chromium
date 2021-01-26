@@ -71,6 +71,7 @@
 <translation id="7890287942691234100">Chromium のスキャナの使用開始</translation>
 <translation id="8013573822802650211">どのデバイスからでも Chromium で自分のタブにアクセスするには、すべてのデバイスでログインしてください</translation>
 <translation id="8073677936375100957">Chromium データをこのデバイスから削除しますか？</translation>
+<translation id="8097322092271030751">アカウントは <ph name="HOSTED_DOMAIN" /> で管理されているため、ログアウトすると、Chromium データはこのデバイスから削除されます。同期データは Google アカウントに残ります。</translation>
 <translation id="8175055321229419309">ヒント: <ph name="BEGIN_LINK" />Chromium を Dock に移動<ph name="END_LINK" />するとアクセスしやすくなります</translation>
 <translation id="8235785158661376110">Chromium を既定のブラウザにするには、[設定] を開き、[デフォルトのブラウザアプリ] をタップして、Chromium を選択します。</translation>
 <translation id="8240981428553046115">Chromium でアップデートを確認できませんでした。しばらくしてからもう一度お試しください。</translation>

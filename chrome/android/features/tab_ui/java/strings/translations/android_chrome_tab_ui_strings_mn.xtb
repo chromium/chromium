@@ -18,7 +18,7 @@
 <translation id="2759453070259087442"><ph name="NUMBER_OF_TABS" /> табтай <ph name="TITLE_OF_GROUP" /> таб бүлгийг дэлгэнэ үү.</translation>
 <translation id="2977480621796371840">Бүлгээс хасах</translation>
 <translation id="3328308545011660196">Зөвлөмж: <ph name="NUMBER_OF_TABS" /> таб холбоотой бололтой. Эдгээрийг бүлэглэх үү?</translation>
-<translation id="3340978935015468852">Тохиргоонууд</translation>
+<translation id="3340978935015468852">тохиргоо</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> табыг хураах.}other{<ph name="TABS_COUNT_MANY" /> таб бүхий <ph name="TITLE_OF_GROUP" /> бүлэг табыг хураах.}}</translation>
 <translation id="3940195383040445971">Табууд дээрх үнийг хянах</translation>
 <translation id="3996880007329611795">Мэдэгдэл авах</translation>

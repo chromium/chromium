@@ -257,6 +257,7 @@
 <translation id="3533436815740441613">Шинэ таб</translation>
 <translation id="3551320343578183772">Цонхыг хаах</translation>
 <translation id="3581564640715911333">Хуудсыг бусад хэлээр орчуулахыг санал болгох</translation>
+<translation id="3588492282865875287">Гарах уу?</translation>
 <translation id="3588820906588687999">Зургийг шинэ цонхонд нээ</translation>
 <translation id="359441731697487922">Та Chrome-г Өгөгдмөл хөтчийн аппаа болгосноор холбооснуудыг үүн дээр автоматаар нээх боломжтой.
       
@@ -409,6 +410,7 @@
 <translation id="5317780077021120954">Хадгалах</translation>
 <translation id="5327248766486351172">Нэр</translation>
 <translation id="5339316356165661760">Синк хийхийг асаах</translation>
+<translation id="5351284593342054342">Энэ төхөөрөмжөөс арилгах</translation>
 <translation id="5388358297987318779">Зургийг нээх</translation>
 <translation id="5407969256130905701">Өөрчлөлтийг болих</translation>
 <translation id="5409365236829784218">Энэ файлыг нээж чадах ямар ч аппликейшн суулгаагүй байна.</translation>
@@ -464,6 +466,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="5948291296578561264">Энэ нь танд зургийг зургийн сандаа хадгалах боломжийг олгодог.</translation>
 <translation id="5955891643922670672">Офлайн хувилбарыг харж байна</translation>
 <translation id="5957613098218939406">Бусад сонголт</translation>
+<translation id="5961521066940389233">Энэ төхөөрөмж дээр хэвээр үлдээх</translation>
 <translation id="5964480694698977962">Нууцлалын шинэ таб үүсгэнэ үү.</translation>
 <translation id="5965679971710331625">Та нэвтэрсэн байна</translation>
 <translation id="5979837087407522202">Нууц үгийг хайх</translation>
@@ -478,6 +481,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">Мэдээ, нийтлэл болон үйл ажиллагаагаа энд хянана уу</translation>
 <translation id="6066301408025741299">Устгахаар дарна уу</translation>
+<translation id="6085282545406522838">Таны cинк хийсэн өгөгдөл Google Бүртгэлд тань үлдэнэ.</translation>
 <translation id="6108923351542677676">Тохиргоо хийгдэж байна...</translation>
 <translation id="6119050551270742952">Одоогийн веб хуудас нууцлалтай байна</translation>
 <translation id="6122191549521593678">Онлайн</translation>
@@ -630,6 +634,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7514365320538308">Татаж авах</translation>
 <translation id="7537586195939242955">Уучлаарай, таны Pass-ыг одоогоор Passbook руу суулгаж болохгүй байна.</translation>
 <translation id="7554791636758816595">Шинэ таб</translation>
+<translation id="7558943807639707687">Та энэ төхөөрөмж дээрх хавчуурга, түүх болон бусад өгөгдлөөрөө юу хийхийг хүсэж байна вэ?</translation>
 <translation id="7561196759112975576">Үргэлж</translation>
 <translation id="7583004045319035904">Нууцлалтай табуудынхаа түгжээг тайлахын тулд <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />-г ашиглана уу.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />-ийг хэзээ ч бүү хөрвүүл</translation>

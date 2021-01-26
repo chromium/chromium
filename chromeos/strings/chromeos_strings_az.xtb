@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Keçid</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Skanlama sahəsinə sığdırın</translation>
+<translation id="1387854245479784695">Bu, bütün nüvələrin birləşməsidir</translation>
 <translation id="1397738625398125236">Giriş test edilə bilər</translation>
 <translation id="1398634363027580500">Çox yüksək HTTPS gecikməsi</translation>
 <translation id="1413240736185167732">Alınmadı - Filtr xətası</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Alınmadı - Naməlum xəta</translation>
 <translation id="357889014807611375">limitli Wi-Fi</translation>
 <translation id="360565022852130722">WiFi şəbəkəsi zəif protokol WEP 802.1x ilə qorunur</translation>
+<translation id="3712633734921637892">CPU sürəti hazırda enerjiyə qənaət etmək və ya temperaturu azaltmaq üçün məhdudlaşdırılıb</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> rəy)</translation>
 <translation id="3748026146096797577">Qoşulmayıb</translation>
 <translation id="3749289110408117711">Fayl adı</translation>
@@ -229,6 +231,7 @@
 <translation id="6146993107019042706">Tamamlamaq üçün yeni parolu daxil edin</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Ətraflı öyrənin</translation>
+<translation id="6189418609903030344">Batareya istifadə edildikcə tutumu azalır</translation>
 <translation id="6191293864534840972">Yanlış ad serverləri</translation>
 <translation id="6232017090690406397">Batareya</translation>
 <translation id="6325525973963619867">Alınmadı</translation>
@@ -326,6 +329,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Defolt</translation>
 <translation id="8798441408945964110">Provayder adı</translation>
+<translation id="880791622116642296">Bu, batareyanızın tam şarj edilmə sayıdır</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
 <translation id="8881098542468797602">Test uğurlu oldu</translation>

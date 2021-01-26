@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">වාහල</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ස්කෑන් කළ හැකි ප්‍රදේශයට ගළපන්න</translation>
+<translation id="1387854245479784695">මෙය සියලු කටයුතුවල එකතුවකි</translation>
 <translation id="1397738625398125236">වාහල පින්ජ් කළ හැකිය</translation>
 <translation id="1398634363027580500">ඉතා ඉහළ HTTPS පමාව</translation>
 <translation id="1413240736185167732">අසාර්ථක විය - පෙරහන අසාර්ථක විය</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">අසාර්ථක විය - නොදන්නා දෝෂයකි</translation>
 <translation id="357889014807611375">මනුගත Wi-Fi</translation>
 <translation id="360565022852130722">WiFi ජාලය දුර්වල ප්‍රොටොකෝලයකින් ආරක්ෂිතයි WEP 802.1x</translation>
+<translation id="3712633734921637892">CPU වේගය දැනට බැටරිය ආරක්ෂා කිරීමට හෝ උෂ්ණත්වය අඩු කිරීමට සීමා කර ඇත</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (සමාලෝචන <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">සබැඳී නැත</translation>
 <translation id="3749289110408117711">ගොනුවේ නම</translation>
@@ -230,6 +232,7 @@
 <translation id="6146993107019042706">අවසන් කිරීමට, ඔබේ නව මුරපදය ඇතුළත් කරන්න</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">තව දැන ගන්න</translation>
+<translation id="6189418609903030344">භාවිතය සමඟ බැටරි ධාරිතාව පහත වැටේ</translation>
 <translation id="6191293864534840972">විකෘති වූ නම් සේවාදායක</translation>
 <translation id="6232017090690406397">බැටරිය</translation>
 <translation id="6325525973963619867">අසාර්ථක විය</translation>
@@ -327,6 +330,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">පෙරනිමි</translation>
 <translation id="8798441408945964110">සපයන්නාගේ නම</translation>
+<translation id="880791622116642296">ඔබගේ බැටරිය පූර්ණ ආරෝපණ චක්‍රයක් හරහා ගිය වාර ගණන මෙයයි</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">උදවු ලබා ගන්න</translation>
 <translation id="8881098542468797602">පරීක්ෂණය සාර්ථක විය</translation>

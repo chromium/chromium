@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Мрежни пролаз</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Прилагоди области за скенирање</translation>
+<translation id="1387854245479784695">Ово је збир свих језгара</translation>
 <translation id="1397738625398125236">Мрежни пролаз може да се пингује</translation>
 <translation id="1398634363027580500">Веома велико HTTPS кашњење</translation>
 <translation id="1413240736185167732">Није успело – филтер је отказао</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Није успело – непозната грешка</translation>
 <translation id="357889014807611375">WiFi са ограничењем</translation>
 <translation id="360565022852130722">WiFi мрежа је обезбеђена слабим протоколом WEP 802.1x</translation>
+<translation id="3712633734921637892">Брзина процесора је тренутно ограничена ради уштеде батерије или смањења температуре</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (рецензије: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Није повезано</translation>
 <translation id="3749289110408117711">Назив датотеке</translation>
@@ -230,6 +232,7 @@
 <translation id="6146993107019042706">Да бисте завршили, унесите нову лозинку</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Сазнајте више</translation>
+<translation id="6189418609903030344">Капацитет батерије се смањује током коришћења</translation>
 <translation id="6191293864534840972">Сервери за имена су погрешног формата</translation>
 <translation id="6232017090690406397">Батерија</translation>
 <translation id="6325525973963619867">Неуспешно</translation>
@@ -327,6 +330,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Подразумевано</translation>
 <translation id="8798441408945964110">Назив добављача</translation>
+<translation id="880791622116642296">Оволико пута се батерија напунила до краја</translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="8845001906332463065">Затражите помоћ</translation>
 <translation id="8881098542468797602">Тест је успео</translation>

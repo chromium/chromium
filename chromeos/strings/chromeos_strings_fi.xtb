@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Yhdyskäytävä</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Sovita skannattavalle alueelle</translation>
+<translation id="1387854245479784695">Tämä on kaikkien ytimien yhteissumma</translation>
 <translation id="1397738625398125236">Yhdyskäytävää voidaan pingata</translation>
 <translation id="1398634363027580500">Erittäin suuri HTTPS-viive</translation>
 <translation id="1413240736185167732">Epäonnistui – Suodatin epäkunnossa</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Epäonnistui – Tuntematon virhe</translation>
 <translation id="357889014807611375">maksullinen Wi-Fi</translation>
 <translation id="360565022852130722">Wi-Fi-verkko on suojattu heikolla WEP 802.1x -protokollalla</translation>
+<translation id="3712633734921637892">CPU-nopeutta rajoitetaan nyt akun säästämiseksi tai lämpötilan laskemiseksi</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> arvostelua)</translation>
 <translation id="3748026146096797577">Ei yhteyttä</translation>
 <translation id="3749289110408117711">Tiedostonimi</translation>
@@ -230,6 +232,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6146993107019042706">Lisää lopuksi uusi salasana</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>
+<translation id="6189418609903030344">Akun kapasiteetti pienenee käytössä</translation>
 <translation id="6191293864534840972">Nimipalvelimet väärän muotoisia</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6325525973963619867">Epäonnistui</translation>
@@ -327,6 +330,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Oletus</translation>
 <translation id="8798441408945964110">Palveluntarjoajan nimi</translation>
+<translation id="880791622116642296">Kertoo, kuinka monta kertaa akku on ollut täynnä ja sitten tyhjentynyt</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Hae ohjeita</translation>
 <translation id="8881098542468797602">Testi onnistui</translation>

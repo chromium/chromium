@@ -178,6 +178,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1559572115229829303">&lt;p&gt;A private connection to <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> can't be established because your device's date and time (<ph name="DATE_AND_TIME" />) are incorrect.&lt;/p&gt;
 
       &lt;p&gt;Please adjust the date and time from the &lt;strong&gt;General&lt;/strong&gt; section of the &lt;strong&gt;Settings&lt;/strong&gt; app.&lt;/p&gt;</translation>
+<translation id="1567040042588613346">This policy is working as intended but the same value is set elsewhere and is superseded by this policy.</translation>
 <translation id="1569487616857761740">Enter expiry date</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Something went wrong while displaying this web page.</translation>
@@ -312,6 +313,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2114841414352855701">Ignored because it was overridden by <ph name="POLICY_NAME" />.</translation>
 <translation id="2119505898009119320">Issued to: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Punch bottom right</translation>
+<translation id="2122719317867821810">This policy is working as intended but a conflicting value is set elsewhere and is overridden by this policy.</translation>
 <translation id="2126374524350484896">PDF producer:</translation>
 <translation id="2129079103035905234">Motion Sensors</translation>
 <translation id="2130448033692577677">The templates that you've specified may not be applied due to the DnsOverHttpsMode policy not being set.</translation>
@@ -463,7 +465,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2734544361860335147">By enabling these features, you could lose browser data or
     compromise your security or privacy. Enabled features apply to all
     users of this browser.</translation>
-<translation id="2735043616039983645">More than one source with conflicting values is present for this policy!</translation>
 <translation id="2738330467931008676">Choose pickup address</translation>
 <translation id="2740531572673183784">OK</translation>
 <translation id="2742870351467570537">Remove selected items</translation>
@@ -581,6 +582,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3229041911291329567">Version information about your device and browser</translation>
 <translation id="323107829343500871">Enter the CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Always detect important content on this site</translation>
+<translation id="3266793032086590337">Value (conflict)</translation>
 <translation id="3270847123878663523">&amp;Undo Reorder</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282497668470633863">Add name on card</translation>
@@ -617,7 +619,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3387261909427947069">Payment Methods</translation>
 <translation id="3391030046425686457">Delivery address</translation>
 <translation id="3395827396354264108">Pickup method</translation>
-<translation id="3399952811970034796">Delivery Address</translation>
+<translation id="3399952811970034796">Delivery address</translation>
 <translation id="3402261774528610252">The connection used to load this site used TLS 1.0 or TLS 1.1, which are deprecated and will be disabled in the future. Once disabled, users will be prevented from loading this site. The server should enable TLS 1.2 or later.</translation>
 <translation id="3414952576877147120">Size:</translation>
 <translation id="3417660076059365994">Files that you upload or attach are sent to Google Cloud or third parties for analysis. For example, they might be scanned for sensitive data or malware.</translation>
@@ -734,6 +736,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3807873520724684969">Harmful content blocked.</translation>
 <translation id="3808375843007691220">Warning: Experimental features ahead!</translation>
 <translation id="3810973564298564668">Manage</translation>
+<translation id="3816482573645936981">Value (superseded)</translation>
 <translation id="382518646247711829">If you use a proxy server...</translation>
 <translation id="3827112369919217609">Absolute</translation>
 <translation id="3828924085048779000">Empty passphrase is not allowed.</translation>
@@ -928,12 +931,14 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4579056131138995126">Personal (Envelope)</translation>
 <translation id="4582204425268416675">Remove card</translation>
 <translation id="4587425331216688090">Remove address from Chrome?</translation>
+<translation id="459089498662672729">Pasting from <ph name="ORIGIN_NAME" /> to this location is not recommended by administrator policy</translation>
 <translation id="4592951414987517459">Your connection to <ph name="DOMAIN" /> is encrypted using a modern cipher suite.</translation>
 <translation id="4594403342090139922">&amp;Undo Delete</translation>
 <translation id="4597348597567598915">Size 8</translation>
 <translation id="4600854749408232102">C6/C5 (Envelope)</translation>
 <translation id="4628948037717959914">Photo</translation>
 <translation id="4631649115723685955">Cashback linked</translation>
+<translation id="4636930964841734540">Info</translation>
 <translation id="464342062220857295">Search features</translation>
 <translation id="4644670975240021822">Reverse order face down</translation>
 <translation id="4646534391647090355">Take me there now</translation>
@@ -1089,6 +1094,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="519422657042045905">Annotation not available</translation>
 <translation id="5201306358585911203">An embedded page on this page says</translation>
 <translation id="5205222826937269299">Name required</translation>
+<translation id="5208899478506185232"><ph name="ONE_TIME_CODE" /> is your code for <ph name="TOP_ORIGIN" /> (through <ph name="EMBEDDED_ORIGIN" />)</translation>
 <translation id="5209518306177824490">SHA-1 Fingerprint</translation>
 <translation id="5215116848420601511">Payment methods and addresses using Google Pay</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
@@ -1218,6 +1224,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5689199277474810259">Export to JSON</translation>
 <translation id="5689516760719285838">Location</translation>
 <translation id="569000877158168851">The DnsOverHttpsTemplates value is not relevant, and will not be used, unless the DnsOverHttpsMode policy is set to either <ph name="SECURE_DNS_MODE_AUTOMATIC" /> or <ph name="SECURE_DNS_MODE_SECURE" />.</translation>
+<translation id="5695542892312572833">Use Windows Hello to verify and complete your purchase?</translation>
 <translation id="5701381305118179107">Centre</translation>
 <translation id="570530837424789914">Manage...</translation>
 <translation id="57094364128775171">Suggest strong password…</translation>
@@ -1409,6 +1416,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6447842834002726250">Cookies</translation>
 <translation id="6451458296329894277">Confirm Form Resubmission</translation>
 <translation id="6457206614190510200">Saddle stitch</translation>
+<translation id="6458606150257356946">Paste anyway</translation>
 <translation id="6465306955648956876">Manage passwords...</translation>
 <translation id="6468485451923838994">Fonts</translation>
 <translation id="647261751007945333">Device policies</translation>
@@ -1441,7 +1449,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6626291197371920147">Add valid card number</translation>
 <translation id="6628463337424475685"><ph name="ENGINE" /> Search</translation>
 <translation id="6630809736994426279">Attackers currently on <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> might attempt to install dangerous programs on your Mac that steal or delete your information (for example, photos, passwords, messages and credit cards). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more<ph name="END_LEARN_MORE_LINK" /></translation>
-<translation id="6631202559048444592">More than one source is present for the policy, but the values are the same.</translation>
 <translation id="663260587451432563">JIS B4</translation>
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6645291930348198241">Access cookies and site data.</translation>
@@ -1505,6 +1512,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6950684638814147129">Error while parsing JSON value: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Reset all</translation>
 <translation id="6957887021205513506">The server's certificate appears to be a forgery.</translation>
+<translation id="6963520811470373926">Superseding</translation>
 <translation id="6964255747740675745">Network configuration failed to be parsed (invalid JSON).</translation>
 <translation id="6965382102122355670">OK</translation>
 <translation id="6965978654500191972">Device</translation>
@@ -1593,7 +1601,6 @@ Additional details:
 <translation id="7300012071106347854">Cobalt blue</translation>
 <translation id="7302712225291570345">'<ph name="TEXT" />'</translation>
 <translation id="7304030187361489308">High</translation>
-<translation id="7313965965371928911"><ph name="BEGIN_LINK" />Safe Browsing<ph name="END_LINK" /> warnings</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Connection help</translation>
 <translation id="7323804146520582233">Hide the '<ph name="SECTION" />' section</translation>
@@ -2091,6 +2098,7 @@ Additional details:
 <translation id="936474030629450166">Super-B</translation>
 <translation id="936602727769022409">You could lose access to your Google Account. Chromium recommends changing your password now. You'll be asked to sign in.</translation>
 <translation id="939736085109172342">New folder</translation>
+<translation id="945522503751344254">Send feedback</translation>
 <translation id="945855313015696284">Check the info below and delete any invalid cards</translation>
 <translation id="950736567201356821">Triple punch top</translation>
 <translation id="961663415146723894">Bind bottom</translation>

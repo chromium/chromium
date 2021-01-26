@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Potrivește în funcție de zona de scanare</translation>
+<translation id="1387854245479784695">Aceasta este o valoare cumulată pentru toate nucleele</translation>
 <translation id="1397738625398125236">Gateway-ul acceptă testul de ping</translation>
 <translation id="1398634363027580500">Latență foarte mare a solicitărilor HTTPS</translation>
 <translation id="1413240736185167732">Nereușită – Filtru defect</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Nereușită – Eroare necunoscută</translation>
 <translation id="357889014807611375">Wi-Fi contorizat</translation>
 <translation id="360565022852130722">Rețeaua Wi-Fi este securizată cu protocolul slab WEP 802.1x</translation>
+<translation id="3712633734921637892">Viteza CPU este limitată pentru a conserva bateria sau a reduce temperatura</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recenzii)</translation>
 <translation id="3748026146096797577">Neconectat</translation>
 <translation id="3749289110408117711">Nume de fișier</translation>
@@ -230,6 +232,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6146993107019042706">Pentru a finaliza, introdu noua parolă</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Află mai multe</translation>
+<translation id="6189418609903030344">Capacitatea bateriei scade pe măsura utilizării</translation>
 <translation id="6191293864534840972">Servere de nume cu formă incorectă</translation>
 <translation id="6232017090690406397">Baterie</translation>
 <translation id="6325525973963619867">Eșuat</translation>
@@ -327,6 +330,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Prestabilit</translation>
 <translation id="8798441408945964110">Numele furnizorului</translation>
+<translation id="880791622116642296">Acesta este numărul de cicluri complete de încărcare a bateriei</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Obține ajutor</translation>
 <translation id="8881098542468797602">Testul a reușit</translation>

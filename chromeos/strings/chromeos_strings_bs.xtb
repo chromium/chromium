@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Pristupnik</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Prilagodi području za skeniranje</translation>
+<translation id="1387854245479784695">Ovo je agregacija svih jezgara</translation>
 <translation id="1397738625398125236">Pristupnik se može provjeriti pingom</translation>
 <translation id="1398634363027580500">Veoma visoka HTTPs latentnost</translation>
 <translation id="1413240736185167732">Nije uspjelo – filter ne radi</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Nije uspjelo – nepoznata greška</translation>
 <translation id="357889014807611375">WiFi mreža s naplatom</translation>
 <translation id="360565022852130722">WiFi mreža je zaštićena slabim protokolom WEP 802.1x</translation>
+<translation id="3712633734921637892">Brzina CPU-a je trenutno ograničena zbog uštede baterije ili smanjenja temperature</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (broj recenzija: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nije povezano</translation>
 <translation id="3749289110408117711">Naziv fajla</translation>
@@ -230,6 +232,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6146993107019042706">Unesite novu lozinku da završite</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Saznajte više</translation>
+<translation id="6189418609903030344">Kapacitet baterije opada s korištenjem</translation>
 <translation id="6191293864534840972">Neispravno formirani serveri naziva</translation>
 <translation id="6232017090690406397">Baterija</translation>
 <translation id="6325525973963619867">Nije uspjelo</translation>
@@ -327,6 +330,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Zadano</translation>
 <translation id="8798441408945964110">Naziv pružaoca usluge</translation>
+<translation id="880791622116642296">Ovoliko puta je vaša baterija prošla kroz kompletan ciklus punjenja</translation>
 <translation id="8814190375133053267">WiFi</translation>
 <translation id="8845001906332463065">Potražite pomoć</translation>
 <translation id="8881098542468797602">Test je uspješan</translation>

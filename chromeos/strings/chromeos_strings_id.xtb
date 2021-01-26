@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Gerbang</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Sesuaikan dengan area pindai</translation>
+<translation id="1387854245479784695">Ini merupakan gabungan dari semua core</translation>
 <translation id="1397738625398125236">Gateway Dapat Di-ping</translation>
 <translation id="1398634363027580500">Latensi HTTPS sangat tinggi</translation>
 <translation id="1413240736185167732">Gagal - Filter gagal</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Gagal - Error tidak diketahui</translation>
 <translation id="357889014807611375">Wi-Fi berbayar</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
+<translation id="3712633734921637892">Kecepatan CPU saat ini dibatasi untuk menghemat baterai atau menurunkan suhu</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
 <translation id="3748026146096797577">Tidak Tersambung</translation>
 <translation id="3749289110408117711">Nama file</translation>
@@ -211,6 +213,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5866840822086176774">Sangat kuat</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>
 <translation id="5916084858004523819">Terlarang</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{File Anda berhasil dipindai dan disimpan ke <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{File Anda berhasil dipindai dan disimpan ke <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">File tidak ditemukan</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, versi <ph name="MILESTONE_VERSION" />)</translation>
 <translation id="6040143037577758943">Tutup</translation>
@@ -229,6 +232,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6146993107019042706">Untuk menyelesaikan, masukkan sandi yang baru</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Pelajari selengkapnya</translation>
+<translation id="6189418609903030344">Kapasitas baterai menurun seiring penggunaan</translation>
 <translation id="6191293864534840972">Format server nama salah</translation>
 <translation id="6232017090690406397">Baterai</translation>
 <translation id="6325525973963619867">Gagal</translation>
@@ -326,6 +330,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8798441408945964110">Nama penyedia</translation>
+<translation id="880791622116642296">Ini adalah frekuensi baterai melalui siklus pengisian daya penuh</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
 <translation id="8881098542468797602">Pengujian berhasil</translation>

@@ -71,6 +71,7 @@
 <translation id="7890287942691234100">Begynn å bruke Chromium-skanneren</translation>
 <translation id="8013573822802650211">For å se fanene dine overalt hvor du bruker Chromium, logg på alle enhetene dine</translation>
 <translation id="8073677936375100957">Vil du fjerne Chromium-dataene dine fra denne enheten?</translation>
+<translation id="8097322092271030751">Fordi kontoen din administreres av <ph name="HOSTED_DOMAIN" />, slettes Chromium-dataene dine fra denne enheten når du logger av. Du beholder de synkroniserte dataene i Google-kontoen din.</translation>
 <translation id="8175055321229419309">Tips: <ph name="BEGIN_LINK" />Flytt Chromium til dokken<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">For å velge Chromium som standardnettleser, åpne Innstillinger, trykk på Standard nettleserapp, og velg Chromium.</translation>
 <translation id="8240981428553046115">Chromium kunne ikke se etter oppdateringer. Prøv igjen senere.</translation>

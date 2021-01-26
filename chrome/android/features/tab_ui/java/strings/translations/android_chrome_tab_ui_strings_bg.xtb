@@ -18,7 +18,7 @@
 <translation id="2759453070259087442">Разгъване на групата с раздели „<ph name="TITLE_OF_GROUP" />“ със <ph name="NUMBER_OF_TABS" /> раздела.</translation>
 <translation id="2977480621796371840">Премахване от групата</translation>
 <translation id="3328308545011660196">Предложение: <ph name="NUMBER_OF_TABS" /> раздела изглеждат сродни. Искате ли да ги групирате?</translation>
-<translation id="3340978935015468852">настройки</translation>
+<translation id="3340978935015468852">настройките</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Свиване на <ph name="TABS_COUNT_ONE" /> раздел.}other{Свиване на групата с раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
 <translation id="3940195383040445971">Проследяване на цените в разделите</translation>
 <translation id="3996880007329611795">Получаване на известия</translation>

@@ -71,6 +71,7 @@
 <translation id="7890287942691234100">Begynd at bruge Chromium-scanner</translation>
 <translation id="8013573822802650211">Log ind på alle de enheder, hvor du bruger Chromium, for at se dine faner på dem</translation>
 <translation id="8073677936375100957">Vil du rydde dine Chromium-data på denne enhed?</translation>
+<translation id="8097322092271030751">Eftersom din konto administreres af <ph name="HOSTED_DOMAIN" />, slettes dine Chromium-data fra denne enhed, når du logger ud. Alle synkroniserede data vil stadig være på din Google-konto.</translation>
 <translation id="8175055321229419309">Tip! <ph name="BEGIN_LINK" />Flyt Chromium til din dock<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Du kan gøre Chromium til din standardbrowser ved at åbne Indstillinger, trykke på Standardbrowserapp og vælge Chromium.</translation>
 <translation id="8240981428553046115">Chromium kunne ikke søge efter opdateringer. Prøv igen senere.</translation>

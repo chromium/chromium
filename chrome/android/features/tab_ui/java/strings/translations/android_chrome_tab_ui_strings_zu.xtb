@@ -18,7 +18,7 @@
 <translation id="2759453070259087442">Nweba <ph name="TITLE_OF_GROUP" /> iqembu lethebhu ngamathebhu angu-<ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2977480621796371840">Susa kusukela kuqembu</translation>
 <translation id="3328308545011660196">Isiphakamiso: amathebhu a-<ph name="NUMBER_OF_TABS" /> abonakala ahlobene. Wenze iqembu?</translation>
-<translation id="3340978935015468852">izilungiselelo</translation>
+<translation id="3340978935015468852">amasethingi</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Goqa ithebhu engu-<ph name="TABS_COUNT_ONE" />.}one{Goqa iqembu lethebhu engu-<ph name="TITLE_OF_GROUP" /> enamathebhu angu-<ph name="TABS_COUNT_MANY" />.}other{Goqa iqembu lethebhu engu-<ph name="TITLE_OF_GROUP" /> enamathebhu angu-<ph name="TABS_COUNT_MANY" />.}}</translation>
 <translation id="3940195383040445971">Landelela izintengo kumathebhu</translation>
 <translation id="3996880007329611795">Thola isaziso</translation>

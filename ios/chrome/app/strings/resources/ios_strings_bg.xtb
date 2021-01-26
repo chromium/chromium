@@ -257,6 +257,7 @@
 <translation id="3533436815740441613">Нов раздел</translation>
 <translation id="3551320343578183772">Затваряне на раздела</translation>
 <translation id="3581564640715911333">Извеждане на предложения за превод на страниците, написани на други езици</translation>
+<translation id="3588492282865875287">Искате ли да излезете от профила?</translation>
 <translation id="3588820906588687999">Отваряне на изображението в нов раздел</translation>
 <translation id="359441731697487922">Можете да отваряте връзките автоматично в Chrome, като го направите стандартното си приложение за браузър.
       
@@ -410,6 +411,7 @@
 <translation id="5317780077021120954">Запазване</translation>
 <translation id="5327248766486351172">Име</translation>
 <translation id="5339316356165661760">Включване на синхронизирането</translation>
+<translation id="5351284593342054342">Изчистване от това устройство</translation>
 <translation id="5388358297987318779">Отваряне на изображението</translation>
 <translation id="5407969256130905701">Отхвърляне на промените</translation>
 <translation id="5409365236829784218">Няма инсталирани приложения, които могат да отворят файла.</translation>
@@ -465,6 +467,7 @@
 <translation id="5948291296578561264">Това ви позволява да запазвате снимки във фотобиблиотеката си.</translation>
 <translation id="5955891643922670672">Гледате офлайн версията</translation>
 <translation id="5957613098218939406">Още опции</translation>
+<translation id="5961521066940389233">Съхраняване на това устройство</translation>
 <translation id="5964480694698977962">Създаване на нов раздел в режим „инкогнито“.</translation>
 <translation id="5965679971710331625">Влезли сте в профил</translation>
 <translation id="5979837087407522202">Търсене в паролите</translation>
@@ -479,6 +482,7 @@
 <translation id="605721222689873409">ГГ</translation>
 <translation id="6059830886158432458">Управлявайте материалите и активността си тук</translation>
 <translation id="6066301408025741299">Докоснете, за да анулирате.</translation>
+<translation id="6085282545406522838">Синхронизираната информация ще остане в профила ви в Google.</translation>
 <translation id="6108923351542677676">Извършва се настройване…</translation>
 <translation id="6119050551270742952">Страницата е в режим „инкогнито“</translation>
 <translation id="6122191549521593678">Онлайн</translation>
@@ -631,6 +635,7 @@
 <translation id="7514365320538308">Изтегляне</translation>
 <translation id="7537586195939242955">Понастоящем пропускът не може да се инсталира в Passbook.</translation>
 <translation id="7554791636758816595">Нов раздел</translation>
+<translation id="7558943807639707687">Какво искате да направите с отметките, историята и другите си данни на това устройство?</translation>
 <translation id="7561196759112975576">Винаги</translation>
 <translation id="7583004045319035904">Използвайте <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> за отключване на разделите в режим „инкогнито“.</translation>
 <translation id="7600965453749440009">Никога да не се превежда от <ph name="LANGUAGE" /></translation>

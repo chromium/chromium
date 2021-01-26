@@ -17,6 +17,7 @@
 <translation id="257708665678654955">Skal Google Chrome tilbyde at oversætte sider på <ph name="LANGUAGE_NAME" /> fra dette website næste gang?</translation>
 <translation id="2695886661449553974">Chrome kunne ikke søge efter opdateringer. Prøv igen senere.</translation>
 <translation id="2732745070297234559">Chrome kunne ikke tjekke alle adgangskoder. Prøv igen i morgen.</translation>
+<translation id="2786324948676799004">Eftersom din konto administreres af <ph name="HOSTED_DOMAIN" />, slettes dine Chrome-data fra denne enhed, når du logger ud. Alle synkroniserede data vil stadig være på din Google-konto.</translation>
 <translation id="2919738076569633423">Når du bruger Chrome, accepterer du <ph name="BEGIN_LINK_TOS" />servicevilkårene<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Da du er ved at logge ud af en konto, der administreres af <ph name="SIGNOUT_MANAGED_DOMAIN" />, slettes dine Chrome-data på denne enhed. Dine data forbliver på din Google-konto.</translation>
 <translation id="3148688391461398285">Angiv din placering og få en bedre oplevelse, når du bruger Chrome.</translation>

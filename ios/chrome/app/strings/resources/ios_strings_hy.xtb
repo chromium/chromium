@@ -257,6 +257,7 @@
 <translation id="3533436815740441613">Նոր ներդիր</translation>
 <translation id="3551320343578183772">Փակել ներդիրը</translation>
 <translation id="3581564640715911333">Առաջարկել էջերի թարգմանությունն այլ լեզուներով</translation>
+<translation id="3588492282865875287">Դո՞ւրս գալ</translation>
 <translation id="3588820906588687999">Բացել պատկերը նոր ներդիրում</translation>
 <translation id="359441731697487922">Դուք կարող եք Chrome-ը դարձնել ձեր կանխադրված դիտարկիչը և կայքերը բացել այնտեղ ավտոմատ կերպով։
       
@@ -410,6 +411,7 @@
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5327248766486351172">Անուն</translation>
 <translation id="5339316356165661760">Միացնել համաժամացումը</translation>
+<translation id="5351284593342054342">Մաքրել այս սարքից</translation>
 <translation id="5388358297987318779">Բացել պատկերը</translation>
 <translation id="5407969256130905701">Չեղարկել փոփոխությունները</translation>
 <translation id="5409365236829784218">Չկան տեղադրված հավելվածներ, որոնք կարող են բացել այս ֆայլը:</translation>
@@ -465,6 +467,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="5948291296578561264">Սրա շնորհիվ կկարողանաք լուսանկարներ պահել ձեր ֆոտոդարանում:</translation>
 <translation id="5955891643922670672">Անցանց տարբերակի դիտում</translation>
 <translation id="5957613098218939406">Լրացուցիչ ընտրանքներ</translation>
+<translation id="5961521066940389233">Պահել այս սարքում</translation>
 <translation id="5964480694698977962">Ստեղծել նոր ինկոգնիտո ներդիր:</translation>
 <translation id="5965679971710331625">Դուք մուտք եք գործել</translation>
 <translation id="5979837087407522202">Գաղտնաբառերի որոնում</translation>
@@ -479,6 +482,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="605721222689873409">տարի</translation>
 <translation id="6059830886158432458">Կառավարեք ձեր պատմություններն ու գործողություններն այստեղ</translation>
 <translation id="6066301408025741299">Հպեք՝ չեղարկելու համար:</translation>
+<translation id="6085282545406522838">Համաժամացված տվյալները կպահպանվեն ձեր Google հաշվում։</translation>
 <translation id="6108923351542677676">Կարգավորումն ընթացքի մեջ է…</translation>
 <translation id="6119050551270742952">Ընթացիկ կայքէջը ինկոգնիտո ռեժիմում է բացված</translation>
 <translation id="6122191549521593678">Առցանց</translation>
@@ -631,6 +635,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="7514365320538308">Ներբեռնել</translation>
 <translation id="7537586195939242955">Ներեցեք, այս պահին հնարավոր չէ տեղադրել ձեր Անցագիրը Անցագրերի մատյանում:</translation>
 <translation id="7554791636758816595">Նոր ներդիր</translation>
+<translation id="7558943807639707687">Ինչպե՞ս եք ուզում կարգավորել ձեր սարքի էջանիշները, պատմությունն ու մյուս տվյալները</translation>
 <translation id="7561196759112975576">Միշտ</translation>
 <translation id="7583004045319035904">Ապակողպեք ձեր ինկոգնիտո ներդիրները՝ օգտագործելով <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />։</translation>
 <translation id="7600965453749440009">Երբեք չթարգմանել <ph name="LANGUAGE" /> էջերը</translation>

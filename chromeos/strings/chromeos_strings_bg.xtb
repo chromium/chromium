@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Шлюз</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Уеднаквяване с областта за сканиране</translation>
+<translation id="1387854245479784695">Това е обобщена стойност за всички ядра</translation>
 <translation id="1397738625398125236">Шлюзът отговаря на команда ping</translation>
 <translation id="1398634363027580500">Много голямо забавяне на HTTPS</translation>
 <translation id="1413240736185167732">Неуспешно – проблем с филтъра</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Неуспешно – неизвестна грешка</translation>
 <translation id="357889014807611375">Wi-Fi мрежа с отчитане</translation>
 <translation id="360565022852130722">Wi-Fi мрежата е защитена със слабия протокол WEP 802.1x</translation>
+<translation id="3712633734921637892">Понастоящем скоростта на процесора е ограничена с цел запазване на батерията или понижаване на температурата</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> отзива)</translation>
 <translation id="3748026146096797577">Няма връзка</translation>
 <translation id="3749289110408117711">Име на файла</translation>
@@ -230,6 +232,7 @@
 <translation id="6146993107019042706">За да завършите процеса, въведете новата си парола</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Научете повече</translation>
+<translation id="6189418609903030344">Капацитетът на батерията намалява с течение на използването ѝ</translation>
 <translation id="6191293864534840972">Неправилно образувани сървъри за имена</translation>
 <translation id="6232017090690406397">Батерия</translation>
 <translation id="6325525973963619867">Неуспешно</translation>
@@ -327,6 +330,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">По подразбиране</translation>
 <translation id="8798441408945964110">Име на доставчика</translation>
+<translation id="880791622116642296">Това е броят пълни цикли на зареждане на батерията ви</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Получете помощ</translation>
 <translation id="8881098542468797602">Тестът бе успешен</translation>

@@ -257,6 +257,7 @@ Weby v anonymnom režime nemôžu pomocou súborov cookie zobraziť vašu aktiv
 <translation id="3533436815740441613">Nová karta</translation>
 <translation id="3551320343578183772">Zatvoriť kartu</translation>
 <translation id="3581564640715911333">Ponúkať preklad stránok v ďalších jazykoch</translation>
+<translation id="3588492282865875287">Chcete sa odhlásiť?</translation>
 <translation id="3588820906588687999">Otvoriť obrázok na novej karte</translation>
 <translation id="359441731697487922">Odkazy môžete v Chrome otvárať automaticky, keď si ho nastavíte ako predvolenú aplikáciu prehliadača.
       
@@ -410,6 +411,7 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5317780077021120954">Uložiť</translation>
 <translation id="5327248766486351172">Názov</translation>
 <translation id="5339316356165661760">Zapnúť synchronizáciu</translation>
+<translation id="5351284593342054342">Vymazať z tohto zariadenia</translation>
 <translation id="5388358297987318779">Otvoriť obrázok</translation>
 <translation id="5407969256130905701">Zahodiť zmeny</translation>
 <translation id="5409365236829784218">Nie sú nainštalované žiadne aplikácie, ktoré dokážu otvoriť tento súbor.</translation>
@@ -465,6 +467,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="5948291296578561264">Umožňuje ukladať fotky do knižnice fotiek.</translation>
 <translation id="5955891643922670672">Zobrazuje sa offline verzia</translation>
 <translation id="5957613098218939406">Ďalšie možnosti</translation>
+<translation id="5961521066940389233">Uchovať v tomto zariadení</translation>
 <translation id="5964480694698977962">Vytvoriť novú kartu inkognito.</translation>
 <translation id="5965679971710331625">Ste prihlásený/-á</translation>
 <translation id="5979837087407522202">Vyhľadajte heslá</translation>
@@ -479,6 +482,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="605721222689873409">RR</translation>
 <translation id="6059830886158432458">Tu ovládajte svoje príbehy aj aktivitu</translation>
 <translation id="6066301408025741299">Sťahovanie zrušíte klepnutím.</translation>
+<translation id="6085282545406522838">Synchronizované údaje zostanú vo vašom účte Google.</translation>
 <translation id="6108923351542677676">Inštaluje sa...</translation>
 <translation id="6119050551270742952">Aktuálna webová stránka je v anonymnom režime</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -631,6 +635,7 @@ Pre každý web skúste použiť jedinečné heslo.</translation>
 <translation id="7514365320538308">Stiahnuť</translation>
 <translation id="7537586195939242955">Kupón Pass sa momentálne nedá do aplikácie Passbook nainštalovať.</translation>
 <translation id="7554791636758816595">Nová karta</translation>
+<translation id="7558943807639707687">Čo chcete robiť so svojimi záložkami, históriou a ďalšími údajmi v tomto zariadení?</translation>
 <translation id="7561196759112975576">Vždy</translation>
 <translation id="7583004045319035904">Odomknite karty inkognito funkciou <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />.</translation>
 <translation id="7600965453749440009">Nikdy neprekladať jazyk <ph name="LANGUAGE" /></translation>

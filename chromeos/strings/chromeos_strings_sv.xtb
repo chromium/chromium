@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Anpassa till området som ska skannas</translation>
+<translation id="1387854245479784695">Detta är en sammanställning av alla kärnor</translation>
 <translation id="1397738625398125236">Gateway går att pinga</translation>
 <translation id="1398634363027580500">Mycket hög HTTPS-fördröjning</translation>
 <translation id="1413240736185167732">Misslyckades – filterfel</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Misslyckades – okänt fel</translation>
 <translation id="357889014807611375">Wi-Fi med datapriser</translation>
 <translation id="360565022852130722">Wi-Fi-nätverket använder det svaga säkerhetsprotokollet WEP 802.1x</translation>
+<translation id="3712633734921637892">CPU-hastigheten begränsas för närvarande för att spara på batteriet eller sänka temperaturen</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioner)</translation>
 <translation id="3748026146096797577">Ej ansluten</translation>
 <translation id="3749289110408117711">Filnamn</translation>
@@ -230,6 +232,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6146993107019042706">Slutför genom att ange det nya lösenordet</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Läs mer</translation>
+<translation id="6189418609903030344">Batterikapaciteten avtar genom användning</translation>
 <translation id="6191293864534840972">Namnserveradresserna har fel format</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6325525973963619867">Misslyckades</translation>
@@ -327,6 +330,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Leverantörens namn</translation>
+<translation id="880791622116642296">Antalet gånger som batteriet har laddats hela sin kapacitet</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Få hjälp</translation>
 <translation id="8881098542468797602">Testet lyckades</translation>

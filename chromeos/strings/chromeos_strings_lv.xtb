@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Vārteja</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ietilpināt skenēšanas apgabalā</translation>
+<translation id="1387854245479784695">Visu kodolu apkopojums</translation>
 <translation id="1397738625398125236">Vārteju var ehotestēt</translation>
 <translation id="1398634363027580500">Ļoti liels HTTPS latentums</translation>
 <translation id="1413240736185167732">Neizdevās — filtra kļūme</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Neizdevās — nezināma kļūda</translation>
 <translation id="357889014807611375">Maksas Wi-Fi tīkls</translation>
 <translation id="360565022852130722">Wi-Fi tīklu sargā nedrošs protokols WEP 802.1x</translation>
+<translation id="3712633734921637892">Centrālā procesora ātrums pašlaik tiek ierobežots, lai taupītu akumulatora enerģiju vai samazinātu temperatūru</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (atsauksmju skaits: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nav izveidots savienojums</translation>
 <translation id="3749289110408117711">Faila nosaukums</translation>
@@ -230,6 +232,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6146993107019042706">Lai pabeigtu, ievadiet savu jauno paroli</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Uzzināt vairāk</translation>
+<translation id="6189418609903030344">Lietošanas gaitā akumulatora kapacitāte samazinās</translation>
 <translation id="6191293864534840972">Nepareizi nosaukumu serveri</translation>
 <translation id="6232017090690406397">Akumulators</translation>
 <translation id="6325525973963619867">Neizdevās</translation>
@@ -327,6 +330,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Noklusējums</translation>
 <translation id="8798441408945964110">Pakalpojumu sniedzēja nosaukums</translation>
+<translation id="880791622116642296">Šeit norādīts, cik pilnu uzlādes ciklu ir bijis jūsu akumulatoram</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Saņemt palīdzību</translation>
 <translation id="8881098542468797602">Pārbaude sekmīga</translation>

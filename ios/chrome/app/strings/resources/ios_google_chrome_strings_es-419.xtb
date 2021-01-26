@@ -17,6 +17,7 @@
 <translation id="257708665678654955">¿Quieres que Google Chrome te ofrezca traducir las páginas de este sitio que estén en <ph name="LANGUAGE_NAME" /> la próxima vez?</translation>
 <translation id="2695886661449553974">Chrome no pudo buscar actualizaciones. Vuelve a intentarlo más tarde.</translation>
 <translation id="2732745070297234559">Chrome no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
+<translation id="2786324948676799004">Como <ph name="HOSTED_DOMAIN" /> administra tu cuenta, cuando salgas de ella, los datos de Chrome se borrarán de este dispositivo. Los datos que tengas sincronizados permanecerán en tu Cuenta de Google.</translation>
 <translation id="2919738076569633423">Si usas Chrome, aceptas las <ph name="BEGIN_LINK_TOS" />Condiciones del Servicio<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Como estás saliendo de una cuenta que administra <ph name="SIGNOUT_MANAGED_DOMAIN" />, tus datos de Chrome se borrarán de este dispositivo, pero permanecerán en tu Cuenta de Google.</translation>
 <translation id="3148688391461398285">Obtén una mejor experiencia en Chrome según tu ubicación.</translation>

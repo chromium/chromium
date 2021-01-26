@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">गेटवे</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">स्कैन करने की जगह में फ़िट करें</translation>
+<translation id="1387854245479784695">यह सभी कोर एक साथ दिखाता है</translation>
 <translation id="1397738625398125236">गेटवे को पिंग किया जा सकता है</translation>
 <translation id="1398634363027580500">एचटीटीपीएस अनुरोधों में इंतज़ार का समय बहुत ज़्यादा है</translation>
 <translation id="1413240736185167732">प्रिंट नहीं हो पाया - फ़िल्टर में कोई गड़बड़ी हुई</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">प्रिंट नहीं हो पाया - अज्ञात गड़बड़ी</translation>
 <translation id="357889014807611375">सीमित डेटा वाला वाई-फ़ाई</translation>
 <translation id="360565022852130722">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP 802.1x से सुरक्षित है</translation>
+<translation id="3712633734921637892">फ़िलहाल, सीपीयू की रफ़्तार को बैटरी की परफ़ॉर्मेंस बेहतर करने या तापमान कम करने तक सीमित रखा गया है</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> समीक्षाएं)</translation>
 <translation id="3748026146096797577">कनेक्ट नहीं है</translation>
 <translation id="3749289110408117711">फ़ाइल नाम</translation>
@@ -206,6 +208,7 @@
 <translation id="5781694279199921985">सेशन लॉग सेव करें</translation>
 <translation id="5797428682393400134">सफल</translation>
 <translation id="5832805196449965646">व्‍यक्ति जोड़ें</translation>
+<translation id="5844247382766192936"><ph name="TEST_NAME" /> टेस्ट को रद्द कर दिया गया है</translation>
 <translation id="5849570051105887917">'होम' पर काम करने वाली सेवाओं का कोड</translation>
 <translation id="5866840822086176774">बहुत सशक्त</translation>
 <translation id="5895138241574237353">फिर से प्रारंभ करें</translation>
@@ -229,6 +232,7 @@
 <translation id="6146993107019042706">खत्म करने के लिए, नया पासवर्ड डालें</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">ज़्यादा जानें</translation>
+<translation id="6189418609903030344">इस्तेमाल के साथ, बैटरी की क्षमता में कमी आती जाती है</translation>
 <translation id="6191293864534840972">इन नाम सर्वर के फ़ॉर्मैट सही नहीं हैं</translation>
 <translation id="6232017090690406397">बैटरी</translation>
 <translation id="6325525973963619867">विफल</translation>
@@ -259,6 +263,7 @@
 <translation id="6977381486153291903">फ़र्मवेयर पुनरीक्षण</translation>
 <translation id="7028979494427204405">इस डिवाइस को <ph name="MANAGER" /> प्रबंधित करता है और इसके पास उपयोगकर्ता की सभी गतिविधियों का ऐक्सेस है. इन गतिविधियों में उपयोगकर्ता के पासवर्ड, ईमेल, और उन पेजों की जानकारी होती है जिन पर वह जाता है.</translation>
 <translation id="7040230719604914234">ऑपरेटर</translation>
+<translation id="708426984172631313">रोका गया</translation>
 <translation id="7143207342074048698">कनेक्‍टिंग</translation>
 <translation id="714876143603641390">LAN कनेक्टिविटी</translation>
 <translation id="7162487448488904999">गैलरी</translation>
@@ -325,6 +330,7 @@
 <translation id="877985182522063539">ए4</translation>
 <translation id="8798099450830957504">सामान्य</translation>
 <translation id="8798441408945964110">कंपनी का नाम</translation>
+<translation id="880791622116642296">इससे पता चलता है कि आपकी बैटरी कितनी बार पूरी चार्ज हुई है</translation>
 <translation id="8814190375133053267">वाई-फ़ाई </translation>
 <translation id="8845001906332463065">सहायता पाएं</translation>
 <translation id="8881098542468797602">टेस्ट सफल रहा</translation>

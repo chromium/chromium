@@ -206,6 +206,7 @@
 <translation id="5781694279199921985">保存会话日志</translation>
 <translation id="5797428682393400134">成功</translation>
 <translation id="5832805196449965646">添加用户</translation>
+<translation id="5844247382766192936"><ph name="TEST_NAME" />测试已被取消</translation>
 <translation id="5849570051105887917">家用移动网络提供商代码</translation>
 <translation id="5866840822086176774">非常强</translation>
 <translation id="5895138241574237353">重新启动</translation>
@@ -259,6 +260,7 @@
 <translation id="6977381486153291903">固件版本</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 负责管理此设备，而且有权查看所有用户活动（包括访问过的网页、密码和电子邮件）。</translation>
 <translation id="7040230719604914234">运营商</translation>
+<translation id="708426984172631313">已停止</translation>
 <translation id="7143207342074048698">正在连接</translation>
 <translation id="714876143603641390">LAN 连接性</translation>
 <translation id="7162487448488904999">媒体库</translation>

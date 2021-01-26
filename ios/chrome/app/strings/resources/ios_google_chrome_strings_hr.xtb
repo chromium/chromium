@@ -17,6 +17,7 @@
 <translation id="257708665678654955">Želite li da Google Chrome sljedeći put ponudi prijevod stranica s te web-lokacije za <ph name="LANGUAGE_NAME" />?</translation>
 <translation id="2695886661449553974">Chrome nije uspio provjeriti ima li ažuriranja. Pokušajte ponovo kasnije.</translation>
 <translation id="2732745070297234559">Chrome nije uspio provjeriti sve zaporke. Pokušajte ponovo sutra.</translation>
+<translation id="2786324948676799004">Budući da vašim računom upravlja <ph name="HOSTED_DOMAIN" />, vaši podaci iz Chromea izbrisat će se s ovog uređaja kad se odjavite. Sinkronizirani podaci ostat će na vašem Google računu.</translation>
 <translation id="2919738076569633423">Upotrebom Chromea pristajete na <ph name="BEGIN_LINK_TOS" />Uvjete pružanja usluge<ph name="END_LINK_TOS" />.</translation>
 <translation id="3030414234702425231">Budući da se odjavljujete s računa kojim upravlja <ph name="SIGNOUT_MANAGED_DOMAIN" />, vaši podaci iz Chromea izbrisat će se s ovog uređaja, no ostat će na vašem Google računu.</translation>
 <translation id="3148688391461398285">Chrome će vam pružiti više ako mu omogućite pristup lokaciji.</translation>

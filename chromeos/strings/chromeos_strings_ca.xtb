@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Passarel·la</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajusta a l'àrea d'escaneig</translation>
+<translation id="1387854245479784695">És una suma de tots els nuclis</translation>
 <translation id="1397738625398125236">Es pot fer ping a la passarel·la</translation>
 <translation id="1398634363027580500">La latència d'HTTPS és molt alta</translation>
 <translation id="1413240736185167732">Error: error en el filtre</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Error: error desconegut</translation>
 <translation id="357889014807611375">Wi‑Fi d'ús mesurat</translation>
 <translation id="360565022852130722">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP 802.1x</translation>
+<translation id="3712633734921637892">En aquests moments la velocitat de la CPU està limitada per estalviar bateria o reduir la temperatura</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ressenyes)</translation>
 <translation id="3748026146096797577">Desconnectat</translation>
 <translation id="3749289110408117711">Nom del fitxer</translation>
@@ -230,6 +232,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6146993107019042706">Per acabar, introdueix la contrasenya nova</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Més informació</translation>
+<translation id="6189418609903030344">La capacitat de la bateria es redueix amb l'ús</translation>
 <translation id="6191293864534840972">Els servidors de noms tenen un format incorrecte</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6325525973963619867">Error</translation>
@@ -327,6 +330,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminat</translation>
 <translation id="8798441408945964110">Nom del proveïdor</translation>
+<translation id="880791622116642296">Indica el nombre de vegades que has carregat la bateria completament</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Obteniu ajuda</translation>
 <translation id="8881098542468797602">La prova s'ha superat</translation>

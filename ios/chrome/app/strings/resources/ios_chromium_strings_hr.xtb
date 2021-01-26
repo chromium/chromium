@@ -71,6 +71,7 @@
 <translation id="7890287942691234100">Počnite koristiti Chromiumov skener</translation>
 <translation id="8013573822802650211">Da biste vidjeli svoje kartice bez obzira na to gdje koristite Chromium, prijavite se na svim svojim uređajima</translation>
 <translation id="8073677936375100957">Želite li izbrisati svoje podatke iz Chromiuma s ovog uređaja?</translation>
+<translation id="8097322092271030751">Budući da vašim računom upravlja <ph name="HOSTED_DOMAIN" />, vaši podaci iz Chromiuma izbrisat će se s ovog uređaja kad se odjavite. Sinkronizirani podaci ostat će na vašem Google računu.</translation>
 <translation id="8175055321229419309">Savjet: <ph name="BEGIN_LINK" />premjestite Chromium na priključnu stanicu<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Da biste Chromium postavili kao zadani preglednik, otvorite Postavke, Zadana aplikacija preglednika i odaberite Chromium.</translation>
 <translation id="8240981428553046115">Chromium nije uspio provjeriti ima li ažuriranja. Pokušajte ponovo kasnije.</translation>

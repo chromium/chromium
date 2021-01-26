@@ -71,6 +71,7 @@
 <translation id="7890287942691234100">Használja a Chromium szkennerét</translation>
 <translation id="8013573822802650211">Jelentkezzen be minden eszközén, hogy bárhol hozzáférhessen a lapjaihoz, ahol a Chromiumot használja.</translation>
 <translation id="8073677936375100957">Törli Chromium-adatait az eszközről?</translation>
+<translation id="8097322092271030751">Mivel fiókját a(z) <ph name="HOSTED_DOMAIN" /> kezeli, Chromium-adatai törölve lesznek erről az eszközről, amikor kijelentkezik. Szinkronizált adatai továbbra is megmaradnak Google-fiókjában.</translation>
 <translation id="8175055321229419309">Tipp: <ph name="BEGIN_LINK" />Helyezze át a Chromiumot a Dockra<ph name="END_LINK" />.</translation>
 <translation id="8235785158661376110">Ha alapértelmezett böngészőként szeretné beállítani a Chromiumot, nyissa meg a Beállításokat, koppintson az Alapértelmezett böngésző lehetőségre, majd válassza ki a Chromiumot.</translation>
 <translation id="8240981428553046115">A Chromium nem tudott frissítéseket keresni. Próbálja újra később.</translation>

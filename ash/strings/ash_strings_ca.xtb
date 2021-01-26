@@ -80,7 +80,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1570871743947603115">Activa o desactiva el Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Accedir a tota la teva activitat d'aquesta sessió.</translation>
 <translation id="1611993646327628135">Activat</translation>
-<translation id="1615402009686901181">La política de l'administrador desactiva la captura de pantalla quan s'hi mostra contingut confidencial</translation>
+<translation id="1615402009686901181">La política de l'administrador desactiva la captura de pantalla quan es mostra contingut confidencial</translation>
 <translation id="1632985212731562677">L'accés amb interruptors es pot desactivar a Configuració &gt; Accessibilitat.</translation>
 <translation id="1654477262762802994">Inicia una consulta per veu</translation>
 <translation id="1667964833127753507">El mode de color neutre no utilitza colors extrets del fons de pantalla, sinó que els substitueix per un conjunt de tons neutres clars o foscos.</translation>
@@ -147,7 +147,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2220572644011485463">PIN o contrasenya</translation>
 <translation id="2222338659135520253">Cal iniciar la sessió</translation>
 <translation id="2222841058024245321">Escriptori 7</translation>
-<translation id="2224075387478458881">No es permeten les gravacions de pantalla mentre es mostra contingut protegit</translation>
+<translation id="2224075387478458881">No es permet la gravació de pantalla quan es mostra contingut protegit</translation>
 <translation id="225680501294068881">S'estan cercant dispositius...</translation>
 <translation id="2268130516524549846">S'ha desactivat el Bluetooth</translation>
 <translation id="2268813581635650749">Tanca les sessions</translation>
@@ -191,7 +191,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2575685495496069081">L'inici de sessió múltiple s'ha desactivat</translation>
 <translation id="2582112259361606227">Reinicia per actualitzar</translation>
 <translation id="2595239820337756193">5 km en milles</translation>
-<translation id="2596078834055697711">Fa una captura de pantalla de la finestra</translation>
+<translation id="2596078834055697711">Fes una captura de pantalla de la finestra</translation>
 <translation id="2617342710774726426">La targeta SIM està bloquejada</translation>
 <translation id="2621713457727696555">Segura</translation>
 <translation id="2653019840645008922">Captura de la finestra</translation>
@@ -365,7 +365,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4072264167173457037">Senyal mitjà</translation>
 <translation id="4112140312785995938">Retrocedeix</translation>
 <translation id="4114315158543974537">Activa Phone Hub</translation>
-<translation id="412298498316631026">de finestra</translation>
+<translation id="412298498316631026">finestra</translation>
 <translation id="4129129681837227511">Per veure notificacions a la pantalla de bloqueig, desbloqueja el dispositiu per canviar aquesta opció</translation>
 <translation id="4146833061457621061">Reprodueix música</translation>
 <translation id="4157822100366708405">Configuració del tema fosc</translation>
@@ -531,7 +531,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="5619862035903135339">La política de l'administrador desactiva la captura de pantalla</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Connector per al micròfon</translation>
-<translation id="5662709761327382534">L'estat actual de l'opció Grava el micròfon és <ph name="CURRENT_STATE" />, prem Retorn per canviar-lo a <ph name="NEW_STATE" /></translation>
+<translation id="5662709761327382534">Grava el micròfon <ph name="CURRENT_STATE" />. Prem Retorn per canviar la gravació del micròfon a <ph name="NEW_STATE" /></translation>
 <translation id="5669267381087807207">Activant</translation>
 <translation id="5673434351075758678">Després de sincronitzar la configuració, canvia <ph name="FROM_LOCALE" /> per <ph name="TO_LOCALE" />.</translation>
 <translation id="5677928146339483299">Bloquejat</translation>
@@ -589,7 +589,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6062360702481658777">Es tancarà la sessió automàticament d'aquí a <ph name="LOGOUT_TIME_LEFT" />.</translation>
 <translation id="6073451960410192870">Atura la gravació</translation>
 <translation id="607652042414456612">El vostre ordinador està visible als dispositius Bluetooth propers i apareixerà com a "<ph name="NAME" />" amb l'adreça <ph name="ADDRESS" />.</translation>
-<translation id="6094290315941448991">La política de l'administrador desactiva la gravació de pantalla quan s'hi mostra contingut confidencial</translation>
+<translation id="6094290315941448991">La política de l'administrador desactiva la gravació de pantalla quan es mostra contingut confidencial</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
 <translation id="612734058257491180">L'Assistent de Google no està disponible a les sessions de convidat.</translation>
 <translation id="6137566720514957455">Obre el quadre de diàleg per suprimir <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -668,6 +668,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6818242057446442178">Enrere per paraula</translation>
 <translation id="6820676911989879663">Fes una pausa</translation>
 <translation id="6850010208275816200">L'aplicació actual està oberta en pantalla completa. Si et demana la contrasenya, primer has de sortir de la pantalla completa.</translation>
+<translation id="6852052252232534364">Clic per activar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780">Activa <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un dígit}other{Falten # dígits}}</translation>
@@ -728,6 +729,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="742594950370306541">La càmera s'està utilitzant.</translation>
 <translation id="742608627846767349">Bon dia,</translation>
 <translation id="743058460480092004">La càmera i el micròfon s'estan utilitzant.</translation>
+<translation id="7434543979546293336">S'ha marcat com a idea clau</translation>
 <translation id="7452560014878697800">Una aplicació està utilitzant la càmera</translation>
 <translation id="7456049842111127849">Mode de captura, l'opció predeterminada és <ph name="TYPE" /> <ph name="SOURCE" />.</translation>
 <translation id="7461924472993315131">Fixa</translation>
@@ -880,7 +882,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">S'ha connectat un carregador de baix consum</translation>
 <translation id="8683506306463609433">Traça del rendiment activa</translation>
-<translation id="8703634754197148428">Comença a gravar. Quan la gravació hagi començat, prem Alt+Maj+L per navegar fins al prestatge, on trobaràs el botó per aturar-la.</translation>
+<translation id="8703634754197148428">Inicia la gravació. Quan la gravació hagi començat, prem Alt+Maj+L per navegar fins al prestatge i trobar el botó per aturar-la.</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Utilitza les tecles de fletxa dreta o esquerra per gestionar aquesta funció.</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8721053961083920564">Activa o desactiva el volum. <ph name="STATE_TEXT" /></translation>

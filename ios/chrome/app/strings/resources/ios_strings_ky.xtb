@@ -257,6 +257,7 @@
 <translation id="3533436815740441613">Жаңы өтмөк</translation>
 <translation id="3551320343578183772">Өтмөктү жабуу</translation>
 <translation id="3581564640715911333">Башка тилдердеги барактарды которуу сунушталсын</translation>
+<translation id="3588492282865875287">Чыгасызбы?</translation>
 <translation id="3588820906588687999">Сүрөттү жаңы өтмөктө ачуу</translation>
 <translation id="359441731697487922">Chrome'ду демейки серепчиңиз кылып алып, шилтемелерди автоматтык түрдө ачыңыз.
       
@@ -410,6 +411,7 @@
 <translation id="5317780077021120954">Сактоо</translation>
 <translation id="5327248766486351172">Аты:</translation>
 <translation id="5339316356165661760">Шайкештирүүнү күйгүзүү</translation>
+<translation id="5351284593342054342">Бул түзмөктөн тазалоо</translation>
 <translation id="5388358297987318779">Сүрөттү ачуу</translation>
 <translation id="5407969256130905701">Өзгөрүүлөрдү жоюу</translation>
 <translation id="5409365236829784218">Бул файлды ача ала турган колдонмолор орнотулган эмес.</translation>
@@ -465,6 +467,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="5948291296578561264">Ушуну менен сүрөттөрдү галереяңызга сактоого мүмкүндүк берилет.</translation>
 <translation id="5955891643922670672">Оффлайн версиясын көрүп жатасыз</translation>
 <translation id="5957613098218939406">Дагы параметрлер</translation>
+<translation id="5961521066940389233">Бул түзмөктө сактоо</translation>
 <translation id="5964480694698977962">Жаңы жашыруун өтмөк түзүү.</translation>
 <translation id="5965679971710331625">Аккаунтка кирдиңиз</translation>
 <translation id="5979837087407522202">Сырсөздөрдү издөө</translation>
@@ -479,6 +482,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="605721222689873409">ЖЖ</translation>
 <translation id="6059830886158432458">Окуяларыңызды жана аракеттериңизди бул жерден көзөмөлдөңүз</translation>
 <translation id="6066301408025741299">Жокко чыгаруу үчүн таптаңыз.</translation>
+<translation id="6085282545406522838">Шайкештирилген маалымат Google аккаунтуңузда сакталып турат.</translation>
 <translation id="6108923351542677676">Орнотулуп жатат…</translation>
 <translation id="6119050551270742952">Учурдагы веб-баракча Жашыруун режимде</translation>
 <translation id="6122191549521593678">Онлайн</translation>
@@ -631,6 +635,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="7514365320538308">Жүктөп алуу</translation>
 <translation id="7537586195939242955">Кечиресиз, учурда картаңызды Passbook'ка орнотуу мүмкүн эмес</translation>
 <translation id="7554791636758816595">Жаңы өтмөк</translation>
+<translation id="7558943807639707687">Бул түзмөктөгү кыстармалар, таржымал жана башка дайын-даректерди эмне кылуу керек?</translation>
 <translation id="7561196759112975576">Ар дайым</translation>
 <translation id="7583004045319035904">Жашыруун өтмөктөрүңүздүн кулпусун <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> менен ачыңыз.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> эч качан которулбасын</translation>

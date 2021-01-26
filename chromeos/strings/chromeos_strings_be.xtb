@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Шлюз</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Дапасаваць да вобласці сканіравання</translation>
+<translation id="1387854245479784695">Гэта даныя па ўсіх ядрах разам</translation>
 <translation id="1397738625398125236">Можна выканаць праверку ping для шлюза</translation>
 <translation id="1398634363027580500">Вельмі вялікая затрымка HTTPS</translation>
 <translation id="1413240736185167732">Збой: фільтр не працуе</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Збой: невядомая памылка</translation>
 <translation id="357889014807611375">Wi-Fi з улікам трафіка</translation>
 <translation id="360565022852130722">Сетка Wi-Fi абаронена слабым пратаколам WEP 802.1x</translation>
+<translation id="3712633734921637892">Хуткасць ЦП зараз абмежавана для захавання зараду акумулятара або зніжэння тэмпературы</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (водгукаў: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Няма падключэння</translation>
 <translation id="3749289110408117711">Назва файла</translation>
@@ -230,6 +232,7 @@
 <translation id="6146993107019042706">Каб закончыць, увядзіце новы пароль</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Даведацца больш</translation>
+<translation id="6189418609903030344">Ёмістасць акумулятара зніжаецца па меры яго выкарыстання</translation>
 <translation id="6191293864534840972">Серверы даменных імён маюць няправільны фармат</translation>
 <translation id="6232017090690406397">Акумулятар</translation>
 <translation id="6325525973963619867">Збой</translation>
@@ -327,6 +330,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Стандартна</translation>
 <translation id="8798441408945964110">Назва пастаўшчыка</translation>
+<translation id="880791622116642296">Гэта колькасць поўных пройдзеных цыклаў зарадкі акумулятара</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Атрымаць даведку</translation>
 <translation id="8881098542468797602">Праверка пройдзена</translation>

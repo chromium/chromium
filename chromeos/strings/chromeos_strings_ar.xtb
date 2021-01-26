@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">المدخل</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">الملاءمة مع منطقة المسح الضوئي</translation>
+<translation id="1387854245479784695">هذه بيانات مجمّعة عن كل النوى.</translation>
 <translation id="1397738625398125236">يمكن فحص اتصال البوابة</translation>
 <translation id="1398634363027580500">‏وقت استجابة بروتوكول HTTPS طويل جدًا.</translation>
 <translation id="1413240736185167732">تعذَّرت الطباعة - خلل في عامل تصفية الطباعة</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">تعذَّرت الطباعة - خطأ غير معروف</translation>
 <translation id="357889014807611375">‏شبكة Wi-Fi تفرض تكلفة استخدام</translation>
 <translation id="360565022852130722">‏شبكة Wi-Fi مؤمَّنة باستخدام بروتوكول WEP 802.1x ضعيف.</translation>
+<translation id="3712633734921637892">‏تم حاليًا فرض حد على سرعة وحدة المعالج المركزية (CPU) للحفاظ على مستوى طاقة البطارية أو للتقليل من درجة حرارة المعالج.</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> مراجعة)</translation>
 <translation id="3748026146096797577">غير متصل</translation>
 <translation id="3749289110408117711">اسم الملف</translation>
@@ -230,6 +232,7 @@
 <translation id="6146993107019042706">يُرجى إدخال كلمة مرور جديدة لإنهاء الإجراء.</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">مزيد من المعلومات</translation>
+<translation id="6189418609903030344">تقلّ سعة البطارية عند استخدامها.</translation>
 <translation id="6191293864534840972">خوادم الأسماء غير صالحة.</translation>
 <translation id="6232017090690406397">البطارية</translation>
 <translation id="6325525973963619867">إخفاق</translation>
@@ -327,6 +330,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">التلقائي</translation>
 <translation id="8798441408945964110">اسم مقدم الخدمة</translation>
+<translation id="880791622116642296">هذا هو عدد المرات التي تم فيها شحن بطاريتك بالكامل.</translation>
 <translation id="8814190375133053267">‏لاسلكي، Wi-Fi</translation>
 <translation id="8845001906332463065">الحصول على مساعدة</translation>
 <translation id="8881098542468797602">نجح الاختبار.</translation>

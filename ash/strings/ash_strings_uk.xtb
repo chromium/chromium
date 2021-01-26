@@ -4,12 +4,12 @@
 <translation id="1012876632442809908">Пристрій із портом USB типу C (на передній панелі)</translation>
 <translation id="1013598600051641573">Роздільну здатність дисплея "<ph name="DISPLAY_NAME" />" змінено на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Щоб зберегти зміни, натисніть "Підтвердити". Попередні налаштування відновляться через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення. Введіть на пристрої цей PIN-код: <ph name="PINCODE" /></translation>
-<translation id="1024261588257374085">Вибрано частковий знімок екрана</translation>
+<translation id="1024261588257374085">Вибрано знімок частини екрана</translation>
 <translation id="1032891413405719768">Низький заряд акумулятора стилуса</translation>
 <translation id="1036672894875463507">Я – Google Асистент і допомагатиму вам упродовж дня.
 Ось що ви можете спробувати.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> додано</translation>
-<translation id="1047017786576569492">частково</translation>
+<translation id="1047017786576569492">частини екрана</translation>
 <translation id="1047773237499189053">Доступна нова функція. Щоб дізнатися більше, натисніть клавішу зі стрілкою вгору.</translation>
 <translation id="1056775291175587022">Немає мереж</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -29,7 +29,7 @@
 <translation id="1195412055398077112">облямівка екрана</translation>
 <translation id="119944043368869598">Очистити все</translation>
 <translation id="1199716647557067911">Вимкнути кнопковий доступ?</translation>
-<translation id="1210557957257435379">запис екрана</translation>
+<translation id="1210557957257435379">запис</translation>
 <translation id="121097972571826261">Уперед на одне слово</translation>
 <translation id="1225748608451425081">Ваш пристрій Chromebook заблоковано через відому проблему. Ви зможете ввійти через <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Припинити вибір</translation>
@@ -123,7 +123,7 @@
 <translation id="1969011864782743497"><ph name="DEVICE_NAME" /> (USB)</translation>
 <translation id="1972950159383891558">Вітаємо, <ph name="USERNAME" /></translation>
 <translation id="1978498689038657292">Ввести текст</translation>
-<translation id="1989113344093894667">Не вдається зняти контент</translation>
+<translation id="1989113344093894667">Не вдається записати контент</translation>
 <translation id="1993072747612765854">Докладніше про останнє оновлення додатка <ph name="SYSTEM_APP_NAME" /></translation>
 <translation id="1995660704900986789">Вимкнути</translation>
 <translation id="1998100899771863792">Поточний робочий стіл</translation>
@@ -210,7 +210,7 @@
 <translation id="2778650143428714839">Пристроєм <ph name="DEVICE_TYPE" /> керує <ph name="MANAGER" /></translation>
 <translation id="2782591952652094792">Вийти з режиму зйомки</translation>
 <translation id="2792498699870441125">Alt+клавіша пошуку</translation>
-<translation id="2814448776515246190">Часткова зйомка</translation>
+<translation id="2814448776515246190">Зйомка частини екрана</translation>
 <translation id="2819276065543622893">Зараз ви вийдете.</translation>
 <translation id="28232023175184696">Не вдається підключитися до мережі. Натисніть, щоб повторити спробу.</translation>
 <translation id="2825224105325558319"><ph name="DISPLAY_NAME" /> не підтримує роздільну здатність <ph name="SPECIFIED_RESOLUTION" />. Роздільну здатність змінено на <ph name="FALLBACK_RESOLUTION" />.</translation>
@@ -234,11 +234,11 @@
 <translation id="2996462380875591307">Увімкнено закріплену лупу. Щоб вимкнути її, знову натисніть комбінацію Ctrl + клавіша пошуку + D.</translation>
 <translation id="3000461861112256445">Монофонічне аудіо</translation>
 <translation id="3009178788565917040">Вихід</translation>
-<translation id="3017687597151988916">Областю вибору вказано вікно</translation>
+<translation id="3017687597151988916">Вибрано вікно</translation>
 <translation id="3033545621352269033">Увімкнено</translation>
 <translation id="3036649622769666520">Відкрити файли</translation>
 <translation id="3038571455154067151">Щоб увійти, введіть свій батьківський код доступу з Family Link</translation>
-<translation id="3039939407102840004">Заряд акумулятора стилуса – <ph name="PERCENTAGE" />%.</translation>
+<translation id="3039939407102840004">Заряд акумулятора стилуса у відсотках становить <ph name="PERCENTAGE" />.</translation>
 <translation id="3045488863354895414">Доброго дня!</translation>
 <translation id="3055162170959710888">Сьогодні цей пристрій працював <ph name="USED_TIME" /></translation>
 <translation id="3077734595579995578">shift</translation>
@@ -365,7 +365,7 @@
 <translation id="4072264167173457037">середній сигнал</translation>
 <translation id="4112140312785995938">Перейти назад</translation>
 <translation id="4114315158543974537">Увімкнути Phone Hub</translation>
-<translation id="412298498316631026">вікно</translation>
+<translation id="412298498316631026">вікна</translation>
 <translation id="4129129681837227511">Щоб переглядати сповіщення на заблокованому екрані, розблокуйте його й змініть налаштування</translation>
 <translation id="4146833061457621061">Увімкни музику</translation>
 <translation id="4157822100366708405">Налаштування темної теми</translation>
@@ -579,7 +579,7 @@
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу –<ph name="SIGNAL_STRENGTH" />. Мережею керує адміністратор</translation>
 <translation id="6030495522958826102">Меню переміщено в нижній лівий кут екрана.</translation>
 <translation id="6032620807120418574">Натисніть будь-де, щоб записати весь екран</translation>
-<translation id="6040071906258664830">Мікрофон для запису: <ph name="STATE" /></translation>
+<translation id="6040071906258664830">Мікрофон для запису <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Закрити</translation>
 <translation id="6043212731627905357">Ваш пристрій <ph name="DEVICE_TYPE" /> не підтримує цей монітор.</translation>
 <translation id="6043994281159824495">Вийти зараз</translation>
@@ -668,6 +668,7 @@
 <translation id="6818242057446442178">Назад на одне слово</translation>
 <translation id="6820676911989879663">Зробіть перерву!</translation>
 <translation id="6850010208275816200">Поточний додаток розгорнуто на весь екран. Якщо з'явиться запит пароля, спершу вийдіть із цього режиму.</translation>
+<translation id="6852052252232534364">Активувати</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> с</translation>
 <translation id="6857811139397017780">Активувати <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Залишилась одна цифра}one{Залишилася # цифра}few{Залишилося # цифри}many{Залишилося # цифр}other{Залишилося # цифри}}</translation>
@@ -696,7 +697,7 @@
 <translation id="7076293881109082629">Вхід</translation>
 <translation id="7088960765736518739">Кнопковий доступ</translation>
 <translation id="7098389117866926363">Пристрій, під’єднаний до порту USB-C (ліворуч на задній панелі)</translation>
-<translation id="7118268675952955085">знімок екрана</translation>
+<translation id="7118268675952955085">знімок</translation>
 <translation id="7131634465328662194">Ви вийдете автоматично.</translation>
 <translation id="7143207342074048698">Під’єднання</translation>
 <translation id="7144878232160441200">Повторити спробу</translation>
@@ -728,13 +729,14 @@
 <translation id="742594950370306541">Камера використовується.</translation>
 <translation id="742608627846767349">Доброго ранку!</translation>
 <translation id="743058460480092004">Камера та мікрофон використовуються.</translation>
+<translation id="7434543979546293336">Позначено як ключову ідею</translation>
 <translation id="7452560014878697800">Додаток використовує вашу камеру</translation>
-<translation id="7456049842111127849">Режим зйомки. За умовчанням – <ph name="TYPE" /> (<ph name="SOURCE" />).</translation>
+<translation id="7456049842111127849">Режим зйомки. За умовчанням – <ph name="TYPE" /> <ph name="SOURCE" />.</translation>
 <translation id="7461924472993315131">Закріпити</translation>
 <translation id="746232733191930409">Режим запису екрана</translation>
 <translation id="7466449121337984263">Торкніться сканера</translation>
 <translation id="7477793887173910789">Керуйте музикою, відео й іншим контентом</translation>
-<translation id="7483025031359818980">Областю вибору вказано весь екран</translation>
+<translation id="7483025031359818980">Вибрано весь екран</translation>
 <translation id="7497767806359279797">Вибрати мову та клавіатуру</translation>
 <translation id="7509246181739783082">Підтвердьте свою особу</translation>
 <translation id="7513622367902644023">Вибрано режим знімка екрана</translation>
@@ -843,7 +845,7 @@
 <translation id="8388750414311082622">Останній робочий стіл не можна видалити.</translation>
 <translation id="8394567579869570560">Батьки заблокували цей пристрій</translation>
 <translation id="8412677897383510995">Показати налаштування дисплея</translation>
-<translation id="8413272770729657668">Запис почнеться через 3, 2, 1</translation>
+<translation id="8413272770729657668">Зараз почнеться запис: 3, 2, 1</translation>
 <translation id="8425213833346101688">Змінити</translation>
 <translation id="8426708595819210923">Доброго вечора, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8427213022735114808">Диктування надсилає зразок вашого голосу в Google, щоб дозволити голосовий ввід у будь-якому текстовому полі.</translation>
@@ -880,7 +882,7 @@
 <translation id="8673028979667498656">270°</translation>
 <translation id="8676770494376880701">Зарядний пристрій низької потужності підключено</translation>
 <translation id="8683506306463609433">Відстеження ефективності активне</translation>
-<translation id="8703634754197148428">Почніть запис. Коли запис почнеться, скористайтеся комбінацією Alt + Shift + L, щоб перейти на полицю, де розташована кнопка зупинки запису</translation>
+<translation id="8703634754197148428">Почніть запис. Коли запис почнеться, натисніть Alt + Shift + L, щоб перейти на полицю, де розташована кнопка зупинки запису</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Щоб керувати цією функцією, натискайте стрілки ліворуч або праворуч.</translation>
 <translation id="8712637175834984815">Виконано</translation>
 <translation id="8721053961083920564">Увімкнути або вимкнути гучність. <ph name="STATE_TEXT" /></translation>
@@ -922,7 +924,7 @@
 <translation id="8990809378771970590">Використовується: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Щоб виконати дію зі сповіщенням, розблокуйте пристрій як <ph name="LOGIN_ID" /></translation>
 <translation id="9017320285115481645">Введіть батьківський код доступу Family Link.</translation>
-<translation id="9024331582947483881">повноекранний режим</translation>
+<translation id="9024331582947483881">усього екрана</translation>
 <translation id="9047624247355796468">Відкрити налаштування <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Пристрій буде відновлено до попереднього стану</translation>
 <translation id="9063800855227801443">Не вдається зробити знімок конфіденційного контенту</translation>

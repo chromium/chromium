@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Tilpas til scanningsområdet</translation>
+<translation id="1387854245479784695">Dette er den samlede værdi for alle kerner</translation>
 <translation id="1397738625398125236">Gatewayen kan pinges</translation>
 <translation id="1398634363027580500">Meget høj HTTPS-forsinkelse</translation>
 <translation id="1413240736185167732">Handlingen mislykkedes – Filterfejl</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Handlingen mislykkedes – Ukendt fejl</translation>
 <translation id="357889014807611375">forbrugsafregnet Wi-Fi</translation>
 <translation id="360565022852130722">Wi-Fi-netværket er beskyttet med den svage protokol WEP 802.1x</translation>
+<translation id="3712633734921637892">CPU-hastigheden er i øjeblikket begrænset for at spare på batteriet eller nedkøle enheden</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> anmeldelser)</translation>
 <translation id="3748026146096797577">Ikke forbundet</translation>
 <translation id="3749289110408117711">Filnavn</translation>
@@ -229,6 +231,7 @@
 <translation id="6146993107019042706">Angiv din nye adgangskode for at afslutte</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
+<translation id="6189418609903030344">Batterikapaciteten falder løbende, når enheden er i brug</translation>
 <translation id="6191293864534840972">Ugyldige navneservere</translation>
 <translation id="6232017090690406397">Batteri</translation>
 <translation id="6325525973963619867">Mislykket</translation>
@@ -326,6 +329,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Navn på udbyder</translation>
+<translation id="880791622116642296">Antal gange dit batteri er blevet fuldt opladet</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Få hjælp</translation>
 <translation id="8881098542468797602">Testen blev gennemført</translation>

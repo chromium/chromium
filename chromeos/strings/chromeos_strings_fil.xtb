@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Pagkasyahin sa nasa-scan na bahagi</translation>
+<translation id="1387854245479784695">Isa itong pagsasama-sama ng lahat ng core</translation>
 <translation id="1397738625398125236">Puwedeng I-ping ang Gateway</translation>
 <translation id="1398634363027580500">Napakataas na latency ng HTTPS</translation>
 <translation id="1413240736185167732">Hindi na-print - Hindi gumana ang filter</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Hindi na-print - Hindi kilalang error</translation>
 <translation id="357889014807611375">nakametrong Wi-Fi</translation>
 <translation id="360565022852130722">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP 802.1x</translation>
+<translation id="3712633734921637892">Kasalukuyang limitado ang bilis ng CPU para mapahaba ang baterya o mapababa ang temperatura</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> (na) review)</translation>
 <translation id="3748026146096797577">Hindi Nakakonekta</translation>
 <translation id="3749289110408117711">File name</translation>
@@ -230,6 +232,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6146993107019042706">Para tapusin, ilagay ang bago mong password</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Matuto pa</translation>
+<translation id="6189418609903030344">Nababawasan ang kapasidad ng baterya sa paggamit</translation>
 <translation id="6191293864534840972">Mali ang format ng mga name server</translation>
 <translation id="6232017090690406397">Baterya</translation>
 <translation id="6325525973963619867">Nabigo</translation>
@@ -327,6 +330,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Default</translation>
 <translation id="8798441408945964110">Pangalan ng provider</translation>
+<translation id="880791622116642296">Ito ang bilang ng mga pagkakataong na-full charge ang iyong baterya</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Humingi ng tulong</translation>
 <translation id="8881098542468797602">Nagtagumpay ang pagsusuri</translation>

@@ -668,6 +668,7 @@
 <translation id="6818242057446442178">1 語戻る</translation>
 <translation id="6820676911989879663">休憩の時間です！</translation>
 <translation id="6850010208275816200">アプリが全画面表示になっています。パスワードの入力を求められたら、まず全画面表示を終了してください。</translation>
+<translation id="6852052252232534364">クリックして有効にする</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> 秒</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> を有効にする</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{残り 1 桁}other{残り # 桁}}</translation>
@@ -729,6 +730,7 @@
 <translation id="742594950370306541">カメラが使用中です。</translation>
 <translation id="742608627846767349">おはようございます</translation>
 <translation id="743058460480092004">カメラとマイクが使用中です。</translation>
+<translation id="7434543979546293336">要点としてマークしました</translation>
 <translation id="7452560014878697800">アプリケーションがカメラを使用しています</translation>
 <translation id="7456049842111127849">キャプチャ モードです。デフォルトは <ph name="SOURCE" /> の <ph name="TYPE" /> です。</translation>
 <translation id="7461924472993315131">固定</translation>
@@ -926,7 +928,7 @@
 <translation id="9024331582947483881">全画面表示</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> の設定を開く</translation>
 <translation id="9056839673611986238">デバイスはロールバックされます</translation>
-<translation id="9063800855227801443">機密コンテンツをキャプチャできません</translation>
+<translation id="9063800855227801443">機密コンテンツはキャプチャできません</translation>
 <translation id="9065203028668620118">編集</translation>
 <translation id="9070640332319875144">アシスタントの設定</translation>
 <translation id="9072519059834302790">あと <ph name="TIME_LEFT" />で電池がなくなります。</translation>
@@ -940,7 +942,7 @@
 <translation id="9091626656156419976">ディスプレイ「<ph name="DISPLAY_NAME" />」が取り外されました</translation>
 <translation id="9098969848082897657">スマートフォンを消音する</translation>
 <translation id="9099154003160514616">Lacros のアップデートがあります</translation>
-<translation id="9133335900048457298">保護されたコンテンツを録画できません</translation>
+<translation id="9133335900048457298">保護されたコンテンツは録画できません</translation>
 <translation id="9151726767154816831">更新するには、再起動して Powerwash を実行してください</translation>
 <translation id="9166331175924255663">ニアバイシェアで付近のデバイスに表示されるモードのオン/オフを切り替えます。</translation>
 <translation id="9168436347345867845">後で行う</translation>

@@ -257,6 +257,7 @@
 <translation id="3533436815740441613">တဘ်အသစ်</translation>
 <translation id="3551320343578183772">တဘ် ပိတ်ရန်</translation>
 <translation id="3581564640715911333">စာမျက်နှာများကို အခြားဘာသာစကားများဖြင့် ပြန်ဆိုရန် ကမ်းလှမ်းသည်</translation>
+<translation id="3588492282865875287">ထွက်မလား။</translation>
 <translation id="3588820906588687999">ရုပ်ပုံကို တက်ဘ်အသစ်တွင်ဖွင့်ရန်</translation>
 <translation id="359441731697487922">Chrome ကို 'မူရင်း ဘရောင်ဇာအက်ပ်' ပြုလုပ်ခြင်းဖြင့် လင့်ခ်များကို ၎င်းတွင် အလိုအလျောက်ဖွင့်နိုင်သည်။
       
@@ -410,6 +411,7 @@
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5327248766486351172">အမည်</translation>
 <translation id="5339316356165661760">စင့်ခ်လုပ်ခြင်းကို ဖွင့်ရန်</translation>
+<translation id="5351284593342054342">ဤစက်မှ ရှင်းထုတ်ရန်</translation>
 <translation id="5388358297987318779">ရုပ်ပုံဖွင့်မည်</translation>
 <translation id="5407969256130905701">အပြောင်းအလဲများကို ဖယ်ပစ်ရန်</translation>
 <translation id="5409365236829784218">ဤဖိုင်ကိုဖွင့်နိုင်သည့် အပလီကေးရှင်းများ တပ်ဆင်ထားခြင်းမရှိပါ။</translation>
@@ -464,6 +466,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="5948291296578561264">၎င်းသည်ဓာတ်ပုံများအား သင်၏ဓာတ်ပုံဒစ်ဂျစ်တိုက်သို့ သိမ်းဆည်းခွင့်ပေးပါသည်။</translation>
 <translation id="5955891643922670672">အောဖ့်လိုင်းဗားရှင်းဖြင့် ကြည့်ရှုနေသည်</translation>
 <translation id="5957613098218939406">နောက်ထပ် ရွေးချယ်စရာများ</translation>
+<translation id="5961521066940389233">ဤစက်တွင် သိမ်းရန်</translation>
 <translation id="5964480694698977962">ရုပ်ဖျက်တဘ်အသစ်တစ်ခု ဖန်တီးပါ။</translation>
 <translation id="5965679971710331625">လက်မှတ်ထိုးဝင်ထားပြီး ဖြစ်သည်</translation>
 <translation id="5979837087407522202">စကားဝှက်များ ရှာရန်</translation>
@@ -478,6 +481,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">သင့်သတင်းများနှင့် လုပ်ဆောင်ချက်ကို ဤနေရာတွင် ထိန်းချုပ်နိုင်သည်</translation>
 <translation id="6066301408025741299">မလုပ်တော့ပါ ထိပါ</translation>
+<translation id="6085282545406522838">သင်စင့်ခ်လုပ်ထားသော ဒေတာများ သင်၏ Google Account တွင် ကျန်နေပါမည်။</translation>
 <translation id="6108923351542677676">စဖွင့် သတ်မှတ်မှု လုပ်ကိုင်…</translation>
 <translation id="6119050551270742952">လက်ရှိဝဘ်စာမျက်နှာကို ရုပ်ဖျက်မုဒ်တွင် ဖွင့်ထားသည်</translation>
 <translation id="6122191549521593678">အွန်လိုင်း</translation>
@@ -630,6 +634,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="7514365320538308">ဒေါင်းလုဒ်</translation>
 <translation id="7537586195939242955">ဝမ်းနည်းပါသည်၊ သင့်လက်မှတ်ကို ယခုချိန်တွင် Passbook သို့ တပ်ဆင်၍ မရနိုင်ပါ။</translation>
 <translation id="7554791636758816595">တဘ် အသစ်</translation>
+<translation id="7558943807639707687">ဤစက်ပေါ်ရှိ သင့်လိပ်စာများ၊ မှတ်တမ်းနှင့် အခြားဒေတာတို့ကို မည်သို့ဆောင်ရွက်လိုသလဲ။</translation>
 <translation id="7561196759112975576">အမြဲတမ်း</translation>
 <translation id="7583004045319035904">သင့် 'ရုပ်ဖျက်တဘ်များ' ကို ဖွင့်ရန် <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ကို သုံးပါ။</translation>
 <translation id="7600965453749440009">ဘာသာပြန်အသစ် <ph name="LANGUAGE" /></translation>

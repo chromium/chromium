@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Gátt</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Laga að skönnunarsvæði</translation>
+<translation id="1387854245479784695">Þetta er samansafn allra kjarna</translation>
 <translation id="1397738625398125236">Ekki er hægt að ping-prófa gátt</translation>
 <translation id="1398634363027580500">Mjög langur HTTPS-biðtími</translation>
 <translation id="1413240736185167732">Mistókst – bilun í síu</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Mistókst – óþekkt villa</translation>
 <translation id="357889014807611375">Wi-Fi net með mælda notkun</translation>
 <translation id="360565022852130722">Wi-Fi netið er varið með veikum samskiptareglum, WEP 802.1x</translation>
+<translation id="3712633734921637892">Hraði örgjörva er takmarkaður eins og er til að spara rafhlöðuorku og lækka hita</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> umsagnir)</translation>
 <translation id="3748026146096797577">Ótengt</translation>
 <translation id="3749289110408117711">Skráarheiti</translation>
@@ -230,6 +232,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6146993107019042706">Sláðu inn nýja aðgangsorðið til að ljúka þessu</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Frekari upplýsingar</translation>
+<translation id="6189418609903030344">Hleðslugeta rafhlöðunnar minnkar með notkun</translation>
 <translation id="6191293864534840972">Gallaðir nafnaþjónar</translation>
 <translation id="6232017090690406397">Rafhlaða</translation>
 <translation id="6325525973963619867">Mistókst</translation>
@@ -327,6 +330,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Sjálfgefið</translation>
 <translation id="8798441408945964110">Heiti veitu</translation>
+<translation id="880791622116642296">Þetta er fjöldi skipta sem rafhlaðan hefur tæmst og verið fullhlaðin aftur</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Fá hjálp</translation>
 <translation id="8881098542468797602">Próf tókst</translation>

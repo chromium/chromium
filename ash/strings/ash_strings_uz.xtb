@@ -194,7 +194,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="2596078834055697711">Oynadan skrinshot olish</translation>
 <translation id="2617342710774726426">SIM karta qulflangan</translation>
 <translation id="2621713457727696555">Himoyalangan</translation>
-<translation id="2653019840645008922">Oynani suratga olish</translation>
+<translation id="2653019840645008922">Oynani tasvirga olish</translation>
 <translation id="2653659639078652383">Yuborish</translation>
 <translation id="2658778018866295321">Bosib torting</translation>
 <translation id="2678852583403169292">Teginib tinglash menyusi</translation>
@@ -275,7 +275,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> keyinroq kira oladi.</translation>
 <translation id="3321628682574733415">Ota-ona kodi xato kiritildi</translation>
 <translation id="332587331255250389">Batareyani almashtiring</translation>
-<translation id="3341303451326249809">Skrinshot saqlandi</translation>
+<translation id="3341303451326249809">Skrinshot olindi</translation>
 <translation id="334252345105450327">Skrinshot olish</translation>
 <translation id="3351879221545518001">Hozir ekraningiz translatsiya qilinmoqda.</translation>
 <translation id="3364721542077212959">Stilus vositalari</translation>
@@ -312,7 +312,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="3621202678540785336">Kirish</translation>
 <translation id="3621712662352432595">Audio sozlamalari</translation>
 <translation id="3626281679859535460">Yorqinlik</translation>
-<translation id="3630697955794050612">yoʻq</translation>
+<translation id="3630697955794050612">oʻchiq</translation>
 <translation id="3631369015426612114">Quyidagilardan bildirishnomalar ko‘rsatilsin</translation>
 <translation id="3638400994746983214">Maxfiylik ekraniga kirish/chiqish. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> boshqariladigan hisob</translation>
@@ -668,6 +668,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="6818242057446442178">Bitta soʻz orqaga</translation>
 <translation id="6820676911989879663">Tanaffus qiling</translation>
 <translation id="6850010208275816200">Joriy ilovangiz butun ekran rejimida. Ilova parol kiritishni soʻrasa, butun ekran rejimidan chiqing.</translation>
+<translation id="6852052252232534364">Faollashtirish</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> soniya</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> tarmog‘ini faollashtirish</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Bitta raqam kiritilmadi}other{# ta raqam kiritilmadi}}</translation>
@@ -728,8 +729,9 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="742594950370306541">Kamera ish faoliyatida.</translation>
 <translation id="742608627846767349">Xayrli tong,</translation>
 <translation id="743058460480092004">Kamera va mikrofon ishlatilmoqda.</translation>
+<translation id="7434543979546293336">Asosiy gʻoya sifatida belgilandi</translation>
 <translation id="7452560014878697800">Ilova kamerangizni ishlatmoqda</translation>
-<translation id="7456049842111127849">Suratga olish rejimi, standart: <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
+<translation id="7456049842111127849">Tasvirga olish rejimi, standart: <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Qadab qo‘yish</translation>
 <translation id="746232733191930409">Ekranni yozib olish rejimi</translation>
 <translation id="7466449121337984263">Sensorga tegining</translation>
@@ -807,7 +809,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="8036504271468642248">Avvalgi gap</translation>
 <translation id="8042893070933512245">Maxsus imkoniyatlar sozlamalari menyusini ochish</translation>
 <translation id="8048123526339889627">Bluetooth sozlamalari</translation>
-<translation id="8052898407431791827">Vaqtincha nusxalandi</translation>
+<translation id="8052898407431791827">Vaqtinchalik xotiraga nusxalandi</translation>
 <translation id="8054466585765276473">Batareyadan ishlash mumkin bo‘lgan vaqt hisoblanmoqda.</translation>
 <translation id="8061464966246066292">Yuqori kontrast</translation>
 <translation id="8098591350844501178">Ekranni “<ph name="RECEIVER_NAME" />” qurilmasiga translatsiya qilishni to‘xtatish</translation>
@@ -925,7 +927,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="9024331582947483881">butun ekran</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> sozlamalarini ochish</translation>
 <translation id="9056839673611986238">Qurilma rejadagi versiyaga qaytariladi</translation>
-<translation id="9063800855227801443">Maxfiy kontent tasvirga olinmadi</translation>
+<translation id="9063800855227801443">Maxfiy kontentni tasvirga olish imkonsiz</translation>
 <translation id="9065203028668620118">O‘zgartirish</translation>
 <translation id="9070640332319875144">Google Assistent sozlamalari</translation>
 <translation id="9072519059834302790">Batareya quvvati tugashigacha qolgan vaqt: <ph name="TIME_LEFT" />.</translation>
@@ -939,7 +941,7 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> ekrani olib tashlandi</translation>
 <translation id="9098969848082897657">Soatni sukut qilish</translation>
 <translation id="9099154003160514616">Lacros yangilanishi mavjud</translation>
-<translation id="9133335900048457298">Himoyalngan kontent yozib olinmadi</translation>
+<translation id="9133335900048457298">Himoyalangan kontentni yozib olish imkonsiz</translation>
 <translation id="9151726767154816831">Tizimni yangilash uchun uni qaytadan ishga tushirib, Powerwash amalini bajaring</translation>
 <translation id="9166331175924255663">Yaqin-atrofga yuborish qurilmalariga ruxsatni ochish tugmasi.</translation>
 <translation id="9168436347345867845">Keyinroq</translation>

@@ -71,6 +71,7 @@
 <translation id="7890287942691234100">Börja använda Chromium som skanner</translation>
 <translation id="8013573822802650211">Logga in på alla dina enheter om du vill ha samma flikar tillgängliga på alla enheter där du använder Chromium</translation>
 <translation id="8073677936375100957">Vill du rensa din data i Chromium från den här enheten?</translation>
+<translation id="8097322092271030751">Eftersom ditt konto hanteras av <ph name="HOSTED_DOMAIN" /> raderas din data i Chromium från enheten när du loggar ut. Din synkroniserade data finns kvar i Google-kontot.</translation>
 <translation id="8175055321229419309">Tips! <ph name="BEGIN_LINK" />Flytta Chromium till Dock<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Så här använder du Chromium som standard: Öppna inställningarna, tryck på Standardwebbläsarapp och välj Chromium.</translation>
 <translation id="8240981428553046115">Chromium kunde inte söka efter uppdateringar. Försök igen senare.</translation>

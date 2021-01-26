@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Brána</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Přizpůsobit skenované oblasti</translation>
+<translation id="1387854245479784695">Jedná se o agregaci všech jader</translation>
 <translation id="1397738625398125236">Pingnutí brány</translation>
 <translation id="1398634363027580500">Velmi vysoká latence HTTPS</translation>
 <translation id="1413240736185167732">Tisk selhal – selhal filtr</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Tisk selhal – neznámá chyba</translation>
 <translation id="357889014807611375">měřená Wi-Fi</translation>
 <translation id="360565022852130722">Síť Wi-Fi je zabezpečena slabým protokolem WEP 802.1x</translation>
+<translation id="3712633734921637892">Rychlost procesoru je momentálně omezena za účelem udržení stavu baterie nebo snížení teploty</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (recenze: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nepřipojeno</translation>
 <translation id="3749289110408117711">Název souboru</translation>
@@ -206,6 +208,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5781694279199921985">Uložit protokol relace</translation>
 <translation id="5797428682393400134">ÚSPĚCH</translation>
 <translation id="5832805196449965646">Přidat uživatele</translation>
+<translation id="5844247382766192936">Test <ph name="TEST_NAME" /> byl zrušen</translation>
 <translation id="5849570051105887917">Kód domácího poskytovatele</translation>
 <translation id="5866840822086176774">Velmi silný</translation>
 <translation id="5895138241574237353">Restartovat</translation>
@@ -229,6 +232,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6146993107019042706">Chcete-li akci dokončit, zadejte své nové heslo</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Další informace</translation>
+<translation id="6189418609903030344">Kapacita baterie se používáním snižuje</translation>
 <translation id="6191293864534840972">Názvové servery nemají správný formát</translation>
 <translation id="6232017090690406397">Baterie</translation>
 <translation id="6325525973963619867">Došlo k selhání</translation>
@@ -259,6 +263,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6977381486153291903">Revize firmwaru</translation>
 <translation id="7028979494427204405">Toto zařízení je spravováno doménou <ph name="MANAGER" />, která má přístup k veškeré uživatelské aktivitě, včetně navštívených webových stránek, hesel a e‑mailu.</translation>
 <translation id="7040230719604914234">Operátor</translation>
+<translation id="708426984172631313">ZASTAVENO</translation>
 <translation id="7143207342074048698">Připojování</translation>
 <translation id="714876143603641390">Připojení k síti LAN</translation>
 <translation id="7162487448488904999">Galerie</translation>
@@ -325,6 +330,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Výchozí</translation>
 <translation id="8798441408945964110">Název poskytovatele</translation>
+<translation id="880791622116642296">Údaj, kolikrát baterie prošla celým cyklem nabíjení</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Nápověda</translation>
 <translation id="8881098542468797602">Test byl úspěšný</translation>

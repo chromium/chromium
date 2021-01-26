@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">አግባቢ ፍኖት</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ከመቃኛ አካባቢ ጋር አመጣጥን</translation>
+<translation id="1387854245479784695">ይህ የሁሉም ኮሮች ድምር ነው</translation>
 <translation id="1397738625398125236">አግባቢ ፍኖት ፒንግ ሊደረግ ይችላል</translation>
 <translation id="1398634363027580500">በጣም ከፍተኛ የHTTPS የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="1413240736185167732">አልተሳካም - ማጣሪያ አልተሳካም</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">አልተሳካም - ያልታወቀ ስህተት</translation>
 <translation id="357889014807611375">የተመጠነ Wi-Fi</translation>
 <translation id="360565022852130722">የWiFi አውታረ መረብ ደህንነት በደካማ ፕሮቶኮል WEP 802.1x የተጠበቀ ነው</translation>
+<translation id="3712633734921637892">የሲፒዩ ፍጥነት በአሁኑ ጊዜ ባትሪውን ለማቆየት ወይም የሙቀት መጠንን ለመቀነስ የተወሰነ ነው</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ግምገማዎች)</translation>
 <translation id="3748026146096797577">አልተገናኘም</translation>
 <translation id="3749289110408117711">የፋይል ስም</translation>
@@ -230,6 +232,7 @@
 <translation id="6146993107019042706">ለማጠናቀቅ፣ የእርስዎን አዲስ የይለፍ ቃል ያስገቡ</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">የበለጠ ለመረዳት</translation>
+<translation id="6189418609903030344">የባትሪ አቅም ከአጠቃቀም ጋር እየቀነሰ ይሄዳል</translation>
 <translation id="6191293864534840972">የተበላሹ የስም አገልጋዮች</translation>
 <translation id="6232017090690406397">ባትሪ</translation>
 <translation id="6325525973963619867">አልተሳካም</translation>
@@ -327,6 +330,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">እንደወረደ</translation>
 <translation id="8798441408945964110">የአቅራቢ ስም</translation>
+<translation id="880791622116642296">ይህ ባትሪዎ ሙሉ የኃይል መሙያ ዑደት ውስጥ ያለፈበት ብዛት ነው</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">እገዛ ያግኙ</translation>
 <translation id="8881098542468797602">ሙከራ ተሳክቷል</translation>

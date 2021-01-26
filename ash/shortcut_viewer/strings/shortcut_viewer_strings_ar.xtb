@@ -23,7 +23,7 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">‏إضافة .www وcom. إلى الإدخال في شريط العناوين، ثم فتح الصفحة</translation>
-<translation id="1768987374400973299">التقاط/تسجيل الشاشة</translation>
+<translation id="1768987374400973299">تصوير/تسجيل الشاشة</translation>
 <translation id="1872219238824176091">إزالة المكتب الحالي</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />، ثم <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> أو <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">الانتقال إلى علامة التبويب التالية</translation>
@@ -111,7 +111,7 @@
 <translation id="4801989101741319327">الانتقال إلى نهاية الكلمة التالية</translation>
 <translation id="4866066940972151697">تفعيل المكتب على يسار الصفحة</translation>
 <translation id="4916163929714267752">فتح الرابط في نافذة جديدة</translation>
-<translation id="492453977506755176">مفتاح وضع الالتقاط</translation>
+<translation id="492453977506755176">مفتاح وضع تصوير الشاشة</translation>
 <translation id="5030659775136592441">عرض "مدير الإشارات"</translation>
 <translation id="5034421018520995080">الانتقال إلى أعلى الصفحة</translation>
 <translation id="5042305953558921026">مفتاح وضع النظرة العامة</translation>
@@ -134,7 +134,7 @@
 <translation id="5899919361772749550">عرض وحدة التحكُّم في "أدوات المطوِّرين" أو إخفاؤها</translation>
 <translation id="5919628958418675842">تشغيل شاشة الخصوصية أو إيقافها</translation>
 <translation id="5921745308587794300">تدوير النافذة</translation>
-<translation id="5926306472221400972">الحصول على لقطة بملء الشاشة</translation>
+<translation id="5926306472221400972">الحصول على لقطة لملء الشاشة</translation>
 <translation id="6022924867608035986">محو نص مربع البحث</translation>
 <translation id="6045998054441862242">تفعيل وضع التباين العالي</translation>
 <translation id="6052614013050385269">النقر بالزر الأيمن على رابط</translation>
@@ -152,7 +152,7 @@
 <translation id="6445033640292336367">إرجاع علامة التبويب إلى موضعها الأصلي</translation>
 <translation id="6474744297082284761">التصغير (عند تفعيل المكبّرات بملء الشاشة أو الإرساء)</translation>
 <translation id="649811797655257835">اختَر الملف، ثم اضغط على <ph name="SPACE" /></translation>
-<translation id="6551886416582667425">التقاط/تسجيل جزء من الشاشة</translation>
+<translation id="6551886416582667425">تصوير/تسجيل جزء من الشاشة</translation>
 <translation id="6556040137485212400">فَتحُ النافذة غير المُستخدمة للفترة الأطول</translation>
 <translation id="666343722268997814">النقر بالزر الأيمن لفتح قائمة العنصر المُحدَّد</translation>
 <translation id="6671538777808758331">الانتقال إلى المطابقة التالية للبحث</translation>

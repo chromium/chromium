@@ -257,6 +257,7 @@
 <translation id="3533436815740441613">新しいタブ</translation>
 <translation id="3551320343578183772">タブを閉じる</translation>
 <translation id="3581564640715911333">他の言語のページで翻訳するかどうかを尋ねる</translation>
+<translation id="3588492282865875287">ログアウトしますか？</translation>
 <translation id="3588820906588687999">新しいタブで画像を開く</translation>
 <translation id="359441731697487922">Chrome をデフォルトのブラウザアプリに設定すると、自動的に Chrome でリンクを開くことができます。
       
@@ -410,6 +411,7 @@
 <translation id="5317780077021120954">保存</translation>
 <translation id="5327248766486351172">名前</translation>
 <translation id="5339316356165661760">同期をオンにする</translation>
+<translation id="5351284593342054342">このデバイスから消去</translation>
 <translation id="5388358297987318779">画像を開く</translation>
 <translation id="5407969256130905701">変更を破棄</translation>
 <translation id="5409365236829784218">このファイルを開くアプリがインストールされていません。</translation>
@@ -465,6 +467,7 @@
 <translation id="5948291296578561264">フォト ライブラリに写真を保存します。</translation>
 <translation id="5955891643922670672">オフライン版を表示しています</translation>
 <translation id="5957613098218939406">その他のオプション</translation>
+<translation id="5961521066940389233">このデバイスに保存</translation>
 <translation id="5964480694698977962">新しいシークレット タブを作成。</translation>
 <translation id="5965679971710331625">ログイン中のアカウント</translation>
 <translation id="5979837087407522202">パスワードを検索</translation>
@@ -479,6 +482,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">ここで記事やアクティビティを管理します</translation>
 <translation id="6066301408025741299">タップしてキャンセルします。</translation>
+<translation id="6085282545406522838">同期データは Google アカウントに残ります。</translation>
 <translation id="6108923351542677676">設定しています...</translation>
 <translation id="6119050551270742952">現在シークレット モードです</translation>
 <translation id="6122191549521593678">オンライン</translation>
@@ -631,6 +635,7 @@
 <translation id="7514365320538308">ダウンロード</translation>
 <translation id="7537586195939242955">現在、Passbookにパスをインストールできません。</translation>
 <translation id="7554791636758816595">新しいタブ</translation>
+<translation id="7558943807639707687">このデバイスのブックマーク、履歴、その他のデータはどうしますか？</translation>
 <translation id="7561196759112975576">常に使用</translation>
 <translation id="7583004045319035904"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> を使用して、シークレット タブのロックを解除します。</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />を翻訳しない</translation>

@@ -668,6 +668,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6818242057446442178">Ett ord tilbake</translation>
 <translation id="6820676911989879663">Ta en pause!</translation>
 <translation id="6850010208275816200">Den nåværende appen er i fullskjerm. Hvis appen spør om passordet ditt, bør du gå ut av fullskjerm først.</translation>
+<translation id="6852052252232534364">Klikk for å aktivere</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> sek</translation>
 <translation id="6857811139397017780">Aktiver <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Ett siffer gjenstår}other{# sifre gjenstår}}</translation>
@@ -728,6 +729,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="742594950370306541">Kameraet er i bruk.</translation>
 <translation id="742608627846767349">God morgen</translation>
 <translation id="743058460480092004">Kameraet og mikrofonen er i bruk.</translation>
+<translation id="7434543979546293336">Merket som nøkkelidé</translation>
 <translation id="7452560014878697800">Et program bruker kameraet ditt</translation>
 <translation id="7456049842111127849">Opptaksmodus – standard er <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Fest</translation>

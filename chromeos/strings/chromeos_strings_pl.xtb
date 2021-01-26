@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Brama</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Dopasuj do obszaru skanowania</translation>
+<translation id="1387854245479784695">To łączne obciążenie wszystkich rdzeni</translation>
 <translation id="1397738625398125236">Brama reaguje na ping</translation>
 <translation id="1398634363027580500">bardzo duże opóźnienie HTTPS</translation>
 <translation id="1413240736185167732">Niepowodzenie – błąd filtra</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Niepowodzenie – nieznany błąd</translation>
 <translation id="357889014807611375">Wi-Fi z pomiarem użycia danych</translation>
 <translation id="360565022852130722">Sieć Wi-Fi jest zabezpieczona słabym protokołem WEP 802.1x</translation>
+<translation id="3712633734921637892">Szybkość procesora jest obecnie ograniczona, by oszczędzać baterię lub zmniejszyć temperaturę</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (liczba opinii: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Brak połączenia</translation>
 <translation id="3749289110408117711">Nazwa pliku</translation>
@@ -230,6 +232,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="6146993107019042706">Aby zakończyć, wpisz nowe hasło</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Dowiedz się więcej</translation>
+<translation id="6189418609903030344">Pojemność baterii zmniejsza się w miarę jej zużycia</translation>
 <translation id="6191293864534840972">Nieprawidłowe serwery nazw</translation>
 <translation id="6232017090690406397">Bateria</translation>
 <translation id="6325525973963619867">Niepowodzenie</translation>
@@ -327,6 +330,7 @@ Kliknij mikrofon i zadaj pytanie.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Domyślny</translation>
 <translation id="8798441408945964110">Nazwa dostawcy</translation>
+<translation id="880791622116642296">To jest liczba wykonanych pełnych cykli ładowania baterii</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Uzyskaj pomoc</translation>
 <translation id="8881098542468797602">Test zakończył się powodzeniem</translation>

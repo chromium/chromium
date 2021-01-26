@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">게이트웨이</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">스캔 영역에 맞춤</translation>
+<translation id="1387854245479784695">모든 코어에서 집계한 값입니다.</translation>
 <translation id="1397738625398125236">핑할 수 있는 게이트웨이</translation>
 <translation id="1398634363027580500">HTTPS 지연 시간 매우 높음</translation>
 <translation id="1413240736185167732">실패 - 필터링 실패</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">실패 - 알 수 없는 오류</translation>
 <translation id="357889014807611375">전송량 제한이 있는 Wi-Fi</translation>
 <translation id="360565022852130722">Wi-Fi 네트워크가 약한 프로토콜 WEP 802.1x로 보호되었습니다.</translation>
+<translation id="3712633734921637892">현재 배터리를 절약하거나 온도를 낮추기 위해 CPU 속도가 제한되었습니다.</translation>
 <translation id="3740976234706877572">★ <ph name="AVERAGE_SCORE" />개(리뷰 <ph name="AGGREGATED_COUNT" />개)</translation>
 <translation id="3748026146096797577">연결되어 있지 않음</translation>
 <translation id="3749289110408117711">파일 이름</translation>
@@ -230,6 +232,7 @@
 <translation id="6146993107019042706">완료하려면 새 비밀번호를 입력하세요.</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">자세히 알아보기</translation>
+<translation id="6189418609903030344">배터리 용량은 사용함에 따라 감소함</translation>
 <translation id="6191293864534840972">네임서버 형식이 잘못되었습니다.</translation>
 <translation id="6232017090690406397">배터리</translation>
 <translation id="6325525973963619867">실패</translation>
@@ -327,6 +330,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">기본값</translation>
 <translation id="8798441408945964110">공급자 이름</translation>
+<translation id="880791622116642296">배터리가 완전 방전 및 충전 사이클을 진행한 횟수입니다.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">도움말 보기</translation>
 <translation id="8881098542468797602">테스트 성공</translation>

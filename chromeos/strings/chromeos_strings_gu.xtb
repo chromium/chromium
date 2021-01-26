@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">ગેટવે</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">સ્કૅન કરી શકાય એટલી જગ્યામાં બંધબેસતું કરો</translation>
+<translation id="1387854245479784695">આ બધા કોરનો સરવાળો હોય છે</translation>
 <translation id="1397738625398125236">ગેટવેને પિંગ કરી શકાય છે</translation>
 <translation id="1398634363027580500">HTTPSની અતિ ઉચ્ચ વિલંબતા</translation>
 <translation id="1413240736185167732">નિષ્ફળ થયું - ફિલ્ટર નિષ્ફળ થયું</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">નિષ્ફળ થયું - અજાણી ભૂલ</translation>
 <translation id="357889014807611375">મીટર્ડ (ડેટા નિયંત્રણ) વાઇ-ફાઇ</translation>
 <translation id="360565022852130722">વાઇ-ફાઇ નેટવર્કની સુરક્ષા પ્રમાણમાં નબળા WEP 802.1x પ્રોટોકૉલ વડે કરવામાં આવી છે</translation>
+<translation id="3712633734921637892">અત્યારે બૅટરી સાચવવા અથવા તાપમાન ઘટાડવા માટે CPUની ઝડપ મર્યાદિત કરવામાં આવી છે</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> રિવ્યૂ)</translation>
 <translation id="3748026146096797577">કનેક્ટેડ નથી</translation>
 <translation id="3749289110408117711">ફાઇલનું નામ</translation>
@@ -205,6 +207,7 @@
 <translation id="5781694279199921985">સત્રનો લૉગ સાચવો</translation>
 <translation id="5797428682393400134">સફળ રહ્યું</translation>
 <translation id="5832805196449965646">વ્યક્તિ ઉમેરો</translation>
+<translation id="5844247382766192936"><ph name="TEST_NAME" />નું પરીક્ષણ રદ કરવામાં આવ્યું</translation>
 <translation id="5849570051105887917">હોમ પ્રદાતાનો કોડ</translation>
 <translation id="5866840822086176774">ખૂબ સશક્ત</translation>
 <translation id="5895138241574237353">પુનઃપ્રારંભ કરો</translation>
@@ -228,6 +231,7 @@
 <translation id="6146993107019042706">સમાપ્ત કરવા માટે, તમારો નવો પાસવર્ડ દાખલ કરો</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">વધુ જાણો</translation>
+<translation id="6189418609903030344">વપરાશની સાથે જ બૅટરીની ક્ષમતા ઘટવા લાગે છે</translation>
 <translation id="6191293864534840972">અયોગ્ય ફોર્મેટ ધરાવતા નામ સર્વર</translation>
 <translation id="6232017090690406397">બૅટરી</translation>
 <translation id="6325525973963619867">નિષ્ફળ થયું</translation>
@@ -258,6 +262,7 @@
 <translation id="6977381486153291903">ફર્મવેયર પુનરાવર્તન</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> આ ડિવાઇસને મેનેજ કરે છે અને મુલાકાત લીધેલા વેબપેજ, પાસવર્ડ અને ઇમેઇલ સહિત, બધી વપરાશકર્તા પ્રવૃત્તિઓનો ઍક્સેસ ધરાવે છે.</translation>
 <translation id="7040230719604914234">ઑપરેટર</translation>
+<translation id="708426984172631313">રોકવામાં આવ્યું</translation>
 <translation id="7143207342074048698">કનેક્ટિંગ</translation>
 <translation id="714876143603641390">LAN કનેક્ટિવિટી</translation>
 <translation id="7162487448488904999">Gallery</translation>
@@ -324,6 +329,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ડિફૉલ્ટ</translation>
 <translation id="8798441408945964110">પ્રદાતાનું નામ</translation>
+<translation id="880791622116642296">આટલી વાર તમારી બૅટરી પૂર્ણ ચાર્જિંગ સાયકલમાંથી પસાર થઈ છે</translation>
 <translation id="8814190375133053267">વાઇ-ફાઇ</translation>
 <translation id="8845001906332463065">સહાય મેળવો</translation>
 <translation id="8881098542468797602">પરીક્ષણ સફળ થયું</translation>

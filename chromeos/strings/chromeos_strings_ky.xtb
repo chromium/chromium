@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Шлюз</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Скандоо аймагы боюнча</translation>
+<translation id="1387854245479784695">Бул бардык зымдардын бириктирилген жери болуп эсептелет</translation>
 <translation id="1397738625398125236">Шлюздун байланышын текшерүүгө болот</translation>
 <translation id="1398634363027580500">HTTPS күтүү убакыты өтө жогору</translation>
 <translation id="1413240736185167732">Басылып чыгарылган жок - Чыпка иштебей калды</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Басылып чыгарылган жок - Белгисиз ката</translation>
 <translation id="357889014807611375">чектелген Wi-Fi</translation>
 <translation id="360565022852130722">WiFi тармагынын WEP 802.1x протоколунун коопсуздугу начар</translation>
+<translation id="3712633734921637892">Батареяны үнөмдөө же температураны төмөндөтүү үчүн процессордун ылдамдыгы чектелди</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> сын-пикир)</translation>
 <translation id="3748026146096797577">Интернет жок</translation>
 <translation id="3749289110408117711">Файлдын аталышы</translation>
@@ -230,6 +232,7 @@
 <translation id="6146993107019042706">Бүтүрүү үчүн жаңы сырсөздү киргизиңиз</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Кошумча маалымат</translation>
+<translation id="6189418609903030344">Батарея колдонулган сайын анын сыйымдуулугу төмөндөйт</translation>
 <translation id="6191293864534840972">Бурмаланган ысым серверлери</translation>
 <translation id="6232017090690406397">Батарея</translation>
 <translation id="6325525973963619867">Аткарылган жок</translation>
@@ -327,6 +330,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Демейки</translation>
 <translation id="8798441408945964110">Жабдуучунун аталышы</translation>
+<translation id="880791622116642296">Батарея толук кубатталган циклдердин саны</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Жардам алуу</translation>
 <translation id="8881098542468797602">Ийгиликтүү сыналды</translation>

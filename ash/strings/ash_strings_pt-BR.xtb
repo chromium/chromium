@@ -365,7 +365,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="4072264167173457037">Sinal médio</translation>
 <translation id="4112140312785995938">Retroceder</translation>
 <translation id="4114315158543974537">Ativar o Phone Hub</translation>
-<translation id="412298498316631026">janela</translation>
+<translation id="412298498316631026">da janela</translation>
 <translation id="4129129681837227511">Para ver as notificações na sua tela de bloqueio, desbloqueie a tela e altere a configuração</translation>
 <translation id="4146833061457621061">Ouvir música</translation>
 <translation id="4157822100366708405">Configurações do tema escuro</translation>
@@ -668,6 +668,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="6818242057446442178">Voltar por palavra</translation>
 <translation id="6820676911989879663">Faça uma pausa</translation>
 <translation id="6850010208275816200">O app atual está no modo tela cheia. Se o app pedir sua senha, saia da tela cheia antes de digitá-la.</translation>
+<translation id="6852052252232534364">Clique para ativar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> segundos</translation>
 <translation id="6857811139397017780">Ativar <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 dígito restante}one{# dígito restante}other{# dígitos restantes}}</translation>
@@ -728,6 +729,7 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="742594950370306541">A câmera está em uso.</translation>
 <translation id="742608627846767349">Bom dia,</translation>
 <translation id="743058460480092004">A câmera e o microfone estão em uso.</translation>
+<translation id="7434543979546293336">Marcado como ideia importante</translation>
 <translation id="7452560014878697800">Um aplicativo está usando a câmera</translation>
 <translation id="7456049842111127849">O padrão do modo de captura é <ph name="TYPE" /> <ph name="SOURCE" />.</translation>
 <translation id="7461924472993315131">Fixar</translation>

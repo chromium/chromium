@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Πύλη</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Προσαρμογή στην περιοχή σάρωσης</translation>
+<translation id="1387854245479784695">Αυτή είναι μια αθροιστική προβολή όλων των πυρήνων</translation>
 <translation id="1397738625398125236">Η πύλη λαμβάνει ping</translation>
 <translation id="1398634363027580500">Πολύ μεγάλος λανθάνων χρόνος HTTPS</translation>
 <translation id="1413240736185167732">Σφάλμα - Πρόβλημα φίλτρου</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Σφάλμα - Άγνωστο σφάλμα</translation>
 <translation id="357889014807611375">Wi-Fi με ογκοχρέωση</translation>
 <translation id="360565022852130722">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε αδύναμο πρωτόκολλο WEP 802.1x.</translation>
+<translation id="3712633734921637892">Προς το παρόν, η ταχύτητα της CPU περιορίζεται για εξοικονόμηση μπαταρίας ή μείωση της θερμοκρασίας</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> αξιολογήσεις)</translation>
 <translation id="3748026146096797577">Εκτός σύνδεσης</translation>
 <translation id="3749289110408117711">Όνομα αρχείου</translation>
@@ -230,6 +232,7 @@
 <translation id="6146993107019042706">Για να ολοκληρώσετε, εισαγάγετε τον νέο κωδικό πρόσβασης</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Μάθετε περισσότερα</translation>
+<translation id="6189418609903030344">Η χωρητικότητα της μπαταρίας μειώνεται με τη χρήση</translation>
 <translation id="6191293864534840972">Τα ονόματα διακομιστών έχουν λανθασμένη μορφή.</translation>
 <translation id="6232017090690406397">Μπαταρία</translation>
 <translation id="6325525973963619867">Απέτυχε</translation>
@@ -327,6 +330,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Προεπιλογή</translation>
 <translation id="8798441408945964110">Όνομα παρόχου</translation>
+<translation id="880791622116642296">Αυτός είναι ο αριθμός των φορών που η μπαταρία σας ολοκλήρωσε έναν πλήρη κύκλο φόρτισης</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Λήψη βοήθειας</translation>
 <translation id="8881098542468797602">Επιτυχία δοκιμής</translation>

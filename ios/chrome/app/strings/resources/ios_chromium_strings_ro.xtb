@@ -71,6 +71,7 @@
 <translation id="7890287942691234100">Începe să folosești scanerul din Chromium</translation>
 <translation id="8013573822802650211">Conectează-te pe toate dispozitivele ca să vezi toate filele tale deschise în Chromium</translation>
 <translation id="8073677936375100957">Ștergi datele tale Chromium de pe dispozitiv?</translation>
+<translation id="8097322092271030751">Deoarece contul tău este gestionat de <ph name="HOSTED_DOMAIN" />, datele Chromium vor fi șterse de pe acest dispozitiv când te deconectezi. Datele sincronizate se vor păstra în Contul Google.</translation>
 <translation id="8175055321229419309">Sfat: <ph name="BEGIN_LINK" />mută Chromium în bara de andocare<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Pentru a seta Chromium ca browser prestabilit, deschide Setări, atinge Aplicația browser prestabilită și selectează Chromium.</translation>
 <translation id="8240981428553046115">Chromium nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>

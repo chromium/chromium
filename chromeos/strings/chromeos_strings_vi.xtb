@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Cổng vào</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Vừa với vùng quét</translation>
+<translation id="1387854245479784695">Đây là số liệu tổng hợp của tất cả lõi</translation>
 <translation id="1397738625398125236">Có thể ping cổng vào</translation>
 <translation id="1398634363027580500">Yêu cầu HTTPS có độ trễ rất cao</translation>
 <translation id="1413240736185167732">Không thành công – Không lọc được</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Không thành công – Lỗi không xác định</translation>
 <translation id="357889014807611375">mạng Wi‑Fi có giới hạn dữ liệu</translation>
 <translation id="360565022852130722">Mạng Wi-Fi được bảo mật bằng giao thức yếu WEP 802.1x</translation>
+<translation id="3712633734921637892">Tốc độ CPU đang bị hạn chế để tiết kiệm pin hoặc giảm nhiệt độ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> bài đánh giá)</translation>
 <translation id="3748026146096797577">Chưa được kết nối</translation>
 <translation id="3749289110408117711">Tên tệp</translation>
@@ -230,6 +232,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="6146993107019042706">Để hoàn tất, hãy nhập mật khẩu mới của bạn</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Tìm hiểu thêm</translation>
+<translation id="6189418609903030344">Dung lượng pin sụt giảm theo mức sử dụng</translation>
 <translation id="6191293864534840972">Máy chủ định danh không hợp lệ</translation>
 <translation id="6232017090690406397">Pin</translation>
 <translation id="6325525973963619867">Lỗi</translation>
@@ -327,6 +330,7 @@ Hãy thử nhấn vào micrô để hỏi tôi bất cứ điều gì.</translat
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Mặc định</translation>
 <translation id="8798441408945964110">Tên nhà mạng</translation>
+<translation id="880791622116642296">Đây là số lần pin của bạn được sạc đầy</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Nhận trợ giúp</translation>
 <translation id="8881098542468797602">Đã kiểm tra thành công</translation>
