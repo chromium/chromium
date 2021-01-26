@@ -11,7 +11,7 @@
       "ozone_platform_wayland": true,
       "ozone_platform_x11": false,
       "rtc_use_pipewire": false,
-      "target_os": "linux",
+      "target_os": "chromeos",
       "use_custom_libcxx": false,
       "use_custom_libcxx_for_host": true,
       "use_evdev_gestures": false,
