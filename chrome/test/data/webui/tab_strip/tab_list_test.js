@@ -978,4 +978,12 @@ suite('TabList', () => {
     tabList.shadowRoot.querySelector('#newTabButton').click();
     return testTabsApiProxy.whenCalled('createNewTab');
   });
+
+  test('PreventsDraggingWhenOnlyOneTab', () => {
+    assertFalse(tabList.shouldPreventDrag());
+    const tabElements = getUnpinnedTabs();
+    tabElements[1].remove();
+    tabElements[2].remove();
+    assertTrue(tabList.shouldPreventDrag());
+  });
 });

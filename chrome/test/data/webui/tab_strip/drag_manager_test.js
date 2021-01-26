@@ -36,6 +36,10 @@ class MockDelegate extends HTMLElement {
     element.remove();
     this.insertBefore(element, this.children[index]);
   }
+
+  shouldPreventDrag() {
+    return false;
+  }
 }
 customElements.define('mock-delegate', MockDelegate);
 
@@ -745,5 +749,27 @@ suite('DragManager', () => {
     dataTransfer.dropEffect = 'none';
     delegate.dispatchEvent(new DragEvent('dragend', {dataTransfer}));
     assertFalse(draggedTab.isDraggedOut());
+  });
+
+  test('DragIsPrevented', () => {
+    // Mock the delegate to return true for shouldPreventDrag.
+    delegate.shouldPreventDrag = () => true;
+
+    const draggedTab = delegate.children[0];
+    let isDefaultPrevented = false;
+    delegate.addEventListener('dragstart', e => {
+      isDefaultPrevented = e.defaultPrevented;
+    });
+
+    const dataTransfer = new MockDataTransfer();
+    draggedTab.dispatchEvent(new DragEvent('dragstart', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,
+      clientX: 100,
+      clientY: 150,
+      dataTransfer,
+    }));
+    assertTrue(isDefaultPrevented);
   });
 });

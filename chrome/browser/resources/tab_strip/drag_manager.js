@@ -82,6 +82,9 @@ export class DragManagerDelegate {
    * @param {number} index
    */
   placeTabGroupElement(element, index) {}
+
+  /** @return {boolean} */
+  shouldPreventDrag() {}
 }
 
 /** @typedef {!DragManagerDelegate|!HTMLElement} */
@@ -536,6 +539,11 @@ export class DragManager {
 
   /** @param {!DragEvent} event */
   onDragStart_(event) {
+    if (this.delegate_.shouldPreventDrag()) {
+      event.preventDefault();
+      return;
+    }
+
     const draggedItem =
         /** @type {!Array<!Element>} */ (event.composedPath()).find(item => {
           return isTabElement(item) || isTabGroupElement(item);

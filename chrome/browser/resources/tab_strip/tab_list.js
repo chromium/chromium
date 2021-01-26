@@ -848,6 +848,11 @@ export class TabListElement extends CustomElement {
     this.animateScrollPosition_(scrollBy);
   }
 
+  /** @return {boolean} */
+  shouldPreventDrag() {
+    return this.$all('tabstrip-tab').length === 1;
+  }
+
   /**
    * @param {number} tabId
    * @param {string} imgData
