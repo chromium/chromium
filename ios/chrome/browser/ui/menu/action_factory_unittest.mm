@@ -27,8 +27,6 @@
 #error "This file requires ARC support."
 #endif
 
-#if defined(__IPHONE_13_0)
-
 namespace {
 MenuScenario kTestMenuScenario = MenuScenario::kHistoryEntry;
 }  // namespace
@@ -395,5 +393,3 @@ TEST_F(ActionFactoryTest, OpenWithJavaScript) {
     EXPECT_EQ(expectedImage, actionWithBlock.image);
   }
 }
-
-#endif  // defined(__IPHONE_13_0)
