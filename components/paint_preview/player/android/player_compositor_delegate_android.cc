@@ -283,7 +283,8 @@ void PlayerCompositorDelegateAndroid::OnBitmapCallback(
       sk_bitmap.computeByteSize());
 
   if (status != mojom::PaintPreviewCompositor::BitmapStatus::kSuccess ||
-      sk_bitmap.isNull()) {
+      sk_bitmap.isNull() || sk_bitmap.info().width() <= 0 ||
+      sk_bitmap.info().height() <= 0) {
     base::android::RunRunnableAndroid(j_error_callback);
     return;
   }
