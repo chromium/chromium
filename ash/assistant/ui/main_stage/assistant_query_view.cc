@@ -15,7 +15,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
 
 namespace ash {
 
@@ -24,16 +24,20 @@ namespace {
 // Appearance.
 constexpr int kLineHeightDip = 24;
 constexpr int kMaxWidthDip = 376;
-constexpr int kMinHeightDip = 32;
+constexpr int kHeightDip = 32;
 
 // Helpers ---------------------------------------------------------------------
 
-views::StyledLabel::RangeStyleInfo CreateStyleInfo(SkColor color) {
-  views::StyledLabel::RangeStyleInfo style;
-  style.custom_font =
-      assistant::ui::GetDefaultFontList().DeriveWithSizeDelta(2);
-  style.override_color = color;
-  return style;
+std::unique_ptr<views::Label> CreateLabel(SkColor color) {
+  auto label = std::make_unique<views::Label>();
+  label->SetAutoColorReadabilityEnabled(false);
+  label->SetLineHeight(kLineHeightDip);
+  label->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+  label->SetFontList(
+      assistant::ui::GetDefaultFontList().DeriveWithSizeDelta(2));
+  label->SetEnabledColor(color);
+  label->SetElideBehavior(gfx::ElideBehavior::ELIDE_HEAD);
+  return label;
 }
 
 }  // namespace
@@ -57,34 +61,32 @@ gfx::Size AssistantQueryView::CalculatePreferredSize() const {
 }
 
 int AssistantQueryView::GetHeightForWidth(int width) const {
-  return std::max(views::View::GetHeightForWidth(width), kMinHeightDip);
-}
-
-void AssistantQueryView::ChildPreferredSizeChanged(views::View* child) {
-  PreferredSizeChanged();
-}
-
-void AssistantQueryView::OnBoundsChanged(const gfx::Rect& prev_bounds) {
-  label_->SizeToFit(width());
+  return kHeightDip;
 }
 
 void AssistantQueryView::InitLayout() {
-  views::BoxLayout* layout_manager =
-      SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical));
+  views::FlexLayout* layout_manager =
+      SetLayoutManager(std::make_unique<views::FlexLayout>());
 
-  layout_manager->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kCenter);
+  layout_manager->SetOrientation(views::LayoutOrientation::kHorizontal);
+  layout_manager->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  layout_manager->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
-  layout_manager->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kStretch);
+  // Labels
+  high_confidence_label_ = AddChildView(CreateLabel(kTextColorPrimary));
 
-  // Label.
-  label_ = AddChildView(std::make_unique<views::StyledLabel>());
-  label_->SetAutoColorReadabilityEnabled(false);
-  label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
-  label_->SetLineHeight(kLineHeightDip);
-  label_->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
+  high_confidence_label_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(2));
+
+  low_confidence_label_ = AddChildView(CreateLabel(kTextColorSecondary));
+  low_confidence_label_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(1));
 }
 
 void AssistantQueryView::SetQuery(const AssistantQuery& query) {
@@ -110,34 +112,18 @@ void AssistantQueryView::SetQuery(const AssistantQuery& query) {
 
 void AssistantQueryView::SetText(const std::string& high_confidence_text,
                                  const std::string& low_confidence_text) {
-  if (high_confidence_text.empty() && low_confidence_text.empty()) {
-    label_->SetText(base::string16());
-  } else {
-    // When coming from the server, both |high_confidence_text| and
-    // |low_confidence_text| may be HTML escaped, so we need to unescape both
-    // before displaying to avoid printing HTML entities to the user.
-    const base::string16& high_confidence_text_16 =
-        net::UnescapeForHTML(base::UTF8ToUTF16(high_confidence_text));
+  // When coming from the server, both |high_confidence_text| and
+  // |low_confidence_text| may be HTML escaped, so we need to unescape both
+  // before displaying to avoid printing HTML entities to the user.
+  const base::string16& high_confidence_text_16 =
+      net::UnescapeForHTML(base::UTF8ToUTF16(high_confidence_text));
 
-    const base::string16& low_confidence_text_16 =
-        net::UnescapeForHTML(base::UTF8ToUTF16(low_confidence_text));
+  high_confidence_label_->SetText(high_confidence_text_16);
 
-    label_->SetText(high_confidence_text_16 + low_confidence_text_16);
+  const base::string16& low_confidence_text_16 =
+      net::UnescapeForHTML(base::UTF8ToUTF16(low_confidence_text));
 
-    // Style high confidence text.
-    if (!high_confidence_text_16.empty()) {
-      label_->AddStyleRange(gfx::Range(0, high_confidence_text_16.length()),
-                            CreateStyleInfo(kTextColorPrimary));
-    }
-
-    // Style low confidence text.
-    if (!low_confidence_text_16.empty()) {
-      label_->AddStyleRange(gfx::Range(high_confidence_text_16.length(),
-                                       high_confidence_text_16.length() +
-                                           low_confidence_text_16.length()),
-                            CreateStyleInfo(kTextColorSecondary));
-    }
-  }
+  low_confidence_label_->SetText(low_confidence_text_16);
 }
 
 }  // namespace ash
