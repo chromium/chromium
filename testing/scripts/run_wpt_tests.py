@@ -61,7 +61,7 @@ class WPTTestAdapter(wpt_common.BaseWptScriptAdapter):
 
         # Here we add all of the arguments required to run WPT tests on Chrome.
         rest_args.extend([
-            "../../third_party/wpt_tools/wpt/wpt",
+            "../../third_party/blink/tools/blinkpy/third_party/wpt/wpt/wpt",
             "--venv=../../",
             "--skip-venv-setup",
             # TODO(crbug.com/1166741): We should be running WPT under Python 3.

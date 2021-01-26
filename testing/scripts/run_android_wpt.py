@@ -14,7 +14,7 @@ executable directly rather than using python run_android_wpt.py so that
 WPT dependencies in Chromium vpython are found.
 
 If you need more advanced test control, please use the runner located at
-//third_party/wpt_tools/wpt/wpt.
+//third_party/blink/tools/blinkpy/third_party/wpt/wpt/wpt.
 
 Here's the mapping [isolate script flag] : [wpt flag]
 --isolated-script-test-output : --log-chromium
@@ -45,7 +45,7 @@ BLINK_TOOLS_DIR = os.path.join(
     SRC_DIR, 'third_party', 'blink', 'tools')
 CATAPULT_DIR = os.path.join(SRC_DIR, 'third_party', 'catapult')
 DEFAULT_WPT = os.path.join(
-    SRC_DIR, 'third_party', 'wpt_tools', 'wpt', 'wpt')
+    BLINK_TOOLS_DIR, 'blinkpy', 'third_party', 'wpt', 'wpt', 'wpt')
 PYUTILS = os.path.join(CATAPULT_DIR, 'common', 'py_utils')
 
 if PYUTILS not in sys.path:

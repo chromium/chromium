@@ -1,4 +1,4 @@
-# W3C Web Platform Tests in Blink Web Tests
+W3C Web Platform Tests in Blink Web Tests
 
 Design Doc: https://goo.gl/iXUaZd
 
@@ -6,7 +6,11 @@ This directory contains checked out and reduced code from web-platform-tests
 (https://github.com/web-platform-tests/wpt/) required to run WPT tests as part
 of Blink's test infrastructure and some maintenance/configuration code.
 
-For licensing, see README.chromium
+The third party code lives entirely in the wpt subdirectory:
+tools/blinkpy/third_party/wpt/wpt
+
+For licensing, see README.chromium in parent directory
+(tools/blinkpy/third_party/README.chromium).
 
 **
 
@@ -14,10 +18,6 @@ Files in this directory (non third-party)
 
 README.chromium
 ===============
-Parseable details on the project name, URL, license, etc.
-
-README.md
-=========
 This file.
 
 wpt.config.json
@@ -33,10 +33,10 @@ changing the ports (HTTP/S, WS/S), make sure to also:
 checkout.sh
 ===========
 Running this script without arguments will remove the existing checkout
-(//third_party/wpt_tools/wpt) and perform a fresh one. See "Rolling in WPT".
+(third_party/wpt/wpt) and perform a fresh one. See "Rolling in WPT" for more.
 
 WPTIncludeList
-==============
+============
 The explicit list of files being kept, everything else not on this list is
 deleted when running "./checkout.sh reduce". Use this file to control what gets
 checked in and try to keep the list as small as possible (use what you need).
@@ -61,14 +61,15 @@ re-generate them:
 3. Look at the "Not After" date in the output of the command, and update
   "January 2025" in this document and expiration_date in wptserve.py to new
   expiration date.
-4. Update certs/127.0.0.1.sxg.\*.
+4. Update certs/127.0.0.1.sxg.*.
   Please refer to
-  //third_party/blink/web_tests/http/tests/loading/sxg/resources/README.md
+  third_party/blink/web_tests/http/tests/loading/sxg/resources/README.md
 5. git commit
 6. git cl upload, etc.
 
+**
+
 Rolling in WPT
-==============
 
 If there are new files that need to be rolled in, add the intended files to
 the WPTIncludeList. Ensure these files are in the correct order by running
@@ -79,10 +80,10 @@ the desired HEAD position. You can then call "./checkout.sh clone" which will
 pull in all the code.
 
 It is also important to update the hashes in the 'Version:' fields of
-//third_party/wpt_tools/README.chromium. While you're in this file, look at the
-"Local Modifications" section which lists ways in which Chromium has diverged
-from WPT. Make sure these modifications are persisted when reviewing the changes
-being made.
+tools/blinkpy/third_party/README.chromium. While you're in this file, look at
+the "Local Modifications" section which lists ways in which Chromium has
+diverged from WPT. Make sure these modifications are persisted when reviewing
+the changes being made.
 
 You can examine what's pulled in and update WPTIncludeList if some new files are
 required to run the updated version.
@@ -93,8 +94,9 @@ remove everything that is not listed in WPTIncludeList.
 Note that calling "./checkout.sh" without arguments is equivalent of calling
 "./checkout.sh clone reduce".
 
+**
+
 Configuration
-=============
 
 Read instructions in WPT README:
 https://github.com/web-platform-tests/wpt/blob/master/README.md
@@ -103,10 +105,11 @@ Also, check out the WPTServe Documentation
 (https://wptserve.readthedocs.org/en/latest/).
 
 Note that editing /etc/hosts is not required for run_web_tests.py since
-content_shell is invoked with flags to map all \*.test domains to 127.0.0.1.
+content_shell is invoked with flags to map all *.test domains to 127.0.0.1.
+
+**
 
 Running web-platform-tests with enabled WPTServe on a local machine
-===================================================================
 
 WPTServe is now enabled by default in run_web_tests.py for tests that live in
 web_tests/external/wpt.

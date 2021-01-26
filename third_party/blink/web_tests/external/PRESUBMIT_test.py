@@ -23,7 +23,6 @@ class MockInputApi(object):
         self.is_windows = sys.platform == 'win32'
         self.environ = os.environ
         self.logging = PrintLogger()
-        self.change = MockChange()
 
     def AbsoluteLocalPaths(self):
         return self.affected_paths
@@ -34,14 +33,6 @@ class MockInputApi(object):
     def AffectedSourceFiles(self, filter_func):
         all_files = [MockFile(self.PresubmitLocalPath(), path) for path in self.affected_paths]
         return filter(lambda f: filter_func(f), all_files)
-
-
-class MockChange(object):
-    """A minimal mock Change for our checks."""
-
-    def RepositoryRoot(self):
-        here = os.path.dirname(__file__)
-        return os.path.abspath(os.path.join(here, '..', '..', '..', '..'))
 
 
 class PrintLogger(object):

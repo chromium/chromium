@@ -18,3 +18,18 @@ Description: Used during presubmit checks and via lint_blinkpy.py.
     stylistic issues that pylint doesn't (e.g., warning about blank lines,
     various whitespace issues, etc.).
 Local Modifications: None
+
+Name: web-platform-tests - Test Suites for Web Platform specifications
+Short Name: wpt
+URL: https://github.com/web-platform-tests/wpt/
+Version: 79d2debce531d115566192dccf70f5d8fb9ced53
+License: LICENSES FOR W3C TEST SUITES (https://www.w3.org/Consortium/Legal/2008/03-bsd-license.html)
+License File: wpt/wpt/LICENSE.md
+Security Critical: no
+Description: This includes code for the manifest tool, lint tool, and wptserve.
+    Used to run all supported web-platform-tests as part of Blink
+    web tests. The wpt/wpt directory only contains the tools, whereas
+    web_tests/external/wpt contains the tests. Also see wpt/README.chromium
+    for more details on maintenance.
+Local Modifications:
+- Removed all files except for those listed in wpt/WPTIncludeList.

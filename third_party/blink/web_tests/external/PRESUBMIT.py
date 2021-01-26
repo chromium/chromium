@@ -38,9 +38,8 @@ def _LintWPT(input_api, output_api):
     information about the lint tool.
     """
     wpt_path = input_api.os_path.join(input_api.PresubmitLocalPath(), 'wpt')
-    linter_path = input_api.os_path.join(input_api.change.RepositoryRoot(),
-                                         'third_party', 'wpt_tools', 'wpt',
-                                         'wpt')
+    linter_path = input_api.os_path.join(input_api.PresubmitLocalPath(), '..', '..', 'tools', 'blinkpy', 'third_party', 'wpt',
+                                         'wpt', 'wpt')
 
     paths_in_wpt = []
     for abs_path in input_api.AbsoluteLocalPaths():
