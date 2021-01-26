@@ -58,13 +58,6 @@ bool IsCornerFineTunePosition(FineTunePosition position) {
   return false;
 }
 
-bool ShouldHideDragAffordance(FineTunePosition position) {
-  // Do not show affordance circles when repositioning the whole region or if
-  // resizing on a corner.
-  return position == FineTunePosition::kCenter ||
-         IsCornerFineTunePosition(position);
-}
-
 void SetStopRecordingButtonVisibility(aura::Window* root, bool visible) {
   DCHECK(root);
   DCHECK(root->IsRootWindow());

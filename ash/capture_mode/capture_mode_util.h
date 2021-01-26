@@ -30,9 +30,6 @@ ASH_EXPORT gfx::Point GetLocationForFineTunePosition(const gfx::Rect& rect,
 // Return whether |position| is a corner.
 bool IsCornerFineTunePosition(FineTunePosition position);
 
-// Return whether drag affordance circles should be hidden.
-bool ShouldHideDragAffordance(FineTunePosition position);
-
 // Sets the visibility of the stop-recording button in the Shelf's status area
 // widget of the given |root| window.
 void SetStopRecordingButtonVisibility(aura::Window* root, bool visible);
