@@ -108,6 +108,69 @@ TEST_F(QuotaSettingsTest, Default) {
   EXPECT_EQ(settings->per_host_quota, 1200);
 }
 
+TEST_F(QuotaSettingsTest, FeatureParamsWithLargeFixedQuota) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kStorageQuotaSettings, {{"MustRemainAvailableBytes", "500"},
+                                        {"MustRemainAvailableRatio", "0.01"},
+                                        {"PoolSizeBytes", "2000"},
+                                        {"PoolSizeRatio", "0.8"},
+                                        {"ShouldRemainAvailableBytes", "600"},
+                                        {"ShouldRemainAvailableRatio", "0.1"}});
+
+  MockQuotaDeviceInfoHelper device_info_helper;
+  ON_CALL(device_info_helper, AmountOfTotalDiskSpace(_))
+      .WillByDefault(::testing::Return(2000));
+
+  base::Optional<QuotaSettings> settings =
+      GetSettings(false, &device_info_helper);
+  ASSERT_TRUE(settings.has_value());
+
+  EXPECT_EQ(settings->pool_size, 1600);
+  EXPECT_EQ(settings->must_remain_available, 20);
+  EXPECT_EQ(settings->should_remain_available, 200);
+}
+
+TEST_F(QuotaSettingsTest, FeatureParamsWithSmallFixedQuota) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kStorageQuotaSettings, {{"MustRemainAvailableBytes", "5"},
+                                        {"MustRemainAvailableRatio", "0.01"},
+                                        {"PoolSizeBytes", "20"},
+                                        {"PoolSizeRatio", "0.8"},
+                                        {"ShouldRemainAvailableBytes", "60"},
+                                        {"ShouldRemainAvailableRatio", "0.1"}});
+
+  MockQuotaDeviceInfoHelper device_info_helper;
+  ON_CALL(device_info_helper, AmountOfTotalDiskSpace(_))
+      .WillByDefault(::testing::Return(2000));
+
+  base::Optional<QuotaSettings> settings =
+      GetSettings(false, &device_info_helper);
+  ASSERT_TRUE(settings.has_value());
+
+  EXPECT_EQ(settings->pool_size, 20);
+  EXPECT_EQ(settings->must_remain_available, 5);
+  EXPECT_EQ(settings->should_remain_available, 60);
+}
+
+TEST_F(QuotaSettingsTest, FeatureParamsWithoutFixedQuota) {
+  scoped_feature_list_.InitAndEnableFeatureWithParameters(
+      features::kStorageQuotaSettings, {{"MustRemainAvailableRatio", "0.01"},
+                                        {"PoolSizeRatio", "0.8"},
+                                        {"ShouldRemainAvailableRatio", "0.1"}});
+
+  MockQuotaDeviceInfoHelper device_info_helper;
+  ON_CALL(device_info_helper, AmountOfTotalDiskSpace(_))
+      .WillByDefault(::testing::Return(2000));
+
+  base::Optional<QuotaSettings> settings =
+      GetSettings(false, &device_info_helper);
+  ASSERT_TRUE(settings.has_value());
+
+  EXPECT_EQ(settings->pool_size, 1600);
+  EXPECT_EQ(settings->must_remain_available, 20);
+  EXPECT_EQ(settings->should_remain_available, 200);
+}
+
 TEST_F(QuotaSettingsIncognitoTest, IncognitoDynamicQuota_LowPhysicalMemory) {
   const int expected_device_info_calls = 1;
 
