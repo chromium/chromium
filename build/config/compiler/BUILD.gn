@@ -2369,9 +2369,8 @@ config("symbols") {
     asmflags = cflags
     ldflags = []
 
-    # Split debug info with all thinlto builds except nacl and apple.
-    # thinlto requires -gsplit-dwarf in ldflags.
-    if (use_debug_fission && use_thin_lto && !is_nacl && !is_apple) {
+    # TODO(agrieve): Not sure why this is Android-specific.
+    if (use_debug_fission && use_thin_lto && is_android) {
       ldflags += [ "-gsplit-dwarf" ]
     }
 
@@ -2446,9 +2445,7 @@ config("minimal_symbols") {
       cflags += [ "-fdebug-info-for-profiling" ]
     }
 
-    # Note: debug_fission is no-op with symbol_level=1 since all -g1 debug_info
-    # will stay in the executable.
-
+    # Note: -gsplit-dwarf implicitly turns on -g2 with clang, so don't pass it.
     asmflags = cflags
   }
 }
