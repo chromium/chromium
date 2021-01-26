@@ -94,16 +94,12 @@ class PlatformSensorProviderChromeOSTest : public ::testing::Test {
     return sensor;
   }
 
-  void StartConnection() {
+  void RegisterSensorHalServer() {
+    // MojoConnectionServiceProvider::BootstrapMojoConnectionForIioService is
+    // responsible for calling this outside unit tests.
+    // This will eventually call PlatformSensorProviderChromeOS::SetUpChannel().
     chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
         sensor_hal_server_->PassRemote());
-  }
-
-  void ResetClient() {
-    // Similar to provider_->OnSensorHalClientFailure, but without the delay.
-    provider_->ResetSensorService();
-    provider_->sensor_hal_client_.reset();
-    provider_->RegisterSensorClient();
   }
 
   std::unique_ptr<chromeos::sensors::FakeSensorHalServer> sensor_hal_server_;
@@ -141,7 +137,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, CheckUnsupportedTypes) {
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationBase);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
 
@@ -156,7 +152,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, MissingScale) {
   AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::ACCEL,
             /*scale=*/base::nullopt, chromeos::sensors::mojom::kLocationBase);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_FALSE(CreateSensor(mojom::SensorType::ACCELEROMETER));
 }
@@ -166,7 +162,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, MissingLocation) {
             base::NumberToString(kScaleValue),
             /*location=*/base::nullopt);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_FALSE(CreateSensor(mojom::SensorType::ACCELEROMETER));
 }
@@ -175,7 +171,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, WrongScale) {
   AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::ACCEL,
             kWrongScale, chromeos::sensors::mojom::kLocationBase);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_FALSE(CreateSensor(mojom::SensorType::ACCELEROMETER));
 }
@@ -184,7 +180,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, WrongLocation) {
   AddDevice(kFakeDeviceId, chromeos::sensors::mojom::DeviceType::ACCEL,
             base::NumberToString(kScaleValue), kWrongLocation);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_FALSE(CreateSensor(mojom::SensorType::ACCELEROMETER));
 }
@@ -208,7 +204,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, CheckMainLocationBase) {
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationBase);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_TRUE(CreateSensor(mojom::SensorType::GYROSCOPE));
 
@@ -242,7 +238,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, CheckMainLocationLid) {
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationCamera);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   // Wait until the disconnect of the first gyroscope arrives at
   // FakeSensorDevice.
@@ -271,7 +267,7 @@ TEST_F(PlatformSensorProviderChromeOSTest,
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationBase);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   // Wait until the disconnect of the gyroscope arrives at FakeSensorDevice.
   base::RunLoop().RunUntilIdle();
@@ -294,7 +290,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, CheckAmbientLightSensorLocationLid) {
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationLid);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   // Wait until the disconnect of the first ambient light sensor arrives at
   // FakeSensorDevice.
@@ -312,7 +308,7 @@ TEST_F(PlatformSensorProviderChromeOSTest,
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationBase);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_TRUE(CreateSensor(mojom::SensorType::AMBIENT_LIGHT));
 }
@@ -326,7 +322,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, SensorDeviceDisconnect) {
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationLid);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
 
@@ -346,12 +342,12 @@ TEST_F(PlatformSensorProviderChromeOSTest, ReconnectClient) {
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationLid);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
 
   // Simulate a disconnection between |provider_| and SensorHalDispatcher.
-  ResetClient();
+  provider_->OnSensorHalClientFailure(base::TimeDelta());
 
   EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
 }
@@ -361,7 +357,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, ReconnectServer) {
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationLid);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
 
@@ -372,14 +368,14 @@ TEST_F(PlatformSensorProviderChromeOSTest, ReconnectServer) {
   // Finished simulating a disconnection with IIO Service.
   EXPECT_FALSE(provider_->GetSensor(mojom::SensorType::ACCELEROMETER));
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_TRUE(CreateSensor(mojom::SensorType::ACCELEROMETER));
 }
 
 TEST_F(PlatformSensorProviderChromeOSTest,
        CheckLinearAccelerationSensorNotCreatedIfNoAccelerometer) {
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_FALSE(CreateSensor(mojom::SensorType::LINEAR_ACCELERATION));
 }
@@ -389,7 +385,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, CheckLinearAcceleration) {
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationBase);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_TRUE(CreateSensor(mojom::SensorType::LINEAR_ACCELERATION));
 }
@@ -397,7 +393,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, CheckLinearAcceleration) {
 TEST_F(
     PlatformSensorProviderChromeOSTest,
     CheckAbsoluteOrientationSensorNotCreatedIfNoAccelerometerAndNoMagnetometer) {
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_FALSE(
       CreateSensor(mojom::SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES));
@@ -411,7 +407,7 @@ TEST_F(PlatformSensorProviderChromeOSTest,
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationBase);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_FALSE(
       CreateSensor(mojom::SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES));
@@ -425,7 +421,7 @@ TEST_F(PlatformSensorProviderChromeOSTest,
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationBase);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_FALSE(
       CreateSensor(mojom::SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES));
@@ -443,7 +439,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, CheckAbsoluteOrientationSensors) {
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationBase);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_TRUE(
       CreateSensor(mojom::SensorType::ABSOLUTE_ORIENTATION_EULER_ANGLES));
@@ -453,7 +449,7 @@ TEST_F(PlatformSensorProviderChromeOSTest, CheckAbsoluteOrientationSensors) {
 TEST_F(
     PlatformSensorProviderChromeOSTest,
     CheckRelativeOrientationSensorNotCreatedIfNoAccelerometerAndNoGyroscope) {
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_FALSE(
       CreateSensor(mojom::SensorType::RELATIVE_ORIENTATION_EULER_ANGLES));
@@ -467,7 +463,7 @@ TEST_F(PlatformSensorProviderChromeOSTest,
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationBase);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_FALSE(
       CreateSensor(mojom::SensorType::RELATIVE_ORIENTATION_EULER_ANGLES));
@@ -481,7 +477,7 @@ TEST_F(PlatformSensorProviderChromeOSTest,
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationBase);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_TRUE(
       CreateSensor(mojom::SensorType::RELATIVE_ORIENTATION_EULER_ANGLES));
@@ -498,7 +494,7 @@ TEST_F(PlatformSensorProviderChromeOSTest,
             base::NumberToString(kScaleValue),
             chromeos::sensors::mojom::kLocationBase);
 
-  StartConnection();
+  RegisterSensorHalServer();
 
   EXPECT_TRUE(
       CreateSensor(mojom::SensorType::RELATIVE_ORIENTATION_EULER_ANGLES));

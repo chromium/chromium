@@ -15,7 +15,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/time/time.h"
 #include "chromeos/components/sensors/sensor_hal_dispatcher.h"
 #include "services/device/generic_sensor/platform_sensor_chromeos.h"
 
@@ -184,10 +183,11 @@ void PlatformSensorProviderChromeOS::RegisterSensorClient() {
 
   sensor_hal_client_.set_disconnect_handler(
       base::BindOnce(&PlatformSensorProviderChromeOS::OnSensorHalClientFailure,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), kReconnectDelay));
 }
 
-void PlatformSensorProviderChromeOS::OnSensorHalClientFailure() {
+void PlatformSensorProviderChromeOS::OnSensorHalClientFailure(
+    base::TimeDelta reconnection_delay) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   LOG(ERROR) << "OnSensorHalClientFailure";
@@ -199,7 +199,7 @@ void PlatformSensorProviderChromeOS::OnSensorHalClientFailure() {
       FROM_HERE,
       base::BindOnce(&PlatformSensorProviderChromeOS::RegisterSensorClient,
                      weak_ptr_factory_.GetWeakPtr()),
-      kReconnectDelay);
+      reconnection_delay);
 }
 
 void PlatformSensorProviderChromeOS::OnSensorServiceDisconnect() {

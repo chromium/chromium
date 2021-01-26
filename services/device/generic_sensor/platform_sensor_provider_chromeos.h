@@ -16,6 +16,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
+#include "base/time/time.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 #include "chromeos/components/sensors/mojom/sensor.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -80,7 +81,7 @@ class PlatformSensorProviderChromeOS
   base::Optional<int32_t> GetDeviceId(mojom::SensorType type) const;
 
   void RegisterSensorClient();
-  void OnSensorHalClientFailure();
+  void OnSensorHalClientFailure(base::TimeDelta reconnection_delay);
 
   void OnSensorServiceDisconnect();
 
@@ -126,6 +127,7 @@ class PlatformSensorProviderChromeOS
 
   FRIEND_TEST_ALL_PREFIXES(PlatformSensorProviderChromeOSTest,
                            CheckUnsupportedTypes);
+  FRIEND_TEST_ALL_PREFIXES(PlatformSensorProviderChromeOSTest, ReconnectClient);
 };
 
 }  // namespace device
