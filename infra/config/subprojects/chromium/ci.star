@@ -1738,6 +1738,7 @@ ci.cipd_builder(
             "tools/android/avd/proto/creation/generic_android28.textpb",
             "tools/android/avd/proto/creation/generic_android29.textpb",
             "tools/android/avd/proto/creation/generic_android30.textpb",
+            "tools/android/avd/proto/creation/generic_playstore_android27.textpb",
             "tools/android/avd/proto/creation/generic_playstore_android28.textpb",
             "tools/android/avd/proto/creation/generic_playstore_android30.textpb",
         ],
