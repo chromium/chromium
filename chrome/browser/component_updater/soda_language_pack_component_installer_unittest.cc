@@ -5,7 +5,6 @@
 #include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
 
 #include "base/files/file_path.h"
-#include "base/test/bind.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "components/soda/constants.h"
@@ -24,18 +23,23 @@ class SodaLanguagePackComponentInstallerTest : public ::testing::Test {
   base::Version fake_version_;
 };
 
-TEST_F(SodaLanguagePackComponentInstallerTest, ComponentReady_CallsLambda) {
-  base::FilePath given_path;
-  OnSodaLanguagePackComponentReadyCallback lambda = base::BindLambdaForTesting(
-      [&](const base::FilePath& path) { given_path = path; });
+TEST_F(SodaLanguagePackComponentInstallerTest, TestGetLanguageComponentConfig) {
+  base::Optional<component_updater::SodaLanguagePackComponentConfig>
+      config_by_name =
+          SodaLanguagePackComponentInstallerPolicy::GetLanguageComponentConfig(
+              "fr-FR");
 
-  SodaLanguagePackComponentConfig config {speech::LanguageCode::kEnUs};
-  SodaLanguagePackComponentInstallerPolicy policy(config, std::move(lambda));
+  ASSERT_TRUE(config_by_name);
+  ASSERT_EQ(config_by_name.value().language_code, speech::LanguageCode::kFrFr);
 
-  policy.ComponentReady(fake_version_, fake_install_dir_,
-                        std::make_unique<base::DictionaryValue>());
+  base::Optional<component_updater::SodaLanguagePackComponentConfig>
+      config_by_language_code =
+          SodaLanguagePackComponentInstallerPolicy::GetLanguageComponentConfig(
+              speech::LanguageCode::kFrFr);
 
-  ASSERT_EQ(fake_install_dir_, given_path);
+  ASSERT_TRUE(config_by_language_code);
+  ASSERT_EQ(config_by_language_code.value().language_code,
+            speech::LanguageCode::kFrFr);
 }
 
 }  // namespace component_updater

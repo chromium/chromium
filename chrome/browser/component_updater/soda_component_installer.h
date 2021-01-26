@@ -14,12 +14,16 @@
 namespace component_updater {
 
 // Success callback to be run after the component is downloaded.
-using OnSodaComponentReadyCallback =
+using OnSodaComponentInstalledCallback =
     base::RepeatingCallback<void(const base::FilePath&)>;
+
+using OnSodaComponentReadyCallback = base::OnceClosure;
 
 class SodaComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
-  explicit SodaComponentInstallerPolicy(OnSodaComponentReadyCallback callback);
+  explicit SodaComponentInstallerPolicy(
+      OnSodaComponentInstalledCallback on_installed_callback,
+      OnSodaComponentReadyCallback on_ready_callback);
   ~SodaComponentInstallerPolicy() override;
 
   SodaComponentInstallerPolicy(const SodaComponentInstallerPolicy&) = delete;
@@ -53,7 +57,8 @@ class SodaComponentInstallerPolicy : public ComponentInstallerPolicy {
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
 
-  OnSodaComponentReadyCallback on_component_ready_callback_;
+  OnSodaComponentInstalledCallback on_installed_callback_;
+  OnSodaComponentReadyCallback on_ready_callback_;
 };
 
 // Registers user preferences related to the Speech On-Device API (SODA)
@@ -65,11 +70,13 @@ void RegisterPrefsForSodaComponent(PrefRegistrySimple* registry);
 void RegisterSodaComponent(ComponentUpdateService* cus,
                            PrefService* profile_prefs,
                            PrefService* global_prefs,
-                           base::OnceClosure callback);
+                           base::OnceClosure on_ready_callback,
+                           base::OnceClosure on_registered_callback);
 
 void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
                                    PrefService* profile_prefs,
-                                   PrefService* global_prefs);
+                                   PrefService* global_prefs,
+                                   base::OnceClosure on_ready_callback);
 
 }  // namespace component_updater
 

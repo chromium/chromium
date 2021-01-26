@@ -19,7 +19,7 @@ class SodaInstaller {
   class Observer : public base::CheckedObserver {
    public:
     // Called when the SODA installation has completed.
-    virtual void OnSodaInstaller() = 0;
+    virtual void OnSodaInstalled() = 0;
 
     // Called if there is an error in the SODA installation.
     virtual void OnSodaError() = 0;
@@ -60,11 +60,11 @@ class SodaInstaller {
   // Removes an observer from the observer list.
   void RemoveObserver(Observer* observer);
 
-  void NotifySodaInstallerForTesting();
+  void NotifySodaInstalledForTesting();
 
  protected:
   // Notifies the observers that the SODA installation has completed.
-  void NotifyOnSodaInstaller();
+  void NotifyOnSodaInstalled();
 
   // Notifies the observers that there is an error in the SODA installation.
   void NotifyOnSodaError();

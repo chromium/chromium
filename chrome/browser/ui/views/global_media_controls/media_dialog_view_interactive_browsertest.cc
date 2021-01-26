@@ -548,8 +548,8 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
     MediaDialogView::GetDialogViewForTesting()->OnSodaProgress(progress);
   }
 
-  void OnSodaInstaller() {
-    MediaDialogView::GetDialogViewForTesting()->OnSodaInstaller();
+  void OnSodaInstalled() {
+    MediaDialogView::GetDialogViewForTesting()->OnSodaInstalled();
   }
 
  protected:
@@ -970,7 +970,7 @@ IN_PROC_BROWSER_TEST_F(MediaDialogViewBrowserTest, LiveCaptionProgressUpdate) {
   EXPECT_EQ("Downloading… 100%",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 
-  OnSodaInstaller();
+  OnSodaInstalled();
   EXPECT_EQ("Live Caption (English only)",
             base::UTF16ToUTF8(GetLiveCaptionTitleLabel()->GetText()));
 }

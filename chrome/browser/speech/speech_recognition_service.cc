@@ -70,6 +70,9 @@ void SpeechRecognitionService::LaunchIfNotRunning() {
   DCHECK(profile_prefs);
   DCHECK(global_prefs);
 
+  if (!profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled))
+    return;
+
   auto binary_path = global_prefs->GetFilePath(prefs::kSodaBinaryPath);
   auto config_path = SpeechRecognitionService::GetSodaConfigPath(profile_prefs);
   if (enable_soda_ && (binary_path.empty() || config_path.empty())) {

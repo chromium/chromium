@@ -31,7 +31,7 @@ class CaptionsHandler : public SettingsPageUIHandler,
   void HandleOpenSystemCaptionsDialog(const base::ListValue* args);
 
   // SodaInstaller::Observer overrides:
-  void OnSodaInstaller() override;
+  void OnSodaInstalled() override;
   void OnSodaError() override;
   void OnSodaProgress(int progress) override;
 

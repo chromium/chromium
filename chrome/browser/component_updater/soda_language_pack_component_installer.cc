@@ -41,9 +41,11 @@ constexpr char kLanguagePackManifestName[] = "SODA %s Models";
 SodaLanguagePackComponentInstallerPolicy::
     SodaLanguagePackComponentInstallerPolicy(
         SodaLanguagePackComponentConfig language_config,
-        OnSodaLanguagePackComponentReadyCallback callback)
+        OnSodaLanguagePackComponentInstalledCallback on_installed_callback,
+        OnSodaLanguagePackComponentReadyCallback on_ready_callback)
     : language_config_(language_config),
-      on_component_ready_callback_(callback) {}
+      on_installed_callback_(on_installed_callback),
+      on_ready_callback_(std::move(on_ready_callback)) {}
 
 SodaLanguagePackComponentInstallerPolicy::
     ~SodaLanguagePackComponentInstallerPolicy() = default;
@@ -150,8 +152,11 @@ void SodaLanguagePackComponentInstallerPolicy::ComponentReady(
     std::unique_ptr<base::DictionaryValue> manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
+  if (on_installed_callback_)
+    on_installed_callback_.Run(install_dir);
 
-  on_component_ready_callback_.Run(install_dir);
+  if (on_ready_callback_)
+    std::move(on_ready_callback_).Run();
 }
 
 base::FilePath SodaLanguagePackComponentInstallerPolicy::GetRelativeInstallDir()
@@ -194,7 +199,8 @@ void UpdateSodaLanguagePackInstallDirPref(speech::LanguageCode language_code,
 void RegisterSodaLanguagePackComponent(
     SodaLanguagePackComponentConfig language_config,
     ComponentUpdateService* cus,
-    PrefService* prefs) {
+    PrefService* prefs,
+    base::OnceClosure on_ready_callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto installer = base::MakeRefCounted<ComponentInstaller>(
@@ -205,14 +211,15 @@ void RegisterSodaLanguagePackComponent(
                  ComponentUpdateService* cus, PrefService* prefs,
                  const base::FilePath& install_dir) {
                 content::GetUIThreadTaskRunner(
-                    {base::TaskPriority::BEST_EFFORT})
+                    {base::TaskPriority::USER_BLOCKING})
                     ->PostTask(
                         FROM_HERE,
                         base::BindOnce(&UpdateSodaLanguagePackInstallDirPref,
                                        language_config.language_code, prefs,
                                        install_dir));
               },
-              language_config, cus, prefs)));
+              language_config, cus, prefs),
+          std::move(on_ready_callback)));
 
   installer->Register(
       cus, base::BindOnce(&SodaLanguagePackComponentInstallerPolicy::

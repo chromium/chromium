@@ -25,8 +25,10 @@ class FilePath;
 namespace component_updater {
 
 // Success callback to be run after the component is downloaded.
-using OnSodaLanguagePackComponentReadyCallback =
+using OnSodaLanguagePackComponentInstalledCallback =
     base::RepeatingCallback<void(const base::FilePath&)>;
+
+using OnSodaLanguagePackComponentReadyCallback = base::OnceClosure;
 
 // Describes all metadata needed to dynamically install ChromeOS components.
 struct SodaLanguagePackComponentConfig {
@@ -88,7 +90,8 @@ class SodaLanguagePackComponentInstallerPolicy
  public:
   SodaLanguagePackComponentInstallerPolicy(
       SodaLanguagePackComponentConfig language_config,
-      OnSodaLanguagePackComponentReadyCallback callback);
+      OnSodaLanguagePackComponentInstalledCallback on_installed_callback,
+      OnSodaLanguagePackComponentReadyCallback on_ready_callback);
   ~SodaLanguagePackComponentInstallerPolicy() override;
 
   SodaLanguagePackComponentInstallerPolicy(
@@ -128,13 +131,15 @@ class SodaLanguagePackComponentInstallerPolicy
 
   SodaLanguagePackComponentConfig language_config_;
 
-  OnSodaLanguagePackComponentReadyCallback on_component_ready_callback_;
+  OnSodaLanguagePackComponentInstalledCallback on_installed_callback_;
+  OnSodaLanguagePackComponentReadyCallback on_ready_callback_;
 };
 
 void RegisterSodaLanguagePackComponent(
     SodaLanguagePackComponentConfig language_config,
     ComponentUpdateService* cus,
-    PrefService* prefs);
+    PrefService* prefs,
+    base::OnceClosure on_ready_callback);
 
 }  // namespace component_updater
 

@@ -53,7 +53,7 @@ bool SodaInstallerImplChromeOS::IsSodaRegistered() {
 void SodaInstallerImplChromeOS::OnSodaInstaller(
     const chromeos::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error == dlcservice::kErrorNone) {
-    NotifyOnSodaInstaller();
+    NotifyOnSodaInstalled();
   } else {
     NotifyOnSodaError();
   }

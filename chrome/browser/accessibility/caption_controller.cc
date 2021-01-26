@@ -131,8 +131,7 @@ void CaptionController::OnLiveCaptionEnabledChanged() {
   }
 }
 
-void CaptionController::OnSodaInstaller() {
-  DCHECK(enabled_);
+void CaptionController::OnSodaInstalled() {
   speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   UpdateUIEnabled();
 }
