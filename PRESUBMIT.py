@@ -371,9 +371,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^media/blink/webmediaplayer_impl.cc',
   '^media/blink/webmediaplayer_impl.h',
   '^ppapi/proxy/',
-  '^services/audio/public/cpp/sounds/audio_stream_handler.cc',
-  '^services/network/public/cpp/content_security_policy/content_security_policy_unittest.cc' # pylint: disable=line-too-long
-  '^services/preferences/README.md'
   '^tools/clang/base_bind_rewriters/',  # Intentional.
   '^tools/gdb/gdb_chrome.py',  # Intentional.
 ))

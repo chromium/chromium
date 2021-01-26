@@ -14,33 +14,6 @@ The pref service persists prefs to disk and communicates updates to prefs
 between services, including Chrome itself. There is a pref service instance per
 profile (prefs are persisted on a per-profile basis).
 
-## Using the service
-
-The service is used through a client library that offers clients fast and
-synchronous access to prefs. To connect to the service and start reading and
-writing prefs simply use the `ConnectToPrefService` factory function:
-
-``` cpp
-#include "services/preferences/public/cpp/pref_service_factory.h"
-
-class MyService : public service_manager::Service {
-  void OnStart() {
-    auto* connector = context()->connector();
-    auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
-    // Register any preferences you intend to use in |pref_registry|.
-    prefs::ConnectToPrefService(
-        connector, std::move(pref_registry), {},
-        base::Bind(&MyService::OnPrefServiceConnected, base::Unretained(this)));
-  }
-
-  void OnPrefServiceConnected(std::unique_ptr<::PrefService> pref_service) {
-    // Use |pref_service|.
-  }
-};
-```
-
-The returned `PrefService` class predates the Pref Service and its behavior
-hasn't changed (i.e. all existing documentation still applies).
 
 ## Semantics
 

@@ -164,7 +164,7 @@ class AudioStreamHandler::AudioStreamContainer
   size_t cursor_;
   bool delayed_stop_posted_;
   std::unique_ptr<media::WavAudioHandler> wav_audio_;
-  base::CancelableClosure stop_closure_;
+  base::CancelableRepeatingClosure stop_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(AudioStreamContainer);
 };

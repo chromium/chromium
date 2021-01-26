@@ -1254,13 +1254,13 @@ TEST(ContentSecurityPolicy, ParseSandbox) {
 TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
   struct TestCase {
     std::string directive_value;
-    base::Callback<mojom::CSPSourceListPtr()> expected;
+    base::OnceCallback<mojom::CSPSourceListPtr()> expected;
     std::string expected_error;
   } cases[] = {
       {
           "'nonce-a' 'nonce-a=' 'nonce-a==' 'nonce-a===' 'nonce-==' 'nonce-' "
           "'nonce 'nonce-cde' 'nonce-cde=' 'nonce-cde==' 'nonce-cde==='",
-          base::Bind([] {
+          base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->nonces.push_back("a");
             csp->nonces.push_back("a=");
@@ -1274,7 +1274,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
       },
       {
           "'sha256-YWJj' 'nonce-cde' 'sha256-QUJD'",
-          base::Bind([] {
+          base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->hashes.push_back(
                 mojom::CSPHashSource::New(mojom::CSPHashAlgorithm::SHA256,
@@ -1289,12 +1289,12 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
       },
       {
           "'none' ",
-          base::Bind([] { return mojom::CSPSourceList::New(); }),
+          base::BindOnce([] { return mojom::CSPSourceList::New(); }),
           "",
       },
       {
           "'none' 'self'",
-          base::Bind([] {
+          base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->allow_self = true;
             return csp;
@@ -1306,7 +1306,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
       },
       {
           "'self' 'none'",
-          base::Bind([] {
+          base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->allow_self = true;
             return csp;
@@ -1318,7 +1318,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
       },
       {
           "'self'",
-          base::Bind([] {
+          base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->allow_self = true;
             return csp;
@@ -1326,7 +1326,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
       },
       {
           "'wrong' *",
-          base::Bind([] {
+          base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->allow_star = true;
             return csp;
@@ -1336,7 +1336,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
       },
       {
           "'wrong' 'unsafe-inline'",
-          base::Bind([] {
+          base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->allow_inline = true;
             return csp;
@@ -1346,7 +1346,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
       },
       {
           "'wrong' 'unsafe-eval'",
-          base::Bind([] {
+          base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->allow_eval = true;
             return csp;
@@ -1356,7 +1356,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
       },
       {
           "'wrong' 'wasm-eval'",
-          base::Bind([] {
+          base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->allow_wasm_eval = true;
             return csp;
@@ -1366,7 +1366,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
       },
       {
           "'wrong' 'strict-dynamic'",
-          base::Bind([] {
+          base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->allow_dynamic = true;
             return csp;
@@ -1376,7 +1376,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
       },
       {
           "'wrong' 'unsafe-hashes'",
-          base::Bind([] {
+          base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->allow_unsafe_hashes = true;
             return csp;
@@ -1386,7 +1386,7 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
       },
       {
           "'wrong' 'report-sample'",
-          base::Bind([] {
+          base::BindOnce([] {
             auto csp = mojom::CSPSourceList::New();
             csp->report_sample = true;
             return csp;
@@ -1405,8 +1405,11 @@ TEST(ContentSecurityPolicy, ParseSerializedSourceList) {
     std::vector<mojom::ContentSecurityPolicyPtr> policies;
     AddContentSecurityPolicyFromHeaders(*headers, GURL("https://example.com/"),
                                         &policies);
-    EXPECT_TRUE(test.expected.Run().Equals(
-        policies[0]->directives[mojom::CSPDirectiveName::ScriptSrc]));
+    EXPECT_TRUE(
+        std::move(test.expected)
+            .Run()
+            .Equals(
+                policies[0]->directives[mojom::CSPDirectiveName::ScriptSrc]));
 
     EXPECT_EQ(policies[0]->raw_directives[mojom::CSPDirectiveName::ScriptSrc],
               base::TrimString(test.directive_value, " ", base::TRIM_ALL)
