@@ -2753,14 +2753,10 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       FROM_HERE);
 }
 
-// Flaky on Android, see crbug.com/1135601.
-#if defined(OS_ANDROID)
-#define MAYBE_LogIpcPostedToCachedFrame DISABLED_LogIpcPostedToCachedFrame
-#else
-#define MAYBE_LogIpcPostedToCachedFrame LogIpcPostedToCachedFrame
-#endif
+// Flaky on Android, see crbug.com/1135601 and on other platforms, see
+// crbug.com/1128772.
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       MAYBE_LogIpcPostedToCachedFrame) {
+                       DISABLED_LogIpcPostedToCachedFrame) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // 1) Navigate to a page.
@@ -8429,8 +8425,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
 // Tests that pagehide handlers of the old RFH are run for bfcached pages even
 // if the page is already hidden (and visibilitychange won't run).
+// Disabled on Linux and Win because of flakiness, see crbug.com/1170802.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_PagehideRunsWhenPageIsHidden DISABLED_PagehideRunsWhenPageIsHidden
+#else
+#define MAYBE_PagehideRunsWhenPageIsHidden PagehideRunsWhenPageIsHidden
+#endif
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       PagehideRunsWhenPageIsHidden) {
+                       MAYBE_PagehideRunsWhenPageIsHidden) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_2(embedded_test_server()->GetURL("b.com", "/title2.html"));
