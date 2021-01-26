@@ -401,6 +401,12 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
     return nullptr;
   }
 
+  bool has_filed_shared_array_buffer_creation_issue() const {
+    return has_filed_shared_array_buffer_creation_issue_;
+  }
+
+  void FileSharedArrayBufferCreationIssue();
+
  protected:
   explicit ExecutionContext(v8::Isolate* isolate, Agent*);
   ExecutionContext(const ExecutionContext&) = delete;
@@ -439,6 +445,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   bool is_in_back_forward_cache_ = false;
 
   bool has_filed_shared_array_buffer_transfer_issue_ = false;
+  bool has_filed_shared_array_buffer_creation_issue_ = false;
 
   Member<PublicURLManager> public_url_manager_;
 

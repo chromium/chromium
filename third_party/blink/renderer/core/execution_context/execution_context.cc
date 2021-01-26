@@ -188,6 +188,23 @@ bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
          CrossOriginIsolatedCapability();
 }
 
+namespace {
+mojom::blink::InspectorIssueInfoPtr CreateSharedArrayBufferIssue(
+    const SourceLocation* source_location) {
+  auto details = mojom::blink::InspectorIssueDetails::New();
+  auto issue_details = mojom::blink::SharedArrayBufferIssueDetails::New();
+  auto mojo_source_location = network::mojom::blink::SourceLocation::New();
+  mojo_source_location->url = source_location->Url();
+  mojo_source_location->line = source_location->LineNumber();
+  mojo_source_location->column = source_location->ColumnNumber();
+  issue_details->source_location = std::move(mojo_source_location);
+  details->sab_issue_details = std::move(issue_details);
+  return mojom::blink::InspectorIssueInfo::New(
+      mojom::blink::InspectorIssueCode::kSharedArrayBufferIssue,
+      std::move(details));
+}
+}  // namespace
+
 bool ExecutionContext::CheckSharedArrayBufferTransferAllowedAndReport() {
   const bool allowed = SharedArrayBufferTransferAllowed();
   // File an issue if the transfer is prohibited, or if it will be prohibited
@@ -198,21 +215,27 @@ bool ExecutionContext::CheckSharedArrayBufferTransferAllowedAndReport() {
                    !CrossOriginIsolatedCapability())) {
     has_filed_shared_array_buffer_transfer_issue_ = true;
     auto source_location = SourceLocation::Capture(this);
-    auto details = mojom::blink::InspectorIssueDetails::New();
-    auto issue_details =
-        mojom::blink::SharedArrayBufferTransferIssueDetails::New();
-    issue_details->is_warning = allowed;
-    auto mojo_source_location = network::mojom::blink::SourceLocation::New();
-    mojo_source_location->url = source_location->Url();
-    mojo_source_location->line = source_location->LineNumber();
-    mojo_source_location->column = source_location->ColumnNumber();
-    issue_details->source_location = std::move(mojo_source_location);
-    details->sab_transfer_details = std::move(issue_details);
-    AddInspectorIssue(mojom::blink::InspectorIssueInfo::New(
-        mojom::blink::InspectorIssueCode::kSharedArrayBufferTransferIssue,
-        std::move(details)));
+    auto issue = CreateSharedArrayBufferIssue(source_location.get());
+    issue->details->sab_issue_details->is_warning = allowed;
+    issue->details->sab_issue_details->type =
+        mojom::blink::SharedArrayBufferIssueType::kTransferIssue;
+    AddInspectorIssue(std::move(issue));
   }
   return allowed;
+}
+
+void ExecutionContext::FileSharedArrayBufferCreationIssue() {
+  // This is performance critical, only do it once per context.
+  if (has_filed_shared_array_buffer_creation_issue_)
+    return;
+  has_filed_shared_array_buffer_creation_issue_ = true;
+  auto source_location = SourceLocation::Capture(this);
+  auto issue = CreateSharedArrayBufferIssue(source_location.get());
+  // In enforced mode, the SAB constructor isn't available.
+  issue->details->sab_issue_details->is_warning = true;
+  issue->details->sab_issue_details->type =
+      mojom::blink::SharedArrayBufferIssueType::kCreationIssue;
+  AddInspectorIssue(std::move(issue));
 }
 
 void ExecutionContext::AddConsoleMessageImpl(mojom::ConsoleMessageSource source,

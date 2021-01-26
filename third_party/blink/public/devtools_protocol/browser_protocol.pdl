@@ -661,13 +661,19 @@ experimental domain Audits
       optional SourceCodeLocation sourceCodeLocation
       optional DOM.BackendNodeId violatingNodeId
 
+  type SharedArrayBufferIssueType extends string
+    enum
+      TransferIssue
+      CreationIssue
+
   # Details for a request that has been blocked with the BLOCKED_BY_RESPONSE
   # code. Currently only used for COEP/COOP, but may be extended to include
   # some CSP errors in the future.
-  type SharedArrayBufferTransferIssueDetails extends object
+  type SharedArrayBufferIssueDetails extends object
     properties
       SourceCodeLocation sourceCodeLocation
       boolean isWarning
+      SharedArrayBufferIssueType type
 
   type TwaQualityEnforcementViolationType extends string
     enum
@@ -698,7 +704,7 @@ experimental domain Audits
       BlockedByResponseIssue
       HeavyAdIssue
       ContentSecurityPolicyIssue
-      SharedArrayBufferTransferIssue
+      SharedArrayBufferIssue
       TrustedWebActivityIssue
 
   # This struct holds a list of optional fields with additional information
@@ -711,7 +717,7 @@ experimental domain Audits
       optional BlockedByResponseIssueDetails blockedByResponseIssueDetails
       optional HeavyAdIssueDetails heavyAdIssueDetails
       optional ContentSecurityPolicyIssueDetails contentSecurityPolicyIssueDetails
-      optional SharedArrayBufferTransferIssueDetails sharedArrayBufferTransferIssueDetails
+      optional SharedArrayBufferIssueDetails sharedArrayBufferIssueDetails
       optional TrustedWebActivityIssueDetails twaQualityEnforcementDetails
 
   # An inspector issue reported from the back-end.

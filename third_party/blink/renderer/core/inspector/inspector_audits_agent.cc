@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_issue.h"
 #include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
 #include "third_party/blink/renderer/core/inspector/inspector_network_agent.h"
+#include "third_party/blink/renderer/core/inspector/protocol/Audits.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 
@@ -192,9 +193,8 @@ blink::protocol::String InspectorIssueCodeValue(
     case mojom::blink::InspectorIssueCode::kContentSecurityPolicyIssue:
       return protocol::Audits::InspectorIssueCodeEnum::
           ContentSecurityPolicyIssue;
-    case mojom::blink::InspectorIssueCode::kSharedArrayBufferTransferIssue:
-      return protocol::Audits::InspectorIssueCodeEnum::
-          SharedArrayBufferTransferIssue;
+    case mojom::blink::InspectorIssueCode::kSharedArrayBufferIssue:
+      return protocol::Audits::InspectorIssueCodeEnum::SharedArrayBufferIssue;
     case mojom::blink::InspectorIssueCode::kTrustedWebActivityIssue:
       return protocol::Audits::InspectorIssueCodeEnum::TrustedWebActivityIssue;
   }
@@ -431,6 +431,16 @@ protocol::String BuildViolationType(
   }
 }
 
+protocol::String BuildSABIssueType(
+    blink::mojom::blink::SharedArrayBufferIssueType type) {
+  switch (type) {
+    case blink::mojom::blink::SharedArrayBufferIssueType::kTransferIssue:
+      return protocol::Audits::SharedArrayBufferIssueTypeEnum::TransferIssue;
+    case blink::mojom::blink::SharedArrayBufferIssueType::kCreationIssue:
+      return protocol::Audits::SharedArrayBufferIssueTypeEnum::CreationIssue;
+  }
+}
+
 }  // namespace
 
 void InspectorAuditsAgent::InspectorIssueAdded(InspectorIssue* issue) {
@@ -523,19 +533,19 @@ void InspectorAuditsAgent::InspectorIssueAdded(InspectorIssue* issue) {
     issueDetails.setContentSecurityPolicyIssueDetails(cspDetails.build());
   }
 
-  if (issue->Details()->sab_transfer_details) {
-    const auto* d = issue->Details()->sab_transfer_details.get();
+  if (issue->Details()->sab_issue_details) {
+    const auto* d = issue->Details()->sab_issue_details.get();
     auto source_location = protocol::Audits::SourceCodeLocation::create()
                                .setUrl(d->source_location->url)
                                .setColumnNumber(d->source_location->column)
                                .setLineNumber(d->source_location->line)
                                .build();
-    auto details =
-        protocol::Audits::SharedArrayBufferTransferIssueDetails::create()
-            .setIsWarning(d->is_warning)
-            .setSourceCodeLocation(std::move(source_location))
-            .build();
-    issueDetails.setSharedArrayBufferTransferIssueDetails(std::move(details));
+    auto details = protocol::Audits::SharedArrayBufferIssueDetails::create()
+                       .setIsWarning(d->is_warning)
+                       .setType(BuildSABIssueType(d->type))
+                       .setSourceCodeLocation(std::move(source_location))
+                       .build();
+    issueDetails.setSharedArrayBufferIssueDetails(std::move(details));
   }
 
   auto inspector_issue = protocol::Audits::InspectorIssue::create()

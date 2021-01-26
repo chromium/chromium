@@ -17,7 +17,7 @@ enum InspectorIssueCode {
   kMixedContentIssue,
   kBlockedByResponseIssue,
   kContentSecurityPolicyIssue,
-  kSharedArrayBufferTransferIssue,
+  kSharedArrayBufferIssue,
   kTrustedWebActivityIssue,
 };
 
@@ -122,9 +122,15 @@ struct SameSiteCookieIssueDetails {
   AffectedRequest? request;
 };
 
-struct SharedArrayBufferTransferIssueDetails {
+enum SharedArrayBufferIssueType {
+  kTransferIssue,
+  kCreationIssue,
+};
+
+struct SharedArrayBufferIssueDetails {
   network.mojom.SourceLocation? source_location;
   bool is_warning;
+  SharedArrayBufferIssueType type;
 };
 
 enum TwaQualityEnforcementViolationType {
@@ -149,8 +155,8 @@ struct InspectorIssueDetails {
   MixedContentIssueDetails? mixed_content_issue_details;
   BlockedByResponseIssueDetails? blocked_by_response_issue_details;
   ContentSecurityPolicyIssueDetails? csp_issue_details;
-  SharedArrayBufferTransferIssueDetails? sab_transfer_details;
-  TrustedWebActivityIssueDetails twa_issue_details;
+  SharedArrayBufferIssueDetails? sab_issue_details;
+  TrustedWebActivityIssueDetails? twa_issue_details;
 };
 
 struct InspectorIssueInfo {

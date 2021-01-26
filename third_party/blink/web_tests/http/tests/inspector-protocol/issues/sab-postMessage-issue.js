@@ -5,8 +5,10 @@
 
   await dp.Audits.enable();
   session.evaluate(`postMessage(new SharedArrayBuffer());`);
-  const issue = await dp.Audits.onceIssueAdded();
+  const issues = await Promise.all(
+      [dp.Audits.onceIssueAdded(), dp.Audits.onceIssueAdded()]);
 
-  testRunner.log(issue.params, 'Inspector issue: ');
+  testRunner.log(issues[0].params, 'Creation issue: ');
+  testRunner.log(issues[1].params, 'Transfer issue: ');
   testRunner.completeTest();
 })
