@@ -400,7 +400,7 @@ class ChromePasswordProtectionServiceTest
   sync_preferences::TestingPrefServiceSyncable test_pref_service_;
   scoped_refptr<HostContentSettingsMap> content_setting_map_;
   std::unique_ptr<MockChromePasswordProtectionService> service_;
-  scoped_refptr<PasswordProtectionRequest> request_;
+  scoped_refptr<PasswordProtectionRequestContent> request_;
   std::unique_ptr<LoginReputationClientResponse> verdict_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_profile_adaptor_;

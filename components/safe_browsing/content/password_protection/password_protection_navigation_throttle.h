@@ -13,7 +13,7 @@ class NavigationHandle;
 }  // namespace content
 
 namespace safe_browsing {
-class PasswordProtectionRequest;
+class PasswordProtectionRequestContent;
 
 // PasswordProtectionNavigationThrottle defers or cancel navigation under the
 // following condition:
@@ -29,7 +29,7 @@ class PasswordProtectionNavigationThrottle
  public:
   PasswordProtectionNavigationThrottle(
       content::NavigationHandle* navigation_handle,
-      scoped_refptr<PasswordProtectionRequest> request,
+      scoped_refptr<PasswordProtectionRequestContent> request,
       bool is_warning_showing);
   ~PasswordProtectionNavigationThrottle() override;
 
@@ -39,16 +39,17 @@ class PasswordProtectionNavigationThrottle
       override;
   const char* GetNameForLogging() override;
 
-  // Called to resume a deferred navigation once the PasswordProtectionRequest
-  // has received a verdict and there is no modal warning shown.
+  // Called to resume a deferred navigation once the
+  // PasswordProtectionRequestContent has received a verdict and there is no
+  // modal warning shown.
   void ResumeNavigation();
-  // Called when the PasswordProtectionRequest has received a verdict and there
-  // is a modal warning shown.
+  // Called when the PasswordProtectionRequestContent has received a verdict and
+  // there is a modal warning shown.
   void CancelNavigation(
       content::NavigationThrottle::ThrottleCheckResult result);
 
  private:
-  scoped_refptr<PasswordProtectionRequest> request_;
+  scoped_refptr<PasswordProtectionRequestContent> request_;
   bool is_warning_showing_;
   DISALLOW_COPY_AND_ASSIGN(PasswordProtectionNavigationThrottle);
 };

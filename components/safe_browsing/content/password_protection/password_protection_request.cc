@@ -477,24 +477,8 @@ void PasswordProtectionRequest::Finish(
 void PasswordProtectionRequest::Cancel(bool timed_out) {
   DCHECK(CurrentlyOnThread(ThreadID::UI));
   url_loader_.reset();
-  // If request is canceled because |password_protection_service_| is shutting
-  // down, ignore all these deferred navigations.
-  if (!timed_out) {
-    throttles_.clear();
-  }
-
   Finish(timed_out ? RequestOutcome::TIMEDOUT : RequestOutcome::CANCELED,
          nullptr);
-}
-
-void PasswordProtectionRequest::HandleDeferredNavigations() {
-  for (auto* throttle : throttles_) {
-    if (is_modal_warning_showing_)
-      throttle->CancelNavigation(content::NavigationThrottle::CANCEL);
-    else
-      throttle->ResumeNavigation();
-  }
-  throttles_.clear();
 }
 
 PasswordProtectionRequestContent::PasswordProtectionRequestContent(
@@ -528,6 +512,26 @@ PasswordProtectionRequestContent::PasswordProtectionRequestContent(
 }
 
 PasswordProtectionRequestContent::~PasswordProtectionRequestContent() = default;
+
+void PasswordProtectionRequestContent::Cancel(bool timed_out) {
+  DCHECK(CurrentlyOnThread(ThreadID::UI));
+  // If request is canceled because |password_protection_service_| is shutting
+  // down, ignore all these deferred navigations.
+  if (!timed_out) {
+    throttles_.clear();
+  }
+  PasswordProtectionRequest::Cancel(timed_out);
+}
+
+void PasswordProtectionRequestContent::HandleDeferredNavigations() {
+  for (auto* throttle : throttles_) {
+    if (is_modal_warning_showing())
+      throttle->CancelNavigation(content::NavigationThrottle::CANCEL);
+    else
+      throttle->ResumeNavigation();
+  }
+  throttles_.clear();
+}
 
 void PasswordProtectionRequestContent::MaybeLogPasswordReuseLookupEvent(
     RequestOutcome outcome,

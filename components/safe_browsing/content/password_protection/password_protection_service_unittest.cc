@@ -286,7 +286,7 @@ class PasswordProtectionServiceTest : public ::testing::Test {
   content::TestBrowserContext browser_context_;
   content::RenderViewHostTestEnabler rvh_test_enabler_;
   std::unique_ptr<content::WebContents> web_contents_;
-  scoped_refptr<PasswordProtectionRequest> request_;
+  scoped_refptr<PasswordProtectionRequestContent> request_;
 };
 
 TEST_F(PasswordProtectionServiceTest,

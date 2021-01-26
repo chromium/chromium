@@ -427,6 +427,11 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
     return common_spoofed_domains_;
   }
 
+  // Subclasses may override this method to either cancel or resume deferred
+  // navigations. By default, deferred navigations are not handled.
+  virtual void MaybeHandleDeferredNavigations(
+      PasswordProtectionRequest* request) {}
+
   // Set of pending PasswordProtectionRequests that are still waiting for
   // verdict.
   std::set<scoped_refptr<PasswordProtectionRequest>> pending_requests_;
@@ -536,6 +541,9 @@ class PasswordProtectionService : public PasswordProtectionServiceBase {
   void RemoveWarningRequestsByWebContents(content::WebContents* web_contents);
 
   bool IsModalWarningShowingInWebContents(content::WebContents* web_contents);
+
+  void MaybeHandleDeferredNavigations(
+      PasswordProtectionRequest* request) override;
 };
 
 }  // namespace safe_browsing

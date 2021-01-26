@@ -266,7 +266,7 @@ void PasswordProtectionServiceBase::RequestFinished(
     }
   }
 
-  request->HandleDeferredNavigations();
+  MaybeHandleDeferredNavigations(request);
 
   // If the request is canceled, the PasswordProtectionServiceBase is already
   // partially destroyed, and we won't be able to log accurate metrics.
@@ -550,7 +550,7 @@ PasswordProtectionService::MaybeCreateNavigationThrottle(
             GetPasswordProtectionReusedPasswordAccountType(
                 request->password_type(), username_for_last_shown_warning()))) {
       return std::make_unique<PasswordProtectionNavigationThrottle>(
-          navigation_handle, request, /*is_warning_showing=*/false);
+          navigation_handle, request_content, /*is_warning_showing=*/false);
     }
   }
 
@@ -559,7 +559,7 @@ PasswordProtectionService::MaybeCreateNavigationThrottle(
         static_cast<PasswordProtectionRequestContent*>(request.get());
     if (request_content->web_contents() == web_contents) {
       return std::make_unique<PasswordProtectionNavigationThrottle>(
-          navigation_handle, request, /*is_warning_showing=*/true);
+          navigation_handle, request_content, /*is_warning_showing=*/true);
     }
   }
   return nullptr;
@@ -586,6 +586,13 @@ bool PasswordProtectionService::IsModalWarningShowingInWebContents(
       return true;
   }
   return false;
+}
+
+void PasswordProtectionService::MaybeHandleDeferredNavigations(
+    PasswordProtectionRequest* request) {
+  PasswordProtectionRequestContent* request_content =
+      static_cast<PasswordProtectionRequestContent*>(request);
+  request_content->HandleDeferredNavigations();
 }
 
 }  // namespace safe_browsing

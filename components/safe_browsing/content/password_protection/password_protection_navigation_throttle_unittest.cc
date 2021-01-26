@@ -52,7 +52,7 @@ class PasswordProtectionNavigationThrottleTest
         password_protection_service =
             std::make_unique<safe_browsing::MockPasswordProtectionService>();
 
-    scoped_refptr<PasswordProtectionRequest> request =
+    scoped_refptr<PasswordProtectionRequestContent> request =
         new PasswordProtectionRequestContent(
             RenderViewHostTestHarness::web_contents(), GURL(), GURL(), GURL(),
             RenderViewHostTestHarness::web_contents()->GetContentsMimeType(),

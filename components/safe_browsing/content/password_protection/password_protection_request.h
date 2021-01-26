@@ -136,18 +136,6 @@ class PasswordProtectionRequest
     request_outcome_ = request_outcome;
   }
 
-  // Keeps track of created navigation throttle.
-  void AddThrottle(PasswordProtectionNavigationThrottle* throttle) {
-    throttles_.insert(throttle);
-  }
-
-  void RemoveThrottle(PasswordProtectionNavigationThrottle* throttle) {
-    throttles_.erase(throttle);
-  }
-
-  // Cancels navigation if there is modal warning showing, resumes it otherwise.
-  void HandleDeferredNavigations();
-
  protected:
   friend class base::RefCountedThreadSafe<PasswordProtectionRequest>;
 
@@ -187,8 +175,6 @@ class PasswordProtectionRequest
  private:
   friend DeleteOnUIThread;
   friend class base::DeleteHelper<PasswordProtectionRequest>;
-  friend class PasswordProtectionServiceTest;
-  friend class ChromePasswordProtectionServiceTest;
 
   // Start checking the allowlist.
   void CheckAllowlist();
@@ -282,11 +268,6 @@ class PasswordProtectionRequest
   // Needed for canceling tasks posted to different threads.
   base::CancelableTaskTracker tracker_;
 
-  // Navigation throttles created for this |web_contents_| during |this|'s
-  // lifetime. These throttles are owned by their corresponding
-  // NavigationHandler instances.
-  std::set<PasswordProtectionNavigationThrottle*> throttles_;
-
   // Whether there is a modal warning triggered by this request.
   bool is_modal_warning_showing_;
 
@@ -311,13 +292,30 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
       PasswordProtectionServiceBase* pps,
       int request_timeout_in_ms);
 
+  // CancelableRequest implementation
+  void Cancel(bool timed_out) override;
+
   content::WebContents* web_contents() const { return web_contents_; }
 
   base::WeakPtr<PasswordProtectionRequestContent> AsWeakPtr() {
     return base::AsWeakPtr(this);
   }
 
+  // Keeps track of created navigation throttle.
+  void AddThrottle(PasswordProtectionNavigationThrottle* throttle) {
+    throttles_.insert(throttle);
+  }
+
+  void RemoveThrottle(PasswordProtectionNavigationThrottle* throttle) {
+    throttles_.erase(throttle);
+  }
+
+  // Cancels navigation if there is modal warning showing, resumes it otherwise.
+  void HandleDeferredNavigations();
+
  private:
+  friend class PasswordProtectionServiceTest;
+  friend class ChromePasswordProtectionServiceTest;
   ~PasswordProtectionRequestContent() override;
 
   void MaybeLogPasswordReuseLookupEvent(
@@ -361,6 +359,11 @@ class PasswordProtectionRequestContent : public PasswordProtectionRequest {
 
   // Cancels the request when it is no longer valid.
   std::unique_ptr<RequestCanceler> request_canceler_;
+
+  // Navigation throttles created for this |web_contents_| during |this|'s
+  // lifetime. These throttles are owned by their corresponding
+  // NavigationHandler instances.
+  std::set<PasswordProtectionNavigationThrottle*> throttles_;
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
   // When we start extracting visual features.
