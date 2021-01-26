@@ -48,25 +48,6 @@
             ]
         }
     ],
-    "AndroidAppMenuUiRework": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "RegroupBackwardButton",
-                    "params": {
-                        "action_bar": "backward_button"
-                    },
-                    "enable_features": [
-                        "TabbedAppOverflowMenuIcons",
-                        "TabbedAppOverflowMenuRegroup"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidAppMenuUiReworkPhase4And5": [
         {
             "platforms": [
