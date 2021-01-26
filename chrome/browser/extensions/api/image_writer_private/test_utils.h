@@ -208,8 +208,6 @@ class ImageWriterUnitTestBase : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 };
 
-bool GetTestDataDirectory(base::FilePath* path);
-
 }  // namespace image_writer
 }  // namespace extensions
 
