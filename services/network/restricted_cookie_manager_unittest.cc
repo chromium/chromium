@@ -185,6 +185,7 @@ class RestrictedCookieManagerTest
             GetParam(),
             &cookie_monster_,
             &cookie_settings_,
+            url::Origin::Create(GURL("https://example.com")),
             isolation_info_,
             recording_client_.GetRemote())),
         receiver_(service_.get(),
@@ -345,6 +346,52 @@ bool CompareCanonicalCookies(const net::CanonicalCookie& c1,
 }
 
 }  // anonymous namespace
+
+// Test the case when `origin` differs from `isolation_info.frame_origin`.
+// RestrictedCookieManager only works for the bound origin and doesn't care
+// about the IsolationInfo's frame_origin. Technically this should only happen
+// when role == mojom::RestrictedCookieManagerRole::NETWORK.
+TEST_P(RestrictedCookieManagerTest,
+       GetAllForUrlFromMismatchingIsolationInfoFrameOrigin) {
+  GURL top_frame_url("https://example.com");
+  GURL resource_url("https://resource.com");
+  auto top_frame_origin = url::Origin::Create(top_frame_url);
+  auto resource_origin = url::Origin::Create(resource_url);
+
+  service_->OverrideOriginForTesting(resource_origin);
+  // Override isolation_info to make it explicit that its frame_origin is
+  // different from the origin.
+  service_->OverrideIsolationInfoForTesting(net::IsolationInfo::Create(
+      net::IsolationInfo::RequestType::kOther, top_frame_origin,
+      top_frame_origin, net::SiteForCookies::FromOrigin(top_frame_origin)));
+  SetSessionCookie("new-name", "new-value", resource_url.host().c_str(), "/");
+
+  // Fetch cookies from the wrong origin (IsolationInfo's frame_origin) should
+  // result in a bad message.
+  {
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = "new-name";
+    options->match_type = mojom::CookieMatchType::EQUALS;
+    ExpectBadMessage();
+    std::vector<net::CanonicalCookie> cookies = sync_service_->GetAllForUrl(
+        top_frame_url, top_frame_url, top_frame_origin, std::move(options));
+    EXPECT_TRUE(received_bad_message());
+  }
+  // Fetch cookies from the correct origin value which RestrictedCookieManager
+  // is bound to should work.
+  {
+    auto options = mojom::CookieManagerGetOptions::New();
+    options->name = "new-name";
+    options->match_type = mojom::CookieMatchType::EQUALS;
+    std::vector<net::CanonicalCookie> cookies = sync_service_->GetAllForUrl(
+        resource_url, top_frame_url, top_frame_origin, std::move(options));
+
+    ASSERT_THAT(cookies, testing::SizeIs(1));
+
+    EXPECT_EQ("new-name", cookies[0].Name());
+    EXPECT_EQ("new-value", cookies[0].Value());
+  }
+}
 
 TEST_P(RestrictedCookieManagerTest, GetAllForUrlBlankFilter) {
   SetSessionCookie("cookie-name", "cookie-value", "example.com", "/");
@@ -901,6 +948,9 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest,
         url::Origin::Create(GURL("https://member1.com")), net::SiteForCookies(),
         std::set<net::SchemefulSite>{
             net::SchemefulSite(GURL("https://member1.com"))}));
+    // Need to override origin as well since the access is from member1.com.
+    service_->OverrideOriginForTesting(
+        url::Origin::Create(GURL("https://member1.com")));
 
     EXPECT_TRUE(sync_service_->SetCanonicalCookie(
         *net::CanonicalCookie::CreateUnsafeCookieForTesting(
@@ -932,6 +982,10 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest,
         url::Origin::Create(GURL("https://example.com")), net::SiteForCookies(),
         std::set<net::SchemefulSite>{
             net::SchemefulSite(GURL("https://not-example.com"))}));
+    // Need to restore the origin value since the previous Same Party test case
+    // changed it to member1.com.
+    service_->OverrideOriginForTesting(
+        url::Origin::Create(GURL("https://example.com")));
 
     EXPECT_FALSE(sync_service_->SetCanonicalCookie(
         *net::CanonicalCookie::CreateUnsafeCookieForTesting(

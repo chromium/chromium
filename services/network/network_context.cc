@@ -606,6 +606,7 @@ void NetworkContext::GetCookieManager(
 void NetworkContext::GetRestrictedCookieManager(
     mojo::PendingReceiver<mojom::RestrictedCookieManager> receiver,
     mojom::RestrictedCookieManagerRole role,
+    const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer) {
   mojom::NetworkServiceClient* network_service_client = nullptr;
@@ -615,7 +616,7 @@ void NetworkContext::GetRestrictedCookieManager(
   restricted_cookie_manager_receivers_.Add(
       std::make_unique<RestrictedCookieManager>(
           role, url_request_context_->cookie_store(),
-          &cookie_manager_->cookie_settings(), isolation_info,
+          &cookie_manager_->cookie_settings(), origin, isolation_info,
           std::move(cookie_observer)),
       std::move(receiver));
 }

@@ -5025,6 +5025,7 @@ void ChromeContentBrowserClient::CreateWebSocket(
 bool ChromeContentBrowserClient::WillCreateRestrictedCookieManager(
     network::mojom::RestrictedCookieManagerRole role,
     content::BrowserContext* browser_context,
+    const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
     bool is_service_worker,
     int process_id,
@@ -5036,7 +5037,8 @@ bool ChromeContentBrowserClient::WillCreateRestrictedCookieManager(
   if (isolation_info.frame_origin()->scheme() == extensions::kExtensionScheme) {
     DCHECK_EQ(network::mojom::RestrictedCookieManagerRole::SCRIPT, role);
     extensions::ChromeExtensionCookies::Get(browser_context)
-        ->CreateRestrictedCookieManager(isolation_info, std::move(*receiver));
+        ->CreateRestrictedCookieManager(origin, isolation_info,
+                                        std::move(*receiver));
     return true;
   }
 #endif

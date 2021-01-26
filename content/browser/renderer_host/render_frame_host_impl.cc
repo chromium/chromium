@@ -8145,7 +8145,7 @@ void RenderFrameHostImpl::BindRestrictedCookieManager(
   static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition())
       ->CreateRestrictedCookieManager(
           network::mojom::RestrictedCookieManagerRole::SCRIPT,
-          GetIsolationInfoForSubresources(),
+          GetLastCommittedOrigin(), GetIsolationInfoForSubresources(),
           /* is_service_worker = */ false, GetProcess()->GetID(), routing_id(),
           std::move(receiver), CreateCookieAccessObserver());
 }
