@@ -76,24 +76,20 @@ const CGFloat kPreferredMaxWidth = 73;
 
     _imageBackgroundView = backgroundView;
 
-#ifdef __IPHONE_13_4
     if (@available(iOS 13.4, *)) {
       _pointerInteraction =
           [[UIPointerInteraction alloc] initWithDelegate:self];
       [self addInteraction:self.pointerInteraction];
     }
-#endif
   }
   return self;
 }
 
 - (void)dealloc {
-#ifdef __IPHONE_13_4
   if (@available(iOS 13.4, *)) {
     [self removeInteraction:self.pointerInteraction];
     self.pointerInteraction = nil;
   }
-#endif
 }
 
 // Returns the font size for the location label.
@@ -115,8 +111,6 @@ const CGFloat kPreferredMaxWidth = 73;
 }
 
 #pragma mark - UIPointerInteractionDelegate
-
-#ifdef __IPHONE_13_4
 
 - (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
                       regionForRequest:(UIPointerRegionRequest*)request
@@ -142,7 +136,5 @@ const CGFloat kPreferredMaxWidth = 73;
                               cornerRadius:8.0];
   return [UIPointerStyle styleWithEffect:effect shape:shape];
 }
-
-#endif
 
 @end

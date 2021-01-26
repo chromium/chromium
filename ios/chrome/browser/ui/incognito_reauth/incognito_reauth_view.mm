@@ -71,11 +71,9 @@ const CGFloat kVerticalContentPadding = 70.0f;
     _tabSwitcherButton.titleLabel.adjustsFontSizeToFitWidth = YES;
     _tabSwitcherButton.titleLabel.adjustsFontForContentSizeCategory = YES;
 
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
       _tabSwitcherButton.pointerInteractionEnabled = YES;
     }
-#endif  // defined(__IPHONE_13_4)
 
     UIView* authButtonContainer =
         [self buildAuthenticateButtonWithBlurEffect:blurEffect];
@@ -158,11 +156,9 @@ const CGFloat kVerticalContentPadding = 70.0f;
       ChromeDirectionalEdgeInsetsMake(-kButtonPaddingV, -kButtonPaddingH,
                                       -kButtonPaddingV, -kButtonPaddingH));
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
     button.pointerInteractionEnabled = YES;
   }
-#endif  // defined(__IPHONE_13_4)
 
   UIView* backgroundView = nil;
   if (@available(iOS 13, *)) {

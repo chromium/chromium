@@ -455,13 +455,11 @@ enum AuthenticationButtonType {
 // Enables pointer support for the button if it is supported on the iOS version.
 - (void)maybeEnablePointerSupportWithButton:(UIButton*)button {
   DCHECK(button);
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       button.pointerInteractionEnabled = YES;
       button.pointerStyleProvider =
           CreateOpaqueOrTransparentButtonPointerStyleProvider();
   }
-#endif  // defined(__IPHONE_13_4)
 }
 
 - (void)setBlueBackgroundStylingWithButton:(UIButton*)button {

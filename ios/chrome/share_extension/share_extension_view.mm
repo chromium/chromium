@@ -104,7 +104,6 @@ const CGFloat kButtonFontSize = 17;
         [self buttonWithTitle:openInChromeTitle
                      selector:@selector(openInChromePressed:)];
 
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
       for (UIButton* button in
            @[ self.readingListButton, bookmarksButton, openButton ]) {
@@ -120,7 +119,6 @@ const CGFloat kButtonFontSize = 17;
         };
       }
     }
-#endif  // defined(__IPHONE_13_4)
 
     UIStackView* contentStack = [[UIStackView alloc] initWithArrangedSubviews:@[
       [self navigationBar], [self dividerView], [self sharedItemView],

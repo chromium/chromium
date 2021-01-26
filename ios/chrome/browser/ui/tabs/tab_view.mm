@@ -58,12 +58,7 @@ UIImage* DefaultFaviconImage() {
 }
 }
 
-#if defined(__IPHONE_13_4)
-@interface TabView (PointerInteraction) <UIPointerInteractionDelegate>
-@end
-#endif  // defined(__IPHONE_13_4)
-
-@interface TabView () {
+@interface TabView () <UIPointerInteractionDelegate> {
   __weak id<TabViewDelegate> _delegate;
 
   // Close button for this tab.
@@ -87,10 +82,8 @@ UIImage* DefaultFaviconImage() {
 
   MDCActivityIndicator* _activityIndicator;
 
-#if defined(__IPHONE_13_4)
   // Adds hover interaction to background tabs.
   API_AVAILABLE(ios(13.4)) UIPointerInteraction* _pointerInteraction;
-#endif  // defined(__IPHONE_13_4)
 }
 @end
 
@@ -296,11 +289,9 @@ UIImage* DefaultFaviconImage() {
                    action:@selector(closeButtonPressed)
          forControlEvents:UIControlEventTouchUpInside];
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       _closeButton.pointerInteractionEnabled = YES;
   }
-#endif  // defined(__IPHONE_13_4)
 
   [self addSubview:_closeButton];
 
@@ -381,7 +372,6 @@ UIImage* DefaultFaviconImage() {
       StretchableImageFromUIImage(resolvedImage, leftInset, 0);
   _backgroundImageView.image = backgroundImage;
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
     if (selected) {
       if (_pointerInteraction)
@@ -393,7 +383,6 @@ UIImage* DefaultFaviconImage() {
       [self addInteraction:_pointerInteraction];
     }
   }
-#endif  // defined(__IPHONE_13_4)
 
   // Style the close button tint color.
   NSString* closeButtonColorName;
@@ -482,7 +471,7 @@ UIImage* DefaultFaviconImage() {
 }
 
 #pragma mark UIPointerInteractionDelegate
-#if defined(__IPHONE_13_4)
+
 - (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
                       regionForRequest:(UIPointerRegionRequest*)request
                          defaultRegion:(UIPointerRegion*)defaultRegion
@@ -517,7 +506,6 @@ UIImage* DefaultFaviconImage() {
   effect.prefersShadow = NO;
   return [UIPointerStyle styleWithEffect:effect shape:nil];
 }
-#endif  // defined(__IPHONE_13_4)
 
 #pragma mark - Touch events
 

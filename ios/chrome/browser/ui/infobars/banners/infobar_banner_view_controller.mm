@@ -231,7 +231,6 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
                forControlEvents:UIControlEventTouchUpInside];
   self.infobarButton.accessibilityIdentifier =
       kInfobarBannerAcceptButtonIdentifier;
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       self.infobarButton.pointerInteractionEnabled = YES;
       self.infobarButton.pointerStyleProvider =
@@ -243,7 +242,6 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
         return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
       };
   }
-#endif  // defined(__IPHONE_13_4)
 
   UIView* buttonSeparator = [[UIView alloc] init];
   buttonSeparator.translatesAutoresizingMaskIntoConstraints = NO;
@@ -278,13 +276,11 @@ const CGFloat kLongPressTimeDurationInSeconds = 0.4;
   [containerStack addArrangedSubview:self.openModalButton];
   // Hide open modal button if user shouldn't be allowed to open the modal.
   self.openModalButton.hidden = !self.presentsModal;
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       self.openModalButton.pointerInteractionEnabled = YES;
       self.openModalButton.pointerStyleProvider =
           CreateDefaultEffectCirclePointerStyleProvider();
   }
-#endif  // defined(__IPHONE_13_4)
 
   // Add accept button.
   [containerStack addArrangedSubview:self.infobarButton];

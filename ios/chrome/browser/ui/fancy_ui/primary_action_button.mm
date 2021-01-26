@@ -35,12 +35,10 @@
 
 - (void)updateStyling {
   self.hasOpaqueBackground = YES;
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       self.pointerInteractionEnabled = YES;
       self.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
   }
-#endif  // defined(__IPHONE_13_4)
 
   UIColor* hintColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   UIColor* inkColor = [UIColor colorWithWhite:1 alpha:0.2f];

@@ -24,7 +24,6 @@ NSString* kCellIdentifier = @"clvcCell";
 const CGFloat kHeaderHeight = 70;
 }
 
-#if defined(__IPHONE_13_4)
 // This cell just adds a simple hover pointer interaction to the TableViewCell.
 @interface CredentialListCell : UITableViewCell
 @end
@@ -43,7 +42,6 @@ const CGFloat kHeaderHeight = 70;
 }
 
 @end
-#endif  // defined(__IPHONE_13_4)
 
 @interface CredentialListViewController () <UITableViewDataSource,
                                             UISearchResultsUpdating>
@@ -153,14 +151,9 @@ const CGFloat kHeaderHeight = 70;
   UITableViewCell* cell =
       [tableView dequeueReusableCellWithIdentifier:kCellIdentifier];
   if (!cell) {
-#if defined(__IPHONE_13_4)
     cell =
         [[CredentialListCell alloc] initWithStyle:UITableViewCellStyleSubtitle
                                   reuseIdentifier:kCellIdentifier];
-#else
-    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                  reuseIdentifier:kCellIdentifier];
-#endif  // defined(__IPHONE_13_4)
     cell.accessoryView = [self infoIconButton];
   }
 
@@ -238,7 +231,6 @@ const CGFloat kHeaderHeight = 70;
       @"IDS_IOS_CREDENTIAL_PROVIDER_SHOW_DETAILS_ACCESSIBILITY_LABEL",
       @"Show Details.");
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
     button.pointerInteractionEnabled = YES;
     button.pointerStyleProvider = ^UIPointerStyle*(
@@ -254,7 +246,6 @@ const CGFloat kHeaderHeight = 70;
       return [UIPointerStyle styleWithEffect:effect shape:shape];
     };
   }
-#endif  // defined(__IPHONE_13_4)
 
   return button;
 }

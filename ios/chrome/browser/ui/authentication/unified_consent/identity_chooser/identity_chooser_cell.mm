@@ -45,11 +45,9 @@ const CGFloat kCheckmarkMagin = 26.;
         ChromeDirectionalEdgeInsetsMake(0, kLeadingMargin, 0, 0);
     AddSameConstraintsToSidesWithInsets(_identityView, self.contentView,
                                         sideFlags, insets);
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         [self addInteraction:[[ViewPointerInteraction alloc] init]];
     }
-#endif  // defined(__IPHONE_13_4)
   }
   return self;
 }

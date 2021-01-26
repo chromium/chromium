@@ -145,14 +145,12 @@ void configureVoiceSearchButton(UIButton* voiceSearchButton,
                                                IDS_IOS_ACCNAME_VOICE_SEARCH)];
   [voiceSearchButton setAccessibilityIdentifier:@"Voice Search"];
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       voiceSearchButton.pointerInteractionEnabled = YES;
       // Make the pointer shape fit the location bar's semi-circle end shape.
       voiceSearchButton.pointerStyleProvider =
           CreateLiftEffectCirclePointerStyleProvider();
   }
-#endif  // defined(__IPHONE_13_4)
 }
 
 UIView* nearestAncestor(UIView* view, Class aClass) {

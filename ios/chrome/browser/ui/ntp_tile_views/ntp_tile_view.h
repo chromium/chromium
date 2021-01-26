@@ -10,11 +10,7 @@
 // A generic NTP tile view. Provides a title label and an image container on a
 // squircle-shaped background. Concrete subclasses of this are used to display
 // most visited tiles and shortcut tiles on NTP and other places.
-#ifdef __IPHONE_13_4
 @interface NTPTileView : UIView <UIPointerInteractionDelegate>
-#else
-@interface NTPTileView : UIView
-#endif
 
 // Container for the image view. Used in subclasses.
 @property(nonatomic, strong, readonly, nonnull) UIView* imageContainerView;

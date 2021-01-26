@@ -92,11 +92,9 @@ const CGFloat kArrowDownMargin = 12.;
     AddSameCenterYConstraint(self, _arrowDownImageView);
     ApplyVisualConstraintsWithMetrics(constraints, views, metrics);
 
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         [self addInteraction:[[ViewPointerInteraction alloc] init]];
     }
-#endif  // defined(__IPHONE_13_4)
 
     // Accessibility.
     self.isAccessibilityElement = YES;

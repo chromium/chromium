@@ -558,7 +558,6 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   primaryActionButton.accessibilityIdentifier =
       kConfirmationAlertPrimaryActionAccessibilityIdentifier;
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
     if (self.pointerInteractionEnabled) {
       primaryActionButton.pointerInteractionEnabled = YES;
@@ -566,7 +565,6 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
           CreateOpaqueButtonPointerStyleProvider();
     }
   }
-#endif  // defined(__IPHONE_13_4)
 
   return primaryActionButton;
 }
@@ -595,7 +593,6 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   secondaryActionButton.accessibilityIdentifier =
       kConfirmationAlertSecondaryActionAccessibilityIdentifier;
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
     if (self.pointerInteractionEnabled) {
       secondaryActionButton.pointerInteractionEnabled = YES;
@@ -603,7 +600,6 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
           CreateOpaqueButtonPointerStyleProvider();
     }
   }
-#endif  // defined(__IPHONE_13_4)
 
   return secondaryActionButton;
 }
@@ -628,7 +624,6 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
   tertiaryActionButton.accessibilityIdentifier =
       kConfirmationAlertTertiaryActionAccessibilityIdentifier;
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
     if (self.pointerInteractionEnabled) {
       tertiaryActionButton.pointerInteractionEnabled = YES;
@@ -636,7 +631,6 @@ constexpr CGFloat kSafeAreaMultiplier = 0.8;
           CreateOpaqueButtonPointerStyleProvider();
     }
   }
-#endif  // defined(__IPHONE_13_4)
 
   return tertiaryActionButton;
 }

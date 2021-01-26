@@ -112,13 +112,11 @@ const CGFloat kImageViewWidthHeight = 32;
                        action:@selector(onPrimaryButtonAction:)
              forControlEvents:UIControlEventTouchUpInside];
     _primaryButton.contentEdgeInsets = primaryButtonInsets;
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         _primaryButton.pointerInteractionEnabled = YES;
         _primaryButton.pointerStyleProvider =
             CreateOpaqueButtonPointerStyleProvider();
     }
-#endif  // defined(__IPHONE_13_4)
 
     // Create and setup seconday button.
     UIButton* secondaryButton;
@@ -134,11 +132,9 @@ const CGFloat kImageViewWidthHeight = 32;
     [_secondaryButton addTarget:self
                          action:@selector(onSecondaryButtonAction:)
                forControlEvents:UIControlEventTouchUpInside];
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         _secondaryButton.pointerInteractionEnabled = YES;
     }
-#endif  // defined(__IPHONE_13_4)
 
     // Vertical stackView containing all previous view.
     UIStackView* verticalStackView =
@@ -161,11 +157,9 @@ const CGFloat kImageViewWidthHeight = 32;
     [_closeButton setImage:[UIImage imageNamed:@"signin_promo_close_gray"]
                   forState:UIControlStateNormal];
     _closeButton.hidden = YES;
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         _closeButton.pointerInteractionEnabled = YES;
     }
-#endif  // defined(__IPHONE_13_4)
     [self addSubview:_closeButton];
 
     [NSLayoutConstraint activateConstraints:@[

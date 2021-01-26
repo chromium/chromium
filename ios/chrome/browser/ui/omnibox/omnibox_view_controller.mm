@@ -549,13 +549,11 @@ const CGFloat kClearButtonSize = 28.0f;
   SetA11yLabelAndUiAutomationName(clearButton, IDS_IOS_ACCNAME_CLEAR_TEXT,
                                   @"Clear Text");
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       clearButton.pointerInteractionEnabled = YES;
       clearButton.pointerStyleProvider =
           CreateLiftEffectCirclePointerStyleProvider();
   }
-#endif  // defined(__IPHONE_13_4)
 
   // Observe text changes to show the clear button when there is text and hide
   // it when the textfield is empty.

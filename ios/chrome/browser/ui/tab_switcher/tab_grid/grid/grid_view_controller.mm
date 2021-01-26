@@ -43,16 +43,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 }
 }  // namespace
 
-#if defined(__IPHONE_13_4)
-@interface GridViewController (Pointer) <UIPointerInteractionDelegate>
-@end
-#endif  // defined(__IPHONE_13_4)
-
 @interface GridViewController () <GridCellDelegate,
                                   UICollectionViewDataSource,
                                   UICollectionViewDelegate,
                                   UICollectionViewDragDelegate,
-                                  UICollectionViewDropDelegate>
+                                  UICollectionViewDropDelegate,
+                                  UIPointerInteractionDelegate>
 // A collection view of items in a grid format.
 @property(nonatomic, weak) UICollectionView* collectionView;
 // A view to obscure incognito content when the user isn't authorized to
@@ -80,14 +76,12 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 // By how much the user scrolled past the view's content size. A negative value
 // means the user hasn't scrolled past the end of the scroll view.
 @property(nonatomic, assign, readonly) CGFloat offsetPastEndOfScrollView;
-#if defined(__IPHONE_13_4)
 // Cells for which pointer interactions have been added. Pointer interactions
 // should only be added to displayed cells (not transition cells). This is only
 // expected to get as large as the number of reusable cells in memory.
 @property(nonatomic, strong)
     NSHashTable<UICollectionViewCell*>* pointerInteractionCells API_AVAILABLE(
         ios(13.4));
-#endif  // defined(__IPHONE_13_4)
 // The transition layout either from grid to horizontal layout or from
 // horizontal to grid layout.
 @property(nonatomic, strong)
@@ -155,12 +149,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   collectionView.dropDelegate = self;
   collectionView.dragInteractionEnabled = YES;
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       self.pointerInteractionCells =
           [NSHashTable<UICollectionViewCell*> weakObjectsHashTable];
   }
-#endif  // defined(__IPHONE_13_4)
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -344,7 +336,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // rows during transitions between grid and horizontal layouts.
   cell.layer.zPosition = self.items.count - itemIndex;
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       if (![self.pointerInteractionCells containsObject:cell]) {
         [cell addInteraction:[[UIPointerInteraction alloc]
@@ -354,7 +345,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
         [self.pointerInteractionCells addObject:cell];
       }
   }
-#endif  // defined(__IPHONE_13_4)
   return cell;
 }
 
@@ -389,7 +379,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return NO;
 }
 
-#if defined(__IPHONE_13_4)
 #pragma mark - UIPointerInteractionDelegate
 
 - (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
@@ -407,7 +396,6 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
                             initWithView:interaction.view]];
   return [UIPointerStyle styleWithEffect:effect shape:nil];
 }
-#endif  // defined(__IPHONE_13_4)
 
 #pragma mark - UICollectionViewDragDelegate
 

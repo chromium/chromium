@@ -109,9 +109,7 @@ extern NSString* const
 @property(nonatomic, readonly) UIButton* primaryActionButton;
 
 // Enables pointer support.
-#if defined(__IPHONE_13_4)
 @property(nonatomic) BOOL pointerInteractionEnabled API_AVAILABLE(ios(13.4));
-#endif  // defined(__IPHONE_13_4)
 
 @end
 

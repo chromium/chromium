@@ -29,12 +29,10 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
 @interface PopupMenuTableViewController ()
 // Whether the -viewDidAppear: callback has been called.
 @property(nonatomic, assign) BOOL viewDidAppear;
-#if defined(__IPHONE_13_4)
 // Tracks reusable cells in memory, which has an upper limit. This is used to
 // ensure that pointer interaction is added only once to a cell.
 @property(nonatomic, strong)
     NSHashTable<UITableViewCell*>* cellsInMemory API_AVAILABLE(ios(13.4));
-#endif  // defined(__IPHONE_13_4)
 @end
 
 @implementation PopupMenuTableViewController
@@ -48,12 +46,10 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
 - (instancetype)init {
   self = [super initWithStyle:UITableViewStyleGrouped];
   if (self) {
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         self.cellsInMemory =
             [NSHashTable<UITableViewCell*> weakObjectsHashTable];
     }
-#endif  // defined(__IPHONE_13_4)
   }
   return self;
 }
@@ -224,14 +220,12 @@ const CGFloat kScrollIndicatorVerticalInsets = 11;
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       if (![self.cellsInMemory containsObject:cell]) {
         [cell addInteraction:[[ViewPointerInteraction alloc] init]];
         [self.cellsInMemory addObject:cell];
       }
   }
-#endif  // defined(__IPHONE_13_4)
   return cell;
 }
 

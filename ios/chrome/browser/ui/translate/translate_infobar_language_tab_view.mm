@@ -107,11 +107,9 @@ const CGFloat kButtonPadding = 12;
         forControlEvents:UIControlEventTouchUpInside];
   [self addSubview:self.button];
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       self.button.pointerInteractionEnabled = YES;
   }
-#endif  // defined(__IPHONE_13_4)
 
   AddSameConstraints(self, self.button);
 }

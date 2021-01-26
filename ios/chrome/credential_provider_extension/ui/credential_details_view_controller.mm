@@ -230,7 +230,6 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
                 action:@selector(passwordIconButtonTapped:event:)
       forControlEvents:UIControlEventTouchUpInside];
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
     button.pointerInteractionEnabled = YES;
     button.pointerStyleProvider = ^UIPointerStyle*(
@@ -246,7 +245,6 @@ typedef NS_ENUM(NSInteger, RowIdentifier) {
       return [UIPointerStyle styleWithEffect:effect shape:shape];
     };
   }
-#endif  // defined(__IPHONE_13_4)
 
   return button;
 }

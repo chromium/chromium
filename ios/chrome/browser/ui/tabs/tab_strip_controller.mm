@@ -151,11 +151,9 @@ UIColor* BackgroundColor() {
     self.titleLabel.minimumScaleFactor = 0.1;
     self.titleLabel.baselineAdjustment = UIBaselineAdjustmentAlignCenters;
 
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         self.pointerInteractionEnabled = YES;
     }
-#endif  // defined(__IPHONE_13_4)
   }
   return self;
 }
@@ -507,11 +505,9 @@ UIColor* BackgroundColor() {
                       action:@selector(recordUserMetrics:)
             forControlEvents:UIControlEventTouchUpInside];
 
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         _buttonNewTab.pointerInteractionEnabled = YES;
     }
-#endif  // defined(__IPHONE_13_4)
 
     [_tabStripView addSubview:_buttonNewTab];
 

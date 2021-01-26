@@ -47,11 +47,9 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
 
 }  // namespace
 
-#if defined(__IPHONE_13_4)
 @interface ContentSuggestionsHeaderViewController (Pointer) <
     UIPointerInteractionDelegate>
 @end
-#endif  // defined(__IPHONE_13_4)
 
 #if defined(__IPHONE_14_0)
 @interface ContentSuggestionsHeaderViewController (Scribble) <
@@ -327,12 +325,10 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   self.accessibilityButton.translatesAutoresizingMaskIntoConstraints = NO;
   AddSameConstraints(self.fakeOmnibox, self.accessibilityButton);
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       [self.fakeOmnibox
           addInteraction:[[UIPointerInteraction alloc] initWithDelegate:self]];
   }
-#endif  // defined(__IPHONE_13_4)
 
   [self.headerView addViewsToSearchField:self.fakeOmnibox];
 
@@ -387,7 +383,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
                               action:@selector(identityDiscTapped)
                     forControlEvents:UIControlEventTouchUpInside];
 
-#if defined(__IPHONE_13_4)
   if (@available(iOS 13.4, *)) {
       self.identityDiscButton.pointerInteractionEnabled = YES;
       self.identityDiscButton.pointerStyleProvider =
@@ -405,7 +400,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
         return [UIPointerStyle styleWithEffect:proposedEffect shape:shape];
       };
   }
-#endif  // defined(__IPHONE_13_4)
 
   // TODO(crbug.com/965958): Set action on button to launch into Settings.
   [self.headerView setIdentityDiscView:self.identityDiscButton];
@@ -734,7 +728,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   self.identityDiscButton.imageView.layer.masksToBounds = YES;
 }
 
-#if defined(__IPHONE_13_4)
 #pragma mark UIPointerInteractionDelegate
 
 - (UIPointerRegion*)pointerInteraction:(UIPointerInteraction*)interaction
@@ -766,6 +759,5 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
                          axis:UIAxisVertical];
   return [UIPointerStyle styleWithEffect:effect shape:shape];
 }
-#endif  // defined(__IPHONE_13_4)
 
 @end

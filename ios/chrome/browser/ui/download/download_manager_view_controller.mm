@@ -423,11 +423,9 @@ NSString* GetSizeString(long long size_in_bytes) {
                      action:@selector(didTapCloseButton)
            forControlEvents:UIControlEventTouchUpInside];
 
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         _closeButton.pointerInteractionEnabled = YES;
     }
-#endif  // defined(__IPHONE_13_4)
   }
   return _closeButton;
 }
@@ -471,11 +469,9 @@ NSString* GetSizeString(long long size_in_bytes) {
                       action:@selector(didTapActionButton)
             forControlEvents:UIControlEventTouchUpInside];
 
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         _actionButton.pointerInteractionEnabled = YES;
     }
-#endif  // defined(__IPHONE_13_4)
 
     [self updateActionButton];
   }
@@ -498,11 +494,9 @@ NSString* GetSizeString(long long size_in_bytes) {
         setTitle:l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_INSTALL)
         forState:UIControlStateNormal];
 
-#if defined(__IPHONE_13_4)
     if (@available(iOS 13.4, *)) {
         _installDriveButton.pointerInteractionEnabled = YES;
     }
-#endif  // defined(__IPHONE_13_4)
   }
   return _installDriveButton;
 }
