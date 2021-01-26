@@ -191,6 +191,7 @@ source_set("eg2_tests") {
 
   sources = [
     "policy_egtest.mm",
+    "policy_incognito_mode_availability_egtest.mm",
     "policy_platform_provider_egtest.mm",
   ]
 
@@ -215,6 +216,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/ui/settings/language:language_ui_constants",
     "//ios/chrome/browser/ui/settings/password:password_constants",
     "//ios/chrome/browser/ui/table_view/cells:cells_constants",
+    "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",

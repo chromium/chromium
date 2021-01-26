@@ -10,6 +10,7 @@
 // Accessibility IDs for the table view in various kinds of popup menus.
 extern NSString* const kPopupMenuToolsMenuTableViewId;
 extern NSString* const kPopupMenuNavigationTableViewId;
+extern NSString* const kPopupMenuTabGridMenuTableViewId;
 
 // Accessibility IDs for the Tools Menu items.
 // Downloads item accessibility Identifier.

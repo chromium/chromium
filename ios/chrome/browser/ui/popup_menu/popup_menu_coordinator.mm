@@ -209,6 +209,9 @@ PopupMenuCommandType CommandTypeFromPopupType(PopupMenuType type) {
              type == PopupMenuTypeNavigationForward) {
     tableViewController.tableView.accessibilityIdentifier =
         kPopupMenuNavigationTableViewId;
+  } else if (type == PopupMenuTypeTabGrid) {
+    tableViewController.tableView.accessibilityIdentifier =
+        kPopupMenuTabGridMenuTableViewId;
   }
 
   self.viewController = tableViewController;

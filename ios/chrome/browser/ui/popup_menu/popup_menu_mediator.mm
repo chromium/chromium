@@ -32,6 +32,7 @@
 #import "ios/chrome/browser/overlays/public/web_content_area/http_auth_overlay.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/policy_features.h"
+#import "ios/chrome/browser/prefs/prefs_util.h"
 #import "ios/chrome/browser/search_engines/search_engines_util.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/activity_services/canonical_url_retriever.h"
@@ -868,12 +869,20 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   PopupMenuToolsItem* voiceSearch = CreateTableViewItem(
       IDS_IOS_TOOLS_MENU_VOICE_SEARCH, PopupMenuActionVoiceSearch,
       @"popup_menu_voice_search", kToolsMenuVoiceSearch);
+
   PopupMenuToolsItem* newSearch =
       CreateTableViewItem(IDS_IOS_TOOLS_MENU_NEW_SEARCH, PopupMenuActionSearch,
                           @"popup_menu_search", kToolsMenuSearch);
+  // Disable the new search if the incognito mode is forced by enterprise
+  // policy.
+  newSearch.enabled = !IsIncognitoModeForced(self.prefService);
+
   PopupMenuToolsItem* newIncognitoSearch = CreateTableViewItem(
       IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH, PopupMenuActionIncognitoSearch,
       @"popup_menu_new_incognito_tab", kToolsMenuIncognitoSearch);
+  // Disable the new incognito search if the incognito mode is disabled by
+  // enterprise policy.
+  newIncognitoSearch.enabled = !IsIncognitoModeDisabled(self.prefService);
 
   return @[ newSearch, newIncognitoSearch, voiceSearch, QRCodeSearch ];
 }
@@ -912,14 +921,23 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
 
 - (NSArray<TableViewItem*>*)itemsForNewTab {
   // Open New Tab.
-  TableViewItem* openNewTabItem =
+  PopupMenuToolsItem* openNewTabItem =
       CreateTableViewItem(IDS_IOS_TOOLS_MENU_NEW_TAB, PopupMenuActionOpenNewTab,
                           @"popup_menu_new_tab", kToolsMenuNewTabId);
+
+  // Disable the new tab menu item if the incognito mode is forced by enterprise
+  // policy.
+  openNewTabItem.enabled = !IsIncognitoModeForced(self.prefService);
 
   // Open New Incognito Tab.
   self.openNewIncognitoTabItem = CreateTableViewItem(
       IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB, PopupMenuActionOpenNewIncognitoTab,
       @"popup_menu_new_incognito_tab", kToolsMenuNewIncognitoTabId);
+
+  // Disable the new incognito tab menu item if the incognito mode is disabled
+  // by enterprise policy.
+  self.openNewIncognitoTabItem.enabled =
+      !IsIncognitoModeDisabled(self.prefService);
 
   return @[ openNewTabItem, self.openNewIncognitoTabItem ];
 }

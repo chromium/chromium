@@ -14,6 +14,8 @@
 #endif
 
 bool IsIncognitoModeDisabled(PrefService* pref_service) {
+  if (!pref_service)
+    return NO;
   return IsEnterprisePolicyEnabled() &&
          pref_service->IsManagedPreference(prefs::kIncognitoModeAvailability) &&
          pref_service->GetInteger(prefs::kIncognitoModeAvailability) ==
@@ -21,6 +23,8 @@ bool IsIncognitoModeDisabled(PrefService* pref_service) {
 }
 
 bool IsIncognitoModeForced(PrefService* pref_service) {
+  if (!pref_service)
+    return NO;
   return IsEnterprisePolicyEnabled() &&
          pref_service->IsManagedPreference(prefs::kIncognitoModeAvailability) &&
          pref_service->GetInteger(prefs::kIncognitoModeAvailability) ==
