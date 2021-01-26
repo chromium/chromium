@@ -60,6 +60,7 @@ ChromeExtensionCookies* ChromeExtensionCookies::Get(
 }
 
 void ChromeExtensionCookies::CreateRestrictedCookieManager(
+    const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -69,7 +70,7 @@ void ChromeExtensionCookies::CreateRestrictedCookieManager(
   // Safe since |io_data_| is non-null so no IOData deletion is queued.
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&IOData::CreateRestrictedCookieManager,
-                                base::Unretained(io_data_.get()),
+                                base::Unretained(io_data_.get()), origin,
                                 isolation_info, std::move(receiver)));
 }
 
@@ -107,6 +108,7 @@ ChromeExtensionCookies::IOData::~IOData() {
 }
 
 void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
+    const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
     mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
@@ -114,7 +116,8 @@ void ChromeExtensionCookies::IOData::CreateRestrictedCookieManager(
   restricted_cookie_managers_.Add(
       std::make_unique<network::RestrictedCookieManager>(
           network::mojom::RestrictedCookieManagerRole::SCRIPT,
-          GetOrCreateCookieStore(), &network_cookie_settings_, isolation_info,
+          GetOrCreateCookieStore(), &network_cookie_settings_, origin,
+          isolation_info,
           /* null cookies_observer disables logging */
           mojo::NullRemote()),
       std::move(receiver));

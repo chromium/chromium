@@ -346,6 +346,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   // makes some decision based on that.
   void CreateRestrictedCookieManager(
       network::mojom::RestrictedCookieManagerRole role,
+      const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       bool is_service_worker,
       int process_id,

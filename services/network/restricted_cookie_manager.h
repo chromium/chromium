@@ -40,11 +40,22 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
     : public mojom::RestrictedCookieManager {
  public:
   // All the pointers passed to the constructor are expected to point to
-  // objects that will outlive |this|. |isolation_info| must be fully populated.
+  // objects that will outlive `this`.
+  //
+  // `origin` represents the domain for which the RestrictedCookieManager can
+  // access cookies. It could either be a frame origin when `role` is
+  // RestrictedCookieManagerRole::SCRIPT (a script scoped to a particular
+  // document's frame)), or a request origin when `role` is
+  // RestrictedCookieManagerRole::NETWORK (a network request).
+  //
+  // `isolation_info` must be fully populated, its `frame_origin` field should
+  // not be used for cookie access decisions, but should be the same as `origin`
+  // if the `role` is mojom::RestrictedCookieManagerRole::SCRIPT.
   RestrictedCookieManager(
       mojom::RestrictedCookieManagerRole role,
       net::CookieStore* cookie_store,
       const CookieSettings* cookie_settings,
+      const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer);
 
@@ -64,7 +75,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) RestrictedCookieManager
   void OverrideIsolationInfoForTesting(
       const net::IsolationInfo& new_isolation_info) {
     site_for_cookies_ = new_isolation_info.site_for_cookies();
-    origin_ = new_isolation_info.frame_origin().value();
     top_frame_origin_ = new_isolation_info.top_frame_origin().value();
     isolation_info_ = new_isolation_info;
   }

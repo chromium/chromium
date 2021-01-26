@@ -907,6 +907,12 @@ interface NetworkContext {
   // Gets a RestrictedCookieManager scoped to a given origin, and applying
   // settings configured on the CookieManager associated with this domain.
   //
+  // |origin| represents the domain for which the RestrictedCookieManager can
+  // access cookies. It could either be a frame origin when |role| is
+  // RestrictedCookieManagerRole::SCRIPT (a script scoped to a particular
+  // document's frame)), or a request origin when |role| is
+  // RestrictedCookieManagerRole::NETWORK (a network request).
+  //
   // |isolation_info| contains info for SameSite and SameParty cookie queries.
   // Must be fully populated.
   //
@@ -918,6 +924,7 @@ interface NetworkContext {
   GetRestrictedCookieManager(
       pending_receiver<RestrictedCookieManager> restricted_cookie_manager,
       RestrictedCookieManagerRole role,
+      url.mojom.Origin origin,
       IsolationInfo isolation_info,
       pending_remote<CookieAccessObserver>? cookie_observer);
 
