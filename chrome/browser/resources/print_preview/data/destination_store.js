@@ -220,6 +220,9 @@ export class DestinationStore extends EventTarget {
     /** @private {boolean} */
     this.initialized_ = false;
 
+    /** @private {boolean} */
+    this.readyToReloadCookieDestinations_ = false;
+
     /**
      * Maps user account to the list of origins for which destinations are
      * already loaded.
@@ -404,6 +407,9 @@ export class DestinationStore extends EventTarget {
     if (this.typesToSearch_.size === 0) {
       this.tryToSelectInitialDestination_();
       this.initialized_ = true;
+      if (this.readyToReloadCookieDestinations_) {
+        this.reloadUserCookieBasedDestinations(this.activeUser_);
+      }
       return;
     }
 
@@ -418,6 +424,9 @@ export class DestinationStore extends EventTarget {
       }
     }
     this.initialized_ = true;
+    if (this.readyToReloadCookieDestinations_) {
+      this.reloadUserCookieBasedDestinations(this.activeUser_);
+    }
   }
 
   /** @private */
@@ -831,6 +840,7 @@ export class DestinationStore extends EventTarget {
    */
   reloadUserCookieBasedDestinations(account) {
     if (!this.initialized_) {
+      this.readyToReloadCookieDestinations_ = true;
       return;
     }
 
