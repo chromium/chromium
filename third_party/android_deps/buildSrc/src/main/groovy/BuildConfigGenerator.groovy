@@ -86,6 +86,11 @@ class BuildConfigGenerator extends DefaultTask {
      */
      boolean useDedicatedAndroidxDir
 
+     /**
+      * Whether to ignore DEPS file.
+      */
+     boolean ignoreDEPS
+
     @TaskAction
     void main() {
         skipLicenses = skipLicenses || project.hasProperty("skipLicenses")
@@ -103,6 +108,9 @@ class BuildConfigGenerator extends DefaultTask {
         def downloadTasks = []
         graph.dependencies.values().each { dependency ->
             if (excludeDependency(dependency)) {
+                return
+            }
+            if (useDedicatedAndroidxDir && dependency.id.startsWith("androidx_")) {
                 return
             }
             logger.debug "Processing ${dependency.name}: \n${jsonDump(dependency)}"
@@ -153,8 +161,10 @@ class BuildConfigGenerator extends DefaultTask {
 
         // 3. Generate the root level build files
         updateBuildTargetDeclaration(graph, repositoryPath, normalisedRepoPath)
-        updateDepsDeclaration(graph, cipdBucket, stripFromCipdPath, repositoryPath,
-                              "${normalisedRepoPath}/../../DEPS")
+        if (!ignoreDEPS) {
+            updateDepsDeclaration(graph, cipdBucket, stripFromCipdPath, repositoryPath,
+                                  "${normalisedRepoPath}/../../DEPS")
+        }
         dependencyDirectories.sort { path1, path2 -> return path1.compareTo(path2) }
         updateReadmeReferenceFile(dependencyDirectories,
                                   "${normalisedRepoPath}/additional_readme_paths.json")
@@ -256,6 +266,8 @@ class BuildConfigGenerator extends DefaultTask {
             def matcher = BUILD_GN_GEN_PATTERN.matcher(buildFile.getText())
             if (!matcher.find()) throw new IllegalStateException("BUILD.gn insertion point not found.")
             out = matcher.replaceFirst(out)
+        } else {
+            out = "import(\"//build/config/android/rules.gni\")\n" + out
         }
         buildFile.write(out)
     }
@@ -558,6 +570,9 @@ class BuildConfigGenerator extends DefaultTask {
 
         depGraph.dependencies.values().sort(dependencyComparator).each { dependency ->
             if (excludeDependency(dependency)) {
+                return
+            }
+            if (useDedicatedAndroidxDir && dependency.id.startsWith("androidx_")) {
                 return
             }
             def depPath = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.id}"

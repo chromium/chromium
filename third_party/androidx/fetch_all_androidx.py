@@ -18,6 +18,7 @@ import json
 import os
 import re
 import shutil
+import stat
 import subprocess
 import tempfile
 import urllib
@@ -30,6 +31,13 @@ _FETCH_ALL_PATH = os.path.normpath(
 
 # URL to BUILD_INFO in latest androidx snapshot.
 _ANDROIDX_LATEST_SNAPSHOT_BUILD_INFO_URL = 'https://androidx.dev/snapshots/latest/artifacts/BUILD_INFO'
+
+
+def _delete_readonly_files(paths):
+    for path in paths:
+        if os.path.exists(path):
+            os.chmod(path, stat.S_IRUSR | stat.S_IRGRP | stat.S_IWUSR)
+            os.remove(path)
 
 
 def _parse_dir_list(dir_list):
@@ -204,6 +212,13 @@ def main():
     # directory deletion if the first deletion attempt does not work.
     if os.path.exists(libs_dir) and os.listdir(libs_dir):
         raise Exception('Recipe did not empty \'libs\' directory.')
+
+    # Files uploaded to cipd are read-only. Delete them because they will be
+    # re-generated.
+    _delete_readonly_files([
+        os.path.join(_ANDROIDX_PATH, 'BUILD.gn'),
+        os.path.join(_ANDROIDX_PATH, 'additional_readme_paths.json'),
+    ])
 
     dependency_version_map, androidx_snapshot_repository_url = (
         _download_and_parse_build_info())
