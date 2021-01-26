@@ -505,9 +505,18 @@ export class ParagraphUtils {
       // We iterate over each nodeGroupItem until the |charIndex| is pointing
       // before the current node's name.
       if (currentNodeGroupItem.startChar + currentNodeNameLength > charIndex) {
-        // The currentNodeOffset is the position of the |charIndex| within the
-        // current nodeGroupItem.
-        const currentNodeOffset = charIndex - currentNodeGroupItem.startChar;
+        // The |currentNodeOffset| is the position of the |charIndex| within the
+        // current nodeGroupItem. ParagraphUtils.getNodeName returns a string
+        // without an ending space character, though |charIndex| is based on a
+        // string that was generated with an extra space character between each
+        // nodeGroupItems. Thus, there might be a gap between the previous
+        // nodeGroupItem and the current nodeGroupItem. If
+        // |currentNodeGroupItem.startChar| is greater than |charIndex|, that
+        // means the |charIndex| is pointing to the gap. In such case, we set
+        // |currentNodeOffset| to 0 and return the beginning of the current
+        // nodeGroupItem.
+        const currentNodeOffset =
+            Math.max(0, charIndex - currentNodeGroupItem.startChar);
         if (!currentNodeGroupItem.hasInlineText) {
           // If the nodeGroupItem does not have inline text, we return the
           // corresponding node and the current offset.
