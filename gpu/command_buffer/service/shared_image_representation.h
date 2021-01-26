@@ -420,6 +420,12 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
 
     gl::GLImage* gl_image() const { return gl_image_; }
 
+#if defined(OS_ANDROID)
+    AHardwareBuffer* GetAHardwareBuffer() {
+      return representation()->GetAHardwareBuffer();
+    }
+#endif
+
     std::vector<gfx::GpuFence> TakeAcquireFences() {
       return std::move(acquire_fences_);
     }
@@ -461,7 +467,9 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
   // |release_fence| will be null in that case.
   virtual void EndReadAccess(gfx::GpuFenceHandle release_fence) = 0;
 
-  // TODO(weiliangc): Add API to backing AHardwareBuffer.
+#if defined(OS_ANDROID)
+  virtual AHardwareBuffer* GetAHardwareBuffer();
+#endif
 
   // TODO(penghuang): Refactor it to not depend on GL.
   // Get the backing as GLImage for GLSurface::ScheduleOverlayPlane.

@@ -252,6 +252,13 @@ sk_sp<SkPromiseImageTexture> SharedImageRepresentationSkia::BeginReadAccess(
   return nullptr;
 }
 
+#if defined(OS_ANDROID)
+AHardwareBuffer* SharedImageRepresentationOverlay::GetAHardwareBuffer() {
+  NOTREACHED();
+  return nullptr;
+}
+#endif
+
 SharedImageRepresentationOverlay::ScopedReadAccess::ScopedReadAccess(
     base::PassKey<SharedImageRepresentationOverlay> pass_key,
     SharedImageRepresentationOverlay* representation,
