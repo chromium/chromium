@@ -1,4 +1,4 @@
-<style include="profile-picker-shared cr-hidden-style">
+<style include="profile-picker-shared cr-hidden-style cr-shared-style">
   :host {
     --avatar-icon-size: 74px;
     --banner-img-height: 400px;
@@ -17,6 +17,12 @@
     z-index: -1;
   }
 
+  .flex-container {
+    display: flex;
+    flex-flow: column;
+    height: calc(100% - var(--cr-button-height) - 2 * var(--footer-spacing));
+  }
+
   #leftBanner {
     background: url(images/left_banner_image.svg);
     left: 0;
@@ -28,6 +34,7 @@
   }
 
   .title-container {
+    flex: 0 1 auto;
     margin: 30px auto 0 auto;
     max-width: 490px;
     padding-inline-end: calc(var(--banner-img-width) - 10px);
@@ -49,9 +56,12 @@
 
   #wrapper {
     display: flex;
-    height: calc(max(100vh, var(--view-min-size)) - 290px);
+    flex: 1 1 auto;
+    margin-bottom: 4px;
     margin-inline-end: 140px;
     margin-inline-start: 140px;
+    overflow-x: hidden;
+    overflow-y: auto;
   }
 
   .profiles-container {
@@ -109,7 +119,7 @@
   }
 
   #browseAsGuestButton {
-    margin-inline-start: var(--footer-margin);
+    margin-inline-start: var(--footer-spacing);
   }
 
   #browseAsGuestButton > iron-icon {
@@ -120,7 +130,7 @@
     --cr-checkbox-label-color:  var(--cr-secondary-text-color);
     --cr-checkbox-label-padding-start: 8px;
     justify-content: flex-end;
-    margin-inline-end: var(--footer-margin);
+    margin-inline-end: var(--footer-spacing);
     margin-inline-start: auto;
     padding-inline-end: 5px;
     padding-inline-start: 5px;
@@ -147,33 +157,36 @@
   }
 </style>
 
-<div id="leftBanner" class="banner"></div>
-<div class="title-container">
-  <img id="product-logo" on-click="onProductLogoTap_"
-      srcset="chrome://theme/current-channel-logo@1x 1x,
-              chrome://theme/current-channel-logo@2x 2x"
-      role="presentation">
-  <h2>$i18n{mainViewTitle}</h2>
-  <h3>$i18n{mainViewSubtitle}</h3>
-</div>
-<div id="wrapper" hidden$="[[!profilesListLoaded_]]">
-  <div class="profiles-container custom-scrollbar">
-    <template is="dom-repeat" items="[[profilesList_]]">
-      <profile-card
-          class="profile-item" profile-state="[[item]]">
-      </profile-card>
-    </template>
-    <cr-button id="addProfile" class="profile-item"
-        on-click="onAddProfileClick_" aria-labelledby="addProfileButtonLabel">
-      <div id="addProfileButtonLabel" class="profile-card-info prominent-text">
-        $i18n{addSpaceButton}
-      </div>
-      <iron-icon icon="profiles:add"></iron-icon>
-    </cr-button>
+<div class="flex-container">
+  <div id="leftBanner" class="banner"></div>
+  <div class="title-container">
+    <img id="product-logo" on-click="onProductLogoTap_"
+        srcset="chrome://theme/current-channel-logo@1x 1x,
+                chrome://theme/current-channel-logo@2x 2x"
+        role="presentation">
+    <h2>$i18n{mainViewTitle}</h2>
+    <h3>$i18n{mainViewSubtitle}</h3>
   </div>
+  <div id="wrapper" hidden$="[[!profilesListLoaded_]]">
+    <div class="profiles-container custom-scrollbar">
+      <template is="dom-repeat" items="[[profilesList_]]">
+        <profile-card
+            class="profile-item" profile-state="[[item]]">
+        </profile-card>
+      </template>
+      <cr-button id="addProfile" class="profile-item"
+          on-click="onAddProfileClick_"
+          aria-labelledby="addProfileButtonLabel">
+        <div id="addProfileButtonLabel"
+            class="profile-card-info prominent-text">
+          $i18n{addSpaceButton}
+        </div>
+        <iron-icon icon="profiles:add"></iron-icon>
+      </cr-button>
+    </div>
+  </div>
+  <div id="rightBanner" class="banner"></div>
 </div>
-<div id="rightBanner" class="banner"></div>
-
 <div class="footer">
   <cr-button id="browseAsGuestButton" on-click="onLaunchGuestProfileClick_">
     <iron-icon icon="profiles:account-circle"></iron-icon>
