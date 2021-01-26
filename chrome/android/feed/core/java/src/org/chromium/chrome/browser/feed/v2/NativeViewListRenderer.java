@@ -7,15 +7,17 @@ package org.chromium.chrome.browser.feed.v2;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.xsurface.HybridListRenderer;
 import org.chromium.chrome.browser.xsurface.ListContentManager;
 import org.chromium.chrome.browser.xsurface.ListContentManagerObserver;
+import org.chromium.ui.base.ViewUtils;
 
 /**
  * Implementation of {@link HybridListRenderer} for list consisting all native views.
@@ -59,10 +61,7 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
         if (viewType >= 0) {
             v = mManager.getNativeView(viewType, parent);
         } else {
-            TextView textView = new TextView(ContextUtils.getApplicationContext());
-            String message = "Unable to render external view";
-            textView.setText(message);
-            v = textView;
+            v = createCannotRenderViewItem();
         }
         return new ViewHolder(v);
     }
@@ -117,5 +116,19 @@ public class NativeViewListRenderer extends RecyclerView.Adapter<NativeViewListR
     @Override
     public void onItemMoved(int curIndex, int newIndex) {
         notifyItemMoved(curIndex, newIndex);
+    }
+
+    private View createCannotRenderViewItem() {
+        TextView viewItem = new TextView(mContext);
+        String message = "Unable to render external view";
+        viewItem.setText(message);
+
+        MarginLayoutParams layoutParams =
+                new MarginLayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        layoutParams.bottomMargin = ViewUtils.dpToPx(mContext, 25F);
+        layoutParams.topMargin = ViewUtils.dpToPx(mContext, 25F);
+        viewItem.setLayoutParams(layoutParams);
+
+        return viewItem;
     }
 }

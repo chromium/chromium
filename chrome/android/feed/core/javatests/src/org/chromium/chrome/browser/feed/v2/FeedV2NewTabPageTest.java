@@ -213,7 +213,7 @@ public class FeedV2NewTabPageTest {
             Criteria.checkThat(FeedV2TestHelper.getLoadStreamStatusInitialValues(),
                     Matchers.hasEntry("kLoadedFromNetwork", 1));
         });
-        waitForRecyclerItems(MIN_ITEMS_AFTER_LOAD);
+        FeedV2TestHelper.waitForRecyclerItems(MIN_ITEMS_AFTER_LOAD, getRecyclerView());
     }
 
     @Test
@@ -383,13 +383,6 @@ public class FeedV2NewTabPageTest {
         return (RecyclerView) getRootView().findViewById(R.id.feed_stream_recycler_view);
     }
 
-    private void waitForRecyclerItems(int minItems) {
-        CriteriaHelper.pollUiThread(() -> {
-            Criteria.checkThat("Recycler view exists", getRecyclerView(), Matchers.notNullValue());
-            Criteria.checkThat("Items are loaded", getRecyclerView().getAdapter().getItemCount(),
-                    Matchers.greaterThan(minItems));
-        });
-    }
     private View getRootView() {
         return mActivityTestRule.getActivity().getWindow().getDecorView().getRootView();
     }

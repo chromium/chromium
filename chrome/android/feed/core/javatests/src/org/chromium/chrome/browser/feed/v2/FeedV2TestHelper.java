@@ -4,13 +4,22 @@
 
 package org.chromium.chrome.browser.feed.v2;
 
+import androidx.recyclerview.widget.RecyclerView;
+
+import org.hamcrest.Matchers;
+
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashMap;
 import java.util.Map;
 
-class FeedV2TestHelper {
+/**
+ * Helpers for Feed V2 browser tests.
+ */
+public class FeedV2TestHelper {
     private FeedV2TestHelper() {}
 
     private static Map<String, Integer> getEnumHistogramValues(
@@ -103,5 +112,13 @@ class FeedV2TestHelper {
         enumNames.put("kLoadedStaleDataFromStoreDueToNetworkFailure", 21);
         enumNames.put("kDataInStoreIsExpired", 22);
         return enumNames;
+    }
+
+    public static void waitForRecyclerItems(int minItems, RecyclerView recyclerView) {
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat("Recycler view exists", recyclerView, Matchers.notNullValue());
+            Criteria.checkThat("Items are loaded", recyclerView.getAdapter().getItemCount(),
+                    Matchers.greaterThan(minItems));
+        });
     }
 }

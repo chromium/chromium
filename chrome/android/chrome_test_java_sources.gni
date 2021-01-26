@@ -637,3 +637,7 @@ if (enable_feed_v1) {
     "javatests/src/org/chromium/chrome/browser/offlinepages/prefetch/PrefetchFeedFlowTest.java",
   ]
 }
+
+if (enable_feed_v2) {
+  chrome_test_java_sources += [ "javatests/src/org/chromium/chrome/browser/ntp/NewTabPageColorWithFeedV2Test.java" ]
+}
