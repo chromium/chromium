@@ -16,9 +16,6 @@ config("absl_component_build") {
   defines = [ "ABSL_CONSUME_DLL" ]
 }
 
-# TODO(mbonadei): WebRTC tests and binaries use absl flags but they are
-# marked testonly because we don't want them to be usable in Chromium.
-# Add an absl_flags component which depends on the main absl component.
 component("absl") {
   public_deps = [ ":absl_component_deps" ]
   if (is_component_build) {
