@@ -31,6 +31,31 @@ class CORE_EXPORT PreloadRequest {
   USING_FAST_MALLOC(PreloadRequest);
 
  public:
+  class CORE_EXPORT ExclusionInfo : public RefCounted<ExclusionInfo> {
+    USING_FAST_MALLOC(ExclusionInfo);
+
+   public:
+    ExclusionInfo(const KURL& document_url,
+                  HashSet<KURL> scopes,
+                  HashSet<KURL> resources);
+    virtual ~ExclusionInfo();
+
+    // Disallow copy and assign.
+    ExclusionInfo(const ExclusionInfo&) = delete;
+    ExclusionInfo& operator=(const ExclusionInfo&) = delete;
+
+    const KURL& document_url() const { return document_url_; }
+    const HashSet<KURL>& scopes() const { return scopes_; }
+    const HashSet<KURL>& resources() const { return resources_; }
+
+    bool ShouldExclude(const KURL& base_url, const String& resource_url) const;
+
+   private:
+    const KURL document_url_;
+    const HashSet<KURL> scopes_;
+    const HashSet<KURL> resources_;
+  };
+
   enum RequestType {
     kRequestTypePreload,
     kRequestTypePreconnect,
@@ -48,6 +73,7 @@ class CORE_EXPORT PreloadRequest {
       const network::mojom::ReferrerPolicy referrer_policy,
       ReferrerSource referrer_source,
       ResourceFetcher::IsImageSet is_image_set,
+      const ExclusionInfo* exclusion_info,
       const FetchParameters::ResourceWidth& resource_width =
           FetchParameters::ResourceWidth(),
       const ClientHintsPreferences& client_hints_preferences =

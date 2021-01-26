@@ -23,6 +23,30 @@
 
 namespace blink {
 
+PreloadRequest::ExclusionInfo::ExclusionInfo(const KURL& document_url,
+                                             HashSet<KURL> scopes,
+                                             HashSet<KURL> resources)
+    : document_url_(document_url),
+      scopes_(std::move(scopes)),
+      resources_(std::move(resources)) {}
+
+PreloadRequest::ExclusionInfo::~ExclusionInfo() = default;
+
+bool PreloadRequest::ExclusionInfo::ShouldExclude(
+    const KURL& base_url,
+    const String& resource_url) const {
+  if (resources_.IsEmpty() && scopes_.IsEmpty())
+    return false;
+  KURL url = KURL(base_url.IsEmpty() ? document_url_ : base_url, resource_url);
+  if (resources_.Contains(url))
+    return true;
+  for (const auto& scope : scopes_) {
+    if (url.GetString().StartsWith(scope.GetString()))
+      return true;
+  }
+  return false;
+}
+
 KURL PreloadRequest::CompleteURL(Document* document) {
   if (!base_url_.IsEmpty())
     return document->CompleteURLWithOverride(resource_url_, base_url_);
@@ -39,6 +63,7 @@ std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
     const network::mojom::ReferrerPolicy referrer_policy,
     ReferrerSource referrer_source,
     ResourceFetcher::IsImageSet is_image_set,
+    const ExclusionInfo* exclusion_info,
     const FetchParameters::ResourceWidth& resource_width,
     const ClientHintsPreferences& client_hints_preferences,
     RequestType request_type) {
@@ -50,6 +75,10 @@ std::unique_ptr<PreloadRequest> PreloadRequest::CreateIfNeeded(
       ProtocolIs(resource_url, "data")) {
     return nullptr;
   }
+
+  if (exclusion_info && exclusion_info->ShouldExclude(base_url, resource_url))
+    return nullptr;
+
   return base::WrapUnique(new PreloadRequest(
       initiator_name, initiator_position, resource_url, base_url, resource_type,
       resource_width, client_hints_preferences, request_type, referrer_policy,
