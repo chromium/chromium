@@ -5507,10 +5507,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPrintServerScalingDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kPrintServerScaling)},
 
-    {"external-pci-devices-allowed",
-     flag_descriptions::kExternalPciDevicesAllowedName,
-     flag_descriptions::kExternalPciDevicesAllowedDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(chromeos::features::kExternalPciDevicesAllowed)},
+    {"disable-peripheral-data-access-protection",
+     flag_descriptions::kDisablePeripheralDataAccessProtectionName,
+     flag_descriptions::kDisablePeripheralDataAccessProtectionDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kDisablePeripheralDataAccessProtection)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-portals", flag_descriptions::kEnablePortalsName,

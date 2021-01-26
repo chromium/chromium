@@ -305,8 +305,8 @@ const base::Feature kExoOrdinalMotion{"ExoOrdinalMotion",
 const base::Feature kExoPointerLock{"ExoPointerLock",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kExternalPciDevicesAllowed{
-    "ExternalPciDevicesAllowed", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kDisablePeripheralDataAccessProtection{
+    "DisablePeripheralDataAccessProtection", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables policy that controls feature to allow Family Link accounts on school
 // owned devices.
@@ -758,8 +758,8 @@ bool IsDiagnosticsAppEnabled() {
   return base::FeatureList::IsEnabled(kDiagnosticsApp);
 }
 
-bool IsExternalPciDevicesAllowedEnabled() {
-  return base::FeatureList::IsEnabled(kExternalPciDevicesAllowed);
+bool IsPeripheralDataAccessProtectionEnabled() {
+  return !base::FeatureList::IsEnabled(kDisablePeripheralDataAccessProtection);
 }
 
 bool IsHostnameSettingEnabled() {

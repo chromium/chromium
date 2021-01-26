@@ -960,6 +960,12 @@ const char kMemlogStackModeNative[] = "Native";
 const char kMemlogStackModeNativeWithThreadNames[] = "Native with thread names";
 const char kMemlogStackModePseudo[] = "Trace events";
 
+const char kDisablePeripheralDataAccessProtectionName[] =
+    "Turn off peripheral data access protection";
+const char kDisablePeripheralDataAccessProtectionDescription[] =
+    "Disables data access protection for external PCI devices (including some "
+    "thunderbolt and SD Express devices that use PCI tunneling)";
+
 const char kEnableLoginDetectionName[] = "Enable login detection";
 const char kEnableLoginDetectionDescription[] =
     "Allow user sign-in to be detected based on heuristics.";
@@ -1141,12 +1147,6 @@ const char kEffectiveConnectionTypeSlow2GOnCellularDescription[] =
 const char kEffectiveConnectionType2GDescription[] = "2G";
 const char kEffectiveConnectionType3GDescription[] = "3G";
 const char kEffectiveConnectionType4GDescription[] = "4G";
-
-const char kExternalPciDevicesAllowedName[] = "Allow external PCI devices";
-const char kExternalPciDevicesAllowedDescription[] =
-    "Enables the use of "
-    "External PCI devices (including some thunderbolt and SD Express devices "
-    "that use PCI tunneling)";
 
 const char kFileHandlingAPIName[] = "File Handling API";
 const char kFileHandlingAPIDescription[] =

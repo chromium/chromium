@@ -44124,6 +44124,8 @@ from previous Chrome versions.
   <int value="-714710496" label="VideoFullscreenOrientationLock:disabled"/>
   <int value="-714543772" label="enable-gpu-service-logging"/>
   <int value="-714043324" label="OutOfBlinkCORS:enabled"/>
+  <int value="-713104676"
+      label="DisablePeripheralDataAccessProtection:enabled"/>
   <int value="-711991950" label="SiteExplorationUi:enabled"/>
   <int value="-711890895" label="enable-website-settings-manager"/>
   <int value="-709058455" label="ui-slow-animations"/>
@@ -45923,6 +45925,8 @@ from previous Chrome versions.
   <int value="1028817487"
       label="OmniboxOnFocusSuggestionsContextualWeb:disabled"/>
   <int value="1030608602" label="AutofillAssistantProactiveHelp:enabled"/>
+  <int value="1031281564"
+      label="DisablePeripheralDataAccessProtection:disabled"/>
   <int value="1033148287" label="NTPShortcuts:disabled"/>
   <int value="1033412163" label="OmniboxDisplayTitleForCurrentUrl:enabled"/>
   <int value="1033597574" label="disable-layer-squashing"/>

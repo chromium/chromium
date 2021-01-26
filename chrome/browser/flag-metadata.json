@@ -997,6 +997,12 @@
     "expiry_milestone": 88
   },
   {
+    "name": "disable-peripheral-data-access-protection",
+    "owners": [ "rajatja@google.com", "czajka@google.com",
+                "cros-peripherals@google.com" ],
+    "expiry_milestone": 94
+  },
+  {
     "name": "disable-threaded-scrolling",
     "owners": [ "bokan", "input-dev" ],
     // This flag is a useful debugging control when investigating scrolling
@@ -2658,12 +2664,6 @@
     // This enables the use of extensions on chrome:// URLs. This is useful for
     // a11y extensions as well as for debugging.
     "expiry_milestone": -1
-  },
-  {
-    "name": "external-pci-devices-allowed",
-    "owners": [ "rajatja@google.com", "czajka@google.com",
-                "cros-peripherals@google.com" ],
-    "expiry_milestone": 94
   },
   {
     "name": "feed-share",

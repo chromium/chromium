@@ -491,9 +491,6 @@ extern const char kEnableTranslateSubFramesDescription[];
 extern const char kEnableWindowsGamingInputDataFetcherName[];
 extern const char kEnableWindowsGamingInputDataFetcherDescription[];
 
-extern const char kExternalPciDevicesAllowedName[];
-extern const char kExternalPciDevicesAllowedDescription[];
-
 extern const char kBlockInsecurePrivateNetworkRequestsName[];
 extern const char kBlockInsecurePrivateNetworkRequestsDescription[];
 
@@ -536,6 +533,9 @@ extern const char kMemlogStackModeMixed[];
 extern const char kMemlogStackModeNative[];
 extern const char kMemlogStackModeNativeWithThreadNames[];
 extern const char kMemlogStackModePseudo[];
+
+extern const char kDisablePeripheralDataAccessProtectionName[];
+extern const char kDisablePeripheralDataAccessProtectionDescription[];
 
 extern const char kDownloadAutoResumptionNativeName[];
 extern const char kDownloadAutoResumptionNativeDescription[];
