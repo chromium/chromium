@@ -693,7 +693,7 @@ class BlinkPerfWebGL(_BlinkPerfBenchmark):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_blink_perf.webgl'
+    return 'blink_perf.webgl'
 
 
 @benchmark.Info(emails=[
@@ -708,7 +708,7 @@ class BlinkPerfWebGLFastCall(_BlinkPerfBenchmark):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_blink_perf.webgl_fast_call'
+    return 'blink_perf.webgl_fast_call'
 
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs(['--enable-unsafe-fast-js-calls'])
@@ -725,7 +725,7 @@ class BlinkPerfWebGPU(_BlinkPerfBenchmark):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_blink_perf.webgpu'
+    return 'blink_perf.webgpu'
 
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs(['--enable-unsafe-webgpu'])
@@ -743,7 +743,7 @@ class BlinkPerfWebGPUFastCall(_BlinkPerfBenchmark):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_blink_perf.webgpu_fast_call'
+    return 'blink_perf.webgpu_fast_call'
 
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs(

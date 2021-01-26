@@ -279,6 +279,12 @@
     },
     "17": {
         "benchmarks": {
+            "blink_perf.webgl": {
+                "abridged": false
+            },
+            "blink_perf.webgl_fast_call": {
+                "abridged": false
+            },
             "system_health.common_desktop": {
                 "begin": 53,
                 "abridged": false

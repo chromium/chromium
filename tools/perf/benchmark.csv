@@ -3,10 +3,6 @@ See the following link for directions for making changes to this data:,https://b
 Googlers can view additional information about internal perf infrastructure at,https://goto.google.com/chrome-benchmarking-sheet
 Benchmark name,Individual owners,Component,Documentation,Tags
 UNSCHEDULED_blink_perf.service_worker,"shimazu@chromium.org, falken@chromium.org, ting.shao@intel.com",Blink>ServiceWorker,https://bit.ly/blink-perf-benchmarks,
-UNSCHEDULED_blink_perf.webgl,"kbr@chromium.org, enga@chromium.org, webgl-team@google.com",Blink>WebGL,https://bit.ly/blink-perf-benchmarks,
-UNSCHEDULED_blink_perf.webgl_fast_call,"kbr@chromium.org, enga@chromium.org, mslekova@chromium.org, webgl-team@google.com",Blink>WebGL,https://bit.ly/blink-perf-benchmarks,
-UNSCHEDULED_blink_perf.webgpu,"enga@chromium.org, cwallez@chromium.org, webgpu-developers@google.com",Blink>WebGPU,https://bit.ly/blink-perf-benchmarks,
-UNSCHEDULED_blink_perf.webgpu_fast_call,"enga@chromium.org, cwallez@chromium.org, mslekova@chromium.org, webgpu-developers@google.com",Blink>WebGPU,https://bit.ly/blink-perf-benchmarks,
 UNSCHEDULED_loading.mbi,blink-isolation-dev@chromium.org,Blink>Internals>Modularization,https://bit.ly/loading-benchmarks,many_agents
 base_perftests,"skyostil@chromium.org, gab@chromium.org",Internals>SequenceManager,https://chromium.googlesource.com/chromium/src/+/HEAD/base/README.md#performance-testing,
 blink_perf.accessibility,dmazzoni@chromium.org,Blink>Accessibility,https://bit.ly/blink-perf-benchmarks,all
@@ -23,6 +19,10 @@ blink_perf.parser,"jbroman@chromium.org, yukishiino@chromium.org, haraken@chromi
 blink_perf.shadow_dom,masonfreed@chromium.org,Blink>DOM>ShadowDOM,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.svg,"fs@opera.com, pdr@chromium.org",Blink>SVG,https://bit.ly/blink-perf-benchmarks,all
 blink_perf.webaudio,"hongchan@chromium.org, rtoy@chromium.org",Blink>WebAudio,https://bit.ly/blink-perf-benchmarks,all
+blink_perf.webgl,"kbr@chromium.org, enga@chromium.org, webgl-team@google.com",Blink>WebGL,https://bit.ly/blink-perf-benchmarks,
+blink_perf.webgl_fast_call,"kbr@chromium.org, enga@chromium.org, mslekova@chromium.org, webgl-team@google.com",Blink>WebGL,https://bit.ly/blink-perf-benchmarks,
+blink_perf.webgpu,"enga@chromium.org, cwallez@chromium.org, webgpu-developers@google.com",Blink>WebGPU,https://bit.ly/blink-perf-benchmarks,
+blink_perf.webgpu_fast_call,"enga@chromium.org, cwallez@chromium.org, mslekova@chromium.org, webgpu-developers@google.com",Blink>WebGPU,https://bit.ly/blink-perf-benchmarks,
 components_perftests,csharrison@chromium.org,,,
 dawn_perf_tests,"enga@chromium.org, chrome-gpu-perf-owners@chromium.org",Internals>GPU>Dawn,https://dawn.googlesource.com/dawn/+/HEAD/src/tests/perf_tests/README.md,
 desktop_ui,"yuhengh@chromium.org, tluk@chromium.org, romanarora@chromium.org",UI>Browser,https://chromium.googlesource.com/chromium/src/+/master/docs/speed/benchmark/harnesses/desktop_ui.md,

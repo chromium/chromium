@@ -67,6 +67,12 @@
             "blink_perf.webaudio": {
                 "abridged": false
             },
+            "blink_perf.webgl": {
+                "abridged": false
+            },
+            "blink_perf.webgl_fast_call": {
+                "abridged": false
+            },
             "dromaeo": {
                 "abridged": false
             },
