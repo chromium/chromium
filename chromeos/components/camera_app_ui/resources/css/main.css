@@ -840,7 +840,7 @@ body.streaming .preview-content {
   pointer-events: auto;
 }
 
-body.mirror .preview-content ,
+body.mirror .preview-content,
 body.mirror #preview-focus {
   transform: scaleX(-1);
 }

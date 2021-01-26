@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/numerics/ranges.h"
 
 #include "media/capture/video/chromeos/camera_metadata_utils.h"
@@ -157,6 +158,21 @@ Camera3AController::Camera3AController(
             base::checked_cast<uint8_t>(ae_mode_));
   Set3AMode(cros::mojom::CameraMetadataTag::ANDROID_CONTROL_AWB_MODE,
             base::checked_cast<uint8_t>(awb_mode_));
+
+  // Enable face detection if it's available.
+  auto face_modes = GetMetadataEntryAsSpan<uint8_t>(
+      static_metadata, cros::mojom::CameraMetadataTag::
+                           ANDROID_STATISTICS_INFO_AVAILABLE_FACE_DETECT_MODES);
+  // We don't need face landmarks and ids, so using SIMPLE mode instead of FULL
+  // mode should be enough.
+  const auto face_mode_simple = cros::mojom::AndroidStatisticsFaceDetectMode::
+      ANDROID_STATISTICS_FACE_DETECT_MODE_SIMPLE;
+  if (base::Contains(face_modes,
+                     base::checked_cast<uint8_t>(face_mode_simple))) {
+    SetRepeatingCaptureMetadata(
+        cros::mojom::CameraMetadataTag::ANDROID_STATISTICS_FACE_DETECT_MODE,
+        face_mode_simple);
+  }
 }
 
 Camera3AController::~Camera3AController() {

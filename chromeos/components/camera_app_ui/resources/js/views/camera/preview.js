@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import * as barcodeChip from '../../barcode_chip.js';
-import {assertInstanceof} from '../../chrome_util.js';
+import {assert, assertInstanceof} from '../../chrome_util.js';
 import * as dom from '../../dom.js';
 import {BarcodeScanner} from '../../models/barcode.js';
 import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
@@ -451,6 +451,19 @@ export class Preview {
       };
     })();
 
+    const updateFace = (mode, rects) => {
+      if (mode ===
+          cros.mojom.AndroidStatisticsFaceDetectMode
+              .ANDROID_STATISTICS_FACE_DETECT_MODE_OFF) {
+        dom.get('#preview-num-faces', HTMLDivElement).style.display = 'none';
+        return;
+      }
+      assert(rects.length % 4 === 0);
+      const numFaces = rects.length / 4;
+      const label = numFaces >= 2 ? 'Faces' : 'Face';
+      showValue('#preview-num-faces', `${numFaces} ${label}`);
+    };
+
     const callback = (metadata) => {
       showValue('#preview-resolution', resolution);
       showValue('#preview-device-name', deviceName);
@@ -458,8 +471,32 @@ export class Preview {
       if (fps !== null) {
         showValue('#preview-fps', `${fps.toFixed(0)} FPS`);
       }
+
+      let faceMode = cros.mojom.AndroidStatisticsFaceDetectMode
+                         .ANDROID_STATISTICS_FACE_DETECT_MODE_OFF;
+      let faceRects = [];
+
+      const tryParseFaceEntry = (entry) => {
+        switch (entry.tag) {
+          case tag.ANDROID_STATISTICS_FACE_DETECT_MODE: {
+            const data = parseMetadata(entry);
+            assert(data.length === 1);
+            faceMode = data;
+            return true;
+          }
+          case tag.ANDROID_STATISTICS_FACE_RECTANGLES: {
+            faceRects = parseMetadata(entry);
+            return true;
+          }
+        }
+        return false;
+      };
+
       for (const entry of metadata.entries) {
         if (entry.count === 0) {
+          continue;
+        }
+        if (tryParseFaceEntry(entry)) {
           continue;
         }
         const handler = metadataEntryHandlers[entry.tag];
@@ -468,6 +505,10 @@ export class Preview {
         }
         handler(parseMetadata(entry));
       }
+
+      // We always need to run updateFace() even if face rectangles are obsent
+      // in the metadata, which may happen if there is no face detected.
+      updateFace(faceMode, faceRects);
     };
 
     const deviceOperator = await DeviceOperator.getInstance();
