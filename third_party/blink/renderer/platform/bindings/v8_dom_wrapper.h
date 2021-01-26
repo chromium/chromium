@@ -57,6 +57,14 @@ class V8DOMWrapper {
       v8::Isolate*,
       v8::Local<v8::Object> creation_context,
       const WrapperTypeInfo*);
+  // This is another version of CreateWrapper which returns
+  // v8::MaybeLocal in order to throw an exception.
+  // TODO(canonmukai): We should replace CreateWrapper with
+  // CreateWrapperV2 soon.
+  PLATFORM_EXPORT static v8::MaybeLocal<v8::Object> CreateWrapperV2(
+      v8::Isolate*,
+      v8::Local<v8::Object> creation_context,
+      const WrapperTypeInfo*);
   PLATFORM_EXPORT static bool IsWrapper(v8::Isolate*, v8::Local<v8::Value>);
 
   // Associates the given ScriptWrappable with the given |wrapper| if the
