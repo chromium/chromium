@@ -574,7 +574,11 @@ if (!is_component_build) {
       "//v8",
     ]
     if (enable_basic_printing) {
-      deps += [ "//components/printing/renderer" ]
+      deps += [
+        "//components/printing/renderer",
+        "//components/services/print_compositor",
+        "//components/services/print_compositor/public/mojom",
+      ]
     }
   }
 } else {
