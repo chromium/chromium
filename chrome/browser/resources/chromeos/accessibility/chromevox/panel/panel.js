@@ -8,18 +8,16 @@
 
 goog.provide('Panel');
 
-goog.require('AbstractEarcons');
 goog.require('AnnotationsUI');
-goog.require('BackgroundKeyboardHandler');
 goog.require('BrailleCommandData');
-goog.require('ChromeVoxKbHandler');
-goog.require('ChromeVoxState');
 goog.require('CommandStore');
 goog.require('EventGenerator');
 goog.require('EventSourceType');
 goog.require('GestureCommandData');
 goog.require('ISearchUI');
 goog.require('KeyCode');
+goog.require('KeyMap');
+goog.require('KeyUtil');
 goog.require('LocaleOutputHelper');
 goog.require('Msgs');
 goog.require('PanelCommand');
@@ -58,11 +56,6 @@ Panel = class {
     };
     chrome.loginState.getSessionState(updateSessionState);
     chrome.loginState.onSessionStateChanged.addListener(updateSessionState);
-
-    // Called directly for initialization. In the background page context,
-    // |Background| subclasses |ChromeVoxState| (who's constructor is called as
-    // part of |Background| construction).
-    new ChromeVoxState();
     UserAnnotationHandler.init();
     LocaleOutputHelper.init();
 
