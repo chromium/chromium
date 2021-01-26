@@ -30,6 +30,7 @@ namespace {
 
 // Scanner name used for tests.
 constexpr char kTestScannerName[] = "Test Scanner";
+constexpr char kVirtualUSBPrinterName[] = "DavieV Virtual USB Printer (USB)";
 
 // Creates a new FakeLorgnetteScannerManager for the given |context|.
 std::unique_ptr<KeyedService> BuildLorgnetteScannerManager(
@@ -101,6 +102,30 @@ TEST_F(DocumentScanScanFunctionTest, Success) {
   GetLorgnetteScannerManager()->SetScanResponse(scan_data);
   std::unique_ptr<base::DictionaryValue> result(RunFunctionAndReturnDictionary(
       function_.get(), "[{\"mimeTypes\": [\"image/png\"]}]"));
+  ASSERT_NE(nullptr, result.get());
+  document_scan::ScanResults scan_results;
+  EXPECT_TRUE(document_scan::ScanResults::Populate(*result, &scan_results));
+  // Verify the image data URL is the PNG image data URL prefix plus the base64
+  // representation of "PrettyPicture".
+  EXPECT_THAT(
+      scan_results.data_urls,
+      testing::ElementsAre("data:image/png;base64,UHJldHR5UGljdHVyZQ=="));
+  EXPECT_EQ("image/png", scan_results.mime_type);
+}
+
+TEST_F(DocumentScanScanFunctionTest, TestingMIMETypeError) {
+  GetLorgnetteScannerManager()->SetGetScannerNamesResponse({kTestScannerName});
+  EXPECT_EQ("Virtual USB printer unavailable",
+            RunFunctionAndReturnError("[{\"mimeTypes\": [\"testing\"]}]"));
+}
+
+TEST_F(DocumentScanScanFunctionTest, TestingMIMEType) {
+  GetLorgnetteScannerManager()->SetGetScannerNamesResponse(
+      {kTestScannerName, kVirtualUSBPrinterName});
+  const std::vector<std::string> scan_data = {"PrettyPicture"};
+  GetLorgnetteScannerManager()->SetScanResponse(scan_data);
+  std::unique_ptr<base::DictionaryValue> result(RunFunctionAndReturnDictionary(
+      function_.get(), "[{\"mimeTypes\": [\"testing\"]}]"));
   ASSERT_NE(nullptr, result.get());
   document_scan::ScanResults scan_results;
   EXPECT_TRUE(document_scan::ScanResults::Populate(*result, &scan_results));
