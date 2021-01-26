@@ -934,6 +934,7 @@ test("ui_base_unittests") {
     "//ui/base/clipboard:clipboard_test",
     "//ui/base/clipboard:clipboard_types",
     "//ui/base/cursor:unittests",
+    "//ui/base/data_transfer_policy:unittests",
     "//ui/base/prediction:prediction",
     "//ui/display",
     "//ui/events:events_base",

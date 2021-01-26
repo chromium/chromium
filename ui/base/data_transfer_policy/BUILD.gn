@@ -21,3 +21,13 @@ component("data_transfer_policy") {
     "//url",
   ]
 }
+
+source_set("unittests") {
+  testonly = true
+  sources = [ "data_transfer_endpoint_unittest.cc" ]
+  deps = [
+    ":data_transfer_policy",
+    "//testing/gtest",
+    "//url",
+  ]
+}
