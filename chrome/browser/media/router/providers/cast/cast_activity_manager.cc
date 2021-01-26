@@ -24,6 +24,7 @@
 #include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
+#include "components/media_router/common/route_request_result.h"
 #include "url/origin.h"
 
 using blink::mojom::PresentationConnectionCloseReason;
@@ -175,7 +176,7 @@ void CastActivityManager::LaunchSessionParsed(
     TerminateSession(existing_route_id, base::DoNothing());
     // The new session will be launched when OnSessionRemoved() is called for
     // the old session.
-    pending_launch_ = std::move(params);
+    SetPendingLaunch(std::move(params));
   }
 }
 
@@ -239,6 +240,15 @@ void CastActivityManager::DoLaunchSession(DoLaunchSessionParams params) {
   std::move(params.callback)
       .Run(route, std::move(presentation_connection),
            /* error_text */ base::nullopt, RouteRequestResult::ResultCode::OK);
+}
+
+void CastActivityManager::SetPendingLaunch(DoLaunchSessionParams params) {
+  if (pending_launch_ && pending_launch_->callback) {
+    std::move(pending_launch_->callback)
+        .Run(base::nullopt, nullptr, "Pending launch session params destroyed",
+             RouteRequestResult::CANCELLED);
+  }
+  pending_launch_ = std::move(params);
 }
 
 AppActivity* CastActivityManager::FindActivityForSessionJoin(
