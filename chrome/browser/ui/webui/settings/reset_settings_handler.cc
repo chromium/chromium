@@ -33,7 +33,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/reset/metrics.h"
+#include "chrome/browser/ash/reset/metrics.h"
 #include "chrome/common/pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
