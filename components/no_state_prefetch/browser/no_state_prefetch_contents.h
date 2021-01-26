@@ -84,10 +84,6 @@ class NoStatePrefetchContents : public content::NotificationObserver,
     // Signals that the prerender has had its load event.
     virtual void OnPrerenderStopLoading(NoStatePrefetchContents* contents) {}
 
-    // Signals that the prerender has had its 'DOMContentLoaded' event.
-    virtual void OnPrerenderDomContentLoaded(
-        NoStatePrefetchContents* contents) {}
-
     // Signals that the prerender has stopped running. A NoStatePrefetchContents
     // with an unset final status will always call OnPrerenderStop before being
     // destroyed.
@@ -152,7 +148,6 @@ class NoStatePrefetchContents : public content::NotificationObserver,
   // content::WebContentsObserver implementation.
   void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
   void DidStopLoading() override;
-  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidRedirectNavigation(

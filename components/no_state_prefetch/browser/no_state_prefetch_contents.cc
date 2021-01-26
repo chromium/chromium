@@ -324,11 +324,6 @@ void NoStatePrefetchContents::NotifyPrerenderStopLoading() {
     observer.OnPrerenderStopLoading(this);
 }
 
-void NoStatePrefetchContents::NotifyPrerenderDomContentLoaded() {
-  for (Observer& observer : observer_list_)
-    observer.OnPrerenderDomContentLoaded(this);
-}
-
 void NoStatePrefetchContents::NotifyPrerenderStop() {
   DCHECK_NE(FINAL_STATUS_UNKNOWN, final_status_);
   for (Observer& observer : observer_list_)
@@ -394,12 +389,6 @@ void NoStatePrefetchContents::RenderFrameCreated(
 
 void NoStatePrefetchContents::DidStopLoading() {
   NotifyPrerenderStopLoading();
-}
-
-void NoStatePrefetchContents::DOMContentLoaded(
-    content::RenderFrameHost* render_frame_host) {
-  if (!render_frame_host->GetParent())
-    NotifyPrerenderDomContentLoaded();
 }
 
 void NoStatePrefetchContents::DidStartNavigation(
