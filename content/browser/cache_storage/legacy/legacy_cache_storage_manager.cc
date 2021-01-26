@@ -71,7 +71,8 @@ int64_t GetCacheStorageSize(const base::FilePath& base_path,
   for (int i = 0, max = index.cache_size(); i < max; ++i) {
     const proto::CacheStorageIndex::Cache& cache = index.cache(i);
     if (!cache.has_cache_dir() || !cache.has_size() ||
-        cache.size() == CacheStorage::kSizeUnknown) {
+        cache.size() == CacheStorage::kSizeUnknown || !cache.has_padding() ||
+        cache.padding() == CacheStorage::kSizeUnknown) {
       return CacheStorage::kSizeUnknown;
     }
 
@@ -88,7 +89,7 @@ int64_t GetCacheStorageSize(const base::FilePath& base_path,
       return CacheStorage::kSizeUnknown;
     }
 
-    storage_size += cache.size();
+    storage_size += (cache.size() + cache.padding());
   }
 
   return storage_size;

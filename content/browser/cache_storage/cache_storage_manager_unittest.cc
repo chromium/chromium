@@ -216,7 +216,7 @@ bool IsIndexFileCurrent(const base::FilePath& cache_dir) {
        file_path = enumerator.Next()) {
     if (!GetFileInfo(file_path, &info))
       return false;
-    if (index_last_modified < info.last_modified)
+    if (index_last_modified <= info.last_modified)
       return false;
   }
 
@@ -1712,6 +1712,43 @@ TEST_P(CacheStorageManagerTestP, GetAllOriginsUsage) {
     EXPECT_FALSE(usage[origin1_index].last_modified.is_null());
     EXPECT_FALSE(usage[origin2_index].last_modified.is_null());
   }
+}
+
+TEST_F(CacheStorageManagerTest, GetAllOriginsUsageWithPadding) {
+  EXPECT_EQ(0ULL, GetAllOriginsUsage().size());
+
+  EXPECT_TRUE(Open(origin1_, "foo"));
+  base::FilePath storage_dir =
+      LegacyCacheStorageCache::From(callback_cache_handle_)->path().DirName();
+  base::FilePath index_path = storage_dir.AppendASCII("index.txt");
+  EXPECT_TRUE(
+      CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
+
+  std::vector<StorageUsageInfo> usage = GetAllOriginsUsage();
+  EXPECT_EQ(1ULL, usage.size());
+  int64_t unpadded_size = usage[0].total_size_bytes;
+
+  EXPECT_TRUE(CachePut(callback_cache_handle_.value(),
+                       GURL("http://example.com/foo"),
+                       FetchResponseType::kOpaque));
+
+  EXPECT_TRUE(FlushCacheStorageIndex(origin1_));
+
+  // We want to verify that padded values are read from the index
+  // file.  If the index is out-of-date, though, the code falls back
+  // to the CacheStorage Size() method.  Further, the underlying disk_cache
+  // does a delayed write which can cause the index to become out-of-date
+  // at any moment.  Therefore, we loop here touching the index file until
+  // we confirm we got an up-to-date index file used in our check.
+  do {
+    base::Time t = base::Time::Now();
+    EXPECT_TRUE(base::TouchFile(index_path, t, t));
+
+    usage = GetAllOriginsUsage();
+    EXPECT_EQ(1ULL, usage.size());
+    int64_t padded_size = usage[0].total_size_bytes;
+    EXPECT_GT(padded_size, unpadded_size);
+  } while (!IsIndexFileCurrent(storage_dir));
 }
 
 TEST_P(CacheStorageManagerTestP, GetAllOriginsUsageDifferentOwners) {
