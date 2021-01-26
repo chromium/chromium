@@ -7,7 +7,11 @@
 
 namespace ash {
 
-// User-selectable speech rates.
+// User-selectable speech rates. Note that these are also recorded in
+// the histogram |CrosSelectToSpeak.OverrideSpeechRateMultiplier|. If new speeds
+// are added, please update CrosSelectToSpeakOverrideSpeechRateMultiplier in
+// enums.xml. If speed changes are no longer discrete values (i.e. if a future
+// change makes speed changes continuous), please deprecate the histogram.
 constexpr double kSelectToSpeakSpeechRateSlow = 0.5;
 constexpr double kSelectToSpeakSpeechRateNormal = 1.0;
 constexpr double kSelectToSpeakSpeechRatePeppy = 1.2;

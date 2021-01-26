@@ -14667,6 +14667,14 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="2" label="Canceled with keyboard shortcut"/>
 </enum>
 
+<enum name="CrosSelectToSpeakOverrideSpeechRateMultiplier">
+  <int value="50" label="0.5"/>
+  <int value="100" label="1.0"/>
+  <int value="120" label="1.2"/>
+  <int value="150" label="1.5"/>
+  <int value="200" label="2.0"/>
+</enum>
+
 <enum name="CrosSelectToSpeakSpeechPitch">
   <obsolete>
     Deprecated 7/2018 in Issue 866550 in favor of using global Text-to-Speech
