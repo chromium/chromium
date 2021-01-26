@@ -21,6 +21,7 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "third_party/blink/public/common/context_menu_data/menu_item.h"
 #include "ui/base/models/image_model.h"
+#include "url/origin.h"
 
 using content::BrowserContext;
 using content::GlobalFrameRoutingId;
@@ -451,6 +452,7 @@ void RenderViewContextMenuBase::OpenURLWithExtraHeaders(
 
   open_url_params.initiator_frame_token = render_frame_token_;
   open_url_params.initiator_process_id = render_process_id_;
+  open_url_params.initiator_origin = url::Origin::Create(referring_url);
 
   if (disposition != WindowOpenDisposition::OFF_THE_RECORD)
     open_url_params.impression = params_.impression;
