@@ -8,6 +8,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -58,22 +59,31 @@ std::unique_ptr<WebAppMover> WebAppMover::CreateIfNeeded(
 
   // Only continue if exactly one of the uninstall settings is set, and the
   // install url is set.
-  if (install_url_str.empty())
+  if (install_url_str.empty()) {
+    base::UmaHistogramEnumeration("WebApp.Mover.Result",
+                                  WebAppMoverResult::kInvalidConfiguration);
     return nullptr;
+  }
 
   GURL install_url = GURL(install_url_str);
 
   // |install_url| has to be a valid URL.
-  if (!install_url.is_valid())
+  if (!install_url.is_valid()) {
+    base::UmaHistogramEnumeration("WebApp.Mover.Result",
+                                  WebAppMoverResult::kInvalidConfiguration);
     return nullptr;
+  }
 
   WebAppMover::UninstallMode uninstall_mode;
   std::string uninstall_prefix_or_pattern;
   if (!uninstall_url_prefix.empty()) {
     DCHECK(uninstall_pattern_str.empty());
     // The installation URL cannot be contained in the uninstall prefix.
-    if (base::StartsWith(install_url.spec(), uninstall_url_prefix))
+    if (base::StartsWith(install_url.spec(), uninstall_url_prefix)) {
+      base::UmaHistogramEnumeration("WebApp.Mover.Result",
+                                    WebAppMoverResult::kInvalidConfiguration);
       return nullptr;
+    }
     uninstall_mode = WebAppMover::UninstallMode::kPrefix;
     uninstall_prefix_or_pattern = uninstall_url_prefix;
   } else if (!uninstall_pattern_str.empty()) {
@@ -82,11 +92,15 @@ std::unique_ptr<WebAppMover> WebAppMover::CreateIfNeeded(
     // pattern.
     if (uninstall_pattern.error_code() != re2::RE2::NoError ||
         re2::RE2::FullMatch(install_url.spec(), uninstall_pattern)) {
+      base::UmaHistogramEnumeration("WebApp.Mover.Result",
+                                    WebAppMoverResult::kInvalidConfiguration);
       return nullptr;
     }
     uninstall_mode = WebAppMover::UninstallMode::kPattern;
     uninstall_prefix_or_pattern = uninstall_pattern_str;
   } else {
+    base::UmaHistogramEnumeration("WebApp.Mover.Result",
+                                  WebAppMoverResult::kInvalidConfiguration);
     return nullptr;
   }
 
@@ -188,8 +202,10 @@ void WebAppMover::OnFirstSyncCycleComplete() {
   for (const AppId& id : registrar_->GetAppIds()) {
     // Stop if the destination app is already installed.
     const GURL& start_url = registrar_->GetAppStartUrl(id);
-    if (start_url == install_url_)
+    if (start_url == install_url_) {
+      RecordResults(WebAppMoverResult::kInstallAppExists);
       return;
+    }
     // To avoid edge cases only consider installed apps to uninstall.
     if (!registrar_->IsInstalled(id))
       continue;
@@ -212,8 +228,10 @@ void WebAppMover::OnFirstSyncCycleComplete() {
     }
   }
 
-  if (apps_to_uninstall_.empty())
+  if (apps_to_uninstall_.empty()) {
+    RecordResults(WebAppMoverResult::kNoAppsToUninstall);
     return;
+  }
 
   install_manager_->LoadWebAppAndCheckManifest(
       install_url_, webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
@@ -233,6 +251,7 @@ void WebAppMover::OnInstallManifestFetched(
       return;
     case InstallManager::InstallableCheckResult::kNotInstallable:
       // If the app is not installable, then abort.
+      RecordResults(WebAppMoverResult::kNotInstallable);
       return;
     case InstallManager::InstallableCheckResult::kInstallable:
       break;
@@ -274,8 +293,10 @@ void WebAppMover::OnAllUninstalled(
     base::ScopedClosureRunner complete_callback_runner,
     std::unique_ptr<content::WebContents> web_contents_for_install,
     scoped_refptr<base::RefCountedData<bool>> success_accumulator) {
-  if (!success_accumulator->data)
+  if (!success_accumulator->data) {
+    RecordResults(WebAppMoverResult::kUninstallFailure);
     return;
+  }
   auto* web_contents = web_contents_for_install.get();
   install_manager_->InstallWebAppFromManifest(
       web_contents, true, webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
@@ -308,10 +329,19 @@ void WebAppMover::OnInstallCompleted(
   if (code == InstallResultCode::kSuccessNewInstall) {
     if (new_app_open_as_window_)
       controller_->SetAppUserDisplayMode(id, DisplayMode::kStandalone, false);
+    RecordResults(WebAppMoverResult::kSuccess);
   } else {
     LOG(WARNING) << "Installation in app move operation failed: " << code;
+    RecordResults(WebAppMoverResult::kInstallFailure);
   }
   migration_keep_alive_.reset();
+}
+
+void WebAppMover::RecordResults(WebAppMoverResult result) {
+  if (results_recorded_)
+    return;
+  results_recorded_ = true;
+  base::UmaHistogramEnumeration("WebApp.Mover.Result", result);
 }
 
 }  // namespace web_app

@@ -33,7 +33,6 @@ class InstallFinalizer;
 
 // WebAppMover is designed to facilitate a one-off migration for a webapp, from
 // one start_url to another.
-// TODO(dmurph): Finish implementing.
 class WebAppMover final : public syncer::SyncServiceObserver {
  public:
   enum class UninstallMode { kPrefix, kPattern };
@@ -68,6 +67,17 @@ class WebAppMover final : public syncer::SyncServiceObserver {
   void OnSyncShutdown(syncer::SyncService* sync_service) final;
 
  private:
+  enum WebAppMoverResult {
+    kInvalidConfiguration = 0,
+    kInstallAppExists = 1,
+    kNoAppsToUninstall = 2,
+    kNotInstallable = 3,
+    kUninstallFailure = 4,
+    kInstallFailure = 5,
+    kSuccess = 6,
+    kMaxValue = kSuccess
+  };
+
   void WaitForFirstSyncCycle(base::OnceClosure callback);
   void OnFirstSyncCycleComplete();
 
@@ -88,6 +98,8 @@ class WebAppMover final : public syncer::SyncServiceObserver {
       const AppId& id,
       InstallResultCode code);
 
+  void RecordResults(WebAppMoverResult result);
+
   Profile* profile_;
   AppRegistrar* registrar_;
   InstallFinalizer* install_finalizer_;
@@ -101,6 +113,7 @@ class WebAppMover final : public syncer::SyncServiceObserver {
   syncer::SyncService* sync_service_ = nullptr;
   base::OnceClosure sync_ready_callback_;
 
+  bool results_recorded_ = false;
   bool new_app_open_as_window_ = false;
   std::vector<AppId> apps_to_uninstall_;
   std::unique_ptr<ScopedKeepAlive> migration_keep_alive_;
