@@ -327,11 +327,13 @@ class SessionRestoreImpl : public BrowserListObserver {
 
   void OnGotSession(
       std::vector<std::unique_ptr<sessions::SessionWindow>> windows,
-      SessionID active_window_id) {
+      SessionID active_window_id,
+      bool read_error) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::BootTimesRecorder::Get()->AddLoginTimeMarker(
         "SessionRestore-GotSession", false);
 #endif
+    read_error_ = read_error;
     if (synchronous_) {
       // See comment above windows_ as to why we don't process immediately.
       windows_.swap(windows);
@@ -352,9 +354,10 @@ class SessionRestoreImpl : public BrowserListObserver {
     std::vector<RestoredTab> contents;
     Browser* result = ProcessSessionWindows(
         windows, active_window_id, &contents, &window_count, &tab_count);
-    // TODO(sky): plumb through whether there is an error.
-    if (log_event_)
-      LogSessionServiceRestoreEvent(profile_, window_count, tab_count, false);
+    if (log_event_) {
+      LogSessionServiceRestoreEvent(profile_, window_count, tab_count,
+                                    read_error_);
+    }
     on_session_restored_callbacks_->Notify(static_cast<int>(contents.size()));
     return result;
   }
@@ -772,6 +775,9 @@ class SessionRestoreImpl : public BrowserListObserver {
 
   // List of callbacks for session restore notification.
   SessionRestore::CallbackList* on_session_restored_callbacks_;
+
+  // Set to true if reading the last commands encountered an error.
+  bool read_error_ = false;
 
   base::WeakPtrFactory<SessionRestoreImpl> weak_factory_{this};
 

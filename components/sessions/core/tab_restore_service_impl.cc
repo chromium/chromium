@@ -430,7 +430,8 @@ class TabRestoreServiceImpl::PersistenceDelegate
   // closed tabs. This creates entries, adds them to staging_entries_, and
   // invokes LoadState.
   void OnGotLastSessionCommands(
-      std::vector<std::unique_ptr<SessionCommand>> commands);
+      std::vector<std::unique_ptr<SessionCommand>> commands,
+      bool read_error);
 
   // Populates |loaded_entries| with Entries from |commands|.
   void CreateEntriesFromCommands(
@@ -447,7 +448,8 @@ class TabRestoreServiceImpl::PersistenceDelegate
   // and invokes LoadStateChanged. |ignored_active_window| is ignored because we
   // don't need to restore activation.
   void OnGotPreviousSession(std::vector<std::unique_ptr<SessionWindow>> windows,
-                            SessionID ignored_active_window);
+                            SessionID ignored_active_window,
+                            bool error_reading);
 
   // Converts a SessionWindow into a Window, returning true on success. We use 0
   // as the timestamp here since we do not know when the window/tab was closed.
@@ -853,7 +855,8 @@ int TabRestoreServiceImpl::PersistenceDelegate::
 }
 
 void TabRestoreServiceImpl::PersistenceDelegate::OnGotLastSessionCommands(
-    std::vector<std::unique_ptr<SessionCommand>> commands) {
+    std::vector<std::unique_ptr<SessionCommand>> commands,
+    bool read_error) {
   std::vector<std::unique_ptr<TabRestoreService::Entry>> entries;
   CreateEntriesFromCommands(commands, &entries);
   // Closed tabs always go to the end.
@@ -1124,7 +1127,8 @@ void TabRestoreServiceImpl::PersistenceDelegate::ValidateAndDeleteEmptyEntries(
 
 void TabRestoreServiceImpl::PersistenceDelegate::OnGotPreviousSession(
     std::vector<std::unique_ptr<SessionWindow>> windows,
-    SessionID ignored_active_window) {
+    SessionID ignored_active_window,
+    bool error_reading) {
   std::vector<std::unique_ptr<Entry>> entries;
   CreateEntriesFromWindows(&windows, &entries);
   // Previous session tabs go first.

@@ -279,7 +279,8 @@ void BrowserPersister::ScheduleRebuildOnNextSave() {
 }
 
 void BrowserPersister::OnGotLastSessionCommands(
-    std::vector<std::unique_ptr<sessions::SessionCommand>> commands) {
+    std::vector<std::unique_ptr<sessions::SessionCommand>> commands,
+    bool read_error) {
   ScheduleRebuildOnNextSave();
 
   RestoreBrowserState(browser_, std::move(commands));

@@ -82,7 +82,7 @@ class ScopedBundleSwizzlerMac;
 // . SetUpUserDataDirectory()
 //
 // Default command line switches are added in the default implementation of
-// SetUpDefaultCommandLine(). Addtional command line switches can be simply
+// SetUpDefaultCommandLine(). Additional command line switches can be simply
 // appended in SetUpCommandLine() without the need to invoke
 // InProcessBrowserTest::SetUpCommandLine(). If a test needs to change the
 // default command line, it can override SetUpDefaultCommandLine(), where it

@@ -93,7 +93,7 @@ class SessionFileReader {
   }
 
   // Reads the state of commands from the specified file.
-  static std::vector<std::unique_ptr<sessions::SessionCommand>> Read(
+  static CommandStorageBackend::ReadCommandsResult Read(
       const base::FilePath& path,
       const std::vector<uint8_t>& crypto_key) {
     SessionFileReader reader(path, crypto_key);
@@ -101,6 +101,11 @@ class SessionFileReader {
   }
 
  private:
+  struct ReadResult {
+    std::unique_ptr<sessions::SessionCommand> command;
+    bool error_reading = false;
+  };
+
   SessionFileReader(const base::FilePath& path,
                     const std::vector<uint8_t>& crypto_key)
       : buffer_(CommandStorageBackend::kFileReadBufferSize, 0),
@@ -118,7 +123,7 @@ class SessionFileReader {
   bool IsHeaderValid() const { return is_header_valid_; }
 
   // Reads the contents of the file specified in the constructor.
-  std::vector<std::unique_ptr<sessions::SessionCommand>> Read();
+  CommandStorageBackend::ReadCommandsResult Read();
 
   bool SupportsMarker() const {
     return IsHeaderValid() && (version_ == kFileVersionWithMarker ||
@@ -131,9 +136,9 @@ class SessionFileReader {
   // Reads commands until the marker is found, or no more commands.
   bool ReadToMarker();
 
-  // Reads a single command, returning it. A return value of null indicates
-  // either there are no commands, or there was an error.
-  std::unique_ptr<sessions::SessionCommand> ReadCommand();
+  // Reads a single command. If the command returned in the structure is null,
+  // there are no more commands.
+  ReadResult ReadCommand();
 
   // Decrypts a previously encrypted command. Returns the new command on
   // success.
@@ -180,20 +185,21 @@ class SessionFileReader {
   DISALLOW_COPY_AND_ASSIGN(SessionFileReader);
 };
 
-std::vector<std::unique_ptr<sessions::SessionCommand>>
-SessionFileReader::Read() {
+CommandStorageBackend::ReadCommandsResult SessionFileReader::Read() {
   if (!IsHeaderValid())
     return {};
 
-  std::vector<std::unique_ptr<sessions::SessionCommand>> read_commands;
-  for (std::unique_ptr<sessions::SessionCommand> command = ReadCommand();
-       command; command = ReadCommand()) {
-    if (command->id() != kInitialStateMarkerCommandId)
-      read_commands.push_back(std::move(command));
-  }
+  CommandStorageBackend::ReadCommandsResult commands_result;
   // Even if there was an error the commands are returned. The hope is at least
   // some portion of the previous session is restored.
-  return read_commands;
+  ReadResult result = ReadCommand();
+  for (; result.command; result = ReadCommand()) {
+    if (result.command->id() != kInitialStateMarkerCommandId)
+      commands_result.commands.push_back(std::move(result.command));
+  }
+  // `error_reading` is only set if `command` is null.
+  commands_result.error_reading = result.error_reading;
+  return commands_result;
 }
 
 bool SessionFileReader::ReadHeader() {
@@ -219,24 +225,26 @@ bool SessionFileReader::ReadHeader() {
 bool SessionFileReader::ReadToMarker() {
   // It's expected this is only called if the marker is supported.
   DCHECK(IsHeaderValid() && SupportsMarker());
-  for (std::unique_ptr<sessions::SessionCommand> command = ReadCommand();
-       command; command = ReadCommand()) {
-    if (command->id() == kInitialStateMarkerCommandId)
+  for (ReadResult result = ReadCommand(); result.command;
+       result = ReadCommand()) {
+    if (result.command->id() == kInitialStateMarkerCommandId)
       return true;
   }
   return false;
 }
 
-std::unique_ptr<sessions::SessionCommand> SessionFileReader::ReadCommand() {
+SessionFileReader::ReadResult SessionFileReader::ReadCommand() {
+  SessionFileReader::ReadResult result;
   // Make sure there is enough in the buffer for the size of the next command.
   if (available_count_ < sizeof(size_type)) {
     if (!FillBuffer())
-      return nullptr;
+      return result;
     if (available_count_ < sizeof(size_type)) {
       VLOG(1) << "SessionFileReader::ReadCommand, file incomplete";
       // Still couldn't read a valid size for the command, assume write was
       // incomplete and return null.
-      return nullptr;
+      result.error_reading = true;
+      return result;
     }
   }
   // Get the size of the command.
@@ -248,7 +256,8 @@ std::unique_ptr<sessions::SessionCommand> SessionFileReader::ReadCommand() {
   if (command_size == 0) {
     VLOG(1) << "SessionFileReader::ReadCommand, empty command";
     // Empty command. Shouldn't happen if write was successful, fail.
-    return nullptr;
+    result.error_reading = true;
+    return result;
   }
 
   // Make sure buffer has the complete contents of the command.
@@ -258,20 +267,21 @@ std::unique_ptr<sessions::SessionCommand> SessionFileReader::ReadCommand() {
     if (!FillBuffer() || command_size > available_count_) {
       // Again, assume the file was ok, and just the last chunk was lost.
       VLOG(1) << "SessionFileReader::ReadCommand, last chunk lost";
-      return nullptr;
+      result.error_reading = true;
+      return result;
     }
   }
-  std::unique_ptr<SessionCommand> command;
   if (aead_) {
-    command = CreateCommandFromEncrypted(buffer_.c_str() + buffer_position_,
-                                         command_size);
+    result.command = CreateCommandFromEncrypted(
+        buffer_.c_str() + buffer_position_, command_size);
   } else {
-    command = CreateCommand(buffer_.c_str() + buffer_position_, command_size);
+    result.command =
+        CreateCommand(buffer_.c_str() + buffer_position_, command_size);
   }
   ++command_counter_;
   buffer_position_ += command_size;
   available_count_ -= command_size;
-  return command;
+  return result;
 }
 
 std::unique_ptr<sessions::SessionCommand>
@@ -393,6 +403,14 @@ base::FilePath GetLegacySessionPath(CommandStorageManager::SessionType type,
 }
 
 }  // namespace
+
+CommandStorageBackend::ReadCommandsResult::ReadCommandsResult() = default;
+CommandStorageBackend::ReadCommandsResult::ReadCommandsResult(
+    CommandStorageBackend::ReadCommandsResult&& other) = default;
+CommandStorageBackend::ReadCommandsResult&
+CommandStorageBackend::ReadCommandsResult::operator=(
+    CommandStorageBackend::ReadCommandsResult&& other) = default;
+CommandStorageBackend::ReadCommandsResult::~ReadCommandsResult() = default;
 
 // CommandStorageBackend
 // -------------------------------------------------------------
@@ -523,7 +541,7 @@ std::set<base::FilePath> CommandStorageBackend::GetSessionFilePaths(
   return result;
 }
 
-std::vector<std::unique_ptr<SessionCommand>>
+CommandStorageBackend::ReadCommandsResult
 CommandStorageBackend::ReadLastSessionCommands() {
   InitIfNecessary();
 
@@ -619,7 +637,7 @@ base::FilePath CommandStorageBackend::FilePathFromTime(
 }
 
 // static
-std::vector<std::unique_ptr<sessions::SessionCommand>>
+CommandStorageBackend::ReadCommandsResult
 CommandStorageBackend::ReadCommandsFromFile(
     const base::FilePath& path,
     const std::vector<uint8_t>& crypto_key) {

@@ -33,8 +33,12 @@ class CommandStorageBackend;
 // and processed after a delay.
 class SESSIONS_EXPORT CommandStorageManager {
  public:
+  // The bool parameter indicates whether there was an error reading the file.
+  // If there was an error, the vector contains the set of commands up to the
+  // error.
   using GetCommandsCallback =
-      base::OnceCallback<void(std::vector<std::unique_ptr<SessionCommand>>)>;
+      base::OnceCallback<void(std::vector<std::unique_ptr<SessionCommand>>,
+                              bool)>;
 
   // Identifies the type of session service this is. This is used by the
   // backend to determine the name of the files.

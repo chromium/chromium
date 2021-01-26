@@ -105,7 +105,8 @@ class BrowserPersister : public sessions::CommandStorageManagerDelegate,
 
   // Called with the contents of the previous session.
   void OnGotLastSessionCommands(
-      std::vector<std::unique_ptr<sessions::SessionCommand>> commands);
+      std::vector<std::unique_ptr<sessions::SessionCommand>> commands,
+      bool read_error);
 
   // Schedules commands to recreate the state of the specified tab.
   void BuildCommandsForTab(TabImpl* tab, int index_in_window);

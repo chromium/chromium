@@ -258,7 +258,8 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
   // Converts |commands| to SessionWindows and notifies the callback.
   void OnGotSessionCommands(
       sessions::GetLastSessionCallback callback,
-      std::vector<std::unique_ptr<sessions::SessionCommand>> commands);
+      std::vector<std::unique_ptr<sessions::SessionCommand>> commands,
+      bool read_error);
 
   // Adds commands to commands that will recreate the state of the specified
   // tab. This adds at most kMaxNavigationCountToPersist navigations (in each

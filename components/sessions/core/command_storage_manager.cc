@@ -30,6 +30,12 @@ scoped_refptr<base::SequencedTaskRunner> CreateDefaultBackendTaskRunner() {
       {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
 }
 
+void AdaptGetLastSessionCommands(
+    CommandStorageManager::GetCommandsCallback callback,
+    CommandStorageBackend::ReadCommandsResult result) {
+  std::move(callback).Run(std::move(result.commands), result.error_reading);
+}
+
 }  // namespace
 
 CommandStorageManager::CommandStorageManager(
@@ -168,7 +174,7 @@ void CommandStorageManager::GetLastSessionCommands(
       FROM_HERE,
       base::BindOnce(&CommandStorageBackend::ReadLastSessionCommands,
                      backend()),
-      std::move(callback));
+      base::BindOnce(&AdaptGetLastSessionCommands, std::move(callback)));
 }
 
 void CommandStorageManager::OnErrorWritingToFile() {

@@ -657,7 +657,8 @@ void SessionService::OnBrowserSetLastActive(Browser* browser) {
 
 void SessionService::OnGotSessionCommands(
     sessions::GetLastSessionCallback callback,
-    std::vector<std::unique_ptr<sessions::SessionCommand>> commands) {
+    std::vector<std::unique_ptr<sessions::SessionCommand>> commands,
+    bool read_error) {
   std::vector<std::unique_ptr<sessions::SessionWindow>> valid_windows;
   SessionID active_window_id = SessionID::InvalidValue();
 
@@ -665,7 +666,8 @@ void SessionService::OnGotSessionCommands(
                                        &active_window_id);
   RemoveUnusedRestoreWindows(&valid_windows);
 
-  std::move(callback).Run(std::move(valid_windows), active_window_id);
+  std::move(callback).Run(std::move(valid_windows), active_window_id,
+                          read_error);
 }
 
 void SessionService::BuildCommandsForTab(

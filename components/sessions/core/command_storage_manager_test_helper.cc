@@ -45,7 +45,9 @@ bool CommandStorageManagerTestHelper::ProcessedAnyCommands() {
 
 std::vector<std::unique_ptr<SessionCommand>>
 CommandStorageManagerTestHelper::ReadLastSessionCommands() {
-  return command_storage_manager_->backend_.get()->ReadLastSessionCommands();
+  return command_storage_manager_->backend_.get()
+      ->ReadLastSessionCommands()
+      .commands;
 }
 
 scoped_refptr<base::SequencedTaskRunner>

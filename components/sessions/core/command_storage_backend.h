@@ -56,6 +56,18 @@ namespace sessions {
 class SESSIONS_EXPORT CommandStorageBackend
     : public base::RefCountedDeleteOnSequence<CommandStorageBackend> {
  public:
+  struct SESSIONS_EXPORT ReadCommandsResult {
+    ReadCommandsResult();
+    ReadCommandsResult(ReadCommandsResult&& other);
+    ReadCommandsResult& operator=(ReadCommandsResult&& other);
+    ReadCommandsResult(const ReadCommandsResult&) = delete;
+    ReadCommandsResult& operator=(const ReadCommandsResult&) = delete;
+    ~ReadCommandsResult();
+
+    std::vector<std::unique_ptr<sessions::SessionCommand>> commands;
+    bool error_reading = false;
+  };
+
   using id_type = SessionCommand::id_type;
   using size_type = SessionCommand::size_type;
 
@@ -115,7 +127,7 @@ class SESSIONS_EXPORT CommandStorageBackend
       CommandStorageManager::SessionType type);
 
   // Returns the commands from the last session file.
-  std::vector<std::unique_ptr<SessionCommand>> ReadLastSessionCommands();
+  ReadCommandsResult ReadLastSessionCommands();
 
   // Deletes the file containing the commands for the last session.
   void DeleteLastSession();
@@ -154,9 +166,9 @@ class SESSIONS_EXPORT CommandStorageBackend
 
   // Reads the commands from the specified file.  If |crypto_key| is non-empty,
   // it is used to decrypt the file.
-  static std::vector<std::unique_ptr<sessions::SessionCommand>>
-  ReadCommandsFromFile(const base::FilePath& path,
-                       const std::vector<uint8_t>& crypto_key);
+  static ReadCommandsResult ReadCommandsFromFile(
+      const base::FilePath& path,
+      const std::vector<uint8_t>& crypto_key);
 
   // Closes the file. The next time AppendCommands() is called the file will
   // implicitly be reopened.

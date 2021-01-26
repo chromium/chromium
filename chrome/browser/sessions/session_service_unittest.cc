@@ -1302,7 +1302,8 @@ namespace {
 
 void OnGotPreviousSession(
     std::vector<std::unique_ptr<sessions::SessionWindow>> windows,
-    SessionID ignored_active_window) {
+    SessionID ignored_active_window,
+    bool error_reading) {
   FAIL() << "SessionService was destroyed, this shouldn't be reached.";
 }
 

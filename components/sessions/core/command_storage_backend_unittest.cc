@@ -153,7 +153,7 @@ TEST_P(CommandStorageBackendTest, MigrateOther) {
 
   // Create the backend, should get back the data written.
   backend = CreateBackend();
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
   ASSERT_EQ(1U, commands.size());
   AssertCommandEqualsData(data, commands[0].get());
 
@@ -167,7 +167,7 @@ TEST_P(CommandStorageBackendTest, MigrateOther) {
   // removed.
   backend = nullptr;
   backend = CreateBackend();
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
   EXPECT_FALSE(base::PathExists(file_path()));
   ASSERT_EQ(1U, commands.size());
   AssertCommandEqualsData(data2, commands[0].get());
@@ -184,7 +184,7 @@ TEST_P(CommandStorageBackendTest, SimpleReadWriteEncrypted) {
   // Read it back in.
   backend = nullptr;
   backend = CreateBackend(key);
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
 
   ASSERT_EQ(1U, commands.size());
   AssertCommandEqualsData(data, commands[0].get());
@@ -193,7 +193,7 @@ TEST_P(CommandStorageBackendTest, SimpleReadWriteEncrypted) {
   backend = nullptr;
   ++(key[0]);
   backend = CreateBackend(key);
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
   EXPECT_TRUE(commands.empty());
 }
 
@@ -220,7 +220,7 @@ TEST_P(CommandStorageBackendTest, RandomDataEncrypted) {
     SessionCommands commands;
     if (i != 0) {
       // Read previous data.
-      commands = backend->ReadLastSessionCommands();
+      commands = backend->ReadLastSessionCommands().commands;
       ASSERT_EQ(i, commands.size());
       for (auto j = commands.begin(); j != commands.end(); ++j)
         AssertCommandEqualsData(data[j - commands.begin()], j->get());
@@ -260,7 +260,7 @@ TEST_P(CommandStorageBackendTest, BigDataEncrypted) {
   backend = nullptr;
   backend = CreateBackend(key);
 
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
   ASSERT_EQ(3U, commands.size());
   AssertCommandEqualsData(data[0], commands[0].get());
   AssertCommandEqualsData(data[1], commands[2].get());
@@ -282,7 +282,7 @@ TEST_P(CommandStorageBackendTest, MarkerOnlyEncrypted) {
 
   backend = nullptr;
   backend = CreateBackend(key2);
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
   ASSERT_TRUE(commands.empty());
 }
 
@@ -307,7 +307,7 @@ TEST_P(CommandStorageBackendTest, TruncateEncrypted) {
   // Read it back in.
   backend = nullptr;
   backend = CreateBackend(key2);
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
 
   // And make sure we get back the expected data.
   ASSERT_EQ(1U, commands.size());
@@ -334,7 +334,7 @@ TEST_P(CommandStorageBackendTest, MaxSizeTypeEncrypted) {
   // Read it back in.
   backend = nullptr;
   backend = CreateBackend(key);
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
 
   // Encryption restricts the main size, and results in truncation.
   ASSERT_EQ(1U, commands.size());
@@ -359,7 +359,7 @@ TEST_P(CommandStorageBackendTest, MaxSizeType) {
   // Read it back in.
   backend = nullptr;
   backend = CreateBackend();
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
 
   ASSERT_EQ(1U, commands.size());
   auto expected_command = CreateCommandWithMaxSize();
@@ -417,20 +417,20 @@ TEST_P(CommandStorageBackendTest, SimpleReadWriteWithRestoreType) {
   backend = CreateBackendWithRestoreType();
   commands.clear();
   backend->AppendCommands(std::move(commands), true, base::DoNothing());
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
 
   ASSERT_EQ(1U, commands.size());
   AssertCommandEqualsData(data, commands[0].get());
 
   backend = nullptr;
   backend = CreateBackendWithRestoreType();
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
 
   ASSERT_EQ(0U, commands.size());
 
   // Make sure we can delete.
   backend->DeleteLastSession();
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
   ASSERT_EQ(0U, commands.size());
 }
 
@@ -457,7 +457,7 @@ TEST_P(CommandStorageBackendTest, RandomDataWithRestoreType) {
     SessionCommands commands;
     if (i != 0) {
       // Read previous data.
-      commands = backend->ReadLastSessionCommands();
+      commands = backend->ReadLastSessionCommands().commands;
       ASSERT_EQ(i, commands.size());
       for (auto j = commands.begin(); j != commands.end(); ++j)
         AssertCommandEqualsData(data[j - commands.begin()], j->get());
@@ -495,7 +495,7 @@ TEST_P(CommandStorageBackendTest, BigDataWithRestoreType) {
   backend = nullptr;
   backend = CreateBackendWithRestoreType();
 
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
   ASSERT_EQ(3U, commands.size());
   AssertCommandEqualsData(data[0], commands[0].get());
   AssertCommandEqualsData(data[1], commands[2].get());
@@ -513,7 +513,7 @@ TEST_P(CommandStorageBackendTest, CommandWithRestoreType) {
   backend->AppendCommands(std::move(commands), true, base::DoNothing());
   backend->MoveCurrentSessionToLastSession();
 
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
   ASSERT_EQ(0U, commands.size());
 }
 
@@ -535,7 +535,7 @@ TEST_P(CommandStorageBackendTest, TruncateWithRestoreType) {
   // Read it back in.
   backend = nullptr;
   backend = CreateBackendWithRestoreType();
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
 
   // And make sure we get back the expected data.
   ASSERT_EQ(1U, commands.size());
@@ -724,7 +724,7 @@ TEST_P(CommandStorageBackendTest, UseMarkerWithoutValidMarker) {
   // Read it back in.
   backend = nullptr;
   backend = CreateBackendWithRestoreType();
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
   // There should be no commands as a valid marker was not written.
   ASSERT_TRUE(commands.empty());
 
@@ -763,7 +763,7 @@ TEST_P(CommandStorageBackendTest, ReadPreviouslyWrittenData) {
       test_data_path, restore_path().Append(kLegacyCurrentSessionFileName)));
   scoped_refptr<CommandStorageBackend> backend = CreateBackendWithRestoreType();
   AssertCommandsEqualsData(data, base::size(data),
-                           backend->ReadLastSessionCommands());
+                           backend->ReadLastSessionCommands().commands);
 }
 
 TEST_P(CommandStorageBackendTest, NewFileOnTruncate) {
@@ -830,7 +830,7 @@ TEST_P(CommandStorageBackendTest, RestoresFileWithMarkerAfterFailure) {
   backend = nullptr;
   backend = CreateBackend();
   backend->AppendCommands({}, false, base::DoNothing());
-  commands = backend->ReadLastSessionCommands();
+  commands = backend->ReadLastSessionCommands().commands;
   ASSERT_EQ(1u, commands.size());
   AssertCommandEqualsData(data, commands[0].get());
 }
