@@ -135,12 +135,10 @@ void ReadLaterButton::OnThemeChanged() {
   if (!theme_provider)
     return;
   const SkColor color =
-      theme_provider->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT);
+      theme_provider->GetColor(ThemeProperties::COLOR_TOOLBAR_BUTTON_ICON);
   SetEnabledTextColors(color);
-  SetImageModel(
-      views::Button::STATE_NORMAL,
-      ui::ImageModel::FromVectorIcon(
-          kReadLaterIcon, color_utils::DeriveDefaultIconColor(color)));
+  SetImageModel(views::Button::STATE_NORMAL,
+                ui::ImageModel::FromVectorIcon(kReadLaterIcon, color));
 
   LabelButton::OnThemeChanged();
 }
