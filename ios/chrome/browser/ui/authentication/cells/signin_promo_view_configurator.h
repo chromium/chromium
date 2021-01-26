@@ -18,11 +18,11 @@
 // Initializes the instance.
 // |userEmail| is used as a proxy to determine if accounts have
 // been added to the device.
-- (instancetype)initWithIdentityPromoViewMode:(IdentityPromoViewMode)viewMode
-                                    userEmail:(NSString*)userEmail
-                                userGivenName:(NSString*)userGivenName
-                                    userImage:(UIImage*)userImage
-                               hasCloseButton:(BOOL)hasCloseButton
+- (instancetype)initWithSigninPromoViewMode:(SigninPromoViewMode)viewMode
+                                  userEmail:(NSString*)userEmail
+                              userGivenName:(NSString*)userGivenName
+                                  userImage:(UIImage*)userImage
+                             hasCloseButton:(BOOL)hasCloseButton
     NS_DESIGNATED_INITIALIZER;
 
 // Configures a sign-in promo view.

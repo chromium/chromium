@@ -134,7 +134,7 @@ using chrome_test_util::WebStateScrollViewMatcher;
 
   [SigninEarlGrey verifySignedOut];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
 }
 
 // Tests that the sign-in promo with user name is displayed in Settings when the
@@ -148,7 +148,7 @@ using chrome_test_util::WebStateScrollViewMatcher;
 
   [SigninEarlGrey verifySignedOut];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeSigninWithAccount];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
 }
 
 // Tests that the sign-in promo is removed from Settings when the user
@@ -160,7 +160,7 @@ using chrome_test_util::WebStateScrollViewMatcher;
 
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeSigninWithAccount
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount
                            closeButton:YES];
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(
@@ -184,7 +184,7 @@ using chrome_test_util::WebStateScrollViewMatcher;
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
-                        IdentityPromoViewModeSyncWithPrimaryAccount];
+                        SigninPromoViewModeSyncWithPrimaryAccount];
 }
 
 // Tests that no sign-in promo for Sync is displayed when the user is signed in
@@ -198,7 +198,7 @@ using chrome_test_util::WebStateScrollViewMatcher;
 
   [ChromeEarlGreyUI openSettingsMenu];
   [SigninEarlGreyUI verifySigninPromoVisibleWithMode:
-                        IdentityPromoViewModeSyncWithPrimaryAccount];
+                        SigninPromoViewModeSyncWithPrimaryAccount];
   // Tap on dismiss button.
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(

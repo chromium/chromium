@@ -176,13 +176,13 @@ GURL TestPageURL() {
 
   // Sign-in promo should be visible with no accounts on the device.
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts
                            closeButton:NO];
   FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   // Sign-in promo should be visible with an account on the device.
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeSigninWithAccount
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount
                            closeButton:NO];
   [self closeRecentTabs];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
@@ -200,7 +200,7 @@ GURL TestPageURL() {
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts
                            closeButton:NO];
 
   // Tap on "Other Devices", to hide the sign-in promo.
@@ -226,7 +226,7 @@ GURL TestPageURL() {
                                           grey_sufficientlyVisible(), nil)]
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeSigninWithAccount
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount
                            closeButton:NO];
   [self closeRecentTabs];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
@@ -314,7 +314,7 @@ GURL TestPageURL() {
       performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
 
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts
                            closeButton:NO];
 }
 

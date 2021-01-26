@@ -437,23 +437,23 @@ const char* AlreadySeenSigninViewPreferenceKey(
   if (_defaultIdentity) {
     AuthenticationService* authService =
         AuthenticationServiceFactory::GetForBrowserState(_browserState);
-    IdentityPromoViewMode viewMode =
+    SigninPromoViewMode viewMode =
         authService->IsAuthenticated()
-            ? IdentityPromoViewModeSyncWithPrimaryAccount
-            : IdentityPromoViewModeSigninWithAccount;
+            ? SigninPromoViewModeSyncWithPrimaryAccount
+            : SigninPromoViewModeSigninWithAccount;
     return [[SigninPromoViewConfigurator alloc]
-        initWithIdentityPromoViewMode:viewMode
-                            userEmail:_defaultIdentity.userEmail
-                        userGivenName:_defaultIdentity.userGivenName
-                            userImage:self.identityAvatar
-                       hasCloseButton:hasCloseButton];
+        initWithSigninPromoViewMode:viewMode
+                          userEmail:_defaultIdentity.userEmail
+                      userGivenName:_defaultIdentity.userGivenName
+                          userImage:self.identityAvatar
+                     hasCloseButton:hasCloseButton];
   }
   return [[SigninPromoViewConfigurator alloc]
-      initWithIdentityPromoViewMode:IdentityPromoViewModeNoAccounts
-                          userEmail:nil
-                      userGivenName:nil
-                          userImage:nil
-                     hasCloseButton:hasCloseButton];
+      initWithSigninPromoViewMode:SigninPromoViewModeNoAccounts
+                        userEmail:nil
+                    userGivenName:nil
+                        userImage:nil
+                   hasCloseButton:hasCloseButton];
 }
 
 - (void)signinPromoViewIsVisible {

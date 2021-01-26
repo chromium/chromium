@@ -494,17 +494,17 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       _signinPromoViewMediator.consumer = self;
     }
 
-    TableViewSigninPromoItem* identityPromoItem =
+    TableViewSigninPromoItem* signinPromoItem =
         [[TableViewSigninPromoItem alloc]
             initWithType:SettingsItemTypeSigninPromo];
-    identityPromoItem.text =
+    signinPromoItem.text =
         l10n_util::GetNSString(IDS_IOS_SIGNIN_PROMO_SETTINGS_WITH_UNITY);
-    identityPromoItem.configurator =
+    signinPromoItem.configurator =
         [_signinPromoViewMediator createConfigurator];
-    identityPromoItem.delegate = _signinPromoViewMediator;
+    signinPromoItem.delegate = _signinPromoViewMediator;
     [_signinPromoViewMediator signinPromoViewIsVisible];
 
-    [model addItem:identityPromoItem
+    [model addItem:signinPromoItem
         toSectionWithIdentifier:SettingsSectionIdentifierSignIn];
   } else if (!authService->IsAuthenticated()) {
     [_signinPromoViewMediator signinPromoViewIsRemoved];

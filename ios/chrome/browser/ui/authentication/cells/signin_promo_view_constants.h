@@ -7,14 +7,14 @@
 
 #import <Foundation/Foundation.h>
 
-typedef NS_ENUM(NSInteger, IdentityPromoViewMode) {
+typedef NS_ENUM(NSInteger, SigninPromoViewMode) {
   // No identity available on the device.
-  IdentityPromoViewModeNoAccounts,
+  SigninPromoViewModeNoAccounts,
   // At least one identity is available on the device and the user can sign in
   // without entering their credentials.
-  IdentityPromoViewModeSigninWithAccount,
+  SigninPromoViewModeSigninWithAccount,
   // The user is signed in to Chrome and can enable Sync on the primary account.
-  IdentityPromoViewModeSyncWithPrimaryAccount,
+  SigninPromoViewModeSyncWithPrimaryAccount,
 };
 
 extern NSString* const kSigninPromoViewId;

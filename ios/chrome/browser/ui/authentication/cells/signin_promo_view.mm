@@ -194,7 +194,7 @@ const CGFloat kImageViewWidthHeight = 32;
           constraintEqualToConstant:kCloseButtonWidthHeight],
     ]];
     // Default mode.
-    _mode = IdentityPromoViewModeNoAccounts;
+    _mode = SigninPromoViewModeNoAccounts;
     [self activateNoAccountsMode];
   }
   return self;
@@ -204,19 +204,19 @@ const CGFloat kImageViewWidthHeight = 32;
   _delegate = nil;
 }
 
-- (void)setMode:(IdentityPromoViewMode)mode {
+- (void)setMode:(SigninPromoViewMode)mode {
   if (mode == _mode) {
     return;
   }
   _mode = mode;
   switch (_mode) {
-    case IdentityPromoViewModeNoAccounts:
+    case SigninPromoViewModeNoAccounts:
       [self activateNoAccountsMode];
       return;
-    case IdentityPromoViewModeSigninWithAccount:
+    case SigninPromoViewModeSigninWithAccount:
       [self activateSigninWithAccountMode];
       return;
-    case IdentityPromoViewModeSyncWithPrimaryAccount:
+    case SigninPromoViewModeSyncWithPrimaryAccount:
       [self activateSyncWithPrimaryAccountMode];
       return;
   }
@@ -224,7 +224,7 @@ const CGFloat kImageViewWidthHeight = 32;
 }
 
 - (void)activateNoAccountsMode {
-  DCHECK_EQ(_mode, IdentityPromoViewModeNoAccounts);
+  DCHECK_EQ(_mode, SigninPromoViewModeNoAccounts);
   UIImage* logo = nil;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   logo = [UIImage imageNamed:@"signin_promo_logo_chrome_color"];
@@ -237,17 +237,17 @@ const CGFloat kImageViewWidthHeight = 32;
 }
 
 - (void)activateSigninWithAccountMode {
-  DCHECK_EQ(_mode, IdentityPromoViewModeSigninWithAccount);
+  DCHECK_EQ(_mode, SigninPromoViewModeSigninWithAccount);
   _secondaryButton.hidden = NO;
 }
 
 - (void)activateSyncWithPrimaryAccountMode {
-  DCHECK_EQ(_mode, IdentityPromoViewModeSyncWithPrimaryAccount);
+  DCHECK_EQ(_mode, SigninPromoViewModeSyncWithPrimaryAccount);
   _secondaryButton.hidden = YES;
 }
 
 - (void)setProfileImage:(UIImage*)image {
-  DCHECK_NE(_mode, IdentityPromoViewModeNoAccounts);
+  DCHECK_NE(_mode, SigninPromoViewModeNoAccounts);
   self.imageView.image = CircularImageFromImage(image, kProfileImageFixedSize);
 }
 
@@ -270,11 +270,11 @@ const CGFloat kImageViewWidthHeight = 32;
 
 - (void)onPrimaryButtonAction:(id)unused {
   switch (_mode) {
-    case IdentityPromoViewModeNoAccounts:
+    case SigninPromoViewModeNoAccounts:
       [_delegate signinPromoViewDidTapSigninWithNewAccount:self];
       break;
-    case IdentityPromoViewModeSigninWithAccount:
-    case IdentityPromoViewModeSyncWithPrimaryAccount:
+    case SigninPromoViewModeSigninWithAccount:
+    case SigninPromoViewModeSyncWithPrimaryAccount:
       [_delegate signinPromoViewDidTapSigninWithDefaultAccount:self];
       break;
   }
@@ -298,7 +298,7 @@ const CGFloat kImageViewWidthHeight = 32;
 - (NSArray<UIAccessibilityCustomAction*>*)accessibilityCustomActions {
   NSMutableArray* actions = [NSMutableArray array];
 
-  if (_mode == IdentityPromoViewModeSigninWithAccount) {
+  if (_mode == SigninPromoViewModeSigninWithAccount) {
     NSString* secondaryActionName =
         [self.secondaryButton titleForState:UIControlStateNormal];
     UIAccessibilityCustomAction* secondaryCustomAction =

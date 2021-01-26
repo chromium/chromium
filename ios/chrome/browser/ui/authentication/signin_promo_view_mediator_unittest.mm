@@ -163,7 +163,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   // Expects the signin promo view to be configured with no accounts on the
   // device.
   void ExpectNoAccountsConfiguration() {
-    OCMExpect([signin_promo_view_ setMode:IdentityPromoViewModeNoAccounts]);
+    OCMExpect([signin_promo_view_ setMode:SigninPromoViewModeNoAccounts]);
     NSString* title = GetNSString(IDS_IOS_OPTIONS_IMPORT_DATA_TITLE_SIGNIN);
     OCMExpect([signin_promo_view_ setAccessibilityLabel:title]);
     OCMExpect([primary_button_ setTitle:title forState:UIControlStateNormal]);
@@ -184,7 +184,7 @@ class SigninPromoViewMediatorTest : public PlatformTest {
   void ExpectSigninWithAccountConfiguration() {
     EXPECT_EQ(expected_default_identity_, mediator_.defaultIdentity);
     OCMExpect(
-        [signin_promo_view_ setMode:IdentityPromoViewModeSigninWithAccount]);
+        [signin_promo_view_ setMode:SigninPromoViewModeSigninWithAccount]);
     OCMExpect([signin_promo_view_
         setProfileImage:[OCMArg checkWithBlock:^BOOL(id value) {
           image_view_profile_image_ = value;

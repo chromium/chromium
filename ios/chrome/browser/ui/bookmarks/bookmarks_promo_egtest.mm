@@ -66,7 +66,7 @@ using chrome_test_util::SecondarySignInButton;
   // Check that sign-in promo view is visible.
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
 
   // Go to child node.
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -99,7 +99,7 @@ using chrome_test_util::SecondarySignInButton;
   // Check that sign-in promo view is visible.
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
 
   // Tap the dismiss button.
   [[EarlGrey
@@ -124,7 +124,7 @@ using chrome_test_util::SecondarySignInButton;
   // Check that sign-in promo view are visible.
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
 
   // Tap the primary button.
   [[EarlGrey
@@ -139,7 +139,7 @@ using chrome_test_util::SecondarySignInButton;
   // Check that the bookmarks UI reappeared and the cell is still here.
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
 }
 
 // Tests the tapping on the primary button of sign-in promo view with identities
@@ -155,7 +155,7 @@ using chrome_test_util::SecondarySignInButton;
   // Check that promo is visible.
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeSigninWithAccount];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
 
   // Tap the primary button.
   [[EarlGrey
@@ -170,7 +170,7 @@ using chrome_test_util::SecondarySignInButton;
 
   // Check that the bookmarks UI reappeared and the cell is still here.
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeSigninWithAccount];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
 
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
 }
@@ -188,7 +188,7 @@ using chrome_test_util::SecondarySignInButton;
   // Check that sign-in promo view are visible.
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeSigninWithAccount];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
 
   // Tap the secondary button.
   [[EarlGrey
@@ -207,7 +207,7 @@ using chrome_test_util::SecondarySignInButton;
   // Check that the bookmarks UI reappeared and the cell is still here.
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeSigninWithAccount];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeSigninWithAccount];
 }
 
 // Tests that the sign-in promo should not be shown after been shown 19 times.
@@ -216,7 +216,7 @@ using chrome_test_util::SecondarySignInButton;
   [BookmarkEarlGreyUI openBookmarks];
   // Check the sign-in promo view is visible.
   [SigninEarlGreyUI
-      verifySigninPromoVisibleWithMode:IdentityPromoViewModeNoAccounts];
+      verifySigninPromoVisibleWithMode:SigninPromoViewModeNoAccounts];
   // Check the sign-in promo already-seen state didn't change.
   [BookmarkEarlGrey verifyPromoAlreadySeen:NO];
   GREYAssertEqual(20, [BookmarkEarlGrey numberOfTimesPromoAlreadySeen],
