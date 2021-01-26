@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_CHOSEN_OBJECT_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_CHOSEN_OBJECT_VIEW_H_
 
-#include "base/macros.h"
 #include "base/strings/string16.h"
 #include "components/page_info/page_info_ui.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -22,8 +22,11 @@ class ChosenObjectViewObserver;
 // access to.
 class ChosenObjectView : public views::View {
  public:
+  METADATA_HEADER(ChosenObjectView);
   explicit ChosenObjectView(std::unique_ptr<PageInfoUI::ChosenObjectInfo> info,
                             base::string16 display_name);
+  ChosenObjectView(const ChosenObjectView&) = delete;
+  ChosenObjectView& operator=(const ChosenObjectView&) = delete;
   ~ChosenObjectView() override;
 
   void AddObserver(ChosenObjectViewObserver* observer);
@@ -32,8 +35,6 @@ class ChosenObjectView : public views::View {
   void OnThemeChanged() override;
 
  private:
-  SkColor GetObjectIconColor() const;
-
   void UpdateIconImage(bool is_deleted) const;
 
   void ExecuteDeleteCommand();
@@ -43,8 +44,6 @@ class ChosenObjectView : public views::View {
 
   base::ObserverList<ChosenObjectViewObserver>::Unchecked observer_list_;
   std::unique_ptr<PageInfoUI::ChosenObjectInfo> info_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChosenObjectView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_CHOSEN_OBJECT_VIEW_H_

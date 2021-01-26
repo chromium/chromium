@@ -9,6 +9,7 @@
 #include "base/callback_forward.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 
@@ -28,6 +29,8 @@ class StyledLabel;
 //                                                                       🌏
 class TipMarqueeView : public views::View {
  public:
+  METADATA_HEADER(TipMarqueeView);
+
   using LearnMoreLinkClickedCallback =
       base::RepeatingCallback<void(TipMarqueeView*)>;
 
@@ -68,7 +71,7 @@ class TipMarqueeView : public views::View {
   void OnPaint(gfx::Canvas* canvas) override;
 
   void LearnMoreLinkClicked();
-  bool CanFitInLayout() const;
+  bool GetFitsInLayout() const;
 
   bool IsPointInIcon(const gfx::Point& p) const;
 

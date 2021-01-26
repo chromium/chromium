@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -25,19 +26,17 @@ class MigratableCreditCard;
 // expiration date. Used by LocalCardMigrationDialogView.
 class MigratableCardView : public views::View {
  public:
-  static const char kViewClassName[];
-
+  METADATA_HEADER(MigratableCardView);
   MigratableCardView(const MigratableCreditCard& migratable_credit_card,
                      LocalCardMigrationDialogView* parent_dialog,
                      bool should_show_checkbox);
+  MigratableCardView(const MigratableCardView&) = delete;
+  MigratableCardView& operator=(const MigratableCardView&) = delete;
   ~MigratableCardView() override;
 
-  bool IsSelected() const;
+  bool GetSelected() const;
   std::string GetGuid() const;
   base::string16 GetCardIdentifierString() const;
-
-  // views::View
-  const char* GetClassName() const override;
 
  private:
   std::unique_ptr<views::View> GetMigratableCardDescriptionView(
@@ -57,8 +56,6 @@ class MigratableCardView : public views::View {
   views::ImageButton* delete_card_from_local_button_ = nullptr;
 
   LocalCardMigrationDialogView* parent_dialog_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MigratableCardView);
 };
 
 }  // namespace autofill

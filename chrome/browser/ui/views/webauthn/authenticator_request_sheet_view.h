@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/strings/string16.h"
 #include "ui/views/controls/button/image_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -58,8 +59,12 @@ class NonAccessibleImageView;
 // avoid code duplication, consider factoring out common parts.
 class AuthenticatorRequestSheetView : public views::View {
  public:
+  METADATA_HEADER(AuthenticatorRequestSheetView);
   explicit AuthenticatorRequestSheetView(
       std::unique_ptr<AuthenticatorRequestSheetModel> model);
+  AuthenticatorRequestSheetView(const AuthenticatorRequestSheetView&) = delete;
+  AuthenticatorRequestSheetView& operator=(
+      const AuthenticatorRequestSheetView&) = delete;
   ~AuthenticatorRequestSheetView() override;
 
   // Recreates the standard child views on this sheet, potentially including
@@ -104,8 +109,6 @@ class AuthenticatorRequestSheetView : public views::View {
   views::View* step_specific_content_ = nullptr;
   NonAccessibleImageView* step_illustration_ = nullptr;
   views::Label* error_label_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestSheetView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_VIEW_H_

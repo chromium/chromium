@@ -40,6 +40,8 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -123,6 +125,8 @@ int ComputeHeadingMessageFromUsage(
 // full list of items.
 class CollapsibleListView : public views::View {
  public:
+  METADATA_HEADER(CollapsibleListView);
+
   // How many rows to show in the expanded table without having to scroll.
   static constexpr int kExpandedTableRowCount = 3;
 
@@ -223,6 +227,9 @@ class CollapsibleListView : public views::View {
   views::ScrollView* table_view_parent_;
   views::ToggleImageButton* expand_collapse_button_;
 };
+
+BEGIN_METADATA(CollapsibleListView, views::View)
+END_METADATA
 
 }  // namespace
 

@@ -44,6 +44,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/metadata/type_conversion.h"
 #include "ui/views/view_class_properties.h"
@@ -56,6 +57,7 @@ namespace {
 
 class OmniboxRemoveSuggestionButton : public views::ImageButton {
  public:
+  METADATA_HEADER(OmniboxRemoveSuggestionButton);
   explicit OmniboxRemoveSuggestionButton(PressedCallback callback)
       : ImageButton(std::move(callback)) {
     views::ConfigureVectorImageButton(this);
@@ -72,6 +74,9 @@ class OmniboxRemoveSuggestionButton : public views::ImageButton {
   }
 };
 
+BEGIN_METADATA(OmniboxRemoveSuggestionButton, views::ImageButton)
+END_METADATA
+
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -79,6 +84,8 @@ class OmniboxRemoveSuggestionButton : public views::ImageButton {
 
 class OmniboxResultSelectionIndicator : public views::View {
  public:
+  METADATA_HEADER(OmniboxResultSelectionIndicator);
+
   static constexpr int kStrokeThickness = 3;
 
   explicit OmniboxResultSelectionIndicator(OmniboxResultView* result_view)
@@ -127,6 +134,10 @@ class OmniboxResultSelectionIndicator : public views::View {
     return path;
   }
 };
+
+BEGIN_METADATA(OmniboxResultSelectionIndicator, views::View)
+END_METADATA
+
 ////////////////////////////////////////////////////////////////////////////////
 // OmniboxResultView, public:
 

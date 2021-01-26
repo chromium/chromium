@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "media/audio/audio_device_description.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace {
 class ExpandDeviceSelectorButton;
@@ -29,6 +30,7 @@ class MediaNotificationDeviceSelectorView
       public IconLabelBubbleView::Delegate,
       public media_router::CastDialogController::Observer {
  public:
+  METADATA_HEADER(MediaNotificationDeviceSelectorView);
   MediaNotificationDeviceSelectorView(
       MediaNotificationDeviceSelectorViewDelegate* delegate,
       std::unique_ptr<media_router::CastDialogController> controller,

@@ -42,6 +42,7 @@
 #include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/style/typography_provider.h"
@@ -98,6 +99,7 @@ ui::NativeTheme::ColorId GetSecurityChipColorId(
 // page.
 class CustomTabBarTitleOriginView : public views::View {
  public:
+  METADATA_HEADER(CustomTabBarTitleOriginView);
   CustomTabBarTitleOriginView(SkColor background_color,
                               bool should_show_title) {
     auto location_label = std::make_unique<views::Label>(
@@ -190,6 +192,11 @@ class CustomTabBarTitleOriginView : public views::View {
 
   views::Label* location_label_ = nullptr;
 };
+
+BEGIN_METADATA(CustomTabBarTitleOriginView, views::View)
+ADD_READONLY_PROPERTY_METADATA(int, MinimumWidth)
+ADD_READONLY_PROPERTY_METADATA(SkColor, LocationColor)
+END_METADATA
 
 CustomTabBarView::CustomTabBarView(BrowserView* browser_view,
                                    LocationBarView::Delegate* delegate)

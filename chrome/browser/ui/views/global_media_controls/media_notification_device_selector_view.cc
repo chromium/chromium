@@ -15,6 +15,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -393,3 +394,6 @@ void MediaNotificationDeviceSelectorView::StartCastSession(
     // TODO(muyaoxu):Add metrics to record start casting usage.
   }
 }
+
+BEGIN_METADATA(MediaNotificationDeviceSelectorView, views::View)
+END_METADATA

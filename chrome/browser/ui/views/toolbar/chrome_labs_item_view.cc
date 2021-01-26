@@ -11,6 +11,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 class LabsComboboxModel : public ui::ComboboxModel {
  public:
@@ -79,10 +80,14 @@ ChromeLabsItemView::ChromeLabsItemView(
                    .Build());
 }
 
-int ChromeLabsItemView::GetSelectedIndex() {
+int ChromeLabsItemView::GetSelectedIndex() const {
   return lab_state_combobox_->GetSelectedIndex();
 }
 
 const flags_ui::FeatureEntry* ChromeLabsItemView::GetFeatureEntry() {
   return feature_entry_;
 }
+
+BEGIN_METADATA(ChromeLabsItemView, views::View)
+ADD_READONLY_PROPERTY_METADATA(int, SelectedIndex)
+END_METADATA

@@ -24,6 +24,7 @@
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -221,3 +222,6 @@ void AuthenticatorRequestSheetView::UpdateIconColors() {
             *this, views::style::CONTEXT_LABEL, views::style::STYLE_PRIMARY)));
   }
 }
+
+BEGIN_METADATA(AuthenticatorRequestSheetView, views::View)
+END_METADATA

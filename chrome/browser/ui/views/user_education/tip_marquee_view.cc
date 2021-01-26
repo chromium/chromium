@@ -23,6 +23,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 constexpr int TipMarqueeView::kTipMarqueeIconSize;
@@ -83,7 +84,7 @@ void TipMarqueeView::ClearTip() {
 bool TipMarqueeView::OnMousePressed(const ui::MouseEvent& event) {
   if (!IsPointInIcon(event.location()))
     return false;
-  if (!CanFitInLayout() && learn_more_link_clicked_callback_) {
+  if (!GetFitsInLayout() && learn_more_link_clicked_callback_) {
     LearnMoreLinkClicked();
   } else {
     collapsed_ = !collapsed_;
@@ -133,15 +134,14 @@ base::string16 TipMarqueeView::GetTooltipText(const gfx::Point& p) const {
   if (!IsPointInIcon(p))
     return View::GetTooltipText(p);
 
-  if (tip_text_label_->GetVisible()) {
+  // TODO(pkasting): Localize
+  if (tip_text_label_->GetVisible())
     return base::ASCIIToUTF16("Click to hide tip");
-  } else if (CanFitInLayout()) {
+  if (GetFitsInLayout())
     return base::ASCIIToUTF16("Click to show tip");
-  } else {
-    base::string16 result = tip_text_;
-    result.append(base::ASCIIToUTF16(" - Click to learn more"));
-    return result;
-  }
+  base::string16 result = tip_text_;
+  result.append(base::ASCIIToUTF16(" - Click to learn more"));
+  return result;
 }
 
 void TipMarqueeView::LearnMoreLinkClicked() {
@@ -151,7 +151,7 @@ void TipMarqueeView::LearnMoreLinkClicked() {
   learn_more_link_clicked_callback_.Run(this);
 }
 
-bool TipMarqueeView::CanFitInLayout() const {
+bool TipMarqueeView::GetFitsInLayout() const {
   const views::SizeBounds available = parent()->GetAvailableSize(this);
   if (!available.width().is_bounded())
     return true;
@@ -164,3 +164,7 @@ bool TipMarqueeView::IsPointInIcon(const gfx::Point& p) const {
   const int pos = GetMirroredXInView(p.x());
   return pos < kTipMarqueeIconTotalWidth;
 }
+
+BEGIN_METADATA(TipMarqueeView, views::View)
+ADD_READONLY_PROPERTY_METADATA(bool, FitsInLayout)
+END_METADATA

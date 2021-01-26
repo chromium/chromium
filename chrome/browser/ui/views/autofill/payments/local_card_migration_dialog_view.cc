@@ -48,6 +48,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace autofill {
@@ -320,9 +321,9 @@ class LocalCardMigrationOfferView : public views::View {
   const std::vector<std::string> GetSelectedCardGuids() const {
     std::vector<std::string> selected_cards;
     for (views::View* child : card_list_view_->children()) {
-      DCHECK_EQ(MigratableCardView::kViewClassName, child->GetClassName());
+      DCHECK(views::IsViewClass<MigratableCardView>(child));
       auto* card = static_cast<MigratableCardView*>(child);
-      if (card->IsSelected())
+      if (card->GetSelected())
         selected_cards.push_back(card->GetGuid());
     }
     return selected_cards;
