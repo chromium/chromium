@@ -11,11 +11,8 @@
 
 namespace views {
 
-MenuCocoaWatcherMac::MenuCocoaWatcherMac(
-    Widget::Predicate activation_is_interesting,
-    base::OnceClosure callback)
-    : activation_is_interesting_(activation_is_interesting),
-      callback_(std::move(callback)) {
+MenuCocoaWatcherMac::MenuCocoaWatcherMac(base::OnceClosure callback)
+    : callback_(std::move(callback)) {
   observer_token_other_menu_ = [[NSNotificationCenter defaultCenter]
       addObserverForName:NSMenuDidBeginTrackingNotification
                   object:nil
@@ -28,11 +25,7 @@ MenuCocoaWatcherMac::MenuCocoaWatcherMac(
                   object:nil
                    queue:nil
               usingBlock:^(NSNotification* notification) {
-                Widget* widget =
-                    Widget::GetWidgetForNativeWindow([NSApp keyWindow]);
-                if (activation_is_interesting_.Run(widget)) {
-                  ExecuteCallback();
-                }
+                ExecuteCallback();
               }];
   observer_token_app_change_ =
       [[[NSWorkspace sharedWorkspace] notificationCenter]

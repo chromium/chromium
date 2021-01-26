@@ -47,7 +47,6 @@ SubmenuView::SubmenuView(MenuItemView* parent)
       scroll_animator_(new ScrollAnimator(this)),
       roundoff_error_(0),
       prefix_selector_(this, this) {
-  SetFocusBehavior(FocusBehavior::ALWAYS);
   DCHECK(parent);
   // We'll delete ourselves, otherwise the ScrollView would delete us on close.
   set_owned_by_client();
@@ -207,11 +206,6 @@ void SubmenuView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kMenu;
   // Menus in Chrome are always traversed in a vertical direction.
   node_data->AddState(ax::mojom::State::kVertical);
-
-  // Explicitly don't set a name: menus themselves don't really have a semantic
-  // description usually, and are instead described by screenreaders as "menu, n
-  // items".
-  node_data->SetNameExplicitlyEmpty();
 }
 
 void SubmenuView::PaintChildren(const PaintInfo& paint_info) {
@@ -360,12 +354,6 @@ void SubmenuView::OnGestureEvent(ui::GestureEvent* event) {
   }
   if (handled)
     event->SetHandled();
-}
-
-bool SubmenuView::OnKeyPressed(const ui::KeyEvent& event) {
-  MenuItemView* item = parent_menu_item_;
-  MenuController* controller = item->GetMenuController();
-  return controller->OnKeyPressed(event);
 }
 
 int SubmenuView::GetRowCount() {

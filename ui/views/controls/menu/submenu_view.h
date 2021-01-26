@@ -97,8 +97,6 @@ class VIEWS_EXPORT SubmenuView : public View,
   // Scrolls on menu item boundaries.
   void OnGestureEvent(ui::GestureEvent* event) override;
 
-  bool OnKeyPressed(const ui::KeyEvent& event) override;
-
   // Overridden from PrefixDelegate.
   int GetRowCount() override;
   int GetSelectedRow() override;
