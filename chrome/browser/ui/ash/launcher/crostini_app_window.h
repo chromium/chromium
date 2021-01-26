@@ -40,8 +40,13 @@ class CrostiniAppWindow : public AppWindowBase, public AppIconLoaderDelegate {
                          const gfx::ImageSkia& image) override;
 
  private:
-  // Loads the app icon to the window icon key.
+  // Loads the app icon to the window's app icon key. The app icon is larger
+  // than the window icon, and is used for things like Alt-Tab.
   std::unique_ptr<AppServiceAppIconLoader> app_icon_loader_;
+
+  // Loads the window icon to the window icon key. The window icon is smaller
+  // than the app icon, and is used for things like shelf app menus.
+  std::unique_ptr<AppServiceAppIconLoader> window_icon_loader_;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_LAUNCHER_CROSTINI_APP_WINDOW_H_

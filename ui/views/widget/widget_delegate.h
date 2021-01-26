@@ -84,6 +84,9 @@ class VIEWS_EXPORT WidgetDelegate {
     // The widget's icon, if any.
     gfx::ImageSkia icon;
 
+    // The widget's app icon, a larger icon used for task bar and Alt-Tab.
+    gfx::ImageSkia app_icon;
+
     // The widget's initially focused view, if any. This can only be set before
     // this WidgetDelegate is used to initialize a Widget.
     base::Optional<View*> initially_focused_view;
@@ -330,6 +333,7 @@ class VIEWS_EXPORT WidgetDelegate {
   void SetFocusTraversesOut(bool focus_traverses_out);
   void SetEnableArrowKeyTraversal(bool enable_arrow_key_traversal);
   void SetIcon(const gfx::ImageSkia& icon);
+  void SetAppIcon(const gfx::ImageSkia& icon);
   void SetInitiallyFocusedView(View* initially_focused_view);
   void SetModalType(ui::ModalType modal_type);
   void SetOwnedByWidget(bool delete_self);
