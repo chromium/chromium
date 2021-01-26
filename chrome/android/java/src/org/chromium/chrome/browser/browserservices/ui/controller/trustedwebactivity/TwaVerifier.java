@@ -12,6 +12,7 @@ import org.chromium.chrome.browser.browserservices.BrowserServicesIntentDataProv
 import org.chromium.chrome.browser.browserservices.BrowserServicesMetrics;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
+import org.chromium.chrome.browser.browserservices.verification.OriginVerifierFactory;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -55,7 +56,7 @@ public class TwaVerifier implements Verifier, Destroyable {
     @Inject
     public TwaVerifier(ActivityLifecycleDispatcher lifecycleDispatcher,
             BrowserServicesIntentDataProvider intentDataProvider,
-            OriginVerifier.Factory originVerifierFactory, CustomTabActivityTabProvider tabProvider,
+            OriginVerifierFactory originVerifierFactory, CustomTabActivityTabProvider tabProvider,
             ClientPackageNameProvider clientPackageNameProvider,
             ExternalAuthUtils externalAuthUtils) {
         mIntentDataProvider = intentDataProvider;

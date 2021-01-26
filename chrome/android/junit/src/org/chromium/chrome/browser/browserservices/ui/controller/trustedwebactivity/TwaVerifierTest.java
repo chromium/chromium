@@ -30,8 +30,8 @@ import org.chromium.base.Promise;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier.OriginVerificationListener;
+import org.chromium.chrome.browser.browserservices.verification.OriginVerifierFactory;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
-import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -62,9 +62,7 @@ public class TwaVerifierTest {
     @Mock
     CustomTabIntentDataProvider mIntentDataProvider;
     @Mock
-    CustomTabsConnection mCustomTabsConnection;
-    @Mock
-    OriginVerifier.Factory mOriginVerifierFactory;
+    OriginVerifierFactory mOriginVerifierFactory;
     @Mock
     OriginVerifier mOriginVerifier;
     @Mock

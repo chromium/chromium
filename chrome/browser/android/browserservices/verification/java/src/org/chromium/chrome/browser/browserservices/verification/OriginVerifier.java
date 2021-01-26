@@ -45,10 +45,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicReference;
 
-import javax.inject.Inject;
-
-import dagger.Reusable;
-
 /**
  * Use to check that an app has a Digital Asset Link relationship with the given origin.
  *
@@ -59,6 +55,9 @@ import dagger.Reusable;
  * One instance of this object should be created per package, but {@link #start} may be called
  * multiple times to verify different origins. This object has a native counterpart that will be
  * kept alive as it is serving requests, but destroyed once all requests are finished.
+ *
+ * Most classes that are Activity-scoped should take an {@link OriginVerifierFactory} and use that
+ * to get instances of this.
  */
 @JNINamespace("customtabs")
 public class OriginVerifier {
@@ -115,28 +114,6 @@ public class OriginVerifier {
          * HTTPS_FAILURE or CACHED_SUCCESS.
          */
         default void recordVerificationTime(long duration, boolean online) {}
-    }
-
-    /**
-     * Factory that can be injected by Dagger.
-     */
-    @Reusable
-    public static class Factory {
-        @Inject
-        public Factory() {}
-
-        public OriginVerifier create(String packageName, @Relation int relation,
-                @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils,
-                MetricsListener metricsListener) {
-            return new OriginVerifier(
-                    packageName, relation, webContents, externalAuthUtils, metricsListener);
-        }
-
-        public OriginVerifier create(String packageName, @Relation int relation,
-                @Nullable WebContents webContents, @Nullable ExternalAuthUtils externalAuthUtils) {
-            return create(packageName, relation, webContents, externalAuthUtils,
-                    new MetricsListener() {});
-        }
     }
 
     /** Small helper class to post a result of origin verification. */

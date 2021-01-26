@@ -12,6 +12,8 @@ import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.trustedwebactivity.TwaVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.AddToHomescreenVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.webapps.WebApkVerifier;
+import org.chromium.chrome.browser.browserservices.verification.OriginVerifierFactory;
+import org.chromium.chrome.browser.browserservices.verification.OriginVerifierFactoryImpl;
 import org.chromium.chrome.browser.customtabs.CustomTabNightModeStateController;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandler.IntentIgnoringCriterion;
 import org.chromium.chrome.browser.customtabs.content.CustomTabIntentHandlingStrategy;
@@ -111,5 +113,11 @@ public class BaseCustomTabActivityModule {
     @Provides
     public ClientAppDataRegister provideClientAppDataRegister() {
         return new ClientAppDataRegister();
+    }
+
+    @Provides
+    @Reusable
+    public OriginVerifierFactory providesOriginVerifierFactory() {
+        return new OriginVerifierFactoryImpl();
     }
 }

@@ -34,6 +34,8 @@ import org.chromium.chrome.browser.browserservices.BrowserServicesMetrics;
 import org.chromium.chrome.browser.browserservices.PostMessageHandler;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier;
 import org.chromium.chrome.browser.browserservices.verification.OriginVerifier.OriginVerificationListener;
+import org.chromium.chrome.browser.browserservices.verification.OriginVerifierFactory;
+import org.chromium.chrome.browser.browserservices.verification.OriginVerifierFactoryImpl;
 import org.chromium.chrome.browser.installedapp.InstalledAppProviderImpl;
 import org.chromium.chrome.browser.installedapp.PackageManagerDelegate;
 import org.chromium.components.embedder_support.util.Origin;
@@ -274,7 +276,7 @@ class ClientManager {
     }
 
     // TODO(crbug.com/1164866): Inject the Factory/Supplier.
-    private final OriginVerifier.Factory mOriginVerifierFactory = new OriginVerifier.Factory();
+    private final OriginVerifierFactory mOriginVerifierFactory = new OriginVerifierFactoryImpl();
 
     private final Map<CustomTabsSessionToken, SessionParams> mSessionParams = new HashMap<>();
 
