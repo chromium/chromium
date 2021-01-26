@@ -661,7 +661,8 @@ bool FocusManager::IsArrowKeyTraversalEnabledForWidget() const {
   Widget* const widget = (focused_view_ && focused_view_->GetWidget())
                              ? focused_view_->GetWidget()
                              : widget_;
-  return widget->widget_delegate()->enable_arrow_key_traversal();
+  return widget && widget->widget_delegate() &&
+         widget->widget_delegate()->enable_arrow_key_traversal();
 }
 
 }  // namespace views
