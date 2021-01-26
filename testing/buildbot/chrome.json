@@ -1069,7 +1069,8 @@
           "--browser=cros-chrome",
           "--remote=127.0.0.1",
           "--remote-ssh-port=9222",
-          "--xvfb"
+          "--xvfb",
+          "--typ-max-failures=3"
         ],
         "isolate_name": "telemetry_perf_unittests",
         "merge": {
@@ -1114,7 +1115,8 @@
           "--jobs=1",
           "--browser=cros-chrome",
           "--remote=127.0.0.1",
-          "--remote-ssh-port=9222"
+          "--remote-ssh-port=9222",
+          "--typ-max-failures=3"
         ],
         "isolate_name": "telemetry_unittests",
         "merge": {
@@ -2115,7 +2117,8 @@
           "--browser=cros-chrome",
           "--remote=127.0.0.1",
           "--remote-ssh-port=9222",
-          "--xvfb"
+          "--xvfb",
+          "--typ-max-failures=3"
         ],
         "isolate_name": "telemetry_perf_unittests",
         "merge": {
@@ -2160,7 +2163,8 @@
           "--jobs=1",
           "--browser=cros-chrome",
           "--remote=127.0.0.1",
-          "--remote-ssh-port=9222"
+          "--remote-ssh-port=9222",
+          "--typ-max-failures=3"
         ],
         "isolate_name": "telemetry_unittests",
         "merge": {
@@ -3161,7 +3165,8 @@
           "--browser=cros-chrome",
           "--remote=127.0.0.1",
           "--remote-ssh-port=9222",
-          "--xvfb"
+          "--xvfb",
+          "--typ-max-failures=3"
         ],
         "isolate_name": "telemetry_perf_unittests",
         "merge": {
@@ -3206,7 +3211,8 @@
           "--jobs=1",
           "--browser=cros-chrome",
           "--remote=127.0.0.1",
-          "--remote-ssh-port=9222"
+          "--remote-ssh-port=9222",
+          "--typ-max-failures=3"
         ],
         "isolate_name": "telemetry_unittests",
         "merge": {
@@ -4207,7 +4213,8 @@
           "--browser=cros-chrome",
           "--remote=127.0.0.1",
           "--remote-ssh-port=9222",
-          "--xvfb"
+          "--xvfb",
+          "--typ-max-failures=3"
         ],
         "isolate_name": "telemetry_perf_unittests",
         "merge": {
@@ -4252,7 +4259,8 @@
           "--jobs=1",
           "--browser=cros-chrome",
           "--remote=127.0.0.1",
-          "--remote-ssh-port=9222"
+          "--remote-ssh-port=9222",
+          "--typ-max-failures=3"
         ],
         "isolate_name": "telemetry_unittests",
         "merge": {
@@ -5253,7 +5261,8 @@
           "--browser=cros-chrome",
           "--remote=127.0.0.1",
           "--remote-ssh-port=9222",
-          "--xvfb"
+          "--xvfb",
+          "--typ-max-failures=3"
         ],
         "isolate_name": "telemetry_perf_unittests",
         "merge": {
@@ -5298,7 +5307,8 @@
           "--jobs=1",
           "--browser=cros-chrome",
           "--remote=127.0.0.1",
-          "--remote-ssh-port=9222"
+          "--remote-ssh-port=9222",
+          "--typ-max-failures=3"
         ],
         "isolate_name": "telemetry_unittests",
         "merge": {

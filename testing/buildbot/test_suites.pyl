@@ -501,6 +501,10 @@
           '--browser=cros-chrome',
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
           '--xvfb',
+          # 3 is arbitrary, but if we're having more than 3 of these tests
+          # fail in a single shard, then something is probably wrong, so fail
+          # fast.
+          '--typ-max-failures=3',
         ],
         'swarming': {
           'idempotent': False,  # https://crbug.com/549140
@@ -515,6 +519,10 @@
           '--jobs=1',
           '--browser=cros-chrome',
           '$$MAGIC_SUBSTITUTION_ChromeOSTelemetryRemote',
+          # 3 is arbitrary, but if we're having more than 3 of these tests
+          # fail in a single shard, then something is probably wrong, so fail
+          # fast.
+          '--typ-max-failures=3',
         ],
         'swarming': {
           'idempotent': False,  # https://crbug.com/549140
