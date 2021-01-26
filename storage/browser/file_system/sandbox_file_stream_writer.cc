@@ -103,8 +103,9 @@ int SandboxFileStreamWriter::WriteInternal(net::IOBuffer* buf, int buf_len) {
   DCHECK(total_bytes_written_ <= allowed_bytes_to_write_ ||
          allowed_bytes_to_write_ < 0);
   if (total_bytes_written_ >= allowed_bytes_to_write_) {
-    has_pending_operation_ = false;
-    return net::ERR_FILE_NO_SPACE;
+    const int out_of_quota = net::ERR_FILE_NO_SPACE;
+    DidWrite(out_of_quota);
+    return out_of_quota;
   }
 
   if (buf_len > allowed_bytes_to_write_ - total_bytes_written_)
@@ -235,7 +236,8 @@ void SandboxFileStreamWriter::DidWrite(int write_response) {
     }
     if (CancelIfRequested())
       return;
-    std::move(write_callback_).Run(write_response);
+    if (write_callback_)
+      std::move(write_callback_).Run(write_response);
     return;
   }
 
