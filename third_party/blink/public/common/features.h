@@ -357,6 +357,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kInterestCohortFeaturePolicy;
 
 BLINK_COMMON_EXPORT extern const base::Feature kTextFragmentColorChange;
 
+BLINK_COMMON_EXPORT extern const base::Feature kDisableDocumentDomainByDefault;
+
 }  // namespace features
 }  // namespace blink
 

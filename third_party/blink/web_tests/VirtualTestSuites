@@ -738,6 +738,13 @@
     "args": [ "--disable-features=PolicyContainer" ]
   },
   {
+    "prefix": "document-domain-disabled-by-default",
+    "bases": [
+      "external/wpt/document-policy/experimental-features/document-domain"
+    ],
+    "args": [ "--enable-features=DisableDocumentDomainByDefault" ]
+  },
+  {
     "prefix": "subresource-web-bundles-disabled",
     "bases": [ "http/tests/loading/wbn/origin-trial/" ],
     "args": [ "--disable-blink-features=SubresourceWebBundles" ]

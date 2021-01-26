@@ -868,5 +868,8 @@ const base::Feature kInterestCohortFeaturePolicy{
 const base::Feature kTextFragmentColorChange{"TextFragmentColorChange",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kDisableDocumentDomainByDefault{
+    "DisableDocumentDomainByDefault", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

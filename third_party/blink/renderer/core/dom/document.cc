@@ -5841,6 +5841,14 @@ void Document::setDomain(const String& raw_domain,
     return;
   }
 
+  const String document_policy_error =
+      "Setting `document.domain` is disabled by document policy.";
+  if (!dom_window_->IsFeatureEnabled(
+          mojom::blink::DocumentPolicyFeature::kDocumentDomain,
+          ReportOptions::kReportOnFailure, document_policy_error)) {
+    return;
+  }
+
   if (dom_window_->IsSandboxed(
           network::mojom::blink::WebSandboxFlags::kDocumentDomain)) {
     exception_state.ThrowSecurityError(

@@ -18297,6 +18297,8 @@ Called by update_document_policy_enum.py.-->
   <int value="10" label="SyncScript"/>
   <int value="11" label="JSProfiling"/>
   <int value="12" label="SyncXHR"/>
+  <int value="13" label="DocumentDomain"/>
+  <int value="14" label="DocumentDomain"/>
 </enum>
 
 <enum name="DocumentScanSaneBackend">
