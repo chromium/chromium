@@ -4,9 +4,9 @@
 
 import {$$, chromeCartDescriptor, ChromeCartProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {assertStyle} from 'chrome://test/new_tab_page/test_support.js';
+import {assertNotStyle, assertStyle} from 'chrome://test/new_tab_page/test_support.js';
 import {TestBrowserProxy} from 'chrome://test/test_browser_proxy.m.js';
-import {eventToPromise, isVisible} from 'chrome://test/test_util.m.js';
+import {eventToPromise, flushTasks, isVisible} from 'chrome://test/test_util.m.js';
 
 suite('NewTabPageModulesChromeCartModuleTest', () => {
   /**
@@ -219,16 +219,18 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     assertEquals(1, testProxy.handler.getCallCount('restoreRemovedCartModule'));
   });
 
-  test('show and hide action menu', async () => {
+  test('dismiss and undo single cart item in module', async () => {
     // Arrange.
     const carts = [
       {
-        merchant: 'Amazon',
-        cartUrl: {url: 'https://amazon.com'},
-        productImageUrls: [
-          {url: 'https://image1.com'}, {url: 'https://image2.com'},
-          {url: 'https://image3.com'}
-        ],
+        merchant: 'Foo',
+        cartUrl: {url: 'https://foo.com'},
+        productImageUrls: [],
+      },
+      {
+        merchant: 'Bar',
+        cartUrl: {url: 'https://bar.com'},
+        productImageUrls: [],
       },
     ];
     testProxy.handler.setResultFor(
@@ -242,7 +244,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
     // Assert.
     const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
-    assertEquals(1, cartItems.length);
+    assertEquals(2, cartItems.length);
     let menuButton = cartItems[0].querySelector('.icon-more-vert');
     assertStyle(menuButton, 'opacity', '0');
     const actionMenu = $$(moduleElement, '#cartActionMenu');
@@ -253,6 +255,61 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
 
     // Assert.
     assertTrue(actionMenu.open);
+    assertEquals(0, testProxy.handler.getCallCount('hideCart'));
+
+    // Act
+    actionMenu.querySelector('#hideCartButton').click();
+    await flushTasks();
+
+    // Assert.
+    assertEquals(1, testProxy.handler.getCallCount('hideCart'));
+    assertTrue($$(moduleElement, '#dismissCartToast').open);
+    assertEquals(
+        loadTimeData.getStringF(
+            'modulesCartCartMenuHideMerchantToastMessage', 'Foo'),
+        $$(moduleElement, '#dismissCartToastMessage').textContent.trim());
+    assertNotStyle(
+        $$(moduleElement, '#undoDismissCartButton'), 'display', 'none');
+    assertEquals(0, testProxy.handler.getCallCount('restoreHiddenCart'));
+
+    // Act.
+    $$(moduleElement, '#undoDismissCartButton').click();
+    await flushTasks();
+
+    // Assert.
+    assertEquals(1, testProxy.handler.getCallCount('restoreHiddenCart'));
+    assertFalse(actionMenu.open);
+
+    // Act.
+    menuButton = cartItems[1].querySelector('.icon-more-vert');
+    menuButton.click();
+
+    // Assert.
+    assertTrue(actionMenu.open);
+    assertEquals(0, testProxy.handler.getCallCount('removeCart'));
+
+    // Act
+    actionMenu.querySelector('#removeCartButton').click();
+    await flushTasks();
+
+    // Assert.
+    assertEquals(1, testProxy.handler.getCallCount('removeCart'));
+    assertTrue($$(moduleElement, '#dismissCartToast').open);
+    assertEquals(
+        loadTimeData.getStringF(
+            'modulesCartCartMenuRemoveMerchantToastMessage', 'Bar'),
+        $$(moduleElement, '#dismissCartToastMessage').textContent.trim());
+    assertNotStyle(
+        $$(moduleElement, '#undoDismissCartButton'), 'display', 'none');
+    assertEquals(0, testProxy.handler.getCallCount('restoreRemovedCart'));
+
+    // Act
+    $$(moduleElement, '#undoDismissCartButton').click();
+    await flushTasks();
+
+    // Assert.
+    assertEquals(1, testProxy.handler.getCallCount('restoreRemovedCart'));
+    assertFalse(actionMenu.open);
   });
 
   test('scroll with full width module', async () => {

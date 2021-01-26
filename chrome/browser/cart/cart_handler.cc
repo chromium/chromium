@@ -47,6 +47,17 @@ void CartHandler::RestoreRemovedCartModule() {
   cart_service_->RestoreRemoved();
 }
 
+void CartHandler::HideCart(const GURL& cart_url, HideCartCallback callback) {}
+
+void CartHandler::RestoreHiddenCart(const GURL& cart_url,
+                                    RestoreHiddenCartCallback callback) {}
+
+void CartHandler::RemoveCart(const GURL& cart_url,
+                             RemoveCartCallback callback) {}
+
+void CartHandler::RestoreRemovedCart(const GURL& cart_url,
+                                     RestoreRemovedCartCallback callback) {}
+
 void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
                                       bool success,
                                       std::vector<CartDB::KeyAndValue> res) {

@@ -10,7 +10,7 @@ import "url/mojom/url.mojom";
 struct MerchantCart {
   // Merchant that this cart comes from.
   string merchant;
-  // URL that directs to the cart page.
+  // URL that directs to the cart page. It is used to identify carts.
   url.mojom.Url cart_url;
   // List of URLs for product image to show in the cart.
   array<url.mojom.Url> product_image_urls;
@@ -28,4 +28,16 @@ interface CartHandler {
   RemoveCartModule();
   // Restore the cart module that has been permanently removed.
   RestoreRemovedCartModule();
+  // Hides the cart for certain domain
+  // and returns if the operation is successful.
+  HideCart(url.mojom.Url cart_url) => (bool success);
+  // Restores hidden cart for certain domain
+  // and returns if the operation is successful.
+  RestoreHiddenCart(url.mojom.Url cart_url) => (bool success);
+  // Removes the cart for certain domain
+  // and returns if the operation is successful.
+  RemoveCart(url.mojom.Url cart_url) => (bool success);
+  // Restores removed cart for certain domain
+  // and returns if the operation is successful.
+  RestoreRemovedCart(url.mojom.Url cart_url) => (bool success);
 };

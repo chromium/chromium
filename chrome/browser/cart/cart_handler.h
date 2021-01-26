@@ -25,6 +25,12 @@ class CartHandler : public chrome_cart::mojom::CartHandler {
   void RestoreHiddenCartModule() override;
   void RemoveCartModule() override;
   void RestoreRemovedCartModule() override;
+  void HideCart(const GURL& cart_url, HideCartCallback callback) override;
+  void RestoreHiddenCart(const GURL& cart_url,
+                         RestoreHiddenCartCallback callback) override;
+  void RemoveCart(const GURL& cart_url, RemoveCartCallback callback) override;
+  void RestoreRemovedCart(const GURL& cart_url,
+                          RestoreRemovedCartCallback callback) override;
 
  private:
   void GetCartDataCallback(GetMerchantCartsCallback callback,
