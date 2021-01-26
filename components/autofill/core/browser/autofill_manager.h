@@ -39,6 +39,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/signatures.h"
 #include "components/translate/core/browser/translate_driver.h"
@@ -375,7 +376,7 @@ class AutofillManager
   void OnBeforeProcessParsedForms() override;
   void OnFormProcessed(const FormData& form,
                        const FormStructure& form_structure) override;
-  void OnAfterProcessParsedForms(const std::set<FormType>& form_types) override;
+  void OnAfterProcessParsedForms(const DenseSet<FormType>& form_types) override;
 
   // Exposed for testing.
   FormData* pending_form_data() { return pending_form_data_.get(); }

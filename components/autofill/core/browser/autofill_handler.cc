@@ -152,26 +152,15 @@ void AutofillHandler::OnFormsSeen(const std::vector<FormData>& forms) {
     const auto parse_form_start_time = AutofillTickClock::NowTicks();
     FormStructure* cached_form_structure =
         FindCachedFormByRendererId(form.unique_renderer_id);
-    // Autofill used to ignore cache hits for non-credit-card forms. The
-    // motivation behind this is probably to have credit-card forms preserve
-    // their original signature, whereas non-credit-card forms would use the
-    // most recent form signature. Ignoring cache hits however appears to be
-    // part of breaking profile imports and voting for dynamic forms. See
-    // crbug/1091401#c15 for details.
-    //
-    // Therefore, if the kAutofillKeepInitialFormValuesInCache experiment is
-    // enabled, we do not ignore cache hits, but in those cases where the old
-    // code would have ignored the cache hit we update the FormStructure's
-    // FormSignature.
-    // Otherwise, if the experiment disabled, we just ignore the cache hit.
+
+    // Not updating signatures of credit card forms is legacy behaviour. We
+    // believe that the signatures are kept stable for voting purposes.
     bool update_form_signature = false;
     if (cached_form_structure) {
-      for (const FormType& form_type : cached_form_structure->GetFormTypes()) {
-        if (form_type != CREDIT_CARD_FORM) {
-          update_form_signature = true;
-          break;
-        }
-      }
+      const DenseSet<FormType>& form_types =
+          cached_form_structure->GetFormTypes();
+      update_form_signature =
+          form_types.size() > form_types.count(FormType::kCreditCardForm);
     }
 
     FormStructure* form_structure = ParseForm(form, cached_form_structure);
@@ -200,7 +189,7 @@ void AutofillHandler::OnFormsParsed(const std::vector<const FormData*>& forms) {
 
   std::vector<FormStructure*> non_queryable_forms;
   std::vector<FormStructure*> queryable_forms;
-  std::set<FormType> form_types;
+  DenseSet<FormType> form_types;
   for (const FormData* form : forms) {
     FormStructure* form_structure =
         FindCachedFormByRendererId(form->unique_renderer_id);
@@ -209,8 +198,7 @@ void AutofillHandler::OnFormsParsed(const std::vector<const FormData*>& forms) {
       continue;
     }
 
-    std::set<FormType> current_form_types = form_structure->GetFormTypes();
-    form_types.insert(current_form_types.begin(), current_form_types.end());
+    form_types.insert_all(form_structure->GetFormTypes());
 
     // Configure the query encoding for this form and add it to the appropriate
     // collection of forms: queryable vs non-queryable.

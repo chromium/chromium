@@ -1250,12 +1250,12 @@ void AutofillManager::OnDidFillAutofillFormData(const FormData& form,
 
   UpdatePendingForm(form);
 
-  std::set<FormType> form_types;
   // Find the FormStructure that corresponds to |form|. Use default form type if
   // form is not present in our cache, which will happen rarely.
 
   FormStructure* form_structure =
       FindCachedFormByRendererId(form.unique_renderer_id);
+  DenseSet<FormType> form_types;
   if (form_structure) {
     form_types = form_structure->GetFormTypes();
   }
@@ -2039,7 +2039,7 @@ void AutofillManager::OnFormProcessed(const FormData& form,
 }
 
 void AutofillManager::OnAfterProcessParsedForms(
-    const std::set<FormType>& form_types) {
+    const DenseSet<FormType>& form_types) {
   AutofillMetrics::LogUserHappinessMetric(
       AutofillMetrics::FORMS_LOADED, form_types,
       client_->GetSecurityLevelForUmaHistograms(),

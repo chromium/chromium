@@ -1454,14 +1454,14 @@ void AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
                                field.Type().GetStorableType(), editing_metric));
 
   // Record the UMA statistics spliced by the autocomplete attribute value.
-  FormType form_type =
-      FormTypes::FieldTypeGroupToFormType(field.Type().group());
-  if (form_type == ADDRESS_FORM || form_type == CREDIT_CARD_FORM) {
+  FormType form_type = FieldTypeGroupToFormType(field.Type().group());
+  if (form_type == FormType::kAddressForm ||
+      form_type == FormType::kCreditCardForm) {
     bool autocomplete_off = field.autocomplete_attribute == "off";
     const std::string autocomplete_histogram = base::StrCat(
         {"Autofill.Autocomplete.", autocomplete_off ? "Off" : "NotOff",
          ".EditedAutofilledFieldAtSubmission.",
-         form_type == ADDRESS_FORM ? "Address" : "CreditCard"});
+         form_type == FormType::kAddressForm ? "Address" : "CreditCard"});
     base::UmaHistogramEnumeration(autocomplete_histogram, editing_metric);
   }
 
@@ -1486,42 +1486,45 @@ void AutofillMetrics::LogUserHappinessMetric(
     FieldTypeGroup field_type_group,
     security_state::SecurityLevel security_level,
     uint32_t profile_form_bitmask) {
-  LogUserHappinessMetric(
-      metric, {FormTypes::FieldTypeGroupToFormType(field_type_group)},
-      security_level, profile_form_bitmask);
+  LogUserHappinessMetric(metric, {FieldTypeGroupToFormType(field_type_group)},
+                         security_level, profile_form_bitmask);
 }
 
 // static
 void AutofillMetrics::LogUserHappinessMetric(
     UserHappinessMetric metric,
-    const std::set<FormType>& form_types,
+    const DenseSet<FormType>& form_types,
     security_state::SecurityLevel security_level,
     uint32_t profile_form_bitmask) {
   DCHECK_LT(metric, NUM_USER_HAPPINESS_METRICS);
   UMA_HISTOGRAM_ENUMERATION("Autofill.UserHappiness", metric,
                             NUM_USER_HAPPINESS_METRICS);
-  if (base::Contains(form_types, CREDIT_CARD_FORM)) {
+  if (base::Contains(form_types, FormType::kCreditCardForm)) {
     UMA_HISTOGRAM_ENUMERATION("Autofill.UserHappiness.CreditCard", metric,
                               NUM_USER_HAPPINESS_METRICS);
-    LogUserHappinessBySecurityLevel(metric, CREDIT_CARD_FORM, security_level);
+    LogUserHappinessBySecurityLevel(metric, FormType::kCreditCardForm,
+                                    security_level);
   }
-  if (base::Contains(form_types, ADDRESS_FORM)) {
+  if (base::Contains(form_types, FormType::kAddressForm)) {
     UMA_HISTOGRAM_ENUMERATION("Autofill.UserHappiness.Address", metric,
                               NUM_USER_HAPPINESS_METRICS);
     if (metric != AutofillMetrics::FORMS_LOADED) {
       LogUserHappinessByProfileFormType(metric, profile_form_bitmask);
     }
-    LogUserHappinessBySecurityLevel(metric, ADDRESS_FORM, security_level);
+    LogUserHappinessBySecurityLevel(metric, FormType::kAddressForm,
+                                    security_level);
   }
-  if (base::Contains(form_types, PASSWORD_FORM)) {
+  if (base::Contains(form_types, FormType::kPasswordForm)) {
     UMA_HISTOGRAM_ENUMERATION("Autofill.UserHappiness.Password", metric,
                               NUM_USER_HAPPINESS_METRICS);
-    LogUserHappinessBySecurityLevel(metric, PASSWORD_FORM, security_level);
+    LogUserHappinessBySecurityLevel(metric, FormType::kPasswordForm,
+                                    security_level);
   }
-  if (base::Contains(form_types, UNKNOWN_FORM_TYPE)) {
+  if (base::Contains(form_types, FormType::kUnknownFormType)) {
     UMA_HISTOGRAM_ENUMERATION("Autofill.UserHappiness.Unknown", metric,
                               NUM_USER_HAPPINESS_METRICS);
-    LogUserHappinessBySecurityLevel(metric, UNKNOWN_FORM_TYPE, security_level);
+    LogUserHappinessBySecurityLevel(metric, FormType::kUnknownFormType,
+                                    security_level);
   }
 }
 
@@ -1536,19 +1539,19 @@ void AutofillMetrics::LogUserHappinessBySecurityLevel(
 
   std::string histogram_name = "Autofill.UserHappiness.";
   switch (form_type) {
-    case CREDIT_CARD_FORM:
+    case FormType::kCreditCardForm:
       histogram_name += "CreditCard";
       break;
 
-    case ADDRESS_FORM:
+    case FormType::kAddressForm:
       histogram_name += "Address";
       break;
 
-    case PASSWORD_FORM:
+    case FormType::kPasswordForm:
       histogram_name += "Password";
       break;
 
-    case UNKNOWN_FORM_TYPE:
+    case FormType::kUnknownFormType:
       histogram_name += "Unknown";
       break;
 
@@ -1594,7 +1597,7 @@ void AutofillMetrics::LogFormFillDurationFromLoadWithoutAutofill(
 
 // static
 void AutofillMetrics::LogFormFillDurationFromInteraction(
-    const std::set<FormType>& form_types,
+    const DenseSet<FormType>& form_types,
     bool used_autofill,
     const base::TimeDelta& duration) {
   std::string parent_metric;
@@ -1604,16 +1607,16 @@ void AutofillMetrics::LogFormFillDurationFromInteraction(
     parent_metric = "Autofill.FillDuration.FromInteraction.WithoutAutofill";
   }
   LogFormFillDuration(parent_metric, duration);
-  if (base::Contains(form_types, CREDIT_CARD_FORM)) {
+  if (base::Contains(form_types, FormType::kCreditCardForm)) {
     LogFormFillDuration(parent_metric + ".CreditCard", duration);
   }
-  if (base::Contains(form_types, ADDRESS_FORM)) {
+  if (base::Contains(form_types, FormType::kAddressForm)) {
     LogFormFillDuration(parent_metric + ".Address", duration);
   }
-  if (base::Contains(form_types, PASSWORD_FORM)) {
+  if (base::Contains(form_types, FormType::kPasswordForm)) {
     LogFormFillDuration(parent_metric + ".Password", duration);
   }
-  if (base::Contains(form_types, UNKNOWN_FORM_TYPE)) {
+  if (base::Contains(form_types, FormType::kUnknownFormType)) {
     LogFormFillDuration(parent_metric + ".Unknown", duration);
   }
 }
@@ -1928,7 +1931,7 @@ void AutofillMetrics::LogAutofillFormSubmittedState(
     AutofillFormSubmittedState state,
     bool is_for_credit_card,
     bool has_upi_vpa_field,
-    const std::set<FormType>& form_types,
+    const DenseSet<FormType>& form_types,
     const base::TimeTicks& form_parsed_timestamp,
     FormSignature form_signature,
     AutofillMetrics::FormInteractionsUkmLogger* form_interactions_ukm_logger) {
@@ -2109,7 +2112,7 @@ void AutofillMetrics::LogDeveloperEngagementUkm(
     ukm::SourceId source_id,
     const GURL& url,
     bool is_for_credit_card,
-    std::set<FormType> form_types,
+    DenseSet<FormType> form_types,
     int developer_engagement_metrics,
     FormSignature form_signature) {
   DCHECK(developer_engagement_metrics);
@@ -2315,7 +2318,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::
 }
 
 int64_t AutofillMetrics::FormTypesToBitVector(
-    const std::set<FormType>& form_types) {
+    const DenseSet<FormType>& form_types) {
   int64_t form_type_bv = 0;
   for (const FormType& form_type : form_types) {
     DCHECK_LT(static_cast<int64_t>(form_type), 63);
@@ -2368,7 +2371,7 @@ const char* AutofillMetrics::GetMetricsSyncStateSuffix(
 void AutofillMetrics::FormInteractionsUkmLogger::LogFormSubmitted(
     bool is_for_credit_card,
     bool has_upi_vpa_field,
-    const std::set<FormType>& form_types,
+    const DenseSet<FormType>& form_types,
     AutofillFormSubmittedState state,
     const base::TimeTicks& form_parsed_timestamp,
     FormSignature form_signature) {
@@ -2394,7 +2397,7 @@ void AutofillMetrics::FormInteractionsUkmLogger::LogFormSubmitted(
 
 void AutofillMetrics::FormInteractionsUkmLogger::LogFormEvent(
     FormEvent form_event,
-    const std::set<FormType>& form_types,
+    const DenseSet<FormType>& form_types,
     const base::TimeTicks& form_parsed_timestamp) {
   if (!CanLog())
     return;

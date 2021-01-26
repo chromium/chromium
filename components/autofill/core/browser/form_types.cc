@@ -7,8 +7,7 @@
 
 namespace autofill {
 
-// static
-FormType FormTypes::FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
+FormType FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
   switch (field_type_group) {
     case NAME:
     case NAME_BILLING:
@@ -18,16 +17,16 @@ FormType FormTypes::FieldTypeGroupToFormType(FieldTypeGroup field_type_group) {
     case ADDRESS_BILLING:
     case PHONE_HOME:
     case PHONE_BILLING:
-      return ADDRESS_FORM;
+      return FormType::kAddressForm;
     case CREDIT_CARD:
-      return CREDIT_CARD_FORM;
+      return FormType::kCreditCardForm;
     case USERNAME_FIELD:
     case PASSWORD_FIELD:
-      return PASSWORD_FORM;
+      return FormType::kPasswordForm;
     case NO_GROUP:
     case TRANSACTION:
     case UNFILLABLE:
-      return UNKNOWN_FORM_TYPE;
+      return FormType::kUnknownFormType;
   }
 }
 }  // namespace autofill

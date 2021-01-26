@@ -2467,11 +2467,10 @@ void FormStructure::ExtractParseableFieldNames() {
   }
 }
 
-std::set<FormType> FormStructure::GetFormTypes() const {
-  std::set<FormType> form_types;
+DenseSet<FormType> FormStructure::GetFormTypes() const {
+  DenseSet<FormType> form_types;
   for (const auto& field : fields_) {
-    form_types.insert(
-        FormTypes::FieldTypeGroupToFormType(field->Type().group()));
+    form_types.insert(FieldTypeGroupToFormType(field->Type().group()));
   }
   return form_types;
 }

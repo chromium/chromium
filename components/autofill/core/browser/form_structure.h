@@ -24,6 +24,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_types.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/renderer_id.h"
@@ -285,7 +286,7 @@ class FormStructure {
   FormData ToFormData() const;
 
   // Returns the possible form types.
-  std::set<FormType> GetFormTypes() const;
+  DenseSet<FormType> GetFormTypes() const;
 
   bool passwords_were_revealed() const { return passwords_were_revealed_; }
   void set_passwords_were_revealed(bool passwords_were_revealed) {

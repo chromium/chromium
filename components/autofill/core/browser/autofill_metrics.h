@@ -22,6 +22,7 @@
 #include "components/autofill/core/browser/metrics/form_events.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/autofill/core/browser/ui/popup_types.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/signatures.h"
@@ -1059,12 +1060,12 @@ class AutofillMetrics {
                       ServerFieldType actual_type);
     void LogFormSubmitted(bool is_for_credit_card,
                           bool has_upi_vpa_field,
-                          const std::set<FormType>& form_types,
+                          const DenseSet<FormType>& form_types,
                           AutofillFormSubmittedState state,
                           const base::TimeTicks& form_parsed_timestamp,
                           FormSignature form_signature);
     void LogFormEvent(FormEvent form_event,
-                      const std::set<FormType>& form_types,
+                      const DenseSet<FormType>& form_types,
                       const base::TimeTicks& form_parsed_timestamp);
 
     // Log whether the autofill decided to skip or to fill each
@@ -1252,7 +1253,7 @@ class AutofillMetrics {
 
   static void LogUserHappinessMetric(
       UserHappinessMetric metric,
-      const std::set<FormType>& form_types,
+      const DenseSet<FormType>& form_types,
       security_state::SecurityLevel security_level,
       uint32_t profile_form_bitmask);
 
@@ -1374,7 +1375,7 @@ class AutofillMetrics {
   // time elapsed between the initial form interaction and submission. This
   // metric is sliced by |form_type| and |used_autofill|.
   static void LogFormFillDurationFromInteraction(
-      const std::set<FormType>& form_types,
+      const DenseSet<FormType>& form_types,
       bool used_autofill,
       const base::TimeDelta& duration);
 
@@ -1507,7 +1508,7 @@ class AutofillMetrics {
       AutofillFormSubmittedState state,
       bool is_for_credit_card,
       bool has_upi_vpa_field,
-      const std::set<FormType>& form_types,
+      const DenseSet<FormType>& form_types,
       const base::TimeTicks& form_parsed_timestamp,
       FormSignature form_signature,
       FormInteractionsUkmLogger* form_interactions_ukm_logger);
@@ -1570,7 +1571,7 @@ class AutofillMetrics {
                                         ukm::SourceId source_id,
                                         const GURL& url,
                                         bool is_for_credit_card,
-                                        std::set<FormType> form_types,
+                                        DenseSet<FormType> form_types,
                                         int developer_engagement_metrics,
                                         FormSignature form_signature);
 
@@ -1579,7 +1580,7 @@ class AutofillMetrics {
   static void LogHiddenOrPresentationalSelectFieldsFilled();
 
   // Converts form type to bit vector to store in UKM.
-  static int64_t FormTypesToBitVector(const std::set<FormType>& form_types);
+  static int64_t FormTypesToBitVector(const DenseSet<FormType>& form_types);
 
   // Records the fact that the server card link was clicked with information
   // about the current sync state.

@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/language_code.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
@@ -265,7 +266,7 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
   // Invoked after all forms have been processed, |form_types| is a set of
   // FormType found.
   virtual void OnAfterProcessParsedForms(
-      const std::set<FormType>& form_types) = 0;
+      const DenseSet<FormType>& form_types) = 0;
 
   // Returns the number of FormStructures with the given |form_signature| and
   // appends them to |form_structures|. Runs in linear time.
