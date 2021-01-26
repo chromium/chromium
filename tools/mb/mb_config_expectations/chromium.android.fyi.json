@@ -59,6 +59,21 @@
       "use_goma": true
     }
   },
+  "android-weblayer-with-aosp-webview-x86-fyi-rel": {
+    "gn_args": {
+      "disable_android_lint": true,
+      "ffmpeg_branding": "Chrome",
+      "is_component_build": false,
+      "is_debug": false,
+      "proprietary_codecs": true,
+      "strip_debug_info": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "target_os": "android",
+      "use_errorprone_java_compiler": false,
+      "use_goma": true
+    }
+  },
   "android-weblayer-x86-fyi-rel": {
     "gn_args": {
       "disable_android_lint": true,

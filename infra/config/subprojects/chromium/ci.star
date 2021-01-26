@@ -935,7 +935,7 @@ ci.android_fyi_builder(
         category = "tester|weblayer",
         short_name = "10",
     ),
-    triggered_by = ["android-weblayer-x86-fyi-rel"],
+    triggered_by = ["android-weblayer-with-aosp-webview-x86-fyi-rel"],
     notifies = ["weblayer-sheriff"],
 )
 
@@ -945,7 +945,7 @@ ci.android_fyi_builder(
         category = "tester|weblayer",
         short_name = "M",
     ),
-    triggered_by = ["android-weblayer-x86-fyi-rel"],
+    triggered_by = ["android-weblayer-with-aosp-webview-x86-fyi-rel"],
     notifies = ["weblayer-sheriff"],
 )
 
@@ -973,6 +973,14 @@ ci.android_fyi_builder(
     name = "android-weblayer-x86-fyi-rel",
     console_view_entry = consoles.console_view_entry(
         category = "builder|weblayer",
+        short_name = "x86",
+    ),
+)
+
+ci.android_fyi_builder(
+    name = "android-weblayer-with-aosp-webview-x86-fyi-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "builder|weblayer_with_aosp_webview",
         short_name = "x86",
     ),
 )
