@@ -37,7 +37,9 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_impl.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "chrome/browser/signin/signin_promo.h"
@@ -369,6 +371,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   // Keep the browser process running while browsers are closed.
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
                              KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
 
   // Close the browser.
   CloseBrowserAsynchronously(browser());
@@ -737,6 +741,12 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, PRE_UpdateWithTwoProfiles) {
   }
   DisableWelcomePages({profile1, profile2});
 
+  // Don't delete Profiles too early.
+  ScopedProfileKeepAlive profile1_keep_alive(
+      profile1, ProfileKeepAliveOrigin::kBrowserWindow);
+  ScopedProfileKeepAlive profile2_keep_alive(
+      profile2, ProfileKeepAliveOrigin::kBrowserWindow);
+
   // Open some urls with the browsers, and close them.
   Browser* browser1 = Browser::Create(
       Browser::CreateParams(Browser::TYPE_NORMAL, profile1, true));
@@ -885,6 +895,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   chrome::NewTab(browser_last);
   ui_test_utils::NavigateToURL(browser_last,
                                embedded_test_server()->GetURL("/empty.html"));
+
+  // Close the browser without deleting |profile_last|.
+  ScopedProfileKeepAlive profile_last_keep_alive(
+      profile_last, ProfileKeepAliveOrigin::kBrowserWindow);
   CloseBrowserSynchronously(browser_last);
 
   // Close the main browser.
@@ -968,10 +982,18 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, RestoreWithNoStartupWindow) {
   SessionStartupPref::SetStartupPref(profile1, pref_last);
   SessionStartupPref::SetStartupPref(profile2, pref_last);
 
-  auto keep_alive = std::make_unique<ScopedKeepAlive>(
-      KeepAliveOrigin::SESSION_RESTORE, KeepAliveRestartOption::DISABLED);
-
   Profile* default_profile = browser()->profile();
+
+  // TODO(crbug.com/88586): Adapt this test for DestroyProfileOnBrowserClose if
+  // needed.
+  ScopedKeepAlive keep_alive(KeepAliveOrigin::SESSION_RESTORE,
+                             KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive default_profile_keep_alive(
+      default_profile, ProfileKeepAliveOrigin::kBrowserWindow);
+  ScopedProfileKeepAlive profile1_keep_alive(
+      profile1, ProfileKeepAliveOrigin::kBrowserWindow);
+  ScopedProfileKeepAlive profile2_keep_alive(
+      profile2, ProfileKeepAliveOrigin::kBrowserWindow);
 
   // Open a page with profile1 and profile2.
   Browser* browser1 = Browser::Create({Browser::TYPE_NORMAL, profile1, true});
@@ -1678,6 +1700,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, WelcomePages) {
   EXPECT_EQ(chrome::kChromeUIWelcomeURL,
             tab_strip->GetWebContentsAt(0)->GetURL().possibly_invalid_spec());
 
+  // TODO(crbug.com/88586): Adapt this test for DestroyProfileOnBrowserClose.
+  ScopedProfileKeepAlive profile1_keep_alive(
+      profile1_ptr, ProfileKeepAliveOrigin::kBrowserWindow);
+
   browser = CloseBrowserAndOpenNew(browser, profile1_ptr);
   ASSERT_TRUE(browser);
   tab_strip = browser->tab_strip_model();
@@ -1727,6 +1753,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
 
   TabStripModel* tab_strip = browser->tab_strip_model();
 
+  // TODO(crbug.com/88586): Adapt this test for DestroyProfileOnBrowserClose.
+  ScopedProfileKeepAlive profile1_keep_alive(
+      profile1_ptr, ProfileKeepAliveOrigin::kBrowserWindow);
+
   // Windows 10 has its own Welcome page but even that should not show up when
   // the policy is set.
   if (IsWindows10OrNewer()) {
@@ -1773,10 +1803,12 @@ class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     profile_ = browser()->profile();
 
-    // Keep the browser process running when all browsers are closed.
+    // Keep the browser process and Profile running when all browsers are
+    // closed.
     scoped_keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
-
+    scoped_profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        profile_, ProfileKeepAliveOrigin::kBrowserWindow);
     // Close the browser opened by InProcessBrowserTest.
     CloseBrowserSynchronously(browser());
     ASSERT_EQ(0U, BrowserList::GetInstance()->size());
@@ -1811,11 +1843,15 @@ class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
     EXPECT_EQ(url, tab_strip->GetWebContentsAt(tab_index)->GetURL());
   }
 
-  void TearDownOnMainThread() override { scoped_keep_alive_.reset(); }
+  void TearDownOnMainThread() override {
+    scoped_profile_keep_alive_.reset();
+    scoped_keep_alive_.reset();
+  }
 
  private:
   Profile* profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> scoped_keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> scoped_profile_keep_alive_;
   StartupBrowserCreator browser_creator_;
   testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
