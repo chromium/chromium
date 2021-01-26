@@ -102,6 +102,9 @@
 [ fuchsia ] Pixel_Canvas2DTabSwitch [ Skip ]
 [ fuchsia ] Pixel_WebGLReadPixelsTabSwitch [ Skip ]
 [ fuchsia ] Pixel_WebGLPreservedAfterTabSwitch [ Skip ]
+# WebGL tab switching test is rendering blank on SkiaRenderer/Dawn
+crbug.com/1170369 [ win skia-renderer-dawn ] Pixel_WebGLPreservedAfterTabSwitch [ Failure ]
+crbug.com/1170369 [ linux skia-renderer-dawn ] Pixel_WebGLPreservedAfterTabSwitch [ Failure ]
 
 # Fuchsia emulators don't support video
 [ fuchsia fuchsia-board-qemu-x64 ] Pixel_Video* [ Skip ]
