@@ -10,12 +10,10 @@ A few parts of the Checker Framework have more permissive licenses, notably
 the parts that you might want to include with your own program.
 
  * The annotations and utility files are licensed under the MIT License.
-   (The text of this license also appears below.)  This applies to the
-   checker-qual*.jar and all the files that appear in it:  every file in a
-   qual/ directory, plus utility files FormatUtil.java,
-   I18nFormatUtil.java, NullnessUtil.java, Opt.java, PurityUnqualified.java,
-   RegexUtil.java, SignednessUtil.java, SignednessUtilExtra.java, and
-   UnitsTools.java.  It also applies to the cleanroom implementations of
+   (The text of this license also appears below.)  This applies to
+   checker-qual*.jar and checker-util.jar and all the files that appear in
+   them, which is all files in checker-qual and checker-util directories.
+   It also applies to the cleanroom implementations of
    third-party annotations (in checker/src/testannotations/,
    framework/src/main/java/org/jmlspecs/, and
    framework/src/main/java/com/google/).
