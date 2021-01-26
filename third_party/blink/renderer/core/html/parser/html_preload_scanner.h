@@ -153,6 +153,8 @@ class TokenPreloadScanner {
   bool in_style_;
   bool in_picture_;
   bool in_script_;
+  bool seen_body_;
+  bool seen_img_;
   PictureData picture_data_;
   size_t template_count_;
   std::unique_ptr<CachedDocumentParameters> document_parameters_;

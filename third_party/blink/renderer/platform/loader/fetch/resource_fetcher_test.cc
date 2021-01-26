@@ -128,7 +128,8 @@ class ResourceFetcherTest : public testing::Test {
                          const ResourceRequest& request,
                          const ResourceResponse& redirect_response,
                          ResourceType,
-                         const FetchInitiatorInfo&) override {
+                         const FetchInitiatorInfo&,
+                         RenderBlockingBehavior) override {
       request_ = PartialResourceRequest(request);
     }
     void DidChangePriority(uint64_t identifier,
@@ -223,9 +224,10 @@ TEST_F(ResourceFetcherTest, StartLoadAfterFrameDetach) {
   EXPECT_FALSE(GetMemoryCache()->ResourceForURL(secure_url));
 
   // Start by calling StartLoad() directly, rather than via RequestResource().
-  // This shouldn't crash.
+  // This shouldn't crash. Setting the resource type to image, as StartLoad with
+  // a single argument is only called on images or fonts.
   fetcher->StartLoad(RawResource::CreateForTest(
-      secure_url, SecurityOrigin::CreateUniqueOpaque(), ResourceType::kRaw));
+      secure_url, SecurityOrigin::CreateUniqueOpaque(), ResourceType::kImage));
 }
 
 TEST_F(ResourceFetcherTest, UseExistingResource) {

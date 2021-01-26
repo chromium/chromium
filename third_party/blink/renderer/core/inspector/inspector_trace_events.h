@@ -64,6 +64,7 @@ class LocalFrameView;
 class Node;
 struct PhysicalRect;
 class QualifiedName;
+enum class RenderBlockingBehavior;
 class Resource;
 class ResourceError;
 class ResourceRequest;
@@ -91,7 +92,8 @@ class CORE_EXPORT InspectorTraceEvents
                        const ResourceRequest&,
                        const ResourceResponse& redirect_response,
                        const FetchInitiatorInfo&,
-                       ResourceType);
+                       ResourceType,
+                       RenderBlockingBehavior);
   void WillSendNavigationRequest(uint64_t identifier,
                                  DocumentLoader*,
                                  const KURL&,
@@ -280,7 +282,8 @@ namespace inspector_send_request_event {
 std::unique_ptr<TracedValue> Data(DocumentLoader*,
                                   uint64_t identifier,
                                   LocalFrame*,
-                                  const ResourceRequest&);
+                                  const ResourceRequest&,
+                                  RenderBlockingBehavior);
 }
 
 namespace inspector_send_navigation_request_event {

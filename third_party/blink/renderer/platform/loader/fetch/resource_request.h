@@ -46,6 +46,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/resource_request_blocked_reason.h"
 #include "third_party/blink/public/platform/web_url_request_extra_data.h"
+#include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_priority.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
@@ -517,6 +518,13 @@ class PLATFORM_EXPORT ResourceRequestHead {
     web_bundle_token_params_ = params;
   }
 
+  void SetRenderBlockingBehavior(RenderBlockingBehavior behavior) {
+    render_blocking_behavior_ = behavior;
+  }
+  RenderBlockingBehavior GetRenderBlockingBehavior() const {
+    return render_blocking_behavior_;
+  }
+
  private:
   const CacheControlHeader& GetCacheControlHeader() const;
 
@@ -619,6 +627,11 @@ class PLATFORM_EXPORT ResourceRequestHead {
   // WebBundle. The network process uses this token to associate the request to
   // the bundle.
   base::Optional<WebBundleTokenParams> web_bundle_token_params_;
+
+  // Render blocking behavior of the resource. Used in maintaining correct
+  // reporting for redirects.
+  RenderBlockingBehavior render_blocking_behavior_ =
+      RenderBlockingBehavior::kUnset;
 };
 
 class PLATFORM_EXPORT ResourceRequestBody {

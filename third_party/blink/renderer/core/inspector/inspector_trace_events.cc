@@ -120,12 +120,14 @@ void InspectorTraceEvents::WillSendRequest(
     const ResourceRequest& request,
     const ResourceResponse& redirect_response,
     const FetchInitiatorInfo&,
-    ResourceType) {
+    ResourceType,
+    RenderBlockingBehavior render_blocking_behavior) {
   LocalFrame* frame = loader ? loader->GetFrame() : nullptr;
   TRACE_EVENT_INSTANT1(
       "devtools.timeline", "ResourceSendRequest", TRACE_EVENT_SCOPE_THREAD,
       "data",
-      inspector_send_request_event::Data(loader, identifier, frame, request));
+      inspector_send_request_event::Data(loader, identifier, frame, request,
+                                         render_blocking_behavior));
 }
 
 void InspectorTraceEvents::WillSendNavigationRequest(
@@ -767,13 +769,36 @@ std::unique_ptr<TracedValue> inspector_send_request_event::Data(
     DocumentLoader* loader,
     uint64_t identifier,
     LocalFrame* frame,
-    const ResourceRequest& request) {
+    const ResourceRequest& request,
+    RenderBlockingBehavior render_blocking_behavior) {
   auto value = std::make_unique<TracedValue>();
   value->SetString("requestId",
                    IdentifiersFactory::RequestId(loader, identifier));
   value->SetString("frame", IdentifiersFactory::FrameId(frame));
   value->SetString("url", request.Url().GetString());
   value->SetString("requestMethod", request.HttpMethod());
+  String render_blocking_string;
+  switch (render_blocking_behavior) {
+    case RenderBlockingBehavior::kUnset:
+      break;
+    case RenderBlockingBehavior::kBlocking:
+      render_blocking_string = "blocking";
+      break;
+    case RenderBlockingBehavior::kNonBlocking:
+      render_blocking_string = "non_blocking";
+      break;
+    case RenderBlockingBehavior::kNonBlockingDynamic:
+      render_blocking_string = "dynamically_injected_non_blocking";
+      break;
+    case RenderBlockingBehavior::kInBodyParserBlocking:
+      render_blocking_string = "in_body_parser_blocking";
+      break;
+    default:
+      NOTREACHED();
+  }
+  if (!render_blocking_string.IsNull()) {
+    value->SetString("renderBlocking", render_blocking_string);
+  }
   const char* priority = ResourcePriorityString(request.Priority());
   if (priority)
     value->SetString("priority", priority);

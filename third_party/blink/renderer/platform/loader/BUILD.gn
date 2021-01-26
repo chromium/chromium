@@ -64,6 +64,7 @@ blink_platform_sources("loader") {
     "fetch/preload_key.h",
     "fetch/raw_resource.cc",
     "fetch/raw_resource.h",
+    "fetch/render_blocking_behavior.h",
     "fetch/resource.cc",
     "fetch/resource.h",
     "fetch/resource_client.cc",

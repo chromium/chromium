@@ -231,9 +231,11 @@ bool HTMLLinkElement::LoadLink(const LinkLoadParameters& params) {
 void HTMLLinkElement::LoadStylesheet(const LinkLoadParameters& params,
                                      const WTF::TextEncoding& charset,
                                      FetchParameters::DeferOption defer_option,
-                                     ResourceClient* link_client) {
+                                     ResourceClient* link_client,
+                                     RenderBlockingBehavior render_blocking) {
   return link_loader_->LoadStylesheet(params, localName(), charset,
-                                      defer_option, GetDocument(), link_client);
+                                      defer_option, GetDocument(), link_client,
+                                      render_blocking);
 }
 
 LinkResource* HTMLLinkElement::LinkResourceToProcess() {

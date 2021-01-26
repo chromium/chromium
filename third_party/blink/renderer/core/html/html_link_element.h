@@ -116,7 +116,8 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   void LoadStylesheet(const LinkLoadParameters&,
                       const WTF::TextEncoding&,
                       FetchParameters::DeferOption,
-                      ResourceClient*);
+                      ResourceClient*,
+                      RenderBlockingBehavior render_blocking);
   bool IsAlternate() const {
     // TODO(crbug.com/1087043): Remove this if() condition once the feature has
     // landed and no compat issues are reported.

@@ -38,18 +38,12 @@ LinkStyle::LinkStyle(HTMLLinkElement* owner)
     : LinkResource(owner),
       disabled_state_(kUnset),
       pending_sheet_type_(kNone),
+      render_blocking_behavior_(RenderBlockingBehavior::kUnset),
       loading_(false),
       fired_load_(false),
       loaded_sheet_(false) {}
 
 LinkStyle::~LinkStyle() = default;
-
-enum StyleSheetCacheStatus {
-  kStyleSheetNewEntry,
-  kStyleSheetInDiskCache,
-  kStyleSheetInMemoryCache,
-  kStyleSheetCacheStatusCount,
-};
 
 void LinkStyle::NotifyFinished(Resource* resource) {
   if (!owner_->isConnected()) {
@@ -107,6 +101,7 @@ void LinkStyle::NotifyFinished(Resource* resource) {
 
     loading_ = false;
     parsed_sheet->CheckLoaded();
+    parsed_sheet->SetRenderBlocking(render_blocking_behavior_);
 
     return;
   }
@@ -123,6 +118,7 @@ void LinkStyle::NotifyFinished(Resource* resource) {
   if (owner_->IsInDocumentTree())
     SetSheetTitle(owner_->title());
 
+  style_sheet->SetRenderBlocking(render_blocking_behavior_);
   style_sheet->ParseAuthorStyleSheet(cached_style_sheet);
 
   loading_ = false;
@@ -288,20 +284,31 @@ LinkStyle::LoadReturnValue LinkStyle::LoadStylesheetIfNeeded(
     media_query_matches = evaluator.Eval(*media);
   }
 
+  bool is_in_body = owner_->IsDescendantOf(owner_->GetDocument().body());
+
   // Don't hold up layout tree construction and script execution on
   // stylesheets that are not needed for the layout at the moment.
-  bool blocking = media_query_matches && !owner_->IsAlternate() &&
-                  owner_->IsCreatedByParser();
-  AddPendingSheet(blocking ? kBlocking : kNonBlocking);
+  bool critical_style = media_query_matches && !owner_->IsAlternate();
+  bool render_blocking = critical_style && owner_->IsCreatedByParser();
+
+  AddPendingSheet(render_blocking ? kBlocking : kNonBlocking);
 
   // Load stylesheets that are not needed for the layout immediately with low
   // priority.  When the link element is created by scripts, load the
   // stylesheets asynchronously but in high priority.
   FetchParameters::DeferOption defer_option =
-      !media_query_matches || owner_->IsAlternate() ? FetchParameters::kLazyLoad
-                                                    : FetchParameters::kNoDefer;
+      !critical_style ? FetchParameters::kLazyLoad : FetchParameters::kNoDefer;
 
-  owner_->LoadStylesheet(params, charset, defer_option, this);
+  render_blocking_behavior_ =
+      !critical_style
+          ? RenderBlockingBehavior::kNonBlocking
+          : (render_blocking
+                 ? (is_in_body ? RenderBlockingBehavior::kInBodyParserBlocking
+                               : RenderBlockingBehavior::kBlocking)
+                 : RenderBlockingBehavior::kNonBlockingDynamic);
+
+  owner_->LoadStylesheet(params, charset, defer_option, this,
+                         render_blocking_behavior_);
 
   if (loading_ && !GetResource()) {
     // Fetch() synchronous failure case.

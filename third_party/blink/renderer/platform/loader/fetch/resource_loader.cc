@@ -847,7 +847,8 @@ bool ResourceLoader::WillFollowRedirect(
   if (auto* observer = fetcher_->GetResourceLoadObserver()) {
     observer->WillSendRequest(resource_->InspectorId(), *new_request,
                               redirect_response, resource_->GetType(),
-                              options.initiator_info);
+                              options.initiator_info,
+                              initial_request.GetRenderBlockingBehavior());
   }
 
   // First-party cookie logic moved from DocumentLoader in Blink to

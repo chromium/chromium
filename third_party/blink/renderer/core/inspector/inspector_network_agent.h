@@ -64,6 +64,7 @@ class LocalFrame;
 class HTTPHeaderMap;
 class KURL;
 class NetworkResourcesData;
+enum class RenderBlockingBehavior;
 class Resource;
 class ResourceError;
 class ResourceResponse;
@@ -106,7 +107,8 @@ class CORE_EXPORT InspectorNetworkAgent final
                        const ResourceRequest&,
                        const ResourceResponse& redirect_response,
                        const FetchInitiatorInfo&,
-                       ResourceType);
+                       ResourceType,
+                       RenderBlockingBehavior);
   void WillSendNavigationRequest(uint64_t identifier,
                                  DocumentLoader*,
                                  const KURL&,

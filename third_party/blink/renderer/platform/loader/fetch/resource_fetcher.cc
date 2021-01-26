@@ -640,13 +640,15 @@ bool ResourceFetcher::ResourceNeedsLoad(Resource* resource,
 void ResourceFetcher::DidLoadResourceFromMemoryCache(
     Resource* resource,
     const ResourceRequest& request,
-    bool is_static_data) {
+    bool is_static_data,
+    RenderBlockingBehavior render_blocking_behavior) {
   if (IsDetached() || !resource_load_observer_)
     return;
 
   resource_load_observer_->WillSendRequest(
       request.InspectorId(), request, ResourceResponse() /* redirects */,
-      resource->GetType(), resource->Options().initiator_info);
+      resource->GetType(), resource->Options().initiator_info,
+      render_blocking_behavior);
   resource_load_observer_->DidReceiveResponse(
       request.InspectorId(), request, resource->GetResponse(), resource,
       ResourceLoadObserver::ResponseSource::kFromMemoryCache);
@@ -913,6 +915,8 @@ base::Optional<ResourceRequestBlockedReason> ResourceFetcher::PrepareRequest(
 
   DCHECK_NE(computed_load_priority, ResourceLoadPriority::kUnresolved);
   resource_request.SetPriority(computed_load_priority);
+  resource_request.SetRenderBlockingBehavior(
+      params.GetRenderBlockingBehavior());
 
   if (resource_request.GetCacheMode() == mojom::FetchCacheMode::kDefault) {
     resource_request.SetCacheMode(Context().ResourceRequestCachePolicy(
@@ -1163,7 +1167,8 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
       resource->GetStatus() == ResourceStatus::kCached &&
       !in_cached_resources_map) {
     // Loaded from MemoryCache.
-    DidLoadResourceFromMemoryCache(resource, resource_request, is_static_data);
+    DidLoadResourceFromMemoryCache(resource, resource_request, is_static_data,
+                                   params.GetRenderBlockingBehavior());
   }
   if (!is_stale_revalidation) {
     String resource_url =
@@ -1181,13 +1186,14 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   // load-blocking. Lazy loaded images that are eventually fetched, however,
   // should always be added to |non_blocking_loaders_|, as they are never
   // load-blocking.
-  LoadBlockingPolicy load_blocking_policy = LoadBlockingPolicy::kDefault;
+  ImageLoadBlockingPolicy load_blocking_policy =
+      ImageLoadBlockingPolicy::kDefault;
   if (resource->GetType() == ResourceType::kImage) {
     image_resources_.insert(resource);
     not_loaded_image_resources_.insert(resource);
     if (params.GetImageRequestBehavior() ==
         FetchParameters::kNonBlockingImage) {
-      load_blocking_policy = LoadBlockingPolicy::kForceNonBlockingLoad;
+      load_blocking_policy = ImageLoadBlockingPolicy::kForceNonBlockingLoad;
     }
   }
 
@@ -1198,7 +1204,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   if (ResourceNeedsLoad(resource, params, policy)) {
     if (!StartLoad(resource,
                    std::move(params.MutableResourceRequest().MutableBody()),
-                   load_blocking_policy)) {
+                   load_blocking_policy, params.GetRenderBlockingBehavior())) {
       resource->FinishAsError(ResourceError::CancelledError(params.Url()),
                               freezable_task_runner_.get());
     }
@@ -1979,13 +1985,18 @@ void ResourceFetcher::MoveResourceLoaderToNonBlocking(ResourceLoader* loader) {
 }
 
 bool ResourceFetcher::StartLoad(Resource* resource) {
+  DCHECK(resource->GetType() == ResourceType::kFont ||
+         resource->GetType() == ResourceType::kImage);
   return StartLoad(resource, ResourceRequestBody(),
-                   LoadBlockingPolicy::kDefault);
+                   ImageLoadBlockingPolicy::kDefault,
+                   RenderBlockingBehavior::kNonBlocking);
 }
 
-bool ResourceFetcher::StartLoad(Resource* resource,
-                                ResourceRequestBody request_body,
-                                LoadBlockingPolicy policy) {
+bool ResourceFetcher::StartLoad(
+    Resource* resource,
+    ResourceRequestBody request_body,
+    ImageLoadBlockingPolicy policy,
+    RenderBlockingBehavior render_blocking_behavior) {
   DCHECK(resource);
   DCHECK(resource->StillNeedsLoad());
 
@@ -2021,7 +2032,7 @@ bool ResourceFetcher::StartLoad(Resource* resource,
       ResourceResponse response;
       resource_load_observer_->WillSendRequest(
           resource->InspectorId(), request, response, resource->GetType(),
-          resource->Options().initiator_info);
+          resource->Options().initiator_info, render_blocking_behavior);
     }
 
     using QuotaType = decltype(inflight_keepalive_bytes_);
@@ -2047,7 +2058,7 @@ bool ResourceFetcher::StartLoad(Resource* resource,
     // is handled by MakePreloadedResourceBlockOnloadIfNeeded().
     if (!resource->IsLinkPreload() &&
         resource->IsLoadEventBlockingResourceType() &&
-        policy != LoadBlockingPolicy::kForceNonBlockingLoad) {
+        policy != ImageLoadBlockingPolicy::kForceNonBlockingLoad) {
       loaders_.insert(loader);
     } else {
       non_blocking_loaders_.insert(loader);
@@ -2212,7 +2223,8 @@ void ResourceFetcher::EmulateLoadStartedForInspector(
   }
   DCHECK_EQ(resource->GetStatus(), ResourceStatus::kCached);
   DidLoadResourceFromMemoryCache(resource, params.GetResourceRequest(),
-                                 false /* is_static_data */);
+                                 false /* is_static_data */,
+                                 params.GetRenderBlockingBehavior());
 }
 
 void ResourceFetcher::PrepareForLeakDetection() {

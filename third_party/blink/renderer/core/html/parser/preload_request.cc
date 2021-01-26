@@ -165,6 +165,12 @@ Resource* PreloadRequest::Start(Document* document) {
     MaybeDisallowFetchForDocWrittenScript(params, *document);
     // We intentionally ignore the returned value, because we don't resend
     // the async request to the blocked script here.
+  } else if (resource_type_ == ResourceType::kCSSStyleSheet) {
+    // CSS here is render blocking, as non blocking doesn't get preloaded.
+    RenderBlockingBehavior render_blocking_behavior =
+        is_in_body_style_ ? RenderBlockingBehavior::kInBodyParserBlocking
+                          : RenderBlockingBehavior::kBlocking;
+    params.SetRenderBlockingBehavior(render_blocking_behavior);
   }
 
   return PreloadHelper::StartPreload(resource_type_, params, *document);

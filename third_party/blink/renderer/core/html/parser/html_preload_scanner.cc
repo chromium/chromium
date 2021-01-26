@@ -268,7 +268,8 @@ class TokenPreloadScanner::StartTagScanner {
       const ClientHintsPreferences& client_hints_preferences,
       const PictureData& picture_data,
       const CachedDocumentParameters& document_parameters,
-      const PreloadRequest::ExclusionInfo* exclusion_info) {
+      const PreloadRequest::ExclusionInfo* exclusion_info,
+      bool treat_links_as_in_body) {
     PreloadRequest::RequestType request_type =
         PreloadRequest::kRequestTypePreload;
     base::Optional<ResourceType> type;
@@ -336,6 +337,8 @@ class TokenPreloadScanner::StartTagScanner {
     request->SetNonce(nonce_);
     request->SetCharset(Charset());
     request->SetDefer(defer_);
+    request->SetInBodyStyle(treat_links_as_in_body &&
+                            type == ResourceType::kCSSStyleSheet);
 
     if (type == ResourceType::kImage && Match(tag_impl_, html_names::kImgTag) &&
         IsLazyLoadImageDeferable(document_parameters)) {
@@ -822,6 +825,8 @@ TokenPreloadScanner::TokenPreloadScanner(
       in_style_(false),
       in_picture_(false),
       in_script_(false),
+      seen_body_(false),
+      seen_img_(false),
       template_count_(0),
       document_parameters_(std::move(document_parameters)),
       media_values_(
@@ -1033,7 +1038,11 @@ void TokenPreloadScanner::ScanCommon(
                                 media_values_.Get(), &css_scanner_, viewport);
       }
 
-      if (Match(tag_impl, html_names::kPictureTag)) {
+      if (Match(tag_impl, html_names::kBodyTag)) {
+        seen_body_ = true;
+      } else if (Match(tag_impl, html_names::kImgTag)) {
+        seen_img_ = true;
+      } else if (Match(tag_impl, html_names::kPictureTag)) {
         in_picture_ = true;
         picture_data_ = PictureData();
         return;
@@ -1064,7 +1073,8 @@ void TokenPreloadScanner::ScanCommon(
         scanner.HandlePictureSourceURL(picture_data_);
       std::unique_ptr<PreloadRequest> request = scanner.CreatePreloadRequest(
           predicted_base_element_url_, source, client_hints_preferences_,
-          picture_data_, *document_parameters_, exclusion_info_.get());
+          picture_data_, *document_parameters_, exclusion_info_.get(),
+          seen_img_ || seen_body_);
       if (request) {
         requests.push_back(std::move(request));
       }

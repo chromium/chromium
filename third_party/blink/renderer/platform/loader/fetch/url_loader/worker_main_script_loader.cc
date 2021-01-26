@@ -57,7 +57,8 @@ void WorkerMainScriptLoader::Start(
   resource_load_observer_->WillSendRequest(
       initial_request_.InspectorId(), resource_request,
       /*redirect_response=*/ResourceResponse(), ResourceType::kScript,
-      resource_loader_options_.initiator_info);
+      resource_loader_options_.initiator_info,
+      RenderBlockingBehavior::kNonBlocking);
 
   resource_load_info_notifier_wrapper_->NotifyResourceLoadInitiated(
       /*request_id=*/-1, initial_request_url_,
@@ -324,7 +325,8 @@ void WorkerMainScriptLoader::HandleRedirections(
         redirect_response->ssl_info.has_value(), /*request_id=*/-1);
     resource_load_observer_->WillSendRequest(
         new_request->InspectorId(), *new_request, response.ToResourceResponse(),
-        ResourceType::kScript, resource_loader_options_.initiator_info);
+        ResourceType::kScript, resource_loader_options_.initiator_info,
+        RenderBlockingBehavior::kNonBlocking);
     resource_load_info_notifier_wrapper_->NotifyResourceRedirectReceived(
         redirect_info, std::move(redirect_response));
   }

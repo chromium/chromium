@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
+#include "third_party/blink/renderer/platform/loader/fetch/render_blocking_behavior.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_error.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -1186,7 +1187,8 @@ void InspectorNetworkAgent::WillSendRequest(
     const ResourceRequest& request,
     const ResourceResponse& redirect_response,
     const FetchInitiatorInfo& initiator_info,
-    ResourceType resource_type) {
+    ResourceType resource_type,
+    RenderBlockingBehavior render_blocking_behavior) {
   // Ignore the request initiated internally.
   if (initiator_info.name == fetch_initiator_type_names::kInternal)
     return;

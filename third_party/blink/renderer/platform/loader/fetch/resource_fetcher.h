@@ -182,7 +182,7 @@ class PLATFORM_EXPORT ResourceFetcher
     return cached_resources_map_;
   }
 
-  enum class LoadBlockingPolicy {
+  enum class ImageLoadBlockingPolicy {
     kDefault,
     kForceNonBlockingLoad,
   };
@@ -193,7 +193,10 @@ class PLATFORM_EXPORT ResourceFetcher
   // call this method explicitly on cases such as ResourceNeedsLoad() returning
   // false.
   bool StartLoad(Resource*);
-  bool StartLoad(Resource*, ResourceRequestBody, LoadBlockingPolicy);
+  bool StartLoad(Resource*,
+                 ResourceRequestBody,
+                 ImageLoadBlockingPolicy,
+                 RenderBlockingBehavior);
 
   void SetAutoLoadImages(bool);
   void SetImagesEnabled(bool);
@@ -402,7 +405,8 @@ class PLATFORM_EXPORT ResourceFetcher
 
   void DidLoadResourceFromMemoryCache(Resource*,
                                       const ResourceRequest&,
-                                      bool is_static_data);
+                                      bool is_static_data,
+                                      RenderBlockingBehavior);
 
   bool ResourceNeedsLoad(Resource*, const FetchParameters&, RevalidationPolicy);
 

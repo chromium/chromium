@@ -52,7 +52,8 @@ class PLATFORM_EXPORT ResourceLoadObserver
                                const ResourceRequest&,
                                const ResourceResponse& redirect_response,
                                ResourceType,
-                               const FetchInitiatorInfo&) = 0;
+                               const FetchInitiatorInfo&,
+                               RenderBlockingBehavior) = 0;
 
   // Called when the priority of the request changes.
   virtual void DidChangePriority(uint64_t identifier,
