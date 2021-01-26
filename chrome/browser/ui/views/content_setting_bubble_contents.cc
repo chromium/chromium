@@ -46,6 +46,8 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/native_cursor.h"
 
 namespace {
@@ -89,6 +91,7 @@ class MediaComboboxModel : public ui::ComboboxModel {
 // and/or camera).
 class MediaMenuBlock : public views::View {
  public:
+  METADATA_HEADER(MediaMenuBlock);
   MediaMenuBlock(base::RepeatingCallback<void(views::Combobox*)> callback,
                  ContentSettingBubbleModel::MediaMenuMap media) {
     const ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
@@ -143,9 +146,12 @@ class MediaMenuBlock : public views::View {
     }
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MediaMenuBlock);
+  MediaMenuBlock(const MediaMenuBlock&) = delete;
+  MediaMenuBlock& operator=(const MediaMenuBlock&) = delete;
 };
+
+BEGIN_METADATA(MediaMenuBlock, views::View)
+END_METADATA
 
 }  // namespace
 
@@ -192,7 +198,10 @@ base::string16 MediaComboboxModel::GetItemAt(int index) const {
 
 class ContentSettingBubbleContents::ListItemContainer : public views::View {
  public:
+  METADATA_HEADER(ListItemContainer);
   explicit ListItemContainer(ContentSettingBubbleContents* parent);
+  ListItemContainer(const ListItemContainer&) = delete;
+  ListItemContainer& operator=(const ListItemContainer&) = delete;
 
   // Creates and adds child views representing |item|.
   void AddItem(const ContentSettingBubbleModel::ListItem& item);
@@ -215,8 +224,6 @@ class ContentSettingBubbleContents::ListItemContainer : public views::View {
   // Our controls representing list items, so we can add or remove
   // these dynamically. Each pair represents one list item.
   std::vector<Row> list_item_views_;
-
-  DISALLOW_COPY_AND_ASSIGN(ListItemContainer);
 };
 
 ContentSettingBubbleContents::ListItemContainer::ListItemContainer(
@@ -356,6 +363,11 @@ void ContentSettingBubbleContents::ListItemContainer::UpdateScrollHeight(
                kMaxVisibleListItems);
   }
 }
+
+BEGIN_NESTED_METADATA(ContentSettingBubbleContents,
+                      ListItemContainer,
+                      views::View)
+END_METADATA
 
 // ContentSettingBubbleContents -----------------------------------------------
 
@@ -681,3 +693,6 @@ void ContentSettingBubbleContents::OnPerformAction(views::Combobox* combobox) {
   content_setting_bubble_model_->OnMediaMenuClicked(
       model->type(), model->GetDevices()[combobox->GetSelectedIndex()].id);
 }
+
+BEGIN_METADATA(ContentSettingBubbleContents, views::BubbleDialogDelegateView)
+END_METADATA

@@ -15,6 +15,7 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace {
 
@@ -86,3 +87,6 @@ void MediaGalleryCheckboxView::Layout() {
                                secondary_text_width, area.height());
   }
 }
+
+BEGIN_METADATA(MediaGalleryCheckboxView, views::View)
+END_METADATA

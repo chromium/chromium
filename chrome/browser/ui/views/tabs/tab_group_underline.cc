@@ -17,6 +17,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/background.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 
 constexpr int TabGroupUnderline::kStrokeThickness;
@@ -79,3 +80,6 @@ SkPath TabGroupUnderline::GetPath() const {
 
   return path;
 }
+
+BEGIN_METADATA(TabGroupUnderline, views::View)
+END_METADATA

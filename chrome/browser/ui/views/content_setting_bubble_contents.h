@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/content_settings/content_setting_bubble_model.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -17,6 +16,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/radio_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 namespace views {
 class Combobox;
@@ -38,11 +38,15 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
                                      public views::BubbleDialogDelegateView,
                                      public ContentSettingBubbleModel::Owner {
  public:
+  METADATA_HEADER(ContentSettingBubbleContents);
   ContentSettingBubbleContents(
       std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model,
       content::WebContents* web_contents,
       views::View* anchor_view,
       views::BubbleBorder::Arrow arrow);
+  ContentSettingBubbleContents(const ContentSettingBubbleContents&) = delete;
+  ContentSettingBubbleContents& operator=(const ContentSettingBubbleContents&) =
+      delete;
   ~ContentSettingBubbleContents() override;
 
   // views::BubbleDialogDelegateView:
@@ -94,8 +98,6 @@ class ContentSettingBubbleContents : public content::WebContentsObserver,
   views::LabelButton* manage_button_ = nullptr;
   views::Checkbox* manage_checkbox_ = nullptr;
   views::ImageButton* learn_more_button_ = nullptr;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ContentSettingBubbleContents);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CONTENT_SETTING_BUBBLE_CONTENTS_H_

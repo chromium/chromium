@@ -27,6 +27,7 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 
 namespace autofill {
@@ -122,6 +123,9 @@ gfx::Size TitleWithIconAndSeparatorView::GetMinimumSize() const {
   return gfx::Size(0, 0);
 }
 
+BEGIN_METADATA(TitleWithIconAndSeparatorView, views::View)
+END_METADATA
+
 std::unique_ptr<views::Textfield> CreateCvcTextfield() {
   auto textfield = std::make_unique<views::Textfield>();
   textfield->SetPlaceholderText(
@@ -150,6 +154,9 @@ LegalMessageView::LegalMessageView(const LegalMessageLines& legal_message_lines,
 }
 
 LegalMessageView::~LegalMessageView() = default;
+
+BEGIN_METADATA(LegalMessageView, views::View)
+END_METADATA
 
 PaymentsBubbleClosedReason GetPaymentsBubbleClosedReasonFromWidgetClosedReason(
     views::Widget::ClosedReason reason) {

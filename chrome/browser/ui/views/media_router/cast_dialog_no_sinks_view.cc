@@ -33,6 +33,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
 
@@ -90,5 +91,8 @@ void CastDialogNoSinksView::SetHelpIconView() {
   label_->SetText(
       l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_STATUS_NO_DEVICES_FOUND));
 }
+
+BEGIN_METADATA(CastDialogNoSinksView, views::View)
+END_METADATA
 
 }  // namespace media_router

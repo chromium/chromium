@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/passwords/bubble_controllers/sign_in_promo_bubble_controller.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace content {
@@ -19,7 +20,10 @@ class SignInPromoBubbleController;
 // offer signing users in so they can access their credentials across devices.
 class PasswordSignInPromoView : public views::View {
  public:
+  METADATA_HEADER(PasswordSignInPromoView);
   explicit PasswordSignInPromoView(content::WebContents* web_contents);
+  PasswordSignInPromoView(const PasswordSignInPromoView&) = delete;
+  PasswordSignInPromoView& operator=(const PasswordSignInPromoView&) = delete;
   ~PasswordSignInPromoView() override;
 
  private:
@@ -28,6 +32,8 @@ class PasswordSignInPromoView : public views::View {
   class DiceSyncPromoDelegate : public BubbleSyncPromoDelegate {
    public:
     explicit DiceSyncPromoDelegate(SignInPromoBubbleController* controller);
+    DiceSyncPromoDelegate(const DiceSyncPromoDelegate&) = delete;
+    DiceSyncPromoDelegate& operator=(const DiceSyncPromoDelegate&) = delete;
     ~DiceSyncPromoDelegate() override;
 
     // BubbleSyncPromoDelegate:
@@ -35,14 +41,10 @@ class PasswordSignInPromoView : public views::View {
 
    private:
     SignInPromoBubbleController* controller_;
-
-    DISALLOW_COPY_AND_ASSIGN(DiceSyncPromoDelegate);
   };
 
   SignInPromoBubbleController controller_;
   std::unique_ptr<DiceSyncPromoDelegate> dice_sync_promo_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(PasswordSignInPromoView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PASSWORDS_PASSWORD_SIGN_IN_PROMO_VIEW_H_

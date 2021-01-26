@@ -13,6 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
@@ -28,6 +29,7 @@ namespace autofill {
 // custom horizontal padding.
 class TitleWithIconAndSeparatorView : public views::View {
  public:
+  METADATA_HEADER(TitleWithIconAndSeparatorView);
   explicit TitleWithIconAndSeparatorView(const base::string16& window_title);
   ~TitleWithIconAndSeparatorView() override;
 
@@ -43,6 +45,8 @@ std::unique_ptr<views::Textfield> CreateCvcTextfield();
 // parsing and the links clicking events.
 class LegalMessageView : public views::View {
  public:
+  METADATA_HEADER(LegalMessageView);
+
   using LinkClickedCallback = base::RepeatingCallback<void(const GURL&)>;
 
   explicit LegalMessageView(const LegalMessageLines& legal_message_lines,
