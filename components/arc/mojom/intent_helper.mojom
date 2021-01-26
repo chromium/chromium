@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 42
+// Next MinVersion: 43
 
 module arc.mojom;
 
@@ -243,8 +243,8 @@ interface CustomTabSession {
 };
 
 // Handles intents from ARC in Chrome.
-// Deprecated method ID: 4
-// Next method ID: 17
+// Deprecated method ID: 4, 10
+// Next method ID: 18
 interface IntentHelperHost {
   // Called when icons associated with the package are no longer up to date.
   [MinVersion=3] OnIconInvalidated@1(string package_name);
@@ -260,17 +260,17 @@ interface IntentHelperHost {
   // navigate to as well. No special URLs that allow access to privileged functions are allowed.
   OnOpenUrl@0(string url);
 
-  // Opens the url with a custom tab.
-  // |task_id| and |surface_id| specify the Android task and the surface on
-  // which the custom tab should be shown.
-  // |top_margin| is the height of the space at the top of the window which
-  // needs to be vacant to display the top bar rendered by Android code.
-  // TODO(b/159918677): Remove |surface_id| and |top_margin| since they are no
-  // longer used.
-  [MinVersion=25] OnOpenCustomTab@10(string url,
-                                     int32 task_id,
-                                     int32 surface_id,
-                                     int32 top_margin)
+  // DEPRECATED: Please use OnOpenCustomTab@17 instead.
+  [MinVersion=25] OnOpenCustomTabDeprecated@10(string url,
+                                               int32 task_id,
+                                               int32 surface_id,
+                                               int32 top_margin)
+      => (pending_remote<CustomTabSession>? session);
+
+  // Opens the |url| with a custom tab.
+  // |task_id| specifies the Android task on which the custom tab should be
+  // shown.
+  [MinVersion=42] OnOpenCustomTab@17(string url, int32 task_id)
       => (pending_remote<CustomTabSession>? session);
 
   // Opens the wallpaper picker dialog.

@@ -38,11 +38,16 @@ class ArcPrintSpoolerBridge : public KeyedService,
   ~ArcPrintSpoolerBridge() override;
 
   // mojom::PrintSpoolerHost:
-  void StartPrintInCustomTab(
+  void StartPrintInCustomTabDeprecated(
       mojo::ScopedHandle scoped_handle,
       int32_t task_id,
       int32_t surface_id,
       int32_t top_margin,
+      mojo::PendingRemote<mojom::PrintSessionInstance> instance,
+      StartPrintInCustomTabCallback callback) override;
+  void StartPrintInCustomTab(
+      mojo::ScopedHandle scoped_handle,
+      int32_t task_id,
       mojo::PendingRemote<mojom::PrintSessionInstance> instance,
       StartPrintInCustomTabCallback callback) override;
 

@@ -68,10 +68,13 @@ class ArcIntentHelperBridge : public KeyedService,
       std::vector<IntentFilter> intent_filters) override;
   void OnOpenDownloads() override;
   void OnOpenUrl(const std::string& url) override;
+  void OnOpenCustomTabDeprecated(const std::string& url,
+                                 int32_t task_id,
+                                 int32_t surface_id,
+                                 int32_t top_margin,
+                                 OnOpenCustomTabCallback callback) override;
   void OnOpenCustomTab(const std::string& url,
                        int32_t task_id,
-                       int32_t surface_id,
-                       int32_t top_margin,
                        OnOpenCustomTabCallback callback) override;
   void OnOpenChromePage(mojom::ChromePage page) override;
   void FactoryResetArc() override;

@@ -168,10 +168,17 @@ void ArcIntentHelperBridge::OnOpenUrl(const std::string& url) {
     g_open_url_delegate->OpenUrlFromArc(gurl);
 }
 
+void ArcIntentHelperBridge::OnOpenCustomTabDeprecated(
+    const std::string& url,
+    int32_t task_id,
+    int32_t surface_id,
+    int32_t top_margin,
+    OnOpenCustomTabCallback callback) {
+  OnOpenCustomTab(url, task_id, std::move(callback));
+}
+
 void ArcIntentHelperBridge::OnOpenCustomTab(const std::string& url,
                                             int32_t task_id,
-                                            int32_t surface_id,
-                                            int32_t top_margin,
                                             OnOpenCustomTabCallback callback) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   RecordOpenType(ArcIntentHelperOpenType::CUSTOM_TAB);

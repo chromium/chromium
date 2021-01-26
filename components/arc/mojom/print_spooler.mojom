@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 4
+// Next MinVersion: 5
 
 module arc.mojom;
 
@@ -33,22 +33,27 @@ interface PrintSessionInstance {
 
 // Used by ARC to create a new print session. A print session is used to print a
 // document from ARC using Chrome print preview.
-// Next method ID: 1
+// Deprecated method ID: 0
+// Next method ID: 2
 interface PrintSpoolerHost {
-  // Opens the file owned by |scoped_handle| in Chrome print preview in an ARC
-  // Custom Tab.
-  // The |task_id| and |surface_id| specify the Android task and the surface on
-  // which the ARC Custom Tab should be shown.
-  // The |top_margin| is the height of the space at the top of the window.
-  // The returned |host| will be null if errors occur while saving the print
-  // document or locating the Android surface.
-  // TODO(b/159918677): Remove |surface_id| and |top_margin| since they are no
-  // longer used.
-  [MinVersion=1] StartPrintInCustomTab@0(
+  // DEPRECATED: Please use StartPrintInCustomTab@1 instead.
+  [MinVersion=1] StartPrintInCustomTabDeprecated@0(
       handle scoped_handle,
       int32 task_id,
       int32 surface_id,
       int32 top_margin,
+      pending_remote<PrintSessionInstance> instance)
+      => (pending_remote<PrintSessionHost>? host);
+
+  // Opens the file owned by |scoped_handle| in Chrome print preview in an ARC
+  // Custom Tab.
+  // The |task_id| specifies the Android task on which the ARC Custom Tab should
+  // be shown.
+  // The returned |host| will be null if errors occur while saving the print
+  // document or locating the Android surface.
+  [MinVersion=4] StartPrintInCustomTab@1(
+      handle scoped_handle,
+      int32 task_id,
       pending_remote<PrintSessionInstance> instance)
       => (pending_remote<PrintSessionHost>? host);
 };
