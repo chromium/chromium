@@ -52,7 +52,8 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadLaterIPHController;
 import org.chromium.chrome.browser.share.ShareDelegate;
-import org.chromium.chrome.browser.signin.SigninPromoUtil;
+import org.chromium.chrome.browser.signin.SigninActivityLauncherImpl;
+import org.chromium.chrome.browser.signin.ui.SigninPromoUtil;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -532,7 +533,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     private boolean maybeShowPromo() {
         // Only one promo can be shown in one run to avoid nagging users too much.
-        if (SigninPromoUtil.launchSigninPromoIfNeeded(mActivity)) return true;
+        if (SigninPromoUtil.launchSigninPromoIfNeeded(
+                    mActivity, SigninActivityLauncherImpl.get())) {
+            return true;
+        }
         if (DataReductionPromoScreen.launchDataReductionPromo(
                     mActivity, mActivity.getTabModelSelector().getCurrentModel().isIncognito())) {
             return true;

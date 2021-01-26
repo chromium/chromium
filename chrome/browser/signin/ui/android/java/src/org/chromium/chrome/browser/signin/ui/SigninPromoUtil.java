@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.signin;
+package org.chromium.chrome.browser.signin.ui;
 
 import android.accounts.Account;
 import android.app.Activity;
@@ -10,17 +10,13 @@ import android.text.TextUtils;
 import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
-import androidx.collection.ArraySet;
 
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
-import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
-import org.chromium.chrome.browser.signin.ui.SigninPromoController;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
@@ -30,13 +26,14 @@ import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.user_prefs.UserPrefs;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 /**
-* Helper functions for promoting sign in.
-*/
-public class SigninPromoUtil {
+ * Helper functions for promoting sign in.
+ */
+public final class SigninPromoUtil {
     private SigninPromoUtil() {}
 
     /**
@@ -44,7 +41,8 @@ public class SigninPromoUtil {
      * @param activity The parent activity.
      * @return Whether the signin promo is shown.
      */
-    public static boolean launchSigninPromoIfNeeded(final Activity activity) {
+    public static boolean launchSigninPromoIfNeeded(
+            final Activity activity, SigninActivityLauncher signinActivityLauncher) {
         if (!AccountManagerFacadeProvider.getInstance().isCachePopulated()) {
             // Suppress the promo if the account list isn't available yet.
             return false;
@@ -58,15 +56,14 @@ public class SigninPromoUtil {
         boolean wasSignedIn =
                 TextUtils.isEmpty(UserPrefs.get(Profile.getLastUsedRegularProfile())
                                           .getString(Pref.GOOGLE_SERVICES_LAST_USERNAME));
-        Set<String> accountNames = new ArraySet<>(AccountUtils.toAccountNames(
+        Set<String> accountNames = new HashSet<>(AccountUtils.toAccountNames(
                 AccountManagerFacadeProvider.getInstance().tryGetGoogleAccounts()));
         if (!shouldLaunchSigninPromo(preferencesManager, currentMajorVersion, isSignedIn,
                     wasSignedIn, accountNames)) {
             return false;
         }
 
-        SigninActivityLauncherImpl.get().launchActivityIfAllowed(
-                activity, SigninAccessPoint.SIGNIN_PROMO);
+        signinActivityLauncher.launchActivityIfAllowed(activity, SigninAccessPoint.SIGNIN_PROMO);
         preferencesManager.setSigninPromoLastShownVersion(currentMajorVersion);
         preferencesManager.setSigninPromoLastAccountNames(accountNames);
         return true;
