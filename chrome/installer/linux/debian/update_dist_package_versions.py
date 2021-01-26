@@ -48,7 +48,6 @@ PACKAGE_FILTER = set([
     "libexpat1",
     "libgbm1",
     "libgcc1",
-    "libgdk-pixbuf2.0-0",
     "libglib2.0-0",
     "libgtk-3-0",
     "libnspr4",

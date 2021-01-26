@@ -4,6 +4,7 @@
 
 #include "ui/gtk/gtk_ui.h"
 
+#include <cairo.h>
 #include <gdk/gdk.h>
 #include <gdk/gdkkeysyms.h>
 #include <pango/pango.h>
@@ -45,6 +46,7 @@
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/gfx/skia_util.h"
+#include "ui/gtk/gdk_pixbuf.h"
 #include "ui/gtk/gtk_key_bindings_handler.h"
 #include "ui/gtk/gtk_ui_delegate.h"
 #include "ui/gtk/gtk_util.h"
@@ -225,7 +227,6 @@ struct GtkIconInfoDeleter {
 };
 typedef std::unique_ptr<GIcon, GObjectDeleter> ScopedGIcon;
 typedef std::unique_ptr<GtkIconInfo, GtkIconInfoDeleter> ScopedGtkIconInfo;
-typedef std::unique_ptr<GdkPixbuf, GObjectDeleter> ScopedGdkPixbuf;
 
 // Number of app indicators used (used as part of app-indicator id).
 int indicators_count;
@@ -309,61 +310,6 @@ views::LinuxUI::WindowFrameAction GetDefaultMiddleClickAction() {
   }
 }
 
-const SkBitmap GdkPixbufToSkBitmap(GdkPixbuf* pixbuf) {
-  // TODO(erg): What do we do in the case where the pixbuf fails these dchecks?
-  // I would prefer to use our gtk based canvas, but that would require
-  // recompiling half of our skia extensions with gtk support, which we can't
-  // do in this build.
-  DCHECK_EQ(GDK_COLORSPACE_RGB, gdk_pixbuf_get_colorspace(pixbuf));
-
-  int n_channels = gdk_pixbuf_get_n_channels(pixbuf);
-  int w = gdk_pixbuf_get_width(pixbuf);
-  int h = gdk_pixbuf_get_height(pixbuf);
-
-  SkBitmap ret;
-  ret.allocN32Pixels(w, h);
-  ret.eraseColor(0);
-
-  uint32_t* skia_data = static_cast<uint32_t*>(ret.getAddr(0, 0));
-
-  if (n_channels == 4) {
-    int total_length = w * h;
-    guchar* gdk_pixels = gdk_pixbuf_get_pixels(pixbuf);
-
-    // Now here's the trick: we need to convert the gdk data (which is RGBA and
-    // isn't premultiplied) to skia (which can be anything and premultiplied).
-    for (int i = 0; i < total_length; ++i, gdk_pixels += 4) {
-      const unsigned char& red = gdk_pixels[0];
-      const unsigned char& green = gdk_pixels[1];
-      const unsigned char& blue = gdk_pixels[2];
-      const unsigned char& alpha = gdk_pixels[3];
-
-      skia_data[i] = SkPreMultiplyARGB(alpha, red, green, blue);
-    }
-  } else if (n_channels == 3) {
-    // Because GDK makes rowstrides word aligned, we need to do something a bit
-    // more complex when a pixel isn't perfectly a word of memory.
-    int rowstride = gdk_pixbuf_get_rowstride(pixbuf);
-    guchar* gdk_pixels = gdk_pixbuf_get_pixels(pixbuf);
-    for (int y = 0; y < h; ++y) {
-      int row = y * rowstride;
-
-      for (int x = 0; x < w; ++x) {
-        guchar* pixel = gdk_pixels + row + (x * 3);
-        const unsigned char& red = pixel[0];
-        const unsigned char& green = pixel[1];
-        const unsigned char& blue = pixel[2];
-
-        skia_data[y * w + x] = SkPreMultiplyARGB(255, red, green, blue);
-      }
-    }
-  } else {
-    NOTREACHED();
-  }
-
-  return ret;
-}
-
 }  // namespace
 
 GtkUi::GtkUi(ui::GtkUiDelegate* delegate) : delegate_(delegate) {
@@ -412,6 +358,9 @@ void GtkUi::Initialize() {
       ui::LinuxInputMethodContextFactory::SetInstance(this);
   }
 #endif
+
+  CHECK(ui_gtk::InitializeStubs(
+      {{ui_gtk::kModuleGdk_pixbuf, {"libgdk_pixbuf-2.0.so.0"}}}));
 
   GtkSettings* settings = gtk_settings_get_default();
   g_signal_connect_after(settings, "notify::gtk-theme-name",
@@ -578,13 +527,29 @@ gfx::Image GtkUi::GetIconForContentType(const std::string& content_type,
         static_cast<GtkIconLookupFlags>(GTK_ICON_LOOKUP_FORCE_SIZE)));
     if (!icon_info)
       continue;
-    ScopedGdkPixbuf pixbuf(gtk_icon_info_load_icon(icon_info.get(), nullptr));
-    if (!pixbuf)
+    auto* surface =
+        gtk_icon_info_load_surface(icon_info.get(), nullptr, nullptr);
+    if (!surface)
       continue;
+    DCHECK_EQ(cairo_surface_get_type(surface), CAIRO_SURFACE_TYPE_IMAGE);
+    DCHECK_EQ(cairo_image_surface_get_format(surface), CAIRO_FORMAT_ARGB32);
 
-    SkBitmap bitmap = GdkPixbufToSkBitmap(pixbuf.get());
-    DCHECK_EQ(size, bitmap.width());
-    DCHECK_EQ(size, bitmap.height());
+    SkBitmap bitmap;
+    SkImageInfo image_info =
+        SkImageInfo::Make(cairo_image_surface_get_width(surface),
+                          cairo_image_surface_get_height(surface),
+                          kBGRA_8888_SkColorType, kUnpremul_SkAlphaType);
+    if (!bitmap.installPixels(
+            image_info, cairo_image_surface_get_data(surface),
+            image_info.minRowBytes(),
+            [](void*, void* surface) {
+              cairo_surface_destroy(
+                  reinterpret_cast<cairo_surface_t*>(surface));
+            },
+            surface)) {
+      continue;
+    }
+
     gfx::ImageSkia image_skia = gfx::ImageSkia::CreateFrom1xBitmap(bitmap);
     image_skia.MakeThreadSafe();
     return gfx::Image(image_skia);

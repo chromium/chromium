@@ -11,6 +11,14 @@ import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//printing/buildflags/buildflags.gni")
+import("//tools/generate_stubs/rules.gni")
+
+generate_stubs("gdk_pixbuf") {
+  sigs = [ "gdk_pixbuf.sigs" ]
+  extra_header = "gdk_pixbuf.fragment"
+  output_name = "gdk_pixbuf"
+  deps = [ "//build/config/linux/gtk" ]
+}
 
 component("gtk_ui_delegate") {
   public = [ "gtk_ui_delegate.h" ]
@@ -64,6 +72,7 @@ component("gtk") {
   }
 
   deps = [
+    ":gdk_pixbuf",
     "//base",
     "//build/config/linux/gtk:gtkprint",
     "//printing",

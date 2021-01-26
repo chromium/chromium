@@ -1,0 +1,3 @@
+GdkPixbuf* gdk_pixbuf_new_from_file_at_size(const char* filename, int width, int height, GError** error);
+int gdk_pixbuf_get_width(const GdkPixbuf* pixbuf);
+int gdk_pixbuf_get_height(const GdkPixbuf* pixbuf);
