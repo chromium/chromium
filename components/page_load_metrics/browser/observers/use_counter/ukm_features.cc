@@ -186,6 +186,10 @@ UseCounterPageLoadMetricsObserver::GetAllowedUkmFeatures() {
           WebFeature::kTextDetectorDetect,
           WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation,
           WebFeature::kV8HTMLVideoElement_GetVideoPlaybackQuality_Method,
+          WebFeature::kRTCPeerConnectionConstructedWithPlanB,
+          WebFeature::kRTCPeerConnectionConstructedWithUnifiedPlan,
+          WebFeature::kRTCPeerConnectionUsingComplexPlanB,
+          WebFeature::kRTCPeerConnectionUsingComplexUnifiedPlan,
       }));
   return *opt_in_features;
 }

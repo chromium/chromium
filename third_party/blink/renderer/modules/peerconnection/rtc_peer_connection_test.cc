@@ -43,6 +43,8 @@ namespace blink {
 
 class RTCOfferOptionsPlatform;
 
+namespace {
+
 static const char* kOfferSdpUnifiedPlanSingleAudioSingleVideo =
     "v=0\r\n"
     "o=- 6676943034916303038 2 IN IP4 127.0.0.1\r\n"
@@ -375,6 +377,15 @@ static const char* kOfferSdpPlanBMultipleAudioTracks =
     "6b5f436e-f85d-40a1-83e4-acec63ca4b82\r\n"
     "a=ssrc:4092260337 mslabel:46f8615e-7599-49f3-9a45-3cf0faf58614\r\n"
     "a=ssrc:4092260337 label:6b5f436e-f85d-40a1-83e4-acec63ca4b82\r\n";
+
+RTCSessionDescriptionInit* CreateSdp(String type, String sdp) {
+  auto* sdp_init = RTCSessionDescriptionInit::Create();
+  sdp_init->setType(type);
+  sdp_init->setSdp(sdp);
+  return sdp_init;
+}
+
+}  // namespace
 
 class RTCPeerConnectionTest : public testing::Test {
  public:
@@ -1183,6 +1194,93 @@ TEST(DeduceSdpUsageCategory, ComplexSdpIsSafeIfMatchingExplicitSdpSemantics) {
       DeduceSdpUsageCategory(ParsedSessionDescription::Parse(
                                  "offer", kOfferSdpPlanBMultipleAudioTracks),
                              true, webrtc::SdpSemantics::kUnifiedPlan));
+}
+
+TEST_F(RTCPeerConnectionTest, SdpSemanticsUseCounters) {
+  // Constructor with default sdpSemantics (= Unified Plan).
+  {
+    V8TestingScope scope;
+    RTCPeerConnection* pc = CreatePC(scope, /*sdp_semantics=*/base::nullopt);
+    // Use counters reflect the constructor's sdpSemantics.
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionConstructedWithPlanB));
+    EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionConstructedWithUnifiedPlan));
+    // Setting simple Unified Plan SDP does not affect use counters.
+    pc->setRemoteDescription(
+        scope.GetScriptState(),
+        CreateSdp("offer", kOfferSdpUnifiedPlanSingleAudioSingleVideo),
+        scope.GetExceptionState());
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionUsingComplexPlanB));
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionUsingComplexUnifiedPlan));
+    // Setting complex Unified Plan SDP does affect use counters.
+    pc->setRemoteDescription(
+        scope.GetScriptState(),
+        CreateSdp("offer", kOfferSdpUnifiedPlanMultipleAudioTracks),
+        scope.GetExceptionState());
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionUsingComplexPlanB));
+    EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionUsingComplexUnifiedPlan));
+  }
+  // Constructor with {sdpSemantics:"plan-b"}.
+  {
+    V8TestingScope scope;
+    RTCPeerConnection* pc = CreatePC(scope, "plan-b");
+    // Use counters reflect the constructor's sdpSemantics.
+    EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionConstructedWithPlanB));
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionConstructedWithUnifiedPlan));
+    // Setting simple Plan B SDP does not affect use counters.
+    pc->setRemoteDescription(
+        scope.GetScriptState(),
+        CreateSdp("offer", kOfferSdpPlanBSingleAudioSingleVideo),
+        scope.GetExceptionState());
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionUsingComplexPlanB));
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionUsingComplexUnifiedPlan));
+    // Setting complex Plan B SDP does affect use counters.
+    pc->setRemoteDescription(
+        scope.GetScriptState(),
+        CreateSdp("offer", kOfferSdpPlanBMultipleAudioTracks),
+        scope.GetExceptionState());
+    EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionUsingComplexPlanB));
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionUsingComplexUnifiedPlan));
+  }
+  // Constructor with {sdpSemantics:"unified-plan"}.
+  {
+    V8TestingScope scope;
+    RTCPeerConnection* pc = CreatePC(scope, "unified-plan");
+    // Use counters reflect the constructor's sdpSemantics.
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionConstructedWithPlanB));
+    EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionConstructedWithUnifiedPlan));
+    // Setting simple Unified Plan SDP does not affect use counters.
+    pc->setRemoteDescription(
+        scope.GetScriptState(),
+        CreateSdp("offer", kOfferSdpUnifiedPlanSingleAudioSingleVideo),
+        scope.GetExceptionState());
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionUsingComplexPlanB));
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionUsingComplexUnifiedPlan));
+    // Setting complex Unified Plan SDP does affect use counters.
+    pc->setRemoteDescription(
+        scope.GetScriptState(),
+        CreateSdp("offer", kOfferSdpUnifiedPlanMultipleAudioTracks),
+        scope.GetExceptionState());
+    EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionUsingComplexPlanB));
+    EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+        WebFeature::kRTCPeerConnectionUsingComplexUnifiedPlan));
+  }
 }
 
 TEST_F(RTCPeerConnectionTest, MediaStreamTrackStopsThrottling) {
