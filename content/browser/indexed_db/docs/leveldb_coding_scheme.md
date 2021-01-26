@@ -105,7 +105,7 @@ database should be deleted.
 
 ### ExternalObject (value)
 
-A external object (a blob, a file, or a native file system handle) is zero-or-more
+A external object (a blob, a file, or a File System Access handle) is zero-or-more
 instances of the structure:
 
 ```
@@ -116,7 +116,7 @@ instances of the structure:
   /*for Blobs and Files only*/ size (VarInt),
   /*for Files only*/ filename (StringWithLength)
   /*for Files only*/ lastModified (VarInt, in microseconds)
-  /*for Native File System Handles only*/ token (BinaryWithLength)
+  /*for File System Access Handles only*/ token (BinaryWithLength)
 }
 ```
 

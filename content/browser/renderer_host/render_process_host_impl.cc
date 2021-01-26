@@ -94,7 +94,7 @@
 #include "content/browser/field_trial_recorder.h"
 #include "content/browser/field_trial_synchronizer.h"
 #include "content/browser/file_system/file_system_manager_impl.h"
-#include "content/browser/file_system_access/native_file_system_manager_impl.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/font_unique_name_lookup/font_unique_name_lookup_service.h"
 #include "content/browser/gpu/browser_gpu_client_delegate.h"
 #include "content/browser/gpu/compositor_util.h"
@@ -2095,7 +2095,7 @@ void RenderProcessHostImpl::BindFileSystemManager(
                      std::move(receiver)));
 }
 
-void RenderProcessHostImpl::BindNativeFileSystemManager(
+void RenderProcessHostImpl::BindFileSystemAccessManager(
     const url::Origin& origin,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -2104,9 +2104,9 @@ void RenderProcessHostImpl::BindNativeFileSystemManager(
   // RenderFrameHostImpl instead.
   auto* storage_partition =
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
-  auto* manager = storage_partition->GetNativeFileSystemManager();
+  auto* manager = storage_partition->GetFileSystemAccessManager();
   manager->BindReceiver(
-      NativeFileSystemManagerImpl::BindingContext(
+      FileSystemAccessManagerImpl::BindingContext(
           origin,
           // TODO(https://crbug.com/989323): Obtain and use a better
           // URL for workers instead of the origin as source url.

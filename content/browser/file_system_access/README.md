@@ -1,7 +1,7 @@
 # File System Access API
 
 This directory contains part of the browser side implementation of the
-native file system API.
+File System Access API.
 
 See https://wicg.github.io/file-system-access/ for the spec for this API.
 

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_MANAGER_IMPL_H_
-#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_MANAGER_IMPL_H_
+#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_MANAGER_IMPL_H_
+#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_MANAGER_IMPL_H_
 
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
@@ -37,31 +37,31 @@ class FileSystemOperationRunner;
 }  // namespace storage
 
 namespace content {
-class NativeFileSystemFileHandleImpl;
-class NativeFileSystemDirectoryHandleImpl;
-class NativeFileSystemTransferTokenImpl;
-class NativeFileSystemDragDropTokenImpl;
-class NativeFileSystemFileWriterImpl;
+class FileSystemAccessFileHandleImpl;
+class FileSystemAccessDirectoryHandleImpl;
+class FileSystemAccessTransferTokenImpl;
+class FileSystemAccessDragDropTokenImpl;
+class FileSystemAccessFileWriterImpl;
 class StoragePartitionImpl;
 
 // This is the browser side implementation of the
-// NativeFileSystemManager mojom interface. This is the main entry point for
-// the native file system API in the browser process.Instances of this class are
+// FileSystemAccessManager mojom interface. This is the main entry point for
+// the File System Access API in the browser process.Instances of this class are
 // owned by StoragePartitionImpl.
 //
-// This class owns all the NativeFileSystemFileHandleImpl,
-// NativeFileSystemDirectoryHandleImpl and NativeFileSystemTransferTokenImpl
+// This class owns all the FileSystemAccessFileHandleImpl,
+// FileSystemAccessDirectoryHandleImpl and FileSystemAccessTransferTokenImpl
 // instances for a specific storage partition.
 //
 // This class is not thread safe, it must be constructed and used on the UI
 // thread only.
-class CONTENT_EXPORT NativeFileSystemManagerImpl
+class CONTENT_EXPORT FileSystemAccessManagerImpl
     : public FileSystemAccessEntryFactory,
       public blink::mojom::FileSystemAccessManager,
       public storage::mojom::FileSystemAccessContext {
  public:
   using BindingContext = FileSystemAccessEntryFactory::BindingContext;
-  using PassKey = base::PassKey<NativeFileSystemManagerImpl>;
+  using PassKey = base::PassKey<FileSystemAccessManagerImpl>;
 
   // State that is shared between handles that are derived from each other.
   // Handles that are created through ChooseEntries or GetSandboxedFileSystem
@@ -86,7 +86,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
 
   // The caller is responsible for ensuring that |permission_context| outlives
   // this instance.
-  NativeFileSystemManagerImpl(
+  FileSystemAccessManagerImpl(
       scoped_refptr<storage::FileSystemContext> context,
       scoped_refptr<ChromeBlobStorageContext> blob_context,
       FileSystemAccessPermissionContext* permission_context,
@@ -141,21 +141,21 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       const base::FilePath& directory_path,
       UserAction user_action) override;
 
-  // Creates a new NativeFileSystemFileHandleImpl for a given url. Assumes the
+  // Creates a new FileSystemAccessFileHandleImpl for a given url. Assumes the
   // passed in URL is valid and represents a file.
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileHandle>
   CreateFileHandle(const BindingContext& binding_context,
                    const storage::FileSystemURL& url,
                    const SharedHandleState& handle_state);
 
-  // Creates a new NativeFileSystemDirectoryHandleImpl for a given url. Assumes
+  // Creates a new FileSystemAccessDirectoryHandleImpl for a given url. Assumes
   // the passed in URL is valid and represents a directory.
   mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryHandle>
   CreateDirectoryHandle(const BindingContext& context,
                         const storage::FileSystemURL& url,
                         const SharedHandleState& handle_state);
 
-  // Creates a new NativeFileSystemFileWriterImpl for a given target and
+  // Creates a new FileSystemAccessFileWriterImpl for a given target and
   // swap file URLs. Assumes the passed in URLs are valid and represent files.
   mojo::PendingRemote<blink::mojom::FileSystemAccessFileWriter>
   CreateFileWriter(const BindingContext& binding_context,
@@ -163,9 +163,9 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
                    const storage::FileSystemURL& swap_url,
                    const SharedHandleState& handle_state,
                    bool auto_close);
-  // Returns a weak pointer to a newly created NativeFileSystemFileWriterImpl.
+  // Returns a weak pointer to a newly created FileSystemAccessFileWriterImpl.
   // Useful for tests
-  base::WeakPtr<NativeFileSystemFileWriterImpl> CreateFileWriter(
+  base::WeakPtr<FileSystemAccessFileWriterImpl> CreateFileWriter(
       const BindingContext& binding_context,
       const storage::FileSystemURL& url,
       const storage::FileSystemURL& swap_url,
@@ -177,19 +177,19 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
 
   // Create a transfer token for a specific file or directory.
   void CreateTransferToken(
-      const NativeFileSystemFileHandleImpl& file,
+      const FileSystemAccessFileHandleImpl& file,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
           receiver);
   void CreateTransferToken(
-      const NativeFileSystemDirectoryHandleImpl& directory,
+      const FileSystemAccessDirectoryHandleImpl& directory,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
           receiver);
 
-  // Creates an instance of NativeFileSystemDragDropTokenImpl with `file_path`
+  // Creates an instance of FileSystemAccessDragDropTokenImpl with `file_path`
   // and `renderer_id` and attaches the instance to `receiver`. The `receiver`'s
   // associated remote can be redeemed for a FileSystemAccessEntry object by a
   // process with ID matching `renderer_id`.
-  void CreateNativeFileSystemDragDropToken(
+  void CreateFileSystemAccessDragDropToken(
       PathType path_type,
       const base::FilePath& file_path,
       int renderer_id,
@@ -200,7 +200,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   // valid tokens. Calls the callback with the found token, or nullptr if no
   // valid token was found.
   using ResolvedTokenCallback =
-      base::OnceCallback<void(NativeFileSystemTransferTokenImpl*)>;
+      base::OnceCallback<void(FileSystemAccessTransferTokenImpl*)>;
   void ResolveTransferToken(
       mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
       ResolvedTokenCallback callback);
@@ -231,7 +231,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
 
   // Remove |writer| from |writer_receivers|. It is an error to try to remove
   // a writer that doesn't exist.
-  void RemoveFileWriter(NativeFileSystemFileWriterImpl* writer);
+  void RemoveFileWriter(FileSystemAccessFileWriterImpl* writer);
 
   // Remove |token| from |transfer_tokens_|. It is an error to try to remove
   // a token that doesn't exist.
@@ -260,9 +260,9 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       const base::FilePath& path);
 
  private:
-  friend class NativeFileSystemFileHandleImpl;
+  friend class FileSystemAccessFileHandleImpl;
 
-  ~NativeFileSystemManagerImpl() override;
+  ~FileSystemAccessManagerImpl() override;
   void SetDefaultPathAndShowPicker(
       const BindingContext& context,
       blink::mojom::ChooseFileSystemEntryType type,
@@ -316,18 +316,18 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       const BindingContext& binding_context,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessFileHandle>
           file_handle_receiver,
-      NativeFileSystemTransferTokenImpl* resolved_token);
+      FileSystemAccessTransferTokenImpl* resolved_token);
   void DidResolveTransferTokenForDirectoryHandle(
       const BindingContext& binding_context,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessDirectoryHandle>
           directory_handle_receiver,
-      NativeFileSystemTransferTokenImpl* resolved_token);
+      FileSystemAccessTransferTokenImpl* resolved_token);
   void DidResolveForSerializeHandle(
       SerializeHandleCallback callback,
-      NativeFileSystemTransferTokenImpl* resolved_token);
+      FileSystemAccessTransferTokenImpl* resolved_token);
 
   // Calls `token_resolved_callback` with a FileSystemAccessEntry object
-  // that's at the file path of the NativeFileSystemDragDropToken with token
+  // that's at the file path of the FileSystemAccessDragDropToken with token
   // value `token`. If no such token exists, calls
   // `failed_token_redemption_callback`.
   void ResolveDragDropToken(
@@ -339,7 +339,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
 
   // Calls `token_resolved_callback` with a FileSystemAccessEntry representing
   // the file/directory at `file_path`. Called by
-  // NativeFileSystemManager::ResolveDragDropToken after it looks up
+  // FileSystemAccessManager::ResolveDragDropToken after it looks up
   // whether the token's file path refers to a file or directory.
   void ResolveDragDropTokenWithFileType(
       const BindingContext& binding_context,
@@ -355,7 +355,7 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
   base::SequenceBound<storage::FileSystemOperationRunner> operation_runner_;
   FileSystemAccessPermissionContext* permission_context_;
 
-  // All the mojo receivers for this NativeFileSystemManager itself. Keeps
+  // All the mojo receivers for this FileSystemAccessManager itself. Keeps
   // track of associated origin and other state as well to not have to rely on
   // the renderer passing that in, and to be able to do security checks around
   // transferability etc.
@@ -371,33 +371,33 @@ class CONTENT_EXPORT NativeFileSystemManagerImpl
       file_receivers_;
   mojo::UniqueReceiverSet<blink::mojom::FileSystemAccessDirectoryHandle>
       directory_receivers_;
-  base::flat_set<std::unique_ptr<NativeFileSystemFileWriterImpl>,
+  base::flat_set<std::unique_ptr<FileSystemAccessFileWriterImpl>,
                  base::UniquePtrComparator>
       writer_receivers_;
 
   bool off_the_record_;
 
-  // NativeFileSystemTransferTokenImpl owns a Transfer token receiver set and is
+  // FileSystemAccessTransferTokenImpl owns a Transfer token receiver set and is
   // removed from this map when all mojo connections are closed.
   std::map<base::UnguessableToken,
-           std::unique_ptr<NativeFileSystemTransferTokenImpl>>
+           std::unique_ptr<FileSystemAccessTransferTokenImpl>>
       transfer_tokens_;
 
-  // This map is used to associate NativeFileSystemDragDropTokenImpl instances
+  // This map is used to associate FileSystemAccessDragDropTokenImpl instances
   // with UnguessableTokens so that this class can find an associated
-  // NativeFileSystemDragDropTokenImpl for a
-  // mojo::PendingRemote<NativeFileSystemDragDropToken>.
+  // FileSystemAccessDragDropTokenImpl for a
+  // mojo::PendingRemote<FileSystemAccessDragDropToken>.
   std::map<base::UnguessableToken,
-           std::unique_ptr<NativeFileSystemDragDropTokenImpl>>
+           std::unique_ptr<FileSystemAccessDragDropTokenImpl>>
       drag_drop_tokens_;
 
   base::Optional<FileSystemChooser::ResultEntry>
       auto_file_picker_result_for_test_;
 
-  base::WeakPtrFactory<NativeFileSystemManagerImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(NativeFileSystemManagerImpl);
+  base::WeakPtrFactory<FileSystemAccessManagerImpl> weak_factory_{this};
+  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessManagerImpl);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_NATIVE_FILE_SYSTEM_NATIVE_FILE_SYSTEM_MANAGER_IMPL_H_
+#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_MANAGER_IMPL_H_

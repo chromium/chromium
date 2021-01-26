@@ -14,7 +14,7 @@
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/chromeos_buildflags.h"
-#include "content/browser/file_system_access/native_file_system_manager_impl.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "storage/browser/file_system/external_mount_points.h"
@@ -29,10 +29,10 @@ namespace content {
 namespace {
 
 // On Chrome OS paths that exist on an external mount point need to be treated
-// differently to make sure the native file system code accesses these paths via
+// differently to make sure the File System Access code accesses these paths via
 // the correct file system backend. This method checks if this is the case, and
-// updates `entry_path` to the path that should be used by the native file
-// system implementation.
+// updates `entry_path` to the path that should be used by the File System
+// Access implementation.
 content::FileSystemAccessEntryFactory::PathType MaybeRemapPath(
     base::FilePath* entry_path) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -51,7 +51,7 @@ content::FileSystemAccessEntryFactory::PathType MaybeRemapPath(
 
 blink::mojom::DragDataPtr DropDataToDragData(
     const DropData& drop_data,
-    NativeFileSystemManagerImpl* native_file_system_manager,
+    FileSystemAccessManagerImpl* file_system_access_manager,
     int child_id) {
   // These fields are currently unused when dragging into Blink.
   DCHECK(drop_data.download_metadata.empty());
@@ -86,9 +86,9 @@ blink::mojom::DragDataPtr DropDataToDragData(
     mojo::PendingRemote<blink::mojom::FileSystemAccessDragDropToken>
         pending_token;
     base::FilePath entry_path = file.path;
-    NativeFileSystemManagerImpl::PathType path_type =
+    FileSystemAccessManagerImpl::PathType path_type =
         MaybeRemapPath(&entry_path);
-    native_file_system_manager->CreateNativeFileSystemDragDropToken(
+    file_system_access_manager->CreateFileSystemAccessDragDropToken(
         path_type, entry_path, child_id,
         pending_token.InitWithNewPipeAndPassReceiver());
     item->file_system_access_token = std::move(pending_token);

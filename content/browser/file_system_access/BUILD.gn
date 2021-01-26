@@ -5,5 +5,5 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
-  sources = [ "native_file_system.proto" ]
+  sources = [ "file_system_access.proto" ]
 }

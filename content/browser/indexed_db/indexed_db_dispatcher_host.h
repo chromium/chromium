@@ -102,7 +102,7 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
   friend class IndexedDBDispatcherHostTest;
 
   storage::mojom::BlobStorageContext* mojo_blob_storage_context();
-  storage::mojom::FileSystemAccessContext* native_file_system_context();
+  storage::mojom::FileSystemAccessContext* file_system_access_context();
 
   // blink::mojom::IDBFactory implementation:
   void GetDatabaseInfo(mojo::PendingAssociatedRemote<blink::mojom::IDBCallbacks>

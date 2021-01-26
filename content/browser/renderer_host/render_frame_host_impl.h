@@ -1365,7 +1365,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void GetFontAccessManager(
       mojo::PendingReceiver<blink::mojom::FontAccessManager> receiver);
 
-  void GetNativeFileSystemManager(
+  void GetFileSystemAccessManager(
       mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver);
 
 #if !defined(OS_ANDROID)

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/native_file_system_drag_drop_token_impl.h"
+#include "content/browser/file_system_access/file_system_access_drag_drop_token_impl.h"
 
 #include <utility>
 
@@ -13,9 +13,9 @@
 
 namespace content {
 
-NativeFileSystemDragDropTokenImpl::NativeFileSystemDragDropTokenImpl(
-    NativeFileSystemManagerImpl* manager,
-    NativeFileSystemManagerImpl::PathType path_type,
+FileSystemAccessDragDropTokenImpl::FileSystemAccessDragDropTokenImpl(
+    FileSystemAccessManagerImpl* manager,
+    FileSystemAccessManagerImpl::PathType path_type,
     const base::FilePath& file_path,
     int renderer_process_id,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessDragDropToken> receiver)
@@ -27,27 +27,27 @@ NativeFileSystemDragDropTokenImpl::NativeFileSystemDragDropTokenImpl(
   DCHECK(manager_);
 
   receivers_.set_disconnect_handler(
-      base::BindRepeating(&NativeFileSystemDragDropTokenImpl::OnMojoDisconnect,
+      base::BindRepeating(&FileSystemAccessDragDropTokenImpl::OnMojoDisconnect,
                           base::Unretained(this)));
 
   receivers_.Add(this, std::move(receiver));
 }
 
-NativeFileSystemDragDropTokenImpl::~NativeFileSystemDragDropTokenImpl() =
+FileSystemAccessDragDropTokenImpl::~FileSystemAccessDragDropTokenImpl() =
     default;
 
-void NativeFileSystemDragDropTokenImpl::GetInternalId(
+void FileSystemAccessDragDropTokenImpl::GetInternalId(
     GetInternalIdCallback callback) {
   std::move(callback).Run(token_);
 }
 
-void NativeFileSystemDragDropTokenImpl::Clone(
+void FileSystemAccessDragDropTokenImpl::Clone(
     mojo::PendingReceiver<blink::mojom::FileSystemAccessDragDropToken>
         clone_receiver) {
   receivers_.Add(this, std::move(clone_receiver));
 }
 
-void NativeFileSystemDragDropTokenImpl::OnMojoDisconnect() {
+void FileSystemAccessDragDropTokenImpl::OnMojoDisconnect() {
   if (receivers_.empty()) {
     manager_->RemoveDragDropToken(token_);
   }

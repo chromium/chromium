@@ -12,12 +12,12 @@
 #include "third_party/blink/public/mojom/page/drag.mojom-forward.h"
 
 namespace content {
-class NativeFileSystemManagerImpl;
+class FileSystemAccessManagerImpl;
 
 CONTENT_EXPORT
 blink::mojom::DragDataPtr DropDataToDragData(
     const DropData& drop_data,
-    NativeFileSystemManagerImpl* native_file_system_manager,
+    FileSystemAccessManagerImpl* file_system_access_manager,
     int child_id);
 
 CONTENT_EXPORT

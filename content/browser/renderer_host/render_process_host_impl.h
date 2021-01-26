@@ -549,9 +549,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::FileSystemManager> receiver) override;
 
-  // Binds |receiver| to the NativeFileSystemManager instance owned by the
+  // Binds |receiver| to the FileSystemAccessManager instance owned by the
   // render process host, and is used by workers via BrowserInterfaceBroker.
-  void BindNativeFileSystemManager(
+  void BindFileSystemAccessManager(
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver)
       override;

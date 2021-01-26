@@ -70,7 +70,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
       mojo::PendingRemote<storage::mojom::BlobStorageContext>
           blob_storage_context,
       mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
-          native_file_system_context,
+          file_system_access_context,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner> custom_task_runner);
 
@@ -188,8 +188,8 @@ class CONTENT_EXPORT IndexedDBContextImpl
   storage::mojom::BlobStorageContext* blob_storage_context() const {
     return blob_storage_context_ ? blob_storage_context_.get() : nullptr;
   }
-  storage::mojom::FileSystemAccessContext* native_file_system_context() const {
-    return native_file_system_context_ ? native_file_system_context_.get()
+  storage::mojom::FileSystemAccessContext* file_system_access_context() const {
+    return file_system_access_context_ ? file_system_access_context_.get()
                                        : nullptr;
   }
 
@@ -238,7 +238,7 @@ class CONTENT_EXPORT IndexedDBContextImpl
   // Bound and accessed on the |idb_task_runner_|.
   mojo::Remote<storage::mojom::BlobStorageContext> blob_storage_context_;
   mojo::Remote<storage::mojom::FileSystemAccessContext>
-      native_file_system_context_;
+      file_system_access_context_;
   std::unique_ptr<IndexedDBFactoryImpl> indexeddb_factory_;
 
   // If |data_path_| is empty then this is an incognito session and the backing

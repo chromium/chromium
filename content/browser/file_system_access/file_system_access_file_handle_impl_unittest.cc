@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/native_file_system_file_handle_impl.h"
+#include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
 
 #include <limits>
 #include <memory>
@@ -33,9 +33,9 @@ namespace content {
 using blink::mojom::PermissionStatus;
 using storage::FileSystemURL;
 
-class NativeFileSystemFileHandleImplTest : public testing::Test {
+class FileSystemAccessFileHandleImplTest : public testing::Test {
  public:
-  NativeFileSystemFileHandleImplTest()
+  FileSystemAccessFileHandleImplTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   void SetUp() override {
@@ -56,17 +56,17 @@ class NativeFileSystemFileHandleImplTest : public testing::Test {
     chrome_blob_context_->InitializeOnIOThread(base::FilePath(),
                                                base::FilePath(), nullptr);
 
-    manager_ = base::MakeRefCounted<NativeFileSystemManagerImpl>(
+    manager_ = base::MakeRefCounted<FileSystemAccessManagerImpl>(
         file_system_context_, chrome_blob_context_,
         /*permission_context=*/nullptr,
         /*off_the_record=*/false);
 
-    handle_ = std::make_unique<NativeFileSystemFileHandleImpl>(
+    handle_ = std::make_unique<FileSystemAccessFileHandleImpl>(
         manager_.get(),
-        NativeFileSystemManagerImpl::BindingContext(
+        FileSystemAccessManagerImpl::BindingContext(
             test_src_origin_, test_src_url_, /*process_id=*/1),
         test_file_url_,
-        NativeFileSystemManagerImpl::SharedHandleState(
+        FileSystemAccessManagerImpl::SharedHandleState(
             allow_grant_, allow_grant_, /*file_system=*/{}));
   }
 
@@ -101,7 +101,7 @@ class NativeFileSystemFileHandleImplTest : public testing::Test {
   base::ScopedTempDir dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
-  scoped_refptr<NativeFileSystemManagerImpl> manager_;
+  scoped_refptr<FileSystemAccessManagerImpl> manager_;
 
   FileSystemURL test_file_url_;
 
@@ -109,10 +109,10 @@ class NativeFileSystemFileHandleImplTest : public testing::Test {
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
           base::FilePath());
-  std::unique_ptr<NativeFileSystemFileHandleImpl> handle_;
+  std::unique_ptr<FileSystemAccessFileHandleImpl> handle_;
 };
 
-TEST_F(NativeFileSystemFileHandleImplTest, CreateFileWriterOverLimitNotOK) {
+TEST_F(FileSystemAccessFileHandleImplTest, CreateFileWriterOverLimitNotOK) {
   int max_files = 5;
   handle_->set_max_swap_files_for_testing(max_files);
 

@@ -23,7 +23,7 @@ class CONTENT_EXPORT IndexedDBControlWrapper
       mojo::PendingRemote<storage::mojom::BlobStorageContext>
           blob_storage_context,
       mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
-          native_file_system_context,
+          file_system_access_context,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       scoped_refptr<base::SequencedTaskRunner> custom_task_runner);
   ~IndexedDBControlWrapper() override;

@@ -6,7 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "content/browser/file_system_access/native_file_system_manager_impl.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
@@ -20,10 +20,10 @@
 
 namespace content {
 
-// End-to-end tests for Native File System drag and drop, or more specifically,
+// End-to-end tests for File System Access drag and drop, or more specifically,
 // DataTransferItem's getAsFileSystemHandle method.
 
-class NativeFileSystemDragDropBrowserTest : public ContentBrowserTest {
+class FileSystemAccessDragDropBrowserTest : public ContentBrowserTest {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -69,7 +69,7 @@ class NativeFileSystemDragDropBrowserTest : public ContentBrowserTest {
   base::ScopedTempDir temp_dir_;
 };
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemDragDropBrowserTest, DropFile) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessDragDropBrowserTest, DropFile) {
   // Get the RenderWidgetHostImpl for the main (and only) frame.
   RenderWidgetHostImpl* render_widget_host_impl =
       GetRenderWidgetHostImplForMainFrame();
@@ -81,7 +81,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemDragDropBrowserTest, DropFile) {
 
   // Prevent defaults of drag operations and create a promise that will resolve
   // on call to window.ondrop with the text from a dropped file. This text is
-  // retrieved using the NativeFileSystem getAsFileSystemHandle function. The
+  // retrieved using the FileSystemAccess getAsFileSystemHandle function. The
   // promise will reject if zero/multiples items are dropped or if the item is
   // not a file.
   ASSERT_TRUE(
@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemDragDropBrowserTest, DropFile) {
   EXPECT_EQ(test_contents, EvalJs(shell(), "p"));
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemDragDropBrowserTest, DropDirectory) {
+IN_PROC_BROWSER_TEST_F(FileSystemAccessDragDropBrowserTest, DropDirectory) {
   // Get the RenderWidgetHostImpl for the main (and only) frame.
   RenderWidgetHostImpl* render_widget_host_impl =
       GetRenderWidgetHostImplForMainFrame();

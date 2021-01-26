@@ -57,7 +57,7 @@ class IndexedDBQuotaClientTest : public testing::Test {
         temp_dir_.GetPath(), quota_manager->proxy(),
         base::DefaultClock::GetInstance(),
         /*blob_storage_context=*/mojo::NullRemote(),
-        /*native_file_system_context=*/mojo::NullRemote(),
+        /*file_system_access_context=*/mojo::NullRemote(),
         base::SequencedTaskRunnerHandle::Get(),
         base::SequencedTaskRunnerHandle::Get());
     base::RunLoop().RunUntilIdle();

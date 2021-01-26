@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_HANDLE_BASE_H_
-#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_HANDLE_BASE_H_
+#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_HANDLE_BASE_H_
+#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_HANDLE_BASE_H_
 
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequence_bound.h"
-#include "content/browser/file_system_access/native_file_system_manager_impl.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -29,23 +29,23 @@ namespace content {
 // Base class for File and Directory handle implementations. Holds data that is
 // common to both and (will) deal with functionality that is common as well,
 // such as permission requests. Instances of this class should be owned by the
-// NativeFileSystemManagerImpl instance passed in to the constructor.
+// FileSystemAccessManagerImpl instance passed in to the constructor.
 //
 // This class is not thread safe, all methods must be called from the same
 // sequence. That sequence also has to be the same sequence on which the
 // FileSystemAccessPermissionContext expects to be interacted with, which
 // is the UI thread.
-class CONTENT_EXPORT NativeFileSystemHandleBase : public WebContentsObserver {
+class CONTENT_EXPORT FileSystemAccessHandleBase : public WebContentsObserver {
  public:
-  using BindingContext = NativeFileSystemManagerImpl::BindingContext;
-  using SharedHandleState = NativeFileSystemManagerImpl::SharedHandleState;
+  using BindingContext = FileSystemAccessManagerImpl::BindingContext;
+  using SharedHandleState = FileSystemAccessManagerImpl::SharedHandleState;
   using PermissionStatus = blink::mojom::PermissionStatus;
 
-  NativeFileSystemHandleBase(NativeFileSystemManagerImpl* manager,
+  FileSystemAccessHandleBase(FileSystemAccessManagerImpl* manager,
                              const BindingContext& context,
                              const storage::FileSystemURL& url,
                              const SharedHandleState& handle_state);
-  ~NativeFileSystemHandleBase() override;
+  ~FileSystemAccessHandleBase() override;
 
   const storage::FileSystemURL& url() const { return url_; }
   const SharedHandleState& handle_state() const { return handle_state_; }
@@ -80,7 +80,7 @@ class CONTENT_EXPORT NativeFileSystemHandleBase : public WebContentsObserver {
       CallbackArgType callback_arg);
 
  protected:
-  NativeFileSystemManagerImpl* manager() { return manager_; }
+  FileSystemAccessManagerImpl* manager() { return manager_; }
   storage::FileSystemContext* file_system_context() {
     return manager()->context();
   }
@@ -89,7 +89,7 @@ class CONTENT_EXPORT NativeFileSystemHandleBase : public WebContentsObserver {
     return static_cast<WebContentsImpl*>(WebContentsObserver::web_contents());
   }
 
-  virtual base::WeakPtr<NativeFileSystemHandleBase> AsWeakPtr() = 0;
+  virtual base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() = 0;
 
   // Invokes |method| on the correct sequence on this handle's
   // FileSystemOperationRunner, passing |args| and a callback to the method. The
@@ -194,17 +194,17 @@ class CONTENT_EXPORT NativeFileSystemHandleBase : public WebContentsObserver {
            url_.type() != storage::kFileSystemTypeTest;
   }
 
-  // The NativeFileSystemManagerImpl that owns this instance.
-  NativeFileSystemManagerImpl* const manager_;
+  // The FileSystemAccessManagerImpl that owns this instance.
+  FileSystemAccessManagerImpl* const manager_;
   const BindingContext context_;
   const storage::FileSystemURL url_;
   const SharedHandleState handle_state_;
 
-  DISALLOW_COPY_AND_ASSIGN(NativeFileSystemHandleBase);
+  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessHandleBase);
 };
 
 template <typename CallbackArgType>
-void NativeFileSystemHandleBase::RunWithWritePermission(
+void FileSystemAccessHandleBase::RunWithWritePermission(
     base::OnceCallback<void(CallbackArgType)> callback,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                             CallbackArgType)> no_permission_callback,
@@ -236,4 +236,4 @@ void NativeFileSystemHandleBase::RunWithWritePermission(
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_HANDLE_BASE_H_
+#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_HANDLE_BASE_H_

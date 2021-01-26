@@ -9,8 +9,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/services/quarantine/test_support.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_chooser_test_helpers.h"
-#include "content/browser/file_system_access/native_file_system_manager_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
@@ -28,8 +28,8 @@
 namespace content {
 
 // This browser test implements end-to-end tests for
-// NativeFileSystemFileWriterImpl.
-class NativeFileSystemFileWriterBrowserTest : public ContentBrowserTest {
+// FileSystemAccessFileWriterImpl.
+class FileSystemAccessFileWriterBrowserTest : public ContentBrowserTest {
  public:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -105,7 +105,7 @@ class NativeFileSystemFileWriterBrowserTest : public ContentBrowserTest {
   GURL test_url_;
 };
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemFileWriterBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        ContentsWrittenToSwapFileFirst) {
   base::FilePath test_file, swap_file;
   std::tie(test_file, swap_file) = CreateTestFilesAndEntry("");
@@ -146,7 +146,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemFileWriterBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemFileWriterBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        KeepExistingDataHasPreviousContent) {
   const std::string initial_contents = "fooks";
   const std::string expected_contents = "barks";
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemFileWriterBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemFileWriterBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        CreateWriterNoKeepExistingWithEmptyFile) {
   const std::string initial_contents = "very long string";
   const std::string expected_contents = "bar";
@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemFileWriterBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemFileWriterBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        EachWriterHasUniqueSwapFile) {
   base::FilePath test_file, base_swap_file;
   std::tie(test_file, base_swap_file) = CreateTestFilesAndEntry("");
@@ -243,7 +243,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemFileWriterBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(NativeFileSystemFileWriterBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        EachWriterHasUniqueSwapFileRacy) {
   base::FilePath test_file, base_swap_file;
   std::tie(test_file, base_swap_file) = CreateTestFilesAndEntry("");
@@ -282,7 +282,7 @@ IN_PROC_BROWSER_TEST_F(NativeFileSystemFileWriterBrowserTest,
 #else
 #define MAYBE_FileAnnotated DISABLED_FileAnnotated
 #endif  // defined(OS_WIN)
-IN_PROC_BROWSER_TEST_F(NativeFileSystemFileWriterBrowserTest,
+IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        MAYBE_FileAnnotated) {
   base::FilePath test_file, swap_file, lib_file;
 

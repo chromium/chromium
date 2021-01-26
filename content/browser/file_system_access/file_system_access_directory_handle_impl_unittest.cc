@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/native_file_system_directory_handle_impl.h"
+#include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 
 #include <iterator>
 #include <string>
@@ -25,9 +25,9 @@ namespace content {
 
 using storage::FileSystemURL;
 
-class NativeFileSystemDirectoryHandleImplTest : public testing::Test {
+class FileSystemAccessDirectoryHandleImplTest : public testing::Test {
  public:
-  NativeFileSystemDirectoryHandleImplTest()
+  FileSystemAccessDirectoryHandleImplTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   void SetUp() override {
@@ -40,7 +40,7 @@ class NativeFileSystemDirectoryHandleImplTest : public testing::Test {
     chrome_blob_context_->InitializeOnIOThread(base::FilePath(),
                                                base::FilePath(), nullptr);
 
-    manager_ = base::MakeRefCounted<NativeFileSystemManagerImpl>(
+    manager_ = base::MakeRefCounted<FileSystemAccessManagerImpl>(
         file_system_context_, chrome_blob_context_,
         /*permission_context=*/nullptr,
         /*off_the_record=*/false);
@@ -48,19 +48,19 @@ class NativeFileSystemDirectoryHandleImplTest : public testing::Test {
     auto url_and_fs = manager_->CreateFileSystemURLFromPath(
         test_src_origin_, FileSystemAccessEntryFactory::PathType::kLocal,
         dir_.GetPath());
-    handle_ = std::make_unique<NativeFileSystemDirectoryHandleImpl>(
+    handle_ = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
         manager_.get(),
-        NativeFileSystemManagerImpl::BindingContext(
+        FileSystemAccessManagerImpl::BindingContext(
             test_src_origin_, test_src_url_, /*worker_process_id=*/1),
         url_and_fs.url,
-        NativeFileSystemManagerImpl::SharedHandleState(
+        FileSystemAccessManagerImpl::SharedHandleState(
             allow_grant_, allow_grant_, url_and_fs.file_system));
-    denied_handle_ = std::make_unique<NativeFileSystemDirectoryHandleImpl>(
+    denied_handle_ = std::make_unique<FileSystemAccessDirectoryHandleImpl>(
         manager_.get(),
-        NativeFileSystemManagerImpl::BindingContext(
+        FileSystemAccessManagerImpl::BindingContext(
             test_src_origin_, test_src_url_, /*worker_process_id=*/1),
         url_and_fs.url,
-        NativeFileSystemManagerImpl::SharedHandleState(
+        FileSystemAccessManagerImpl::SharedHandleState(
             deny_grant_, deny_grant_, std::move(url_and_fs.file_system)));
   }
 
@@ -75,7 +75,7 @@ class NativeFileSystemDirectoryHandleImplTest : public testing::Test {
   base::ScopedTempDir dir_;
   scoped_refptr<storage::FileSystemContext> file_system_context_;
   scoped_refptr<ChromeBlobStorageContext> chrome_blob_context_;
-  scoped_refptr<NativeFileSystemManagerImpl> manager_;
+  scoped_refptr<FileSystemAccessManagerImpl> manager_;
 
   scoped_refptr<FixedFileSystemAccessPermissionGrant> allow_grant_ =
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
@@ -85,11 +85,11 @@ class NativeFileSystemDirectoryHandleImplTest : public testing::Test {
       base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
           FixedFileSystemAccessPermissionGrant::PermissionStatus::DENIED,
           base::FilePath());
-  std::unique_ptr<NativeFileSystemDirectoryHandleImpl> handle_;
-  std::unique_ptr<NativeFileSystemDirectoryHandleImpl> denied_handle_;
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> handle_;
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> denied_handle_;
 };
 
-TEST_F(NativeFileSystemDirectoryHandleImplTest, IsSafePathComponent) {
+TEST_F(FileSystemAccessDirectoryHandleImplTest, IsSafePathComponent) {
   constexpr const char* kSafePathComponents[] = {
       "a", "a.txt", "a b.txt", "My Computer", ".a", "lnk.zip", "lnk", "a.local",
   };
@@ -125,21 +125,21 @@ TEST_F(NativeFileSystemDirectoryHandleImplTest, IsSafePathComponent) {
 
   for (const char* component : kSafePathComponents) {
     EXPECT_TRUE(
-        NativeFileSystemDirectoryHandleImpl::IsSafePathComponent(component))
+        FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(component))
         << component;
   }
   for (const char* component : kUnsafePathComponents) {
     EXPECT_FALSE(
-        NativeFileSystemDirectoryHandleImpl::IsSafePathComponent(component))
+        FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(component))
         << component;
   }
 }
 
 namespace {
-class TestNativeFileSystemDirectoryEntriesListener
+class TestFileSystemAccessDirectoryEntriesListener
     : public blink::mojom::FileSystemAccessDirectoryEntriesListener {
  public:
-  TestNativeFileSystemDirectoryEntriesListener(
+  TestFileSystemAccessDirectoryEntriesListener(
       std::vector<blink::mojom::FileSystemAccessEntryPtr>* entries,
       blink::mojom::FileSystemAccessErrorPtr* final_result,
       base::OnceClosure done)
@@ -168,7 +168,7 @@ class TestNativeFileSystemDirectoryEntriesListener
 };
 }  // namespace
 
-TEST_F(NativeFileSystemDirectoryHandleImplTest, GetEntries) {
+TEST_F(FileSystemAccessDirectoryHandleImplTest, GetEntries) {
   constexpr const char* kSafeNames[] = {"a", "a.txt", "My Computer", "lnk.txt",
                                         "a.local"};
   constexpr const char* kUnsafeNames[] = {
@@ -198,7 +198,7 @@ TEST_F(NativeFileSystemDirectoryHandleImplTest, GetEntries) {
   mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryEntriesListener>
       listener;
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<TestNativeFileSystemDirectoryEntriesListener>(
+      std::make_unique<TestFileSystemAccessDirectoryEntriesListener>(
           &entries, &result, loop.QuitClosure()),
       listener.InitWithNewPipeAndPassReceiver());
   handle_->GetEntries(std::move(listener));
@@ -212,7 +212,7 @@ TEST_F(NativeFileSystemDirectoryHandleImplTest, GetEntries) {
   EXPECT_THAT(names, testing::UnorderedElementsAreArray(kSafeNames));
 }
 
-TEST_F(NativeFileSystemDirectoryHandleImplTest, GetFile_NoReadAccess) {
+TEST_F(FileSystemAccessDirectoryHandleImplTest, GetFile_NoReadAccess) {
   ASSERT_TRUE(base::WriteFile(dir_.GetPath().AppendASCII("filename"), "data"));
 
   base::RunLoop loop;
@@ -230,7 +230,7 @@ TEST_F(NativeFileSystemDirectoryHandleImplTest, GetFile_NoReadAccess) {
   loop.Run();
 }
 
-TEST_F(NativeFileSystemDirectoryHandleImplTest, GetDirectory_NoReadAccess) {
+TEST_F(FileSystemAccessDirectoryHandleImplTest, GetDirectory_NoReadAccess) {
   ASSERT_TRUE(base::CreateDirectory(dir_.GetPath().AppendASCII("dirname")));
 
   base::RunLoop loop;
@@ -248,7 +248,7 @@ TEST_F(NativeFileSystemDirectoryHandleImplTest, GetDirectory_NoReadAccess) {
   loop.Run();
 }
 
-TEST_F(NativeFileSystemDirectoryHandleImplTest, GetEntries_NoReadAccess) {
+TEST_F(FileSystemAccessDirectoryHandleImplTest, GetEntries_NoReadAccess) {
   ASSERT_TRUE(base::WriteFile(dir_.GetPath().AppendASCII("filename"), "data"));
 
   std::vector<blink::mojom::FileSystemAccessEntryPtr> entries;
@@ -257,7 +257,7 @@ TEST_F(NativeFileSystemDirectoryHandleImplTest, GetEntries_NoReadAccess) {
   mojo::PendingRemote<blink::mojom::FileSystemAccessDirectoryEntriesListener>
       listener;
   mojo::MakeSelfOwnedReceiver(
-      std::make_unique<TestNativeFileSystemDirectoryEntriesListener>(
+      std::make_unique<TestFileSystemAccessDirectoryEntriesListener>(
           &entries, &result, loop.QuitClosure()),
       listener.InitWithNewPipeAndPassReceiver());
   denied_handle_->GetEntries(std::move(listener));

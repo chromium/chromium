@@ -585,11 +585,15 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
   map->Add<blink::mojom::FeatureObserver>(base::BindRepeating(
       &RenderFrameHostImpl::GetFeatureObserver, base::Unretained(host)));
 
-  map->Add<blink::mojom::FontAccessManager>(base::BindRepeating(
-      &RenderFrameHostImpl::GetFontAccessManager, base::Unretained(host)));
+  map->Add<blink::mojom::FileSystemAccessManager>(
+      base::BindRepeating(&RenderFrameHostImpl::GetFileSystemAccessManager,
+                          base::Unretained(host)));
 
   map->Add<blink::mojom::FileSystemManager>(base::BindRepeating(
       &RenderFrameHostImpl::GetFileSystemManager, base::Unretained(host)));
+
+  map->Add<blink::mojom::FontAccessManager>(base::BindRepeating(
+      &RenderFrameHostImpl::GetFontAccessManager, base::Unretained(host)));
 
   map->Add<device::mojom::GamepadHapticsManager>(
       base::BindRepeating(&device::GamepadHapticsManager::Create));
@@ -599,10 +603,6 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
 
   map->Add<blink::mojom::IdleManager>(base::BindRepeating(
       &RenderFrameHostImpl::BindIdleManager, base::Unretained(host)));
-
-  map->Add<blink::mojom::FileSystemAccessManager>(
-      base::BindRepeating(&RenderFrameHostImpl::GetNativeFileSystemManager,
-                          base::Unretained(host)));
 
   // BrowserMainLoop::GetInstance() may be null on unit tests.
   if (BrowserMainLoop::GetInstance()) {
@@ -1005,7 +1005,7 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::FileSystemManager>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindFileSystemManager, host));
   map->Add<blink::mojom::FileSystemAccessManager>(BindWorkerReceiverForOrigin(
-      &RenderProcessHostImpl::BindNativeFileSystemManager, host));
+      &RenderProcessHostImpl::BindFileSystemAccessManager, host));
   map->Add<blink::mojom::NativeIOHost>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindNativeIOHost, host));
   map->Add<blink::mojom::NotificationService>(BindWorkerReceiverForOrigin(
@@ -1083,7 +1083,7 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::PermissionService>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreatePermissionService, host));
   map->Add<blink::mojom::FileSystemAccessManager>(BindWorkerReceiverForOrigin(
-      &RenderProcessHostImpl::BindNativeFileSystemManager, host));
+      &RenderProcessHostImpl::BindFileSystemAccessManager, host));
   map->Add<blink::mojom::NativeIOHost>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindNativeIOHost, host));
   map->Add<blink::mojom::NotificationService>(BindWorkerReceiverForOrigin(
@@ -1187,7 +1187,7 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePermissionService, host));
   map->Add<blink::mojom::FileSystemAccessManager>(
       BindServiceWorkerReceiverForOrigin(
-          &RenderProcessHostImpl::BindNativeFileSystemManager, host));
+          &RenderProcessHostImpl::BindFileSystemAccessManager, host));
   map->Add<blink::mojom::NativeIOHost>(BindServiceWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindNativeIOHost, host));
   map->Add<blink::mojom::NotificationService>(

@@ -8,7 +8,7 @@ option optimize_for = LITE_RUNTIME;
 
 package content;
 
-// Used to serialize a Native File System handle representing a file or
+// Used to serialize a File System Access handle representing a file or
 // directory.
 //
 // Paths are stored as a serialized base::FilePath. I.e. on platforms where
@@ -19,8 +19,8 @@ package content;
 // or computers from where they were written, but since the path references
 // something on the local device that likely doesn't exist on a different
 // computer anyway this should be no problem in practice.
-message NativeFileData {
-  // The root path of a Native File System handle is the path that the user
+message LocalFileData {
+  // The root path of a File System Access handle is the path that the user
   // selected in a file or directory picker. All permissions related to the
   // handle are based on this path.
   required bytes root_path = 1;
@@ -35,10 +35,10 @@ message NativeFileData {
   required bytes relative_path = 2;
 }
 
-// Used to serialize a Native File System handle representing a file or
+// Used to serialize a File System Access handle representing a file or
 // directory in the origin scoped sandboxed file system.
 //
-// The same comment as for the above NativeFileData messages applies here as
+// The same comment as for the above LocalFileData messages applies here as
 // well regarding serialization format of the paths themselves.
 message SandboxedFileData {
   // The path to the file or directory relative to the root of the origin's
@@ -46,9 +46,9 @@ message SandboxedFileData {
   required bytes virtual_path = 1;
 }
 
-// Used to serialize any Native File System handle, for example when a handle is
+// Used to serialize any File System Access handle, for example when a handle is
 // stored in IndexedDB.
-message NativeFileSystemHandleData {
+message FileSystemAccessHandleData {
   // Is this handle representing a file or a directory?
   enum HandleType {
     kFile = 0;
@@ -61,8 +61,8 @@ message NativeFileSystemHandleData {
   oneof data {
     SandboxedFileData sandboxed = 2;
     // Paths reference the devices local file system.
-    NativeFileData local = 3;
+    LocalFileData local = 3;
     // Paths are virtual paths in an external file system.
-    NativeFileData external = 4;
+    LocalFileData external = 4;
   }
 }

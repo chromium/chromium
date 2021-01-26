@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/native_file_system_handle_base.h"
+#include "content/browser/file_system_access/file_system_access_handle_base.h"
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/bind.h"
@@ -22,24 +22,24 @@ using storage::FileSystemURL;
 using UserActivationState =
     FileSystemAccessPermissionGrant::UserActivationState;
 
-class TestNativeFileSystemHandle : public NativeFileSystemHandleBase {
+class TestFileSystemAccessHandle : public FileSystemAccessHandleBase {
  public:
-  TestNativeFileSystemHandle(NativeFileSystemManagerImpl* manager,
+  TestFileSystemAccessHandle(FileSystemAccessManagerImpl* manager,
                              const BindingContext& context,
                              const storage::FileSystemURL& url,
                              const SharedHandleState& handle_state)
-      : NativeFileSystemHandleBase(manager, context, url, handle_state) {}
+      : FileSystemAccessHandleBase(manager, context, url, handle_state) {}
 
  private:
-  base::WeakPtr<NativeFileSystemHandleBase> AsWeakPtr() override {
+  base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override {
     return weak_factory_.GetWeakPtr();
   }
-  base::WeakPtrFactory<TestNativeFileSystemHandle> weak_factory_{this};
+  base::WeakPtrFactory<TestFileSystemAccessHandle> weak_factory_{this};
 };
 
-class NativeFileSystemHandleBaseTest : public testing::Test {
+class FileSystemAccessHandleBaseTest : public testing::Test {
  public:
-  NativeFileSystemHandleBaseTest()
+  FileSystemAccessHandleBaseTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
   void SetUp() override {
@@ -51,7 +51,7 @@ class NativeFileSystemHandleBaseTest : public testing::Test {
     chrome_blob_context_->InitializeOnIOThread(base::FilePath(),
                                                base::FilePath(), nullptr);
 
-    manager_ = base::MakeRefCounted<NativeFileSystemManagerImpl>(
+    manager_ = base::MakeRefCounted<FileSystemAccessManagerImpl>(
         file_system_context_, chrome_blob_context_,
         /*permission_context=*/nullptr,
         /*off_the_record=*/false);
@@ -73,20 +73,20 @@ class NativeFileSystemHandleBaseTest : public testing::Test {
       base::MakeRefCounted<
           testing::StrictMock<MockFileSystemAccessPermissionGrant>>();
 
-  scoped_refptr<NativeFileSystemManagerImpl> manager_;
+  scoped_refptr<FileSystemAccessManagerImpl> manager_;
 
-  NativeFileSystemManagerImpl::SharedHandleState handle_state_ = {read_grant_,
+  FileSystemAccessManagerImpl::SharedHandleState handle_state_ = {read_grant_,
                                                                   write_grant_,
                                                                   {}};
 };
 
-TEST_F(NativeFileSystemHandleBaseTest, GetReadPermissionStatus) {
+TEST_F(FileSystemAccessHandleBaseTest, GetReadPermissionStatus) {
   auto url =
       FileSystemURL::CreateForTest(kTestOrigin, storage::kFileSystemTypeTest,
                                    base::FilePath::FromUTF8Unsafe("/test"));
-  TestNativeFileSystemHandle handle(
+  TestFileSystemAccessHandle handle(
       manager_.get(),
-      NativeFileSystemManagerImpl::BindingContext(kTestOrigin, kTestURL,
+      FileSystemAccessManagerImpl::BindingContext(kTestOrigin, kTestURL,
                                                   /*worker_process_id=*/1),
       url, handle_state_);
 
@@ -99,14 +99,14 @@ TEST_F(NativeFileSystemHandleBaseTest, GetReadPermissionStatus) {
   EXPECT_EQ(PermissionStatus::GRANTED, handle.GetReadPermissionStatus());
 }
 
-TEST_F(NativeFileSystemHandleBaseTest,
+TEST_F(FileSystemAccessHandleBaseTest,
        GetWritePermissionStatus_ReadStatusNotGranted) {
   auto url =
       FileSystemURL::CreateForTest(kTestOrigin, storage::kFileSystemTypeTest,
                                    base::FilePath::FromUTF8Unsafe("/test"));
-  TestNativeFileSystemHandle handle(
+  TestFileSystemAccessHandle handle(
       manager_.get(),
-      NativeFileSystemManagerImpl::BindingContext(kTestOrigin, kTestURL,
+      FileSystemAccessManagerImpl::BindingContext(kTestOrigin, kTestURL,
                                                   /*worker_process_id=*/1),
       url, handle_state_);
 
@@ -119,14 +119,14 @@ TEST_F(NativeFileSystemHandleBaseTest,
   EXPECT_EQ(PermissionStatus::DENIED, handle.GetWritePermissionStatus());
 }
 
-TEST_F(NativeFileSystemHandleBaseTest,
+TEST_F(FileSystemAccessHandleBaseTest,
        GetWritePermissionStatus_ReadStatusGranted) {
   auto url =
       FileSystemURL::CreateForTest(kTestOrigin, storage::kFileSystemTypeTest,
                                    base::FilePath::FromUTF8Unsafe("/test"));
-  TestNativeFileSystemHandle handle(
+  TestFileSystemAccessHandle handle(
       manager_.get(),
-      NativeFileSystemManagerImpl::BindingContext(kTestOrigin, kTestURL,
+      FileSystemAccessManagerImpl::BindingContext(kTestOrigin, kTestURL,
                                                   /*worker_process_id=*/1),
       url, handle_state_);
 
@@ -137,13 +137,13 @@ TEST_F(NativeFileSystemHandleBaseTest,
   EXPECT_EQ(PermissionStatus::ASK, handle.GetWritePermissionStatus());
 }
 
-TEST_F(NativeFileSystemHandleBaseTest, RequestWritePermission_AlreadyGranted) {
+TEST_F(FileSystemAccessHandleBaseTest, RequestWritePermission_AlreadyGranted) {
   auto url =
       FileSystemURL::CreateForTest(kTestOrigin, storage::kFileSystemTypeTest,
                                    base::FilePath::FromUTF8Unsafe("/test"));
-  TestNativeFileSystemHandle handle(
+  TestFileSystemAccessHandle handle(
       manager_.get(),
-      NativeFileSystemManagerImpl::BindingContext(kTestOrigin, kTestURL,
+      FileSystemAccessManagerImpl::BindingContext(kTestOrigin, kTestURL,
                                                   /*worker_process_id=*/1),
       url, handle_state_);
 
@@ -165,7 +165,7 @@ TEST_F(NativeFileSystemHandleBaseTest, RequestWritePermission_AlreadyGranted) {
   loop.Run();
 }
 
-TEST_F(NativeFileSystemHandleBaseTest, RequestWritePermission) {
+TEST_F(FileSystemAccessHandleBaseTest, RequestWritePermission) {
   const int kProcessId = 1;
   const int kFrameRoutingId = 2;
   const GlobalFrameRoutingId kFrameId(kProcessId, kFrameRoutingId);
@@ -173,8 +173,8 @@ TEST_F(NativeFileSystemHandleBaseTest, RequestWritePermission) {
   auto url =
       FileSystemURL::CreateForTest(kTestOrigin, storage::kFileSystemTypeTest,
                                    base::FilePath::FromUTF8Unsafe("/test"));
-  TestNativeFileSystemHandle handle(manager_.get(),
-                                    NativeFileSystemManagerImpl::BindingContext(
+  TestFileSystemAccessHandle handle(manager_.get(),
+                                    FileSystemAccessManagerImpl::BindingContext(
                                         kTestOrigin, kTestURL, kFrameId),
                                     url, handle_state_);
 

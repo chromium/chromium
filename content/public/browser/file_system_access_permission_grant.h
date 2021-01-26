@@ -17,7 +17,7 @@ namespace content {
 
 // A ref-counted permission grant. This is needed so the implementation of
 // this class can keep track of references to permissions, and clean up state
-// when no more references remain. Multiple NativeFileSystemHandle instances
+// when no more references remain. Multiple FileSystemAccessHandle instances
 // can share the same permission grant. For example a directory and all its
 // children will use the same grant.
 //

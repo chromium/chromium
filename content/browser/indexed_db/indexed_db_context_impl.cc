@@ -123,7 +123,7 @@ IndexedDBContextImpl::IndexedDBContextImpl(
     mojo::PendingRemote<storage::mojom::BlobStorageContext>
         blob_storage_context,
     mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
-        native_file_system_context,
+        file_system_access_context,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> custom_task_runner)
     : idb_task_runner_(
@@ -151,30 +151,30 @@ IndexedDBContextImpl::IndexedDBContextImpl(
 
   // This is safe because the IndexedDBContextImpl must be destructed on the
   // IDBTaskRunner, and this task will always happen before that.
-  if (blob_storage_context || native_file_system_context) {
+  if (blob_storage_context || file_system_access_context) {
     idb_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
             [](mojo::Remote<storage::mojom::BlobStorageContext>*
                    blob_storage_context,
                mojo::Remote<storage::mojom::FileSystemAccessContext>*
-                   native_file_system_context,
+                   file_system_access_context,
                mojo::PendingRemote<storage::mojom::BlobStorageContext>
                    pending_blob_storage_context,
                mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
-                   pending_native_file_system_context) {
+                   pending_file_system_access_context) {
               if (pending_blob_storage_context) {
                 blob_storage_context->Bind(
                     std::move(pending_blob_storage_context));
               }
-              if (pending_native_file_system_context) {
-                native_file_system_context->Bind(
-                    std::move(pending_native_file_system_context));
+              if (pending_file_system_access_context) {
+                file_system_access_context->Bind(
+                    std::move(pending_file_system_access_context));
               }
             },
-            &blob_storage_context_, &native_file_system_context_,
+            &blob_storage_context_, &file_system_access_context_,
             std::move(blob_storage_context),
-            std::move(native_file_system_context)));
+            std::move(file_system_access_context)));
   }
 }
 

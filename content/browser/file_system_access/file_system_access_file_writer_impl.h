@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_FILE_WRITER_IMPL_H_
-#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_FILE_WRITER_IMPL_H_
+#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_FILE_WRITER_IMPL_H_
+#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_FILE_WRITER_IMPL_H_
 
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/download/public/common/quarantine_connection.h"
 #include "components/download/quarantine/quarantine.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
-#include "content/browser/file_system_access/native_file_system_file_handle_impl.h"
-#include "content/browser/file_system_access/native_file_system_handle_base.h"
+#include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
+#include "content/browser/file_system_access/file_system_access_handle_base.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -23,14 +23,14 @@
 namespace content {
 
 // This is the browser side implementation of the
-// NativeFileSystemFileWriter mojom interface. Instances of this class are
-// owned by the NativeFileSystemManagerImpl instance passed in to the
+// FileSystemAccessFileWriter mojom interface. Instances of this class are
+// owned by the FileSystemAccessManagerImpl instance passed in to the
 // constructor.
 //
 // This class is not thread safe, all methods must be called from the same
 // sequence.
-class CONTENT_EXPORT NativeFileSystemFileWriterImpl
-    : public NativeFileSystemHandleBase,
+class CONTENT_EXPORT FileSystemAccessFileWriterImpl
+    : public FileSystemAccessHandleBase,
       public blink::mojom::FileSystemAccessFileWriter {
  public:
   // Creates a FileWriter that writes in a swap file URL and
@@ -39,10 +39,10 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
   // file, and is valid.
   // If no |quarantine_connection_callback| is passed in no quarantine is done,
   // other than setting source information directly if on windows.
-  // FileWriters should only be created via the NativeFileSystemManagerImpl.
-  NativeFileSystemFileWriterImpl(
-      NativeFileSystemManagerImpl* manager,
-      base::PassKey<NativeFileSystemManagerImpl> pass_key,
+  // FileWriters should only be created via the FileSystemAccessManagerImpl.
+  FileSystemAccessFileWriterImpl(
+      FileSystemAccessManagerImpl* manager,
+      base::PassKey<FileSystemAccessManagerImpl> pass_key,
       const BindingContext& context,
       const storage::FileSystemURL& url,
       const storage::FileSystemURL& swap_url,
@@ -51,10 +51,10 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
       bool has_transient_user_activation,
       bool auto_close,
       download::QuarantineConnectionCallback quarantine_connection_callback);
-  ~NativeFileSystemFileWriterImpl() override;
+  ~FileSystemAccessFileWriterImpl() override;
 
   const storage::FileSystemURL& swap_url() const { return swap_url_; }
-  const base::WeakPtr<NativeFileSystemFileWriterImpl> weak_ptr() const {
+  const base::WeakPtr<FileSystemAccessFileWriterImpl> weak_ptr() const {
     return weak_factory_.GetWeakPtr();
   }
 
@@ -149,13 +149,13 @@ class CONTENT_EXPORT NativeFileSystemFileWriterImpl
   // explicitly closed.
   bool auto_close_ = false;
 
-  base::WeakPtr<NativeFileSystemHandleBase> AsWeakPtr() override;
+  base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override;
 
-  base::WeakPtrFactory<NativeFileSystemFileWriterImpl> weak_factory_{this};
+  base::WeakPtrFactory<FileSystemAccessFileWriterImpl> weak_factory_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(NativeFileSystemFileWriterImpl);
+  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessFileWriterImpl);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_FILE_WRITER_IMPL_H_
+#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_FILE_WRITER_IMPL_H_

@@ -326,7 +326,7 @@ void TestRenderViewHost::TestStartDragging(const DropData& drop_data,
       static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition());
   GetWidget()->StartDragging(
       DropDataToDragData(drop_data,
-                         storage_partition->GetNativeFileSystemManager(),
+                         storage_partition->GetFileSystemAccessManager(),
                          GetProcess()->GetID()),
       blink::kDragOperationEvery, std::move(bitmap), gfx::Vector2d(),
       blink::mojom::DragEventSourceInfo::New());

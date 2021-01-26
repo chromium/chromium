@@ -75,7 +75,7 @@ class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
       storage::mojom::BlobStorageContext* blob_storage_context,
-      storage::mojom::FileSystemAccessContext* native_file_system_context,
+      storage::mojom::FileSystemAccessContext* file_system_access_context,
       std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       BlobFilesCleanedCallback blob_files_cleaned,
       ReportOutstandingBlobsCallback report_outstanding_blobs,
@@ -86,7 +86,7 @@ class TestableIndexedDBBackingStore : public IndexedDBBackingStore {
                               blob_path,
                               std::move(db),
                               blob_storage_context,
-                              native_file_system_context,
+                              file_system_access_context,
                               std::move(filesystem_proxy),
                               std::move(blob_files_cleaned),
                               std::move(report_outstanding_blobs),
@@ -124,12 +124,12 @@ class TestIDBFactory : public IndexedDBFactoryImpl {
   explicit TestIDBFactory(
       IndexedDBContextImpl* idb_context,
       storage::mojom::BlobStorageContext* blob_storage_context,
-      storage::mojom::FileSystemAccessContext* native_file_system_context)
+      storage::mojom::FileSystemAccessContext* file_system_access_context)
       : IndexedDBFactoryImpl(idb_context,
                              IndexedDBClassFactory::Get(),
                              base::DefaultClock::GetInstance()),
         blob_storage_context_(blob_storage_context),
-        native_file_system_context_(native_file_system_context) {}
+        file_system_access_context_(file_system_access_context) {}
 
   TestIDBFactory(const TestIDBFactory&) = delete;
   TestIDBFactory& operator=(const TestIDBFactory&) = delete;
@@ -150,19 +150,19 @@ class TestIDBFactory : public IndexedDBFactoryImpl {
       IndexedDBBackingStore::ReportOutstandingBlobsCallback
           report_outstanding_blobs,
       scoped_refptr<base::SequencedTaskRunner> idb_task_runner) override {
-    // Use the overridden blob storage and native file system contexts rather
+    // Use the overridden blob storage and File System Access contexts rather
     // than the versions that were passed in to this method. This way tests can
     // use a different context from what is stored in the IndexedDBContext.
     return std::make_unique<TestableIndexedDBBackingStore>(
         backing_store_mode, leveldb_factory, origin, blob_path, std::move(db),
-        blob_storage_context_, native_file_system_context_,
+        blob_storage_context_, file_system_access_context_,
         std::move(filesystem_proxy), std::move(blob_files_cleaned),
         std::move(report_outstanding_blobs), std::move(idb_task_runner));
   }
 
  private:
   storage::mojom::BlobStorageContext* blob_storage_context_;
-  storage::mojom::FileSystemAccessContext* native_file_system_context_;
+  storage::mojom::FileSystemAccessContext* file_system_access_context_;
 };
 
 struct BlobWrite {
@@ -251,10 +251,10 @@ class FakeFileSystemAccessTransferToken
   base::UnguessableToken id_;
 };
 
-class MockNativeFileSystemContext
+class MockFileSystemAccessContext
     : public ::storage::mojom::FileSystemAccessContext {
  public:
-  ~MockNativeFileSystemContext() override = default;
+  ~MockFileSystemAccessContext() override = default;
 
   void SerializeHandle(
       mojo::PendingRemote<::blink::mojom::FileSystemAccessTransferToken>
@@ -298,14 +298,14 @@ class IndexedDBBackingStoreTest : public testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     blob_context_ = std::make_unique<MockBlobStorageContext>();
-    native_file_system_context_ =
-        std::make_unique<MockNativeFileSystemContext>();
+    file_system_access_context_ =
+        std::make_unique<MockFileSystemAccessContext>();
 
     idb_context_ = base::MakeRefCounted<IndexedDBContextImpl>(
         temp_dir_.GetPath(), quota_manager_proxy_,
         base::DefaultClock::GetInstance(),
         /*blob_storage_context=*/mojo::NullRemote(),
-        /*native_file_system_context=*/mojo::NullRemote(),
+        /*file_system_access_context=*/mojo::NullRemote(),
         base::SequencedTaskRunnerHandle::Get(),
         base::SequencedTaskRunnerHandle::Get());
 
@@ -323,7 +323,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
     const Origin origin = Origin::Create(GURL("http://localhost:81"));
     idb_factory_ = std::make_unique<TestIDBFactory>(
         idb_context_.get(), blob_context_.get(),
-        native_file_system_context_.get());
+        file_system_access_context_.get());
 
     leveldb::Status s;
     std::tie(origin_state_handle_, s, std::ignore, data_loss_info_,
@@ -438,7 +438,7 @@ class IndexedDBBackingStoreTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<MockBlobStorageContext> blob_context_;
-  std::unique_ptr<MockNativeFileSystemContext> native_file_system_context_;
+  std::unique_ptr<MockFileSystemAccessContext> file_system_access_context_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   scoped_refptr<IndexedDBContextImpl> idb_context_;
   std::unique_ptr<TestIDBFactory> idb_factory_;
@@ -460,8 +460,8 @@ class IndexedDBBackingStoreTest : public testing::Test {
 
 enum class ExternalObjectTestType {
   kOnlyBlobs,
-  kOnlyNativeFileSystemHandles,
-  kBlobsAndNativeFileSystemHandles
+  kOnlyFileSystemAccessHandles,
+  kBlobsAndFileSystemAccessHandles
 };
 
 class IndexedDBBackingStoreTestWithExternalObjects
@@ -473,10 +473,10 @@ class IndexedDBBackingStoreTestWithExternalObjects
   virtual ExternalObjectTestType TestType() { return GetParam(); }
 
   bool IncludesBlobs() {
-    return TestType() != ExternalObjectTestType::kOnlyNativeFileSystemHandles;
+    return TestType() != ExternalObjectTestType::kOnlyFileSystemAccessHandles;
   }
 
-  bool IncludesNativeFileSystemHandles() {
+  bool IncludesFileSystemAccessHandles() {
     return TestType() != ExternalObjectTestType::kOnlyBlobs;
   }
 
@@ -500,9 +500,9 @@ class IndexedDBBackingStoreTestWithExternalObjects
               base::TimeDelta::FromMicroseconds(kTime2)),
           kBlobFileData2.size()));
     }
-    if (IncludesNativeFileSystemHandles()) {
-      external_objects_.push_back(CreateNativeFileSystemHandle());
-      external_objects_.push_back(CreateNativeFileSystemHandle());
+    if (IncludesFileSystemAccessHandles()) {
+      external_objects_.push_back(CreateFileSystemAccessHandle());
+      external_objects_.push_back(CreateFileSystemAccessHandle());
     }
     value3_ = IndexedDBValue("value3", external_objects_);
     key3_ = IndexedDBKey(ASCIIToUTF16("key3"));
@@ -547,7 +547,7 @@ class IndexedDBBackingStoreTestWithExternalObjects
     return info;
   }
 
-  IndexedDBExternalObject CreateNativeFileSystemHandle() {
+  IndexedDBExternalObject CreateFileSystemAccessHandle() {
     auto id = base::UnguessableToken::Create();
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> remote;
     base::ThreadPool::CreateSequencedTaskRunner({})->PostTask(
@@ -604,9 +604,9 @@ class IndexedDBBackingStoreTestWithExternalObjects
             return false;
           }
           break;
-        case IndexedDBExternalObject::ObjectType::kNativeFileSystemHandle:
-          if (b.native_file_system_token().empty()) {
-            EXPECT_FALSE(b.native_file_system_token().empty());
+        case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle:
+          if (b.file_system_access_token().empty()) {
+            EXPECT_FALSE(b.file_system_access_token().empty());
             return false;
           }
           break;
@@ -620,7 +620,7 @@ class IndexedDBBackingStoreTestWithExternalObjects
     DCHECK(idb_context_->IDBTaskRunner()->RunsTasksInCurrentSequence());
 
     if (blob_context_->writes().size() +
-            native_file_system_context_->writes().size() !=
+            file_system_access_context_->writes().size() !=
         reads.size()) {
       return false;
     }
@@ -636,10 +636,10 @@ class IndexedDBBackingStoreTestWithExternalObjects
           if (ids.count(read.indexed_db_file_path()) != 1)
             return false;
           break;
-        case IndexedDBExternalObject::ObjectType::kNativeFileSystemHandle:
-          if (read.native_file_system_token().size() != 1 ||
-              read.native_file_system_token()[0] >
-                  native_file_system_context_->writes().size()) {
+        case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle:
+          if (read.file_system_access_token().size() != 1 ||
+              read.file_system_access_token()[0] >
+                  file_system_access_context_->writes().size()) {
             return false;
           }
           break;
@@ -660,7 +660,7 @@ class IndexedDBBackingStoreTestWithExternalObjects
     }
 
     size_t num_written = blob_context_->writes().size() +
-                         native_file_system_context_->writes().size();
+                         file_system_access_context_->writes().size();
     if (num_written != external_objects_.size() - num_empty_blobs) {
       return false;
     }
@@ -683,13 +683,13 @@ class IndexedDBBackingStoreTestWithExternalObjects
       if (uuid_out != info.uuid())
         return false;
     }
-    for (size_t i = 0; i < native_file_system_context_->writes().size(); ++i) {
+    for (size_t i = 0; i < file_system_access_context_->writes().size(); ++i) {
       const IndexedDBExternalObject& info =
           external_objects_[blob_context_->writes().size() + i];
       base::UnguessableToken info_token;
       {
         base::RunLoop loop;
-        info.native_file_system_token_remote()->GetInternalID(
+        info.file_system_access_token_remote()->GetInternalID(
             base::BindLambdaForTesting(
                 [&](const base::UnguessableToken& token) {
                   info_token = token;
@@ -700,7 +700,7 @@ class IndexedDBBackingStoreTestWithExternalObjects
       base::UnguessableToken written_token;
       {
         base::RunLoop loop;
-        native_file_system_context_->writes()[i]->GetInternalID(
+        file_system_access_context_->writes()[i]->GetInternalID(
             base::BindLambdaForTesting(
                 [&](const base::UnguessableToken& token) {
                   written_token = token;
@@ -757,8 +757,8 @@ INSTANTIATE_TEST_SUITE_P(
     IndexedDBBackingStoreTestWithExternalObjects,
     ::testing::Values(
         ExternalObjectTestType::kOnlyBlobs,
-        ExternalObjectTestType::kOnlyNativeFileSystemHandles,
-        ExternalObjectTestType::kBlobsAndNativeFileSystemHandles));
+        ExternalObjectTestType::kOnlyFileSystemAccessHandles,
+        ExternalObjectTestType::kBlobsAndFileSystemAccessHandles));
 
 class IndexedDBBackingStoreTestWithBlobs
     : public IndexedDBBackingStoreTestWithExternalObjects {
@@ -1008,7 +1008,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRange) {
 
     // Reset from previous iteration.
     blob_context_->ClearWrites();
-    native_file_system_context_->ClearWrites();
+    file_system_access_context_->ClearWrites();
     backing_store()->ClearRemovals();
 
     std::vector<IndexedDBValue> values = {
@@ -1104,7 +1104,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, DeleteRangeEmptyRange) {
 
     // Reset from previous iteration.
     blob_context_->ClearWrites();
-    native_file_system_context_->ClearWrites();
+    file_system_access_context_->ClearWrites();
     backing_store()->ClearRemovals();
 
     std::vector<IndexedDBValue> values = {
@@ -1305,7 +1305,7 @@ TEST_P(IndexedDBBackingStoreTestWithExternalObjects, ActiveBlobJournal) {
   }
   task_environment_.RunUntilIdle();
 
-  if (TestType() != ExternalObjectTestType::kOnlyNativeFileSystemHandles) {
+  if (TestType() != ExternalObjectTestType::kOnlyFileSystemAccessHandles) {
     EXPECT_TRUE(backing_store()->IsBlobCleanupPending());
 #if DCHECK_IS_ON()
   EXPECT_EQ(3,

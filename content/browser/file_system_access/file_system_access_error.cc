@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/native_file_system_error.h"
+#include "content/browser/file_system_access/file_system_access_error.h"
 
 namespace content {
 
@@ -10,7 +10,7 @@ using blink::mojom::FileSystemAccessError;
 using blink::mojom::FileSystemAccessErrorPtr;
 using blink::mojom::FileSystemAccessStatus;
 
-namespace native_file_system_error {
+namespace file_system_access_error {
 
 FileSystemAccessErrorPtr Ok() {
   return FileSystemAccessError::New(FileSystemAccessStatus::kOk,
@@ -32,5 +32,5 @@ blink::mojom::FileSystemAccessErrorPtr FromStatus(
                                     std::string(message));
 }
 
-}  // namespace native_file_system_error
+}  // namespace file_system_access_error
 }  // namespace content

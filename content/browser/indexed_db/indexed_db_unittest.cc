@@ -94,7 +94,7 @@ class IndexedDBTest : public testing::Test {
             quota_manager_proxy_.get(),
             base::DefaultClock::GetInstance(),
             /*blob_storage_context=*/mojo::NullRemote(),
-            /*native_file_system_context=*/mojo::NullRemote(),
+            /*file_system_access_context=*/mojo::NullRemote(),
             base::SequencedTaskRunnerHandle::Get(),
             base::SequencedTaskRunnerHandle::Get())) {
     std::vector<storage::mojom::IndexedDBStoragePolicyUpdatePtr> policy_updates;

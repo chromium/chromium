@@ -279,7 +279,7 @@ Status MergeDatabaseIntoActiveBlobJournal(
 //     (for Blobs and Files only) size [int64_t as varInt]
 //     (for Files only) fileName [string-with-length]
 //     (for Files only) lastModified [int64_t as varInt, in microseconds]
-//     (for Native File System Handles only) token [binary-with-length]
+//     (for File System Access Handles only) token [binary-with-length]
 //   }
 // There is no length field; just read until you run out of data.
 std::string EncodeExternalObjects(
@@ -300,9 +300,9 @@ std::string EncodeExternalObjects(
               &ret);
         }
         break;
-      case IndexedDBExternalObject::ObjectType::kNativeFileSystemHandle:
-        DCHECK(!info.native_file_system_token().empty());
-        EncodeBinary(info.native_file_system_token(), &ret);
+      case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle:
+        DCHECK(!info.file_system_access_token().empty());
+        EncodeBinary(info.file_system_access_token(), &ret);
         break;
     }
   }
@@ -389,7 +389,7 @@ bool DecodeExternalObjects(const std::string& data,
                          size);
         break;
       }
-      case IndexedDBExternalObject::ObjectType::kNativeFileSystemHandle: {
+      case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle: {
         base::span<const uint8_t> token;
         if (!DecodeBinary(&slice, &token))
           return false;
@@ -627,7 +627,7 @@ IndexedDBBackingStore::IndexedDBBackingStore(
     const base::FilePath& blob_path,
     std::unique_ptr<TransactionalLevelDBDatabase> db,
     storage::mojom::BlobStorageContext* blob_storage_context,
-    storage::mojom::FileSystemAccessContext* native_file_system_context,
+    storage::mojom::FileSystemAccessContext* file_system_access_context,
     std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
     BlobFilesCleanedCallback blob_files_cleaned,
     ReportOutstandingBlobsCallback report_outstanding_blobs,
@@ -638,7 +638,7 @@ IndexedDBBackingStore::IndexedDBBackingStore(
       blob_path_(backing_store_mode == Mode::kInMemory ? base::FilePath()
                                                        : blob_path),
       blob_storage_context_(blob_storage_context),
-      native_file_system_context_(native_file_system_context),
+      file_system_access_context_(file_system_access_context),
       filesystem_proxy_(std::move(filesystem_proxy)),
       origin_identifier_(ComputeOriginIdentifier(origin)),
       idb_task_runner_(std::move(idb_task_runner)),
@@ -1878,7 +1878,7 @@ Status IndexedDBBackingStore::Transaction::GetExternalObjectsForRecord(
               backing_store_->active_blob_registry()->GetFinalReleaseCallback(
                   database_id, entry.blob_number()));
           break;
-        case IndexedDBExternalObject::ObjectType::kNativeFileSystemHandle:
+        case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle:
           break;
       }
     }
@@ -3242,7 +3242,7 @@ Status IndexedDBBackingStore::Transaction::HandleBlobPreTransaction() {
           if (!result)
             return InternalInconsistencyStatus();
           break;
-        case IndexedDBExternalObject::ObjectType::kNativeFileSystemHandle:
+        case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle:
           break;
       }
     }
@@ -3516,8 +3516,8 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
           if (entry.size() != 0)
             ++num_objects_to_write;
           break;
-        case IndexedDBExternalObject::ObjectType::kNativeFileSystemHandle:
-          if (entry.native_file_system_token().empty())
+        case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle:
+          if (entry.file_system_access_token().empty())
             ++num_objects_to_write;
           break;
       }
@@ -3605,18 +3605,18 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
               last_modified, write_result_callback);
           break;
         }
-        case IndexedDBExternalObject::ObjectType::kNativeFileSystemHandle: {
-          if (!entry.native_file_system_token().empty())
+        case IndexedDBExternalObject::ObjectType::kFileSystemAccessHandle: {
+          if (!entry.file_system_access_token().empty())
             continue;
           // TODO(dmurph): Refactor IndexedDBExternalObject to not use a
           // SharedRemote, so this code can just move the remote, instead of
           // cloning.
           mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
               token_clone;
-          entry.native_file_system_token_remote()->Clone(
+          entry.file_system_access_token_remote()->Clone(
               token_clone.InitWithNewPipeAndPassReceiver());
 
-          backing_store_->native_file_system_context_->SerializeHandle(
+          backing_store_->file_system_access_context_->SerializeHandle(
               std::move(token_clone),
               base::BindOnce(
                   [](base::WeakPtr<Transaction> transaction,
@@ -3633,7 +3633,7 @@ leveldb::Status IndexedDBBackingStore::Transaction::WriteNewBlobs(
                           storage::mojom::WriteBlobToFileResult::kError);
                       return;
                     }
-                    object->set_native_file_system_token(serialized_token);
+                    object->set_file_system_access_token(serialized_token);
                     std::move(callback).Run(
                         storage::mojom::WriteBlobToFileResult::kSuccess);
                   },

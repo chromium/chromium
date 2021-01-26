@@ -58,7 +58,7 @@
 #include "content/browser/download/mhtml_generation_manager.h"
 #include "content/browser/file_system/file_system_manager_impl.h"
 #include "content/browser/file_system/file_system_url_loader_factory.h"
-#include "content/browser/file_system_access/native_file_system_manager_impl.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/generic_sensor/sensor_provider_proxy_impl.h"
 #include "content/browser/geolocation/geolocation_service_impl.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
@@ -8270,13 +8270,13 @@ void RenderFrameHostImpl::GetFontAccessManager(
                      std::move(receiver));
 }
 
-void RenderFrameHostImpl::GetNativeFileSystemManager(
+void RenderFrameHostImpl::GetFileSystemAccessManager(
     mojo::PendingReceiver<blink::mojom::FileSystemAccessManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* storage_partition =
       static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition());
-  auto* manager = storage_partition->GetNativeFileSystemManager();
-  manager->BindReceiver(NativeFileSystemManagerImpl::BindingContext(
+  auto* manager = storage_partition->GetFileSystemAccessManager();
+  manager->BindReceiver(FileSystemAccessManagerImpl::BindingContext(
                             GetLastCommittedOrigin(), GetLastCommittedURL(),
                             GetGlobalFrameRoutingId()),
                         std::move(receiver));

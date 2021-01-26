@@ -14,7 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "build/build_config.h"
-#include "content/browser/file_system_access/native_file_system_error.h"
+#include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
@@ -306,14 +306,14 @@ void FileSystemChooser::MultiFilesSelectedWithExtraInfo(
   }
 
   RecordFileSelectionResult(type_, result.size());
-  std::move(callback_).Run(native_file_system_error::Ok(), std::move(result));
+  std::move(callback_).Run(file_system_access_error::Ok(), std::move(result));
   delete this;
 }
 
 void FileSystemChooser::FileSelectionCanceled(void* params) {
   RecordFileSelectionResult(type_, 0);
   std::move(callback_).Run(
-      native_file_system_error::FromStatus(
+      file_system_access_error::FromStatus(
           blink::mojom::FileSystemAccessStatus::kOperationAborted),
       {});
   delete this;

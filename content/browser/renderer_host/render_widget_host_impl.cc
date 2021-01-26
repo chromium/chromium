@@ -49,7 +49,7 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/compositor/surface_utils.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
-#include "content/browser/file_system_access/native_file_system_manager_impl.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/dip_util.h"
@@ -1879,7 +1879,7 @@ void RenderWidgetHostImpl::DragTargetDrop(const DropData& drop_data,
         static_cast<StoragePartitionImpl*>(GetProcess()->GetStoragePartition());
     blink_frame_widget_->DragTargetDrop(
         DropDataToDragData(drop_data_with_permissions,
-                           storage_partition->GetNativeFileSystemManager(),
+                           storage_partition->GetFileSystemAccessManager(),
                            GetProcess()->GetID()),
         ConvertWindowPointToViewport(client_point), screen_point,
         key_modifiers);

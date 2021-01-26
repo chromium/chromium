@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_DIRECTORY_HANDLE_IMPL_H_
-#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_DIRECTORY_HANDLE_IMPL_H_
+#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_DIRECTORY_HANDLE_IMPL_H_
+#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_DIRECTORY_HANDLE_IMPL_H_
 
 #include "base/files/file.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
-#include "content/browser/file_system_access/native_file_system_handle_base.h"
+#include "content/browser/file_system_access/file_system_access_handle_base.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "storage/browser/file_system/file_system_url.h"
@@ -17,21 +17,21 @@
 
 namespace content {
 // This is the browser side implementation of the
-// NativeFileSystemDirectoryHandle mojom interface. Instances of this class are
-// owned by the NativeFileSystemManagerImpl instance passed in to the
+// FileSystemAccessDirectoryHandle mojom interface. Instances of this class are
+// owned by the FileSystemAccessManagerImpl instance passed in to the
 // constructor.
 //
 // This class is not thread safe, all methods must be called from the same
 // sequence.
-class CONTENT_EXPORT NativeFileSystemDirectoryHandleImpl
-    : public NativeFileSystemHandleBase,
+class CONTENT_EXPORT FileSystemAccessDirectoryHandleImpl
+    : public FileSystemAccessHandleBase,
       public blink::mojom::FileSystemAccessDirectoryHandle {
  public:
-  NativeFileSystemDirectoryHandleImpl(NativeFileSystemManagerImpl* manager,
+  FileSystemAccessDirectoryHandleImpl(FileSystemAccessManagerImpl* manager,
                                       const BindingContext& context,
                                       const storage::FileSystemURL& url,
                                       const SharedHandleState& handle_state);
-  ~NativeFileSystemDirectoryHandleImpl() override;
+  ~FileSystemAccessDirectoryHandleImpl() override;
 
   // blink::mojom::FileSystemAccessDirectoryHandle:
   void GetPermissionStatus(bool writable,
@@ -92,7 +92,7 @@ class CONTENT_EXPORT NativeFileSystemDirectoryHandleImpl
                        RemoveEntryCallback callback);
 
   void ResolveImpl(ResolveCallback callback,
-                   NativeFileSystemTransferTokenImpl* possible_child);
+                   FileSystemAccessTransferTokenImpl* possible_child);
 
   // Calculates a FileSystemURL for a (direct) child of this directory with the
   // given basename.  Returns an error when |basename| includes invalid input
@@ -107,12 +107,12 @@ class CONTENT_EXPORT NativeFileSystemDirectoryHandleImpl
       const storage::FileSystemURL& url,
       FileSystemAccessPermissionContext::HandleType handle_type);
 
-  base::WeakPtr<NativeFileSystemHandleBase> AsWeakPtr() override;
+  base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() override;
 
-  base::WeakPtrFactory<NativeFileSystemDirectoryHandleImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(NativeFileSystemDirectoryHandleImpl);
+  base::WeakPtrFactory<FileSystemAccessDirectoryHandleImpl> weak_factory_{this};
+  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessDirectoryHandleImpl);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_DIRECTORY_HANDLE_IMPL_H_
+#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_DIRECTORY_HANDLE_IMPL_H_

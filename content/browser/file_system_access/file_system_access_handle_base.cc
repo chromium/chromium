@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/native_file_system_handle_base.h"
+#include "content/browser/file_system_access/file_system_access_handle_base.h"
 
 #include "base/task/post_task.h"
-#include "content/browser/file_system_access/native_file_system_error.h"
+#include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -13,8 +13,8 @@
 
 namespace content {
 
-NativeFileSystemHandleBase::NativeFileSystemHandleBase(
-    NativeFileSystemManagerImpl* manager,
+FileSystemAccessHandleBase::FileSystemAccessHandleBase(
+    FileSystemAccessManagerImpl* manager,
     const BindingContext& context,
     const storage::FileSystemURL& url,
     const SharedHandleState& handle_state)
@@ -27,7 +27,7 @@ NativeFileSystemHandleBase::NativeFileSystemHandleBase(
             handle_state_.file_system.is_valid())
       << url_.mount_type();
 
-  // We support sandboxed file system and native file systems on all platforms.
+  // We support sandboxed file system and local file systems on all platforms.
   DCHECK(url_.type() == storage::kFileSystemTypeNativeLocal ||
          url_.type() == storage::kFileSystemTypeTemporary ||
          url_.mount_type() == storage::kFileSystemTypeExternal ||
@@ -43,16 +43,16 @@ NativeFileSystemHandleBase::NativeFileSystemHandleBase(
 
     Observe(WebContentsImpl::FromRenderFrameHostID(context_.frame_id));
 
-    // Disable back-forward cache as native file system's usage of
+    // Disable back-forward cache as File System Access's usage of
     // RenderFrameHost::IsCurrent at the moment is not compatible with bfcache.
     BackForwardCache::DisableForRenderFrameHost(context_.frame_id,
-                                                "NativeFileSystem");
+                                                "FileSystemAccess");
     if (web_contents())
       web_contents()->IncrementFileSystemAccessHandleCount();
   }
 }
 
-NativeFileSystemHandleBase::~NativeFileSystemHandleBase() {
+FileSystemAccessHandleBase::~FileSystemAccessHandleBase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (ShouldTrackUsage() && web_contents()) {
@@ -60,18 +60,18 @@ NativeFileSystemHandleBase::~NativeFileSystemHandleBase() {
   }
 }
 
-NativeFileSystemHandleBase::PermissionStatus
-NativeFileSystemHandleBase::GetReadPermissionStatus() {
+FileSystemAccessHandleBase::PermissionStatus
+FileSystemAccessHandleBase::GetReadPermissionStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return handle_state_.read_grant->GetStatus();
 }
 
-NativeFileSystemHandleBase::PermissionStatus
-NativeFileSystemHandleBase::GetWritePermissionStatus() {
+FileSystemAccessHandleBase::PermissionStatus
+FileSystemAccessHandleBase::GetWritePermissionStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // It is not currently possible to have write only handles, so first check the
   // read permission status. See also:
-  // http://wicg.github.io/native-file-system/#api-filesystemhandle-querypermission
+  // http://wicg.github.io/file-system-access/#api-filesystemhandle-querypermission
   PermissionStatus read_status = GetReadPermissionStatus();
   if (read_status != PermissionStatus::GRANTED)
     return read_status;
@@ -79,7 +79,7 @@ NativeFileSystemHandleBase::GetWritePermissionStatus() {
   return handle_state_.write_grant->GetStatus();
 }
 
-void NativeFileSystemHandleBase::DoGetPermissionStatus(
+void FileSystemAccessHandleBase::DoGetPermissionStatus(
     bool writable,
     base::OnceCallback<void(PermissionStatus)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -87,7 +87,7 @@ void NativeFileSystemHandleBase::DoGetPermissionStatus(
                                    : GetReadPermissionStatus());
 }
 
-void NativeFileSystemHandleBase::DoRequestPermission(
+void FileSystemAccessHandleBase::DoRequestPermission(
     bool writable,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                             PermissionStatus)> callback) {
@@ -99,18 +99,18 @@ void NativeFileSystemHandleBase::DoRequestPermission(
   // don't support prompting for increased permissions from workers.
   //
   // Currently the worker check here is redundant because there is no way for
-  // workers to get native file system handles. While workers will never be able
+  // workers to get File System Access handles. While workers will never be able
   // to call chooseEntries(), they will be able to receive existing handles from
   // windows via postMessage() and IndexedDB.
   if (current_status != PermissionStatus::ASK || context_.is_worker()) {
-    std::move(callback).Run(native_file_system_error::Ok(), current_status);
+    std::move(callback).Run(file_system_access_error::Ok(), current_status);
     return;
   }
   if (!writable) {
     handle_state_.read_grant->RequestPermission(
         context().frame_id,
         FileSystemAccessPermissionGrant::UserActivationState::kRequired,
-        base::BindOnce(&NativeFileSystemHandleBase::DidRequestPermission,
+        base::BindOnce(&FileSystemAccessHandleBase::DidRequestPermission,
                        AsWeakPtr(), writable, std::move(callback)));
     return;
   }
@@ -131,11 +131,11 @@ void NativeFileSystemHandleBase::DoRequestPermission(
   handle_state_.write_grant->RequestPermission(
       context().frame_id,
       FileSystemAccessPermissionGrant::UserActivationState::kRequired,
-      base::BindOnce(&NativeFileSystemHandleBase::DidRequestPermission,
+      base::BindOnce(&FileSystemAccessHandleBase::DidRequestPermission,
                      AsWeakPtr(), writable, std::move(callback)));
 }
 
-void NativeFileSystemHandleBase::DidRequestPermission(
+void FileSystemAccessHandleBase::DidRequestPermission(
     bool writable,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr,
                             PermissionStatus)> callback,
@@ -146,14 +146,14 @@ void NativeFileSystemHandleBase::DidRequestPermission(
     case Outcome::kInvalidFrame:
     case Outcome::kThirdPartyContext:
       std::move(callback).Run(
-          native_file_system_error::FromStatus(
+          file_system_access_error::FromStatus(
               blink::mojom::FileSystemAccessStatus::kSecurityError,
               "Not allowed to request permissions in this context."),
           writable ? GetWritePermissionStatus() : GetReadPermissionStatus());
       return;
     case Outcome::kNoUserActivation:
       std::move(callback).Run(
-          native_file_system_error::FromStatus(
+          file_system_access_error::FromStatus(
               blink::mojom::FileSystemAccessStatus::kSecurityError,
               "User activation is required to request permissions."),
           writable ? GetWritePermissionStatus() : GetReadPermissionStatus());
@@ -165,7 +165,7 @@ void NativeFileSystemHandleBase::DidRequestPermission(
     case Outcome::kRequestAborted:
     case Outcome::kGrantedByContentSetting:
       std::move(callback).Run(
-          native_file_system_error::Ok(),
+          file_system_access_error::Ok(),
           writable ? GetWritePermissionStatus() : GetReadPermissionStatus());
       return;
   }

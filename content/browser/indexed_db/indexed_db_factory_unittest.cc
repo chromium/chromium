@@ -113,7 +113,7 @@ class IndexedDBFactoryTest : public testing::Test {
         temp_dir_.GetPath(), quota_manager_proxy_.get(),
         base::DefaultClock::GetInstance(),
         /*blob_storage_context=*/mojo::NullRemote(),
-        /*native_file_system_context=*/mojo::NullRemote(),
+        /*file_system_access_context=*/mojo::NullRemote(),
         base::SequencedTaskRunnerHandle::Get(),
         base::SequencedTaskRunnerHandle::Get());
   }
@@ -123,7 +123,7 @@ class IndexedDBFactoryTest : public testing::Test {
         base::FilePath(), quota_manager_proxy_.get(),
         base::DefaultClock::GetInstance(),
         /*blob_storage_context=*/mojo::NullRemote(),
-        /*native_file_system_context=*/mojo::NullRemote(),
+        /*file_system_access_context=*/mojo::NullRemote(),
         base::SequencedTaskRunnerHandle::Get(),
         base::SequencedTaskRunnerHandle::Get());
   }
@@ -132,7 +132,7 @@ class IndexedDBFactoryTest : public testing::Test {
     context_ = base::MakeRefCounted<IndexedDBContextImpl>(
         temp_dir_.GetPath(), quota_manager_proxy_.get(), clock,
         /*blob_storage_context=*/mojo::NullRemote(),
-        /*native_file_system_context=*/mojo::NullRemote(),
+        /*file_system_access_context=*/mojo::NullRemote(),
         base::SequencedTaskRunnerHandle::Get(),
         base::SequencedTaskRunnerHandle::Get());
     if (factory)

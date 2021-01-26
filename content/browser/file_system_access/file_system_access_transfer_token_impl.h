@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_TRANSFER_TOKEN_IMPL_H_
-#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_TRANSFER_TOKEN_IMPL_H_
+#ifndef CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_TRANSFER_TOKEN_IMPL_H_
+#define CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_TRANSFER_TOKEN_IMPL_H_
 
-#include "content/browser/file_system_access/native_file_system_manager_impl.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -23,18 +23,18 @@ namespace content {
 //
 // Instances of this class should always be used from the sequence they were
 // created on.
-class CONTENT_EXPORT NativeFileSystemTransferTokenImpl
+class CONTENT_EXPORT FileSystemAccessTransferTokenImpl
     : public blink::mojom::FileSystemAccessTransferToken {
  public:
-  NativeFileSystemTransferTokenImpl(
+  FileSystemAccessTransferTokenImpl(
       const storage::FileSystemURL& url,
       const url::Origin& origin,
-      const NativeFileSystemManagerImpl::SharedHandleState& handle_state,
+      const FileSystemAccessManagerImpl::SharedHandleState& handle_state,
       FileSystemAccessPermissionContext::HandleType handle_type,
-      NativeFileSystemManagerImpl* manager,
+      FileSystemAccessManagerImpl* manager,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
           receiver);
-  ~NativeFileSystemTransferTokenImpl() override;
+  ~FileSystemAccessTransferTokenImpl() override;
 
   const base::UnguessableToken& token() const { return token_; }
   FileSystemAccessPermissionContext::HandleType type() const {
@@ -48,10 +48,10 @@ class CONTENT_EXPORT NativeFileSystemTransferTokenImpl
   FileSystemAccessPermissionGrant* GetReadGrant() const;
   FileSystemAccessPermissionGrant* GetWriteGrant() const;
 
-  std::unique_ptr<NativeFileSystemFileHandleImpl> CreateFileHandle(
-      const NativeFileSystemManagerImpl::BindingContext& binding_context) const;
-  std::unique_ptr<NativeFileSystemDirectoryHandleImpl> CreateDirectoryHandle(
-      const NativeFileSystemManagerImpl::BindingContext& binding_context) const;
+  std::unique_ptr<FileSystemAccessFileHandleImpl> CreateFileHandle(
+      const FileSystemAccessManagerImpl::BindingContext& binding_context) const;
+  std::unique_ptr<FileSystemAccessDirectoryHandleImpl> CreateDirectoryHandle(
+      const FileSystemAccessManagerImpl::BindingContext& binding_context) const;
 
   // blink::mojom::FileSystemAccessTransferToken:
   void GetInternalID(GetInternalIDCallback callback) override;
@@ -67,16 +67,16 @@ class CONTENT_EXPORT NativeFileSystemTransferTokenImpl
   // empty.
   const base::UnguessableToken token_;
   const FileSystemAccessPermissionContext::HandleType handle_type_;
-  // Raw pointer since NativeFileSystemManagerImpl owns `this`.
-  NativeFileSystemManagerImpl* const manager_;
+  // Raw pointer since FileSystemAccessManagerImpl owns `this`.
+  FileSystemAccessManagerImpl* const manager_;
   const storage::FileSystemURL url_;
   const url::Origin origin_;
-  const NativeFileSystemManagerImpl::SharedHandleState handle_state_;
+  const FileSystemAccessManagerImpl::SharedHandleState handle_state_;
   mojo::ReceiverSet<blink::mojom::FileSystemAccessTransferToken> receivers_;
 
-  DISALLOW_COPY_AND_ASSIGN(NativeFileSystemTransferTokenImpl);
+  DISALLOW_COPY_AND_ASSIGN(FileSystemAccessTransferTokenImpl);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_NATIVE_FILE_SYSTEM_TRANSFER_TOKEN_IMPL_H_
+#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_ACCESS_TRANSFER_TOKEN_IMPL_H_

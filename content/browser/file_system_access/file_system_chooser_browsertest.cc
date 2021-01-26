@@ -7,11 +7,11 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/threading/thread_restrictions.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/file_system_access/file_system_chooser_test_helpers.h"
 #include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_context.h"
 #include "content/browser/file_system_access/mock_file_system_access_permission_grant.h"
-#include "content/browser/file_system_access/native_file_system_manager_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
@@ -199,7 +199,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       new FakeSelectFileDialogFactory({test_file}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
-  static_cast<NativeFileSystemManagerImpl*>(
+  static_cast<FileSystemAccessManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       new FakeSelectFileDialogFactory({test_file}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
-  static_cast<NativeFileSystemManagerImpl*>(
+  static_cast<FileSystemAccessManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
@@ -438,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
-  static_cast<NativeFileSystemManagerImpl*>(
+  static_cast<FileSystemAccessManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
       new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
-  static_cast<NativeFileSystemManagerImpl*>(
+  static_cast<FileSystemAccessManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
@@ -542,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       new FakeSelectFileDialogFactory({test_file}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
-  static_cast<NativeFileSystemManagerImpl*>(
+  static_cast<FileSystemAccessManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
@@ -603,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       new FakeSelectFileDialogFactory({test_file}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
-  static_cast<NativeFileSystemManagerImpl*>(
+  static_cast<FileSystemAccessManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
@@ -687,7 +687,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, AcceptsOptions) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
-                       NativeFileSystemUsageDisablesBackForwardCache) {
+                       FileSystemAccessUsageDisablesBackForwardCache) {
   BackForwardCacheDisabledTester tester;
 
   const base::FilePath test_file = CreateTestFile("file contents");
@@ -705,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_TRUE(tester.IsDisabledForFrameWithReason(
       shell()->web_contents()->GetMainFrame()->GetProcess()->GetID(),
       shell()->web_contents()->GetMainFrame()->GetRoutingID(),
-      "NativeFileSystem"));
+      "FileSystemAccess"));
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
@@ -717,7 +717,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
-  static_cast<NativeFileSystemManagerImpl*>(
+  static_cast<FileSystemAccessManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
@@ -798,7 +798,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
-  static_cast<NativeFileSystemManagerImpl*>(
+  static_cast<FileSystemAccessManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
@@ -885,7 +885,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
-  static_cast<NativeFileSystemManagerImpl*>(
+  static_cast<FileSystemAccessManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
@@ -968,7 +968,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
       new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
-  static_cast<NativeFileSystemManagerImpl*>(
+  static_cast<FileSystemAccessManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())
@@ -1055,7 +1055,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartInCommonDirectory) {
       new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
-  static_cast<NativeFileSystemManagerImpl*>(
+  static_cast<FileSystemAccessManagerImpl*>(
       BrowserContext::GetStoragePartition(
           shell()->web_contents()->GetBrowserContext(),
           shell()->web_contents()->GetSiteInstance())

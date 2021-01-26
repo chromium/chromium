@@ -783,7 +783,7 @@ std::unique_ptr<IndexedDBBackingStore> IndexedDBFactoryImpl::CreateBackingStore(
     const base::FilePath& blob_path,
     std::unique_ptr<TransactionalLevelDBDatabase> db,
     storage::mojom::BlobStorageContext* blob_storage_context,
-    storage::mojom::FileSystemAccessContext* native_file_system_context,
+    storage::mojom::FileSystemAccessContext* file_system_access_context,
     std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
     IndexedDBBackingStore::BlobFilesCleanedCallback blob_files_cleaned,
     IndexedDBBackingStore::ReportOutstandingBlobsCallback
@@ -791,7 +791,7 @@ std::unique_ptr<IndexedDBBackingStore> IndexedDBFactoryImpl::CreateBackingStore(
     scoped_refptr<base::SequencedTaskRunner> idb_task_runner) {
   return std::make_unique<IndexedDBBackingStore>(
       backing_store_mode, transactional_leveldb_factory, origin, blob_path,
-      std::move(db), blob_storage_context, native_file_system_context,
+      std::move(db), blob_storage_context, file_system_access_context,
       std::move(filesystem_proxy), std::move(blob_files_cleaned),
       std::move(report_outstanding_blobs), std::move(idb_task_runner));
 }
@@ -922,7 +922,7 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
   std::unique_ptr<IndexedDBBackingStore> backing_store = CreateBackingStore(
       backing_store_mode, &class_factory_->transactional_leveldb_factory(),
       origin, blob_path, std::move(database), context_->blob_storage_context(),
-      context_->native_file_system_context(), std::move(filesystem_proxy),
+      context_->file_system_access_context(), std::move(filesystem_proxy),
       base::BindRepeating(&IndexedDBFactoryImpl::BlobFilesCleaned,
                           weak_factory_.GetWeakPtr(), origin),
       base::BindRepeating(&IndexedDBFactoryImpl::ReportOutstandingBlobs,

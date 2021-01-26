@@ -51,14 +51,14 @@ IndexedDBControlWrapper::IndexedDBControlWrapper(
     mojo::PendingRemote<storage::mojom::BlobStorageContext>
         blob_storage_context,
     mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
-        native_file_system_context,
+        file_system_access_context,
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,
     scoped_refptr<base::SequencedTaskRunner> custom_task_runner)
     : special_storage_policy_(std::move(special_storage_policy)) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   context_ = base::MakeRefCounted<IndexedDBContextImpl>(
       data_path, std::move(quota_manager_proxy), clock,
-      std::move(blob_storage_context), std::move(native_file_system_context),
+      std::move(blob_storage_context), std::move(file_system_access_context),
       io_task_runner, std::move(custom_task_runner));
 
   if (special_storage_policy_) {

@@ -2018,9 +2018,9 @@ TEST_F(RenderWidgetHostTest, RendererExitedNoDrag) {
   DropData drop_data;
   drop_data.url = http_url;
   drop_data.html_base_url = http_url;
-  NativeFileSystemManagerImpl* file_system_manager =
+  FileSystemAccessManagerImpl* file_system_manager =
       static_cast<StoragePartitionImpl*>(process_->GetStoragePartition())
-          ->GetNativeFileSystemManager();
+          ->GetFileSystemAccessManager();
   blink::DragOperationsMask drag_operation = blink::kDragOperationEvery;
   host_->StartDragging(
       DropDataToDragData(drop_data, file_system_manager, process_->GetID()),

@@ -17,7 +17,7 @@ namespace content {
 class BrowserContext;
 class WebContents;
 
-// Represents the state of a NativeFileSystemFileWriter when it is closed,
+// Represents the state of a FileSystemAccessFileWriter when it is closed,
 // containing all the data necessary to do a safe browsing download protection
 // check on the data written to disk.
 struct CONTENT_EXPORT FileSystemAccessWriteItem {

@@ -58,7 +58,7 @@ Isolated file systems generally are used to expose files from other file system
 types to the web for the [Files and Directory Entries API](https://wicg.github.io/entries-api/),
 either via Drag&Drop or `<input type=file>`. They are also used for the (deprecated)
 [Chrome Apps chrome.fileSystem API](https://developer.chrome.com/apps/fileSystem),
-and the new [Native File System API](http://wicg.github.io/native-file-system/).
+and the new [Native File System API](http://wicg.github.io/file-system-access/).
 
 # Interesting Classes
 

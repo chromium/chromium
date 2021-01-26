@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/native_file_system_file_handle_impl.h"
+#include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
 
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
-#include "content/browser/file_system_access/native_file_system_error.h"
-#include "content/browser/file_system_access/native_file_system_transfer_token_impl.h"
+#include "content/browser/file_system_access/file_system_access_error.h"
+#include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -31,32 +31,32 @@ using storage::IsolatedContext;
 
 namespace content {
 
-NativeFileSystemFileHandleImpl::NativeFileSystemFileHandleImpl(
-    NativeFileSystemManagerImpl* manager,
+FileSystemAccessFileHandleImpl::FileSystemAccessFileHandleImpl(
+    FileSystemAccessManagerImpl* manager,
     const BindingContext& context,
     const storage::FileSystemURL& url,
     const SharedHandleState& handle_state)
-    : NativeFileSystemHandleBase(manager, context, url, handle_state) {}
+    : FileSystemAccessHandleBase(manager, context, url, handle_state) {}
 
-NativeFileSystemFileHandleImpl::~NativeFileSystemFileHandleImpl() = default;
+FileSystemAccessFileHandleImpl::~FileSystemAccessFileHandleImpl() = default;
 
-void NativeFileSystemFileHandleImpl::GetPermissionStatus(
+void FileSystemAccessFileHandleImpl::GetPermissionStatus(
     bool writable,
     GetPermissionStatusCallback callback) {
   DoGetPermissionStatus(writable, std::move(callback));
 }
 
-void NativeFileSystemFileHandleImpl::RequestPermission(
+void FileSystemAccessFileHandleImpl::RequestPermission(
     bool writable,
     RequestPermissionCallback callback) {
   DoRequestPermission(writable, std::move(callback));
 }
 
-void NativeFileSystemFileHandleImpl::AsBlob(AsBlobCallback callback) {
+void FileSystemAccessFileHandleImpl::AsBlob(AsBlobCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (GetReadPermissionStatus() != PermissionStatus::GRANTED) {
-    std::move(callback).Run(native_file_system_error::FromStatus(
+    std::move(callback).Run(file_system_access_error::FromStatus(
                                 FileSystemAccessStatus::kPermissionDenied),
                             base::File::Info(), nullptr);
     return;
@@ -66,7 +66,7 @@ void NativeFileSystemFileHandleImpl::AsBlob(AsBlobCallback callback) {
   // streaming is not supported.
   DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::GetMetadata,
-      base::BindOnce(&NativeFileSystemFileHandleImpl::DidGetMetaDataForBlob,
+      base::BindOnce(&FileSystemAccessFileHandleImpl::DidGetMetaDataForBlob,
                      weak_factory_.GetWeakPtr(), std::move(callback)),
       url(),
       FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY |
@@ -74,14 +74,14 @@ void NativeFileSystemFileHandleImpl::AsBlob(AsBlobCallback callback) {
           FileSystemOperation::GET_METADATA_FIELD_LAST_MODIFIED);
 }
 
-void NativeFileSystemFileHandleImpl::CreateFileWriter(
+void FileSystemAccessFileHandleImpl::CreateFileWriter(
     bool keep_existing_data,
     bool auto_close,
     CreateFileWriterCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   RunWithWritePermission(
-      base::BindOnce(&NativeFileSystemFileHandleImpl::CreateFileWriterImpl,
+      base::BindOnce(&FileSystemAccessFileHandleImpl::CreateFileWriterImpl,
                      weak_factory_.GetWeakPtr(), keep_existing_data,
                      auto_close),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
@@ -91,30 +91,30 @@ void NativeFileSystemFileHandleImpl::CreateFileWriter(
       std::move(callback));
 }
 
-void NativeFileSystemFileHandleImpl::IsSameEntry(
+void FileSystemAccessFileHandleImpl::IsSameEntry(
     mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token,
     IsSameEntryCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   manager()->ResolveTransferToken(
       std::move(token),
-      base::BindOnce(&NativeFileSystemFileHandleImpl::IsSameEntryImpl,
+      base::BindOnce(&FileSystemAccessFileHandleImpl::IsSameEntryImpl,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void NativeFileSystemFileHandleImpl::IsSameEntryImpl(
+void FileSystemAccessFileHandleImpl::IsSameEntryImpl(
     IsSameEntryCallback callback,
-    NativeFileSystemTransferTokenImpl* other) {
+    FileSystemAccessTransferTokenImpl* other) {
   if (!other) {
     std::move(callback).Run(
-        native_file_system_error::FromStatus(
+        file_system_access_error::FromStatus(
             blink::mojom::FileSystemAccessStatus::kOperationFailed),
         false);
     return;
   }
 
   if (other->type() != FileSystemAccessPermissionContext::HandleType::kFile) {
-    std::move(callback).Run(native_file_system_error::Ok(), false);
+    std::move(callback).Run(file_system_access_error::Ok(), false);
     return;
   }
 
@@ -123,17 +123,17 @@ void NativeFileSystemFileHandleImpl::IsSameEntryImpl(
 
   // If two URLs are of a different type they are definitely not related.
   if (url1.type() != url2.type()) {
-    std::move(callback).Run(native_file_system_error::Ok(), false);
+    std::move(callback).Run(file_system_access_error::Ok(), false);
     return;
   }
 
   // Otherwise compare path.
   const base::FilePath& path1 = url1.path();
   const base::FilePath& path2 = url2.path();
-  std::move(callback).Run(native_file_system_error::Ok(), path1 == path2);
+  std::move(callback).Run(file_system_access_error::Ok(), path1 == path2);
 }
 
-void NativeFileSystemFileHandleImpl::Transfer(
+void FileSystemAccessFileHandleImpl::Transfer(
     mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -175,14 +175,14 @@ void CreateBlobOnIOThread(
 
 }  // namespace
 
-void NativeFileSystemFileHandleImpl::DidGetMetaDataForBlob(
+void FileSystemAccessFileHandleImpl::DidGetMetaDataForBlob(
     AsBlobCallback callback,
     base::File::Error result,
     const base::File::Info& info) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (result != base::File::FILE_OK) {
-    std::move(callback).Run(native_file_system_error::FromFileError(result),
+    std::move(callback).Run(file_system_access_error::FromFileError(result),
                             base::File::Info(), nullptr);
     return;
   }
@@ -208,7 +208,7 @@ void NativeFileSystemFileHandleImpl::DidGetMetaDataForBlob(
       blob_remote.InitWithNewPipeAndPassReceiver();
 
   std::move(callback).Run(
-      native_file_system_error::Ok(), info,
+      file_system_access_error::Ok(), info,
       blink::mojom::SerializedBlob::New(uuid, content_type, info.size,
                                         std::move(blob_remote)));
 
@@ -221,7 +221,7 @@ void NativeFileSystemFileHandleImpl::DidGetMetaDataForBlob(
                      std::move(content_type), info));
 }
 
-void NativeFileSystemFileHandleImpl::CreateFileWriterImpl(
+void FileSystemAccessFileHandleImpl::CreateFileWriterImpl(
     bool keep_existing_data,
     bool auto_close,
     CreateFileWriterCallback callback) {
@@ -239,7 +239,7 @@ void NativeFileSystemFileHandleImpl::CreateFileWriterImpl(
       /*count=*/0, keep_existing_data, auto_close, std::move(callback));
 }
 
-void NativeFileSystemFileHandleImpl::CreateSwapFile(
+void FileSystemAccessFileHandleImpl::CreateSwapFile(
     int count,
     bool keep_existing_data,
     bool auto_close,
@@ -249,7 +249,7 @@ void NativeFileSystemFileHandleImpl::CreateSwapFile(
   DCHECK(max_swap_files_ >= 0);
 
   if (GetWritePermissionStatus() != blink::mojom::PermissionStatus::GRANTED) {
-    std::move(callback).Run(native_file_system_error::FromStatus(
+    std::move(callback).Run(file_system_access_error::FromStatus(
                                 FileSystemAccessStatus::kPermissionDenied),
                             mojo::NullRemote());
     return;
@@ -263,7 +263,7 @@ void NativeFileSystemFileHandleImpl::CreateSwapFile(
     DLOG(ERROR) << "Error Creating Swap File, count: " << count
                 << " exceeds max unique files of: " << max_swap_files_
                 << " base path: " << swap_path;
-    std::move(callback).Run(native_file_system_error::FromStatus(
+    std::move(callback).Run(file_system_access_error::FromStatus(
                                 FileSystemAccessStatus::kOperationFailed,
                                 "Failed to create swap file."),
                             mojo::NullRemote());
@@ -303,7 +303,7 @@ void NativeFileSystemFileHandleImpl::CreateSwapFile(
 
   DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::CreateFile,
-      base::BindOnce(&NativeFileSystemFileHandleImpl::DidCreateSwapFile,
+      base::BindOnce(&FileSystemAccessFileHandleImpl::DidCreateSwapFile,
                      weak_factory_.GetWeakPtr(), count, swap_url,
                      swap_file_system, keep_existing_data, auto_close,
                      std::move(callback)),
@@ -311,7 +311,7 @@ void NativeFileSystemFileHandleImpl::CreateSwapFile(
       /*exclusive=*/true);
 }
 
-void NativeFileSystemFileHandleImpl::DidCreateSwapFile(
+void FileSystemAccessFileHandleImpl::DidCreateSwapFile(
     int count,
     const storage::FileSystemURL& swap_url,
     storage::IsolatedContext::ScopedFSHandle swap_file_system,
@@ -331,7 +331,7 @@ void NativeFileSystemFileHandleImpl::DidCreateSwapFile(
     DLOG(ERROR) << "Error Creating Swap File, status: "
                 << base::File::ErrorToString(result)
                 << " path: " << swap_url.path();
-    std::move(callback).Run(native_file_system_error::FromFileError(
+    std::move(callback).Run(file_system_access_error::FromFileError(
                                 result, "Error creating swap file."),
                             mojo::NullRemote());
     return;
@@ -339,10 +339,10 @@ void NativeFileSystemFileHandleImpl::DidCreateSwapFile(
 
   if (!keep_existing_data) {
     std::move(callback).Run(
-        native_file_system_error::Ok(),
+        file_system_access_error::Ok(),
         manager()->CreateFileWriter(
             context(), url(), swap_url,
-            NativeFileSystemManagerImpl::SharedHandleState(
+            FileSystemAccessManagerImpl::SharedHandleState(
                 handle_state().read_grant, handle_state().write_grant,
                 swap_file_system),
             auto_close));
@@ -351,7 +351,7 @@ void NativeFileSystemFileHandleImpl::DidCreateSwapFile(
 
   DoFileSystemOperation(
       FROM_HERE, &FileSystemOperationRunner::Copy,
-      base::BindOnce(&NativeFileSystemFileHandleImpl::DidCopySwapFile,
+      base::BindOnce(&FileSystemAccessFileHandleImpl::DidCopySwapFile,
                      weak_factory_.GetWeakPtr(), swap_url, swap_file_system,
                      auto_close, std::move(callback)),
       url(), swap_url,
@@ -360,7 +360,7 @@ void NativeFileSystemFileHandleImpl::DidCreateSwapFile(
       storage::FileSystemOperation::CopyProgressCallback());
 }
 
-void NativeFileSystemFileHandleImpl::DidCopySwapFile(
+void FileSystemAccessFileHandleImpl::DidCopySwapFile(
     const storage::FileSystemURL& swap_url,
     storage::IsolatedContext::ScopedFSHandle swap_file_system,
     bool auto_close,
@@ -371,22 +371,22 @@ void NativeFileSystemFileHandleImpl::DidCopySwapFile(
     DLOG(ERROR) << "Error Creating Swap File, status: "
                 << base::File::ErrorToString(result)
                 << " path: " << swap_url.path();
-    std::move(callback).Run(native_file_system_error::FromFileError(
+    std::move(callback).Run(file_system_access_error::FromFileError(
                                 result, "Error copying to swap file."),
                             mojo::NullRemote());
     return;
   }
-  std::move(callback).Run(native_file_system_error::Ok(),
+  std::move(callback).Run(file_system_access_error::Ok(),
                           manager()->CreateFileWriter(
                               context(), url(), swap_url,
-                              NativeFileSystemManagerImpl::SharedHandleState(
+                              FileSystemAccessManagerImpl::SharedHandleState(
                                   handle_state().read_grant,
                                   handle_state().write_grant, swap_file_system),
                               auto_close));
 }
 
-base::WeakPtr<NativeFileSystemHandleBase>
-NativeFileSystemFileHandleImpl::AsWeakPtr() {
+base::WeakPtr<FileSystemAccessHandleBase>
+FileSystemAccessFileHandleImpl::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 

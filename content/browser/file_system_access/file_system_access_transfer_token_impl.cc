@@ -2,23 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/file_system_access/native_file_system_transfer_token_impl.h"
+#include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
 
-#include "content/browser/file_system_access/native_file_system_directory_handle_impl.h"
-#include "content/browser/file_system_access/native_file_system_file_handle_impl.h"
+#include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
+#include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
 
 namespace content {
 
 using HandleType = FileSystemAccessPermissionContext::HandleType;
-using SharedHandleState = NativeFileSystemManagerImpl::SharedHandleState;
+using SharedHandleState = FileSystemAccessManagerImpl::SharedHandleState;
 
-NativeFileSystemTransferTokenImpl::NativeFileSystemTransferTokenImpl(
+FileSystemAccessTransferTokenImpl::FileSystemAccessTransferTokenImpl(
     const storage::FileSystemURL& url,
     const url::Origin& origin,
-    const NativeFileSystemManagerImpl::SharedHandleState& handle_state,
+    const FileSystemAccessManagerImpl::SharedHandleState& handle_state,
     HandleType handle_type,
-    NativeFileSystemManagerImpl* manager,
+    FileSystemAccessManagerImpl* manager,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken> receiver)
     : token_(base::UnguessableToken::Create()),
       handle_type_(handle_type),
@@ -30,53 +30,53 @@ NativeFileSystemTransferTokenImpl::NativeFileSystemTransferTokenImpl(
   DCHECK(url.origin().opaque() || url.origin() == origin);
 
   receivers_.set_disconnect_handler(
-      base::BindRepeating(&NativeFileSystemTransferTokenImpl::OnMojoDisconnect,
+      base::BindRepeating(&FileSystemAccessTransferTokenImpl::OnMojoDisconnect,
                           base::Unretained(this)));
 
   receivers_.Add(this, std::move(receiver));
 }
 
-NativeFileSystemTransferTokenImpl::~NativeFileSystemTransferTokenImpl() =
+FileSystemAccessTransferTokenImpl::~FileSystemAccessTransferTokenImpl() =
     default;
 
-std::unique_ptr<NativeFileSystemFileHandleImpl>
-NativeFileSystemTransferTokenImpl::CreateFileHandle(
-    const NativeFileSystemManagerImpl::BindingContext& binding_context) const {
+std::unique_ptr<FileSystemAccessFileHandleImpl>
+FileSystemAccessTransferTokenImpl::CreateFileHandle(
+    const FileSystemAccessManagerImpl::BindingContext& binding_context) const {
   DCHECK_EQ(handle_type_, HandleType::kFile);
-  return std::make_unique<NativeFileSystemFileHandleImpl>(
+  return std::make_unique<FileSystemAccessFileHandleImpl>(
       manager_, binding_context, url_, handle_state_);
 }
 
-std::unique_ptr<NativeFileSystemDirectoryHandleImpl>
-NativeFileSystemTransferTokenImpl::CreateDirectoryHandle(
-    const NativeFileSystemManagerImpl::BindingContext& binding_context) const {
+std::unique_ptr<FileSystemAccessDirectoryHandleImpl>
+FileSystemAccessTransferTokenImpl::CreateDirectoryHandle(
+    const FileSystemAccessManagerImpl::BindingContext& binding_context) const {
   DCHECK_EQ(handle_type_, HandleType::kDirectory);
-  return std::make_unique<NativeFileSystemDirectoryHandleImpl>(
+  return std::make_unique<FileSystemAccessDirectoryHandleImpl>(
       manager_, binding_context, url_, handle_state_);
 }
 
 FileSystemAccessPermissionGrant*
-NativeFileSystemTransferTokenImpl::GetReadGrant() const {
+FileSystemAccessTransferTokenImpl::GetReadGrant() const {
   return handle_state_.read_grant.get();
 }
 
 FileSystemAccessPermissionGrant*
-NativeFileSystemTransferTokenImpl::GetWriteGrant() const {
+FileSystemAccessTransferTokenImpl::GetWriteGrant() const {
   return handle_state_.write_grant.get();
 }
 
-void NativeFileSystemTransferTokenImpl::GetInternalID(
+void FileSystemAccessTransferTokenImpl::GetInternalID(
     GetInternalIDCallback callback) {
   std::move(callback).Run(token_);
 }
 
-void NativeFileSystemTransferTokenImpl::OnMojoDisconnect() {
+void FileSystemAccessTransferTokenImpl::OnMojoDisconnect() {
   if (receivers_.empty()) {
     manager_->RemoveToken(token_);
   }
 }
 
-void NativeFileSystemTransferTokenImpl::Clone(
+void FileSystemAccessTransferTokenImpl::Clone(
     mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
         clone_receiver) {
   receivers_.Add(this, std::move(clone_receiver));

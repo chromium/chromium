@@ -84,7 +84,7 @@ class FontAccessContext;
 class GeneratedCodeCacheContext;
 class IndexedDBContextImpl;
 class FileSystemAccessEntryFactory;
-class NativeFileSystemManagerImpl;
+class FileSystemAccessManagerImpl;
 class NativeIOContext;
 class PrefetchURLLoaderService;
 class QuotaContext;
@@ -214,7 +214,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   BlobRegistryWrapper* GetBlobRegistry();
   PrefetchURLLoaderService* GetPrefetchURLLoaderService();
   CookieStoreContext* GetCookieStoreContext();
-  NativeFileSystemManagerImpl* GetNativeFileSystemManager();
+  FileSystemAccessManagerImpl* GetFileSystemAccessManager();
   QuotaContext* GetQuotaContext();
   NativeIOContext* GetNativeIOContext();
   ConversionManagerImpl* GetConversionManager();
@@ -544,7 +544,7 @@ class CONTENT_EXPORT StoragePartitionImpl
   scoped_refptr<GeneratedCodeCacheContext> generated_code_cache_context_;
   scoped_refptr<DevToolsBackgroundServicesContextImpl>
       devtools_background_services_context_;
-  scoped_refptr<NativeFileSystemManagerImpl> native_file_system_manager_;
+  scoped_refptr<FileSystemAccessManagerImpl> file_system_access_manager_;
   std::unique_ptr<leveldb_proto::ProtoDatabaseProvider>
       proto_database_provider_;
   scoped_refptr<ContentIndexContextImpl> content_index_context_;

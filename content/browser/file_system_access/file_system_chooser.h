@@ -95,4 +95,4 @@ class CONTENT_EXPORT FileSystemChooser : public ui::SelectFileDialog::Listener {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_NATIVE_FILE_SYSTEM_FILE_SYSTEM_CHOOSER_H_
+#endif  // CONTENT_BROWSER_FILE_SYSTEM_ACCESS_FILE_SYSTEM_CHOOSER_H_

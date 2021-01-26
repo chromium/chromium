@@ -53,7 +53,7 @@
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/devtools/devtools_url_loader_interceptor.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
-#include "content/browser/file_system_access/native_file_system_manager_impl.h"
+#include "content/browser/file_system_access/file_system_access_manager_impl.h"
 #include "content/browser/gpu/shader_cache_factory.h"
 #include "content/browser/loader/prefetch_url_loader_service.h"
 #include "content/browser/native_io/native_io_context.h"
@@ -1202,22 +1202,22 @@ void StoragePartitionImpl::Initialize(
   scoped_refptr<ChromeBlobStorageContext> blob_context =
       ChromeBlobStorageContext::GetFor(browser_context_);
 
-  native_file_system_manager_ =
-      base::MakeRefCounted<NativeFileSystemManagerImpl>(
+  file_system_access_manager_ =
+      base::MakeRefCounted<FileSystemAccessManagerImpl>(
           filesystem_context_, blob_context,
           browser_context_->GetFileSystemAccessPermissionContext(),
           browser_context_->IsOffTheRecord());
 
   mojo::PendingRemote<storage::mojom::FileSystemAccessContext>
-      native_file_system_context;
-  native_file_system_manager_->BindInternalsReceiver(
-      native_file_system_context.InitWithNewPipeAndPassReceiver());
+      file_system_access_context;
+  file_system_access_manager_->BindInternalsReceiver(
+      file_system_access_context.InitWithNewPipeAndPassReceiver());
   base::FilePath path = is_in_memory_ ? base::FilePath() : partition_path_;
   indexed_db_control_wrapper_ = std::make_unique<IndexedDBControlWrapper>(
       path, browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy,
       base::DefaultClock::GetInstance(),
       ChromeBlobStorageContext::GetRemoteFor(browser_context_),
-      std::move(native_file_system_context), GetIOThreadTaskRunner({}),
+      std::move(file_system_access_context), GetIOThreadTaskRunner({}),
       /*task_runner=*/nullptr);
 
   cache_storage_context_ = base::MakeRefCounted<CacheStorageContextImpl>();
@@ -1484,7 +1484,7 @@ IndexedDBContextImpl* StoragePartitionImpl::GetIndexedDBContextInternal() {
 FileSystemAccessEntryFactory*
 StoragePartitionImpl::GetFileSystemAccessEntryFactory() {
   DCHECK(initialized_);
-  return native_file_system_manager_.get();
+  return file_system_access_manager_.get();
 }
 
 QuotaContext* StoragePartitionImpl::GetQuotaContext() {
@@ -1591,10 +1591,10 @@ StoragePartitionImpl::GetDevToolsBackgroundServicesContext() {
   return devtools_background_services_context_.get();
 }
 
-NativeFileSystemManagerImpl*
-StoragePartitionImpl::GetNativeFileSystemManager() {
+FileSystemAccessManagerImpl*
+StoragePartitionImpl::GetFileSystemAccessManager() {
   DCHECK(initialized_);
-  return native_file_system_manager_.get();
+  return file_system_access_manager_.get();
 }
 
 ConversionManagerImpl* StoragePartitionImpl::GetConversionManager() {

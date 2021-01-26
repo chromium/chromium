@@ -16224,7 +16224,7 @@ should be able to be added at any place in this file.
 
 <action name="NativeFileSystemAPI.OpenedBubble">
   <owner>mek@chromium.org</owner>
-  <owner>src/content/browser/native_file_system/OWNERS</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
   <description>
     Recorded any time the user opens the usage indicator bubble for the Native
     File System API.
@@ -16233,7 +16233,7 @@ should be able to be added at any place in this file.
 
 <action name="NativeFileSystemAPI.RevokePermissions">
   <owner>mek@chromium.org</owner>
-  <owner>src/content/browser/native_file_system/OWNERS</owner>
+  <owner>src/content/browser/file_system_access/OWNERS</owner>
   <description>
     Recorded any time the user revokes all Native File System API permissions
     from the usage indicator bubble.

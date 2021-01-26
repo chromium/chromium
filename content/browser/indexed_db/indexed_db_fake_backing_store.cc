@@ -33,7 +33,7 @@ IndexedDBFakeBackingStore::IndexedDBFakeBackingStore()
                             base::FilePath(),
                             std::unique_ptr<TransactionalLevelDBDatabase>(),
                             /*blob_storage_context=*/nullptr,
-                            /*native_file_system_context=*/nullptr,
+                            /*file_system_access_context=*/nullptr,
                             std::make_unique<storage::FilesystemProxy>(
                                 storage::FilesystemProxy::UNRESTRICTED,
                                 base::FilePath()),
@@ -50,7 +50,7 @@ IndexedDBFakeBackingStore::IndexedDBFakeBackingStore(
                             base::FilePath(),
                             std::unique_ptr<TransactionalLevelDBDatabase>(),
                             /*blob_storage_context=*/nullptr,
-                            /*native_file_system_context=*/nullptr,
+                            /*file_system_access_context=*/nullptr,
                             std::make_unique<storage::FilesystemProxy>(
                                 storage::FilesystemProxy::UNRESTRICTED,
                                 base::FilePath()),

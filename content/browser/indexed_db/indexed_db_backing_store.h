@@ -390,7 +390,7 @@ class CONTENT_EXPORT IndexedDBBackingStore {
       const base::FilePath& blob_path,
       std::unique_ptr<TransactionalLevelDBDatabase> db,
       storage::mojom::BlobStorageContext* blob_storage_context,
-      storage::mojom::FileSystemAccessContext* native_file_system_context,
+      storage::mojom::FileSystemAccessContext* file_system_access_context,
       std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       BlobFilesCleanedCallback blob_files_cleaned,
       ReportOutstandingBlobsCallback report_outstanding_blobs,
@@ -664,13 +664,13 @@ class CONTENT_EXPORT IndexedDBBackingStore {
   const url::Origin origin_;
   const base::FilePath blob_path_;
 
-  // IndexedDB can store blobs and native file system handles. These mojo
+  // IndexedDB can store blobs and File System Access handles. These mojo
   // interfaces are used to make this possible by communicating with the
   // relevant subsystems.
   // Raw pointers are safe because the bindings are owned by
   // IndexedDBContextImpl.
   storage::mojom::BlobStorageContext* const blob_storage_context_;
-  storage::mojom::FileSystemAccessContext* const native_file_system_context_;
+  storage::mojom::FileSystemAccessContext* const file_system_access_context_;
 
   // Filesystem proxy to use for file operations.  nullptr if in memory.
   const std::unique_ptr<storage::FilesystemProxy> filesystem_proxy_;

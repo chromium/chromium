@@ -485,7 +485,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual void BindFileSystemManager(
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::FileSystemManager> receiver) = 0;
-  virtual void BindNativeFileSystemManager(
+  virtual void BindFileSystemAccessManager(
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::FileSystemAccessManager>
           receiver) = 0;
