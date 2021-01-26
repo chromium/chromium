@@ -21,7 +21,7 @@ if (optimize_webui) {
   build_manifest = "build_manifest.json"
 
   optimize_webui("build") {
-    host = "tab-search"
+    host = "tab-search.top-chrome"
     input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
     js_out_files = [ "tab_search.rollup.js" ]
     js_module_in_files = [ "tab_search.js" ]

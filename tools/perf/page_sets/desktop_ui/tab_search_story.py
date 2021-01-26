@@ -25,7 +25,7 @@ TAB_SEARCH_BENCHMARK_UMA = [
     'Tabs.TabSearch.WindowTimeToShowUncachedWebView',
 ]
 
-TAB_SEARCH_URL = 'chrome://tab-search/'
+TAB_SEARCH_URL = 'chrome://tab-search.top-chrome/'
 
 
 class TabSearchStory(MultiTabStory):

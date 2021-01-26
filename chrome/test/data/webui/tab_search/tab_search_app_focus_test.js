@@ -4,7 +4,7 @@
 
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {ProfileTabs, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchItem, TabSearchSearchField} from 'chrome://tab-search/tab_search.js';
+import {ProfileTabs, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchItem, TabSearchSearchField} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 import {assertEquals, assertGT} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.m.js';

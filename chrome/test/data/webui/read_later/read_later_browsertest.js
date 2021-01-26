@@ -24,7 +24,7 @@ class ReadLaterBrowserTest extends PolymerTest {
 var ReadLaterAppTest = class extends ReadLaterBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://read-later/test_loader.html?module=read_later/read_later_app_test.js';
+    return 'chrome://read-later.top-chrome/test_loader.html?module=read_later/read_later_app_test.js';
   }
 };
 

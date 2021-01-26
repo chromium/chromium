@@ -300,7 +300,7 @@
       "chrome://os-settings/*",
       "chrome://settings/*",
       "chrome://sync-confirmation/*",
-      "chrome://tab-search/*",
+      "chrome://tab-search.top-chrome/*",
       "chrome://tab-strip/*",
       "chrome://welcome/*",
       "chrome://profile-picker/*",

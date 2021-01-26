@@ -203,8 +203,8 @@ const char kChromeUIUntrustedVideoPlayerUrl[] =
 const char kChromeUIWebApksHost[] = "webapks";
 #else
 const char kChromeUINearbyInternalsHost[] = "nearby-internals";
-const char kChromeUIReadLaterHost[] = "read-later";
-const char kChromeUIReadLaterURL[] = "chrome://read-later/";
+const char kChromeUIReadLaterHost[] = "read-later.top-chrome";
+const char kChromeUIReadLaterURL[] = "chrome://read-later.top-chrome/";
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -404,8 +404,8 @@ const char kChromeUITabStripURL[] = "chrome://tab-strip";
 #if !defined(OS_ANDROID)
 const char kChromeUICommanderHost[] = "commander";
 const char kChromeUICommanderURL[] = "chrome://commander";
-const char kChromeUITabSearchHost[] = "tab-search";
-const char kChromeUITabSearchURL[] = "chrome://tab-search/";
+const char kChromeUITabSearchHost[] = "tab-search.top-chrome";
+const char kChromeUITabSearchURL[] = "chrome://tab-search.top-chrome/";
 #endif
 
 const char kChromeUIWebRtcLogsHost[] = "webrtc-logs";

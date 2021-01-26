@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://read-later/read_later.mojom-lite.js';
+import 'chrome://read-later.top-chrome/read_later.mojom-lite.js';
 
-import {ReadLaterApiProxy} from 'chrome://read-later/read_later_api_proxy.js';
+import {ReadLaterApiProxy} from 'chrome://read-later.top-chrome/read_later_api_proxy.js';
 import {TestBrowserProxy} from '../test_browser_proxy.m.js';
 
 /** @implements {ReadLaterApiProxy} */

@@ -6,19 +6,20 @@ import("//third_party/closure_compiler/compile_js.gni")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags =
-      default_closure_args + mojom_js_args + [
-        "browser_resolver_prefix_replacements=\"chrome://tab-search/=./\"",
-        "js_module_root=" + rebase_path("//chrome/browser/resources/tab_search",
-                                        root_build_dir),
-        "js_module_root=" +
-            rebase_path("//chrome/test/data/webui", root_build_dir),
-        "js_module_root=" +
-            rebase_path("$root_gen_dir/chrome/test/data/webui", root_build_dir),
-        "js_module_root=" + rebase_path(
-                "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_search",
-                root_build_dir),
-      ]
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://tab-search.top-chrome/=./\"",
+                    "js_module_root=" +
+                        rebase_path("//chrome/browser/resources/tab_search",
+                                    root_build_dir),
+                    "js_module_root=" +
+                        rebase_path("//chrome/test/data/webui", root_build_dir),
+                    "js_module_root=" +
+                        rebase_path("$root_gen_dir/chrome/test/data/webui",
+                                    root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_search",
+                            root_build_dir),
+                  ]
   deps = [
     ":fuzzy_search_test",
     ":infinite_list_test",

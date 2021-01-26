@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {InfiniteList, TabSearchItem} from 'chrome://tab-search/tab_search.js';
+import {InfiniteList, TabSearchItem} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 import {assertEquals, assertGT, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
