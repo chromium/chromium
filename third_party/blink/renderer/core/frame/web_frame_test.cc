@@ -8526,6 +8526,32 @@ TEST_F(WebFrameTest, WebXrImmersiveOverlay) {
   EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "inner").size());
 }
 
+TEST_F(WebFrameTest, FullscreenFrameSet) {
+  frame_test_helpers::WebViewHelper web_view_helper;
+  WebViewImpl* web_view_impl = web_view_helper.InitializeAndLoad(
+      "data:text/html,<frameset id=frameset></frameset>", nullptr, nullptr);
+  web_view_helper.Resize(gfx::Size(640, 480));
+  UpdateAllLifecyclePhases(web_view_impl);
+
+  LocalFrame* frame = web_view_impl->MainFrameImpl()->GetFrame();
+  Document* document = frame->GetDocument();
+  LocalFrame::NotifyUserActivation(
+      frame, mojom::UserActivationNotificationType::kTest);
+  Element* frameset = document->getElementById("frameset");
+  Fullscreen::RequestFullscreen(*frameset);
+  EXPECT_EQ(nullptr, Fullscreen::FullscreenElementFrom(*document));
+  web_view_impl->DidEnterFullscreen();
+  EXPECT_EQ(frameset, Fullscreen::FullscreenElementFrom(*document));
+  UpdateAllLifecyclePhases(web_view_impl);
+  EXPECT_EQ(frameset, Fullscreen::FullscreenElementFrom(*document));
+
+  // Verify that the element is in the top layer, attached to the LayoutView.
+  EXPECT_TRUE(frameset->IsInTopLayer());
+  auto* fullscreen_layout_object = To<LayoutBox>(frameset->GetLayoutObject());
+  ASSERT_TRUE(fullscreen_layout_object);
+  EXPECT_EQ(fullscreen_layout_object->Parent(), document->GetLayoutView());
+}
+
 TEST_F(WebFrameTest, LayoutBlockPercentHeightDescendants) {
   RegisterMockedHttpURLLoad("percent-height-descendants.html");
   frame_test_helpers::WebViewHelper web_view_helper;

@@ -281,8 +281,13 @@ Node::InsertionNotificationRequest HTMLFrameSetElement::InsertedInto(
 }
 void HTMLFrameSetElement::WillRecalcStyle(const StyleRecalcChange) {
   if (NeedsStyleRecalc() && GetLayoutObject()) {
-    GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
-        layout_invalidation_reason::kStyleChange);
+    if (GetForceReattachLayoutTree()) {
+      // Adding a frameset to the top layer for fullscreen forces a reattach.
+      SetNeedsReattachLayoutTree();
+    } else {
+      GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
+          layout_invalidation_reason::kStyleChange);
+    }
     ClearNeedsStyleRecalc();
   }
 }
