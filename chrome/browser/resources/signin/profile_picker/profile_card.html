@@ -1,4 +1,4 @@
-<style include="profile-picker-shared cr-hidden-style">
+<style include="profile-picker-shared cr-hidden-style cr-shared-style">
   #profileCardContainer {
     border-radius: inherit;
     height: 100%;
@@ -99,6 +99,13 @@
     width: 130px;
   }
 
+  paper-tooltip {
+    --paper-tooltip-delay-in: 100ms;
+    --paper-tooltip-duration-in: 100ms;
+    --paper-tooltip-duration-out: 100ms;
+    --paper-tooltip-min-width: none;
+  }
+
   @media (prefers-color-scheme: dark) {
     #iconContainer {
       background-color: var(--md-background-color);
@@ -130,6 +137,9 @@
         hidden="[[profileState.needsSignin]]">
       [[profileState.gaiaName]]
     </div>
+    <paper-tooltip for="gaiaName" offset="-16">
+      [[profileState.gaiaName]]
+    </paper-tooltip>
     <div id="forceSigninContainer" class="profile-card-info secondary-text"
         hidden="[[!profileState.needsSignin]]">
       <div>$i18n{needsSigninPrompt}</div>
@@ -144,6 +154,9 @@
         auto-validate spellcheck="false" required>
     </cr-input>
     <div id="hoverUnderline"></div>
+    <paper-tooltip id="tooltip" for="nameInput" manual-mode offset="-10">
+      [[profileState.localProfileName]]
+    </paper-tooltip>
   </div>
   <profile-card-menu profile-state="[[profileState]]"></profile-card-menu>
 </div>
