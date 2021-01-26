@@ -913,6 +913,14 @@ ci.android_fyi_builder(
     ),
 )
 
+ci.android_fyi_builder(
+    name = "android-weblayer-pie-x86-wpt-fyi-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "builder_tester|weblayer",
+        short_name = "P",
+    ),
+)
+
 ci.android_builder(
     name = "android-pie-x86-rel",
     console_view_entry = consoles.console_view_entry(
