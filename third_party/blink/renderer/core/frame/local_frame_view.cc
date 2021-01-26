@@ -2502,7 +2502,23 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
   // Note that after ResizeObserver has settled, we also run intersection
   // observations that need to be delievered in post-layout. This process can
   // also dirty layout, which will run this loop again.
+
+  // A LocalFrameView can be unthrottled at this point, but become throttled as
+  // it advances through lifecycle stages. If that happens, it will prevent
+  // subsequent passes through the loop from updating the newly-throttled views.
+  // To avoid that, we lock in the set of unthrottled views before entering the
+  // loop.
+  HeapVector<Member<LocalFrameView>> unthrottled_frame_views;
+  ForAllNonThrottledLocalFrameViews(
+      [&unthrottled_frame_views](LocalFrameView& frame_view) {
+        unthrottled_frame_views.push_back(&frame_view);
+      });
+
   while (true) {
+    for (LocalFrameView* frame_view : unthrottled_frame_views) {
+      frame_view->Lifecycle().EnsureStateAtMost(
+          DocumentLifecycle::kVisualUpdatePending);
+    }
     bool run_more_lifecycle_phases =
         RunStyleAndLayoutLifecyclePhases(target_state);
     if (!run_more_lifecycle_phases)
