@@ -25,7 +25,7 @@ void CompareExtension(const Extension& extension1,
   EXPECT_EQ(extension1.path(), extension2.path());
   EXPECT_EQ(extension1.permissions_data()->active_permissions(),
             extension2.permissions_data()->active_permissions());
-  EXPECT_TRUE(extension1.manifest()->Equals(extension2.manifest()));
+  EXPECT_TRUE(extension1.manifest()->EqualsForTesting(*extension2.manifest()));
   const PermissionsData::TabPermissionsMap& second_tab_permissions =
       extension2.permissions_data()->tab_specific_permissions();
   for (const auto& tab_permissions :

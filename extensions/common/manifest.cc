@@ -295,15 +295,9 @@ bool Manifest::GetPathOfType(const std::string& path,
   return *out_value != nullptr;
 }
 
-std::unique_ptr<Manifest> Manifest::CreateDeepCopy() const {
-  auto manifest =
-      std::make_unique<Manifest>(location_, value_->CreateDeepCopy());
-  manifest->SetExtensionId(extension_id_);
-  return manifest;
-}
-
-bool Manifest::Equals(const Manifest* other) const {
-  return other && value_->Equals(other->value());
+bool Manifest::EqualsForTesting(const Manifest& other) const {
+  return value_->Equals(other.value()) && location_ == other.location_ &&
+         extension_id_ == other.extension_id_;
 }
 
 int Manifest::GetManifestVersion() const {

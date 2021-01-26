@@ -106,12 +106,13 @@ TEST_F(ManifestUnitTest, Extension) {
   EXPECT_TRUE(manifest->GetString("unknown_key", &value));
   EXPECT_EQ("foo", value);
 
-  // Test CreateDeepCopy and Equals.
-  std::unique_ptr<Manifest> manifest2 = manifest->CreateDeepCopy();
-  EXPECT_TRUE(manifest->Equals(manifest2.get()));
-  EXPECT_TRUE(manifest2->Equals(manifest.get()));
+  // Test EqualsForTesting.
+  auto manifest2 = std::make_unique<Manifest>(
+      Manifest::INTERNAL, manifest->value()->CreateDeepCopy());
+  EXPECT_TRUE(manifest->EqualsForTesting(*manifest2));
+  EXPECT_TRUE(manifest2->EqualsForTesting(*manifest));
   MutateManifest(&manifest, "foo", std::make_unique<base::Value>("blah"));
-  EXPECT_FALSE(manifest->Equals(manifest2.get()));
+  EXPECT_FALSE(manifest->EqualsForTesting(*manifest2));
 }
 
 // Verifies that key restriction based on type works.

@@ -216,11 +216,8 @@ class Manifest {
                      base::Value::Type type,
                      const base::Value** out_value) const;
 
-  // Returns a new Manifest equal to this one.
-  std::unique_ptr<Manifest> CreateDeepCopy() const;
-
   // Returns true if this equals the |other| manifest.
-  bool Equals(const Manifest* other) const;
+  bool EqualsForTesting(const Manifest& other) const;
 
   // Gets the underlying DictionaryValue representing the manifest.
   // Note: only use this when you KNOW you don't need the validation.

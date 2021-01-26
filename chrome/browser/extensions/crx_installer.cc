@@ -147,7 +147,7 @@ CrxInstaller::CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
     expected_manifest_check_level_ = approval->manifest_check_level;
     if (expected_manifest_check_level_ !=
         WebstoreInstaller::MANIFEST_CHECK_LEVEL_NONE) {
-      expected_manifest_ = approval->manifest->CreateDeepCopy();
+      expected_manifest_ = approval->manifest->value()->CreateDeepCopy();
     }
     expected_id_ = approval->extension_id;
   }
@@ -381,13 +381,9 @@ base::Optional<CrxInstallError> CrxInstaller::AllowInstall(
       if (!valid && expected_manifest_check_level_ ==
           WebstoreInstaller::MANIFEST_CHECK_LEVEL_LOOSE) {
         std::string error;
-        scoped_refptr<Extension> dummy_extension =
-            Extension::Create(base::FilePath(),
-                              install_source_,
-                              *expected_manifest_->value(),
-                              creation_flags_,
-                              extension->id(),
-                              &error);
+        scoped_refptr<Extension> dummy_extension = Extension::Create(
+            base::FilePath(), install_source_, *expected_manifest_,
+            creation_flags_, extension->id(), &error);
         if (error.empty()) {
           valid = !(PermissionMessageProvider::Get()->IsPrivilegeIncrease(
               dummy_extension->permissions_data()->active_permissions(),
@@ -561,10 +557,7 @@ void CrxInstaller::OnUnpackSuccessOnSharedFileThread(
   if (!install_icon.empty())
     install_icon_ = std::make_unique<SkBitmap>(install_icon);
 
-  if (original_manifest) {
-    original_manifest_ = std::make_unique<Manifest>(
-        Manifest::INVALID_LOCATION, std::move(original_manifest));
-  }
+  original_manifest_ = std::move(original_manifest);
 
   // We don't have to delete the unpack dir explicity since it is a child of
   // the temp dir.
