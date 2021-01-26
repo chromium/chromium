@@ -23,14 +23,14 @@ class UnitTest(fake_filesystem_unittest.TestCase):
   def test_convert_to_go_swarming_args(self):
     args = [
         '--swarming', 'x.apphost.com', '--dimension', 'pool', 'ci',
-        '--dimension', 'os', 'linux', '-env', 'FOO=foo', '--hello',
-        '-cipd-package', 'path:name=123', '--scalar', '42',
-        '--enable-resultdb'
+        '--dimension', 'os', 'linux', '--env', 'FOO', 'foo', '--hello',
+        '--cipd-package', 'path:name:123', '--scalar', '42',
+        '--resultdb'
     ]
     go_args = base_test_triggerer._convert_to_go_swarming_args(args)
     expected = [
         '--server', 'x.apphost.com', '--dimension', 'pool=ci', '--dimension',
-        'os=linux', '-env', 'FOO=foo', '--hello', '-cipd-package',
+        'os=linux', '--env', 'FOO=foo', '--hello', '--cipd-package',
         'path:name=123', '--scalar', '42', '--enable-resultdb'
     ]
     self.assertEquals(go_args, expected)
@@ -42,6 +42,13 @@ class UnitTest(fake_filesystem_unittest.TestCase):
             '--dimension',
             'key',
         ], IndexError),
+        # expected format: --env key value
+        ([
+            '--env',
+            'key',
+        ], IndexError),
+        # expected format: --cipd-package path:name:version
+        (['--cipd-package', 'path:name'], ValueError),
     ]
     for args, ex in invalid_args:
       self.assertRaises(ex, base_test_triggerer._convert_to_go_swarming_args,
