@@ -55,7 +55,8 @@ class MockFileChooser {
     this.params_ = params;
     log(`FileChooser: opened; mode=${modeToString(params.mode)}`);
 
-    this.factory_.dispatchEvent(new CustomEvent('open'));
+    this.factory_.dispatchEvent(
+        new CustomEvent('open', {detail: modeToString(params.mode)}));
     return new Promise((resolve, reject) => {
       setTimeout(() => this.chooseFiles_(resolve), 1);
     });
@@ -86,24 +87,22 @@ class MockFileChooser {
   }
 }
 
-function toFilePath(str) {
-  if (str === '')
-    return navigator.platform.startsWith('Win') ? { path: [] } : { path: '' };
-  const absoluteUrl = (new URL(str, document.URL)).href;
-  console.assert(absoluteUrl.startsWith('file:///'),
-      'File selection works only on file: URL documents; document.URL=' + document.URL);
+function toFilePath(path) {
   if (!navigator.platform.startsWith('Win')) {
-    // "file:///Users/foo/..." -> "/Users/foo/..."
-    return { path: absoluteUrl.substr(7) };
+    // We assume `path` is absolute, and it is therefore fine as-is on
+    // non-Windows systems.
+    return {path}
   }
-  // "file:///D:/Users/foo/..." -> "/Users/foo/..."
-  // We omit drive letters to get identical results on multiple platforms.
-  const fullPath = absoluteUrl.substr(10).replace(/\//g, '\\');
-  const path = [];
-  for (let i = 0; i < fullPath.length; ++i) {
-    path.push(fullPath.charCodeAt(i));
+
+  // On Windows, we rewrite / to \ and return as an array of character codes,
+  // since the path's mojom representation on Windows is an array<uint16>
+  // instead of a string.
+  const winPath = path.replace(/\//g, '\\');
+  const string16Path = [];
+  for (let i = 0; i < winPath.length; ++i) {
+    string16Path.push(winPath.charCodeAt(i));
   }
-  return { path: path };
+  return {path: string16Path};
 }
 
 window.mockFileChooserFactory = new MockFileChooserFactory();

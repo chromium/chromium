@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
+<script src="/gen/third_party/blink/public/mojom/choosers/file_chooser.mojom.js"></script>
+<script src="../resources/mock-file-chooser.js"></script>
+<title>INPUT TYPE=FILE WEBKITDIRECTORY and click events</title>
+<input type="file" webkitdirectory>
+<script>
+promise_test(async _ => {
+  const promise = new Promise(
+      resolve => mockFileChooserFactory.addEventListener('open', resolve));
+  const file = document.querySelector('input');
+  const x = file.offsetLeft + file.offsetWidth / 2;
+  const y = file.offsetTop + file.offsetHeight / 2;
+
+  eventSender.mouseMoveTo(x, y);
+  eventSender.mouseDown();
+  eventSender.mouseMoveTo(x, y);
+  eventSender.mouseUp();
+
+  const openEvent = await promise;
+  assert_equals(openEvent.detail, 'kUploadFolder');
+}, 'clicking a file input with the webkitdirectory attribute launches a file chooser');
+</script>
