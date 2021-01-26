@@ -33,7 +33,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleManager {
       const mojom::URLLoaderFactoryParamsPtr& factory_params);
 
   base::WeakPtr<WebBundleURLLoaderFactory> GetWebBundleURLLoaderFactory(
-      const base::UnguessableToken& token,
+      const ResourceRequest::WebBundleTokenParams& params,
       int32_t process_id);
 
  private:

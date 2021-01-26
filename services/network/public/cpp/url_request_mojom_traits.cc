@@ -173,6 +173,7 @@ bool StructTraits<network::mojom::WebBundleTokenParamsDataView,
   }
   out->handle = data.TakeWebBundleHandle<
       mojo::PendingRemote<network::mojom::WebBundleHandle>>();
+  out->render_process_id = data.render_process_id();
   return true;
 }
 

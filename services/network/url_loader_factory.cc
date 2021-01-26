@@ -136,7 +136,7 @@ void URLLoaderFactory::CreateLoaderAndStart(
     // Load a subresource from a WebBundle.
     base::WeakPtr<WebBundleURLLoaderFactory> web_bundle_url_loader_factory =
         context_->GetWebBundleManager().GetWebBundleURLLoaderFactory(
-            url_request.web_bundle_token_params->token, params_->process_id);
+            *url_request.web_bundle_token_params, params_->process_id);
     if (web_bundle_url_loader_factory) {
       web_bundle_url_loader_factory->CreateLoaderAndStart(
           std::move(receiver), routing_id, request_id, options, url_request,

@@ -103,6 +103,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
         const_cast<network::ResourceRequest::WebBundleTokenParams&>(params)
             .handle);
   }
+  static int32_t render_process_id(
+      const network::ResourceRequest::WebBundleTokenParams& params) {
+    return params.render_process_id;
+  }
 
   static bool Read(network::mojom::WebBundleTokenParamsDataView data,
                    network::ResourceRequest::WebBundleTokenParams* out);

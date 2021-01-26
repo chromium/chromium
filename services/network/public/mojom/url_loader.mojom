@@ -93,6 +93,10 @@ struct WebBundleTokenParams {
   // the WebBundle data in the network process when the renderer-side endpoint
   // is deleted.
   pending_remote<WebBundleHandle>? web_bundle_handle;
+  // Renderer process ID of the request initiator frame. Set by the browser
+  // process, for subframe navigation requests to bundled resources. Not used
+  // for subresource requests sent by renderer processes.
+  int32 render_process_id;
 };
 
 // Typemapped to network::ResourceRequest.

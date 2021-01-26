@@ -38,39 +38,66 @@ TEST_F(WebBundleManagerTest, NoFactoryExistsForDifferentProcessId) {
   mojo::PendingRemote<network::mojom::WebBundleHandle> handle;
   mojo::PendingReceiver<network::mojom::WebBundleHandle> receiver =
       handle.InitWithNewPipeAndPassReceiver();
-  auto token_params =
-      ResourceRequest::WebBundleTokenParams(token, std::move(handle));
+  ResourceRequest::WebBundleTokenParams create_params(token, std::move(handle));
 
   auto factory = manager.CreateWebBundleURLLoaderFactory(
-      GURL(kBundleUrl), token_params, factory_params);
+      GURL(kBundleUrl), create_params, factory_params);
   ASSERT_TRUE(factory);
-  ASSERT_TRUE(
-      manager.GetWebBundleURLLoaderFactory(token, factory_params->process_id));
-  ASSERT_FALSE(manager.GetWebBundleURLLoaderFactory(token, process_id2));
+
+  ResourceRequest::WebBundleTokenParams find_params(token,
+                                                    mojom::kInvalidProcessId);
+  ASSERT_TRUE(manager.GetWebBundleURLLoaderFactory(find_params,
+                                                   factory_params->process_id));
+  ASSERT_FALSE(manager.GetWebBundleURLLoaderFactory(find_params, process_id2));
+}
+
+TEST_F(WebBundleManagerTest, UseProcesIdInTokenParamsForRequestsFromBrowser) {
+  WebBundleManager manager;
+  base::UnguessableToken token = base::UnguessableToken::Create();
+  auto factory_params = mojom::URLLoaderFactoryParams::New();
+  factory_params->process_id = process_id1;
+  mojo::PendingRemote<network::mojom::WebBundleHandle> handle;
+  mojo::PendingReceiver<network::mojom::WebBundleHandle> receiver =
+      handle.InitWithNewPipeAndPassReceiver();
+  ResourceRequest::WebBundleTokenParams create_params(token, std::move(handle));
+
+  auto factory = manager.CreateWebBundleURLLoaderFactory(
+      GURL(kBundleUrl), create_params, factory_params);
+  ASSERT_TRUE(factory);
+
+  ResourceRequest::WebBundleTokenParams find_params1(token, process_id1);
+  ASSERT_TRUE(manager.GetWebBundleURLLoaderFactory(find_params1,
+                                                   mojom::kBrowserProcessId));
+  ASSERT_FALSE(manager.GetWebBundleURLLoaderFactory(find_params1, process_id2));
+  ResourceRequest::WebBundleTokenParams find_params2(token, process_id2);
+  ASSERT_FALSE(manager.GetWebBundleURLLoaderFactory(find_params2,
+                                                    mojom::kBrowserProcessId));
 }
 
 TEST_F(WebBundleManagerTest, RemoveFactoryWhenDisconnected) {
   WebBundleManager manager;
   base::UnguessableToken token = base::UnguessableToken::Create();
+  ResourceRequest::WebBundleTokenParams find_params(token,
+                                                    mojom::kInvalidProcessId);
   auto factory_params = mojom::URLLoaderFactoryParams::New();
   factory_params->process_id = 123;
   {
     mojo::PendingRemote<network::mojom::WebBundleHandle> handle;
     mojo::PendingReceiver<network::mojom::WebBundleHandle> receiver =
         handle.InitWithNewPipeAndPassReceiver();
-    auto token_params =
-        ResourceRequest::WebBundleTokenParams(token, std::move(handle));
+    ResourceRequest::WebBundleTokenParams create_params(token,
+                                                        std::move(handle));
 
     auto factory = manager.CreateWebBundleURLLoaderFactory(
-        GURL(kBundleUrl), token_params, factory_params);
+        GURL(kBundleUrl), create_params, factory_params);
     ASSERT_TRUE(factory);
     ASSERT_TRUE(manager.GetWebBundleURLLoaderFactory(
-        token, factory_params->process_id));
+        find_params, factory_params->process_id));
     // Getting out of scope to delete |receiver|.
   }
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(
-      manager.GetWebBundleURLLoaderFactory(token, factory_params->process_id))
+  EXPECT_FALSE(manager.GetWebBundleURLLoaderFactory(find_params,
+                                                    factory_params->process_id))
       << "The manager should remove a factory when the handle is disconnected.";
 }
 

@@ -72,6 +72,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
 
     WebBundleTokenParams(const base::UnguessableToken& token,
                          mojo::PendingRemote<mojom::WebBundleHandle> handle);
+    WebBundleTokenParams(const base::UnguessableToken& token,
+                         int32_t render_process_id);
 
     // For testing. Regarding the equality of |handle|, |this| equals |other| if
     // both |handle| exists, or neither exists, because we cannot test the
@@ -82,6 +84,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) ResourceRequest {
 
     base::UnguessableToken token;
     mojo::PendingRemote<mojom::WebBundleHandle> handle;
+    int32_t render_process_id = -1;
   };
 
   ResourceRequest();

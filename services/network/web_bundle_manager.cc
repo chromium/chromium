@@ -49,9 +49,14 @@ WebBundleManager::CreateWebBundleURLLoaderFactory(
 
 base::WeakPtr<WebBundleURLLoaderFactory>
 WebBundleManager::GetWebBundleURLLoaderFactory(
-    const base::UnguessableToken& web_bundle_token,
+    const ResourceRequest::WebBundleTokenParams& token_params,
     int32_t process_id) {
-  auto it = factories_.find({process_id, web_bundle_token});
+  // If the request is from the browser process, use
+  // WebBundleTokenParams::render_process_id for matching.
+  if (process_id == mojom::kBrowserProcessId)
+    process_id = token_params.render_process_id;
+
+  auto it = factories_.find({process_id, token_params.token});
   if (it == factories_.end()) {
     return nullptr;
   }
