@@ -94,7 +94,6 @@ no_check_targets = [
   "//extensions/browser/api/declarative_content:*",  # 2 errors
   "//extensions/browser/api/declarative_net_request:*",  # 18 errors
   "//extensions/browser/api/declarative_webrequest:*",  # 29 errors
-  "//extensions/browser/api/display_source:*",  # 7 errors
   "//extensions/browser/api/dns:*",  # 3 errors
   "//extensions/browser/api/document_scan:*",  # 2 errors
   "//extensions/browser/api/feedback_private:*",  # 2 errors
