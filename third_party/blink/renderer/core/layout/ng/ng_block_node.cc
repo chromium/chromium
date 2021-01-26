@@ -743,7 +743,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     // of the layout phase.
     // TODO(ikilpatrick): Remove this check.
     if (!box_->GetFrameView()->IsInPerformLayout()) {
-      sizes = ComputeMinMaxSizesFromLegacy(input);
+      sizes = ComputeMinMaxSizesFromLegacy(input, *constraint_space);
       return MinMaxSizesResult(sizes,
                                /* depends_on_percentage_block_size */ false);
     }
@@ -834,7 +834,7 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
   box_->SetIntrinsicLogicalWidthsDirty();
 
   if (!CanUseNewLayout()) {
-    MinMaxSizes sizes = ComputeMinMaxSizesFromLegacy(input);
+    MinMaxSizes sizes = ComputeMinMaxSizesFromLegacy(input, *constraint_space);
 
     // Update the cache bits for this legacy root (but not the intrinsic
     // inline-sizes themselves).
@@ -897,13 +897,10 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
 }
 
 MinMaxSizes NGBlockNode::ComputeMinMaxSizesFromLegacy(
-    const MinMaxSizesInput& input) const {
-  bool needs_size_reset = false;
-  if (!box_->HasOverrideContainingBlockContentLogicalHeight()) {
-    box_->SetOverrideContainingBlockContentLogicalHeight(
-        input.percentage_resolution_block_size);
-    needs_size_reset = true;
-  }
+    const MinMaxSizesInput& input,
+    const NGConstraintSpace& space) const {
+  BoxLayoutExtraInput extra_input(*box_);
+  SetupBoxLayoutExtraInput(space, *box_, &extra_input);
 
   // Tables don't calculate their min/max content contribution the same way as
   // other layout nodes. This is because width/min-width/etc have a different
@@ -913,9 +910,6 @@ MinMaxSizes NGBlockNode::ComputeMinMaxSizesFromLegacy(
   MinMaxSizes sizes = box_->IsTable()
                           ? box_->PreferredLogicalWidths()
                           : box_->IntrinsicLogicalWidths(input.type);
-
-  if (needs_size_reset)
-    box_->ClearOverrideContainingBlockContentSize();
 
   return sizes;
 }
