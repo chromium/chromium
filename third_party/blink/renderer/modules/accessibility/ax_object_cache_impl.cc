@@ -728,16 +728,10 @@ AXObject* AXObjectCacheImpl::GetOrCreate(AbstractInlineTextBox* inline_text_box,
     return nullptr;
 
   if (!parent) {
-    Node* text_parent = inline_text_box->GetNode();
-    if (text_parent) {
-      DCHECK(IsA<Text>(text_parent));
-      parent = GetOrCreate(text_parent);
-    } else {
-      LayoutObject* anonymous_text_parent = inline_text_box->GetLayoutObject();
-      DCHECK(anonymous_text_parent);
-      DCHECK(anonymous_text_parent->IsText());
-      parent = GetOrCreate(anonymous_text_parent);
-    }
+    LayoutObject* anonymous_text_parent = inline_text_box->GetLayoutObject();
+    DCHECK(anonymous_text_parent);
+    DCHECK(anonymous_text_parent->IsText());
+    parent = GetOrCreate(anonymous_text_parent);
     DCHECK(parent) << "No parent for textbox: " << inline_text_box;
   }
 
