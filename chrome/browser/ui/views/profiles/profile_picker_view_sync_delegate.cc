@@ -55,6 +55,9 @@ void RecordSyncOutcomeAndRunCallback(
               : ProfileMetrics::ProfileAddSignInFlowOutcome::
                     kConsumerSigninOnly);
       break;
+    case LoginUIService::UI_CLOSED:
+      // The metric is recorded elsewhere.
+      break;
   }
   std::move(callback).Run(result);
 }

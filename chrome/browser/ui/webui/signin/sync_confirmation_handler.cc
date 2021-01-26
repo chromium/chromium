@@ -55,8 +55,7 @@ SyncConfirmationHandler::~SyncConfirmationHandler() {
   // Abort signin and prevent sync from starting if none of the actions on the
   // sync confirmation dialog are taken by the user.
   if (!did_user_explicitly_interact_) {
-    HandleUndo(nullptr);
-    base::RecordAction(base::UserMetricsAction("Signin_Abort_Signin"));
+    CloseModalSigninWindow(LoginUIService::UI_CLOSED);
   }
 }
 
@@ -205,6 +204,9 @@ void SyncConfirmationHandler::CloseModalSigninWindow(
       break;
     case LoginUIService::ABORT_SYNC:
       base::RecordAction(base::UserMetricsAction("Signin_Undo_Signin"));
+      break;
+    case LoginUIService::UI_CLOSED:
+      base::RecordAction(base::UserMetricsAction("Signin_Abort_Signin"));
       break;
   }
   LoginUIServiceFactory::GetForProfile(profile_)->SyncConfirmationUIClosed(

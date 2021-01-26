@@ -44,6 +44,9 @@ class LoginUIService : public KeyedService {
     CONFIGURE_SYNC_FIRST,
     // Turn sync on process was aborted, don't start sync or show settings.
     ABORT_SYNC,
+    // The dialog got closed without any explicit user action. The impact of
+    // this action depends on the particular flow.
+    UI_CLOSED,
   };
 
   // Interface for obervers of LoginUIService.
