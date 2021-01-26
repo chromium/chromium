@@ -168,11 +168,13 @@
 #endif
 
 #if defined(OS_ANDROID)
+#include "base/system/sys_info.h"
 #include "content/browser/android/browser_startup_controller.h"
 #include "content/common/android/cpu_affinity.h"
 #endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#include "base/allocator/partition_allocator/extended_api.h"
 #include "base/allocator/partition_allocator/thread_cache.h"
 #endif
 
@@ -921,6 +923,13 @@ int ContentMainRunnerImpl::Run(bool start_minimal_browser) {
 #endif
 
   RegisterMainThreadFactories();
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_ANDROID)
+  // The thread cache consumes more memory, especially as long as periodic purge
+  // above is disabled. Don't use one on low-memory devices.
+  if (base::SysInfo::IsLowEndDevice())
+    base::DisablePartitionAllocThreadCacheForProcess();
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_ANDROID)
 
   if (process_type.empty())
     return RunBrowser(main_params, start_minimal_browser);
