@@ -861,7 +861,7 @@ ExtensionFunction::ResponseAction WebViewInternalSetPermissionFunction::Run() {
     user_input = *params->user_input;
 
   WebViewPermissionHelper* web_view_permission_helper =
-      WebViewPermissionHelper::FromWebContents(guest_->web_contents());
+      guest_->web_view_permission_helper();
 
   WebViewPermissionHelper::SetPermissionResult result =
       web_view_permission_helper->SetPermission(

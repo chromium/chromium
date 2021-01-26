@@ -20,6 +20,7 @@
           "guest_with_inline_script.html",
           "test.bmp",
           "test.pdf",
+          "pdf_with_dialog.pdf",
           "guest_with_select.html"
         ]
       }

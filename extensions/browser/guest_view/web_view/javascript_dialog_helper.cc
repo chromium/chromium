@@ -51,17 +51,6 @@ void JavaScriptDialogHelper::RunJavaScriptDialog(
     const base::string16& default_prompt_text,
     DialogClosedCallback callback,
     bool* did_suppress_message) {
-  WebViewPermissionHelper* web_view_permission_helper =
-      WebViewPermissionHelper::FromWebContents(web_contents);
-  // crbug.com/1144419: Exit if the permission helper is missing.
-  // TODO(mcnee) - if |web_contents| is an inner MimeHandlerView,
-  // this will be null. We should get the WebViewPermissionHelper
-  // from our WebViewGuest instead.
-  if (!web_view_permission_helper) {
-    std::move(callback).Run(false, base::string16());
-    return;
-  }
-
   base::DictionaryValue request_info;
   request_info.SetString(webview::kDefaultPromptText,
                          base::UTF16ToUTF8(default_prompt_text));
@@ -72,6 +61,8 @@ void JavaScriptDialogHelper::RunJavaScriptDialog(
   request_info.SetString(guest_view::kUrl,
                          render_frame_host->GetLastCommittedURL().spec());
 
+  WebViewPermissionHelper* web_view_permission_helper =
+      web_view_guest_->web_view_permission_helper();
   web_view_permission_helper->RequestPermission(
       WEB_VIEW_PERMISSION_TYPE_JAVASCRIPT_DIALOG, request_info,
       base::BindOnce(&JavaScriptDialogHelper::OnPermissionResponse,

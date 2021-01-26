@@ -3152,6 +3152,21 @@ function testNavigateToPDFInWebview() {
   document.body.appendChild(webview);
 }
 
+// Test that when a PDF loaded in a webview triggers a JS dialog, the webview's
+// embedder receives the request.
+function testDialogInPdf() {
+  let webview = document.createElement('webview');
+  let pdfUrl = 'pdf_with_dialog.pdf';
+  // Partition 'foobar' has access to local resource |pdfUrl|.
+  webview.partition = 'foobar';
+  webview.src = pdfUrl;
+  webview.addEventListener('dialog', (e) => {
+    e.dialog.ok();
+    embedder.test.succeed();
+  });
+  document.body.appendChild(webview);
+}
+
 // This test verifies that mailto links are enabled.
 function testMailtoLink() {
   var webview = new WebView();
@@ -3465,6 +3480,7 @@ embedder.test.testList = {
   'testFocusWhileFocused': testFocusWhileFocused,
   'testPDFInWebview': testPDFInWebview,
   'testNavigateToPDFInWebview': testNavigateToPDFInWebview,
+  'testDialogInPdf': testDialogInPdf,
   'testMailtoLink': testMailtoLink,
   'testRendererNavigationRedirectWhileUnattached':
        testRendererNavigationRedirectWhileUnattached,

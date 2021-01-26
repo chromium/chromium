@@ -149,6 +149,9 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
                  base::OnceClosure callback);
 
   ScriptExecutor* script_executor() { return script_executor_.get(); }
+  WebViewPermissionHelper* web_view_permission_helper() {
+    return web_view_permission_helper_.get();
+  }
 
   // Enables or disables spatial navigation.
   void SetSpatialNavigationEnabled(bool enabled);
@@ -157,8 +160,6 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
   bool IsSpatialNavigationEnabled() const;
 
  private:
-  friend class WebViewPermissionHelper;
-
   explicit WebViewGuest(content::WebContents* owner_web_contents);
 
   ~WebViewGuest() override;
