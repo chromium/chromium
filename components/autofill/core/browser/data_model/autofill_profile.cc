@@ -326,8 +326,7 @@ void AutofillProfile::GetMatchingTypes(
     const std::string& app_locale,
     ServerFieldTypeSet* matching_types) const {
   ServerFieldTypeSet matching_types_in_this_profile;
-  FormGroupList info = FormGroups();
-  for (const auto* form_group : info) {
+  for (const auto* form_group : FormGroups()) {
     form_group->GetMatchingTypes(text, app_locale,
                                  &matching_types_in_this_profile);
   }
@@ -346,8 +345,7 @@ void AutofillProfile::GetMatchingTypesAndValidities(
     return;
 
   ServerFieldTypeSet matching_types_in_this_profile;
-  FormGroupList info = FormGroups();
-  for (const auto* form_group : info) {
+  for (const auto* form_group : FormGroups()) {
     form_group->GetMatchingTypes(text, app_locale,
                                  &matching_types_in_this_profile);
   }
@@ -385,8 +383,7 @@ void AutofillProfile::SetRawInfoWithVerificationStatus(
 
 void AutofillProfile::GetSupportedTypes(
     ServerFieldTypeSet* supported_types) const {
-  FormGroupList info = FormGroups();
-  for (const auto* form_group : info) {
+  for (const auto* form_group : FormGroups()) {
     form_group->GetSupportedTypes(supported_types);
   }
 }
@@ -1273,16 +1270,6 @@ void AutofillProfile::CreateInferredLabelsHelper(
         label_fields.data(), label_fields.size(), label_fields.size(),
         app_locale);
   }
-}
-
-AutofillProfile::FormGroupList AutofillProfile::FormGroups() const {
-  FormGroupList v(5);
-  v[0] = &name_;
-  v[1] = &email_;
-  v[2] = &company_;
-  v[3] = &phone_number_;
-  v[4] = &address_;
-  return v;
 }
 
 const FormGroup* AutofillProfile::FormGroupForType(
