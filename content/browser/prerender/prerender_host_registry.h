@@ -32,12 +32,20 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   PrerenderHostRegistry(PrerenderHostRegistry&&) = delete;
   PrerenderHostRegistry& operator=(PrerenderHostRegistry&&) = delete;
 
-  // Creates and starts a host for `prerendering_url`.
-  void CreateAndStartHost(blink::mojom::PrerenderAttributesPtr attributes,
-                          const url::Origin& initiator_origin);
+  // Creates and starts a host and returns the id of the created host.
+  int64_t CreateAndStartHost(blink::mojom::PrerenderAttributesPtr attributes,
+                             const url::Origin& initiator_origin);
 
-  // Destroys the host registered for `prerendering_url`.
-  void AbandonHost(const GURL& prerendering_url);
+  // Destroys the host registered for `prerender_host_id`.
+  // TODO(https://crbug.com/1169594): Distinguish two paths that cancel
+  // prerendering. A prerender can be canceled due to the following reasons:
+  // 1. Initiator was no longer interested. Since one prerender may have several
+  // initiators, PrerenderHostRegistry should not destroy a PrerenderHost
+  // instance if one of the initiators is still alive.
+  // 2. Prerendering page did something undesirable. The same behavior always
+  // happens regardless of which caller calls it. So PrerenderHostRegistry
+  // should destroy the PrerenderHost.
+  void AbandonHost(int64_t prerender_host_id);
 
   // Selects the host to activate for a navigation for the given FrameTreeNode.
   // Returns nullptr if it's not found or not ready for activation yet.
@@ -56,7 +64,9 @@ class CONTENT_EXPORT PrerenderHostRegistry {
 
   // TODO(https://crbug.com/1132746): Expire prerendered contents if they are
   // not used for a while.
-  std::map<GURL, std::unique_ptr<PrerenderHost>> prerender_host_by_url_;
+  int64_t next_prerender_host_id_{0};
+  std::map<int64_t, std::unique_ptr<PrerenderHost>> prerender_host_by_id_;
+  std::map<GURL, int64_t> prerender_host_id_by_url_;
 };
 
 }  // namespace content

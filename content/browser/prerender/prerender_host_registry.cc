@@ -21,24 +21,50 @@ PrerenderHostRegistry::PrerenderHostRegistry(BrowserContext& browser_context)
 
 PrerenderHostRegistry::~PrerenderHostRegistry() = default;
 
-void PrerenderHostRegistry::CreateAndStartHost(
+int64_t PrerenderHostRegistry::CreateAndStartHost(
     blink::mojom::PrerenderAttributesPtr attributes,
     const url::Origin& initiator_origin) {
   DCHECK(attributes);
 
   // Ignore prerendering requests for the same URL.
   const GURL prerendering_url = attributes->url;
-  if (base::Contains(prerender_host_by_url_, prerendering_url))
-    return;
+  auto found = prerender_host_id_by_url_.find(prerendering_url);
+  if (found != prerender_host_id_by_url_.end())
+    return found->second;
+
+  // `next_prerender_host_id_` is not expected to ever hit int64_t max.
+  CHECK_LT(next_prerender_host_id_, std::numeric_limits<int64_t>::max());
+  const int64_t prerender_host_id = next_prerender_host_id_++;
 
   auto prerender_host =
       std::make_unique<PrerenderHost>(std::move(attributes), initiator_origin);
-  prerender_host->StartPrerendering(browser_context_);
-  prerender_host_by_url_[prerendering_url] = std::move(prerender_host);
+  // Start prerendering before adding the host to `prerender_host_id_by_url_` to
+  // make sure navigation for prerendering doesn't select itself.
+  // TODO(https://crbug.com/1132746): FindHostToActivate() should avoid
+  // selecting a prerender host when the current NavigationRequest is for
+  // prerendering regardless of the calling order of StartPrerendering(). At
+  // this point, RenderFrameHostImpl doesn't know its prerendering state until
+  // it receives NavigationRequest, so it cannot guarantee to provide
+  // PrerenderHostRegistry with a stable prerendering state. This issue will be
+  // fixed after landing the new approach of depending on FrameTree's
+  // prerendering state.
+  prerender_host_by_id_[prerender_host_id] = std::move(prerender_host);
+  prerender_host_by_id_[prerender_host_id]->StartPrerendering(browser_context_);
+
+  // Make sure StartPrerendering() doesn't call AbandonHost().
+  DCHECK(base::Contains(prerender_host_by_id_, prerender_host_id));
+
+  prerender_host_id_by_url_[prerendering_url] = prerender_host_id;
+  return prerender_host_id;
 }
 
-void PrerenderHostRegistry::AbandonHost(const GURL& prerendering_url) {
-  prerender_host_by_url_.erase(prerendering_url);
+void PrerenderHostRegistry::AbandonHost(int64_t prerender_host_id) {
+  auto found = prerender_host_by_id_.find(prerender_host_id);
+  if (found != prerender_host_by_id_.end()) {
+    auto initial_url = found->second->GetInitialUrl();
+    prerender_host_id_by_url_.erase(initial_url);
+    prerender_host_by_id_.erase(found);
+  }
 }
 
 std::unique_ptr<PrerenderHost> PrerenderHostRegistry::FindHostToActivate(
@@ -66,12 +92,16 @@ std::unique_ptr<PrerenderHost> PrerenderHostRegistry::FindHostToActivate(
   if (site_instance->GetRelatedActiveContentsCount() != 1u)
     return nullptr;
 
-  auto found = prerender_host_by_url_.find(navigation_url);
-  if (found == prerender_host_by_url_.end())
+  auto id_iter = prerender_host_id_by_url_.find(navigation_url);
+  if (id_iter == prerender_host_id_by_url_.end())
     return nullptr;
+  const int64_t prerender_host_id = id_iter->second;
+  prerender_host_id_by_url_.erase(id_iter);
 
-  std::unique_ptr<PrerenderHost> host = std::move(found->second);
-  prerender_host_by_url_.erase(found);
+  auto host_iter = prerender_host_by_id_.find(prerender_host_id);
+  DCHECK(host_iter != prerender_host_by_id_.end());
+  std::unique_ptr<PrerenderHost> host = std::move(host_iter->second);
+  prerender_host_by_id_.erase(host_iter);
 
   // If the host is not ready for activation yet, destroys it and returns
   // nullptr. This is because it is likely that the prerendered page is never
@@ -84,10 +114,13 @@ std::unique_ptr<PrerenderHost> PrerenderHostRegistry::FindHostToActivate(
 
 PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
     const GURL& prerendering_url) {
-  auto found = prerender_host_by_url_.find(prerendering_url);
-  if (found == prerender_host_by_url_.end())
+  auto id_iter = prerender_host_id_by_url_.find(prerendering_url);
+  if (id_iter == prerender_host_id_by_url_.end())
     return nullptr;
-  return found->second.get();
+  const int64_t prerender_host_id = id_iter->second;
+  auto host_iter = prerender_host_by_id_.find(prerender_host_id);
+  DCHECK(host_iter != prerender_host_by_id_.end());
+  return host_iter->second.get();
 }
 
 }  // namespace content

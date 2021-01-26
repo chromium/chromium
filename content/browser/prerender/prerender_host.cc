@@ -13,11 +13,9 @@
 
 namespace content {
 
-PrerenderHost::PrerenderHost(
-    blink::mojom::PrerenderAttributesPtr attributes,
-    const url::Origin& initiator_origin)
-    : attributes_(std::move(attributes)),
-      initiator_origin_(initiator_origin) {
+PrerenderHost::PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
+                             const url::Origin& initiator_origin)
+    : attributes_(std::move(attributes)), initiator_origin_(initiator_origin) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
 }
 
@@ -113,6 +111,10 @@ void PrerenderHost::RecordFinalStatus(FinalStatus status) {
   final_status_ = status;
   base::UmaHistogramEnumeration(
       "Prerender.Experimental.PrerenderHostFinalStatus", status);
+}
+
+const GURL& PrerenderHost::GetInitialUrl() const {
+  return attributes_->url;
 }
 
 }  // namespace content

@@ -65,8 +65,9 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHost) {
   attributes->url = kPrerenderingUrl;
 
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
-  registry->CreateAndStartHost(std::move(attributes),
-                               render_frame_host->GetLastCommittedOrigin());
+  const int64_t prerender_host_id = registry->CreateAndStartHost(
+      std::move(attributes), render_frame_host->GetLastCommittedOrigin());
+  ASSERT_GE(prerender_host_id, int64_t{0});
   PrerenderHost* prerender_host =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
 
@@ -94,15 +95,16 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForSameURL) {
   attributes2->url = kPrerenderingUrl;
 
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
-  registry->CreateAndStartHost(std::move(attributes1),
-                               render_frame_host->GetLastCommittedOrigin());
+  const int64_t prerender_host_id1 = registry->CreateAndStartHost(
+      std::move(attributes1), render_frame_host->GetLastCommittedOrigin());
   PrerenderHost* prerender_host1 =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
 
   // Start the prerender host for the same URL. This second host should be
   // ignored, and the first host should still be findable.
-  registry->CreateAndStartHost(std::move(attributes2),
-                               render_frame_host->GetLastCommittedOrigin());
+  const int64_t prerender_host_id2 = registry->CreateAndStartHost(
+      std::move(attributes2), render_frame_host->GetLastCommittedOrigin());
+  EXPECT_EQ(prerender_host_id1, prerender_host_id2);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl),
             prerender_host1);
 
@@ -130,10 +132,11 @@ TEST_F(PrerenderHostRegistryTest, CreateAndStartHostForDifferentURLs) {
   attributes2->url = kPrerenderingUrl2;
 
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
-  registry->CreateAndStartHost(std::move(attributes1),
-                               render_frame_host->GetLastCommittedOrigin());
-  registry->CreateAndStartHost(std::move(attributes2),
-                               render_frame_host->GetLastCommittedOrigin());
+  const int64_t prerender_host_id1 = registry->CreateAndStartHost(
+      std::move(attributes1), render_frame_host->GetLastCommittedOrigin());
+  const int64_t prerender_host_id2 = registry->CreateAndStartHost(
+      std::move(attributes2), render_frame_host->GetLastCommittedOrigin());
+  EXPECT_NE(prerender_host_id1, prerender_host_id2);
   PrerenderHost* prerender_host1 =
       registry->FindHostByUrlForTesting(kPrerenderingUrl1);
   PrerenderHost* prerender_host2 =
@@ -169,8 +172,9 @@ TEST_F(PrerenderHostRegistryTest, FindHostToActivateBeforeReadyForActivation) {
   attributes->url = kPrerenderingUrl;
 
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
-  registry->CreateAndStartHost(std::move(attributes),
-                               render_frame_host->GetLastCommittedOrigin());
+  const int64_t prerender_host_id = registry->CreateAndStartHost(
+      std::move(attributes), render_frame_host->GetLastCommittedOrigin());
+  ASSERT_GE(prerender_host_id, int64_t{0});
   PrerenderHost* prerender_host =
       registry->FindHostByUrlForTesting(kPrerenderingUrl);
 
@@ -193,11 +197,11 @@ TEST_F(PrerenderHostRegistryTest, AbandonHost) {
   attributes->url = kPrerenderingUrl;
 
   PrerenderHostRegistry* registry = GetPrerenderHostRegistry();
-  registry->CreateAndStartHost(std::move(attributes),
-                               render_frame_host->GetLastCommittedOrigin());
+  const int64_t prerender_host_id = registry->CreateAndStartHost(
+      std::move(attributes), render_frame_host->GetLastCommittedOrigin());
   EXPECT_NE(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 
-  registry->AbandonHost(kPrerenderingUrl);
+  registry->AbandonHost(prerender_host_id);
   EXPECT_EQ(registry->FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
 }
 

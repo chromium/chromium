@@ -66,6 +66,8 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
   // ActivatePrerenderedContents().
   RenderFrameHostImpl* GetPrerenderedMainFrameHostForTesting();
 
+  const GURL& GetInitialUrl() const;
+
   bool is_ready_for_activation() const { return is_ready_for_activation_; }
 
  private:

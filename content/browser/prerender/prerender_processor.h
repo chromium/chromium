@@ -54,8 +54,8 @@ class CONTENT_EXPORT PrerenderProcessor final
   // may navigate away before Start() is called from a renderer process.
   const url::Origin initiator_origin_;
 
-  // URL to be prerendered.
-  GURL prerendering_url_;
+  // ID of the corresponding PrerenderHost which handles this prerender request.
+  int64_t prerender_host_id_{-1};
 
   enum class State { kInitial, kStarted, kCancelled };
   State state_ = State::kInitial;

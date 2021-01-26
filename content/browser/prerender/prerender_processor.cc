@@ -55,10 +55,8 @@ void PrerenderProcessor::Start(
   // TODO(https://crbug.com/1138711, https://crbug.com/1138723): Abort if the
   // initiator frame is not the main frame (i.e., iframe or pop-up window).
 
-  prerendering_url_ = attributes->url;
-
-  GetPrerenderHostRegistry().CreateAndStartHost(std::move(attributes),
-                                                initiator_origin_);
+  prerender_host_id_ = GetPrerenderHostRegistry().CreateAndStartHost(
+      std::move(attributes), initiator_origin_);
 }
 
 void PrerenderProcessor::Cancel() {
@@ -73,7 +71,7 @@ void PrerenderProcessor::Cancel() {
 void PrerenderProcessor::CancelPrerendering() {
   DCHECK_EQ(state_, State::kStarted);
   state_ = State::kCancelled;
-  GetPrerenderHostRegistry().AbandonHost(prerendering_url_);
+  GetPrerenderHostRegistry().AbandonHost(prerender_host_id_);
 }
 
 PrerenderHostRegistry& PrerenderProcessor::GetPrerenderHostRegistry() {
