@@ -27,8 +27,12 @@ class CartHandler : public chrome_cart::mojom::CartHandler {
   void RestoreRemovedCartModule() override;
 
  private:
+  void GetCartDataCallback(GetMerchantCartsCallback callback,
+                           bool success,
+                           std::vector<CartDB::KeyAndValue> res);
   mojo::Receiver<chrome_cart::mojom::CartHandler> handler_;
   CartService* cart_service_;
+  base::WeakPtrFactory<CartHandler> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_CART_CART_HANDLER_H_

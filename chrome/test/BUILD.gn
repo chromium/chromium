@@ -4750,6 +4750,7 @@ test("unit_tests") {
       "../browser/feedback/system_logs/log_sources/crash_ids_source_unittest.cc",
 
       # NTP is in native code on Android.
+      "../browser/cart/cart_handler_unittest.cc",
       "../browser/cart/cart_service_unittest.cc",
       "../browser/search/drive/drive_service_unittest.cc",
       "../browser/search/ntp_features_unittest.cc",

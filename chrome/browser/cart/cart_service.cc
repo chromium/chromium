@@ -3,10 +3,21 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/cart/cart_service.h"
+#include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+
+namespace {
+constexpr char kFakeDataPrefix[] = "Fake:";
+
+std::string eTLDPlusOne(const GURL& url) {
+  return net::registry_controlled_domains::GetDomainAndRegistry(
+      url, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+}
+}  // namespace
 
 CartService::CartService(Profile* profile)
     : profile_(profile),
@@ -16,6 +27,14 @@ CartService::CartService(Profile* profile)
           ServiceAccessType::EXPLICIT_ACCESS)) {
   if (history_service_) {
     history_service_->AddObserver(this);
+  }
+  if (base::GetFieldTrialParamValueByFeature(
+          ntp_features::kNtpChromeCartModule,
+          ntp_features::kNtpChromeCartModuleDataParam) == "fake") {
+    AddCartsWithFakeData();
+  } else {
+    // In case last deconstruction is interrupted and fake data is not deleted.
+    DeleteCartsWithFakeData();
   }
 }
 
@@ -71,6 +90,10 @@ void CartService::DeleteCart(const std::string& domain) {
                                               weak_ptr_factory_.GetWeakPtr()));
 }
 
+void CartService::LoadCartsWithFakeData(CartDB::LoadCallback callback) {
+  cart_db_->LoadCartsWithPrefix(kFakeDataPrefix, std::move(callback));
+}
+
 void CartService::OnOperationFinished(bool success) {
   DCHECK(success) << "database operation failed.";
 }
@@ -79,6 +102,7 @@ void CartService::Shutdown() {
   if (history_service_) {
     history_service_->RemoveObserver(this);
   }
+  DeleteCartsWithFakeData();
 }
 
 void CartService::OnURLsDeleted(history::HistoryService* history_service,
@@ -91,4 +115,83 @@ void CartService::OnURLsDeleted(history::HistoryService* history_service,
 
 CartDB* CartService::GetDB() {
   return cart_db_.get();
+}
+
+void CartService::AddCartsWithFakeData() {
+  DeleteCartsWithFakeData();
+  // Polulate and add some carts with fake data.
+  cart_db::ChromeCartContentProto dummy_proto1;
+  GURL dummy_url1 = GURL("https://www.google.com/");
+  dummy_proto1.set_key(std::string(kFakeDataPrefix) + eTLDPlusOne(dummy_url1));
+  dummy_proto1.set_merchant("Cart Foo");
+  dummy_proto1.set_merchant_cart_url(dummy_url1.spec());
+  dummy_proto1.add_product_image_urls(
+      "https://encrypted-tbn3.gstatic.com/"
+      "shopping?q=tbn:ANd9GcQpn38jB2_BANnHUFa7kHJsf6SyubcgeU1lNYO_"
+      "ZxM1Q2ju_ZMjv2EwNh0Zx_zbqYy_mFg_aiIhWYnD5PQ7t-uFzLM5cN77s_2_"
+      "DFNeumI-LMPJMYjW-BOSaA&usqp=CAY");
+  dummy_proto1.add_product_image_urls(
+      "https://encrypted-tbn0.gstatic.com/"
+      "shopping?q=tbn:ANd9GcQyMRYWeM2Yq095nOXTL0-"
+      "EUUnm79kh6hnw8yctJUNrAuse607KEr1CVxEa24r-"
+      "8XHBuhTwcuC4GXeN94h9Kn19DhdBGsXG0qrD74veYSDJNLrUP-sru0jH&usqp=CAY");
+  dummy_proto1.add_product_image_urls(
+      "https://encrypted-tbn1.gstatic.com/"
+      "shopping?q=tbn:ANd9GcT2ew6Aydzu5VzRV756ORGha6fyjKp_On7iTlr_"
+      "tL9vODnlNtFo_xsxj6_lCop-3J0Vk44lHfk-AxoBJDABVHPVFN-"
+      "EiWLcZvzkdpHFqcurm7fBVmWtYKo2rg&usqp=CAY");
+  cart_db_->AddCart(dummy_proto1.key(), dummy_proto1,
+                    base::BindOnce(&CartService::OnOperationFinished,
+                                   weak_ptr_factory_.GetWeakPtr()));
+
+  cart_db::ChromeCartContentProto dummy_proto2;
+  GURL dummy_url2 = GURL("https://www.amazon.com/");
+  dummy_proto2.set_key(std::string(kFakeDataPrefix) + eTLDPlusOne(dummy_url2));
+  dummy_proto2.set_merchant("Cart Bar");
+  dummy_proto2.set_merchant_cart_url(dummy_url2.spec());
+  cart_db_->AddCart(dummy_proto2.key(), dummy_proto2,
+                    base::BindOnce(&CartService::OnOperationFinished,
+                                   weak_ptr_factory_.GetWeakPtr()));
+
+  cart_db::ChromeCartContentProto dummy_proto3;
+  GURL dummy_url3 = GURL("https://www.ebay.com/");
+  dummy_proto3.set_key(std::string(kFakeDataPrefix) + eTLDPlusOne(dummy_url3));
+  dummy_proto3.set_merchant("Cart Baz");
+  dummy_proto3.set_merchant_cart_url(dummy_url3.spec());
+  cart_db_->AddCart(dummy_proto3.key(), dummy_proto3,
+                    base::BindOnce(&CartService::OnOperationFinished,
+                                   weak_ptr_factory_.GetWeakPtr()));
+
+  cart_db::ChromeCartContentProto dummy_proto4;
+  GURL dummy_url4 = GURL("https://www.walmart.com/");
+  dummy_proto4.set_key(std::string(kFakeDataPrefix) + eTLDPlusOne(dummy_url4));
+  dummy_proto4.set_merchant("Cart Qux");
+  dummy_proto4.set_merchant_cart_url(dummy_url4.spec());
+  cart_db_->AddCart(dummy_proto4.key(), dummy_proto4,
+                    base::BindOnce(&CartService::OnOperationFinished,
+                                   weak_ptr_factory_.GetWeakPtr()));
+
+  cart_db::ChromeCartContentProto dummy_proto5;
+  GURL dummy_url5 = GURL("https://www.bestbuy.com/");
+  dummy_proto5.set_key(std::string(kFakeDataPrefix) + eTLDPlusOne(dummy_url5));
+  dummy_proto5.set_merchant("Cart Corge");
+  dummy_proto5.set_merchant_cart_url(dummy_url5.spec());
+  cart_db_->AddCart(dummy_proto5.key(), dummy_proto5,
+                    base::BindOnce(&CartService::OnOperationFinished,
+                                   weak_ptr_factory_.GetWeakPtr()));
+
+  cart_db::ChromeCartContentProto dummy_proto6;
+  GURL dummy_url6 = GURL("https://www.nike.com/");
+  dummy_proto6.set_key(std::string(kFakeDataPrefix) + eTLDPlusOne(dummy_url6));
+  dummy_proto6.set_merchant("Cart Flob");
+  dummy_proto6.set_merchant_cart_url(dummy_url6.spec());
+  cart_db_->AddCart(dummy_proto6.key(), dummy_proto6,
+                    base::BindOnce(&CartService::OnOperationFinished,
+                                   weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CartService::DeleteCartsWithFakeData() {
+  cart_db_->DeleteCartsWithPrefix(
+      kFakeDataPrefix, base::BindOnce(&CartService::OnOperationFinished,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }

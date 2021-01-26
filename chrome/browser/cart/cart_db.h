@@ -41,6 +41,9 @@ class CartDB {
   // Load all carts in the database.
   void LoadAllCarts(LoadCallback callback);
 
+  // Load all carts with certain prefix in the database.
+  void LoadCartsWithPrefix(const std::string& prefix, LoadCallback callback);
+
   // Add a cart to the database.
   void AddCart(const std::string& domain,
                const cart_db::ChromeCartContentProto& proto,
@@ -51,6 +54,10 @@ class CartDB {
 
   // Delete all carts in the database.
   void DeleteAllCarts(OperationCallback callback);
+
+  // Delete all carts with certain prefix in the database.
+  void DeleteCartsWithPrefix(const std::string& prefix,
+                             OperationCallback callback);
 
  private:
   ProfileProtoDB<cart_db::ChromeCartContentProto>* proto_db_;

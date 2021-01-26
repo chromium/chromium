@@ -65,6 +65,8 @@ enum class RepeatableQueriesInsertPosition {
 extern const char kNtpModulesLoadTimeoutMillisecondsParam[];
 // Parameter determining the type of stateful data to request.
 extern const char kNtpStatefulTasksModuleDataParam[];
+// Parameter determining the type of cart data used to render module.
+extern const char kNtpChromeCartModuleDataParam[];
 
 // Returns the age threshold for local history repeatable queries.
 base::Time GetLocalHistoryRepeatableQueriesAgeThreshold();
