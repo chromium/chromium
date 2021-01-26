@@ -2014,8 +2014,15 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 
 // Tests that a Previous Track button is displayed in the Picture-in-Picture
 // window when Media Session Action "previoustrack" is handled by the website.
+// Flaky on Linux, see crbug.com/985303.
+#if defined(OS_LINUX)
+#define MAYBE_PreviousTrackButtonVisibility \
+  DISABLED_PreviousTrackButtonVisibility
+#else
+#define MAYBE_PreviousTrackButtonVisibility PreviousTrackButtonVisibility
+#endif
 IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
-                       PreviousTrackButtonVisibility) {
+                       MAYBE_PreviousTrackButtonVisibility) {
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(kPictureInPictureWindowSizePage));
 
