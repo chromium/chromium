@@ -150,11 +150,6 @@ class WebTestRuntimeFlags {
   // frames. Only one can do it at a time.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(have_loading_frame)
 
-  // If true, new windows can be opened via javascript or by plugins. By
-  // default, set to false and can be toggled to true using
-  // setCanOpenWindows().
-  DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(can_open_windows)
-
   // If true, output a descriptive line each time WebViewClient::createView
   // is invoked.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(dump_create_view)

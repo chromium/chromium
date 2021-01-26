@@ -1470,7 +1470,8 @@ void TestRunnerBindings::DumpCreateView() {
 void TestRunnerBindings::SetCanOpenWindows() {
   if (invalid_)
     return;
-  runner_->SetCanOpenWindows();
+  // TODO(https://crbug.com/1170931): Remove the alias from the tests.
+  runner_->GetWebTestControlHostRemote()->SetPopupBlockingEnabled(false);
 }
 
 void TestRunnerBindings::SetCaretBrowsingEnabled() {
@@ -2486,10 +2487,6 @@ bool TestRunner::ShouldDumpCreateView() const {
   return web_test_runtime_flags_.dump_create_view();
 }
 
-bool TestRunner::CanOpenWindows() const {
-  return web_test_runtime_flags_.can_open_windows();
-}
-
 blink::WebContentSettingsClient* TestRunner::GetWebContentSettings() {
   return &test_content_settings_client_;
 }
@@ -2977,11 +2974,6 @@ void TestRunner::DumpTitleChanges() {
 
 void TestRunner::DumpCreateView() {
   web_test_runtime_flags_.set_dump_create_view(true);
-  OnWebTestRuntimeFlagsChanged();
-}
-
-void TestRunner::SetCanOpenWindows() {
-  web_test_runtime_flags_.set_can_open_windows(true);
   OnWebTestRuntimeFlagsChanged();
 }
 

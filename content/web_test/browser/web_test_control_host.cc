@@ -683,7 +683,7 @@ bool WebTestControlHost::ResetBrowserAfterWebTest() {
   test_url_ = GURL();
   prefs_ = blink::web_pref::WebPreferences();
   should_override_prefs_ = false;
-  WebTestContentBrowserClient::Get()->SetPopupBlockingEnabled(false);
+  WebTestContentBrowserClient::Get()->SetPopupBlockingEnabled(true);
   WebTestContentBrowserClient::Get()->ResetMockClipboardHosts();
   WebTestContentBrowserClient::Get()->SetScreenOrientationChanged(false);
   WebTestContentBrowserClient::Get()->ResetFakeBluetoothDelegate();

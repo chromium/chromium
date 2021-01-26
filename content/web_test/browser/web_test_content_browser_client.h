@@ -146,7 +146,7 @@ class WebTestContentBrowserClient : public ShellContentBrowserClient {
 
   std::unique_ptr<MockPlatformNotificationService>
       mock_platform_notification_service_;
-  bool block_popups_ = false;
+  bool block_popups_ = true;
   bool screen_orientation_changed_ = false;
 
   // Stores the FakeBluetoothChooserFactory that produces FakeBluetoothChoosers.

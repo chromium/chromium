@@ -52,9 +52,6 @@ blink::WebView* WebViewTestProxy::CreateView(
         web_test_string_util::WebNavigationPolicyToString(policy) + "'\n");
   }
 
-  if (!test_runner_->CanOpenWindows())
-    return nullptr;
-
   if (test_runner_->ShouldDumpCreateView()) {
     test_runner_->PrintMessage(
         std::string("createView(") +

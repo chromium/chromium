@@ -53,8 +53,6 @@ void WebTestRuntimeFlags::Reset() {
 
   set_have_loading_frame(false);
 
-  set_can_open_windows(false);
-
   set_dump_create_view(false);
   set_dump_javascript_dialogs(true);
 

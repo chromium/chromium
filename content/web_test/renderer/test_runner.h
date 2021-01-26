@@ -447,8 +447,6 @@ class TestRunner {
   // It takes no arguments, and ignores any that may be present.
   void DumpCreateView();
 
-  void SetCanOpenWindows();
-
   // This function sets a flag that tells the test runner to dump the MIME type
   // for each resource that was loaded. It takes no arguments, and ignores any
   // that may be present.
