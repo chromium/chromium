@@ -14,6 +14,7 @@
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "chrome/browser/enterprise/connectors/file_system/box_api_call_test_helper.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -76,7 +77,7 @@ class BoxFindUpstreamFolderApiCallFlowTest
 };
 
 TEST_F(BoxFindUpstreamFolderApiCallFlowTest, CreateApiCallUrl) {
-  GURL url("https://api.box.com/2.0/search?type=folder&query=ChromeDownloads");
+  GURL url(kFileSystemBoxFindFolderUrl);
   ASSERT_EQ(flow_->CreateApiCallUrl(), url);
 }
 
@@ -117,15 +118,11 @@ TEST_F(BoxFindUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess,
 
 TEST_F(BoxFindUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess,
        EmptyEntries) {
-  std::string body(R"({
-    "entries": [
-        ]
-  })");
-
-  flow_->ProcessApiCallSuccess(head_.get(),
-                               std::make_unique<std::string>(body));
+  flow_->ProcessApiCallSuccess(
+      head_.get(), std::make_unique<std::string>(
+                       kFileSystemBoxFindFolderResponseEmptyEntriesList));
   base::RunLoop().RunUntilIdle();
-  ASSERT_TRUE(processed_success_) << body;
+  ASSERT_TRUE(processed_success_);
   ASSERT_EQ(response_code_, net::HTTP_OK);
   ASSERT_EQ(processed_folder_id_, "");
 }
@@ -172,44 +169,24 @@ TEST_F(BoxFindUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess,
 
 TEST_F(BoxFindUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess,
        IntegerFolderId) {
-  std::string body(R"({
-    "entries": [
-      {
-        "id": 12345,
-        "etag": 1,
-        "type": "folder",
-        "sequence_id": 3,
-        "name": "ChromeDownloads"
-      }
-    ]
-  })");
-  flow_->ProcessApiCallSuccess(head_.get(),
-                               std::make_unique<std::string>(body));
+  flow_->ProcessApiCallSuccess(
+      head_.get(),
+      std::make_unique<std::string>(kFileSystemBoxFindFolderResponseBody));
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(processed_success_);
   ASSERT_EQ(response_code_, net::HTTP_OK);
-  ASSERT_EQ(processed_folder_id_, "12345");
+  ASSERT_EQ(processed_folder_id_, kFileSystemBoxFindFolderResponseFolderId);
 }
 
 TEST_F(BoxFindUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess,
        StringFolderId) {
-  std::string body(R"({
-    "entries": [
-      {
-        "id": "12345",
-        "etag": 1,
-        "type": "folder",
-        "sequence_id": 3,
-        "name": "ChromeDownloads"
-      }
-    ]
-  })");
-  flow_->ProcessApiCallSuccess(head_.get(),
-                               std::make_unique<std::string>(body));
+  flow_->ProcessApiCallSuccess(
+      head_.get(),
+      std::make_unique<std::string>(kFileSystemBoxFindFolderResponseBody));
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(processed_success_);
   ASSERT_EQ(response_code_, net::HTTP_OK);
-  ASSERT_EQ(processed_folder_id_, "12345");
+  ASSERT_EQ(processed_folder_id_, kFileSystemBoxFindFolderResponseFolderId);
 }
 
 TEST_F(BoxFindUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess,
@@ -262,7 +239,7 @@ class BoxCreateUpstreamFolderApiCallFlowTest
 };
 
 TEST_F(BoxCreateUpstreamFolderApiCallFlowTest, CreateApiCallUrl) {
-  GURL url("https://api.box.com/2.0/folders");
+  GURL url(kFileSystemBoxCreateFolderUrl);
   ASSERT_EQ(flow_->CreateApiCallUrl(), url);
 }
 
@@ -301,47 +278,14 @@ class BoxCreateUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess
 };
 
 TEST_F(BoxCreateUpstreamFolderApiCallFlowTest_ProcessApiCallSuccess, Normal) {
-  std::string body(R"({
-    "id": 12345,
-    "type": "folder",
-    "content_created_at": "2012-12-12T10:53:43-08:00",
-    "content_modified_at": "2012-12-12T10:53:43-08:00",
-    "created_at": "2012-12-12T10:53:43-08:00",
-    "created_by": {
-      "id": 11446498,
-      "type": "user",
-      "login": "ceo@example.com",
-      "name": "Aaron Levie"
-    },
-    "description": "Legal contracts for the new ACME deal",
-    "etag": 1,
-    "expires_at": "2012-12-12T10:53:43-08:00",
-    "folder_upload_email": {
-      "access": "open",
-      "email": "upload.Contracts.asd7asd@u.box.com"
-    },
-    "name": "ChromeDownloads",
-    "owned_by": {
-      "id": 11446498,
-      "type": "user",
-      "login": "ceo@example.com",
-      "name": "Aaron Levie"
-    },
-    "parent": {
-      "id": 0,
-      "type": "folder",
-      "etag": 1,
-      "name": "",
-      "sequence_id": 3
-    }
-  })");
   auto http_head = network::CreateURLResponseHead(net::HTTP_CREATED);
-  flow_->ProcessApiCallSuccess(http_head.get(),
-                               std::make_unique<std::string>(body));
+  flow_->ProcessApiCallSuccess(
+      http_head.get(),
+      std::make_unique<std::string>(kFileSystemBoxCreateFolderResponseBody));
   base::RunLoop().RunUntilIdle();
   ASSERT_TRUE(processed_success_);
   ASSERT_EQ(response_code_, net::HTTP_CREATED);
-  ASSERT_EQ(processed_folder_id_, "12345");
+  ASSERT_EQ(processed_folder_id_, kFileSystemBoxCreateFolderResponseFolderId);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -394,7 +338,7 @@ class BoxWholeFileUploadApiCallFlowTest
 };
 
 TEST_F(BoxWholeFileUploadApiCallFlowTest, CreateApiCallUrl) {
-  GURL url("https://upload.box.com/api/2.0/files/content");
+  GURL url(kFileSystemBoxWholeFileUploadUrl);
   ASSERT_EQ(flow_->CreateApiCallUrl(), url);
 }
 
@@ -513,7 +457,7 @@ TEST_F(BoxWholeFileUploadApiCallFlowFileReadTest, GoodUpload) {
   }
 
   test_url_loader_factory_.AddResponse(
-      "https://upload.box.com/api/2.0/files/content",
+      kFileSystemBoxWholeFileUploadUrl,
       std::string(),  // Dummy body since we are not reading from body.
       net::HTTP_CREATED);
 

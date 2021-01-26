@@ -5772,8 +5772,11 @@ test("unit_tests") {
 
   if (is_linux || is_chromeos || is_mac || is_win) {
     sources += [
-      "../browser/enterprise/connectors/file_system/box_access_token_fetcher_unittests.cc",
-      "../browser/enterprise/connectors/file_system/box_api_call_flow_unittests.cc",
+      "../browser/enterprise/connectors/file_system/box_access_token_fetcher_unittest.cc",
+      "../browser/enterprise/connectors/file_system/box_api_call_flow_unittest.cc",
+      "../browser/enterprise/connectors/file_system/box_api_call_test_helper.cc",
+      "../browser/enterprise/connectors/file_system/box_api_call_test_helper.h",
+      "../browser/enterprise/connectors/file_system/download_controller_unittest.cc",
     ]
   }
 

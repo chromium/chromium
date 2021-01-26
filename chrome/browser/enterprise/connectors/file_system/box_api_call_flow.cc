@@ -25,7 +25,7 @@ static const char kParentFolderId[] = "0";
 std::string ExtractFolderId(const base::Value& entry) {
   const base::Value* folder_id = entry.FindPath("id");
   if (!folder_id) {
-    DLOG(ERROR) << "[BoxApiCallFlow] Can't find folder id!";
+    DLOG(ERROR) << "[BoxApiCallFlow] Can't find folder id! " << entry;
     return std::string();
   }
 
@@ -41,6 +41,8 @@ std::string ExtractFolderId(const base::Value& entry) {
   return id;
 }
 
+// For possible extensions:
+// https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Common_types
 std::string GetMimeType(base::FilePath file_path) {
   auto ext = file_path.FinalExtension();
   if (ext.front() == '.') {
@@ -157,7 +159,8 @@ void BoxFindUpstreamFolderApiCallFlow::OnJsonParsed(
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.value) {
     DLOG(ERROR) << "[BoxApiCallFlow] FindUpstreamFolder OnJsonParsed Error: "
-                << result.error->data();
+                << (result.error ? result.error->data()
+                                 : "<no error info available>");
     std::move(callback_).Run(false, net::HTTP_OK, std::string());
     return;
   }
@@ -241,7 +244,8 @@ void BoxCreateUpstreamFolderApiCallFlow::OnJsonParsed(
     folder_id = ExtractFolderId(*result.value);
   } else {
     DLOG(ERROR) << "[BoxApiCallFlow] CreateUpstreamFolder OnJsonParsed Error: "
-                << result.error->data();
+                << (result.error ? result.error->data()
+                                 : "<no error info available>");
   }
   // TODO(1157641): store folder_id in profile pref to handle indexing latency.
   std::move(callback_).Run(!folder_id.empty(), net::HTTP_CREATED, folder_id);

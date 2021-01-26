@@ -3579,6 +3579,8 @@ static_library("browser") {
       "enterprise/connectors/file_system/box_api_call_endpoints.h",
       "enterprise/connectors/file_system/box_api_call_flow.cc",
       "enterprise/connectors/file_system/box_api_call_flow.h",
+      "enterprise/connectors/file_system/download_controller.cc",
+      "enterprise/connectors/file_system/download_controller.h",
       "enterprise/connectors/file_system/signin_dialog_delegate.cc",
       "enterprise/connectors/file_system/signin_dialog_delegate.h",
       "enterprise/connectors/reporting_service_settings.cc",
