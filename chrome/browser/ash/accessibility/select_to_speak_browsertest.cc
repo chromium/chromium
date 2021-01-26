@@ -76,13 +76,6 @@ class SelectToSpeakTest : public InProcessBrowserTest {
     ui_test_utils::NavigateToURL(browser(), GURL(url::kAboutBlankURL));
   }
 
-  void TearDownOnMainThread() override {
-    // Check STS has not generated any errors.
-    EXPECT_FALSE(console_observer_->HasErrorsOrWarnings())
-        << "Found console.log or console.warn with message: "
-        << console_observer_->GetErrorOrWarningAt(0);
-  }
-
   test::SpeechMonitor sm_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   std::unique_ptr<ash::SystemTrayTestApi> tray_test_api_;

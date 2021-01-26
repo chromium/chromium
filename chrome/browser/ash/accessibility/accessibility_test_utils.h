@@ -5,23 +5,31 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_TEST_UTILS_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_TEST_UTILS_H_
 
+#include <string>
+#include <vector>
+
+#include "chrome/browser/extensions/error_console/error_console.h"
 #include "content/public/test/browser_test_utils.h"
-#include "extensions/browser/process_manager_observer.h"
+
+using extensions::ErrorConsole;
 
 // Instantiate this class to get errors and warnings for an extension.
+// This will catch console.error and console.warn messages as well as
+// any uncaught JS errors in the extension and cause a non-fatal
+// test failure as well as log the failure message.
 //
-// Sample usage:
-//
-// ExtensionConsoleErrorObserver console_observer(browser_context,
-// some_extension_id); LoadSomeExtension();
-// ...
-// EXPECT_FALSE(console_observer.HasErrorsOrWarnings());
-class ExtensionConsoleErrorObserver
-    : public extensions::ProcessManagerObserver {
+// If this is used in the test SetUp, ensure the lifecycle lasts past
+// the scope of the SetUp method, perhaps by using a member var, e.g.
+// console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
+//        browser()->profile(), extension_misc::kSelectToSpeakExtensionId);
+class ExtensionConsoleErrorObserver : public ErrorConsole::Observer {
  public:
-  ExtensionConsoleErrorObserver(content::BrowserContext* context,
-                                const char* extension_id);
-  ~ExtensionConsoleErrorObserver() override;
+  ExtensionConsoleErrorObserver(Profile* profile, const char* extension_id);
+  virtual ~ExtensionConsoleErrorObserver();
+
+  // ErrorConsole::Observer:
+  void OnErrorAdded(const extensions::ExtensionError* error) override;
+  void OnErrorConsoleDestroyed() override;
 
   // Returns whether errors or warnings were received.
   bool HasErrorsOrWarnings();
@@ -34,13 +42,10 @@ class ExtensionConsoleErrorObserver
   // Get the number of errors and warnings received.
   size_t GetErrorsAndWarningsCount() const;
 
-  // extensions::ProcessManagerObserver:
-  void OnBackgroundHostCreated(extensions::ExtensionHost* host) override;
 
  private:
-  content::BrowserContext* context_;
-  const char* extension_id_;
-  std::unique_ptr<content::WebContentsConsoleObserver> console_observer_;
+  std::vector<base::string16> errors_;
+  ErrorConsole* error_console_;
 };
 
 #endif  // CHROME_BROWSER_ASH_ACCESSIBILITY_ACCESSIBILITY_TEST_UTILS_H_

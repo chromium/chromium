@@ -3,56 +3,53 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
-#include "extensions/browser/extension_host.h"
-#include "extensions/browser/process_manager.h"
+#include "base/strings/utf_string_conversions.h"
+#include "chrome/common/extensions/extension_constants.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 
 ExtensionConsoleErrorObserver::ExtensionConsoleErrorObserver(
-    content::BrowserContext* context,
-    const char* extension_id)
-    : context_(context), extension_id_(extension_id) {
-  auto* pm = extensions::ProcessManager::Get(context_);
-  CHECK(pm);
-  pm->AddObserver(this);
-
-  // In case the extension already loaded.
-  extensions::ExtensionHost* host =
-      pm->GetBackgroundHostForExtension(extension_id_);
-  if (host)
-    OnBackgroundHostCreated(host);
+    Profile* profile,
+    const char* extension_id) {
+  error_console_ = extensions::ErrorConsole::Get(profile);
+  profile->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
+  error_console_->SetReportingForExtension(
+      extension_id, extensions::ExtensionError::Type::RUNTIME_ERROR,
+      true /* enabled */);
+  error_console_->SetReportingForExtension(
+      extension_id, extensions::ExtensionError::Type::INTERNAL_ERROR,
+      true /* enabled */);
+  error_console_->AddObserver(this);
 }
 
-ExtensionConsoleErrorObserver ::~ExtensionConsoleErrorObserver() {
-  // Intentionally skip removal of this instance from ProcessManager; it leads
-  // to errors in DependencyManager.
+ExtensionConsoleErrorObserver::~ExtensionConsoleErrorObserver() {
+  if (error_console_)
+    error_console_->RemoveObserver(this);
+}
+
+void ExtensionConsoleErrorObserver::OnErrorAdded(
+    const extensions::ExtensionError* error) {
+  // Add a non-fatal failure to the test. Thus the test can continue
+  // executing in case the warning/error is helpful in debugging.
+  ADD_FAILURE() << "Found extension console warning or error with message: "
+                << error->message();
+  errors_.push_back(error->message());
+}
+
+void ExtensionConsoleErrorObserver::OnErrorConsoleDestroyed() {
+  error_console_ = nullptr;
 }
 
 bool ExtensionConsoleErrorObserver::HasErrorsOrWarnings() {
-  return console_observer_ && !console_observer_->messages().empty();
+  return !errors_.empty();
 }
 
 std::string ExtensionConsoleErrorObserver::GetErrorOrWarningAt(
     size_t index) const {
-  return console_observer_ ? console_observer_->GetMessageAt(index)
-                           : std::string();
+  return errors_.size() > index ? base::UTF16ToUTF8(errors_[index])
+                                : std::string();
 }
 
 size_t ExtensionConsoleErrorObserver::GetErrorsAndWarningsCount() const {
-  return console_observer_ ? console_observer_->messages().size() : 0U;
-}
-
-void ExtensionConsoleErrorObserver::OnBackgroundHostCreated(
-    extensions::ExtensionHost* host) {
-  if (host->extension_id() != extension_id_)
-    return;
-
-  console_observer_ = std::make_unique<content::WebContentsConsoleObserver>(
-      host->host_contents());
-
-  auto filter =
-      [](const content::WebContentsConsoleObserver::Message& message) {
-        return message.log_level ==
-                   blink::mojom::ConsoleMessageLevel::kWarning ||
-               message.log_level == blink::mojom::ConsoleMessageLevel::kError;
-      };
-  console_observer_->SetFilter(base::BindRepeating(filter));
+  return errors_.size();
 }

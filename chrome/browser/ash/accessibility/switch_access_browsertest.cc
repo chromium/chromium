@@ -68,12 +68,6 @@ class SwitchAccessTest : public InProcessBrowserTest {
         browser()->profile(), extension_misc::kSwitchAccessExtensionId);
   }
 
-  void TearDownOnMainThread() override {
-    EXPECT_FALSE(console_observer_->HasErrorsOrWarnings())
-        << "Found console.log or console.warn with message: "
-        << console_observer_->GetErrorOrWarningAt(0);
-  }
-
  protected:
   SwitchAccessTest() = default;
   ~SwitchAccessTest() override = default;
