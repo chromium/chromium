@@ -57,6 +57,12 @@ Polymer({
       type: String,
       value: '',  // Allows the $hidden= binding to run without being set.
     },
+
+    /*
+     * The alt text attribute associated with the expand button. Used by screen
+     * readers when announcing the expand button.
+     */
+    expandButtonAlt: String,
   },
 
   observers: [
