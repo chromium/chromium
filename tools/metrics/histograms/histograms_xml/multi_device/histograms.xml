@@ -53,7 +53,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="MultiDevice.DeviceSyncService.ForceEnrollmentNow.Result"
     enum="MultiDevice_DeviceSyncService_ForceCryptAuthOperationResult"
-    expires_after="2021-02-02">
+    expires_after="2022-02-02">
   <owner>vecore@google.com</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>Result for when ForceEnrollmentNow is called.</summary>
