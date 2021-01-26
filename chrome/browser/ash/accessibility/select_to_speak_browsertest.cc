@@ -292,21 +292,22 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, LanguageBoundsIgnoredByDefault) {
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<div>"
       "<span lang='en-US'>The first paragraph</span>"
-      "<span lang='fr-FR'>la deuxième paragraphe</span></div>");
+      "<span lang='fr-FR'>le deuxième paragraphe</span></div>");
 
-  sm_.ExpectSpeechPattern("The first paragraph* la deuxième paragraphe*");
+  sm_.ExpectSpeechPattern("The first paragraph* le deuxième paragraphe*");
   sm_.Replay();
 }
 
+// TODO(crbug.com/1107958): Re-enable this test after fixing flakes.
 IN_PROC_BROWSER_TEST_F(SelectToSpeakTestWithLanguageDetection,
-                       BreaksAtLanguageBounds) {
+                       DISABLED_BreaksAtLanguageBounds) {
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<div>"
       "<span lang='en-US'>The first paragraph</span>"
-      "<span lang='fr-FR'>la deuxième paragraphe</span></div>");
+      "<span lang='fr-FR'>le deuxième paragraphe</span></div>");
 
   sm_.ExpectSpeechPatternWithLocale("The first paragraph*", "en-US");
-  sm_.ExpectSpeechPatternWithLocale("la deuxième paragraphe*", "fr-FR");
+  sm_.ExpectSpeechPatternWithLocale("le deuxième paragraphe*", "fr-FR");
   sm_.Replay();
 }
 
