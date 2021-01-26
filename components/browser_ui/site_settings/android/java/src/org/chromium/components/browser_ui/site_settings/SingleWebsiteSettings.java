@@ -18,6 +18,7 @@ import android.provider.Settings;
 import android.text.format.Formatter;
 import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
@@ -160,6 +161,20 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
             default:
                 return null;
         }
+    }
+
+    public static @ContentSettingsType int getHighestPriorityPermission(
+            @ContentSettingsType @NonNull int[] types) {
+        if (types.length == 1) return types[0];
+
+        for (@ContentSettingsType int setting : SETTINGS_ORDER) {
+            for (@ContentSettingsType int type : types) {
+                if (setting == type) {
+                    return type;
+                }
+            }
+        }
+        return ContentSettingsType.DEFAULT;
     }
 
     /**
@@ -410,15 +425,8 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
 
     private Drawable getContentSettingsIcon(@ContentSettingsType int contentSettingsType,
             @ContentSettingValues @Nullable Integer value, boolean enabled) {
-        Drawable icon = enabled
-                ? SettingsUtils.getTintedIcon(
-                        getContext(), ContentSettingsResources.getIcon(contentSettingsType))
-                : ContentSettingsResources.getDisabledIcon(contentSettingsType, getResources());
-        if (isActionableContentSettingsEnabled() && value != null
-                && value == ContentSettingValues.BLOCK) {
-            return ContentSettingsResources.getBlockedSquareIcon(getResources(), icon);
-        }
-        return icon;
+        return ContentSettingsResources.getContentSettingsIcon(getContext(), contentSettingsType,
+                isActionableContentSettingsEnabled() ? value : null, enabled);
     }
 
     /**
@@ -726,8 +734,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                     new ChromeImageViewPreference(getStyledContext());
 
             preference.setKey(CHOOSER_PERMISSION_PREFERENCE_KEY);
-            preference.setIcon(SettingsUtils.getTintedIcon(
-                    getContext(), ContentSettingsResources.getIcon(info.getContentSettingsType())));
+            preference.setIcon(getContentSettingsIcon(info.getContentSettingsType(), null, true));
             preference.setTitle(info.getName());
             preference.setImageView(R.drawable.ic_delete_white_24dp,
                     R.string.website_settings_revoke_device_permission, (View view) -> {

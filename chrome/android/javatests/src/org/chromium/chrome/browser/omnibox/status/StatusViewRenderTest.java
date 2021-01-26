@@ -9,6 +9,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -34,7 +35,10 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ToolbarTestUtils;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.widget.CompositeTouchDelegate;
+import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
@@ -169,5 +173,21 @@ public class StatusViewRenderTest extends DummyUiActivityTestCase {
                     new StatusIconResource(R.drawable.ic_search, 0));
         });
         mRenderTestRule.render(mStatusView, "status_view_no_icon_with_verbose_padding");
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"RenderTest"})
+    public void testStatusViewWithLocationPermissionIcon() throws IOException {
+        runOnUiThreadBlocking(() -> {
+            Drawable locationIcon =
+                    ContentSettingsResources.getContentSettingsIcon(mStatusView.getContext(),
+                            ContentSettingsType.GEOLOCATION, ContentSettingValues.ALLOW, true);
+            mStatusModel.set(StatusProperties.STATUS_ICON_ALPHA, 1f);
+            mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
+            mStatusModel.set(
+                    StatusProperties.STATUS_ICON_RESOURCE, new StatusIconResource(locationIcon));
+        });
+        mRenderTestRule.render(mStatusView, "status_view_with_location_permission_icon");
     }
 }

@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.omnibox.status;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -16,6 +18,7 @@ import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.CallbackController;
 import org.chromium.base.MathUtils;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.supplier.Supplier;
@@ -27,6 +30,12 @@ import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconRes
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
+import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
+import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.content_settings.ContentSettingsType;
+import org.chromium.components.page_info.PageInfoFeatureList;
+import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -34,7 +43,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * Contains the controller logic of the Status component.
  */
-class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
+public class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver,
+                                       PermissionDialogController.Observer {
+    private static final int PERMISSION_ICON_DISPLAY_TIMEOUT_MS = 8500;
+
     private final PropertyModel mModel;
     private final SearchEngineLogoUtils mSearchEngineLogoUtils;
     private final Supplier<TemplateUrlService> mTemplateUrlServiceSupplier;
@@ -70,6 +82,11 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
     private LocationBarDataProvider mLocationBarDataProvider;
     private UrlBarEditingTextStateProvider mUrlBarEditingTextStateProvider;
 
+    private final PermissionDialogController mPermissionDialogController;
+    private final Handler mPermissionTaskHandler = new Handler();
+    private final CallbackController mCallbackController = new CallbackController();
+    private @ContentSettingsType int mLastPermission;
+
     private boolean mUrlBarTextIsSearch = true;
 
     private float mUrlFocusPercent;
@@ -86,11 +103,12 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
     // The denominator for the above formula, which will adjust the scale for the alpha.
     private final float mTextOffsetAdjustedScale;
 
-    StatusMediator(PropertyModel model, Resources resources, Context context,
+    public StatusMediator(PropertyModel model, Resources resources, Context context,
             UrlBarEditingTextStateProvider urlBarEditingTextStateProvider, boolean isTablet,
             Runnable forceModelViewReconciliationRunnable,
             IncognitoStateProvider incognitoStateProvider,
             LocationBarDataProvider locationBarDataProvider,
+            PermissionDialogController permissionDialogController,
             SearchEngineLogoUtils searchEngineLogoUtils,
             Supplier<TemplateUrlService> templateUrlServiceSupplier,
             Supplier<Profile> profileSupplier) {
@@ -118,6 +136,15 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
         if (incognitoStateProvider != null) {
             incognitoStateProvider.addIncognitoStateObserverAndTrigger(this);
         }
+
+        mPermissionDialogController = permissionDialogController;
+        mPermissionDialogController.addObserver(this);
+    }
+
+    public void destroy() {
+        mPermissionTaskHandler.removeCallbacksAndMessages(null);
+        mCallbackController.destroy();
+        mPermissionDialogController.removeObserver(this);
     }
 
     /**
@@ -446,6 +473,8 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
      *     - not shown if URL is focused.
      */
     void updateLocationBarIcon() {
+        // Reset the last saved permission.
+        mLastPermission = ContentSettingsType.DEFAULT;
         // Update the accessibility description before continuing since we need it either way.
         mModel.set(StatusProperties.STATUS_ICON_DESCRIPTION_RES, getAccessibilityDescriptionRes());
 
@@ -650,5 +679,29 @@ class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver {
 
         assert mForceModelViewReconciliationRunnable != null;
         mForceModelViewReconciliationRunnable.run();
+    }
+
+    // PermissionDialogController.Observer interface
+    @Override
+    public void onDialogResult(
+            @ContentSettingsType int[] permissions, @ContentSettingValues int result) {
+        if (!PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY)) {
+            return;
+        }
+        mLastPermission = SingleWebsiteSettings.getHighestPriorityPermission(permissions);
+        assert mLastPermission != ContentSettingsType.DEFAULT;
+        Drawable permissionIcon = ContentSettingsResources.getContentSettingsIcon(
+                mContext, mLastPermission, result, true);
+        // TODO(crbug.com/1158288): Animate the icon change.
+        // Set the timer to switch the icon back afterwards.
+        mPermissionTaskHandler.removeCallbacksAndMessages(null);
+        mModel.set(StatusProperties.STATUS_ICON_RESOURCE, new StatusIconResource(permissionIcon));
+        mPermissionTaskHandler.postDelayed(
+                mCallbackController.makeCancelable(this::updateLocationBarIcon),
+                PERMISSION_ICON_DISPLAY_TIMEOUT_MS);
+    }
+
+    public int getLastPermission() {
+        return mLastPermission;
     }
 }

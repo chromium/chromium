@@ -131,7 +131,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
     /**
      * Starts an activity and listens for info-bars appearing/disappearing.
      */
-    void setUpActivity() throws InterruptedException {
+    public void setUpActivity() throws InterruptedException {
         startMainActivityOnBlankPage();
         mListener = new InfoBarTestAnimationListener();
         getInfoBarContainer().addAnimationListener(mListener);

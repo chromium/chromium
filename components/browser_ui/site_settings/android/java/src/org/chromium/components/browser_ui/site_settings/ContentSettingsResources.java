@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.site_settings;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,7 +21,9 @@ import android.os.Build;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.FeatureList;
 import org.chromium.base.ThreadUtils;
+import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.device.DeviceFeatureList;
@@ -194,7 +197,9 @@ public class ContentSettingsResources {
             int sensorsBlockedDescription =
                     R.string.website_settings_category_motion_sensors_blocked;
             try {
-                if (DeviceFeatureList.isEnabled(DeviceFeatureList.GENERIC_SENSOR_EXTRA_CLASSES)) {
+                if (FeatureList.isNativeInitialized()
+                        && DeviceFeatureList.isEnabled(
+                                DeviceFeatureList.GENERIC_SENSOR_EXTRA_CLASSES)) {
                     sensorsPermissionTitle = R.string.sensors_permission_title;
                     sensorsAllowedDescription = R.string.website_settings_category_sensors_allowed;
                     sensorsBlockedDescription = R.string.website_settings_category_sensors_blocked;
@@ -259,10 +264,31 @@ public class ContentSettingsResources {
     }
 
     /**
+     * @param context The Context for this drawable.
+     * @param contentSettingsType The ContentSettingsType for this drawable. Returns null if the
+     *         resource for this type cannot be found.
+     * @param value The ContentSettingValues for this drawable. If ContentSettingValues.BLOCK, the
+     *         returned icon will have a strike through it.
+     * @param enabled A boolean describing the enabled state for this drawable. If disabled, the
+     *         returned icon will be greyed out.
+     * @return A {@link Drawable} for this content setting.
+     */
+    public static Drawable getContentSettingsIcon(Context context,
+            @ContentSettingsType int contentSettingsType,
+            @ContentSettingValues @Nullable Integer value, boolean enabled) {
+        Drawable icon = enabled ? SettingsUtils.getTintedIcon(context, getIcon(contentSettingsType))
+                                : getDisabledIcon(contentSettingsType, context.getResources());
+        if (value != null && value == ContentSettingValues.BLOCK) {
+            return getBlockedSquareIcon(context.getResources(), icon);
+        }
+        return icon;
+    }
+
+    /**
      * @return A {@link Drawable} that is the blocked version of the square icon passed in.
      *         Achieved by adding a diagonal strike through the icon.
      */
-    public static Drawable getBlockedSquareIcon(Resources resources, Drawable icon) {
+    private static Drawable getBlockedSquareIcon(Resources resources, Drawable icon) {
         if (icon == null) return null;
         // Save color filter in order to re-apply later
         ColorFilter filter = icon.getColorFilter();

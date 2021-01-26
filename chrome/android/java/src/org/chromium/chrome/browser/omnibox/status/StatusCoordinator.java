@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.components.page_info.PageInfoController;
+import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -82,7 +83,8 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         };
         mMediator = new StatusMediator(mModel, mStatusView.getResources(), mStatusView.getContext(),
                 urlBarEditingTextStateProvider, isTablet, forceModelViewReconciliationRunnable,
-                incognitoStateProvider, locationBarDataProvider, searchEngineLogoUtils,
+                incognitoStateProvider, locationBarDataProvider,
+                PermissionDialogController.getInstance(), searchEngineLogoUtils,
                 templateUrlServiceSupplier, profileSupplier);
 
         Resources res = mStatusView.getResources();
@@ -315,6 +317,7 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     }
 
     public void destroy() {
+        mMediator.destroy();
         mLocationBarDataProvider.removeObserver(this);
         mLocationBarDataProvider = null;
     }

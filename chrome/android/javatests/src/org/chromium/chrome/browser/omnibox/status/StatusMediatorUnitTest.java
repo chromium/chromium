@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.permissions.PermissionDialogController;
 import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -78,6 +79,8 @@ public final class StatusMediatorUnitTest {
     LibraryLoader mLibraryLoader;
     @Mock
     TemplateUrlService mTemplateUrlService;
+    @Mock
+    PermissionDialogController mPermissionDialogController;
 
     Context mContext;
     Resources mResources;
@@ -112,7 +115,7 @@ public final class StatusMediatorUnitTest {
             mMediator = new StatusMediator(mModel, mResources, mContext,
                     mUrlBarEditingTextStateProvider,
                     /* isTablet */ false, mMockForceModelViewReconciliationRunnable, null,
-                    mLocationBarDataProvider, mSearchEngineLogoUtils,
+                    mLocationBarDataProvider, mPermissionDialogController, mSearchEngineLogoUtils,
                     () -> mTemplateUrlService, () -> mProfile);
         });
         mBitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
