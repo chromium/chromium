@@ -11251,6 +11251,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="shopping_tasks" label="Module ID for Shopping Tasks"/>
   <affected-histogram name="NewTabPage.Modules.Dismissed"/>
   <affected-histogram name="NewTabPage.Modules.Impression"/>
+  <affected-histogram name="NewTabPage.Modules.ImpressionRatio"/>
   <affected-histogram name="NewTabPage.Modules.LoadDuration"/>
   <affected-histogram name="NewTabPage.Modules.Loaded"/>
   <affected-histogram name="NewTabPage.Modules.Restored"/>

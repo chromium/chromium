@@ -297,6 +297,7 @@
     "matches": [
       "chrome://bookmarks/*",
       "chrome://extensions/*",
+      "chrome://new-tab-page/*",
       "chrome://os-settings/*",
       "chrome://settings/*",
       "chrome://sync-confirmation/*",

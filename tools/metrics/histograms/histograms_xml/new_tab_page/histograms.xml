@@ -796,6 +796,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Modules.ImpressionRatio" units="perdecage"
+    expires_after="2022-01-01">
+  <owner>danielms@google.com</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Records the maximum amount that any (base histogram) or a particular (sub
+    histograms) module was visible in the NTP content's area between load and
+    unload of an NTP. The amount is recorded as the perdecage (x/10th) of the
+    module's total size. Logged when the NTP unloads, such as via navigating
+    somewhere else or closing the tab (switching tabs does not cause an unload).
+    Logs a value into the base histogram and the corresponding sub histogram for
+    each module that is present. Only logged on the 1P NTP. Note that even if
+    the user has Google as their default search engine, Incognito and Guest mode
+    NTPs are not considered 1P and don't log these histograms. It is possible
+    for this histogram to log a value of 0 if, for instance, the module was
+    always more than 90% below the fold.
+  </summary>
+</histogram>
+
 <histogram name="NewTabPage.Modules.LoadDuration" units="ms"
     expires_after="2022-01-01">
   <owner>danielms@google.com</owner>
