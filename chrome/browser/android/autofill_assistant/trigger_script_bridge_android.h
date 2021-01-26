@@ -79,7 +79,7 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::Observer {
   void OnOnboardingFinished(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& jcaller,
                             jboolean jonboarding_shown,
-                            jboolean jaccepted);
+                            jint jresult);
 
  private:
   // From TriggerScriptCoordinator::Observer:

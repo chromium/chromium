@@ -14,6 +14,7 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.autofill_assistant.AssistantCoordinator;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOnboardingResult;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantClient;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferencesUtil;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiController;
@@ -197,7 +198,8 @@ public class AssistantTriggerScriptBridge {
     @CalledByNative
     private void onOnboardingRequested(boolean isDialogOnboardingEnabled) {
         if (!AutofillAssistantPreferencesUtil.getShowOnboarding()) {
-            safeNativeOnOnboardingFinished(/* onboardingShown= */ false, /* accepted= */ true);
+            safeNativeOnOnboardingFinished(
+                    /* onboardingShown= */ false, /* result= */ AssistantOnboardingResult.ACCEPTED);
             return;
         }
 
@@ -231,10 +233,11 @@ public class AssistantTriggerScriptBridge {
     }
 
     // On finishing of onboarding for trigger scripts.
-    private void safeNativeOnOnboardingFinished(boolean onboardingShown, boolean accepted) {
+    private void safeNativeOnOnboardingFinished(
+            boolean onboardingShown, @AssistantOnboardingResult int result) {
         if (mNativeBridge != 0) {
             AssistantTriggerScriptBridgeJni.get().onOnboardingFinished(
-                    mNativeBridge, AssistantTriggerScriptBridge.this, onboardingShown, accepted);
+                    mNativeBridge, AssistantTriggerScriptBridge.this, onboardingShown, result);
         }
     }
 
@@ -279,8 +282,8 @@ public class AssistantTriggerScriptBridge {
                 isDialogOnboardingEnabled, mExperimentIds, mScriptParameters, mContext,
                 mBottomSheetController, mBrowserControls, mCompositorViewHolder);
 
-        mOnboardingCoordinator.show(accepted -> {
-            safeNativeOnOnboardingFinished(/* onboardingShown= */ true, accepted);
+        mOnboardingCoordinator.show(result -> {
+            safeNativeOnOnboardingFinished(/* onboardingShown= */ true, result);
         }, mWebContents, mInitialUrl);
     }
 
@@ -297,6 +300,7 @@ public class AssistantTriggerScriptBridge {
         void onTabInteractabilityChanged(long nativeTriggerScriptBridgeAndroid,
                 AssistantTriggerScriptBridge caller, boolean interactable);
         void onOnboardingFinished(long nativeTriggerScriptBridgeAndroid,
-                AssistantTriggerScriptBridge caller, boolean onboardingShown, boolean accepted);
+                AssistantTriggerScriptBridge caller, boolean onboardingShown,
+                @AssistantOnboardingResult int result);
     }
 }

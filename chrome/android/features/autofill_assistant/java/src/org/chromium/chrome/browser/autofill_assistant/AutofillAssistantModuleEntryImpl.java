@@ -21,6 +21,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptFinishedState;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptOnboarding;
 import org.chromium.chrome.browser.autofill_assistant.metrics.LiteScriptStarted;
@@ -182,14 +183,26 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                         bottomSheetController, browserControls, compositorViewHolder,
                         bottomSheetController.getScrimCoordinator());
 
-        onboardingCoordinator.show(accepted -> {
-            if (parameters.containsKey(PARAMETER_TRIGGER_SCRIPT_USED)
-                    || parameters.containsKey(PARAMETER_STARTED_WITH_TRIGGER_SCRIPT)) {
-                AutofillAssistantMetrics.recordLiteScriptOnboarding(webContents,
-                        accepted ? LiteScriptOnboarding.LITE_SCRIPT_ONBOARDING_SEEN_AND_ACCEPTED
-                                 : LiteScriptOnboarding.LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED);
+        onboardingCoordinator.show(result -> {
+            switch (result) {
+                case AssistantOnboardingResult.DISMISSED:
+                    AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_NO_ANSWER);
+                    AutofillAssistantMetrics.recordDropOut(
+                            DropOutReason.ONBOARDING_BACK_BUTTON_CLICKED);
+                    break;
+                case AssistantOnboardingResult.REJECTED:
+                    AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_CANCELLED);
+                    AutofillAssistantMetrics.recordDropOut(DropOutReason.DECLINED);
+                    break;
+                case AssistantOnboardingResult.NAVIGATION:
+                    AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_NO_ANSWER);
+                    AutofillAssistantMetrics.recordDropOut(DropOutReason.ONBOARDING_NAVIGATION);
+                    break;
+                case AssistantOnboardingResult.ACCEPTED:
+                    AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_ACCEPTED);
+                    break;
             }
-            if (!accepted) {
+            if (result != AssistantOnboardingResult.ACCEPTED) {
                 return;
             }
             AutofillAssistantClient.fromWebContents(webContents)

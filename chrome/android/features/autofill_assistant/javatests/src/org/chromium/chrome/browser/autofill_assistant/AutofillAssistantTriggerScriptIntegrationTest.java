@@ -370,6 +370,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         onView(withText("Loading regular script")).check(matches(isDisplayed()));
         onView(withId(R.id.progress_bar)).check(matches(not(isDisplayed())));
         onView(withId(R.id.step_progress_bar)).check(matches(isDisplayed()));
+        Assert.assertFalse(AutofillAssistantPreferencesUtil.getShowOnboarding());
     }
 
     @Test
@@ -714,6 +715,7 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         onView(withId(R.id.button_init_ok)).perform(click());
         waitUntilViewMatchesCondition(withText("Done"), isCompletelyDisplayed());
         onView(withText("Loading regular script")).check(matches(isDisplayed()));
+        Assert.assertFalse(AutofillAssistantPreferencesUtil.getShowOnboarding());
     }
 
     @Test
@@ -767,5 +769,6 @@ public class AutofillAssistantTriggerScriptIntegrationTest {
         // Cancel onboarding.
         onView(withId(R.id.button_init_not_ok)).perform(click());
         waitUntilViewAssertionTrue(withText("Continue"), doesNotExist(), DEFAULT_MAX_TIME_TO_POLL);
+        Assert.assertTrue(AutofillAssistantPreferencesUtil.getShowOnboarding());
     }
 }

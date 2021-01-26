@@ -4731,6 +4731,8 @@ others/histograms.xml -->
   <int value="0" label="Seen and accepted"/>
   <int value="1" label="Seen and rejected"/>
   <int value="2" label="Already accepted"/>
+  <int value="3" label="Seen and dismissed"/>
+  <int value="4" label="Interrupted by navigation"/>
 </enum>
 
 <enum name="AutofillAssistantLiteScriptShownToUser">

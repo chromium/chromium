@@ -887,7 +887,7 @@ TEST_F(TriggerScriptCoordinatorTest, OnboardingShownAndAccepted) {
       .Times(1);
   EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(0);
   coordinator_->OnOnboardingFinished(/* onboardingShown= */ true,
-                                     /* accepted= */ true);
+                                     /* result= */ OnboardingResult::ACCEPTED);
 
   AssertRecordedLiteScriptOnboardingState(
       Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_ACCEPTED,
@@ -897,7 +897,7 @@ TEST_F(TriggerScriptCoordinatorTest, OnboardingShownAndAccepted) {
 }
 
 TEST_F(TriggerScriptCoordinatorTest,
-       DialogOnboardingShownAndAcceptedOnThirdTime) {
+       CancellingDialogOnboardingDoesNotStopTriggerScript) {
   auto feature_list = CreateScopedFeatureList(/* dialog_onboarding= */ true);
 
   GetTriggerScriptsResponseProto response;
@@ -918,11 +918,12 @@ TEST_F(TriggerScriptCoordinatorTest,
 
   EXPECT_CALL(mock_observer_, OnTriggerScriptFinished).Times(0);
   coordinator_->OnOnboardingFinished(/* onboardingShown= */ true,
-                                     /* accepted= */ false);
-
-  EXPECT_CALL(mock_observer_, OnTriggerScriptFinished).Times(0);
+                                     /* result= */ OnboardingResult::REJECTED);
   coordinator_->OnOnboardingFinished(/* onboardingShown= */ true,
-                                     /* accepted= */ false);
+                                     /* result= */ OnboardingResult::DISMISSED);
+  coordinator_->OnOnboardingFinished(
+      /* onboardingShown= */ true,
+      /* result= */ OnboardingResult::NAVIGATION);
 
   EXPECT_CALL(
       mock_observer_,
@@ -931,19 +932,24 @@ TEST_F(TriggerScriptCoordinatorTest,
       .Times(1);
   EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(0);
   coordinator_->OnOnboardingFinished(/* onboardingShown= */ true,
-                                     /* accepted= */ true);
+                                     /* result= */ OnboardingResult::ACCEPTED);
 
   AssertRecordedLiteScriptOnboardingState(
       Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED,
-      2);
+      1);
   AssertRecordedLiteScriptOnboardingState(
       Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_ACCEPTED,
+      1);
+  AssertRecordedLiteScriptOnboardingState(
+      Metrics::LiteScriptOnboarding::
+          LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION,
       1);
   AssertRecordedFinishedState(
       Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
 }
 
-TEST_F(TriggerScriptCoordinatorTest, BottomSheetOnboardingShownAndRejected) {
+TEST_F(TriggerScriptCoordinatorTest,
+       RejectingBottomSheetOnboardingStopsTriggerScript) {
   auto feature_list = CreateScopedFeatureList(/* dialog_onboarding= */ false);
 
   GetTriggerScriptsResponseProto response;
@@ -970,7 +976,7 @@ TEST_F(TriggerScriptCoordinatorTest, BottomSheetOnboardingShownAndRejected) {
   EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(1);
   EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(0);
   coordinator_->OnOnboardingFinished(/* onboardingShown= */ true,
-                                     /* accepted= */ false);
+                                     /* result= */ OnboardingResult::REJECTED);
 
   AssertRecordedLiteScriptOnboardingState(
       Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED,
@@ -1003,7 +1009,7 @@ TEST_F(TriggerScriptCoordinatorTest, OnboardingNotShown) {
       .Times(1);
   EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(0);
   coordinator_->OnOnboardingFinished(/* onboardingShown= */ false,
-                                     /* accepted= */ true);
+                                     /* result= */ OnboardingResult::ACCEPTED);
 
   AssertRecordedLiteScriptOnboardingState(
       Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_ALREADY_ACCEPTED,

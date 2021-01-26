@@ -57,7 +57,9 @@ class Metrics {
     kMaxValue = ONBOARDING_DIALOG_DISMISSED
   };
 
-  // The different ways that autofill assistant can stop.
+  // The different ways that autofill assistant can stop. Note that this only
+  // covers regular onboarding. Trigger script onboarding is covered by
+  // LiteScriptOnboarding.
   //
   // GENERATED_JAVA_ENUM_PACKAGE: (
   // org.chromium.chrome.browser.autofill_assistant.metrics)
@@ -322,8 +324,12 @@ class Metrics {
     LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED = 1,
     // The user has already accepted the onboarding in the past.
     LITE_SCRIPT_ONBOARDING_ALREADY_ACCEPTED = 2,
+    // The user has seen and dismissed the onboarding.
+    LITE_SCRIPT_ONBOARDING_SEEN_AND_DISMISSED = 3,
+    // The onboarding was interrupted by a website navigation.
+    LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION = 4,
 
-    kMaxValue = LITE_SCRIPT_ONBOARDING_ALREADY_ACCEPTED
+    kMaxValue = LITE_SCRIPT_ONBOARDING_SEEN_AND_INTERRUPTED_BY_NAVIGATION
   };
 
   static void RecordDropOut(DropOutReason reason);
