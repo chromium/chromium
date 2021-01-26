@@ -207,28 +207,6 @@ const char* VaapiFunctionName(VaapiFunctions function) {
 
 namespace {
 
-uint32_t BufferFormatToVAFourCC(gfx::BufferFormat fmt) {
-  switch (fmt) {
-    case gfx::BufferFormat::BGRX_8888:
-      return VA_FOURCC_BGRX;
-    case gfx::BufferFormat::BGRA_8888:
-      return VA_FOURCC_BGRA;
-    case gfx::BufferFormat::RGBX_8888:
-      return VA_FOURCC_RGBX;
-    case gfx::BufferFormat::RGBA_8888:
-      return VA_FOURCC_RGBA;
-    case gfx::BufferFormat::YVU_420:
-      return VA_FOURCC_YV12;
-    case gfx::BufferFormat::YUV_420_BIPLANAR:
-      return VA_FOURCC_NV12;
-    case gfx::BufferFormat::P010:
-      return VA_FOURCC_P010;
-    default:
-      NOTREACHED() << gfx::BufferFormatToString(fmt);
-      return 0;
-  }
-}
-
 media::VAImplementation VendorStringToImplementationType(
     const std::string& va_vendor_string) {
   if (base::StartsWith(va_vendor_string, "Mesa Gallium driver",
@@ -826,6 +804,8 @@ bool GetRequiredAttribs(const base::Lock* va_lock,
   if (mode == VaapiWrapper::kDecodeProtected && profile != VAProfileProtected) {
     required_attribs->push_back(
         {VAConfigAttribEncryption, VA_ENCRYPTION_TYPE_CTR_128});
+    required_attribs->push_back(
+        {VAConfigAttribDecProcessing, VA_DEC_PROCESSING});
   }
 #endif
 
@@ -1737,6 +1717,29 @@ uint32_t VaapiWrapper::BufferFormatToVARTFormat(gfx::BufferFormat fmt) {
       return VA_RT_FORMAT_YUV420;
     case gfx::BufferFormat::P010:
       return VA_RT_FORMAT_YUV420_10BPP;
+    default:
+      NOTREACHED() << gfx::BufferFormatToString(fmt);
+      return 0;
+  }
+}
+
+// static
+uint32_t VaapiWrapper::BufferFormatToVAFourCC(gfx::BufferFormat fmt) {
+  switch (fmt) {
+    case gfx::BufferFormat::BGRX_8888:
+      return VA_FOURCC_BGRX;
+    case gfx::BufferFormat::BGRA_8888:
+      return VA_FOURCC_BGRA;
+    case gfx::BufferFormat::RGBX_8888:
+      return VA_FOURCC_RGBX;
+    case gfx::BufferFormat::RGBA_8888:
+      return VA_FOURCC_RGBA;
+    case gfx::BufferFormat::YVU_420:
+      return VA_FOURCC_YV12;
+    case gfx::BufferFormat::YUV_420_BIPLANAR:
+      return VA_FOURCC_NV12;
+    case gfx::BufferFormat::P010:
+      return VA_FOURCC_P010;
     default:
       NOTREACHED() << gfx::BufferFormatToString(fmt);
       return 0;
@@ -2796,7 +2799,8 @@ bool VaapiWrapper::CreateSurfaces(unsigned int va_format,
 std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateScopedVASurface(
     unsigned int va_rt_format,
     const gfx::Size& size,
-    const base::Optional<gfx::Size>& visible_size) {
+    const base::Optional<gfx::Size>& visible_size,
+    uint32_t va_fourcc) {
   if (kInvalidVaRtFormat == va_rt_format) {
     LOG(ERROR) << "Invalid VA RT format to CreateScopedVASurface";
     return nullptr;
@@ -2807,12 +2811,20 @@ std::unique_ptr<ScopedVASurface> VaapiWrapper::CreateScopedVASurface(
     return nullptr;
   }
 
+  VASurfaceAttrib attrib;
+  memset(&attrib, 0, sizeof(attrib));
+  if (va_fourcc) {
+    attrib.type = VASurfaceAttribPixelFormat;
+    attrib.flags = VA_SURFACE_ATTRIB_SETTABLE;
+    attrib.value.type = VAGenericValueTypeInteger;
+    attrib.value.value.i = base::checked_cast<int32_t>(va_fourcc);
+  }
   base::AutoLock auto_lock(*va_lock_);
   VASurfaceID va_surface_id = VA_INVALID_ID;
   VAStatus va_res = vaCreateSurfaces(
       va_display_, va_rt_format, base::checked_cast<unsigned int>(size.width()),
-      base::checked_cast<unsigned int>(size.height()), &va_surface_id, 1u, NULL,
-      0);
+      base::checked_cast<unsigned int>(size.height()), &va_surface_id, 1u,
+      va_fourcc ? &attrib : nullptr, va_fourcc ? 1 : 0);
   VA_SUCCESS_OR_RETURN(va_res, VaapiFunctions::kVACreateSurfaces_Allocating,
                        nullptr);
 

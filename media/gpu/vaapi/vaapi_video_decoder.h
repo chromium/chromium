@@ -30,6 +30,7 @@
 #include "media/base/video_frame_layout.h"
 #include "media/gpu/chromeos/video_decoder_pipeline.h"
 #include "media/gpu/decode_surface_handler.h"
+#include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/video/supported_video_decoder_config.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -69,6 +70,11 @@ class VaapiVideoDecoder : public DecoderInterface,
 
   // DecodeSurfaceHandler<VASurface> implementation.
   scoped_refptr<VASurface> CreateSurface() override;
+  scoped_refptr<VASurface> CreateDecodeSurface() override;
+  bool IsScalingDecode() override;
+  const gfx::Rect GetOutputVisibleRect(
+      const gfx::Rect& decode_visible_rect,
+      const gfx::Size& output_picture_size) override;
   void SurfaceReady(scoped_refptr<VASurface> va_surface,
                     int32_t buffer_id,
                     const gfx::Rect& visible_rect,
@@ -143,6 +149,18 @@ class VaapiVideoDecoder : public DecoderInterface,
   // Callback for the CDM to notify |this|.
   void OnCdmContextEvent(CdmContext::Event event);
 
+  // This is a callback from ApplyResolutionChange() when we need to query the
+  // browser process for the screen sizes.
+  void ApplyResolutionChangeWithScreenSizes(
+      const std::vector<gfx::Size>& screen_resolution);
+
+  // Callback for when a VASurface in the decode pool is no longer used as a
+  // reference frame and should then be returned to the pool. We ignore the
+  // VASurfaceID in the normal callback because it is retained in the |surface|
+  // object.
+  void ReturnDecodeSurfaceToPool(std::unique_ptr<ScopedVASurface> surface,
+                                 VASurfaceID);
+
   // The video decoder's state.
   State state_ = State::kUninitialized;
 
@@ -209,6 +227,15 @@ class VaapiVideoDecoder : public DecoderInterface,
   // TODO(crbug.com/1022246): Instead of having the raw pointer here, getting
   // the pointer from AcceleratedVideoDecoder.
   VaapiVideoDecoderDelegate* decoder_delegate_ = nullptr;
+
+  // When we are doing scaled decoding, this is the pool of surfaces used by the
+  // decoder for reference frames.
+  base::queue<std::unique_ptr<ScopedVASurface>>
+      decode_surface_pool_for_scaling_;
+
+  // When we are doing scaled decoding, this is the scale factor we are using,
+  // and applies the same in both dimensions.
+  base::Optional<float> decode_to_output_scale_factor_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

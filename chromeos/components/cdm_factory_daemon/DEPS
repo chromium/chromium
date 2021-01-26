@@ -1,4 +1,5 @@
 include_rules = [
+  "+ash/shell.h",
   "+components/arc/mojom",
   "+content/public/browser",
   "+content/public/test",
@@ -7,9 +8,3 @@ include_rules = [
   "+media/mojo/mojom",
   "+ui/display",
 ]
-
-specific_include_rules = {
-  "output_protection_impl.cc": [
-    "+ash/shell.h",
-  ]
-}

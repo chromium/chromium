@@ -240,6 +240,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   static VAEntrypoint GetDefaultVaEntryPoint(CodecMode mode, VAProfile profile);
 
   static uint32_t BufferFormatToVARTFormat(gfx::BufferFormat fmt);
+  static uint32_t BufferFormatToVAFourCC(gfx::BufferFormat fmt);
 
   // Creates |num_surfaces| VASurfaceIDs of |va_format|, |size| and
   // |surface_usage_hint| and, if successful, creates a |va_context_id_| of the
@@ -290,18 +291,19 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   // Destroys the context identified by |va_context_id_|.
   virtual void DestroyContext();
 
-  // Requests a VA surface of size |size| and |va_rt_format|. Returns a
-  // self-cleaning ScopedVASurface or nullptr if creation failed. If
-  // |visible_size| is supplied, the returned ScopedVASurface's size is set to
-  // it: for example, we may want to request a 16x16 surface to decode a 13x12
-  // JPEG: we may want to keep track of the visible size 13x12 inside the
-  // ScopedVASurface to inform the surface's users that that's the only region
-  // with meaningful content. If |visible_size| is not supplied, we store |size|
-  // in the returned ScopedVASurface.
+  // Requests a VA surface of size |size|, |va_rt_format| and optionally
+  // |va_fourcc|. Returns a self-cleaning ScopedVASurface or nullptr if creation
+  // failed. If |visible_size| is supplied, the returned ScopedVASurface's size
+  // is set to it: for example, we may want to request a 16x16 surface to decode
+  // a 13x12 JPEG: we may want to keep track of the visible size 13x12 inside
+  // the ScopedVASurface to inform the surface's users that that's the only
+  // region with meaningful content. If |visible_size| is not supplied, we store
+  // |size| in the returned ScopedVASurface.
   std::unique_ptr<ScopedVASurface> CreateScopedVASurface(
       unsigned int va_rt_format,
       const gfx::Size& size,
-      const base::Optional<gfx::Size>& visible_size = base::nullopt);
+      const base::Optional<gfx::Size>& visible_size = base::nullopt,
+      uint32_t va_fourcc = 0);
 
   // Creates a self-releasing VASurface from |pixmap|. The created VASurface
   // shares the ownership of the underlying buffer represented by |pixmap|. The

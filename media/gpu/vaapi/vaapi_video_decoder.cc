@@ -38,6 +38,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_factory.h"
 #include "media/gpu/av1_decoder.h"
 #include "media/gpu/vaapi/av1_vaapi_video_decoder_delegate.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -65,6 +66,18 @@ base::Optional<VideoPixelFormat> GetPixelFormatForBitDepth(uint8_t bit_depth) {
   return GfxBufferFormatToVideoPixelFormat(
       kSupportedBitDepthAndGfxFormats.at(bit_depth));
 }
+
+inline int RoundDownToEven(int x) {
+  DCHECK_GE(x, 0);
+  return x - (x % 2);
+}
+
+inline int RoundUpToEven(int x) {
+  DCHECK_GE(x, 0);
+  CHECK_LT(x, std::numeric_limits<int>::max());
+  return x + (x % 2);
+}
+
 }  // namespace
 
 VaapiVideoDecoder::DecodeTask::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
@@ -126,13 +139,16 @@ VaapiVideoDecoder::~VaapiVideoDecoder() {
     decoder_delegate_->OnVAContextDestructionSoon();
 
   // Destroy explicitly to DCHECK() that |vaapi_wrapper_| references are held
-  // inside the accelerator in |decoder_|, by the |allocated_va_surfaces_| and
-  // of course by this class. To clear |allocated_va_surfaces_| we have to first
-  // DestroyContext().
+  // inside the accelerator in |decoder_|, by the |allocated_va_surfaces_|, by
+  // the |decode_surface_pool_for_scaling_| and of course by this class. To
+  // clear |allocated_va_surfaces_| and |decode_surface_pool_for_scaling_| we
+  // have to first DestroyContext().
   decoder_ = nullptr;
   if (vaapi_wrapper_) {
     vaapi_wrapper_->DestroyContext();
     allocated_va_surfaces_.clear();
+    while (!decode_surface_pool_for_scaling_.empty())
+      decode_surface_pool_for_scaling_.pop();
 
     DCHECK(vaapi_wrapper_->HasOneRef());
     vaapi_wrapper_ = nullptr;
@@ -202,9 +218,13 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
     decoder_ = nullptr;
     DCHECK(vaapi_wrapper_);
-    // To clear |allocated_va_surfaces_| we have to first DestroyContext().
+    // To clear |allocated_va_surfaces_| and |decode_surface_pool_for_scaling_|
+    // we have to first DestroyContext().
     vaapi_wrapper_->DestroyContext();
     allocated_va_surfaces_.clear();
+    while (!decode_surface_pool_for_scaling_.empty())
+      decode_surface_pool_for_scaling_.pop();
+    decode_to_output_scale_factor_.reset();
 
     DCHECK(vaapi_wrapper_->HasOneRef());
     vaapi_wrapper_ = nullptr;
@@ -458,6 +478,55 @@ scoped_refptr<VASurface> VaapiVideoDecoder::CreateSurface() {
                        va_surface->format(), std::move(release_frame_cb));
 }
 
+scoped_refptr<VASurface> VaapiVideoDecoder::CreateDecodeSurface() {
+  DVLOGF(4);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_EQ(state_, State::kDecoding);
+  DCHECK(current_decode_task_);
+
+  if (decode_surface_pool_for_scaling_.empty())
+    return nullptr;
+
+  // Get surface from pool.
+  std::unique_ptr<ScopedVASurface> surface =
+      std::move(decode_surface_pool_for_scaling_.front());
+  decode_surface_pool_for_scaling_.pop();
+  // Gather information about the surface to avoid use-after-move.
+  const VASurfaceID surface_id = surface->id();
+  const gfx::Size surface_size = surface->size();
+  const unsigned int surface_format = surface->format();
+  // Wrap the ScopedVASurface inside a VASurface indirectly.
+  VASurface::ReleaseCB release_decode_surface_cb =
+      base::BindOnce(&VaapiVideoDecoder::ReturnDecodeSurfaceToPool, weak_this_,
+                     std::move(surface));
+  return new VASurface(surface_id, surface_size, surface_format,
+                       std::move(release_decode_surface_cb));
+}
+
+bool VaapiVideoDecoder::IsScalingDecode() {
+  // If we're not decoding while scaling, we shouldn't have any surfaces for
+  // that purpose.
+  DCHECK(!!decode_to_output_scale_factor_ ||
+         decode_surface_pool_for_scaling_.empty());
+  return !!decode_to_output_scale_factor_;
+}
+
+const gfx::Rect VaapiVideoDecoder::GetOutputVisibleRect(
+    const gfx::Rect& decode_visible_rect,
+    const gfx::Size& output_picture_size) {
+  if (!IsScalingDecode())
+    return decode_visible_rect;
+  DCHECK_LT(*decode_to_output_scale_factor_, 1.0f);
+  gfx::Rect output_rect =
+      ScaleToEnclosedRect(decode_visible_rect, *decode_to_output_scale_factor_);
+  // Make the dimensions even numbered to align with other requirements later in
+  // the pipeline.
+  output_rect.set_width(RoundDownToEven(output_rect.width()));
+  output_rect.set_height(RoundDownToEven(output_rect.height()));
+  CHECK(gfx::Rect(output_picture_size).Contains(output_rect));
+  return output_rect;
+}
+
 void VaapiVideoDecoder::SurfaceReady(scoped_refptr<VASurface> va_surface,
                                      int32_t buffer_id,
                                      const gfx::Rect& visible_rect,
@@ -514,23 +583,33 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
   DCHECK(output_frames_.empty());
   VLOGF(2);
 
+  if (cdm_context_ref_) {
+    // Get the screen resolutions so we can determine if we should pre-scale
+    // content during decoding to maximize use of overlay downscaling since
+    // protected content requires overlays currently.
+    // NOTE: Only use this for protected content as other requirements for using
+    // it are tied to protected content.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    chromeos::ChromeOsCdmFactory::GetScreenResolutions(BindToCurrentLoop(
+        base::BindOnce(&VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes,
+                       weak_this_)));
+    return;
+#endif
+  }
+  ApplyResolutionChangeWithScreenSizes(std::vector<gfx::Size>());
+}
+
+void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
+    const std::vector<gfx::Size>& screen_resolutions) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(state_ == State::kChangingResolution ||
+         state_ == State::kWaitingForInput);
+  DCHECK(output_frames_.empty());
+  VLOGF(2);
   const uint8_t bit_depth = decoder_->GetBitDepth();
   const base::Optional<VideoPixelFormat> format =
       GetPixelFormatForBitDepth(bit_depth);
   if (!format) {
-    SetState(State::kError);
-    return;
-  }
-  const gfx::Rect visible_rect = decoder_->GetVisibleRect();
-  const gfx::Size natural_size =
-      GetNaturalSize(visible_rect, pixel_aspect_ratio_);
-  const gfx::Size pic_size = decoder_->GetPicSize();
-  auto format_fourcc = Fourcc::FromVideoPixelFormat(*format);
-  CHECK(format_fourcc);
-  if (!frame_pool_->Initialize(
-          *format_fourcc, pic_size, visible_rect, natural_size,
-          decoder_->GetRequiredNumOfPictures(), !!cdm_context_ref_)) {
-    DLOG(WARNING) << "Failed Initialize()ing the frame pool.";
     SetState(State::kError);
     return;
   }
@@ -541,9 +620,124 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
 
   // All pending decode operations will be completed before triggering a
   // resolution change, so we can safely DestroyContext() here; that, in turn,
-  // allows for clearing the |allocated_va_surfaces_|.
+  // allows for clearing the |allocated_va_surfaces_| and the
+  // |decode_surface_pool_for_scaling_|.
   vaapi_wrapper_->DestroyContext();
   allocated_va_surfaces_.clear();
+
+  while (!decode_surface_pool_for_scaling_.empty())
+    decode_surface_pool_for_scaling_.pop();
+  decode_to_output_scale_factor_.reset();
+
+  gfx::Rect output_visible_rect = decoder_->GetVisibleRect();
+  gfx::Size output_pic_size = decoder_->GetPicSize();
+  if (output_pic_size.IsEmpty()) {
+    DLOG(ERROR) << "Empty picture size in decoder";
+    SetState(State::kError);
+    return;
+  }
+  const auto format_fourcc = Fourcc::FromVideoPixelFormat(*format);
+  CHECK(format_fourcc);
+  if (!screen_resolutions.empty()) {
+    // Ideally we would base this off visible size, but that can change
+    // midstream without forcing a config change, so we need to scale the
+    // overall decoded image and then apply that same relative scaling to the
+    // visible rect later.
+    CHECK(cdm_context_ref_);
+    gfx::Size max_desired_size;
+    const float pic_aspect =
+        static_cast<float>(output_pic_size.width()) / output_pic_size.height();
+    for (const auto& screen : screen_resolutions) {
+      if (screen.IsEmpty())
+        continue;
+      int target_width;
+      int target_height;
+      const float screen_aspect =
+          static_cast<float>(screen.width()) / screen.height();
+      if (pic_aspect >= screen_aspect) {
+        // Constrain on width.
+        if (screen.width() < output_pic_size.width()) {
+          target_width = screen.width();
+          target_height =
+              base::checked_cast<int>(std::lround(target_width / pic_aspect));
+        } else {
+          target_width = output_pic_size.width();
+          target_height = output_pic_size.height();
+        }
+      } else {
+        // Constrain on height.
+        if (screen.height() < output_pic_size.height()) {
+          target_height = screen.height();
+          target_width =
+              base::checked_cast<int>(std::lround(target_height * pic_aspect));
+        } else {
+          target_height = output_pic_size.height();
+          target_width = output_pic_size.width();
+        }
+      }
+      if (target_width > max_desired_size.width() ||
+          target_height > max_desired_size.height()) {
+        max_desired_size.SetSize(target_width, target_height);
+      }
+    }
+    if (!max_desired_size.IsEmpty() &&
+        max_desired_size.width() < output_pic_size.width()) {
+      // Fix this so we are sure it's on a multiple of two to deal with
+      // subsampling.
+      max_desired_size.set_width(RoundUpToEven(max_desired_size.width()));
+      max_desired_size.set_height(RoundUpToEven(max_desired_size.height()));
+      decode_to_output_scale_factor_ =
+          static_cast<float>(max_desired_size.width()) /
+          output_pic_size.width();
+      output_pic_size = max_desired_size;
+      output_visible_rect =
+          GetOutputVisibleRect(output_visible_rect, output_pic_size);
+
+      // Create the surface pool for decoding, the normal pool will be used for
+      // output.
+      const size_t decode_pool_size = decoder_->GetRequiredNumOfPictures();
+      const base::Optional<gfx::BufferFormat> buffer_format =
+          VideoPixelFormatToGfxBufferFormat(*format);
+      if (!buffer_format) {
+        decode_to_output_scale_factor_.reset();
+        SetState(State::kError);
+        return;
+      }
+      const uint32_t va_fourcc =
+          VaapiWrapper::BufferFormatToVAFourCC(*buffer_format);
+      const uint32_t va_rt_format =
+          VaapiWrapper::BufferFormatToVARTFormat(*buffer_format);
+      if (!va_fourcc || !va_rt_format) {
+        decode_to_output_scale_factor_.reset();
+        SetState(State::kError);
+        return;
+      }
+      const gfx::Size decoder_pic_size = decoder_->GetPicSize();
+      for (size_t i = 0; i < decode_pool_size; ++i) {
+        std::unique_ptr<ScopedVASurface> surface =
+            vaapi_wrapper_->CreateScopedVASurface(
+                base::strict_cast<unsigned int>(va_rt_format), decoder_pic_size,
+                /*visible_size=*/base::nullopt, va_fourcc);
+        if (!surface) {
+          while (!decode_surface_pool_for_scaling_.empty())
+            decode_surface_pool_for_scaling_.pop();
+          decode_to_output_scale_factor_.reset();
+          SetState(State::kError);
+          return;
+        }
+        decode_surface_pool_for_scaling_.push(std::move(surface));
+      }
+    }
+  }
+  const gfx::Size natural_size =
+      GetNaturalSize(output_visible_rect, pixel_aspect_ratio_);
+  if (!frame_pool_->Initialize(
+          *format_fourcc, output_pic_size, output_visible_rect, natural_size,
+          decoder_->GetRequiredNumOfPictures(), !!cdm_context_ref_)) {
+    DLOG(WARNING) << "Failed Initialize()ing the frame pool.";
+    SetState(State::kError);
+    return;
+  }
 
   if (profile_ != decoder_->GetProfile()) {
     // When a profile is changed, we need to re-initialize VaapiWrapper.
@@ -567,7 +761,7 @@ void VaapiVideoDecoder::ApplyResolutionChange() {
     vaapi_wrapper_ = std::move(new_vaapi_wrapper);
   }
 
-  if (!vaapi_wrapper_->CreateContext(pic_size)) {
+  if (!vaapi_wrapper_->CreateContext(decoder_->GetPicSize())) {
     VLOGF(1) << "Failed creating context";
     SetState(State::kError);
     return;
@@ -816,6 +1010,14 @@ void VaapiVideoDecoder::SetState(State state) {
   }
 
   state_ = state;
+}
+
+void VaapiVideoDecoder::ReturnDecodeSurfaceToPool(
+    std::unique_ptr<ScopedVASurface> surface,
+    VASurfaceID) {
+  DVLOGF(4);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  decode_surface_pool_for_scaling_.push(std::move(surface));
 }
 
 }  // namespace media

@@ -48,6 +48,7 @@ class VP9VaapiVideoDecoderDelegate : public VP9Decoder::VP9Accelerator,
   std::unique_ptr<ScopedVABuffer> picture_params_;
   std::unique_ptr<ScopedVABuffer> slice_params_;
   std::unique_ptr<ScopedVABuffer> crypto_params_;
+  std::unique_ptr<ScopedVABuffer> proc_params_;
 
   DISALLOW_COPY_AND_ASSIGN(VP9VaapiVideoDecoderDelegate);
 };

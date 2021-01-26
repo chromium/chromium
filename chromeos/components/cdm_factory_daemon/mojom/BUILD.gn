@@ -16,6 +16,7 @@ mojom_component("mojom") {
     "//components/arc/mojom:oemcrypto",
     "//components/arc/mojom:protected_buffer_manager",
     "//mojo/public/mojom/base",
+    "//ui/gfx/geometry/mojom",
   ]
 
   cpp_typemaps = [
