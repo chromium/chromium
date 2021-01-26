@@ -8,6 +8,7 @@
 #include <vulkan/vulkan.h>
 
 #include "base/types/pass_key.h"
+#include "gpu/gpu_gles2_export.h"
 #include "gpu/vulkan/semaphore_handle.h"
 
 namespace viz {
@@ -16,7 +17,7 @@ class VulkanContextProvider;
 
 namespace gpu {
 
-class ExternalSemaphore {
+class GPU_GLES2_EXPORT ExternalSemaphore {
  public:
   static ExternalSemaphore Create(viz::VulkanContextProvider* context_provider);
 
