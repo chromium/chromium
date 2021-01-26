@@ -1651,39 +1651,45 @@ TEST_F(PartitionAllocTest, LostFreeSlotSpansBug) {
 // allocator in a bad global state.
 // Performing them as death tests causes them to be forked into their own
 // process, so they won't pollute other tests.
-TEST_F(PartitionAllocDeathTest, RepeatedAllocReturnNullDirect) {
+//
+// Disabled tests as they are (1) slow, and (2) don't work. They are slow
+// because with DCHECK_IS_ON() they memset() multiple tens of GiB of memory per
+// test, and they don't work because some EXPECT_*() fail, but since they are
+// wrapped into EXPECT_DEATH(), this is not reported.
+// See crbug.com/1168168 for details.
+TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedAllocReturnNullDirect) {
   // A direct-mapped allocation size.
   EXPECT_DEATH(DoReturnNullTest(32 * 1024 * 1024, kPartitionAllocFlags),
                "DoReturnNullTest");
 }
 
 // Repeating above test with Realloc
-TEST_F(PartitionAllocDeathTest, RepeatedReallocReturnNullDirect) {
+TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedReallocReturnNullDirect) {
   EXPECT_DEATH(DoReturnNullTest(32 * 1024 * 1024, kPartitionReallocFlags),
                "DoReturnNullTest");
 }
 
 // Repeating above test with TryRealloc
-TEST_F(PartitionAllocDeathTest, RepeatedTryReallocReturnNullDirect) {
+TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedTryReallocReturnNullDirect) {
   EXPECT_DEATH(DoReturnNullTest(32 * 1024 * 1024, kPartitionRootTryRealloc),
                "DoReturnNullTest");
 }
 
 // Test "return null" with a 512 kB block size.
-TEST_F(PartitionAllocDeathTest, RepeatedAllocReturnNull) {
+TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedAllocReturnNull) {
   // A single-slot but non-direct-mapped allocation size.
   EXPECT_DEATH(DoReturnNullTest(512 * 1024, kPartitionAllocFlags),
                "DoReturnNullTest");
 }
 
 // Repeating above test with Realloc.
-TEST_F(PartitionAllocDeathTest, RepeatedReallocReturnNull) {
+TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedReallocReturnNull) {
   EXPECT_DEATH(DoReturnNullTest(512 * 1024, kPartitionReallocFlags),
                "DoReturnNullTest");
 }
 
 // Repeating above test with TryRealloc.
-TEST_F(PartitionAllocDeathTest, RepeatedTryReallocReturnNull) {
+TEST_F(PartitionAllocDeathTest, DISABLED_RepeatedTryReallocReturnNull) {
   EXPECT_DEATH(DoReturnNullTest(512 * 1024, kPartitionRootTryRealloc),
                "DoReturnNullTest");
 }
