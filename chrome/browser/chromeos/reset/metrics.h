@@ -8,28 +8,28 @@
 namespace chromeos {
 namespace reset {
 
-enum DialogViewType {
+enum class DialogViewType {
 
   // User invoked the dialog from options page.
-  DIALOG_FROM_OPTIONS,
+  kFromOptions,
 
   // Invoked with shortcut. Confirming form for powerwash.
-  DIALOG_SHORTCUT_CONFIRMING_POWERWASH_ONLY,
+  kShortcutConfirmingPowerwashOnly,
 
   // Invoked with shortcut. Confirming form for powerwash and rollback.
-  DIALOG_SHORTCUT_CONFIRMING_POWERWASH_AND_ROLLBACK,
+  kShortcutConfirmingPowerwashAndRollback,
 
   // Invoked with shortcut. Offering form, rollback option set.
-  DIALOG_SHORTCUT_OFFERING_ROLLBACK_UNAVAILABLE,
+  kShortcutOfferingRollbackUnavailable,
 
   // Invoked with shortcut. Offering form, rollback option not set.
-  DIALOG_SHORTCUT_OFFERING_ROLLBACK_AVAILABLE,
+  kShortcutOfferingRollbackAvailable,
 
   // Invoked with shortcut. Requesting restart form.
-  DIALOG_SHORTCUT_RESTART_REQUIRED,
+  kShortcutRestartRequired,
 
   // Must be last enum element.
-  DIALOG_VIEW_TYPE_SIZE
+  kCount
 };
 
 }  // namespace reset

@@ -304,8 +304,8 @@ void ResetSettingsHandler::OnShowPowerwashDialog(
      const base::ListValue* args) {
   UMA_HISTOGRAM_ENUMERATION(
       "Reset.ChromeOS.PowerwashDialogShown",
-      chromeos::reset::DIALOG_FROM_OPTIONS,
-      chromeos::reset::DIALOG_VIEW_TYPE_SIZE);
+      chromeos::reset::DialogViewType::kFromOptions,
+      chromeos::reset::DialogViewType::kCount);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
