@@ -501,6 +501,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             menu.findItem(R.id.get_image_descriptions_id).setVisible(false);
         }
 
+        menu.findItem(R.id.feed_follow_id)
+                .setVisible(ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED));
+
         // Disable find in page on the native NTP.
         menu.findItem(R.id.find_in_page_id).setVisible(shouldShowFindInPage(currentTab));
 

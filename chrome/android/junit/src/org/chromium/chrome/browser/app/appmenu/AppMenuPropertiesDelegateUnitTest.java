@@ -79,6 +79,7 @@ import java.util.Set;
  * Unit tests for {@link AppMenuPropertiesDelegateImpl}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures({ChromeFeatureList.WEB_FEED})
 public class AppMenuPropertiesDelegateUnitTest {
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -241,7 +242,8 @@ public class AppMenuPropertiesDelegateUnitTest {
         Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
                 R.id.new_incognito_tab_menu_id, R.id.all_bookmarks_menu_id,
                 R.id.recent_tabs_menu_id, R.id.open_history_menu_id, R.id.downloads_menu_id,
-                R.id.request_desktop_site_row_menu_id, R.id.preferences_id, R.id.help_id};
+                R.id.feed_follow_id, R.id.request_desktop_site_row_menu_id, R.id.preferences_id,
+                R.id.help_id};
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 
@@ -260,13 +262,14 @@ public class AppMenuPropertiesDelegateUnitTest {
         Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
                 R.id.new_incognito_tab_menu_id, R.id.all_bookmarks_menu_id,
                 R.id.recent_tabs_menu_id, R.id.open_history_menu_id, R.id.downloads_menu_id,
-                R.id.translate_id, R.id.share_row_menu_id, R.id.find_in_page_id,
-                R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
-                R.id.preferences_id, R.id.help_id};
+                R.id.translate_id, R.id.share_row_menu_id, R.id.feed_follow_id,
+                R.id.find_in_page_id, R.id.add_to_homescreen_id,
+                R.id.request_desktop_site_row_menu_id, R.id.preferences_id, R.id.help_id};
         Integer[] expectedTitles = {0, R.string.menu_new_tab, R.string.menu_new_incognito_tab,
                 R.string.menu_bookmarks, R.string.menu_recent_tabs, R.string.menu_history,
-                R.string.menu_downloads, R.string.menu_translate, 0, R.string.menu_find_in_page,
-                R.string.menu_add_to_homescreen, 0, R.string.menu_settings, R.string.menu_help};
+                R.string.menu_downloads, R.string.menu_translate, 0, R.string.menu_follow,
+                R.string.menu_find_in_page, R.string.menu_add_to_homescreen, 0,
+                R.string.menu_settings, R.string.menu_help};
         Integer[] expectedActionBarItems = {R.id.forward_menu_id, R.id.bookmark_this_page_id,
                 R.id.offline_page_id, R.id.info_menu_id, R.id.reload_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
@@ -293,14 +296,14 @@ public class AppMenuPropertiesDelegateUnitTest {
         Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
                 R.id.new_incognito_tab_menu_id, R.id.all_bookmarks_menu_id,
                 R.id.recent_tabs_menu_id, R.id.open_history_menu_id, R.id.downloads_menu_id,
-                R.id.translate_id, R.id.share_row_menu_id, R.id.find_in_page_id,
-                R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
-                R.id.preferences_id, R.id.help_id};
+                R.id.translate_id, R.id.share_row_menu_id, R.id.feed_follow_id,
+                R.id.find_in_page_id, R.id.add_to_homescreen_id,
+                R.id.request_desktop_site_row_menu_id, R.id.preferences_id, R.id.help_id};
         Integer[] expectedTitles = {0, R.string.menu_new_tab, R.string.menu_new_incognito_tab,
                 R.string.menu_bookmarks, R.string.menu_recent_tabs, R.string.menu_history,
-                R.string.menu_downloads, R.string.menu_translate, 0, R.string.menu_find_in_page,
-                R.string.menu_add_to_homescreen_install, 0, R.string.menu_settings,
-                R.string.menu_help};
+                R.string.menu_downloads, R.string.menu_translate, 0, R.string.menu_follow,
+                R.string.menu_find_in_page, R.string.menu_add_to_homescreen_install, 0,
+                R.string.menu_settings, R.string.menu_help};
         Integer[] expectedActionBarItems = {R.id.forward_menu_id, R.id.bookmark_this_page_id,
                 R.id.offline_page_id, R.id.info_menu_id, R.id.reload_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
@@ -324,9 +327,10 @@ public class AppMenuPropertiesDelegateUnitTest {
         Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
                 R.id.new_incognito_tab_menu_id, R.id.all_bookmarks_menu_id,
                 R.id.recent_tabs_menu_id, R.id.open_history_menu_id, R.id.downloads_menu_id,
-                R.id.translate_id, R.id.share_row_menu_id, R.id.find_in_page_id,
-                R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
-                R.id.preferences_id, R.id.help_id, R.id.managed_by_menu_id};
+                R.id.translate_id, R.id.share_row_menu_id, R.id.feed_follow_id,
+                R.id.find_in_page_id, R.id.add_to_homescreen_id,
+                R.id.request_desktop_site_row_menu_id, R.id.preferences_id, R.id.help_id,
+                R.id.managed_by_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
     }
 
@@ -362,8 +366,9 @@ public class AppMenuPropertiesDelegateUnitTest {
         Integer[] expectedItems = {R.id.update_menu_id, R.id.new_tab_menu_id,
                 R.id.new_incognito_tab_menu_id, R.id.all_bookmarks_menu_id,
                 R.id.recent_tabs_menu_id, R.id.open_history_menu_id, R.id.downloads_menu_id,
-                R.id.translate_id, R.id.find_in_page_id, R.id.add_to_homescreen_id,
-                R.id.reader_mode_prefs_id, R.id.preferences_id, R.id.help_id};
+                R.id.translate_id, R.id.feed_follow_id, R.id.find_in_page_id,
+                R.id.add_to_homescreen_id, R.id.reader_mode_prefs_id, R.id.preferences_id,
+                R.id.help_id};
         assertMenuItemsHaveIcons(menu, expectedItems);
     }
 
@@ -385,8 +390,8 @@ public class AppMenuPropertiesDelegateUnitTest {
                 R.id.new_incognito_tab_menu_id, R.id.divider_line_id, R.id.open_history_menu_id,
                 R.id.downloads_row_menu_id, R.id.all_bookmarks_row_menu_id,
                 R.id.recent_tabs_menu_id, R.id.divider_line_id, R.id.share_row_menu_id,
-                R.id.paint_preview_show_id, R.id.find_in_page_id, R.id.translate_id,
-                R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
+                R.id.feed_follow_id, R.id.paint_preview_show_id, R.id.find_in_page_id,
+                R.id.translate_id, R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
                 R.id.divider_line_id, R.id.preferences_id, R.id.help_id};
         Integer[] expectedActionBarItems = {R.id.forward_menu_id, R.id.bookmark_this_page_id,
                 R.id.offline_page_id, R.id.info_menu_id, R.id.reload_menu_id};
@@ -412,9 +417,9 @@ public class AppMenuPropertiesDelegateUnitTest {
                 R.id.new_incognito_tab_menu_id, R.id.divider_line_id, R.id.open_history_menu_id,
                 R.id.downloads_row_menu_id, R.id.all_bookmarks_row_menu_id,
                 R.id.recent_tabs_menu_id, R.id.divider_line_id, R.id.share_row_menu_id,
-                R.id.find_in_page_id, R.id.translate_id, R.id.add_to_homescreen_id,
-                R.id.request_desktop_site_row_menu_id, R.id.divider_line_id, R.id.preferences_id,
-                R.id.info_id, R.id.help_id};
+                R.id.feed_follow_id, R.id.find_in_page_id, R.id.translate_id,
+                R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
+                R.id.divider_line_id, R.id.preferences_id, R.id.info_id, R.id.help_id};
         Integer[] expectedActionBarItems = {R.id.backward_menu_id, R.id.forward_menu_id,
                 R.id.offline_page_id, R.id.bookmark_this_page_id, R.id.reload_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
@@ -439,8 +444,9 @@ public class AppMenuPropertiesDelegateUnitTest {
                 R.id.new_incognito_tab_menu_id, R.id.divider_line_id, R.id.open_history_menu_id,
                 R.id.downloads_row_menu_id, R.id.all_bookmarks_row_menu_id,
                 R.id.recent_tabs_menu_id, R.id.divider_line_id, R.id.find_in_page_id,
-                R.id.translate_id, R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
-                R.id.divider_line_id, R.id.preferences_id, R.id.info_id, R.id.help_id};
+                R.id.feed_follow_id, R.id.translate_id, R.id.add_to_homescreen_id,
+                R.id.request_desktop_site_row_menu_id, R.id.divider_line_id, R.id.preferences_id,
+                R.id.info_id, R.id.help_id};
         Integer[] expectedActionBarItems = {R.id.forward_menu_id, R.id.bookmark_this_page_id,
                 R.id.offline_page_id, R.id.share_menu_button_id, R.id.reload_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
@@ -469,9 +475,10 @@ public class AppMenuPropertiesDelegateUnitTest {
                 R.id.new_incognito_tab_menu_id, R.id.move_to_other_window_menu_id,
                 R.id.divider_line_id, R.id.open_history_menu_id, R.id.downloads_row_menu_id,
                 R.id.all_bookmarks_row_menu_id, R.id.recent_tabs_menu_id, R.id.divider_line_id,
-                R.id.share_row_menu_id, R.id.paint_preview_show_id, R.id.find_in_page_id,
-                R.id.translate_id, R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
-                R.id.divider_line_id, R.id.preferences_id, R.id.help_id};
+                R.id.share_row_menu_id, R.id.feed_follow_id, R.id.paint_preview_show_id,
+                R.id.find_in_page_id, R.id.translate_id, R.id.add_to_homescreen_id,
+                R.id.request_desktop_site_row_menu_id, R.id.divider_line_id, R.id.preferences_id,
+                R.id.help_id};
         Integer[] expectedActionBarItems = {
                 R.id.forward_menu_id, R.id.info_menu_id, R.id.reload_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
@@ -500,9 +507,10 @@ public class AppMenuPropertiesDelegateUnitTest {
                 R.id.new_incognito_tab_menu_id, R.id.move_to_other_window_menu_id,
                 R.id.divider_line_id, R.id.open_history_menu_id, R.id.downloads_row_menu_id,
                 R.id.all_bookmarks_row_menu_id, R.id.recent_tabs_menu_id, R.id.divider_line_id,
-                R.id.share_row_menu_id, R.id.paint_preview_show_id, R.id.find_in_page_id,
-                R.id.translate_id, R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
-                R.id.divider_line_id, R.id.preferences_id, R.id.info_id, R.id.help_id};
+                R.id.share_row_menu_id, R.id.feed_follow_id, R.id.paint_preview_show_id,
+                R.id.find_in_page_id, R.id.translate_id, R.id.add_to_homescreen_id,
+                R.id.request_desktop_site_row_menu_id, R.id.divider_line_id, R.id.preferences_id,
+                R.id.info_id, R.id.help_id};
         Integer[] expectedActionBarItems = {
                 R.id.backward_menu_id, R.id.forward_menu_id, R.id.reload_menu_id};
         assertMenuItemsAreEqual(menu, expectedItems);
@@ -530,8 +538,8 @@ public class AppMenuPropertiesDelegateUnitTest {
                 R.id.new_incognito_tab_menu_id, R.id.move_to_other_window_menu_id,
                 R.id.divider_line_id, R.id.open_history_menu_id, R.id.downloads_row_menu_id,
                 R.id.all_bookmarks_row_menu_id, R.id.recent_tabs_menu_id, R.id.divider_line_id,
-                R.id.paint_preview_show_id, R.id.find_in_page_id, R.id.translate_id,
-                R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
+                R.id.feed_follow_id, R.id.paint_preview_show_id, R.id.find_in_page_id,
+                R.id.translate_id, R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
                 R.id.divider_line_id, R.id.preferences_id, R.id.info_id, R.id.help_id};
         Integer[] expectedActionBarItems = {
                 R.id.forward_menu_id, R.id.share_menu_button_id, R.id.reload_menu_id};
@@ -563,9 +571,9 @@ public class AppMenuPropertiesDelegateUnitTest {
                 R.id.divider_line_id, R.id.open_history_menu_id, R.id.downloads_row_menu_id,
                 R.id.all_bookmarks_row_menu_id, R.id.recent_tabs_menu_id,
                 R.id.add_to_divider_line_id, R.id.add_to_menu_id, R.id.divider_line_id,
-                R.id.paint_preview_show_id, R.id.find_in_page_id, R.id.translate_id,
-                R.id.request_desktop_site_row_menu_id, R.id.divider_line_id, R.id.preferences_id,
-                R.id.info_id, R.id.help_id};
+                R.id.feed_follow_id, R.id.paint_preview_show_id, R.id.find_in_page_id,
+                R.id.translate_id, R.id.request_desktop_site_row_menu_id, R.id.divider_line_id,
+                R.id.preferences_id, R.id.info_id, R.id.help_id};
         Integer[] expectedActionBarItems = {
                 R.id.forward_menu_id, R.id.share_menu_button_id, R.id.reload_menu_id};
         Integer[] expectedAddToItems = {R.id.add_to_bookmarks_menu_id,
@@ -606,9 +614,9 @@ public class AppMenuPropertiesDelegateUnitTest {
                 R.id.divider_line_id, R.id.open_history_menu_id, R.id.downloads_row_menu_id,
                 R.id.all_bookmarks_row_menu_id, R.id.recent_tabs_menu_id,
                 R.id.add_to_divider_line_id, R.id.add_to_menu_id, R.id.install_app_id,
-                R.id.divider_line_id, R.id.paint_preview_show_id, R.id.find_in_page_id,
-                R.id.translate_id, R.id.request_desktop_site_row_menu_id, R.id.divider_line_id,
-                R.id.preferences_id, R.id.info_id, R.id.help_id};
+                R.id.divider_line_id, R.id.feed_follow_id, R.id.paint_preview_show_id,
+                R.id.find_in_page_id, R.id.translate_id, R.id.request_desktop_site_row_menu_id,
+                R.id.divider_line_id, R.id.preferences_id, R.id.info_id, R.id.help_id};
         Integer[] expectedActionBarItems = {
                 R.id.forward_menu_id, R.id.share_menu_button_id, R.id.reload_menu_id};
         Integer[] expectedAddToItems = {
@@ -689,9 +697,9 @@ public class AppMenuPropertiesDelegateUnitTest {
         Integer[] expectedItems = {R.id.icon_row_menu_id, R.id.new_tab_menu_id,
                 R.id.new_incognito_tab_menu_id, R.id.all_bookmarks_menu_id,
                 R.id.recent_tabs_menu_id, R.id.open_history_menu_id, R.id.downloads_menu_id,
-                R.id.share_row_menu_id, R.id.get_image_descriptions_id, R.id.find_in_page_id,
-                R.id.add_to_homescreen_id, R.id.request_desktop_site_row_menu_id,
-                R.id.preferences_id, R.id.help_id};
+                R.id.share_row_menu_id, R.id.feed_follow_id, R.id.get_image_descriptions_id,
+                R.id.find_in_page_id, R.id.add_to_homescreen_id,
+                R.id.request_desktop_site_row_menu_id, R.id.preferences_id, R.id.help_id};
 
         assertMenuItemsAreEqual(menu, expectedItems);
 

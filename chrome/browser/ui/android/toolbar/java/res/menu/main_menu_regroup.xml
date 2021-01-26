@@ -133,6 +133,9 @@
                 android:title="@null" />
           </menu>
         </item>
+        <item android:id="@+id/feed_follow_id"
+            android:title="@string/menu_follow"
+            android:icon="@drawable/ic_add"/>
         <item android:id="@+id/find_in_page_id"
             android:title="@string/menu_find_in_page"
             android:icon="@drawable/ic_find_in_page" />

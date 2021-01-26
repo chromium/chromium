@@ -79,6 +79,9 @@
                 android:title="@null" />
           </menu>
         </item>
+        <item android:id="@+id/feed_follow_id"
+            android:title="@string/menu_follow"
+            android:icon="@drawable/ic_add"/>
         <item android:id="@+id/get_image_descriptions_id"
             android:title="@string/menu_get_image_descriptions"
             android:icon="@drawable/ic_image_descriptions"/>
