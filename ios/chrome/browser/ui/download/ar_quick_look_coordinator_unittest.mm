@@ -115,7 +115,8 @@ TEST_F(ARQuickLookCoordinatorTest, ValidUSDZFile) {
       [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
 
   [tab_helper()->delegate() ARQuickLookTabHelper:tab_helper()
-                  didFinishDowloadingFileWithURL:fileURL];
+                  didFinishDowloadingFileWithURL:fileURL
+                            allowsContentScaling:YES];
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
     return [base_view_controller_.presentedViewController class] ==
@@ -132,7 +133,8 @@ TEST_F(ARQuickLookCoordinatorTest, ValidUSDZFile) {
 // Tests attempting to present an invalid USDZ file.
 TEST_F(ARQuickLookCoordinatorTest, InvalidUSDZFile) {
   [tab_helper()->delegate() ARQuickLookTabHelper:tab_helper()
-                  didFinishDowloadingFileWithURL:nil];
+                  didFinishDowloadingFileWithURL:nil
+                            allowsContentScaling:YES];
 
   EXPECT_FALSE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
     return [base_view_controller_.presentedViewController class] ==
@@ -152,7 +154,8 @@ TEST_F(ARQuickLookCoordinatorTest, MultipleValidUSDZFiles) {
   NSURL* fileURL =
       [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
   [tab_helper()->delegate() ARQuickLookTabHelper:tab_helper()
-                  didFinishDowloadingFileWithURL:fileURL];
+                  didFinishDowloadingFileWithURL:fileURL
+                            allowsContentScaling:YES];
 
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, ^{
     return [base_view_controller_.presentedViewController class] ==
@@ -170,7 +173,8 @@ TEST_F(ARQuickLookCoordinatorTest, MultipleValidUSDZFiles) {
       base_view_controller_.presentedViewController;
 
   [tab_helper()->delegate() ARQuickLookTabHelper:tab_helper()
-                  didFinishDowloadingFileWithURL:fileURL];
+                  didFinishDowloadingFileWithURL:fileURL
+                            allowsContentScaling:YES];
 
   // The attempt is ignored.
   EXPECT_EQ(presented_view_controller,
@@ -201,7 +205,8 @@ TEST_F(ARQuickLookCoordinatorTest, AnotherViewControllerIsPresented) {
   NSURL* fileURL =
       [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
   [tab_helper()->delegate() ARQuickLookTabHelper:tab_helper()
-                  didFinishDowloadingFileWithURL:fileURL];
+                  didFinishDowloadingFileWithURL:fileURL
+                            allowsContentScaling:YES];
 
   // The attempt is ignored.
   EXPECT_EQ(presented_view_controller,

@@ -111,6 +111,11 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   // presentation.
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* goodTitle = app.staticTexts[@"good"];
+#if TARGET_IPHONE_SIMULATOR
+  if (@available(iOS 14, *)) {
+    goodTitle = app.staticTexts[@"Unsupported file format"];
+  }
+#endif
   GREYAssert(
       [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
       @"AR preview dialog UI was not presented");
@@ -137,6 +142,11 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   // presentation.
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* goodTitle = app.staticTexts[@"good"];
+#if TARGET_IPHONE_SIMULATOR
+  if (@available(iOS 14, *)) {
+    goodTitle = app.staticTexts[@"Unsupported file format"];
+  }
+#endif
   GREYAssertFalse(
       [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
       @"AR preview dialog UI was presented");
@@ -163,6 +173,11 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   // presentation.
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* goodTitle = app.staticTexts[@"good"];
+#if TARGET_IPHONE_SIMULATOR
+  if (@available(iOS 14, *)) {
+    goodTitle = app.staticTexts[@"Unsupported file format"];
+  }
+#endif
   GREYAssertFalse(
       [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
       @"AR preview dialog UI was presented");
@@ -189,6 +204,11 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   // presentation.
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* goodTitle = app.staticTexts[@"good"];
+#if TARGET_IPHONE_SIMULATOR
+  if (@available(iOS 14, *)) {
+    goodTitle = app.staticTexts[@"Unsupported file format"];
+  }
+#endif
   GREYAssertFalse(
       [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
       @"AR preview dialog UI was presented");
@@ -219,6 +239,11 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   // presentation.
   XCUIApplication* app = [[XCUIApplication alloc] init];
   XCUIElement* goodTitle = app.staticTexts[@"good"];
+#if TARGET_IPHONE_SIMULATOR
+  if (@available(iOS 14, *)) {
+    goodTitle = app.staticTexts[@"Unsupported file format"];
+  }
+#endif
   GREYAssert(
       [goodTitle waitForExistenceWithTimeout:kWaitForARPresentationTimeout],
       @"AR preview dialog UI was not presented");

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/download/ar_quick_look_coordinator.h"
 
+#import <ARKit/ARKit.h>
 #import <QuickLook/QuickLook.h>
 
 #include <memory>
@@ -75,6 +76,8 @@ PresentQLPreviewController GetHistogramEnum(
 @property(nonatomic, weak) QLPreviewController* viewController;
 
 @property(nonatomic, assign) web::WebState* webState;
+
+@property(nonatomic, assign) BOOL allowsContentScaling;
 
 @end
 
@@ -194,8 +197,10 @@ PresentQLPreviewController GetHistogramEnum(
 #pragma mark - ARQuickLookTabHelperDelegate
 
 - (void)ARQuickLookTabHelper:(ARQuickLookTabHelper*)tabHelper
-    didFinishDowloadingFileWithURL:(NSURL*)fileURL {
+    didFinishDowloadingFileWithURL:(NSURL*)fileURL
+              allowsContentScaling:(BOOL)allowsScaling {
   self.fileURL = fileURL;
+  self.allowsContentScaling = allowsScaling;
 
   base::UmaHistogramEnumeration(
       kIOSPresentQLPreviewControllerHistogram,
@@ -230,6 +235,12 @@ PresentQLPreviewController GetHistogramEnum(
 
 - (id<QLPreviewItem>)previewController:(QLPreviewController*)controller
                     previewItemAtIndex:(NSInteger)index {
+  if (@available(iOS 13, *)) {
+    ARQuickLookPreviewItem* item =
+        [[ARQuickLookPreviewItem alloc] initWithFileAtURL:self.fileURL];
+    item.allowsContentScaling = self.allowsContentScaling;
+    return item;
+  }
   return self.fileURL;
 }
 

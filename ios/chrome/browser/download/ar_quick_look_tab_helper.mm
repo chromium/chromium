@@ -33,6 +33,11 @@ const char kUsdzMimeTypeHistogramSuffix[] = ".USDZ";
 
 namespace {
 
+// When an AR Quick Look URL contains this fragment, scaling the displayed
+// image (e.g., by pinch-zooming) is disallowed. See
+// https://developer.apple.com/videos/play/wwdc2019/612/
+const char kDisallowContentScalingUrlFragment[] = "allowsContentScaling=0";
+
 // Returns a suffix for Download.IOSDownloadARModelState histogram for the
 // |download_task|.
 std::string GetMimeTypeSuffix(web::DownloadTask* download_task) {
@@ -133,7 +138,14 @@ void ARQuickLookTabHelper::DidFinishDownload() {
   base::FilePath path = file_writer->file_path();
   NSURL* fileURL =
       [NSURL fileURLWithPath:base::SysUTF8ToNSString(path.value())];
-  [delegate_ ARQuickLookTabHelper:this didFinishDowloadingFileWithURL:fileURL];
+  bool allow_content_scaling = true;
+  if (download_task_->GetOriginalUrl().ref() ==
+      kDisallowContentScalingUrlFragment) {
+    allow_content_scaling = false;
+  }
+  [delegate_ ARQuickLookTabHelper:this
+      didFinishDowloadingFileWithURL:fileURL
+                allowsContentScaling:allow_content_scaling];
 }
 
 void ARQuickLookTabHelper::RemoveCurrentDownload() {
