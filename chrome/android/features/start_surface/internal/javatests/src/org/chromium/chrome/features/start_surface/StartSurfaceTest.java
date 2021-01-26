@@ -1202,6 +1202,7 @@ public class StartSurfaceTest {
     @Test
     @MediumTest
     @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1170450")
     // clang-format off
     @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study",
             ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
