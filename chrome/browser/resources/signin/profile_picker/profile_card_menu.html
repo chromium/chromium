@@ -95,17 +95,15 @@
   }
 
   #removeConfirmationButton {
-    --active-shadow-action-rgb: var(--google-red-300-rgb);
-    --bg-action: var(--google-red-300);
-    --hover-bg-action: rgba(var(--google-red-700-rgb), .9);
-    --hover-shadow-action-rgb: var(--google-red-300-rgb);
-    background-color: var(--bg-action);
-    color: var(--ink-color-action);
+    --active-shadow-action-rgb: var(--google-red-refresh-500-rgb);
+    --bg-action: var(--google-red-600);
+    --focus-shadow-color: rgba(var(--google-red-600-rgb), .4);
+    --hover-bg-action: rgba(var(--google-red-600-rgb), .9);
+    --hover-shadow-action-rgb: var(--google-red-refresh-500-rgb);
+    --hover-border-color: var(--google-red-100);
+    --hover-shadow-action-rgb: var(--google-red-refresh-500-rgb);
   }
 
-  #removeConfirmationButton:hover {
-    background-color: var(--hover-bg-action);
-  }
 
   @media (prefers-color-scheme: dark) {
     .warning-message {
@@ -114,6 +112,13 @@
 
     #removeActionDialogBody {
       border-color: var(--google-grey-refresh-700);
+    }
+
+    #removeConfirmationButton {
+      --bg-action: var(--google-red-refresh-300);
+      --focus-shadow-color: rgba(var(--google-red-refresh-300-rgb), .5);
+      --hover-bg-action: var(--bg-action)
+          linear-gradient(rgba(0, 0, 0, .08), rgba(0, 0, 0, .08));
     }
   }
 </style>
@@ -140,9 +145,9 @@
   </div>
   <div id="removeWarningHeader" slot="header" class="warning-message">
     [[removeWarningText_]]
-    <div id="userName" hidden$="[[!profileState.isSyncing]]" class="key-text">
+    <span id="userName" hidden$="[[!profileState.isSyncing]]" class="key-text">
       [[profileState.userName]]
-    </div>
+    </span>
   </div>
   <div slot="body">
     <div id="removeActionDialogBody">
