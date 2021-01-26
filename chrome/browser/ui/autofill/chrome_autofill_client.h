@@ -70,6 +70,7 @@ class ChromeAutofillClient
   security_state::SecurityLevel GetSecurityLevelForUmaHistograms() override;
   const translate::LanguageState* GetLanguageState() override;
   std::string GetVariationConfigCountryCode() const override;
+  profile_metrics::BrowserProfileType GetProfileType() const override;
   std::unique_ptr<InternalAuthenticator> CreateCreditCardInternalAuthenticator(
       content::RenderFrameHost* rfh) override;
 

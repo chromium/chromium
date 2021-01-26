@@ -281,6 +281,7 @@ static_library("browser") {
     "//components/password_manager/core/common",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/profile_metrics",
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/security_state/core",

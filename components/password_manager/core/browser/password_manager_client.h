@@ -26,6 +26,7 @@
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
 #include "net/cert/cert_status_flags.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -288,6 +289,9 @@ class PasswordManagerClient {
 
   // If this browsing session should not be persisted.
   virtual bool IsIncognito() const;
+
+  // Returns the profile type of the session.
+  virtual profile_metrics::BrowserProfileType GetProfileType() const;
 
   // Returns the PasswordManager associated with this client. The non-const
   // version calls the const one.

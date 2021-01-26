@@ -811,6 +811,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FormSubmission.PerProfileType"
+    enum="BrowserProfileType" expires_after="2022-02-02">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-privacy-core@google.com</owner>
+  <summary>
+    This histogram records the browser profile type when an autofill form is
+    submitted.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormSubmittedState" enum="AutofillFormSubmittedState"
     expires_after="M95">
   <owner>battre@chromium.org</owner>

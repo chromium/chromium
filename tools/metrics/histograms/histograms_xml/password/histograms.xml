@@ -1160,6 +1160,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.FormSubmission.PerProfileType"
+    enum="BrowserProfileType" expires_after="2022-02-02">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-privacy-core@google.com</owner>
+  <summary>
+    This histogram records the browser profile type when a password form is
+    submitted.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.GeneratedFormHasNoFormManager"
     enum="BooleanFormManager" expires_after="M90">
   <owner>jdoerrie@chromium.org</owner>

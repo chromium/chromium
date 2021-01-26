@@ -2,6 +2,7 @@ include_rules = [
   "+components/autofill/core/browser",
   "+components/favicon/core",
   "+components/keyed_service/core",
+  "+components/profile_metrics",
   "+components/pref_registry",
   "+components/security_state",
   "+components/safe_browsing/buildflags.h",

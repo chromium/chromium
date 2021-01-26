@@ -719,6 +719,10 @@ void AutofillManager::OnFormSubmittedImpl(const FormData& form,
   autocomplete_history_manager_->OnWillSubmitForm(
       form_for_autocomplete, client_->IsAutocompleteEnabled());
 
+  // TODO(https://crbug.com/1167475): Add Test for this metric.
+  base::UmaHistogramEnumeration("Autofill.FormSubmission.PerProfileType",
+                                client_->GetProfileType());
+
   if (IsAutofillProfileEnabled()) {
     address_form_event_logger_->OnWillSubmitForm(sync_state_, *submitted_form);
   }

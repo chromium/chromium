@@ -43,6 +43,12 @@ std::string AutofillClient::GetVariationConfigCountryCode() const {
   return std::string();
 }
 
+profile_metrics::BrowserProfileType AutofillClient::GetProfileType() const {
+  // This is an abstract interface and thus never instantiated directly,
+  // therefore it is safe to always return |kRegular| here.
+  return profile_metrics::BrowserProfileType::kRegular;
+}
+
 #if !defined(OS_IOS)
 std::unique_ptr<InternalAuthenticator>
 AutofillClient::CreateCreditCardInternalAuthenticator(

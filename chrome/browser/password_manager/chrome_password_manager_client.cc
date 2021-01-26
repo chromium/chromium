@@ -31,6 +31,7 @@
 #include "chrome/browser/password_manager/field_info_manager_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -731,6 +732,14 @@ bool ChromePasswordManagerClient::IsIncognito() const {
   const Profile* profile = Profile::FromBrowserContext(browser_context);
   return browser_context->IsOffTheRecord() ||
          profile->IsEphemeralGuestProfile();
+}
+
+profile_metrics::BrowserProfileType
+ChromePasswordManagerClient::GetProfileType() const {
+  content::BrowserContext* browser_context =
+      web_contents()->GetBrowserContext();
+  return ProfileMetrics::GetBrowserProfileType(
+      Profile::FromBrowserContext(browser_context));
 }
 
 const password_manager::PasswordManager*
