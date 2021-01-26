@@ -12,6 +12,7 @@
 #include "base/observer_list_types.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
+#include "components/feed/core/v2/common_enums.h"
 #include "components/feed/core/v2/public/types.h"
 #include "url/gurl.h"
 
@@ -56,7 +57,6 @@ class FeedStreamApi {
   virtual void AttachSurface(SurfaceInterface*) = 0;
   virtual void DetachSurface(SurfaceInterface*) = 0;
 
-  virtual void SetArticlesListVisible(bool is_visible) = 0;
   virtual bool IsArticlesListVisible() = 0;
 
   // Returns true if activity logging is enabled. The returned value is
@@ -131,9 +131,6 @@ class FeedStreamApi {
   // Some feed content has been loaded and is now available to the user on the
   // feed surface. Reported only once after a surface is attached.
   virtual void ReportFeedViewed(SurfaceId surface_id) = 0;
-  // Navigation was started in response to a link in the Feed. This event
-  // eventually leads to |ReportPageLoaded()| if a page is loaded successfully.
-  virtual void ReportNavigationStarted() = 0;
   // A web page was loaded in response to opening a link from the Feed.
   virtual void ReportPageLoaded() = 0;
   // The user triggered the default open action, usually by tapping the card.
@@ -144,32 +141,14 @@ class FeedStreamApi {
   virtual void ReportOpenVisitComplete(base::TimeDelta visit_time) = 0;
   // The user triggered the 'open in new tab' action.
   virtual void ReportOpenInNewTabAction(const std::string& slice_id) = 0;
-  // The user triggered the 'open in new incognito tab' action.
-  virtual void ReportOpenInNewIncognitoTabAction() = 0;
-  // The user pressed the 'send feedback' context menu option, but may have not
-  // completed the feedback process.
-  virtual void ReportSendFeedbackAction() = 0;
-  // The user selected the 'learn more' option on the context menu.
-  virtual void ReportLearnMoreAction() = 0;
-  // The user selected the 'download' option on the context menu.
-  virtual void ReportDownloadAction() = 0;
-  // A piece of content was removed or dismissed explicitly by the user.
-  virtual void ReportRemoveAction() = 0;
-  // The 'Not Interested In' menu item was selected.
-  virtual void ReportNotInterestedInAction() = 0;
-  // The 'Manage Interests' menu item was selected.
-  virtual void ReportManageInterestsAction() = 0;
-  // The user opened the context menu (three dot, or long press).
-  virtual void ReportContextMenuOpened() = 0;
   // The user scrolled the feed by |distance_dp| and then stopped.
   virtual void ReportStreamScrolled(int distance_dp) = 0;
   // The user started scrolling the feed. Typically followed by a call to
   // |ReportStreamScrolled()|.
   virtual void ReportStreamScrollStart() = 0;
-  // The user selected the 'Turn on' option in the control menu.
-  virtual void ReportTurnOnAction() = 0;
-  // The user selected the 'Turn off' option in the control menu.
-  virtual void ReportTurnOffAction() = 0;
+  // Report that some user action occurred which does not have a specific
+  // reporting function above..
+  virtual void ReportOtherUserAction(FeedUserActionType action_type) = 0;
 
   // The following methods are used for the internals page.
 

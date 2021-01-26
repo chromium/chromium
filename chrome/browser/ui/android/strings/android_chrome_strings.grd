@@ -2733,6 +2733,9 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_NTP_MANAGE_INTERESTS" desc="Content description to manage settings from the feed header overflow menu.">
         Manage interests
       </message>
+      <message name="IDS_NTP_MANAGE_REACTIONS" desc="Content description to manage feed reactions from the feed header overflow menu.">
+        Manage reactions
+      </message>
       <message name="IDS_NTP_TURN_OFF_FEED" desc="Content description to turn off the feed from the feed header overflow menu.">
         Turn off
       </message>

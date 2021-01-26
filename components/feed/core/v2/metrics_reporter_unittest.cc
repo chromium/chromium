@@ -93,7 +93,7 @@ TEST_F(MetricsReporterTest, OpeningContentIsInteracting) {
 }
 
 TEST_F(MetricsReporterTest, RemovingContentIsInteracting) {
-  reporter_->RemoveAction();
+  reporter_->OtherUserAction(FeedUserActionType::kTappedHideStory);
 
   std::map<FeedEngagementType, int> want({
       {FeedEngagementType::kFeedEngaged, 1},
@@ -104,7 +104,7 @@ TEST_F(MetricsReporterTest, RemovingContentIsInteracting) {
 }
 
 TEST_F(MetricsReporterTest, NotInterestedInIsInteracting) {
-  reporter_->NotInterestedInAction();
+  reporter_->OtherUserAction(FeedUserActionType::kTappedNotInterestedIn);
 
   std::map<FeedEngagementType, int> want({
       {FeedEngagementType::kFeedEngaged, 1},
@@ -115,7 +115,7 @@ TEST_F(MetricsReporterTest, NotInterestedInIsInteracting) {
 }
 
 TEST_F(MetricsReporterTest, ManageInterestsInIsInteracting) {
-  reporter_->ManageInterestsAction();
+  reporter_->OtherUserAction(FeedUserActionType::kTappedManageInterests);
 
   std::map<FeedEngagementType, int> want({
       {FeedEngagementType::kFeedEngaged, 1},
@@ -303,7 +303,7 @@ TEST_F(MetricsReporterTest, OpenInNewTabAction) {
 }
 
 TEST_F(MetricsReporterTest, OpenInNewIncognitoTabAction) {
-  reporter_->OpenInNewIncognitoTabAction();
+  reporter_->OtherUserAction(FeedUserActionType::kTappedOpenInNewIncognitoTab);
 
   std::map<FeedEngagementType, int> want({
       {FeedEngagementType::kFeedEngaged, 1},
@@ -320,7 +320,7 @@ TEST_F(MetricsReporterTest, OpenInNewIncognitoTabAction) {
 }
 
 TEST_F(MetricsReporterTest, SendFeedbackAction) {
-  reporter_->SendFeedbackAction();
+  reporter_->OtherUserAction(FeedUserActionType::kTappedSendFeedback);
 
   std::map<FeedEngagementType, int> want({
       {FeedEngagementType::kFeedEngaged, 1},
@@ -335,7 +335,7 @@ TEST_F(MetricsReporterTest, SendFeedbackAction) {
 }
 
 TEST_F(MetricsReporterTest, DownloadAction) {
-  reporter_->DownloadAction();
+  reporter_->OtherUserAction(FeedUserActionType::kTappedDownload);
 
   std::map<FeedEngagementType, int> want({
       {FeedEngagementType::kFeedEngaged, 1},
@@ -350,7 +350,7 @@ TEST_F(MetricsReporterTest, DownloadAction) {
 }
 
 TEST_F(MetricsReporterTest, LearnMoreAction) {
-  reporter_->LearnMoreAction();
+  reporter_->OtherUserAction(FeedUserActionType::kTappedLearnMore);
 
   std::map<FeedEngagementType, int> want({
       {FeedEngagementType::kFeedEngaged, 1},
@@ -365,7 +365,7 @@ TEST_F(MetricsReporterTest, LearnMoreAction) {
 }
 
 TEST_F(MetricsReporterTest, RemoveAction) {
-  reporter_->RemoveAction();
+  reporter_->OtherUserAction(FeedUserActionType::kTappedHideStory);
 
   std::map<FeedEngagementType, int> want({
       {FeedEngagementType::kFeedEngaged, 1},
@@ -380,7 +380,7 @@ TEST_F(MetricsReporterTest, RemoveAction) {
 }
 
 TEST_F(MetricsReporterTest, NotInterestedInAction) {
-  reporter_->NotInterestedInAction();
+  reporter_->OtherUserAction(FeedUserActionType::kTappedNotInterestedIn);
 
   std::map<FeedEngagementType, int> want({
       {FeedEngagementType::kFeedEngaged, 1},
@@ -395,7 +395,7 @@ TEST_F(MetricsReporterTest, NotInterestedInAction) {
 }
 
 TEST_F(MetricsReporterTest, ManageInterestsAction) {
-  reporter_->ManageInterestsAction();
+  reporter_->OtherUserAction(FeedUserActionType::kTappedManageInterests);
 
   std::map<FeedEngagementType, int> want({
       {FeedEngagementType::kFeedEngaged, 1},
@@ -410,7 +410,7 @@ TEST_F(MetricsReporterTest, ManageInterestsAction) {
 }
 
 TEST_F(MetricsReporterTest, ContextMenuOpened) {
-  reporter_->ContextMenuOpened();
+  reporter_->OtherUserAction(FeedUserActionType::kOpenedContextMenu);
 
   std::map<FeedEngagementType, int> want_empty;
   EXPECT_EQ(want_empty, ReportedEngagementType());
@@ -579,13 +579,13 @@ TEST_F(MetricsReporterTest, TimeSpentInFeedTracksWholeScrollTime) {
 }
 
 TEST_F(MetricsReporterTest, TurnOnAction) {
-  reporter_->TurnOnAction();
+  reporter_->OtherUserAction(FeedUserActionType::kTappedTurnOn);
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
                                 FeedUserActionType::kTappedTurnOn, 1);
 }
 
 TEST_F(MetricsReporterTest, TurnOffAction) {
-  reporter_->TurnOffAction();
+  reporter_->OtherUserAction(FeedUserActionType::kTappedTurnOff);
   histogram_.ExpectUniqueSample("ContentSuggestions.Feed.UserActions",
                                 FeedUserActionType::kTappedTurnOff, 1);
 }

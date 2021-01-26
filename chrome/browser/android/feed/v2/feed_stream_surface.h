@@ -96,34 +96,17 @@ class FeedStreamSurface : public FeedStreamApi::SurfaceInterface {
   void ReportSendFeedbackAction(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
-  void ReportLearnMoreAction(JNIEnv* env,
-                             const base::android::JavaParamRef<jobject>& obj);
-  void ReportDownloadAction(JNIEnv* env,
-                            const base::android::JavaParamRef<jobject>& obj);
-  void ReportNavigationStarted(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj);
   void ReportPageLoaded(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj,
                         jboolean in_new_tab);
-  void ReportRemoveAction(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj);
-  void ReportNotInterestedInAction(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  void ReportManageInterestsAction(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& obj);
-  void ReportContextMenuOpened(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj);
   void ReportStreamScrolled(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& obj,
                             int distance_dp);
   void ReportStreamScrollStart(JNIEnv* env,
                                const base::android::JavaParamRef<jobject>& obj);
-  void ReportTurnOnAction(JNIEnv* env,
-                          const base::android::JavaParamRef<jobject>& obj);
-  void ReportTurnOffAction(JNIEnv* env,
-                           const base::android::JavaParamRef<jobject>& obj);
+  void ReportOtherUserAction(JNIEnv* env,
+                             const base::android::JavaParamRef<jobject>& obj,
+                             int action_type);
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;

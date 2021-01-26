@@ -332,10 +332,6 @@ void FeedStream::UnloadModelIfNoSurfacesAttachedTask() {
   UnloadModel();
 }
 
-void FeedStream::SetArticlesListVisible(bool is_visible) {
-  profile_prefs_->SetBoolean(prefs::kArticlesListVisible, is_visible);
-}
-
 bool FeedStream::IsArticlesListVisible() {
   return profile_prefs_->GetBoolean(prefs::kArticlesListVisible);
 }
@@ -405,7 +401,7 @@ EphemeralChangeId FeedStream::CreateEphemeralChange(
     DLOG(ERROR) << "Calling CreateEphemeralChange before the model is loaded";
     return {};
   }
-  metrics_reporter_->EphemeralStreamChange();
+  metrics_reporter_->OtherUserAction(FeedUserActionType::kEphemeralChange);
   return model_->CreateEphemeralChange(std::move(operations));
 }
 
@@ -419,13 +415,16 @@ EphemeralChangeId FeedStream::CreateEphemeralChangeFromPackedData(
 bool FeedStream::CommitEphemeralChange(EphemeralChangeId id) {
   if (!model_)
     return false;
+  metrics_reporter_->OtherUserAction(
+      FeedUserActionType::kEphemeralChangeCommited);
   return model_->CommitEphemeralChange(id);
 }
 
 bool FeedStream::RejectEphemeralChange(EphemeralChangeId id) {
   if (!model_)
     return false;
-  metrics_reporter_->EphemeralStreamChangeRejected();
+  metrics_reporter_->OtherUserAction(
+      FeedUserActionType::kEphemeralChangeRejected);
   return model_->RejectEphemeralChange(id);
 }
 
@@ -806,9 +805,6 @@ void FeedStream::ReportOpenInNewTabAction(const std::string& slice_id) {
   metrics_reporter_->OpenInNewTabAction(index);
   notice_card_tracker_.OnOpenAction(index);
 }
-void FeedStream::ReportOpenInNewIncognitoTabAction() {
-  metrics_reporter_->OpenInNewIncognitoTabAction();
-}
 void FeedStream::ReportSliceViewed(SurfaceId surface_id,
                                    const std::string& slice_id) {
   int index = surface_updater_->GetSliceIndexFromSliceId(slice_id);
@@ -870,32 +866,8 @@ void FeedStream::UpdateCanUploadActionsWithNoticeCard() {
 void FeedStream::ReportFeedViewed(SurfaceId surface_id) {
   metrics_reporter_->FeedViewed(surface_id);
 }
-void FeedStream::ReportSendFeedbackAction() {
-  metrics_reporter_->SendFeedbackAction();
-}
-void FeedStream::ReportLearnMoreAction() {
-  metrics_reporter_->LearnMoreAction();
-}
-void FeedStream::ReportDownloadAction() {
-  metrics_reporter_->DownloadAction();
-}
-void FeedStream::ReportNavigationStarted() {
-  metrics_reporter_->NavigationStarted();
-}
 void FeedStream::ReportPageLoaded() {
   metrics_reporter_->PageLoaded();
-}
-void FeedStream::ReportRemoveAction() {
-  metrics_reporter_->RemoveAction();
-}
-void FeedStream::ReportNotInterestedInAction() {
-  metrics_reporter_->NotInterestedInAction();
-}
-void FeedStream::ReportManageInterestsAction() {
-  metrics_reporter_->ManageInterestsAction();
-}
-void FeedStream::ReportContextMenuOpened() {
-  metrics_reporter_->ContextMenuOpened();
 }
 void FeedStream::ReportStreamScrolled(int distance_dp) {
   metrics_reporter_->StreamScrolled(distance_dp);
@@ -903,11 +875,7 @@ void FeedStream::ReportStreamScrolled(int distance_dp) {
 void FeedStream::ReportStreamScrollStart() {
   metrics_reporter_->StreamScrollStart();
 }
-void FeedStream::ReportTurnOnAction() {
-  metrics_reporter_->TurnOnAction();
+void FeedStream::ReportOtherUserAction(FeedUserActionType action_type) {
+  metrics_reporter_->OtherUserAction(action_type);
 }
-void FeedStream::ReportTurnOffAction() {
-  metrics_reporter_->TurnOffAction();
-}
-
 }  // namespace feed

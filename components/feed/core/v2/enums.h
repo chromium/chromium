@@ -19,6 +19,7 @@ enum class NetworkRequestType : int {
 // This must be kept in sync with FeedLoadStreamStatus in enums.xml.
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.v2
 enum class LoadStreamStatus {
   // Loading was not attempted.
   kNoStatus = 0,
@@ -59,6 +60,7 @@ enum class LoadStreamStatus {
 std::ostream& operator<<(std::ostream& out, LoadStreamStatus value);
 
 // Keep this in sync with FeedUploadActionsStatus in enums.xml.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.feed.v2
 enum class UploadActionsStatus {
   kNoStatus = 0,
   kNoPendingActions = 1,

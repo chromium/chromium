@@ -130,7 +130,6 @@ class FeedStream : public FeedStreamApi,
   std::string GetSessionId() const override;
   void AttachSurface(SurfaceInterface*) override;
   void DetachSurface(SurfaceInterface*) override;
-  void SetArticlesListVisible(bool is_visible) override;
   bool IsArticlesListVisible() override;
   std::string GetClientInstanceId() const override;
   void ExecuteRefreshTask() override;
@@ -160,23 +159,13 @@ class FeedStream : public FeedStreamApi,
   void ReportSliceViewed(SurfaceId surface_id,
                          const std::string& slice_id) override;
   void ReportFeedViewed(SurfaceId surface_id) override;
-  void ReportNavigationStarted() override;
   void ReportPageLoaded() override;
   void ReportOpenAction(const std::string& slice_id) override;
   void ReportOpenVisitComplete(base::TimeDelta visit_time) override;
   void ReportOpenInNewTabAction(const std::string& slice_id) override;
-  void ReportOpenInNewIncognitoTabAction() override;
-  void ReportSendFeedbackAction() override;
-  void ReportLearnMoreAction() override;
-  void ReportDownloadAction() override;
-  void ReportRemoveAction() override;
-  void ReportNotInterestedInAction() override;
-  void ReportManageInterestsAction() override;
-  void ReportContextMenuOpened() override;
   void ReportStreamScrolled(int distance_dp) override;
   void ReportStreamScrollStart() override;
-  void ReportTurnOnAction() override;
-  void ReportTurnOffAction() override;
+  void ReportOtherUserAction(FeedUserActionType action_type) override;
 
   // offline_pages::TaskQueue::Delegate.
   void OnTaskQueueIsIdle() override;

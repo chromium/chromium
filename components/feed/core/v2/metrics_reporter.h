@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
+#include "components/feed/core/v2/common_enums.h"
 #include "components/feed/core/v2/enums.h"
 #include "components/feed/core/v2/feed_stream.h"
 
@@ -37,20 +38,8 @@ class MetricsReporter {
   void OpenAction(int index_in_stream);
   void OpenVisitComplete(base::TimeDelta visit_time);
   void OpenInNewTabAction(int index_in_stream);
-  void OpenInNewIncognitoTabAction();
-  void SendFeedbackAction();
-  void LearnMoreAction();
-  void DownloadAction();
-  void NavigationStarted();
   void PageLoaded();
-  void RemoveAction();
-  void NotInterestedInAction();
-  void ManageInterestsAction();
-  void ContextMenuOpened();
-  void EphemeralStreamChange();
-  void EphemeralStreamChangeRejected();
-  void TurnOnAction();
-  void TurnOffAction();
+  void OtherUserAction(FeedUserActionType action_type);
 
   // Indicates the user scrolled the feed by |distance_dp| and then stopped
   // scrolling.

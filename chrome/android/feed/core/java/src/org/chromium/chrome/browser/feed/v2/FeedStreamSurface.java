@@ -105,7 +105,7 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
 
     private final long mNativeFeedStreamSurface;
     private final FeedListContentManager mContentManager;
-    private final SurfaceScope mSurfaceScope;  
+    private final SurfaceScope mSurfaceScope;
     @VisibleForTesting
     RecyclerView mRootView;
     private final HybridListRenderer mHybridListRenderer;
@@ -702,8 +702,8 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     @Override
     public void navigateIncognitoTab(String url) {
         assert ThreadUtils.runningOnUiThread();
-        FeedStreamSurfaceJni.get().reportOpenInNewIncognitoTabAction(
-                mNativeFeedStreamSurface, FeedStreamSurface.this);
+        FeedStreamSurfaceJni.get().reportOtherUserAction(mNativeFeedStreamSurface,
+                FeedStreamSurface.this, FeedUserActionType.TAPPED_OPEN_IN_NEW_INCOGNITO_TAB);
         NewTabPageUma.recordAction(NewTabPageUma.ACTION_OPENED_SNIPPET);
 
         openUrl(url, WindowOpenDisposition.OFF_THE_RECORD);
@@ -715,8 +715,8 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     @Override
     public void downloadLink(String url) {
         assert ThreadUtils.runningOnUiThread();
-        FeedStreamSurfaceJni.get().reportDownloadAction(
-                mNativeFeedStreamSurface, FeedStreamSurface.this);
+        FeedStreamSurfaceJni.get().reportOtherUserAction(mNativeFeedStreamSurface,
+                FeedStreamSurface.this, FeedUserActionType.TAPPED_DOWNLOAD);
         RequestCoordinatorBridge.getForProfile(Profile.getLastUsedRegularProfile())
                 .savePageLater(
                         url, OfflinePageBridge.NTP_SUGGESTIONS_NAMESPACE, true /* user requested*/);
@@ -727,8 +727,8 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         assert ThreadUtils.runningOnUiThread();
         dismissBottomSheet();
 
-        FeedStreamSurfaceJni.get().reportContextMenuOpened(
-                mNativeFeedStreamSurface, FeedStreamSurface.this);
+        FeedStreamSurfaceJni.get().reportOtherUserAction(mNativeFeedStreamSurface,
+                FeedStreamSurface.this, FeedUserActionType.OPENED_CONTEXT_MENU);
 
         // Make a sheetContent with the view.
         mBottomSheetContent = new CardMenuBottomSheetContent(view);
@@ -746,11 +746,24 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         mBottomSheetOriginatingSliceId = null;
     }
 
-    @Override
+    public void recordActionManageActivity() {
+        FeedStreamSurfaceJni.get().reportOtherUserAction(mNativeFeedStreamSurface,
+                FeedStreamSurface.this, FeedUserActionType.TAPPED_MANAGE_ACTIVITY);
+    }
+
     public void recordActionManageInterests() {
-        assert ThreadUtils.runningOnUiThread();
-        FeedStreamSurfaceJni.get().reportManageInterestsAction(
-                mNativeFeedStreamSurface, FeedStreamSurface.this);
+        FeedStreamSurfaceJni.get().reportOtherUserAction(mNativeFeedStreamSurface,
+                FeedStreamSurface.this, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
+    }
+
+    public void recordActionManageReactions() {
+        FeedStreamSurfaceJni.get().reportOtherUserAction(mNativeFeedStreamSurface,
+                FeedStreamSurface.this, FeedUserActionType.TAPPED_MANAGE_REACTIONS);
+    }
+
+    public void recordActionLearnMore() {
+        FeedStreamSurfaceJni.get().reportOtherUserAction(mNativeFeedStreamSurface,
+                FeedStreamSurface.this, FeedUserActionType.TAPPED_LEARN_MORE);
     }
 
     @Override
@@ -779,8 +792,8 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
     @Override
     public void sendFeedback(Map<String, String> productSpecificDataMap) {
         assert ThreadUtils.runningOnUiThread();
-        FeedStreamSurfaceJni.get().reportSendFeedbackAction(
-                mNativeFeedStreamSurface, FeedStreamSurface.this);
+        FeedStreamSurfaceJni.get().reportOtherUserAction(mNativeFeedStreamSurface,
+                FeedStreamSurface.this, FeedUserActionType.TAPPED_SEND_FEEDBACK);
 
         // Make sure the bottom sheet is dismissed before we take a snapshot.
         dismissBottomSheet();
@@ -899,6 +912,12 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         updateSurfaceOpenState();
     }
 
+    public void toggledArticlesListVisible(boolean visible) {
+        FeedStreamSurfaceJni.get().reportOtherUserAction(mNativeFeedStreamSurface,
+                FeedStreamSurface.this,
+                visible ? FeedUserActionType.TAPPED_TURN_ON : FeedUserActionType.TAPPED_TURN_OFF);
+    }
+
     /**
      * Informs FeedStreamSurface of the visibility of its parent stream.
      */
@@ -981,8 +1000,6 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         boolean inNewTab = (disposition == WindowOpenDisposition.NEW_BACKGROUND_TAB
                 || disposition == WindowOpenDisposition.OFF_THE_RECORD);
 
-        FeedStreamSurfaceJni.get().reportNavigationStarted(
-                mNativeFeedStreamSurface, FeedStreamSurface.this);
         if (tab != null) {
             tab.addObserver(new FeedTabNavigationObserver(inNewTab));
             NavigationRecorder.record(tab,
@@ -1104,29 +1121,14 @@ public class FeedStreamSurface implements SurfaceActionsHandler, FeedActionsHand
         void reportFeedViewed(long nativeFeedStreamSurface, FeedStreamSurface caller);
         void reportSliceViewed(
                 long nativeFeedStreamSurface, FeedStreamSurface caller, String sliceId);
-        void reportNavigationStarted(long nativeFeedStreamSurface, FeedStreamSurface caller);
         void reportPageLoaded(
                 long nativeFeedStreamSurface, FeedStreamSurface caller, boolean inNewTab);
         void reportOpenAction(
                 long nativeFeedStreamSurface, FeedStreamSurface caller, String sliceId);
         void reportOpenInNewTabAction(
                 long nativeFeedStreamSurface, FeedStreamSurface caller, String sliceId);
-        void reportOpenInNewIncognitoTabAction(
-                long nativeFeedStreamSurface, FeedStreamSurface caller);
-        void reportSendFeedbackAction(long nativeFeedStreamSurface, FeedStreamSurface caller);
-        void reportDownloadAction(long nativeFeedStreamSurface, FeedStreamSurface caller);
-        void reportContextMenuOpened(long nativeFeedStreamSurface, FeedStreamSurface caller);
-        void reportManageInterestsAction(long nativeFeedStreamSurface, FeedStreamSurface caller);
-        // TODO(crbug.com/1123044): Call these from the front end.
-        void reportTurnOnAction(long nativeFeedStreamSurface, FeedStreamSurface caller);
-        void reportTurnOffAction(long nativeFeedStreamSurface, FeedStreamSurface caller);
-
-        // TODO(crbug.com/1111101): These actions aren't visible to the client, so these functions
-        // are never called.
-        void reportLearnMoreAction(long nativeFeedStreamSurface, FeedStreamSurface caller);
-        void reportRemoveAction(long nativeFeedStreamSurface, FeedStreamSurface caller);
-        void reportNotInterestedInAction(long nativeFeedStreamSurface, FeedStreamSurface caller);
-
+        void reportOtherUserAction(long nativeFeedStreamSurface, FeedStreamSurface caller,
+                @FeedUserActionType int userAction);
         void reportStreamScrolled(
                 long nativeFeedStreamSurface, FeedStreamSurface caller, int distanceDp);
         void reportStreamScrollStart(long nativeFeedStreamSurface, FeedStreamSurface caller);

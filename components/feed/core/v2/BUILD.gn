@@ -173,3 +173,12 @@ bundle_data("unit_tests_bundle_data") {
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
+
+if (is_android) {
+  java_cpp_enum("feedv2_enums_java") {
+    sources = [
+      "common_enums.h",
+      "enums.h",
+    ]
+  }
+}

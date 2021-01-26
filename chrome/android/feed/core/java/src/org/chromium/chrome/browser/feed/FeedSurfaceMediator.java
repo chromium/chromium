@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.feed.shared.FeedFeatures;
 import org.chromium.chrome.browser.feed.shared.stream.Stream;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ContentChangedListener;
 import org.chromium.chrome.browser.feed.shared.stream.Stream.ScrollListener;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.native_page.NativePageNavigationDelegate;
 import org.chromium.chrome.browser.ntp.NewTabPageLayout;
@@ -190,7 +191,7 @@ public class FeedSurfaceMediator
     private void initializePropertiesForStream() {
         Stream stream = mCoordinator.getStream();
 
-        if (mSnapScrollHelper != null) {
+        if (mSnapScrollHelper != null && stream != null) {
             mStreamScrollListener = new ScrollListener() {
                 @Override
                 public void onScrollStateChanged(int state) {}
@@ -299,7 +300,7 @@ public class FeedSurfaceMediator
                         return mSigninManager.getIdentityManager().hasPrimaryAccount();
                     }
                 };
-                mCoordinator.getStream().addScrollListener(new HeaderIphScrollListener(delegate));
+                stream.addScrollListener(new HeaderIphScrollListener(delegate));
                 mSigninManager.getIdentityManager().addObserver(this);
             }
         }
@@ -309,7 +310,7 @@ public class FeedSurfaceMediator
 
         initStreamHeaderViews();
 
-        mMemoryPressureCallback = pressure -> mCoordinator.getStream().trim();
+        mMemoryPressureCallback = pressure -> stream.trim();
         MemoryPressureListener.addCallback(mMemoryPressureCallback);
     }
 
@@ -414,6 +415,8 @@ public class FeedSurfaceMediator
      */
     private void onSectionHeaderToggled() {
         getPrefService().setBoolean(Pref.ARTICLES_LIST_VISIBLE, mSectionHeader.isExpanded());
+
+        mCoordinator.getStream().toggledArticlesListVisible(mSectionHeader.isExpanded());
         mCoordinator.getStream().setStreamContentVisibility(mSectionHeader.isExpanded());
         // TODO(huayinz): Update the section header view through a ModelChangeProcessor.
         mCoordinator.getSectionHeaderView().updateVisuals();
@@ -449,6 +452,10 @@ public class FeedSurfaceMediator
                     R.id.ntp_feed_header_menu_item_activity, icon_id));
             itemList.add(buildMenuListItem(R.string.ntp_manage_interests,
                     R.id.ntp_feed_header_menu_item_interest, icon_id));
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_V2_HEARTS)) {
+                itemList.add(buildMenuListItem(R.string.ntp_manage_reactions,
+                        R.id.ntp_feed_header_menu_item_reactions, icon_id));
+            }
         }
         itemList.add(buildMenuListItem(
                 R.string.learn_more, R.id.ntp_feed_header_menu_item_learn, icon_id));
@@ -575,16 +582,33 @@ public class FeedSurfaceMediator
     @Override
     public void onItemSelected(PropertyModel item) {
         int itemId = item.get(ListMenuItemProperties.MENU_ITEM_ID);
+        Stream stream = mCoordinator.getStream();
         if (itemId == R.id.ntp_feed_header_menu_item_activity) {
             mPageNavigationDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
                     new LoadUrlParams("https://myactivity.google.com/myactivity?product=50"));
+            if (stream != null) {
+                stream.recordActionManageActivity();
+            }
             FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MY_ACTIVITY);
         } else if (itemId == R.id.ntp_feed_header_menu_item_interest) {
             mPageNavigationDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
                     new LoadUrlParams("https://www.google.com/preferences/interests"));
+            if (stream != null) {
+                stream.recordActionManageInterests();
+            }
+            FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE_INTERESTS);
+        } else if (itemId == R.id.ntp_feed_header_menu_item_reactions) {
+            mPageNavigationDelegate.openUrl(WindowOpenDisposition.CURRENT_TAB,
+                    new LoadUrlParams("https://www.google.com/search/contributions/reactions"));
+            if (stream != null) {
+                stream.recordActionManageReactions();
+            }
             FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE_INTERESTS);
         } else if (itemId == R.id.ntp_feed_header_menu_item_learn) {
             mPageNavigationDelegate.navigateToHelpPage();
+            if (stream != null) {
+                stream.recordActionLearnMore();
+            }
             FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_LEARN_MORE);
         } else if (itemId == R.id.ntp_feed_header_menu_item_toggle_switch) {
             mSectionHeader.toggleHeader();

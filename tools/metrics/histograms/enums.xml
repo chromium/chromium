@@ -31395,7 +31395,7 @@ Called by update_feature_policy_enum.py.-->
 
 <enum name="FeedUserActionType">
   <int value="0" label="Tapped on card"/>
-  <int value="1" label="Shown card"/>
+  <int value="1" label="Shown card (REMOVED, never reported)"/>
   <int value="2" label="Tapped Send Feedback"/>
   <int value="3" label="Tapped Learn More"/>
   <int value="4" label="Tapped Hide Story"/>
@@ -31422,7 +31422,12 @@ Called by update_feature_policy_enum.py.-->
   <int value="20" label="Open Dialog e.g. Report Content Dialog"/>
   <int value="21" label="Close Dialog e.g. Report Content Dialog"/>
   <int value="22" label="Show Snackbar"/>
-  <int value="23" label="Opened native context menu. (iOS Only)"/>
+  <int value="23" label="Opened native back-of-card action sheet. (iOS Only)"/>
+  <int value="24" label="Opened native back-of-card context menu. (iOS Only)"/>
+  <int value="25" label="Closed native back-of-card context menu. (iOS Only)"/>
+  <int value="26" label="Opened native back-of-card pulldown menu. (iOS Only)"/>
+  <int value="27" label="Closed native back-of-card pulldown menu. (iOS Only)"/>
+  <int value="28" label="Tapped manage reactions"/>
 </enum>
 
 <enum name="FeedUserCommandType"/>

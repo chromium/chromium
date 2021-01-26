@@ -199,14 +199,6 @@ void FeedStreamSurface::ReportOpenInNewTabAction(
       base::android::ConvertJavaStringToUTF8(env, slice_id));
 }
 
-void FeedStreamSurface::ReportOpenInNewIncognitoTabAction(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportOpenInNewIncognitoTabAction();
-}
-
 void FeedStreamSurface::ReportSliceViewed(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
@@ -225,74 +217,12 @@ void FeedStreamSurface::ReportFeedViewed(
   feed_stream_api_->ReportFeedViewed(GetSurfaceId());
 }
 
-void FeedStreamSurface::ReportSendFeedbackAction(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportSendFeedbackAction();
-}
-
-void FeedStreamSurface::ReportLearnMoreAction(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportLearnMoreAction();
-}
-
-void FeedStreamSurface::ReportDownloadAction(JNIEnv* env,
-                                             const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportDownloadAction();
-}
-
-void FeedStreamSurface::ReportNavigationStarted(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportNavigationStarted();
-}
-
 void FeedStreamSurface::ReportPageLoaded(JNIEnv* env,
                                          const JavaParamRef<jobject>& obj,
                                          jboolean in_new_tab) {
   if (!feed_stream_api_)
     return;
   feed_stream_api_->ReportPageLoaded();
-}
-
-void FeedStreamSurface::ReportRemoveAction(JNIEnv* env,
-                                           const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportRemoveAction();
-}
-
-void FeedStreamSurface::ReportNotInterestedInAction(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportNotInterestedInAction();
-}
-
-void FeedStreamSurface::ReportManageInterestsAction(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportManageInterestsAction();
-}
-
-void FeedStreamSurface::ReportContextMenuOpened(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportContextMenuOpened();
 }
 
 void FeedStreamSurface::ReportStreamScrolled(JNIEnv* env,
@@ -311,18 +241,11 @@ void FeedStreamSurface::ReportStreamScrollStart(
   feed_stream_api_->ReportStreamScrollStart();
 }
 
-void FeedStreamSurface::ReportTurnOnAction(JNIEnv* env,
-                                           const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportTurnOnAction();
-}
-
-void FeedStreamSurface::ReportTurnOffAction(JNIEnv* env,
-                                            const JavaParamRef<jobject>& obj) {
-  if (!feed_stream_api_)
-    return;
-  feed_stream_api_->ReportTurnOffAction();
+void FeedStreamSurface::ReportOtherUserAction(JNIEnv* env,
+                                              const JavaParamRef<jobject>& obj,
+                                              int action_type) {
+  feed_stream_api_->ReportOtherUserAction(
+      static_cast<FeedUserActionType>(action_type));
 }
 
 }  // namespace feed

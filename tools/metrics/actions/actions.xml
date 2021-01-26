@@ -5043,12 +5043,31 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ContentSuggestions.Feed.CardAction.ManageActivity">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <description>
+    The user selected the 'manage activity' option from the Feed header menu.
+  </description>
+</action>
+
 <action name="ContentSuggestions.Feed.CardAction.ManageInterests">
   <owner>harringtond@chromium.org</owner>
   <owner>carlosk@chromium.org</owner>
   <owner>feed@chromium.org</owner>
   <description>
-    The user selected the 'manage interests' option for a Feed card.
+    The user selected the 'manage interests' option from the Feed header menu.
+  </description>
+</action>
+
+<action name="ContentSuggestions.Feed.CardAction.ManageReactions">
+  <owner>harringtond@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <owner>feed@chromium.org</owner>
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>
+    The user selected the 'manage reactions' option from the Feed header menu.
   </description>
 </action>
 

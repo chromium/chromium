@@ -117,6 +117,7 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &feed::kInterestFeedSpinnerAlwaysAnimate,
     &feed::kInterestFeedV1ClicksAndViewsConditionalUpload,
     &feed::kInterestFeedV2,
+    &feed::kInterestFeedV2Hearts,
     &feed::kReportFeedUserActions,
     &feed::kWebFeed,
     &feed::kXsurfaceMetricsReporting,

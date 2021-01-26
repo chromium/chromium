@@ -134,6 +134,11 @@ public class FeedStream implements Stream {
     }
 
     @Override
+    public void toggledArticlesListVisible(boolean visible) {
+        mFeedStreamSurface.toggledArticlesListVisible(visible);
+    }
+
+    @Override
     public void trim() {
         mRecyclerView.getRecycledViewPool().clear();
     }
@@ -197,6 +202,23 @@ public class FeedStream implements Stream {
     @Override
     public void removeOnContentChangedListener(ContentChangedListener listener) {
         mFeedStreamSurface.removeContentChangedListener(listener);
+    }
+
+    @Override
+    public void recordActionManageInterests() {
+        mFeedStreamSurface.recordActionManageInterests();
+    }
+    @Override
+    public void recordActionManageActivity() {
+        mFeedStreamSurface.recordActionManageActivity();
+    }
+    @Override
+    public void recordActionManageReactions() {
+        mFeedStreamSurface.recordActionManageReactions();
+    }
+    @Override
+    public void recordActionLearnMore() {
+        mFeedStreamSurface.recordActionLearnMore();
     }
 
     @Override

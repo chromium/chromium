@@ -737,16 +737,8 @@ TEST_F(FeedStreamTest, IsArticlesListVisibleByDefault) {
   EXPECT_TRUE(stream_->IsArticlesListVisible());
 }
 
-TEST_F(FeedStreamTest, SetArticlesListVisible) {
-  EXPECT_TRUE(stream_->IsArticlesListVisible());
-  stream_->SetArticlesListVisible(false);
-  EXPECT_FALSE(stream_->IsArticlesListVisible());
-  stream_->SetArticlesListVisible(true);
-  EXPECT_TRUE(stream_->IsArticlesListVisible());
-}
-
 TEST_F(FeedStreamTest, DoNotRefreshIfArticlesListIsHidden) {
-  stream_->SetArticlesListVisible(false);
+  profile_prefs_.SetBoolean(prefs::kArticlesListVisible, false);
   stream_->InitializeScheduling();
   EXPECT_TRUE(refresh_scheduler_.canceled);
 
@@ -1219,7 +1211,7 @@ TEST_F(FeedStreamTest, DoNotLoadFromNetworkWhenOffline) {
 }
 
 TEST_F(FeedStreamTest, DoNotLoadStreamWhenArticleListIsHidden) {
-  stream_->SetArticlesListVisible(false);
+  profile_prefs_.SetBoolean(prefs::kArticlesListVisible, false);
   response_translator_.InjectResponse(MakeTypicalInitialModelState());
   TestSurface surface(stream_.get());
   WaitForIdleTaskQueue();

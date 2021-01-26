@@ -85,6 +85,12 @@ public interface Stream {
     void setStreamContentVisibility(boolean visible);
 
     /**
+     * Visibility of the feed was toggled through the header menu. Note that
+     * setStreamContentVisibility() is also called when this happens.
+     */
+    default void toggledArticlesListVisible(boolean visible) {}
+
+    /**
      * Notifies the Stream to purge unnecessary memory. This just purges recycling pools for now.
      * Can expand out as needed.
      */
@@ -145,7 +151,15 @@ public interface Stream {
      */
     default int getFirstCardDensity() {
         return FeedFirstCardDensity.UNKNOWN;
-    };
+    }
+
+    /**
+     * Functions which report UMA / actions in Feed v2 only.
+     */
+    default void recordActionManageInterests() {}
+    default void recordActionManageActivity() {}
+    default void recordActionManageReactions() {}
+    default void recordActionLearnMore() {}
 
     /**
      * Interface users can implement to know when content in the Stream has changed content on
