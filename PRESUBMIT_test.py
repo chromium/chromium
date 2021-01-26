@@ -3524,14 +3524,14 @@ class BuildtoolsRevisionsAreInSyncTest(unittest.TestCase):
   def testBothFilesChangedAndMatch(self):
     results = self._check({
         "DEPS": "'libunwind_revision': 'onerev'",
-        "buildtools/DEPS": "'libunwind_revision': 'onerev'",
+        os.path.join("buildtools", "DEPS"): "'libunwind_revision': 'onerev'",
     })
     self.assertEqual(results, [])
 
   def testBothFilesWereChangedAndDontMatch(self):
     results = self._check({
-        "DEPS": "'libunwind_revision': 'onerev'",
-        "buildtools/DEPS": "'libunwind_revision': 'anotherrev'",
+        "DEPS": "'libunwind_revision': 'rev1'",
+        os.path.join("buildtools", "DEPS"): "'libunwind_revision': 'rev2'",
     })
     self.assertNotEqual(results, [])
 

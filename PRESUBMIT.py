@@ -4116,23 +4116,24 @@ def CheckBuildtoolsRevisionsAreInSync(input_api, output_api):
   # lines. The 'long_text' parameter to the error will contain the
   # list of changed lines in both files, which should make it easy enough
   # to spot the error without going overboard in this implementation.
+  buildtools_deps = input_api.os_path.join('buildtools', 'DEPS')
   revs_changes = {
       'DEPS': {},
-      'buildtools/DEPS': {},
+      buildtools_deps: {},
   }
   long_text = ''
 
   for f in input_api.AffectedFiles(
-      file_filter=lambda f: f.LocalPath() in ('DEPS', 'buildtools/DEPS')):
+      file_filter=lambda f: f.LocalPath() in ('DEPS', buildtools_deps)):
     for line_num, line in f.ChangedContents():
       if rev_regexp.search(line):
         revs_changes[f.LocalPath()][line.replace(' ', '')] = line
         long_text += '%s:%d: %s\n' % (f.LocalPath(), line_num, line)
 
-  if set(revs_changes['DEPS']) != set(revs_changes['buildtools/DEPS']):
+  if set(revs_changes['DEPS']) != set(revs_changes[buildtools_deps]):
     return [output_api.PresubmitError(
-        'Change buildtools revisions in sync in both //DEPS and '
-        '//buildtools/DEPS.', long_text=long_text + '\n')]
+        'Change buildtools revisions in sync in both DEPS and ' +
+        buildtools_deps + '.', long_text=long_text + '\n')]
   else:
     return []
 

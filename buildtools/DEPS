@@ -20,7 +20,7 @@ vars = {
   'checkout_reclient': False,
 
   # reclient CIPD package version
-  'reclient_version': 're_client_version:0.17.0.7d283ef',
+  'reclient_version': 're_client_version:0.19.2.319f839',
 
   # When changing these, also update the svn revisions in deps_revisions.gni
   # TODO(crbug.com/1166332) rename to clang_format_revision.

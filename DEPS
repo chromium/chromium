@@ -184,7 +184,7 @@ vars = {
   'llvm_force_head_revision': False,
 
   # reclient CIPD package version
-  'reclient_version': 're_client_version:0.17.0.7d283ef',
+  'reclient_version': 're_client_version:0.19.2.319f839',
 
   'android_git': 'https://android.googlesource.com',
   'aomedia_git': 'https://aomedia.googlesource.com',
