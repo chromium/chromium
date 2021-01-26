@@ -304,7 +304,7 @@ class RemoteObjectImpl implements RemoteObject {
     }
 
     private abstract static class WrapBuffer {
-        private Class<?> mParameterType;
+        protected Class<?> mParameterType;
         protected int mLength;
 
         WrapBuffer(Class<?> parameterType) {
@@ -353,6 +353,16 @@ class RemoteObjectImpl implements RemoteObject {
         }
 
         @Override
+        public Object copyArray() {
+            if (mParameterType != byte.class) {
+                return super.copyArray();
+            }
+            byte[] result = new byte[mLength];
+            mBuffer.get(result);
+            return result;
+        }
+
+        @Override
         protected Number get(int index) {
             byte number = mBuffer.get(index);
             return (mUnsigned ? (short) (number & UNSIGNED_BYTE_MASK) : number);
@@ -367,6 +377,16 @@ class RemoteObjectImpl implements RemoteObject {
             mBuffer = buffer;
             mLength = mBuffer.limit();
             mUnsigned = unsigned;
+        }
+
+        @Override
+        public Object copyArray() {
+            if (mParameterType != short.class) {
+                return super.copyArray();
+            }
+            short[] result = new short[mLength];
+            mBuffer.get(result);
+            return result;
         }
 
         @Override
@@ -387,6 +407,16 @@ class RemoteObjectImpl implements RemoteObject {
         }
 
         @Override
+        public Object copyArray() {
+            if (mParameterType != int.class) {
+                return super.copyArray();
+            }
+            int[] result = new int[mLength];
+            mBuffer.get(result);
+            return result;
+        }
+
+        @Override
         protected Number get(int index) {
             int number = mBuffer.get(index);
             return (mUnsigned ? (long) (number & UNSIGNED_INT_MASK) : number);
@@ -399,6 +429,16 @@ class RemoteObjectImpl implements RemoteObject {
             super(parameterType);
             mBuffer = buffer;
             mLength = mBuffer.limit();
+        }
+
+        @Override
+        public Object copyArray() {
+            if (mParameterType != float.class) {
+                return super.copyArray();
+            }
+            float[] result = new float[mLength];
+            mBuffer.get(result);
+            return result;
         }
 
         @Override
@@ -418,6 +458,16 @@ class RemoteObjectImpl implements RemoteObject {
             super(parameterType);
             mBuffer = buffer;
             mLength = mBuffer.limit();
+        }
+
+        @Override
+        public Object copyArray() {
+            if (mParameterType != double.class) {
+                return super.copyArray();
+            }
+            double[] result = new double[mLength];
+            mBuffer.get(result);
+            return result;
         }
 
         @Override
