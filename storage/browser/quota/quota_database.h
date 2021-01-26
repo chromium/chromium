@@ -53,15 +53,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
     base::Time last_modified_time;
   };
 
-  // Constants for {Get,Set}QuotaConfigValue keys.
-  static const char kDesiredAvailableSpaceKey[];
-  static const char kTemporaryQuotaOverrideKey[];
-
   // If 'path' is empty, an in memory database will be used.
   explicit QuotaDatabase(const base::FilePath& path);
   ~QuotaDatabase();
-
-  void CloseDatabase();
 
   // Returns whether the record could be found.
   bool GetHostQuota(const std::string& host,
@@ -110,9 +104,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
 
   bool DeleteOriginInfo(const url::Origin& origin,
                         blink::mojom::StorageType type);
-
-  bool GetQuotaConfigValue(const char* key, int64_t* value);
-  bool SetQuotaConfigValue(const char* key, int64_t value);
 
   // Sets |origin| to the least recently used origin of origins not included
   // in |exceptions| and not granted the special unlimited storage right.
@@ -207,7 +198,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   static base::Time TimeFromSqlValue(int64_t time);
   static int64_t TimeToSqlValue(const base::Time& time);
 
-  base::FilePath db_file_path_;
+  const base::FilePath db_file_path_;
 
   std::unique_ptr<sql::Database> db_;
   std::unique_ptr<sql::MetaTable> meta_table_;
