@@ -184,6 +184,34 @@
 // Closes all but one window, including all non-foreground windows.
 + (void)closeAllExtraWindows;
 
+// Open a new window. Returns an error if multiwindow is not supported.
++ (NSError*)openNewWindow;
+
+// Closes the window with given number.
++ (void)closeWindowWithNumber:(int)windowNumber;
+
+// Renumbers given window with current number to new number.
++ (void)changeWindowWithNumber:(int)windowNumber
+                   toNewNumber:(int)newWindowNumber;
+
+// Loads the URL |spec| in the current WebState in window with given number with
+// transition type ui::PAGE_TRANSITION_TYPED and returns without waiting for the
+// page to load.
++ (void)startLoadingURL:(NSString*)spec inWindowWithNumber:(int)windowNumber;
+
+// Returns YES if the current WebState in window with given number is loading.
++ (BOOL)isLoadingInWindowWithNumber:(int)windowNumber WARN_UNUSED_RESULT;
+
+// If the current WebState in window with given number is HTML content, will
+// wait until the window ID is injected. Returns YES if the injection is
+// successful or if the WebState is not HTML content.
++ (BOOL)waitForWindowIDInjectionIfNeededInWindowWithNumber:(int)windowNumber;
+
+// Returns YES if the current WebState in window with given number contains
+// |text|.
++ (BOOL)webStateContainsText:(NSString*)text
+          inWindowWithNumber:(int)windowNumber;
+
 #pragma mark - WebState Utilities (EG2)
 
 // Attempts to tap the element with |element_id| within window.frames[0] of the

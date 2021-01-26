@@ -14,12 +14,16 @@ namespace chrome_test_util {
 // ui::PAGE_TRANSITION_TYPED.
 void LoadUrl(const GURL& url);
 
+// Loads |url| in the current WebState with transition of type
+// ui::PAGE_TRANSITION_TYPED in window given windowNumber.
+void LoadUrlInWindowWithNumber(const GURL& url, int window_number);
+
 // Returns true if the current page in the current WebState is loading.
 bool IsLoading();
 
-// Returns true if the current page in the current WebState finishes loading
-// within a timeout.
-bool WaitForPageToFinishLoading() WARN_UNUSED_RESULT;
+// Returns true if the current page in the current WebState is loading in window
+// given windowNumber.
+bool IsLoadingInWindowWithNumber(int window_number);
 
 }  // namespace chrome_test_util
 

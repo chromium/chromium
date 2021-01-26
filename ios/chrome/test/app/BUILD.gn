@@ -29,6 +29,8 @@ source_set("test_support") {
     "tab_test_util.mm",
     "web_view_interaction_test_util.h",
     "web_view_interaction_test_util.mm",
+    "window_test_util.h",
+    "window_test_util.mm",
   ]
   deps = [
     "//base",

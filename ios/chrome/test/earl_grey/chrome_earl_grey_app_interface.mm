@@ -28,6 +28,7 @@
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/ntp/features.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -44,6 +45,7 @@
 #import "ios/chrome/test/app/signin_test_util.h"
 #import "ios/chrome/test/app/sync_test_util.h"
 #import "ios/chrome/test/app/tab_test_util.h"
+#import "ios/chrome/test/app/window_test_util.h"
 #import "ios/chrome/test/earl_grey/accessibility_util.h"
 #import "ios/testing/hardware_keyboard_util.h"
 #import "ios/testing/nserror_util.h"
@@ -349,6 +351,68 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
   return 1;
 }
 
++ (NSError*)openNewWindow {
+  if (!base::ios::IsMultipleScenesSupported()) {
+    return testing::NSErrorWithLocalizedDescription(
+        @"Multiwindow not supported");
+  }
+
+  if (@available(iOS 13, *)) {
+    NSUserActivity* activity =
+        [[NSUserActivity alloc] initWithActivityType:@"EG2NewWindow"];
+    UISceneActivationRequestOptions* options =
+        [[UISceneActivationRequestOptions alloc] init];
+    [UIApplication.sharedApplication
+        requestSceneSessionActivation:nil /* make a new scene */
+                         userActivity:activity
+                              options:options
+                         errorHandler:nil];
+    return nil;
+  }
+
+  return testing::NSErrorWithLocalizedDescription(
+      @"Multiwindow supported on iOS13+ only");
+}
+
++ (void)changeWindowWithNumber:(int)windowNumber
+                   toNewNumber:(int)newWindowNumber {
+  NSArray<SceneState*>* connectedScenes =
+      chrome_test_util::GetMainController().appState.connectedScenes;
+  NSString* accessibilityIdentifier =
+      [NSString stringWithFormat:@"%ld", (long)windowNumber];
+  NSString* newAccessibilityIdentifier =
+      [NSString stringWithFormat:@"%ld", (long)newWindowNumber];
+  for (SceneState* state in connectedScenes) {
+    if ([state.window.accessibilityIdentifier
+            isEqualToString:accessibilityIdentifier]) {
+      state.window.accessibilityIdentifier = newAccessibilityIdentifier;
+      break;
+    }
+  }
+}
+
++ (void)closeWindowWithNumber:(int)windowNumber {
+  if (@available(iOS 13, *)) {
+    NSArray<SceneState*>* connectedScenes =
+        chrome_test_util::GetMainController().appState.connectedScenes;
+    NSString* accessibilityIdentifier =
+        [NSString stringWithFormat:@"%ld", (long)windowNumber];
+    for (SceneState* state in connectedScenes) {
+      if ([state.window.accessibilityIdentifier
+              isEqualToString:accessibilityIdentifier]) {
+        UIWindowSceneDestructionRequestOptions* options =
+            [[UIWindowSceneDestructionRequestOptions alloc] init];
+        options.windowDismissalAnimation =
+            UIWindowSceneDismissalAnimationStandard;
+        [UIApplication.sharedApplication
+            requestSceneSessionDestruction:state.scene.session
+                                   options:options
+                              errorHandler:nil];
+      }
+    }
+  }
+}
+
 + (void)closeAllExtraWindows {
   if (!base::ios::IsMultipleScenesSupported())
     return;
@@ -379,6 +443,33 @@ base::test::ScopedFeatureList closeAllTabsScopedFeatureList;
                                                          errorHandler:nil];
     }
   }
+}
+
++ (void)startLoadingURL:(NSString*)spec inWindowWithNumber:(int)windowNumber {
+  chrome_test_util::LoadUrlInWindowWithNumber(
+      GURL(base::SysNSStringToUTF8(spec)), windowNumber);
+}
+
++ (BOOL)isLoadingInWindowWithNumber:(int)windowNumber {
+  return chrome_test_util::IsLoadingInWindowWithNumber(windowNumber);
+}
+
++ (BOOL)waitForWindowIDInjectionIfNeededInWindowWithNumber:(int)windowNumber {
+  web::WebState* webState =
+      chrome_test_util::GetCurrentWebStateForWindowWithNumber(windowNumber);
+
+  if (webState->ContentIsHTML()) {
+    return web::WaitUntilWindowIdInjected(webState);
+  }
+
+  return YES;
+}
+
++ (BOOL)webStateContainsText:(NSString*)text
+          inWindowWithNumber:(int)windowNumber {
+  return web::test::IsWebViewContainingText(
+      chrome_test_util::GetCurrentWebStateForWindowWithNumber(windowNumber),
+      base::SysNSStringToUTF8(text));
 }
 
 #pragma mark - WebState Utilities (EG2)

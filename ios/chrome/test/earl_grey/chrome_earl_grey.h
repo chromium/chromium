@@ -364,6 +364,55 @@ id ExecuteJavaScript(NSString* javascript, NSError** out_error);
 // only one window presents.
 - (void)closeAllExtraWindows;
 
+// Opens a new window.
+- (void)openNewWindow;
+
+// Closes the window with given number. Note that numbering doesn't change and
+// if a new window is to be added in a test, a renumbering might be needed.
+- (void)closeWindowWithNumber:(int)windowNumber;
+
+// Renumbers given window with current number to new number. For example, if
+// you have windows 0 and 1, close window 0, the add new window, then both
+// windows would be 1. Therefore you should renumber the remaining ones
+// before adding new ones.
+- (void)changeWindowWithNumber:(int)windowNumber
+                   toNewNumber:(int)newWindowNumber;
+
+// Loads |URL| in the current WebState for window with given number, with
+// transition type ui::PAGE_TRANSITION_TYPED, and if waitForCompletion is YES
+// waits for the loading to complete within a timeout.
+// Returns nil on success, or else an NSError indicating why the operation
+// failed.
+- (void)loadURL:(const GURL&)URL
+    inWindowWithNumber:(int)windowNumber
+     waitForCompletion:(BOOL)wait;
+
+// Loads |URL| in the current WebState for window with given number, with
+// transition type ui::PAGE_TRANSITION_TYPED, and waits for the loading to
+// complete within a timeout. If the condition is not met within a timeout
+// returns an NSError indicating why the operation failed, otherwise nil.
+- (void)loadURL:(const GURL&)URL inWindowWithNumber:(int)windowNumber;
+
+// Waits for the page to finish loading for window with given number, within a
+// timeout, or a GREYAssert is induced.
+- (void)waitForPageToFinishLoadingInWindowWithNumber:(int)windowNumber;
+
+// Returns YES if the window with given number's current WebState is loading.
+- (BOOL)isLoadingInWindowWithNumber:(int)windowNumber WARN_UNUSED_RESULT;
+
+// Waits for the current web state for window with given number, to contain
+// |UTF8Text|. If the condition is not met within a timeout a GREYAssert is
+// induced.
+- (void)waitForWebStateContainingText:(const std::string&)UTF8Text
+                   inWindowWithNumber:(int)windowNumber;
+
+// Waits for the current web state for window with given number, to contain
+// |UTF8Text|. If the condition is not met within the given |timeout| a
+// GREYAssert is induced.
+- (void)waitForWebStateContainingText:(const std::string&)UTF8Text
+                              timeout:(NSTimeInterval)timeout
+                   inWindowWithNumber:(int)windowNumber;
+
 #pragma mark - SignIn Utilities (EG2)
 
 // Signs the user out, clears the known accounts entirely and checks whether the

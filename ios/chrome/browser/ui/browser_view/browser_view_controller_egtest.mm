@@ -31,6 +31,12 @@
 
 @implementation BrowserViewControllerTestCase
 
+- (void)tearDown {
+  // No-op if only one window presents.
+  [ChromeEarlGrey closeAllExtraWindows];
+  [super tearDown];
+}
+
 // Tests that the NTP is interactable even when multiple NTP are opened during
 // the animation of the first NTP opening. See crbug.com/1032544.
 - (void)testPageInteractable {
@@ -196,6 +202,54 @@
                                           "https://anything")]
       assertWithMatcher:grey_notNil()];
   [ChromeEarlGrey waitForMainTabCount:1];
+}
+
+#pragma mark - Multiwindow
+
+- (void)testMultiWindowURLLoading {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  // Preps the http server with two URLs serving content.
+  std::map<GURL, std::string> responses;
+  const GURL firstURL = web::test::HttpServer::MakeUrl("http://first");
+  const GURL secondURL = web::test::HttpServer::MakeUrl("http://second");
+  responses[firstURL] = "First window";
+  responses[secondURL] = "Second window";
+  web::test::SetUpSimpleHttpServer(responses);
+
+  // Loads url in first window.
+  [ChromeEarlGrey loadURL:firstURL inWindowWithNumber:0];
+
+  // Opens second window and loads url.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+  [ChromeEarlGrey loadURL:secondURL inWindowWithNumber:1];
+
+  // Checks loads worked.
+  [ChromeEarlGrey waitForWebStateContainingText:responses[firstURL]
+                             inWindowWithNumber:0];
+  [ChromeEarlGrey waitForWebStateContainingText:responses[secondURL]
+                             inWindowWithNumber:1];
+
+  // Closes first window and renumbers second window as first
+  [ChromeEarlGrey closeWindowWithNumber:0];
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
+  [ChromeEarlGrey changeWindowWithNumber:1 toNewNumber:0];
+  [ChromeEarlGrey waitForWebStateContainingText:responses[secondURL]
+                             inWindowWithNumber:0];
+
+  // Opens a 'new' second window.
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  // Loads urls in both windows, and verifies.
+  [ChromeEarlGrey loadURL:firstURL inWindowWithNumber:0];
+  [ChromeEarlGrey loadURL:secondURL inWindowWithNumber:1];
+  [ChromeEarlGrey waitForWebStateContainingText:responses[firstURL]
+                             inWindowWithNumber:0];
+  [ChromeEarlGrey waitForWebStateContainingText:responses[secondURL]
+                             inWindowWithNumber:1];
 }
 
 @end

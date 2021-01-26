@@ -109,6 +109,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/infobars:eg_app_support+eg2",
     "//ios/chrome/browser/ui/location_bar:constants",
     "//ios/chrome/browser/ui/location_bar:location_bar",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/material_components",
     "//ios/chrome/browser/ui/omnibox:app_support+eg2",
     "//ios/chrome/browser/ui/omnibox:omnibox_internal",
