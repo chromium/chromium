@@ -23,8 +23,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Compositing.Browser.HitTestTimeToFindClosestLayer"
     units="microseconds" expires_after="2020-12-01">
+  <obsolete>
+    Expired Dec 2020.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
-  <owner>animations-dev@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Time spent finding the closest matching layer to a given point whenever we
     do hit testing on LayerTreeImpl (in a browser process).
@@ -380,8 +383,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Compositing.Renderer.HitTestTimeToFindClosestLayer"
     units="microseconds" expires_after="2020-12-01">
+  <obsolete>
+    Expired Dec 2020.
+  </obsolete>
   <owner>flackr@chromium.org</owner>
-  <owner>animations-dev@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
   <summary>
     Time spent finding the closest matching layer to a given point whenever we
     do hit testing on LayerTreeImpl (in a renderer process).
