@@ -36,6 +36,7 @@ namespace {
 // Gets the offline data at |offline_path|. The result is a single std::string
 // with all resources inlined.
 // This method access file system and cannot be called on UI thread.
+// TODO(crbug.com/1166398): Remove backwards compatibility after M95
 std::string GetOfflineData(base::FilePath offline_root,
                            base::FilePath offline_path) {
   base::FilePath absolute_path =

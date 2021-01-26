@@ -109,7 +109,8 @@ void EnsureNonEmptyContent(std::string* content) {
 }
 
 std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
-                                      const mojom::FontFamily font_family) {
+                                      const mojom::FontFamily font_family,
+                                      const std::string& csp_nonce) {
   std::string html_template =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
           IDR_DOM_DISTILLER_VIEWER_HTML);
@@ -156,6 +157,7 @@ std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
   // Now do other non-i18n string replacements.
   std::vector<std::string> substitutions;
 
+  std::ostringstream csp;
   std::ostringstream css;
   std::ostringstream svg;
 #if defined(OS_IOS)
@@ -163,19 +165,37 @@ std::string ReplaceHtmlTemplateValues(const mojom::Theme theme,
   // and return the local data once a page is loaded.
   css << "<style>" << viewer::GetCss() << "</style>";
   svg << viewer::GetLoadingImage();
+
+  // iOS specific CSP policy to mitigate leaking of data from different
+  // origins.
+  csp << "<meta http-equiv=\"Content-Security-Policy\" content=\"";
+  csp << "default-src 'none'; ";
+  csp << "script-src 'nonce-" << csp_nonce << "'; ";
+  // YouTube videos are embedded as an iframe.
+  csp << "frame-src http://www.youtube.com; ";
+  csp << "style-src 'unsafe-inline' https://fonts.googleapis.com; ";
+  // Allows the fallback font-face from the main stylesheet.
+  csp << "font-src https://fonts.gstatic.com; ";
+  // Images will be inlined as data-uri if they are valid.
+  csp << "img-src data:; ";
+  csp << "form-action 'none'; ";
+  csp << "base-uri 'none'; ";
+  csp << "\">";
+
 #else
   css << "<link rel=\"stylesheet\" href=\"/" << kViewerCssPath << "\">";
   svg << "<img src=\"/" << kViewerLoadingImagePath << "\">";
 #endif  // defined(OS_IOS)
 
-  substitutions.push_back(css.str());  // $1
+  substitutions.push_back(csp.str());  // $1
+  substitutions.push_back(css.str());  // $2
   substitutions.push_back(GetThemeCssClass(theme) + " " +
-                          GetFontCssClass(font_family));  // $2
+                          GetFontCssClass(font_family));  // $3
 
   substitutions.push_back(l10n_util::GetStringUTF8(
-      IDS_DOM_DISTILLER_JAVASCRIPT_DISABLED_CONTENT));  // $3
+      IDS_DOM_DISTILLER_JAVASCRIPT_DISABLED_CONTENT));  // $4
 
-  substitutions.push_back(svg.str());  // $4
+  substitutions.push_back(svg.str());  // $5
 
   return base::ReplaceStringPlaceholders(html_template, substitutions, nullptr);
 }
@@ -239,8 +259,9 @@ const std::string GetToggleLoadingIndicatorJs(bool is_last_page) {
 }
 
 const std::string GetArticleTemplateHtml(mojom::Theme theme,
-                                         mojom::FontFamily font_family) {
-  return ReplaceHtmlTemplateValues(theme, font_family);
+                                         mojom::FontFamily font_family,
+                                         const std::string& csp_nonce) {
+  return ReplaceHtmlTemplateValues(theme, font_family, csp_nonce);
 }
 
 const std::string GetUnsafeArticleContentJs(

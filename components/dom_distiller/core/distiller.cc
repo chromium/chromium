@@ -253,20 +253,22 @@ void DistillerImpl::OnPageDistillationFinished(
       GURL next_page_url(pagination_info.next_page());
       if (next_page_url.is_valid()) {
         // The pages should be in same origin.
-        DCHECK_EQ(next_page_url.GetOrigin(), page_url.GetOrigin());
-        AddToDistillationQueue(page_num + 1, next_page_url);
-        page_data->distilled_page_proto->data.mutable_pagination_info()
-            ->set_next_page(next_page_url.spec());
+        if (next_page_url.GetOrigin() == page_url.GetOrigin()) {
+          AddToDistillationQueue(page_num + 1, next_page_url);
+          page_data->distilled_page_proto->data.mutable_pagination_info()
+              ->set_next_page(next_page_url.spec());
+        }
       }
     }
 
     if (pagination_info.has_prev_page()) {
       GURL prev_page_url(pagination_info.prev_page());
       if (prev_page_url.is_valid()) {
-        DCHECK_EQ(prev_page_url.GetOrigin(), page_url.GetOrigin());
-        AddToDistillationQueue(page_num - 1, prev_page_url);
-        page_data->distilled_page_proto->data.mutable_pagination_info()
-            ->set_prev_page(prev_page_url.spec());
+        if (prev_page_url.GetOrigin() == page_url.GetOrigin()) {
+          AddToDistillationQueue(page_num - 1, prev_page_url);
+          page_data->distilled_page_proto->data.mutable_pagination_info()
+              ->set_prev_page(prev_page_url.spec());
+        }
       }
     }
 

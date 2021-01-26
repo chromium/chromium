@@ -45,6 +45,8 @@ class DistillerViewerInterface : public DomDistillerRequestViewBase {
 
   void SendJavaScript(const std::string& buffer) override = 0;
 
+  virtual std::string GetCspNonce() = 0;
+
   DISALLOW_COPY_AND_ASSIGN(DistillerViewerInterface);
 };
 
@@ -77,6 +79,8 @@ class DistillerViewer : public DistillerViewerInterface {
 
   void SendJavaScript(const std::string& buffer) override;
 
+  std::string GetCspNonce() override;
+
  private:
   // Called by the distiller when article is ready.
   void OnDistillerFinished(
@@ -90,6 +94,8 @@ class DistillerViewer : public DistillerViewerInterface {
   const GURL url_;
   // JavaScript buffer.
   std::string js_buffer_;
+  // CSP nonce value.
+  std::string csp_nonce_;
   // Callback to run once distillation is complete.
   DistillationFinishedCallback callback_;
   // Keep reference of the distiller_ during distillation.
