@@ -33,6 +33,15 @@ namespace blink {
 class Document;
 class Event;
 
+// This enum is for EventType UKM and existing values should not be removed or
+// modified.
+enum class InputEventType {
+  kMousedown = 0,
+  kClick = 1,
+  kKeydown = 2,
+  kPointerup = 3
+};
+
 // Detects when a page reaches First Idle and Time to Interactive. See
 // https://goo.gl/SYt55W for detailed description and motivation of First Idle
 // and Time to Interactive.
@@ -132,7 +141,8 @@ class CORE_EXPORT InteractiveDetector
 
   void RecordInputEventTimingUKM(base::TimeDelta input_delay,
                                  base::TimeDelta processing_time,
-                                 base::TimeDelta time_to_next_paint);
+                                 base::TimeDelta time_to_next_paint,
+                                 WTF::AtomicString event_type);
 
   void DidObserveFirstScrollDelay(base::TimeDelta first_scroll_delay,
                                   base::TimeTicks first_scroll_timestamp);

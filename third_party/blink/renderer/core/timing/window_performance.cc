@@ -422,13 +422,13 @@ void WindowPerformance::ReportEventTimings(uint64_t frame_index,
         interactive_detector->RecordInputEventTimingUKM(
             pending_pointer_down_input_delay_.value(),
             pending_pointer_down_processing_time_.value(),
-            pending_pointer_down_time_to_next_paint_.value());
+            pending_pointer_down_time_to_next_paint_.value(), entry->name());
       }
     } else if ((entry->name() == "click" || entry->name() == "keydown" ||
                 entry->name() == "mousedown") &&
                interactive_detector) {
       interactive_detector->RecordInputEventTimingUKM(
-          input_delay, processing_time, time_to_next_paint);
+          input_delay, processing_time, time_to_next_paint, entry->name());
     }
 
     if (!first_input_timing_) {

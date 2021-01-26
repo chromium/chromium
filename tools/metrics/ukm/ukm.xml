@@ -6308,6 +6308,20 @@ be describing additional metrics about the same event.
     Consumers of this event's metrics should be aware of this when making
     comparisons between InputEvent metrics and PageLoad metrics.
   </summary>
+  <metric name="EventType" enum="InputEventTypeForResponsivenessMetric">
+    <summary>
+      The Event Type of the input event.
+    </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.is_dominant_version"/>
+        <index fields="profile.is_latest_version"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
   <metric name="InteractiveTiming.InputDelay">
     <summary>
       Measures Input Delay, the duration between the hardware timestamp and the

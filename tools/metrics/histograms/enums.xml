@@ -38583,6 +38583,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="9" label="Canceled"/>
 </enum>
 
+<enum name="InputEventTypeForResponsivenessMetric">
+  <int value="0" label="mousedown"/>
+  <int value="1" label="click"/>
+  <int value="2" label="keydown"/>
+  <int value="3" label="pointerup"/>
+</enum>
+
 <enum name="InputMethodCategory">
   <int value="0" label="Unkown"/>
   <int value="1" label="XKB">XKeyboard</int>
