@@ -459,7 +459,13 @@ void ProfileSyncService::CredentialsChanged() {
   // then shut down. This happens when the user signs out on the web, i.e. we're
   // in the "Sync paused" state.
   if (!IsEngineAllowedToRun()) {
-    // This will notify observers if appropriate.
+    // If the engine currently exists, then StopImpl() will notify observers
+    // anyway. Otherwise, notify them here. (One relevant case is when entering
+    // the PAUSED state before the engine was created, e.g. during deferred
+    // startup.)
+    if (!engine_) {
+      NotifyObservers();
+    }
     StopImpl(KEEP_DATA);
     return;
   }

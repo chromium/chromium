@@ -67,7 +67,6 @@ SyncAuthManager::SyncAuthManager(
     : identity_manager_(identity_manager),
       account_state_changed_callback_(account_state_changed),
       credentials_changed_callback_(credentials_changed),
-      registered_for_auth_notifications_(false),
       request_access_token_backoff_(&kRequestAccessTokenBackoffPolicy) {
   // |identity_manager_| can be null if local Sync is enabled.
 }
@@ -88,6 +87,16 @@ void SyncAuthManager::RegisterForAuthNotifications() {
   // Also initialize the sync account here, but *without* notifying the
   // SyncService.
   sync_account_ = DetermineAccountToUse();
+  // If there's already a persistent auth error, also propagate that into our
+  // local state. Note that (as of 2021-01) this shouldn't happen in practice:
+  // Auth errors are not persisted, so it's unlikely that at this point in time
+  // (early during browser startup) an auth error has already been detected.
+  GoogleServiceAuthError token_error =
+      identity_manager_->GetErrorStateOfRefreshTokenForAccount(
+          sync_account_.account_info.account_id);
+  if (token_error.IsPersistentError()) {
+    SetLastAuthError(token_error);
+  }
 }
 
 bool SyncAuthManager::IsActiveAccountInfoFullyLoaded() const {

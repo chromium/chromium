@@ -35,6 +35,13 @@ namespace {
 
 const char kEmail[] = "test_user@gmail.com";
 
+class MockSyncServiceObserver : public SyncServiceObserver {
+ public:
+  MockSyncServiceObserver() = default;
+
+  MOCK_METHOD(void, OnStateChanged, (SyncService*), (override));
+};
+
 }  // namespace
 
 ACTION_P(InvokeOnConfigureStart, sync_service) {
@@ -91,6 +98,13 @@ class ProfileSyncServiceStartupTest : public testing::Test {
   void UpdateCredentials() {
     profile_sync_service_bundle_.identity_test_env()
         ->SetRefreshTokenForPrimaryAccount();
+  }
+
+  // Sets a special invalid refresh token. This is what happens when the primary
+  // (and sync-consented) account signs out on the web.
+  void SimulateWebSignout() {
+    profile_sync_service_bundle_.identity_test_env()
+        ->SetInvalidRefreshTokenForPrimaryAccount();
   }
 
   DataTypeManagerMock* SetUpDataTypeManagerMock() {
@@ -246,6 +260,96 @@ TEST_F(ProfileSyncServiceStartupTest, StartNoCredentials) {
   EXPECT_TRUE(sync_service()->GetAccessTokenForTest().empty());
   // Note that ProfileSyncService is not in an auth error state - no auth was
   // attempted, so no error.
+}
+
+TEST_F(ProfileSyncServiceStartupTest, WebSignoutBeforeInitialization) {
+  // There is a primary account, but it's in a "web signout" aka sync-paused
+  // state.
+  SimulateTestUserSignin();
+  SimulateWebSignout();
+  sync_prefs()->SetFirstSetupComplete();
+
+  CreateSyncService(ProfileSyncService::MANUAL_START);
+
+  SetUpFakeSyncEngine();
+  SetUpDataTypeManagerMock();
+
+  sync_service()->Initialize();
+
+  // ProfileSyncService should now be in the paused state.
+  EXPECT_EQ(SyncService::TransportState::PAUSED,
+            sync_service()->GetTransportState());
+}
+
+TEST_F(ProfileSyncServiceStartupTest, WebSignoutDuringDeferredStartup) {
+  // There is a primary account. It is theoretically in the "web signout" aka
+  // sync-paused error state, but the identity code hasn't detected that yet
+  // (because auth errors are not persisted).
+  SimulateTestUserSignin();
+  sync_prefs()->SetFirstSetupComplete();
+
+  // Note: Deferred startup is only enabled if SESSIONS is among the preferred
+  // data types.
+  CreateSyncService(ProfileSyncService::MANUAL_START, {TYPED_URLS, SESSIONS});
+
+  SetUpFakeSyncEngine();
+  SetUpDataTypeManagerMock();
+
+  sync_service()->Initialize();
+
+  ASSERT_EQ(SyncService::TransportState::START_DEFERRED,
+            sync_service()->GetTransportState());
+
+  MockSyncServiceObserver observer;
+  sync_service()->AddObserver(&observer);
+
+  // Entering the sync-paused state should trigger a notification.
+  EXPECT_CALL(observer, OnStateChanged(sync_service())).WillOnce([&]() {
+    EXPECT_EQ(SyncService::TransportState::PAUSED,
+              sync_service()->GetTransportState());
+  });
+
+  // Now sign out on the web to enter the sync-paused state.
+  SimulateWebSignout();
+
+  // ProfileSyncService should now be in the paused state.
+  EXPECT_EQ(SyncService::TransportState::PAUSED,
+            sync_service()->GetTransportState());
+
+  sync_service()->RemoveObserver(&observer);
+}
+
+TEST_F(ProfileSyncServiceStartupTest, WebSignoutAfterInitialization) {
+  // There is a primary account. It is theoretically in the "web signout" aka
+  // sync-paused error state, but the identity code hasn't detected that yet
+  // (because auth errors are not persisted).
+  SimulateTestUserSignin();
+  sync_prefs()->SetFirstSetupComplete();
+
+  CreateSyncService(ProfileSyncService::MANUAL_START);
+
+  SetUpFakeSyncEngine();
+  SetUpDataTypeManagerMock();
+
+  sync_service()->Initialize();
+
+  MockSyncServiceObserver observer;
+  sync_service()->AddObserver(&observer);
+
+  // Entering the sync-paused state should trigger a notification.
+  EXPECT_CALL(observer, OnStateChanged(sync_service())).WillOnce([&]() {
+    EXPECT_EQ(SyncService::TransportState::PAUSED,
+              sync_service()->GetTransportState());
+  });
+
+  // Now sign out on the web to enter the sync-paused state.
+  SimulateWebSignout();
+
+  // ProfileSyncService should now be in the paused state.
+  EXPECT_EQ(SyncService::TransportState::PAUSED,
+            sync_service()->GetTransportState());
+
+  sync_service()->RemoveObserver(&observer);
 }
 
 TEST_F(ProfileSyncServiceStartupTest, StartInvalidCredentials) {
