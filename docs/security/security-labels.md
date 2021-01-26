@@ -121,7 +121,8 @@ Other cases where it's OK to set **Security_Impact-None**:
 Cases where it's *not* OK to set **Security_Impact-None**:
 
 * Features enabled via normal UI or settings which users might happen across
-  in normal usage. For instance, accessibility features.
+  in normal usage. For instance, accessibility features and the Chrome Labs
+  experimental features accessible from the toolbar.
 * Origin trials. Origin trials are only active on some websites, but the
   affected code does run for Chrome users with the default Chrome configuration.
 * The impacted code runs behind a feature flag which is *enabled by default*,
