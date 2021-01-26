@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
@@ -67,6 +68,7 @@
 #include "third_party/blink/renderer/core/html/html_dimension.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/html_slot_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
@@ -1127,7 +1129,7 @@ static inline bool ElementAffectsDirectionality(const Node* node) {
 
 void HTMLElement::ChildrenChanged(const ChildrenChange& change) {
   Element::ChildrenChanged(change);
-  AdjustDirectionalityIfNeededAfterChildrenChanged(change);
+  AdjustDirectionalityIfNeededAfterChildrenChanged();
 }
 
 bool HTMLElement::HasDirectionAuto() const {
@@ -1143,15 +1145,16 @@ TextDirection HTMLElement::DirectionalityIfhasDirAutoAttribute(
   is_auto = HasDirectionAuto();
   if (!is_auto)
     return TextDirection::kLtr;
-  return Directionality();
+  bool is_deferred;
+  return ResolveAutoDirectionality(is_deferred);
 }
 
-TextDirection HTMLElement::Directionality() const {
+TextDirection HTMLElement::ResolveAutoDirectionality(bool& is_deferred) const {
+  is_deferred = false;
   if (auto* input_element = DynamicTo<HTMLInputElement>(*this)) {
     bool has_strong_directionality;
-    TextDirection text_direction = DetermineDirectionality(
-        input_element->value(), &has_strong_directionality);
-    return text_direction;
+    return DetermineDirectionality(input_element->value(),
+                                   &has_strong_directionality);
   }
 
   Node* node = FlatTreeTraversal::FirstChild(*this);
@@ -1165,6 +1168,18 @@ TextDirection HTMLElement::Directionality() const {
                         shadow_element_names::kPseudoInputPlaceholder)) {
       node = FlatTreeTraversal::NextSkippingChildren(*node, this);
       continue;
+    }
+
+    if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(node)) {
+      ShadowRoot* root = slot->ContainingShadowRoot();
+      // Defer to adjust the directionality to avoid recalcuating slot
+      // assignment in FlatTreeTraversal when updating slot.
+      // ResolveAutoDirectionality will be adjusted after recalculating its
+      // children.
+      if (root->NeedsSlotAssignmentRecalc()) {
+        is_deferred = true;
+        return TextDirection::kLtr;
+      }
     }
 
     // Skip elements with valid dir attribute
@@ -1202,7 +1217,9 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildAttributeChanged(
     Element* child) {
   DCHECK(SelfOrAncestorHasDirAutoAttribute());
   const ComputedStyle* style = GetComputedStyle();
-  if (style && style->Direction() != Directionality()) {
+  bool is_deferred;
+  if (style && style->Direction() != ResolveAutoDirectionality(is_deferred) &&
+      !is_deferred) {
     for (Element* element_to_adjust = this; element_to_adjust;
          element_to_adjust =
              FlatTreeTraversal::ParentElement(*element_to_adjust)) {
@@ -1216,10 +1233,11 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildAttributeChanged(
   }
 }
 
-bool HTMLElement::CalculateAndAdjustDirectionality() {
-  TextDirection text_direction = Directionality();
+bool HTMLElement::CalculateAndAdjustAutoDirectionality() {
   const ComputedStyle* style = GetComputedStyle();
-  if (style && style->Direction() != text_direction) {
+  bool is_deferred;
+  if (style && style->Direction() != ResolveAutoDirectionality(is_deferred) &&
+      !is_deferred) {
     SetNeedsStyleRecalc(kLocalStyleChange,
                         StyleChangeReasonForTracing::Create(
                             style_change_reason::kWritingModeChange));
@@ -1231,7 +1249,8 @@ bool HTMLElement::CalculateAndAdjustDirectionality() {
 TextDirection HTMLElement::ComputeInheritedDirectionality() const {
   const AtomicString& direction = FastGetAttribute(html_names::kDirAttr);
   if (HasDirectionAuto()) {
-    return Directionality();
+    bool is_deferred;
+    return ResolveAutoDirectionality(is_deferred);
   } else if (EqualIgnoringASCIICase(direction, "ltr")) {
     return TextDirection::kLtr;
   } else if (EqualIgnoringASCIICase(direction, "rtl")) {
@@ -1244,8 +1263,7 @@ TextDirection HTMLElement::ComputeInheritedDirectionality() const {
   }
 }
 
-void HTMLElement::AdjustDirectionalityIfNeededAfterChildrenChanged(
-    const ChildrenChange& change) {
+void HTMLElement::AdjustDirectionalityIfNeededAfterChildrenChanged() {
   if (!SelfOrAncestorHasDirAutoAttribute())
     return;
 
@@ -1254,7 +1272,7 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildrenChanged(
            FlatTreeTraversal::ParentElement(*element_to_adjust)) {
     if (ElementAffectsDirectionality(element_to_adjust)) {
       if (To<HTMLElement>(element_to_adjust)
-              ->CalculateAndAdjustDirectionality() &&
+              ->CalculateAndAdjustAutoDirectionality() &&
           RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
         SetNeedsStyleRecalc(kLocalStyleChange,
                             StyleChangeReasonForTracing::Create(
@@ -1263,6 +1281,43 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildrenChanged(
       return;
     }
   }
+}
+
+void HTMLElement::AdjustCandidateDirectionalityForSlot(
+    HeapHashSet<Member<HTMLElement>> candidate_set) {
+  HeapHashSet<Member<HTMLElement>> directionality_set;
+  // Transfer a candidate directionality set to |directionality_set| to avoid
+  // the tree walk to the duplicated parent node for the directionality.
+  for (auto& element : candidate_set) {
+    if (!element->SelfOrAncestorHasDirAutoAttribute())
+      continue;
+
+    for (auto* element_to_adjust = element.Get(); element_to_adjust;
+         element_to_adjust = DynamicTo<HTMLElement>(
+             FlatTreeTraversal::ParentElement(*element_to_adjust))) {
+      if (ElementAffectsDirectionality(element_to_adjust)) {
+        directionality_set.insert(element_to_adjust);
+        continue;
+      }
+    }
+  }
+
+  for (auto& element : directionality_set) {
+    if (element->CalculateAndAdjustAutoDirectionality() &&
+        RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+      element->SetNeedsStyleRecalc(kLocalStyleChange,
+                                   StyleChangeReasonForTracing::Create(
+                                       style_change_reason::kPseudoClass));
+    }
+  }
+}
+
+void HTMLElement::AddCandidateDirectionalityForSlot() {
+  ShadowRoot* root = ShadowRootOfParent();
+  if (!root || !root->HasSlotAssignment())
+    return;
+
+  root->GetSlotAssignment().GetCandidateDirectionality().insert(this);
 }
 
 Node::InsertionNotificationRequest HTMLElement::InsertedInto(
@@ -1603,7 +1658,7 @@ void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
   }
 
   if (EqualIgnoringASCIICase(params.new_value, "auto"))
-    CalculateAndAdjustDirectionality();
+    CalculateAndAdjustAutoDirectionality();
 
   if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
     SetNeedsStyleRecalc(

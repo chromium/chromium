@@ -3270,6 +3270,9 @@ void Node::FlatTreeParentChanged() {
   // We also need to force a layout tree re-attach since the layout tree parent
   // box may have changed.
   SetForceReattachLayoutTree();
+
+  if (auto* element = DynamicTo<HTMLElement>(this))
+    element->AddCandidateDirectionalityForSlot();
 }
 
 void Node::RemovedFromFlatTree() {

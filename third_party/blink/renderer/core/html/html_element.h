@@ -154,6 +154,9 @@ class CORE_EXPORT HTMLElement : public Element {
   bool IsFormAssociatedCustomElement() const;
 
   TextDirection ComputeInheritedDirectionality() const;
+  void AddCandidateDirectionalityForSlot();
+  static void AdjustCandidateDirectionalityForSlot(
+      HeapHashSet<Member<HTMLElement>> candidate_set);
 
  protected:
   enum AllowPercentage { kDontAllowPercentageValues, kAllowPercentageValues };
@@ -187,7 +190,7 @@ class CORE_EXPORT HTMLElement : public Element {
   unsigned ParseBorderWidthAttribute(const AtomicString&) const;
 
   void ChildrenChanged(const ChildrenChange&) override;
-  bool CalculateAndAdjustDirectionality();
+  bool CalculateAndAdjustAutoDirectionality();
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode& insertion_point) override;
@@ -210,8 +213,8 @@ class CORE_EXPORT HTMLElement : public Element {
 
   bool SelfOrAncestorHasDirAutoAttribute() const;
   void AdjustDirectionalityIfNeededAfterChildAttributeChanged(Element* child);
-  void AdjustDirectionalityIfNeededAfterChildrenChanged(const ChildrenChange&);
-  TextDirection Directionality() const;
+  void AdjustDirectionalityIfNeededAfterChildrenChanged();
+  TextDirection ResolveAutoDirectionality(bool& is_deferred) const;
 
   TranslateAttributeMode GetTranslateAttributeMode() const;
 
