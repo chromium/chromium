@@ -17113,6 +17113,17 @@ regressions. -->
   </token>
 </histogram>
 
+<histogram name="VoiceInteraction.AssistantIntent.TranslateExtrasAttached"
+    enum="BooleanSuccess" expires_after="2021-06-04">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Android: Whether Translate extras were successfully attached to an Assistant
+    intent. This is recorded just before the intent is sent to Assistant, and is
+    only recorded if the Translate extras are enabled.
+  </summary>
+</histogram>
+
 <histogram name="VoiceInteraction.DismissedEventSource"
     enum="VoiceInteractionEventSource" expires_after="2021-05-30">
   <owner>wylieb@chromium.org</owner>
