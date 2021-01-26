@@ -4,6 +4,13 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("tflite-config-proto") {
+  proto_in_dir = "src"
+  sources = [ "src/tensorflow/lite/experimental/acceleration/configuration/configuration.proto" ]
+  cc_generator_options = "lite=true:"
+}
 
 config("tflite_config") {
   include_dirs = [ "src" ]
@@ -454,6 +461,7 @@ static_library("tflite") {
   ]
 
   public_deps = [
+    ":tflite-config-proto",
     ":tflite_public_headers",
     "//third_party/flatbuffers",
   ]
