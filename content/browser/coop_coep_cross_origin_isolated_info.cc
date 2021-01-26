@@ -57,4 +57,13 @@ bool CoopCoepCrossOriginIsolatedInfo::operator<(
   return origin_.value() < b.origin();
 }
 
+std::ostream& operator<<(std::ostream& out,
+                         const CoopCoepCrossOriginIsolatedInfo& info) {
+  out << "{";
+  if (info.is_isolated()) {
+    out << info.origin();
+  }
+  out << "}";
+  return out;
+}
 }  // namespace content

@@ -140,8 +140,9 @@ bool IsSiteInstanceCompatibleWithErrorIsolation(SiteInstance* site_instance,
   // SiteInstance but the navigation will fail and actually need an error page
   // SiteInstance.
   bool is_site_instance_for_failures =
-      static_cast<SiteInstanceImpl*>(site_instance)->GetSiteInfo() ==
-      SiteInfo::CreateForErrorPage();
+      static_cast<SiteInstanceImpl*>(site_instance)
+          ->GetSiteInfo()
+          .is_error_page();
   return is_site_instance_for_failures == is_failure;
 }
 
@@ -973,7 +974,7 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const ProcessLock process_lock =
       navigation_rfh->GetSiteInstance()->GetProcessLock();
-  if (process_lock != ProcessLock::CreateForErrorPage() &&
+  if (!process_lock.is_error_page() &&
       request->common_params().url.IsStandard() &&
       !policy->CanAccessDataForOrigin(navigation_rfh->GetProcess()->GetID(),
                                       request->common_params().url) &&

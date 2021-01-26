@@ -73,10 +73,6 @@ class ResourceContext;
 // TODO(wjmaclean): Move this into its own .h file.
 class CONTENT_EXPORT ProcessLock {
  public:
-  // Error page processes are locked to a special error URL, to avoid loading
-  // real pages into the process.
-  static ProcessLock CreateForErrorPage();
-
   // Create a lock that that represents a process that is associated with at
   // least one SiteInstance, but is not locked to a specific site. Any request
   // that wants to commit in this process must have COOP/COEP information that
@@ -136,6 +132,10 @@ class CONTENT_EXPORT ProcessLock {
     return site_info_.has_value()
                ? site_info_->coop_coep_cross_origin_isolated_info()
                : CoopCoepCrossOriginIsolatedInfo::CreateNonIsolated();
+  }
+
+  bool is_error_page() const {
+    return site_info_.has_value() && site_info_->is_error_page();
   }
 
   // Returns whether lock_url() is at least at the granularity of a site (i.e.,

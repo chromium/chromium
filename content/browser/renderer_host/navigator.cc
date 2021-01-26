@@ -124,7 +124,7 @@ bool Navigator::CheckWebUIRendererDoesNotDisplayNormalURL(
       security_policy->GetProcessLock(render_frame_host->GetProcess()->GetID());
 
   // In the case of error page process, any URL is allowed to commit.
-  if (process_lock == ProcessLock::CreateForErrorPage())
+  if (process_lock.is_error_page())
     return true;
 
   bool frame_has_bindings = ((render_frame_host->GetEnabledBindings() &

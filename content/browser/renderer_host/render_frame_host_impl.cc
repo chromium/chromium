@@ -6419,8 +6419,7 @@ void RenderFrameHostImpl::CommitNavigation(
   // debug issues with browser-side security checks. https://crbug.com/931895.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const ProcessLock process_lock = GetSiteInstance()->GetProcessLock();
-  if (process_lock != ProcessLock::CreateForErrorPage() &&
-      common_params->url.IsStandard() &&
+  if (!process_lock.is_error_page() && common_params->url.IsStandard() &&
       !policy->CanAccessDataForOrigin(GetProcess()->GetID(),
                                       common_params->url) &&
       !is_mhtml_subframe) {
@@ -7096,7 +7095,7 @@ bool RenderFrameHostImpl::IsFocused() {
 bool RenderFrameHostImpl::CreateWebUI(const GURL& dest_url,
                                       int entry_bindings) {
   // Verify expectation that WebUI should not be created for error pages.
-  DCHECK_NE(GetSiteInstance()->GetSiteInfo(), SiteInfo::CreateForErrorPage());
+  DCHECK(!GetSiteInstance()->GetSiteInfo().is_error_page());
 
   WebUI::TypeID new_web_ui_type =
       WebUIControllerFactoryRegistry::GetInstance()->GetWebUIType(
@@ -8551,7 +8550,7 @@ bool RenderFrameHostImpl::ShouldBypassSecurityChecksForErrorPage(
     *should_commit_unreachable_url = false;
 
   if (SiteIsolationPolicy::IsErrorPageIsolationEnabled(is_main_frame())) {
-    if (GetSiteInstance()->GetSiteInfo() == SiteInfo::CreateForErrorPage()) {
+    if (GetSiteInstance()->GetSiteInfo().is_error_page()) {
       if (should_commit_unreachable_url)
         *should_commit_unreachable_url = true;
 
