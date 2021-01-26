@@ -1385,7 +1385,8 @@ void ServiceWorkerStorage::DidStoreRegistrationData(
         storage::QuotaClientType::kServiceWorker, url::Origin::Create(origin),
         blink::mojom::StorageType::kTemporary,
         new_resources_total_size_bytes -
-            deleted_version.resources_total_size_bytes);
+            deleted_version.resources_total_size_bytes,
+        base::Time::Now());
   }
 
   std::move(callback).Run(ServiceWorkerDatabase::Status::kOk,
@@ -1419,7 +1420,7 @@ void ServiceWorkerStorage::DidDeleteRegistration(
         storage::QuotaClientType::kServiceWorker,
         url::Origin::Create(params->origin),
         blink::mojom::StorageType::kTemporary,
-        -deleted_version.resources_total_size_bytes);
+        -deleted_version.resources_total_size_bytes, base::Time::Now());
   }
 
   if (origin_state == OriginState::kDelete)

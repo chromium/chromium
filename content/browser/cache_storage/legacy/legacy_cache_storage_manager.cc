@@ -501,7 +501,7 @@ void LegacyCacheStorageManager::DeleteOriginDidClose(
 
   quota_manager_proxy_->NotifyStorageModified(
       CacheStorageQuotaClient::GetClientTypeFromOwner(owner), origin,
-      blink::mojom::StorageType::kTemporary, -1 * origin_size);
+      blink::mojom::StorageType::kTemporary, -origin_size, base::Time::Now());
 
   if (owner == storage::mojom::CacheStorageOwner::kCacheAPI)
     NotifyCacheListChanged(origin);

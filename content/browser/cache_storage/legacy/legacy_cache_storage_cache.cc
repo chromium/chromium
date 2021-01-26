@@ -2127,7 +2127,7 @@ void LegacyCacheStorageCache::UpdateCacheSizeGotSize(
 
   quota_manager_proxy_->NotifyStorageModified(
       CacheStorageQuotaClient::GetClientTypeFromOwner(owner_), origin_,
-      blink::mojom::StorageType::kTemporary, size_delta);
+      blink::mojom::StorageType::kTemporary, size_delta, base::Time::Now());
 
   if (cache_storage_)
     cache_storage_->NotifyCacheContentChanged(cache_name_);

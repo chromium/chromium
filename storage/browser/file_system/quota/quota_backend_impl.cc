@@ -141,7 +141,8 @@ void QuotaBackendImpl::ReserveQuotaInternal(const QuotaReservationInfo& info) {
   DCHECK(quota_manager_proxy_.get());
   quota_manager_proxy_->NotifyStorageModified(
       QuotaClientType::kFileSystem, info.origin,
-      FileSystemTypeToQuotaStorageType(info.type), info.delta);
+      FileSystemTypeToQuotaStorageType(info.type), info.delta,
+      base::Time::Now());
 }
 
 base::File::Error QuotaBackendImpl::GetUsageCachePath(

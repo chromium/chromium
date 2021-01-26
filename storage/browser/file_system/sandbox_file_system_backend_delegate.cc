@@ -18,6 +18,7 @@
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task_runner_util.h"
+#include "base/time/time.h"
 #include "storage/browser/file_system/async_file_util_adapter.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_context.h"
@@ -274,7 +275,8 @@ void SandboxFileSystemBackendDelegate::OpenFileSystem(
       (quota_manager_proxy_.get())
           ? base::BindOnce(&QuotaManagerProxy::NotifyStorageAccessed,
                            quota_manager_proxy_, origin,
-                           FileSystemTypeToQuotaStorageType(type))
+                           FileSystemTypeToQuotaStorageType(type),
+                           base::Time::Now())
           : base::DoNothing();
 
   file_task_runner_->PostTaskAndReplyWithResult(
@@ -352,8 +354,8 @@ SandboxFileSystemBackendDelegate::DeleteOriginDataOnFileTaskRunner(
       origin, GetTypeString(type));
   if (result && proxy && usage) {
     proxy->NotifyStorageModified(QuotaClientType::kFileSystem, origin,
-                                 FileSystemTypeToQuotaStorageType(type),
-                                 -usage);
+                                 FileSystemTypeToQuotaStorageType(type), -usage,
+                                 base::Time::Now());
   }
 
   if (result)

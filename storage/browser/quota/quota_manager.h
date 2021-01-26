@@ -27,6 +27,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -197,7 +198,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   // Quota-managed storage backends should call this method when storage is
   // accessed. Used to maintain LRU ordering.
   void NotifyStorageAccessed(const url::Origin& origin,
-                             blink::mojom::StorageType type);
+                             blink::mojom::StorageType type,
+                             base::Time access_time);
 
   // Called by storage backends via proxy.
   //
@@ -206,7 +208,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   void NotifyStorageModified(QuotaClientType client_id,
                              const url::Origin& origin,
                              blink::mojom::StorageType type,
-                             int64_t delta);
+                             int64_t delta,
+                             base::Time modification_time);
 
   // Called by storage backends via proxy.
   //
@@ -416,16 +419,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   // Extract cached origins list from the usage tracker.
   // (Might return empty list if no origin is tracked by the tracker.)
   std::set<url::Origin> GetCachedOrigins(blink::mojom::StorageType type);
-
-  // These internal methods are separately defined mainly for testing.
-  void NotifyStorageAccessedInternal(const url::Origin& origin,
-                                     blink::mojom::StorageType type,
-                                     base::Time accessed_time);
-  void NotifyStorageModifiedInternal(QuotaClientType client_id,
-                                     const url::Origin& origin,
-                                     blink::mojom::StorageType type,
-                                     int64_t delta,
-                                     base::Time modified_time);
 
   void DumpQuotaTable(DumpQuotaTableCallback callback);
   void DumpOriginInfoTable(DumpOriginInfoTableCallback callback);

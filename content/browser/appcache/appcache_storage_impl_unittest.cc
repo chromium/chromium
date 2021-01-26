@@ -182,7 +182,8 @@ class AppCacheStorageImplTest : public testing::Test {
         : QuotaManagerProxy(nullptr, base::SequencedTaskRunnerHandle::Get()) {}
 
     void NotifyStorageAccessed(const url::Origin& origin,
-                               StorageType type) override {
+                               StorageType type,
+                               base::Time access_time) override {
       EXPECT_EQ(StorageType::kTemporary, type);
       ++notify_storage_accessed_count_;
       last_origin_ = origin;
@@ -191,7 +192,8 @@ class AppCacheStorageImplTest : public testing::Test {
     void NotifyStorageModified(storage::QuotaClientType client_id,
                                const url::Origin& origin,
                                StorageType type,
-                               int64_t delta) override {
+                               int64_t delta,
+                               base::Time modification_time) override {
       EXPECT_EQ(storage::QuotaClientType::kAppcache, client_id);
       EXPECT_EQ(StorageType::kTemporary, type);
       ++notify_storage_modified_count_;

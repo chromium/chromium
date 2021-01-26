@@ -120,7 +120,8 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
   }
 
   void NotifyStorageAccessed(const url::Origin& origin,
-                             blink::mojom::StorageType type) override {
+                             blink::mojom::StorageType type,
+                             base::Time access_time) override {
     EXPECT_EQ(blink::mojom::StorageType::kTemporary, type);
     accesses_[origin] += 1;
   }
@@ -128,7 +129,8 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
   void NotifyStorageModified(QuotaClientType client_id,
                              const url::Origin& origin,
                              blink::mojom::StorageType type,
-                             int64_t delta) override {
+                             int64_t delta,
+                             base::Time modification_time) override {
     EXPECT_EQ(QuotaClientType::kDatabase, client_id);
     EXPECT_EQ(blink::mojom::StorageType::kTemporary, type);
     modifications_[origin].first += 1;

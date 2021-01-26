@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -62,7 +63,8 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   // The also records the |origin| and |type| in last_notified_origin_ and
   // last_notified_type_.
   void NotifyStorageAccessed(const url::Origin& origin,
-                             blink::mojom::StorageType type) override;
+                             blink::mojom::StorageType type,
+                             base::Time access_time) override;
 
   // Records the |origin|, |type| and |delta| as last_notified_origin_,
   // last_notified_type_ and last_notified_delta_ respecitvely.
@@ -71,7 +73,8 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   void NotifyStorageModified(storage::QuotaClientType client_id,
                              const url::Origin& origin,
                              blink::mojom::StorageType type,
-                             int64_t delta) override;
+                             int64_t delta,
+                             base::Time modification_time) override;
 
   int notify_storage_accessed_count() const { return storage_accessed_count_; }
   int notify_storage_modified_count() const { return storage_modified_count_; }

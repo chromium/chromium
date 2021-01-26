@@ -16,14 +16,13 @@
 #include "base/sequence_checker.h"
 #include "base/sequenced_task_runner_helpers.h"
 #include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "base/types/pass_key.h"
-#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "components/services/storage/public/mojom/quota_client.mojom-forward.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/quota/quota_callbacks.h"
-#include "storage/browser/quota/quota_client.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager.h"
-#include "storage/browser/quota/quota_override_handle.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace base {
@@ -39,6 +38,9 @@ class Origin;
 }  // namespace url
 
 namespace storage {
+
+class QuotaClient;
+class QuotaOverrideHandle;
 
 // Thread-safe proxy for QuotaManager.
 //
@@ -74,11 +76,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types);
   virtual void NotifyStorageAccessed(const url::Origin& origin,
-                                     blink::mojom::StorageType type);
+                                     blink::mojom::StorageType type,
+                                     base::Time access_time);
   virtual void NotifyStorageModified(QuotaClientType client_id,
                                      const url::Origin& origin,
                                      blink::mojom::StorageType type,
-                                     int64_t delta);
+                                     int64_t delta,
+                                     base::Time modification_time);
   virtual void NotifyOriginInUse(const url::Origin& origin);
   virtual void NotifyOriginNoLongerInUse(const url::Origin& origin);
   virtual void NotifyWriteFailed(const url::Origin& origin);

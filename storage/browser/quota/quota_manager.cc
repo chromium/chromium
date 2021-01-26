@@ -1029,21 +1029,6 @@ void QuotaManager::GetUsageAndQuota(const url::Origin& origin,
   helper->Start();
 }
 
-void QuotaManager::NotifyStorageAccessed(const url::Origin& origin,
-                                         StorageType type) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NotifyStorageAccessedInternal(origin, type, base::Time::Now());
-}
-
-void QuotaManager::NotifyStorageModified(QuotaClientType client_id,
-                                         const url::Origin& origin,
-                                         StorageType type,
-                                         int64_t delta) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  NotifyStorageModifiedInternal(client_id, origin, type, delta,
-                                base::Time::Now());
-}
-
 void QuotaManager::NotifyWriteFailed(const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1417,9 +1402,9 @@ std::set<url::Origin> QuotaManager::GetCachedOrigins(StorageType type) {
   return GetUsageTracker(type)->GetCachedOrigins();
 }
 
-void QuotaManager::NotifyStorageAccessedInternal(const url::Origin& origin,
-                                                 StorageType type,
-                                                 base::Time accessed_time) {
+void QuotaManager::NotifyStorageAccessed(const url::Origin& origin,
+                                         StorageType type,
+                                         base::Time access_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LazyInitialize();
   if (type == StorageType::kTemporary && is_getting_eviction_origin_) {
@@ -1432,16 +1417,16 @@ void QuotaManager::NotifyStorageAccessedInternal(const url::Origin& origin,
     return;
   PostTaskAndReplyWithResultForDBThread(
       FROM_HERE,
-      base::BindOnce(&UpdateAccessTimeOnDBThread, origin, type, accessed_time),
+      base::BindOnce(&UpdateAccessTimeOnDBThread, origin, type, access_time),
       base::BindOnce(&QuotaManager::DidDatabaseWork,
                      weak_factory_.GetWeakPtr()));
 }
 
-void QuotaManager::NotifyStorageModifiedInternal(QuotaClientType client_id,
-                                                 const url::Origin& origin,
-                                                 StorageType type,
-                                                 int64_t delta,
-                                                 base::Time modified_time) {
+void QuotaManager::NotifyStorageModified(QuotaClientType client_id,
+                                         const url::Origin& origin,
+                                         StorageType type,
+                                         int64_t delta,
+                                         base::Time modification_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   LazyInitialize();
   DCHECK(GetUsageTracker(type));
@@ -1453,7 +1438,7 @@ void QuotaManager::NotifyStorageModifiedInternal(QuotaClientType client_id,
   PostTaskAndReplyWithResultForDBThread(
       FROM_HERE,
       base::BindOnce(&UpdateModifiedTimeOnDBThread, origin, type,
-                     modified_time),
+                     modification_time),
       base::BindOnce(&QuotaManager::DidDatabaseWork,
                      weak_factory_.GetWeakPtr()));
 }

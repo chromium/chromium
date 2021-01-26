@@ -62,7 +62,8 @@ void MockQuotaManagerProxy::GetUsageAndQuota(
 
 void MockQuotaManagerProxy::NotifyStorageAccessed(
     const url::Origin& origin,
-    blink::mojom::StorageType type) {
+    blink::mojom::StorageType type,
+    base::Time access_time) {
   ++storage_accessed_count_;
   last_notified_origin_ = origin;
   last_notified_type_ = type;
@@ -72,7 +73,8 @@ void MockQuotaManagerProxy::NotifyStorageModified(
     storage::QuotaClientType client_id,
     const url::Origin& origin,
     blink::mojom::StorageType type,
-    int64_t delta) {
+    int64_t delta,
+    base::Time modification_time) {
   ++storage_modified_count_;
   last_notified_origin_ = origin;
   last_notified_type_ = type;

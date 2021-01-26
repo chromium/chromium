@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "net/base/net_errors.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -112,7 +113,7 @@ void DatabaseTracker::DatabaseOpened(const std::string& origin_identifier,
   if (quota_manager_proxy_.get())
     quota_manager_proxy_->NotifyStorageAccessed(
         GetOriginFromIdentifier(origin_identifier),
-        blink::mojom::StorageType::kTemporary);
+        blink::mojom::StorageType::kTemporary, base::Time::Now());
 
   InsertOrUpdateDatabaseDetails(origin_identifier, database_name,
                                 database_description, estimated_size);
@@ -148,7 +149,7 @@ void DatabaseTracker::DatabaseClosed(const std::string& origin_identifier,
   if (quota_manager_proxy_.get())
     quota_manager_proxy_->NotifyStorageAccessed(
         GetOriginFromIdentifier(origin_identifier),
-        blink::mojom::StorageType::kTemporary);
+        blink::mojom::StorageType::kTemporary, base::Time::Now());
 
   UpdateOpenDatabaseSizeAndNotify(origin_identifier, database_name);
   if (database_connections_.RemoveConnection(origin_identifier, database_name))
@@ -358,7 +359,8 @@ bool DatabaseTracker::DeleteClosedDatabase(
   if (quota_manager_proxy_.get() && db_file_size)
     quota_manager_proxy_->NotifyStorageModified(
         QuotaClientType::kDatabase, GetOriginFromIdentifier(origin_identifier),
-        blink::mojom::StorageType::kTemporary, -db_file_size);
+        blink::mojom::StorageType::kTemporary, -db_file_size,
+        base::Time::Now());
 
   // Clean up the main database and invalidate the cached record.
   databases_table_->DeleteDatabaseDetails(origin_identifier, database_name);
@@ -435,7 +437,8 @@ bool DatabaseTracker::DeleteOrigin(const std::string& origin_identifier,
   if (quota_manager_proxy_.get() && deleted_size) {
     quota_manager_proxy_->NotifyStorageModified(
         QuotaClientType::kDatabase, GetOriginFromIdentifier(origin_identifier),
-        blink::mojom::StorageType::kTemporary, -deleted_size);
+        blink::mojom::StorageType::kTemporary, -deleted_size,
+        base::Time::Now());
   }
 
   return true;
@@ -636,7 +639,8 @@ int64_t DatabaseTracker::UpdateOpenDatabaseInfoAndNotify(
     if (quota_manager_proxy_.get())
       quota_manager_proxy_->NotifyStorageModified(
           QuotaClientType::kDatabase, GetOriginFromIdentifier(origin_id),
-          blink::mojom::StorageType::kTemporary, new_size - old_size);
+          blink::mojom::StorageType::kTemporary, new_size - old_size,
+          base::Time::Now());
     for (auto& observer : observers_)
       observer.OnDatabaseSizeChanged(origin_id, name, new_size);
   }
