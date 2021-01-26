@@ -142,6 +142,9 @@ extern const char kChromeUIRestartHost[];
 extern const char kChromeUIRestartURL[];
 extern const char kChromeUISafetyPixelbookURL[];
 extern const char kChromeUISafetyPixelSlateURL[];
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+extern const char kChromeUISessionServiceInternalsHost[];
+#endif
 extern const char kChromeUISettingsHost[];
 extern const char kChromeUISettingsURL[];
 extern const char kChromeUISignInInternalsHost[];

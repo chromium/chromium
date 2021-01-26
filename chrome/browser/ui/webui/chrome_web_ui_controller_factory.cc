@@ -301,6 +301,10 @@
 #include "chrome/browser/ui/webui/signin/dice_web_signin_intercept_ui.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+#include "chrome/browser/ui/webui/sessions/session_service_internals_ui.h"
+#endif
+
 using content::WebUI;
 using content::WebUIController;
 using ui::WebDialogUI;
@@ -976,6 +980,11 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (url.host_piece() == chrome::kChromeUIDiceWebSigninInterceptHost)
     return &NewWebUI<DiceWebSigninInterceptUI>;
+#endif
+
+#if BUILDFLAG(ENABLE_SESSION_SERVICE)
+  if (url.host_piece() == chrome::kChromeUISessionServiceInternalsHost)
+    return &NewWebUI<SessionServiceInternalsUI>;
 #endif
 
   return nullptr;

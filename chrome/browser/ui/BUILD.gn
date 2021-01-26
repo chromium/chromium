@@ -310,6 +310,13 @@ static_library("ui") {
     "webui/webui_util.h",
   ]
 
+  if (enable_session_service) {
+    sources += [
+      "webui/sessions/session_service_internals_ui.cc",
+      "webui/sessions/session_service_internals_ui.h",
+    ]
+  }
+
   if (safe_browsing_mode == 1) {
     sources += [
       "webui/reset_password/reset_password_ui.cc",

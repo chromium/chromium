@@ -1,0 +1,100 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/webui/sessions/session_service_internals_ui.h"
+
+#include <string>
+
+#include "base/memory/ref_counted_memory.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_service_log.h"
+#include "chrome/common/url_constants.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_data_source.h"
+
+namespace {
+
+// This is for debugging, so it doesn't use local time conversions.
+std::string EventTimeToString(const SessionServiceEvent& event) {
+  base::Time::Exploded time_details;
+  event.time.LocalExplode(&time_details);
+  return base::StringPrintf("%d/%d/%d %d:%02d:%02d", time_details.month,
+                            time_details.day_of_month, time_details.year,
+                            time_details.hour, time_details.minute,
+                            time_details.second);
+}
+
+std::string EventToString(const SessionServiceEvent& event) {
+  switch (event.type) {
+    case SessionServiceEventLogType::kStart:
+      return base::StrCat(
+          {EventTimeToString(event), " start",
+           (event.data.start.did_last_session_crash ? " (last session crashed)"
+                                                    : std::string())});
+    case SessionServiceEventLogType::kRestore:
+      return base::StrCat(
+          {EventTimeToString(event), " restore windows=",
+           base::NumberToString(event.data.restore.window_count),
+           " tabs=", base::NumberToString(event.data.restore.tab_count),
+           (event.data.restore.encountered_error_reading ? " (error reading)"
+                                                         : std::string())});
+    case SessionServiceEventLogType::kExit:
+      return base::StrCat(
+          {EventTimeToString(event), " exit (shutdown) windows=",
+           base::NumberToString(event.data.exit.window_count),
+           " tabs=", base::NumberToString(event.data.exit.tab_count)});
+    case SessionServiceEventLogType::kWriteError:
+      return base::StrCat(
+          {EventTimeToString(event), " write errors (",
+           base::NumberToString(event.data.write_error.error_count), ")"});
+  }
+}
+
+std::string GetEventLogAsString(Profile* profile) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  std::vector<std::string> results;
+  results.push_back("<pre>");
+  for (const auto& event : GetSessionServiceEvents(profile))
+    results.push_back(EventToString(event));
+  results.push_back("</pre>");
+  return base::JoinString(results, "\n");
+}
+
+bool ShouldHandleWebUIRequestCallback(const std::string& path) {
+  return true;
+}
+
+void HandleWebUIRequestCallback(
+    const std::string& result,
+    const std::string& path,
+    content::WebUIDataSource::GotDataCallback callback) {
+  DCHECK(ShouldHandleWebUIRequestCallback(path));
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  std::string result_copy = result;
+  std::move(callback).Run(base::RefCountedString::TakeString(&result_copy));
+}
+
+}  // namespace
+
+SessionServiceInternalsUI::SessionServiceInternalsUI(content::WebUI* web_ui)
+    : WebUIController(web_ui) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+  content::WebUIDataSource* source = content::WebUIDataSource::Create(
+      chrome::kChromeUISessionServiceInternalsHost);
+  // This page only needs raw text, and the string is on the small side.
+  source->SetRequestFilter(
+      base::BindRepeating(&ShouldHandleWebUIRequestCallback),
+      base::BindRepeating(&HandleWebUIRequestCallback,
+                          GetEventLogAsString(profile)));
+  content::WebUIDataSource::Add(profile, source);
+}
+
+SessionServiceInternalsUI::~SessionServiceInternalsUI() = default;
