@@ -363,6 +363,7 @@ message PolicyFetchRequest {
   //   google/chromeos/user => ChromeSettingsProto
   //   google/chromeos/publicaccount => ChromeSettingsProto
   //   google/chrome/machine-level-user => ChromeSettingsProto
+  //   google/chrome/machine-level-user-android => ChromeSettingsProto
   //   google/chrome/machine-level-user-ios => ChromeSettingsProto
   //   google/chrome/extension => ExternalPolicyData
   //   google/chrome/machine-level-extension => ExternalPolicyData
