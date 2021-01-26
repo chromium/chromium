@@ -1337,8 +1337,9 @@ INSTANTIATE_TEST_SUITE_P(OopRasterMode,
                          PaintCanvasVideoRendererWithGLTest,
                          testing::Bool());
 
-// Deterministic failure on Android and ChromeOS (https://crbug.com/1170392).
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+// Deterministic failure on Android, ChromeOS and Linux
+// (https://crbug.com/1170392).
+#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_LINUX)
 #define MAYBE_CopyVideoFrameYUVDataToGLTexture \
   DISABLED_CopyVideoFrameYUVDataToGLTexture
 #else
@@ -1376,8 +1377,9 @@ TEST_P(PaintCanvasVideoRendererWithGLTest,
   destination_gl->DeleteTextures(1, &texture);
 }
 
-// Deterministic failure on Android and ChromeOS (https://crbug.com/1170392).
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS)
+// Deterministic failure on Android, ChromeOS and Linux
+// (https://crbug.com/1170392).
+#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_LINUX)
 #define MAYBE_CopyVideoFrameYUVDataToGLTexture_FlipY \
   DISABLED_CopyVideoFrameYUVDataToGLTexture_FlipY
 #else
