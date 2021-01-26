@@ -159,6 +159,7 @@ def try_builder(
         list_view = list_view,
         resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
         experiments = experiments,
+        resultdb_index_by_timestamp = True,
         **kwargs
     )
 
