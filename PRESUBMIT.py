@@ -320,7 +320,8 @@ _BANNED_IOS_EGTEST_FUNCTIONS = (
 # Find sub-directories from a given directory by running:
 # for i in `find . -maxdepth 1 -type d|sort`; do
 #   echo "-- $i"
-#   (cd $i; git grep -nP 'base::(Bind\(|(Callback<|Closure))'|wc -l)
+#   (cd $i; git grep -nP \
+#     'base::(Bind\(|(Cancelable)?(Callback<|Closure))'|wc -l)
 # done
 #
 # TODO(crbug.com/714018): Remove (or narrow the scope of) paths from this list
@@ -330,22 +331,17 @@ _BANNED_IOS_EGTEST_FUNCTIONS = (
 _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^base/callback.h',  # Intentional.
   '^base/cancelable_callback.h',  # Intentional.
-  '^chrome/browser/android/webapps/add_to_homescreen_data_fetcher_unittest.cc',
-  '^chrome/browser/apps/guest_view/',
+  '^chrome/browser/apps/guest_view/web_view_browsertest.cc',
   '^chrome/browser/browsing_data/',
   '^chrome/browser/captive_portal/captive_portal_browsertest.cc',
   '^chrome/browser/chromeos/',
-  '^chrome/browser/component_updater/',
   '^chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.cc', # pylint: disable=line-too-long
-  '^chrome/browser/download/',
   '^chrome/browser/extensions/',
-  '^chrome/browser/history/',
-  '^chrome/browser/lifetime/',
+  '^chrome/browser/history/android/android_history_provider_service_unittest.cc', # pylint: disable=line-too-long
   '^chrome/browser/media_galleries/',
-  '^chrome/browser/net/',
+  '^chrome/browser/net/websocket_browsertest.cc',
   '^chrome/browser/notifications/',
   '^chrome/browser/ntp_tiles/ntp_tiles_browsertest.cc',
-  '^chrome/browser/offline_pages/',
   '^chrome/browser/page_load_metrics/observers/data_saver_site_breakdown_metrics_observer_browsertest.cc', # pylint: disable=line-too-long
   '^chrome/browser/payments/payment_manifest_parser_browsertest.cc',
   '^chrome/browser/pdf/pdf_extension_test.cc',
@@ -353,15 +349,11 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/policy/',
   '^chrome/browser/portal/portal_browsertest.cc',
   '^chrome/browser/prefs/profile_pref_store_manager_unittest.cc',
-  '^chrome/browser/prerender/',
   '^chrome/browser/previews/',
-  '^chrome/browser/printing/printing_message_filter.cc',
-  '^chrome/browser/profiles/',
   '^chrome/browser/profiling_host/profiling_process_host.cc',
   '^chrome/browser/push_messaging/',
   '^chrome/browser/recovery/recovery_install_global_error.cc',
   '^chrome/browser/renderer_context_menu/',
-  '^chrome/browser/renderer_host/pepper/',
   '^chrome/browser/resource_coordinator/',
   '^chrome/browser/resources/chromeos/accessibility/',
   '^chrome/browser/rlz/chrome_rlz_tracker_delegate.cc',
@@ -369,21 +361,19 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/service_process/',
   '^chrome/browser/signin/',
   '^chrome/browser/site_isolation/site_per_process_text_input_browsertest.cc',
-  '^chrome/browser/supervised_user/',
   '^chrome/browser/sync_file_system/',
   '^chrome/browser/translate/',
   '^chrome/browser/web_applications/',
   '^chrome/browser/win/',
-  '^components/drive/',
   '^components/search_engines/',
-  '^components/webcrypto/',
   '^extensions/browser/',
   '^extensions/renderer/',
-  '^media/blink/',
-  '^net/http/',
-  '^net/url_request/',
+  '^media/blink/webmediaplayer_impl.cc',
+  '^media/blink/webmediaplayer_impl.h',
   '^ppapi/proxy/',
-  '^services/',
+  '^services/audio/public/cpp/sounds/audio_stream_handler.cc',
+  '^services/network/public/cpp/content_security_policy/content_security_policy_unittest.cc' # pylint: disable=line-too-long
+  '^services/preferences/README.md'
   '^tools/clang/base_bind_rewriters/',  # Intentional.
   '^tools/gdb/gdb_chrome.py',  # Intentional.
 ))
