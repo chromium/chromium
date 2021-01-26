@@ -103,16 +103,21 @@ public class SplitPreloader {
             return;
         }
 
-        assert !mPreloadTasks.containsKey(name);
         PreloadTask task = new PreloadTask(name, onComplete);
         task.executeWithTaskTraits(TaskTraits.USER_BLOCKING_MAY_BLOCK);
-        mPreloadTasks.put(name, task);
+        synchronized (mPreloadTasks) {
+            assert !mPreloadTasks.containsKey(name);
+            mPreloadTasks.put(name, task);
+        }
     }
 
     /** Waits for the specified split to be finished loading. */
     public void wait(String name) {
         try (TraceEvent te = TraceEvent.scoped("SplitPreloader.wait")) {
-            PreloadTask task = mPreloadTasks.remove(name);
+            PreloadTask task;
+            synchronized (mPreloadTasks) {
+                task = mPreloadTasks.remove(name);
+            }
             if (task != null) {
                 long startTime = SystemClock.uptimeMillis();
                 // Make sure the task is finished and onComplete has run.
