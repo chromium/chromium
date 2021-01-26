@@ -2829,9 +2829,10 @@ void NearbySharingServiceImpl::OnReceivedIntroduction(
       return;
     }
 
-    NS_LOG(VERBOSE) << __func__ << "Found file attachment " << file->name
-                    << " of type " << file->type << " with mimeType "
-                    << file->mime_type;
+    NS_LOG(VERBOSE) << __func__ << ": Found file attachment: id=" << file->id
+                    << ", type= " << file->type << ", size=" << file->size
+                    << ", payload_id=" << file->payload_id
+                    << ", mime_type=" << file->mime_type;
     FileAttachment attachment(file->id, file->size, file->name, file->mime_type,
                               file->type);
     SetAttachmentPayloadId(attachment, file->payload_id);
@@ -2856,8 +2857,9 @@ void NearbySharingServiceImpl::OnReceivedIntroduction(
       return;
     }
 
-    NS_LOG(VERBOSE) << __func__ << "Found text attachment " << text->text_title
-                    << " of type " << text->type;
+    NS_LOG(VERBOSE) << __func__ << ": Found text attachment: id=" << text->id
+                    << ", type= " << text->type << ", size=" << text->size
+                    << ", payload_id=" << text->payload_id;
     TextAttachment attachment(text->id, text->type, text->text_title,
                               text->size);
     SetAttachmentPayloadId(attachment, text->payload_id);
