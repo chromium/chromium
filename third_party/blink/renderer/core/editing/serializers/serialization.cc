@@ -776,10 +776,11 @@ void MergeWithNextTextNode(Text* text_node, ExceptionState& exception_state) {
     text_next->remove(exception_state);
 }
 
-static Document* CreateStagingDocumentForMarkupSanitization() {
+static Document* CreateStagingDocumentForMarkupSanitization(
+    scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
   Page::PageClients page_clients;
   FillWithEmptyClients(page_clients);
-  Page* page = Page::CreateNonOrdinary(page_clients);
+  Page* page = Page::CreateNonOrdinary(page_clients, agent_group_scheduler);
 
   page->GetSettings().SetScriptEnabled(false);
   page->GetSettings().SetPluginsEnabled(false);
@@ -849,7 +850,8 @@ DocumentFragment* CreateSanitizedFragmentFromMarkupWithContext(
   if (raw_markup.IsEmpty())
     return nullptr;
 
-  Document* staging_document = CreateStagingDocumentForMarkupSanitization();
+  Document* staging_document = CreateStagingDocumentForMarkupSanitization(
+      *document.GetFrame()->GetFrameScheduler()->GetAgentGroupScheduler());
   Element* body = staging_document->body();
 
   DocumentFragment* fragment = CreateFragmentFromMarkupWithContext(

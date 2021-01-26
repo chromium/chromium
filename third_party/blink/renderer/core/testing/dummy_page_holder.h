@@ -99,6 +99,7 @@ class DummyPageHolder {
   CrossThreadPersistent<LocalFrame> frame_;
 
   Persistent<LocalFrameClient> local_frame_client_;
+  std::unique_ptr<scheduler::WebAgentGroupScheduler> agent_group_scheduler_;
   DISALLOW_COPY_AND_ASSIGN(DummyPageHolder);
 };
 

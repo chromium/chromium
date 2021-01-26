@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record_builder.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
+#include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
 namespace blink {
 
@@ -179,6 +180,18 @@ class SVGImage::SVGImageLocalFrameClient : public EmptyLocalFrameClient {
 SVGImage::SVGImage(ImageObserver* observer, bool is_multipart)
     : Image(observer, is_multipart),
       paint_controller_(std::make_unique<PaintController>()),
+      // TODO(chikamune): use an existing AgentGroupScheduler
+      // SVG will be shared via MemoryCache (which is renderer process
+      // global cache) across multiple AgentSchedulingGroups. That's
+      // why we can't use an existing AgentSchedulingGroup for now. If
+      // we incorrectly use the existing ASG/AGS and if we freeze task
+      // queues on a AGS, it will affect SVGs on other AGS. To
+      // mitigate this problem, we need to split the MemoryCache into
+      // smaller granularity. There is an active effort to mitigate
+      // this which is called "Memory Cache Per Context"
+      // (https://crbug.com/1127971).
+      agent_group_scheduler_(
+          Thread::MainThread()->Scheduler()->CreateAgentGroupScheduler()),
       has_pending_timeline_rewind_(false) {}
 
 SVGImage::~SVGImage() {
@@ -783,7 +796,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   Page* page;
   {
     TRACE_EVENT0("blink", "SVGImage::dataChanged::createPage");
-    page = Page::CreateNonOrdinary(page_clients);
+    page = Page::CreateNonOrdinary(page_clients, *agent_group_scheduler_);
     page->GetSettings().SetScriptEnabled(false);
     page->GetSettings().SetPluginsEnabled(false);
 

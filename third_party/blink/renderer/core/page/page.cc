@@ -152,13 +152,12 @@ float DeviceScaleFactorDeprecated(LocalFrame* frame) {
   return page->DeviceScaleFactorDeprecated();
 }
 
-Page* Page::CreateNonOrdinary(PageClients& page_clients) {
+Page* Page::CreateNonOrdinary(
+    PageClients& page_clients,
+    scheduler::WebAgentGroupScheduler& agent_group_scheduler) {
   Page* page = MakeGarbageCollected<Page>(page_clients);
-  std::unique_ptr<scheduler::WebAgentGroupScheduler> agent_group_scheduler =
-      ThreadScheduler::Current()->CreateAgentGroupScheduler();
   page->SetPageScheduler(
-      agent_group_scheduler->AsAgentGroupScheduler().CreatePageScheduler(page));
-  page->SetAgentGroupSchedulerForNonOrdinary(std::move(agent_group_scheduler));
+      agent_group_scheduler.AsAgentGroupScheduler().CreatePageScheduler(page));
   return page;
 }
 
@@ -993,7 +992,6 @@ void Page::WillBeDestroyed() {
   page_visibility_observer_set_.Clear();
 
   page_scheduler_ = nullptr;
-  agent_group_scheduler_for_non_ordinary_ = nullptr;
 }
 
 void Page::RegisterPluginsChangedObserver(PluginsChangedObserver* observer) {
@@ -1008,12 +1006,6 @@ ScrollbarTheme& Page::GetScrollbarTheme() const {
 
 PageScheduler* Page::GetPageScheduler() const {
   return page_scheduler_.get();
-}
-
-void Page::SetAgentGroupSchedulerForNonOrdinary(
-    std::unique_ptr<blink::scheduler::WebAgentGroupScheduler>
-        agent_group_scheduler) {
-  agent_group_scheduler_for_non_ordinary_ = std::move(agent_group_scheduler);
 }
 
 void Page::SetPageScheduler(std::unique_ptr<PageScheduler> page_scheduler) {
