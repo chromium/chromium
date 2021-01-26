@@ -347,6 +347,14 @@ void WebURLRequest::SetMode(network::mojom::RequestMode mode) {
   return resource_request_->SetMode(mode);
 }
 
+bool WebURLRequest::GetFavicon() const {
+  return resource_request_->IsFavicon();
+}
+
+void WebURLRequest::SetFavicon(bool) {
+  resource_request_->SetFavicon(true);
+}
+
 network::mojom::CredentialsMode WebURLRequest::GetCredentialsMode() const {
   return resource_request_->GetCredentialsMode();
 }

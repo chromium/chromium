@@ -474,6 +474,10 @@ class PLATFORM_EXPORT ResourceRequestHead {
 
   void SetFetchLikeAPI(bool enabled) { is_fetch_like_api_ = enabled; }
 
+  bool IsFavicon() const { return is_favicon_; }
+
+  void SetFavicon(bool enabled) { is_favicon_ = enabled; }
+
   bool PrefetchMaybeForTopLeveNavigation() const {
     return prefetch_maybe_for_top_level_navigation_;
   }
@@ -595,6 +599,8 @@ class PLATFORM_EXPORT ResourceRequestHead {
   bool is_signed_exchange_prefetch_cache_enabled_ = false;
 
   bool is_fetch_like_api_ = false;
+
+  bool is_favicon_ = false;
 
   // Currently this is only used when a prefetch request has `as=document`
   // specified. If true, and the request is cross-origin, the browser will cache
