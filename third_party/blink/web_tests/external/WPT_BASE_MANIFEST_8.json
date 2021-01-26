@@ -73567,6 +73567,19 @@
        {}
       ]
      ],
+     "rem-in-monospace.html": [
+      "0358d811b403e6443ca5d861257a70a19093e5ce",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/rem-in-monospace-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "standard-font-family-10.html": [
       "5dde6348d3985307999572b342433cfc8f800d9c",
       [
@@ -77132,7 +77145,7 @@
        ]
       ],
       "grid-auto-margin-and-replaced-item-001.html": [
-       "f6c0afb6ae3cb654367001439c1569b13e2f33e2",
+       "ccf87024bc699d58c9cb4d5e1c610646dc86adc2",
        [
         null,
         [
@@ -103556,6 +103569,19 @@
       ],
       "percentage-resolution-004.html": [
        "5d222a9be2131028f50ecd476f6e484c51bbfe22",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "percentage-resolution-005.html": [
+       "97842a26e19810347c7df622422d2b6a8639f176",
        [
         null,
         [
@@ -173620,7 +173646,7 @@
       []
      ],
      "sequence-conversion-expected.txt": [
-      "4069fd20a3a5a8f3077964986e68222ecf877c85",
+      "a6e53f24e17840ccd4895f9e4de5dfea80b81a3d",
       []
      ],
      "support": {
@@ -188737,6 +188763,10 @@
      },
      "quoted-generic-ignored-ref.html": [
       "70e2d50cd83f61017f0f22da14065c7afa76e1d1",
+      []
+     ],
+     "rem-in-monospace-ref.html": [
+      "5acb0522019e342eff9a955ae6b15b8d4c235000",
       []
      ],
      "resources": {
@@ -225255,7 +225285,7 @@
        []
       ],
       "name2dir.yaml": [
-       "43385459f398ed505fa78b1f08215e6a0f7edeea",
+       "485c070fb06d1f636a14867b06967fced9b86497",
        []
       ],
       "spec.yaml": [
@@ -225310,6 +225340,10 @@
         ],
         "pixel-manipulation.yaml": [
          "59d3053fc8ae80c36d22f52dd98c10a119b95ae8",
+         []
+        ],
+        "reset.yaml": [
+         "bd9479c8cf17b00c81b78d03133cc1c8b02e0b04",
          []
         ],
         "scroll.yaml": [
@@ -244271,7 +244305,7 @@
      []
     ],
     "testharness.js": [
-     "84df6ae5118cd943cd0bd946ab68dd21cb4dde56",
+     "fea1f2f52e9f50c53e4689854927698eb57a30fb",
      []
     ],
     "testharness.js.headers": [
@@ -250824,7 +250858,7 @@
       ]
      },
      "generate-test-wbns.sh": [
-      "0caef325d1f03846792094e2535c84daf8bf4516",
+      "5a205c9d5ceb4b5d041d4db82134088bf9ba0880",
       []
      ],
      "location": {
@@ -250877,6 +250911,50 @@
       "wbn1": {
        "resource.js": [
         "a4967d2285ae3a87b6da6e41f786cf65527184b6",
+        []
+       ]
+      }
+     },
+     "static-element": {
+      "out-of-scope": {
+       "script.js": [
+        "0f3e0d27c07f0f800158e72ad176420c510bac2d",
+        []
+       ]
+      },
+      "resources": {
+       "script.js": [
+        "f5327df7ae2c40ee508648792e1079e438cc4b57",
+        []
+       ],
+       "style-imported-from-file.css": [
+        "6b79f6dd8cbb2dedeb29f2e36fd04c6f7bc2f13c",
+        []
+       ],
+       "style-imported-from-tag.css": [
+        "38e9fe31338c1bd3d61f14e11f04d6ac1a9d959e",
+        []
+       ],
+       "style.css": [
+        "7f98b85eb6dd67a43208c2de3f104e3b8b415534",
+        []
+       ]
+      },
+      "scopes": {
+       "script.js": [
+        "140698cb5c8bf6edfc9a791876a6a904398608ed",
+        []
+       ],
+       "style-imported-from-file.css": [
+        "01628886441193183310bf09683f8f71036cf53a",
+        []
+       ],
+       "style-imported-from-tag.css": [
+        "7055c86ee952e7c0f1a90a475d6effb76f73bab4",
+        []
+       ],
+       "style.css": [
+        "f2af82dfd799e8885d834a1eccaa369ae772a702",
         []
        ]
       }
@@ -250964,6 +251042,54 @@
       },
       "path-restriction.wbn": [
        "e861469e122afd141bcec8d394a0d4504898208c",
+       []
+      ],
+      "static-element": {
+       "out-of-scope": {
+        "script.js": [
+         "e7617294833eb20738ceda4736c6720ad64e3fcb",
+         []
+        ]
+       },
+       "resources": {
+        "script.js": [
+         "08c4d9a2ee2de278ae821f55b1f80fb4eafe8084",
+         []
+        ],
+        "style-imported-from-file.css": [
+         "33f0f375da0d0ed686ef370ef364270f9c7eb785",
+         []
+        ],
+        "style-imported-from-tag.css": [
+         "85dbf84db3d42ed02986d211587f9e2e930a2105",
+         []
+        ],
+        "style.css": [
+         "41886f41d93172c39bb2c974ea13123615eedafb",
+         []
+        ]
+       },
+       "scopes": {
+        "script.js": [
+         "060d8c50a8cf49a0ea38e31517388e1f8c3f6f93",
+         []
+        ],
+        "style-imported-from-file.css": [
+         "d865cebd12f735a6bb47acb9d0235742f9cfb128",
+         []
+        ],
+        "style-imported-from-tag.css": [
+         "ad70df9b396378f821b12cbb00466615756d5f2d",
+         []
+        ],
+        "style.css": [
+         "233ecd7113949f03f250b9a360f97d25de584a35",
+         []
+        ]
+       }
+      },
+      "static-element.wbn": [
+       "112f4f363f48d4985a449b3e9b245b03bd9d7573",
        []
       ],
       "subresource.wbn": [
@@ -275038,7 +275164,7 @@
      ]
     ],
     "async-navigator-clipboard-basics.https.html": [
-     "65759186a6c98ab25f35e18d4f9d9350caedb1a0",
+     "8fbcd11e7e963240f41e2e1ce6c9a0ae26979d3a",
      [
       null,
       {}
@@ -346451,6 +346577,15 @@
         ]
        ]
       },
+      "reset": {
+       "2d.reset.basic.html": [
+        "092db9794c1001260733d9c2cef051d9ce5718ce",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
       "scroll": {
        "2d.scrollPathIntoView.basic.html": [
         "8263eb7b8080e4c2b2d6530739fc8056dcdbc338",
@@ -362643,7 +362778,7 @@
         ]
        ],
        "video-aspect-ratio.html": [
-        "2b4937046d2f20e0dafddf07b1470adec5e7b050",
+        "c81b70dbf4ea6484643f534fecfccaf023f828ec",
         [
          null,
          {}
@@ -427287,6 +427422,20 @@
      ],
      "subresource-loading-path-restriction.tentative.html": [
       "706bfb97b1142833380024c3f969b1b3b2756ec1",
+      [
+       null,
+       {}
+      ]
+     ],
+     "subresource-loading-static-element-with-base.tentative.html": [
+      "338782697d20f9663b4a11189ea8ff68a3617b21",
+      [
+       null,
+       {}
+      ]
+     ],
+     "subresource-loading-static-element.tentative.html": [
+      "d8d60a93081a96fbd2a6c63f2751be1d966f09bf",
       [
        null,
        {}
