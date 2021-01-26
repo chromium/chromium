@@ -67,7 +67,6 @@ proto::PrintJobInfo_PrintJobSource PrintJobSourceToProto(
 proto::PrintJobInfo_PrintJobStatus PrintJobStateToProto(
     CupsPrintJob::State state) {
   switch (state) {
-    case CupsPrintJob::State::STATE_ERROR:
     case CupsPrintJob::State::STATE_FAILED:
       return proto::PrintJobInfo_PrintJobStatus_FAILED;
     case CupsPrintJob::State::STATE_CANCELLED:
