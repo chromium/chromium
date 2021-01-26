@@ -722,6 +722,17 @@ Google Chrome is unable to recover your settings.
         </message>
       </if>
 
+      <!-- Work profile confirmation dialog  -->
+      <message name="IDS_WORK_PROFILE_CONFIRMATION_TITLE" desc="Title of the work profile confirmation dialog in the tab modal signin flow when Dice is enabled">
+        Chrome Profile Required
+      </message>
+      <message name="IDS_WORK_PROFILE_CONFIRMATION_WORK_PROFILE_INFO_UNKNOWN_ORGANIZATION" desc="Information about work profiles on the work profile confirmation dialog when Dice is enabled">
+        This account is managed. Your administrator requires a Chrome profile for access. This profile is completely separated from any personal profile. Chrome data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords, and other settings) can be removed by your admin. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$1"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+      <message name="IDS_WORK_PROFILE_CONFIRMATION_WORK_PROFILE_INFO" desc="Information about work profiles on the work profile confirmation dialog when Dice is enabled">
+        This account is managed by <ph name="MANAGEMENT_DOMAIN">$1<ex>example.com</ex></ph>. Your administrator requires a Chrome profile for access. This profile is completely separated from any personal profile. Chrome data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords, and other settings) can be removed by your admin. <ph name="BEGIN_LINK">&lt;a target="_blank" href="$2"&gt;</ph>Learn more<ph name="END_LINK">&lt;/a&gt;</ph>
+      </message>
+
       <!-- about:browser-switch strings -->
       <if expr="is_win or is_macosx or (is_linux and not chromeos)">
         <message name="IDS_ABOUT_BROWSER_SWITCH_DESCRIPTION_UNKNOWN_BROWSER" desc="Description shown while waiting for an alternative browser to open, when the browser name is not auto-detected">

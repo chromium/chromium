@@ -8048,6 +8048,11 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Cancel sign in
       </message>
 
+      <!--  Sync Confirmation section of the tab modal signin flow -->
+      <message name="IDS_WORK_PROFILE_CONFIRMATION_CONFIRM_BUTTON_LABEL" desc="Label of the confirmation button in the sync confirmation dialog of the tab modal signin flow">
+        Add Profile
+      </message>
+
       <!-- Dice Web Signin Interception Bubble-->
       <if expr="not chromeos and not is_android">
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_BUBBLE_NEW_PROFILE_BUTTON_LABEL" desc="Label of the confirmation button in the web signin interception bubble">

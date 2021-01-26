@@ -23594,6 +23594,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_WorkProfilePrompt_Add">
+  <owner>ydago@chromium.org</owner>
+  <description>
+    Recorded when the user chooses to add a work profile in the work profile
+    confirmation dialog.
+  </description>
+</action>
+
+<action name="Signin_WorkProfilePrompt_Cancel">
+  <owner>ydago@chromium.org</owner>
+  <description>
+    Recorded when the user chooses not to add a work profile in the work profile
+    confirmation dialog.
+  </description>
+</action>
+
 <action name="SiteChipPress">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <description>Please enter the description of this user action.</description>

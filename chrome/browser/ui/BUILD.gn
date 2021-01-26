@@ -2866,6 +2866,10 @@ static_library("ui") {
       "webui/signin/sync_confirmation_handler.h",
       "webui/signin/sync_confirmation_ui.cc",
       "webui/signin/sync_confirmation_ui.h",
+      "webui/signin/work_profile_confirmation_handler.cc",
+      "webui/signin/work_profile_confirmation_handler.h",
+      "webui/signin/work_profile_confirmation_ui.cc",
+      "webui/signin/work_profile_confirmation_ui.h",
     ]
     deps += [ "//ui/webui" ]
   }

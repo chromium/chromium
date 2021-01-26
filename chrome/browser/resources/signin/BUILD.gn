@@ -6,7 +6,10 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//tools/polymer/html_to_js.gni")
 
 group("closure_compile") {
-  deps = [ "sync_confirmation:closure_compile" ]
+  deps = [
+    "sync_confirmation:closure_compile",
+    "work_profile_confirmation:closure_compile",
+  ]
   if (!is_chromeos_ash) {
     deps += [
       "dice_web_signin_intercept:closure_compile",
@@ -23,6 +26,7 @@ group("web_components") {
   public_deps = [
     ":web_components_local",
     "sync_confirmation:web_components",
+    "work_profile_confirmation:web_components",
   ]
   if (!is_chromeos_ash) {
     public_deps += [
