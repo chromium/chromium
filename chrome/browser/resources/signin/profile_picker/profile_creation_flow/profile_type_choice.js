@@ -7,7 +7,6 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import './shared_css.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -47,7 +46,6 @@ Polymer({
     this.addWebUIListener(
         'load-signin-finished',
         success => this.handleLoadSigninFinished_(success));
-    FocusOutlineManager.forDocument(document);
     this.manageProfilesBrowserProxy_.recordSignInPromoImpression();
   },
 

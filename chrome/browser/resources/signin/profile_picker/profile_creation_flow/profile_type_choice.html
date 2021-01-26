@@ -22,28 +22,14 @@
     width: 100%;
   }
 
+  cr-button {
+    font-size: 1em;
+    font-weight: normal;
+    min-width: 240px;
+  }
+
   #notNowButton {
-    background: none;
-    border: none;
-    color: var(--cr-link-color);
-    cursor: pointer;
-    font-size: 1em;
-    font-weight: normal;
-    line-height: 20px;
     margin-top: 18px;
-  }
-
-  /* The "not now" button is styled like a link, and uses FocusOutlineManager to
-   * only show outlines when focus was triggered by keyboard.
-   */
-  :host-context(html:not(.focus-outline-visible)) #notNowButton {
-      outline: none;
-  }
-
-  #signInButton {
-    font-size: 1em;
-    font-weight: normal;
-    width: 208px;
   }
 
   .title-container {
@@ -74,8 +60,8 @@
       disabled="[[loadSigninInProgess_]]">
     $i18n{signInButtonLabel}
   </cr-button>
-  <button id="notNowButton" on-click="onNotNowClick_"
+  <cr-button id="notNowButton" on-click="onNotNowClick_"
       disabled="[[loadSigninInProgess_]]">
     $i18n{notNowButtonLabel}
-  </button>
+  </cr-button>
 </div>
