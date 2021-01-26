@@ -3355,22 +3355,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (isLink) {
     base::RecordAction(
         base::UserMetricsAction("MobileWebContextMenuLinkImpression"));
-    // Only show the "Open" item for Javascript coming from the main frame since
-    // it can't be executed on a child frame.
-    if (link.SchemeIs(url::kJavaScriptScheme) && params.is_main_frame) {
-      // Open
-      title = l10n_util::GetNSStringWithFixup(IDS_IOS_CONTENT_CONTEXT_OPEN);
-      action = ^{
-        base::RecordAction(
-            base::UserMetricsAction("MobileWebContextMenuOpenJS"));
-        Record(ACTION_OPEN_JAVASCRIPT, isImage, isLink);
-        [weakSelf openJavascript:base::SysUTF8ToNSString(link.GetContent())];
-      };
-      [_contextMenuCoordinator addItemWithTitle:title
-                                         action:action
-                                          style:UIAlertActionStyleDefault];
-    }
-
     if (web::UrlHasWebScheme(link)) {
       web::Referrer referrer(lastCommittedURL, params.referrer_policy);
 

@@ -15881,8 +15881,11 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileWebContextMenuOpenJS">
-  <owner>gambard@chromium.org</owner>
+  <obsolete>
+    Deprecated as of 2021/01/26 as the feature has been removed.
+  </obsolete>
   <owner>michaeldo@chromium.org</owner>
+  <owner>gambard@chromium.org</owner>
   <description>
     Recorded when user taps Open Java Script in context menu. iOS only.
   </description>
