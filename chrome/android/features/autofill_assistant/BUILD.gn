@@ -243,6 +243,7 @@ generate_jni("jni_headers") {
 generate_jni("test_support_jni_headers") {
   testonly = true
   sources = [
+    "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTestEndpointService.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTestService.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTestServiceRequestSender.java",
   ]
@@ -253,6 +254,7 @@ android_library("autofill_assistant_java_test_support") {
 
   sources = [
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantService.java",
+    "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTestEndpointService.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTestScript.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTestService.java",
     "javatests/src/org/chromium/chrome/browser/autofill_assistant/AutofillAssistantTestServiceRequestSender.java",

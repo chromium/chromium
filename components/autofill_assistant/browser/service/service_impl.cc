@@ -14,7 +14,6 @@
 #include "components/autofill_assistant/browser/client.h"
 #include "components/autofill_assistant/browser/protocol_utils.h"
 #include "components/autofill_assistant/browser/service/api_key_fetcher.h"
-#include "components/autofill_assistant/browser/service/server_url_fetcher.h"
 #include "components/autofill_assistant/browser/service/service_request_sender_impl.h"
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/trigger_context.h"
@@ -31,7 +30,16 @@ namespace autofill_assistant {
 std::unique_ptr<ServiceImpl> ServiceImpl::Create(
     content::BrowserContext* context,
     Client* client) {
-  ServerUrlFetcher url_fetcher{ServerUrlFetcher::GetDefaultServerUrl()};
+  return ServiceImpl::Create(
+      context, client,
+      ServerUrlFetcher(ServerUrlFetcher::GetDefaultServerUrl()));
+}
+
+// static
+std::unique_ptr<ServiceImpl> ServiceImpl::Create(
+    content::BrowserContext* context,
+    Client* client,
+    const ServerUrlFetcher& url_fetcher) {
   auto request_sender = std::make_unique<ServiceRequestSenderImpl>(
       context, client->GetAccessTokenFetcher(),
       std::make_unique<NativeURLLoaderFactory>(),

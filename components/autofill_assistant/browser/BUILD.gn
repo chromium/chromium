@@ -466,6 +466,8 @@ if (is_android) {
       "service/java_service.h",
       "service/java_service_request_sender.cc",
       "service/java_service_request_sender.h",
+      "service/java_test_endpoint_service.cc",
+      "service/java_test_endpoint_service.h",
     ]
 
     deps = [
@@ -473,6 +475,7 @@ if (is_android) {
       ":proto",
       "//base",
       "//chrome/android/features/autofill_assistant:test_support_jni_headers",
+      "//content/public/browser",
       "//net",
       "//url:url",
     ]

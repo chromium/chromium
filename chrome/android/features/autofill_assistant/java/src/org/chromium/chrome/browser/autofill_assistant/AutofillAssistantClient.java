@@ -121,7 +121,7 @@ public class AutofillAssistantClient {
                 onboardingCoordinator,
                 /* onboardingShown= */
                 onboardingCoordinator != null && onboardingCoordinator.getOnboardingShown(),
-                AutofillAssistantServiceInjector.getServiceToInject());
+                AutofillAssistantServiceInjector.getServiceToInject(mNativeClientAndroid));
     }
 
     public void startTriggerScript(AssistantTriggerScriptBridge delegate, String initialUrl,

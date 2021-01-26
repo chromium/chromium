@@ -76,7 +76,7 @@ public class AutofillAssistantTestService
     }
 
     @Override
-    public long createNativeService() {
+    public long createNativeService(long nativeClientAndroid) {
         // Ask native to create and return a wrapper around |this|. The wrapper will be injected
         // upon startup, at which point the native controller will take ownership of the wrapper.
         return AutofillAssistantTestServiceJni.get().javaServiceCreate(this);

@@ -16,6 +16,7 @@
 #include "components/autofill_assistant/browser/device_context.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/access_token_fetcher.h"
+#include "components/autofill_assistant/browser/service/server_url_fetcher.h"
 #include "components/autofill_assistant/browser/service/service.h"
 #include "components/autofill_assistant/browser/service/service_request_sender.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -41,6 +42,11 @@ class ServiceImpl : public Service {
   // flag.
   static std::unique_ptr<ServiceImpl> Create(content::BrowserContext* context,
                                              Client* client);
+  // Same as above, but allows injecting a specific endpoint.
+  static std::unique_ptr<ServiceImpl> Create(
+      content::BrowserContext* context,
+      Client* client,
+      const ServerUrlFetcher& url_fetcher);
 
   bool IsLiteService() const override;
 
