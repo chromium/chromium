@@ -1475,6 +1475,8 @@ crbug.com/1002937 external/wpt/editing/run/caret-navigation-around-line-break.ht
 
 crbug.com/821455 editing/pasteboard/drag-files-to-editable-element.html [ Failure ]
 
+crbug.com/1170052 external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-audio-is-silence.https.html [ Pass Timeout ]
+
 crbug.com/766135 fast/dom/Window/redirect-with-timer.html [ Timeout Pass ]
 
 # Ref tests that needs investigation.
@@ -2554,14 +2556,12 @@ crbug.com/626703 [ Win10 ] external/wpt/css/css-typed-om/stylevalue-subclasses/c
 crbug.com/626703 [ Win10 ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.small.worker.html [ Timeout ]
 crbug.com/626703 virtual/module-top-level-await/external/wpt/html/semantics/scripting-1/the-script-element/module/evaluation-order-3-dynamic-worker.html [ Timeout ]
 crbug.com/626703 virtual/module-top-level-await/external/wpt/html/semantics/scripting-1/the-script-element/module/evaluation-order-1-worker.html [ Timeout ]
-crbug.com/626703 [ Mac10.13 ] external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-audio-is-silence.https.html [ Timeout ]
 crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/module/evaluation-order-1-nothrow-sharedworker.html [ Timeout ]
 crbug.com/626703 [ Win10 ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.NaN.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.strokeText.html [ Timeout ]
 crbug.com/626703 [ Win10 ] external/wpt/html/canvas/element/fill-and-stroke-styles/2d.gradient.interpolate.zerosize.strokeText.html [ Timeout ]
 crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/module/evaluation-order-3-dynamic-sharedworker.html [ Timeout ]
 crbug.com/626703 virtual/module-top-level-await/external/wpt/html/semantics/scripting-1/the-script-element/module/evaluation-order-2-import-worker.html [ Timeout ]
-crbug.com/626703 [ Win10 ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-audio-is-silence.https.html [ Timeout ]
 crbug.com/626703 [ Win10 ] external/wpt/html/canvas/offscreen/text/2d.text.draw.fill.maxWidth.zero.html [ Timeout ]
 crbug.com/626703 [ Win10 ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.negative.html [ Timeout ]
 crbug.com/626703 external/wpt/html/semantics/scripting-1/the-script-element/module/evaluation-order-2-import-sharedworker.html [ Timeout ]
