@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
  * Common text utilities used by autofill assistant.
  */
 public class AssistantTextUtils {
-    private static final String TAG = "AssistantTextUtils";
+    private static final String TAG = "AutofillAssistant";
 
     /** Bold tags of the form <b>...</b>. */
     private static final SpanApplier.SpanInfo BOLD_SPAN_INFO =
