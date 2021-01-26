@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/hid/web_hid_histograms.h"
@@ -14,6 +15,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/web_contents.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"
+#include "services/device/public/cpp/hid/hid_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -212,15 +214,23 @@ bool HidChooserController::DisplayDevice(
   if (device::HidBlocklist::IsDeviceExcluded(device))
     return false;
 
-  // Do not pass the device to the chooser if it has a top-level collection with
-  // the FIDO usage page.
-  auto find_it =
-      std::find_if(device.collections.begin(), device.collections.end(),
-                   [](const device::mojom::HidCollectionInfoPtr& c) {
-                     return c->usage->usage_page == device::mojom::kPageFido;
-                   });
-  if (find_it != device.collections.end())
-    return false;
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableHidBlocklist)) {
+    // Do not pass the device to the chooser if it has a top-level collection
+    // with the FIDO usage page.
+    //
+    // Note: The HID blocklist also blocks top-level collections with the FIDO
+    // usage page, but will not block the device if it has other (non-FIDO)
+    // collections. The check below will exclude the device from the chooser
+    // if it has any top-level FIDO collection.
+    auto find_it =
+        std::find_if(device.collections.begin(), device.collections.end(),
+                     [](const device::mojom::HidCollectionInfoPtr& c) {
+                       return c->usage->usage_page == device::mojom::kPageFido;
+                     });
+    if (find_it != device.collections.end())
+      return false;
+  }
 
   return FilterMatchesAny(device);
 }
