@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/form_submission_throttle.h"
 #include "base/memory/ptr_util.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"

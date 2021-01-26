@@ -798,11 +798,10 @@ void WebContentsImpl::WebContentsObserverList::RemoveObserver(
 
 WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
     : delegate_(nullptr),
-      controller_(this, browser_context),
       render_view_host_delegate_view_(nullptr),
       created_with_opener_(false),
       node_(this),
-      frame_tree_(&controller_, this, this, this, this, this),
+      frame_tree_(browser_context, this, this, this, this, this, this),
       is_load_to_different_document_(false),
       crashed_status_(base::TERMINATION_STATUS_STILL_RUNNING),
       crashed_error_code_(0),
@@ -1141,12 +1140,16 @@ bool WebContentsImpl::OnMessageReceived(RenderFrameHostImpl* render_frame_host,
   return false;
 }
 
+// Returns the NavigationController for the primary FrameTree, i.e. the one
+// whose URL is shown in the omnibox. With MPArch we can have multiple
+// FrameTrees in one WebContents and each has its own NavigationController.
+// TODO(https://crbug.com/1170273): Make sure callers are aware of this.
 NavigationControllerImpl& WebContentsImpl::GetController() {
-  return controller_;
+  return frame_tree_.controller();
 }
 
 BrowserContext* WebContentsImpl::GetBrowserContext() {
-  return controller_.GetBrowserContext();
+  return GetController().GetBrowserContext();
 }
 
 const GURL& WebContentsImpl::GetURL() {
@@ -1155,13 +1158,13 @@ const GURL& WebContentsImpl::GetURL() {
 
 const GURL& WebContentsImpl::GetVisibleURL() {
   // We may not have a navigation entry yet.
-  NavigationEntry* entry = controller_.GetVisibleEntry();
+  NavigationEntry* entry = GetController().GetVisibleEntry();
   return entry ? entry->GetVirtualURL() : GURL::EmptyGURL();
 }
 
 const GURL& WebContentsImpl::GetLastCommittedURL() {
   // We may not have a navigation entry yet.
-  NavigationEntry* entry = controller_.GetLastCommittedEntry();
+  NavigationEntry* entry = GetController().GetLastCommittedEntry();
   return entry ? entry->GetVirtualURL() : GURL::EmptyGURL();
 }
 
@@ -1547,6 +1550,8 @@ WebUI* WebContentsImpl::GetCommittedWebUI() {
   return frame_tree_.root()->current_frame_host()->web_ui();
 }
 
+// TODO(https://crbug.com/1170277): (MPArch) We should probably iterate all
+// FrameTree instances here.
 void WebContentsImpl::SetUserAgentOverride(
     const blink::UserAgentOverride& ua_override,
     bool override_in_new_tabs) {
@@ -1576,11 +1581,11 @@ void WebContentsImpl::SetUserAgentOverride(
   // No need to reload if the current entry matches that of the
   // NavigationRequest supplied to DidStartNavigation() as NavigationRequest
   // handles it.
-  NavigationEntry* entry = controller_.GetVisibleEntry();
+  NavigationEntry* entry = GetController().GetVisibleEntry();
   if (IsLoading() && entry != nullptr && entry->GetIsOverridingUserAgent() &&
       (!frame_tree_.root()->navigation_request() ||
        frame_tree_.root()->navigation_request()->ua_change_requires_reload())) {
-    controller_.Reload(ReloadType::BYPASSING_CACHE, true);
+    GetController().Reload(ReloadType::BYPASSING_CACHE, true);
   }
 
   observers_.NotifyObservers(&WebContentsObserver::UserAgentOverrideSet,
@@ -1600,7 +1605,7 @@ const blink::UserAgentOverride& WebContentsImpl::GetUserAgentOverride() {
 }
 
 bool WebContentsImpl::ShouldOverrideUserAgentForRendererInitiatedNavigation() {
-  NavigationEntryImpl* current_entry = controller_.GetLastCommittedEntry();
+  NavigationEntryImpl* current_entry = GetController().GetLastCommittedEntry();
   if (!current_entry)
     return should_override_user_agent_in_new_tabs_;
 
@@ -1662,7 +1667,7 @@ const base::string16& WebContentsImpl::GetTitle() {
           : GetRenderManager()->current_frame_host()->web_ui();
   if (our_web_ui) {
     // Don't override the title in view source mode.
-    NavigationEntry* entry = controller_.GetVisibleEntry();
+    NavigationEntry* entry = GetController().GetVisibleEntry();
     if (!(entry && entry->IsViewSourceMode())) {
       // Give the Web UI the chance to override our title.
       const base::string16& title = our_web_ui->GetOverriddenTitle();
@@ -1675,7 +1680,7 @@ const base::string16& WebContentsImpl::GetTitle() {
   // navigation entry. For example, when the user types in a URL, we want to
   // keep the old page's title until the new load has committed and we get a new
   // title.
-  NavigationEntry* entry = controller_.GetLastCommittedEntry();
+  NavigationEntry* entry = GetController().GetLastCommittedEntry();
 
   // We make an exception for initial navigations. We only want to use the title
   // from the visible entry if:
@@ -1685,11 +1690,11 @@ const base::string16& WebContentsImpl::GetTitle() {
   //
   // Otherwise, we want to stick with the last committed entry's title during
   // new navigations, which have pending entries at index -1 with no title.
-  if (controller_.IsInitialNavigation() &&
-      ((controller_.GetVisibleEntry() &&
-        !controller_.GetVisibleEntry()->GetTitle().empty()) ||
-       controller_.GetPendingEntryIndex() != -1)) {
-    entry = controller_.GetVisibleEntry();
+  if (GetController().IsInitialNavigation() &&
+      ((GetController().GetVisibleEntry() &&
+        !GetController().GetVisibleEntry()->GetTitle().empty()) ||
+       GetController().GetPendingEntryIndex() != -1)) {
+    entry = GetController().GetVisibleEntry();
   }
 
   if (entry) {
@@ -2649,7 +2654,7 @@ std::unique_ptr<WebContents> WebContentsImpl::Clone() {
     opener_rfh = opener->current_frame_host();
   std::unique_ptr<WebContentsImpl> tc =
       CreateWithOpener(create_params, opener_rfh);
-  tc->GetController().CopyStateFrom(&controller_, true);
+  tc->GetController().CopyStateFrom(&frame_tree_.controller(), true);
   observers_.NotifyObservers(&WebContentsObserver::DidCloneToNewWebContents,
                              this, tc.get());
   return tc;
@@ -2700,13 +2705,8 @@ void WebContentsImpl::Init(const WebContents::CreateParams& params) {
         ->PreventAssociationWithSpareProcess();
   }
 
-  GetRenderManager()->InitRoot(site_instance.get(),
-                               params.renderer_initiated_creation);
-
-  // blink::FrameTree::setName always keeps |unique_name| empty in case of a
-  // main frame - let's do the same thing here.
-  std::string unique_name;
-  frame_tree_.root()->SetFrameName(params.main_frame_name, unique_name);
+  frame_tree_.Init(site_instance.get(), params.renderer_initiated_creation,
+                   params.main_frame_name);
 
   WebContentsViewDelegate* delegate =
       GetContentClient()->browser()->GetWebContentsViewDelegate(this);
@@ -2952,12 +2952,12 @@ bool WebContentsImpl::HandleMouseEvent(const blink::WebMouseEvent& event) {
   if (event.GetType() == blink::WebInputEvent::Type::kMouseUp) {
     WebContentsImpl* outermost = GetOutermostWebContents();
     if (event.button == blink::WebPointerProperties::Button::kBack &&
-        outermost->controller_.CanGoBack()) {
-      outermost->controller_.GoBack();
+        outermost->GetController().CanGoBack()) {
+      outermost->GetController().GoBack();
       return true;
     } else if (event.button == blink::WebPointerProperties::Button::kForward &&
-               outermost->controller_.CanGoForward()) {
-      outermost->controller_.GoForward();
+               outermost->GetController().CanGoForward()) {
+      outermost->GetController().GoForward();
       return true;
     }
   }
@@ -3235,7 +3235,7 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
     // keying this behavior off of |page_visibility| instead of just
     // |new_visibility| we avoid this case. See crbug.com/1020782 for more
     // context.
-    controller_.SetActive(true);
+    GetController().SetActive(true);
 
     // This shows the Page before showing the individual RenderWidgets, as
     // RenderWidgets will work to produce compositor frames and handle input
@@ -3636,7 +3636,8 @@ RenderFrameHostDelegate* WebContentsImpl::CreateNewWindow(
         DCHECK(!new_contents_impl->delayed_open_url_params_);
         new_contents_impl->delayed_load_url_params_ = std::move(load_params);
       } else {
-        new_contents_impl->controller_.LoadURLWithParams(*load_params.get());
+        new_contents_impl->GetController().LoadURLWithParams(
+            *load_params.get());
         if (!is_guest)
           new_contents_impl->Focus();
       }
@@ -3899,11 +3900,11 @@ std::string WebContentsImpl::GetDefaultMediaDeviceID(
 
 SessionStorageNamespace* WebContentsImpl::GetSessionStorageNamespace(
     SiteInstance* instance) {
-  return controller_.GetSessionStorageNamespace(instance);
+  return GetController().GetSessionStorageNamespace(instance);
 }
 
 SessionStorageNamespaceMap WebContentsImpl::GetSessionStorageNamespaceMap() {
-  return controller_.GetSessionStorageNamespaceMap();
+  return GetController().GetSessionStorageNamespaceMap();
 }
 
 FrameTree* WebContentsImpl::GetFrameTree() {
@@ -4537,7 +4538,7 @@ void WebContentsImpl::SaveFrameWithHeaders(
 
   int64_t post_id = -1;
   if (is_main_frame) {
-    NavigationEntry* entry = controller_.GetLastCommittedEntry();
+    NavigationEntry* entry = GetController().GetLastCommittedEntry();
     if (entry)
       post_id = entry->GetPostID();
   }
@@ -4998,7 +4999,7 @@ void WebContentsImpl::ResumeLoadingCreatedWebContents() {
                         "WebContentsImpl::ResumeLoadingCreatedWebContents");
   if (delayed_load_url_params_.get()) {
     DCHECK(!delayed_open_url_params_);
-    controller_.LoadURLWithParams(*delayed_load_url_params_.get());
+    GetController().LoadURLWithParams(*delayed_load_url_params_.get());
     delayed_load_url_params_.reset(nullptr);
     return;
   }
@@ -5048,7 +5049,7 @@ void WebContentsImpl::DidStartNavigation(NavigationHandle* navigation_handle) {
     // are all aimed at ensuring no such attacker-controlled navigation can
     // trigger this.
     should_focus_location_bar_by_default_ =
-        controller_.IsInitialNavigation() &&
+        GetController().IsInitialNavigation() &&
         !navigation_handle->IsRendererInitiated() &&
         navigation_handle->GetURL() == url::kAboutBlankURL;
   }
@@ -5112,7 +5113,7 @@ void WebContentsImpl::ReadyToCommitNavigation(
   // does not get called on network errors.
   if (navigation_handle->IsInMainFrame() &&
       navigation_handle->GetNetErrorCode() == net::OK) {
-    controller_.ssl_manager()->DidStartResourceResponse(
+    GetController().ssl_manager()->DidStartResourceResponse(
         navigation_handle->GetURL(),
         navigation_handle->GetSSLInfo().has_value()
             ? net::IsCertStatusError(
@@ -5379,13 +5380,13 @@ void WebContentsImpl::DidLoadResourceFromMemoryCache(
 void WebContentsImpl::DidDisplayInsecureContent() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::DidDisplayInsecureContent");
-  controller_.ssl_manager()->DidDisplayMixedContent();
+  GetController().ssl_manager()->DidDisplayMixedContent();
 }
 
 void WebContentsImpl::DidContainInsecureFormAction() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::DidContainInsecureFormAction");
-  controller_.ssl_manager()->DidContainInsecureFormAction();
+  GetController().ssl_manager()->DidContainInsecureFormAction();
 }
 
 void WebContentsImpl::DocumentAvailableInMainFrame() {
@@ -5419,7 +5420,7 @@ void WebContentsImpl::DidRunInsecureContent(const GURL& security_origin,
   if (base::EndsWith(security_origin.spec(), kDotGoogleDotCom,
                      base::CompareCase::INSENSITIVE_ASCII))
     RecordAction(base::UserMetricsAction("SSL.RanInsecureContentGoogle"));
-  controller_.ssl_manager()->DidRunMixedContent(security_origin);
+  GetController().ssl_manager()->DidRunMixedContent(security_origin);
 }
 
 void WebContentsImpl::PassiveInsecureContentFound(const GURL& resource_url) {
@@ -5470,7 +5471,7 @@ void WebContentsImpl::RecordActiveContentWithCertificateErrors(
       render_frame_host->IsInactiveAndDisallowReactivation()) {
     return;
   }
-  controller_.ssl_manager()->DidRunContentWithCertErrors(
+  GetController().ssl_manager()->DidRunContentWithCertErrors(
       render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL());
 }
 
@@ -5563,7 +5564,7 @@ void WebContentsImpl::SubresourceResponseStarted(const GURL& url,
   OPTIONAL_TRACE_EVENT1("content",
                         "WebContentsImpl::SubresourceResponseStarted", "url",
                         base::trace_event::ValueToString(url));
-  controller_.ssl_manager()->DidStartResourceResponse(url, cert_status);
+  GetController().ssl_manager()->DidStartResourceResponse(url, cert_status);
   SetNotWaitingForResponse();
 }
 
@@ -5671,7 +5672,7 @@ WebContentsImpl::GetJavaRenderFrameHostDelegate() {
 void WebContentsImpl::OnDidDisplayContentWithCertificateErrors() {
   OPTIONAL_TRACE_EVENT0(
       "content", "WebContentsImpl::OnDidDisplayContentWithCertificateErrors");
-  controller_.ssl_manager()->DidDisplayContentWithCertErrors();
+  GetController().ssl_manager()->DidDisplayContentWithCertErrors();
 }
 
 void WebContentsImpl::OnDidRunContentWithCertificateErrors(
@@ -5727,10 +5728,10 @@ void WebContentsImpl::OnGoToEntryAtOffset(RenderFrameHostImpl* source,
     if (source->IsSandboxed(network::mojom::WebSandboxFlags::kTopNavigation)) {
       // Keep track of whether this is a session history from a sandboxed iframe
       // with top level navigation disallowed.
-      controller_.GoToOffsetInSandboxedFrame(offset,
-                                             source->GetFrameTreeNodeId());
+      GetController().GoToOffsetInSandboxedFrame(offset,
+                                                 source->GetFrameTreeNodeId());
     } else {
-      controller_.GoToOffset(offset);
+      GetController().GoToOffset(offset);
     }
   }
 }
@@ -6126,7 +6127,7 @@ void WebContentsImpl::UpdateTitleForEntry(NavigationEntry* entry,
   view_->SetPageTitle(final_title);
 
   observers_.NotifyObservers(&WebContentsObserver::TitleWasSet, entry);
-  if (entry == controller_.GetEntryAtOffset(0))
+  if (entry == GetController().GetEntryAtOffset(0))
     NotifyNavigationStateChanged(INVALIDATE_TYPE_TITLE);
 }
 
@@ -6192,7 +6193,7 @@ void WebContentsImpl::LoadingStateChanged(bool to_different_document,
   if (details)
       det = Details<LoadNotificationDetails>(details);
   NotificationService::current()->Notify(
-      type, Source<NavigationController>(&controller_), det);
+      type, Source<NavigationController>(&GetController()), det);
 }
 
 void WebContentsImpl::NotifyViewSwapped(RenderViewHost* old_view,
@@ -6343,7 +6344,7 @@ void WebContentsImpl::RenderFrameCreated(RenderFrameHost* render_frame_host) {
   if (!render_frame_host->IsRenderFrameLive() || render_frame_host->GetParent())
     return;
 
-  NavigationEntry* entry = controller_.GetPendingEntry();
+  NavigationEntry* entry = GetController().GetPendingEntry();
   if (entry && entry->IsViewSourceMode()) {
     // Put the renderer in view source mode.
     static_cast<RenderFrameHostImpl*>(render_frame_host)
@@ -6998,14 +6999,14 @@ void WebContentsImpl::DidStopLoading() {
 
   // Use the last committed entry rather than the active one, in case a
   // pending entry has been created.
-  NavigationEntry* entry = controller_.GetLastCommittedEntry();
+  NavigationEntry* entry = GetController().GetLastCommittedEntry();
 
   // An entry may not exist for a stop when loading an initial blank page or
   // if an iframe injected by script into a blank page finishes loading.
   if (entry) {
     details = std::make_unique<LoadNotificationDetails>(
-        entry->GetVirtualURL(), &controller_,
-        controller_.GetCurrentEntryIndex());
+        entry->GetVirtualURL(), &GetController(),
+        GetController().GetCurrentEntryIndex());
   }
 
   LoadingStateChanged(true, details.get());
@@ -7094,7 +7095,9 @@ void WebContentsImpl::RegisterExistingOriginToPreventOptInIsolation(
     // We only need to search entries in the same BrowserContext as us.
     if (web_contents->GetBrowserContext() != GetBrowserContext())
       continue;
-    web_contents->controller_.RegisterExistingOriginToPreventOptInIsolation(
+
+    // TODO(https://crbug.com/1170273): Handle multiple controllers (MPArch)
+    web_contents->GetController().RegisterExistingOriginToPreventOptInIsolation(
         origin);
     // Walk the frame tree to pick up any frames without FrameNavigationEntries.
     // * Some frames won't have FrameNavigationEntries (Issues 524208, 608402).
@@ -7106,7 +7109,7 @@ void WebContentsImpl::RegisterExistingOriginToPreventOptInIsolation(
 
 void WebContentsImpl::DidCancelLoading() {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DidCancelLoading");
-  controller_.DiscardNonCommittedEntries();
+  GetController().DiscardNonCommittedEntries();
 
   // Update the URL display.
   NotifyNavigationStateChanged(INVALIDATE_TYPE_URL);
@@ -7119,8 +7122,8 @@ void WebContentsImpl::DidAccessInitialDocument() {
   // We may have left a failed browser-initiated navigation in the address bar
   // to let the user edit it and try again.  Clear it now that content might
   // show up underneath it.
-  if (!IsLoading() && controller_.GetPendingEntry())
-    controller_.DiscardPendingEntry(false);
+  if (!IsLoading() && GetController().GetPendingEntry())
+    GetController().DiscardPendingEntry(false);
 
   // Update the URL display.
   NotifyNavigationStateChanged(INVALIDATE_TYPE_URL);
@@ -7194,8 +7197,9 @@ void WebContentsImpl::UpdateStateForFrame(RenderFrameHost* render_frame_host,
   // which entry this is in the RenderFrameHost's nav_entry_id.
   RenderFrameHostImpl* rfhi =
       static_cast<RenderFrameHostImpl*>(render_frame_host);
+  // TODO(https://crbug.com/1170273): Handle multiple controllers (MPArch)
   NavigationEntryImpl* entry =
-      controller_.GetEntryWithUniqueID(rfhi->nav_entry_id());
+      GetController().GetEntryWithUniqueID(rfhi->nav_entry_id());
   if (!entry)
     return;
 
@@ -7232,7 +7236,7 @@ void WebContentsImpl::UpdateStateForFrame(RenderFrameHost* render_frame_host,
   }
 
   frame_entry->SetPageState(page_state);
-  controller_.NotifyEntryChanged(entry);
+  GetController().NotifyEntryChanged(entry);
 }
 
 void WebContentsImpl::UpdateTitle(RenderFrameHost* render_frame_host,
@@ -7244,7 +7248,7 @@ void WebContentsImpl::UpdateTitle(RenderFrameHost* render_frame_host,
                         "title", base::trace_event::ValueToString(title));
   // Try to find the navigation entry, which might not be the current one.
   // For example, it might be from a recently swapped out RFH.
-  NavigationEntryImpl* entry = controller_.GetEntryWithUniqueID(
+  NavigationEntryImpl* entry = GetController().GetEntryWithUniqueID(
       static_cast<RenderFrameHostImpl*>(render_frame_host)->nav_entry_id());
 
   // We can handle title updates when we don't have an entry in
@@ -7587,7 +7591,8 @@ void WebContentsImpl::SubframeCrashed(
   if (IsHidden() && visibility != blink::mojom::FrameVisibility::kNotRendered &&
       base::FeatureList::IsEnabled(
           features::kReloadHiddenTabsWithCrashedSubframes)) {
-    controller_.SetNeedsReload(
+    // TODO(https://crbug.com/1170273): Handle multiple controllers (MPArch)
+    GetController().SetNeedsReload(
         NavigationControllerImpl::NeedsReloadType::kCrashedSubframe);
     did_mark_for_reload = true;
     UMA_HISTOGRAM_ENUMERATION(
@@ -7642,9 +7647,13 @@ void WebContentsImpl::NotifySwappedFromRenderManager(RenderFrameHost* old_frame,
   if (is_main_frame) {
     // The |new_frame| and its various compadres are already swapped into place
     // for the WebContentsImpl when this method is called.
-    DCHECK(GetMainFrame() == new_frame);
-    DCHECK(GetRenderViewHost() == new_frame->GetRenderViewHost());
-    DCHECK(GetRenderWidgetHostView() == new_frame->GetView());
+    FrameTree* frame_tree =
+        static_cast<RenderFrameHostImpl*>(new_frame)->frame_tree();
+    DCHECK_EQ(frame_tree->root()->current_frame_host(), new_frame);
+    DCHECK_EQ(frame_tree->root()->render_manager()->current_host(),
+              new_frame->GetRenderViewHost());
+    DCHECK_EQ(frame_tree->root()->render_manager()->GetRenderWidgetHostView(),
+              new_frame->GetView());
 
     RenderViewHost* old_rvh =
         old_frame ? old_frame->GetRenderViewHost() : nullptr;
@@ -7683,10 +7692,6 @@ void WebContentsImpl::NotifyMainFrameSwappedFromRenderManager(
                     new_frame->GetRenderViewHost());
 }
 
-NavigationControllerImpl& WebContentsImpl::GetControllerForRenderManager() {
-  return GetController();
-}
-
 std::unique_ptr<WebUIImpl> WebContentsImpl::CreateWebUIForRenderFrameHost(
     RenderFrameHostImpl* frame_host,
     const GURL& url) {
@@ -7716,12 +7721,13 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
                "WebContentsImpl::CreateRenderViewForRenderManager",
                "render_view_host", render_view_host);
 
+  auto* rvh_impl = static_cast<RenderViewHostImpl*>(render_view_host);
+
   if (proxy_routing_id == MSG_ROUTING_NONE)
     CreateRenderWidgetHostViewForRenderManager(render_view_host);
 
-  if (!static_cast<RenderViewHostImpl*>(render_view_host)
-           ->CreateRenderView(opener_frame_token, proxy_routing_id,
-                              created_with_opener_)) {
+  if (!rvh_impl->CreateRenderView(opener_frame_token, proxy_routing_id,
+                                  created_with_opener_)) {
     return false;
   }
   // Set the TextAutosizer state from the main frame's renderer on the new view,
@@ -7729,8 +7735,11 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
   // this state themselves from up-to-date values, so we shouldn't override it
   // with the cached values.
   if (!render_view_host->GetMainFrame()) {
-    auto* proxy_host = GetRenderManager()->GetRenderFrameProxyHost(
-        render_view_host->GetSiteInstance());
+    auto* proxy_host =
+        rvh_impl->frame_tree()
+            ->root()
+            ->render_manager()
+            ->GetRenderFrameProxyHost(render_view_host->GetSiteInstance());
     proxy_host->GetAssociatedRemoteMainFrame()->UpdateTextAutosizerPageInfo(
         text_autosizer_page_info_.Clone());
   }
@@ -7738,9 +7747,10 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
   if (proxy_routing_id == MSG_ROUTING_NONE)
     ReattachOuterDelegateIfNeeded();
 
+  // TODO(https://crbug.com/1170273): Handle multiple controllers (MPArch)
   SetHistoryOffsetAndLengthForView(render_view_host,
-                                   controller_.GetLastCommittedEntryIndex(),
-                                   controller_.GetEntryCount());
+                                   GetController().GetLastCommittedEntryIndex(),
+                                   GetController().GetEntryCount());
 
 #if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
   // Force a ViewMsg_Resize to be sent, needed to make plugins show up on
@@ -7841,7 +7851,8 @@ void WebContentsImpl::OnDialogClosed(int render_process_id,
     // meantime.  Do not reset the navigation state in that case.
     if (rfh && rfh == rfh->frame_tree_node()->current_frame_host()) {
       rfh->frame_tree_node()->BeforeUnloadCanceled();
-      controller_.DiscardNonCommittedEntries();
+      // TODO(https://crbug.com/1170273): Handle multiple controllers (MPArch)
+      GetController().DiscardNonCommittedEntries();
     }
 
     // Update the URL display either way, to avoid showing a stale URL.

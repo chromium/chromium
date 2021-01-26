@@ -31,12 +31,13 @@ struct FramePolicy;
 
 namespace content {
 
-class NavigationControllerImpl;
+class BrowserContext;
 class RenderFrameHostDelegate;
 class RenderViewHostDelegate;
 class RenderViewHostImpl;
 class RenderFrameHostManager;
 class RenderWidgetHostDelegate;
+class SiteInstance;
 
 // Represents the frame tree for a page. With the exception of the main frame,
 // all FrameTreeNodes will be created/deleted in response to frame attach and
@@ -92,19 +93,26 @@ class CONTENT_EXPORT FrameTree {
     FrameTreeNode* const root_of_subtree_to_skip_;
   };
 
-  // Each FrameTreeNode will default to using the given |navigator| for
-  // navigation tasks in the frame.
   // A set of delegates are remembered here so that we can create
   // RenderFrameHostManagers.
-  // TODO(creis): This set of delegates will change as we move things to
-  // Navigator.
-  FrameTree(NavigationControllerImpl* navigation_controller,
+  FrameTree(BrowserContext* browser_context,
+            NavigationControllerDelegate* navigation_controller_delegate,
             NavigatorDelegate* navigator_delegate,
             RenderFrameHostDelegate* render_frame_delegate,
             RenderViewHostDelegate* render_view_delegate,
             RenderWidgetHostDelegate* render_widget_delegate,
             RenderFrameHostManager::Delegate* manager_delegate);
   ~FrameTree();
+
+  // Initializes the main frame for this FrameTree. That is it creates the
+  // initial RenderFrameHost in the root node's RenderFrameHostManager. This
+  // method will call back into the delegates so it should only be called once
+  // they have completed their initialization.
+  // TODO(carlscab): It would be great if initialization could happened in the
+  // constructor so we do not leave objects in a half initialized state.
+  void Init(SiteInstance* main_frame_site_instance,
+            bool renderer_initiated_creation,
+            const std::string& main_frame_name);
 
   FrameTreeNode* root() const { return root_; }
 
@@ -288,7 +296,7 @@ class CONTENT_EXPORT FrameTree {
       const url::Origin& previously_visited_origin,
       NavigationRequest* navigation_request_to_exclude);
 
-  NavigationControllerImpl* controller() { return navigator_.controller(); }
+  NavigationControllerImpl& controller() { return navigator_.controller(); }
   Navigator& navigator() { return navigator_; }
 
  private:
@@ -308,7 +316,8 @@ class CONTENT_EXPORT FrameTree {
   RenderFrameHostManager::Delegate* manager_delegate_;
 
   // The Navigator object responsible for managing navigations on this frame
-  // tree.
+  // tree. Each FrameTreeNode will default to using it for navigation tasks in
+  // the frame.
   Navigator navigator_;
 
   // Map of SiteInstance ID to RenderViewHost. This allows us to look up the

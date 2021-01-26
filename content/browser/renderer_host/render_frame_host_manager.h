@@ -144,7 +144,6 @@ class CONTENT_EXPORT RenderFrameHostManager
     virtual void NotifyMainFrameSwappedFromRenderManager(
         RenderFrameHost* old_frame,
         RenderFrameHost* new_frame) = 0;
-    virtual NavigationControllerImpl& GetControllerForRenderManager() = 0;
 
     // Returns true if the location bar should be focused by default rather than
     // the page contents. The view calls this function when the tab is focused
@@ -921,6 +920,8 @@ class CONTENT_EXPORT RenderFrameHostManager
   // inner delegate is known. When successful, |render_frame_host_| can be used
   // for attaching the inner Delegate.
   void NotifyPrepareForInnerDelegateAttachComplete(bool success);
+
+  NavigationControllerImpl& GetNavigationController();
 
   // For use in creating RenderFrameHosts.
   FrameTreeNode* frame_tree_node_;

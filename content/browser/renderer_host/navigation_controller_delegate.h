@@ -16,8 +16,6 @@
 namespace content {
 
 struct LoadCommittedDetails;
-class FrameTree;
-class RenderViewHost;
 class WebContents;
 
 // Interface for objects embedding a NavigationController to provide the
@@ -27,16 +25,13 @@ class NavigationControllerDelegate {
   virtual ~NavigationControllerDelegate() {}
 
   // Duplicates of WebContents methods.
-  virtual RenderViewHost* GetRenderViewHost() = 0;
   virtual const std::string& GetContentsMimeType() = 0;
   virtual void NotifyNavigationStateChanged(InvalidateTypes changed_flags) = 0;
   virtual void Stop() = 0;
   virtual bool IsBeingDestroyed() = 0;
-  virtual bool CanOverscrollContent() const = 0;
 
   // Methods from WebContentsImpl that NavigationControllerImpl needs to
   // call.
-  virtual FrameTree* GetFrameTree() = 0;
   virtual void NotifyBeforeFormRepostWarningShow() = 0;
   virtual void NotifyNavigationEntryCommitted(
       const LoadCommittedDetails& load_details) = 0;

@@ -45,6 +45,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
@@ -55,10 +56,12 @@
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
+#include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/web_package/web_bundle_navigation_info.h"
 #include "content/common/content_constants_internal.h"
@@ -588,9 +591,11 @@ NavigationControllerImpl::ScopedShowRepostDialogForTesting::
 }
 
 NavigationControllerImpl::NavigationControllerImpl(
-    NavigationControllerDelegate* delegate,
-    BrowserContext* browser_context)
-    : browser_context_(browser_context),
+    BrowserContext* browser_context,
+    FrameTree& frame_tree,
+    NavigationControllerDelegate* delegate)
+    : frame_tree_(frame_tree),
+      browser_context_(browser_context),
       delegate_(delegate),
       ssl_manager_(this),
       get_timestamp_callback_(base::BindRepeating(&base::Time::Now)) {
@@ -1273,7 +1278,7 @@ bool NavigationControllerImpl::RendererDidNavigate(
   // state and title updates from RenderFrames to apply to the latest relevant
   // NavigationEntry.
   int nav_entry_id = active_entry->GetUniqueID();
-  for (FrameTreeNode* node : delegate_->GetFrameTree()->Nodes())
+  for (FrameTreeNode* node : frame_tree_.Nodes())
     node->current_frame_host()->set_nav_entry_id(nav_entry_id);
   return true;
 }
@@ -1457,8 +1462,7 @@ void NavigationControllerImpl::RendererDidNavigateToNewEntry(
         nullptr /* document_policies */);
 
     new_entry = GetLastCommittedEntry()->CloneAndReplace(
-        frame_entry, true, rfh->frame_tree_node(),
-        delegate_->GetFrameTree()->root());
+        frame_entry, true, rfh->frame_tree_node(), frame_tree_.root());
     if (new_entry->GetURL().GetOrigin() != params.url.GetOrigin()) {
       // TODO(jam): we had one report of this with a URL that was redirecting to
       // only tildes. Until we understand that better, don't copy the cert in
@@ -1880,7 +1884,7 @@ void NavigationControllerImpl::RendererDidNavigateNewSubframe(
   std::unique_ptr<NavigationEntryImpl> new_entry =
       GetLastCommittedEntry()->CloneAndReplace(
           std::move(frame_entry), is_same_document, rfh->frame_tree_node(),
-          delegate_->GetFrameTree()->root());
+          frame_tree_.root());
 
   SetShouldSkipOnBackForwardUIIfNeeded(
       replace_entry, previous_document_was_activated,
@@ -2674,7 +2678,7 @@ void NavigationControllerImpl::NavigateToExistingPendingEntry(
   DCHECK(!IsRendererDebugURL(pending_entry_->GetURL()));
   bool is_forced_reload = needs_reload_;
   needs_reload_ = false;
-  FrameTreeNode* root = delegate_->GetFrameTree()->root();
+  FrameTreeNode* root = frame_tree_.root();
   int nav_entry_id = pending_entry_->GetUniqueID();
 
   // If we were navigating to a slow-to-commit page, and the user performs
@@ -3006,13 +3010,13 @@ void NavigationControllerImpl::NavigateWithoutEntry(
   if (params.frame_tree_node_id != RenderFrameHost::kNoFrameTreeNodeId ||
       !params.frame_name.empty()) {
     node = params.frame_tree_node_id != RenderFrameHost::kNoFrameTreeNodeId
-               ? delegate_->GetFrameTree()->FindByID(params.frame_tree_node_id)
-               : delegate_->GetFrameTree()->FindByName(params.frame_name);
+               ? frame_tree_.FindByID(params.frame_tree_node_id)
+               : frame_tree_.FindByName(params.frame_name);
   }
 
   // If no FrameTreeNode was specified, navigate the main frame.
   if (!node)
-    node = delegate_->GetFrameTree()->root();
+    node = frame_tree_.root();
 
   // Compute overrides to the LoadURLParams for |override_user_agent|,
   // |should_replace_current_entry| and |has_user_gesture| that will be used

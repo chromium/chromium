@@ -3292,7 +3292,7 @@ void NavigationRequest::AddOldPageInfoToCommitParamsIfNeeded() {
   bool can_store_old_page_in_bfcache =
       frame_tree_node_->frame_tree()
           ->controller()
-          ->GetBackForwardCache()
+          .GetBackForwardCache()
           .CanPotentiallyStorePageLater(old_frame_host);
   commit_params_->old_page_info = mojom::OldPageInfo::New();
   commit_params_->old_page_info->routing_id_for_old_main_frame =

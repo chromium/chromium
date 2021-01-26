@@ -1455,7 +1455,7 @@ void RenderFrameHostImpl::StartBackForwardCacheEvictionTimer() {
       BackForwardCacheImpl::GetTimeToLiveInBackForwardCache();
 
   back_forward_cache_eviction_timer_.SetTaskRunner(
-      frame_tree()->controller()->GetBackForwardCache().GetTaskRunner());
+      frame_tree()->controller().GetBackForwardCache().GetTaskRunner());
 
   back_forward_cache_eviction_timer_.Start(
       FROM_HERE, evict_after,
@@ -4733,7 +4733,7 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
     // A document is evicted from the BackForwardCache, but it has already been
     // restored. The current document should be reloaded, because it is not
     // salvageable.
-    frame_tree()->controller()->Reload(ReloadType::NORMAL, false);
+    frame_tree()->controller().Reload(ReloadType::NORMAL, false);
     return;
   }
 
@@ -4765,7 +4765,7 @@ void RenderFrameHostImpl::EvictFromBackForwardCacheWithReasons(
   top_document->is_evicted_from_back_forward_cache_ = true;
   frame_tree()
       ->controller()
-      ->GetBackForwardCache()
+      .GetBackForwardCache()
       .PostTaskToDestroyEvictedFrames();
 }
 
@@ -6806,7 +6806,7 @@ void RenderFrameHostImpl::CommitNavigation(
     if (!GetParent() && frame_tree_node_->current_frame_host() == this) {
       if (NavigationEntryImpl* last_committed_entry =
               NavigationEntryImpl::FromNavigationEntry(
-                  frame_tree()->controller()->GetLastCommittedEntry())) {
+                  frame_tree()->controller().GetLastCommittedEntry())) {
         if (last_committed_entry->back_forward_cache_metrics()) {
           last_committed_entry->back_forward_cache_metrics()
               ->RecordFeatureUsage(this);
@@ -8445,7 +8445,7 @@ void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
 
   if (!last_committed_site_info_.site_url().is_empty()) {
     RenderProcessHostImpl::RemoveFrameWithSite(
-        frame_tree()->controller()->GetBrowserContext(), GetProcess(),
+        frame_tree()->controller().GetBrowserContext(), GetProcess(),
         last_committed_site_info_);
   }
 
@@ -8453,7 +8453,7 @@ void RenderFrameHostImpl::SetLastCommittedSiteInfo(const GURL& url) {
 
   if (!last_committed_site_info_.site_url().is_empty()) {
     RenderProcessHostImpl::AddFrameWithSite(
-        frame_tree()->controller()->GetBrowserContext(), GetProcess(),
+        frame_tree()->controller().GetBrowserContext(), GetProcess(),
         last_committed_site_info_);
   }
 }
@@ -10136,7 +10136,7 @@ void RenderFrameHostImpl::MaybeEvictFromBackForwardCache() {
     top_document = parent;
 
   auto can_store =
-      frame_tree()->controller()->GetBackForwardCache().CanStorePageNow(
+      frame_tree()->controller().GetBackForwardCache().CanStorePageNow(
           top_document);
   TRACE_EVENT1("navigation",
                "RenderFrameHostImpl::MaybeEvictFromBackForwardCache",
@@ -10230,7 +10230,7 @@ void RenderFrameHostImpl::EnableMojoJsBindings() {
 
 BackForwardCacheMetrics* RenderFrameHostImpl::GetBackForwardCacheMetrics() {
   NavigationEntryImpl* navigation_entry =
-      frame_tree()->controller()->GetEntryWithUniqueID(nav_entry_id());
+      frame_tree()->controller().GetEntryWithUniqueID(nav_entry_id());
   if (!navigation_entry)
     return nullptr;
   return navigation_entry->back_forward_cache_metrics();

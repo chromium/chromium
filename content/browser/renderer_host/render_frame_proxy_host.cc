@@ -712,8 +712,8 @@ void RenderFrameProxyHost::OpenURL(mojom::OpenURLParamsPtr params) {
   // renderer side, e.g. status not available on remote frame, etc.
   NavigationDownloadPolicy download_policy = params->download_policy;
   GetContentClient()->browser()->AugmentNavigationDownloadPolicy(
-      frame_tree_node_->navigator().GetController()->GetWebContents(),
-      current_rfh, params->user_gesture, &download_policy);
+      frame_tree_node_->navigator().controller().GetWebContents(), current_rfh,
+      params->user_gesture, &download_policy);
 
   if ((frame_tree_node_->pending_frame_policy().sandbox_flags &
        network::mojom::WebSandboxFlags::kDownloads) !=

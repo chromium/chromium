@@ -94,17 +94,22 @@ FrameTree::NodeRange::NodeRange(FrameTreeNode* root,
                                 FrameTreeNode* root_of_subtree_to_skip)
     : root_(root), root_of_subtree_to_skip_(root_of_subtree_to_skip) {}
 
-FrameTree::FrameTree(NavigationControllerImpl* navigation_controller,
-                     NavigatorDelegate* navigator_delegate,
-                     RenderFrameHostDelegate* render_frame_delegate,
-                     RenderViewHostDelegate* render_view_delegate,
-                     RenderWidgetHostDelegate* render_widget_delegate,
-                     RenderFrameHostManager::Delegate* manager_delegate)
+FrameTree::FrameTree(
+    BrowserContext* browser_context,
+    NavigationControllerDelegate* navigation_controller_delegate,
+    NavigatorDelegate* navigator_delegate,
+    RenderFrameHostDelegate* render_frame_delegate,
+    RenderViewHostDelegate* render_view_delegate,
+    RenderWidgetHostDelegate* render_widget_delegate,
+    RenderFrameHostManager::Delegate* manager_delegate)
     : render_frame_delegate_(render_frame_delegate),
       render_view_delegate_(render_view_delegate),
       render_widget_delegate_(render_widget_delegate),
       manager_delegate_(manager_delegate),
-      navigator_(navigation_controller, navigator_delegate),
+      navigator_(browser_context,
+                 *this,
+                 navigator_delegate,
+                 navigation_controller_delegate),
       root_(new FrameTreeNode(this,
                               nullptr,
                               // The top-level frame must always be in a
@@ -245,7 +250,7 @@ FrameTreeNode* FrameTree::AddFrame(
   // their frames are deleted.  If there is a stale one, remove it to avoid
   // conflicts on future updates.
   NavigationEntryImpl* last_committed_entry = static_cast<NavigationEntryImpl*>(
-      navigator_.GetController()->GetLastCommittedEntry());
+      navigator_.controller().GetLastCommittedEntry());
   if (last_committed_entry) {
     last_committed_entry->RemoveEntryForFrame(
         added_node, /* only_if_different_position = */ true);
@@ -554,6 +559,17 @@ void FrameTree::RegisterExistingOriginToPreventOptInIsolation(
     static_cast<SiteInstanceImpl*>(site_instance)
         ->PreventOptInOriginIsolation(previously_visited_origin);
   }
+}
+
+void FrameTree::Init(SiteInstance* main_frame_site_instance,
+                     bool renderer_initiated_creation,
+                     const std::string& main_frame_name) {
+  root_->render_manager()->InitRoot(main_frame_site_instance,
+                                    renderer_initiated_creation);
+  // blink::FrameTree::SetName always keeps |unique_name| empty in case of a
+  // main frame - let's do the same thing here.
+  std::string unique_name;
+  root_->SetFrameName(main_frame_name, unique_name);
 }
 
 }  // namespace content

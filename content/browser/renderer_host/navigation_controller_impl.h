@@ -32,6 +32,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace content {
+class FrameTree;
 class FrameTreeNode;
 class NavigationRequest;
 class RenderFrameHostImpl;
@@ -70,8 +71,9 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
     DISALLOW_COPY_AND_ASSIGN(PendingEntryRef);
   };
 
-  NavigationControllerImpl(NavigationControllerDelegate* delegate,
-                           BrowserContext* browser_context);
+  NavigationControllerImpl(BrowserContext* browser_context,
+                           FrameTree& frame_tree,
+                           NavigationControllerDelegate* delegate);
   ~NavigationControllerImpl() override;
 
   // NavigationController implementation:
@@ -612,6 +614,10 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
                                        NavigationRequest* request);
 
   // ---------------------------------------------------------------------------
+
+  // The FrameTree this instance belongs to. Each FrameTree gets its own
+  // NavigationController.
+  FrameTree& frame_tree_;
 
   // The user browser context associated with this controller.
   BrowserContext* const browser_context_;

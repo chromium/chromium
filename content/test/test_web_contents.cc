@@ -240,7 +240,7 @@ bool TestWebContents::CreateRenderViewForRenderManager(
 std::unique_ptr<WebContents> TestWebContents::Clone() {
   std::unique_ptr<WebContentsImpl> contents =
       Create(GetBrowserContext(), SiteInstance::Create(GetBrowserContext()));
-  contents->GetController().CopyStateFrom(&controller_, true);
+  contents->GetController().CopyStateFrom(&GetController(), true);
   return contents;
 }
 

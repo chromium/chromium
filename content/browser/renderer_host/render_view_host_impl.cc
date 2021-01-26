@@ -575,7 +575,7 @@ void RenderViewHostImpl::OnBackForwardCacheTimeout() {
   // associated with |this|, instead of iterating through all the
   // RenderFrameHosts in bfcache.
   const auto& entries =
-      frame_tree_->controller()->GetBackForwardCache().GetEntries();
+      frame_tree_->controller().GetBackForwardCache().GetEntries();
   for (auto& entry : entries) {
     for (auto* const rvh : entry->render_view_hosts) {
       if (rvh == this) {

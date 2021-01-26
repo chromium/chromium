@@ -97,9 +97,13 @@ struct Navigator::NavigationMetricsData {
   base::Optional<base::TimeTicks> commit_navigation_sent_;
 };
 
-Navigator::Navigator(NavigationControllerImpl* navigation_controller,
-                     NavigatorDelegate* delegate)
-    : controller_(navigation_controller), delegate_(delegate) {}
+Navigator::Navigator(
+    BrowserContext* browser_context,
+    FrameTree& frame_tree,
+    NavigatorDelegate* delegate,
+    NavigationControllerDelegate* navigation_controller_delegate)
+    : controller_(browser_context, frame_tree, navigation_controller_delegate),
+      delegate_(delegate) {}
 
 Navigator::~Navigator() = default;
 
@@ -202,10 +206,6 @@ NavigatorDelegate* Navigator::GetDelegate() {
   return delegate_;
 }
 
-NavigationController* Navigator::GetController() {
-  return controller_;
-}
-
 void Navigator::DidFailLoadWithError(RenderFrameHostImpl* render_frame_host,
                                      const GURL& url,
                                      int error_code) {
@@ -217,8 +217,8 @@ void Navigator::DidFailLoadWithError(RenderFrameHostImpl* render_frame_host,
 bool Navigator::StartHistoryNavigationInNewSubframe(
     RenderFrameHostImpl* render_frame_host,
     mojo::PendingAssociatedRemote<mojom::NavigationClient>* navigation_client) {
-  return controller_->StartHistoryNavigationInNewSubframe(render_frame_host,
-                                                          navigation_client);
+  return controller_.StartHistoryNavigationInNewSubframe(render_frame_host,
+                                                         navigation_client);
 }
 
 void Navigator::DidNavigate(
@@ -232,7 +232,7 @@ void Navigator::DidNavigate(
   base::WeakPtr<RenderFrameHostImpl> old_frame_host =
       frame_tree_node->render_manager()->current_frame_host()->GetWeakPtr();
 
-  bool is_same_document_navigation = controller_->IsURLSameDocumentNavigation(
+  bool is_same_document_navigation = controller_.IsURLSameDocumentNavigation(
       params.url, params.origin, was_within_same_document, render_frame_host);
   // If a frame claims the navigation was same-document, it must be the current
   // frame, not a pending one.
@@ -271,8 +271,7 @@ void Navigator::DidNavigate(
         render_frame_host->GetSiteInstance()));
     DCHECK(is_cross_document_same_site_navigation);
     bool can_store_in_back_forward_cache =
-        controller_->GetBackForwardCache().CanStorePageNow(
-            old_frame_host.get());
+        controller_.GetBackForwardCache().CanStorePageNow(old_frame_host.get());
     UMA_HISTOGRAM_BOOLEAN(
         "BackForwardCache.ProactiveSameSiteBISwap.EligibilityDuringCommit",
         can_store_in_back_forward_cache);
@@ -365,17 +364,17 @@ void Navigator::DidNavigate(
     rvh->SetContentsMimeType(params.contents_mime_type);
   }
 
-  int old_entry_count = controller_->GetEntryCount();
+  int old_entry_count = controller_.GetEntryCount();
   LoadCommittedDetails details;
-  bool did_navigate = controller_->RendererDidNavigate(
+  bool did_navigate = controller_.RendererDidNavigate(
       render_frame_host, params, &details, is_same_document_navigation,
       previous_document_was_activated, navigation_request.get());
 
   // If the history length and/or offset changed, update other renderers in the
   // FrameTree.
-  if (old_entry_count != controller_->GetEntryCount() ||
+  if (old_entry_count != controller_.GetEntryCount() ||
       details.previous_entry_index !=
-          controller_->GetLastCommittedEntryIndex()) {
+          controller_.GetLastCommittedEntryIndex()) {
     frame_tree->root()->render_manager()->ExecutePageBroadcastMethod(
         base::BindRepeating(
             [](int history_offset, int history_count, RenderViewHostImpl* rvh) {
@@ -383,8 +382,8 @@ void Navigator::DidNavigate(
                 broadcast->SetHistoryOffsetAndLength(history_offset,
                                                      history_count);
             },
-            controller_->GetLastCommittedEntryIndex(),
-            controller_->GetEntryCount()),
+            controller_.GetLastCommittedEntryIndex(),
+            controller_.GetEntryCount()),
         site_instance);
   }
 
@@ -477,8 +476,8 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
 
   int nav_entry_id = request->nav_entry_id();
   bool is_pending_entry =
-      controller_->GetPendingEntry() &&
-      (nav_entry_id == controller_->GetPendingEntry()->GetUniqueID());
+      controller_.GetPendingEntry() &&
+      (nav_entry_id == controller_.GetPendingEntry()->GetUniqueID());
   frame_tree_node->CreatedNavigationRequest(std::move(request));
   DCHECK(frame_tree_node->navigation_request());
 
@@ -499,7 +498,7 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
 
   // Make sure no code called via RFH::Navigate clears the pending entry.
   if (is_pending_entry)
-    CHECK_EQ(nav_entry_id, controller_->GetPendingEntry()->GetUniqueID());
+    CHECK_EQ(nav_entry_id, controller_.GetPendingEntry()->GetUniqueID());
 }
 
 void Navigator::RequestOpenURL(
@@ -640,7 +639,7 @@ void Navigator::NavigateFromFrameProxy(
     return;
   }
 
-  controller_->NavigateFromFrameProxy(
+  controller_.NavigateFromFrameProxy(
       render_frame_host, url, initiator_frame_token, initiator_process_id,
       initiator_origin, is_renderer_initiated, source_site_instance,
       referrer_to_use, page_transition, should_replace_current_entry,
@@ -749,8 +748,8 @@ void Navigator::OnBeginNavigation(
   frame_tree_node->CreatedNavigationRequest(
       NavigationRequest::CreateRendererInitiated(
           frame_tree_node, navigation_entry, std::move(common_params),
-          std::move(begin_params), controller_->GetLastCommittedEntryIndex(),
-          controller_->GetEntryCount(), override_user_agent,
+          std::move(begin_params), controller_.GetLastCommittedEntryIndex(),
+          controller_.GetEntryCount(), override_user_agent,
           std::move(blob_url_loader_factory), std::move(navigation_client),
           std::move(navigation_initiator),
           std::move(prefetched_signed_exchange_cache),
@@ -1025,7 +1024,7 @@ Navigator::GetNavigationEntryForRendererInitiatedNavigation(
   // point, but the referrer will be set properly upon commit.  This does not
   // set the SiteInstance for the pending entry, because it may change
   // before the URL commits.
-  NavigationEntryImpl* pending_entry = controller_->GetPendingEntry();
+  NavigationEntryImpl* pending_entry = controller_.GetPendingEntry();
   bool has_browser_initiated_pending_entry =
       pending_entry && !pending_entry->is_renderer_initiated();
   if (has_browser_initiated_pending_entry)
@@ -1054,18 +1053,18 @@ Navigator::GetNavigationEntryForRendererInitiatedNavigation(
               common_params.initiator_origin, source_site_instance,
               ui::PAGE_TRANSITION_LINK, true /* is_renderer_initiated */,
               std::string() /* extra_headers */,
-              controller_->GetBrowserContext(),
+              controller_.GetBrowserContext(),
               nullptr /* blob_url_loader_factory */,
               common_params.should_replace_current_entry,
-              controller_->GetWebContents()));
+              controller_.GetWebContents()));
   entry->set_reload_type(NavigationRequest::NavigationTypeToReloadType(
       common_params.navigation_type));
 
-  controller_->SetPendingEntry(std::move(entry));
+  controller_.SetPendingEntry(std::move(entry));
   if (delegate_)
     delegate_->NotifyChangedNavigationState(content::INVALIDATE_TYPE_URL);
 
-  return controller_->GetPendingEntry();
+  return controller_.GetPendingEntry();
 }
 
 }  // namespace content

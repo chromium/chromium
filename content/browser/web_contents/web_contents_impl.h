@@ -321,6 +321,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void NotifyManifestUrlChanged(RenderFrameHost* rfh,
                                 const base::Optional<GURL>& manifest_url);
 
+  // Returns the primary FrameTree for this WebContents (as opposed to the
+  // ones held by MPArch features like Prerender or Portal).
+  FrameTree* GetFrameTree();
+
 #if defined(OS_ANDROID)
   void SetMainFrameImportance(ChildProcessImportance importance);
 #endif
@@ -839,7 +843,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   SessionStorageNamespace* GetSessionStorageNamespace(
       SiteInstance* instance) override;
   SessionStorageNamespaceMap GetSessionStorageNamespaceMap() override;
-  FrameTree* GetFrameTree() override;
   bool IsOverridingUserAgent() override;
   bool IsJavaScriptDialogShowing() const override;
   bool ShouldIgnoreUnresponsiveRenderer() override;
@@ -996,7 +999,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void NotifyMainFrameSwappedFromRenderManager(
       RenderFrameHost* old_frame,
       RenderFrameHost* new_frame) override;
-  NavigationControllerImpl& GetControllerForRenderManager() override;
   bool FocusLocationBarByDefault() override;
   bool IsHidden() override;
   int GetOuterDelegateFrameTreeNodeId() override;
@@ -1718,9 +1720,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // Delegate for notifying our owner about stuff. Not owned by us.
   WebContentsDelegate* delegate_;
-
-  // Handles the back/forward list and loading.
-  NavigationControllerImpl controller_;
 
   // The corresponding view.
   std::unique_ptr<WebContentsView> view_;

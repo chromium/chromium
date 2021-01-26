@@ -29,6 +29,7 @@
 #include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/renderer_host/frame_navigation_entry.h"
 #include "content/browser/renderer_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -498,7 +499,7 @@ void RenderFrameHostManager::UnloadOldFrame(
   old_render_frame_host->ResetNavigationRequests();
 
   NavigationEntryImpl* last_committed_entry =
-      delegate_->GetControllerForRenderManager().GetLastCommittedEntry();
+      GetNavigationController().GetLastCommittedEntry();
   BackForwardCacheMetrics* old_page_back_forward_cache_metrics =
       (!old_render_frame_host->GetParent() && last_committed_entry)
           ? last_committed_entry->back_forward_cache_metrics()
@@ -526,7 +527,7 @@ void RenderFrameHostManager::UnloadOldFrame(
   // be restored later.
   {
     BackForwardCacheImpl& back_forward_cache =
-        delegate_->GetControllerForRenderManager().GetBackForwardCache();
+        GetNavigationController().GetBackForwardCache();
     auto can_store =
         back_forward_cache.CanStorePageNow(old_render_frame_host.get());
     TRACE_EVENT1("navigation", "BackForwardCache_MaybeStorePage", "can_store",
@@ -1325,7 +1326,7 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   // doesn't usually swap (e.g., process-per-tab).  Any time we return true,
   // the new URL will be rendered in a new SiteInstance AND BrowsingInstance.
   BrowserContext* browser_context =
-      delegate_->GetControllerForRenderManager().GetBrowserContext();
+      GetNavigationController().GetBrowserContext();
   const GURL& destination_effective_url =
       SiteInstanceImpl::GetEffectiveURL(browser_context, destination_url);
   // Don't force a new BrowsingInstance for URLs that are handled in the
@@ -1557,11 +1558,11 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
   // If BackForwardCache is enabled, swap BrowsingInstances only when the
   // previous page can be stored in the back-forward cache.
   DCHECK(IsBackForwardCacheEnabled());
-  NavigationControllerImpl* controller = static_cast<NavigationControllerImpl*>(
-      render_frame_host_->frame_tree_node()->navigator().GetController());
+  NavigationControllerImpl& controller =
+      render_frame_host_->frame_tree_node()->navigator().controller();
 
   auto can_store =
-      controller->GetBackForwardCache().CanPotentiallyStorePageLater(
+      controller.GetBackForwardCache().CanPotentiallyStorePageLater(
           render_frame_host_.get());
   if (can_store) {
     if (is_same_site) {
@@ -1637,7 +1638,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // or when a new RenderFrameHost has been swapped in at the beginning of a
   // navigation to replace a crashed RenderFrameHost.
   BrowserContext* browser_context =
-      delegate_->GetControllerForRenderManager().GetBrowserContext();
+      GetNavigationController().GetBrowserContext();
   const GURL& current_effective_url =
       !render_frame_host_->last_successful_url().is_empty()
           ? SiteInstanceImpl::GetEffectiveURL(
@@ -1651,7 +1652,7 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   // RenderFrameHost was swapped in at the beginning of the navigation. See
   // https://crbug.com/766630.
   NavigationEntry* current_entry =
-      delegate_->GetControllerForRenderManager().GetLastCommittedEntry();
+      GetNavigationController().GetLastCommittedEntry();
   bool current_is_view_source_mode = current_entry
                                          ? current_entry->IsViewSourceMode()
                                          : dest_is_view_source_mode;
@@ -1859,8 +1860,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // ShouldSwapBrowsingInstancesForNavigation.
   SiteInstanceImpl* current_instance_impl =
       static_cast<SiteInstanceImpl*>(current_instance);
-  NavigationControllerImpl& controller =
-      delegate_->GetControllerForRenderManager();
+  NavigationControllerImpl& controller = GetNavigationController();
 
   // If the entry has an instance already we should usually use it, unless it is
   // no longer suitable.
@@ -2226,8 +2226,8 @@ scoped_refptr<SiteInstance> RenderFrameHostManager::ConvertToSiteInstance(
 
   // Otherwise return a newly created one.
   return SiteInstanceImpl::CreateForUrlInfo(
-      delegate_->GetControllerForRenderManager().GetBrowserContext(),
-      descriptor.dest_url_info, descriptor.cross_origin_isolated_info);
+      GetNavigationController().GetBrowserContext(), descriptor.dest_url_info,
+      descriptor.cross_origin_isolated_info);
 }
 
 bool RenderFrameHostManager::CanUseSourceSiteInstance(
@@ -2282,7 +2282,7 @@ bool RenderFrameHostManager::IsCandidateSameSite(
     RenderFrameHostImpl* candidate,
     const UrlInfo& dest_url_info,
     const CoopCoepCrossOriginIsolatedInfo& cross_origin_isolated_info) {
-  DCHECK_EQ(delegate_->GetControllerForRenderManager().GetBrowserContext(),
+  DCHECK_EQ(GetNavigationController().GetBrowserContext(),
             candidate->GetSiteInstance()->GetBrowserContext());
   if (candidate->GetSiteInstance()->GetCoopCoepCrossOriginIsolatedInfo() !=
       cross_origin_isolated_info) {
@@ -2993,7 +2993,7 @@ void RenderFrameHostManager::CommitPending(
   // instance if the user navigates from A(B) to C and B is deleted after C
   // commits, then the last committed navigation entry wouldn't match anymore.
   NavigationEntryImpl* navigation_entry =
-      delegate_->GetControllerForRenderManager().GetLastCommittedEntry();
+      GetNavigationController().GetLastCommittedEntry();
   if (navigation_entry) {
     render_frame_host_->frame_tree_node()->PruneChildFrameNavigationEntries(
         navigation_entry);
@@ -3489,6 +3489,10 @@ void RenderFrameHostManager::NotifyPrepareForInnerDelegateAttachComplete(
                 RenderFrameHostImpl::FromID(process_id, routing_id));
           },
           std::move(attach_inner_delegate_callback_), process_id, routing_id));
+}
+
+NavigationControllerImpl& RenderFrameHostManager::GetNavigationController() {
+  return frame_tree_node_->frame_tree()->controller();
 }
 
 }  // namespace content

@@ -660,10 +660,7 @@ bool FrameTreeNode::NotifyUserActivation(
     }
   }
 
-  NavigationControllerImpl* controller =
-      static_cast<NavigationControllerImpl*>(navigator().GetController());
-  if (controller)
-    controller->NotifyUserActivation();
+  navigator().controller().NotifyUserActivation();
 
   return true;
 }

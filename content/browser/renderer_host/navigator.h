@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "content/browser/renderer_host/navigation_controller_impl.h"
 #include "content/common/content_export.h"
 #include "content/common/navigation_client.mojom.h"
 #include "content/common/navigation_params.h"
@@ -34,12 +35,14 @@ class ResourceRequestBody;
 
 namespace content {
 
+class BrowserContext;
 class FrameNavigationEntry;
+class FrameTree;
 class FrameTreeNode;
-class NavigationControllerImpl;
-class NavigatorDelegate;
+class NavigationControllerDelegate;
 class NavigationEntryImpl;
 class NavigationRequest;
+class NavigatorDelegate;
 class PrefetchedSignedExchangeCache;
 class RenderFrameHostImpl;
 class WebBundleHandleTracker;
@@ -50,8 +53,10 @@ struct UrlInfo;
 // FrameTree. Its lifetime is bound to the FrameTree.
 class CONTENT_EXPORT Navigator {
  public:
-  Navigator(NavigationControllerImpl* navigation_controller,
-            NavigatorDelegate* delegate);
+  Navigator(BrowserContext* browser_context,
+            FrameTree& frame_tree,
+            NavigatorDelegate* delegate,
+            NavigationControllerDelegate* navigation_controller_delegate);
   ~Navigator();
 
   // This method verifies that a navigation to |url| doesn't commit into a WebUI
@@ -77,7 +82,8 @@ class CONTENT_EXPORT Navigator {
   NavigatorDelegate* GetDelegate();
 
   // Returns the NavigationController associated with this Navigator.
-  NavigationController* GetController();
+  // TODO(https://crbug.com/1170277): Remove. Use controller() instead
+  NavigationController* GetController() { return &controller_; }
 
   // Notifications coming from the RenderFrameHosts ----------------------------
 
@@ -197,7 +203,7 @@ class CONTENT_EXPORT Navigator {
   // commit the current navigation.
   void LogCommitNavigationSent();
 
-  NavigationControllerImpl* controller() { return controller_; }
+  NavigationControllerImpl& controller() { return controller_; }
 
  private:
   friend class NavigatorTestWithBrowserSideNavigation;
@@ -227,9 +233,7 @@ class CONTENT_EXPORT Navigator {
 
   // The NavigationController that will keep track of session history for all
   // RenderFrameHost objects using this Navigator.
-  // TODO(nasko): Move ownership of the NavigationController from
-  // WebContentsImpl to this class.
-  NavigationControllerImpl* controller_;
+  NavigationControllerImpl controller_;
 
   // Used to notify the object embedding this Navigator about navigation
   // events. Can be nullptr in tests.
