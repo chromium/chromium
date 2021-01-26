@@ -242,6 +242,12 @@ void WebviewController::SendNavigationEvent(
     content::NavigationHandle* navigation_handle) {
   DCHECK(!current_navigation_throttle_);
   DCHECK(navigation_handle);
+  if (!client_) {
+    DLOG(INFO)
+        << "Attempt to dispatch navigation event after RPC client invalidation";
+    return;
+  }
+
   std::unique_ptr<webview::WebviewResponse> response =
       std::make_unique<webview::WebviewResponse>();
   auto* navigation_event = response->mutable_navigation_event();
