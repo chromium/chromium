@@ -29,6 +29,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/extensions_guest_view_manager_delegate.h"
@@ -566,4 +567,39 @@ IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, DoNotLoadInSandboxedFrame) {
       content::EvalJs(
           main_rfh,
           "sandbox2.contentDocument.getElementById('fallback').innerText"));
+}
+
+// Tests that a MimeHandlerViewGuest auto-rejects pointer lock requests.
+IN_PROC_BROWSER_TEST_F(MimeHandlerViewTest, RejectPointLock) {
+  GetGuestViewManager()->RegisterTestGuestViewType<MimeHandlerViewGuest>(
+      base::BindRepeating(&TestMimeHandlerViewGuest::Create));
+
+  auto* extension = LoadTestExtension();
+  ASSERT_TRUE(extension);
+
+  ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/test_embedded.html"));
+
+  auto* guest_contents = GetGuestViewManager()->WaitForSingleGuestCreated();
+  // Make sure the load has started, before waiting for it to stop.
+  // This is a little hacky, but will unjank the test for now.
+  while (!guest_contents->IsLoading() &&
+         !guest_contents->GetController().GetLastCommittedEntry()) {
+    base::RunLoop run_loop;
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), TestTimeouts::tiny_timeout());
+    run_loop.Run();
+  }
+  EXPECT_TRUE(WaitForLoadStop(guest_contents));
+  content::RenderFrameHost* guest_rfh = guest_contents->GetMainFrame();
+  EXPECT_EQ(false, content::EvalJs(guest_rfh, R"code(
+    var promise = new Promise((resolve, reject) => {
+      document.addEventListener('pointerlockchange', () => resolve(true));
+      document.addEventListener('pointerlockerror', () => resolve(false));
+    });
+    document.body.requestPointerLock();
+    (async ()=> { return await promise; })();
+  )code",
+                                   content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                                   1 /* world_id */));
 }
