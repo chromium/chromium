@@ -10,6 +10,9 @@ group("wpt_tests_isolate") {
     "//testing/scripts/wpt_common.py",
     "//testing/xvfb.py",
 
+    # WPT tooling
+    "//third_party/wpt_tools/",
+
     # Include blinkpy tools for setting up expectations.
     "//third_party/blink/tools/build_wpt_metadata.py",
     "//third_party/blink/tools/blinkpy/",

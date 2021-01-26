@@ -40,7 +40,7 @@ def _TestWPTManifest(input_api, output_api):
     f.close()
 
     wpt_exec_path = input_api.os_path.join(
-        blink_path, 'tools', 'blinkpy', 'third_party', 'wpt', 'wpt', 'wpt')
+        input_api.change.RepositoryRoot(), 'third_party', 'wpt_tools', 'wpt', 'wpt')
     external_wpt = input_api.os_path.join(
         blink_path, 'web_tests', 'external', 'wpt')
     try:

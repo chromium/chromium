@@ -53,8 +53,8 @@ class WPTServe(server_base.ServerBase):
         finder = PathFinder(fs)
         path_to_pywebsocket = finder.path_from_chromium_base(
             'third_party', 'pywebsocket3', 'src')
-        self.path_to_wpt_support = finder.path_from_blink_tools(
-            'blinkpy', 'third_party', 'wpt')
+        self.path_to_wpt_support = finder.path_from_chromium_base(
+            'third_party', 'wpt_tools')
         path_to_wpt_root = fs.join(self.path_to_wpt_support, 'wpt')
         path_to_wpt_tests = fs.abspath(
             fs.join(self._port_obj.web_tests_dir(), 'external', 'wpt'))

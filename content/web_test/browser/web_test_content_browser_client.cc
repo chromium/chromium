@@ -395,7 +395,7 @@ WebTestContentBrowserClient::GetOriginsRequiringDedicatedProcess() {
     };
 
     // The list of schemes below is based on
-    // third_party/blink/tools/blinkpy/third_party/wpt/wpt.config.json
+    // //third_party/wpt_tools/wpt.config.json
     const char* kOriginTemplates[] = {
         "http://%s/",
         "https://%s/",
