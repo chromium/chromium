@@ -210,10 +210,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 #define SK_DISABLE_REDUCE_OPLIST_SPLITTING
 #endif
 
-#ifndef SK_SUPPORT_LEGACY_PAINT_QUALITY_APIS
-#define SK_SUPPORT_LEGACY_PAINT_QUALITY_APIS
-#endif
-
 // Max. verb count for paths rendered by the edge-AA tessellating path renderer.
 #define GR_AA_TESSELLATOR_MAX_VERB_COUNT 100
 

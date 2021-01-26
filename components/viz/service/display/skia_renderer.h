@@ -280,7 +280,7 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
     base::Optional<gfx::Rect> scissor_rect;
     base::Optional<gfx::RRectF> rounded_corner_bounds;
     SkBlendMode blend_mode;
-    SkFilterQuality filter_quality;
+    SkSamplingOptions sampling;
     SkCanvas::SrcRectConstraint constraint;
 
     BatchedQuadState();

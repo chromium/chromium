@@ -293,14 +293,14 @@ bool UseNearestNeighborSampling(const DrawQuad* quad) {
   }
 }
 
-SkFilterQuality GetFilterQuality(const DrawQuad* quad) {
+SkSamplingOptions GetSampling(const DrawQuad* quad) {
   if (UseNearestNeighborSampling(quad))
-    return kNone_SkFilterQuality;
+    return SkSamplingOptions(SkFilterMode::kNearest);
 
   // Default to bilinear if the quad doesn't specify nearest_neighbor.
   // TODO(penghuang): figure out how to set correct filter quality for YUV and
   // video stream quads.
-  return kLow_SkFilterQuality;
+  return SkSamplingOptions(SkFilterMode::kLinear);
 }
 
 // Returns kFast if sampling outside of vis_tex_coords due to AA or bilerp will
@@ -479,7 +479,7 @@ struct SkiaRenderer::DrawQuadParams {
                  unsigned aa_flags,
                  SkBlendMode blend_mode,
                  float opacity,
-                 SkFilterQuality filter_quality,
+                 const SkSamplingOptions& sampling,
                  const gfx::QuadF* draw_region);
 
   // window_matrix * projection_matrix * quad_to_target_transform normally,
@@ -500,8 +500,8 @@ struct SkiaRenderer::DrawQuadParams {
   SkBlendMode blend_mode;
   // Final opacity of quad
   float opacity;
-  // Resolved filter quality from quad settings
-  SkFilterQuality filter_quality;
+  // Resolved sampling from quad settings
+  SkSamplingOptions sampling;
   // Optional restricted draw geometry, will point to a length 4 SkPoint array
   // with its points in CW order matching Skia's vertex/edge expectations.
   base::Optional<SkDrawRegion> draw_region;
@@ -517,7 +517,6 @@ struct SkiaRenderer::DrawQuadParams {
     if (color_filter) {
       p.setColorFilter(color_filter);
     }
-    p.setFilterQuality(filter_quality);
     p.setBlendMode(blend_mode);
     p.setAlphaf(opacity);
     p.setAntiAlias(aa_flags != SkCanvas::kNone_QuadAAFlags);
@@ -531,7 +530,7 @@ SkiaRenderer::DrawQuadParams::DrawQuadParams(const gfx::Transform& cdt,
                                              unsigned aa_flags,
                                              SkBlendMode blend_mode,
                                              float opacity,
-                                             SkFilterQuality filter_quality,
+                                             const SkSamplingOptions& sampling,
                                              const gfx::QuadF* draw_region)
     : content_device_transform(cdt),
       rect(rect),
@@ -540,7 +539,7 @@ SkiaRenderer::DrawQuadParams::DrawQuadParams(const gfx::Transform& cdt,
       aa_flags(aa_flags),
       blend_mode(blend_mode),
       opacity(opacity),
-      filter_quality(filter_quality) {
+      sampling(sampling) {
   if (draw_region) {
     this->draw_region.emplace(*draw_region);
   }
@@ -1233,7 +1232,7 @@ SkiaRenderer::DrawQuadParams SkiaRenderer::CalculateDrawQuadParams(
       target_to_device * quad->shared_quad_state->quad_to_target_transform,
       gfx::RectF(quad->rect), gfx::RectF(quad->visible_rect),
       SkCanvas::kNone_QuadAAFlags, quad->shared_quad_state->blend_mode,
-      quad->shared_quad_state->opacity, GetFilterQuality(quad), draw_region);
+      quad->shared_quad_state->opacity, GetSampling(quad), draw_region);
 
   params.content_device_transform.FlattenTo2d();
 
@@ -1479,9 +1478,18 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
 
   // Take the highest quality filter, since this single draw will reflect the
   // filtering decisions made both when drawing into the RP and when drawing the
-  // RP results itself.
-  if (bypass_params.filter_quality > params->filter_quality)
-    params->filter_quality = bypass_params.filter_quality;
+  // RP results itself. The ord() lambda simulates this notion of "highest" when
+  // we used to use SkFilterQuality.
+  auto ord = [](const SkSamplingOptions& sampling) {
+    if (sampling.useCubic)
+      return 3;
+    if (sampling.mipmap != SkMipmapMode::kNone)
+      return 2;
+    return sampling.filter == SkFilterMode::kLinear ? 1 : 0;
+  };
+
+  if (ord(bypass_params.sampling) > ord(params->sampling))
+    params->sampling = bypass_params.sampling;
 
   // Rounded corner bounds are in device space, which gets tricky when bypassing
   // the device that the RP would have represented
@@ -1504,7 +1512,7 @@ SkCanvas::SrcRectConstraint SkiaRenderer::ResolveTextureConstraints(
     const gfx::RectF& valid_texel_bounds,
     DrawQuadParams* params) const {
   if (params->aa_flags == SkCanvas::kNone_QuadAAFlags &&
-      params->filter_quality == kNone_SkFilterQuality) {
+      params->sampling == SkSamplingOptions()) {
     // Non-AA and no bilinear filtering so rendering won't filter outside the
     // provided texture coordinates.
     return SkCanvas::kFast_SrcRectConstraint;
@@ -1561,7 +1569,7 @@ bool SkiaRenderer::MustFlushBatchedQuads(const DrawQuad* new_quad,
     return true;
 
   if (batched_quad_state_.blend_mode != params.blend_mode ||
-      batched_quad_state_.filter_quality != params.filter_quality)
+      batched_quad_state_.sampling != params.sampling)
     return true;
 
   if (batched_quad_state_.scissor_rect != params.scissor_rect) {
@@ -1592,7 +1600,7 @@ void SkiaRenderer::AddQuadToBatch(const SkImage* image,
     batched_quad_state_.scissor_rect = params->scissor_rect;
     batched_quad_state_.rounded_corner_bounds = params->rounded_corner_bounds;
     batched_quad_state_.blend_mode = params->blend_mode;
-    batched_quad_state_.filter_quality = params->filter_quality;
+    batched_quad_state_.sampling = params->sampling;
     batched_quad_state_.constraint = constraint;
   }
   DCHECK(batched_quad_state_.constraint == constraint);
@@ -1626,13 +1634,12 @@ void SkiaRenderer::FlushBatchedQuads() {
   sk_sp<SkColorFilter> color_filter = GetContentColorFilter();
   if (color_filter)
     paint.setColorFilter(color_filter);
-  paint.setFilterQuality(batched_quad_state_.filter_quality);
   paint.setBlendMode(batched_quad_state_.blend_mode);
 
   current_canvas_->experimental_DrawEdgeAAImageSet(
       &batched_quads_.front(), batched_quads_.size(),
-      batched_draw_regions_.data(), &batched_cdt_matrices_.front(), &paint,
-      batched_quad_state_.constraint);
+      batched_draw_regions_.data(), &batched_cdt_matrices_.front(),
+      batched_quad_state_.sampling, &paint, batched_quad_state_.constraint);
 
   batched_quads_.clear();
   batched_draw_regions_.clear();
@@ -1720,7 +1727,8 @@ void SkiaRenderer::DrawSingleImage(const SkImage* image,
   const SkPoint* draw_region =
       params->draw_region.has_value() ? params->draw_region->points : nullptr;
   current_canvas_->experimental_DrawEdgeAAImageSet(
-      &entry, 1, draw_region, bypass_transform, paint, constraint);
+      &entry, 1, draw_region, bypass_transform, params->sampling, paint,
+      constraint);
 }
 
 void SkiaRenderer::DrawDebugBorderQuad(const DebugBorderDrawQuad* quad,
@@ -1761,9 +1769,8 @@ void SkiaRenderer::DrawPictureQuad(const PictureDrawQuad* quad,
   // then blended as a single layer at the end.
   const bool needs_transparency =
       params->opacity < 1.f || params->blend_mode != SkBlendMode::kSrcOver;
-  const bool disable_image_filtering =
-      disable_picture_quad_image_filtering_ ||
-      params->filter_quality == kNone_SkFilterQuality;
+  const bool disable_image_filtering = disable_picture_quad_image_filtering_ ||
+                                       params->sampling == SkSamplingOptions();
 
   SkAutoCanvasRestore acr(current_canvas_, true /* do_save */);
   PrepareCanvas(params->scissor_rect, params->rounded_corner_bounds,
@@ -2511,10 +2518,9 @@ void SkiaRenderer::DrawRenderPassQuad(const AggregatedRenderPassDrawQuad* quad,
   if (!content_image)
     return;
 
-  // If the RP generated mipmaps when it was created, set quality to medium,
-  // which turns on mipmap filtering in Skia.
   if (backing.generate_mipmap)
-    params->filter_quality = kMedium_SkFilterQuality;
+    params->sampling =
+        SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear);
 
   params->vis_tex_coords = cc::MathUtil::ScaleRectProportional(
       quad->tex_coord_rect, gfx::RectF(quad->rect), params->visible_rect);
@@ -2824,10 +2830,9 @@ void SkiaRenderer::PrepareRenderPassOverlay(CALayerOverlay* overlay) {
       return;
     }
 
-    // If the RP generated mipmaps when it was created, set quality to medium,
-    // which turns on mipmap filtering in Skia.
     if (backing->generate_mipmap)
-      params.filter_quality = kMedium_SkFilterQuality;
+      params.sampling =
+          SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear);
 
     params.vis_tex_coords = cc::MathUtil::ScaleRectProportional(
         quad->tex_coord_rect, gfx::RectF(quad->rect), params.visible_rect);
