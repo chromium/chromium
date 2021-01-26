@@ -99,7 +99,7 @@ IdpNetworkRequestManager::IdpNetworkRequestManager(const GURL& provider,
 
 IdpNetworkRequestManager::~IdpNetworkRequestManager() = default;
 
-void IdpNetworkRequestManager::FetchIDPWellKnown(
+void IdpNetworkRequestManager::FetchIdpWellKnown(
     FetchWellKnownCallback callback) {
   DCHECK(!url_loader_);
   DCHECK(!idp_well_known_callback_);

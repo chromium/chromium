@@ -83,7 +83,7 @@ class IdpNetworkRequestManager {
   IdpNetworkRequestManager& operator=(const IdpNetworkRequestManager&) = delete;
 
   // Attempt to fetch the IDP's WebID parameters from the its .well-known file.
-  void FetchIDPWellKnown(FetchWellKnownCallback);
+  void FetchIdpWellKnown(FetchWellKnownCallback);
 
   // Transmit the OAuth request to the IDP.
   void SendSigninRequest(const GURL& signin_url,

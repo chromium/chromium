@@ -129,7 +129,7 @@ void FederatedAuthRequestImpl::OnSigninApproved(
     return;
   }
 
-  network_manager_->FetchIDPWellKnown(
+  network_manager_->FetchIdpWellKnown(
       base::BindOnce(&FederatedAuthRequestImpl::OnWellKnownFetched,
                      weak_ptr_factory_.GetWeakPtr()));
 }
