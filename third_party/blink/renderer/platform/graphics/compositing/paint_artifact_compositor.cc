@@ -154,8 +154,11 @@ scoped_refptr<cc::Layer> PaintArtifactCompositor::WrappedCcLayerForPendingLayer(
 const TransformPaintPropertyNode&
 PaintArtifactCompositor::NearestScrollTranslationForLayer(
     const PendingLayer& pending_layer) {
-  if (const auto* scroll_translation = ScrollTranslationForLayer(pending_layer))
-    return *scroll_translation;
+  if (pending_layer.compositing_type != PendingLayer::kPreCompositedLayer) {
+    if (const auto* scroll_translation =
+            ScrollTranslationForLayer(pending_layer))
+      return *scroll_translation;
+  }
 
   const auto& transform = pending_layer.property_tree_state.Transform();
   // TODO(pdr): This could be a performance issue because it crawls up the
@@ -167,6 +170,7 @@ PaintArtifactCompositor::NearestScrollTranslationForLayer(
 const TransformPaintPropertyNode*
 PaintArtifactCompositor::ScrollTranslationForLayer(
     const PendingLayer& pending_layer) {
+  DCHECK_NE(pending_layer.compositing_type, PendingLayer::kPreCompositedLayer);
   // Not checking PendingLayer::kScrollHitTestLayer because a scroll hit test
   // chunk without a direct compositing reasons can still be composited (e.g.
   // when it can't be merged into any other layer).

@@ -94,6 +94,7 @@ class TestPaintArtifact {
   // automatically created client.
   TestPaintArtifact& RectDrawing(const IntRect& bounds, Color color);
   TestPaintArtifact& ScrollHitTest(
+      const IntRect&,
       const TransformPaintPropertyNode* scroll_translation);
 
   TestPaintArtifact& ForeignLayer(scoped_refptr<cc::Layer> layer,
@@ -105,6 +106,7 @@ class TestPaintArtifact {
                                  Color color);
   TestPaintArtifact& ScrollHitTest(
       DisplayItemClient&,
+      const IntRect&,
       const TransformPaintPropertyNode* scroll_translation);
 
   // Sets fake bounds for the last paint chunk. Note that the bounds will be
