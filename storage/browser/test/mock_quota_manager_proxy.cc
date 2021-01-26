@@ -16,6 +16,7 @@ MockQuotaManagerProxy::MockQuotaManagerProxy(
     MockQuotaManager* quota_manager,
     scoped_refptr<base::SequencedTaskRunner> quota_manager_task_runner)
     : QuotaManagerProxy(quota_manager, std::move(quota_manager_task_runner)),
+      mock_quota_manager_(quota_manager),
       storage_accessed_count_(0),
       storage_modified_count_(0),
       last_notified_type_(blink::mojom::StorageType::kUnknown),
@@ -55,8 +56,8 @@ void MockQuotaManagerProxy::GetUsageAndQuota(
     const url::Origin& origin,
     blink::mojom::StorageType type,
     QuotaManager::UsageAndQuotaCallback callback) {
-  if (mock_manager()) {
-    mock_manager()->GetUsageAndQuota(origin, type, std::move(callback));
+  if (mock_quota_manager_) {
+    mock_quota_manager_->GetUsageAndQuota(origin, type, std::move(callback));
   }
 }
 
@@ -79,8 +80,9 @@ void MockQuotaManagerProxy::NotifyStorageModified(
   last_notified_origin_ = origin;
   last_notified_type_ = type;
   last_notified_delta_ = delta;
-  if (mock_manager())
-    mock_manager()->UpdateUsage(origin, type, delta);
+  if (mock_quota_manager_) {
+    mock_quota_manager_->UpdateUsage(origin, type, delta);
+  }
 }
 
 MockQuotaManagerProxy::~MockQuotaManagerProxy() {

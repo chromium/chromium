@@ -285,13 +285,6 @@ void QuotaManagerProxy::WithdrawOverridesForHandle(int handle_id) {
     quota_manager_->WithdrawOverridesForHandle(handle_id);
 }
 
-QuotaManager* QuotaManagerProxy::quota_manager() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_sequence_checker_);
-  DCHECK(quota_manager_task_runner_->RunsTasksInCurrentSequence());
-
-  return quota_manager_;
-}
-
 void QuotaManagerProxy::GetOverrideHandleId(
     scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     base::OnceCallback<void(int)> callback) {

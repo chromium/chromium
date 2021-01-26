@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "net/base/escape.h"
 #include "net/url_request/url_request.h"
@@ -414,9 +415,8 @@ void FileSystemOperationImpl::GetUsageAndQuotaThenRunTask(
   }
 
   DCHECK(quota_manager_proxy);
-  DCHECK(quota_manager_proxy->quota_manager());
-  quota_manager_proxy->quota_manager()->GetUsageAndQuota(
-      url::Origin::Create(url.origin().GetURL()),
+  quota_manager_proxy->GetUsageAndQuota(
+      base::SequencedTaskRunnerHandle::Get().get(), url.origin(),
       FileSystemTypeToQuotaStorageType(url.type()),
       base::BindOnce(&FileSystemOperationImpl::DidGetUsageAndQuotaAndRunTask,
                      weak_ptr_, std::move(task), std::move(error_callback)));

@@ -117,10 +117,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       base::OnceClosure callback);
   void WithdrawOverridesForHandle(int handle_id);
 
-  // This method may only be called on the QuotaManager sequence.
-  // It may return nullptr if the manager has already been deleted.
-  QuotaManager* quota_manager() const;
-
   // Called right before the QuotaManager is destroyed.
   // This method may only be called on the QuotaManager sequence.
   void InvalidateQuotaManager(base::PassKey<QuotaManager>);

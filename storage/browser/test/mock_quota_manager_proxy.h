@@ -88,9 +88,7 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   ~MockQuotaManagerProxy() override;
 
  private:
-  MockQuotaManager* mock_manager() const {
-    return static_cast<MockQuotaManager*>(quota_manager());
-  }
+  MockQuotaManager* const mock_quota_manager_;
 
   int storage_accessed_count_;
   int storage_modified_count_;
