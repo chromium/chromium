@@ -363,6 +363,8 @@ crbug.com/1021566 [ skia-renderer-dawn ] Pixel_WebGLGreenTriangle_AA_Alpha [ Ski
 crbug.com/1021566 [ skia-renderer-dawn ] Pixel_WebGLGreenTriangle_AA_NoAlpha [ Skip ]
 crbug.com/1021566 [ skia-renderer-dawn ] Pixel_WebGLGreenTriangle_NoAA_Alpha [ Skip ]
 crbug.com/1021566 [ skia-renderer-dawn ] Pixel_WebGLGreenTriangle_NoAA_NoAlpha [ Skip ]
+crbug.com/1170369 [ linux skia-renderer-dawn ] Pixel_WebGLPreservedAfterTabSwitch [ Failure ]
+crbug.com/1170369 [ win skia-renderer-dawn ] Pixel_WebGLPreservedAfterTabSwitch [ Failure ]
 
 # DirectComposition tests are not expected to work properly on Windows 7.
 crbug.com/1086758 [ win7 ] Pixel_DirectComposition* [ Skip ]
