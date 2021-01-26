@@ -19,13 +19,17 @@
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using extensions::Extension;
 
 namespace browser_sync {
 
 namespace {
+
+using extensions::Extension;
+
+using ::testing::Contains;
+using ::testing::Key;
 
 namespace keys = extensions::manifest_keys;
 
@@ -113,8 +117,8 @@ TEST_F(SyncChromeExtensionsActivityMonitorTest, Basic) {
   monitor_.GetExtensionsActivity()->GetAndClearRecords(&results);
 
   EXPECT_EQ(2U, results.size());
-  EXPECT_TRUE(results.find(id1_) != results.end());
-  EXPECT_TRUE(results.find(id2_) != results.end());
+  EXPECT_THAT(results, Contains(Key(id1_)));
+  EXPECT_THAT(results, Contains(Key(id2_)));
   EXPECT_EQ(writes_by_extension1, results[id1_].bookmark_write_count);
   EXPECT_EQ(writes_by_extension2, results[id2_].bookmark_write_count);
 }

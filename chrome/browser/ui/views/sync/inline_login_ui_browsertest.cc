@@ -338,15 +338,15 @@ IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, OneProcessLimit) {
 
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOfferNoProfile) {
   std::string error_message;
-  EXPECT_FALSE(CanOfferSignin(NULL, CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS, "12345",
-                              "user@gmail.com", &error_message));
+  EXPECT_FALSE(CanOfferSignin(nullptr, CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS,
+                              "12345", "user@gmail.com", &error_message));
   EXPECT_EQ("", error_message);
 }
 
 IN_PROC_BROWSER_TEST_F(InlineLoginUIBrowserTest, CanOffer) {
   EXPECT_TRUE(CanOfferSignin(browser()->profile(),
                              CAN_OFFER_SIGNIN_FOR_ALL_ACCOUNTS, "12345",
-                             "user@gmail.com", NULL));
+                             "user@gmail.com", nullptr));
 
   std::string error_message;
 

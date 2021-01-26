@@ -63,7 +63,7 @@ class UserConsentEqualityChecker : public SingleClientStatusChangeChecker {
     for (const SyncEntity& entity : entities) {
       UserConsentSpecifics server_specifics = entity.specifics().user_consent();
       auto iter = expected_specifics_.find(server_specifics.consent_case());
-      EXPECT_TRUE(expected_specifics_.end() != iter);
+      EXPECT_NE(expected_specifics_.end(), iter);
       if (expected_specifics_.end() == iter) {
         return false;
       }

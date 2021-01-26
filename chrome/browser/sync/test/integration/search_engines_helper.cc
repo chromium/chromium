@@ -24,14 +24,19 @@
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/search_engines/template_url.h"
 
+namespace {
+
 using sync_datatype_helper::test;
 
-namespace {
+using ::testing::Contains;
+using ::testing::Key;
+using ::testing::Not;
 
 GUIDToTURLMap CreateGUIDToTURLMap(TemplateURLService* service) {
   GUIDToTURLMap map;
   for (TemplateURL* turl : service->GetTemplateURLs()) {
-    EXPECT_TRUE(map.find(turl->sync_guid()) == map.end());
+    EXPECT_THAT(map, Not(Contains(Key(turl->sync_guid()))))
+        << "Found two template URLs with same GUID";
     map[turl->sync_guid()] = turl;
   }
   return map;

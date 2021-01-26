@@ -25,6 +25,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace history {
+
+namespace {
+
 using base::Time;
 using base::TimeDelta;
 using sync_pb::TypedUrlSpecifics;
@@ -38,14 +42,12 @@ using syncer::MetadataChangeList;
 using syncer::MockModelTypeChangeProcessor;
 using testing::_;
 using testing::AllOf;
+using testing::Contains;
 using testing::Mock;
 using testing::NiceMock;
+using testing::Not;
 using testing::Pointee;
 using testing::Return;
-
-namespace history {
-
-namespace {
 
 // Constants used to limit size of visits processed. See
 // equivalent constants in typed_url_sync_bridge.cc for descriptions.
@@ -1128,8 +1130,7 @@ TEST_F(TypedURLSyncBridgeTest, ExpireLocalTypedUrl) {
   metadata_store()->GetAllSyncMetadata(&smaller_metadata_batch);
   EXPECT_EQ(2u, smaller_metadata_batch.GetAllMetadata().size());
   for (const auto& kv : smaller_metadata_batch.GetAllMetadata()) {
-    EXPECT_TRUE(deleted_storage_keys.find(kv.first) ==
-                deleted_storage_keys.end());
+    EXPECT_THAT(deleted_storage_keys, Not(Contains(kv.first)));
   }
 }
 

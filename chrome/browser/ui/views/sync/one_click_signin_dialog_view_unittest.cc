@@ -48,7 +48,7 @@ class OneClickSigninDialogViewTest : public ChromeViewsTestBase,
 
     OneClickSigninDialogView* view =
         OneClickSigninDialogView::view_for_testing();
-    EXPECT_TRUE(view != NULL);
+    EXPECT_NE(nullptr, view);
     return view;
   }
 
