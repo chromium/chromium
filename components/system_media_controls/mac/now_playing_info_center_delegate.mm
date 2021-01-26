@@ -15,7 +15,7 @@ namespace internal {
 
 namespace {
 
-API_AVAILABLE(macos(10.12.2))
+API_AVAILABLE(macos(10.13.1))
 MPNowPlayingPlaybackState PlaybackStatusToMPNowPlayingPlaybackState(
     SystemMediaControls::PlaybackStatus status) {
   switch (status) {
@@ -62,6 +62,26 @@ void NowPlayingInfoCenterDelegate::SetArtist(const base::string16& artist) {
 void NowPlayingInfoCenterDelegate::SetAlbum(const base::string16& album) {
   [now_playing_info_center_delegate_cocoa_
       setAlbum:base::SysUTF16ToNSString(album)];
+}
+
+void NowPlayingInfoCenterDelegate::SetPosition(
+    const media_session::MediaPosition& position) {
+  auto time_since_epoch =
+      position.last_updated_time() - base::TimeTicks::UnixEpoch();
+
+  [now_playing_info_center_delegate_cocoa_
+      setPlaybackRate:[NSNumber numberWithDouble:position.playback_rate()]];
+  [now_playing_info_center_delegate_cocoa_
+      setCurrentPlaybackDate:
+          [NSDate dateWithTimeIntervalSince1970:time_since_epoch.InSecondsF()]];
+  [now_playing_info_center_delegate_cocoa_
+      setElapsedPlaybackTime:
+          [NSNumber numberWithFloat:position
+                                        .GetPositionAtTime(
+                                            position.last_updated_time())
+                                        .InSecondsF()]];
+  [now_playing_info_center_delegate_cocoa_
+      setDuration:[NSNumber numberWithFloat:position.duration().InSecondsF()]];
 }
 
 void NowPlayingInfoCenterDelegate::ClearMetadata() {

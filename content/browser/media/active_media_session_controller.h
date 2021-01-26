@@ -42,7 +42,7 @@ class CONTENT_EXPORT ActiveMediaSessionController
   void MediaSessionChanged(
       const base::Optional<base::UnguessableToken>& request_id) override {}
   void MediaSessionPositionChanged(
-      const base::Optional<media_session::MediaPosition>& position) override {}
+      const base::Optional<media_session::MediaPosition>& position) override;
 
   // ui::MediaKeysListener::Delegate:
   void OnMediaKeysAccelerator(const ui::Accelerator& accelerator) override;
@@ -54,6 +54,7 @@ class CONTENT_EXPORT ActiveMediaSessionController
   void OnPause();
   void OnPlayPause();
   void OnStop();
+  void OnSeekTo(const base::TimeDelta& time);
 
   void FlushForTesting();
   void SetMediaControllerForTesting(
@@ -88,6 +89,9 @@ class CONTENT_EXPORT ActiveMediaSessionController
   // Used to receive updates to the active media controller.
   mojo::Receiver<media_session::mojom::MediaControllerObserver>
       media_controller_observer_receiver_{this};
+
+  // Stores the current playback position.
+  base::Optional<media_session::MediaPosition> position_;
 };
 
 }  // namespace content

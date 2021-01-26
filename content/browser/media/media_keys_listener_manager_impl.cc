@@ -192,6 +192,12 @@ void MediaKeysListenerManagerImpl::OnStop() {
   MaybeSendKeyCode(ui::VKEY_MEDIA_STOP);
 }
 
+void MediaKeysListenerManagerImpl::OnSeekTo(const base::TimeDelta& time) {
+  if (!CanActiveMediaSessionControllerReceiveEvents())
+    return;
+  active_media_session_controller_->OnSeekTo(time);
+}
+
 void MediaKeysListenerManagerImpl::MaybeSendKeyCode(ui::KeyboardCode key_code) {
   if (!delegate_map_.contains(key_code))
     return;

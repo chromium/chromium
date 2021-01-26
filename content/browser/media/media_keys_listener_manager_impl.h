@@ -61,6 +61,7 @@ class CONTENT_EXPORT MediaKeysListenerManagerImpl
   void OnPause() override;
   void OnPlayPause() override;
   void OnStop() override;
+  void OnSeekTo(const base::TimeDelta& time) override;
 
   // Informs the MediaKeysListener whether or not media is playing.
   void SetIsMediaPlaying(bool is_playing);

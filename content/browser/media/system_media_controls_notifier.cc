@@ -133,6 +133,22 @@ void SystemMediaControlsNotifier::MediaSessionMetadataChanged(
   }
 }
 
+void SystemMediaControlsNotifier::MediaSessionActionsChanged(
+    const std::vector<media_session::mojom::MediaSessionAction>& actions) {
+  // SeekTo is not often supported so we will emulate "seekto" using
+  // "seekforward" and "seekbackward" if they exist.
+  bool seek_available = false;
+  for (const media_session::mojom::MediaSessionAction& action : actions) {
+    if (action == media_session::mojom::MediaSessionAction::kSeekTo ||
+        action == media_session::mojom::MediaSessionAction::kSeekBackward ||
+        action == media_session::mojom::MediaSessionAction::kSeekForward) {
+      seek_available = true;
+      break;
+    }
+  }
+  system_media_controls_->SetIsSeekToEnabled(seek_available);
+}
+
 void SystemMediaControlsNotifier::MediaControllerImageChanged(
     media_session::mojom::MediaSessionImageType type,
     const SkBitmap& bitmap) {
@@ -154,6 +170,17 @@ void SystemMediaControlsNotifier::MediaControllerImageChanged(
       system_media_controls_->SetThumbnail(*icon->bitmap());
     else
       system_media_controls_->ClearThumbnail();
+  }
+}
+
+void SystemMediaControlsNotifier::MediaSessionPositionChanged(
+    const base::Optional<media_session::MediaPosition>& position) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (position) {
+    system_media_controls_->SetPosition(*position);
+  } else {
+    system_media_controls_->ClearMetadata();
   }
 }
 

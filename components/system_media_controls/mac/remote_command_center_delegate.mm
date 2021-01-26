@@ -21,6 +21,7 @@ RemoteCommandCenterDelegate::~RemoteCommandCenterDelegate() {
   SetIsPreviousEnabled(false);
   SetIsPlayPauseEnabled(false);
   SetIsStopEnabled(false);
+  SetIsSeekToEnabled(false);
 }
 
 void RemoteCommandCenterDelegate::AddObserver(
@@ -63,6 +64,13 @@ void RemoteCommandCenterDelegate::SetIsStopEnabled(bool value) {
   [remote_command_center_delegate_cocoa_ setCanStop:value];
 }
 
+void RemoteCommandCenterDelegate::SetIsSeekToEnabled(bool value) {
+  if (!ShouldSetCommandEnabled(Command::kSeekTo, value))
+    return;
+
+  [remote_command_center_delegate_cocoa_ setCanSeekTo:value];
+}
+
 void RemoteCommandCenterDelegate::OnNext() {
   DCHECK(enabled_commands_.contains(Command::kNextTrack));
   for (auto& observer : observers_)
@@ -97,6 +105,12 @@ void RemoteCommandCenterDelegate::OnStop() {
   DCHECK(enabled_commands_.contains(Command::kStop));
   for (auto& observer : observers_)
     observer.OnStop();
+}
+
+void RemoteCommandCenterDelegate::OnSeekTo(const base::TimeDelta& time) {
+  DCHECK(enabled_commands_.contains(Command::kSeekTo));
+  for (auto& observer : observers_)
+    observer.OnSeekTo(time);
 }
 
 bool RemoteCommandCenterDelegate::ShouldSetCommandEnabled(Command command,

@@ -87,6 +87,11 @@ void ActiveMediaSessionController::MediaSessionActionsChanged(
   }
 }
 
+void ActiveMediaSessionController::MediaSessionPositionChanged(
+    const base::Optional<media_session::MediaPosition>& position) {
+  position_ = position;
+}
+
 void ActiveMediaSessionController::FlushForTesting() {
   media_controller_remote_.FlushForTesting();  // IN-TEST
 }
@@ -127,6 +132,17 @@ void ActiveMediaSessionController::OnPlayPause() {
 
 void ActiveMediaSessionController::OnStop() {
   MaybePerformAction(MediaSessionAction::kStop);
+}
+
+void ActiveMediaSessionController::OnSeekTo(const base::TimeDelta& time) {
+  if (base::Contains(actions_,
+                     media_session::mojom::MediaSessionAction::kSeekTo)) {
+    media_controller_remote_->SeekTo(time);
+  } else if (position_) {
+    auto time_diff =
+        time - position_->GetPositionAtTime(base::TimeTicks::Now());
+    media_controller_remote_->Seek(time_diff);
+  }
 }
 
 void ActiveMediaSessionController::MaybePerformAction(

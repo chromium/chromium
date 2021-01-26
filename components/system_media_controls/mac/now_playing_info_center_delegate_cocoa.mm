@@ -58,6 +58,29 @@
   [self updateNowPlayingInfo];
 }
 
+- (void)setPlaybackRate:(NSNumber*)rate {
+  [_nowPlayingInfo setObject:rate forKey:MPNowPlayingInfoPropertyPlaybackRate];
+  [self updateNowPlayingInfo];
+}
+
+- (void)setCurrentPlaybackDate:(NSDate*)date {
+  [_nowPlayingInfo setObject:date
+                      forKey:MPNowPlayingInfoPropertyCurrentPlaybackDate];
+  [self updateNowPlayingInfo];
+}
+
+- (void)setElapsedPlaybackTime:(NSNumber*)time {
+  [_nowPlayingInfo setObject:time
+                      forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+  [self updateNowPlayingInfo];
+}
+
+- (void)setDuration:(NSNumber*)duration {
+  [_nowPlayingInfo setObject:duration
+                      forKey:MPMediaItemPropertyPlaybackDuration];
+  [self updateNowPlayingInfo];
+}
+
 - (void)clearMetadata {
   [self initializeNowPlayingInfoValues];
   [self updateNowPlayingInfo];

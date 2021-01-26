@@ -49,6 +49,7 @@ class MockSystemMediaControlsObserver : public SystemMediaControlsObserver {
   MOCK_METHOD0(OnPlayPause, void());
   MOCK_METHOD0(OnStop, void());
   MOCK_METHOD0(OnPlay, void());
+  MOCK_METHOD1(OnSeekTo, void(const base::TimeDelta&));
 };
 
 class SystemMediaControlsLinuxTest : public testing::Test,
@@ -163,6 +164,7 @@ class SystemMediaControlsLinuxTest : public testing::Test,
   void OnPause() override {}
   void OnPlayPause() override {}
   void OnStop() override {}
+  void OnSeekTo(const base::TimeDelta& time) override {}
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> service_wait_loop_;
