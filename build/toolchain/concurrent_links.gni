@@ -10,6 +10,7 @@ assert(current_toolchain == default_toolchain)
 import("//build/config/android/config.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/config/coverage/coverage.gni")
 import("//build/config/mac/symbols.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
@@ -37,9 +38,14 @@ if (concurrent_links == -1) {
     } else {
       _args += [ "--mem_per_link_gb=10" ]
     }
-  } else if (use_clang_coverage || use_sanitizer_coverage ||
-             use_fuzzing_engine) {
-    # Sanitizer coverage instrumentation increases linker memory consumption
+  } else if ((use_clang_coverage &&
+              # When coverage_instrumentation_input_file is not empty it means
+              # we're only instrumenting changed files and not using a lot of
+              # memory. Likewise, when it's empty we're building everything with
+              # coverage, which requires more memory.
+              coverage_instrumentation_input_file == "") ||
+             use_sanitizer_coverage || use_fuzzing_engine) {
+    # Full sanitizer coverage instrumentation increases linker memory consumption
     # significantly.
     _args = [ "--mem_per_link_gb=16" ]
   } else if (is_win && symbol_level == 1 && !is_debug && is_component_build) {
