@@ -141,7 +141,8 @@ class PrintPreviewUI : public ConstrainedWebDialogUI,
   // Determines whether to cancel a print preview request based on the request
   // id.
   // Can be called from any thread.
-  static bool ShouldCancelRequest(int preview_ui_id, int request_id);
+  static bool ShouldCancelRequest(const base::Optional<int32_t>& preview_ui_id,
+                                  int request_id);
 
   // Returns an id to uniquely identify this PrintPreviewUI.
   base::Optional<int32_t> GetIDForPrintPreviewUI() const;

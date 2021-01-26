@@ -589,7 +589,7 @@ void PrintPreviewUI::NotifyUIPreviewPageReady(
     return;
 
   // Don't bother notifying the UI if this request has been cancelled already.
-  if (ShouldCancelRequest(*id_, request_id))
+  if (ShouldCancelRequest(id_, request_id))
     return;
 
   DCHECK_NE(page_number, kInvalidPageIndex);
@@ -609,7 +609,7 @@ void PrintPreviewUI::NotifyUIPreviewDocumentReady(
     return;
 
   // Don't bother notifying the UI if this request has been cancelled already.
-  if (ShouldCancelRequest(*id_, request_id))
+  if (ShouldCancelRequest(id_, request_id))
     return;
 
   if (!initial_preview_start_time_.is_null()) {
@@ -632,7 +632,7 @@ void PrintPreviewUI::OnCompositePdfPageDone(
     base::ReadOnlySharedMemoryRegion region) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (ShouldCancelRequest(*id_, request_id))
+  if (ShouldCancelRequest(id_, request_id))
     return;
 
   if (status != mojom::PrintCompositor::Status::kSuccess) {
@@ -707,7 +707,7 @@ void PrintPreviewUI::OnCompositeToPdfDone(
     base::ReadOnlySharedMemoryRegion region) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (ShouldCancelRequest(*id_, request_id))
+  if (ShouldCancelRequest(id_, request_id))
     return;
 
   if (status != mojom::PrintCompositor::Status::kSuccess) {
@@ -749,7 +749,7 @@ void PrintPreviewUI::OnPrepareForDocumentToPdfDone(
     mojom::PrintCompositor::Status status) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (ShouldCancelRequest(*id_, request_id))
+  if (ShouldCancelRequest(id_, request_id))
     return;
 
   if (status != mojom::PrintCompositor::Status::kSuccess)
@@ -816,9 +816,13 @@ void PrintPreviewUI::SetInitialParams(
 }
 
 // static
-bool PrintPreviewUI::ShouldCancelRequest(int preview_ui_id, int request_id) {
+bool PrintPreviewUI::ShouldCancelRequest(
+    const base::Optional<int32_t>& preview_ui_id,
+    int request_id) {
+  if (!preview_ui_id)
+    return true;
   int current_id = -1;
-  if (!g_print_preview_request_id_map.Get().Get(preview_ui_id, &current_id))
+  if (!g_print_preview_request_id_map.Get().Get(*preview_ui_id, &current_id))
     return true;
   return request_id != current_id;
 }
@@ -1041,7 +1045,7 @@ void PrintPreviewUI::DidPreviewPage(mojom::DidPreviewPageParamsPtr params,
 
   if (ShouldUseCompositor(this)) {
     // Don't bother compositing if this request has been cancelled already.
-    if (ShouldCancelRequest(*id_, request_id))
+    if (ShouldCancelRequest(id_, request_id))
       return;
 
     WebContents* web_contents = GetInitiator(web_ui());
@@ -1100,7 +1104,7 @@ void PrintPreviewUI::MetafileReadyForPrinting(
 
   if (composite_document_using_individual_pages) {
     // Don't bother compositing if this request has been cancelled already.
-    if (ShouldCancelRequest(*id_, request_id))
+    if (ShouldCancelRequest(id_, request_id))
       return;
 
     auto callback = base::BindOnce(&PrintPreviewUI::OnCompositeToPdfDone,

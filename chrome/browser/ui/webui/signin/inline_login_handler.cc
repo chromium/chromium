@@ -38,9 +38,9 @@
 const char kSignInPromoQueryKeyShowAccountManagement[] =
     "showAccountManagement";
 
-InlineLoginHandler::InlineLoginHandler() {}
+InlineLoginHandler::InlineLoginHandler() = default;
 
-InlineLoginHandler::~InlineLoginHandler() {}
+InlineLoginHandler::~InlineLoginHandler() = default;
 
 void InlineLoginHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -62,6 +62,10 @@ void InlineLoginHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "dialogClose", base::BindRepeating(&InlineLoginHandler::HandleDialogClose,
                                          base::Unretained(this)));
+}
+
+void InlineLoginHandler::OnJavascriptDisallowed() {
+  weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void InlineLoginHandler::HandleInitializeMessage(const base::ListValue* args) {

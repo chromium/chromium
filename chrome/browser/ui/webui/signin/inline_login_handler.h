@@ -32,6 +32,7 @@ class InlineLoginHandler : public content::WebUIMessageHandler {
 
   // content::WebUIMessageHandler overrides:
   void RegisterMessages() override;
+  void OnJavascriptDisallowed() override;
 
  protected:
   // Enum for gaia auth mode, must match AuthMode defined in

@@ -121,6 +121,10 @@ void WebUIImpl::RenderFrameHostUnloading() {
   DisallowJavascriptOnAllHandlers();
 }
 
+void WebUIImpl::RenderFrameDeleted() {
+  DisallowJavascriptOnAllHandlers();
+}
+
 void WebUIImpl::SetupMojoConnection() {
   // TODO(nasko): WebUI mojo might be useful to be registered for
   // subframes as well, though at this time there is no such usage.

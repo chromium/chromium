@@ -2585,6 +2585,7 @@ void RenderFrameHostImpl::RenderFrameDeleted() {
   }
 
   if (web_ui_) {
+    web_ui_->RenderFrameDeleted();
     web_ui_->InvalidateMojoConnection();
   }
   render_frame_state_ = RenderFrameState::kDeleted;

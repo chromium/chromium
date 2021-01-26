@@ -45,6 +45,11 @@ class CONTENT_EXPORT WebUIImpl : public WebUI,
   // Called when the owning RenderFrameHost has started unloading.
   void RenderFrameHostUnloading();
 
+  // Called when the renderer-side frame is destroyed, along with any mojo
+  // connections to it. The browser can not attempt to communicate with the
+  // renderer afterward.
+  void RenderFrameDeleted();
+
   // Called right after AllowBindings is notified to a RenderFrame.
   void SetupMojoConnection();
 

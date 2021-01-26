@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "base/values.h"
 #include "content/common/content_export.h"
@@ -33,8 +34,8 @@ class WebUIImpl;
 // host is destroyed.
 class CONTENT_EXPORT WebUIMessageHandler {
  public:
-  WebUIMessageHandler() : javascript_allowed_(false), web_ui_(nullptr) {}
-  virtual ~WebUIMessageHandler() {}
+  WebUIMessageHandler() = default;
+  virtual ~WebUIMessageHandler() = default;
 
   // Call this when a page should not receive JavaScript messages.
   void DisallowJavascript();
@@ -89,6 +90,8 @@ class CONTENT_EXPORT WebUIMessageHandler {
   // from the allowed state. This will never be called before
   // OnJavascriptAllowed has been called. Subclasses should override this method
   // to deregister or disabled observers that push JavaScript calls to the page.
+  // Any WeakPtrFactory used for async tasks that would talk to the renderer
+  // must by invalidated by the subclass when this is called.
   virtual void OnJavascriptDisallowed() {}
 
   // Helper method for responding to Javascript requests initiated with
@@ -148,9 +151,9 @@ class CONTENT_EXPORT WebUIMessageHandler {
   // http://crbug.com/610450
 
   // True if the page is for JavaScript calls from this handler.
-  bool javascript_allowed_;
+  bool javascript_allowed_ = false;
 
-  WebUI* web_ui_;
+  WebUI* web_ui_ = nullptr;
 };
 
 }  // namespace content
