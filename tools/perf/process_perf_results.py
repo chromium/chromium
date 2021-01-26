@@ -650,8 +650,8 @@ def main():
   parser.add_argument(
       '--skip-perf',
       action='store_true',
-      help='In lightweight mode, this indicates the workflow is from processor,'
-      ' otherwise its value is ignored.')
+      help='In lightweight mode, using --skip-perf will skip the performance'
+      ' data handling.')
   parser.add_argument(
       '--lightweight',
       action='store_true',
