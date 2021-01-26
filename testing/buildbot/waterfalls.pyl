@@ -305,6 +305,7 @@
           'gtest_tests': 'lacros_tast_tests_eve',
           'isolated_scripts': 'chrome_sizes',
         },
+        'os_type': 'chromeos',
       },
       'linux-chrome': {
         'additional_compile_targets': [
