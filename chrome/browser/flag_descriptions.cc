@@ -3304,12 +3304,6 @@ const char kAndroidDarkSearchDescription[] =
     "If enabled, users will see a darkened search page if Chrome is in "
     "nightmode as well.";
 
-const char kAndroidNightModeTabReparentingName[] =
-    "Android Chrome UI dark mode tab reparenting";
-const char kAndroidNightModeTabReparentingDescription[] =
-    "If enabled, when the user changes themes the current tabs are reparented "
-    "instead of reloaded.";
-
 const char kSwipeToMoveCursorName[] = "Swipe to move cursor";
 const char kSwipeToMoveCursorDescription[] =
     "Allows user to use touch gestures to move the text cursor around. This "

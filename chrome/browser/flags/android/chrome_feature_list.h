@@ -19,7 +19,6 @@ extern const base::Feature kAndroidDefaultBrowserPromo;
 extern const base::Feature kAndroidLayoutChangeTabReparenting;
 extern const base::Feature kAndroidManagedByMenuItem;
 extern const base::Feature kAndroidMultipleDisplay;
-extern const base::Feature kAndroidNightModeTabReparenting;
 extern const base::Feature kAndroidPartnerCustomizationPhenotype;
 extern const base::Feature kAndroidSearchEngineChoiceNotification;
 extern const base::Feature kAssistantIntentExperimentId;

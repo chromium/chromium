@@ -3696,11 +3696,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAndroidDarkSearchDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kAndroidDarkSearch)},
 
-    {"enable-android-night-mode-tab-reparenting",
-     flag_descriptions::kAndroidNightModeTabReparentingName,
-     flag_descriptions::kAndroidNightModeTabReparentingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kAndroidNightModeTabReparenting)},
-
     {"enable-android-layout-change-tab-reparenting",
      flag_descriptions::kAndroidLayoutChangeTabReparentingName,
      flag_descriptions::kAndroidLayoutChangeTabReparentingDescription,

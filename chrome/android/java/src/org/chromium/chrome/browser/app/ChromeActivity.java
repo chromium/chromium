@@ -1436,14 +1436,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 findViewById(R.id.keyboard_accessory_stub),
                 findViewById(R.id.keyboard_accessory_sheet_stub));
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_NIGHT_MODE_TAB_REPARENTING)
-                || ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.ANDROID_LAYOUT_CHANGE_TAB_REPARENT)) {
-            mTabReparentingController = new TabReparentingController(
-                    ReparentingDelegateFactory.createReparentingControllerDelegate(
-                            getTabModelSelector()),
-                    AsyncTabParamsManagerSingleton.getInstance());
-        }
+        mTabReparentingController = new TabReparentingController(
+                ReparentingDelegateFactory.createReparentingControllerDelegate(
+                        getTabModelSelector()),
+                AsyncTabParamsManagerSingleton.getInstance());
 
         // Make sure the user is reporting into one of the feed spinner groups, so that we can
         // analyze daily power impact for a typical Chrome user. The flag only has an effect if the
@@ -2440,9 +2436,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
         // Note: order matters here because the call to super will recreate the activity.
         // Note: it's possible for this method to be called before mNightModeReparentingController
         // is constructed.
-        if (FeatureList.isInitialized()
-                && ChromeFeatureList.isEnabled(ChromeFeatureList.ANDROID_NIGHT_MODE_TAB_REPARENTING)
-                && mTabReparentingController != null) {
+        if (mTabReparentingController != null) {
             mTabReparentingController.prepareTabsForReparenting();
         }
         super.onNightModeStateChanged();

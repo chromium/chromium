@@ -1902,9 +1902,6 @@ extern const char kInlineUpdateFlowDescription[];
 extern const char kAndroidDarkSearchName[];
 extern const char kAndroidDarkSearchDescription[];
 
-extern const char kAndroidNightModeTabReparentingName[];
-extern const char kAndroidNightModeTabReparentingDescription[];
-
 extern const char kSwipeToMoveCursorName[];
 extern const char kSwipeToMoveCursorDescription[];
 

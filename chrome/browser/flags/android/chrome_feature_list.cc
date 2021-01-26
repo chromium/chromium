@@ -129,7 +129,6 @@ const base::Feature* kFeaturesExposedToJava[] = {
     &kAndroidLayoutChangeTabReparenting,
     &kAndroidManagedByMenuItem,
     &kAndroidMultipleDisplay,
-    &kAndroidNightModeTabReparenting,
     &kAndroidPartnerCustomizationPhenotype,
     &kAndroidSearchEngineChoiceNotification,
     &kAssistantIntentExperimentId,
@@ -330,9 +329,6 @@ const base::Feature kAndroidManagedByMenuItem{"AndroidManagedByMenuItem",
 
 const base::Feature kAndroidMultipleDisplay{"AndroidMultipleDisplay",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kAndroidNightModeTabReparenting{
-    "AndroidNightModeTabReparenting", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kAllowNewIncognitoTabIntents{
     "AllowNewIncognitoTabIntents", base::FEATURE_ENABLED_BY_DEFAULT};
