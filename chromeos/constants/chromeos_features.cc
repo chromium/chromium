@@ -709,7 +709,7 @@ const base::Feature kVmCameraMicIndicatorsAndNotifications{
 // Controls whether to enable syncing of Wi-Fi configurations between
 // ChromeOS and a connected Android phone.
 const base::Feature kWifiSyncAndroid{"WifiSyncAndroid",
-                                     base::FEATURE_DISABLED_BY_DEFAULT};
+                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enable or disable MOZC IME to use protobuf as interactive message format.
 const base::Feature kImeMozcProto{"ImeMozcProto",
