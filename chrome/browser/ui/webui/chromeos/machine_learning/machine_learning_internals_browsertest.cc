@@ -9,8 +9,10 @@
 #include "chromeos/services/machine_learning/public/cpp/fake_service_connection.h"
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 
-MachineLearningInternalsBrowserTest::MachineLearningInternalsBrowserTest() = default;
-MachineLearningInternalsBrowserTest::~MachineLearningInternalsBrowserTest() = default;
+MachineLearningInternalsBrowserTest::MachineLearningInternalsBrowserTest() =
+    default;
+MachineLearningInternalsBrowserTest::~MachineLearningInternalsBrowserTest() =
+    default;
 
 void MachineLearningInternalsBrowserTest::SetupFakeConnectionAndOutput(
     double fake_output) {
@@ -18,6 +20,7 @@ void MachineLearningInternalsBrowserTest::SetupFakeConnectionAndOutput(
       new chromeos::machine_learning::FakeServiceConnectionImpl();
   fake_client->SetOutputValue(std::vector<int64_t>{1L},
                               std::vector<double>{fake_output});
-  chromeos::machine_learning::ServiceConnection
-      ::UseFakeServiceConnectionForTesting(fake_client);
+  chromeos::machine_learning::ServiceConnection::
+      UseFakeServiceConnectionForTesting(fake_client);
+  chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
 }

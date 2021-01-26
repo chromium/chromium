@@ -600,8 +600,9 @@ void SearchRankingEventLogger::BindGraphExecutorIfNeeded() {
     // Load the model.
     auto spec = BuiltinModelSpec::New(BuiltinModelId::SEARCH_RANKER_20190923);
     chromeos::machine_learning::ServiceConnection::GetInstance()
-        ->LoadBuiltinModel(std::move(spec), model_.BindNewPipeAndPassReceiver(),
-                           base::BindOnce(&LoadModelCallback));
+        ->GetMachineLearningService()
+        .LoadBuiltinModel(std::move(spec), model_.BindNewPipeAndPassReceiver(),
+                          base::BindOnce(&LoadModelCallback));
   }
 
   if (!executor_) {

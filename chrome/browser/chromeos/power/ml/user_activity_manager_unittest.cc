@@ -126,6 +126,7 @@ class UserActivityManagerTest : public ChromeRenderViewHostTestHarness {
 
     machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection_);
+    machine_learning::ServiceConnection::GetInstance()->Initialize();
   }
 
   void TearDown() override {

@@ -33,6 +33,7 @@ TEST_F(GrammarServiceClientTest, ReturnsEmptyResultWhenSpellCheckIsDiabled) {
   machine_learning::FakeServiceConnectionImpl fake_service_connection;
   machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
       &fake_service_connection);
+  machine_learning::ServiceConnection::GetInstance()->Initialize();
 
   auto profile = std::make_unique<TestingProfile>();
   profile->GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable, false);
@@ -57,6 +58,7 @@ TEST_F(GrammarServiceClientTest, ParsesResults) {
   machine_learning::FakeServiceConnectionImpl fake_service_connection;
   machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
       &fake_service_connection);
+  machine_learning::ServiceConnection::GetInstance()->Initialize();
 
   auto profile = std::make_unique<TestingProfile>();
   profile->GetPrefs()->SetBoolean(spellcheck::prefs::kSpellCheckEnable, true);

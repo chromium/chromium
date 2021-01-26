@@ -126,8 +126,7 @@ bool IsPreferredLanguage(const std::string& detected_language,
 }  // namespace
 
 IntentGenerator::IntentGenerator(IntentGeneratorCallback complete_callback)
-    : complete_callback_(std::move(complete_callback)) {
-}
+    : complete_callback_(std::move(complete_callback)) {}
 
 IntentGenerator::~IntentGenerator() {
   if (complete_callback_)
@@ -144,9 +143,10 @@ void IntentGenerator::GenerateIntent(const QuickAnswersRequest& request) {
 
   // Load text classifier.
   chromeos::machine_learning::ServiceConnection::GetInstance()
-      ->LoadTextClassifier(text_classifier_.BindNewPipeAndPassReceiver(),
-                           base::BindOnce(&IntentGenerator::LoadModelCallback,
-                                          weak_factory_.GetWeakPtr(), request));
+      ->GetMachineLearningService()
+      .LoadTextClassifier(text_classifier_.BindNewPipeAndPassReceiver(),
+                          base::BindOnce(&IntentGenerator::LoadModelCallback,
+                                         weak_factory_.GetWeakPtr(), request));
 }
 
 void IntentGenerator::LoadModelCallback(const QuickAnswersRequest& request,

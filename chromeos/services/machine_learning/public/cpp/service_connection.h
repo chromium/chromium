@@ -73,63 +73,6 @@ class ServiceConnection {
   // should own the Mojo connection to MachineLearningService (e.g. UI thread).
   virtual void Initialize() = 0;
 
-  // Instruct ML daemon to load the builtin model specified in |spec|, binding a
-  // Model implementation to |receiver|. Bootstraps the initial Mojo connection
-  // to the daemon if necessary.
-  virtual void LoadBuiltinModel(
-      mojom::BuiltinModelSpecPtr spec,
-      mojo::PendingReceiver<mojom::Model> receiver,
-      mojom::MachineLearningService::LoadBuiltinModelCallback
-          result_callback) = 0;
-
-  // Instruct ML daemon to load the flatbuffer model specified in |spec|,
-  // binding a Model implementation to |receiver|. Bootstraps the initial Mojo
-  // connection to the daemon if necessary.
-  virtual void LoadFlatBufferModel(
-      mojom::FlatBufferModelSpecPtr spec,
-      mojo::PendingReceiver<mojom::Model> receiver,
-      mojom::MachineLearningService::LoadFlatBufferModelCallback
-          result_callback) = 0;
-
-  // Instruct ML daemon to load the TextClassifier model, binding a
-  // TextClassifier implementation to |receiver|. Bootstraps the initial Mojo
-  // connection to the daemon if necessary.
-  virtual void LoadTextClassifier(
-      mojo::PendingReceiver<mojom::TextClassifier> receiver,
-      mojom::MachineLearningService::LoadTextClassifierCallback
-          result_callback) = 0;
-
-  // Instruct ML daemon to load the Handwriting model with the given |spec|,
-  // binding a Handwriting implementation to |receiver|. Bootstraps the initial
-  // Mojo connection to the daemon if necessary.
-  virtual void LoadHandwritingModel(
-      mojom::HandwritingRecognizerSpecPtr spec,
-      mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
-      mojom::MachineLearningService::LoadHandwritingModelCallback
-          result_callback) = 0;
-
-  // Same as LoadHandwritingModel, but will be deprecated and removed soon.
-  virtual void LoadHandwritingModelWithSpec(
-      mojom::HandwritingRecognizerSpecPtr spec,
-      mojo::PendingReceiver<mojom::HandwritingRecognizer> receiver,
-      mojom::MachineLearningService::LoadHandwritingModelWithSpecCallback
-          result_callback) = 0;
-
-  // Instruct ML daemon to load the Grammar model, binding a GrammarChecker
-  // implementation to |receiver|. Bootstraps the initial Mojo connection to the
-  // daemon if necessary.
-  virtual void LoadGrammarChecker(
-      mojo::PendingReceiver<mojom::GrammarChecker> receiver,
-      mojom::MachineLearningService::LoadGrammarCheckerCallback
-          result_callback) = 0;
-
-  // Instruct ML daemon to load a SODA model.
-  virtual void LoadSpeechRecognizer(
-      mojom::SodaConfigPtr soda_config,
-      mojo::PendingRemote<mojom::SodaClient> soda_client,
-      mojo::PendingReceiver<mojom::SodaRecognizer> soda_recognizer,
-      mojom::MachineLearningService::LoadSpeechRecognizerCallback callback) = 0;
-
  protected:
   ServiceConnection() = default;
   virtual ~ServiceConnection() {}

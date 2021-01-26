@@ -70,6 +70,8 @@ class IntentGeneratorTest : public testing::Test {
           std::vector<TextLanguagePtr>()) {
     chromeos::machine_learning::ServiceConnection::
         UseFakeServiceConnectionForTesting(&fake_service_connection_);
+    chromeos::machine_learning::ServiceConnection::GetInstance()->Initialize();
+
     fake_service_connection_.SetOutputAnnotation(annotations);
     fake_service_connection_.SetOutputLanguages(languages);
   }

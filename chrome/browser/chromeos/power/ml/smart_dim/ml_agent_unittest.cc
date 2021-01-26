@@ -137,6 +137,7 @@ class SmartDimMlAgentTest : public testing::Test {
     MachineLearningClient::InitializeFake();
     machine_learning::ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection_);
+    machine_learning::ServiceConnection::GetInstance()->Initialize();
     fake_service_connection_.SetOutputValue(
         std::vector<int64_t>{1L}, std::vector<double>{kTestInactivityScore});
   }

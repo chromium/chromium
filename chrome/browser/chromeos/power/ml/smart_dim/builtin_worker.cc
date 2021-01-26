@@ -93,8 +93,9 @@ void BuiltinWorker::LazyInitialize() {
     // Builtin model is supposed to be always available and valid, using
     // base::DoNothing as callbacks.
     chromeos::machine_learning::ServiceConnection::GetInstance()
-        ->LoadBuiltinModel(std::move(spec), model_.BindNewPipeAndPassReceiver(),
-                           base::DoNothing());
+        ->GetMachineLearningService()
+        .LoadBuiltinModel(std::move(spec), model_.BindNewPipeAndPassReceiver(),
+                          base::DoNothing());
   }
 
   if (!executor_) {

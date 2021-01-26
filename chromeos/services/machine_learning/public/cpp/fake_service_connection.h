@@ -56,7 +56,6 @@ class FakeServiceConnectionImpl : public ServiceConnection,
   void Clone(
       mojo::PendingReceiver<mojom::MachineLearningService> receiver) override;
 
-  // mojom::MachineLearningService and ServiceConnection:
   // It's safe to execute LoadBuiltinModel, LoadFlatBufferModel and
   // LoadTextClassifier for multi times, but all the receivers will be bound to
   // the same instance.

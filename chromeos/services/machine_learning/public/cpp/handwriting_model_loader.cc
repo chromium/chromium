@@ -65,8 +65,10 @@ void OnInstallDlcComplete(
     const chromeos::DlcserviceClient::InstallResult& result) {
   // Call LoadHandwritingModelWithSpec if no error was found.
   if (result.error == dlcservice::kErrorNone) {
-    ServiceConnection::GetInstance()->LoadHandwritingModel(
-        std::move(spec), std::move(receiver), std::move(callback));
+    ServiceConnection::GetInstance()
+        ->GetMachineLearningService()
+        .LoadHandwritingModel(std::move(spec), std::move(receiver),
+                              std::move(callback));
     return;
   }
 
@@ -132,8 +134,10 @@ void LoadHandwritingModelFromRootfsOrDlc(HandwritingRecognizerSpecPtr spec,
 
   // Load from rootfs if enabled.
   if (IsLibHandwritingRootfsEnabled()) {
-    ServiceConnection::GetInstance()->LoadHandwritingModel(
-        std::move(spec), std::move(receiver), std::move(callback));
+    ServiceConnection::GetInstance()
+        ->GetMachineLearningService()
+        .LoadHandwritingModel(std::move(spec), std::move(receiver),
+                              std::move(callback));
     return;
   }
 

@@ -110,7 +110,8 @@ void DownloadWorker::LoadModelAndCreateGraphExecutor(
   DCHECK(!model_.is_bound() && !executor_.is_bound());
 
   chromeos::machine_learning::ServiceConnection::GetInstance()
-      ->LoadFlatBufferModel(
+      ->GetMachineLearningService()
+      .LoadFlatBufferModel(
           FlatBufferModelSpec::New(std::move(model_flatbuffer), inputs_,
                                    outputs_, metrics_model_name_),
           model_.BindNewPipeAndPassReceiver(),

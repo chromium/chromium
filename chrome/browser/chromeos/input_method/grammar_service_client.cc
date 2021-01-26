@@ -22,7 +22,8 @@ using chromeos::machine_learning::mojom::GrammarCheckerResultPtr;
 
 GrammarServiceClient::GrammarServiceClient() {
   chromeos::machine_learning::ServiceConnection::GetInstance()
-      ->LoadGrammarChecker(
+      ->GetMachineLearningService()
+      .LoadGrammarChecker(
           grammar_checker_.BindNewPipeAndPassReceiver(),
           base::BindOnce(
               [](bool* grammar_checker_loaded_,

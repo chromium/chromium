@@ -31,6 +31,7 @@ class HandwritingModelLoaderTest : public testing::Test {
   void SetUp() override {
     ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection_);
+    ServiceConnection::GetInstance()->Initialize();
     result_ = LoadHandwritingModelResult::DEPRECATED_MODEL_SPEC_ERROR;
     language_ = "en";
   }
