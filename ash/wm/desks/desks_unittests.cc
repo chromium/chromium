@@ -3886,7 +3886,7 @@ TEST_F(DesksBentoTest, NameNudges) {
 }
 
 TEST_F(DesksBentoTest, ScrollableDesks) {
-  UpdateDisplay("301x600");
+  UpdateDisplay("201x400");
   auto* overview_controller = Shell::Get()->overview_controller();
   overview_controller->StartOverview();
   EXPECT_TRUE(overview_controller->InOverviewSession());
