@@ -188,6 +188,7 @@ MEDIA_EXPORT extern const base::Feature kVaapiVideoDecodeLinux;
         // defined(OS_FREEBSD)
 MEDIA_EXPORT extern const base::Feature kVaapiAV1Decoder;
 MEDIA_EXPORT extern const base::Feature kVaapiLowPowerEncoderGen9x;
+MEDIA_EXPORT extern const base::Feature kVaapiEnforceVideoMinMaxResolution;
 MEDIA_EXPORT extern const base::Feature kVaapiVP8Encoder;
 MEDIA_EXPORT extern const base::Feature kVaapiVP9Encoder;
 MEDIA_EXPORT extern const base::Feature kVideoBlitColorAccuracy;

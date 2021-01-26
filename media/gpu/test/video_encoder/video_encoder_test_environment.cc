@@ -48,6 +48,11 @@ const std::vector<base::Feature> kDisabledFeaturesForVideoEncoderTest = {
     // with this feature flag. We disable the feature to use VpxVideoDecoder to
     // decode any vp8 stream in BitstreamValidator.
     kFFmpegDecodeOpaqueVP8,
+#if BUILDFLAG(USE_VAAPI)
+    // Disable this feature so that the encoder test can test a resolution
+    // which is denied for the sake of performance. See crbug.com/1008491.
+    kVaapiEnforceVideoMinMaxResolution,
+#endif
 };
 
 uint32_t GetDefaultTargetBitrate(const gfx::Size& resolution,

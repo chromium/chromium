@@ -1098,6 +1098,25 @@ bool VASupportedProfiles::FillProfileInfo_Locked(
     return false;
   }
 
+  if (va_profile != VAProfileJPEGBaseline) {
+    // Deny unreasonably small resolutions (e.g. 0x0) for VA-API hardware video
+    // decode and encode acceleration.
+    profile_info->min_resolution.SetToMax(gfx::Size(16, 16));
+    if (entrypoint == VAEntrypointEncSliceLP ||
+        entrypoint == VAEntrypointEncSlice) {
+      // Using VA-API for accelerated encoding frames smaller than a certain
+      // size is less efficient than using a software encoder.
+      constexpr gfx::Size kMinEncodeResolution(320 + 1, 240 + 1);
+      if (!gfx::Rect(profile_info->min_resolution)
+               .Contains(gfx::Rect(kMinEncodeResolution))) {
+        profile_info->min_resolution.SetToMax(kMinEncodeResolution);
+        DVLOG(2) << "Setting the minimum supported encoding resolution to "
+                 << profile_info->min_resolution.ToString() << " for "
+                 << vaProfileStr(va_profile);
+      }
+    }
+  }
+
   // Create a new configuration to find the supported RT formats. We don't pass
   // required attributes here because we want the driver to tell us all the
   // supported RT formats.
@@ -1384,10 +1403,7 @@ VaapiWrapper::GetSupportedEncodeProfiles() {
 
     VideoEncodeAccelerator::SupportedProfile profile;
     profile.profile = media_profile;
-    // Using VA-API for accelerated encoding frames smaller than a certain
-    // size is less efficient than using a software encoder.
-    const gfx::Size kMinEncodeResolution = gfx::Size(320 + 1, 240 + 1);
-    profile.min_resolution = kMinEncodeResolution;
+    profile.min_resolution = profile_info->min_resolution;
     profile.max_resolution = profile_info->max_resolution;
     // Maximum framerate of encoded profile. This value is an arbitrary
     // limit and not taken from HW documentation.
@@ -1427,7 +1443,7 @@ VaapiWrapper::GetSupportedDecodeProfiles(
     VideoDecodeAccelerator::SupportedProfile profile;
     profile.profile = media_profile;
     profile.max_resolution = profile_info->max_resolution;
-    profile.min_resolution.SetSize(16, 16);
+    profile.min_resolution = profile_info->min_resolution;
     profiles.push_back(profile);
   }
   return profiles;
@@ -1849,6 +1865,26 @@ bool VaapiWrapper::CreateContext(const gfx::Size& size) {
   // vpp, just passing 0x0.
   const int flag = mode_ != kVideoProcess ? VA_PROGRESSIVE : 0x0;
   const gfx::Size picture_size = mode_ != kVideoProcess ? size : gfx::Size();
+  if (base::FeatureList::IsEnabled(kVaapiEnforceVideoMinMaxResolution) &&
+      mode_ != kVideoProcess) {
+    const VASupportedProfiles::ProfileInfo* profile_info =
+        VASupportedProfiles::Get().IsProfileSupported(mode_, va_profile_,
+                                                      va_entrypoint_);
+    DCHECK(profile_info);
+    const bool is_picture_within_bounds =
+        gfx::Rect(picture_size)
+            .Contains(gfx::Rect(profile_info->min_resolution)) &&
+        gfx::Rect(profile_info->max_resolution)
+            .Contains(gfx::Rect(picture_size));
+    if (!is_picture_within_bounds) {
+      VLOG(2) << "Requested resolution=" << picture_size.ToString()
+              << " is not within bounds ["
+              << profile_info->min_resolution.ToString() << ", "
+              << profile_info->max_resolution.ToString() << "]";
+      return false;
+    }
+  }
+
   VAStatus va_res = vaCreateContext(
       va_display_, va_config_id_, picture_size.width(), picture_size.height(),
       flag, empty_va_surfaces_ids_pointer, empty_va_surfaces_ids_size,

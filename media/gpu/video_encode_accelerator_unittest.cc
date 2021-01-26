@@ -238,7 +238,10 @@ std::unique_ptr<base::test::ScopedFeatureList> CreateScopedFeatureList() {
       media::kVaapiLowPowerEncoderGen9x,
       // TODO(crbug.com/811912): remove once enabled by default.
       media::kVaapiVP9Encoder};
-  scoped_feature_list->InitWithFeatures(enabled_features, {});
+  std::vector<base::Feature> disabled_features = {
+      media::kVaapiEnforceVideoMinMaxResolution,
+  };
+  scoped_feature_list->InitWithFeatures(enabled_features, disabled_features);
   return scoped_feature_list;
 #else
   return nullptr;
