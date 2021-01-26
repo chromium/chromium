@@ -1556,6 +1556,36 @@ java_prebuilt("com_google_errorprone_javac_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("google_firebase_firebase_messaging_java") {
+  aar_path = "libs/com_google_firebase_firebase_messaging/firebase-messaging-21.0.1.aar"
+  info_path = "libs/com_google_firebase_firebase_messaging/com_google_firebase_firebase_messaging.info"
+  deps = [
+    ":androidx_collection_collection_java",
+    ":androidx_core_core_java",
+    ":google_android_datatransport_transport_api_java",
+    ":google_firebase_firebase_common_java",
+    ":google_firebase_firebase_components_java",
+    ":google_firebase_firebase_encoders_java",
+    ":google_firebase_firebase_encoders_json_java",
+    ":google_firebase_firebase_iid_java",
+    ":google_firebase_firebase_installations_interop_java",
+    ":google_firebase_firebase_installations_java",
+    ":google_firebase_firebase_measurement_connector_java",
+    ":google_play_services_basement_java",
+    ":google_play_services_cloud_messaging_java",
+    ":google_play_services_stats_java",
+    ":google_play_services_tasks_java",
+  ]
+
+  # Removing drawables from GMS .aars as they are unused bloat.
+  strip_drawables = true
+
+  # We removed the datatransport dependency to reduce binary size.
+  # The library works without it as it's only used for logging.
+  enable_bytecode_checks = false
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 java_prebuilt("com_google_guava_failureaccess_java") {
   jar_path = "libs/com_google_guava_failureaccess/failureaccess-1.0.1.jar"
   output_name = "com_google_guava_failureaccess"
@@ -2364,6 +2394,20 @@ java_prebuilt("com_github_kevinstern_software_and_algorithms_java") {
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("google_android_datatransport_transport_api_java") {
+  aar_path = "libs/com_google_android_datatransport_transport_api/transport-api-2.2.1.aar"
+  info_path = "libs/com_google_android_datatransport_transport_api/com_google_android_datatransport_transport_api.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [ ":androidx_annotation_annotation_java" ]
+
+  # Removing drawables from GMS .aars as they are unused bloat.
+  strip_drawables = true
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
 android_aar_prebuilt("google_play_services_clearcut_java") {
   aar_path = "libs/com_google_android_gms_play_services_clearcut/play-services-clearcut-17.0.0.aar"
   info_path = "libs/com_google_android_gms_play_services_clearcut/com_google_android_gms_play_services_clearcut.info"
@@ -2376,6 +2420,23 @@ android_aar_prebuilt("google_play_services_clearcut_java") {
     ":google_play_services_base_java",
     ":google_play_services_basement_java",
     ":google_play_services_phenotype_java",
+    ":google_play_services_tasks_java",
+  ]
+
+  # Removing drawables from GMS .aars as they are unused bloat.
+  strip_drawables = true
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("google_play_services_cloud_messaging_java") {
+  aar_path = "libs/com_google_android_gms_play_services_cloud_messaging/play-services-cloud-messaging-16.0.0.aar"
+  info_path = "libs/com_google_android_gms_play_services_cloud_messaging/com_google_android_gms_play_services_cloud_messaging.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [
+    ":google_play_services_basement_java",
     ":google_play_services_tasks_java",
   ]
 
@@ -2544,6 +2605,190 @@ java_prebuilt("com_google_errorprone_javac_shaded_java") {
   # To remove visibility constraint, add this dependency to
   # //third_party/android_deps/build.gradle.
   visibility = [ ":*" ]
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+java_prebuilt("google_firebase_firebase_annotations_java") {
+  jar_path = "libs/com_google_firebase_firebase_annotations/firebase-annotations-16.0.0.jar"
+  output_name = "com_google_firebase_firebase_annotations"
+  supports_android = true
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("google_firebase_firebase_common_java") {
+  aar_path =
+      "libs/com_google_firebase_firebase_common/firebase-common-19.5.0.aar"
+  info_path = "libs/com_google_firebase_firebase_common/com_google_firebase_firebase_common.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [
+    ":google_firebase_firebase_components_java",
+    ":google_play_services_basement_java",
+    ":google_play_services_tasks_java",
+  ]
+
+  # Removing drawables from GMS .aars as they are unused bloat.
+  strip_drawables = true
+
+  # Ignore missing kotlin.KotlinVersion definition in
+  # com.google.firebase.platforminfo.KotlinDetector.
+  enable_bytecode_checks = false
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("google_firebase_firebase_components_java") {
+  aar_path = "libs/com_google_firebase_firebase_components/firebase-components-16.1.0.aar"
+  info_path = "libs/com_google_firebase_firebase_components/com_google_firebase_firebase_components.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [
+    ":androidx_annotation_annotation_java",
+    ":google_firebase_firebase_annotations_java",
+  ]
+
+  # Removing drawables from GMS .aars as they are unused bloat.
+  strip_drawables = true
+
+  # Can't find com.google.firebase.components.Component$ComponentType.
+  enable_bytecode_checks = false
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+java_prebuilt("google_firebase_firebase_encoders_java") {
+  jar_path =
+      "libs/com_google_firebase_firebase_encoders/firebase-encoders-16.1.0.jar"
+  output_name = "com_google_firebase_firebase_encoders"
+  supports_android = true
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [ ":androidx_annotation_annotation_java" ]
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("google_firebase_firebase_encoders_json_java") {
+  aar_path = "libs/com_google_firebase_firebase_encoders_json/firebase-encoders-json-17.1.0.aar"
+  info_path = "libs/com_google_firebase_firebase_encoders_json/com_google_firebase_firebase_encoders_json.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [
+    ":androidx_annotation_annotation_java",
+    ":google_firebase_firebase_encoders_java",
+  ]
+
+  # Removing drawables from GMS .aars as they are unused bloat.
+  strip_drawables = true
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("google_firebase_firebase_iid_java") {
+  aar_path = "libs/com_google_firebase_firebase_iid/firebase-iid-21.0.1.aar"
+  info_path = "libs/com_google_firebase_firebase_iid/com_google_firebase_firebase_iid.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [
+    ":androidx_collection_collection_java",
+    ":androidx_core_core_java",
+    ":androidx_legacy_legacy_support_core_utils_java",
+    ":google_firebase_firebase_common_java",
+    ":google_firebase_firebase_components_java",
+    ":google_firebase_firebase_iid_interop_java",
+    ":google_firebase_firebase_installations_interop_java",
+    ":google_firebase_firebase_installations_java",
+    ":google_play_services_basement_java",
+    ":google_play_services_cloud_messaging_java",
+    ":google_play_services_stats_java",
+    ":google_play_services_tasks_java",
+  ]
+
+  # Removing drawables from GMS .aars as they are unused bloat.
+  strip_drawables = true
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("google_firebase_firebase_iid_interop_java") {
+  aar_path = "libs/com_google_firebase_firebase_iid_interop/firebase-iid-interop-17.0.0.aar"
+  info_path = "libs/com_google_firebase_firebase_iid_interop/com_google_firebase_firebase_iid_interop.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [
+    ":google_play_services_base_java",
+    ":google_play_services_basement_java",
+  ]
+
+  # Removing drawables from GMS .aars as they are unused bloat.
+  strip_drawables = true
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("google_firebase_firebase_installations_java") {
+  aar_path = "libs/com_google_firebase_firebase_installations/firebase-installations-16.3.5.aar"
+  info_path = "libs/com_google_firebase_firebase_installations/com_google_firebase_firebase_installations.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [
+    ":google_firebase_firebase_common_java",
+    ":google_firebase_firebase_components_java",
+    ":google_firebase_firebase_installations_interop_java",
+    ":google_play_services_tasks_java",
+  ]
+
+  # Removing drawables from GMS .aars as they are unused bloat.
+  strip_drawables = true
+
+  # Can't find com.google.auto.value.AutoValue$Builder.
+  enable_bytecode_checks = false
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("google_firebase_firebase_installations_interop_java") {
+  aar_path = "libs/com_google_firebase_firebase_installations_interop/firebase-installations-interop-16.0.1.aar"
+  info_path = "libs/com_google_firebase_firebase_installations_interop/com_google_firebase_firebase_installations_interop.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [
+    ":google_firebase_firebase_annotations_java",
+    ":google_play_services_tasks_java",
+  ]
+
+  # Removing drawables from GMS .aars as they are unused bloat.
+  strip_drawables = true
+
+  # Can't find com.google.auto.value.AutoValue$Builder.
+  enable_bytecode_checks = false
+}
+
+# This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+android_aar_prebuilt("google_firebase_firebase_measurement_connector_java") {
+  aar_path = "libs/com_google_firebase_firebase_measurement_connector/firebase-measurement-connector-18.0.0.aar"
+  info_path = "libs/com_google_firebase_firebase_measurement_connector/com_google_firebase_firebase_measurement_connector.info"
+
+  # To remove visibility constraint, add this dependency to
+  # //third_party/android_deps/build.gradle.
+  visibility = [ ":*" ]
+  deps = [ ":google_play_services_basement_java" ]
+
+  # Removing drawables from GMS .aars as they are unused bloat.
+  strip_drawables = true
 }
 
 # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

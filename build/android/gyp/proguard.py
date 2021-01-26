@@ -468,6 +468,10 @@ def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors):
         'Ljavax/management/ObjectInstance',
         'Ljavax/management/ObjectName',
         'Ljavax/management/StandardMBean',
+
+        # Explicitly guarded by try (NoClassDefFoundError) in Firebase's
+        # KotlinDetector: com.google.firebase.platforminfo.KotlinDetector.
+        'Lkotlin/KotlinVersion',
     ]
 
     had_unfiltered_items = '  ' in stderr

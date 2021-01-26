@@ -152,6 +152,7 @@ dependencies {
     compile "com.android.support:multidex:1.0.0"
 
     compile "com.google.code.findbugs:jsr305:3.0.2"
+    compile "com.google.firebase:firebase-messaging:21.0.1"
     compile "com.google.guava:failureaccess:1.0.1"
     compile "com.google.j2objc:j2objc-annotations:1.1"
     compile "com.google.protobuf:protobuf-javalite:3.13.0"

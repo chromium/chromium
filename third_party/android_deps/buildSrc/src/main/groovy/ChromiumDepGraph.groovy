@@ -43,6 +43,14 @@ class ChromiumDepGraph {
             licenseName: "MIT"),
         'com_github_kevinstern_software_and_algorithms': new PropertyOverride(
             licenseUrl: "https://raw.githubusercontent.com/KevinStern/software-and-algorithms/master/LICENSE"),
+        'com_google_android_datatransport_transport_api': new PropertyOverride(
+            description: "Interfaces for data logging in GmsCore SDKs."),
+        'com_google_android_datatransport_transport_backend_cct': new PropertyOverride(
+            exclude: true),  // We're not using datatransport functionality.
+        'com_google_android_datatransport_transport_runtime': new PropertyOverride(
+            exclude: true),  // We're not using datatransport functionality.
+        'com_google_android_gms_play_services_cloud_messaging': new PropertyOverride(
+            description: "Firebase Cloud Messaging library that interfaces with GmsCore."),
         'com_google_auto_auto_common': new PropertyOverride(
             licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
             licenseName: "Apache 2.0"),
@@ -68,6 +76,30 @@ class ChromiumDepGraph {
             url: "https://errorprone.info/",
             licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
             licenseName: "Apache 2.0"),
+        'com_google_firebase_firebase_annotations': new PropertyOverride(
+            description: "Common annotations for Firebase SKDs."),
+        'com_google_firebase_firebase_common': new PropertyOverride(
+            description: "Common classes for Firebase SDKs."),
+        'com_google_firebase_firebase_components': new PropertyOverride(
+            description: "Provides dependency management for Firebase SDKs."),
+        'com_google_firebase_firebase_datatransport': new PropertyOverride(
+            exclude: true),  // We're not using datatransport functionality.
+        'com_google_firebase_firebase_encoders_json': new PropertyOverride(
+            description: "JSON encoders used in Firebase SDKs."),
+        'com_google_firebase_firebase_encoders': new PropertyOverride(
+            description: "Commonly used encoders for Firebase SKDs."),
+        'com_google_firebase_firebase_iid_interop': new PropertyOverride(
+            description: "Interface library for Firebase IID SDK."),
+        'com_google_firebase_firebase_iid': new PropertyOverride(
+            description: "Firebase IID SDK to get access to Instance IDs."),
+        'com_google_firebase_firebase_installations_interop': new PropertyOverride(
+            description: "Interface library for Firebase Installations SDK."),
+        'com_google_firebase_firebase_installations': new PropertyOverride(
+            description: "Firebase Installations SDK containing the client libraries to manage FIS."),
+        'com_google_firebase_firebase_measurement_connector': new PropertyOverride(
+            description: "Bridge interfaces for Firebase analytics into GmsCore."),
+        'com_google_firebase_firebase_messaging': new PropertyOverride(
+            description: "Firebase Cloud Messaging SDK to send and receive push messages via FCM."),
         'com_google_googlejavaformat_google_java_format': new PropertyOverride(
             url: "https://github.com/google/google-java-format",
             licenseUrl: "https://www.apache.org/licenses/LICENSE-2.0.txt",
@@ -479,6 +511,17 @@ class ChromiumDepGraph {
             if (dep.url?.isEmpty()) {
                 dep.url = "https://developers.google.com/android/guides/setup"
             }
+        } else if (dep.id?.startsWith("com_google_firebase_")) {
+            // Use proper Android license file.
+            if (dep.licenseUrl?.equals("https://developer.android.com/studio/terms.html")) {
+                project.logger.debug("Using Android license for ${dep.id}")
+                dep.licenseUrl = ""
+                dep.licensePath = "licenses/Android_SDK_License-December_9_2016.txt"
+            }
+            // Some firebase dependencies don't set their URL.
+            if (dep.url?.isEmpty()) {
+                dep.url = "https://firebase.google.com"
+            }
         } else if (dep.licenseUrl?.equals("http://openjdk.java.net/legal/gplv2+ce.html")) {
             project.logger.debug("Detected GPL v2 /w classpath license for ${dep.id}")
             // This avoids using html in a LICENSE file.
@@ -490,6 +533,9 @@ class ChromiumDepGraph {
         def fallbackProperties = PROPERTY_OVERRIDES.get(dep.id)
         if (fallbackProperties != null) {
             project.logger.debug("Using fallback properties for ${dep.id}")
+            if (fallbackProperties.description != null) {
+              dep.description = fallbackProperties.description
+            }
             if (fallbackProperties.licenseName != null) {
               dep.licenseName = fallbackProperties.licenseName
             }

@@ -315,7 +315,7 @@ class BuildConfigGenerator extends DefaultTask {
     }
 
     private static void addSpecialTreatment(StringBuilder sb, String dependencyId, String dependencyExtension) {
-        if (isPlayServicesTarget(dependencyId)) {
+        if (dependencyExtension == "aar" && isPlayServicesTarget(dependencyId)) {
             if (Pattern.matches(".*cast_framework.*", dependencyId)) {
                 sb.append('  # Removing all resources from cast framework as they are unused bloat.\n')
                 sb.append('  # Can only safely remove them when R8 will strip the path that accesses them.\n')
@@ -549,6 +549,29 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  ]')
                 break
             case 'com_android_tools_desugar_jdk_libs_configuration':
+                sb.append('  enable_bytecode_checks = false\n')
+                break
+            case 'com_google_firebase_firebase_common':
+                sb.append('\n')
+                sb.append('  # Ignore missing kotlin.KotlinVersion definition in\n')
+                sb.append('  # com.google.firebase.platforminfo.KotlinDetector.\n')
+                sb.append('  enable_bytecode_checks = false\n')
+                break
+            case 'com_google_firebase_firebase_components':
+                sb.append('\n')
+                sb.append('  # Can\'t find com.google.firebase.components.Component\\$ComponentType.\n')
+                sb.append('  enable_bytecode_checks = false\n')
+                break
+            case 'com_google_firebase_firebase_installations':
+            case 'com_google_firebase_firebase_installations_interop':
+                sb.append('\n')
+                sb.append('  # Can\'t find com.google.auto.value.AutoValue\\$Builder.\n')
+                sb.append('  enable_bytecode_checks = false\n')
+                break
+            case 'com_google_firebase_firebase_messaging':
+                sb.append('\n')
+                sb.append('  # We removed the datatransport dependency to reduce binary size.\n')
+                sb.append('  # The library works without it as it\'s only used for logging.\n')
                 sb.append('  enable_bytecode_checks = false\n')
                 break
         }

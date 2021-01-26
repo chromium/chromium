@@ -837,6 +837,13 @@
     <meta-data android:name="org.chromium.content.browser.NUM_SANDBOXED_SERVICES" android:value="40"/>
     <meta-data android:name="org.chromium.content.browser.SMART_CLIP_PROVIDER" android:value="org.chromium.content_public.browser.SmartClipProvider"/>
     <meta-data android:name="preloaded_fonts" android:resource="@array/chrome_preloaded_google_sans_fonts"/>
+    <provider  # DIFF-ANCHOR: 31002ffd
+        android:authorities="$PACKAGE.firebaseinitprovider"
+        android:directBootAware="true"
+        android:exported="false"
+        android:initOrder="100"
+        android:name="com.google.firebase.provider.FirebaseInitProvider">
+    </provider>  # DIFF-ANCHOR: 31002ffd
     <provider  # DIFF-ANCHOR: a5e78e63
         android:authorities="$PACKAGE.LicenseContentProvider"
         android:exported="true"
@@ -897,6 +904,14 @@
         <category android:name="$PACKAGE"/>
       </intent-filter>  # DIFF-ANCHOR: aae22013
     </receiver>  # DIFF-ANCHOR: 0ea504ef
+    <receiver  # DIFF-ANCHOR: f1c9c29d
+        android:exported="true"
+        android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
+        android:permission="com.google.android.c2dm.permission.SEND">
+      <intent-filter>  # DIFF-ANCHOR: aae22013
+        <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
+      </intent-filter>  # DIFF-ANCHOR: aae22013
+    </receiver>  # DIFF-ANCHOR: f1c9c29d
     <receiver  # DIFF-ANCHOR: 9ef4cd0a
         android:exported="false"
         android:name="org.chromium.chrome.browser.announcement.AnnouncementNotificationManager$Receiver">
@@ -1037,6 +1052,24 @@
         android:exported="false"
         android:name="com.google.android.gms.cast.framework.media.MediaNotificationService">
     </service>  # DIFF-ANCHOR: 7dad1ec5
+    <service  # DIFF-ANCHOR: 7e26656b
+        android:directBootAware="true"
+        android:exported="false"
+        android:name="com.google.firebase.components.ComponentDiscoveryService"
+        tools:targetApi="n">
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.dynamicloading.DynamicLoadingRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.iid.Registrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+      <meta-data android:name="com.google.firebase.components:com.google.firebase.messaging.FirebaseMessagingRegistrar" android:value="com.google.firebase.components.ComponentRegistrar"/>
+    </service>  # DIFF-ANCHOR: 7e26656b
+    <service  # DIFF-ANCHOR: 137c712b
+        android:directBootAware="true"
+        android:exported="false"
+        android:name="com.google.firebase.messaging.FirebaseMessagingService">
+      <intent-filter android:priority="-500">  # DIFF-ANCHOR: 69e70070
+        <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+      </intent-filter>  # DIFF-ANCHOR: 69e70070
+    </service>  # DIFF-ANCHOR: 137c712b
     <service  # DIFF-ANCHOR: 4c2196d9
         android:exported="true"
         android:name="com.google.ipc.invalidation.ticl.android2.channel.GcmRegistrationTaskService"

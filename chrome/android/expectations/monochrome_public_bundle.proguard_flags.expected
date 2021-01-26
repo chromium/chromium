@@ -739,6 +739,30 @@
     @com.google.vr.dynamite.client.UsedByReflection *;
 }
 
+# File: obj/third_party/android_deps/google_android_datatransport_transport_api_java/proguard.txt
+-dontwarn com.google.auto.value.AutoValue
+-dontwarn com.google.auto.value.AutoValue$Builder
+
+# File: obj/third_party/android_deps/google_firebase_firebase_common_java/proguard.txt
+-dontwarn com.google.firebase.platforminfo.KotlinDetector
+-dontwarn com.google.auto.value.AutoValue
+-dontwarn com.google.auto.value.AutoValue$Builder
+
+# File: obj/third_party/android_deps/google_firebase_firebase_components_java/proguard.txt
+-dontwarn com.google.firebase.components.Component$Instantiation
+-dontwarn com.google.firebase.components.Component$ComponentType
+
+-keep class * implements com.google.firebase.components.ComponentRegistrar
+
+# File: obj/third_party/android_deps/google_firebase_firebase_encoders_json_java/proguard.txt
+
+
+# File: obj/third_party/android_deps/google_firebase_firebase_messaging_java/proguard.txt
+# Analytics library is optional.
+# Access to this class is protected by try/catch(NoClassDefFoundError e)
+# b/35686744 Don't fail during proguard if the class is missing from the APK.
+-dontwarn com.google.android.gms.measurement.AppMeasurement*
+
 # File: obj/third_party/android_deps/google_play_services_base_java/proguard.txt
 # b/35135904 Ensure that proguard will not strip the mResultGuardian.
 -keepclassmembers class com.google.android.gms.common.api.internal.BasePendingResult {

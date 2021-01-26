@@ -2215,6 +2215,7 @@ android_library("base_module_java") {
   ]
   deps = [
     ":chrome_base_module_resources",
+    "$google_play_services_package:google_firebase_firebase_messaging_java",
     "$google_play_services_package:google_play_services_gcm_java",
     "//base:base_java",
     "//base:jni_java",

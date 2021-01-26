@@ -1,0 +1,13 @@
+Name: firebase-iid
+Short Name: firebase-iid
+URL: https://firebase.google.com
+Version: 21.0.1
+License: Android Software Development Kit License
+License File: LICENSE
+Security Critical: yes
+
+Description:
+Firebase IID SDK to get access to Instance IDs.
+
+Local Modifications:
+No modifications.
