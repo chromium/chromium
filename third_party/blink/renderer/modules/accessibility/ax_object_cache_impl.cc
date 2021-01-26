@@ -129,18 +129,6 @@ bool IsActive(Document& document) {
   return document.IsActive() && !document.IsDetached();
 }
 
-// Returns true if |node| is an <option> element and its parent <select>
-// is a menu list (not a list box).
-bool ShouldCreateAXMenuListOptionFor(const Node* node) {
-  auto* option_element = DynamicTo<HTMLOptionElement>(node);
-  if (!option_element)
-    return false;
-  const HTMLSelectElement* select = option_element->OwnerSelectElement();
-  if (!select || !select->UsesMenuList())
-    return false;
-  return select->GetLayoutObject() && AXObjectCacheImpl::UseAXMenuList();
-}
-
 bool IsPseudoElementDescendant(const LayoutObject& layout_object) {
   const LayoutObject* ancestor = &layout_object;
   while (true) {
@@ -176,7 +164,7 @@ bool IsLayoutObjectRelevantForAccessibility(const LayoutObject& layout_object) {
 
   // Menu list option and HTML area elements are indexed by DOM node, never by
   // layout object.
-  if (ShouldCreateAXMenuListOptionFor(node))
+  if (AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(node))
     return false;
   if (IsA<HTMLAreaElement>(node))
     return false;
@@ -190,6 +178,11 @@ bool IsNodeRelevantForAccessibility(const Node* node, bool parent_ax_known) {
 
   if (!node->IsElementNode() && !node->IsTextNode() && !node->IsDocumentNode())
     return false;  // Only documents, elements and text nodes get ax objects.
+
+  if (IsA<HTMLAreaElement>(node) &&
+      !Traversal<HTMLMapElement>::FirstAncestor(*node)) {
+    return false;  // <area> without ancestor <map> is not relevant.
+  }
 
   // When there is a layout object, the element is known to be visible, so
   // consider it relevant and return early. Checking the layout object is only
@@ -526,6 +519,19 @@ AXObject* AXObjectCacheImpl::CreateFromRenderer(LayoutObject* layout_object) {
   }
 
   return MakeGarbageCollected<AXLayoutObject>(layout_object, *this);
+}
+
+// Returns true if |node| is an <option> element and its parent <select>
+// is a menu list (not a list box).
+// static
+bool AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(const Node* node) {
+  auto* option_element = DynamicTo<HTMLOptionElement>(node);
+  if (!option_element)
+    return false;
+  const HTMLSelectElement* select = option_element->OwnerSelectElement();
+  if (!select || !select->UsesMenuList())
+    return false;
+  return select->GetLayoutObject() && AXObjectCacheImpl::UseAXMenuList();
 }
 
 AXObject* AXObjectCacheImpl::CreateFromNode(Node* node) {

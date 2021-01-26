@@ -97,15 +97,22 @@ bool AXRelationCache::IsValidOwnsRelation(AXObject* owner,
   if (!child)
     return false;
 
-  // Some objects aren't allowed to aria-own children - in particular
-  // aria-owns is sometimes set on combo boxes but we don't want to
-  // rearrange the tree because then we'd interpret that as the owned
-  // children actually being part of the editable content of the text
-  // field.
+  DCHECK(owner->GetNode()) << "Cannot use aria-owns without a node";
+  DCHECK(child->GetNode()) << "Cannot be target of aria-owns without a node";
+
+  // Some objects aren't allowed to aria-own children:
+  // - If set on combo boxes but we don't want to rearrange the tree because
+  //   then we'd interpret that as the owned children actually being part of the
+  //   editable content of the text field.
+  // - Do not allow on <area> to own another object, in order to prevent
+  //   interference with the special cased parenting logic used with <area>.
   if (!owner->CanHaveChildren() || owner->IsNativeTextControl() ||
-      owner->HasContentEditableAttributeSet()) {
+      owner->HasContentEditableAttributeSet() || owner->IsImageMapLink()) {
     return false;
   }
+
+  if (child->IsImageMapLink())
+    return false;  // An area must be parented by an image.
 
   // If this child is already aria-owned by a different owner, continue.
   // It's an author error if this happens and we don't worry about which of

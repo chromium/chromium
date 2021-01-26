@@ -72,6 +72,7 @@
 #include "third_party/blink/renderer/core/html/html_dlist_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
+#include "third_party/blink/renderer/core/html/html_map_element.h"
 #include "third_party/blink/renderer/core/html/html_meter_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
 #include "third_party/blink/renderer/core/html/html_table_caption_element.h"
@@ -3207,21 +3208,7 @@ void AXNodeObject::AddNodeChildren() {
 
   for (Node* child = LayoutTreeBuilderTraversal::FirstChild(*node_); child;
        child = LayoutTreeBuilderTraversal::NextSibling(*child)) {
-    AXObject* child_obj = AXObjectCache().GetOrCreate(child, this);
-
-    if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled() &&
-        child_obj &&
-        child_obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
-        child_obj->CanIgnoreTextAsEmpty())
-      continue;
-
-    // TODO(crbug.com/1158511) This shouldn't be needed!
-    if (IsDetached()) {
-      NOTREACHED();
-      return;
-    }
-
-    AddChild(child_obj);
+    AddNodeChild(child);
   }
 }
 
@@ -3264,6 +3251,7 @@ void AXNodeObject::AddChildren() {
   // childrenChanged should have been called, leaving the object with no
   // children.
   DCHECK(!have_children_);
+
   have_children_ = true;
 
   if (RoleValue() == ax::mojom::blink::Role::kStaticText ||
@@ -3310,11 +3298,33 @@ void AXNodeObject::AddNodeChild(Node* node) {
   if (!node)
     return;
 
-  AddChild(AXObjectCache().GetOrCreate(node, this));
+  AXObject* child_obj = AXObjectCache().GetOrCreate(node, this);
+  if (!child_obj)
+    return;
+
+  // TODO(aleventhal) Move to Is[Layout|Node]ObjectRelevantForAccessibility(),
+  // which is where we decide whether an AXObject can be created at all,
+  // otherwise are create these AXObjects and they use up memory.
+  if (RuntimeEnabledFeatures::AccessibilityExposeIgnoredNodesEnabled() &&
+      child_obj &&
+      child_obj->RoleValue() == ax::mojom::blink::Role::kStaticText &&
+      child_obj->CanIgnoreTextAsEmpty())
+    return;
+
+  // <area> children should only be added via AddImageMapChildren(), as the
+  // children of an <image usemap>, and never alone or as children of a <map>.
+  if (child_obj->IsImageMapLink())
+    return;
+
+  AddChild(child_obj);
 }
 
 void AXNodeObject::AddChild(AXObject* child, bool is_from_aria_owns) {
   if (!child)
+    return;
+
+  // These must only be added via an overridden AddChildren() on the parent.
+  if (child->IsMenuListOption() || child->IsMenuListPopup())
     return;
 
   unsigned int index = children_.size();
@@ -3387,10 +3397,21 @@ void AXNodeObject::InsertChild(AXObject* child,
         children_.insert(new_index++, children[i]);
       }
     }
-  } else if (!child->IsMenuListOption()) {
-    // MenuListOptions must only be added in AXMenuListPopup::AddChildren.
+  } else {
     DCHECK(!child->IsDetached())
         << "Cannot add a detached child: " << child->ToString(true, true);
+    // These AXObjects must be added in an overridden AddChildren() method:
+    DCHECK(!child->IsMenuListOption())
+        << "Adding menulist option child in wrong place: "
+        << child->ToString(true, true)
+        << " of parent: " << child->ParentObject()->ToString(true, true)
+        << "\n UseAXMenuList()=" << AXObjectCacheImpl::UseAXMenuList()
+        << " ShouldCreateAXMenuListOptionFor()="
+        << AXObjectCacheImpl::ShouldCreateAXMenuListOptionFor(child->GetNode());
+    DCHECK(!child->IsMenuListPopup())
+        << "Adding menulist popup in wrong place: "
+        << child->ToString(true, true)
+        << " of parent: " << child->ParentObject()->ToString(true, true);
     children_.insert(index, child);
   }
 }

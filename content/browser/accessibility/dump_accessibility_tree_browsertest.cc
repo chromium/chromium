@@ -443,6 +443,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityArea) {
   RunHtmlTest(FILE_PATH_LITERAL("area.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAreaAlone) {
+  RunHtmlTest(FILE_PATH_LITERAL("area-alone.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAreaCrash) {
   RunHtmlTest(FILE_PATH_LITERAL("area-crash.html"));
 }
@@ -450,6 +454,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAreaCrash) {
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityAreaSerializationCrash) {
   RunHtmlTest(FILE_PATH_LITERAL("area-serialization-crash.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAreaWithAriaOwns) {
+  RunHtmlTest(FILE_PATH_LITERAL("area-with-aria-owns.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAName) {
@@ -863,6 +872,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaIllegalVal) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaImg) {
   RunAriaTest(FILE_PATH_LITERAL("aria-img.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaImgChild) {
+  RunAriaTest(FILE_PATH_LITERAL("aria-img-child.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -2190,6 +2203,19 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityLongText) {
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityMain) {
   RunHtmlTest(FILE_PATH_LITERAL("main.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityMapUnused) {
+  RunHtmlTest(FILE_PATH_LITERAL("map-unused.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityMapWithRole) {
+  RunHtmlTest(FILE_PATH_LITERAL("map-with-role.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       DISABLED_AccessibilityMapWithAriaOwns) {
+  RunHtmlTest(FILE_PATH_LITERAL("map-with-aria-owns.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityMark) {

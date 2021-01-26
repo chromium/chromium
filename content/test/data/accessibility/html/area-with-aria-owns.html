@@ -1,0 +1,16 @@
+<!-- An area must have an image maprent. It cannot own or be owned. -->
+<!DOCTYPE html>
+<html>
+<body>
+
+<img id="img" src="pipe.jpg" width="145" height="126" alt="pipe" usemap="#pipe">
+<map name="pipe">
+  <area aria-owns="img" shape="rect" coords="0,0,145,50" alt="pipe1"
+    href="fake.htm">
+  <area id="area2" shape="rect" coords="0,50,145,100" alt="pipe1"
+    href="fake.htm">
+</map>
+<p aria-owns="area2">Paragraph</p>
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+rootWebArea name='done'
+++genericContainer ignored
+++++genericContainer
+++++++imageMap name='pipe'
+++++++++link name='pipe1'
+++++++docBibliography name='bar'

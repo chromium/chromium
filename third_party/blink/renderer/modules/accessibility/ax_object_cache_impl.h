@@ -298,6 +298,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   AXObject* GetActiveAriaModalDialog() const;
 
   static bool UseAXMenuList() { return use_ax_menu_list_; }
+  static bool ShouldCreateAXMenuListOptionFor(const Node*);
 
 #if DCHECK_IS_ON()
   bool HasBeenDisposed() { return has_been_disposed_; }
