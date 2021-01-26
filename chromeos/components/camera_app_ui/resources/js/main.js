@@ -184,9 +184,10 @@ export class App {
             // Handle unchecked grouped sibling radios.
             const grouped =
                 `input[type=radio][name=${element.name}]:not(:checked)`;
-            document.querySelectorAll(grouped).forEach(
-                (radio) =>
-                    radio.dispatchEvent(new Event('change')) && save(radio));
+            dom.getAll(grouped, HTMLInputElement)
+                .forEach(
+                    (radio) => radio.dispatchEvent(new Event('change')) &&
+                        save(radio));
           }
         }
       });

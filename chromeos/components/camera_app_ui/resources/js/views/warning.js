@@ -4,6 +4,7 @@
 
 import {browserProxy} from '../browser_proxy/browser_proxy.js';
 import {assertString} from '../chrome_util.js';
+import * as dom from '../dom.js';
 import {ViewName} from '../type.js';
 import {View} from './view.js';
 
@@ -40,7 +41,7 @@ export class Warning extends View {
    */
   updateMessage_() {
     const message = this.errorNames_[this.errorNames_.length - 1];
-    document.querySelector('#error-msg').textContent =
+    dom.get('#error-msg', HTMLElement).textContent =
         browserProxy.getI18nMessage(message);
   }
 
@@ -80,7 +81,7 @@ export class Warning extends View {
       this.updateMessage_();
       return false;
     }
-    document.querySelector('#error-msg').textContent = '';
+    dom.get('#error-msg', HTMLElement).textContent = '';
     return true;
   }
 }

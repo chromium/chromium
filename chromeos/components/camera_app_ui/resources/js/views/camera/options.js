@@ -99,8 +99,8 @@ export class Options {
      ['#open-settings', () => nav.open(ViewName.SETTINGS)],
     ]
         .forEach(
-            ([selector, fn]) =>
-                document.querySelector(selector).addEventListener('click', fn));
+            ([selector, fn]) => dom.get(selector, HTMLButtonElement)
+                                    .addEventListener('click', fn));
 
     this.toggleMic_.addEventListener('click', () => this.updateAudioByMic_());
     this.toggleMirror_.addEventListener('click', () => this.saveMirroring_());

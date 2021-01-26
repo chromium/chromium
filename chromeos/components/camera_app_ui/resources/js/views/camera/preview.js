@@ -321,16 +321,16 @@ export class Preview {
       return;
     }
 
-    document.querySelectorAll('.metadata-value').forEach((element) => {
+    dom.getAll('.metadata-value', HTMLElement).forEach((element) => {
       element.style.display = 'none';
     });
 
     const displayCategory = (selector, enabled) => {
-      document.querySelector(selector).classList.toggle('mode-on', enabled);
+      dom.get(selector, HTMLElement).classList.toggle('mode-on', enabled);
     };
 
     const showValue = (selector, val) => {
-      const element = document.querySelector(selector);
+      const element = dom.get(selector, HTMLElement);
       element.style.display = '';
       element.textContent = val;
     };

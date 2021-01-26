@@ -92,7 +92,8 @@ export function openHelp() {
  *     up with.
  */
 export function setupI18nElements(rootElement) {
-  const getElements = (attr) => rootElement.querySelectorAll('[' + attr + ']');
+  const getElements = (attr) =>
+      dom.getAllFrom(rootElement, '[' + attr + ']', HTMLElement);
   const getMessage = (element, attr) =>
       browserProxy.getI18nMessage(element.getAttribute(attr));
   const setAriaLabel = (element, attr) =>

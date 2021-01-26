@@ -201,16 +201,16 @@ export class Camera extends View {
           metrics.ShutterType.MOUSE;
     };
 
-    document.querySelector('#start-takephoto')
+    dom.get('#start-takephoto', HTMLButtonElement)
         .addEventListener('click', (e) => {
           const mouseEvent = assertInstanceof(e, MouseEvent);
           this.beginTake_(getShutterType(mouseEvent));
         });
 
-    document.querySelector('#stop-takephoto')
+    dom.get('#stop-takephoto', HTMLButtonElement)
         .addEventListener('click', () => this.endTake_());
 
-    const videoShutter = document.querySelector('#recordvideo');
+    const videoShutter = dom.get('#recordvideo', HTMLButtonElement);
     videoShutter.addEventListener('click', (e) => {
       if (!state.get(state.State.TAKING)) {
         this.beginTake_(getShutterType(assertInstanceof(e, MouseEvent)));
@@ -219,12 +219,13 @@ export class Camera extends View {
       }
     });
 
-    document.querySelector('#video-snapshot').addEventListener('click', () => {
-      const videoMode = assertInstanceof(this.modes_.current, Video);
-      videoMode.takeSnapshot();
-    });
+    dom.get('#video-snapshot', HTMLButtonElement)
+        .addEventListener('click', () => {
+          const videoMode = assertInstanceof(this.modes_.current, Video);
+          videoMode.takeSnapshot();
+        });
 
-    const pauseShutter = document.querySelector('#pause-recordvideo');
+    const pauseShutter = dom.get('#pause-recordvideo', HTMLButtonElement);
     pauseShutter.addEventListener('click', () => {
       const videoMode = assertInstanceof(this.modes_.current, Video);
       videoMode.togglePaused();

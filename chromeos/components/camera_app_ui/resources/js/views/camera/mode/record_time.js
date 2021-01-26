@@ -49,7 +49,7 @@ export class RecordTime {
       hh = pad(Math.floor(time / 3600)) + ':';
     }
     const mm = pad(Math.floor(time / 60) % 60) + ':';
-    document.querySelector('#record-time-msg').textContent =
+    dom.get('#record-time-msg', HTMLElement).textContent =
         hh + mm + pad(time % 60);
   }
 

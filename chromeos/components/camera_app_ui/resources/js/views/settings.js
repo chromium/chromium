@@ -58,9 +58,9 @@ export class BaseSettings extends View {
   constructor(name, itemHandlers = {}) {
     super(name, true, true);
 
-    this.root.querySelector('.menu-header button')
+    dom.getFrom(this.root, '.menu-header button', HTMLButtonElement)
         .addEventListener('click', () => this.leave());
-    this.root.querySelectorAll('.menu-item').forEach((element) => {
+    dom.getAllFrom(this.root, '.menu-item', HTMLElement).forEach((element) => {
       /** @type {function(!Event=)|undefined} */
       const handler = itemHandlers[element.id];
       if (handler) {
@@ -422,7 +422,7 @@ export class ResolutionSettings extends BaseSettings {
     const prepItem = (item, id, {prefResol, resols}, optTextTempl) => {
       item.dataset['deviceId'] = id;
       item.classList.toggle('multi-option', resols.length > 1);
-      item.querySelector('.description>span').textContent =
+      dom.getFrom(item, '.description>span', HTMLSpanElement).textContent =
           optTextTempl(prefResol, resols);
     };
 
@@ -480,7 +480,7 @@ export class ResolutionSettings extends BaseSettings {
           }
         });
         photoItem.setAttribute('aria-describedby', `${deviceId}-photores-desc`);
-        photoItem.querySelector('.description').id =
+        dom.getFrom(photoItem, '.description', HTMLElement).id =
             `${deviceId}-photores-desc`;
         videoItem.addEventListener('click', () => {
           if (videoItem.classList.contains('multi-option')) {
@@ -488,7 +488,7 @@ export class ResolutionSettings extends BaseSettings {
           }
         });
         videoItem.setAttribute('aria-describedby', `${deviceId}-videores-desc`);
-        videoItem.querySelector('.description').id =
+        dom.getFrom(videoItem, '.description', HTMLElement).id =
             `${deviceId}-videores-desc`;
         if (index < focusIdx) {
           this.resMenu_.insertBefore(extItem, fTitle);
@@ -535,7 +535,7 @@ export class ResolutionSettings extends BaseSettings {
           this.resMenu_, `.menu-item.photo-item[data-device-id="${deviceId}"]`,
           HTMLElement);
     }
-    photoItem.querySelector('.description>span').textContent =
+    dom.getFrom(photoItem, '.description>span', HTMLSpanElement).textContent =
         this.photoOptTextTempl_(photo.prefResol, photo.resols);
 
     // Update setting option if it's opened.
@@ -570,7 +570,7 @@ export class ResolutionSettings extends BaseSettings {
           this.resMenu_, `.menu-item.video-item[data-device-id="${deviceId}"]`,
           HTMLElement);
     }
-    videoItem.querySelector('.description>span').textContent =
+    dom.getFrom(videoItem, '.description>span', HTMLSpanElement).textContent =
         this.videoOptTextTempl_(video.prefResol);
 
     // Update setting option if it's opened.
@@ -633,9 +633,10 @@ export class ResolutionSettings extends BaseSettings {
    * @private
    */
   updateMenu_(resolItem, menu, optTextTempl, onChange, resolutions, selectedR) {
-    const captionText = resolItem.querySelector('.description>span');
+    const captionText =
+        dom.getFrom(resolItem, '.description>span', HTMLSpanElement);
     captionText.textContent = '';
-    menu.querySelectorAll('.menu-item')
+    dom.getAllFrom(menu, '.menu-item', HTMLLabelElement)
         .forEach((element) => element.parentNode.removeChild(element));
 
     resolutions.forEach((r) => {
@@ -643,7 +644,8 @@ export class ResolutionSettings extends BaseSettings {
       const label = dom.getFrom(item, 'label', HTMLLabelElement);
       util.setInkdropEffect(label);
       const input = dom.getFrom(item, 'input', HTMLInputElement);
-      item.querySelector('span').textContent = optTextTempl(r, resolutions);
+      dom.getFrom(item, 'span', HTMLSpanElement).textContent =
+          optTextTempl(r, resolutions);
       input.name = menu.dataset['name'];
       input.dataset['width'] = r.width.toString();
       input.dataset['height'] = r.height.toString();
