@@ -317,6 +317,7 @@ source_set("quiche") {
       "src/quic/core/frames/quic_window_update_frame.cc",
       "src/quic/core/frames/quic_window_update_frame.h",
       "src/quic/core/handshaker_delegate_interface.h",
+      "src/quic/core/http/http_constants.cc",
       "src/quic/core/http/http_constants.h",
       "src/quic/core/http/http_decoder.cc",
       "src/quic/core/http/http_decoder.h",
