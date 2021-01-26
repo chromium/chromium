@@ -726,6 +726,9 @@ void CaptureModeController::TerminateRecordingUiElements() {
       video_recording_watcher_->window_being_recorded()->GetRootWindow(),
       false);
   video_recording_watcher_.reset();
+
+  capture_mode_util::TriggerAccessibilityAlert(
+      IDS_ASH_SCREEN_CAPTURE_ALERT_RECORDING_STOPPED);
 }
 
 void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
@@ -750,6 +753,9 @@ void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
 
   ++num_consecutive_screenshots_;
   num_consecutive_screenshots_scheduler_.Reset();
+
+  capture_mode_util::TriggerAccessibilityAlert(
+      IDS_ASH_SCREEN_CAPTURE_ALERT_SCREENSHOT_CAPTURED);
 }
 
 void CaptureModeController::CaptureVideo(const CaptureParams& capture_params) {
@@ -765,6 +771,9 @@ void CaptureModeController::CaptureVideo(const CaptureParams& capture_params) {
   capture_mode_session_->StartCountDown(
       base::BindOnce(&CaptureModeController::OnVideoRecordCountDownFinished,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  capture_mode_util::TriggerAccessibilityAlert(
+      IDS_ASH_SCREEN_CAPTURE_ALERT_RECORDING_STARTING);
 }
 
 void CaptureModeController::OnImageCaptured(
@@ -1000,6 +1009,10 @@ void CaptureModeController::OnVideoRecordCountDownFinished() {
   // destroyed, this should be a no-op.
   if (!IsActive())
     return;
+
+  // Do not trigger an alert when exiting the session, since we end the session
+  // to start recording.
+  capture_mode_session_->set_a11y_alert_on_session_exit(false);
 
   const base::Optional<CaptureParams> capture_params = GetCaptureParams();
   // Stop the capture session now, so the bar doesn't show up in the captured

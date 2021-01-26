@@ -64,6 +64,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   aura::Window* current_root() const { return current_root_; }
   bool is_selecting_region() const { return is_selecting_region_; }
   bool is_drag_in_progress() const { return is_drag_in_progress_; }
+  void set_a11y_alert_on_session_exit(bool value) {
+    a11y_alert_on_session_exit_ = value;
+  }
 
   // Gets the current window selected for |kWindow| capture source. Returns
   // nullptr if no window is available for selection.
@@ -309,6 +312,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   // The window which had input capture prior to entering the session. It may be
   // null if no such window existed.
   aura::Window* input_capture_window_ = nullptr;
+
+  // False only when we end the session to start recording.
+  bool a11y_alert_on_session_exit_ = true;
 };
 
 }  // namespace ash
