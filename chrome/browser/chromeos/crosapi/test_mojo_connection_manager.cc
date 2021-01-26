@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
 #include "chrome/browser/chromeos/crosapi/crosapi_ash.h"
+#include "chrome/browser/chromeos/crosapi/crosapi_manager.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
@@ -130,13 +131,17 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
 
 void TestMojoConnectionManager::OnCrosapiReceiverReceived(
     mojo::PendingReceiver<crosapi::mojom::Crosapi> pending_receiver) {
-  crosapi_ = std::make_unique<CrosapiAsh>(std::move(pending_receiver));
+  // Transfer the disconnect handler to Crosapi.
+  browser_service_.set_disconnect_handler(base::OnceClosure());
+  CrosapiManager::Get()->BindCrosapi(
+      std::move(pending_receiver),
+      base::BindOnce(&TestMojoConnectionManager::OnMojoDisconnected,
+                     weak_factory_.GetWeakPtr()));
   LOG(INFO) << "Connection to lacros-chrome is established.";
 }
 
 void TestMojoConnectionManager::OnMojoDisconnected() {
   browser_service_.reset();
-  crosapi_ = nullptr;
   LOG(WARNING) << "Mojo to lacros-chrome is disconnected.";
 }
 

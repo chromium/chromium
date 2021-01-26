@@ -66,10 +66,6 @@ class TestMojoConnectionManager {
   // Available during the connected browser is running.
   mojo::Remote<crosapi::mojom::BrowserService> browser_service_;
 
-  // Implementation of Crosapi Mojo APIs.
-  // Instantiated on receiving the PendingReceiver from lacros-chrome.
-  std::unique_ptr<crosapi::mojom::Crosapi> crosapi_;
-
   // A socket for a client, such as a test launcher, to connect to.
   base::ScopedFD testing_socket_;
 

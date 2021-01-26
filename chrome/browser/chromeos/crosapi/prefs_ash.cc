@@ -9,21 +9,46 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #include "base/bind.h"
 #include "base/check.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 
 namespace crosapi {
+namespace {
 
-PrefsAsh::PrefsAsh(PrefService* local_state, PrefService* profile_prefs)
-    : local_state_(local_state), profile_prefs_(profile_prefs) {
-  DCHECK(local_state_);
-  DCHECK(profile_prefs_);
-  local_state_registrar_.Init(local_state_);
-  profile_prefs_registrar_.Init(profile_prefs_);
+// On non login case, ProfileManager::GetPrimaryUserProfile() returns
+// a Profile instance which is different from logged in user profile.
+Profile* GetPrimaryLoggedInUserProfile() {
+  // Check login state first.
+  if (!user_manager::UserManager::IsInitialized() ||
+      !user_manager::UserManager::Get()->IsUserLoggedIn()) {
+    return nullptr;
+  }
+
+  return ProfileManager::GetPrimaryUserProfile();
 }
 
-PrefsAsh::~PrefsAsh() = default;
+}  // namespace
+
+PrefsAsh::PrefsAsh(ProfileManager* profile_manager, PrefService* local_state)
+    : profile_manager_(profile_manager), local_state_(local_state) {
+  DCHECK(profile_manager_);
+  DCHECK(local_state_);
+
+  profile_manager_->AddObserver(this);
+  local_state_registrar_.Init(local_state_);
+
+  Profile* primary_profile = GetPrimaryLoggedInUserProfile();
+  if (primary_profile)
+    OnPrimaryProfileReady(primary_profile);
+}
+
+PrefsAsh::~PrefsAsh() {
+  // Remove this observer, in case Primary logged in profile is not yet created.
+  profile_manager_->RemoveObserver(this);
+}
 
 void PrefsAsh::BindReceiver(mojo::PendingReceiver<mojom::Prefs> receiver) {
   receivers_.Add(this, std::move(receiver));
@@ -72,12 +97,27 @@ void PrefsAsh::AddObserver(mojom::PrefPath path,
   observers_[path].Add(std::move(remote));
 }
 
+void PrefsAsh::OnProfileAdded(Profile* profile) {
+  Profile* primary_profile = GetPrimaryLoggedInUserProfile();
+  if (!primary_profile) {
+    // Primary profile is not yet available. Wait for another invocation
+    // to capture its creation.
+    return;
+  }
+
+  OnPrimaryProfileReady(primary_profile);
+}
+
 base::Optional<PrefsAsh::State> PrefsAsh::GetState(mojom::PrefPath path) {
   switch (path) {
     case mojom::PrefPath::kMetricsReportingEnabled:
       return State{local_state_, &local_state_registrar_,
                    metrics::prefs::kMetricsReportingEnabled};
     case mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled:
+      if (!profile_prefs_) {
+        LOG(WARNING) << "Primary profile is not yet initialized";
+        return base::nullopt;
+      }
       return State{profile_prefs_, &profile_prefs_registrar_,
                    ash::prefs::kAccessibilitySpokenFeedbackEnabled};
     default:
@@ -105,6 +145,12 @@ void PrefsAsh::OnDisconnect(mojom::PrefPath path, mojo::RemoteSetElementId id) {
     }
     observers_.erase(it);
   }
+}
+
+void PrefsAsh::OnPrimaryProfileReady(Profile* profile) {
+  profile_manager_->RemoveObserver(this);
+  profile_prefs_ = profile->GetPrefs();
+  profile_prefs_registrar_.Init(profile_prefs_);
 }
 
 }  // namespace crosapi

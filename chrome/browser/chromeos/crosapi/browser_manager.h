@@ -210,10 +210,6 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   // Available during lacros-chrome is running.
   mojo::Remote<mojom::BrowserService> browser_service_;
 
-  // Implementation of Crosapi Mojo APIs.
-  // Instantiated on receiving the PendingReceiver from lacros-chrome.
-  std::unique_ptr<mojom::Crosapi> crosapi_;
-
   // Helps set up and manage the mojo connections between lacros-chrome and
   // ash-chrome in testing environment. Only applicable when
   // '--lacros-mojo-socket-for-testing' is present in the command line.

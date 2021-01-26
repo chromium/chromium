@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_CHROMEOS_CROSAPI_CROSAPI_ASH_H_
 #define CHROME_BROWSER_CHROMEOS_CROSAPI_CROSAPI_ASH_H_
 
+#include <map>
 #include <memory>
 
+#include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 
 namespace crosapi {
 
@@ -31,8 +34,13 @@ class UrlHandlerAsh;
 // crosapi clients, such as lacros-chrome, can call into.
 class CrosapiAsh : public mojom::Crosapi {
  public:
-  explicit CrosapiAsh(mojo::PendingReceiver<mojom::Crosapi> pending_receiver);
+  CrosapiAsh();
   ~CrosapiAsh() override;
+
+  // Binds the given receiver to this instance.
+  // |disconnected_handler| is called on the connection lost.
+  void BindReceiver(mojo::PendingReceiver<mojom::Crosapi> pending_receiver,
+                    base::OnceClosure disconnect_handler);
 
   // crosapi::mojom::Crosapi:
   void BindAccountManager(
@@ -74,7 +82,8 @@ class CrosapiAsh : public mojom::Crosapi {
       mojo::PendingReceiver<mojom::UrlHandler> receiver) override;
 
  private:
-  mojo::Receiver<mojom::Crosapi> receiver_;
+  // Called when a connection is lost.
+  void OnDisconnected();
 
   std::unique_ptr<DeviceAttributesAsh> device_attributes_ash_;
   std::unique_ptr<FileManagerAsh> file_manager_ash_;
@@ -89,6 +98,11 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<TestControllerAsh> test_controller_ash_;
   std::unique_ptr<ClipboardAsh> clipboard_ash_;
   std::unique_ptr<UrlHandlerAsh> url_handler_ash_;
+
+  mojo::ReceiverSet<mojom::Crosapi> receiver_set_;
+  std::map<mojo::ReceiverId, base::OnceClosure> disconnect_handler_map_;
+
+  base::WeakPtrFactory<CrosapiAsh> weak_factory_{this};
 };
 
 }  // namespace crosapi

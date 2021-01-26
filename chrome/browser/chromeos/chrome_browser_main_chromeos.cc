@@ -47,6 +47,7 @@
 #include "chrome/browser/chromeos/arc/session/arc_service_launcher.h"
 #include "chrome/browser/chromeos/boot_times_recorder.h"
 #include "chrome/browser/chromeos/crosapi/browser_manager.h"
+#include "chrome/browser/chromeos/crosapi/crosapi_manager.h"
 #include "chrome/browser/chromeos/crostini/crostini_unsupported_action_notifier.h"
 #include "chrome/browser/chromeos/crostini/crosvm_metrics.h"
 #include "chrome/browser/chromeos/dbus/chrome_features_service_provider.h"
@@ -820,6 +821,7 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
   // Always construct BrowserManager, even if the lacros flag is disabled, so
   // it can do cleanup work if needed. Initialized in PreProfileInit because the
   // profile-keyed service AppService can call into it.
+  crosapi_manager_ = std::make_unique<crosapi::CrosapiManager>();
   browser_manager_ = std::make_unique<crosapi::BrowserManager>(
       g_browser_process->platform_part()->cros_component_manager());
 
@@ -1134,6 +1136,7 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
   BootTimesRecorder::Get()->AddLogoutTimeMarker("UIMessageLoopEnded", true);
 
   browser_manager_.reset();
+  crosapi_manager_.reset();
 
   if (lock_screen_apps_state_controller_)
     lock_screen_apps_state_controller_->Shutdown();

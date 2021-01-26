@@ -12,6 +12,7 @@
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -41,24 +42,35 @@ class TestObserver : public mojom::PrefObserver {
 
 class PrefsAshTest : public testing::Test {
  public:
-  PrefsAshTest()
-      : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()),
-        local_state_(scoped_testing_local_state_.Get()),
-        profile_prefs_(profile_.GetPrefs()) {}
+  PrefsAshTest() = default;
   PrefsAshTest(const PrefsAshTest&) = delete;
   PrefsAshTest& operator=(const PrefsAshTest&) = delete;
   ~PrefsAshTest() override = default;
 
+  void SetUp() override { ASSERT_TRUE(testing_profile_manager_.SetUp()); }
+
+  PrefService* local_state() {
+    return testing_profile_manager_.local_state()->Get();
+  }
+  ProfileManager* profile_manager() {
+    return testing_profile_manager_.profile_manager();
+  }
+
+  Profile* CreateProfile() {
+    return testing_profile_manager_.CreateTestingProfile(std::string());
+  }
+
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState scoped_testing_local_state_;
-  TestingProfile profile_;
-  PrefService* const local_state_;
-  PrefService* const profile_prefs_;
+
+ private:
+  TestingProfileManager testing_profile_manager_{
+      TestingBrowserProcess::GetGlobal()};
 };
 
 TEST_F(PrefsAshTest, LocalStatePrefs) {
-  local_state_->SetBoolean(metrics::prefs::kMetricsReportingEnabled, false);
-  PrefsAsh prefs_ash(local_state_, profile_prefs_);
+  local_state()->SetBoolean(metrics::prefs::kMetricsReportingEnabled, false);
+  PrefsAsh prefs_ash(profile_manager(), local_state());
+  prefs_ash.OnPrimaryProfileReadyForTesting(CreateProfile());
   mojo::Remote<mojom::Prefs> prefs_remote;
   prefs_ash.BindReceiver(prefs_remote.BindNewPipeAndPassReceiver());
   mojom::PrefPath path = mojom::PrefPath::kMetricsReportingEnabled;
@@ -76,7 +88,7 @@ TEST_F(PrefsAshTest, LocalStatePrefs) {
   prefs_remote->SetPref(path, base::Value(true), base::DoNothing());
   prefs_remote.FlushForTesting();
   EXPECT_TRUE(
-      local_state_->GetBoolean(metrics::prefs::kMetricsReportingEnabled));
+      local_state()->GetBoolean(metrics::prefs::kMetricsReportingEnabled));
 
   // Adding an observer results in it being fired with the current state.
   EXPECT_FALSE(prefs_ash.local_state_registrar_.IsObserved(
@@ -99,7 +111,7 @@ TEST_F(PrefsAshTest, LocalStatePrefs) {
   EXPECT_EQ(2, prefs_ash.observers_[path].size());
 
   // Observer should be notified when value changes.
-  local_state_->SetBoolean(metrics::prefs::kMetricsReportingEnabled, false);
+  local_state()->SetBoolean(metrics::prefs::kMetricsReportingEnabled, false);
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(observer1->value_->GetBool());
   EXPECT_FALSE(observer2->value_->GetBool());
@@ -116,9 +128,13 @@ TEST_F(PrefsAshTest, LocalStatePrefs) {
 }
 
 TEST_F(PrefsAshTest, ProfilePrefs) {
-  profile_prefs_->SetBoolean(ash::prefs::kAccessibilitySpokenFeedbackEnabled,
-                             false);
-  PrefsAsh prefs_ash(local_state_, profile_prefs_);
+  Profile* const profile = CreateProfile();
+  PrefService* const profile_prefs = profile->GetPrefs();
+  profile_prefs->SetBoolean(ash::prefs::kAccessibilitySpokenFeedbackEnabled,
+                            false);
+  PrefsAsh prefs_ash(profile_manager(), local_state());
+  prefs_ash.OnPrimaryProfileReadyForTesting(profile);
+
   mojo::Remote<mojom::Prefs> prefs_remote;
   prefs_ash.BindReceiver(prefs_remote.BindNewPipeAndPassReceiver());
   mojom::PrefPath path = mojom::PrefPath::kAccessibilitySpokenFeedbackEnabled;
@@ -135,7 +151,7 @@ TEST_F(PrefsAshTest, ProfilePrefs) {
   // Set updates value.
   prefs_remote->SetPref(path, base::Value(true), base::DoNothing());
   prefs_remote.FlushForTesting();
-  EXPECT_TRUE(profile_prefs_->GetBoolean(
+  EXPECT_TRUE(profile_prefs->GetBoolean(
       ash::prefs::kAccessibilitySpokenFeedbackEnabled));
 
   // Adding an observer results in it being fired with the current state.
@@ -147,7 +163,8 @@ TEST_F(PrefsAshTest, ProfilePrefs) {
 }
 
 TEST_F(PrefsAshTest, GetUnknown) {
-  PrefsAsh prefs_ash(local_state_, profile_prefs_);
+  PrefsAsh prefs_ash(profile_manager(), local_state());
+  prefs_ash.OnPrimaryProfileReadyForTesting(CreateProfile());
   mojo::Remote<mojom::Prefs> prefs_remote;
   prefs_ash.BindReceiver(prefs_remote.BindNewPipeAndPassReceiver());
   mojom::PrefPath path = mojom::PrefPath::kUnknown;

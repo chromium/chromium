@@ -1064,6 +1064,8 @@ source_set("chromeos") {
     "crosapi/clipboard_ash.h",
     "crosapi/crosapi_ash.cc",
     "crosapi/crosapi_ash.h",
+    "crosapi/crosapi_manager.cc",
+    "crosapi/crosapi_manager.h",
     "crosapi/device_attributes_ash.cc",
     "crosapi/device_attributes_ash.h",
     "crosapi/environment_provider.cc",

@@ -33,7 +33,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/crosapi/browser_loader.h"
 #include "chrome/browser/chromeos/crosapi/browser_util.h"
-#include "chrome/browser/chromeos/crosapi/crosapi_ash.h"
+#include "chrome/browser/chromeos/crosapi/crosapi_manager.h"
 #include "chrome/browser/chromeos/crosapi/environment_provider.h"
 #include "chrome/browser/chromeos/crosapi/test_mojo_connection_manager.h"
 #include "chrome/browser/component_updater/cros_component_manager.h"
@@ -425,7 +425,12 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
 void BrowserManager::OnCrosapiReceiverReceived(
     mojo::PendingReceiver<mojom::Crosapi> pending_receiver) {
   DCHECK_EQ(state_, State::STARTING);
-  crosapi_ = std::make_unique<CrosapiAsh>(std::move(pending_receiver));
+  // Transfer the disconnect handler from BrowserService to Crosapi.
+  browser_service_.set_disconnect_handler(base::OnceClosure());
+  CrosapiManager::Get()->BindCrosapi(
+      std::move(pending_receiver),
+      base::BindOnce(&BrowserManager::OnMojoDisconnected,
+                     weak_factory_.GetWeakPtr()));
   state_ = State::RUNNING;
   base::UmaHistogramMediumTimes("ChromeOS.Lacros.StartTime",
                                 base::TimeTicks::Now() - lacros_launch_time_);
@@ -443,7 +448,6 @@ void BrowserManager::OnMojoDisconnected() {
   state_ = State::TERMINATING;
 
   browser_service_.reset();
-  crosapi_ = nullptr;
   base::ThreadPool::PostTaskAndReply(
       FROM_HERE, {base::WithBaseSyncPrimitives()},
       base::BindOnce(&TerminateLacrosChrome, std::move(lacros_process_)),

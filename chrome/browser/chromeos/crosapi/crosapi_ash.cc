@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/chromeos/crosapi/browser_manager.h"
@@ -43,17 +42,16 @@
 
 namespace crosapi {
 
-CrosapiAsh::CrosapiAsh(mojo::PendingReceiver<mojom::Crosapi> pending_receiver)
-    : receiver_(this, std::move(pending_receiver)),
-      device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
+CrosapiAsh::CrosapiAsh()
+    : device_attributes_ash_(std::make_unique<DeviceAttributesAsh>()),
       file_manager_ash_(std::make_unique<FileManagerAsh>()),
       keystore_service_ash_(std::make_unique<KeystoreServiceAsh>()),
       message_center_ash_(std::make_unique<MessageCenterAsh>()),
       metrics_reporting_ash_(std::make_unique<MetricsReportingAsh>(
           g_browser_process->local_state())),
-      prefs_ash_(std::make_unique<PrefsAsh>(
-          g_browser_process->local_state(),
-          ProfileManager::GetPrimaryUserProfile()->GetPrefs())),
+      prefs_ash_(
+          std::make_unique<PrefsAsh>(g_browser_process->profile_manager(),
+                                     g_browser_process->local_state())),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       select_file_ash_(std::make_unique<SelectFileAsh>()),
       feedback_ash_(std::make_unique<FeedbackAsh>()),
@@ -61,12 +59,24 @@ CrosapiAsh::CrosapiAsh(mojo::PendingReceiver<mojom::Crosapi> pending_receiver)
       test_controller_ash_(std::make_unique<TestControllerAsh>()),
       clipboard_ash_(std::make_unique<ClipboardAsh>()),
       url_handler_ash_(std::make_unique<UrlHandlerAsh>()) {
-  // TODO(hidehiko): Remove non-critical log from here.
-  // Currently this is the signal that the connection is established.
-  LOG(WARNING) << "Crosapi connected.";
+  receiver_set_.set_disconnect_handler(base::BindRepeating(
+      &CrosapiAsh::OnDisconnected, weak_factory_.GetWeakPtr()));
 }
 
-CrosapiAsh::~CrosapiAsh() = default;
+CrosapiAsh::~CrosapiAsh() {
+  // Invoke all disconnect handlers.
+  auto handlers = std::move(disconnect_handler_map_);
+  for (auto& entry : handlers)
+    std::move(entry.second).Run();
+}
+
+void CrosapiAsh::BindReceiver(
+    mojo::PendingReceiver<mojom::Crosapi> pending_receiver,
+    base::OnceClosure disconnect_handler) {
+  mojo::ReceiverId id = receiver_set_.Add(this, std::move(pending_receiver));
+  if (!disconnect_handler.is_null())
+    disconnect_handler_map_.emplace(id, std::move(disconnect_handler));
+}
 
 void CrosapiAsh::BindAccountManager(
     mojo::PendingReceiver<mojom::AccountManager> receiver) {
@@ -187,6 +197,16 @@ void CrosapiAsh::BindUrlHandler(
 
 void CrosapiAsh::OnBrowserStartup(mojom::BrowserInfoPtr browser_info) {
   BrowserManager::Get()->set_browser_version(browser_info->browser_version);
+}
+
+void CrosapiAsh::OnDisconnected() {
+  auto it = disconnect_handler_map_.find(receiver_set_.current_receiver());
+  if (it == disconnect_handler_map_.end())
+    return;
+
+  base::OnceClosure callback = std::move(it->second);
+  disconnect_handler_map_.erase(it);
+  std::move(callback).Run();
 }
 
 }  // namespace crosapi
