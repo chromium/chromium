@@ -1388,9 +1388,11 @@ void LegacyCacheStorage::SizeRetrievedFromCache(
     int64_t* accumulator,
     int64_t size) {
   auto* impl = LegacyCacheStorageCache::From(cache_handle);
-  if (doomed_caches_.find(impl) == doomed_caches_.end())
-    cache_index_->SetCacheSize(impl->cache_name(), size);
-  *accumulator += size;
+  if (doomed_caches_.find(impl) == doomed_caches_.end()) {
+    cache_index_->SetCacheSize(impl->cache_name(), impl->cache_size());
+    cache_index_->SetCachePadding(impl->cache_name(), impl->cache_padding());
+  }
+  *accumulator += (impl->cache_size() + impl->cache_padding());
   std::move(closure).Run();
 }
 
@@ -1443,8 +1445,9 @@ void LegacyCacheStorage::SizeImpl(SizeCallback callback) {
                      std::move(callback)));
 
   for (const auto& cache_metadata : cache_index_->ordered_cache_metadata()) {
-    if (cache_metadata.size != LegacyCacheStorage::kSizeUnknown) {
-      *accumulator_ptr += cache_metadata.size;
+    if (cache_metadata.size != LegacyCacheStorage::kSizeUnknown &&
+        cache_metadata.padding != LegacyCacheStorage::kSizeUnknown) {
+      *accumulator_ptr += (cache_metadata.size + cache_metadata.padding);
       barrier_closure.Run();
       continue;
     }

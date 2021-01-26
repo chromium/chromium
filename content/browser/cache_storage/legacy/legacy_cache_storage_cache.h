@@ -147,11 +147,15 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   // will exit early. Close should only be called once per CacheStorageCache.
   void Close(base::OnceClosure callback);
 
-  // The size of the cache's contents.
+  // The size of the cache's contents.  The callback reports the padded
+  // size.  If you want the unpadded size you may call the cache_size()
+  // getter method on the cache object when the callback is invoked; the
+  // getter will have an up-to-date value at that point.
   void Size(SizeCallback callback);
 
   // Gets the cache's size, closes the backend, and then runs |callback| with
-  // the cache's size.
+  // the cache's size.  As per the comment for Size(), this also returns the
+  // padded size.
   void GetSizeThenClose(SizeCallback callback);
 
   void Put(blink::mojom::FetchAPIRequestPtr request,
