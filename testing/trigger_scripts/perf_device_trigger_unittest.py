@@ -170,7 +170,10 @@ class UnitTest(unittest.TestCase):
       if not 'trigger' in run:
         continue
       bot_id = run[(run.index('id') + 1)]
-      shard = int(run[(run.index('GTEST_SHARD_INDEX') + 1)])
+
+      g = 'GTEST_SHARD_INDEX='
+      shard = [int(r[len(g):]) for r in run if r.startswith(g)][0]
+
       triggered_map[shard] = bot_id
     return triggered_map
 
