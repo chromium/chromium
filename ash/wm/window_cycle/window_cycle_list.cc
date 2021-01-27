@@ -113,6 +113,11 @@ constexpr base::TimeDelta kFadeInDuration =
 constexpr base::TimeDelta kContainerSlideDuration =
     base::TimeDelta::FromMilliseconds(120);
 
+// Duration of the window cycle scale animation when a user toggles alt-tab
+// modes.
+constexpr base::TimeDelta kToggleModeScaleDuration =
+    base::TimeDelta::FromMilliseconds(150);
+
 // The alt-tab cycler widget is not activatable (except when ChromeVox is on),
 // so we use WindowTargeter to send input events to the widget.
 class CustomWindowTargeter : public aura::WindowTargeter {
@@ -353,13 +358,81 @@ class WindowCycleView : public views::WidgetDelegateView,
   WindowCycleView& operator=(const WindowCycleView&) = delete;
   ~WindowCycleView() override = default;
 
+  // Scales the window cycle view by scaling its clip rect. If the widget is
+  // growing, the widget's bounds are set to |screen_bounds| immediately then
+  // its clipping rect is scaled. If the widget is shrinking, the widget's
+  // cliping rect is scaled first then the widget's bounds are set to
+  // |screen_bounds| upon completion/interruption of the clipping rect's
+  // animation.
+  void ScaleCycleView(const gfx::Rect& screen_bounds) {
+    auto* layer_animator = layer()->GetAnimator();
+    if (layer_animator->is_animating()) {
+      // There is an existing scaling animation occurring. To accurately get the
+      // new bounds for the next layout, we must abort the ongoing animation so
+      // |this| will set the previous bounds of the widget and clear the clip
+      // rect.
+      // TODO(chinsenj): We may not want to abort the animation and rather just
+      // animate from the current position.
+      layer_animator->AbortAllAnimations();
+    }
+
+    // |screen_bounds| is in screen coords so store it in local coordinates in
+    // |new_bounds|.
+    gfx::Rect old_bounds = GetLocalBounds();
+    gfx::Rect new_bounds = gfx::Rect(screen_bounds.size());
+
+    if (old_bounds == new_bounds)
+      return;
+
+    if (new_bounds.width() >= old_bounds.width()) {
+      // In this case, the cycle view is growing. To achieve the scaling
+      // animation we set the widget bounds immediately and scale the clipping
+      // rect of |this|'s layer from where the |old_bounds| would be in the
+      // new local coordinates.
+      GetWidget()->SetBounds(screen_bounds);
+      old_bounds +=
+          gfx::Vector2d((new_bounds.width() - old_bounds.width()) / 2, 0);
+    } else {
+      // In this case, the cycle view is shrinking. To achieve the scaling
+      // animation, we first scale the clipping rect and defer updating the
+      // widget's bounds to when the animation is complete. If we instantly
+      // laid out, then it wouldn't appear as though the background is
+      // shrinking.
+      new_bounds +=
+          gfx::Vector2d((old_bounds.width() - new_bounds.width()) / 2, 0);
+      defer_widget_bounds_update_ = true;
+    }
+
+    layer()->SetClipRect(old_bounds);
+    ui::ScopedLayerAnimationSettings settings(layer_animator);
+    settings.SetTransitionDuration(kToggleModeScaleDuration);
+    settings.SetTweenType(gfx::Tween::FAST_OUT_SLOW_IN_2);
+    settings.SetPreemptionStrategy(
+        ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+    settings.AddObserver(this);
+    layer()->SetClipRect(new_bounds);
+  }
+
+  gfx::Rect GetTargetBounds() const {
+    // The widget is sized clamped to the screen bounds. Its child, the mirror
+    // container which is parent to all the previews may be larger than the
+    // widget as some previews will be offscreen. In Layout() of |cycle_view_|
+    // the mirror container will be slid back and forth depending on the target
+    // window.
+    aura::Window* root_window = Shell::GetRootWindowForNewWindows();
+    gfx::Rect widget_rect = root_window->GetBoundsInScreen();
+    widget_rect.ClampToCenteredSize(GetPreferredSize());
+    return widget_rect;
+  }
+
   void UpdateWindows(const WindowCycleList::WindowList& windows) {
     const bool no_windows = windows.empty();
-    if (Shell::Get()
+    const bool is_interactive_alt_tab_mode_allowed =
+        Shell::Get()
             ->window_cycle_controller()
-            ->IsInteractiveAltTabModeAllowed()) {
+            ->IsInteractiveAltTabModeAllowed();
+    if (is_interactive_alt_tab_mode_allowed)
       no_recent_items_label_->SetVisible(no_windows);
-    }
     if (no_windows)
       return;
     for (auto* window : windows) {
@@ -370,11 +443,11 @@ class WindowCycleView : public views::WidgetDelegateView,
       no_previews_set_.insert(view);
     }
 
-    // Resize the widget.
-    aura::Window* root_window = Shell::GetRootWindowForNewWindows();
-    gfx::Rect widget_rect = root_window->GetBoundsInScreen();
-    widget_rect.ClampToCenteredSize(GetPreferredSize());
-    GetWidget()->SetBounds(widget_rect);
+    gfx::Rect widget_rect = GetTargetBounds();
+    if (is_interactive_alt_tab_mode_allowed)
+      ScaleCycleView(widget_rect);
+    else
+      GetWidget()->SetBounds(widget_rect);
 
     SetTargetWindow(windows[0]);
     ScrollToWindow(windows[0]);
@@ -450,6 +523,7 @@ class WindowCycleView : public views::WidgetDelegateView,
     no_previews_set_.clear();
     target_window_ = nullptr;
     current_window_ = nullptr;
+    defer_widget_bounds_update_ = false;
     RemoveAllChildViews(true);
   }
 
@@ -538,10 +612,14 @@ class WindowCycleView : public views::WidgetDelegateView,
       }
     }
 
-    // Enable animations only after the first Layout() pass.
+    // Enable animations only after the first Layout() pass. If |this| is
+    // animating or |defer_widget_bounds_update_|, don't animate as well since
+    // the cycle view is already being animated or just finished animating for
+    // mode switch.
     std::unique_ptr<ui::ScopedLayerAnimationSettings> settings;
     base::Optional<ui::AnimationThroughputReporter> reporter;
-    if (!first_layout) {
+    if (!first_layout && !this->layer()->GetAnimator()->is_animating() &&
+        !defer_widget_bounds_update_) {
       settings = std::make_unique<ui::ScopedLayerAnimationSettings>(
           mirror_container_->layer()->GetAnimator());
       settings->SetTransitionDuration(kContainerSlideDuration);
@@ -604,11 +682,22 @@ class WindowCycleView : public views::WidgetDelegateView,
   // ui::ImplicitAnimationObserver:
   void OnImplicitAnimationsCompleted() override {
     occlusion_tracker_pauser_.reset();
+    this->layer()->SetClipRect(gfx::Rect());
+    if (defer_widget_bounds_update_) {
+      // This triggers a Layout() so reset |defer_widget_bounds_update_| after
+      // calling SetBounds() to prevent the mirror container from animating.
+      GetWidget()->SetBounds(GetTargetBounds());
+      defer_widget_bounds_update_ = false;
+    }
   }
 
  private:
   std::map<aura::Window*, WindowCycleItemView*> window_view_map_;
   views::View* mirror_container_ = nullptr;
+
+  // Used when the widget bounds update should be deferred during the cycle
+  // view's scaling animation..
+  bool defer_widget_bounds_update_ = false;
 
   // Tab slider and no recent items are only used when Bento is enabled.
   WindowCycleTabSlider* tab_slider_container_ = nullptr;
@@ -859,15 +948,7 @@ void WindowCycleList::InitWindowCycleView() {
   // or a system modal dialog is shown.
   aura::Window* root_window = Shell::GetRootWindowForNewWindows();
   params.parent = root_window->GetChildById(kShellWindowId_OverlayContainer);
-
-  // The widget is sized clamped to the screen bounds. Its child, the mirror
-  // container which is parent to all the previews may be larger than the widget
-  // as some previews will be offscreen. In Layout() of |cyclev_view_| the
-  // mirror container will be slid back and forth depending on the target
-  // window.
-  gfx::Rect widget_rect = root_window->GetBoundsInScreen();
-  widget_rect.ClampToCenteredSize(cycle_view_->GetPreferredSize());
-  params.bounds = widget_rect;
+  params.bounds = cycle_view_->GetTargetBounds();
 
   screen_observer_.Observe(display::Screen::GetScreen());
   widget->Init(std::move(params));
