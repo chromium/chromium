@@ -3876,7 +3876,7 @@
     Restart requested
   </message>
   <message name="IDS_ARC_SNAPSHOT_RESTART_NOTIFICATION_MESSAGE" desc="Message in the notification shown to the user when ARC data snapshot must be updated">
-    You Administrator requested to restart your device to update apps. This may take several minutes to complete
+    Your administrator requested to restart your device to update apps. This may take several minutes to complete.
   </message>
   <message name="IDS_ARC_SNAPSHOT_RESTART_NOTIFICATION_RESTART_BUTTON" desc="Label on button in the notification shown to the user when ARC data snapshot must be updated">
     Restart
