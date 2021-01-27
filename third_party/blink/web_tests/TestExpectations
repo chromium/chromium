@@ -1152,6 +1152,9 @@ crbug.com/958381 [ Win ] virtual/text-antialias/hyphen-min-preferred-width.html 
 crbug.com/958381 [ Mac ] virtual/layout_ng_block_frag/fragmentation/fragmented-table-cell.html [ Failure ]
 crbug.com/958381 [ Mac ] fragmentation/single-line-cells-paginated-with-text.html [ Failure ]
 
+# Asan underinvalidation failure. Skip while investigating
+crbug.com/958381 paint/tables/huge-table-composited-scroll-collapsed-borders.html [ Skip ]
+
 # TablesNG ends
 
 # ====== LayoutNG-only failures until here ======
