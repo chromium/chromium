@@ -299,14 +299,16 @@ libwebviewchromium_tmpl("libwebviewchromium") {
 # a WebView-specific library defined here for whichever ABI isn't used by
 # Chrome.
 #
-# Note that this library only includes code needed for the embedded usecase,
-# as all non-embedded code uses the primary library.
+# Note that this library does also include code needed for the embedded usecase,
+# because even though it's not used in normal circumstances, it is required on
+# a 64-bit-only device where the nonembedded process will also be 64-bit.
 template("webview_alternate_library") {
   chrome_common_shared_library(target_name) {
     forward_variables_from(invoker, "*")
     deps = [
       "//android_webview/lib",
       "//android_webview/lib:webview_entry_point",
+      "//android_webview/nonembedded",
     ]
     is_webview = true
   }
