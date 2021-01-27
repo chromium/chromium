@@ -142,8 +142,10 @@ struct TargetEmbeddingHeuristicTestCase {
 TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
   const std::vector<DomainInfo> kEngagedSites = {
       GetDomainInfo(GURL("https://highengagement.com")),
+      GetDomainInfo(GURL("https://highengagement.inthesubdomain.com")),
       GetDomainInfo(GURL("https://highengagement.co.uk")),
       GetDomainInfo(GURL("https://subdomain.highengagement.com")),
+      GetDomainInfo(GURL("https://www.highengagementwithwww.com")),
       GetDomainInfo(GURL("https://subdomain.google.com")),
   };
   const std::vector<TargetEmbeddingHeuristicTestCase> kTestCases = {
@@ -253,9 +255,19 @@ TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
       {"foo.subdomain.google.com.foo.com", "subdomain.google.com",
        TargetEmbeddingType::kInterstitial},
 
-      // Skeleton matching should work against engaged sites at the eTLD level.
+      // Skeleton matching should work against engaged sites at a eTLD+1 level,
+      {"highengagement.inthesubdomain.com-foo.com",
+       "highengagement.inthesubdomain.com", TargetEmbeddingType::kInterstitial},
+      // but only if the bare eTLD+1, or www.[eTLD+1] has been engaged.
       {"subdomain.highéngagement.com-foo.com", "highengagement.com",
        TargetEmbeddingType::kInterstitial},
+      {"subdomain.highéngagementwithwww.com-foo.com",
+       "highengagementwithwww.com", TargetEmbeddingType::kInterstitial},
+      {"other.inthésubdomain.com-foo.com", "", TargetEmbeddingType::kNone},
+      // Ideally, we'd be able to combine subdomains and skeleton matching, but
+      // our current algorithm can't detect that precisely.
+      {"highengagement.inthésubdomain.com-foo.com", "",
+       TargetEmbeddingType::kNone},
 
       // Domains should be allowed to embed themselves.
       {"highengagement.com.highengagement.com", "", TargetEmbeddingType::kNone},

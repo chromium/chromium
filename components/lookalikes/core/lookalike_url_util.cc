@@ -239,6 +239,13 @@ std::string GetMatchingTopDomainWithoutSeparators(
   return std::string();
 }
 
+// Returns whether the visited domain is either for a bare eTLD+1 (e.g.
+// 'google.com') or a trivial subdomain (e.g. 'www.google.com').
+bool IsETLDPlusOneOrTrivialSubdomain(const DomainInfo& host) {
+  return (host.domain_and_registry == host.hostname ||
+          "www." + host.domain_and_registry == host.hostname);
+}
+
 // Returns if |etld_plus_one| shares the skeleton of an eTLD+1 with an engaged
 // site or a top 500 domain. |embedded_target| is set to matching eTLD+1.
 bool DoesETLDPlus1MatchTopDomainOrEngagedSite(
@@ -247,7 +254,11 @@ bool DoesETLDPlus1MatchTopDomainOrEngagedSite(
     std::string* embedded_target) {
   for (const auto& skeleton : domain.skeletons) {
     for (const auto& engaged_site : engaged_sites) {
-      if (base::Contains(engaged_site.skeletons, skeleton)) {
+      // Skeleton matching only calculates skeletons of the eTLD+1, so only
+      // consider engaged sites that are bare eTLD+1s (or a trivial subdomain)
+      // and are a skeleton match.
+      if (IsETLDPlusOneOrTrivialSubdomain(engaged_site) &&
+          base::Contains(engaged_site.skeletons, skeleton)) {
         *embedded_target = engaged_site.domain_and_registry;
         return true;
       }
