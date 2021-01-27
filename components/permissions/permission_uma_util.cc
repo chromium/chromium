@@ -530,9 +530,10 @@ void PermissionUmaUtil::RecordInfobarDetailsExpanded(bool expanded) {
                             expanded);
 }
 
-void PermissionUmaUtil::RecordCrowdDenyIsLoadedAtAbuseCheckTime(bool loaded) {
-  base::UmaHistogramBoolean(
-      "Permissions.CrowdDeny.PreloadData.IsLoadedAtAbuseCheckTime", loaded);
+void PermissionUmaUtil::RecordCrowdDenyDelayedPushNotification(
+    base::TimeDelta delay) {
+  base::UmaHistogramTimes(
+      "Permissions.CrowdDeny.PreloadData.DelayedPushNotification", delay);
 }
 
 void PermissionUmaUtil::RecordCrowdDenyVersionAtAbuseCheckTime(

@@ -248,7 +248,7 @@ class PermissionUmaUtil {
 
   static void RecordInfobarDetailsExpanded(bool expanded);
 
-  static void RecordCrowdDenyIsLoadedAtAbuseCheckTime(bool loaded);
+  static void RecordCrowdDenyDelayedPushNotification(base::TimeDelta delay);
 
   static void RecordCrowdDenyVersionAtAbuseCheckTime(
       const base::Optional<base::Version>& version);

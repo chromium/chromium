@@ -5,6 +5,7 @@
 #include "chrome/browser/permissions/abusive_origin_permission_revocation_request.h"
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -81,12 +82,14 @@ class AbusiveOriginPermissionRevocationRequestTestBase : public testing::Test {
   void QueryAndExpectDecisionForUrl(const GURL& origin,
                                     Outcome expected_result) {
     base::MockOnceCallback<void(Outcome)> mock_callback_receiver;
-    permission_revocation_ =
+    base::RunLoop run_loop;
+    auto permission_revocation =
         std::make_unique<AbusiveOriginPermissionRevocationRequest>(
             testing_profile_.get(), origin, mock_callback_receiver.Get());
-    EXPECT_CALL(mock_callback_receiver, Run(expected_result));
-    task_environment_.RunUntilIdle();
-    permission_revocation_.reset();
+    EXPECT_CALL(mock_callback_receiver, Run(expected_result))
+        .WillOnce(
+            testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+    run_loop.Run();
   }
 
   void SetPermission(const GURL& origin, const ContentSetting value) {
@@ -114,8 +117,6 @@ class AbusiveOriginPermissionRevocationRequestTestBase : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   testing::ScopedCrowdDenyPreloadDataOverride testing_preload_data_;
   std::unique_ptr<TestingProfile> testing_profile_;
-  std::unique_ptr<AbusiveOriginPermissionRevocationRequest>
-      permission_revocation_;
   scoped_refptr<CrowdDenyFakeSafeBrowsingDatabaseManager>
       fake_database_manager_;
   std::unique_ptr<safe_browsing::TestSafeBrowsingServiceFactory>
@@ -229,6 +230,52 @@ TEST_F(AbusiveOriginPermissionRevocationRequestTest, PreloadDataTest) {
   QueryAndExpectDecisionForUrl(acceptable_origin,
                                Outcome::PERMISSION_NOT_REVOKED);
   QueryAndExpectDecisionForUrl(unknown_origin, Outcome::PERMISSION_NOT_REVOKED);
+}
+
+TEST_F(AbusiveOriginPermissionRevocationRequestTest, PreloadDataTest_Async) {
+  auto* instance = CrowdDenyPreloadData::GetInstance();
+  // From this point on CrowdDenyPreloadData is not usable for origins
+  // verification.
+  instance->set_is_ready_to_use_for_testing(false);
+
+  const GURL abusive_content_origin_to_revoke =
+      GURL("https://abusive-content.com/");
+  base::MockOnceCallback<void(Outcome)> mock_callback_receiver_1;
+  auto permission_revocation_1 =
+      std::make_unique<AbusiveOriginPermissionRevocationRequest>(
+          GetTestingProfile(), abusive_content_origin_to_revoke,
+          mock_callback_receiver_1.Get());
+
+  const GURL abusive_prompts_origin_to_revoke =
+      GURL("https://abusive-prompts.com/");
+  base::MockOnceCallback<void(Outcome)> mock_callback_receiver_2;
+  auto permission_revocation_2 =
+      std::make_unique<AbusiveOriginPermissionRevocationRequest>(
+          GetTestingProfile(), abusive_prompts_origin_to_revoke,
+          mock_callback_receiver_2.Get());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_callback_receiver_1,
+              Run(Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE));
+
+  EXPECT_CALL(mock_callback_receiver_2,
+              Run(Outcome::PERMISSION_REVOKED_DUE_TO_ABUSE))
+      .WillOnce(testing::InvokeWithoutArgs([&run_loop]() { run_loop.Quit(); }));
+
+  SetPermission(abusive_content_origin_to_revoke, CONTENT_SETTING_ALLOW);
+  SetPermission(abusive_prompts_origin_to_revoke, CONTENT_SETTING_ALLOW);
+
+  AddToSafeBrowsingBlocklist(abusive_content_origin_to_revoke);
+  AddToSafeBrowsingBlocklist(abusive_prompts_origin_to_revoke);
+
+  // At this point CrowdDenyPreloadData will be reactivated by a new data set.
+  AddToPreloadDataBlocklist(abusive_content_origin_to_revoke,
+                            SiteReputation::ABUSIVE_CONTENT,
+                            /*has_warning=*/false);
+  AddToPreloadDataBlocklist(abusive_prompts_origin_to_revoke,
+                            SiteReputation::ABUSIVE_PROMPTS,
+                            /*has_warning=*/false);
+  run_loop.Run();
 }
 
 TEST_F(AbusiveOriginPermissionRevocationRequestTest,

@@ -152,8 +152,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Permissions.CrowdDeny.PreloadData.DelayedPushNotification"
+    units="ms" expires_after="2021-06-06">
+  <owner>elklm@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Record, for each incoming push notification, a delay caused by loading Crowd
+    Deny component during abusive an origin verification. It's recorded only for
+    non-abusive origins and only if the Crowd Deny request was made while the
+    preload data is in the process of being loaded. Timing starts at requesting
+    CrowdDenyPreloadData::GetReputationDataForSiteAsync, and timing ends after
+    Crowd Deny returns result to
+    AbusiveOriginPermissionRevocationRequest::OnSiteReputationReady.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.CrowdDeny.PreloadData.IsLoadedAtAbuseCheckTime"
     enum="Boolean" expires_after="2021-06-06">
+  <obsolete>
+    Removed in January 2021.
+  </obsolete>
   <owner>elklm@chromium.org</owner>
   <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
