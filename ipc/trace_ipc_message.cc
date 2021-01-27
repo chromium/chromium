@@ -43,12 +43,6 @@ void WriteIpcMessageIdAsProtozero(uint32_t message_id,
     case PpapiMsgStart:
       message_class = ChromeLegacyIpc::CLASS_PPAPI;
       break;
-    case ChromeMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_CHROME;
-      break;
-    case PrintMsgStart:
-      message_class = ChromeLegacyIpc::CLASS_PRINT;
-      break;
     case ExtensionMsgStart:
       message_class = ChromeLegacyIpc::CLASS_EXTENSION;
       break;

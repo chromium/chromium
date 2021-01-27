@@ -20,8 +20,6 @@ enum IPCMessageStart {
   GpuChannelMsgStart,
   MediaMsgStart,
   PpapiMsgStart,
-  ChromeMsgStart,
-  PrintMsgStart,
   ExtensionMsgStart,
   ChromotingMsgStart,
   NaClHostMsgStart,

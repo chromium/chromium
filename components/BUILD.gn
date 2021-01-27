@@ -448,10 +448,7 @@ test("components_unittests") {
   }
 
   if (enable_basic_printing) {
-    deps += [
-      "//components/printing/common:unit_tests",
-      "//components/services/print_compositor:unit_tests",
-    ]
+    deps += [ "//components/services/print_compositor:unit_tests" ]
   }
   if (enable_print_preview) {
     deps += [ "//components/pwg_encoder:unit_tests" ]

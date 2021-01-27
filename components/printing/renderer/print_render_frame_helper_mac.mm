@@ -12,7 +12,6 @@
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/metrics/histogram.h"
 #include "cc/paint/paint_canvas.h"
-#include "components/printing/common/print_messages.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/metafile_skia.h"
 #include "printing/mojom/print.mojom.h"

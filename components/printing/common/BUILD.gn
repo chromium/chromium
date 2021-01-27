@@ -9,11 +9,6 @@ static_library("common") {
   sources = [
     "cloud_print_cdd_conversion.cc",
     "cloud_print_cdd_conversion.h",
-    "print_messages.cc",
-    "print_messages.h",
-    "printing_param_traits.cc",
-    "printing_param_traits.h",
-    "printing_param_traits_macros.h",
   ]
 
   deps = [
@@ -21,16 +16,9 @@ static_library("common") {
     "//base",
     "//build:chromeos_buildflags",
     "//components/cloud_devices/common:common",
-    "//ipc",
     "//printing",
     "//printing/common:common",
     "//printing/mojom",
-    "//third_party/blink/public:blink_headers",
-    "//ui/accessibility",
-    "//ui/gfx/geometry",
-    "//ui/gfx/ipc",
-    "//ui/gfx/ipc/geometry",
-    "//ui/gfx/ipc/skia",
   ]
 }
 
@@ -51,17 +39,4 @@ mojom("mojo_interfaces") {
     public_deps += [ "//ui/accessibility/mojom" ]
     enabled_features += [ "enable_tagged_pdf" ]
   }
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "printing_param_traits_unittest.cc" ]
-  deps = [
-    ":common",
-    "//ipc:test_support",
-    "//printing/mojom",
-    "//skia",
-    "//testing/gtest",
-    "//ui/gfx/geometry",
-  ]
 }
