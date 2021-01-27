@@ -189,15 +189,20 @@ Polymer({
    * @protected
    */
   getPowerTimeString_() {
+    const fullyCharged = this.batteryChargeStatus_.batteryState ===
+        chromeos.diagnostics.mojom.BatteryState.kFull;
+    if (fullyCharged) {
+      return loadTimeData.getString('batteryFullText');
+    }
+
     const powerTimeStr = this.batteryChargeStatus_.powerTime;
     if (!powerTimeStr || powerTimeStr.data.length === 0) {
-      return '';
+      return loadTimeData.getString('batteryCalculatingText');
     }
 
     const timeValue = mojoString16ToString(powerTimeStr);
-    const charging = this.batteryChargeStatus_ &&
-        this.batteryChargeStatus_.powerAdapterStatus ===
-            chromeos.diagnostics.mojom.ExternalPowerSource.kAc;
+    const charging = this.batteryChargeStatus_.powerAdapterStatus ===
+        chromeos.diagnostics.mojom.ExternalPowerSource.kAc;
 
     return charging ?
         loadTimeData.getStringF('batteryChargingStatusText', timeValue) :

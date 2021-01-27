@@ -34,12 +34,14 @@ constexpr char kGeneratedPath[] =
 
 void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"batteryCalculatingText", IDS_DIAGNOSTICS_BATTERY_CALCULATING_TEXT},
       {"batteryChargeRoutineText", IDS_DIAGNOSTICS_BATTERY_CHARGE_ROUTINE_TEXT},
       {"batteryDischargeRoutineText",
        IDS_DIAGNOSTICS_BATTERY_DISCHARGE_ROUTINE_TEXT},
       {"batteryChargingStatusText", IDS_DIAGNOSTICS_BATTERY_CHARGING},
       {"batteryChipText", IDS_DIAGNOSTICS_BATTERY_CHIP_TEXT},
       {"batteryDischargingStatusText", IDS_DIAGNOSTICS_BATTERY_DISCHARGING},
+      {"batteryFullText", IDS_DIAGNOSTICS_BATTERY_FULL_TEXT},
       {"batteryHealthLabel", IDS_DIAGNOSTICS_BATTERY_HEALTH_LABEL},
       {"batteryHealthText", IDS_DIAGNOSTICS_BATTERY_HEALTH_TEXT},
       {"batteryHealthTooltipText", IDS_DIAGNOSTICS_BATTERY_HEALTH_TOOLTIP_TEXT},

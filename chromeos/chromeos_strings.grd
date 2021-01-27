@@ -629,6 +629,12 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_BATTERY_DISCHARGING" desc="The title of the diagnostics battery section which shows users' information about their computer battery.">
         <ph name="TIME_VALUE">$1<ex>2 hours and 18 minutes</ex></ph> left
       </message>
+      <message name="IDS_DIAGNOSTICS_BATTERY_CALCULATING_TEXT" desc="Battery status text indicating transitionary state where battery values are being calculated.">
+        Calculating...
+      </message>
+      <message name="IDS_DIAGNOSTICS_BATTERY_FULL_TEXT" desc="Battery status text indicating the battery is fully charged.">
+        Battery full
+      </message>
       <message name="IDS_DIAGNOSTICS_CPU_TITLE" desc="The title of the diagnostics CPU section which shows users' information about their computer CPU usage.">
         CPU
       </message>
