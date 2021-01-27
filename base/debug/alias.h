@@ -40,7 +40,7 @@ namespace debug {
 // call stack. In this case there is no memory that needs to be on
 // the stack so we can use nullptr. The call to base::debug::Alias() needs to
 // happen after the call that is suspected to be tail called. Note: This
-// technique will prevent taill calls at the specific call site only. To prevent
+// technique will prevent tail calls at the specific call site only. To prevent
 // them for all invocations of a function look at NOT_TAIL_CALLED.
 //
 // Example usage:
@@ -55,13 +55,13 @@ namespace debug {
 // cause the same address to be assigned to different functions if they are
 // identical. If finding the precise signature of a function in the call-stack
 // is important and it's suspected the function is identical to other functions
-// it can be made unique using base::debug::Alias().
+// it can be made unique using NO_CODE_FOLDING which is a wrapper around
+// base::debug::Alias();
 //
 // Example usage:
 //   NOINLINE void Foo(){
+//     NO_CODE_FOLDING();
 //     Bar();
-//     const int line_number = __LINE__;
-//     base::debug::Alias(&line_number);
 //   }
 //
 // Finally please note that these effects compound. This means that saving a
@@ -83,5 +83,20 @@ BASE_EXPORT size_t strlcpy(char* dst, const char* src, size_t dst_size);
   char var_name[char_count];                              \
   ::base::strlcpy(var_name, (c_str), sizeof(var_name));   \
   ::base::debug::Alias(var_name);
+
+// Code folding is a linker optimization whereby the linker identifies functions
+// that are bit-identical and overlays them. This saves space but it leads to
+// confusing call stacks because multiple symbols are at the same address and
+// it is unpredictable which one will be displayed. Disabling of code folding is
+// particularly useful when function names are used as signatures in crashes.
+// This macro doesn't guarantee that code folding will be prevented but it
+// greatly reduces the odds and always prevents it within one source file.
+// If using in a function that terminates the process it is safest to put the
+// NO_CODE_FOLDING macro at the top of the function.
+// Use like:
+//   void FooBarFailure(size_t size) { NO_CODE_FOLDING(); OOM_CRASH(size); }
+#define NO_CODE_FOLDING()           \
+  const int line_number = __LINE__; \
+  base::debug::Alias(&line_number)
 
 #endif  // BASE_DEBUG_ALIAS_H_

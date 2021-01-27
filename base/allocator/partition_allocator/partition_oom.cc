@@ -15,26 +15,20 @@ namespace internal {
 OomFunction g_oom_handling_function = nullptr;
 
 NOINLINE void NOT_TAIL_CALLED PartitionExcessiveAllocationSize(size_t size) {
-  // Prevent code folding.
-  const int line_number = __LINE__;
-  base::debug::Alias(&line_number);
+  NO_CODE_FOLDING();
   OOM_CRASH(size);
 }
 
 #if !defined(ARCH_CPU_64_BITS)
 NOINLINE void NOT_TAIL_CALLED
 PartitionOutOfMemoryWithLotsOfUncommitedPages(size_t size) {
-  // Prevent code folding.
-  const int line_number = __LINE__;
-  base::debug::Alias(&line_number);
+  NO_CODE_FOLDING();
   OOM_CRASH(size);
 }
 
 [[noreturn]] NOINLINE void NOT_TAIL_CALLED
 PartitionOutOfMemoryWithLargeVirtualSize(size_t virtual_size) {
-  // Prevent code folding.
-  const int line_number = __LINE__;
-  base::debug::Alias(&line_number);
+  NO_CODE_FOLDING();
   OOM_CRASH(virtual_size);
 }
 
