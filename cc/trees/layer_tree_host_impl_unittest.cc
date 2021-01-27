@@ -29,6 +29,7 @@
 #include "cc/animation/transform_operations.h"
 #include "cc/base/features.h"
 #include "cc/base/histograms.h"
+#include "cc/document_transition/document_transition_request.h"
 #include "cc/input/browser_controls_offset_manager.h"
 #include "cc/input/main_thread_scrolling_reason.h"
 #include "cc/input/page_scale_animation.h"
@@ -18224,6 +18225,40 @@ TEST_F(LayerTreeHostImplTest, FrameElementIdHitTestOverlapSibling) {
   // should be discarded outside of the simple frame -> subframe case.
   EXPECT_FALSE(
       GetInputHandler().FindFrameElementIdAtPoint(gfx::PointF(30, 30)));
+}
+
+TEST_F(LayerTreeHostImplTest, DocumentTransitionRequestCausesDamage) {
+  const gfx::Size viewport_size(100, 100);
+  SetupDefaultRootLayer(viewport_size);
+  UpdateDrawProperties(host_impl_->active_tree());
+
+  const gfx::Transform draw_transform;
+  const gfx::Rect draw_viewport(viewport_size);
+  bool resourceless_software_draw = false;
+
+  // Clear any damage.
+  host_impl_->OnDraw(draw_transform, draw_viewport, resourceless_software_draw,
+                     false);
+  last_on_draw_frame_.reset();
+  did_request_redraw_ = false;
+
+  // Ensure there is no damage.
+  host_impl_->OnDraw(draw_transform, draw_viewport, resourceless_software_draw,
+                     false);
+  EXPECT_FALSE(did_request_redraw_);
+  EXPECT_TRUE(last_on_draw_frame_->has_no_damage);
+  last_on_draw_frame_.reset();
+  did_request_redraw_ = false;
+
+  // Adding a transition effect should cause us to redraw.
+  host_impl_->active_tree()->AddDocumentTransitionRequest(
+      DocumentTransitionRequest::CreateStart(base::OnceClosure()));
+
+  // Ensure there is damage and we requested a redraw.
+  host_impl_->OnDraw(draw_transform, draw_viewport, resourceless_software_draw,
+                     false);
+  EXPECT_TRUE(did_request_redraw_);
+  EXPECT_FALSE(last_on_draw_frame_->has_no_damage);
 }
 
 }  // namespace cc

@@ -2681,4 +2681,8 @@ LayerTreeImpl::TakeDocumentTransitionRequests() {
   return std::move(document_transition_requests_);
 }
 
+bool LayerTreeImpl::HasDocumentTransitionRequests() const {
+  return !document_transition_requests_.empty();
+}
+
 }  // namespace cc

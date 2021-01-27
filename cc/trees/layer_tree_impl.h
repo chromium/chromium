@@ -759,6 +759,8 @@ class CC_EXPORT LayerTreeImpl {
   std::vector<std::unique_ptr<DocumentTransitionRequest>>
   TakeDocumentTransitionRequests();
 
+  bool HasDocumentTransitionRequests() const;
+
  protected:
   float ClampPageScaleFactorToLimits(float page_scale_factor) const;
   void PushPageScaleFactorAndLimits(const float* page_scale_factor,
