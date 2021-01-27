@@ -1049,7 +1049,7 @@ void AppLauncherHandler::HandleShowAppInfo(const base::ListValue* args) {
 
   ShowAppInfoInNativeDialog(web_ui()->GetWebContents(),
                             Profile::FromWebUI(web_ui()), extension,
-                            base::RepeatingClosure());
+                            base::OnceClosure());
 }
 
 void AppLauncherHandler::HandleReorderApps(const base::ListValue* args) {

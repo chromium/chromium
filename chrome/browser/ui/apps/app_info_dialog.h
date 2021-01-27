@@ -57,6 +57,6 @@ void ShowAppInfoInAppList(gfx::NativeWindow parent,
 void ShowAppInfoInNativeDialog(content::WebContents* web_contents,
                                Profile* profile,
                                const extensions::Extension* app,
-                               base::RepeatingClosure close_callback);
+                               base::OnceClosure close_callback);
 
 #endif  // CHROME_BROWSER_UI_APPS_APP_INFO_DIALOG_H_

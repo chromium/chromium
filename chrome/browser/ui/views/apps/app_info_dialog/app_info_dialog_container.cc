@@ -74,49 +74,18 @@ class AppListOverlayBackground : public views::Background {
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Base container for modal dialogs. Encases a content view in a modal dialog
-// with an accelerator to close on escape.
-class BaseDialogContainer : public views::DialogDelegateView {
- public:
-  METADATA_HEADER(BaseDialogContainer);
-  BaseDialogContainer(std::unique_ptr<views::View> dialog_body,
-                      base::RepeatingClosure close_callback)
-      : dialog_body_(AddChildView(std::move(dialog_body))),
-        close_callback_(close_callback) {
-    SetButtons(ui::DIALOG_BUTTON_NONE);
-    SetModalType(kModalType);
-  }
-  BaseDialogContainer(const BaseDialogContainer&) = delete;
-  BaseDialogContainer& operator=(const BaseDialogContainer&) = delete;
-  ~BaseDialogContainer() override = default;
-
- protected:
-  views::View* dialog_body() { return dialog_body_; }
-
- private:
-  // Overridden from views::WidgetDelegate:
-  void WindowClosing() override {
-    if (!close_callback_.is_null())
-      close_callback_.Run();
-  }
-
-  views::View* dialog_body_;
-  const base::RepeatingClosure close_callback_;
-};
-
-BEGIN_METADATA(BaseDialogContainer, views::DialogDelegateView)
-END_METADATA
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // The contents view for an App List Dialog, which covers the entire app list
 // and adds a close button.
-class AppListDialogContainer : public BaseDialogContainer {
+class AppListDialogContainer : public views::DialogDelegateView {
  public:
   METADATA_HEADER(AppListDialogContainer);
-  explicit AppListDialogContainer(std::unique_ptr<views::View> dialog_body)
-      : BaseDialogContainer(std::move(dialog_body), base::RepeatingClosure()) {
+  explicit AppListDialogContainer(std::unique_ptr<views::View> dialog_body) {
+    SetButtons(ui::DIALOG_BUTTON_NONE);
+    SetModalType(kModalType);
     SetBackground(std::make_unique<AppListOverlayBackground>());
+    dialog_body_ = AddChildView(std::move(dialog_body));
     close_button_ = AddChildView(
         views::BubbleFrameView::CreateCloseButton(base::BindRepeating(
             [](AppListDialogContainer* container) {
@@ -139,7 +108,7 @@ class AppListDialogContainer : public BaseDialogContainer {
         gfx::Point(width() - close_button_->width() - kCloseButtonDialogMargin,
                    kCloseButtonDialogMargin));
 
-    dialog_body()->SetBoundsRect(GetContentsBounds());
+    dialog_body_->SetBoundsRect(GetContentsBounds());
     views::DialogDelegateView::Layout();
   }
 
@@ -149,10 +118,11 @@ class AppListDialogContainer : public BaseDialogContainer {
     return std::make_unique<views::NativeFrameView>(widget);
   }
 
+  views::View* dialog_body_;
   views::Button* close_button_;
 };
 
-BEGIN_METADATA(AppListDialogContainer, BaseDialogContainer)
+BEGIN_METADATA(AppListDialogContainer, views::DialogDelegateView)
 END_METADATA
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -195,13 +165,16 @@ BEGIN_METADATA(FullSizeBubbleFrameView, views::BubbleFrameView)
 END_METADATA
 
 // A container view for a native dialog, which sizes to the given fixed |size|.
-class NativeDialogContainer : public BaseDialogContainer {
+class NativeDialogContainer : public views::DialogDelegateView {
  public:
   METADATA_HEADER(NativeDialogContainer);
   NativeDialogContainer(std::unique_ptr<views::View> dialog_body,
                         const gfx::Size& size,
-                        base::RepeatingClosure close_callback)
-      : BaseDialogContainer(std::move(dialog_body), close_callback) {
+                        base::OnceClosure close_callback) {
+    SetButtons(ui::DIALOG_BUTTON_NONE);
+    SetModalType(kModalType);
+    AddChildView(std::move(dialog_body));
+    RegisterWindowClosingCallback(std::move(close_callback));
     SetLayoutManager(std::make_unique<views::FillLayout>());
     chrome::RecordDialogCreation(chrome::DialogIdentifier::NATIVE_CONTAINER);
     SetPreferredSize(size);
@@ -223,7 +196,7 @@ class NativeDialogContainer : public BaseDialogContainer {
   }
 };
 
-BEGIN_METADATA(NativeDialogContainer, BaseDialogContainer)
+BEGIN_METADATA(NativeDialogContainer, views::DialogDelegateView)
 END_METADATA
 
 }  // namespace
@@ -238,6 +211,7 @@ views::DialogDelegateView* CreateAppListContainerForView(
 views::DialogDelegateView* CreateDialogContainerForView(
     std::unique_ptr<views::View> view,
     const gfx::Size& size,
-    base::RepeatingClosure close_callback) {
-  return new NativeDialogContainer(std::move(view), size, close_callback);
+    base::OnceClosure close_callback) {
+  return new NativeDialogContainer(std::move(view), size,
+                                   std::move(close_callback));
 }
