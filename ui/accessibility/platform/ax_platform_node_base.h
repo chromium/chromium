@@ -68,7 +68,6 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   gfx::NativeViewAccessible ChildAtIndex(int index) const;
 
   std::string GetName() const;
-  base::string16 GetNameAsString16() const;
 
   // This returns nullopt if there's no parent, it's unable to find the child in
   // the list of its parent's children, or its parent doesn't have children.
@@ -402,7 +401,7 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
 #if BUILDFLAG(USE_ATK)
   using PlatformAttributeList = AtkAttributeSet*;
 #else
-  using PlatformAttributeList = std::vector<base::string16>;
+  using PlatformAttributeList = std::vector<std::wstring>;
 #endif
 
   // Compute the attributes exposed via platform accessibility objects and put

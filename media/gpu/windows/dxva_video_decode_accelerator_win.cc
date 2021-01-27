@@ -1433,8 +1433,9 @@ bool DXVAVideoDecodeAccelerator::InitDecoder(VideoCodecProfile profile) {
     RETURN_ON_FAILURE(version_info, "unable to get version of msmpeg2vdec.dll",
                       false);
     base::string16 file_version = version_info->file_version();
-    RETURN_ON_FAILURE(file_version.find(L"6.1.7140") == base::string16::npos,
-                      "blocked version of msmpeg2vdec.dll 6.1.7140", false);
+    RETURN_ON_FAILURE(
+        file_version.find(STRING16_LITERAL("6.1.7140")) == base::string16::npos,
+        "blocked version of msmpeg2vdec.dll 6.1.7140", false);
     codec_ = kCodecH264;
     clsid = __uuidof(CMSH264DecoderMFT);
   } else if ((profile >= VP9PROFILE_PROFILE0 &&

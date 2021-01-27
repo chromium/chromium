@@ -435,7 +435,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
   WIN_ACCESSIBILITY_API_PERF_HISTOGRAM(UMA_API_TEXTRANGE_FINDTEXT);
   UIA_VALIDATE_TEXTRANGEPROVIDER_CALL_1_IN_1_OUT(string, result);
 
-  base::string16 search_string(string);
+  base::string16 search_string = base::WideToUTF16(string);
   if (search_string.length() <= 0)
     return E_INVALIDARG;
 
@@ -639,7 +639,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetText(int max_count, BSTR* text) {
   if (max_count < -1)
     return E_INVALIDARG;
 
-  base::string16 full_text = GetString(max_count);
+  std::wstring full_text = base::UTF16ToWide(GetString(max_count));
   if (!full_text.empty()) {
     size_t length = full_text.length();
 

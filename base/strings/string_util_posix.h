@@ -33,17 +33,6 @@ inline int vswprintf(wchar_t* buffer, size_t size,
   return ::vswprintf(buffer, size, format, arguments);
 }
 
-// These mirror the APIs in string_util_win.h. Since base::StringPiece is
-// already the native string type on POSIX platforms these APIs are simple
-// no-ops.
-inline StringPiece AsCrossPlatformPiece(StringPiece str) {
-  return str;
-}
-
-inline StringPiece AsNativeStringPiece(StringPiece str) {
-  return str;
-}
-
 }  // namespace base
 
 #endif  // BASE_STRINGS_STRING_UTIL_POSIX_H_

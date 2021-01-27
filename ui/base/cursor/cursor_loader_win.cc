@@ -18,7 +18,7 @@ namespace ui {
 
 namespace {
 
-base::LazyInstance<base::string16>::DestructorAtExit
+base::LazyInstance<std::wstring>::DestructorAtExit
     g_cursor_resource_module_name;
 
 const wchar_t* GetCursorId(gfx::NativeCursor native_cursor) {
@@ -165,8 +165,7 @@ void CursorLoaderWin::SetPlatformCursor(gfx::NativeCursor* cursor) {
 }
 
 // static
-void CursorLoaderWin::SetCursorResourceModule(
-    const base::string16& module_name) {
+void CursorLoaderWin::SetCursorResourceModule(const std::wstring& module_name) {
   g_cursor_resource_module_name.Get() = module_name;
 }
 

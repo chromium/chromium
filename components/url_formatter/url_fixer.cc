@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -83,6 +84,16 @@ void UTF8PartsToUTF16Parts(const std::string& text_utf8,
   parts->ref = UTF8ComponentToUTF16Component(text_utf8, parts_utf8.ref);
 }
 
+base::TrimPositions TrimWhitespace(const base::string16& input,
+                                   base::TrimPositions positions,
+                                   std::string* output) {
+  base::string16 output16;
+  base::TrimPositions result =
+      base::TrimWhitespace(input, positions, &output16);
+  *output = base::UTF16ToUTF8(output16);
+  return result;
+}
+
 base::TrimPositions TrimWhitespaceUTF8(const std::string& input,
                                        base::TrimPositions positions,
                                        std::string* output) {
@@ -90,33 +101,23 @@ base::TrimPositions TrimWhitespaceUTF8(const std::string& input,
   // twice. Please feel free to file a bug if this function hurts the
   // performance of Chrome.
   DCHECK(base::IsStringUTF8(input));
-  base::string16 input16 = base::UTF8ToUTF16(input);
-  base::string16 output16;
-  base::TrimPositions result =
-      base::TrimWhitespace(input16, positions, &output16);
-  *output = base::UTF16ToUTF8(output16);
-  return result;
+  return TrimWhitespace(base::UTF8ToUTF16(input), positions, output);
 }
 
 // does some basic fixes for input that we want to test for file-ness
-void PrepareStringForFileOps(const base::FilePath& text,
-                             base::FilePath::StringType* output) {
+void PrepareStringForFileOps(const base::FilePath& text, std::string* output) {
+  TrimWhitespace(text.AsUTF16Unsafe(), base::TRIM_ALL, output);
 #if defined(OS_WIN)
-  base::TrimWhitespace(text.value(), base::TRIM_ALL, output);
-  replace(output->begin(), output->end(), '/', '\\');
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-  TrimWhitespaceUTF8(text.value(), base::TRIM_ALL, output);
-#else
-#error Unsupported platform
+  base::ranges::replace(*output, '/', '\\');
 #endif
 }
 
 // Tries to create a full path from |text|.  If the result is valid and the
 // file exists, returns true and sets |full_path| to the result.  Otherwise,
 // returns false and leaves |full_path| unchanged.
-bool ValidPathForFile(const base::FilePath::StringType& text,
-                      base::FilePath* full_path) {
-  base::FilePath file_path = base::MakeAbsoluteFilePath(base::FilePath(text));
+bool ValidPathForFile(const std::string& text, base::FilePath* full_path) {
+  base::FilePath file_path =
+      base::MakeAbsoluteFilePath(base::FilePath::FromUTF8Unsafe(text));
   if (file_path.empty())
     return false;
 
@@ -173,7 +174,7 @@ std::string FixupHomedir(const std::string& text) {
 std::string FixupPath(const std::string& text) {
   DCHECK(!text.empty());
 
-  base::FilePath::StringType filename;
+  std::string filename;
 #if defined(OS_WIN)
   base::FilePath input_path(base::UTF8ToWide(text));
   PrepareStringForFileOps(input_path, &filename);
@@ -189,7 +190,8 @@ std::string FixupPath(const std::string& text) {
 #endif
 
   // Here, we know the input looks like a file.
-  GURL file_url = net::FilePathToFileURL(base::FilePath(filename));
+  GURL file_url =
+      net::FilePathToFileURL(base::FilePath::FromUTF8Unsafe(filename));
   if (file_url.is_valid()) {
     return base::UTF16ToUTF8(url_formatter::FormatUrl(
         file_url, url_formatter::kFormatUrlOmitUsernamePassword,
@@ -635,7 +637,7 @@ GURL FixupRelativeFile(const base::FilePath& base_dir,
   }
 
   // Allow funny input with extra whitespace and the wrong kind of slashes.
-  base::FilePath::StringType trimmed;
+  std::string trimmed;
   PrepareStringForFileOps(text, &trimmed);
 
   bool is_file = true;
@@ -648,17 +650,10 @@ GURL FixupRelativeFile(const base::FilePath& base_dir,
 // Not a path as entered, try unescaping it in case the user has
 // escaped things. We need to go through 8-bit since the escaped values
 // only represent 8-bit values.
-#if defined(OS_WIN)
-    std::wstring unescaped = base::UTF8ToWide(net::UnescapeURLComponent(
-        base::WideToUTF8(trimmed),
-        net::UnescapeRule::SPACES | net::UnescapeRule::PATH_SEPARATORS |
-            net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
     std::string unescaped = net::UnescapeURLComponent(
         trimmed,
         net::UnescapeRule::SPACES | net::UnescapeRule::PATH_SEPARATORS |
             net::UnescapeRule::URL_SPECIAL_CHARS_EXCEPT_PATH_SEPARATORS);
-#endif
 
     if (!ValidPathForFile(unescaped, &full_path))
       is_file = false;

@@ -297,8 +297,7 @@ void OnScreenKeyboardDisplayManagerTabTip::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-bool OnScreenKeyboardDisplayManagerTabTip::GetOSKPath(
-    base::string16* osk_path) {
+bool OnScreenKeyboardDisplayManagerTabTip::GetOSKPath(std::wstring* osk_path) {
   DCHECK(osk_path);
 
   // We need to launch TabTip.exe from the location specified under the
@@ -317,7 +316,7 @@ bool OnScreenKeyboardDisplayManagerTabTip::GetOSKPath(
     return false;
   }
 
-  osk_path->resize(base::string16::traits_type::length(osk_path->c_str()));
+  osk_path->resize(wcslen(osk_path->c_str()));
 
   *osk_path = base::ToLowerASCII(*osk_path);
 
@@ -326,7 +325,7 @@ bool OnScreenKeyboardDisplayManagerTabTip::GetOSKPath(
   // %CommonProgramFiles% which needs to be replaced with the corrsponding
   // expanded string.
   // If the path does not begin with %CommonProgramFiles% we use it as is.
-  if (common_program_files_offset != base::string16::npos) {
+  if (common_program_files_offset != std::wstring::npos) {
     // Preserve the beginning quote in the path.
     osk_path->erase(common_program_files_offset,
                     wcslen(L"%commonprogramfiles%"));
@@ -340,7 +339,7 @@ bool OnScreenKeyboardDisplayManagerTabTip::GetOSKPath(
 
     // We then replace the %CommonProgramFiles% value with the actual common
     // files path found in the process.
-    base::string16 common_program_files_path;
+    std::wstring common_program_files_path;
     DWORD buffer_size =
         GetEnvironmentVariable(L"CommonProgramW6432", nullptr, 0);
     if (buffer_size) {

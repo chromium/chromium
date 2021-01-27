@@ -8,6 +8,7 @@
 
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 
 PrefRegistrySimple::PrefRegistrySimple() = default;
@@ -41,7 +42,7 @@ void PrefRegistrySimple::RegisterFilePathPref(
     const std::string& path,
     const base::FilePath& default_value,
     uint32_t flags) {
-  RegisterPreference(path, base::Value(default_value.value()), flags);
+  RegisterPreference(path, base::Value(default_value.AsUTF8Unsafe()), flags);
 }
 
 void PrefRegistrySimple::RegisterListPref(const std::string& path,

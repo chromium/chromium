@@ -102,8 +102,8 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAccessibility) {
   View* content = widget.SetContentsView(std::make_unique<View>());
 
   Textfield* textfield = new Textfield;
-  textfield->SetAccessibleName(L"Name");
-  textfield->SetText(L"Value");
+  textfield->SetAccessibleName(STRING16_LITERAL("Name"));
+  textfield->SetText(STRING16_LITERAL("Value"));
   content->AddChildView(textfield);
 
   ComPtr<IAccessible> content_accessible(content->GetNativeViewAccessible());
@@ -137,7 +137,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAccessibility) {
   ScopedBstr new_value(L"New value");
   ASSERT_EQ(S_OK,
             textfield_accessible->put_accValue(childid_self, new_value.Get()));
-  EXPECT_STREQ(L"New value", textfield->GetText().c_str());
+  EXPECT_EQ(STRING16_LITERAL("New value"), textfield->GetText());
 }
 
 TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAssociatedLabel) {
@@ -148,7 +148,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, TextfieldAssociatedLabel) {
 
   View* content = widget.SetContentsView(std::make_unique<View>());
 
-  Label* label = new Label(L"Label");
+  Label* label = new Label(STRING16_LITERAL("Label"));
   content->AddChildView(label);
   Textfield* textfield = new Textfield;
   textfield->SetAssociatedLabel(label);
@@ -394,7 +394,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTest, Overrides) {
 
   View* alert_view = new ScrollView;
   alert_view->GetViewAccessibility().OverrideRole(ax::mojom::Role::kAlert);
-  alert_view->GetViewAccessibility().OverrideName(L"Name");
+  alert_view->GetViewAccessibility().OverrideName(STRING16_LITERAL("Name"));
   alert_view->GetViewAccessibility().OverrideDescription("Description");
   alert_view->GetViewAccessibility().OverrideIsLeaf(true);
   contents_view->AddChildView(alert_view);
@@ -627,7 +627,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTableTest, TableCellAttributes) {
   ComPtr<IAccessible2_2> table_accessible;
   GetIAccessible2InterfaceForView(table_, &table_accessible);
 
-  auto get_attributes = [&](int row_child, int cell_child) -> base::string16 {
+  auto get_attributes = [&](int row_child, int cell_child) -> std::wstring {
     ComPtr<IDispatch> row_dispatch;
     CHECK_EQ(S_OK, table_accessible->get_accChild(ScopedVariant(row_child),
                                                   &row_dispatch));
@@ -644,7 +644,7 @@ TEST_F(ViewAXPlatformNodeDelegateWinTableTest, TableCellAttributes) {
 
     ScopedBstr attributes_bstr;
     CHECK_EQ(S_OK, ia2_cell->get_attributes(attributes_bstr.Receive()));
-    base::string16 attributes(attributes_bstr.Get());
+    std::wstring attributes(attributes_bstr.Get());
     return attributes;
   };
 

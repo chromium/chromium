@@ -55,11 +55,11 @@ class AXPlatformRelationWin : public CComObjectRootEx<CComMultiThreadModel>,
   // criteria.
   static int EnumerateRelationships(AXPlatformNodeBase* node,
                                     int desired_index,
-                                    const base::string16& desired_ia2_relation,
-                                    base::string16* out_ia2_relation,
+                                    const std::wstring& desired_ia2_relation,
+                                    std::wstring* out_ia2_relation,
                                     std::set<AXPlatformNode*>* out_targets);
 
-  void Initialize(const base::string16& type);
+  void Initialize(const std::wstring& type);
   void Invalidate();
   void AddTarget(AXPlatformNodeWin* target);
 
@@ -73,7 +73,7 @@ class AXPlatformRelationWin : public CComObjectRootEx<CComMultiThreadModel>,
   IFACEMETHODIMP get_localizedRelationType(BSTR* relation_type) override;
 
  private:
-  base::string16 type_;
+  std::wstring type_;
   std::vector<Microsoft::WRL::ComPtr<AXPlatformNodeWin>> targets_;
 };
 

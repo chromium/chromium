@@ -149,13 +149,6 @@ std::string AXPlatformNodeBase::GetName() const {
   return std::string();
 }
 
-base::string16 AXPlatformNodeBase::GetNameAsString16() const {
-  std::string name = GetName();
-  if (name.empty())
-    return base::string16();
-  return base::UTF8ToUTF16(name);
-}
-
 base::Optional<int> AXPlatformNodeBase::GetIndexInParent() {
   AXPlatformNodeBase* parent = FromNativeViewAccessible(GetParent());
   if (!parent)
@@ -1357,7 +1350,7 @@ void AXPlatformNodeBase::UpdateComputedHypertext() const {
     // hypertext with the embedded object character. We copy all of their text
     // instead.
     if (child_iter->IsText()) {
-      hypertext_.hypertext += child_iter->GetNameAsString16();
+      hypertext_.hypertext += base::UTF8ToUTF16(child_iter->GetName());
     } else {
       int32_t char_offset = static_cast<int32_t>(hypertext_.hypertext.size());
       int32_t child_unique_id = child_iter->GetUniqueId();

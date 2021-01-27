@@ -20,7 +20,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_number_conversions_win.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -220,7 +222,7 @@ constexpr int kLargeChangeScaleFactor = 10;
 // cursor keys are used to scroll a webpage.
 constexpr float kSmallScrollIncrement = 40.0f;
 
-void AppendTextToString(base::string16 extra_text, base::string16* string) {
+void AppendTextToString(const std::wstring& extra_text, std::wstring* string) {
   if (extra_text.empty())
     return;
 
@@ -229,7 +231,7 @@ void AppendTextToString(base::string16 extra_text, base::string16* string) {
     return;
   }
 
-  *string += base::string16(L". ") + extra_text;
+  *string += L". " + extra_text;
 }
 
 // Helper function to GetPatternProviderFactoryMethod that, given a node,
@@ -247,8 +249,8 @@ void AXPlatformNodeWin::AddAttributeToList(const char* name,
                                            PlatformAttributeList* attributes) {
   std::string str_value = value;
   SanitizeStringAttribute(str_value, &str_value);
-  attributes->push_back(base::UTF8ToUTF16(name) + L":" +
-                        base::UTF8ToUTF16(str_value));
+  attributes->push_back(base::UTF8ToWide(name) + L":" +
+                        base::UTF8ToWide(str_value));
 }
 
 // There is no easy way to decouple |kScreenReader| and |kHTML| accessibility
@@ -320,8 +322,8 @@ void AXPlatformNodeWin::ClearOwnRelations() {
 
 // Static
 void AXPlatformNodeWin::SanitizeStringAttributeForUIAAriaProperty(
-    const base::string16& input,
-    base::string16* output) {
+    const std::wstring& input,
+    std::wstring* output) {
   DCHECK(output);
   // According to the UIA Spec, these characters need to be escaped with a
   // backslash in an AriaProperties string: backslash, equals and semicolon.
@@ -332,69 +334,71 @@ void AXPlatformNodeWin::SanitizeStringAttributeForUIAAriaProperty(
 }
 
 void AXPlatformNodeWin::StringAttributeToUIAAriaProperty(
-    std::vector<base::string16>& properties,
+    std::vector<std::wstring>& properties,
     ax::mojom::StringAttribute attribute,
     const char* uia_aria_property) {
-  base::string16 value;
-  if (GetString16Attribute(attribute, &value)) {
-    SanitizeStringAttributeForUIAAriaProperty(value, &value);
-    properties.push_back(base::ASCIIToUTF16(uia_aria_property) + L"=" + value);
+  std::string value;
+  if (GetStringAttribute(attribute, &value)) {
+    std::wstring wide_value = base::UTF8ToWide(value);
+    SanitizeStringAttributeForUIAAriaProperty(wide_value, &wide_value);
+    properties.push_back(base::ASCIIToWide(uia_aria_property) + L"=" +
+                         wide_value);
   }
 }
 
 void AXPlatformNodeWin::BoolAttributeToUIAAriaProperty(
-    std::vector<base::string16>& properties,
+    std::vector<std::wstring>& properties,
     ax::mojom::BoolAttribute attribute,
     const char* uia_aria_property) {
   bool value;
   if (GetBoolAttribute(attribute, &value)) {
-    properties.push_back((base::ASCIIToUTF16(uia_aria_property) + L"=") +
+    properties.push_back(base::ASCIIToWide(uia_aria_property) + L"=" +
                          (value ? L"true" : L"false"));
   }
 }
 
 void AXPlatformNodeWin::IntAttributeToUIAAriaProperty(
-    std::vector<base::string16>& properties,
+    std::vector<std::wstring>& properties,
     ax::mojom::IntAttribute attribute,
     const char* uia_aria_property) {
   int value;
   if (GetIntAttribute(attribute, &value)) {
-    properties.push_back(base::ASCIIToUTF16(uia_aria_property) + L"=" +
-                         base::NumberToString16(value));
+    properties.push_back(base::ASCIIToWide(uia_aria_property) + L"=" +
+                         base::NumberToWString(value));
   }
 }
 
 void AXPlatformNodeWin::FloatAttributeToUIAAriaProperty(
-    std::vector<base::string16>& properties,
+    std::vector<std::wstring>& properties,
     ax::mojom::FloatAttribute attribute,
     const char* uia_aria_property) {
   float value;
   if (GetFloatAttribute(attribute, &value)) {
-    properties.push_back(base::ASCIIToUTF16(uia_aria_property) + L"=" +
-                         base::NumberToString16(value));
+    properties.push_back(base::ASCIIToWide(uia_aria_property) + L"=" +
+                         base::NumberToWString(value));
   }
 }
 
 void AXPlatformNodeWin::StateToUIAAriaProperty(
-    std::vector<base::string16>& properties,
+    std::vector<std::wstring>& properties,
     ax::mojom::State state,
     const char* uia_aria_property) {
   const AXNodeData& data = GetData();
   bool value = data.HasState(state);
-  properties.push_back((base::ASCIIToUTF16(uia_aria_property) + L"=") +
+  properties.push_back(base::ASCIIToWide(uia_aria_property) + L"=" +
                        (value ? L"true" : L"false"));
 }
 
 void AXPlatformNodeWin::HtmlAttributeToUIAAriaProperty(
-    std::vector<base::string16>& properties,
+    std::vector<std::wstring>& properties,
     const char* html_attribute_name,
     const char* uia_aria_property) {
   base::string16 html_attribute_value;
   if (GetData().GetHtmlAttribute(html_attribute_name, &html_attribute_value)) {
-    SanitizeStringAttributeForUIAAriaProperty(html_attribute_value,
-                                              &html_attribute_value);
-    properties.push_back(base::ASCIIToUTF16(uia_aria_property) + L"=" +
-                         html_attribute_value);
+    std::wstring wide_value = base::UTF16ToWide(html_attribute_value);
+    SanitizeStringAttributeForUIAAriaProperty(wide_value, &wide_value);
+    properties.push_back(base::ASCIIToWide(uia_aria_property) + L"=" +
+                         wide_value);
   }
 }
 
@@ -675,13 +679,14 @@ void AXPlatformNodeWin::OnActiveComposition(
   // AXPlatformNodeTextProviderWin
   active_composition_range_ = range;
   // Fire the UiaTextEditTextChangedEvent
-  FireUiaTextEditTextChangedEvent(range, active_composition_text,
+  FireUiaTextEditTextChangedEvent(range,
+                                  base::UTF16ToWide(active_composition_text),
                                   is_composition_committed);
 }
 
 void AXPlatformNodeWin::FireUiaTextEditTextChangedEvent(
     const gfx::Range& range,
-    const base::string16& active_composition_text,
+    const std::wstring& active_composition_text,
     bool is_composition_committed) {
   if (!::switches::IsExperimentalAccessibilityPlatformUIAEnabled()) {
     return;
@@ -998,7 +1003,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accDefaultAction(VARIANT var_id,
     return S_FALSE;
   }
 
-  base::string16 action_verb = base::UTF8ToUTF16(
+  std::wstring action_verb = base::UTF8ToWide(
       ui::ToLocalizedString(static_cast<ax::mojom::DefaultActionVerb>(action)));
   if (action_verb.empty()) {
     *def_action = nullptr;
@@ -1068,7 +1073,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accName(VARIANT var_id, BSTR* name_bstr) {
     return S_FALSE;
 
   bool has_name = target->HasStringAttribute(ax::mojom::StringAttribute::kName);
-  base::string16 name = target->GetNameAsString16();
+  std::wstring name = base::UTF8ToWide(target->GetName());
   auto status = GetData().GetImageAnnotationStatus();
   switch (status) {
     case ax::mojom::ImageAnnotationStatus::kNone:
@@ -1083,14 +1088,16 @@ IFACEMETHODIMP AXPlatformNodeWin::get_accName(VARIANT var_id, BSTR* name_bstr) {
     case ax::mojom::ImageAnnotationStatus::kAnnotationAdult:
     case ax::mojom::ImageAnnotationStatus::kAnnotationProcessFailed:
       AppendTextToString(
-          GetDelegate()->GetLocalizedStringForImageAnnotationStatus(status),
+          base::UTF16ToWide(
+              GetDelegate()->GetLocalizedStringForImageAnnotationStatus(
+                  status)),
           &name);
       break;
 
     case ax::mojom::ImageAnnotationStatus::kAnnotationSucceeded:
-      AppendTextToString(
-          GetString16Attribute(ax::mojom::StringAttribute::kImageAnnotation),
-          &name);
+      AppendTextToString(base::UTF8ToWide(GetStringAttribute(
+                             ax::mojom::StringAttribute::kImageAnnotation)),
+                         &name);
       break;
   }
 
@@ -1294,7 +1301,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relationTargetsOfType(BSTR type_bstr,
   *targets = nullptr;
 
   // Special case for relations of type "alerts".
-  base::string16 type(type_bstr);
+  std::wstring type(type_bstr);
   if (type == L"alerts") {
     // Collect all of the objects that have had an alert fired on them that
     // are a descendant of this object.
@@ -1328,7 +1335,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relationTargetsOfType(BSTR type_bstr,
     return S_OK;
   }
 
-  base::string16 relation_type;
+  std::wstring relation_type;
   std::set<AXPlatformNode*> enumerated_targets;
   int found = AXPlatformRelationWin::EnumerateRelationships(
       this, 0, type, &relation_type, &enumerated_targets);
@@ -1363,9 +1370,9 @@ IFACEMETHODIMP AXPlatformNodeWin::get_attributes(BSTR* attributes) {
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
   *attributes = nullptr;
 
-  base::string16 attributes_str;
-  std::vector<base::string16> computed_attributes = ComputeIA2Attributes();
-  for (const base::string16& attribute : computed_attributes)
+  std::wstring attributes_str;
+  std::vector<std::wstring> computed_attributes = ComputeIA2Attributes();
+  for (const std::wstring& attribute : computed_attributes)
     attributes_str += attribute + L';';
 
   if (attributes_str.empty())
@@ -1393,7 +1400,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_nRelations(LONG* n_relations) {
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
   int count = AXPlatformRelationWin::EnumerateRelationships(
-      this, -1, base::string16(), nullptr, nullptr);
+      this, -1, std::wstring(), nullptr, nullptr);
   *n_relations = count;
   return S_OK;
 }
@@ -1404,10 +1411,10 @@ IFACEMETHODIMP AXPlatformNodeWin::get_relation(LONG relation_index,
   COM_OBJECT_VALIDATE_1_ARG(relation);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
-  base::string16 relation_type;
+  std::wstring relation_type;
   std::set<AXPlatformNode*> targets;
   int found = AXPlatformRelationWin::EnumerateRelationships(
-      this, relation_index, base::string16(), &relation_type, &targets);
+      this, relation_index, std::wstring(), &relation_type, &targets);
   if (found == 0)
     return E_INVALIDARG;
 
@@ -1479,7 +1486,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_localizedExtendedRole(
   if (base::ContainsOnlyChars(role_description, base::kWhitespaceUTF16))
     return S_FALSE;
 
-  *localized_extended_role = SysAllocString(role_description.c_str());
+  *localized_extended_role = SysAllocString(base::as_wcstr(role_description));
   return S_OK;
 }
 
@@ -1487,21 +1494,20 @@ IFACEMETHODIMP AXPlatformNodeWin::get_attribute(BSTR name, VARIANT* attribute) {
   COM_OBJECT_VALIDATE_1_ARG(attribute);
   AXPlatformNode::NotifyAddAXModeFlags(kScreenReaderAndHTMLAccessibilityModes);
 
-  base::string16 desired_attribute(name);
+  std::wstring desired_attribute(name);
 
   // Each computed attribute from ComputeIA2Attributes is a string of
   // the form "key:value". Search for strings that start with the
   // attribute name plus a colon.
-  base::string16 prefix = desired_attribute + L":";
+  std::wstring prefix = desired_attribute + L":";
 
   // Let's accept any case.
   const auto compare_case = base::CompareCase::INSENSITIVE_ASCII;
 
-  const std::vector<base::string16> computed_attributes =
-      ComputeIA2Attributes();
-  for (const base::string16& computed_attribute : computed_attributes) {
+  const std::vector<std::wstring> computed_attributes = ComputeIA2Attributes();
+  for (const std::wstring& computed_attribute : computed_attributes) {
     if (base::StartsWith(computed_attribute, prefix, compare_case)) {
-      base::string16 value = computed_attribute.substr(prefix.size());
+      std::wstring value = computed_attribute.substr(prefix.size());
       attribute->vt = VT_BSTR;
       attribute->bstrVal = SysAllocString(value.c_str());
       return S_OK;
@@ -2575,14 +2581,14 @@ IFACEMETHODIMP AXPlatformNodeWin::get_columnDescription(LONG column,
     if (!cell)
       continue;
 
-    base::string16 cell_name = cell->GetNameAsString16();
+    std::wstring cell_name = base::UTF8ToWide(cell->GetName());
     if (!cell_name.empty()) {
       *description = SysAllocString(cell_name.c_str());
       return S_OK;
     }
 
-    cell_name =
-        cell->GetString16Attribute(ax::mojom::StringAttribute::kDescription);
+    cell_name = base::UTF8ToWide(
+        cell->GetStringAttribute(ax::mojom::StringAttribute::kDescription));
     if (!cell_name.empty()) {
       *description = SysAllocString(cell_name.c_str());
       return S_OK;
@@ -2760,14 +2766,14 @@ IFACEMETHODIMP AXPlatformNodeWin::get_rowDescription(LONG row,
     if (!cell)
       continue;
 
-    base::string16 cell_name = cell->GetNameAsString16();
+    std::wstring cell_name = base::UTF8ToWide(cell->GetName());
     if (!cell_name.empty()) {
       *description = SysAllocString(cell_name.c_str());
       return S_OK;
     }
 
-    cell_name =
-        cell->GetString16Attribute(ax::mojom::StringAttribute::kDescription);
+    cell_name = base::UTF8ToWide(
+        cell->GetStringAttribute(ax::mojom::StringAttribute::kDescription));
     if (!cell_name.empty()) {
       *description = SysAllocString(cell_name.c_str());
       return S_OK;
@@ -3428,7 +3434,7 @@ IFACEMETHODIMP AXPlatformNodeWin::get_text(LONG start_offset,
   if (substr.empty())
     return S_FALSE;
 
-  *text = SysAllocString(substr.c_str());
+  *text = SysAllocString(base::as_wcstr(substr));
   DCHECK(*text);
   return S_OK;
 }
@@ -4063,7 +4069,7 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
     case UIA_AutomationIdPropertyId:
       V_VT(result) = VT_BSTR;
       V_BSTR(result) =
-          SysAllocString(GetDelegate()->GetAuthorUniqueId().c_str());
+          SysAllocString(base::as_wcstr(GetDelegate()->GetAuthorUniqueId()));
       break;
 
     case UIA_ClassNamePropertyId:
@@ -4232,7 +4238,8 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
       base::string16 localized_control_type = GetRoleDescription();
       if (!localized_control_type.empty()) {
         result->vt = VT_BSTR;
-        result->bstrVal = SysAllocString(localized_control_type.c_str());
+        result->bstrVal =
+            SysAllocString(base::as_wcstr(localized_control_type));
       }
       // If a role description has not been provided, leave as VT_EMPTY.
       // UIA core handles Localized Control type for some built-in types and
@@ -4389,7 +4396,8 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
           GetDelegate()->GetLocalizedStringForLandmarkType();
       if (!localized_landmark_type.empty()) {
         result->vt = VT_BSTR;
-        result->bstrVal = SysAllocString(localized_landmark_type.c_str());
+        result->bstrVal =
+            SysAllocString(base::as_wcstr(localized_landmark_type));
       }
       break;
     }
@@ -4435,7 +4443,7 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
     // convention here and when we fire events via ::NotifyWinEvent().
     result->vt = VT_BSTR;
     result->bstrVal =
-        SysAllocString(base::NumberToString16(-GetUniqueId()).c_str());
+        SysAllocString(base::NumberToWString(-GetUniqueId()).c_str());
   }
 
   return S_OK;
@@ -4482,9 +4490,9 @@ void SendBulkFetchResponse(
     Microsoft::WRL::ComPtr<IChromeAccessibleDelegate> delegate,
     LONG request_id,
     std::string json_result) {
-  base::string16 json_result_utf16 = base::UTF8ToUTF16(json_result);
+  std::wstring json_result_wide = base::UTF8ToWide(json_result);
   delegate->put_bulkFetchResult(request_id,
-                                SysAllocString(json_result_utf16.c_str()));
+                                SysAllocString(json_result_wide.c_str()));
 }
 
 IFACEMETHODIMP AXPlatformNodeWin::get_bulkFetch(
@@ -4766,7 +4774,7 @@ base::Optional<LCID> AXPlatformNodeWin::GetCultureAttributeAsLCID() const {
   const base::string16 language =
       GetInheritedString16Attribute(ax::mojom::StringAttribute::kLanguage);
   const LCID lcid =
-      LocaleNameToLCID(language.c_str(), LOCALE_ALLOW_NEUTRAL_NAMES);
+      LocaleNameToLCID(base::as_wcstr(language), LOCALE_ALLOW_NEUTRAL_NAMES);
   if (!lcid)
     return base::nullopt;
 
@@ -5417,7 +5425,7 @@ int AXPlatformNodeWin::MSAARole() {
       return ROLE_SYSTEM_STATICTEXT;
 
     case ax::mojom::Role::kSection: {
-      if (GetNameAsString16().empty()) {
+      if (GetName().empty()) {
         // Do not use ARIA mapping for nameless <section>.
         return ROLE_SYSTEM_GROUPING;
       }
@@ -5819,7 +5827,7 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
       ia2_role = IA2_ROLE_LANDMARK;
       break;
     case ax::mojom::Role::kSection: {
-      if (GetNameAsString16().empty()) {
+      if (GetName().empty()) {
         // Do not use ARIA mapping for nameless <section>.
         ia2_role = IA2_ROLE_SECTION;
       } else {
@@ -5850,13 +5858,13 @@ int32_t AXPlatformNodeWin::ComputeIA2Role() {
   return ia2_role;
 }
 
-std::vector<base::string16> AXPlatformNodeWin::ComputeIA2Attributes() {
-  std::vector<base::string16> attribute_list;
+std::vector<std::wstring> AXPlatformNodeWin::ComputeIA2Attributes() {
+  std::vector<std::wstring> attribute_list;
   ComputeAttributes(&attribute_list);
   return attribute_list;
 }
 
-base::string16 AXPlatformNodeWin::UIAAriaRole() {
+std::wstring AXPlatformNodeWin::UIAAriaRole() {
   // If this is a web area for a presentational iframe, give it a role of
   // something other than document so that the fact that it's a separate doc
   // is not exposed to AT.
@@ -6255,7 +6263,7 @@ base::string16 AXPlatformNodeWin::UIAAriaRole() {
       return L"description";
 
     case ax::mojom::Role::kSection: {
-      if (GetNameAsString16().empty()) {
+      if (GetName().empty()) {
         // Do not use ARIA mapping for nameless <section>.
         return L"group";
       }
@@ -6375,8 +6383,8 @@ base::string16 AXPlatformNodeWin::UIAAriaRole() {
   return L"document";
 }
 
-base::string16 AXPlatformNodeWin::ComputeUIAProperties() {
-  std::vector<base::string16> properties;
+std::wstring AXPlatformNodeWin::ComputeUIAProperties() {
+  std::vector<std::wstring> properties;
   const AXNodeData& data = GetData();
 
   BoolAttributeToUIAAriaProperty(
@@ -6441,7 +6449,7 @@ base::string16 AXPlatformNodeWin::ComputeUIAProperties() {
   // aria-dropeffect is deprecated in WAI-ARIA 1.1.
   if (data.HasIntAttribute(ax::mojom::IntAttribute::kDropeffect)) {
     properties.push_back(L"dropeffect=" +
-                         base::UTF8ToUTF16(data.DropeffectBitfieldToString()));
+                         base::UTF8ToWide(data.DropeffectBitfieldToString()));
   }
   StateToUIAAriaProperty(properties, ax::mojom::State::kExpanded, "expanded");
   BoolAttributeToUIAAriaProperty(properties, ax::mojom::BoolAttribute::kGrabbed,
@@ -6527,13 +6535,13 @@ base::string16 AXPlatformNodeWin::ComputeUIAProperties() {
     StringAttributeToUIAAriaProperty(
         properties, ax::mojom::StringAttribute::kValue, "valuetext");
 
-    base::string16 value_now = GetValueForControl();
+    std::wstring value_now = base::UTF16ToWide(GetValueForControl());
     SanitizeStringAttributeForUIAAriaProperty(value_now, &value_now);
     if (!value_now.empty())
       properties.push_back(L"valuenow=" + value_now);
   }
 
-  base::string16 result = base::JoinString(properties, L";");
+  std::wstring result = base::JoinString(properties, L";");
   return result;
 }
 
@@ -7206,7 +7214,7 @@ bool AXPlatformNodeWin::IsUIAControl() const {
     // Doing so helps Narrator find all the content of live regions.
     if (!data.GetBoolAttribute(ax::mojom::BoolAttribute::kHasAriaAttribute) &&
         !data.GetBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot) &&
-        GetNameAsString16().empty() &&
+        GetName().empty() &&
         data.GetStringAttribute(ax::mojom::StringAttribute::kDescription)
             .empty() &&
         !data.HasState(ax::mojom::State::kFocusable) && !data.IsClickable()) {
@@ -7608,22 +7616,22 @@ base::Optional<PROPERTYID> AXPlatformNodeWin::MojoEventToUIAProperty(
 // static
 BSTR AXPlatformNodeWin::GetValueAttributeAsBstr(AXPlatformNodeWin* target) {
   if (target->IsPlatformDocument()) {
-    base::string16 url =
-        base::UTF8ToUTF16(target->GetDelegate()->GetTreeData().url);
+    std::wstring url =
+        base::UTF8ToWide(target->GetDelegate()->GetTreeData().url);
     BSTR value = SysAllocString(url.c_str());
     DCHECK(value);
     return value;
   }
 
   if (IsLink(target->GetData().role)) {
-    base::string16 url =
-        target->GetString16Attribute(ax::mojom::StringAttribute::kUrl);
+    std::wstring url = base::UTF8ToWide(
+        target->GetStringAttribute(ax::mojom::StringAttribute::kUrl));
     BSTR value = SysAllocString(url.c_str());
     DCHECK(value);
     return value;
   }
 
-  BSTR value = SysAllocString(target->GetValueForControl().c_str());
+  BSTR value = SysAllocString(base::as_wcstr(target->GetValueForControl()));
   DCHECK(value);
   return value;
 }
@@ -7636,14 +7644,14 @@ HRESULT AXPlatformNodeWin::GetStringAttributeAsBstr(
   if (!GetString16Attribute(attribute, &str))
     return S_FALSE;
 
-  *value_bstr = SysAllocString(str.c_str());
+  *value_bstr = SysAllocString(base::as_wcstr(str));
   DCHECK(*value_bstr);
 
   return S_OK;
 }
 
 HRESULT AXPlatformNodeWin::GetNameAsBstr(BSTR* value_bstr) const {
-  base::string16 str = GetNameAsString16();
+  std::wstring str = base::UTF8ToWide(GetName());
   *value_bstr = SysAllocString(str.c_str());
   DCHECK(*value_bstr);
   return S_OK;
@@ -7652,14 +7660,14 @@ HRESULT AXPlatformNodeWin::GetNameAsBstr(BSTR* value_bstr) const {
 HRESULT AXPlatformNodeWin::ComputeListItemNameAsBstr(BSTR* value_bstr) const {
   DCHECK_EQ(GetData().role, ax::mojom::Role::kListItem);
   DCHECK(!HasStringAttribute(ax::mojom::StringAttribute::kName));
-  base::string16 str;
+  std::wstring str;
   // The list item name will result in the concatenation of its children's
   // accessible names, excluding the list item marker.
   for (int i = 0; i < GetChildCount(); ++i) {
     auto* child = static_cast<AXPlatformNodeWin*>(
         FromNativeViewAccessible(ChildAtIndex(i)));
     if (child->GetDelegate()->IsText())
-      str += child->GetNameAsString16();
+      str += base::UTF8ToWide(child->GetName());
   }
   *value_bstr = SysAllocString(str.c_str());
   DCHECK(*value_bstr);
@@ -7824,8 +7832,8 @@ double AXPlatformNodeWin::GetVerticalScrollPercent() {
 }
 
 BSTR AXPlatformNodeWin::GetFontNameAttributeAsBSTR() const {
-  const base::string16 string =
-      GetInheritedString16Attribute(ax::mojom::StringAttribute::kFontFamily);
+  const std::wstring string = base::UTF8ToWide(
+      GetInheritedStringAttribute(ax::mojom::StringAttribute::kFontFamily));
 
   return SysAllocString(string.c_str());
 }
@@ -7834,7 +7842,7 @@ BSTR AXPlatformNodeWin::GetStyleNameAttributeAsBSTR() const {
   base::string16 style_name =
       GetDelegate()->GetStyleNameAttributeAsLocalizedString();
 
-  return SysAllocString(style_name.c_str());
+  return SysAllocString(base::as_wcstr(style_name));
 }
 
 TextDecorationLineStyle AXPlatformNodeWin::GetUIATextDecorationStyle(

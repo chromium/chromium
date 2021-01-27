@@ -23,7 +23,7 @@ class COMPONENT_EXPORT(UI_BASE_CURSOR) CursorLoaderWin : public CursorLoader {
 
   // Used to pass the cursor resource module name to the cursor loader. This is
   // typically used to load non system cursors.
-  static void SetCursorResourceModule(const base::string16& module_name);
+  static void SetCursorResourceModule(const std::wstring& module_name);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CursorLoaderWin);

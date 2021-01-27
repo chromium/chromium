@@ -5,11 +5,12 @@
 #ifndef UI_BASE_IME_WIN_ON_SCREEN_KEYBOARD_DISPLAY_MANAGER_TAP_TIP_H_
 #define UI_BASE_IME_WIN_ON_SCREEN_KEYBOARD_DISPLAY_MANAGER_TAP_TIP_H_
 
+#include <string>
+
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "ui/base/ime/virtual_keyboard_controller.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -37,7 +38,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN)
   // Returns the path of the on screen keyboard exe (TabTip.exe) in the
   // |osk_path| parameter.
   // Returns true on success.
-  bool GetOSKPath(base::string16* osk_path);
+  bool GetOSKPath(std::wstring* osk_path);
 
  private:
   friend class OnScreenKeyboardTest;
@@ -52,7 +53,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN)
   HWND hwnd_;
 
   // The location of TabTip.exe.
-  base::string16 osk_path_;
+  std::wstring osk_path_;
 
   DISALLOW_COPY_AND_ASSIGN(OnScreenKeyboardDisplayManagerTabTip);
 };

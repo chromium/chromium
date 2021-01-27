@@ -185,7 +185,7 @@ HRESULT MediaFoundationCdmFactory::CreateMFCdmFactory(
   RETURN_IF_FAILED(CoCreateInstance(CLSID_MFMediaEngineClassFactory, nullptr,
                                     CLSCTX_INPROC_SERVER,
                                     IID_PPV_ARGS(&class_factory)));
-  auto key_system_str = base::UTF8ToUTF16(key_system);
+  auto key_system_str = base::UTF8ToWide(key_system);
   RETURN_IF_FAILED(class_factory->CreateContentDecryptionModuleFactory(
       key_system_str.c_str(), IID_PPV_ARGS(&cdm_factory)));
   return S_OK;
@@ -198,7 +198,7 @@ HRESULT MediaFoundationCdmFactory::CreateCdmInternal(
   ComPtr<IMFContentDecryptionModuleFactory> cdm_factory;
   RETURN_IF_FAILED(CreateMFCdmFactory(key_system, cdm_factory));
 
-  auto key_system_str = base::UTF8ToUTF16(key_system);
+  auto key_system_str = base::UTF8ToWide(key_system);
   if (!cdm_factory->IsTypeSupported(key_system_str.c_str(), nullptr)) {
     DLOG(ERROR) << key_system << " not supported by MF CdmFactory";
     return MF_NOT_SUPPORTED_ERR;

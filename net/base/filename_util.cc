@@ -24,21 +24,21 @@
 namespace net {
 
 // Prefix to prepend to get a file URL.
-static const base::FilePath::CharType kFileURLPrefix[] =
-    FILE_PATH_LITERAL("file:///");
+static const char kFileURLPrefix[] = "file:///";
 
 GURL FilePathToFileURL(const base::FilePath& path) {
   // Produce a URL like "file:///C:/foo" for a regular file, or
   // "file://///server/path" for UNC. The URL canonicalizer will fix up the
   // latter case to be the canonical UNC form: "file://server/path"
-  base::FilePath::StringType url_string(kFileURLPrefix);
+  std::string url_string(kFileURLPrefix);
 
   // GURL() strips some whitespace and trailing control chars which are valid
   // in file paths. It also interprets chars such as `%;#?` and maybe `\`, so we
   // must percent encode these first. Reserve max possible length up front.
-  url_string.reserve(url_string.size() + (3 * path.value().size()));
+  std::string utf8_path = path.AsUTF8Unsafe();
+  url_string.reserve(url_string.size() + (3 * utf8_path.size()));
 
-  for (auto c : path.value()) {
+  for (auto c : utf8_path) {
     if (c == '%' || c == ';' || c == '#' || c == '?' ||
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
         c == '\\' ||
@@ -53,7 +53,7 @@ GURL FilePathToFileURL(const base::FilePath& path) {
     }
   }
 
-  return GURL(base::AsCrossPlatformPiece(url_string));
+  return GURL(url_string);
 }
 
 bool FileURLToFilePath(const GURL& url, base::FilePath* file_path) {

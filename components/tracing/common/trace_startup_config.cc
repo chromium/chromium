@@ -301,11 +301,11 @@ bool TraceStartupConfig::ParseTraceConfigFileContent(
   if (startup_duration_in_seconds_ < 0)
     startup_duration_in_seconds_ = 0;
 
-  base::FilePath::StringType result_file_or_dir_str;
-  if (dict->GetString(kResultFileParam, &result_file_or_dir_str))
-    result_file_ = base::FilePath(result_file_or_dir_str);
-  else if (dict->GetString(kResultDirectoryParam, &result_file_or_dir_str)) {
-    result_file_ = base::FilePath(result_file_or_dir_str);
+  std::string result_file_or_dir_str;
+  if (dict->GetString(kResultFileParam, &result_file_or_dir_str)) {
+    result_file_ = base::FilePath::FromUTF8Unsafe(result_file_or_dir_str);
+  } else if (dict->GetString(kResultDirectoryParam, &result_file_or_dir_str)) {
+    result_file_ = base::FilePath::FromUTF8Unsafe(result_file_or_dir_str);
     // Java time to get an int instead of a double.
     result_file_ = result_file_.AppendASCII(
         base::NumberToString(base::Time::Now().ToJavaTime()) +

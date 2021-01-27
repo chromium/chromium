@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/strings/string_util.h"
+#include "base/strings/string_util_win.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_win.h"
@@ -190,12 +191,13 @@ void NativeMenuWin::UpdateMenuItemInfoForString(MENUITEMINFO* mii,
   ui::MenuModel::ItemType type = model_->GetTypeAt(model_index);
   // Strip out any tabs, otherwise they get interpreted as accelerators and can
   // lead to weird behavior.
-  base::ReplaceSubstringsAfterOffset(&formatted, 0, L"\t", L" ");
+  base::ReplaceSubstringsAfterOffset(&formatted, 0, STRING16_LITERAL("\t"),
+                                     STRING16_LITERAL(" "));
   if (type != ui::MenuModel::TYPE_SUBMENU) {
     // Add accelerator details to the label if provided.
     ui::Accelerator accelerator(ui::VKEY_UNKNOWN, ui::EF_NONE);
     if (model_->GetAcceleratorAt(model_index, &accelerator)) {
-      formatted += L"\t";
+      formatted += STRING16_LITERAL("\t");
       formatted += accelerator.GetShortcutText();
     }
   }
@@ -206,7 +208,7 @@ void NativeMenuWin::UpdateMenuItemInfoForString(MENUITEMINFO* mii,
 
   // Give Windows a pointer to the label string.
   mii->fMask |= MIIM_STRING;
-  mii->dwTypeData = const_cast<wchar_t*>(items_[model_index]->label.c_str());
+  mii->dwTypeData = base::as_writable_wcstr(items_[model_index]->label);
 }
 
 void NativeMenuWin::ResetNativeMenu() {

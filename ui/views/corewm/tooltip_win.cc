@@ -6,6 +6,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "base/strings/string_util_win.h"
 #include "base/win/windowsx_shim.h"
 #include "ui/base/l10n/l10n_util_win.h"
 #include "ui/display/display.h"
@@ -141,7 +142,7 @@ void TooltipWin::SetText(aura::Window* window,
 
   base::string16 adjusted_text(tooltip_text);
   base::i18n::AdjustStringForLocaleDirection(&adjusted_text);
-  toolinfo_.lpszText = const_cast<WCHAR*>(adjusted_text.c_str());
+  toolinfo_.lpszText = base::as_writable_wcstr(adjusted_text);
   SendMessage(tooltip_hwnd_, TTM_SETTOOLINFO, 0,
               reinterpret_cast<LPARAM>(&toolinfo_));
 

@@ -241,7 +241,7 @@ HRESULT MediaFoundationRenderer::SetSourceOnMediaEngine() {
 
   DVLOG(2) << "Set MFRendererSrc scheme as the source for MFMediaEngine.";
   base::win::ScopedBstr mf_renderer_source_scheme(
-      base::ASCIIToUTF16("MFRendererSrc"));
+      base::ASCIIToWide("MFRendererSrc"));
   // We need to set our source scheme first in order for the MFMediaEngine to
   // load of our custom MFMediaSource.
   RETURN_IF_FAILED(
