@@ -416,14 +416,9 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
   // Compute passthrough decoder status before ComputeGpuFeatureInfo below.
   // Do this after GL is initialized so extensions can be queried.
-  if (gles2::UsePassthroughCommandDecoder(command_line)) {
-    gpu_info_.passthrough_cmd_decoder =
-        gles2::PassthroughCommandDecoderSupported();
-    LOG_IF(DFATAL, !gpu_info_.passthrough_cmd_decoder)
-        << "Passthrough is not supported";
-  } else {
-    gpu_info_.passthrough_cmd_decoder = false;
-  }
+  gpu_info_.passthrough_cmd_decoder =
+      gles2::UsePassthroughCommandDecoder(command_line) &&
+      gles2::PassthroughCommandDecoderSupported();
 
   // We need to collect GL strings (VENDOR, RENDERER) for blocklisting purposes.
   if (!gl_disabled) {
