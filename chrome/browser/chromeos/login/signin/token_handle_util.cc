@@ -22,7 +22,6 @@ const char kTokenHandleLastCheckedPref[] = "TokenHandleLastChecked";
 
 const char kHandleStatusValid[] = "valid";
 const char kHandleStatusInvalid[] = "invalid";
-const char* const kDefaultHandleStatus = kHandleStatusValid;
 
 constexpr int kMaxRetries = 3;
 
@@ -54,8 +53,24 @@ bool MaybeReturnCachedStatus(
 }
 
 void OnStatusChecked(const TokenHandleUtil::TokenValidationCallback& callback,
+                     const std::string& token,
                      const AccountId& account_id,
                      TokenHandleUtil::TokenHandleStatus status) {
+  // Check that the token that was checked matches the latest known token.
+  // (This may happen if token check took too long, and user went through
+  // online sign-in and obtained new token during that time.
+  const base::DictionaryValue* dict = nullptr;
+  std::string latest_token;
+  if (user_manager::known_user::FindPrefs(account_id, &dict)) {
+    auto* latest_token = dict->FindStringPath(kTokenHandlePref);
+    if (latest_token) {
+      if (token != *latest_token) {
+        LOG(WARNING) << "Outdated token, assuming status is unknown";
+        std::move(callback).Run(account_id, TokenHandleUtil::UNKNOWN);
+      }
+    }
+  }
+
   if (status != TokenHandleUtil::UNKNOWN) {
     // Update last checked timestamp.
     user_manager::known_user::SetPref(account_id, kTokenHandleLastCheckedPref,
@@ -69,6 +84,16 @@ void OnStatusChecked(const TokenHandleUtil::TokenValidationCallback& callback,
   callback.Run(account_id, status);
 }
 
+// Checks if token handle is explicitly marked as INVALID for |account_id|.
+bool HasTokenStatusInvalid(const AccountId& account_id) {
+  const base::DictionaryValue* dict = nullptr;
+  std::string token;
+  if (!user_manager::known_user::FindPrefs(account_id, &dict))
+    return false;
+  auto* status = dict->FindStringPath(kTokenHandleStatusPref);
+  return status && *status == kHandleStatusInvalid;
+}
+
 }  // namespace
 
 TokenHandleUtil::TokenHandleUtil() {}
@@ -78,12 +103,10 @@ TokenHandleUtil::~TokenHandleUtil() {}
 // static
 bool TokenHandleUtil::HasToken(const AccountId& account_id) {
   const base::DictionaryValue* dict = nullptr;
-  std::string token;
   if (!user_manager::known_user::FindPrefs(account_id, &dict))
     return false;
-  if (!dict->GetString(kTokenHandlePref, &token))
-    return false;
-  return !token.empty();
+  auto* token = dict->FindStringPath(kTokenHandlePref);
+  return token && !token->empty();
 }
 
 // static
@@ -104,17 +127,7 @@ bool TokenHandleUtil::IsRecentlyChecked(const AccountId& account_id) {
 
 // static
 bool TokenHandleUtil::ShouldObtainHandle(const AccountId& account_id) {
-  const base::DictionaryValue* dict = nullptr;
-  std::string token;
-  if (!user_manager::known_user::FindPrefs(account_id, &dict))
-    return true;
-  if (!dict->GetString(kTokenHandlePref, &token))
-    return true;
-  if (token.empty())
-    return true;
-  std::string status(kDefaultHandleStatus);
-  dict->GetString(kTokenHandleStatusPref, &status);
-  return kHandleStatusInvalid == status;
+  return !HasToken(account_id) || HasTokenStatusInvalid(account_id);
 }
 
 // static
@@ -143,10 +156,18 @@ void TokenHandleUtil::CheckToken(
     return;
   }
 
+  // If token is explicitly marked as invalid, it does not make sense to check
+  // it again.
+  if (HasTokenStatusInvalid(account_id)) {
+    std::move(callback).Run(account_id, INVALID);
+    return;
+  }
+
   // Constructor starts validation.
   validation_delegates_[token] = std::make_unique<TokenDelegate>(
       weak_factory_.GetWeakPtr(), account_id, token,
-      std::move(url_loader_factory), base::Bind(&OnStatusChecked, callback));
+      std::move(url_loader_factory),
+      base::Bind(&OnStatusChecked, callback, token));
 }
 
 // static
