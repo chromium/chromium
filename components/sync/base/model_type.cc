@@ -121,12 +121,6 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
     {DICTIONARY, "DICTIONARY", "dictionary", "Dictionary",
      sync_pb::EntitySpecifics::kDictionaryFieldNumber,
      ModelTypeForHistograms::kDictionary},
-    {DEPRECATED_FAVICON_IMAGES, "FAVICON_IMAGE", "favicon_images",
-     "Favicon Images", sync_pb::EntitySpecifics::kFaviconImageFieldNumber,
-     ModelTypeForHistograms::kFaviconImages},
-    {DEPRECATED_FAVICON_TRACKING, "FAVICON_TRACKING", "favicon_tracking",
-     "Favicon Tracking", sync_pb::EntitySpecifics::kFaviconTrackingFieldNumber,
-     ModelTypeForHistograms::kFaviconTracking},
     {DEVICE_INFO, "DEVICE_INFO", "device_info", "Device Info",
      sync_pb::EntitySpecifics::kDeviceInfoFieldNumber,
      ModelTypeForHistograms::kDeviceInfo},
@@ -194,11 +188,11 @@ const ModelTypeInfo kModelTypeInfoMap[] = {
 static_assert(base::size(kModelTypeInfoMap) == ModelType::NUM_ENTRIES,
               "kModelTypeInfoMap should have ModelType::NUM_ENTRIES elements");
 
-static_assert(41 == syncer::ModelType::NUM_ENTRIES,
+static_assert(39 == syncer::ModelType::NUM_ENTRIES,
               "When adding a new type, update enum SyncModelTypes in enums.xml "
               "and suffix SyncModelType in histograms.xml.");
 
-static_assert(41 == syncer::ModelType::NUM_ENTRIES,
+static_assert(39 == syncer::ModelType::NUM_ENTRIES,
               "When adding a new type, update kAllocatorDumpNameAllowlist in "
               "base/trace_event/memory_infra_background_allowlist.cc.");
 
@@ -261,12 +255,6 @@ void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
       break;
     case DICTIONARY:
       specifics->mutable_dictionary();
-      break;
-    case DEPRECATED_FAVICON_IMAGES:
-      specifics->mutable_favicon_image();
-      break;
-    case DEPRECATED_FAVICON_TRACKING:
-      specifics->mutable_favicon_tracking();
       break;
     case DEVICE_INFO:
       specifics->mutable_device_info();
@@ -367,7 +355,7 @@ ModelType GetModelType(const sync_pb::SyncEntity& sync_entity) {
 }
 
 ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
-  static_assert(41 == ModelType::NUM_ENTRIES,
+  static_assert(39 == ModelType::NUM_ENTRIES,
                 "When adding new protocol types, the following type lookup "
                 "logic must be updated.");
   if (specifics.has_bookmark())
@@ -404,10 +392,6 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
     return HISTORY_DELETE_DIRECTIVES;
   if (specifics.has_dictionary())
     return DICTIONARY;
-  if (specifics.has_favicon_image())
-    return DEPRECATED_FAVICON_IMAGES;
-  if (specifics.has_favicon_tracking())
-    return DEPRECATED_FAVICON_TRACKING;
   if (specifics.has_device_info())
     return DEVICE_INFO;
   if (specifics.has_priority_preference())
@@ -451,7 +435,7 @@ ModelType GetModelTypeFromSpecifics(const sync_pb::EntitySpecifics& specifics) {
 }
 
 ModelTypeSet EncryptableUserTypes() {
-  static_assert(41 == ModelType::NUM_ENTRIES,
+  static_assert(39 == ModelType::NUM_ENTRIES,
                 "If adding an unencryptable type, remove from "
                 "encryptable_user_types below.");
   ModelTypeSet encryptable_user_types = UserTypes();

@@ -26,8 +26,6 @@ EXCEPTION_MODEL_TYPES = [
                                # 'Supervised' with 'Managed'
 
   # Deprecated types:
-  'DEPRECATED_FAVICON_IMAGES',
-  'DEPRECATED_FAVICON_TRACKING',
   'DEPRECATED_SUPERVISED_USER_ALLOWLISTS']
 
 # Root tags are used as prefixes when creating storage keys, so certain strings

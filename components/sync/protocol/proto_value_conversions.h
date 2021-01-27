@@ -36,8 +36,6 @@ class EntitySpecifics;
 class ExperimentsSpecifics;
 class ExtensionSettingSpecifics;
 class ExtensionSpecifics;
-class FaviconImageSpecifics;
-class FaviconTrackingSpecifics;
 class HistoryDeleteDirectiveSpecifics;
 class LinkedAppIconInfo;
 class ManagedUserSettingSpecifics;
@@ -153,12 +151,6 @@ std::unique_ptr<base::DictionaryValue> ExtensionSettingSpecificsToValue(
 
 std::unique_ptr<base::DictionaryValue> ExtensionSpecificsToValue(
     const sync_pb::ExtensionSpecifics& extension_specifics);
-
-std::unique_ptr<base::DictionaryValue> FaviconImageSpecificsToValue(
-    const sync_pb::FaviconImageSpecifics& favicon_image_specifics);
-
-std::unique_ptr<base::DictionaryValue> FaviconTrackingSpecificsToValue(
-    const sync_pb::FaviconTrackingSpecifics& favicon_tracking_specifics);
 
 std::unique_ptr<base::DictionaryValue> HistoryDeleteDirectiveSpecificsToValue(
     const sync_pb::HistoryDeleteDirectiveSpecifics&

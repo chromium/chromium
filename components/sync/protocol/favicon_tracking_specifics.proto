@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
+// DEPRECATED: This data type is no longer synced.
+// TODO(crbug.com/978775): Remove once the file is no longer used by the server.
 // Sync protocol datatype extension for the favicon tracking type.
 
 // If you change or add any fields in this file, update proto_visitors.h and

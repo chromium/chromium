@@ -39,13 +39,6 @@ void InitOnBackendSequence(const base::FilePath& level_db_path,
                << error->ToString();
     return;
   }
-
-  // TODO(crbug.com/978775): Remove the cleanup logic after a year (in 2020-12).
-  // Clean up local data from deprecated datatypes.
-  for (ModelType type :
-       {DEPRECATED_FAVICON_IMAGES, DEPRECATED_FAVICON_TRACKING}) {
-    BlockingModelTypeStoreImpl(type, store_backend).DeleteAllDataAndMetadata();
-  }
 }
 
 std::unique_ptr<BlockingModelTypeStoreImpl, base::OnTaskRunnerDeleter>

@@ -424,7 +424,7 @@ VISIT_PROTO_FIELDS(const sync_pb::EntityMetadata& proto) {
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
-  static_assert(41 == ModelType::NUM_ENTRIES,
+  static_assert(39 == ModelType::NUM_ENTRIES,
                 "When adding a new protocol type, you will likely need to add "
                 "it here as well.");
   VISIT(encrypted);
@@ -442,8 +442,8 @@ VISIT_PROTO_FIELDS(const sync_pb::EntitySpecifics& proto) {
   VISIT(experiments);
   VISIT(extension);
   VISIT(extension_setting);
-  VISIT(favicon_image);
-  VISIT(favicon_tracking);
+  VISIT(deprecated_favicon_image);
+  VISIT(deprecated_favicon_tracking);
   VISIT(history_delete_directive);
   VISIT(managed_user_setting);
   VISIT(managed_user_whitelist);
