@@ -117,7 +117,7 @@ To run against clank:
 ```
     $ autoninja -C out/Default monochrome_public_apk
     $ out/Default/bin/monochrome_public_apk install
-    $ testing/scripts/run_android_wpt.py --webdriver-binary=out/Default/clang_x64/chromedriver --product chrome_android --package-name org.chromium.chrome --isolated-script-test-output /tmp/weblayer_out.json --include ./third_party/blink/web_tests/external/wpt/$WPT_TEST
+    $ testing/scripts/run_android_wpt.py --webdriver-binary=out/Default/clang_x64/chromedriver --product chrome_android --chrome-package-name org.chromium.chrome --isolated-script-test-output /tmp/clank_out.json --include ./third_party/blink/web_tests/external/wpt/$WPT_TEST
 ```
 
 Passing in `-vvvv` may be useful if you want to see loads of information about
