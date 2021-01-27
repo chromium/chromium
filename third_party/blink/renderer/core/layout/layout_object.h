@@ -4311,6 +4311,10 @@ inline bool LayoutObject::CanTraversePhysicalFragments() const {
   // The NG paint system currently doesn't support table-cells.
   if (IsTableCellLegacy())
     return false;
+  // Text controls have some logic in the layout objects that will be missed if
+  // we traverse the fragment tree when hit-testing.
+  if (IsTextControlIncludingNG())
+    return false;
   return true;
 }
 
