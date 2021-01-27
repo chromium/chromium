@@ -81,14 +81,13 @@ class WaylandEventSource : public PlatformEventSource,
 
  protected:
   // WaylandKeyboard::Delegate
-  void OnKeyboardCreated(WaylandKeyboard* keyboard) override;
-  void OnKeyboardDestroyed(WaylandKeyboard* keyboard) override;
   void OnKeyboardFocusChanged(WaylandWindow* window, bool focused) override;
   void OnKeyboardModifiersChanged(int modifiers) override;
   uint32_t OnKeyboardKeyEvent(EventType type,
                               DomCode dom_code,
                               bool repeat,
-                              base::TimeTicks timestamp) override;
+                              base::TimeTicks timestamp,
+                              int device_id) override;
 
   // WaylandPointer::Delegate
   void OnPointerCreated(WaylandPointer* pointer) override;
@@ -147,7 +146,6 @@ class WaylandEventSource : public PlatformEventSource,
   WaylandWindowManager* const window_manager_;
 
   // Input device objects. Owned by WaylandConnection.
-  WaylandKeyboard* keyboard_ = nullptr;
   WaylandPointer* pointer_ = nullptr;
   WaylandTouch* touch_ = nullptr;
 

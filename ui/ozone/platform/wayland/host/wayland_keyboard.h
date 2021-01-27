@@ -17,7 +17,6 @@
 
 namespace ui {
 
-class DomKey;
 class KeyboardLayoutEngine;
 class WaylandConnection;
 class WaylandWindow;
@@ -29,14 +28,6 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
  public:
   class Delegate;
 
-  using LayoutEngine =
-#if BUILDFLAG(USE_XKBCOMMON)
-      XkbKeyboardLayoutEngine
-#else
-      KeyboardLayoutEngine
-#endif
-      ;
-
   WaylandKeyboard(wl_keyboard* keyboard,
                   zcr_keyboard_extension_v1* keyboard_extension_v1,
                   WaylandConnection* connection,
@@ -45,13 +36,16 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
   virtual ~WaylandKeyboard();
 
   int device_id() const { return obj_.id(); }
-  bool Decode(DomCode dom_code,
-              int modifiers,
-              DomKey* out_dom_key,
-              KeyboardCode* out_key_code);
-  LayoutEngine* layout_engine() const { return layout_engine_; }
 
  private:
+  using LayoutEngine =
+#if BUILDFLAG(USE_XKBCOMMON)
+      XkbKeyboardLayoutEngine
+#else
+      KeyboardLayoutEngine
+#endif
+      ;
+
   // wl_keyboard_listener
   static void Keymap(void* data,
                      wl_keyboard* obj,
@@ -113,8 +107,6 @@ class WaylandKeyboard : public EventAutoRepeatHandler::Delegate {
 
 class WaylandKeyboard::Delegate {
  public:
-  virtual void OnKeyboardCreated(WaylandKeyboard* keyboard) = 0;
-  virtual void OnKeyboardDestroyed(WaylandKeyboard* keyboard) = 0;
   virtual void OnKeyboardFocusChanged(WaylandWindow* window, bool focused) = 0;
   virtual void OnKeyboardModifiersChanged(int modifiers) = 0;
   // Returns a mask of ui::PostDispatchAction indicating how the event was
@@ -122,7 +114,8 @@ class WaylandKeyboard::Delegate {
   virtual uint32_t OnKeyboardKeyEvent(EventType type,
                                       DomCode dom_code,
                                       bool repeat,
-                                      base::TimeTicks timestamp) = 0;
+                                      base::TimeTicks timestamp,
+                                      int device_id) = 0;
 
  protected:
   // Prevent deletion through a WaylandKeyboard::Delegate pointer.

@@ -51,9 +51,6 @@ WaylandKeyboard::WaylandKeyboard(
       &WaylandKeyboard::Modifiers, &WaylandKeyboard::RepeatInfo,
   };
 
-  DCHECK(delegate_);
-  delegate_->OnKeyboardCreated(this);
-
   wl_keyboard_add_listener(obj_.get(), &listener, this);
   // TODO(tonikitoo): Default auto-repeat to ON here?
 
@@ -63,7 +60,8 @@ WaylandKeyboard::WaylandKeyboard(
 }
 
 WaylandKeyboard::~WaylandKeyboard() {
-  delegate_->OnKeyboardDestroyed(this);
+  // Reset keyboard modifiers on destruction.
+  delegate_->OnKeyboardModifiersChanged(0);
 }
 
 void WaylandKeyboard::Keymap(void* data,
@@ -194,23 +192,15 @@ void WaylandKeyboard::DispatchKey(uint32_t key,
 
   // Pass empty DomKey and KeyboardCode here so the delegate can pre-process
   // and decode it when needed.
-  uint32_t result = delegate_->OnKeyboardKeyEvent(
-      down ? ET_KEY_PRESSED : ET_KEY_RELEASED, dom_code, repeat, timestamp);
+  uint32_t result =
+      delegate_->OnKeyboardKeyEvent(down ? ET_KEY_PRESSED : ET_KEY_RELEASED,
+                                    dom_code, repeat, timestamp, device_id);
 
   if (extended_keyboard_v1_) {
     bool handled = result & POST_DISPATCH_STOP_PROPAGATION;
     zcr_extended_keyboard_v1_ack_key(extended_keyboard_v1_.get(),
                                      connection_->serial(), handled);
   }
-}
-
-bool WaylandKeyboard::Decode(DomCode dom_code,
-                             int modifiers,
-                             DomKey* out_dom_key,
-                             KeyboardCode* out_key_code) {
-  DCHECK(out_dom_key);
-  DCHECK(out_key_code);
-  return layout_engine_->Lookup(dom_code, modifiers, out_dom_key, out_key_code);
 }
 
 void WaylandKeyboard::SyncCallback(void* data,

@@ -25,6 +25,7 @@
 #include "ui/ozone/public/ozone_switches.h"
 
 #if BUILDFLAG(USE_XKBCOMMON)
+#include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/xkb/xkb_keyboard_layout_engine.h"
 #endif
 
@@ -255,16 +256,24 @@ void WaylandInputMethodContext::OnKeysym(uint32_t keysym,
                                          uint32_t state,
                                          uint32_t modifiers) {
 #if BUILDFLAG(USE_XKBCOMMON)
+  auto* layout_engine = KeyboardLayoutEngineManager::GetKeyboardLayoutEngine();
+  if (!layout_engine)
+    return;
+
   // TODO(crbug.com/1079353): Handle modifiers.
-  DomCode dom_code =
-      connection_->keyboard()->layout_engine()->GetDomCodeByKeysym(keysym);
+  DomCode dom_code = static_cast<XkbKeyboardLayoutEngine*>(layout_engine)
+                         ->GetDomCodeByKeysym(keysym);
   if (dom_code == DomCode::NONE)
     return;
+
+  // Keyboard might not exist.
+  int device_id =
+      connection_->keyboard() ? connection_->keyboard()->device_id() : 0;
 
   EventType type =
       state == WL_KEYBOARD_KEY_STATE_PRESSED ? ET_KEY_PRESSED : ET_KEY_RELEASED;
   key_delegate_->OnKeyboardKeyEvent(type, dom_code, /*repeat=*/false,
-                                    EventTimeForNow());
+                                    EventTimeForNow(), device_id);
 #else
   NOTIMPLEMENTED();
 #endif
