@@ -136,6 +136,32 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, LocaleTest) {
   ASSERT_EQ(result, ms_yahei_utf8)
       << "Expected:" << ms_yahei_utf8 << " Got:" << result;
 }
+
+IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest,
+                       UnlocalizedFamilyTest) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
+  font_access_manager()->SkipPrivacyChecksForTesting(true);
+
+  OverrideFontAccessLocale("zh-cn");
+
+  std::string result =
+      EvalJs(shell(),
+             "(async () => {"
+             "  let family = '';"
+             "  const fonts = await navigator.fonts.query({persistentAccess: "
+             "true});"
+             "  for (const item of fonts) {"
+             "    if (item.postscriptName == 'MicrosoftYaHei') {"
+             "      family = item.family;"
+             "      break;"
+             "    }"
+             "  }"
+             "  return family;"
+             "})()")
+          .ExtractString();
+  std::string unlocalized_family = "Microsoft YaHei";
+  EXPECT_EQ(result, unlocalized_family);
+}
 #endif
 
 #endif

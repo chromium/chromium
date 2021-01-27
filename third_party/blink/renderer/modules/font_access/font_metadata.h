@@ -41,8 +41,8 @@ class BLINK_EXPORT FontMetadata final : public ScriptWrappable {
   //  |    Property    | name ID | Localized |
   //  +----------------+---------+-----------+
   //  | postscriptName |       6 | No        |
+  //  | family         |       1 | No        |
   //  | fullName       |       4 | Yes       |
-  //  | family         |       1 | Yes       |
   //  +----------------+---------+-----------+
 
   String postscriptName() const { return postscriptName_; }

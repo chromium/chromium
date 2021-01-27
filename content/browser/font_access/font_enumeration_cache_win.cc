@@ -79,11 +79,6 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
     return family_result;
   }
 
-  base::Optional<std::string> localized_family_name =
-      GetLocalizedString(family_names.Get(), locale);
-  if (!localized_family_name)
-    localized_family_name = native_family_name;
-
   UINT32 font_count = family->GetFontCount();
   for (UINT32 font_index = 0; font_index < font_count; ++font_index) {
     BOOL exists = false;
@@ -163,7 +158,7 @@ ExtractNamesFromFamily(Microsoft::WRL::ComPtr<IDWriteFontCollection> collection,
     blink::FontEnumerationTable_FontMetadata metadata;
     metadata.set_postscript_name(native_postscript_name.value());
     metadata.set_full_name(localized_full_name.value());
-    metadata.set_family(localized_family_name.value());
+    metadata.set_family(native_family_name.value());
 
     family_result->fonts.push_back(std::move(metadata));
   }

@@ -93,7 +93,7 @@ void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
       base::ScopedCFTypeRef<CFStringRef> cf_full_name =
           GetLocalizedString(fd, kCTFontDisplayNameAttribute);
       base::ScopedCFTypeRef<CFStringRef> cf_family =
-          GetLocalizedString(fd, kCTFontFamilyNameAttribute);
+          GetString(fd, kCTFontFamilyNameAttribute);
 
       std::string postscript_name =
           base::SysCFStringRefToUTF8(cf_postscript_name.get());
