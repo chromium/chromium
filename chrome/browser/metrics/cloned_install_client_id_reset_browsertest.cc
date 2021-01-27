@@ -31,7 +31,6 @@ class ClonedInstallClientIdResetBrowserTest : public InProcessBrowserTest {
     // consistency between Chromium and Chrome builds.
     ChromeMetricsServiceAccessor::SetForceIsMetricsReportingEnabledPrefLookup(
         true);
-    // Based on GetParam(), either enable or disable metrics reporting.
     ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
         &metrics_enabled_);
 
