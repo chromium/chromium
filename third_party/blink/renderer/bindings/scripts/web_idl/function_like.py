@@ -71,8 +71,9 @@ class FunctionLike(WithIdentifier):
     def num_of_required_arguments(self):
         """Returns the number of required arguments."""
         return len(
-            filter(lambda arg: not (arg.is_optional or arg.is_variadic),
-                   self.arguments))
+            list(
+                filter(lambda arg: not (arg.is_optional or arg.is_variadic),
+                       self.arguments)))
 
 
 class OverloadGroup(WithIdentifier):
@@ -191,17 +192,17 @@ class OverloadGroup(WithIdentifier):
                     list(map(lambda arg: arg.optionality, X.arguments))))
 
             if X.is_variadic:
-                for i in xrange(n, max(maxarg, N)):
+                for i in range(n, max(maxarg, N)):
                     t = list(map(lambda arg: arg.idl_type, X.arguments))
                     o = list(map(lambda arg: arg.optionality, X.arguments))
-                    for _ in xrange(n, i + 1):
+                    for _ in range(n, i + 1):
                         t.append(X.arguments[-1].idl_type)
                         o.append(X.arguments[-1].optionality)
                     S.append(OverloadGroup.EffectiveOverloadItem(X, t, o))
 
             t = list(map(lambda arg: arg.idl_type, X.arguments))
             o = list(map(lambda arg: arg.optionality, X.arguments))
-            for i in xrange(n - 1, -1, -1):
+            for i in range(n - 1, -1, -1):
                 if X.arguments[i].optionality == IdlType.Optionality.REQUIRED:
                     break
                 S.append(OverloadGroup.EffectiveOverloadItem(X, t[:i], o[:i]))
@@ -221,7 +222,7 @@ class OverloadGroup(WithIdentifier):
             for item in items)
         assert len(items) > 1
 
-        for index in xrange(len(items[0].type_list)):
+        for index in range(len(items[0].type_list)):
             # Assume that the given items are valid, and we only need to test
             # the two types.
             if OverloadGroup.are_distinguishable_types(

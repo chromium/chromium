@@ -721,7 +721,7 @@ class SymbolScopeNode(SequenceNode):
             if not scope_chains:
                 return counts
 
-            self_index = iter(scope_chains).next().index(self)
+            self_index = next(iter(scope_chains)).index(self)
             scope_chains = map(
                 lambda scope_chain: scope_chain[self_index + 1:], scope_chains)
             scope_to_likeliness = {}

@@ -189,7 +189,7 @@ def context_enabled_features(attributes):
         return sorted([
             member for member in members
             if member.get(KEY) and not member.get('exposed_test')
-        ])
+        ], key=lambda item: item['name'])
 
     def member_filter_by_name(members, name):
         return [member for member in members if member[KEY] == name]
@@ -612,7 +612,8 @@ def interface_context(interface, interfaces, component_info):
         sorted(
             origin_trial_features(interface, context['constants'],
                                   context['attributes'], context['methods']) +
-            context_enabled_features(context['attributes'])),
+            context_enabled_features(context['attributes']),
+            key=lambda item: item['name']),
     })
     if context['optional_features']:
         includes.add('platform/bindings/v8_per_context_data.h')

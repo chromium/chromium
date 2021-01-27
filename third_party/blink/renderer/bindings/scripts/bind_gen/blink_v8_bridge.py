@@ -396,7 +396,7 @@ def make_default_value_expr(idl_type, default_value):
             or isinstance(default_value, web_idl.LiteralConstant))
     assert default_value.is_type_compatible_with(idl_type)
 
-    class DefaultValueExpr:
+    class DefaultValueExpr(object):
         _ALLOWED_SYMBOLS_IN_DEPS = ("isolate")
 
         def __init__(self, initializer_expr, initializer_deps,

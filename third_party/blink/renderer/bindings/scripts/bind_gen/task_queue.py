@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import functools
 import multiprocessing
 
 from .package_initializer import package_initializer
@@ -77,7 +78,7 @@ class TaskQueue(object):
         def report_worker_task_progress():
             if not report_progress:
                 return
-            done_count = reduce(
+            done_count = functools.reduce(
                 lambda count, worker_task: count + bool(worker_task.ready()),
                 self._worker_tasks, 0)
             report_progress(len(self._worker_tasks), done_count)

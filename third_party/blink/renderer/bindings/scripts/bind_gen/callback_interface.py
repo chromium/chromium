@@ -177,7 +177,7 @@ def generate_callback_interface(callback_interface_identifier):
          prop_install_mode=PropInstallMode.UNCONDITIONAL,
          trampoline_var_name=None,
          attribute_entries=[],
-         constant_entries=filter(is_unconditional, constant_entries),
+         constant_entries=list(filter(is_unconditional, constant_entries)),
          exposed_construct_entries=[],
          operation_entries=[])
     (install_interface_template_decl, install_interface_template_def,

@@ -394,7 +394,8 @@ class IdlInterface(object):
             else:
                 raise ValueError('Unrecognized node class: %s' % child_class)
 
-        if len(filter(None, [self.iterable, self.maplike, self.setlike])) > 1:
+        if len(list(filter(None,
+                           [self.iterable, self.maplike, self.setlike]))) > 1:
             raise ValueError(
                 'Interface can only have one of iterable<>, maplike<> and setlike<>.'
             )
@@ -511,6 +512,9 @@ class IdlAttribute(TypedObject):
 
     def accept(self, visitor):
         visitor.visit_attribute(self)
+
+    def __lt__(self, other):
+        return self.name < other.name
 
 
 ################################################################################
@@ -852,7 +856,7 @@ class IdlIncludes(object):
 ################################################################################
 
 
-class Exposure:
+class Exposure(object):
     """An Exposure holds one Exposed or RuntimeEnabled condition.
     Each exposure has two properties: exposed and runtime_enabled.
     Exposure(e, r) corresponds to [Exposed(e r)]. Exposure(e) corresponds to
