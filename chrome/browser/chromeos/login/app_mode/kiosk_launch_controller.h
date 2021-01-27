@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_CHROMEOS_LOGIN_APP_MODE_KIOSK_LAUNCH_CONTROLLER_H_
 #define CHROME_BROWSER_CHROMEOS_LOGIN_APP_MODE_KIOSK_LAUNCH_CONTROLLER_H_
 
-#include "chrome/browser/chromeos/app_mode/kiosk_app_launcher.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_types.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_profile_loader.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_launcher.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
 #include "chrome/browser/extensions/forced_extensions/force_installed_tracker.h"
 #include "chrome/browser/ui/webui/chromeos/login/app_launch_splash_screen_handler.h"
 

@@ -9,8 +9,8 @@
 #include "chrome/browser/task_manager/web_contents_tags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/app_mode/app_session.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/app_session.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #endif
 
 namespace extensions {

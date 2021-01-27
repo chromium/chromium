@@ -4,7 +4,7 @@
 
 #include "chrome/browser/extensions/chrome_kiosk_delegate.h"
 
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 
 namespace extensions {
 

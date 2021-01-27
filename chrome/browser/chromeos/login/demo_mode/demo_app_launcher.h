@@ -10,7 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_profile_loader.h"
+#include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
 
 class AccountId;
 

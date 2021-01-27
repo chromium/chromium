@@ -30,7 +30,7 @@
 #include "components/constrained_window/constrained_window_views.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "content/public/browser/context_factory.h"
 #endif
 #endif

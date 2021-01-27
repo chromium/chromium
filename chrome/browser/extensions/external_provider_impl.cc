@@ -53,7 +53,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/path_service.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_external_loader.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_external_loader.h"
 #include "chrome/browser/chromeos/customization/customization_document.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
 #include "chrome/browser/chromeos/extensions/signin_screen_extensions_external_loader.h"

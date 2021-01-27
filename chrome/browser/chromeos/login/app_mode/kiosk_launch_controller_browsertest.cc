@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/strings/strcat.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_types.h"
-#include "chrome/browser/chromeos/app_mode/web_app/mock_web_kiosk_app_launcher.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/app_mode/web_app/mock_web_kiosk_app_launcher.h"
 #include "chrome/browser/chromeos/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/chromeos/login/test/kiosk_test_helpers.h"
 #include "chrome/browser/extensions/extension_service.h"
