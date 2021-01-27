@@ -6,13 +6,13 @@
 
 #include <utility>
 
-#include "chrome/browser/banners/app_banner_settings_helper.h"
 #include "chrome/browser/history/history_utils.h"
 #include "chrome/browser/history/web_history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/browsing_data/core/history_notice_utils.h"
 #include "components/prefs/pref_service.h"
+#include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

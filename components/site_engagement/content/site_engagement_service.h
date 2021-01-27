@@ -39,6 +39,7 @@ class WebAppEngagementBrowserTest;
 
 class GURL;
 class HostContentSettingsMap;
+class PrefRegistrySimple;
 
 namespace site_engagement {
 
@@ -97,6 +98,8 @@ class SiteEngagementService : public KeyedService,
 
   // The name of the site engagement variation field trial.
   static const char kEngagementParams[];
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Sets and clears the service provider. These are separate functions to
   // enable better checking.

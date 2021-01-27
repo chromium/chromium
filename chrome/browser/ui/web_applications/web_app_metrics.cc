@@ -311,7 +311,9 @@ void WebAppMetrics::UpdateUkmData(WebContents* web_contents,
     return;
   auto* app_banner_manager =
       webapps::AppBannerManager::FromWebContents(web_contents);
-  DCHECK(app_banner_manager);
+  // May be null in unit tests.
+  if (!app_banner_manager)
+    return;
   WebAppProvider* provider = WebAppProvider::Get(profile_);
   // WebAppProvider not available in kiosk mode.
   if (!provider)
@@ -389,8 +391,9 @@ void WebAppMetrics::UpdateForegroundWebContents(WebContents* web_contents) {
   if (web_contents) {
     auto* app_banner_manager =
         webapps::AppBannerManager::FromWebContents(web_contents);
-    DCHECK(app_banner_manager);
-    app_banner_manager_observer_.Observe(app_banner_manager);
+    // May be null in unit tests.
+    if (app_banner_manager)
+      app_banner_manager_observer_.Observe(app_banner_manager);
   }
 }
 

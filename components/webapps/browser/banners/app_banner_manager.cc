@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
 
 #include <algorithm>
 #include <utility>
@@ -16,12 +16,13 @@
 #include "base/stl_util.h"
 #include "base/strings/string16.h"
 #include "base/time/time.h"
-#include "chrome/browser/banners/app_banner_metrics.h"
-#include "chrome/browser/banners/app_banner_settings_helper.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/webapps/browser/banners/app_banner_metrics.h"
+#include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/webapps_client.h"
 #include "components/webapps/common/switches.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_handle.h"
@@ -125,6 +126,14 @@ class NullStatusReporter : public AppBannerManager::StatusReporter {
 };
 
 }  // anonymous namespace
+
+// static
+AppBannerManager* AppBannerManager::FromWebContents(
+    content::WebContents* web_contents) {
+  return WebappsClient::Get()
+             ? WebappsClient::Get()->GetAppBannerManager(web_contents)
+             : nullptr;
+}
 
 // static
 base::Time AppBannerManager::GetCurrentTime() {
@@ -421,8 +430,7 @@ void AppBannerManager::RecordDidShowBanner() {
 
   AppBannerSettingsHelper::RecordBannerEvent(
       contents, validated_url_, GetAppIdentifier(),
-      AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW,
-      GetCurrentTime());
+      AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW, GetCurrentTime());
 }
 
 void AppBannerManager::ReportStatus(InstallableStatusCode code) {

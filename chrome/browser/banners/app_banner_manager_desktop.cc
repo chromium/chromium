@@ -13,14 +13,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/banners/app_banner_metrics.h"
-#include "chrome/browser/banners/app_banner_settings_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/webapps/browser/banners/app_banner_metrics.h"
+#include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
@@ -65,12 +65,6 @@ void AppBannerManagerDesktop::CreateForWebContents(
   web_contents->SetUserData(
       UserDataKey(),
       base::WrapUnique(new AppBannerManagerDesktop(web_contents)));
-}
-
-// static
-AppBannerManager* AppBannerManager::FromWebContents(
-    content::WebContents* web_contents) {
-  return AppBannerManagerDesktop::FromWebContents(web_contents);
 }
 
 void AppBannerManagerDesktop::DisableTriggeringForTesting() {

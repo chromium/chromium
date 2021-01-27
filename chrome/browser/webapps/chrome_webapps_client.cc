@@ -15,10 +15,13 @@
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
+#include "chrome/browser/banners/app_banner_manager_android.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "components/feature_engagement/public/event_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
+#else
+#include "chrome/browser/banners/app_banner_manager_desktop.h"
 #endif
 
 namespace webapps {
@@ -73,6 +76,15 @@ WebappInstallSource ChromeWebappsClient::GetInstallSource(
   }
   NOTREACHED();
   return WebappInstallSource::COUNT;
+}
+
+AppBannerManager* ChromeWebappsClient::GetAppBannerManager(
+    content::WebContents* web_contents) {
+#if defined(OS_ANDROID)
+  return AppBannerManagerAndroid::FromWebContents(web_contents);
+#else
+  return AppBannerManagerDesktop::FromWebContents(web_contents);
+#endif
 }
 
 #if defined(OS_ANDROID)

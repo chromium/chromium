@@ -20,6 +20,7 @@ class ContentInfoBarManager;
 
 namespace webapps {
 
+class AppBannerManager;
 enum class InstallTrigger;
 enum class WebappInstallSource;
 struct AddToHomescreenParams;
@@ -45,6 +46,9 @@ class WebappsClient {
   virtual WebappInstallSource GetInstallSource(
       content::WebContents* web_contents,
       InstallTrigger trigger) = 0;
+
+  virtual AppBannerManager* GetAppBannerManager(
+      content::WebContents* web_contents) = 0;
 
 #if defined(OS_ANDROID)
   virtual bool IsInstallationInProgress(content::WebContents* web_contents,

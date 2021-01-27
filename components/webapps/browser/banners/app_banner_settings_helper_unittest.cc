@@ -2,11 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/banners/app_banner_settings_helper.h"
-#include "chrome/browser/banners/app_banner_metrics.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/testing_profile.h"
+#include "components/webapps/browser/banners/app_banner_settings_helper.h"
+
+#include "components/permissions/test/test_permissions_client.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/user_prefs/user_prefs.h"
+#include "components/webapps/browser/banners/app_banner_metrics.h"
+#include "content/public/browser/browser_context.h"
+#include "content/public/test/test_renderer_host.h"
 
 namespace webapps {
 
@@ -36,11 +40,37 @@ base::Time GetReferenceTime() {
   return out_time;
 }
 
-class AppBannerSettingsHelperTest : public ChromeRenderViewHostTestHarness {
+class AppBannerSettingsHelperTest
+    : public content::RenderViewHostTestHarness,
+      public site_engagement::SiteEngagementService::ServiceProvider {
   void SetUp() override {
-    ChromeRenderViewHostTestHarness::SetUp();
+    content::RenderViewHostTestHarness::SetUp();
+    user_prefs::UserPrefs::Set(browser_context(), &prefs_);
+    site_engagement_service_ =
+        std::make_unique<site_engagement::SiteEngagementService>(
+            browser_context());
+    site_engagement::SiteEngagementService::RegisterProfilePrefs(
+        prefs_.registry());
+    site_engagement::SiteEngagementService::SetServiceProvider(this);
     AppBannerSettingsHelper::SetDefaultParameters();
   }
+
+  void TearDown() override {
+    site_engagement::SiteEngagementService::ClearServiceProvider(this);
+    content::RenderViewHostTestHarness::TearDown();
+  }
+
+  // site_engagement::SiteEngagementService::ServiceProvider:
+  site_engagement::SiteEngagementService* GetSiteEngagementService(
+      content::BrowserContext* browser_context) override {
+    return site_engagement_service_.get();
+  }
+
+ private:
+  TestingPrefServiceSimple prefs_;
+  permissions::TestPermissionsClient permissions_client_;
+  std::unique_ptr<site_engagement::SiteEngagementService>
+      site_engagement_service_;
 };
 
 }  // namespace
@@ -90,7 +120,7 @@ TEST_F(AppBannerSettingsHelperTest, SingleEvents) {
 TEST_F(AppBannerSettingsHelperTest, ShouldShowFromEngagement) {
   GURL url(kTestURL);
   site_engagement::SiteEngagementService* service =
-      site_engagement::SiteEngagementService::Get(profile());
+      site_engagement::SiteEngagementService::Get(browser_context());
 
   // By default the banner should not be shown.
   EXPECT_FALSE(
@@ -193,7 +223,7 @@ TEST_F(AppBannerSettingsHelperTest, OperatesOnOrigins) {
   GURL otherURL(kSameOriginTestURL);
 
   site_engagement::SiteEngagementService* service =
-      site_engagement::SiteEngagementService::Get(profile());
+      site_engagement::SiteEngagementService::Get(browser_context());
 
   // By default the banner should not be shown.
   EXPECT_FALSE(
@@ -234,7 +264,7 @@ TEST_F(AppBannerSettingsHelperTest, ShouldShowWithHigherTotal) {
   AppBannerSettingsHelper::SetTotalEngagementToTrigger(10);
   GURL url(kTestURL);
   site_engagement::SiteEngagementService* service =
-      site_engagement::SiteEngagementService::Get(profile());
+      site_engagement::SiteEngagementService::Get(browser_context());
 
   // By default the banner should not be shown.
   EXPECT_FALSE(
@@ -274,61 +304,61 @@ TEST_F(AppBannerSettingsHelperTest, WasLaunchedRecently) {
   base::Time tenth_day = reference_time + base::TimeDelta::FromDays(10);
   base::Time eleventh_day = reference_time + base::TimeDelta::FromDays(11);
 
-  EXPECT_FALSE(AppBannerSettingsHelper::WasLaunchedRecently(profile(), url,
-                                                            reference_time));
+  EXPECT_FALSE(AppBannerSettingsHelper::WasLaunchedRecently(
+      browser_context(), url, reference_time));
 
   AppBannerSettingsHelper::RecordBannerEvent(
       web_contents(), url, kTestPackageName,
       AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
       reference_time);
-  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(profile(), url,
-                                                           reference_time));
-  EXPECT_TRUE(
-      AppBannerSettingsHelper::WasLaunchedRecently(profile(), url, first_day));
-  EXPECT_TRUE(
-      AppBannerSettingsHelper::WasLaunchedRecently(profile(), url, ninth_day));
-  EXPECT_TRUE(
-      AppBannerSettingsHelper::WasLaunchedRecently(profile(), url, tenth_day));
-  EXPECT_FALSE(AppBannerSettingsHelper::WasLaunchedRecently(profile(), url,
-                                                            eleventh_day));
+  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(
+      browser_context(), url, reference_time));
+  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
+                                                           url, first_day));
+  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
+                                                           url, ninth_day));
+  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
+                                                           url, tenth_day));
+  EXPECT_FALSE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
+                                                            url, eleventh_day));
 
   // Make sure a different path under the same origin also returns true.
   EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(
-      profile(), url_same_origin, reference_time));
+      browser_context(), url_same_origin, reference_time));
   EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(
-      profile(), url_same_origin, first_day));
+      browser_context(), url_same_origin, first_day));
   EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(
-      profile(), url_same_origin, ninth_day));
+      browser_context(), url_same_origin, ninth_day));
   EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(
-      profile(), url_same_origin, tenth_day));
+      browser_context(), url_same_origin, tenth_day));
   EXPECT_FALSE(AppBannerSettingsHelper::WasLaunchedRecently(
-      profile(), url_same_origin, eleventh_day));
+      browser_context(), url_same_origin, eleventh_day));
 
   // Check a different event type.
   AppBannerSettingsHelper::RecordBannerEvent(
       web_contents(), url2, kTestPackageName,
       AppBannerSettingsHelper::APP_BANNER_EVENT_DID_SHOW, reference_time);
 
-  EXPECT_FALSE(AppBannerSettingsHelper::WasLaunchedRecently(profile(), url2,
-                                                            reference_time));
-  EXPECT_FALSE(
-      AppBannerSettingsHelper::WasLaunchedRecently(profile(), url2, first_day));
-  EXPECT_FALSE(
-      AppBannerSettingsHelper::WasLaunchedRecently(profile(), url2, ninth_day));
+  EXPECT_FALSE(AppBannerSettingsHelper::WasLaunchedRecently(
+      browser_context(), url2, reference_time));
+  EXPECT_FALSE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
+                                                            url2, first_day));
+  EXPECT_FALSE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
+                                                            url2, ninth_day));
 
   // Make sure that the most recent time the event is recorded is used.
   AppBannerSettingsHelper::RecordBannerEvent(
       web_contents(), url, kTestPackageName,
       AppBannerSettingsHelper::APP_BANNER_EVENT_DID_ADD_TO_HOMESCREEN,
       first_day);
-  EXPECT_TRUE(
-      AppBannerSettingsHelper::WasLaunchedRecently(profile(), url, first_day));
-  EXPECT_TRUE(
-      AppBannerSettingsHelper::WasLaunchedRecently(profile(), url, ninth_day));
-  EXPECT_TRUE(
-      AppBannerSettingsHelper::WasLaunchedRecently(profile(), url, tenth_day));
-  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(profile(), url,
-                                                           eleventh_day));
+  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
+                                                           url, first_day));
+  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
+                                                           url, ninth_day));
+  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
+                                                           url, tenth_day));
+  EXPECT_TRUE(AppBannerSettingsHelper::WasLaunchedRecently(browser_context(),
+                                                           url, eleventh_day));
 }
 
 TEST_F(AppBannerSettingsHelperTest, NulloptSingleBannerEvent) {

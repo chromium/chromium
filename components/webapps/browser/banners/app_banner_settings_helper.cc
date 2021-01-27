@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/banners/app_banner_settings_helper.h"
+#include "components/webapps/browser/banners/app_banner_settings_helper.h"
 
 #include <stddef.h>
 
@@ -14,12 +14,12 @@
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/util/values/values_util.h"
-#include "chrome/browser/banners/app_banner_manager.h"
-#include "chrome/browser/banners/app_banner_metrics.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/permissions/permissions_client.h"
 #include "components/variations/variations_associated_data.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
+#include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/common/switches.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"

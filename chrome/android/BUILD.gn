@@ -719,7 +719,6 @@ java_cpp_enum("chrome_android_java_enums_srcjar") {
     "//chrome/browser/android/webapk/webapk_install_service.h",
     "//chrome/browser/android/webapk/webapk_installer.h",
     "//chrome/browser/android/webapk/webapk_types.h",
-    "//chrome/browser/banners/app_banner_settings_helper.h",
     "//chrome/browser/download/android/download_open_source.h",
     "//chrome/browser/installable/installed_webapp_geolocation_bridge.cc",
     "//chrome/browser/installable/quality_enforcer.cc",

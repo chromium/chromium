@@ -12,9 +12,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_installer.h"
-#include "chrome/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/android/add_to_homescreen_data_fetcher.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 

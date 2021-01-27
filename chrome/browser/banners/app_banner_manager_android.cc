@@ -18,8 +18,6 @@
 #include "chrome/browser/android/webapps/add_to_homescreen_coordinator.h"
 #include "chrome/browser/banners/android/jni_headers/AppBannerInProductHelpControllerProvider_jni.h"
 #include "chrome/browser/banners/android/jni_headers/AppBannerManager_jni.h"
-#include "chrome/browser/banners/app_banner_metrics.h"
-#include "chrome/browser/banners/app_banner_settings_helper.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/infobars/infobar_service.h"
 #include "chrome/browser/webapps/android/features.h"
@@ -36,6 +34,8 @@
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
 #include "components/webapps/browser/android/webapps_utils.h"
+#include "components/webapps/browser/banners/app_banner_metrics.h"
+#include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/installable/installable_data.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/webapps_client.h"
@@ -574,12 +574,6 @@ base::WeakPtr<AppBannerManager> AppBannerManagerAndroid::GetWeakPtr() {
 
 void AppBannerManagerAndroid::InvalidateWeakPtrs() {
   weak_factory_.InvalidateWeakPtrs();
-}
-
-// static
-AppBannerManager* AppBannerManager::FromWebContents(
-    content::WebContents* web_contents) {
-  return AppBannerManagerAndroid::FromWebContents(web_contents);
 }
 
 // static

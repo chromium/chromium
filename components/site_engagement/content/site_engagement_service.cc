@@ -23,6 +23,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/permissions/permissions_client.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_metrics.h"
@@ -161,6 +162,12 @@ bool IsEngagementNavigation(ui::PageTransition transition) {
 }  // namespace
 
 const char SiteEngagementService::kEngagementParams[] = "SiteEngagement";
+
+// static
+void SiteEngagementService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterInt64Pref(prefs::kSiteEngagementLastUpdateTime, 0,
+                              PrefRegistry::LOSSY_PREF);
+}
 
 // static
 SiteEngagementService* SiteEngagementService::Get(

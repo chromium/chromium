@@ -33,7 +33,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
-#include "chrome/browser/banners/app_banner_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
@@ -162,6 +161,7 @@
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/version_info/channel.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
+#include "components/webapps/browser/banners/app_banner_manager.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "content/public/browser/notification_service.h"
@@ -1147,8 +1147,11 @@ void BrowserView::OnActiveTabChanged(content::WebContents* old_contents,
   infobar_container_->ChangeInfoBarManager(
       InfoBarService::FromWebContents(new_contents));
 
-  ObserveAppBannerManager(
-      webapps::AppBannerManager::FromWebContents(new_contents));
+  auto* app_banner_manager =
+      webapps::AppBannerManager::FromWebContents(new_contents);
+  // May be null in unit tests.
+  if (app_banner_manager)
+    ObserveAppBannerManager(app_banner_manager);
 
   UpdateUIForContents(new_contents);
   RevealTabStripIfNeeded();

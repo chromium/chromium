@@ -6,6 +6,12 @@ assert(!is_ios)
 
 source_set("browser") {
   sources = [
+    "banners/app_banner_manager.cc",
+    "banners/app_banner_manager.h",
+    "banners/app_banner_metrics.cc",
+    "banners/app_banner_metrics.h",
+    "banners/app_banner_settings_helper.cc",
+    "banners/app_banner_settings_helper.h",
     "installable/installable_data.cc",
     "installable/installable_data.h",
     "installable/installable_logging.cc",
@@ -23,7 +29,12 @@ source_set("browser") {
   ]
   deps = [
     "//base",
+    "//components/content_settings/core/browser",
+    "//components/permissions",
     "//components/security_state/core",
+    "//components/site_engagement/content",
+    "//components/variations",
+    "//components/webapps/common",
     "//content/public/browser",
     "//content/public/common",
     "//net",
@@ -65,14 +76,10 @@ source_set("browser") {
       "//components/infobars/android",
       "//components/infobars/content",
       "//components/strings",
-      "//components/webapps/common",
       "//components/webapps/common:mojo_bindings",
       "//services/device/public/mojom",
-      "//skia",
-      "//third_party/blink/public/common:common",
       "//ui/base",
       "//ui/gfx",
-      "//url",
     ]
   }
 }
@@ -94,6 +101,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "banners/app_banner_settings_helper_unittest.cc",
     "installable/installable_manager_unittest.cc",
     "installable/installable_task_queue_unittest.cc",
   ]
@@ -101,7 +109,14 @@ source_set("unit_tests") {
     ":browser",
     "//base",
     "//base/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/permissions:test_support",
+    "//components/prefs:test_support",
+    "//components/site_engagement/content",
+    "//components/user_prefs",
+    "//content/public/browser",
     "//content/public/common",
+    "//content/test:test_support",
     "//testing/gtest",
     "//third_party/blink/public/mojom:mojom_platform_headers",
   ]
