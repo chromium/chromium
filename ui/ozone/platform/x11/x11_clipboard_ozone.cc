@@ -354,6 +354,14 @@ void X11ClipboardOzone::RequestClipboardData(
     std::move(callback).Run(selection_state.data);
     return;
   }
+
+  // If we know the available mime types, and it is not this, send empty now.
+  if (!selection_state.mime_types.empty() &&
+      !Contains(selection_state.mime_types, mime_type)) {
+    std::move(callback).Run(PlatformClipboard::Data());
+    return;
+  }
+
   selection_state.data_mime_type = mime_type;
   selection_state.request_data_map = data_map;
   DCHECK(selection_state.request_clipboard_data_callback.is_null());
