@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
+#include "ash/wm/window_cycle/window_cycle_tab_slider.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "ui/aura/window_observer.h"
@@ -49,14 +50,19 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
 
   // Cycles to the next or previous window based on |direction|. This moves the
   // focus ring to the next/previous window and also scrolls the list.
-  void Step(WindowCycleController::Direction direction);
+  void Step(WindowCycleController::WindowCyclingDirection direction);
 
   // Scrolls windows in given |direction|. Does not move the focus ring.
-  void ScrollInDirection(WindowCycleController::Direction direction);
+  void ScrollInDirection(
+      WindowCycleController::WindowCyclingDirection direction);
 
   // Moves the focus ring to the respective preview for |window|. Does not
   // scroll the window cycle list.
   void SetFocusedWindow(aura::Window* window);
+
+  // Moves the focus to the tab slider or the window cycle list based on
+  // |focus| value during keyboard navigation.
+  void SetFocusTabSlider(bool focus);
 
   // Checks whether |event| occurs within the cycle view. Returns false if
   // |cycle_view_| does not exist.
@@ -65,14 +71,18 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // Returns true if the window list overlay should be shown.
   bool ShouldShowUi();
 
-  // Updates window cycle tab slider when the mode prefs is updated.
-  void OnModePrefsChanged();
+  // Updates the tab slider mode UI and saved the new |per_desk| mode in the
+  // user prefs if the |source| of mode change is not from
+  // |ModeSwitchSource::USER_PREFS|
+  void OnModeChanged(bool per_desk,
+                     WindowCycleTabSlider::ModeSwitchSource source);
 
   void set_user_did_accept(bool user_did_accept) {
     user_did_accept_ = user_did_accept;
   }
 
   bool HasWindowTargeter() { return !!window_targeter_; }
+  bool is_tab_slider_focused() { return is_tab_slider_focused_; }
 
  private:
   friend class WindowCycleControllerTest;
@@ -169,6 +179,10 @@ class ASH_EXPORT WindowCycleList : public aura::WindowObserver,
   // This is needed so that it won't leak keyboard events even if the widget is
   // not activatable.
   std::unique_ptr<aura::ScopedWindowTargeter> window_targeter_;
+
+  // True if during keyboard navigation, alt-tab focuses the tab slider instead
+  // of cycle window.
+  bool is_tab_slider_focused_ = false;
 };
 
 }  // namespace ash

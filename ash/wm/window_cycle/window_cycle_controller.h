@@ -40,7 +40,8 @@ class ASH_EXPORT WindowCycleController : public SessionObserver {
  public:
   using WindowList = std::vector<aura::Window*>;
 
-  enum Direction { FORWARD, BACKWARD };
+  enum WindowCyclingDirection { FORWARD, BACKWARD };
+  enum KeyboardNavDirection { UP, DOWN, LEFT, RIGHT, INVALID };
 
   WindowCycleController();
   ~WindowCycleController() override;
@@ -59,11 +60,15 @@ class ASH_EXPORT WindowCycleController : public SessionObserver {
 
   // Cycles between windows in the given |direction|. This moves the focus ring
   // to the window in the given |direction| and also scrolls the list.
-  void HandleCycleWindow(Direction direction);
+  void HandleCycleWindow(WindowCyclingDirection direction);
+
+  // Navigates between cycle windows and tab slider. This moves the focus ring
+  // to the active button or the last focused window.
+  void HandleKeyboardNavigation(KeyboardNavDirection direction);
 
   // Scrolls the windows in the given |direction|. This does not move the focus
   // ring.
-  void Scroll(Direction direction);
+  void Scroll(WindowCyclingDirection direction);
 
   // Returns true if we are in the middle of a window cycling gesture.
   bool IsCycling() const { return window_cycle_list_.get() != NULL; }
@@ -109,6 +114,10 @@ class ASH_EXPORT WindowCycleController : public SessionObserver {
   // window correctly.
   bool IsSwitchingMode();
 
+  // Return if the tab slider is currently focused instead of the window cycle
+  // during keyboard navigation.
+  bool IsTabSliderFocused();
+
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;
 
@@ -124,7 +133,7 @@ class ASH_EXPORT WindowCycleController : public SessionObserver {
   void SaveCurrentActiveDeskAndWindow(const WindowList& window_list);
 
   // Cycles to the next or previous window based on |direction|.
-  void Step(Direction direction);
+  void Step(WindowCyclingDirection direction);
 
   void StopCycling();
 

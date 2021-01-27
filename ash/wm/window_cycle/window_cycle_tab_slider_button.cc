@@ -42,8 +42,6 @@ WindowCycleTabSliderButton::WindowCycleTabSliderButton(
 
   SetEnabledTextColors(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorPrimary));
-
-  SetBorder(views::CreateEmptyBorder(gfx::Insets()));
 }
 
 void WindowCycleTabSliderButton::SetToggled(bool is_toggled) {

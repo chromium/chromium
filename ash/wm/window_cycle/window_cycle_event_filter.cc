@@ -12,6 +12,7 @@
 #include "ash/shell.h"
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 #include "ash/wm/window_cycle/window_cycle_list.h"
+#include "ash/wm/window_state.h"
 #include "base/bind.h"
 #include "components/prefs/pref_service.h"
 #include "ui/events/event.h"
@@ -77,6 +78,7 @@ void WindowCycleEventFilter::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void WindowCycleEventFilter::HandleTriggerKey(ui::KeyEvent* event) {
+  const ui::KeyboardCode key_code = event->key_code();
   if (event->type() == ui::ET_KEY_RELEASED) {
     repeat_timer_.Stop();
   } else if (ShouldRepeatKey(event)) {
@@ -85,24 +87,30 @@ void WindowCycleEventFilter::HandleTriggerKey(ui::KeyEvent* event) {
         base::BindRepeating(
             &WindowCycleController::HandleCycleWindow,
             base::Unretained(Shell::Get()->window_cycle_controller()),
-            GetDirection(event)));
-  } else if (event->key_code() == ui::VKEY_LEFT ||
-             event->key_code() == ui::VKEY_RIGHT) {
-    Shell::Get()->window_cycle_controller()->HandleCycleWindow(
-        GetDirection(event));
+            GetWindowCyclingDirection(event)));
+  } else if (key_code == ui::VKEY_UP || key_code == ui::VKEY_DOWN ||
+             key_code == ui::VKEY_LEFT || key_code == ui::VKEY_RIGHT) {
+    Shell::Get()->window_cycle_controller()->HandleKeyboardNavigation(
+        GetKeyboardNavDirection(event));
   }
 }
 
 bool WindowCycleEventFilter::IsTriggerKey(ui::KeyEvent* event) const {
+  const ui::KeyboardCode key_code = event->key_code();
   const bool interactive_trigger_key =
       features::IsInteractiveWindowCycleListEnabled() &&
-      (event->key_code() == ui::VKEY_LEFT ||
-       event->key_code() == ui::VKEY_RIGHT);
+      (key_code == ui::VKEY_LEFT || key_code == ui::VKEY_RIGHT);
 
-  return event->key_code() == ui::VKEY_TAB ||
-         (debug::DeveloperAcceleratorsEnabled() &&
-          event->key_code() == ui::VKEY_W) ||
-         interactive_trigger_key;
+  const bool nav_trigger_key =
+      Shell::Get()
+          ->window_cycle_controller()
+          ->IsInteractiveAltTabModeAllowed() &&
+      (key_code == ui::VKEY_UP || key_code == ui::VKEY_DOWN ||
+       key_code == ui::VKEY_LEFT || key_code == ui::VKEY_RIGHT);
+
+  return key_code == ui::VKEY_TAB ||
+         (debug::DeveloperAcceleratorsEnabled() && key_code == ui::VKEY_W) ||
+         interactive_trigger_key || nav_trigger_key;
 }
 
 bool WindowCycleEventFilter::IsExitKey(ui::KeyEvent* event) const {
@@ -217,8 +225,8 @@ bool WindowCycleEventFilter::CycleWindowCycleList(int finger_count,
   return true;
 }
 
-WindowCycleController::Direction WindowCycleEventFilter::GetDirection(
-    ui::KeyEvent* event) const {
+WindowCycleController::WindowCyclingDirection
+WindowCycleEventFilter::GetWindowCyclingDirection(ui::KeyEvent* event) const {
   DCHECK(IsTriggerKey(event));
 
   // Move backward if left arrow, forward if right arrow, tab, or W. Shift flips
@@ -228,6 +236,24 @@ WindowCycleController::Direction WindowCycleEventFilter::GetDirection(
 
   return (left ^ shift) ? WindowCycleController::BACKWARD
                         : WindowCycleController::FORWARD;
+}
+
+WindowCycleController::KeyboardNavDirection
+WindowCycleEventFilter::GetKeyboardNavDirection(ui::KeyEvent* event) const {
+  DCHECK(IsTriggerKey(event));
+  switch (event->key_code()) {
+    case ui::VKEY_UP:
+      return WindowCycleController::UP;
+    case ui::VKEY_DOWN:
+      return WindowCycleController::DOWN;
+    case ui::VKEY_LEFT:
+      return WindowCycleController::LEFT;
+    case ui::VKEY_RIGHT:
+      return WindowCycleController::RIGHT;
+    default:
+      NOTREACHED();
+      return WindowCycleController::INVALID;
+  }
 }
 
 void WindowCycleEventFilter::OnMouseEvent(ui::MouseEvent* event) {
