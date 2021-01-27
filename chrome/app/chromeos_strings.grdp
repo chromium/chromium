@@ -2416,6 +2416,9 @@
   <message name="IDS_LOCK_SCREEN_CANCEL_BUTTON" desc="Cancel button for online account verification on the lock screen">
     Cancel
   </message>
+  <message name="IDS_LOCK_SCREEN_CLOSE_BUTTON" desc="Close button for online account verification on the lock screen">
+    Close
+  </message>
   <message name="IDS_LOCK_SCREEN_VERIFICATION_FAILED" desc="Title of incorrect user online reauthentication on the lock screen">
     Verification was not successful
   </message>

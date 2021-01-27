@@ -17,17 +17,35 @@
   <dom-module id="lock-reauth">
     <template>
       <style>
-        ::part(dialog) {
-          /* The HTML dialog should fill the entire system dialog. */
-          height: 100%;
+        :host {
+          padding: 0;
+          margin: 0;
+          top: 0;
+          left: 0;
+          position: fixed;
           width: 100%;
-          display: flex;
+          height: 100%;
         }
 
-        ::part(wrapper) {
+        .content-wrapper {
+          display: flex;
+          flex-direction: column;
           height: 100%;
           width: 100%;
+        }
+
+        #body {
           display: flex;
+          flex-direction: column;
+          flex-grow: 1;
+          align-self: stretch;
+          width: 100%;
+          height: 100%;
+        }
+
+        #saml-container {
+          display: flex;
+          justify-content: flex-end;
         }
 
         #saml-close-button {
@@ -35,20 +53,20 @@
           --cr-icon-button-margin-start: 0;
         }
 
-        [slot='body'],
         #signin-frame {
+          flex: 1;
           width: 100%;
           height: 100%;
         }
 
-        #title-icon {
+        .title-icon {
           --iron-icon-height: 32px;
           --iron-icon-width: 32px;
           /* #1a73e8 */
           --iron-icon-fill-color: rgb(26, 115, 232);
         }
 
-        [slot='header'] {
+        .header {
           background: white;
           padding-bottom: 0;
           padding-inline-end: 64px;
@@ -57,67 +75,86 @@
           flex: 1;
         }
 
-        [slot='header'],
-        #title {
-          /* #202124 */
-          color: rgb(32, 33, 36);
+        .title {
+          color: var(--cr-primary-text-color);
           font-size: 28px;
           font-weight: 400;
-          padding-top: 20px;
+          padding-top: 30px;
           margin: 0;
         }
 
-        [slot='header'],
-        #subtitle {
-          /* #5f6368 */
-          color: rgb(95, 99, 104);
+        .subtitle {
+          color: var(--cr-secondary-text-color);
           font-size: 13px;
           font-weight: 400;
           padding-top: 8px;
           margin: 0;
         }
 
-        [slot="button-container"] {
+        #button-container {
+          display: flex;
+          justify-content: flex-end;
+          flex-shrink: 0;
           padding: 40px;
         }
+
+        [hidden] {
+          display: none;
+        }
       </style>
-      <cr-dialog id="dialog" exportparts="dialog">
-        <div slot="header">
-          <iron-icon id="title-icon" icon="oobe-64:alert"></iron-icon>
-          <div id="title" hidden="[[isErrorDisplayed_]]">
+      <div class="content-wrapper" hidden="[[!isVerifyUser_]]" role="dialog"
+          aria-modal="true"
+          aria-label="$i18n{loginWelcomeMessage}">
+        <div class="header">
+          <iron-icon class="title-icon" icon="oobe-64:alert"></iron-icon>
+          <div class="title">
             $i18n{loginWelcomeMessage}
           </div>
-          <div id="title" hidden="[[!isErrorDisplayed_]]">
-            $i18n{loginWelcomeMessageWithError}
-          </div>
-          <div id="subtitle" hidden="[[isErrorDisplayed_]]">
+          <div class="subtitle">
             $i18n{lockScreenReauthSubtitile}
           </div>
-          <div id="subtitle" hidden="[[!isErrorDisplayed_]]">
+        </div>
+        <div id="button-container" class="flex layout horizontal">
+          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
+            $i18n{lockScreenCancelButton}
+          </cr-button>
+          <cr-button id="nextButton" class="action-button" on-click="onVerify_">
+            $i18n{lockScreenVerifyButton}
+          </cr-button>
+        </div>
+      </div>
+
+      <div class="content-wrapper" hidden="[[!isErrorDisplayed_]]" role="dialog"
+          aria-modal="true"
+          aria-label="$i18n{loginWelcomeMessageWithError}">
+        <div class="header">
+          <iron-icon class="title-icon" icon="oobe-64:alert"></iron-icon>
+          <div class="title">
+            $i18n{loginWelcomeMessageWithError}
+          </div>
+          <div class="subtitle">
             $i18n{lockScreenReauthSubtitileWithError}
           </div>
         </div>
-        <div slot="body" hidden="[[isButtonsEnabled_]]">
-          <cr-icon-button id="saml-close-button" iron-icon="cr:close" on-click="onCloseTap_">
-          </cr-icon-button>
-          <webview id="signin-frame" name="signin-frame" class="flex">
-          </webview>
-        </div>
-        <div slot="button-container" class="flex layout horizontal">
-          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_"
-              hidden="[[!isButtonsEnabled_]]">
+        <div id="button-container" class="flex layout horizontal">
+          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
             $i18n{lockScreenCancelButton}
           </cr-button>
-          <cr-button id="nextButton" class="action-button" on-click="onNext_"
-              hidden="[[!isVerifyButtonEnabled_]]">
-            $i18n{lockScreenVerifyButton}
-          </cr-button>
-          <cr-button id="nextButton" class="action-button" on-click="onNext_"
-              hidden="[[!isVerifyAgainButtonEnabled_]]">
+          <cr-button id="nextButton" class="action-button" on-click="onVerify_">
             $i18n{lockScreenVerifyAgainButton}
           </cr-button>
         </div>
-      </cr-dialog>
+      </div>
+
+      <div id="body" hidden="[[isButtonsEnabled_]]">
+        <div id="saml-container">
+          <cr-icon-button id="saml-close-button" iron-icon="cr:close" on-click="onCloseTap_"
+              aria-label="$i18n{lockScreenCloseButton}">
+          </cr-icon-button>
+        </div>
+        <webview id="signin-frame" name="signin-frame" class="flex">
+        </webview>
+      </div>
     </template>
   </dom-module>
 </head>

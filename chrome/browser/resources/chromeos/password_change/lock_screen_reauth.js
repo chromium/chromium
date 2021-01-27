@@ -15,6 +15,7 @@ import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.m
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
+import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 
 Polymer({
@@ -22,6 +23,17 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
+    // User non-canonicalized email for display
+    email_: String,
+
+    /**
+     * Whether the ‘verify user’ screen is shown.
+     */
+    isVerifyUser_: {
+      type: Boolean,
+      value: true,
+    },
+
     isErrorDisplayed_: {
       type: Boolean,
       value: false,
@@ -30,18 +42,6 @@ Polymer({
     isButtonsEnabled_: {
       type: Boolean,
       value: true,
-    },
-
-    isVerifyButtonEnabled_: {
-      type: Boolean,
-      computed:
-          'computeVerifyButtonEnabled_(isErrorDisplayed_,isButtonsEnabled_)',
-    },
-
-    isVerifyAgainButtonEnabled_: {
-      type: Boolean,
-      computed:
-          'computeVerifyAgainButtonEnabled_(isErrorDisplayed_,isButtonsEnabled_)',
     },
   },
 
@@ -59,15 +59,29 @@ Polymer({
   signinFrame_: undefined,
 
   /** @override */
-  attached() {
-    this.$.dialog.showModal();
-  },
-
-  /** @override */
   ready() {
     this.signinFrame_ = this.getSigninFrame_();
     this.authenticator_ = new cr.login.Authenticator(this.signinFrame_);
     chrome.send('initialize');
+  },
+
+  /**
+   * Loads the authentication parameter into the iframe.
+   * @param {!Object} data authenticator parameters bag.
+   */
+  LoadAuthenticatorParam(data) {
+    this.authenticator_.setWebviewPartition(data.webviewPartitionName);
+    let params = {};
+    for (let i in cr.login.Authenticator.SUPPORTED_PARAMS) {
+      const name = cr.login.Authenticator.SUPPORTED_PARAMS[i];
+      if (data[name]) {
+        params[name] = data[name];
+      }
+    }
+    params.doSamlRedirect = true;
+    this.authenticatorParams_ = params;
+    this.email_ = data.email;
+    chrome.send('authenticatorLoaded');
   },
 
   /**
@@ -84,18 +98,12 @@ Polymer({
   },
 
   /** @private */
-  computeVerifyButtonEnabled_(isErrorDisplayed, isButtonsEnabled) {
-    return !isErrorDisplayed && isButtonsEnabled;
-  },
-
-  /** @private */
-  computeVerifyAgainButtonEnabled_(isErrorDisplayed, isButtonsEnabled) {
-    return isErrorDisplayed && isButtonsEnabled;
-  },
-
-  /** @private */
-  onNext_() {
+  onVerify_() {
+    this.authenticator_.load(
+      cr.login.Authenticator.AuthMode.DEFAULT, this.authenticatorParams_);
     this.isButtonsEnabled_ = false;
+    this.isVerifyUser_ = false;
+    this.isErrorDisplayed_ = false;
   },
 
   /** @private */

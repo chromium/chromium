@@ -30,7 +30,7 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
   content::WebUIDataSource* source = content::WebUIDataSource::Create(
       chrome::kChromeUILockScreenStartReauthHost);
 
-  web_ui->AddMessageHandler(std::make_unique<LockScreenReauthHandler>());
+  web_ui->AddMessageHandler(std::make_unique<LockScreenReauthHandler>(email));
 
   // TODO(crbug.com/1098690): Trusted Type Polymer
   source->DisableTrustedTypesCSP();
@@ -49,6 +49,8 @@ LockScreenStartReauthUI::LockScreenStartReauthUI(content::WebUI* web_ui)
       l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_VERIFY_AGAIN_BUTTON));
   source->AddString("lockScreenCancelButton",
                     l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_CANCEL_BUTTON));
+  source->AddString("lockScreenCloseButton",
+                    l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_CLOSE_BUTTON));
   source->AddString("loginWelcomeMessage",
                     l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_VERIFY_ACCOUNT));
   source->AddString(
