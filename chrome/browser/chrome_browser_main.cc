@@ -1604,8 +1604,8 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   PreBrowserStart();
 
   if (!parsed_command_line().HasSwitch(switches::kDisableComponentUpdate)) {
-    component_updater::RegisterComponentsForUpdate(profile_->IsOffTheRecord(),
-                                                   profile_->GetPrefs());
+    component_updater::RegisterComponentsForUpdate(
+        profile_->IsOffTheRecord(), profile_->GetPrefs(), profile_->GetPath());
   }
 
   variations::VariationsService* variations_service =

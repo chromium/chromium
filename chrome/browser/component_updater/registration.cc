@@ -4,6 +4,7 @@
 
 #include "chrome/browser/component_updater/registration.h"
 
+#include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "build/branding_buildflags.h"
@@ -83,7 +84,8 @@
 namespace component_updater {
 
 void RegisterComponentsForUpdate(bool is_off_the_record_profile,
-                                 PrefService* profile_prefs) {
+                                 PrefService* profile_prefs,
+                                 const base::FilePath& profile_path) {
   auto* const cus = g_browser_process->component_updater();
 
 #if defined(OS_WIN)
@@ -94,7 +96,7 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
 #endif  // defined(OS_WIN)
 
   // TODO(crbug.com/1069814): Remove after 2021-10-01.
-  CleanUpPepperFlashComponent();
+  CleanUpPepperFlashComponent(profile_path);
 
 #if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
   RegisterWidevineCdmComponent(cus);

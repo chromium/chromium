@@ -7,10 +7,15 @@
 
 class PrefService;
 
+namespace base {
+class FilePath;
+}
+
 namespace component_updater {
 
 void RegisterComponentsForUpdate(bool is_off_the_record_profile,
-                                 PrefService* profile_prefs);
+                                 PrefService* profile_prefs,
+                                 const base::FilePath& profile_path);
 
 }  // namespace component_updater
 
