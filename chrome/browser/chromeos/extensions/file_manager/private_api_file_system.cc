@@ -409,7 +409,7 @@ ExtensionFunction::ResponseAction FileManagerPrivateGrantAccessFunction::Run() {
           file_system_url.mount_type() != storage::kFileSystemTypeExternal) {
         continue;
       }
-      backend->GrantFileAccessToExtension(extension_->id(),
+      backend->GrantFileAccessToExtension(extension_id(),
                                           file_system_url.virtual_path());
       content::ChildProcessSecurityPolicy::GetInstance()
           ->GrantCreateReadWriteFile(render_frame_host()->GetProcess()->GetID(),
@@ -1063,8 +1063,8 @@ FileManagerPrivateInternalResolveIsolatedEntriesFunction::Run() {
     FileDefinition file_definition;
     const bool result =
         file_manager::util::ConvertAbsoluteFilePathToRelativeFileSystemPath(
-            chrome_details.GetProfile(), extension_->id(),
-            file_system_url.path(), &file_definition.virtual_path);
+            chrome_details.GetProfile(), extension_id(), file_system_url.path(),
+            &file_definition.virtual_path);
     if (!result)
       continue;
     // The API only supports isolated files. It still works for directories,
@@ -1074,7 +1074,7 @@ FileManagerPrivateInternalResolveIsolatedEntriesFunction::Run() {
   }
 
   file_manager::util::ConvertFileDefinitionListToEntryDefinitionList(
-      chrome_details.GetProfile(), extension_->id(),
+      chrome_details.GetProfile(), extension_id(),
       file_definition_list,  // Safe, since copied internally.
       base::BindOnce(
           &FileManagerPrivateInternalResolveIsolatedEntriesFunction::
