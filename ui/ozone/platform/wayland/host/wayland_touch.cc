@@ -22,14 +22,11 @@ WaylandTouch::WaylandTouch(wl_touch* touch,
       &WaylandTouch::Frame, &WaylandTouch::Cancel,
   };
 
-  DCHECK(delegate_);
-  delegate_->OnTouchCreated(this);
-
   wl_touch_add_listener(obj_.get(), &listener, this);
 }
 
 WaylandTouch::~WaylandTouch() {
-  delegate_->OnTouchDestroyed(this);
+  delegate_->OnTouchCancelEvent();
 }
 
 void WaylandTouch::Down(void* data,

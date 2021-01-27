@@ -103,8 +103,6 @@ class WaylandEventSource : public PlatformEventSource,
   void OnResetPointerFlags() override;
 
   // WaylandTouch::Delegate
-  void OnTouchCreated(WaylandTouch* touch) override;
-  void OnTouchDestroyed(WaylandTouch* touch) override;
   void OnTouchPressEvent(WaylandWindow* window,
                          const gfx::PointF& location,
                          base::TimeTicks timestamp,
@@ -143,9 +141,6 @@ class WaylandEventSource : public PlatformEventSource,
   gfx::Vector2dF ComputeFlingVelocity();
 
   WaylandWindowManager* const window_manager_;
-
-  // Input device objects. Owned by WaylandConnection.
-  WaylandTouch* touch_ = nullptr;
 
   // Bitmask of EventFlags used to keep track of the the pointer state.
   int pointer_flags_ = 0;

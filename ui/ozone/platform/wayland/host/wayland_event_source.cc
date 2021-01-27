@@ -230,17 +230,6 @@ void WaylandEventSource::OnPointerAxisStopEvent(uint32_t axis) {
   current_pointer_frame_.is_axis_stop = true;
 }
 
-void WaylandEventSource::OnTouchCreated(WaylandTouch* touch) {
-  DCHECK(touch);
-  touch_ = touch;
-}
-
-void WaylandEventSource::OnTouchDestroyed(WaylandTouch* touch) {
-  DCHECK_EQ(touch_, touch);
-  touch_points_.clear();
-  touch_ = nullptr;
-}
-
 void WaylandEventSource::OnTouchPressEvent(WaylandWindow* window,
                                            const gfx::PointF& location,
                                            base::TimeTicks timestamp,
