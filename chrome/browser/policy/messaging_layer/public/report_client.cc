@@ -17,87 +17,26 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/task/post_task.h"
-#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/messaging_layer/encryption/verification.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_configuration.h"
 #include "chrome/browser/policy/messaging_layer/storage/storage_module.h"
+#include "chrome/browser/policy/messaging_layer/util/get_cloud_policy_client.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 #include "chrome/browser/policy/messaging_layer/util/status_macros.h"
 #include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "chrome/browser/policy/messaging_layer/util/task_runner_context.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_paths.h"
-#include "components/enterprise/browser/controller/browser_dm_token_storage.h"
-#include "components/policy/core/common/cloud/cloud_policy_client_registration_helper.h"
-#include "components/policy/core/common/cloud/cloud_policy_manager.h"
-#include "components/policy/core/common/cloud/device_management_service.h"
-#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
-#include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/proto/record.pb.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/login/users/chrome_user_manager.h"
-#include "chrome/browser/chromeos/policy/browser_policy_connector_chromeos.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/settings/device_settings_service.h"
-#include "components/policy/proto/chrome_device_policy.pb.h"
-#else
-#include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#endif
 
 namespace reporting {
 
 namespace {
-
-// policy::CloudPolicyClient is needed by the UploadClient, but is retrieved in
-// two different ways for ChromeOS and non-ChromeOS browsers.
-// NOT THREAD SAFE - these functions must be called on the main thread.
-// TODO(chromium:1078512) Wrap CloudPolicyClient in a new object so that its
-// methods and retrieval are accessed on the correct thread.
-void GetCloudPolicyClient(
-    base::OnceCallback<void(StatusOr<policy::CloudPolicyClient*>)>
-        get_client_cb) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  policy::CloudPolicyManager* cloud_policy_manager =
-      g_browser_process->platform_part()
-          ->browser_policy_connector_chromeos()
-          ->GetDeviceCloudPolicyManager();
-#elif defined(OS_ANDROID)
-  // Android doesn't have access to a device level CloudPolicyClient, so get the
-  // PrimaryUserProfile CloudPolicyClient.
-  policy::CloudPolicyManager* cloud_policy_manager =
-      ProfileManager::GetPrimaryUserProfile()->GetUserCloudPolicyManager();
-#else
-  policy::CloudPolicyManager* cloud_policy_manager =
-      g_browser_process->browser_policy_connector()
-          ->machine_level_user_cloud_policy_manager();
-#endif
-  if (cloud_policy_manager == nullptr) {
-    std::move(get_client_cb)
-        .Run(
-            Status(error::FAILED_PRECONDITION, "This is not a managed device"));
-    return;
-  }
-  auto* cloud_policy_client = cloud_policy_manager->core()->client();
-  if (cloud_policy_client == nullptr) {
-    std::move(get_client_cb)
-        .Run(Status(error::FAILED_PRECONDITION,
-                    "Cloud Policy Client is not available"));
-    return;
-  }
-  std::move(get_client_cb).Run(cloud_policy_client);
-}
 
 const base::FilePath::CharType kReportingDirectory[] =
     FILE_PATH_LITERAL("reporting");
@@ -502,7 +441,7 @@ ReportingClient::ReportingClient()
     : create_request_queue_(SharedQueue<CreateReportQueueRequest>::Create()),
       init_state_tracker_(
           ReportingClient::InitializationStateTracker::Create()),
-      build_cloud_policy_client_cb_(base::BindOnce(&GetCloudPolicyClient)) {}
+      build_cloud_policy_client_cb_(GetCloudPolicyClientCb()) {}
 
 ReportingClient::~ReportingClient() = default;
 
