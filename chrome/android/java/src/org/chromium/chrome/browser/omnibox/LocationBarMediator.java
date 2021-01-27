@@ -71,6 +71,7 @@ import java.util.List;
  */
 class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDelegate,
                                      VoiceRecognitionHandler.Delegate,
+                                     VoiceRecognitionHandler.Observer,
                                      AssistantVoiceSearchService.Observer, UrlBarDelegate,
                                      OnKeyListener, ComponentCallbacks, TemplateUrlServiceObserver {
     private static final long MAX_NTP_KEYBOARD_FOCUS_DURATION_MS = 200;
@@ -139,6 +140,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mLocaleManager = localeManager;
         mVoiceRecognitionHandler =
                 new VoiceRecognitionHandler(this, mAssistantVoiceSearchServiceSupplier);
+        mVoiceRecognitionHandler.addObserver(this);
         mProfileSupplier = profileSupplier;
         mProfileSupplier.addObserver(mCallbackController.makeCancelable(this::setProfile));
         mPrivacyPreferencesManager = privacyPreferencesManager;
@@ -173,6 +175,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mAutocompleteCoordinator = null;
         mUrlCoordinator = null;
         mPrivacyPreferencesManager = null;
+        mVoiceRecognitionHandler.removeObserver(this);
         mVoiceRecognitionHandler.destroy();
         mVoiceRecognitionHandler = null;
         mLocationBarDataProvider.removeObserver(this);
@@ -812,7 +815,11 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     }
 
     @Override
-    public void updateMicButtonState() {
+    public void onVoiceAvailabilityImpacted() {
+        updateMicButtonState();
+    }
+
+    private void updateMicButtonState() {
         mLocationBarLayout.setVoiceSearchEnabled(mVoiceRecognitionHandler != null
                 && mVoiceRecognitionHandler.isVoiceSearchEnabled());
         updateButtonVisibility();

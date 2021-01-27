@@ -19,6 +19,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
+import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.Supplier;
@@ -101,6 +102,7 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
     private WebContentsObserver mVoiceSearchWebContentsObserver;
     private Supplier<AssistantVoiceSearchService> mAssistantVoiceSearchServiceSupplier;
     private TranslateBridgeWrapper mTranslateBridgeWrapper;
+    private final ObserverList<Observer> mObservers = new ObserverList<>();
 
     // VoiceInteractionEventSource defined in tools/metrics/histograms/enums.xml.
     // Do not reorder or remove items, only add new items before HISTOGRAM_BOUNDARY.
@@ -142,11 +144,6 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
          */
         void loadUrlFromVoice(String url);
 
-        /**
-         * Notifies the location bar that the state of the voice search microphone button may need
-         * to be updated.
-         */
-        void updateMicButtonState();
 
         /**
          * Sets the query string in the omnibox (ensuring the URL bar has focus and triggering
@@ -179,6 +176,15 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
 
         /** Clears omnibox focus, used to display the dialog when the keyboard is shown. */
         void clearOmniboxFocus();
+    }
+
+    /** Interface for observers interested in updates to the voice state. */
+    public interface Observer {
+        /**
+         * Triggers when an event occurs that impacts availability of the voice
+         * recognition, for example audio permissions or policy values change.
+         */
+        void onVoiceAvailabilityImpacted();
     }
 
     /**
@@ -275,13 +281,27 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
         ProfileManager.addObserver(this);
     }
 
+    public void addObserver(Observer observer) {
+        mObservers.addObserver(observer);
+    }
+
+    public void removeObserver(Observer observer) {
+        mObservers.removeObserver(observer);
+    }
+
+    private void notifyVoiceAvailabilityImpacted() {
+        for (Observer o : mObservers) {
+            o.onVoiceAvailabilityImpacted();
+        }
+    }
+
     /**
      * After profile is created and prefs loaded ensure that UI is updated and the mic shown/hidden
      * as needed.
      */
     @Override
     public void onProfileAdded(Profile profile) {
-        mDelegate.updateMicButtonState();
+        notifyVoiceAvailabilityImpacted();
     }
 
     @Override
@@ -606,7 +626,7 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
         // If we don't have permission and also can't ask, then there's no more work left other
         // than telling the delegate to update the mic state.
         if (!windowAndroid.canRequestPermission(Manifest.permission.RECORD_AUDIO)) {
-            mDelegate.updateMicButtonState();
+            notifyVoiceAvailabilityImpacted();
             return false;
         }
 
@@ -618,7 +638,7 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startVoiceRecognition(source);
             } else {
-                mDelegate.updateMicButtonState();
+                notifyVoiceAvailabilityImpacted();
             }
         };
         windowAndroid.requestPermissions(new String[] {Manifest.permission.RECORD_AUDIO}, callback);
@@ -643,7 +663,7 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
         if (!showSpeechRecognitionIntent(windowAndroid, intent, source)) {
             // Requery whether or not the recognition intent can be handled.
             isRecognitionIntentPresent(false);
-            mDelegate.updateMicButtonState();
+            notifyVoiceAvailabilityImpacted();
             recordVoiceSearchFailureEventSource(source);
 
             return false;
@@ -710,7 +730,7 @@ public class VoiceRecognitionHandler implements ProfileManager.Observer {
         }
 
         if (!showSpeechRecognitionIntent(windowAndroid, intent, source)) {
-            mDelegate.updateMicButtonState();
+            notifyVoiceAvailabilityImpacted();
             recordVoiceSearchFailureEventSource(source);
 
             return false;

@@ -12,6 +12,10 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.test.util.ViewUtils.waitForView;
 
@@ -34,6 +38,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.GarbageCollectionTestUtils;
 import org.chromium.base.MemoryPressureListener;
@@ -52,6 +58,7 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.UrlBar;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -115,6 +122,10 @@ public class NewTabPageTest {
     public ChromeRenderTestRule mRenderTestRule = ChromeRenderTestRule.Builder.withPublicCorpus()
                                                           .setRevision(RENDER_TEST_REVISION)
                                                           .build();
+    @Mock
+    FakeboxDelegate mFakeboxDelegate;
+    @Mock
+    VoiceRecognitionHandler mVoiceRecognitionHandler;
 
     private static final String TEST_PAGE = "/chrome/test/data/android/navigate/simple.html";
     private static final String TEST_FEED =
@@ -130,6 +141,7 @@ public class NewTabPageTest {
 
     @Before
     public void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
         mActivityTestRule.startMainActivityWithURL("about:blank");
 
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
@@ -548,6 +560,25 @@ public class NewTabPageTest {
         mTab = null;
 
         Assert.assertTrue(GarbageCollectionTestUtils.canBeGarbageCollected(ntpRef));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"NewTabPage", "FeedNewTabPage"})
+    public void testSettingFakeboxDelegateAddsVoiceObserver() throws IOException {
+        when(mFakeboxDelegate.getVoiceRecognitionHandler()).thenReturn(mVoiceRecognitionHandler);
+        when(mVoiceRecognitionHandler.isVoiceSearchEnabled()).thenReturn(true);
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mNtp.setFakeboxDelegate(mFakeboxDelegate);
+            verify(mVoiceRecognitionHandler).addObserver(eq(mNtp));
+            View micButton = mNtp.getView().findViewById(R.id.voice_search_button);
+            assertEquals(View.VISIBLE, micButton.getVisibility());
+
+            when(mVoiceRecognitionHandler.isVoiceSearchEnabled()).thenReturn(false);
+            mNtp.onVoiceAvailabilityImpacted();
+            assertEquals(View.GONE, micButton.getVisibility());
+        });
     }
 
     private void assertThumbnailInvalidAndRecapture() {

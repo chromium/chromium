@@ -186,6 +186,8 @@ public class RootUiCoordinator
     protected Supplier<Tab> mStartSurfaceParentTabSupplier;
     private final ObservableSupplierImpl<Tab> mActivityTabSupplier = new ObservableSupplierImpl<>();
     private final ActivityTabProvider.ActivityTabTabObserver mTabObserver;
+    @Nullable
+    private VoiceRecognitionHandler.Observer mMicStateObserver;
 
     /**
      * Create a new {@link RootUiCoordinator} for the given activity.
@@ -314,6 +316,9 @@ public class RootUiCoordinator
         }
 
         if (mToolbarManager != null) {
+            if (mMicStateObserver != null && mToolbarManager.getVoiceRecognitionHandler() != null) {
+                mToolbarManager.getVoiceRecognitionHandler().removeObserver(mMicStateObserver);
+            }
             mToolbarManager.destroy();
             mToolbarManager = null;
         }
@@ -661,6 +666,13 @@ public class RootUiCoordinator
                     mStartSurfaceParentTabSupplier);
             if (!mActivity.supportsAppMenu()) {
                 mToolbarManager.getToolbar().disableMenuButton();
+            }
+
+            VoiceRecognitionHandler voiceRecognitionHandler =
+                    mToolbarManager.getVoiceRecognitionHandler();
+            if (voiceRecognitionHandler != null) {
+                mMicStateObserver = voiceToolbarButtonController::updateMicButtonState;
+                voiceRecognitionHandler.addObserver(mMicStateObserver);
             }
         }
     }

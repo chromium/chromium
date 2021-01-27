@@ -6,10 +6,7 @@ package org.chromium.chrome.browser.toolbar;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.res.Configuration;
@@ -104,26 +101,5 @@ public final class VoiceToolbarButtonControllerUnitTest {
         mVoiceToolbarButtonController.onConfigurationChanged(mConfiguration);
 
         assertTrue(mVoiceToolbarButtonController.get(mTab).canShow);
-    }
-
-    @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
-    @Test
-    public void onProfileLoaded_isVoiceSearchEnabledChecked() {
-        verify(mVoiceSearchDelegate, never()).isVoiceSearchEnabled();
-        mVoiceToolbarButtonController.onProfileAdded(null /* ignored */);
-
-        verify(mVoiceSearchDelegate, atLeastOnce()).isVoiceSearchEnabled();
-    }
-
-    @EnableFeatures({ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
-    @Test
-    public void onProfileLoaded_canShowChanges() {
-        assertTrue(mVoiceToolbarButtonController.get(mTab).canShow);
-
-        // Simulate loading a profile with policy disabling mic in the UI.
-        doReturn(false).when(mVoiceSearchDelegate).isVoiceSearchEnabled();
-        mVoiceToolbarButtonController.onProfileAdded(null /* ignored */);
-
-        assertFalse(mVoiceToolbarButtonController.get(mTab).canShow);
     }
 }

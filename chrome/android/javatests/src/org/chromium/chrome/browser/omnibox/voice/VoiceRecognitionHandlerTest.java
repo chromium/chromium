@@ -96,6 +96,8 @@ public class VoiceRecognitionHandlerTest {
     TranslateBridgeWrapper mTranslateBridgeWrapper;
     @Mock
     Tab mTab;
+    @Mock
+    VoiceRecognitionHandler.Observer mObserver;
 
     private TestDataProvider mDataProvider;
     private TestDelegate mDelegate;
@@ -361,7 +363,6 @@ public class VoiceRecognitionHandlerTest {
      */
     private class TestDelegate implements VoiceRecognitionHandler.Delegate {
         private String mUrl;
-        private boolean mUpdatedMicButtonState;
         private AutocompleteCoordinator mAutocompleteCoordinator;
 
         TestDelegate() {
@@ -374,11 +375,6 @@ public class VoiceRecognitionHandlerTest {
         @Override
         public void loadUrlFromVoice(String url) {
             mUrl = url;
-        }
-
-        @Override
-        public void updateMicButtonState() {
-            mUpdatedMicButtonState = true;
         }
 
         @Override
@@ -401,10 +397,6 @@ public class VoiceRecognitionHandlerTest {
 
         @Override
         public void clearOmniboxFocus() {}
-
-        public boolean updatedMicButtonState() {
-            return mUpdatedMicButtonState;
-        }
 
         public String getUrl() {
             return mUrl;
@@ -550,6 +542,7 @@ public class VoiceRecognitionHandlerTest {
         mDataProvider = new TestDataProvider();
         mDelegate = TestThreadUtils.runOnUiThreadBlocking(() -> new TestDelegate());
         mHandler = new TestVoiceRecognitionHandler(mDelegate);
+        mHandler.addObserver(mObserver);
         mPermissionDelegate = new TestAndroidPermissionDelegate();
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -571,6 +564,7 @@ public class VoiceRecognitionHandlerTest {
 
     @After
     public void tearDown() {
+        mHandler.removeObserver(mObserver);
         SysUtils.resetForTesting();
         TestThreadUtils.runOnUiThreadBlocking(() -> { mWindowAndroid.destroy(); });
     }
@@ -665,14 +659,14 @@ public class VoiceRecognitionHandlerTest {
         setAudioCapturePref(true);
         mPermissionDelegate.setCanRequestPermission(true);
         mPermissionDelegate.setHasPermission(true);
-        Assert.assertFalse(mDelegate.updatedMicButtonState());
+        verify(mObserver, never()).onVoiceAvailabilityImpacted();
         Assert.assertTrue(isVoiceSearchEnabled());
 
         setAudioCapturePref(false);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mHandler.onProfileAdded(Profile.getLastUsedRegularProfile()); });
         Assert.assertFalse(isVoiceSearchEnabled());
-        Assert.assertTrue(mDelegate.updatedMicButtonState());
+        verify(mObserver).onVoiceAvailabilityImpacted();
     }
 
     /** Calls isVoiceSearchEnabled(), ensuring it is run on the UI thread. */
@@ -687,22 +681,24 @@ public class VoiceRecognitionHandlerTest {
     @Test
     @SmallTest
     public void testStartVoiceRecognition_OnlyUpdateMicButtonStateIfCantRequestPermission() {
+        verify(mObserver, never()).onVoiceAvailabilityImpacted();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX); });
         Assert.assertEquals(-1, mHandler.getVoiceSearchStartEventSource());
-        Assert.assertTrue(mDelegate.updatedMicButtonState());
+        verify(mObserver).onVoiceAvailabilityImpacted();
         verify(mAssistantVoiceSearchService).reportUserEligibility();
     }
 
     @Test
     @SmallTest
     public void testStartVoiceRecognition_OnlyUpdateMicButtonStateIfPermissionsNotGranted() {
+        verify(mObserver, never()).onVoiceAvailabilityImpacted();
         mPermissionDelegate.setCanRequestPermission(true);
         mPermissionDelegate.setPermissionResults(PackageManager.PERMISSION_DENIED);
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mHandler.startVoiceRecognition(VoiceInteractionSource.OMNIBOX); });
         Assert.assertEquals(-1, mHandler.getVoiceSearchStartEventSource());
-        Assert.assertTrue(mDelegate.updatedMicButtonState());
+        verify(mObserver).onVoiceAvailabilityImpacted();
         verify(mAssistantVoiceSearchService).reportUserEligibility();
     }
 
@@ -961,11 +957,13 @@ public class VoiceRecognitionHandlerTest {
     @Test
     @SmallTest
     public void testStartVoiceRecognition_StartsVoiceSearchWithFailedIntent() {
+        verify(mObserver, never()).onVoiceAvailabilityImpacted();
         mWindowAndroid.setCancelableIntentSuccess(false);
         startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
         Assert.assertEquals(
                 VoiceInteractionSource.OMNIBOX, mHandler.getVoiceSearchStartEventSource());
-        Assert.assertTrue(mDelegate.updatedMicButtonState());
+        verify(mObserver).onVoiceAvailabilityImpacted();
+
         Assert.assertEquals(
                 VoiceInteractionSource.OMNIBOX, mHandler.getVoiceSearchFailureEventSource());
     }
@@ -976,7 +974,7 @@ public class VoiceRecognitionHandlerTest {
         startVoiceRecognition(VoiceInteractionSource.OMNIBOX);
         Assert.assertEquals(
                 VoiceInteractionSource.OMNIBOX, mHandler.getVoiceSearchStartEventSource());
-        Assert.assertFalse(mDelegate.updatedMicButtonState());
+        verify(mObserver, never()).onVoiceAvailabilityImpacted();
     }
 
     @Test

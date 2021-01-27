@@ -90,7 +90,8 @@ import java.util.List;
  */
 public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvider,
                                    TemplateUrlServiceObserver,
-                                   BrowserControlsStateProvider.Observer, FeedSurfaceDelegate {
+                                   BrowserControlsStateProvider.Observer, FeedSurfaceDelegate,
+                                   VoiceRecognitionHandler.Observer {
     private static final String TAG = "NewTabPage";
 
     // Key for the scroll position data that may be stored in a navigation entry.
@@ -619,7 +620,7 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
     }
 
     /**
-     * Sets the FakeboxDelegate that this pages interacts with.
+     * Sets the FakeboxDelegate that this page interacts with.
      */
     public void setFakeboxDelegate(FakeboxDelegate fakeboxDelegate) {
         mFakeboxDelegate = fakeboxDelegate;
@@ -633,8 +634,14 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
 
         mVoiceRecognitionHandler = mFakeboxDelegate.getVoiceRecognitionHandler();
         if (mVoiceRecognitionHandler != null) {
+            mVoiceRecognitionHandler.addObserver(this);
             mNewTabPageLayout.updateVoiceSearchButtonVisibility();
         }
+    }
+
+    @Override
+    public void onVoiceAvailabilityImpacted() {
+        mNewTabPageLayout.updateVoiceSearchButtonVisibility();
     }
 
     /**
@@ -746,6 +753,9 @@ public class NewTabPage implements NativePage, InvalidationAwareThumbnailProvide
         mBrowserControlsStateProvider.removeObserver(this);
         mFeedSurfaceProvider.destroy();
         mTab.getWindowAndroid().removeContextMenuCloseListener(mContextMenuManager);
+        if (mVoiceRecognitionHandler != null) {
+            mVoiceRecognitionHandler.removeObserver(this);
+        }
         mIsDestroyed = true;
     }
 

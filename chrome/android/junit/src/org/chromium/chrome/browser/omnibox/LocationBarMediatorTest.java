@@ -884,6 +884,13 @@ public class LocationBarMediatorTest {
                         eq(UrlBarCoordinator.SelectionState.SELECT_END));
     }
 
+    @Test
+    public void testMicUpdatedAfterEventTriggered() {
+        mMediator.onVoiceAvailabilityImpacted();
+        verify(mLocationBarLayout).setVoiceSearchEnabled(false);
+        verify(mLocationBarLayout).updateButtonVisibility();
+    }
+
     private ArgumentMatcher<UrlBarData> matchesUrlBarDataForQuery(String query) {
         return actual -> {
             UrlBarData expected = UrlBarData.forNonUrlText(query);
