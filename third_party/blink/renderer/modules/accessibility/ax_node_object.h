@@ -75,7 +75,6 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool IsTextControl() const override;
   Element* MenuItemElementForMenu() const;
   Element* MouseButtonListener() const;
-  void SetNode(Node*);
   AXObject* CorrespondingControlAXObjectForLabelElement() const;
   AXObject* CorrespondingLabelAXObject() const;
   HTMLLabelElement* LabelElementContainer() const;

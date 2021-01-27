@@ -3648,10 +3648,6 @@ const AtomicString& AXNodeObject::GetInternalsAttribute(
   return element.EnsureElementInternals().FastGetAttribute(attribute);
 }
 
-void AXNodeObject::SetNode(Node* node) {
-  node_ = node;
-}
-
 AXObject* AXNodeObject::CorrespondingControlAXObjectForLabelElement() const {
   HTMLLabelElement* label_element = LabelElementContainer();
   if (!label_element)
