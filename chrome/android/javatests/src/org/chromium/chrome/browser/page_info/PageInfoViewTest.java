@@ -34,6 +34,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.Log;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -79,6 +80,8 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
 public class PageInfoViewTest {
+    private static final String TAG = "PageInfoViewTest";
+
     private static final String sSimpleHtml = "/chrome/test/data/android/simple.html";
     private static final String sSiteDataHtml = "/content/test/data/browsing_data/site_data.html";
 
@@ -113,7 +116,14 @@ public class PageInfoViewTest {
     }
 
     private void openPageInfo() {
-        onViewWaiting(allOf(withId(R.id.location_bar_status_icon), isDisplayed())).perform(click());
+        for (int i = 0; i < 5; i++) {
+            try {
+                onViewWaiting(allOf(withId(R.id.location_bar_status_icon), isDisplayed()));
+            } catch (AssertionError e) {
+                Log.e(TAG, "Lock icon hasn't shown up yet...");
+            }
+        }
+        onView(withId(R.id.location_bar_status_icon)).perform(click());
     }
 
     private View getPageInfoView() {
