@@ -130,24 +130,13 @@ class CORE_EXPORT PrePaintTreeWalk {
   // very big stack frames. Splitting the heavy lifting to a separate function
   // makes sure the stack frame is freed prior to making a recursive call.
   // See https://crbug.com/781301 .
-
-  // TODO(https://crbug.com/841364): Remove is_wheel_event_regions_enabled
-  // argument once kWheelEventRegions feature flag is removed.
   NOINLINE void WalkInternal(const LayoutObject&,
                              const NGFragmentChildIterator*,
-                             PrePaintTreeWalkContext&,
-                             bool is_wheel_event_regions_enabled);
-  void WalkNGChildren(const LayoutObject* parent,
-                      NGFragmentChildIterator*,
-                      bool is_wheel_event_regions_enabled);
-  void WalkLegacyChildren(const LayoutObject&,
-                          bool is_wheel_event_regions_enabled);
-  void WalkChildren(const LayoutObject*,
-                    const NGFragmentChildIterator*,
-                    bool is_wheel_event_regions_enabled);
-  void Walk(const LayoutObject&,
-            const NGFragmentChildIterator*,
-            bool is_wheel_event_regions_enabled);
+                             PrePaintTreeWalkContext&);
+  void WalkNGChildren(const LayoutObject* parent, NGFragmentChildIterator*);
+  void WalkLegacyChildren(const LayoutObject&);
+  void WalkChildren(const LayoutObject*, const NGFragmentChildIterator*);
+  void Walk(const LayoutObject&, const NGFragmentChildIterator*);
 
   bool NeedsTreeBuilderContextUpdate(const LocalFrameView&,
                                      const PrePaintTreeWalkContext&);
@@ -175,6 +164,10 @@ class CORE_EXPORT PrePaintTreeWalk {
 
   PaintInvalidator paint_invalidator_;
   Vector<PrePaintTreeWalkContext> context_storage_;
+
+  // TODO(https://crbug.com/841364): Remove is_wheel_event_regions_enabled
+  // argument once kWheelEventRegions feature flag is removed.
+  bool is_wheel_event_regions_enabled_ = false;
 
   bool needs_invalidate_chrome_client_ = false;
 

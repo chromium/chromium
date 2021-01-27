@@ -301,8 +301,10 @@ void PrePaintTreeWalk::Walk(LocalFrameView& frame_view) {
     }
 #endif
 
-    Walk(*view, /* iterator */ nullptr,
-         base::FeatureList::IsEnabled(::features::kWheelEventRegions));
+    is_wheel_event_regions_enabled_ =
+        base::FeatureList::IsEnabled(::features::kWheelEventRegions);
+
+    Walk(*view, /* iterator */ nullptr);
 #if DCHECK_IS_ON()
     view->AssertSubtreeClearedPaintInvalidationFlags();
 #endif
@@ -570,8 +572,7 @@ void PrePaintTreeWalk::UpdatePaintInvalidationContainer(
 
 void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
                                     const NGFragmentChildIterator* iterator,
-                                    PrePaintTreeWalkContext& context,
-                                    bool is_wheel_event_regions_enabled) {
+                                    PrePaintTreeWalkContext& context) {
   PaintInvalidatorContext& paint_invalidator_context =
       context.paint_invalidator_context;
 
@@ -613,7 +614,7 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   // depends on the effective allowed touch action and blocking wheel event
   // handlers.
   UpdateEffectiveAllowedTouchAction(object, context);
-  if (is_wheel_event_regions_enabled)
+  if (is_wheel_event_regions_enabled_)
     UpdateBlockingWheelEventHandler(object, context);
 
   if (paint_invalidator_.InvalidatePaint(
@@ -701,16 +702,14 @@ LocalFrameView* FindWebViewPluginContentFrameView(
 }
 
 void PrePaintTreeWalk::WalkNGChildren(const LayoutObject* parent,
-                                      NGFragmentChildIterator* iterator,
-                                      bool is_wheel_event_regions_enabled) {
+                                      NGFragmentChildIterator* iterator) {
   for (; !iterator->IsAtEnd(); iterator->Advance()) {
     const LayoutObject* object = (*iterator)->GetLayoutObject();
     if (const auto* fragment_item = (*iterator)->FragmentItem()) {
       // Line boxes are not interesting. They have no paint effects. Descend
       // directly into children.
       if (fragment_item->Type() == NGFragmentItem::kLine) {
-        WalkChildren(/* parent */ nullptr, iterator,
-                     is_wheel_event_regions_enabled);
+        WalkChildren(/* parent */ nullptr, iterator);
         continue;
       }
     } else if (!object) {
@@ -732,13 +731,12 @@ void PrePaintTreeWalk::WalkNGChildren(const LayoutObject* parent,
         containing_block_context = &context.current;
         containing_block_context->paint_offset += offset;
       }
-      WalkChildren(/* parent */ nullptr, iterator,
-                   is_wheel_event_regions_enabled);
+      WalkChildren(/* parent */ nullptr, iterator);
       if (containing_block_context)
         containing_block_context->paint_offset -= offset;
       continue;
     }
-    Walk(*object, iterator, is_wheel_event_regions_enabled);
+    Walk(*object, iterator);
   }
 
   const LayoutBlockFlow* parent_block = DynamicTo<LayoutBlockFlow>(parent);
@@ -754,8 +752,7 @@ void PrePaintTreeWalk::WalkNGChildren(const LayoutObject* parent,
   }
 }
 
-void PrePaintTreeWalk::WalkLegacyChildren(const LayoutObject& object,
-                                          bool is_wheel_event_regions_enabled) {
+void PrePaintTreeWalk::WalkLegacyChildren(const LayoutObject& object) {
   if (const auto* layout_box = DynamicTo<LayoutBox>(&object)) {
     if (layout_box->CanTraversePhysicalFragments()) {
       // Enter NG child fragment traversal. We'll stay in this mode for all
@@ -768,7 +765,7 @@ void PrePaintTreeWalk::WalkLegacyChildren(const LayoutObject& object,
           To<NGPhysicalBoxFragment>(*layout_box->GetPhysicalFragment(0));
       DCHECK(!fragment.BreakToken());
       NGFragmentChildIterator child_iterator(fragment);
-      WalkNGChildren(&object, &child_iterator, is_wheel_event_regions_enabled);
+      WalkNGChildren(&object, &child_iterator);
       return;
     }
   }
@@ -781,7 +778,7 @@ void PrePaintTreeWalk::WalkLegacyChildren(const LayoutObject& object,
     // way).
     if (const LayoutBox* legend =
             LayoutFieldset::FindInFlowLegend(To<LayoutBlock>(object)))
-      Walk(*legend, /* iterator */ nullptr, is_wheel_event_regions_enabled);
+      Walk(*legend, /* iterator */ nullptr);
   }
 
   for (const LayoutObject* child = object.SlowFirstChild(); child;
@@ -809,7 +806,7 @@ void PrePaintTreeWalk::WalkLegacyChildren(const LayoutObject& object,
     if (UNLIKELY(child->IsRenderedLegend()))
       continue;
 
-    Walk(*child, /* iterator */ nullptr, is_wheel_event_regions_enabled);
+    Walk(*child, /* iterator */ nullptr);
   }
 
   if (!RuntimeEnabledFeatures::LayoutNGFragmentTraversalEnabled())
@@ -853,18 +850,17 @@ void PrePaintTreeWalk::WalkLegacyChildren(const LayoutObject& object,
         !ObjectRequiresTreeBuilderContext(*box))
       continue;
     DCHECK_EQ(box->Container(), &object);
-    Walk(*box, /* iterator */ nullptr, is_wheel_event_regions_enabled);
+    Walk(*box, /* iterator */ nullptr);
   }
 }
 
 void PrePaintTreeWalk::WalkChildren(const LayoutObject* object,
-                                    const NGFragmentChildIterator* iterator,
-                                    bool is_wheel_event_regions_enabled) {
+                                    const NGFragmentChildIterator* iterator) {
   DCHECK(iterator || object);
 
   if (!iterator) {
     // We're not doing LayoutNG fragment traversal of this object.
-    WalkLegacyChildren(*object, is_wheel_event_regions_enabled);
+    WalkLegacyChildren(*object);
     return;
   }
 
@@ -878,18 +874,17 @@ void PrePaintTreeWalk::WalkChildren(const LayoutObject* object,
            (object->IsBox() &&
             To<LayoutBox>(object)->GetNGPaginationBreakability() ==
                 LayoutBox::kForbidBreaks));
-    WalkLegacyChildren(*object, is_wheel_event_regions_enabled);
+    WalkLegacyChildren(*object);
     return;
   }
 
   // Traverse child NG fragments.
   NGFragmentChildIterator child_iterator(iterator->Descend());
-  WalkNGChildren(object, &child_iterator, is_wheel_event_regions_enabled);
+  WalkNGChildren(object, &child_iterator);
 }
 
 void PrePaintTreeWalk::Walk(const LayoutObject& object,
-                            const NGFragmentChildIterator* iterator,
-                            bool is_wheel_event_regions_enabled) {
+                            const NGFragmentChildIterator* iterator) {
   const NGPhysicalBoxFragment* physical_fragment = nullptr;
   bool is_last_fragment = true;
   if (iterator) {
@@ -944,7 +939,7 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
       context().tree_builder_context->clip_changed = false;
   }
 
-  WalkInternal(object, iterator, context(), is_wheel_event_regions_enabled);
+  WalkInternal(object, iterator, context());
 
   bool child_walk_blocked = object.ChildPrePaintBlockedByDisplayLock();
   // If we need a subtree walk due to context flags, we need to store that
@@ -964,7 +959,7 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   }
 
   if (!child_walk_blocked) {
-    WalkChildren(&object, iterator, is_wheel_event_regions_enabled);
+    WalkChildren(&object, iterator);
 
     if (const auto* layout_embedded_content =
             DynamicTo<LayoutEmbeddedContent>(object)) {
