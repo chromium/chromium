@@ -1384,6 +1384,23 @@
             ]
         }
     ],
+    "ChromeLabs": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210128",
+                    "enable_features": [
+                        "ChromeLabs"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSAssistantDspHotword": [
         {
             "platforms": [
