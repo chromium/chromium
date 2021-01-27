@@ -204,6 +204,13 @@ const CGFloat kOffsetToPinOmnibox = 100;
   [coordinator animateAlongsideTransition:alongsideBlock completion:nil];
 }
 
+- (void)willMoveToParentViewController:(UIViewController*)parent {
+  if (self.parentViewController) {
+    [self removeFromParentViewController];
+  }
+  [super willMoveToParentViewController:parent];
+}
+
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   if (previousTraitCollection.preferredContentSizeCategory !=
