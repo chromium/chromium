@@ -68,9 +68,11 @@ void ColorProfileReader::UpdateIfNeeded() {
 
   // Enumerate device profile paths on a background thread.  When this
   // completes it will run another task on a background thread to read
-  // the profiles.
+  // the profiles. This can impact the color of the browser so we want
+  // to set this to a higher priority to complete the task earlier
+  // during startup.
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(
           &ColorProfileReader::BuildDeviceToPathMapOnBackgroundThread),
       base::BindOnce(&ColorProfileReader::BuildDeviceToPathMapCompleted,
@@ -100,7 +102,7 @@ void ColorProfileReader::BuildDeviceToPathMapCompleted(
   device_to_path_map_ = new_device_to_path_map;
 
   base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(&ColorProfileReader::ReadProfilesOnBackgroundThread,
                      new_device_to_path_map),
       base::BindOnce(&ColorProfileReader::ReadProfilesCompleted,
