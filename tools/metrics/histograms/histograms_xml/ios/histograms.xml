@@ -537,8 +537,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>justincohen@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
-    The reason for the application termination in background. Logged when a
-    MXMetricPayload is received (one per day).
+    The reason for the application termination in foreground. Recorded when a
+    MXMetricPayload is received from the OS (at most once per day) at
+    unspecified time. Records cumulative data collected and agregated since the
+    previous recording. All buckets from MetricKitExitData are available on iOS
+    14 and higher (unless MetricKitExitData bucket comments specify otherwise).
+    Recorded only if user opted in for sharing diagnostic data on iOS device.
+    All buckets except &quot;App exited normally&quot; are likely user-visible
+    terminations (this is a guess rather that verified fact).
   </summary>
 </histogram>
 
