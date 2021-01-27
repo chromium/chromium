@@ -5144,7 +5144,7 @@
   {
     "name": "window-naming",
     "owners": [ "ellyjones" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 92
   },
   {
     "name": "xsurface-metrics-reporting",
