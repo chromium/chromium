@@ -35,6 +35,16 @@ bool CanShowBottomSheet(content::WebContents* web_contents,
       screenshots.size() == 0)
     return false;
 
+  bool all_screenshots_draw_nothing = true;
+  for (const auto& item : screenshots) {
+    if (!item.second.drawsNothing()) {
+      all_screenshots_draw_nothing = false;
+      break;
+    }
+  }
+  if (all_screenshots_draw_nothing)
+    return false;
+
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_PwaBottomSheetControllerProvider_canShowPwaBottomSheetInstaller(
       env, web_contents->GetJavaWebContents());
