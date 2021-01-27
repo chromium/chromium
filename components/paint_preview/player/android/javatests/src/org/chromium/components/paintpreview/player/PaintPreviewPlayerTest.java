@@ -148,8 +148,8 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
 
     @Test
     @MediumTest
-    @DisableIf.Build(message = "Test is failing on Android P, see crbug.com/1110939.",
-            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
+    @DisableIf.Build(message = "Flaky, see crbug.com/1110939 and crbug.com/1169668.",
+            sdk_is_less_than = VERSION_CODES.Q)
     public void
     nestedLinkClickTest() throws Exception {
         initPlayerManager(true);
