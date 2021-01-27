@@ -9479,6 +9479,20 @@
       ]
      ]
     },
+    "pointerevent_multiple_primary_pointers_boundary_events-manual.html": [
+     "029aa26368413ea96b90823285a780b6798a12d9",
+     [
+      null,
+      {}
+     ]
+    ],
+    "pointerevent_pointerId_scope-manual.html": [
+     "3640cb6f6bba67b51f96c857a4deb811a495845d",
+     [
+      null,
+      {}
+     ]
+    ],
     "pointerevent_pointerleave_pen-manual.html": [
      "d0d8dd3682513fa44659573f02aa3eb9044c5605",
      [
@@ -9906,6 +9920,29 @@
      }
     }
    },
+   "touch-events": {
+    "multi-touch-interactions-manual.html": [
+     "45e53af0ee97c0e29826002701083c21d50ce989",
+     [
+      null,
+      {}
+     ]
+    ],
+    "multi-touch-interfaces-manual.html": [
+     "e9f1b91c4862ebaa77fb855b6d20c2850e5b482b",
+     [
+      null,
+      {}
+     ]
+    ],
+    "single-touch-manual.html": [
+     "1b47a64c157ac64f5760ebc0ad2fd114773cdea3",
+     [
+      null,
+      {}
+     ]
+    ]
+   },
    "uievents": {
     "interface": {
      "click-event-manual.htm": [
@@ -9938,6 +9975,75 @@
        {}
       ]
      ]
+    },
+    "order-of-events": {
+     "focus-events": {
+      "focus-contained-manual.html": [
+       "3f6e584d1ea3f9d34dd56d3ff1102708dc772983",
+       [
+        null,
+        {}
+       ]
+      ],
+      "legacy-manual.html": [
+       "e71273973e615932addc8cd69dc76e3a0cd0a000",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
+     "mouse-events": {
+      "click-on-body-manual.html": [
+       "30b6646afff4b6d3e50a21fa8a96d7341b256076",
+       [
+        null,
+        {}
+       ]
+      ],
+      "click-on-div-manual.html": [
+       "173e520a17eeb9ea6da189c217fe3af98df11a6b",
+       [
+        null,
+        {}
+       ]
+      ],
+      "click-on-html-manual.html": [
+       "7f3514fdd02ed5e05d988c35593928a7a80698f6",
+       [
+        null,
+        {}
+       ]
+      ],
+      "click-order-manual.html": [
+       "7d31a5f8dbb066af7cb9ff89b99347e1c68ec7a3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "mouseevents-mousemove-manual.htm": [
+       "8ed9c1c28486168580610458c48b3793329a4dda",
+       [
+        null,
+        {}
+       ]
+      ],
+      "mousemove-across-manual.html": [
+       "8b0e7171a54f7311464e65cc7c2de2e6e16bc5ba",
+       [
+        null,
+        {}
+       ]
+      ],
+      "mousemove-between-manual.html": [
+       "89b5db92ca94435964cf434d7a56445b5a1cb732",
+       [
+        null,
+        {}
+       ]
+      ]
+     }
     }
    },
    "vibration": {
@@ -152867,6 +152973,19 @@
        {}
       ]
      ],
+     "selectors-dir-selector-auto-direction-change-001.html": [
+      "f6c6393b08a940054b90b68fe3ebea9ebc8846ec",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "selectors-dir-selector-change-001.html": [
       "f952389643834f4a67062bf722d5ce4422253094",
       [
@@ -216122,7 +216241,7 @@
      []
     ],
     "idlharness.window_exclude=Node-expected.txt": [
-     "8614c5c19613911e60445824964cebe6955b4386",
+     "aab09e18870ecf37ad20ec4d46631b8f96739bc5",
      []
     ],
     "lists": {
@@ -216508,10 +216627,6 @@
      ],
      "Range-test-iframe.html": [
       "f354ff758fca36d9fb156900225f1b33424bff31",
-      []
-     ],
-     "StaticRange-constructor-expected.txt": [
-      "8df10da8b613c537311a6e74a065b37a2ea7d3c9",
       []
      ]
     },
@@ -223500,12 +223615,20 @@
        []
       ],
       "resources": {
+       "204-no-content.asis": [
+        "58e46abbc9e0d5d744cc41d49fdb869d23e23801",
+        []
+       ],
        "check-sandbox-flags.html": [
         "0dc95315f164d693bd7bd0622880781f30bad7a1",
         []
        ],
        "document-open.html": [
         "136c494d5ad866a12e361b95e8ca29e377f4c0fd",
+        []
+       ],
+       "executor.html": [
+        "89bd268f9c73343f64648e91ed618c3e7096f567",
         []
        ],
        "post-done-to-opener.html": [
@@ -228464,166 +228587,6 @@
         "373309d1a9284f48510c34c86de6f625b381682d",
         []
        ],
-       "plugin": {
-        "click-to-activate.js": [
-         "2ea2f19c2c951973a85f1a12cd9f964204218db8",
-         []
-        ],
-        "dragndrop.swf": [
-         "6b49d46c5f2deec418cc9acbd0039dc21f32db6c",
-         []
-        ],
-        "dragndropleavedeactivate.swf": [
-         "be486248d13667d4fa873cdfc4def134bdc0959a",
-         []
-        ],
-        "plugin-dnd-001.html": [
-         "96a502004410f976c2762992176310b00416c8d3",
-         []
-        ],
-        "plugin-dnd-002.html": [
-         "2958458e7eaad99dcd4efbca0d08c1266d4aa230",
-         []
-        ],
-        "plugin-dnd-003.html": [
-         "592192124ffad10624814a14880be1ce0fa4f527",
-         []
-        ],
-        "plugin-dnd-004.html": [
-         "a4e776be74e749961f17313d673a815b7487e2f1",
-         []
-        ],
-        "plugin-dnd-005.html": [
-         "67035acc71a0edf5eed3abcf5212b8f63c883614",
-         []
-        ],
-        "plugin-dnd-006.html": [
-         "5322edd7d66dfe6b18f93697e154707b028155a3",
-         []
-        ],
-        "plugin-dnd-007.html": [
-         "8ec0bebd3b2ae52f81c79681432598b8cceaae1e",
-         []
-        ],
-        "plugin-dnd-008.html": [
-         "017696e6079c3f001a853e4cb8161e104e14ce27",
-         []
-        ],
-        "plugin-dnd-009.html": [
-         "74761894d3260a9e705345168aedfd96e3317519",
-         []
-        ],
-        "plugin-dnd-010.html": [
-         "7ce900d8fd8427cc5e425efca7acbb00e7595b0d",
-         []
-        ],
-        "plugin-dnd-011.html": [
-         "e22c4eec224cea1e7b6e1b8c8cba147a9fef1819",
-         []
-        ],
-        "plugin-dnd-101.html": [
-         "5f28430aa8f3d2e819a487498e1ceef19e1049b9",
-         []
-        ],
-        "plugin-dnd-102.html": [
-         "79bb0dfd7e688436b759285ffc60dd1d291e9a27",
-         []
-        ],
-        "plugin-dnd-103.html": [
-         "3166b054f518a618023409726ae4ef2f294eeaa4",
-         []
-        ],
-        "plugin-dnd-104.html": [
-         "53128eeb4b30ca99c0fe35745fa1c4463c6b1da0",
-         []
-        ],
-        "plugin-dnd-105.html": [
-         "a146a4608dfa18aec7ca46e3f68f9bebc0c6ff98",
-         []
-        ],
-        "plugin-dnd-106.html": [
-         "4ee1923d2e485f13ee0a2e74abc5ef60218a162c",
-         []
-        ],
-        "plugin-dnd-107.html": [
-         "96dc126a26d6cdd546f22d7de4e18222366777fa",
-         []
-        ],
-        "plugin-dnd-108.html": [
-         "ba69dfedb30025159cf920dfb0a899ebc7c61020",
-         []
-        ],
-        "plugin-dnd-109.html": [
-         "8748d8745d428ddd07165dac7e027300ecdda153",
-         []
-        ],
-        "plugin-dnd-110.html": [
-         "fbf5b48fa4ae3525c112606062564ae1e0c97888",
-         []
-        ],
-        "plugin-dnd-111.html": [
-         "8687c74b121c304946afa58ad4754dd2baae2051",
-         []
-        ],
-        "plugin-dnd-203.html": [
-         "ed6048783bd94308fb5899abb4751455f6c6c87a",
-         []
-        ],
-        "plugin-dnd-204.html": [
-         "e11ce92f0a3cd70510028e3b25ca0e4d054f4a07",
-         []
-        ],
-        "plugin-dnd-205.html": [
-         "eaf3e188578e37a8a6a3b44fe878df129993d2a9",
-         []
-        ],
-        "plugin-dnd-206.html": [
-         "a39ab0bcbf9dd5bcf802306182f68fe23ee18cec",
-         []
-        ],
-        "plugin-dnd-207.html": [
-         "a9ddcba494af1cb128aa2732e1abfb61c9796940",
-         []
-        ],
-        "plugin-dnd-303.html": [
-         "91307e61600c0b569372e06026dd5584082120ad",
-         []
-        ],
-        "plugin-dnd-304.html": [
-         "d3d27ebb690bd89b02b47679b1dfe4c8b409784a",
-         []
-        ],
-        "plugin-dnd-305.html": [
-         "ed8561b9c3b5b9b398ea2082f835b2f1bfa59f51",
-         []
-        ],
-        "plugin-dnd-306.html": [
-         "8ea6001962476bafd2e3e1aa817621ffd72628f2",
-         []
-        ],
-        "plugin-dnd-307.html": [
-         "0e55a7b1bf4e407599ea5ab69b77cee9094ffc8c",
-         []
-        ],
-        "swfsources": {
-         "dragndrop.hx": [
-          "25fc51ef0d2b5f2d3cdd02b280e43ff94801ec84",
-          []
-         ],
-         "dragndrop.hxml": [
-          "71f2eb5b9c9a873833f7a64f188ea647cae58370",
-          []
-         ],
-         "mouseup.hx": [
-          "13a8757bd79bf20a3c90cf0b49fd96b938aedaf2",
-          []
-         ],
-         "mouseup.hxml": [
-          "d588590347fe575d8abade7e885cce47d4ea344f",
-          []
-         ]
-        }
-       },
        "plugindrop.html": [
         "c34e60c4a941d53cf1f368edc288cc9a781a2668",
         []
@@ -244376,7 +244339,7 @@
      []
     ],
     "testharness.js": [
-     "11e31b133ddd20736119f216e0326f15dc82f691",
+     "3623aa4d57e6bdab1fcab1b235646331381df31e",
      []
     ],
     "testharness.js.headers": [
@@ -340632,6 +340595,15 @@
        [
         null,
         {}
+       ]
+      ],
+      "window-open-blank-from-different-initiator.html": [
+       "aa269fdf14ca00fe083f31a8f801ab996406860f",
+       [
+        null,
+        {
+         "timeout": "long"
+        }
        ]
       ]
      },
