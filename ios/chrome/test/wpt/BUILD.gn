@@ -35,6 +35,7 @@ ios_app_bundle("ios_cwt_chromedriver_tests") {
     "//ios/third_party/gtx:gtx+bundle",
     ios_application_icons_target,
   ]
+  bundle_deps += ios_providers_resources_targets
   info_plist_target = ":chrome_app_plist"
   extra_substitutions = [
     "CHROMIUM_HANDOFF_ID=$chromium_handoff_id",
