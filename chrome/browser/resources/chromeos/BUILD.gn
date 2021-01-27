@@ -38,6 +38,7 @@ group("closure_compile") {
   deps = [
     "accessibility/accessibility_common:closure_compile",
     "accessibility/braille_ime:closure_compile",
+    "accessibility/chromevox:closure_compile",
     "accessibility/select_to_speak:closure_compile",
     "accessibility/switch_access:closure_compile",
     "account_manager:closure_compile",

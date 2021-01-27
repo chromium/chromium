@@ -209,7 +209,7 @@ CommandHandler.onCommand = function(command) {
           'description=';
 
       const description = {};
-      description['Version'] = chrome.app.getDetails().version;
+      description['Version'] = chrome.runtime.getManifest().version;
       description['Reproduction Steps'] = '%0a1.%0a2.%0a3.';
       for (const key in description) {
         url += key + ':%20' + description[key] + '%0a';

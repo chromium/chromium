@@ -51,10 +51,14 @@ const StateType = chrome.automation.StateType;
  * $ prefix: used to substitute either an attribute or a specialized value from
  *     an AutomationNode. Specialized values include role and state.
  *     For example, $value $role $enabled
- * @ prefix: used to substitute a message. Note the ability to specify params to
- *     the message.  For example, '@tag_html' '@selected_index($text_sel_start,
+ *
+ * Note: (@) means @ to avoid Closure mistaking it for an annotation.
+ *
+ * (@) prefix: used to substitute a message. Note the ability to specify params
+ * to the message.  For example, '@tag_html' '@selected_index($text_sel_start,
  *     $text_sel_end').
- * @@ prefix: similar to @, used to substitute a message, but also pulls the
+ *
+ * (@@) prefix: similar to @, used to substitute a message, but also pulls the
  *     localized string through goog.i18n.MessageFormat to support locale
  *     aware plural handling.  The first argument should be a number which will
  *     be passed as a COUNT named parameter to MessageFormat.

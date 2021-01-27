@@ -922,7 +922,7 @@ Panel = class {
    * Activate a menu whose title has been clicked. Stop event propagation at
    * this point so we don't close the ChromeVox menus and restore focus.
    * @param {PanelMenu} menu The menu we would like to activate.
-   * @parm {Event} mouseUpEvent The mouseup event.
+   * @param {Event} mouseUpEvent The mouseup event.
    * @private
    */
   static onMouseUpOnMenuTitle_(menu, mouseUpEvent) {

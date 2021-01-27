@@ -546,3 +546,28 @@ copy("i_tutorial") {
     "i_tutorial/components:components",
   ]
 }
+
+# Closure type check compilation and associated js libraries.
+js_type_check("closure_compile") {
+  deps = [ ":chromevox_library" ]
+}
+
+js_library("chromevox_library") {
+  sources = chromevox_modules
+  deps = [ "//third_party/chromevox/third_party/closure-library:library" ]
+  externs_list = [
+    "background/externs.js",
+    "$externs_path/accessibility_private.js",
+    "$externs_path/audio.js",
+    "$externs_path/automation.js",
+    "$externs_path/braille_display_private.js",
+    "$externs_path/chromeos_info_private.js",
+    "$externs_path/chrome.js",
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/command_line_private.js",
+    "$externs_path/login_state.js",
+    "$externs_path/metrics_private.js",
+    "$externs_path/settings_private.js",
+    "$externs_path/virtual_keyboard_private.js",
+  ]
+}
