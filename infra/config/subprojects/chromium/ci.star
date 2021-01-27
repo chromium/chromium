@@ -5038,6 +5038,7 @@ ci.win_builder(
 ci.win_builder(
     name = "Win10 Tests x64",
     branch_selector = branches.STANDARD_MILESTONE,
+    executable = "recipe:chromium (bbagent)",
     console_view_entry = consoles.console_view_entry(
         category = "release|tester",
         short_name = "w10",
