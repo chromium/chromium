@@ -1033,9 +1033,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PasswordManager.EditsInSaveBubble"
-    enum="PasswordManagerEditsInSaveBubbleEnum" expires_after="2021-01-30">
-  <owner>battre@chromium.org</owner>
+    enum="PasswordManagerEditsInSaveBubbleEnum" expires_after="2021-06-30">
   <owner>vasilii@chromium.org</owner>
+  <owner>jdoerrie@chromium.org</owner>
   <summary>
     Indication whether users change the credentials (username and password) in
     the save bubble of the password manager, considering only cases where the
