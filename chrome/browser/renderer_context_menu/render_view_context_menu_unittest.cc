@@ -568,6 +568,26 @@ TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationParamsSet) {
   EXPECT_TRUE(delegate.last_navigation_params()->impression);
 }
 
+// Verify ContextMenu navigations properly set the initiating origin.
+TEST_F(RenderViewContextMenuPrefsTest, OpenLinkNavigationInitiatorSet) {
+  TestNavigationDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+  content::RenderFrameHost* main_frame = web_contents()->GetMainFrame();
+
+  content::ContextMenuParams params = CreateParams(MenuItem::LINK);
+  params.unfiltered_link_url = params.link_url;
+  params.link_url = params.link_url;
+  params.impression = blink::Impression();
+  auto menu = std::make_unique<TestRenderViewContextMenu>(main_frame, params);
+  menu->ExecuteCommand(IDC_CONTENT_CONTEXT_OPENLINKNEWTAB, 0);
+  EXPECT_TRUE(delegate.last_navigation_params());
+
+  // Verify that the initiator is set, and set expectedly.
+  EXPECT_TRUE(delegate.last_navigation_params()->initiator_origin.has_value());
+  EXPECT_EQ(delegate.last_navigation_params()->initiator_origin->GetURL(),
+            params.page_url.GetOrigin());
+}
+
 // Verify that "Show all passwords" is displayed on a password field.
 TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswords) {
   // Set up password manager stuff.
