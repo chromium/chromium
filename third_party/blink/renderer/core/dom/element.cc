@@ -759,9 +759,14 @@ void Element::SetElementAttribute(const QualifiedName& name, Element* element) {
   ExplicitlySetAttrElementsMap* explicitly_set_attr_elements_map =
       GetDocument().GetExplicitlySetAttrElementsMap(this);
 
-  // If the reflected element is explicitly null then we remove the content
+  // If the reflected element is explicitly null, or is not a member of this
+  // elements shadow including ancestor tree, then we remove the content
   // attribute and the explicitly set attr-element.
-  if (!element) {
+  // Note this means that explicitly set elements can cross ancestral shadow
+  // boundaries, but not descendant ones. See the spec for more details:
+  // https://whatpr.org/html/3917/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:concept-shadow-including-ancestor
+  if (!element ||
+      !ElementIsDescendantOfShadowIncludingAncestor(*this, *element)) {
     explicitly_set_attr_elements_map->erase(name);
     removeAttribute(name);
     return;
@@ -769,15 +774,13 @@ void Element::SetElementAttribute(const QualifiedName& name, Element* element) {
 
   const AtomicString id = element->GetIdAttribute();
 
-  // In order to sprout a non-empty content attribute from an explicitly set
-  // attr-element, |element| must:
-  //  1) have a valid ID attribute, and
-  //  2) be the first element in tree order with this ID.
-  // Otherwise the content attribute will reflect the empty string.
-  //
-  // Note that the explicitly set attr-element is still set. See the spec for
-  // more details:
-  // https://whatpr.org/html/3917/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes
+  // Explicitly set attr-elements must have a valid id attribute, and also
+  // refer to the first element in tree order of |this| elements node tree in
+  // order for the content attribute to reflect the ID. Where these conditions
+  // aren't met, the content attribute should reflect the empty string. Note
+  // that the explicitly set attr-element is still set. See the spec for more
+  // details:
+  // https://whatpr.org/html/3917/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:root-2
   if (id.IsNull() || GetTreeScope() != element->GetTreeScope() ||
       GetTreeScope().getElementById(id) != element)
     setAttribute(name, g_empty_atom);
@@ -805,19 +808,12 @@ Element* Element::GetElementAttribute(const QualifiedName& name) {
   if (element_attribute_vector) {
     DCHECK_EQ(element_attribute_vector->size(), 1u);
     Element* explicitly_set_element = element_attribute_vector->at(0);
-    if (!explicitly_set_element)
-      return nullptr;
-
-    // Only return the explicit element if it still exists within a valid scope.
-    if (!ElementIsDescendantOfShadowIncludingAncestor(*this,
-                                                      *explicitly_set_element))
-      return nullptr;
-
-    return explicitly_set_element;
+    // Only return the explicit element if it still exists in the same scope.
+    if (explicitly_set_element)
+      return explicitly_set_element;
   }
 
-  // Compute the attr-associated element from the content attribute if present,
-  // id can be null.
+  // Compute the attr-associated element, this can be null.
   AtomicString id = getAttribute(name);
   if (id.IsNull())
     return nullptr;
@@ -850,10 +846,14 @@ void Element::SetElementArrayAttribute(
   SpaceSplitString value;
 
   for (auto element : given_elements.value()) {
-    // If |value| is null and |elements| is non-empty, then a previous element
-    // must have been invalid wrt. the content attribute string rules, and
-    // therefore the content attribute string should reflect the empty string.
-    // This means we can stop trying to compute the content attribute string.
+    // Elements that are not descendants of this element's shadow including
+    // ancestors are dropped.
+    if (!ElementIsDescendantOfShadowIncludingAncestor(*this, *element))
+      continue;
+
+    // If |value| is null, this means a previous element must have been invalid,
+    // and the content attribute should reflect the empty string, so we don't
+    // continue trying to compute it.
     if (value.IsNull() && !elements->IsEmpty()) {
       elements->push_back(element);
       continue;
@@ -888,23 +888,16 @@ void Element::SetElementArrayAttribute(
 
 base::Optional<HeapVector<Member<Element>>> Element::GetElementArrayAttribute(
     const QualifiedName& name) {
-  HeapVector<Member<Element>> result_elements;
   HeapVector<Member<Element>>* explicitly_set_elements =
       GetExplicitlySetElementsForAttr(this, name);
 
   if (explicitly_set_elements) {
-    for (auto attrElement : *explicitly_set_elements) {
-      if (ElementIsDescendantOfShadowIncludingAncestor(*this, *attrElement))
-        result_elements.push_back(attrElement);
-    }
-    return result_elements;
+    return *explicitly_set_elements;
   }
 
   QualifiedName attr = name;
 
   // Account for labelled vs labeled spelling
-  // TODO(chrishall): should this be refactored into a method?
-  // e.g. hasAttributeAccountForSpelling(...) ?
   if (attr == html_names::kAriaLabelledbyAttr) {
     attr = hasAttribute(html_names::kAriaLabeledbyAttr) &&
                    !hasAttribute(html_names::kAriaLabelledbyAttr)
@@ -913,22 +906,20 @@ base::Optional<HeapVector<Member<Element>>> Element::GetElementArrayAttribute(
   }
 
   String attribute_value = getAttribute(attr).GetString();
+  HeapVector<Member<Element>> content_elements;
+
   Vector<String> tokens;
   attribute_value = attribute_value.SimplifyWhiteSpace();
   attribute_value.Split(' ', tokens);
 
-  // Lookup each id within the same root.
-  // Since this is based on ID we know it cannot cross shadow boundaries, so we
-  // don't need to include additional logic to check that.
-  for (auto id : tokens) {
-    Element* candidate = GetTreeScope().getElementById(AtomicString(id));
+  for (auto token : tokens) {
+    Element* candidate = GetTreeScope().getElementById(AtomicString(token));
     if (candidate)
-      result_elements.push_back(candidate);
+      content_elements.push_back(candidate);
   }
-  if (result_elements.IsEmpty())
+  if (content_elements.IsEmpty())
     return base::nullopt;
-
-  return result_elements;
+  return content_elements;
 }
 
 NamedNodeMap* Element::attributesForBindings() const {
