@@ -16,6 +16,7 @@ import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Curriculum, Screen} from './constants.js';
+import {MainMenu} from './main_menu.js';
 import {NavigationButtons} from './navigation_buttons.js';
 import {TutorialCommon} from './tutorial_common.js';
 import {TutorialLesson} from './tutorial_lesson.js';
@@ -95,6 +96,37 @@ Polymer({
     nudgeArray: {type: Array},
 
     isPracticeAreaActive: {type: Boolean, value: false},
+
+    /** @private {Array<!{title: string, curriculum: Curriculum}>} */
+    mainMenuButtonData_: {
+      type: Array,
+      value: [
+        {
+          title: 'tutorial_quick_orientation_title',
+          curriculum: Curriculum.QUICK_ORIENTATION,
+        },
+        {
+          title: 'tutorial_essential_keys_title',
+          curriculum: Curriculum.ESSENTIAL_KEYS,
+        },
+        {
+          title: 'tutorial_navigation_title',
+          curriculum: Curriculum.NAVIGATION,
+        },
+        {
+          title: 'tutorial_command_references_title',
+          curriculum: Curriculum.COMMAND_REFERENCES,
+        },
+        {
+          title: 'tutorial_sounds_and_settings_title',
+          curriculum: Curriculum.SOUNDS_AND_SETTINGS,
+        },
+        {
+          title: 'tutorial_resources_title',
+          curriculum: Curriculum.RESOURCES,
+        }
+      ]
+    },
 
     lessonData: {
       type: Array,
@@ -347,23 +379,10 @@ Polymer({
    * @param {!MouseEvent} evt
    * @private
    */
-  chooseCurriculum(evt) {
-    const id = evt.target.id;
-    if (id === 'quickOrientationButton') {
-      this.curriculum = Curriculum.QUICK_ORIENTATION;
-    } else if (id === 'essentialKeysButton') {
-      this.curriculum = Curriculum.ESSENTIAL_KEYS;
-    } else if (id === 'navigationButton') {
-      this.curriculum = Curriculum.NAVIGATION;
-    } else if (id === 'commandReferencesButton') {
-      this.curriculum = Curriculum.COMMAND_REFERENCES;
-    } else if (id === 'soundsAndSettingsButton') {
-      this.curriculum = Curriculum.SOUNDS_AND_SETTINGS;
-    } else if (id === 'resourcesButton') {
-      this.curriculum = Curriculum.RESOURCES;
-    } else {
-      throw new Error('Invalid target for chooseCurriculum: ' + evt.target.id);
-    }
+  onMainMenuButtonClicked_(evt) {
+    const detail =
+        /** @type {!{title: string, curriculum: Curriculum}} */ (evt.detail);
+    this.curriculum = detail.curriculum;
     this.showLessonMenu();
   },
 
@@ -419,7 +438,6 @@ Polymer({
   /** @private */
   showMainMenu() {
     this.activeScreen = Screen.MAIN_MENU;
-    this.$.mainMenuHeader.focus();
   },
 
   /** @private */
@@ -489,15 +507,6 @@ Polymer({
 
 
   // Methods for computing attributes and properties.
-
-  /**
-   * @param {Screen} activeScreen
-   * @return {boolean}
-   * @private
-   */
-  shouldHideMainMenu(activeScreen) {
-    return activeScreen !== Screen.MAIN_MENU;
-  },
 
   /**
    * @param {Screen} activeScreen

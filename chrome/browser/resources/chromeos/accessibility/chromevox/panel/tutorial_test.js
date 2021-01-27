@@ -82,8 +82,8 @@ TEST_F('ChromeVoxTutorialTest', 'BasicTest', function() {
     mockFeedback
         .expectSpeech(
             'ChromeVox tutorial', 'Heading 1',
-            ' Press Search + Right Arrow, or Search + Left Arrow to browse' +
-                ' topics ')
+            'Press Search + Right Arrow, or Search + Left Arrow to browse' +
+                ' topics')
         .call(doCmd('nextObject'))
         .expectSpeech('Quick orientation', 'Link')
         .call(doCmd('nextObject'))

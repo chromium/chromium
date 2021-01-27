@@ -154,6 +154,7 @@ group("build") {
     ":chromevox_phonetic_dictionaries_js",
     ":i_tutorial",
     ":tutorial_lesson",
+    ":tutorial_main_menu",
     ":tutorial_navigation_buttons",
     "//chrome/browser/resources/chromeos/accessibility/braille_ime:braille_ime_manifest",
     "//third_party/chromevox:chromevox_third_party_resources",
@@ -499,6 +500,16 @@ if (is_chromeos_ash) {
 copy("tutorial_lesson") {
   sources = [ "$chromevox_gen_dir/i_tutorial/components/tutorial_lesson.js" ]
   outputs = [ "$chromevox_out_dir/i_tutorial/components/tutorial_lesson.js" ]
+  deps = [
+    "i_tutorial/components:closure_compile",
+    "i_tutorial/components:components",
+  ]
+}
+
+copy("tutorial_main_menu") {
+  sources = [ "$chromevox_gen_dir/i_tutorial/components/main_menu.js" ]
+  outputs = [ "$chromevox_out_dir/i_tutorial/components/main_menu.js" ]
+
   deps = [
     "i_tutorial/components:closure_compile",
     "i_tutorial/components:components",

@@ -14,16 +14,13 @@
   top: 0;
 }
 
-#mainMenu,
 #lessonMenu,
-#lessonContainer,
-#mainMenuButtons {
+#lessonContainer {
   margin: auto;
   text-align: start;
   width: 800px;
 }
 
-#mainMenuButtons,
 #lessonShortcuts {
   background: #FFF;
   border-radius: 4px;
@@ -64,38 +61,13 @@ cr-button {
 
 <div id="tutorial">
 
-<div id="mainMenu"
-    hidden$="[[ shouldHideMainMenu(activeScreen) ]]">
-  <h1 id="mainMenuHeader" tabindex="-1" aria-describedby="mainMenuHeaderHint">
-    [[ getMsg('tutorial_main_menu_header') ]]
-  </h1>
-  <div id="mainMenuHeaderHint" hidden>
-    [[ getMsg('tutorial_main_menu_header_description') ]]
-  </div>
-  <div id="mainMenuButtons">
-    <cr-link-row id="quickOrientationButton" class="hr"
-        on-click="chooseCurriculum"
-        label="[[ getMsg('tutorial_quick_orientation_title') ]]">
-    </cr-link-row>
-    <cr-link-row id="essentialKeysButton" class="hr" on-click="chooseCurriculum"
-        label="[[ getMsg('tutorial_essential_keys_title') ]]">
-    </cr-link-row>
-    <cr-link-row id="navigationButton" class="hr" on-click="chooseCurriculum"
-        label="[[ getMsg('tutorial_navigation_title') ]]">
-    </cr-link-row>
-    <cr-link-row id="commandReferencesButton" class="hr"
-        on-click="chooseCurriculum"
-        label="[[ getMsg('tutorial_command_references_title') ]]">
-    </cr-link-row>
-    <cr-link-row id="soundsAndSettingsButton" class="hr"
-        on-click="chooseCurriculum"
-        label="[[ getMsg('tutorial_sounds_and_settings_title') ]]">
-    </cr-link-row>
-    <cr-link-row id="resourcesButton" class="hr" on-click="chooseCurriculum"
-        label="[[ getMsg('tutorial_resources_title') ]]">
-    </cr-link-row>
-  </div>
-</div>
+<main-menu
+    header_="tutorial_main_menu_header"
+    header-description_="tutorial_main_menu_header_description"
+    button-data_="[[ mainMenuButtonData_ ]]"
+    active-screen="[[ activeScreen ]]"
+    on-button-clicked="onMainMenuButtonClicked_">
+</main-menu>
 
 <div id="lessonMenu"
     hidden$="[[ shouldHideLessonMenu(activeScreen) ]]">
