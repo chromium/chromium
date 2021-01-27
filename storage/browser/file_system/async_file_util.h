@@ -79,9 +79,9 @@ class AsyncFileUtil {
   using CopyOrMoveOption = FileSystemOperation::CopyOrMoveOption;
   using GetMetadataField = FileSystemOperation::GetMetadataField;
 
-  // Creates an AsyncFileUtil instance which performs file operations on
-  // local native file system. The created instance assumes
-  // FileSystemURL::path() has the target platform path.
+  // Creates an AsyncFileUtil instance which performs file operations on local
+  // file system. The created instance assumes FileSystemURL::path() has the
+  // target platform path.
   COMPONENT_EXPORT(STORAGE_BROWSER)
   static AsyncFileUtil* CreateForLocalFileSystem();
 
