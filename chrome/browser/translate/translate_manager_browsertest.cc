@@ -234,8 +234,8 @@ class TranslateManagerBrowserTest : public InProcessBrowserTest {
          translate::kOverrideLanguagePrefsForHrefTranslate,
          translate::kOverrideSitePrefsForHrefTranslate});
     error_subscription_ = TranslateManager::RegisterTranslateErrorCallback(
-        base::Bind(&TranslateManagerBrowserTest::OnTranslateError,
-                   base::Unretained(this)));
+        base::BindRepeating(&TranslateManagerBrowserTest::OnTranslateError,
+                            base::Unretained(this)));
   }
 
   ~TranslateManagerBrowserTest() override = default;

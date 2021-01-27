@@ -152,9 +152,9 @@ class TranslateManagerRenderViewHostTest
       public infobars::InfoBarManager::Observer {
  public:
   TranslateManagerRenderViewHostTest()
-      : pref_callback_(
-            base::Bind(&TranslateManagerRenderViewHostTest::OnPreferenceChanged,
-                       base::Unretained(this))),
+      : pref_callback_(base::BindRepeating(
+            &TranslateManagerRenderViewHostTest::OnPreferenceChanged,
+            base::Unretained(this))),
         test_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)),
