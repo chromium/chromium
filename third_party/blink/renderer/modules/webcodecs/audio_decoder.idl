@@ -62,5 +62,5 @@
 
   // Call prior to configure() to determine whether config will be supported.
   [CallWith=ScriptState, RaisesException]
-  static Promise<boolean> isConfigSupported(AudioDecoderConfig config);
+  static Promise<AudioDecoderSupport> isConfigSupported(AudioDecoderConfig config);
 };

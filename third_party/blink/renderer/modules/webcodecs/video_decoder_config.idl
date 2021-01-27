@@ -4,6 +4,9 @@
 
 // https://github.com/WICG/web-codecs
 
+// NOTE: Keep this strucutre in sync with CopyConfig() defined in
+// video_decoder.cc.
+
 dictionary VideoDecoderConfig {
   // Codec string, eg. "avc1.42001e" or "vp09.00.10.08".
   // TODO(sandersd): Should we accept "avc1" when |description| is provided?

@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_support.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder_broker.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_frame.h"
@@ -48,6 +49,30 @@ bool IsValidConfig(const AudioDecoderConfig& config,
 
   out_audio_type = {codec};
   return true;
+}
+
+AudioDecoderConfig* CopyConfig(const AudioDecoderConfig& config) {
+  AudioDecoderConfig* copy = AudioDecoderConfig::Create();
+  copy->setCodec(config.codec());
+  copy->setSampleRate(config.sampleRate());
+  copy->setNumberOfChannels(config.numberOfChannels());
+  if (config.hasDescription()) {
+    DOMArrayBuffer* buffer_copy;
+    if (config.description().IsArrayBuffer()) {
+      DOMArrayBuffer* buffer = config.description().GetAsArrayBuffer();
+      buffer_copy =
+          DOMArrayBuffer::Create(buffer->Data(), buffer->ByteLength());
+    } else {
+      DCHECK(config.description().IsArrayBufferView());
+      DOMArrayBufferView* view =
+          config.description().GetAsArrayBufferView().Get();
+      buffer_copy =
+          DOMArrayBuffer::Create(view->BaseAddress(), view->byteLength());
+    }
+    copy->setDescription(
+        ArrayBufferOrArrayBufferView::FromArrayBuffer(buffer_copy));
+  }
+  return copy;
 }
 
 // static
@@ -117,8 +142,11 @@ ScriptPromise AudioDecoder::isConfigSupported(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  bool is_supported = media::IsSupportedAudioType(audio_type);
-  return ScriptPromise::Cast(script_state, ToV8(is_supported, script_state));
+  AudioDecoderSupport* support = AudioDecoderSupport::Create();
+  support->setSupported(media::IsSupportedAudioType(audio_type));
+  support->setConfig(CopyConfig(*config));
+
+  return ScriptPromise::Cast(script_state, ToV8(support, script_state));
 }
 
 // static

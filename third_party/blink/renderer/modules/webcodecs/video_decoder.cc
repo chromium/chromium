@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_support.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_config_eval.h"
 #include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
@@ -161,6 +162,54 @@ bool IsValidConfig(const VideoDecoderConfig& config,
   return true;
 }
 
+VideoDecoderConfig* CopyConfig(const VideoDecoderConfig& config) {
+  VideoDecoderConfig* copy = VideoDecoderConfig::Create();
+  copy->setCodec(config.codec());
+
+  if (config.hasDescription()) {
+    DOMArrayBuffer* buffer_copy;
+    if (config.description().IsArrayBuffer()) {
+      DOMArrayBuffer* buffer = config.description().GetAsArrayBuffer();
+      buffer_copy =
+          DOMArrayBuffer::Create(buffer->Data(), buffer->ByteLength());
+    } else {
+      DCHECK(config.description().IsArrayBufferView());
+      DOMArrayBufferView* view =
+          config.description().GetAsArrayBufferView().Get();
+      buffer_copy =
+          DOMArrayBuffer::Create(view->BaseAddress(), view->byteLength());
+    }
+    copy->setDescription(
+        ArrayBufferOrArrayBufferView::FromArrayBuffer(buffer_copy));
+  }
+
+  if (config.hasCodedWidth())
+    copy->setCodedWidth(config.codedWidth());
+
+  if (config.hasCodedHeight())
+    copy->setCodedHeight(config.codedHeight());
+
+  if (config.hasCropLeft())
+    copy->setCropLeft(config.cropLeft());
+
+  if (config.hasCropTop())
+    copy->setCropTop(config.cropTop());
+
+  if (config.hasCropWidth())
+    copy->setCropWidth(config.cropWidth());
+
+  if (config.hasCropHeight())
+    copy->setCropHeight(config.cropHeight());
+
+  if (config.hasDisplayWidth())
+    copy->setDisplayWidth(config.displayWidth());
+
+  if (config.hasDisplayHeight())
+    copy->setDisplayHeight(config.displayHeight());
+
+  return copy;
+}
+
 // static
 std::unique_ptr<VideoDecoderTraits::MediaDecoderType>
 VideoDecoderTraits::CreateDecoder(
@@ -232,8 +281,11 @@ ScriptPromise VideoDecoder::isConfigSupported(ScriptState* script_state,
 
   // TODO(https://crbug.com/1164013): Add async checks for hardware support upon
   // adding "acceleration" options to the config.
-  bool is_supported = media::IsSupportedVideoType(video_type);
-  return ScriptPromise::Cast(script_state, ToV8(is_supported, script_state));
+  VideoDecoderSupport* support = VideoDecoderSupport::Create();
+  support->setSupported(media::IsSupportedVideoType(video_type));
+  support->setConfig(CopyConfig(*config));
+
+  return ScriptPromise::Cast(script_state, ToV8(support, script_state));
 }
 
 // static
