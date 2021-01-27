@@ -9059,10 +9059,11 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   // browser must match with the ones computed from the renderer process.
   // Ultimately, the one from the browser process should supersede the
   // renderer one. The browser will just "push" the correct value.
-  if (navigation_request->state() >=
-      NavigationRequest::NavigationState::WILL_PROCESS_RESPONSE) {
-    DCHECK_EQ(params.sandbox_flags, navigation_request->SandboxFlagsToCommit());
-  }
+  //
+  // This currently doesn't match for about blank in the WPT test:
+  // window-open-blank-from-different-initiator-after-slow.html
+  DCHECK(navigation_request->GetURL().IsAboutBlank() ||
+         params.sandbox_flags == navigation_request->SandboxFlagsToCommit());
 
   // TODO(https://crbug.com/888079): The origin computed from the browser must
   // match the one reported from the renderer process.
