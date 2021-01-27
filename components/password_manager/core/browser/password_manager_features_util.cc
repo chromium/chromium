@@ -40,6 +40,11 @@ bool CanAccountStorageBeEnabled(const syncer::SyncService* sync_service) {
   if (!sync_service)
     return false;
 
+  // The account-scoped password storage does not work with LocalSync aka
+  // roaming profiles.
+  if (sync_service->IsLocalSyncEnabled())
+    return false;
+
   return true;
 }
 

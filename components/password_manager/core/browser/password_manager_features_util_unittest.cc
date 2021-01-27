@@ -395,6 +395,51 @@ TEST(PasswordFeatureManagerUtil, SyncDisablesAccountStorage) {
             PasswordForm::Store::kProfileStore);
 }
 
+TEST(PasswordFeatureManagerUtil, LocalSyncDisablesAccountStorage) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(features::kEnablePasswordsAccountStorage);
+
+  TestingPrefServiceSimple pref_service;
+  pref_service.registry()->RegisterDictionaryPref(
+      prefs::kAccountStoragePerAccountSettings);
+
+  CoreAccountInfo account;
+  account.email = "name@account.com";
+  account.gaia = "name";
+  account.account_id = CoreAccountId::FromGaiaId(account.gaia);
+
+  // The SyncService is running in local-sync mode.
+  syncer::TestSyncService sync_service;
+  // In local-sync mode, there might or might not be an account. Set one for
+  // this test, so that all other conditions for using the account-scoped
+  // storage are fulfilled.
+  sync_service.SetIsAuthenticatedAccountPrimary(false);
+  sync_service.SetAuthenticatedAccountInfo(account);
+  sync_service.SetLocalSyncEnabled(true);
+  ASSERT_EQ(sync_service.GetTransportState(),
+            syncer::SyncService::TransportState::ACTIVE);
+  ASSERT_FALSE(sync_service.IsSyncFeatureEnabled());
+
+  // The account-scoped storage should be unavailable.
+  ASSERT_FALSE(IsOptedInForAccountStorage(&pref_service, &sync_service));
+  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service, &sync_service));
+  EXPECT_FALSE(ShouldShowAccountStorageBubbleUi(&pref_service, &sync_service));
+  EXPECT_EQ(GetDefaultPasswordStore(&pref_service, &sync_service),
+            PasswordForm::Store::kProfileStore);
+
+  // Even if the user is opted in (e.g. from a previous browser run, before
+  // local-sync was enabled), the account-scoped storage should remain
+  // unavailable.
+  OptInToAccountStorage(&pref_service, &sync_service);
+  // The user is *not* considered opted in (even though the corresponding pref
+  // is set) since the account storage is completely unavailable.
+  EXPECT_FALSE(IsOptedInForAccountStorage(&pref_service, &sync_service));
+  EXPECT_FALSE(ShouldShowAccountStorageOptIn(&pref_service, &sync_service));
+  EXPECT_FALSE(ShouldShowAccountStorageBubbleUi(&pref_service, &sync_service));
+  EXPECT_EQ(GetDefaultPasswordStore(&pref_service, &sync_service),
+            PasswordForm::Store::kProfileStore);
+}
+
 TEST(PasswordFeatureManagerUtil, OptOutClearsStorePreference) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kEnablePasswordsAccountStorage);
