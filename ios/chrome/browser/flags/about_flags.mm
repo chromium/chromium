@@ -692,6 +692,19 @@ void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line) {
     }];
   }
 
+  // If an incognito mode availability is set, add the policy key to the list of
+  // allowed experimental policies, and set the value.
+  NSString* incognito_policy_key =
+      base::SysUTF8ToNSString(policy::key::kIncognitoModeAvailability);
+  NSInteger incognito_mode_availability =
+      [defaults integerForKey:incognito_policy_key];
+  if (incognito_mode_availability) {
+    [allowed_experimental_policies addObject:incognito_policy_key];
+    [testing_policies addEntriesFromDictionary:@{
+      incognito_policy_key : @(incognito_mode_availability),
+    }];
+  }
+
   // If a CBCM enrollment token is provided, force Chrome Browser Cloud
   // Management to enabled, add the token to the list of policies, and allow
   // the CloudReportingEnabled experimental policy.
