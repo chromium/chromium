@@ -175,10 +175,10 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem*)menuItem {
-  // In guest mode, chrome://settings isn't available, so disallow creating
-  // or editing a profile.
-  Profile* activeProfile = ProfileManager::GetLastUsedProfile();
-  if (activeProfile->IsGuestSession()) {
+  // In guest mode, or if there is no loaded profile, chrome://settings isn't
+  // available, so disallow creating or editing a profile.
+  Profile* activeProfile = ProfileManager::GetLastUsedProfileIfLoaded();
+  if (!activeProfile || activeProfile->IsGuestSession()) {
     return [menuItem action] != @selector(newProfile:) &&
            [menuItem action] != @selector(editProfile:);
   }
@@ -198,7 +198,7 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
     else if ([menuItem action] == @selector(switchToProfileFromDock:))
       currentSelector = SWITCH_PROFILE_DOCK;
     UMA_HISTOGRAM_BOOLEAN("Profile.ValidateMenuItemInvalidIndex.IsGuest",
-                          activeProfile->IsGuestSession());
+                          false);
     UMA_HISTOGRAM_CUSTOM_COUNTS(
         "Profile.ValidateMenuItemInvalidIndex.ProfileCount",
         _avatarMenu->GetNumberOfItems(),
