@@ -158,6 +158,9 @@ class MakeGarbageCollectedTrait<blink::HeapVectorBacking<T>>
  public:
   template <typename... Args>
   static T* Call(AllocationHandle& handle, size_t num_elements) {
+    static_assert(!std::is_polymorphic<blink::HeapVectorBacking<T>>::value,
+                  "HeapVectorBacking must not be polymorphic as it is "
+                  "converted to a raw array of buckets for certain operation");
     CHECK_GT(num_elements, 0u);
     // Allocate automatically considers the custom space via SpaceTrait.
     void* memory = MakeGarbageCollectedTraitBase<T>::Allocate(

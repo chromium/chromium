@@ -129,13 +129,17 @@ template <typename T>
 struct IsWeak : cppgc::internal::IsWeak<T> {};
 
 template <typename T>
+struct IsMemberType : std::integral_constant<bool, cppgc::IsMemberTypeV<T>> {};
+
+template <typename T>
+struct IsWeakMemberType
+    : std::integral_constant<bool, cppgc::IsWeakMemberTypeV<T>> {};
+
+template <typename T>
 struct IsMemberOrWeakMemberType
     : std::integral_constant<bool,
                              cppgc::IsMemberTypeV<T> ||
                                  cppgc::IsWeakMemberTypeV<T>> {};
-
-template <typename T>
-struct IsMemberType : std::integral_constant<bool, cppgc::IsMemberTypeV<T>> {};
 
 #else  // !USE_V8_OILPAN
 
@@ -218,17 +222,22 @@ template <typename T>
 struct IsWeak : std::false_type {};
 
 template <typename T>
-struct IsMemberOrWeakMemberType
-    : std::integral_constant<
-          bool,
-          WTF::IsSubclassOfTemplate<T, blink::Member>::value ||
-              WTF::IsSubclassOfTemplate<T, blink::WeakMember>::value> {};
-
-template <typename T>
 struct IsMemberType : std::integral_constant<
                           bool,
                           WTF::IsSubclassOfTemplate<T, blink::Member>::value> {
 };
+
+template <typename T>
+struct IsWeakMemberType
+    : std::integral_constant<
+          bool,
+          WTF::IsSubclassOfTemplate<T, blink::WeakMember>::value> {};
+
+template <typename T>
+struct IsMemberOrWeakMemberType
+    : std::integral_constant<bool,
+                             IsMemberType<T>::value ||
+                                 IsWeakMemberType<T>::value> {};
 
 #endif  // !USE_V8_OILPAN
 

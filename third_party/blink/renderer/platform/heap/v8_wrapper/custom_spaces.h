@@ -22,6 +22,13 @@ class HeapVectorBackingSpace
   static constexpr bool kSupportsCompaction = true;
 };
 
+class HeapHashTableBackingSpace
+    : public cppgc::CustomSpace<HeapHashTableBackingSpace> {
+ public:
+  static constexpr cppgc::CustomSpaceIndex kSpaceIndex = 1;
+  static constexpr bool kSupportsCompaction = true;
+};
+
 class NodeSpace : public cppgc::CustomSpace<NodeSpace> {
  public:
   static constexpr cppgc::CustomSpaceIndex kSpaceIndex = 2;

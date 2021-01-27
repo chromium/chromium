@@ -80,6 +80,9 @@ void HeapVectorBacking<T, Traits>::Finalize() {
 template <typename T>
 struct MakeGarbageCollectedTrait<HeapVectorBacking<T>> {
   static HeapVectorBacking<T>* Call(size_t num_elements) {
+    static_assert(!std::is_polymorphic<HeapVectorBacking<T>>::value,
+                  "HeapVectorBacking must not be polymorphic as it is "
+                  "converted to a raw array of buckets for certain operation");
     CHECK_GT(num_elements, 0u);
     void* memory =
         HeapVectorBacking<T>::template AllocateObject<HeapVectorBacking<T>>(

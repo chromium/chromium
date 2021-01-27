@@ -24,8 +24,6 @@ namespace blink {
 
 template <typename T>
 struct TraceTrait;
-template <typename T>
-class WeakMember;
 
 template <typename T, bool = NeedsAdjustPointer<T>::value>
 struct AdjustPointerTrait;
@@ -71,67 +69,6 @@ template <typename T>
 struct TraceIfNeeded<T, true> {
   STATIC_ONLY(TraceIfNeeded);
   static void Trace(Visitor* visitor, const T& t) { visitor->Trace(t); }
-};
-
-template <WTF::WeakHandlingFlag weakness,
-          typename T,
-          typename Traits,
-          bool = WTF::IsTraceableInCollectionTrait<Traits>::value,
-          WTF::WeakHandlingFlag = WTF::WeakHandlingTrait<T>::value>
-struct TraceCollectionIfEnabled;
-
-template <WTF::WeakHandlingFlag weakness, typename T, typename Traits>
-struct TraceCollectionIfEnabled<weakness,
-                                T,
-                                Traits,
-                                false,
-                                WTF::kNoWeakHandling> {
-  STATIC_ONLY(TraceCollectionIfEnabled);
-
-  static bool IsAlive(const blink::LivenessBroker& info, const T&) {
-    return true;
-  }
-
-  static void Trace(Visitor*, const void*) {
-    static_assert(!WTF::IsTraceableInCollectionTrait<Traits>::value,
-                  "T should not be traced");
-  }
-};
-
-template <typename T, typename Traits>
-struct TraceCollectionIfEnabled<WTF::kNoWeakHandling,
-                                T,
-                                Traits,
-                                false,
-                                WTF::kWeakHandling> {
-  STATIC_ONLY(TraceCollectionIfEnabled);
-
-  static void Trace(Visitor* visitor, const void* t) {
-    WTF::TraceInCollectionTrait<WTF::kNoWeakHandling, T, Traits>::Trace(
-        visitor, *reinterpret_cast<const T*>(t));
-  }
-};
-
-template <WTF::WeakHandlingFlag weakness,
-          typename T,
-          typename Traits,
-          bool,
-          WTF::WeakHandlingFlag>
-struct TraceCollectionIfEnabled {
-  STATIC_ONLY(TraceCollectionIfEnabled);
-
-  static bool IsAlive(const blink::LivenessBroker& info, const T& traceable) {
-    return WTF::TraceInCollectionTrait<weakness, T, Traits>::IsAlive(info,
-                                                                     traceable);
-  }
-
-  static void Trace(Visitor* visitor, const void* t) {
-    static_assert(WTF::IsTraceableInCollectionTrait<Traits>::value ||
-                      weakness == WTF::kWeakHandling,
-                  "Traits should be traced");
-    WTF::TraceInCollectionTrait<weakness, T, Traits>::Trace(
-        visitor, *reinterpret_cast<const T*>(t));
-  }
 };
 
 // The TraceTrait is used to specify how to trace and object for Oilpan and
@@ -184,56 +121,6 @@ struct TraceTrait<std::pair<T, U>> {
     TraceIfNeeded<T>::Trace(visitor, pair->first);
     TraceIfNeeded<U>::Trace(visitor, pair->second);
   }
-};
-
-// Helper for processing ephemerons represented as KeyValuePair. Reorders
-// parameters if needed so that KeyType is always weak.
-template <typename _KeyType,
-          typename _ValueType,
-          typename _KeyTraits,
-          typename _ValueTraits,
-          bool = WTF::IsWeak<_ValueType>::value>
-struct EphemeronKeyValuePair {
-  using KeyType = _KeyType;
-  using ValueType = _ValueType;
-  using KeyTraits = _KeyTraits;
-  using ValueTraits = _ValueTraits;
-
-  // Ephemerons have different weakness for KeyType and ValueType. If weakness
-  // is equal, we either have Strong/Strong, or Weak/Weak, which would indicate
-  // a full strong or fully weak pair.
-  static constexpr bool is_ephemeron =
-      WTF::IsWeak<KeyType>::value != WTF::IsWeak<ValueType>::value;
-
-  static_assert(!WTF::IsWeak<KeyType>::value ||
-                    WTF::IsSubclassOfTemplate<KeyType, WeakMember>::value,
-                "Weakness must be encoded using WeakMember.");
-
-  EphemeronKeyValuePair(const KeyType* k, const ValueType* v)
-      : key(k), value(v) {}
-  const KeyType* key;
-  const ValueType* value;
-};
-
-template <typename _KeyType,
-          typename _ValueType,
-          typename _KeyTraits,
-          typename _ValueTraits>
-struct EphemeronKeyValuePair<_KeyType,
-                             _ValueType,
-                             _KeyTraits,
-                             _ValueTraits,
-                             true> : EphemeronKeyValuePair<_ValueType,
-                                                           _KeyType,
-                                                           _ValueTraits,
-                                                           _KeyTraits,
-                                                           false> {
-  EphemeronKeyValuePair(const _KeyType* k, const _ValueType* v)
-      : EphemeronKeyValuePair<_ValueType,
-                              _KeyType,
-                              _ValueTraits,
-                              _KeyTraits,
-                              false>(v, k) {}
 };
 
 }  // namespace blink

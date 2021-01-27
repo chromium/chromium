@@ -17,6 +17,71 @@
 #include "third_party/blink/renderer/platform/heap/impl/trace_traits.h"
 #endif  // !USE_V8_OILPAN
 
+namespace blink {
+
+template <WTF::WeakHandlingFlag weakness,
+          typename T,
+          typename Traits,
+          bool = WTF::IsTraceableInCollectionTrait<Traits>::value,
+          WTF::WeakHandlingFlag = WTF::WeakHandlingTrait<T>::value>
+struct TraceCollectionIfEnabled;
+
+template <WTF::WeakHandlingFlag weakness, typename T, typename Traits>
+struct TraceCollectionIfEnabled<weakness,
+                                T,
+                                Traits,
+                                false,
+                                WTF::kNoWeakHandling> {
+  STATIC_ONLY(TraceCollectionIfEnabled);
+
+  static bool IsAlive(const blink::LivenessBroker& info, const T&) {
+    return true;
+  }
+
+  static void Trace(Visitor*, const void*) {
+    static_assert(!WTF::IsTraceableInCollectionTrait<Traits>::value,
+                  "T should not be traced");
+  }
+};
+
+template <typename T, typename Traits>
+struct TraceCollectionIfEnabled<WTF::kNoWeakHandling,
+                                T,
+                                Traits,
+                                false,
+                                WTF::kWeakHandling> {
+  STATIC_ONLY(TraceCollectionIfEnabled);
+
+  static void Trace(Visitor* visitor, const void* t) {
+    WTF::TraceInCollectionTrait<WTF::kNoWeakHandling, T, Traits>::Trace(
+        visitor, *reinterpret_cast<const T*>(t));
+  }
+};
+
+template <WTF::WeakHandlingFlag weakness,
+          typename T,
+          typename Traits,
+          bool,
+          WTF::WeakHandlingFlag>
+struct TraceCollectionIfEnabled {
+  STATIC_ONLY(TraceCollectionIfEnabled);
+
+  static bool IsAlive(const blink::LivenessBroker& info, const T& traceable) {
+    return WTF::TraceInCollectionTrait<weakness, T, Traits>::IsAlive(info,
+                                                                     traceable);
+  }
+
+  static void Trace(Visitor* visitor, const void* t) {
+    static_assert(WTF::IsTraceableInCollectionTrait<Traits>::value ||
+                      weakness == WTF::kWeakHandling,
+                  "Traits should be traced");
+    WTF::TraceInCollectionTrait<weakness, T, Traits>::Trace(
+        visitor, *reinterpret_cast<const T*>(t));
+  }
+};
+
+}  // namespace blink
+
 namespace WTF {
 
 // Catch-all for types that have a way to trace that don't have special
