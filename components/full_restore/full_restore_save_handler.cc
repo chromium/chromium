@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "components/full_restore/app_launch_info.h"
 #include "components/full_restore/full_restore_file_handler.h"
+#include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_utils.h"
 #include "components/full_restore/restore_data.h"
 #include "components/full_restore/window_info.h"
@@ -64,6 +65,8 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
   AddAppLaunchInfo(
       active_profile_path_,
       std::make_unique<AppLaunchInfo>(extension_misc::kChromeAppId, window_id));
+
+  FullRestoreInfo::GetInstance()->OnAppLaunched(window);
 }
 
 void FullRestoreSaveHandler::OnWindowDestroyed(aura::Window* window) {

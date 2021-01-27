@@ -62,6 +62,10 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreInfo {
   // and the user's choice from the notification for |account_id|.
   void SetRestoreFlag(const AccountId& account_id, bool should_restore);
 
+  // Notifies observers to observe |window| and restore or save the window info
+  // for |window|.
+  void OnAppLaunched(aura::Window* window);
+
  private:
   base::ObserverList<Observer> observers_;
 

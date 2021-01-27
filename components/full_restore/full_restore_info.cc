@@ -44,4 +44,9 @@ void FullRestoreInfo::SetRestoreFlag(const AccountId& account_id,
     observer.OnRestoreFlagChanged(account_id, should_restore);
 }
 
+void FullRestoreInfo::OnAppLaunched(aura::Window* window) {
+  for (auto& observer : observers_)
+    observer.OnAppLaunched(window);
+}
+
 }  // namespace full_restore
