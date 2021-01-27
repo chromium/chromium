@@ -36,6 +36,7 @@ class InstallFinalizer;
 // TODO(dmurph): Finish implementing.
 class WebAppMover final : public syncer::SyncServiceObserver {
  public:
+  enum class UninstallMode { kPrefix, kPattern };
   static std::unique_ptr<WebAppMover> CreateIfNeeded(
       Profile* profile,
       AppRegistrar* registrar,
@@ -52,7 +53,8 @@ class WebAppMover final : public syncer::SyncServiceObserver {
               InstallFinalizer* install_finalizer,
               InstallManager* install_manager,
               AppRegistryController* controller,
-              const std::string& uninstall_url_prefix,
+              UninstallMode mode,
+              std::string uninstall_url_prefix_or_pattern,
               const GURL& install_url);
   WebAppMover(const WebAppMover&) = delete;
   WebAppMover& operator=(const WebAppMover&) = delete;
@@ -92,7 +94,8 @@ class WebAppMover final : public syncer::SyncServiceObserver {
   InstallManager* install_manager_;
   AppRegistryController* controller_;
 
-  std::string uninstall_url_prefix_;
+  UninstallMode uninstall_mode_;
+  std::string uninstall_url_prefix_or_pattern_;
   GURL install_url_;
 
   syncer::SyncService* sync_service_ = nullptr;

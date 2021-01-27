@@ -605,6 +605,10 @@ const base::FeatureParam<std::string> kMoveWebAppUninstallStartUrlPrefix(
     &kMoveWebApp,
     "uninstallStartUrlPrefix",
     "");
+const base::FeatureParam<std::string> kMoveWebAppUninstallStartUrlPattern(
+    &kMoveWebApp,
+    "uninstallStartUrlPattern",
+    "");
 const base::FeatureParam<std::string>
     kMoveWebAppInstallStartUrl(&kMoveWebApp, "installStartUrl", "");
 
