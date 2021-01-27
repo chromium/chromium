@@ -155,14 +155,14 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   if (syncService->GetDisableReasons().Has(
           syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
     return kSyncDisabledByAdministrator;
-  } else if (syncSetupService->IsFirstSetupComplete()) {
+  } else if (syncSetupService->IsFirstSetupComplete() &&
+             syncSetupService->IsSyncEnabled()) {
     SyncSetupService::SyncServiceState errorState =
         syncSetupService->GetSyncServiceState();
-    if (syncSetupService->IsSyncEnabled() && IsTransientSyncError(errorState)) {
+    if (IsTransientSyncError(errorState)) {
       return kSyncEnabled;
-    } else {
-      return kSyncEnabledWithError;
     }
+    return kSyncEnabledWithError;
   } else {
     return kSyncOff;
   }
@@ -1484,6 +1484,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     case kSyncEnabledWithError: {
       SyncSetupService* syncSetupService =
           SyncSetupServiceFactory::GetForBrowserState(_browserState);
+      googleSyncItem.textLayoutConstraintAxis = UILayoutConstraintAxisVertical;
       googleSyncItem.detailText =
           GetSyncErrorDescriptionForSyncSetupService(syncSetupService);
       googleSyncItem.iconImageName = kSyncAndGoogleServicesSyncErrorImageName;
