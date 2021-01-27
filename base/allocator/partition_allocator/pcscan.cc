@@ -23,10 +23,27 @@
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/allocator/partition_allocator/partition_page.h"
 #include "base/compiler_specific.h"
+#include "base/cpu.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/threading/platform_thread.h"
 #include "base/trace_event/base_tracing.h"
+#include "build/build_config.h"
+
+#if defined(ARCH_CPU_X86_64)
+// Include order is important, so we disable formatting.
+// clang-format off
+#include <immintrin.h>
+// Including these headers directly should generally be avoided. For the
+// scanning loop, we check at runtime which SIMD extension we can use. Since
+// Chrome is compiled with -msse3 (the minimal requirement), we include the
+// headers directly to make the intrinsics available. Another option could be to
+// use inline assembly, but that would hinder compiler optimization for
+// vectorized instructions.
+#include <avxintrin.h>
+#include <avx2intrin.h>
+// clang-format on
+#endif
 
 namespace base {
 namespace internal {
@@ -124,6 +141,8 @@ class PCScan<thread_safe>::PCScanTask final {
   void RunOnce() &&;
 
  private:
+  class ScanLoop;
+
   using SlotSpan = SlotSpanMetadata<thread_safe>;
 
   struct ScanArea {
@@ -186,13 +205,10 @@ class PCScan<thread_safe>::PCScanTask final {
   };
 
   struct BitmapLookupPolicy {
-    ALWAYS_INLINE bool TestPointer(uintptr_t maybe_ptr) const {
+    ALWAYS_INLINE bool TestOnHeapPointer(uintptr_t maybe_ptr) const {
 #if defined(PA_HAS_64_BITS_POINTERS)
-      // First, do a fast bitmask check to see if the pointer points to the
-      // normal bucket pool.
-      if (!PartitionAddressSpace::IsInNormalBucketPool(
-              reinterpret_cast<void*>(maybe_ptr)))
-        return false;
+      PA_DCHECK(PartitionAddressSpace::IsInNormalBucketPool(
+          reinterpret_cast<void*>(maybe_ptr)));
 #endif
       return task_.super_pages_bitmap_.Test(maybe_ptr);
     }
@@ -200,7 +216,7 @@ class PCScan<thread_safe>::PCScanTask final {
   };
 
   struct BinaryLookupPolicy {
-    ALWAYS_INLINE bool TestPointer(uintptr_t maybe_ptr) const {
+    ALWAYS_INLINE bool TestOnHeapPointer(uintptr_t maybe_ptr) const {
       const auto super_page_base = maybe_ptr & kSuperPageBaseMask;
       auto it = task_.super_pages_.lower_bound(super_page_base);
       return it != task_.super_pages_.end() && *it == super_page_base;
@@ -208,26 +224,19 @@ class PCScan<thread_safe>::PCScanTask final {
     const PCScanTask& task_;
   };
 
-  template <class LookupPolicy>
+  template <typename LookupPolicy>
   ALWAYS_INLINE QuarantineBitmap* TryFindScannerBitmapForPointer(
       uintptr_t maybe_ptr) const;
 
   // Lookup and marking functions. Return size of the object if marked or zero
   // otherwise.
-  template <class LookupPolicy>
-  ALWAYS_INLINE size_t TryMarkObjectInNormalBucketPool(uintptr_t maybe_ptr);
+  template <typename LookupPolicy>
+  ALWAYS_INLINE size_t
+  TryMarkObjectInNormalBucketPool(uintptr_t maybe_ptr) const;
 
   // Scans all registeres partitions and marks reachable quarantined objects.
   // Returns the size of marked objects.
-  template <class LookupPolicy>
   size_t ScanPartitions();
-
-  // Scans a range of addresses and marks reachable quarantined objects. Returns
-  // the size of marked objects. The function race-fully reads the heap and
-  // therefore TSAN is disabled for it.
-  template <class LookupPolicy>
-  size_t ScanRange(Root* root, uintptr_t* begin, uintptr_t* end)
-      NO_SANITIZE("thread");
 
   // Clear quarantined objects inside the PCScan task.
   void ClearQuarantinedObjects() const;
@@ -245,13 +254,13 @@ class PCScan<thread_safe>::PCScanTask final {
 };
 
 template <bool thread_safe>
-template <class LookupPolicy>
+template <typename LookupPolicy>
 ALWAYS_INLINE QuarantineBitmap*
 PCScan<thread_safe>::PCScanTask::TryFindScannerBitmapForPointer(
     uintptr_t maybe_ptr) const {
   // First, check if |maybe_ptr| points to a valid super page.
   LookupPolicy lookup{*this};
-  if (!lookup.TestPointer(maybe_ptr))
+  if (!lookup.TestOnHeapPointer(maybe_ptr))
     return nullptr;
   // Check if we are not pointing to metadata/guard pages.
   if (!IsWithinSuperPagePayload(reinterpret_cast<char*>(maybe_ptr),
@@ -274,10 +283,10 @@ PCScan<thread_safe>::PCScanTask::TryFindScannerBitmapForPointer(
 // from the scanner bitmap. This way, when scanning is done, all uncleared
 // entries in the scanner bitmap correspond to unreachable objects.
 template <bool thread_safe>
-template <class LookupPolicy>
+template <typename LookupPolicy>
 ALWAYS_INLINE size_t
 PCScan<thread_safe>::PCScanTask::TryMarkObjectInNormalBucketPool(
-    uintptr_t maybe_ptr) {
+    uintptr_t maybe_ptr) const {
   // Check if maybe_ptr points somewhere to the heap.
   auto* bitmap = TryFindScannerBitmapForPointer<LookupPolicy>(maybe_ptr);
   if (!bitmap)
@@ -334,35 +343,200 @@ void PCScan<thread_safe>::PCScanTask::ClearQuarantinedObjects() const {
   }
 }
 
+// Class used to perform actual scanning. Dispatches at runtime based on
+// supported SIMD extensions.
 template <bool thread_safe>
-template <class LookupPolicy>
-size_t NO_SANITIZE("thread") PCScan<thread_safe>::PCScanTask::ScanRange(
-    Root* root,
-    uintptr_t* begin,
-    uintptr_t* end) {
-  static_assert(alignof(uintptr_t) % alignof(void*) == 0,
-                "Alignment of uintptr_t must be at least as strict as "
-                "alignment of a pointer type.");
-  size_t new_quarantine_size = 0;
-
-  for (uintptr_t* payload = begin; payload < end; ++payload) {
-    PA_DCHECK(reinterpret_cast<uintptr_t>(payload) % alignof(void*) == 0);
-    auto maybe_ptr = *payload;
-    if (!maybe_ptr)
-      continue;
-    new_quarantine_size +=
-        TryMarkObjectInNormalBucketPool<LookupPolicy>(maybe_ptr);
+class PCScan<thread_safe>::PCScanTask::ScanLoop final {
+ public:
+  explicit ScanLoop(const PCScanTask& pcscan_task)
+      : scan_function_(GetScanFunction()),
+        pcscan_task_(pcscan_task)
+#if defined(PA_HAS_64_BITS_POINTERS)
+        ,
+        normal_bucket_pool_base_(PartitionAddressSpace::NormalBucketPoolBase())
+#endif
+  {
   }
 
-  return new_quarantine_size;
-}
+  ScanLoop(const ScanLoop&) = delete;
+  ScanLoop& operator=(const ScanLoop&) = delete;
+
+  // Scans a range of addresses and marks reachable quarantined objects. Returns
+  // the size of marked objects. The function race-fully reads the heap and
+  // therefore TSAN is disabled for the dispatch functions.
+  size_t Run(uintptr_t* begin, uintptr_t* end) const {
+    static_assert(alignof(uintptr_t) % alignof(void*) == 0,
+                  "Alignment of uintptr_t must be at least as strict as "
+                  "alignment of a pointer type.");
+    return (this->*scan_function_)(begin, end);
+  }
+
+ private:
+  // This is to support polymorphic behavior and to avoid virtual calls.
+  using ScanFunction = size_t (ScanLoop::*)(uintptr_t*, uintptr_t*) const;
+
+  static ScanFunction GetScanFunction() {
+#if defined(ARCH_CPU_X86_64)
+    // We define vectorized versions of the scanning loop only for 64bit since
+    // they require support of the 64bit GigaCage.
+    if (UNLIKELY(!features::IsPartitionAllocGigaCageEnabled()))
+      return &ScanLoop::RunUnvectorizedNoGigaCage;
+
+    base::CPU cpu;
+    if (cpu.has_avx2())
+      return &ScanLoop::RunAVX2;
+    else if (cpu.has_sse3())
+      return &ScanLoop::RunSSE3;
+    else
+      return &ScanLoop::RunUnvectorized;
+#else
+    return &ScanLoop::RunUnvectorizedNoGigaCage;
+#endif  // defined(ARCH_CPU_X86_64)
+  }
+
+#if defined(PA_HAS_64_BITS_POINTERS)
+  ALWAYS_INLINE bool IsInNormalBucketPool(uintptr_t maybe_ptr) const {
+    return (maybe_ptr & PartitionAddressSpace::NormalBucketPoolBaseMask()) ==
+           normal_bucket_pool_base_;
+  }
+#endif
+
+#if defined(ARCH_CPU_X86_64)
+  __attribute__((target("sse3"))) NO_SANITIZE("thread") size_t
+      RunSSE3(uintptr_t* begin, uintptr_t* end) const {
+    static constexpr size_t kAlignmentRequirement = 16;
+    static constexpr size_t kWordsInVector = 2;
+    PA_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));
+    PA_DCHECK(
+        !((reinterpret_cast<char*>(end) - reinterpret_cast<char*>(begin)) %
+          kAlignmentRequirement));
+
+    const __m128i vbase = _mm_set1_epi64x(normal_bucket_pool_base_);
+    const __m128d cage_mask =
+        _mm_set1_epi64x(PartitionAddressSpace::NormalBucketPoolBaseMask());
+
+    size_t quarantine_size = 0;
+    for (uintptr_t* payload = begin; payload < end; payload += kWordsInVector) {
+      const __m128d maybe_ptrs =
+          _mm_load_pd(reinterpret_cast<double*>(payload));
+      const __m128d vand = _mm_and_pd(maybe_ptrs, cage_mask);
+      const __m128d vcmp = _mm_cmpeq_pd(vand, vbase);
+      const int mask = _mm_movemask_pd(vcmp);
+      if (LIKELY(!mask))
+        continue;
+      // It's important to extract pointers from the already loaded vector to
+      // avoid racing with the mutator.
+      if (mask & 0b01) {
+        quarantine_size +=
+            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+                _mm_cvtsi128_si64(maybe_ptrs));
+      }
+      if (mask & 0b10) {
+        // Extraction intrinsics for qwords are only supported in SSE4.1, so
+        // instead we reshuffle dwords with pshufd. The mask is used to move the
+        // 4th and 3rd dwords into the second and first position.
+        static constexpr int kSecondWordMask = (3 << 2) | (2 << 0);
+        const __m128i shuffled = _mm_shuffle_epi32(maybe_ptrs, kSecondWordMask);
+        quarantine_size +=
+            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+                _mm_cvtsi128_si64(shuffled));
+      }
+    }
+    return quarantine_size;
+  }
+
+  __attribute__((target("avx2"))) NO_SANITIZE("thread") size_t
+      RunAVX2(uintptr_t* begin, uintptr_t* end) const {
+    static constexpr size_t kAlignmentRequirement = 32;
+    static constexpr size_t kWordsInVector = 4;
+    PA_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % kAlignmentRequirement));
+
+    const __m256i vbase = _mm256_set1_epi64x(normal_bucket_pool_base_);
+    const __m256i cage_mask =
+        _mm256_set1_epi64x(PartitionAddressSpace::NormalBucketPoolBaseMask());
+
+    size_t quarantine_size = 0;
+    uintptr_t* payload = begin;
+    for (; payload < (end - kWordsInVector); payload += kWordsInVector) {
+      const __m256d maybe_ptrs =
+          _mm256_load_pd(reinterpret_cast<double*>(payload));
+      const __m256d vand = _mm256_and_pd(maybe_ptrs, cage_mask);
+      const __m256i vcmp = _mm256_cmpeq_epi64(vand, vbase);
+      const int mask = _mm256_movemask_pd(vcmp);
+      if (LIKELY(!mask))
+        continue;
+      // It's important to extract pointers from the already loaded vector to
+      // avoid racing with the mutator.
+      if (mask & 0b0001)
+        quarantine_size +=
+            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+                _mm256_extract_epi64(maybe_ptrs, 0));
+      if (mask & 0b0010)
+        quarantine_size +=
+            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+                _mm256_extract_epi64(maybe_ptrs, 1));
+      if (mask & 0b0100)
+        quarantine_size +=
+            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+                _mm256_extract_epi64(maybe_ptrs, 2));
+      if (mask & 0b1000)
+        quarantine_size +=
+            pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+                _mm256_extract_epi64(maybe_ptrs, 3));
+    }
+
+    quarantine_size += RunUnvectorized(payload, end);
+    return quarantine_size;
+  }
+
+  ALWAYS_INLINE NO_SANITIZE("thread") size_t
+      RunUnvectorized(uintptr_t* begin, uintptr_t* end) const {
+    PA_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % sizeof(uintptr_t)));
+    size_t quarantine_size = 0;
+    for (; begin < end; ++begin) {
+      uintptr_t maybe_ptr = *begin;
+      if (LIKELY(!IsInNormalBucketPool(maybe_ptr)))
+        continue;
+      quarantine_size +=
+          pcscan_task_.TryMarkObjectInNormalBucketPool<BitmapLookupPolicy>(
+              maybe_ptr);
+    }
+    return quarantine_size;
+  }
+#endif  // defined(ARCH_CPU_X86_64)
+
+  ALWAYS_INLINE NO_SANITIZE("thread") size_t
+      RunUnvectorizedNoGigaCage(uintptr_t* begin, uintptr_t* end) const {
+    PA_DCHECK(!(reinterpret_cast<uintptr_t>(begin) % sizeof(uintptr_t)));
+    size_t quarantine_size = 0;
+    for (; begin < end; ++begin) {
+      uintptr_t maybe_ptr = *begin;
+      if (!maybe_ptr)
+        continue;
+      quarantine_size +=
+          pcscan_task_.TryMarkObjectInNormalBucketPool<BinaryLookupPolicy>(
+              maybe_ptr);
+    }
+    return quarantine_size;
+  }
+
+  // Keep this constant so that the compiler can remove redundant loads for
+  // the base of the normal bucket pool and hoist them out of the loops.
+  const ScanFunction scan_function_;
+  const PCScanTask& pcscan_task_;
+#if defined(PA_HAS_64_BITS_POINTERS)
+  const uintptr_t normal_bucket_pool_base_;
+#endif
+};
 
 template <bool thread_safe>
-template <class LookupPolicy>
 size_t PCScan<thread_safe>::PCScanTask::ScanPartitions() {
   PCSCAN_EVENT(scopes::kScan);
 
+  const ScanLoop scan_loop(*this);
+
   size_t new_quarantine_size = 0;
+
   // For scanning large areas, it's worthwhile checking whether the range that
   // is scanned contains quarantined objects.
   for (auto scan_area : large_scan_areas_) {
@@ -370,31 +544,25 @@ size_t PCScan<thread_safe>::PCScanTask::ScanPartitions() {
     // objects in a given slot span.
     // TODO(chromium:1129751): Check mutator bitmap as well if performance
     // allows.
-    auto* root = Root::FromPointerInNormalBucketPool(
-        reinterpret_cast<char*>(scan_area.begin));
     auto* bitmap = QuarantineBitmapFromPointer(
         QuarantineBitmapType::kScanner, pcscan_.quarantine_data_.epoch(),
         reinterpret_cast<char*>(scan_area.begin));
-    for (uintptr_t current_slot = reinterpret_cast<uintptr_t>(scan_area.begin);
-         current_slot < reinterpret_cast<uintptr_t>(scan_area.end);
-         current_slot += scan_area.slot_size) {
+    for (uintptr_t* current_slot = scan_area.begin;
+         current_slot < scan_area.end;
+         current_slot += (scan_area.slot_size / sizeof(uintptr_t))) {
       // It is okay to skip objects as their payload has been zapped at this
       // point which means that the pointers no longer retain other objects.
-      if (bitmap->CheckBit(current_slot)) {
+      if (bitmap->CheckBit(reinterpret_cast<uintptr_t>(current_slot))) {
         continue;
       }
-      uintptr_t* payload_end =
-          reinterpret_cast<uintptr_t*>(current_slot + scan_area.slot_size);
-      PA_DCHECK(payload_end <= scan_area.end);
-      new_quarantine_size += ScanRange<LookupPolicy>(
-          root, reinterpret_cast<uintptr_t*>(current_slot), payload_end);
+      uintptr_t* current_slot_end =
+          current_slot + (scan_area.slot_size / sizeof(uintptr_t));
+      PA_DCHECK(current_slot_end <= scan_area.end);
+      new_quarantine_size += scan_loop.Run(current_slot, current_slot_end);
     }
   }
   for (auto scan_area : scan_areas_) {
-    auto* root = Root::FromPointerInNormalBucketPool(
-        reinterpret_cast<char*>(scan_area.begin));
-    new_quarantine_size +=
-        ScanRange<LookupPolicy>(root, scan_area.begin, scan_area.end);
+    new_quarantine_size += scan_loop.Run(scan_area.begin, scan_area.end);
   }
   return new_quarantine_size;
 }
@@ -432,10 +600,6 @@ PCScan<thread_safe>::PCScanTask::PCScanTask(PCScan& pcscan) : pcscan_(pcscan) {
 
   for (Root* root : pcscan.roots_) {
     typename Root::ScopedGuard guard(root->lock_);
-
-    // TODO: We should probably skip some roots if they are not highly
-    // allocating/freeing. For that we would need to introduce and record some
-    // LocalQuarantineData per partition.
 
     // Take a snapshot of all super pages and scannable slot spans.
     // TODO(bikineev): Consider making current_extent lock-free and moving it to
@@ -482,10 +646,8 @@ void PCScan<thread_safe>::PCScanTask::RunOnce() && {
   ClearQuarantinedObjects();
 
   // Mark and sweep the quarantine list.
-  const auto new_quarantine_size = is_with_gigacage
-                                       ? ScanPartitions<BitmapLookupPolicy>()
-                                       : ScanPartitions<BinaryLookupPolicy>();
-  const auto swept_bytes = SweepQuarantine();
+  const size_t new_quarantine_size = ScanPartitions();
+  const size_t swept_bytes = SweepQuarantine();
 
   ReportStats(swept_bytes, pcscan_.quarantine_data_.last_size(),
               new_quarantine_size);

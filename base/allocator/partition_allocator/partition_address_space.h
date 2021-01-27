@@ -28,6 +28,10 @@ namespace internal {
 // Reserves address space for PartitionAllocator.
 class BASE_EXPORT PartitionAddressSpace {
  public:
+  static ALWAYS_INLINE constexpr uintptr_t NormalBucketPoolBaseMask() {
+    return kNormalBucketPoolBaseMask;
+  }
+
   static ALWAYS_INLINE internal::pool_handle GetDirectMapPool() {
     return direct_map_pool_;
   }
