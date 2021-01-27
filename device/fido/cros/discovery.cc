@@ -18,9 +18,20 @@ FidoChromeOSDiscovery::FidoChromeOSDiscovery(
 
 FidoChromeOSDiscovery::~FidoChromeOSDiscovery() {}
 
+void FidoChromeOSDiscovery::set_require_power_button_mode(bool require) {
+  require_power_button_mode_ = require;
+}
+
 void FidoChromeOSDiscovery::Start() {
   DCHECK(!authenticator_);
   if (!observer()) {
+    return;
+  }
+
+  if (require_power_button_mode_) {
+    ChromeOSAuthenticator::IsPowerButtonModeEnabled(
+        base::BindOnce(&FidoChromeOSDiscovery::MaybeAddAuthenticator,
+                       weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -37,6 +48,7 @@ void FidoChromeOSDiscovery::MaybeAddAuthenticator(bool is_available) {
     observer()->DiscoveryStarted(this, /*success=*/false);
     return;
   }
+
   authenticator_ =
       std::make_unique<ChromeOSAuthenticator>(generate_request_id_callback_);
   observer()->DiscoveryStarted(this, /*success=*/true, {authenticator_.get()});

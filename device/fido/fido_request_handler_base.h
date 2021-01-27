@@ -184,6 +184,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     virtual void SetMightCreateResidentCredential(bool v) = 0;
   };
 
+  FidoRequestHandlerBase();
+
   // The |available_transports| should be the intersection of transports
   // supported by the client and allowed by the relying party.
   FidoRequestHandlerBase(
@@ -254,6 +256,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
   // FidoRequestHandler and stored in active_authenticators().
   virtual void DispatchRequest(FidoAuthenticator*) = 0;
 
+  void InitDiscoveries(
+      FidoDiscoveryFactory* fido_discovery_factory,
+      base::flat_set<FidoTransportProtocol> available_transports);
+
   void Start();
 
   AuthenticatorMap& active_authenticators() { return active_authenticators_; }
@@ -274,15 +280,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
 
  private:
   friend class FidoRequestHandlerTest;
-
-  void InitDiscoveries(
-      FidoDiscoveryFactory* fido_discovery_factory,
-      const base::flat_set<FidoTransportProtocol>& available_transports);
-#if defined(OS_WIN)
-  void InitDiscoveriesWin(
-      FidoDiscoveryFactory* fido_discovery_factory,
-      const base::flat_set<FidoTransportProtocol>& available_transports);
-#endif
 
   void NotifyObserverTransportAvailability();
 

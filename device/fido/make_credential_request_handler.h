@@ -209,6 +209,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
   FidoAuthenticator* selected_authenticator_for_pin_uv_auth_token_ = nullptr;
   base::Optional<pin::TokenResponse> token_;
   std::unique_ptr<BioEnroller> bio_enroller_;
+
+  // On ChromeOS, non-U2F cross-platform requests may be dispatched to the
+  // platform authenticator if the request is user-presence-only and the
+  // authenticator has been configured for user-presence-only mode via an
+  // enterprise policy. For such requests, this field will be true.
+  bool allow_platform_authenticator_for_cross_platform_request_ = false;
+
   SEQUENCE_CHECKER(my_sequence_checker_);
   base::WeakPtrFactory<MakeCredentialRequestHandler> weak_factory_{this};
 

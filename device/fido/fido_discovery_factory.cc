@@ -177,15 +177,23 @@ FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<FidoDiscoveryBase>
 FidoDiscoveryFactory::MaybeCreatePlatformDiscovery() const {
-  return base::FeatureList::IsEnabled(kWebAuthCrosPlatformAuthenticator)
-             ? std::make_unique<FidoChromeOSDiscovery>(
-                   generate_request_id_callback_)
-             : nullptr;
+  if (base::FeatureList::IsEnabled(kWebAuthCrosPlatformAuthenticator)) {
+    auto discovery =
+        std::make_unique<FidoChromeOSDiscovery>(generate_request_id_callback_);
+    discovery->set_require_power_button_mode(
+        require_legacy_cros_authenticator_);
+    return discovery;
+  }
+  return nullptr;
 }
 
 void FidoDiscoveryFactory::set_generate_request_id_callback(
     base::RepeatingCallback<uint32_t()> callback) {
   generate_request_id_callback_ = std::move(callback);
+}
+
+void FidoDiscoveryFactory::set_require_legacy_cros_authenticator(bool value) {
+  require_legacy_cros_authenticator_ = value;
 }
 #endif
 

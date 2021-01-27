@@ -421,6 +421,52 @@ bool ChromeOSAuthenticator::IsUVPlatformAuthenticatorAvailableBlocking() {
   return resp.available();
 }
 
+// static
+void ChromeOSAuthenticator::IsPowerButtonModeEnabled(
+    base::OnceCallback<void(bool is_enabled)> callback) {
+  dbus::Bus::Options dbus_options;
+  dbus_options.bus_type = dbus::Bus::SYSTEM;
+  scoped_refptr<dbus::Bus> bus = new dbus::Bus(dbus_options);
+  dbus::ObjectProxy* u2f_proxy = bus->GetObjectProxy(
+      u2f::kU2FServiceName, dbus::ObjectPath(u2f::kU2FServicePath));
+
+  if (!u2f_proxy) {
+    FIDO_LOG(DEBUG) << "Couldn't get u2f proxy";
+    std::move(callback).Run(false);
+    return;
+  }
+
+  u2f::IsUvpaaRequest req;
+  dbus::MethodCall method_call(u2f::kU2FInterface, u2f::kU2FIsU2fEnabled);
+  dbus::MessageWriter writer(&method_call);
+  writer.AppendProtoAsArrayOfBytes(req);
+
+  u2f_proxy->CallMethodWithErrorResponse(
+      &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
+      base::BindOnce(
+          [](base::OnceCallback<void(bool is_enabled)> callback,
+             dbus::Response* dbus_response, dbus::ErrorResponse* error) {
+            if (!dbus_response) {
+              FIDO_LOG(DEBUG)
+                  << "IsU2fEnabled dbus call had no response or timed out";
+              std::move(callback).Run(false);
+              return;
+            }
+
+            dbus::MessageReader reader(dbus_response);
+            u2f::IsU2fEnabledResponse resp;
+            if (!reader.PopArrayOfBytesAsProto(&resp)) {
+              FIDO_LOG(ERROR)
+                  << "Failed to parse reply for call to IsU2fEnabled";
+              std::move(callback).Run(false);
+              return;
+            }
+
+            std::move(callback).Run(resp.enabled());
+          },
+          std::move(callback)));
+}
+
 bool ChromeOSAuthenticator::IsInPairingMode() const {
   return false;
 }

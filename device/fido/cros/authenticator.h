@@ -28,9 +28,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
       base::RepeatingCallback<uint32_t()> generate_request_id_callback);
   ~ChromeOSAuthenticator() override;
 
-  bool HasCredentialForGetAssertionRequest(
-      const CtapGetAssertionRequest& request);
-
   // Returns whether the platform authenticator is available, which is true if
   // the current user has a PIN set up or biometrics enrolled.
   //
@@ -39,6 +36,16 @@ class COMPONENT_EXPORT(DEVICE_FIDO) ChromeOSAuthenticator
   //
   // TODO(crbug.com/1154063): Refactor IsUVPAA() to be async.
   static bool IsUVPlatformAuthenticatorAvailableBlocking();
+
+  // Invokes |callback| with a bool indicating whether the legacy U2F
+  // authenticator, which uses the power button for user presence checking, is
+  // enabled in the OS either via the DeviceSecondFactorAuthentication
+  // enterprise policy or debug u2f_flags.
+  static void IsPowerButtonModeEnabled(
+      base::OnceCallback<void(bool is_enabled)> callback);
+
+  bool HasCredentialForGetAssertionRequest(
+      const CtapGetAssertionRequest& request);
 
   // FidoAuthenticator
   void InitializeAuthenticator(base::OnceClosure callback) override;
