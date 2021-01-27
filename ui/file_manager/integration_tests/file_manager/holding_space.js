@@ -112,8 +112,15 @@ testcase.holdingSpaceWelcomeBannerWontShowForModalDialogs = async () => {
  * Tests that the holding space welcome banner will not show on Drive.
  */
 testcase.holdingSpaceWelcomeBannerWontShowOnDrive = async () => {
-  // Open Files app on Drive.
-  const appId = await setupAndWaitUntilReady(RootPath.DRIVE);
+  // Open Files app on Downloads.
+  const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
+
+  // Check: the holding space welcome banner should appear.
+  await remoteCall.waitForElement(
+      appId, '.holding-space-welcome:not([hidden])');
+
+  // Change to My Drive folder.
+  await navigateWithDirectoryTree(appId, '/My Drive');
 
   // Check: the holding space welcome banner should be hidden.
   await remoteCall.waitForElement(appId, '.holding-space-welcome[hidden]');
