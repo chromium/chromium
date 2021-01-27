@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 
+#include "components/shared_highlighting/core/common/text_fragments_constants.h"
 #include "third_party/blink/renderer/core/css/pseudo_style_request.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/element.h"
@@ -19,6 +20,7 @@
 #include "third_party/blink/renderer/core/paint/text_paint_style.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -105,6 +107,9 @@ Color HighlightThemeBackgroundColor(const Document& document,
                  : LayoutTheme::GetTheme().InactiveSelectionBackgroundColor(
                        style.UsedColorScheme());
     case kPseudoIdTargetText:
+      if (RuntimeEnabledFeatures::TextFragmentColorChangeEnabled())
+        return Color(shared_highlighting::kFragmentTextBackgroundColor);
+
       return LayoutTheme::GetTheme().PlatformTextSearchHighlightColor(
           false /* active match */, document.InForcedColorsMode(),
           style.UsedColorScheme());
