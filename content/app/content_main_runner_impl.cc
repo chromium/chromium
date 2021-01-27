@@ -527,11 +527,12 @@ int RunZygote(ContentMainDelegate* delegate) {
 
   InitializeFieldTrialAndFeatureList();
   delegate->PostFieldTrialInitialization();
-  mojo::core::InitFeatures();
 
   // After feature list has been initialized, enable pcscan on malloc
   // partitions.
   EnablePCScanForMallocPartitionsIfNeeded();
+
+  mojo::core::InitFeatures();
 
   for (size_t i = 0; i < base::size(kMainFunctions); ++i) {
     if (process_type == kMainFunctions[i].name)
@@ -557,7 +558,6 @@ int RunBrowserProcessMain(const MainFunctionParams& main_function_params,
   int exit_code = delegate->RunProcess("", main_function_params);
   if (exit_code >= 0)
     return exit_code;
-  EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
   return BrowserMain(main_function_params);
 }
 
@@ -575,12 +575,6 @@ int RunOtherNamedProcessTypeMain(const std::string& process_type,
     {switches::kGpuProcess, GpuMain},
   };
 
-  if (process_type != switches::kZygoteProcess) {
-    // Must run as early as possible. See the definition comment.
-    ConfigurePartitionRefCountSupportIfNeeded(process_type !=
-                                              switches::kRendererProcess);
-  }
-
   for (size_t i = 0; i < base::size(kMainFunctions); ++i) {
     if (process_type == kMainFunctions[i].name) {
       int exit_code = delegate->RunProcess(process_type, main_function_params);
@@ -588,11 +582,6 @@ int RunOtherNamedProcessTypeMain(const std::string& process_type,
         return exit_code;
       return kMainFunctions[i].function(main_function_params);
     }
-  }
-
-  if (process_type != switches::kZygoteProcess) {
-    // Zygote processes are handled in RunZygote.
-    EnablePCScanForMallocPartitionsIfNeeded();
   }
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
@@ -742,9 +731,28 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
   // overriding logic is working correctly. If not causes a hard crash, as its
   // unexpected absence has security implications.
   CHECK(base::allocator::IsAllocatorInitialized());
+
+  if (process_type != switches::kZygoteProcess) {
+    // Must run as early as possible. See the definition comment.
+    // In case of zygote, this is called in RunZygote().
+    ConfigurePartitionRefCountSupportIfNeeded(process_type !=
+                                              switches::kRendererProcess);
+  }
+
+  // These initializations are only relevant for PartitionAlloc-Everywhere
+  // builds.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   base::allocator::EnablePartitionAllocMemoryReclaimer();
-#endif
+
+#if defined(OS_ANDROID)
+  // The thread cache consumes more memory, especially when periodic purge is
+  // disabled. Don't use it on low-memory devices.
+  if (base::SysInfo::IsLowEndDevice()) {
+    base::DisablePartitionAllocThreadCacheForProcess();
+  }
+#endif  // defined(OS_ANDROID)
+
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
   if (!process_type.empty()) {
@@ -901,6 +909,7 @@ int ContentMainRunnerImpl::Run(bool start_minimal_browser) {
       // After feature list has been initialized, enable pcscan on malloc
       // partitions.
       EnablePCScanForMallocPartitionsIfNeeded();
+
       mojo::core::InitFeatures();
     }
 
@@ -928,13 +937,6 @@ int ContentMainRunnerImpl::Run(bool start_minimal_browser) {
 
   RegisterMainThreadFactories();
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_ANDROID)
-  // The thread cache consumes more memory, especially as long as periodic purge
-  // above is disabled. Don't use one on low-memory devices.
-  if (base::SysInfo::IsLowEndDevice())
-    base::DisablePartitionAllocThreadCacheForProcess();
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && defined(OS_ANDROID)
-
   if (process_type.empty())
     return RunBrowser(main_params, start_minimal_browser);
 
@@ -947,9 +949,6 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
                        TRACE_EVENT_SCOPE_THREAD);
   if (is_browser_main_loop_started_)
     return -1;
-
-  // Must run as early as possible. See the definition comment.
-  ConfigurePartitionRefCountSupportIfNeeded(/* enable_ref_count = */ true);
 
   bool should_start_minimal_browser = start_minimal_browser;
   if (!mojo_ipc_support_) {
@@ -1051,6 +1050,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
 
   // Enable PCScan once we are certain that FeatureList was initialized.
   EnablePCScanForMallocPartitionsIfNeeded();
+  EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
 
   if (should_start_minimal_browser) {
     DVLOG(0) << "Chrome is running in minimal browser mode.";
