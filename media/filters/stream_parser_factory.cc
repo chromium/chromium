@@ -373,7 +373,7 @@ static StreamParser* BuildMP2TParser(const std::vector<std::string>& codecs,
     }
   }
 
-  return new media::mp2t::Mp2tStreamParser(has_sbr);
+  return new media::mp2t::Mp2tStreamParser(codecs, has_sbr);
 }
 #endif  // ENABLE_MSE_MPEG2TS_STREAM_PARSER
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
