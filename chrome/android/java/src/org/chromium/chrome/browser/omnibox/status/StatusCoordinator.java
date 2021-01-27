@@ -11,6 +11,7 @@ import android.view.View;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfoControllerDelegate;
 import org.chromium.chrome.browser.page_info.ChromePermissionParamsListBuilderDelegate;
+import org.chromium.chrome.browser.page_info.PageInfoIPHController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
@@ -81,11 +83,15 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
             securityIconView.setVisibility(
                     mModel.get(StatusProperties.SHOW_STATUS_ICON) ? View.VISIBLE : View.GONE);
         };
+
+        PageInfoIPHController pageInfoIPHController = new PageInfoIPHController(
+                ContextUtils.activityFromContext(mStatusView.getContext()), getSecurityIconView());
+
         mMediator = new StatusMediator(mModel, mStatusView.getResources(), mStatusView.getContext(),
                 urlBarEditingTextStateProvider, isTablet, forceModelViewReconciliationRunnable,
                 incognitoStateProvider, locationBarDataProvider,
                 PermissionDialogController.getInstance(), searchEngineLogoUtils,
-                templateUrlServiceSupplier, profileSupplier);
+                templateUrlServiceSupplier, profileSupplier, pageInfoIPHController);
 
         Resources res = mStatusView.getResources();
         mMediator.setUrlMinWidth(res.getDimensionPixelSize(R.dimen.location_bar_min_url_width)

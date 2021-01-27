@@ -103,6 +103,8 @@ const base::Feature kIPHKeyboardAccessoryPaymentOfferFeature{
     "IPH_KeyboardAccessoryPaymentOffer", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHNewTabPageHomeButtonFeature{
     "IPH_NewTabPageHomeButton", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kIPHPageInfoFeature{"IPH_PageInfo",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kIPHPreviewsOmniboxUIFeature{
     "IPH_PreviewsOmniboxUI", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kIPHTabGroupsQuicklyComparePagesFeature{

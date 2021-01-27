@@ -116,7 +116,7 @@ public final class StatusMediatorUnitTest {
                     mUrlBarEditingTextStateProvider,
                     /* isTablet */ false, mMockForceModelViewReconciliationRunnable, null,
                     mLocationBarDataProvider, mPermissionDialogController, mSearchEngineLogoUtils,
-                    () -> mTemplateUrlService, () -> mProfile);
+                    () -> mTemplateUrlService, () -> mProfile, null);
         });
         mBitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
     }

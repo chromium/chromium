@@ -96,6 +96,7 @@ DEFINE_VARIATION_PARAM(kIPHKeyboardAccessoryPaymentFillingFeature,
 DEFINE_VARIATION_PARAM(kIPHKeyboardAccessoryPaymentOfferFeature,
                        "IPH_KeyboardAccessoryPaymentOffer");
 DEFINE_VARIATION_PARAM(kIPHNewTabPageButtonFeature, "IPH_NewTabPageHomeButton");
+DEFINE_VARIATION_PARAM(kIPHPageInfoFeature, "IPH_PageInfo");
 DEFINE_VARIATION_PARAM(kIPHPreviewsOmniboxUIFeature, "IPH_PreviewsOmniboxUI");
 DEFINE_VARIATION_PARAM(kIPHPwaInstallAvailableFeature,
                        "IPH_PwaInstallAvailableFeature");
@@ -200,6 +201,7 @@ constexpr flags_ui::FeatureEntry::FeatureVariation
         VARIATION_ENTRY(kIPHKeyboardAccessoryPaymentFillingFeature),
         VARIATION_ENTRY(kIPHKeyboardAccessoryPaymentOfferFeature),
         VARIATION_ENTRY(kIPHNewTabPageButtonFeature),
+        VARIATION_ENTRY(kIPHPageInfoFeature),
         VARIATION_ENTRY(kIPHPreviewsOmniboxUIFeature),
         VARIATION_ENTRY(kIPHPwaInstallAvailableFeature),
         VARIATION_ENTRY(kIPHQuietNotificationPromptsFeature),

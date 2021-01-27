@@ -2245,6 +2245,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         You are viewing a preview of this page
       </message>
 
+<message name="IDS_PAGE_INFO_IPH" desc="Message to in InProductHelp bubble to make users aware of changing permissions in PageInfo.">
+        Change your site settings here
+      </message>
+
       <!-- Sad tab page -->
       <message name="IDS_SAD_TAB_SUGGESTIONS" desc="The help message displayed on the sad tab page after a tab crashes.">
         If you’re seeing this frequently, try these <ph name="BEGIN_LINK">&lt;link&gt;</ph>suggestions<ph name="END_LINK">&lt;/link&gt;</ph>.

@@ -93,6 +93,9 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
         initOfflinePageParams();
         mOfflinePageLoadUrlDelegate = offlinePageLoadUrlDelegate;
         initHttpsImageCompressionStateAndRecordUMA();
+
+        TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
+                .notifyEvent(EventConstants.PAGE_INFO_OPENED);
     }
 
     /**

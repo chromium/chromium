@@ -215,6 +215,12 @@ public final class EventConstants {
     /** PWA install events. */
     public static final String PWA_INSTALL_MENU_SELECTED = "pwa_install_menu_clicked";
 
+    /** PageInfo events. */
+    public static final String PAGE_INFO_OPENED = "page_info_opened";
+
+    /** Permission events. */
+    public static final String PERMISSION_REQUEST_SHOWN = "permission_request_shown";
+
     /**
      * Do not instantiate.
      */

@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
+import org.chromium.chrome.browser.page_info.PageInfoIPHController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
@@ -86,6 +87,7 @@ public class StatusMediator implements IncognitoStateProvider.IncognitoStateObse
     private final Handler mPermissionTaskHandler = new Handler();
     private final CallbackController mCallbackController = new CallbackController();
     private @ContentSettingsType int mLastPermission;
+    private final PageInfoIPHController mPageInfoIPHController;
 
     private boolean mUrlBarTextIsSearch = true;
 
@@ -111,7 +113,7 @@ public class StatusMediator implements IncognitoStateProvider.IncognitoStateObse
             PermissionDialogController permissionDialogController,
             SearchEngineLogoUtils searchEngineLogoUtils,
             Supplier<TemplateUrlService> templateUrlServiceSupplier,
-            Supplier<Profile> profileSupplier) {
+            Supplier<Profile> profileSupplier, PageInfoIPHController pageInfoIPHController) {
         mModel = model;
         mLocationBarDataProvider = locationBarDataProvider;
         mSearchEngineLogoUtils = searchEngineLogoUtils;
@@ -122,6 +124,7 @@ public class StatusMediator implements IncognitoStateProvider.IncognitoStateObse
         mResources = resources;
         mContext = context;
         mUrlBarEditingTextStateProvider = urlBarEditingTextStateProvider;
+        mPageInfoIPHController = pageInfoIPHController;
 
         mEndPaddingPixelSizeOnFocusDelta =
                 mResources.getDimensionPixelSize(R.dimen.sei_location_bar_icon_end_padding_focused)
@@ -685,6 +688,9 @@ public class StatusMediator implements IncognitoStateProvider.IncognitoStateObse
     @Override
     public void onDialogResult(
             @ContentSettingsType int[] permissions, @ContentSettingValues int result) {
+        if (mPageInfoIPHController != null) {
+            mPageInfoIPHController.onPermissionDialogShown(permissions);
+        }
         if (!PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_DISCOVERABILITY)) {
             return;
         }

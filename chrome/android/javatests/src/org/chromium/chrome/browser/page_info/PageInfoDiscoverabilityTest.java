@@ -84,7 +84,7 @@ public class PageInfoDiscoverabilityTest {
                     mUrlBarEditingTextStateProvider,
                     /* isTablet */ false, mMockForceModelViewReconciliationRunnable, null,
                     mLocationBarDataProvider, mPermissionDialogController, mSearchEngineLogoUtils,
-                    () -> mTemplateUrlService, () -> mProfile);
+                    () -> mTemplateUrlService, () -> mProfile, null);
         });
     }
 
