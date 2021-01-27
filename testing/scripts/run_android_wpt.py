@@ -128,6 +128,7 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     rest_args.extend(["run",
       "--tests=" + wpt_common.EXTERNAL_WPT_TESTS_DIR,
       "--test-type=" + self.options.test_type,
+      "--device-serial", self._device.serial,
       "--webdriver-binary",
       self.options.webdriver_binary,
       "--headless",
