@@ -599,7 +599,7 @@ RenderViewContextMenu::RenderViewContextMenu(
       extension_items_(browser_context_,
                        this,
                        &menu_model_,
-                       base::Bind(MenuItemMatchesParams, params_)),
+                       base::BindRepeating(MenuItemMatchesParams, params_)),
       profile_link_submenu_model_(this),
       multiple_profiles_open_(false),
       protocol_handler_submenu_model_(this),
@@ -2872,8 +2872,8 @@ void RenderViewContextMenu::ExecOpenLinkInProfile(int profile_index) {
   base::FilePath profile_path = profile_link_paths_[profile_index];
   profiles::SwitchToProfile(
       profile_path, false,
-      base::Bind(OnProfileCreated, params_.link_url,
-                 CreateReferrer(params_.link_url, params_)));
+      base::BindRepeating(OnProfileCreated, params_.link_url,
+                          CreateReferrer(params_.link_url, params_)));
 }
 
 void RenderViewContextMenu::ExecInspectElement() {

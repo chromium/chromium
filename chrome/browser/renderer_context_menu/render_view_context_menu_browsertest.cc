@@ -252,13 +252,13 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     auto callback =
         [](std::vector<uint8_t>* response_image_data,
            gfx::Size* response_original_size,
-           std::string* response_file_extension, const base::Closure& quit,
+           std::string* response_file_extension, base::OnceClosure quit,
            const std::vector<uint8_t>& image_data,
            const gfx::Size& original_size, const std::string& file_extension) {
           *response_image_data = image_data;
           *response_original_size = original_size;
           *response_file_extension = file_extension;
-          quit.Run();
+          std::move(quit).Run();
         };
 
     base::RunLoop run_loop;
@@ -267,8 +267,8 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
     std::string response_file_extension;
     chrome_render_frame->RequestImageForContextNode(
         0, request_size, request_image_format,
-        base::Bind(callback, &response_image_data, &response_original_size,
-                   &response_file_extension, run_loop.QuitClosure()));
+        base::BindOnce(callback, &response_image_data, &response_original_size,
+                       &response_file_extension, run_loop.QuitClosure()));
     run_loop.Run();
 
     ASSERT_EQ(expected_original_size.width(), response_original_size.width());
@@ -356,7 +356,7 @@ class PdfPluginContextMenuBrowserTest : public InProcessBrowserTest {
         browser()->tab_strip_model()->GetActiveWebContents();
     // Prepare to load a pdf plugin inside.
     test_guest_view_manager_->RegisterTestGuestViewType<MimeHandlerViewGuest>(
-        base::Bind(&TestMimeHandlerViewGuest::Create));
+        base::BindRepeating(&TestMimeHandlerViewGuest::Create));
     ASSERT_TRUE(
         content::ExecuteScript(web_contents,
                                "var l = document.getElementById('link1');"
@@ -1415,12 +1415,12 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithCorruptImage) {
       ->GetRemoteAssociatedInterfaces()
       ->GetInterface(&chrome_render_frame);
 
-  auto callback = [](bool* response_received, const base::Closure& quit,
+  auto callback = [](bool* response_received, base::OnceClosure quit,
                      const std::vector<uint8_t>& thumbnail_data,
                      const gfx::Size& original_size,
                      const std::string& file_extension) {
     *response_received = true;
-    quit.Run();
+    std::move(quit).Run();
   };
 
   base::RunLoop run_loop;
