@@ -113,7 +113,6 @@ std::unique_ptr<aura::Window> CreateTransientWindow(
   aura::client::ParentWindowWithContext(
       window.get(), transient_parent->GetRootWindow(), bounds);
   window->Show();
-  wm::ActivateWindow(window.get());
   return window;
 }
 
@@ -702,6 +701,7 @@ TEST_F(DesksTest, TransientWindows) {
   // it's tracked in desk_1 (even though desk_2 is the currently active one).
   // This is because the transient parent exists in desk_1.
   auto win2 = CreateTransientWindow(win1.get(), gfx::Rect(100, 100, 50, 50));
+  EXPECT_FALSE(controller->AreDesksBeingModified());
   EXPECT_EQ(3u, desk_1->windows().size());
   EXPECT_TRUE(desk_2->windows().empty());
   EXPECT_FALSE(DoesActiveDeskContainWindow(win2.get()));
@@ -732,6 +732,7 @@ TEST_F(DesksTest, WindowStackingAfterWindowMoveToAnotherDesk) {
 
   auto win1 = CreateAppWindow(gfx::Rect(10, 10, 250, 100));
   auto win2 = CreateTransientWindow(win1.get(), gfx::Rect(100, 100, 100, 100));
+  wm::ActivateWindow(win2.get());
   auto win3 = CreateAppWindow(gfx::Rect(20, 20, 250, 100));
 
   // Move back to desk_1, so |win0| becomes the most recent.
