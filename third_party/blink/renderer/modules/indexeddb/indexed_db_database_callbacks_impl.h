@@ -35,7 +35,6 @@ class IndexedDBDatabaseCallbacksImpl
              mojom::blink::IDBException code,
              const WTF::String& message) override;
   void Complete(int64_t transaction_id) override;
-  void Changes(mojom::blink::IDBObserverChangesPtr changes) override;
 
  private:
   std::unique_ptr<WebIDBDatabaseCallbacks> callbacks_;

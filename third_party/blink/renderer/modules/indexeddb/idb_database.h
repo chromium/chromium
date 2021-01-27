@@ -49,14 +49,13 @@
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/scheduler/public/frame_or_worker_scheduler.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
 class DOMException;
 class ExceptionState;
 class ExecutionContext;
-class IDBObservation;
-class IDBObserver;
 
 class MODULES_EXPORT IDBDatabase final
     : public EventTargetWithInlineData,
@@ -69,7 +68,6 @@ class MODULES_EXPORT IDBDatabase final
       ExecutionContext*,
       std::unique_ptr<WebIDBDatabase>,
       IDBDatabaseCallbacks*,
-      v8::Isolate*,
       mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime);
   ~IDBDatabase() override;
 
@@ -85,13 +83,6 @@ class MODULES_EXPORT IDBDatabase final
   void TransactionCreated(IDBTransaction*);
   void TransactionFinished(const IDBTransaction*);
   const String& GetObjectStoreName(int64_t object_store_id) const;
-  int32_t AddObserver(IDBObserver*,
-                      int64_t transaction_id,
-                      bool include_transaction,
-                      bool no_records,
-                      bool values,
-                      std::bitset<kIDBOperationTypeCount> operation_types);
-  void RemoveObservers(const Vector<int32_t>& observer_ids);
 
   // Implement the IDL
   const String& name() const { return metadata_.name; }
@@ -125,9 +116,6 @@ class MODULES_EXPORT IDBDatabase final
   void OnVersionChange(int64_t old_version, int64_t new_version);
   void OnAbort(int64_t, DOMException*);
   void OnComplete(int64_t);
-  void OnChanges(const WebIDBDatabaseCallbacks::ObservationIndexMap&,
-                 Vector<Persistent<IDBObservation>> observations,
-                 const WebIDBDatabaseCallbacks::TransactionMap& transactions);
 
   // ScriptWrappable
   bool HasPendingActivity() const final;
@@ -157,9 +145,7 @@ class MODULES_EXPORT IDBDatabase final
   WebIDBDatabase* Backend() const { return backend_.get(); }
 
   static int64_t NextTransactionId();
-  static int32_t NextObserverId();
 
-  static const char kCannotObserveVersionChangeTransaction[];
   static const char kIndexDeletedErrorMessage[];
   static const char kIndexNameTakenErrorMessage[];
   static const char kIsKeyCursorErrorMessage[];
@@ -193,7 +179,6 @@ class MODULES_EXPORT IDBDatabase final
   std::unique_ptr<WebIDBDatabase> backend_;
   Member<IDBTransaction> version_change_transaction_;
   HeapHashMap<int64_t, Member<IDBTransaction>> transactions_;
-  HeapHashMap<int32_t, Member<IDBObserver>> observers_;
   // No interface here, so no need to bind it.  This is only for
   // lifetime observation of the use of IndexedDB from the browser.
   mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime_;
@@ -203,9 +188,6 @@ class MODULES_EXPORT IDBDatabase final
   Member<EventQueue> event_queue_;
 
   Member<IDBDatabaseCallbacks> database_callbacks_;
-  // Maintain the isolate so that all externally allocated memory can be
-  // registered against it.
-  v8::Isolate* isolate_;
 
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;

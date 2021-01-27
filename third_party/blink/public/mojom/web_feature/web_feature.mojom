@@ -1335,8 +1335,6 @@ enum WebFeature {
   kV0CustomElementsCreateCustomTagElement = 1877,
   kV0CustomElementsCreateTypeExtensionElement = 1878,
   kV0CustomElementsConstruct = 1879,
-  kV8IDBObserver_Observe_Method = 1880,
-  kV8IDBObserver_Unobserve_Method = 1881,
   kWebBluetoothRemoteCharacteristicGetDescriptor = 1882,
   kWebBluetoothRemoteCharacteristicGetDescriptors = 1883,
   kWebBluetoothRemoteCharacteristicReadValue = 1884,

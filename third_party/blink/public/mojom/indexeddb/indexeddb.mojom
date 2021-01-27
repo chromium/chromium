@@ -233,24 +233,6 @@ struct IDBReturnValue {
   IDBKeyPath key_path;
 };
 
-struct IDBObservation {
-  int64 object_store_id;
-  IDBOperationType type;
-  IDBKeyRange key_range;
-  IDBValue? value;
-};
-
-struct IDBObserverTransaction {
-  int64 id;
-  array<int64> scope;
-};
-
-struct IDBObserverChanges {
-  map<int32, array<int32>> observation_index_map;
-  map<int32, IDBObserverTransaction> transaction_map;
-  array<IDBObservation> observations;
-};
-
 // The IDBCallbacks interface is used to return results for individual requests.
 // Some requests may return multiple results before completion, such as
 // UpgradeNeeded before SuccessDatabase.
@@ -292,7 +274,6 @@ interface IDBDatabaseCallbacks {
   Abort(int64 transaction_id, IDBException code,
         mojo_base.mojom.String16 message);
   Complete(int64 transaction_id);
-  Changes(IDBObserverChanges changes);
 };
 
 struct IDBError {
@@ -406,13 +387,6 @@ interface IDBDatabase {
                     IDBTransactionDurability durability);
   Close();
   VersionChangeIgnored();
-  AddObserver(int64 transaction_id,
-              int32 observer_id,
-              bool include_transaction,
-              bool no_records,
-              bool values,
-              uint32 operation_types);
-  RemoveObservers(array<int32> observers);
   Get(int64 transaction_id,
       int64 object_store_id,
       int64 index_id,

@@ -959,8 +959,6 @@ source_set("browser") {
     "indexed_db/indexed_db_leveldb_operations.h",
     "indexed_db/indexed_db_metadata_coding.cc",
     "indexed_db/indexed_db_metadata_coding.h",
-    "indexed_db/indexed_db_observer.cc",
-    "indexed_db/indexed_db_observer.h",
     "indexed_db/indexed_db_origin_state.cc",
     "indexed_db/indexed_db_origin_state.h",
     "indexed_db/indexed_db_origin_state_handle.cc",

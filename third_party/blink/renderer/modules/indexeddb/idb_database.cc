@@ -36,7 +36,6 @@
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_binding_for_modules.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_idb_observer_callback.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
@@ -44,8 +43,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_event_dispatcher.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_index.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_observer.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_observer_changes.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_tracing.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_version_change_event.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_database_callbacks.h"
@@ -58,8 +55,6 @@
 
 namespace blink {
 
-const char IDBDatabase::kCannotObserveVersionChangeTransaction[] =
-    "An observer cannot target a version change transaction.";
 const char IDBDatabase::kIndexDeletedErrorMessage[] =
     "The index or its object store has been deleted.";
 const char IDBDatabase::kIndexNameTakenErrorMessage[] =
@@ -99,7 +94,6 @@ IDBDatabase::IDBDatabase(
     ExecutionContext* context,
     std::unique_ptr<WebIDBDatabase> backend,
     IDBDatabaseCallbacks* callbacks,
-    v8::Isolate* isolate,
     mojo::PendingRemote<mojom::blink::ObservedFeature> connection_lifetime)
     : ExecutionContextLifecycleObserver(context),
       backend_(std::move(backend)),
@@ -107,7 +101,6 @@ IDBDatabase::IDBDatabase(
       event_queue_(
           MakeGarbageCollected<EventQueue>(context, TaskType::kDatabaseAccess)),
       database_callbacks_(callbacks),
-      isolate_(isolate),
       feature_handle_for_scheduler_(
           context
               ? context->GetScheduler()->RegisterFeature(
@@ -125,7 +118,6 @@ IDBDatabase::~IDBDatabase() {
 void IDBDatabase::Trace(Visitor* visitor) const {
   visitor->Trace(version_change_transaction_);
   visitor->Trace(transactions_);
-  visitor->Trace(observers_);
   visitor->Trace(event_queue_);
   visitor->Trace(database_callbacks_);
   EventTargetWithInlineData::Trace(visitor);
@@ -138,12 +130,6 @@ int64_t IDBDatabase::NextTransactionId() {
   // bits of the id.
   static base::AtomicSequenceNumber current_transaction_id;
   return current_transaction_id.GetNext() + 1;
-}
-
-int32_t IDBDatabase::NextObserverId() {
-  // Starts at 1, unlike AtomicSequenceNumber.
-  static base::AtomicSequenceNumber current_observer_id;
-  return current_observer_id.GetNext() + 1;
 }
 
 void IDBDatabase::SetMetadata(const IDBDatabaseMetadata& metadata) {
@@ -190,36 +176,6 @@ void IDBDatabase::OnComplete(int64_t transaction_id) {
   transactions_.at(transaction_id)->OnComplete();
 }
 
-void IDBDatabase::OnChanges(
-    const WebIDBDatabaseCallbacks::ObservationIndexMap& observation_index_map,
-    Vector<Persistent<IDBObservation>> observations,
-    const WebIDBDatabaseCallbacks::TransactionMap& transactions) {
-  for (const auto& observation : observations) {
-    observation->SetIsolate(isolate_);
-  }
-
-  for (const auto& map_entry : observation_index_map) {
-    auto observer_lookup_result = observers_.find(map_entry.key);
-    if (observer_lookup_result != observers_.end()) {
-      IDBObserver* observer = observer_lookup_result->value;
-
-      auto transactions_lookup_result = transactions.find(map_entry.key);
-      if (transactions_lookup_result != transactions.end()) {
-        const std::pair<int64_t, Vector<int64_t>>& obs_txn =
-            transactions_lookup_result->value;
-        HashSet<String> stores;
-        for (int64_t store_id : obs_txn.second) {
-          stores.insert(metadata_.object_stores.at(store_id)->name);
-        }
-      }
-
-      observer->Callback()->InvokeAndReportException(
-          observer, MakeGarbageCollected<IDBObserverChanges>(
-                        this, nullptr, observations, map_entry.value));
-    }
-  }
-}
-
 DOMStringList* IDBDatabase::objectStoreNames() const {
   auto* object_store_names = MakeGarbageCollected<DOMStringList>();
   for (const auto& it : metadata_.object_stores)
@@ -232,25 +188,6 @@ const String& IDBDatabase::GetObjectStoreName(int64_t object_store_id) const {
   const auto& it = metadata_.object_stores.find(object_store_id);
   DCHECK(it != metadata_.object_stores.end());
   return it->value->name;
-}
-
-int32_t IDBDatabase::AddObserver(
-    IDBObserver* observer,
-    int64_t transaction_id,
-    bool include_transaction,
-    bool no_records,
-    bool values,
-    std::bitset<blink::kIDBOperationTypeCount> operation_types) {
-  int32_t observer_id = NextObserverId();
-  observers_.Set(observer_id, observer);
-  Backend()->AddObserver(transaction_id, observer_id, include_transaction,
-                         no_records, values, operation_types);
-  return observer_id;
-}
-
-void IDBDatabase::RemoveObservers(const Vector<int32_t>& observer_ids) {
-  observers_.RemoveAll(observer_ids);
-  Backend()->RemoveObservers(observer_ids);
 }
 
 IDBObjectStore* IDBDatabase::createObjectStore(

@@ -42,15 +42,6 @@ class MODULES_EXPORT WebIDBDatabaseImpl : public WebIDBDatabase {
   void Close() override;
   void VersionChangeIgnored() override;
 
-  void AddObserver(
-      int64_t transaction_id,
-      int32_t observer_id,
-      bool include_transaction,
-      bool no_records,
-      bool values,
-      std::bitset<kIDBOperationTypeCount> operation_types) override;
-  void RemoveObservers(const Vector<int32_t>& observer_ids) override;
-
   void Get(int64_t transaction_id,
            int64_t object_store_id,
            int64_t index_id,

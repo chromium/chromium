@@ -149,35 +149,6 @@ void DatabaseImpl::VersionChangeIgnored() {
   connection_->VersionChangeIgnored();
 }
 
-void DatabaseImpl::AddObserver(int64_t transaction_id,
-                               int32_t observer_id,
-                               bool include_transaction,
-                               bool no_records,
-                               bool values,
-                               uint32_t operation_types) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected())
-    return;
-
-  IndexedDBTransaction* transaction =
-      connection_->GetTransaction(transaction_id);
-  if (!transaction)
-    return;
-
-  IndexedDBObserver::Options options(include_transaction, no_records, values,
-                                     operation_types);
-  connection_->database()->AddPendingObserver(transaction, observer_id,
-                                              options);
-}
-
-void DatabaseImpl::RemoveObservers(const std::vector<int32_t>& observers) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!connection_->IsConnected())
-    return;
-
-  connection_->RemoveObservers(observers);
-}
-
 void DatabaseImpl::Get(int64_t transaction_id,
                        int64_t object_store_id,
                        int64_t index_id,

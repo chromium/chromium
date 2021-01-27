@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_database_callbacks.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database_error.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_range.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_observation.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
@@ -71,16 +70,6 @@ void WebIDBDatabaseCallbacksImpl::OnAbort(int64_t transaction_id,
 void WebIDBDatabaseCallbacksImpl::OnComplete(int64_t transaction_id) {
   if (callbacks_)
     callbacks_->OnComplete(transaction_id);
-}
-
-void WebIDBDatabaseCallbacksImpl::OnChanges(
-    const ObservationIndexMap& observation_index_map,
-    Vector<Persistent<IDBObservation>> observations,
-    const TransactionMap& transactions) {
-  if (callbacks_) {
-    callbacks_->OnChanges(observation_index_map, std::move(observations),
-                          transactions);
-  }
 }
 
 void WebIDBDatabaseCallbacksImpl::Detach() {

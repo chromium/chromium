@@ -36,7 +36,6 @@ namespace blink {
 
 class DOMException;
 class IDBDatabase;
-class IDBObservation;
 
 class MODULES_EXPORT IDBDatabaseCallbacks
     : public GarbageCollected<IDBDatabaseCallbacks> {
@@ -51,10 +50,6 @@ class MODULES_EXPORT IDBDatabaseCallbacks
 
   virtual void OnAbort(int64_t transaction_id, DOMException*);
   virtual void OnComplete(int64_t transaction_id);
-  virtual void OnChanges(
-      const WebIDBDatabaseCallbacks::ObservationIndexMap&,
-      Vector<Persistent<IDBObservation>> observations,
-      const WebIDBDatabaseCallbacks::TransactionMap& transactions);
 
   void Connect(IDBDatabase*);
 

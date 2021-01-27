@@ -691,23 +691,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method put
 [Worker]     method putAllValues
 [Worker]     setter name
-[Worker] interface IDBObservation
-[Worker]     attribute @@toStringTag
-[Worker]     getter key
-[Worker]     getter type
-[Worker]     getter value
-[Worker]     method constructor
-[Worker] interface IDBObserver
-[Worker]     attribute @@toStringTag
-[Worker]     method constructor
-[Worker]     method observe
-[Worker]     method unobserve
-[Worker] interface IDBObserverChanges
-[Worker]     attribute @@toStringTag
-[Worker]     getter database
-[Worker]     getter records
-[Worker]     getter transaction
-[Worker]     method constructor
 [Worker] interface IDBOpenDBRequest : IDBRequest
 [Worker]     attribute @@toStringTag
 [Worker]     getter onblocked

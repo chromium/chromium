@@ -1014,10 +1014,6 @@
       status: "experimental",
     },
     {
-      name: "IDBObserver",
-      status: "experimental",
-    },
-    {
       name: "IDBPutAll",
       status: "experimental",
     },

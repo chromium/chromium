@@ -54,24 +54,6 @@ void WebIDBDatabaseImpl::VersionChangeIgnored() {
   database_->VersionChangeIgnored();
 }
 
-void WebIDBDatabaseImpl::AddObserver(
-    int64_t transaction_id,
-    int32_t observer_id,
-    bool include_transaction,
-    bool no_records,
-    bool values,
-    std::bitset<blink::kIDBOperationTypeCount> operation_types) {
-  static_assert(kIDBOperationTypeCount < sizeof(uint32_t) * CHAR_BIT,
-                "IDBOperationTypeCount exceeds size of uint32_t");
-  database_->AddObserver(transaction_id, observer_id, include_transaction,
-                         no_records, values,
-                         static_cast<uint32_t>(operation_types.to_ulong()));
-}
-
-void WebIDBDatabaseImpl::RemoveObservers(const Vector<int32_t>& observer_ids) {
-  database_->RemoveObservers(observer_ids);
-}
-
 void WebIDBDatabaseImpl::Get(int64_t transaction_id,
                              int64_t object_store_id,
                              int64_t index_id,

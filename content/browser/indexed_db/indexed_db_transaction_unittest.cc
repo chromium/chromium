@@ -25,7 +25,6 @@
 #include "content/browser/indexed_db/indexed_db_fake_backing_store.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_metadata_coding.h"
-#include "content/browser/indexed_db/indexed_db_observer.h"
 #include "content/browser/indexed_db/mock_indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/mock_indexed_db_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -523,50 +522,6 @@ TEST_P(IndexedDBTransactionTestMode, AbortPreemptive) {
   EXPECT_FALSE(transaction->HasPendingTasks());
   EXPECT_EQ(transaction->diagnostics().tasks_completed,
             transaction->diagnostics().tasks_scheduled);
-}
-
-TEST_F(IndexedDBTransactionTest, IndexedDBObserver) {
-  const int64_t id = 0;
-  const std::set<int64_t> scope;
-  const leveldb::Status commit_success = leveldb::Status::OK();
-  std::unique_ptr<IndexedDBConnection> connection = CreateConnection();
-  IndexedDBTransaction* transaction = connection->CreateTransaction(
-      id, scope, blink::mojom::IDBTransactionMode::ReadWrite,
-      new IndexedDBFakeBackingStore::FakeTransaction(commit_success));
-  ASSERT_TRUE(transaction);
-  db_->RegisterAndScheduleTransaction(transaction);
-
-  EXPECT_EQ(0UL, transaction->pending_observers_.size());
-  EXPECT_EQ(0UL, connection->active_observers().size());
-
-  // Add observers to pending observer list.
-  const int32_t observer_id1 = 1, observer_id2 = 2;
-  IndexedDBObserver::Options options(false, false, false, 0U);
-  transaction->AddPendingObserver(observer_id1, options);
-  transaction->AddPendingObserver(observer_id2, options);
-  EXPECT_EQ(2UL, transaction->pending_observers_.size());
-  EXPECT_EQ(0UL, connection->active_observers().size());
-
-  // Before commit, observer would be in pending list of transaction.
-  std::vector<int32_t> observer_to_remove1 = {observer_id1};
-  connection->RemoveObservers(observer_to_remove1);
-  EXPECT_EQ(1UL, transaction->pending_observers_.size());
-  EXPECT_EQ(0UL, connection->active_observers().size());
-
-  // After commit, observer moved to connection's active observer.
-  transaction->SetCommitFlag();
-  RunPostedTasks();
-  EXPECT_EQ(0UL, connection->transactions().size());
-  EXPECT_EQ(1UL, connection->active_observers().size());
-
-  // Observer does not exist, so no change to active_observers.
-  connection->RemoveObservers(observer_to_remove1);
-  EXPECT_EQ(1UL, connection->active_observers().size());
-
-  // Observer removed from connection's active observer.
-  std::vector<int32_t> observer_to_remove2 = {observer_id2};
-  connection->RemoveObservers(observer_to_remove2);
-  EXPECT_EQ(0UL, connection->active_observers().size());
 }
 
 static const blink::mojom::IDBTransactionMode kTestModes[] = {

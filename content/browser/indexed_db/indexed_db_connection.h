@@ -20,7 +20,6 @@
 namespace content {
 class IndexedDBDatabaseCallbacks;
 class IndexedDBDatabaseError;
-class IndexedDBObserver;
 class IndexedDBTransaction;
 class IndexedDBOriginStateHandle;
 
@@ -49,21 +48,10 @@ class CONTENT_EXPORT IndexedDBConnection {
 
   void VersionChangeIgnored();
 
-  virtual void ActivatePendingObservers(
-      std::vector<std::unique_ptr<IndexedDBObserver>> pending_observers);
-  // Removes observer listed in |remove_observer_ids| from active_observer of
-  // connection or pending_observer of transactions associated with this
-  // connection.
-  virtual void RemoveObservers(const std::vector<int32_t>& remove_observer_ids);
-
   int32_t id() const { return id_; }
 
   base::WeakPtr<IndexedDBDatabase> database() const { return database_; }
   IndexedDBDatabaseCallbacks* callbacks() const { return callbacks_.get(); }
-  const std::vector<std::unique_ptr<IndexedDBObserver>>& active_observers()
-      const {
-    return active_observers_;
-  }
   base::WeakPtr<IndexedDBConnection> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
@@ -119,7 +107,6 @@ class CONTENT_EXPORT IndexedDBConnection {
   // The callbacks_ member is cleared when the connection is closed.
   // May be nullptr in unit tests.
   scoped_refptr<IndexedDBDatabaseCallbacks> callbacks_;
-  std::vector<std::unique_ptr<IndexedDBObserver>> active_observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

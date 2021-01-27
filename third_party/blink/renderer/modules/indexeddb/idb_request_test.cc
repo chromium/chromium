@@ -93,13 +93,6 @@ class BackendDatabaseWithMockedClose
                          mojom::blink::IDBTransactionDurability) override {}
   MOCK_METHOD0(Close, void());
   void VersionChangeIgnored() override {}
-  void AddObserver(int64_t transaction_id,
-                   int32_t observer_id,
-                   bool include_transaction,
-                   bool no_records,
-                   bool values,
-                   uint32_t operation_types) override {}
-  void RemoveObservers(const WTF::Vector<int32_t>& observers) override {}
   void Get(int64_t transaction_id,
            int64_t object_store_id,
            int64_t index_id,
@@ -192,8 +185,7 @@ class IDBRequestTest : public testing::Test {
       std::unique_ptr<MockWebIDBTransaction> transaction_backend) {
     db_ = MakeGarbageCollected<IDBDatabase>(
         scope.GetExecutionContext(), std::move(database_backend),
-        MakeGarbageCollected<IDBDatabaseCallbacks>(), scope.GetIsolate(),
-        mojo::NullRemote());
+        MakeGarbageCollected<IDBDatabaseCallbacks>(), mojo::NullRemote());
 
     HashSet<String> transaction_scope = {"store"};
     transaction_ = IDBTransaction::CreateNonVersionChange(

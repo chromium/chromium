@@ -86,13 +86,6 @@ void IndexedDBDatabaseCallbacks::OnComplete(
     callbacks_->Complete(transaction.id());
 }
 
-void IndexedDBDatabaseCallbacks::OnDatabaseChange(
-    blink::mojom::IDBObserverChangesPtr changes) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (callbacks_)
-    callbacks_->Changes(std::move(changes));
-}
-
 void IndexedDBDatabaseCallbacks::OnConnectionError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callbacks_.reset();

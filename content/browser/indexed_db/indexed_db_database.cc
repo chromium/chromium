@@ -358,60 +358,6 @@ void IndexedDBDatabase::TransactionFinished(
   }
 }
 
-void IndexedDBDatabase::AddPendingObserver(
-    IndexedDBTransaction* transaction,
-    int32_t observer_id,
-    const IndexedDBObserver::Options& options) {
-  DCHECK(transaction);
-  transaction->AddPendingObserver(observer_id, options);
-}
-
-void IndexedDBDatabase::FilterObservation(IndexedDBTransaction* transaction,
-                                          int64_t object_store_id,
-                                          blink::mojom::IDBOperationType type,
-                                          const IndexedDBKeyRange& key_range,
-                                          const IndexedDBValue* value) {
-  for (auto* connection : connections()) {
-    bool recorded = false;
-    for (const auto& observer : connection->active_observers()) {
-      if (!observer->IsRecordingType(type) ||
-          !observer->IsRecordingObjectStore(object_store_id))
-        continue;
-      if (!recorded) {
-        auto observation = blink::mojom::IDBObservation::New();
-        observation->object_store_id = object_store_id;
-        observation->type = type;
-        if (type != blink::mojom::IDBOperationType::Clear)
-          observation->key_range = key_range;
-        transaction->AddObservation(connection->id(), std::move(observation));
-        recorded = true;
-      }
-      blink::mojom::IDBObserverChangesPtr& changes =
-          *transaction->GetPendingChangesForConnection(connection->id());
-
-      changes->observation_index_map[observer->id()].push_back(
-          changes->observations.size() - 1);
-      if (value && observer->values() && !changes->observations.back()->value) {
-        // TODO(dmurph): Avoid any and all IndexedDBValue copies. Perhaps defer
-        // this until the end of the transaction, where we can safely erase the
-        // indexeddb value. crbug.com/682363
-        IndexedDBValue copy = *value;
-        changes->observations.back()->value =
-            IndexedDBValue::ConvertAndEraseValue(&copy);
-      }
-    }
-  }
-}
-
-void IndexedDBDatabase::SendObservations(
-    std::map<int32_t, blink::mojom::IDBObserverChangesPtr> changes_map) {
-  for (auto* conn : connections()) {
-    auto it = changes_map.find(conn->id());
-    if (it != changes_map.end())
-      conn->callbacks()->OnDatabaseChange(std::move(it->second));
-  }
-}
-
 void IndexedDBDatabase::ScheduleOpenConnection(
     IndexedDBOriginStateHandle origin_state_handle,
     std::unique_ptr<IndexedDBPendingConnection> connection) {
@@ -1259,11 +1205,6 @@ Status IndexedDBDatabase::PutOperation(
     std::move(params->callback)
         .Run(blink::mojom::IDBTransactionPutResult::NewKey(*key));
   }
-  FilterObservation(transaction, params->object_store_id,
-                    params->put_mode == blink::mojom::IDBPutMode::AddOnly
-                        ? blink::mojom::IDBOperationType::Add
-                        : blink::mojom::IDBOperationType::Put,
-                    IndexedDBKeyRange(*key), &params->value);
   factory_->NotifyIndexedDBContentChanged(
       origin(), metadata_.name,
       metadata_.object_stores[params->object_store_id].name);
@@ -1381,11 +1322,6 @@ Status IndexedDBDatabase::PutAllOperation(
                transaction->id());
     std::move(callback).Run(
         blink::mojom::IDBTransactionPutAllResult::NewKeys(std::move(keys)));
-  }
-  for (auto& put_param : params) {
-    FilterObservation(transaction, object_store_id,
-                      blink::mojom::IDBOperationType::Put,
-                      IndexedDBKeyRange(*(put_param->key)), &put_param->value);
   }
   factory_->NotifyIndexedDBContentChanged(
       origin(), metadata_.name, metadata_.object_stores[object_store_id].name);
@@ -1612,9 +1548,6 @@ Status IndexedDBDatabase::DeleteRangeOperation(
   if (!s.ok())
     return s;
   callbacks->OnSuccess();
-  FilterObservation(transaction, object_store_id,
-                    blink::mojom::IDBOperationType::Delete, *key_range,
-                    nullptr);
   factory_->NotifyIndexedDBContentChanged(
       origin(), metadata_.name, metadata_.object_stores[object_store_id].name);
   return s;
@@ -1659,9 +1592,6 @@ Status IndexedDBDatabase::ClearOperation(
     return s;
   callbacks->OnSuccess();
 
-  FilterObservation(transaction, object_store_id,
-                    blink::mojom::IDBOperationType::Clear, IndexedDBKeyRange(),
-                    nullptr);
   factory_->NotifyIndexedDBContentChanged(
       origin(), metadata_.name, metadata_.object_stores[object_store_id].name);
   return s;

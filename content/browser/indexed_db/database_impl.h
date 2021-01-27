@@ -53,13 +53,6 @@ class DatabaseImpl : public blink::mojom::IDBDatabase {
       blink::mojom::IDBTransactionDurability durability) override;
   void Close() override;
   void VersionChangeIgnored() override;
-  void AddObserver(int64_t transaction_id,
-                   int32_t observer_id,
-                   bool include_transaction,
-                   bool no_records,
-                   bool values,
-                   uint32_t operation_types) override;
-  void RemoveObservers(const std::vector<int32_t>& observers) override;
   void Get(int64_t transaction_id,
            int64_t object_store_id,
            int64_t index_id,

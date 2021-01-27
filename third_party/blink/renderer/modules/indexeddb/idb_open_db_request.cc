@@ -107,7 +107,7 @@ void IDBOpenDBRequest::EnqueueUpgradeNeeded(
 
   auto* idb_database = MakeGarbageCollected<IDBDatabase>(
       GetExecutionContext(), std::move(backend), database_callbacks_.Release(),
-      isolate_, std::move(connection_lifetime_));
+      std::move(connection_lifetime_));
   idb_database->SetMetadata(metadata);
 
   if (old_version == IDBDatabaseMetadata::kNoVersion) {
@@ -150,8 +150,7 @@ void IDBOpenDBRequest::EnqueueResponse(std::unique_ptr<WebIDBDatabase> backend,
     DCHECK(database_callbacks_);
     idb_database = MakeGarbageCollected<IDBDatabase>(
         GetExecutionContext(), std::move(backend),
-        database_callbacks_.Release(), isolate_,
-        std::move(connection_lifetime_));
+        database_callbacks_.Release(), std::move(connection_lifetime_));
     SetResult(MakeGarbageCollected<IDBAny>(idb_database));
   }
   idb_database->SetMetadata(metadata);
