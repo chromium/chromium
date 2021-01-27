@@ -471,7 +471,7 @@
       },
       {
         "args": [
-          "--webview-apk-path=apks/AOSP_SystemWebview.apk",
+          "--webview-apk-path=apks/AOSP_SystemWebView.apk",
           "--test-runner-outdir",
           ".",
           "--client-outdir",
@@ -549,7 +549,7 @@
       },
       {
         "args": [
-          "--webview-apk-path=apks/AOSP_SystemWebview.apk",
+          "--webview-apk-path=apks/AOSP_SystemWebView.apk",
           "--test-runner-outdir",
           ".",
           "--client-outdir",
@@ -943,7 +943,7 @@
       },
       {
         "args": [
-          "--webview-apk-path=apks/AOSP_SystemWebview.apk",
+          "--webview-apk-path=apks/AOSP_SystemWebView.apk",
           "--test-runner-outdir",
           ".",
           "--client-outdir",
@@ -1021,7 +1021,7 @@
       },
       {
         "args": [
-          "--webview-apk-path=apks/AOSP_SystemWebview.apk",
+          "--webview-apk-path=apks/AOSP_SystemWebView.apk",
           "--test-runner-outdir",
           ".",
           "--client-outdir",

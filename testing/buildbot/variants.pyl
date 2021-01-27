@@ -309,7 +309,7 @@
   },
   'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE': {
     'args': [
-      '--webview-apk-path=apks/AOSP_SystemWebview.apk',
+      '--webview-apk-path=apks/AOSP_SystemWebView.apk',
       '--test-runner-outdir',
       '.',
       '--client-outdir',
@@ -333,7 +333,7 @@
   },
   'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MINUS_ONE_MILESTONE': {
     'args': [
-      '--webview-apk-path=apks/AOSP_SystemWebview.apk',
+      '--webview-apk-path=apks/AOSP_SystemWebView.apk',
       '--test-runner-outdir',
       '.',
       '--client-outdir',
