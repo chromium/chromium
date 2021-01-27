@@ -40,7 +40,6 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
-#include "third_party/blink/renderer/core/editing/markers/document_marker.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -1150,53 +1149,6 @@ WebAXObject WebAXObject::PreviousOnLine() const {
     return WebAXObject();
 
   return WebAXObject(private_.Get()->PreviousOnLine());
-}
-
-static ax::mojom::MarkerType ToAXMarkerType(
-    DocumentMarker::MarkerType marker_type) {
-  switch (marker_type) {
-    case DocumentMarker::kSpelling:
-      return ax::mojom::MarkerType::kSpelling;
-    case DocumentMarker::kGrammar:
-      return ax::mojom::MarkerType::kGrammar;
-    case DocumentMarker::kTextFragment:
-    case DocumentMarker::kTextMatch:
-      return ax::mojom::MarkerType::kTextMatch;
-    case DocumentMarker::kActiveSuggestion:
-      return ax::mojom::MarkerType::kActiveSuggestion;
-    case DocumentMarker::kSuggestion:
-      return ax::mojom::MarkerType::kSuggestion;
-    default:
-      return ax::mojom::MarkerType::kNone;
-  }
-}
-
-void WebAXObject::Markers(WebVector<ax::mojom::MarkerType>& types,
-                          WebVector<int>& starts,
-                          WebVector<int>& ends) const {
-  if (IsDetached())
-    return;
-
-  VectorOf<DocumentMarker::MarkerType> marker_types;
-  VectorOf<AXRange> marker_ranges;
-  private_->GetDocumentMarkers(&marker_types, &marker_ranges);
-  DCHECK_EQ(marker_types.size(), marker_ranges.size());
-
-  WebVector<ax::mojom::MarkerType> web_marker_types(marker_types.size());
-  WebVector<int> start_offsets(marker_ranges.size());
-  WebVector<int> end_offsets(marker_ranges.size());
-  for (wtf_size_t i = 0; i < marker_types.size(); ++i) {
-    web_marker_types[i] = ToAXMarkerType(marker_types[i]);
-    DCHECK(marker_ranges[i].IsValid());
-    DCHECK_EQ(marker_ranges[i].Start().ContainerObject(),
-              marker_ranges[i].End().ContainerObject());
-    start_offsets[i] = marker_ranges[i].Start().TextOffset();
-    end_offsets[i] = marker_ranges[i].End().TextOffset();
-  }
-
-  types.Swap(web_marker_types);
-  starts.Swap(start_offsets);
-  ends.Swap(end_offsets);
 }
 
 void WebAXObject::CharacterOffsets(WebVector<int>& offsets) const {

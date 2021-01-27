@@ -61,8 +61,7 @@ class AXInlineTextBox final : public AXObject {
   Node* GetNode() const override;
   AXObject* NextOnLine() const override;
   AXObject* PreviousOnLine() const override;
-  void GetDocumentMarkers(Vector<DocumentMarker::MarkerType>* marker_types,
-                          Vector<AXRange>* marker_ranges) const override;
+  void SerializeMarkerAttributes(ui::AXNodeData* node_data) const override;
 
  protected:
   void Init(AXObject* parent) override;

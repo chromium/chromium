@@ -577,6 +577,33 @@ std::string GetEquivalentAriaRoleString(const ax::mojom::blink::Role role) {
 
 }  // namespace
 
+int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type) {
+  ax::mojom::blink::MarkerType result;
+  switch (marker_type) {
+    case DocumentMarker::kSpelling:
+      result = ax::mojom::blink::MarkerType::kSpelling;
+      break;
+    case DocumentMarker::kGrammar:
+      result = ax::mojom::blink::MarkerType::kGrammar;
+      break;
+    case DocumentMarker::kTextFragment:
+    case DocumentMarker::kTextMatch:
+      result = ax::mojom::blink::MarkerType::kTextMatch;
+      break;
+    case DocumentMarker::kActiveSuggestion:
+      result = ax::mojom::blink::MarkerType::kActiveSuggestion;
+      break;
+    case DocumentMarker::kSuggestion:
+      result = ax::mojom::blink::MarkerType::kSuggestion;
+      break;
+    default:
+      result = ax::mojom::blink::MarkerType::kNone;
+      break;
+  }
+
+  return static_cast<int32_t>(result);
+}
+
 unsigned AXObject::number_of_live_ax_objects_ = 0;
 
 AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
@@ -1067,6 +1094,7 @@ void AXObject::Serialize(ui::AXNodeData* node_data,
   }
 
   if (accessibility_mode.has_mode(ui::AXMode::kScreenReader)) {
+    SerializeMarkerAttributes(node_data);
     SerializeStyleAttributes(node_data);
   }
 
@@ -1333,6 +1361,10 @@ void AXObject::SerializeListAttributes(ui::AXNodeData* node_data) {
     node_data->AddIntAttribute(ax::mojom::blink::IntAttribute::kPosInSet,
                                PosInSet());
   }
+}
+
+void AXObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
+  // Implemented in subclasses.
 }
 
 void AXObject::TruncateAndAddStringAttribute(
@@ -2884,10 +2916,6 @@ AXObject::GetAriaSpellingOrGrammarMarker() const {
     return DocumentMarker::kGrammar;
   return base::nullopt;
 }
-
-void AXObject::GetDocumentMarkers(
-    VectorOf<DocumentMarker::MarkerType>* marker_types,
-    VectorOf<AXRange>* marker_ranges) const {}
 
 void AXObject::TextCharacterOffsets(Vector<int>&) const {}
 

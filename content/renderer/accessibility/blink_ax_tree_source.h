@@ -143,8 +143,6 @@ class CONTENT_EXPORT BlinkAXTreeSource
                                              ui::AXNodeData* dst) const;
   void SerializeInlineTextBoxAttributes(blink::WebAXObject src,
                                         ui::AXNodeData* dst) const;
-  void SerializeMarkerAttributes(blink::WebAXObject src,
-                                 ui::AXNodeData* dst) const;
   void SerializeLiveRegionAttributes(blink::WebAXObject src,
                                      ui::AXNodeData* dst) const;
   void SerializeChooserPopupAttributes(blink::WebAXObject src,

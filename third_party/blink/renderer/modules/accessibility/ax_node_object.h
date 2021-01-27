@@ -135,8 +135,7 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   bool CanvasHasFallbackContent() const final;
   int HeadingLevel() const final;
   unsigned HierarchicalLevel() const final;
-  void GetDocumentMarkers(Vector<DocumentMarker::MarkerType>* marker_types,
-                          Vector<AXRange>* marker_ranges) const override;
+  void SerializeMarkerAttributes(ui::AXNodeData* node_data) const override;
   AXObject* InPageLinkTarget() const override;
   AccessibilityOrientation Orientation() const override;
 

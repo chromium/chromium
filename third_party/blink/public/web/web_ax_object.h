@@ -251,9 +251,6 @@ class WebAXObject {
   BLINK_EXPORT WebString ComputedStyleDisplay() const;
   BLINK_EXPORT bool AccessibilityIsIgnored() const;
   BLINK_EXPORT bool AccessibilityIsIncludedInTree() const;
-  BLINK_EXPORT void Markers(WebVector<ax::mojom::MarkerType>& types,
-                            WebVector<int>& starts,
-                            WebVector<int>& ends) const;
 
   // Actions. Return true if handled.
   BLINK_EXPORT ax::mojom::DefaultActionVerb Action() const;
@@ -382,4 +379,4 @@ class WebAXObject {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AX_OBJECT_H_

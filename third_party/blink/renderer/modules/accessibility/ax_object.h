@@ -65,7 +65,6 @@ namespace blink {
 class AccessibleNodeList;
 class AXObject;
 class AXObjectCacheImpl;
-class AXRange;
 class IntPoint;
 class LayoutObject;
 class LocalFrameView;
@@ -155,6 +154,10 @@ class DescriptionSource {
 
   void Trace(Visitor* visitor) const { visitor->Trace(related_objects); }
 };
+
+// Returns a ax::mojom::blink::MarkerType cast to an int, suitable
+// for serializing into AXNodeData.
+int32_t ToAXMarkerType(DocumentMarker::MarkerType marker_type);
 
 }  // namespace blink
 
@@ -705,13 +708,6 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   // object.
   base::Optional<const DocumentMarker::MarkerType>
   GetAriaSpellingOrGrammarMarker() const;
-
-  // For all node and inline text box objects. The start and end character
-  // offset of each document marker, such as spelling or grammar error expressed
-  // as an AXRange.
-  virtual void GetDocumentMarkers(
-      Vector<DocumentMarker::MarkerType>* marker_types,
-      Vector<AXRange>* marker_ranges) const;
 
   // For all inline text objects: Returns the horizontal pixel offset of each
   // character in the object's text, rounded to the nearest integer. Negative
@@ -1314,6 +1310,9 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   void SerializeTableAttributes(ui::AXNodeData* node_data);
   void SerializeListAttributes(ui::AXNodeData* node_data);
   void SerializeScrollAttributes(ui::AXNodeData* node_data);
+
+  // Serialization implemented in specific subclasses.
+  virtual void SerializeMarkerAttributes(ui::AXNodeData* node_data) const;
 
  private:
   mutable int last_modification_count_;

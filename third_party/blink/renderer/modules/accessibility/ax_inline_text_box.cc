@@ -28,6 +28,8 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_inline_text_box.h"
 
+#include <stdint.h>
+
 #include <utility>
 
 #include "base/numerics/clamped_math.h"
@@ -225,9 +227,8 @@ AXObject* AXInlineTextBox::PreviousOnLine() const {
   return nullptr;
 }
 
-void AXInlineTextBox::GetDocumentMarkers(
-    Vector<DocumentMarker::MarkerType>* marker_types,
-    Vector<AXRange>* marker_ranges) const {
+void AXInlineTextBox::SerializeMarkerAttributes(
+    ui::AXNodeData* node_data) const {
   // TODO(nektar) Address 20% performance degredation and restore code.
   // It may be necessary to add document markers as part of tree data instead
   // of computing for every node. To measure current performance, create a
@@ -259,12 +260,17 @@ void AXInlineTextBox::GetDocumentMarkers(
     return;
   const auto ax_range = AXRange::RangeOfContents(*this);
 
+  std::vector<int32_t> marker_types;
+  std::vector<int32_t> marker_starts;
+  std::vector<int32_t> marker_ends;
+
   // First use ARIA markers for spelling/grammar if available.
   base::Optional<DocumentMarker::MarkerType> aria_marker_type =
       GetAriaSpellingOrGrammarMarker();
   if (aria_marker_type) {
-    marker_types->push_back(aria_marker_type.value());
-    marker_ranges->push_back(ax_range);
+    marker_types.push_back(ToAXMarkerType(aria_marker_type.value()));
+    marker_starts.push_back(ax_range.Start().TextOffset());
+    marker_ends.push_back(ax_range.End().TextOffset());
   }
 
   DocumentMarkerController& marker_controller = GetDocument()->Markers();
@@ -325,11 +331,23 @@ void AXInlineTextBox::GetDocumentMarkers(
         end_position.TextOffset() - start_text_offset_in_parent, text_length);
     DCHECK_GE(local_end_offset, 0);
 
-    marker_types->push_back(marker->GetType());
-    marker_ranges->emplace_back(
-        AXPosition::CreatePositionInTextObject(*this, local_start_offset),
-        AXPosition::CreatePositionInTextObject(*this, local_end_offset));
+    marker_types.push_back(int32_t{ToAXMarkerType(marker->GetType())});
+    marker_starts.push_back(local_start_offset);
+    marker_ends.push_back(local_end_offset);
   }
+
+  DCHECK_EQ(marker_types.size(), marker_starts.size());
+  DCHECK_EQ(marker_types.size(), marker_ends.size());
+
+  if (marker_types.empty())
+    return;
+
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kMarkerTypes, marker_types);
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kMarkerStarts, marker_starts);
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kMarkerEnds, marker_ends);
 }
 
 void AXInlineTextBox::Init(AXObject* parent) {

@@ -1669,9 +1669,7 @@ String AXNodeObject::AutoComplete() const {
 // TODO(nektar): Consider removing this method in favor of
 // AXInlineTextBox::GetDocumentMarkers, or add document markers to the tree data
 // instead of nodes objects.
-void AXNodeObject::GetDocumentMarkers(
-    Vector<DocumentMarker::MarkerType>* marker_types,
-    Vector<AXRange>* marker_ranges) const {
+void AXNodeObject::SerializeMarkerAttributes(ui::AXNodeData* node_data) const {
   if (!GetNode() || !GetDocument() || !GetDocument()->View())
     return;
 
@@ -1679,12 +1677,18 @@ void AXNodeObject::GetDocumentMarkers(
   if (!text_node)
     return;
 
+  std::vector<int32_t> marker_types;
+  std::vector<int32_t> marker_starts;
+  std::vector<int32_t> marker_ends;
+
   // First use ARIA markers for spelling/grammar if available.
   base::Optional<DocumentMarker::MarkerType> aria_marker_type =
       GetAriaSpellingOrGrammarMarker();
   if (aria_marker_type) {
-    marker_types->push_back(aria_marker_type.value());
-    marker_ranges->push_back(AXRange::RangeOfContents(*this));
+    AXRange range = AXRange::RangeOfContents(*this);
+    marker_types.push_back(ToAXMarkerType(aria_marker_type.value()));
+    marker_starts.push_back(range.Start().TextOffset());
+    marker_ends.push_back(range.End().TextOffset());
   }
 
   DocumentMarkerController& marker_controller = GetDocument()->Markers();
@@ -1705,13 +1709,26 @@ void AXNodeObject::GetDocumentMarkers(
       continue;
     }
 
-    marker_types->push_back(marker->GetType());
-    marker_ranges->emplace_back(
+    marker_types.push_back(ToAXMarkerType(marker->GetType()));
+    auto start_pos =
         AXPosition::FromPosition(start_position, TextAffinity::kDownstream,
-                                 AXPositionAdjustmentBehavior::kMoveLeft),
+                                 AXPositionAdjustmentBehavior::kMoveLeft);
+    auto end_pos =
         AXPosition::FromPosition(end_position, TextAffinity::kDownstream,
-                                 AXPositionAdjustmentBehavior::kMoveRight));
+                                 AXPositionAdjustmentBehavior::kMoveRight);
+    marker_starts.push_back(start_pos.TextOffset());
+    marker_ends.push_back(end_pos.TextOffset());
   }
+
+  if (marker_types.empty())
+    return;
+
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kMarkerTypes, marker_types);
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kMarkerStarts, marker_starts);
+  node_data->AddIntListAttribute(
+      ax::mojom::blink::IntListAttribute::kMarkerEnds, marker_ends);
 }
 
 AXObject* AXNodeObject::InPageLinkTarget() const {

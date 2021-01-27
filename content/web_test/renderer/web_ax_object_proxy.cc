@@ -182,27 +182,6 @@ gfx::Rect BoundsForCharacter(const blink::WebAXObject& object,
   return gfx::Rect();
 }
 
-std::vector<std::string> GetMisspellings(const blink::WebAXObject& object) {
-  std::vector<std::string> misspellings;
-  std::string text(object.GetName().Utf8());
-
-  blink::WebVector<ax::mojom::MarkerType> marker_types;
-  blink::WebVector<int> marker_starts;
-  blink::WebVector<int> marker_ends;
-  object.Markers(marker_types, marker_starts, marker_ends);
-  DCHECK_EQ(marker_types.size(), marker_starts.size());
-  DCHECK_EQ(marker_starts.size(), marker_ends.size());
-
-  for (size_t i = 0; i < marker_types.size(); ++i) {
-    if (marker_types[i] == ax::mojom::MarkerType::kSpelling) {
-      misspellings.push_back(
-          text.substr(marker_starts[i], marker_ends[i] - marker_starts[i]));
-    }
-  }
-
-  return misspellings;
-}
-
 void GetBoundariesForOneWord(const blink::WebAXObject& object,
                              int character_index,
                              int& word_start,
@@ -1528,11 +1507,45 @@ v8::Local<v8::Object> WebAXObjectProxy::PreviousOnLine() {
   return factory_->GetOrCreate(obj);
 }
 
+std::vector<std::string> WebAXObjectProxy::GetMisspellings() const {
+  std::vector<std::string> misspellings;
+  std::string text(accessibility_object_.GetName().Utf8());
+  if (text.empty())
+    return {};
+
+  const ui::AXNodeData& node_data = GetAXNodeData();
+  std::vector<int32_t> marker_types;
+  std::vector<int32_t> marker_starts;
+  std::vector<int32_t> marker_ends;
+  if (node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes,
+                                    &marker_types) &&
+      node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts,
+                                    &marker_starts) &&
+      node_data.GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
+                                    &marker_ends)) {
+    DCHECK_EQ(marker_types.size(), marker_starts.size());
+    DCHECK_EQ(marker_types.size(), marker_ends.size());
+    for (size_t i = 0; i < marker_types.size(); ++i) {
+      if (marker_types[i] == int32_t(ax::mojom::MarkerType::kSpelling)) {
+        DCHECK_LE(marker_starts[i], marker_ends[i]);
+        misspellings.push_back(
+            text.substr(marker_starts[i], marker_ends[i] - marker_starts[i]));
+      }
+    }
+
+    return misspellings;
+  }
+
+  return {};
+}
+
 std::string WebAXObjectProxy::MisspellingAtIndex(int index) {
   UpdateLayout();
-  if (index < 0 || index >= MisspellingsCount())
+
+  std::vector<std::string> misspellings = GetMisspellings();
+  if (index < 0 || index >= int{misspellings.size()})
     return std::string();
-  return GetMisspellings(accessibility_object_)[index];
+  return misspellings[index];
 }
 
 std::string WebAXObjectProxy::Name() {
@@ -1639,7 +1652,7 @@ std::string WebAXObjectProxy::Placeholder() {
 
 int WebAXObjectProxy::MisspellingsCount() {
   UpdateLayout();
-  return GetMisspellings(accessibility_object_).size();
+  return GetMisspellings().size();
 }
 
 int WebAXObjectProxy::DescriptionElementCount() {

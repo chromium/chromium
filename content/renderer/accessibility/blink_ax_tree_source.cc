@@ -518,7 +518,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
   SerializeChooserPopupAttributes(src, dst);
 
   if (accessibility_mode_.has_mode(ui::AXMode::kScreenReader)) {
-    SerializeMarkerAttributes(src, dst);
     if (src.IsInLiveRegion())
       SerializeLiveRegionAttributes(src, dst);
     SerializeOtherScreenReaderAttributes(src, dst);
@@ -642,37 +641,6 @@ void BlinkAXTreeSource::SerializeInlineTextBoxAttributes(
                            src_word_starts.ReleaseVector());
   dst->AddIntListAttribute(ax::mojom::IntListAttribute::kWordEnds,
                            src_word_ends.ReleaseVector());
-}
-
-void BlinkAXTreeSource::SerializeMarkerAttributes(WebAXObject src,
-                                                  ui::AXNodeData* dst) const {
-  // Spelling, grammar and other document markers.
-  WebVector<ax::mojom::MarkerType> src_marker_types;
-  WebVector<int> src_marker_starts;
-  WebVector<int> src_marker_ends;
-  src.Markers(src_marker_types, src_marker_starts, src_marker_ends);
-  DCHECK_EQ(src_marker_types.size(), src_marker_starts.size());
-  DCHECK_EQ(src_marker_starts.size(), src_marker_ends.size());
-
-  if (src_marker_types.size()) {
-    std::vector<int32_t> marker_types;
-    std::vector<int32_t> marker_starts;
-    std::vector<int32_t> marker_ends;
-    marker_types.reserve(src_marker_types.size());
-    marker_starts.reserve(src_marker_starts.size());
-    marker_ends.reserve(src_marker_ends.size());
-    for (size_t i = 0; i < src_marker_types.size(); ++i) {
-      marker_types.push_back(static_cast<int32_t>(src_marker_types[i]));
-      marker_starts.push_back(src_marker_starts[i]);
-      marker_ends.push_back(src_marker_ends[i]);
-    }
-    dst->AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes,
-                             marker_types);
-    dst->AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerStarts,
-                             marker_starts);
-    dst->AddIntListAttribute(ax::mojom::IntListAttribute::kMarkerEnds,
-                             marker_ends);
-  }
 }
 
 void BlinkAXTreeSource::SerializeLiveRegionAttributes(
