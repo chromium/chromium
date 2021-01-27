@@ -22,6 +22,8 @@ namespace init {
 
 namespace {
 
+bool g_is_angle_enabled = true;
+
 bool ShouldFallbackToSoftwareGL() {
   const base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
   std::string requested_implementation_name =
@@ -57,7 +59,7 @@ GLImplementation GetRequestedGLImplementation(bool* fallback_to_software_gl) {
   }
 
   // If the passthrough command decoder is enabled, put ANGLE first if allowed
-  if (gl::UsePassthroughCommandDecoder(cmd)) {
+  if (g_is_angle_enabled && gl::UsePassthroughCommandDecoder(cmd)) {
     auto iter = std::find(allowed_impls.begin(), allowed_impls.end(),
                           kGLImplementationEGLANGLE);
     if (iter != allowed_impls.end()) {
@@ -205,6 +207,11 @@ void ShutdownGL(bool due_to_fallback) {
 
 scoped_refptr<GLSurface> CreateOffscreenGLSurface(const gfx::Size& size) {
   return CreateOffscreenGLSurfaceWithFormat(size, GLSurfaceFormat());
+}
+
+void DisableANGLE() {
+  DCHECK_NE(GetGLImplementation(), kGLImplementationEGLANGLE);
+  g_is_angle_enabled = false;
 }
 
 }  // namespace init

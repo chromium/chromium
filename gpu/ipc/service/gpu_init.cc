@@ -416,9 +416,20 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
   // Compute passthrough decoder status before ComputeGpuFeatureInfo below.
   // Do this after GL is initialized so extensions can be queried.
-  gpu_info_.passthrough_cmd_decoder =
-      gles2::UsePassthroughCommandDecoder(command_line) &&
-      gles2::PassthroughCommandDecoderSupported();
+  if (gles2::UsePassthroughCommandDecoder(command_line)) {
+    gpu_info_.passthrough_cmd_decoder =
+        gles2::PassthroughCommandDecoderSupported();
+#if defined(OS_ANDROID)
+    // We never use swiftshader on Android
+    LOG_IF(DFATAL, !gpu_info_.passthrough_cmd_decoder)
+#else
+    LOG_IF(ERROR, !gpu_info_.passthrough_cmd_decoder)
+#endif
+      << "Passthrough is not supported, GL is"
+        << gl::GetGLImplementationName(gl::GetGLImplementation());
+  } else {
+    gpu_info_.passthrough_cmd_decoder = false;
+  }
 
   // We need to collect GL strings (VENDOR, RENDERER) for blocklisting purposes.
   if (!gl_disabled) {
