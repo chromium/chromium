@@ -121,9 +121,8 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   ~LegacyCacheStorageManager() override;
 
   void GetAllOriginsUsageGetSizes(
-      std::unique_ptr<std::vector<storage::mojom::StorageUsageInfoPtr>>
-          usage_info,
-      storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback);
+      storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback,
+      std::vector<storage::mojom::StorageUsageInfoPtr> usage_info);
 
   void DeleteOriginDidClose(
       const url::Origin& origin,

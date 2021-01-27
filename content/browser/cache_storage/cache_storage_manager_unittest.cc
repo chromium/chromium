@@ -1704,7 +1704,7 @@ TEST_P(CacheStorageManagerTestP, GetAllOriginsUsage) {
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/bar")));
 
   std::vector<storage::mojom::StorageUsageInfoPtr> usage = GetAllOriginsUsage();
-  EXPECT_EQ(2ULL, usage.size());
+  ASSERT_EQ(2ULL, usage.size());
 
   int origin1_index = usage[0]->origin == origin1_ ? 0 : 1;
   int origin2_index = usage[1]->origin == origin2_ ? 1 : 0;
@@ -1789,7 +1789,7 @@ TEST_P(CacheStorageManagerTestP, GetAllOriginsUsageDifferentOwners) {
   EXPECT_EQ(1ULL, usage_cache.size());
   std::vector<storage::mojom::StorageUsageInfoPtr> usage_bgf =
       GetAllOriginsUsage(storage::mojom::CacheStorageOwner::kBackgroundFetch);
-  EXPECT_EQ(2ULL, usage_bgf.size());
+  ASSERT_EQ(2ULL, usage_bgf.size());
 
   int origin1_index = usage_bgf[0]->origin == origin1_ ? 0 : 1;
   int origin2_index = usage_bgf[1]->origin == origin2_ ? 1 : 0;

@@ -126,8 +126,9 @@ void RecordIndexValidationResult(IndexResult value) {
 
 // Open the various cache directories' index files and extract their origins,
 // sizes (if current), and last modified times.
-void ListOriginsAndLastModifiedOnTaskRunner(
-    std::vector<storage::mojom::StorageUsageInfoPtr>* usages,
+std::vector<storage::mojom::StorageUsageInfoPtr>
+GetOriginsAndLastModifiedOnTaskRunner(
+    std::vector<storage::mojom::StorageUsageInfoPtr> usages,
     base::FilePath root_path,
     storage::mojom::CacheStorageOwner owner) {
   base::FileEnumerator file_enum(root_path, false /* recursive */,
@@ -182,17 +183,20 @@ void ListOriginsAndLastModifiedOnTaskRunner(
     base::UmaHistogramBoolean("ServiceWorkerCache.UsedIndexFileSize",
                               storage_size != CacheStorage::kSizeUnknown);
 
-    usages->push_back(storage::mojom::StorageUsageInfo::New(
+    usages.push_back(storage::mojom::StorageUsageInfo::New(
         origin, storage_size, file_info.last_modified));
     RecordIndexValidationResult(IndexResult::kOk);
   }
+
+  return usages;
 }
 
 std::vector<url::Origin> ListOriginsOnTaskRunner(
     base::FilePath root_path,
     storage::mojom::CacheStorageOwner owner) {
-  std::vector<storage::mojom::StorageUsageInfoPtr> usages;
-  ListOriginsAndLastModifiedOnTaskRunner(&usages, root_path, owner);
+  std::vector<storage::mojom::StorageUsageInfoPtr> usages =
+      GetOriginsAndLastModifiedOnTaskRunner(
+          std::vector<storage::mojom::StorageUsageInfoPtr>(), root_path, owner);
 
   std::vector<url::Origin> out_origins;
   for (const storage::mojom::StorageUsageInfoPtr& usage : usages)
@@ -216,11 +220,11 @@ void GetOriginsForHostDidListOrigins(
 }
 
 void AllOriginSizesReported(
-    std::unique_ptr<std::vector<storage::mojom::StorageUsageInfoPtr>> usages,
+    std::vector<storage::mojom::StorageUsageInfoPtr> usages,
     storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback) {
   // On scheduler sequence.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::move(*usages)));
+      FROM_HERE, base::BindOnce(std::move(callback), std::move(usages)));
 }
 
 void OneOriginSizeReported(base::OnceClosure callback,
@@ -344,54 +348,51 @@ void LegacyCacheStorageManager::GetAllOriginsUsage(
     storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto usages =
-      std::make_unique<std::vector<storage::mojom::StorageUsageInfoPtr>>();
+  std::vector<storage::mojom::StorageUsageInfoPtr> usages;
 
   if (IsMemoryBacked()) {
     for (const auto& origin_details : cache_storage_map_) {
       if (origin_details.first.second != owner)
         continue;
-      usages->push_back(storage::mojom::StorageUsageInfo::New(
+      usages.push_back(storage::mojom::StorageUsageInfo::New(
           origin_details.first.first,
           /*total_size_bytes=*/0,
           /*last_modified=*/base::Time()));
     }
-    GetAllOriginsUsageGetSizes(std::move(usages), std::move(callback));
+    GetAllOriginsUsageGetSizes(std::move(callback), std::move(usages));
     return;
   }
 
-  std::vector<storage::mojom::StorageUsageInfoPtr>* usages_ptr = usages.get();
-  cache_task_runner_->PostTaskAndReply(
+  cache_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&ListOriginsAndLastModifiedOnTaskRunner, usages_ptr,
+      base::BindOnce(&GetOriginsAndLastModifiedOnTaskRunner, std::move(usages),
                      root_path_, owner),
       base::BindOnce(&LegacyCacheStorageManager::GetAllOriginsUsageGetSizes,
-                     base::WrapRefCounted(this), std::move(usages),
-                     std::move(callback)));
+                     base::WrapRefCounted(this), std::move(callback)));
 }
 
 void LegacyCacheStorageManager::GetAllOriginsUsageGetSizes(
-    std::unique_ptr<std::vector<storage::mojom::StorageUsageInfoPtr>> usages,
-    storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback) {
+    storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback,
+    std::vector<storage::mojom::StorageUsageInfoPtr> usages) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(usages);
 
   // The origin GURL and last modified times are set in |usages| but not the
   // size in bytes. Call each CacheStorage's Size() function to fill that out.
-  std::vector<storage::mojom::StorageUsageInfoPtr>* usages_ptr = usages.get();
 
-  if (usages->empty()) {
+  if (usages.empty()) {
     scheduler_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(*usages)));
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(usages)));
     return;
   }
 
+  auto* usages_ptr = &usages[0];
+  size_t usages_count = usages.size();
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      usages_ptr->size(),
-      base::BindOnce(&AllOriginSizesReported, std::move(usages),
-                     std::move(callback)));
+      usages_count, base::BindOnce(&AllOriginSizesReported, std::move(usages),
+                                   std::move(callback)));
 
-  for (storage::mojom::StorageUsageInfoPtr& usage : *usages_ptr) {
+  for (size_t i = 0; i < usages_count; ++i) {
+    auto& usage = usages_ptr[i];
     if (usage->total_size_bytes != CacheStorage::kSizeUnknown ||
         !IsValidQuotaOrigin(usage->origin)) {
       scheduler_task_runner_->PostTask(FROM_HERE, barrier_closure);
