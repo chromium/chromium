@@ -17,6 +17,7 @@ namespace full_restore {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kWindowIdKey, 0)
 DEFINE_UI_CLASS_PROPERTY_KEY(int32_t, kRestoreWindowIdKey, 0)
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::string, kAppIdKey, nullptr)
 
 void SaveAppLaunchInfo(const base::FilePath& profile_path,
                        std::unique_ptr<AppLaunchInfo> app_launch_info) {

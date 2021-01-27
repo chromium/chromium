@@ -33,6 +33,10 @@ extern const ui::ClassProperty<int32_t>* const kWindowIdKey;
 COMPONENT_EXPORT(FULL_RESTORE)
 extern const ui::ClassProperty<int32_t>* const kRestoreWindowIdKey;
 
+// A property key to store the app id.
+COMPONENT_EXPORT(FULL_RESTORE)
+extern const ui::ClassProperty<std::string*>* const kAppIdKey;
+
 // Saves the app launch parameters to the full restore file.
 COMPONENT_EXPORT(FULL_RESTORE)
 void SaveAppLaunchInfo(const base::FilePath& profile_path,

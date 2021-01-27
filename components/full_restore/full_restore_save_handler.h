@@ -113,6 +113,12 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   std::map<int32_t, std::pair<base::FilePath, std::string>>
       window_id_to_app_restore_info_;
 
+  // The map from the app id to the full restore file path and the app launch
+  // info.
+  std::map<std::string,
+           std::pair<base::FilePath, std::unique_ptr<AppLaunchInfo>>>
+      app_id_to_app_launch_info_;
+
   // The current active user profile path.
   base::FilePath active_profile_path_;
 
