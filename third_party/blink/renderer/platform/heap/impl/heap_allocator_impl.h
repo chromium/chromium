@@ -138,8 +138,9 @@ class PLATFORM_EXPORT HeapAllocator {
     MarkingVisitor::WriteBarrier(reinterpret_cast<void**>(slot));
   }
 
-  static void TraceBackingStoreIfMarked(const void* object) {
-    MarkingVisitor::RetraceObject(object);
+  template <typename T>
+  static void TraceBackingStoreIfMarked(T** slot) {
+    MarkingVisitor::RetraceObject(*slot);
   }
 
   template <typename T, typename Traits>

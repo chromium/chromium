@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "v8/include/cppgc/prefinalizer.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8.h"
 
 namespace v8 {

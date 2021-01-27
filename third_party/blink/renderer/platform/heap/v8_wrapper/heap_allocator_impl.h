@@ -8,9 +8,11 @@
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_table_backing.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector_backing.h"
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/heap.h"
+#include "third_party/blink/renderer/platform/heap/v8_wrapper/thread_state.h"
 #include "third_party/blink/renderer/platform/heap/v8_wrapper/visitor.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "v8/include/cppgc/heap-consistency.h"
 
 namespace blink {
 
@@ -18,6 +20,7 @@ class PLATFORM_EXPORT HeapAllocator {
   STATIC_ONLY(HeapAllocator);
 
  public:
+  using HeapConsistency = cppgc::subtle::HeapConsistency;
   using LivenessBroker = blink::LivenessBroker;
 
   static constexpr bool kIsGarbageCollected = true;
@@ -93,11 +96,13 @@ class PLATFORM_EXPORT HeapAllocator {
   }
 
   static void EnterGCForbiddenScope() {
-    // TODO(1056170): Implement.
+    cppgc::subtle::NoGarbageCollectionScope::Enter(
+        ThreadState::Current()->cpp_heap().GetHeapHandle());
   }
 
   static void LeaveGCForbiddenScope() {
-    // TODO(1056170): Implement.
+    cppgc::subtle::NoGarbageCollectionScope::Leave(
+        ThreadState::Current()->cpp_heap().GetHeapHandle());
   }
 
   template <typename Traits>
@@ -108,27 +113,79 @@ class PLATFORM_EXPORT HeapAllocator {
   }
 
   template <typename T>
-  static void BackingWriteBarrier(T**) {
-    // TODO(1056170): Implement.
+  static void BackingWriteBarrier(T** slot) {
+    HeapConsistency::WriteBarrierParams params;
+    switch (HeapConsistency::GetWriteBarrierType(slot, *slot, params)) {
+      case HeapConsistency::WriteBarrierType::kMarking:
+        HeapConsistency::DijkstraWriteBarrier(params, *slot);
+        break;
+      case HeapConsistency::WriteBarrierType::kGenerational:
+        HeapConsistency::GenerationalBarrier(params, slot);
+        break;
+      case HeapConsistency::WriteBarrierType::kNone:
+        break;
+      default:
+        break;  // TODO(1056170): Remove default case when API is stable.
+    }
   }
 
-  static void TraceBackingStoreIfMarked(const void* object) {
-    // TODO(1056170): Implement.
+  template <typename T>
+  static void TraceBackingStoreIfMarked(T** slot) {
+    HeapConsistency::WriteBarrierParams params;
+    if (HeapConsistency::GetWriteBarrierType(slot, params) ==
+        HeapConsistency::WriteBarrierType::kMarking) {
+      HeapConsistency::SteeleWriteBarrier(params, *slot);
+    }
   }
 
   template <typename T, typename Traits>
-  static void NotifyNewObject(T*) {
-    // TODO(1056170): Implement.
+  static void NotifyNewObject(T* slot_in_backing) {
+    HeapConsistency::WriteBarrierParams params;
+    // `slot_in_backing` points into a backing store and T is not necessarily a
+    // garbage collected type but may be kept inline.
+    switch (HeapConsistency::GetWriteBarrierType(slot_in_backing, params)) {
+      case HeapConsistency::WriteBarrierType::kMarking:
+        HeapConsistency::DijkstraWriteBarrierRange(
+            params, ThreadState::Current()->cpp_heap().GetHeapHandle(),
+            slot_in_backing, sizeof(T), 1,
+            TraceCollectionIfEnabled<WTF::kNoWeakHandling, T, Traits>::Trace);
+        break;
+      case HeapConsistency::WriteBarrierType::kGenerational:
+        HeapConsistency::GenerationalBarrier(params, slot_in_backing);
+        break;
+      case HeapConsistency::WriteBarrierType::kNone:
+        break;
+      default:
+        break;  // TODO(1056170): Remove default case when API is stable.
+    }
   }
 
   template <typename T, typename Traits>
-  static void NotifyNewObjects(T*, size_t) {
-    // TODO(1056170): Implement.
+  static void NotifyNewObjects(T* first_element, size_t length) {
+    HeapConsistency::WriteBarrierParams params;
+    // `first_element` points into a backing store and T is not necessarily a
+    // garbage collected type but may be kept inline.
+    switch (HeapConsistency::GetWriteBarrierType(first_element, params)) {
+      case HeapConsistency::WriteBarrierType::kMarking:
+        HeapConsistency::DijkstraWriteBarrierRange(
+            params, ThreadState::Current()->cpp_heap().GetHeapHandle(),
+            first_element, sizeof(T), length,
+            TraceCollectionIfEnabled<WTF::kNoWeakHandling, T, Traits>::Trace);
+        break;
+      case HeapConsistency::WriteBarrierType::kGenerational:
+        HeapConsistency::GenerationalBarrier(params, first_element);
+        break;
+      case HeapConsistency::WriteBarrierType::kNone:
+        break;
+      default:
+        break;  // TODO(1056170): Remove default case when API is stable.
+    }
   }
 
   template <typename T, typename Traits>
   static void Trace(Visitor* visitor, const T& t) {
-    // TODO(1056170): Forward to TraceInCollectionTrait.
+    TraceCollectionIfEnabled<WTF::WeakHandlingTrait<T>::value, T,
+                             Traits>::Trace(visitor, &t);
   }
 
   template <typename T>
