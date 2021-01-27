@@ -4574,24 +4574,6 @@
             ]
         }
     ],
-    "OmniboxSearchEngineLogoAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "rounded_edges": "true"
-                    },
-                    "enable_features": [
-                        "OmniboxSearchEngineLogo"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxSpareRendererGWS": [
         {
             "platforms": [
