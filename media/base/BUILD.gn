@@ -359,6 +359,7 @@ source_set("base") {
     "//build:chromeos_buildflags",
     "//components/system_media_controls/linux/buildflags",
     "//gpu/command_buffer/client:interface_base",
+    "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/common",
     "//gpu/ipc/common:common",
     "//third_party/libyuv",

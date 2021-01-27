@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "build/build_config.h"
@@ -21,6 +20,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_color_space.h"
 #include "media/base/video_encoder.h"
+#include "media/base/video_util.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "media/video/video_encode_accelerator_adapter.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
@@ -48,12 +48,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
-#include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/core/SkRefCnt.h"
-#include "third_party/skia/include/core/SkSurface.h"
-#include "third_party/skia/include/core/SkYUVAPixmaps.h"
-#include "third_party/skia/include/gpu/GrDirectContext.h"
-#include "third_party/skia/include/gpu/gl/GrGLTypes.h"
 
 #if BUILDFLAG(ENABLE_OPENH264)
 #include "media/video/openh264_video_encoder.h"
@@ -136,42 +130,6 @@ std::unique_ptr<media::VideoEncoder> CreateOpenH264VideoEncoder() {
 #else
   return nullptr;
 #endif  // BUILDFLAG(ENABLE_OPENH264)
-}
-
-std::pair<SkColorType, GrGLenum> GetSkiaAndGlColorTypesForPlane(
-    media::VideoPixelFormat format,
-    size_t plane) {
-  // TODO(eugene): There is some strange channel switch during RGB readback.
-  // When frame's pixel format matches GL and Skia color types we get reversed
-  // channels. But why?
-  switch (format) {
-    case media::PIXEL_FORMAT_NV12:
-      if (plane == media::VideoFrame::kUVPlane)
-        return {kR8G8_unorm_SkColorType, GL_RG8_EXT};
-      if (plane == media::VideoFrame::kYPlane)
-        return {kAlpha_8_SkColorType, GL_R8_EXT};
-      break;
-    case media::PIXEL_FORMAT_XBGR:
-      if (plane == media::VideoFrame::kARGBPlane)
-        return {kRGBA_8888_SkColorType, GL_RGBA8_OES};
-      break;
-    case media::PIXEL_FORMAT_ABGR:
-      if (plane == media::VideoFrame::kARGBPlane)
-        return {kRGBA_8888_SkColorType, GL_RGBA8_OES};
-      break;
-    case media::PIXEL_FORMAT_XRGB:
-      if (plane == media::VideoFrame::kARGBPlane)
-        return {kBGRA_8888_SkColorType, GL_BGRA8_EXT};
-      break;
-    case media::PIXEL_FORMAT_ARGB:
-      if (plane == media::VideoFrame::kARGBPlane)
-        return {kBGRA_8888_SkColorType, GL_BGRA8_EXT};
-      break;
-    default:
-      break;
-  }
-  NOTREACHED();
-  return {kUnknown_SkColorType, 0};
 }
 
 }  // namespace
@@ -458,7 +416,20 @@ void VideoEncoder::ProcessEncode(Request* request) {
   scoped_refptr<media::VideoFrame> frame = request->frame->frame();
 
   if (frame->HasTextures() && !frame->HasGpuMemoryBuffer()) {
-    frame = ReadbackTextureBackedFrameToMemory(std::move(frame));
+    scoped_refptr<viz::RasterContextProvider> raster_provider;
+    auto wrapper = SharedGpuContext::ContextProviderWrapper();
+    if (wrapper && wrapper->ContextProvider())
+      raster_provider = wrapper->ContextProvider()->RasterContextProvider();
+    if (raster_provider) {
+      auto* ri = raster_provider->RasterInterface();
+      auto* gr_context = raster_provider->GrContext();
+
+      frame = ReadbackTextureBackedFrameToMemorySync(*frame, ri, gr_context,
+                                                     &readback_frame_pool_);
+    } else {
+      frame.reset();
+    }
+
     if (!frame) {
       auto status = media::Status(media::StatusCode::kEncoderFailedEncode,
                                   "Can't readback frame textures.");
@@ -657,112 +628,6 @@ void VideoEncoder::CallOutputCallback(
   }
   ScriptState::Scope scope(script_state_);
   output_callback_->InvokeAndReportException(nullptr, chunk, decoder_config);
-}
-
-// This function reads pixel data from textures associated with |txt_frame|
-// and creates a new CPU memory backed frame. It's needed because
-// existing video encoders can't handle texture backed frames.
-//
-// TODO(crbug.com/1162530): Remove this code from blink::VideoEncoder, combine
-// with media::ConvertAndScaleFrame and put into a new class
-// media:FrameSizeAndFormatConverter.
-scoped_refptr<media::VideoFrame>
-VideoEncoder::ReadbackTextureBackedFrameToMemory(
-    scoped_refptr<media::VideoFrame> txt_frame) {
-  DCHECK(txt_frame);
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (txt_frame->NumTextures() > 2 || txt_frame->NumTextures() < 1) {
-    DLOG(ERROR) << "Readback is not possible for this frame: "
-                << txt_frame->AsHumanReadableString();
-    return nullptr;
-  }
-
-  media::VideoPixelFormat result_format = txt_frame->format();
-  if (txt_frame->NumTextures() == 1 &&
-      result_format == media::PIXEL_FORMAT_NV12) {
-    // Even though |txt_frame| format is NV12 and it is NV12 in GPU memory,
-    // the texture is a RGB view that is produced by a shader on the fly.
-    // So we currently we currently can only read it back as RGB.
-    result_format = media::PIXEL_FORMAT_ARGB;
-  }
-
-  scoped_refptr<viz::RasterContextProvider> raster_provider;
-  auto wrapper = SharedGpuContext::ContextProviderWrapper();
-  if (wrapper && wrapper->ContextProvider())
-    raster_provider = wrapper->ContextProvider()->RasterContextProvider();
-  if (!raster_provider)
-    return nullptr;
-
-  auto* ri = raster_provider->RasterInterface();
-  auto* gr_context = raster_provider->GrContext();
-
-  scoped_refptr<media::VideoFrame> result = readback_frame_pool_.CreateFrame(
-      result_format, txt_frame->coded_size(), txt_frame->visible_rect(),
-      txt_frame->natural_size(), txt_frame->timestamp());
-  result->set_color_space(txt_frame->ColorSpace());
-  result->metadata().MergeMetadataFrom(txt_frame->metadata());
-
-  size_t planes = media::VideoFrame::NumPlanes(result->format());
-  for (size_t plane = 0; plane < planes; plane++) {
-    const gpu::MailboxHolder& holder = txt_frame->mailbox_holder(plane);
-    if (holder.mailbox.IsZero())
-      return nullptr;
-    ri->WaitSyncTokenCHROMIUM(holder.sync_token.GetConstData());
-
-    int width = media::VideoFrame::Columns(plane, result->format(),
-                                           result->coded_size().width());
-    int height = result->rows(plane);
-
-    auto texture_id = ri->CreateAndConsumeForGpuRaster(holder.mailbox);
-    if (holder.mailbox.IsSharedImage()) {
-      ri->BeginSharedImageAccessDirectCHROMIUM(
-          texture_id, GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM);
-    }
-
-    auto cleanup_fn = [](GLuint texture_id, bool shared,
-                         gpu::raster::RasterInterface* ri) {
-      if (shared)
-        ri->EndSharedImageAccessDirectCHROMIUM(texture_id);
-      ri->DeleteGpuRasterTexture(texture_id);
-    };
-    base::ScopedClosureRunner cleanup(base::BindOnce(
-        cleanup_fn, texture_id, holder.mailbox.IsSharedImage(), ri));
-
-    GrGLenum texture_format;
-    SkColorType sk_color_type;
-    std::tie(sk_color_type, texture_format) =
-        GetSkiaAndGlColorTypesForPlane(result->format(), plane);
-    GrGLTextureInfo gl_texture_info;
-    gl_texture_info.fID = texture_id;
-    gl_texture_info.fTarget = holder.texture_target;
-    gl_texture_info.fFormat = texture_format;
-
-    GrBackendTexture texture(width, height, GrMipMapped::kNo, gl_texture_info);
-    auto image = SkImage::MakeFromTexture(
-        gr_context, texture, kTopLeft_GrSurfaceOrigin, sk_color_type,
-        kOpaque_SkAlphaType, nullptr /* colorSpace */);
-
-    if (!image) {
-      DLOG(ERROR) << "Can't create SkImage from texture!"
-                  << " plane:" << plane;
-      return nullptr;
-    }
-
-    SkImageInfo info =
-        SkImageInfo::Make(width, height, sk_color_type, kOpaque_SkAlphaType);
-    SkPixmap pixmap(info, result->data(plane), result->row_bytes(plane));
-    if (!image->readPixels(gr_context, pixmap, 0, 0,
-                           SkImage::kDisallow_CachingHint)) {
-      DLOG(ERROR) << "Plane readback failed."
-                  << " plane:" << plane << " width: " << width
-                  << " height: " << height
-                  << " minRowBytes: " << info.minRowBytes();
-      return nullptr;
-    }
-  }
-
-  return result;
 }
 
 }  // namespace blink
