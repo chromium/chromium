@@ -32,7 +32,7 @@ void FocusOmnibox(bool focus, content::WebContents* web_contents) {
     return;
 
   if (focus) {
-    // This is an invisible focus to support "realbox" implementations on NTPs
+    // This is an invisible focus to support "fakebox" implementations on NTPs
     // (including other search providers). We shouldn't consider it as the user
     // explicitly focusing the omnibox.
     omnibox_view->SetFocus(/*is_user_initiated=*/false);
