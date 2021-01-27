@@ -189,7 +189,7 @@ base::string16 AXNodePosition::GetText() const {
   // don't expose that character to assistive software that tries to retrieve
   // the node's inner text.
   if (IsEmptyObjectReplacedByCharacter())
-    return base::string16(1, kEmbeddedCharacter);
+    return AXNode::kEmbeddedCharacter;
 
   const AXNode* anchor = GetAnchor();
   DCHECK(anchor);

@@ -93,16 +93,20 @@ enum class AXRangeExpandBehavior {
   kRightFirst
 };
 
-// Some platforms require empty objects to be represented by a replacement
-// character in order for text navigation to work correctly. This enum controls
-// whether a replacement character will be exposed for such objects.
+// Some platforms require most objects, including empty objects, to be
+// represented by an "embedded object character" in order for text navigation to
+// work correctly. This enum controls whether a replacement character will be
+// exposed for such objects.
 //
-// When an embedded object is replaced by a real character, the expectations
-// are the same with this character as with other ordinary characters.
+// When an embedded object is replaced by this special character, the
+// expectations are the same with this character as with other ordinary
+// characters.
+//
 // For example, with UIA on Windows, we need to be able to navigate inside and
 // outside of this character as if it was an ordinary character, using the
-// AXPlatformNodeTextRangeProvider methods. Since an embedded object character
-// is the only character in a node, we also treat this character as a word.
+// `AXPlatformNodeTextRangeProvider` methods. Since an "embedded object
+// character" is the only character in a node, we also treat this character as a
+// word.
 enum class AXEmbeddedObjectBehavior {
   kExposeCharacter,
   kSuppressCharacter,
@@ -111,6 +115,14 @@ enum class AXEmbeddedObjectBehavior {
 // Controls whether embedded objects are represented by a replacement
 // character. This is initialized to a per-platform default but can be
 // overridden for testing.
+//
+// On some platforms, most objects are represented in the text of their parents
+// with a special "embedded object character" and not with their actual text
+// contents. Also on the same platforms, if a node has only ignored descendants,
+// i.e., it appears to be empty to assistive software, we need to treat it as a
+// character and a word boundary. For example, an empty text field should act as
+// a character and a word boundary when a screen reader user tries to navigate
+// through it, otherwise the text field would be missed by the user.
 AX_EXPORT extern AXEmbeddedObjectBehavior g_ax_embedded_object_behavior;
 
 // Forward declarations.
@@ -171,13 +183,6 @@ class AXPosition {
   static const int BEFORE_TEXT = -1;
   static const int INVALID_INDEX = -2;
   static const int INVALID_OFFSET = -1;
-
-  // Replacement character used to represent an empty object. See
-  // AXEmbeddedObjectBehavior for more information.
-  //
-  // Duplicate of AXPlatformNodeBase::kEmbeddedCharacter because we don't want
-  // to include platform specific code in here.
-  static constexpr base::char16 kEmbeddedCharacter = L'\xfffc';
 
   static AXPositionInstance CreateNullPosition() {
     AXPositionInstance new_position(new AXPositionType());
@@ -356,10 +361,11 @@ class AXPosition {
 
         // If this position is an "after children" position, consider the
         // position to be ignored if the last child is ignored. This is because
-        // the last child will not be visible in the unignored tree. If the
-        // position is not adjusted, the resulting position would erroneously
-        // point before the second child in the unignored subtree rooted at the
-        // last child.
+        // the last child will not be visible in the unignored tree.
+        //
+        // For example, in the following tree if the position is not adjusted,
+        // the resulting position would erroneously point before the second
+        // child in the unignored subtree rooted at the last child.
         //
         // 1 kRootWebArea
         // ++2 kGenericContainer ignored
@@ -409,7 +415,6 @@ class AXPosition {
   bool IsLeaf() const {
     if (IsNullPosition())
       return false;
-
     return !AnchorChildCount() || IsEmptyObjectReplacedByCharacter();
   }
 
@@ -1070,12 +1075,23 @@ class AXPosition {
           return CreateNullPosition();
 
         if (AXNodeType* empty_object_node = GetEmptyObjectAncestorNode()) {
-          // In this class and on certain platforms, we define the empty object
-          // as one that doesn't expose its underlying content. Its content is
-          // replaced by the empty object character (string of length 1). A
-          // position on a descendant of an empty object is invalid. To make it
-          // valid we move the position from the descendant to the empty object
-          // node itself.
+          // In this class, (but only on certain platforms), we define the empty
+          // node as a leaf node (see `AXNode::IsLeaf()`) that doesn't have any
+          // content. So that such nodes will act as a character and a word
+          // boundary, we insert an "embedded object replacement character" in
+          // their text contents. This character is a string of length
+          // `AXNode::kEmbeddedCharacterLength`. For example, an empty text
+          // field should act as a character and a word boundary when a screen
+          // reader user tries to navigate through it, otherwise the text field
+          // would be missed by the user.
+          //
+          // Since we just explained that empty leaf nodes expose the "embedded
+          // object replacement character" in their text contents, and since we
+          // assume that all text is found only on leaf nodes, we should hide
+          // any descendants. Thus, a position on a descendant of an empty
+          // object is defined as invalid. To make it valid we move the position
+          // from the descendant to the empty leaf node itself. Otherwise,
+          // character and word navigation won't work properly.
           return CreateTreePosition(
               position->tree_id(), GetAnchorID(empty_object_node),
               position->child_index() == BEFORE_TEXT ? BEFORE_TEXT : 0);
@@ -1100,14 +1116,15 @@ class AXPosition {
           // exposed. See comment above in similar implementation for
           // AXPositionKind::TREE_POSITION.
           //
-          // We set the |text_offset_| to either 0 or 1 here because the
-          // MaxTextOffset of an empty object is 1 (the empty object character,
-          // a string of length 1). If the invalid position was already at the
-          // start of the node, we set it to 0.
-          return CreateTextPosition(position->tree_id(),
-                                    GetAnchorID(empty_object_node),
-                                    position->text_offset() > 0 ? 1 : 0,
-                                    ax::mojom::TextAffinity::kDownstream);
+          // We set the |text_offset_| to either 0 or the length of the embedded
+          // object character here because the MaxTextOffset of an empty object
+          // is `AXNode::kEmbeddedCharacterLength`. If the invalid position was
+          // already at the start of the node, we set it to 0.
+          return CreateTextPosition(
+              position->tree_id(), GetAnchorID(empty_object_node),
+              position->text_offset() > 0 ? AXNode::kEmbeddedCharacterLength
+                                          : 0,
+              ax::mojom::TextAffinity::kDownstream);
         }
 
         if (position->text_offset_ <= 0) {

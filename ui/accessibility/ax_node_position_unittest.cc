@@ -9334,14 +9334,12 @@ TEST_F(AXPositionTest, CreatePreviousWordPositionInList) {
 
 TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   g_ax_embedded_object_behavior = AXEmbeddedObjectBehavior::kExposeCharacter;
-  const base::string16 embedded_character_str(
-      1, AXNodePosition::kEmbeddedCharacter);
 
   // ++1 kRootWebArea
   // ++++2 kStaticText
   // ++++++3 kInlineTextBox
   // ++++4 kTextField
-  // ++++++5 kGenericContainer
+  // ++++++5 kGenericContainer ignored
   // ++++6 kStaticText
   // ++++++7 kInlineTextBox
   // ++++8 kHeading
@@ -9406,9 +9404,11 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
                                    std::vector<int32_t>{6});
 
   text_field_4.role = ax::mojom::Role::kTextField;
+  text_field_4.AddBoolAttribute(ax::mojom::BoolAttribute::kEditableRoot, true);
   text_field_4.child_ids = {generic_container_5.id};
 
   generic_container_5.role = ax::mojom::Role::kGenericContainer;
+  generic_container_5.AddState(ax::mojom::State::kIgnored);
 
   static_text_6.role = ax::mojom::Role::kStaticText;
   static_text_6.SetName(" world");
@@ -9467,10 +9467,10 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   TestPositionType result_position =
       position->CreateNextWordStartPosition(AXBoundaryBehavior::CrossBoundary);
   EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(generic_container_5.id, result_position->anchor_id());
+  EXPECT_EQ(text_field_4.id, result_position->anchor_id());
   EXPECT_EQ(0, result_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(embedded_character_str, result_position->GetText());
+  EXPECT_EQ(AXNode::kEmbeddedCharacter, result_position->GetText());
 
   position = std::move(result_position);
   result_position =
@@ -9486,10 +9486,10 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   result_position = position->CreatePreviousWordStartPosition(
       AXBoundaryBehavior::CrossBoundary);
   EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(generic_container_5.id, result_position->anchor_id());
+  EXPECT_EQ(text_field_4.id, result_position->anchor_id());
   EXPECT_EQ(0, result_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(embedded_character_str, result_position->GetText());
+  EXPECT_EQ(AXNode::kEmbeddedCharacter, result_position->GetText());
 
   position = std::move(result_position);
   result_position = position->CreatePreviousWordStartPosition(
@@ -9514,10 +9514,10 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   result_position =
       position->CreateNextWordEndPosition(AXBoundaryBehavior::CrossBoundary);
   EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(generic_container_5.id, result_position->anchor_id());
+  EXPECT_EQ(text_field_4.id, result_position->anchor_id());
   EXPECT_EQ(1, result_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(embedded_character_str, result_position->GetText());
+  EXPECT_EQ(AXNode::kEmbeddedCharacter, result_position->GetText());
 
   position = std::move(result_position);
   result_position =
@@ -9533,10 +9533,10 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   result_position = position->CreatePreviousWordEndPosition(
       AXBoundaryBehavior::CrossBoundary);
   EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(generic_container_5.id, result_position->anchor_id());
+  EXPECT_EQ(text_field_4.id, result_position->anchor_id());
   EXPECT_EQ(1, result_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(embedded_character_str, result_position->GetText());
+  EXPECT_EQ(AXNode::kEmbeddedCharacter, result_position->GetText());
 
   position = std::move(result_position);
   result_position = position->CreatePreviousWordEndPosition(
@@ -9547,62 +9547,48 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
   EXPECT_EQ(base::WideToUTF16(L"Hello "), result_position->GetText());
 
-  // GetText() with embedded object replacement character test.
+  // Positions on descendants of nodes that we classify as empty for the
+  // purposes of text navigation, are invalid.
   position = AXNodePosition::CreateTextPosition(
       GetTreeID(), generic_container_5.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
+  EXPECT_TRUE(position->IsNullPosition());
+  EXPECT_TRUE(position->GetText().empty());
 
-  EXPECT_EQ(embedded_character_str, position->GetText());
-
-  // GetText() on a node that is the parent of a set of text nodes and a
-  // non-text node, the latter represented by an embedded object replacement
-  // character.
+  // `AXPosition::GetText()` on a node that is the parent of a set of text nodes
+  // and a non-text node, the latter represented by an embedded object
+  // replacement character.
   position = AXNodePosition::CreateTextPosition(
       GetTreeID(), root_1.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
 
   base::string16 expected_text =
-      base::WideToUTF16(L"Hello ") + AXNodePosition::kEmbeddedCharacter +
-      base::WideToUTF16(L" world") + AXNodePosition::kEmbeddedCharacter +
-      AXNodePosition::kEmbeddedCharacter + base::WideToUTF16(L"hey") +
-      AXNodePosition::kEmbeddedCharacter + AXNodePosition::kEmbeddedCharacter;
+      base::WideToUTF16(L"Hello ") + AXNode::kEmbeddedCharacter +
+      base::WideToUTF16(L" world") + AXNode::kEmbeddedCharacter +
+      AXNode::kEmbeddedCharacter + base::WideToUTF16(L"hey") +
+      AXNode::kEmbeddedCharacter + AXNode::kEmbeddedCharacter;
   EXPECT_EQ(expected_text, position->GetText());
 
-  // MaxTextOffset() on a non-text node. This is represented by an embedded
-  // object replacement character.
+  // A position on an empty object that has been replaced by an "object
+  // replacement character".
   position = AXNodePosition::CreateTextPosition(
-      GetTreeID(), generic_container_5.id, 0 /* text_offset */,
+      GetTreeID(), text_field_4.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
-  EXPECT_EQ(1, position->MaxTextOffset());
-
-  // Parent positions created from a position inside a node represented by an
-  // embedded object replacement character.
-  position = position->CreateParentPosition();
-  EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(inline_box_3.id, result_position->anchor_id());
-  EXPECT_EQ(6, result_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(base::WideToUTF16(L"Hello "), result_position->GetText());
-  EXPECT_EQ(1, position->MaxTextOffset());
+  EXPECT_EQ(1, position->MaxTextOffset()) << *position;
 
   position = position->CreateParentPosition();
-  EXPECT_TRUE(result_position->IsTextPosition());
-  EXPECT_EQ(inline_box_3.id, result_position->anchor_id());
-  EXPECT_EQ(6, result_position->text_offset());
-  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
-  EXPECT_EQ(base::WideToUTF16(L"Hello "), result_position->GetText());
-  EXPECT_EQ(22, position->MaxTextOffset());
+  EXPECT_EQ(22, position->MaxTextOffset()) << *position;
 
-  // MaxTextOffset() on a node which is the parent of a set of text nodes and an
-  // a non-text node, the latter represented by an embedded object replacement
-  // character.
+  // `AXPosition::MaxTextOffset()` on a node which is the parent of a set of
+  // text nodes and non-text nodes, the latter represented by "embedded object
+  // replacement characters".
   position = AXNodePosition::CreateTextPosition(
       GetTreeID(), root_1.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
-  EXPECT_EQ(22, position->MaxTextOffset());
+  EXPECT_EQ(22, position->MaxTextOffset()) << *position;
 
   // The following is to test a specific edge case with heading navigation,
-  // occurring in AXPosition::CreatePreviousFormatStartPosition.
+  // occurring in `AXPosition::CreatePreviousFormatStartPosition`.
   //
   // When the position is at the beginning of an unignored empty object,
   // preceded by an ignored empty object, which is itself preceded by a heading
