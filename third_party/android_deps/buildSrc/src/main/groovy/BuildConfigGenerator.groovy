@@ -636,8 +636,7 @@ class BuildConfigGenerator extends DefaultTask {
     public boolean excludeDependency(ChromiumDepGraph.DependencyDescription dependency) {
         def onlyAndroidx = (repositoryPath == "third_party/androidx")
         return dependency.exclude || EXISTING_LIBS.get(dependency.id) != null ||
-                (onlyAndroidx && !dependency.id.startsWith("androidx_")) ||
-                (useDedicatedAndroidxDir && dependency.id == "androidx_legacy_legacy_preference_v14")
+                (onlyAndroidx && !dependency.id.startsWith("androidx_"))
     }
 
     private String normalisePath(String pathRelativeToChromiumRoot) {
