@@ -3652,8 +3652,8 @@
   },
   {
     "name": "omnibox-experimental-keyword-mode",
-    "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 92
+    "owners": [ "orinj", "yoangela", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 99
   },
   {
     "name": "omnibox-experimental-suggest-scoring",
@@ -3662,8 +3662,8 @@
   },
   {
     "name": "omnibox-keyword-search-button",
-    "owners": [ "jdonnelly", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 89
+    "owners": [ "jdonnelly", "yoangela", "orinj", "chrome-omnibox-team@google.com" ],
+    "expiry_milestone": 92
   },
   {
     "name": "omnibox-local-history-zero-suggest",
@@ -3788,7 +3788,7 @@
   {
     "name": "omnibox-suggestion-button-row",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 92
   },
   {
     "name": "omnibox-tab-switch-suggestions",
