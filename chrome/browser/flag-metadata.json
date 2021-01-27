@@ -3018,8 +3018,8 @@
   },
   {
     "name": "impulse-scroll-animations",
-    "owners": [ "dlibby@microsoft.com", "sarsha@microsoft.com" ],
-    "expiry_milestone": 89
+    "owners": [ "arakeri@microsoft.com", "gerchiko@microsoft.com" ],
+    "expiry_milestone": 100
   },
   {
     "name": "in-product-help-demo-mode-choice",
