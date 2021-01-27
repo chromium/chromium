@@ -187,8 +187,7 @@ class MockShareTargetDiscoveredCallback : public ShareTargetDiscoveredCallback {
 
 class FakePowerClient : public PowerClient {
  public:
-  // Make setters public for testing.
-  using PowerClient::SetScreenOn;
+  // Make SetSuspended() public for testing.
   using PowerClient::SetSuspended;
 };
 
@@ -1710,34 +1709,6 @@ TEST_F(NearbySharingServiceImplTest, SuspendDuringAdvertising) {
   power_client_->SetSuspended(true);
   EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
   power_client_->SetSuspended(false);
-  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
-}
-
-TEST_F(NearbySharingServiceImplTest,
-       ScreenOffRegisterReceiveSurfaceNotAdvertising) {
-  power_client_->SetScreenOn(false);
-  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
-  MockTransferUpdateCallback callback;
-  NearbySharingService::StatusCodes result = service_->RegisterReceiveSurface(
-      &callback, NearbySharingService::ReceiveSurfaceState::kForeground);
-  EXPECT_EQ(result, NearbySharingService::StatusCodes::kOk);
-  EXPECT_FALSE(fake_nearby_connections_manager_->IsAdvertising());
-  EXPECT_FALSE(fake_nearby_connections_manager_->is_shutdown());
-}
-
-TEST_F(NearbySharingServiceImplTest, SetScreenOffDuringAdvertising) {
-  SetConnectionType(net::NetworkChangeNotifier::CONNECTION_WIFI);
-  MockTransferUpdateCallback transfer_callback;
-  MockShareTargetDiscoveredCallback discovery_callback;
-  EXPECT_EQ(
-      NearbySharingService::StatusCodes::kOk,
-      service_->RegisterSendSurface(&transfer_callback, &discovery_callback,
-                                    SendSurfaceState::kForeground));
-  EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
-
-  power_client_->SetScreenOn(false);
-  EXPECT_FALSE(fake_nearby_connections_manager_->IsDiscovering());
-  power_client_->SetScreenOn(true);
   EXPECT_TRUE(fake_nearby_connections_manager_->IsDiscovering());
 }
 

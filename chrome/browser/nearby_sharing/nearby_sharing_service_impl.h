@@ -163,7 +163,6 @@ class NearbySharingServiceImpl
   // PowerClient::Observer:
   void SuspendImminent() override;
   void SuspendDone() override;
-  void ScreenStateChanged(bool is_screen_on) override;
 
   base::ObserverList<TransferUpdateCallback>& GetReceiveCallbacksFromState(
       ReceiveSurfaceState state);
