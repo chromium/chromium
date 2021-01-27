@@ -141,6 +141,9 @@
   <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_DESCRIPTION" desc="Description of the mobile data usage setting where Wi-Fi or cell data may be used for transfers for the Nearby Share feature.">
     May incur mobile data charges
   </message>
+  <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_TOOLTIP" desc="Explanation of when the mobile data usage setting applies. When selected, Mobile data means that Wi-Fi or cell data may be used for transfers for the Nearby Share feature.">
+    This option applies to Chromebooks with a data plan or mobile network dongle, or when tethering to a portable hotspot
+  </message>
   <message name="IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_OFFLINE_LABEL" desc="Label for the data usage setting where transfers will only take place offline for the Nearby Share feature.">
     Without internet
   </message>

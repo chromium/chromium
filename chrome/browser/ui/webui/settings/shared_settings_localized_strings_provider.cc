@@ -274,6 +274,8 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_LABEL},
       {"nearbyShareDataUsageDataDescription",
        IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_DESCRIPTION},
+      {"nearbyShareDataUsageDataTooltip",
+       IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_MOBILE_DATA_TOOLTIP},
       {"nearbyShareDataUsageOfflineLabel",
        IDS_SETTINGS_NEARBY_SHARE_DATA_USAGE_OFFLINE_LABEL},
       {"nearbyShareDataUsageOfflineDescription",
