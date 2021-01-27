@@ -70,6 +70,11 @@
     // overload.
     [CallWith=Isolate, RaisesException] Window? open(optional USVString url="", optional DOMString target = "_blank", optional [TreatNullAs=EmptyString] DOMString features = "", optional ImpressionParams impression_params);
 
+    // Overload which prevents exceptions caused by trying to convert a boolean
+    // to ImpressionParams when a boolean is passed as the fourth parameter.
+    // See https://crbug.com/1164959.
+    [CallWith=Isolate, RaisesException] Window? open(optional USVString url="", optional DOMString target = "_blank", optional [TreatNullAs=EmptyString] DOMString features = "", boolean unused);
+
     // indexed properties
     // https://html.spec.whatwg.org/C/browsers.html#windowproxy-getownproperty
     [NotEnumerable, CrossOrigin] getter Window (unsigned long index);

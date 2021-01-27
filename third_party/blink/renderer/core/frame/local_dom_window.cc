@@ -1955,6 +1955,24 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
                                 const String& url_string,
                                 const AtomicString& target,
                                 const String& features,
+                                bool unused,
+                                ExceptionState& exception_state) {
+  UseCounter::Count(this, WebFeature::kWindowOpenWithAdditionalBoolParameter);
+
+  PrintErrorMessage(
+      "A boolean is being passed as a fourth parameter to "
+      "window.open. This is not used and may cause an "
+      "exception in a future release.");
+
+  // Ignore the unused bool argument.
+  return open(isolate, url_string, target, features,
+              nullptr /* impression_params */, exception_state);
+}
+
+DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
+                                const String& url_string,
+                                const AtomicString& target,
+                                const String& features,
                                 const ImpressionParams* impression_params,
                                 ExceptionState& exception_state) {
   if (!RuntimeEnabledFeatures::ConversionMeasurementEnabled(this)) {

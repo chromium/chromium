@@ -30996,6 +30996,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="AddressSpaceUnknownNonSecureContextNavigatedToPrivate"/>
   <int value="3773" label="RTCPeerConnectionSdpSemanticsPlanB"/>
   <int value="3774" label="FetchRespondWithNoResponseWithUsedRequestBody"/>
+  <int value="3784" label="WindowOpenWithAdditionalBoolParameter"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
