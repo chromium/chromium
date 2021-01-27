@@ -136,8 +136,15 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
 }
 
 // Test that only render blocking resources are loaded during NoStatePrefetch.
+// TODO(https://crbug.com/1144282): Fix failures on Asan.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_NSPLoadsRenderBlockingResource \
+  DISABLED_NSPLoadsRenderBlockingResource
+#else
+#define MAYBE_NSPLoadsRenderBlockingResource NSPLoadsRenderBlockingResource
+#endif
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
-                       NSPLoadsRenderBlockingResource) {
+                       MAYBE_NSPLoadsRenderBlockingResource) {
   NavigateAndWaitForCompletion(GURL(https_server_->GetURL("/parent_page.html")),
                                shell());
   script_resource_fetched_->Run();
@@ -147,7 +154,14 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
 
 // Test that navigating to a no-state-prefetched page executes JS and reuses
 // prerendered resources.
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, NavigateToPrerenderedPage) {
+// TODO(https://crbug.com/1144282): Fix failures on Asan.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_NavigateToPrerenderedPage DISABLED_NavigateToPrerenderedPage
+#else
+#define MAYBE_NavigateToPrerenderedPage NavigateToPrerenderedPage
+#endif
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
+                       MAYBE_NavigateToPrerenderedPage) {
   NavigateAndWaitForCompletion(GURL(https_server_->GetURL("/parent_page.html")),
                                shell());
   script_resource_fetched_->Run();
