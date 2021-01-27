@@ -572,12 +572,6 @@ IPC_MESSAGE_ROUTED1(ExtensionMsg_SetFrameName,
 IPC_MESSAGE_CONTROL1(ExtensionMsg_Loaded,
                      std::vector<ExtensionMsg_Loaded_Params>)
 
-// Updates the scripting allowlist for extensions in the render process. This is
-// only used for testing.
-IPC_MESSAGE_CONTROL1(ExtensionMsg_SetScriptingAllowlist,
-                     // extension ids
-                     extensions::ExtensionsClient::ScriptingAllowlist)
-
 // Notification that renderer should run some JavaScript code.
 IPC_MESSAGE_ROUTED1(ExtensionMsg_ExecuteCode,
                     ExtensionMsg_ExecuteCode_Params)

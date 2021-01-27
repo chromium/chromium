@@ -223,6 +223,8 @@ class Dispatcher : public content::RenderThreadObserver,
   void SetSystemFont(const std::string& font_family,
                      const std::string& font_size) override;
   void SetWebViewPartitionID(const std::string& partition_id) override;
+  void SetScriptingAllowlist(
+      const std::vector<std::string>& extension_ids) override;
   void OnRendererAssociatedRequest(
       mojo::PendingAssociatedReceiver<mojom::Renderer> receiver);
   void OnCancelSuspend(const std::string& extension_id);
@@ -245,8 +247,6 @@ class Dispatcher : public content::RenderThreadObserver,
                        const base::ListValue& args);
   void OnDispatchEvent(const ExtensionMsg_DispatchEvent_Params& params,
                        const base::ListValue& event_args);
-  void OnSetScriptingAllowlist(
-      const ExtensionsClient::ScriptingAllowlist& extension_ids);
   void OnShouldSuspend(const std::string& extension_id, uint64_t sequence_id);
   void OnSuspend(const std::string& extension_id);
   void OnTransferBlobs(const std::vector<std::string>& blob_uuids);

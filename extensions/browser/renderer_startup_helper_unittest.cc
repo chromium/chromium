@@ -59,6 +59,9 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
 
   void SetWebViewPartitionID(const std::string& partition_id) override {}
 
+  void SetScriptingAllowlist(
+      const std::vector<std::string>& extension_ids) override {}
+
   std::vector<std::string> activated_extensions_;
   std::vector<std::string> unloaded_extensions_;
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;

@@ -36,4 +36,8 @@ interface Renderer {
 
   // Reports the WebView partition ID to the WebView guest renderer process.
   SetWebViewPartitionID(string partition_id);
+
+  // Updates the scripting allowlist for extensions in the render process. This
+  // is only used for testing.
+  SetScriptingAllowlist(array<string> extension_ids);
 };

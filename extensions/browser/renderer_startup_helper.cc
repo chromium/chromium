@@ -131,8 +131,8 @@ void RendererStartupHelper::InitializeProcess(
 
   // Scripting allowlist. This is modified by tests and must be communicated
   // to renderers.
-  process->Send(new ExtensionMsg_SetScriptingAllowlist(
-      extensions::ExtensionsClient::Get()->GetScriptingAllowlist()));
+  renderer->SetScriptingAllowlist(
+      extensions::ExtensionsClient::Get()->GetScriptingAllowlist());
 
   // If the new render process is a WebView guest process, propagate the WebView
   // partition ID to it.

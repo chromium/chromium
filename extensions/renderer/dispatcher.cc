@@ -874,8 +874,6 @@ bool Dispatcher::OnControlMessageReceived(const IPC::Message& message) {
   IPC_MESSAGE_HANDLER(ExtensionMsg_Loaded, OnLoaded)
   IPC_MESSAGE_HANDLER(ExtensionMsg_MessageInvoke, OnMessageInvoke)
   IPC_MESSAGE_HANDLER(ExtensionMsg_DispatchEvent, OnDispatchEvent)
-  IPC_MESSAGE_HANDLER(ExtensionMsg_SetScriptingAllowlist,
-                      OnSetScriptingAllowlist)
   IPC_MESSAGE_HANDLER(ExtensionMsg_ShouldSuspend, OnShouldSuspend)
   IPC_MESSAGE_HANDLER(ExtensionMsg_Suspend, OnSuspend)
   IPC_MESSAGE_HANDLER(ExtensionMsg_TransferBlobs, OnTransferBlobs)
@@ -1016,6 +1014,11 @@ void Dispatcher::SetWebViewPartitionID(const std::string& partition_id) {
   // |webview_partition_id_| cannot be changed once set.
   CHECK(webview_partition_id_.empty() || webview_partition_id_ == partition_id);
   webview_partition_id_ = partition_id;
+}
+
+void Dispatcher::SetScriptingAllowlist(
+    const std::vector<std::string>& extension_ids) {
+  ExtensionsClient::Get()->SetScriptingAllowlist(extension_ids);
 }
 
 void Dispatcher::OnCancelSuspend(const std::string& extension_id) {
@@ -1182,11 +1185,6 @@ void Dispatcher::SetSessionInfo(version_info::Channel channel,
 
   blink::WebSecurityPolicy::RegisterURLSchemeAsAllowingWasmEvalCSP(
       blink::WebString::FromUTF8(extensions::kExtensionScheme));
-}
-
-void Dispatcher::OnSetScriptingAllowlist(
-    const ExtensionsClient::ScriptingAllowlist& extension_ids) {
-  ExtensionsClient::Get()->SetScriptingAllowlist(extension_ids);
 }
 
 void Dispatcher::OnShouldSuspend(const std::string& extension_id,

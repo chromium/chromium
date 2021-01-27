@@ -86,6 +86,8 @@ class InterceptingRendererStartupHelper : public RendererStartupHelper,
   void SetSystemFont(const std::string& font_family,
                      const std::string& font_size) override {}
   void SetWebViewPartitionID(const std::string& partition_id) override {}
+  void SetScriptingAllowlist(
+      const std::vector<std::string>& extension_ids) override {}
 
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
 };
