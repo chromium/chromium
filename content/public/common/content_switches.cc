@@ -372,7 +372,7 @@ const char kEnablePluginPlaceholderTesting[] =
 // also applys to workers.
 const char kEnablePreciseMemoryInfo[] = "enable-precise-memory-info";
 
-// Set options to cache V8 data. (off, preparse data, or code)
+// Set options to cache V8 data. (none, code, or default)
 const char kV8CacheOptions[] = "v8-cache-options";
 
 // If true the ServiceProcessLauncher is used to launch services. This allows
