@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/secure_channel/remote_attribute.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -48,6 +49,8 @@ class BluetoothLowEnergyCharacteristicsFinder
   // all characteristics of |service| were discovered, if |from_periphral_char|
   // or |to_peripheral| was not found, it calls |error_callback|. The object
   // will perform at most one call of the callbacks.
+  //
+  // Starts this operation by posting a task to |task_runner|.
   BluetoothLowEnergyCharacteristicsFinder(
       scoped_refptr<device::BluetoothAdapter> adapter,
       device::BluetoothDevice* device,
@@ -57,7 +60,9 @@ class BluetoothLowEnergyCharacteristicsFinder
       SuccessCallback success_callback,
       base::OnceClosure error_callback,
       const multidevice::RemoteDeviceRef& remote_device,
-      std::unique_ptr<BackgroundEidGenerator> background_eid_generator);
+      std::unique_ptr<BackgroundEidGenerator> background_eid_generator,
+      scoped_refptr<base::TaskRunner> task_runner =
+          base::ThreadTaskRunnerHandle::Get());
 
   ~BluetoothLowEnergyCharacteristicsFinder() override;
 
@@ -72,6 +77,9 @@ class BluetoothLowEnergyCharacteristicsFinder
 
  private:
   friend class SecureChannelBluetoothLowEnergyCharacteristicFinderTest;
+
+  // Starts the process of finding GATT characteristics.
+  void Start();
 
   // Scans the remote chracteristics of the service with |remote_service_.uuid|
   // in |device| and triggers the success or error callback.
