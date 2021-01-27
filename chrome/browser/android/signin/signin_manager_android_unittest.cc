@@ -138,8 +138,7 @@ TEST_F(SigninManagerAndroidTest, DISABLED_DeleteGoogleServiceWorkerCaches) {
   // be able to observe deletions.
   // Add service workers.
   auto helper = base::MakeRefCounted<browsing_data::CannedCacheStorageHelper>(
-      content::BrowserContext::GetDefaultStoragePartition(profile())
-          ->GetCacheStorageContext());
+      content::BrowserContext::GetDefaultStoragePartition(profile()));
 
   for (const TestCase& test_case : kTestCases)
     helper->Add(url::Origin::Create(GURL(test_case.worker_url)));

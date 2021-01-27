@@ -14,7 +14,6 @@
 #include "content/browser/cache_storage/cache_storage_handle.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/cache_storage_context.h"
 #include "content/public/browser/storage_usage_info.h"
 
 namespace url {

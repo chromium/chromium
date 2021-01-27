@@ -1971,8 +1971,7 @@ std::unique_ptr<CookiesTreeModel> CookiesTreeModel::CreateForProfile(
           storage_partition->GetServiceWorkerContext()),
       new browsing_data::SharedWorkerHelper(storage_partition,
                                             profile->GetResourceContext()),
-      new browsing_data::CacheStorageHelper(
-          storage_partition->GetCacheStorageContext()),
+      new browsing_data::CacheStorageHelper(storage_partition),
       BrowsingDataMediaLicenseHelper::Create(file_system_context));
 
 #if !defined(OS_ANDROID)

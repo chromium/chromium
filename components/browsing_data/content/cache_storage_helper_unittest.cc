@@ -18,10 +18,13 @@ namespace {
 
 class CannedCacheStorageHelperTest : public testing::Test {
  public:
-  content::CacheStorageContext* CacheStorageContext() {
+  content::StoragePartition* storage_partition() {
     return content::BrowserContext::GetDefaultStoragePartition(
-               &browser_context_)
-        ->GetCacheStorageContext();
+        &browser_context_);
+  }
+
+  scoped_refptr<CannedCacheStorageHelper> MakeHelper() {
+    return base::MakeRefCounted<CannedCacheStorageHelper>(storage_partition());
   }
 
  private:
@@ -32,9 +35,7 @@ class CannedCacheStorageHelperTest : public testing::Test {
 TEST_F(CannedCacheStorageHelperTest, Empty) {
   const GURL origin("http://host1:1/");
 
-  scoped_refptr<CannedCacheStorageHelper> helper(
-      new CannedCacheStorageHelper(CacheStorageContext()));
-
+  auto helper = MakeHelper();
   ASSERT_TRUE(helper->empty());
   helper->Add(url::Origin::Create(origin));
   ASSERT_FALSE(helper->empty());
@@ -46,9 +47,7 @@ TEST_F(CannedCacheStorageHelperTest, Delete) {
   const url::Origin origin1 = url::Origin::Create(GURL("http://host1:9000"));
   const url::Origin origin2 = url::Origin::Create(GURL("http://example.com"));
 
-  scoped_refptr<CannedCacheStorageHelper> helper(
-      new CannedCacheStorageHelper(CacheStorageContext()));
-
+  auto helper = MakeHelper();
   EXPECT_TRUE(helper->empty());
   helper->Add(origin1);
   helper->Add(origin2);
@@ -62,9 +61,7 @@ TEST_F(CannedCacheStorageHelperTest, IgnoreExtensionsAndDevTools) {
   const GURL origin1("chrome-extension://abcdefghijklmnopqrstuvwxyz/");
   const GURL origin2("devtools://abcdefghijklmnopqrstuvwxyz/");
 
-  scoped_refptr<CannedCacheStorageHelper> helper(
-      new CannedCacheStorageHelper(CacheStorageContext()));
-
+  auto helper = MakeHelper();
   ASSERT_TRUE(helper->empty());
   helper->Add(url::Origin::Create(origin1));
   ASSERT_TRUE(helper->empty());

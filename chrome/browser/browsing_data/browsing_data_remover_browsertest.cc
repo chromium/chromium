@@ -463,8 +463,6 @@ class BrowsingDataRemoverBrowserTest
         content::BrowserContext::GetDefaultStoragePartition(profile);
     content::ServiceWorkerContext* service_worker_context =
         storage_partition->GetServiceWorkerContext();
-    content::CacheStorageContext* cache_storage_context =
-        storage_partition->GetCacheStorageContext();
     storage::FileSystemContext* file_system_context =
         storage_partition->GetFileSystemContext();
     auto container = std::make_unique<LocalDataContainer>(
@@ -484,7 +482,7 @@ class BrowsingDataRemoverBrowserTest
         new browsing_data::ServiceWorkerHelper(service_worker_context),
         new browsing_data::SharedWorkerHelper(storage_partition,
                                               profile->GetResourceContext()),
-        new browsing_data::CacheStorageHelper(cache_storage_context),
+        new browsing_data::CacheStorageHelper(storage_partition),
         BrowsingDataMediaLicenseHelper::Create(file_system_context));
     base::RunLoop run_loop;
     CookiesTreeObserver observer(run_loop.QuitClosure());

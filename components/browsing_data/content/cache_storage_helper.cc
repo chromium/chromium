@@ -10,9 +10,10 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/cache_storage_context.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "url/gurl.h"
 
@@ -42,10 +43,9 @@ void GetAllOriginsInfoForCacheStorageCallback(
 
 }  // namespace
 
-CacheStorageHelper::CacheStorageHelper(
-    CacheStorageContext* cache_storage_context)
-    : cache_storage_context_(cache_storage_context) {
-  DCHECK(cache_storage_context_);
+CacheStorageHelper::CacheStorageHelper(content::StoragePartition* partition)
+    : partition_(partition) {
+  DCHECK(partition);
 }
 
 CacheStorageHelper::~CacheStorageHelper() {}
@@ -53,18 +53,18 @@ CacheStorageHelper::~CacheStorageHelper() {}
 void CacheStorageHelper::StartFetching(FetchCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
-  cache_storage_context_->GetAllOriginsInfo(base::BindOnce(
+  partition_->GetCacheStorageControl()->GetAllOriginsInfo(base::BindOnce(
       &GetAllOriginsInfoForCacheStorageCallback, std::move(callback)));
 }
 
 void CacheStorageHelper::DeleteCacheStorage(const url::Origin& origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  cache_storage_context_->DeleteForOrigin(origin);
+  partition_->GetCacheStorageControl()->DeleteForOrigin(origin);
 }
 
 CannedCacheStorageHelper::CannedCacheStorageHelper(
-    content::CacheStorageContext* context)
-    : CacheStorageHelper(context) {}
+    content::StoragePartition* partition)
+    : CacheStorageHelper(partition) {}
 
 CannedCacheStorageHelper::~CannedCacheStorageHelper() {}
 
