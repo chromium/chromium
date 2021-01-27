@@ -108,7 +108,7 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     // - Slight differences in radio and checkbox rendering in 10.15
     cc::FuzzyPixelComparator comparator(
         /* discard_alpha */ true,
-        /* error_pixels_percentage_limit */ 9.f,
+        /* error_pixels_percentage_limit */ 11.f,
         /* small_error_pixels_percentage_limit */ 0.f,
         /* avg_abs_error_limit */ 20.f,
         /* max_abs_error_limit */ 79.f,
@@ -165,7 +165,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Radio) {
           /* screenshot_height */ 40);
 }
 
-// TODO(iopopesc): Re-enable test when there is a resolution for
+// TODO(crbug.com/1165919): Re-enable test when there is a resolution for
 // android-bfcache-rel builder producing different results.
 #if defined(OS_ANDROID) || defined(OS_MAC)
 #define MAYBE_DarkModeTextSelection DISABLED_DarkModeTextSelection
@@ -175,6 +175,7 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, Radio) {
 IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_DarkModeTextSelection) {
   RunTest("form_controls_browsertest_dark_mode_text_selection",
           "<meta name=\"color-scheme\" content=\"dark\">"
+          "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
           "<div id=\"target\">This is some basic text that we are going to "
           "select.</div>"
           "<script>"
@@ -186,6 +187,35 @@ IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_DarkModeTextSelection) {
           "</script>",
           /* screenshot_width */ 400,
           /* screenshot_height */ 40);
+}
+
+// TODO(crbug.com/1165919) skip this test until there is a resolution for
+// android-bfcache-rel builder producing different results.
+#if defined(OS_ANDROID)
+#define MAYBE_Input DISABLED_Input
+#else
+#define MAYBE_Input Input
+#endif
+IN_PROC_BROWSER_TEST_F(FormControlsBrowserTest, MAYBE_Input) {
+  RunTest("form_controls_browsertest_input",
+          "<!-- text inputs -->"
+          "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+          "<style>body {margin: 8px} input {width: 150px; "
+          "margin-bottom: 18px}</style>"
+          "<input type=\"text\" /><br>"
+          "<input type=\"number\" /><br>"
+          "<input type=\"search\" /><br>"
+          "<input type=\"email\" /><br>"
+          "<input type=\"password\" /><br>"
+          "<!-- border -->"
+          "<input type=\"text\" style=\"border: 3px solid lime;\"/><br>"
+          "<!-- shadow -->"
+          "<input type=\"text\" style=\"box-shadow: 4px 4px 10px "
+          "rgba(255,0,0,0.5), inset 4px 4px 4px rgba(0,255,0,0.5);\"/><br>"
+          "<!-- disabled -->"
+          "<input type=\"text\" disabled/>",
+          /* screenshot_width */ 200,
+          /* screenshot_height */ 330);
 }
 
 // TODO(jarhar): Add tests for other elements from
