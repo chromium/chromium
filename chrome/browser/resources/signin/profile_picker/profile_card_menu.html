@@ -1,4 +1,4 @@
-<style include="cr-icons profile-picker-shared cr-hidden-style">
+<style include="profile-picker-shared cr-hidden-style">
   #moreActionsButton {
     --cr-icon-button-icon-size: 14px;
     --cr-icon-button-margin-end: 0;
@@ -14,12 +14,14 @@
   }
 
   #actionMenu iron-icon {
+    --iron-icon-fill-color: var(--google-grey-700);
     padding-inline-end: 14px;
   }
 
   #actionMenu button {
     --iron-icon-height: 16px;
     --iron-icon-width: 16px;
+    color: var(--google-grey-800);
     padding-inline-start: 14px;
   }
 
@@ -106,6 +108,14 @@
 
 
   @media (prefers-color-scheme: dark) {
+    #actionMenu button {
+      color: var(--google-grey-300);
+    }
+
+    #actionMenu iron-icon {
+      --iron-icon-fill-color: var(--google-grey-500);
+    }
+
     .warning-message {
       color: var(--google-grey-500);
     }
@@ -123,7 +133,7 @@
   }
 </style>
 
-<cr-icon-button class="icon-more-vert" id="moreActionsButton"
+<cr-icon-button iron-icon="cr:more-vert" id="moreActionsButton"
     on-click="onMoreActionsButtonClicked_" title="$i18n{profileMenuName}"
     aria-label="$i18n{profileMenuName}">
 </cr-icon-button>
