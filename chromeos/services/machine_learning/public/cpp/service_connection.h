@@ -27,29 +27,9 @@ namespace machine_learning {
 //       ->GetMachineLearningService()
 //       .LoadBuiltinModel(...);
 //
-// Usage for Built-in models (will be deprecated soon):
-//   mojo::Remote<chromeos::machine_learning::mojom::Model> model;
-//   chromeos::machine_learning::mojom::BuiltinModelSpecPtr spec =
-//       chromeos::machine_learning::mojom::BuiltinModelSpec::New();
-//   spec->id = ...;
-//   chromeos::machine_learning::ServiceConnection::GetInstance()
-//       ->LoadBuiltinModel(std::move(spec), model.BindNewPipeAndPassReceiver(),
-//                          base::BindOnce(&MyCallBack));
-//   // Use |model| or wait for |MyCallBack|.
-// Usage for Flatbuffer models (will be deprecated soon):
-//   mojo::Remote<chromeos::machine_learning::mojom::Model> model;
-//   chromeos::machine_learning::mojom::FlatBufferModelSpecPtr spec =
-//       chromeos::machine_learning::mojom::FlatBufferModelSpec::New();
-//   spec->model_string = ...;
-//   spec->inputs = ...;
-//   spec->outputs = ...;
-//   spec->metrics_model_name = ...;
-//   chromeos::machine_learning::ServiceConnection::GetInstance()
-//       ->LoadFlatBufferModel(std::move(spec),
-//                             model.BindNewPipeAndPassReceiver(),
-//                             base::BindOnce(&MyCallBack));
-//
-// Sequencing: can be called from any sequence.
+// Sequencing: BindMachineLearningService can be called from any sequence, while
+// GetMachineLearningService must be called from the sequence that the instance
+// is created on.
 class ServiceConnection {
  public:
   static ServiceConnection* GetInstance();
