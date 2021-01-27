@@ -189,5 +189,27 @@ TEST_F(SequenceMatcherTest, TestEditDistanceRatio) {
               0.0, 0.01);
 }
 
+TEST_F(SequenceMatcherTest, TestEmptyStrings) {
+  ASSERT_EQ(SequenceMatcher(base::UTF8ToUTF16(""), base::UTF8ToUTF16(""),
+                            /*use_edit_distance=*/true, 0.0)
+                .Ratio(),
+            0.0);
+
+  ASSERT_EQ(SequenceMatcher(base::UTF8ToUTF16(""), base::UTF8ToUTF16("abcd"),
+                            /*use_edit_distance=*/true, 0.0)
+                .Ratio(),
+            0.0);
+
+  ASSERT_EQ(SequenceMatcher(base::UTF8ToUTF16(""), base::UTF8ToUTF16(""),
+                            /*use_edit_distance=*/false, 0.0)
+                .Ratio(),
+            0.0);
+
+  ASSERT_EQ(SequenceMatcher(base::UTF8ToUTF16(""), base::UTF8ToUTF16("abcd"),
+                            /*use_edit_distance=*/false, 0.0)
+                .Ratio(),
+            0.0);
+}
+
 }  // namespace string_matching
 }  // namespace chromeos
