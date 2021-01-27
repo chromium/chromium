@@ -20,9 +20,10 @@
 // Functions for recording UMA histograms. These can be used for cases
 // when the histogram name is generated at runtime. The functionality is
 // equivalent to macros defined in histogram_macros.h but allowing non-constant
-// histogram names. These functions are slower compared to their macro
-// equivalent because the histogram objects are not cached between calls.
-// So, these shouldn't be used in performance critical code.
+// histogram names. These functions are slower but result in smaller code size
+// compared to their macro equivalent because the histogram objects are not
+// cached between calls. So, these should be used in non-performance-critical
+// code that is called rarely (not more than once per second).
 //
 // Every function is duplicated to take both std::string and char* for the
 // name. This avoids ctor/dtor instantiation for constant strigs to std::string
