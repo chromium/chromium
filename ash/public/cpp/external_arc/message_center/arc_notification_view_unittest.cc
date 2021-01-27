@@ -68,9 +68,8 @@ class ArcNotificationViewTest : public AshTestBase {
 
     item_ = std::make_unique<MockArcNotificationItem>(kDefaultNotificationKey);
 
-    message_center::MessageViewFactory::
-        ClearCustomNotificationViewFactoryForTest(
-            kArcNotificationCustomViewType);
+    message_center::MessageViewFactory::ClearCustomNotificationViewFactory(
+        kArcNotificationCustomViewType);
     message_center::MessageViewFactory::SetCustomNotificationViewFactory(
         kArcNotificationCustomViewType,
         base::BindRepeating(

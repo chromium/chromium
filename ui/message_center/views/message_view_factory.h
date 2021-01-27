@@ -41,7 +41,7 @@ class MESSAGE_CENTER_EXPORT MessageViewFactory {
       const CustomMessageViewFactoryFunction& factory_function);
   static bool HasCustomNotificationViewFactory(
       const std::string& custom_view_type);
-  static void ClearCustomNotificationViewFactoryForTest(
+  static void ClearCustomNotificationViewFactory(
       const std::string& custom_view_type);
 };
 

@@ -213,6 +213,9 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
   void OnNotificationInputSubmit(size_t index,
                                  const base::string16& text) override;
 
+ protected:
+  views::View* image_container_view() { return image_container_view_; }
+
  private:
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, AppNameExtension);
   FRIEND_TEST_ALL_PREFIXES(NotificationViewMDTest, AppNameSystemNotification);

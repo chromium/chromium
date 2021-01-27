@@ -79,7 +79,7 @@ bool MessageViewFactory::HasCustomNotificationViewFactory(
 }
 
 // static
-void MessageViewFactory::ClearCustomNotificationViewFactoryForTest(
+void MessageViewFactory::ClearCustomNotificationViewFactory(
     const std::string& custom_view_type) {
   g_custom_view_factories.Get().erase(custom_view_type);
 }
