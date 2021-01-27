@@ -1266,6 +1266,17 @@ int main(int argc, const char* argv[]) {
   FilteredExprWriter union_field_decl_writer(&output_helper, "union");
   match_finder.addMatcher(union_field_decl_matcher, &union_field_decl_writer);
 
+  // Matches rewritable fields of struct `SomeStruct` if that struct happens to
+  // be a destination type of a `reinterpret_cast<SomeStruct*>` cast.
+  auto reinterpret_cast_struct_matcher =
+      cxxReinterpretCastExpr(hasDestinationType(
+          pointerType(pointee(hasUnqualifiedDesugaredType(recordType(
+              hasDeclaration(recordDecl(forEach(field_decl_matcher)))))))));
+  FilteredExprWriter reinterpret_cast_struct_writer(&output_helper,
+                                                    "reinterpret-cast-struct");
+  match_finder.addMatcher(reinterpret_cast_struct_matcher,
+                          &reinterpret_cast_struct_writer);
+
   // Prepare and run the tool.
   std::unique_ptr<clang::tooling::FrontendActionFactory> factory =
       clang::tooling::newFrontendActionFactory(&match_finder, &output_helper);

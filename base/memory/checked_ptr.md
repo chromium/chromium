@@ -219,8 +219,8 @@ may become unbalanced if the `CheckedPtr` value is assigned to without going
 through the assignment operator.  An unbalanced ref-count may lead to crashes or
 memory leaks.
 
-One way to execute such an incorrect assignment is `reinterpret_cast`.
-For example, see https://crbug.com/1154799
+One way to execute such an incorrect assignment is `reinterpret_cast` of
+a pointer to a `CheckedPtr`.  For example, see https://crbug.com/1154799
 where the `reintepret_cast` is/was used in the `Extract` method
 [here](https://source.chromium.org/chromium/chromium/src/+/master:device/fido/cbor_extract.h;l=318;drc=16f9768803e17c90901adce97b3153cfd39fdde2)).
 Simplified example:
@@ -232,6 +232,28 @@ int** ptr_to_raw_int_ptr = reinterpret_cast<int**>(&checked_int_ptr);
 // Incorrect code: the assignment below won't update the ref-count internally
 // maintained by CheckedPtr.
 *ptr_to_raw_int_ptr = new int(123);
+```
+
+Another way is to `reinterpret_cast` a struct containing `CheckedPtr` fields.
+For example, see https://crbug.com/1165613#c5 where `reinterpret_cast` was
+used to treat a `buffer` of data as `FunctionInfo` struct (where
+`interceptor_address` field might be a `CheckedPtr`). Simplified example:
+
+```cpp
+struct MyStruct {
+  CheckedPtr<int> checked_int_ptr_;
+};
+
+void foo(void* buffer) {
+  // During the assignment, parts of `buffer` will be interpreted as an
+  // already initialized/constructed `CheckedPtr<int>` field.
+  MyStruct* my_struct_ptr = reinterpret_cast<MyStruct*>(buffer);
+
+  // The assignment below will try to decrement the ref-count of the old
+  // pointee.  This may crash if the old pointer is pointing to a
+  // PartitionAlloc-managed allocation that has a ref-count already set to 0.
+  my_struct_ptr->checked_int_ptr_ = nullptr;
+}
 ```
 
 #### Fields order leading to dereferencing a destructed CheckedPtr
