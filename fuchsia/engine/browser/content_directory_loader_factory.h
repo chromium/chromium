@@ -12,17 +12,17 @@
 #include <string>
 #include <vector>
 
-#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "fuchsia/engine/web_engine_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 // URLLoaderFactory which services requests for resources stored under named
 // directories. The directories are accessed using the fuchsia-dir:// scheme.
 class ContentDirectoryLoaderFactory
-    : public content::NonNetworkURLLoaderFactoryBase {
+    : public network::SelfDeletingURLLoaderFactory {
  public:
   // Returns mojo::PendingRemote to a newly constructed
   // ContentDirectoryLoaderFactory.  The factory is self-owned - it will delete

@@ -176,7 +176,7 @@ CastExtensionURLLoaderFactory::CastExtensionURLLoaderFactory(
     content::BrowserContext* browser_context,
     mojo::PendingRemote<network::mojom::URLLoaderFactory> extension_factory,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
-    : content::NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)),
+    : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
       extension_registry_(extensions::ExtensionRegistry::Get(browser_context)),
       extension_factory_(std::move(extension_factory)),
       network_factory_(
@@ -284,7 +284,8 @@ CastExtensionURLLoaderFactory::Create(
     return pending_remote;
 
   // The CastExtensionURLLoaderFactory will delete itself when there are no more
-  // receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
+  // receivers - see the network::SelfDeletingURLLoaderFactory::OnDisconnect
+  // method.
   new CastExtensionURLLoaderFactory(
       browser_context, std::move(extension_factory),
       pending_remote.InitWithNewPipeAndPassReceiver());

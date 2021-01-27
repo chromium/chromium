@@ -11,14 +11,8 @@
 namespace network {
 
 NotImplementedURLLoaderFactory::NotImplementedURLLoaderFactory(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver) {
-  // TODO(lukasza): Reuse content::NonNetworkURLLoaderFactoryBase (after moving
-  // it to //services/network/public/cpp and maybe renaming it to
-  // SelfDeletingURLLoaderFactory.
-  receivers_.set_disconnect_handler(base::BindRepeating(
-      &NotImplementedURLLoaderFactory::OnDisconnect, base::Unretained(this)));
-  receivers_.Add(this, std::move(factory_receiver));
-}
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
+    : SelfDeletingURLLoaderFactory(std::move(factory_receiver)) {}
 
 NotImplementedURLLoaderFactory::~NotImplementedURLLoaderFactory() = default;
 
@@ -35,21 +29,6 @@ void NotImplementedURLLoaderFactory::CreateLoaderAndStart(
   status.error_code = net::ERR_NOT_IMPLEMENTED;
   mojo::Remote<network::mojom::URLLoaderClient>(std::move(client))
       ->OnComplete(status);
-}
-
-void NotImplementedURLLoaderFactory::Clone(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver) {
-  receivers_.Add(this, std::move(receiver));
-}
-
-void NotImplementedURLLoaderFactory::OnDisconnect() {
-  if (receivers_.empty()) {
-    // If there are no more |receivers_|, then no instance methods of |this| can
-    // be called in the future (mojo methods Clone and CreateLoaderAndStart
-    // should be the only public entrypoints).  Therefore, it is safe to delete
-    // |this| at this point.
-    delete this;
-  }
 }
 
 // static

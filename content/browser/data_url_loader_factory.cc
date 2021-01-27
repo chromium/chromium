@@ -42,7 +42,8 @@ void OnWrite(std::unique_ptr<WriteData> write_data, MojoResult result) {
 DataURLLoaderFactory::DataURLLoaderFactory(
     const GURL& url,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
-    : NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)), url_(url) {}
+    : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
+      url_(url) {}
 
 DataURLLoaderFactory::~DataURLLoaderFactory() = default;
 
@@ -119,7 +120,8 @@ DataURLLoaderFactory::CreateForOneSpecificUrl(const GURL& url) {
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
 
   // The DataURLLoaderFactory will delete itself when there are no more
-  // receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
+  // receivers - see the network::SelfDeletingURLLoaderFactory::OnDisconnect
+  // method.
   new DataURLLoaderFactory(url,
                            pending_remote.InitWithNewPipeAndPassReceiver());
 

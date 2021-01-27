@@ -9,16 +9,16 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 
 namespace content {
 
 // A URLLoaderFactory used for the content:// scheme used when Network Service
 // is enabled.
 class CONTENT_EXPORT ContentURLLoaderFactory
-    : public NonNetworkURLLoaderFactoryBase {
+    : public network::SelfDeletingURLLoaderFactory {
  public:
   // Returns mojo::PendingRemote to a newly constructed ContentURLLoadedFactory.
   // The factory is self-owned - it will delete itself once there are no more

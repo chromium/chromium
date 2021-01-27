@@ -23,7 +23,6 @@
 #include "content/browser/webui/url_data_source_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/message.h"
@@ -32,6 +31,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/parsed_headers.h"
+#include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "ui/base/template_expressions.h"
 
@@ -204,7 +204,7 @@ void StartURLLoader(
                                      std::move(data_available_callback));
 }
 
-class WebUIURLLoaderFactory : public NonNetworkURLLoaderFactoryBase {
+class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
  public:
   // Returns mojo::PendingRemote to a newly constructed WebUIURLLoaderFactory.
   // The factory is self-owned - it will delete itself once there are no more
@@ -220,7 +220,8 @@ class WebUIURLLoaderFactory : public NonNetworkURLLoaderFactoryBase {
     mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
 
     // The WebUIURLLoaderFactory will delete itself when there are no more
-    // receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
+    // receivers - see the
+    // network::SelfDeletingURLLoaderFactory::OnDisconnect method.
     new WebUIURLLoaderFactory(ftn, scheme, std::move(allowed_hosts),
                               pending_remote.InitWithNewPipeAndPassReceiver());
 
@@ -307,7 +308,7 @@ class WebUIURLLoaderFactory : public NonNetworkURLLoaderFactoryBase {
       const std::string& scheme,
       base::flat_set<std::string> allowed_hosts,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
-      : NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)),
+      : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
         frame_tree_node_id_(ftn->frame_tree_node_id()),
         scheme_(scheme),
         allowed_hosts_(std::move(allowed_hosts)) {}

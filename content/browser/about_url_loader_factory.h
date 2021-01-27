@@ -6,16 +6,16 @@
 #define CONTENT_BROWSER_ABOUT_URL_LOADER_FACTORY_H_
 
 #include "base/macros.h"
-#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 
 namespace content {
 
 // URLLoaderFactory for handling about: URLs. This treats everything as
 // about:blank since no other about: features should be available to web
 // content.
-class AboutURLLoaderFactory : public NonNetworkURLLoaderFactoryBase {
+class AboutURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
  public:
   // Returns mojo::PendingRemote to a newly constructed AboutURLLoadedFactory.
   // The factory is self-owned - it will delete itself once there are no more

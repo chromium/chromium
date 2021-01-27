@@ -9,6 +9,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace network {
@@ -16,7 +17,7 @@ namespace network {
 // A URLLoaderFactory which just fails to create a loader with
 // net::ERR_NOT_IMPLEMENTED.
 class COMPONENT_EXPORT(NETWORK_CPP) NotImplementedURLLoaderFactory final
-    : public network::mojom::URLLoaderFactory {
+    : public SelfDeletingURLLoaderFactory {
  public:
   // Returns mojo::PendingRemote to a newly constructed
   // NotImplementedURLLoaderFactory.  The factory is self-owned - it will delete
@@ -39,18 +40,11 @@ class COMPONENT_EXPORT(NETWORK_CPP) NotImplementedURLLoaderFactory final
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
 
-  void Clone(mojo::PendingReceiver<network::mojom::URLLoaderFactory> receiver)
-      override;
-
-  // Constructs NonNetworkURLLoaderFactoryBase object that will self-delete once
-  // all receivers disconnect (including |factory_receiver| below as well as
-  // receivers that connect via the Clone method).
+  // Constructs a NotImplementedURLLoaderFactory object that will self-delete
+  // once all receivers disconnect (including |factory_receiver| below as well
+  // as receivers that connect via the Clone method).
   explicit NotImplementedURLLoaderFactory(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
-
-  void OnDisconnect();
-
-  mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
 
   DISALLOW_COPY_AND_ASSIGN(NotImplementedURLLoaderFactory);
 };

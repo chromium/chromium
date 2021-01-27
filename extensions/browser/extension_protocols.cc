@@ -46,7 +46,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_url_loader.h"
 #include "content/public/browser/navigation_ui_data.h"
-#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
@@ -91,6 +90,7 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/http_response_info.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -457,8 +457,7 @@ class FileLoaderObserver : public content::FileURLLoaderObserver {
   DISALLOW_COPY_AND_ASSIGN(FileLoaderObserver);
 };
 
-class ExtensionURLLoaderFactory
-    : public content::NonNetworkURLLoaderFactoryBase {
+class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
  public:
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create(
       content::BrowserContext* browser_context,
@@ -492,14 +491,14 @@ class ExtensionURLLoaderFactory
   // The factory is self-owned - it will delete itself once there are no more
   // receivers (including the receiver associated with the returned
   // mojo::PendingRemote and the receivers bound by the Clone method).  See also
-  // the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
+  // the network::SelfDeletingURLLoaderFactory::OnDisconnect method.
   ExtensionURLLoaderFactory(
       content::BrowserContext* browser_context,
       ukm::SourceIdObj ukm_source_id,
       bool is_web_view_request,
       int render_process_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
-      : content::NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)),
+      : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
         browser_context_(browser_context),
         is_web_view_request_(is_web_view_request),
         ukm_source_id_(ukm_source_id),

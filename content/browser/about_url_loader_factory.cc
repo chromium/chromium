@@ -12,7 +12,7 @@ namespace content {
 
 AboutURLLoaderFactory::AboutURLLoaderFactory(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
-    : NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)) {}
+    : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)) {}
 
 AboutURLLoaderFactory::~AboutURLLoaderFactory() = default;
 
@@ -50,7 +50,8 @@ AboutURLLoaderFactory::Create() {
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
 
   // The AboutURLLoaderFactory will delete itself when there are no more
-  // receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
+  // receivers - see the network::SelfDeletingURLLoaderFactory::OnDisconnect
+  // method.
   new AboutURLLoaderFactory(pending_remote.InitWithNewPipeAndPassReceiver());
 
   return pending_remote;

@@ -237,8 +237,6 @@ source_set("browser_sources") {
     "network_context_client_base.h",
     "network_quality_observer_factory.h",
     "network_service_instance.h",
-    "non_network_url_loader_factory_base.cc",
-    "non_network_url_loader_factory_base.h",
     "notification_database_data.cc",
     "notification_database_data.h",
     "notification_details.h",

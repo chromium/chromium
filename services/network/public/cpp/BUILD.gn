@@ -89,6 +89,8 @@ component("cpp") {
     "request_mode.h",
     "resolve_host_client_base.cc",
     "resolve_host_client_base.h",
+    "self_deleting_url_loader_factory.cc",
+    "self_deleting_url_loader_factory.h",
     "session_cookie_delete_predicate.h",
     "shared_url_loader_factory.cc",
     "shared_url_loader_factory.h",

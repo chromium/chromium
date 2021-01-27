@@ -11,9 +11,9 @@
 #include "base/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 
 namespace content {
 
@@ -24,7 +24,7 @@ class SharedCorsOriginAccessList;
 // If a caller needs a request that has a fetch request mode other than
 // "no-cors", this class should be used on the UI thread.
 class CONTENT_EXPORT FileURLLoaderFactory
-    : public NonNetworkURLLoaderFactoryBase {
+    : public network::SelfDeletingURLLoaderFactory {
  public:
   // Returns mojo::PendingRemote to a newly constructed FileURLLoaderFactory.
   // The factory is self-owned - it will delete itself once there are no more

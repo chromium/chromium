@@ -774,7 +774,7 @@ FileURLLoaderFactory::FileURLLoaderFactory(
     scoped_refptr<SharedCorsOriginAccessList> shared_cors_origin_access_list,
     base::TaskPriority task_priority,
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
-    : NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)),
+    : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
       profile_path_(profile_path),
       shared_cors_origin_access_list_(
           std::move(shared_cors_origin_access_list)),
@@ -825,6 +825,9 @@ void FileURLLoaderFactory::CreateLoaderAndStart(
                  .CheckAccessState(*request.request_initiator, request.url) ==
              network::cors::OriginAccessList::AccessState::kAllowed)));
 
+  // TODO(toyoshim, lukasza): https://crbug.com/1105256: Extract CORS checks
+  // into a separate base class (i.e. to reuse similar checks in
+  // FileURLLoaderFactory and ExtensionURLLoaderFactory.
   network::mojom::FetchResponseType response_type =
       network::cors::CalculateResponseType(request.mode,
                                            is_request_considered_same_origin);
@@ -887,7 +890,8 @@ FileURLLoaderFactory::Create(
   mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
 
   // The FileURLLoaderFactory will delete itself when there are no more
-  // receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
+  // receivers - see the network::SelfDeletingURLLoaderFactory::OnDisconnect
+  // method.
   new FileURLLoaderFactory(
       profile_path, std::move(shared_cors_origin_access_list), task_priority,
       pending_remote.InitWithNewPipeAndPassReceiver());

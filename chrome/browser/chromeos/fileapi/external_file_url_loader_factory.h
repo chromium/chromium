@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_CHROMEOS_FILEAPI_EXTERNAL_FILE_URL_LOADER_FACTORY_H_
 
 #include "base/macros.h"
-#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace chromeos {
@@ -17,7 +17,7 @@ namespace chromeos {
 // URLLoaderFactory that creates URLLoader instances for URLs with the
 // externalfile scheme.
 class ExternalFileURLLoaderFactory
-    : public content::NonNetworkURLLoaderFactoryBase {
+    : public network::SelfDeletingURLLoaderFactory {
  public:
   // Returns mojo::PendingRemote to a newly constructed
   // ExternalFileURLLoaderFactory.  The factory is self-owned - it will delete

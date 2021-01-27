@@ -24,7 +24,6 @@
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
@@ -40,6 +39,7 @@
 #include "net/base/mime_util.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "storage/browser/file_system/file_stream_reader.h"
@@ -600,13 +600,14 @@ class FileSystemFileURLLoader : public FileSystemEntryURLLoader {
 
 // A URLLoaderFactory used for the filesystem:// scheme used when the Network
 // Service is enabled.
-class FileSystemURLLoaderFactory : public NonNetworkURLLoaderFactoryBase {
+class FileSystemURLLoaderFactory
+    : public network::SelfDeletingURLLoaderFactory {
  public:
   FileSystemURLLoaderFactory(
       FactoryParams params,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
-      : NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)),
+      : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
         params_(std::move(params)),
         io_task_runner_(io_task_runner) {}
 
@@ -660,7 +661,8 @@ CreateFileSystemURLLoaderFactory(
                           file_system_context, storage_domain};
 
   // The FileSystemURLLoaderFactory will delete itself when there are no more
-  // receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect method.
+  // receivers - see the network::SelfDeletingURLLoaderFactory::OnDisconnect
+  // method.
   new FileSystemURLLoaderFactory(
       std::move(params), GetIOThreadTaskRunner({}),
       pending_remote.InitWithNewPipeAndPassReceiver());

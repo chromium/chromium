@@ -308,7 +308,6 @@
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "content/public/browser/non_network_url_loader_factory_base.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -366,6 +365,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/strings/grit/services_strings.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
@@ -4694,7 +4694,7 @@ namespace {
 // pages.  Checks with the ChildProcessSecurityPolicy to validate the file
 // access.
 class SpecialAccessFileURLLoaderFactory
-    : public content::NonNetworkURLLoaderFactoryBase {
+    : public network::SelfDeletingURLLoaderFactory {
  public:
   // Returns mojo::PendingRemote to a newly constructed
   // SpecialAccessFileURLLoaderFactory.  The factory is self-owned - it will
@@ -4706,8 +4706,8 @@ class SpecialAccessFileURLLoaderFactory
     mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
 
     // The SpecialAccessFileURLLoaderFactory will delete itself when there are
-    // no more receivers - see the NonNetworkURLLoaderFactoryBase::OnDisconnect
-    // method.
+    // no more receivers - see the
+    // network::SelfDeletingURLLoaderFactory::OnDisconnect method.
     new SpecialAccessFileURLLoaderFactory(
         child_id, pending_remote.InitWithNewPipeAndPassReceiver());
 
@@ -4718,7 +4718,7 @@ class SpecialAccessFileURLLoaderFactory
   explicit SpecialAccessFileURLLoaderFactory(
       int child_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
-      : content::NonNetworkURLLoaderFactoryBase(std::move(factory_receiver)),
+      : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
         child_id_(child_id) {}
 
   // network::mojom::URLLoaderFactory:
