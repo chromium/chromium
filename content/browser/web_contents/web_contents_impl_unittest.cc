@@ -1257,8 +1257,10 @@ TEST_F(WebContentsImplTest, CrossSiteNavigationBackOldNavigationIgnored) {
   // The newly created process for url1 should be locked to chrome://gpu.
   RenderProcessHost* new_process = contents()->GetMainFrame()->GetProcess();
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  EXPECT_TRUE(policy->CanAccessDataForOrigin(new_process->GetID(), url1));
-  EXPECT_FALSE(policy->CanAccessDataForOrigin(new_process->GetID(), url2));
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(new_process->GetID(),
+                                             url::Origin::Create(url1)));
+  EXPECT_FALSE(policy->CanAccessDataForOrigin(new_process->GetID(),
+                                              url::Origin::Create(url2)));
 }
 
 // Test that during a slow cross-site navigation, a sub-frame navigation in the

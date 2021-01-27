@@ -69,7 +69,7 @@ bool CanAccessDocumentURL(ChildProcessSecurityPolicyImpl::Handle* handle,
          document_url == GURL("data:,") ||  // CSP blocked_urls.
          (document_url.SchemeIsBlob() &&    // <iframe src="blob:null/xx"> case.
           url::Origin::Create(document_url).opaque()) ||
-         handle->CanAccessDataForOrigin(document_url);
+         handle->CanAccessDataForOrigin(url::Origin::Create(document_url));
 }
 
 base::debug::CrashKeyString* GetDocumentUrlCrashKey() {
@@ -172,7 +172,8 @@ void AppCacheHost::SelectCache(const GURL& document_url,
   }
 
   if (!manifest_url.is_empty() &&
-      !security_policy_handle()->CanAccessDataForOrigin(manifest_url)) {
+      !security_policy_handle()->CanAccessDataForOrigin(
+          url::Origin::Create(manifest_url))) {
     mojo::ReportBadMessage("ACH_SELECT_CACHE_MANIFEST_URL_ACCESS_NOT_ALLOWED");
     return;
   }

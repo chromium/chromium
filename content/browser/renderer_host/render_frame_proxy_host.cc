@@ -557,8 +557,8 @@ void RenderFrameProxyHost::RouteMessageEvent(
   // TODO(lukasza): Move opaque-ness check into ChildProcessSecurityPolicyImpl.
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   if (source_origin != base::UTF8ToUTF16("null") &&
-      !policy->CanAccessDataForOrigin(GetProcess()->GetID(),
-                                      GURL(source_origin))) {
+      !policy->CanAccessDataForOrigin(
+          GetProcess()->GetID(), url::Origin::Create(GURL(source_origin)))) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFPH_POST_MESSAGE_INVALID_SOURCE_ORIGIN);
     return;

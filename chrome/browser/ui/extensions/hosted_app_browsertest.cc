@@ -1563,14 +1563,14 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
 
   // Ensure each process only has access to its site's data.
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  EXPECT_TRUE(
-      policy->CanAccessDataForOrigin(foo_process->GetID(), foo_app_url));
-  EXPECT_FALSE(
-      policy->CanAccessDataForOrigin(foo_process->GetID(), bar_app_url));
-  EXPECT_FALSE(
-      policy->CanAccessDataForOrigin(bar_process->GetID(), foo_app_url));
-  EXPECT_TRUE(
-      policy->CanAccessDataForOrigin(bar_process->GetID(), bar_app_url));
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(foo_process->GetID(),
+                                             url::Origin::Create(foo_app_url)));
+  EXPECT_FALSE(policy->CanAccessDataForOrigin(
+      foo_process->GetID(), url::Origin::Create(bar_app_url)));
+  EXPECT_FALSE(policy->CanAccessDataForOrigin(
+      bar_process->GetID(), url::Origin::Create(foo_app_url)));
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(bar_process->GetID(),
+                                             url::Origin::Create(bar_app_url)));
 
   // Both processes should still be app processes.
   auto* process_map = extensions::ProcessMap::Get(browser()->profile());
@@ -1618,10 +1618,10 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
   // At this point the main frame process should have access to foo.com data
   // but not bar.com data.
   auto* policy = content::ChildProcessSecurityPolicy::GetInstance();
-  EXPECT_TRUE(
-      policy->CanAccessDataForOrigin(foo_process->GetID(), foo_app_url));
-  EXPECT_FALSE(
-      policy->CanAccessDataForOrigin(foo_process->GetID(), bar_app_url));
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(foo_process->GetID(),
+                                             url::Origin::Create(foo_app_url)));
+  EXPECT_FALSE(policy->CanAccessDataForOrigin(
+      foo_process->GetID(), url::Origin::Create(bar_app_url)));
 
   // Ensure the current process is allowed to access cookies.
   EXPECT_TRUE(ExecuteScript(web_contents, "document.cookie = 'foo=bar';"));
@@ -1644,10 +1644,10 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
   EXPECT_NE(foo_process, bar_process);
 
   // At this point the main frame process should have access to bar.com data.
-  EXPECT_TRUE(
-      policy->CanAccessDataForOrigin(bar_process->GetID(), bar_app_url));
-  EXPECT_FALSE(
-      policy->CanAccessDataForOrigin(bar_process->GetID(), foo_app_url));
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(bar_process->GetID(),
+                                             url::Origin::Create(bar_app_url)));
+  EXPECT_FALSE(policy->CanAccessDataForOrigin(
+      bar_process->GetID(), url::Origin::Create(foo_app_url)));
 
   // Ensure the current process is allowed to access cookies.
   EXPECT_TRUE(ExecuteScript(web_contents, "document.cookie = 'foo=bar';"));
@@ -1677,8 +1677,8 @@ IN_PROC_BROWSER_TEST_P(HostedAppSitePerProcessTest,
 
   // Ensure the current non-app foo.com process is allowed to access foo.com
   // data.
-  EXPECT_TRUE(policy->CanAccessDataForOrigin(foo_nonapp_process->GetID(),
-                                             foo_nonapp_url));
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(
+      foo_nonapp_process->GetID(), url::Origin::Create(foo_nonapp_url)));
   EXPECT_TRUE(ExecuteScript(web_contents, "document.cookie = 'foo=bar';"));
   EXPECT_EQ("foo=bar", EvalJs(web_contents, "document.cookie"));
 }

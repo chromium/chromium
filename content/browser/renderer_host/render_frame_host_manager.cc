@@ -976,8 +976,11 @@ RenderFrameHostImpl* RenderFrameHostManager::GetFrameHostForNavigation(
       navigation_rfh->GetSiteInstance()->GetProcessLock();
   if (!process_lock.is_error_page() &&
       request->common_params().url.IsStandard() &&
-      !policy->CanAccessDataForOrigin(navigation_rfh->GetProcess()->GetID(),
-                                      request->common_params().url) &&
+      // TODO(https://crbug.com/888079): Replace `common_params().url` with
+      // the origin to commit calculated on the browser side.
+      !policy->CanAccessDataForOrigin(
+          navigation_rfh->GetProcess()->GetID(),
+          url::Origin::Create(request->common_params().url)) &&
       !request->IsForMhtmlSubframe()) {
     base::debug::SetCrashKeyString(
         base::debug::AllocateCrashKeyString("lock_url",

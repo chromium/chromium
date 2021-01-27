@@ -8536,8 +8536,10 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // either, so that it can be used for subsequent navigations.
   content::RenderProcessHost* new_process = new_instance->GetProcess();
   auto* policy = ChildProcessSecurityPolicy::GetInstance();
-  EXPECT_TRUE(policy->CanAccessDataForOrigin(new_process->GetID(), url1));
-  EXPECT_TRUE(policy->CanAccessDataForOrigin(new_process->GetID(), url2));
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(new_process->GetID(),
+                                             url::Origin::Create(url1)));
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(new_process->GetID(),
+                                             url::Origin::Create(url2)));
 
   SetBrowserClientForTesting(old_client);
 }

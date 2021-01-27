@@ -339,18 +339,6 @@ bool ChildProcessSecurityPolicyImpl::Handle::CanReadFileSystemFile(
 }
 
 bool ChildProcessSecurityPolicyImpl::Handle::CanAccessDataForOrigin(
-    const GURL& url) {
-  if (child_id_ == ChildProcessHost::kInvalidUniqueID) {
-    LogCanAccessDataForOriginCrashKeys(
-        "(unknown)", "(unknown)", url.GetOrigin().spec(), "handle_not_valid");
-    return false;
-  }
-
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  return policy->CanAccessDataForOrigin(child_id_, url);
-}
-
-bool ChildProcessSecurityPolicyImpl::Handle::CanAccessDataForOrigin(
     const url::Origin& origin) {
   if (child_id_ == ChildProcessHost::kInvalidUniqueID) {
     LogCanAccessDataForOriginCrashKeys(
@@ -1247,7 +1235,8 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
   // With site isolation, a URL from a site may only be committed in a process
   // dedicated to that site.  This check will ensure that |url| can't commit if
   // the process is locked to a different site.
-  if (!CanAccessDataForOrigin(child_id, url))
+  if (!CanAccessDataForOrigin(child_id, url,
+                              false /* url_is_precursor_of_opaque_origin */))
     return false;
 
   {
@@ -1581,12 +1570,6 @@ bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(
   auto* requested_origin_key = GetRequestedOriginCrashKey();
   base::debug::SetCrashKeyString(requested_origin_key, origin.GetDebugString());
   return false;
-}
-
-bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(int child_id,
-                                                            const GURL& url) {
-  constexpr bool kUrlIsPrecursorOfOpaqueOrigin = false;
-  return CanAccessDataForOrigin(child_id, url, kUrlIsPrecursorOfOpaqueOrigin);
 }
 
 bool ChildProcessSecurityPolicyImpl::CanAccessDataForOrigin(

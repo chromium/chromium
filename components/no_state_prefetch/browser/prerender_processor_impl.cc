@@ -47,8 +47,7 @@ void PrerenderProcessorImpl::Start(
     blink::mojom::PrerenderAttributesPtr attributes) {
   if (!initiator_origin_.opaque() &&
       !content::ChildProcessSecurityPolicy::GetInstance()
-           ->CanAccessDataForOrigin(render_process_id_,
-                                    initiator_origin_.GetURL())) {
+           ->CanAccessDataForOrigin(render_process_id_, initiator_origin_)) {
     mojo::ReportBadMessage("PPI_INVALID_INITIATOR_ORIGIN");
     return;
   }

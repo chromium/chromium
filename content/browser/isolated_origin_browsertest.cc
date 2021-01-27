@@ -3753,7 +3753,8 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
   // The old foo.com process should still be able to access bar.com data,
   // since it isn't locked to a specific site.
   int old_process_id = root->current_frame_host()->GetProcess()->GetID();
-  EXPECT_TRUE(policy->CanAccessDataForOrigin(old_process_id, bar_url));
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(old_process_id,
+                                             url::Origin::Create(bar_url)));
 
   // In particular, make sure the bar.com iframe in the old foo.com process can
   // still access bar.com cookies.
@@ -3776,9 +3777,11 @@ IN_PROC_BROWSER_TEST_F(DynamicIsolatedOriginTest,
   // enforcements. Currently this is only on Android, but will be extended to
   // desktop, at which time the EXPECT_TRUE() case below can be removed.
 #if defined(OS_ANDROID)
-  EXPECT_FALSE(policy->CanAccessDataForOrigin(old_process_id, bar_url));
+  EXPECT_FALSE(policy->CanAccessDataForOrigin(old_process_id,
+                                              url::Origin::Create(bar_url)));
 #else
-  EXPECT_TRUE(policy->CanAccessDataForOrigin(old_process_id, bar_url));
+  EXPECT_TRUE(policy->CanAccessDataForOrigin(old_process_id,
+                                             url::Origin::Create(bar_url)));
 #endif
 }
 

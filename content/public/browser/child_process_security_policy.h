@@ -213,11 +213,8 @@ class ChildProcessSecurityPolicy {
   // which can happen for any origin when the --site-per-process flag is used,
   // or for isolated origins that require a dedicated process (see
   // AddIsolatedOrigin).
-  //
-  // TODO(lukasza, nasko): https://crbug.com/882053: Convert this method to take
-  // url::Origin instead of GURL (so that CanAccessDataForOrigin can verify
-  // whether precursor of opaque origins also matches the process lock).
-  virtual bool CanAccessDataForOrigin(int child_id, const GURL& url) = 0;
+  virtual bool CanAccessDataForOrigin(int child_id,
+                                      const url::Origin& origin) = 0;
 
   // Defines available sources of isolated origins.  This should be specified
   // when adding isolated origins with the AddIsolatedOrigins() call below.

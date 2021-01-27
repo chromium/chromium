@@ -171,7 +171,8 @@ void MediaResourceGetterImpl::GetCookies(const GURL& url,
 
   ChildProcessSecurityPolicyImpl* policy =
       ChildProcessSecurityPolicyImpl::GetInstance();
-  if (!policy->CanAccessDataForOrigin(render_process_id_, url)) {
+  if (!policy->CanAccessDataForOrigin(render_process_id_,
+                                      url::Origin::Create(url))) {
     // Running the callback asynchronously on the caller thread to avoid
     // reentrancy issues.
     ReturnResultOnUIThread(std::move(callback), std::string());

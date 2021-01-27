@@ -6434,9 +6434,11 @@ void RenderFrameHostImpl::CommitNavigation(
   auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   const ProcessLock process_lock = GetSiteInstance()->GetProcessLock();
   if (!process_lock.is_error_page() && common_params->url.IsStandard() &&
-      !policy->CanAccessDataForOrigin(GetProcess()->GetID(),
-                                      common_params->url) &&
-      !is_mhtml_subframe) {
+      !is_mhtml_subframe &&
+      // TODO(https://crbug.com/888079): Replace `common_params().url` with
+      // the origin to commit calculated on the browser side.
+      !policy->CanAccessDataForOrigin(
+          GetProcess()->GetID(), url::Origin::Create(common_params->url))) {
     base::debug::SetCrashKeyString(
         base::debug::AllocateCrashKeyString("lock_url",
                                             base::debug::CrashKeySize::Size64),

@@ -222,7 +222,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     bool CanReadFileSystemFile(const storage::FileSystemURL& url);
 
     // Returns true if the process is permitted to read and modify the data for
-    // the origin of |url|. This is currently used to protect data such as
+    // the given `origin`. This is currently used to protect data such as
     // cookies, passwords, and local storage. Does not affect cookies attached
     // to or set by network requests.
     //
@@ -230,7 +230,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     // which can happen for any origin when the --site-per-process flag is used,
     // or for isolated origins that require a dedicated process (see
     // AddIsolatedOrigins).
-    bool CanAccessDataForOrigin(const GURL& url);
     bool CanAccessDataForOrigin(const url::Origin& origin);
 
    private:
@@ -297,7 +296,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
                                const std::string& filesystem_id) override;
   bool HasWebUIBindings(int child_id) override;
   void GrantSendMidiSysExMessage(int child_id) override;
-  bool CanAccessDataForOrigin(int child_id, const GURL& url) override;
+  bool CanAccessDataForOrigin(int child_id, const url::Origin& origin) override;
   void AddIsolatedOrigins(base::StringPiece origins_list,
                           IsolatedOriginSource source,
                           BrowserContext* browser_context = nullptr) override;
@@ -311,14 +310,6 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   bool IsIsolatedSiteFromSource(const url::Origin& origin,
                                 IsolatedOriginSource source) override;
   void ClearIsolatedOriginsForTesting() override;
-
-  // Identical to the above method, but takes url::Origin as input.
-  bool CanAccessDataForOrigin(int child_id, const url::Origin& origin);
-
-  // Shared helper for GURL and url::Origin processing.
-  bool CanAccessDataForOrigin(int child_id,
-                              const GURL& url,
-                              bool url_is_precursor_of_opaque_origin);
 
   // Determines if the combination of |origin|, |url|,
   // |is_coop_coep_cross_origin_isolated|, and
@@ -806,6 +797,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   // based on the contents of |security_state|.
   static std::string GetKilledProcessOriginLock(
       const SecurityState* security_state);
+
+  // Helper for public CanAccessDataForOrigin overloads.
+  bool CanAccessDataForOrigin(int child_id,
+                              const GURL& url,
+                              bool url_is_precursor_of_opaque_origin);
 
   // You must acquire this lock before reading or writing any members of this
   // class, except for isolated_origins_ which uses its own lock.  You must not

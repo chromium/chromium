@@ -785,8 +785,8 @@ TEST_F(AppCacheHostTest, SelectCacheAfterProcessCleanup) {
   mojo::Remote<blink::mojom::AppCacheHost> host_remote;
   host.BindReceiver(host_remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_TRUE(
-      security_policy->CanAccessDataForOrigin(kProcessIdForTest, kDocumentURL));
+  EXPECT_TRUE(security_policy->CanAccessDataForOrigin(
+      kProcessIdForTest, url::Origin::Create(kDocumentURL)));
 
   // Destroy the WebContents so the process gets cleaned up.
   web_contents_.reset();
@@ -795,8 +795,8 @@ TEST_F(AppCacheHostTest, SelectCacheAfterProcessCleanup) {
   // Since |host| for kProcessIdForTest is still alive, the corresponding
   // SecurityState in ChildProcessSecurityPolicy should also be kept alive,
   // allowing access for kDocumentURL.
-  EXPECT_TRUE(
-      security_policy->CanAccessDataForOrigin(kProcessIdForTest, kDocumentURL));
+  EXPECT_TRUE(security_policy->CanAccessDataForOrigin(
+      kProcessIdForTest, url::Origin::Create(kDocumentURL)));
 
   // Verify that the document and manifest URLs do not trigger a bad message.
   {
@@ -837,8 +837,8 @@ TEST_F(AppCacheHostTest, ForeignEntryAfterProcessCleanup) {
   mojo::Remote<blink::mojom::AppCacheHost> host_remote;
   host.BindReceiver(host_remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_TRUE(
-      security_policy->CanAccessDataForOrigin(kProcessIdForTest, kDocumentURL));
+  EXPECT_TRUE(security_policy->CanAccessDataForOrigin(
+      kProcessIdForTest, url::Origin::Create(kDocumentURL)));
 
   // Destroy the WebContents so the process gets cleaned up.
   web_contents_.reset();
@@ -847,8 +847,8 @@ TEST_F(AppCacheHostTest, ForeignEntryAfterProcessCleanup) {
   // Since |host| for kProcessIdForTest is still alive, the corresponding
   // SecurityState in ChildProcessSecurityPolicy should also be kept alive,
   // allowing access for kDocumentURL.
-  EXPECT_TRUE(
-      security_policy->CanAccessDataForOrigin(kProcessIdForTest, kDocumentURL));
+  EXPECT_TRUE(security_policy->CanAccessDataForOrigin(
+      kProcessIdForTest, url::Origin::Create(kDocumentURL)));
 
   // Verify that a document URL does not trigger a bad message.
   {
