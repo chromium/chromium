@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "media/gpu/av1_picture.h"
 #include "media/gpu/codec_picture.h"
 #include "media/gpu/windows/d3d11_picture_buffer.h"
@@ -325,12 +326,12 @@ class D3D11AV1Accelerator::ScopedDecoderBuffer {
         type_(type) {
     UINT size;
     uint8_t* buffer;
-    const auto hr = context_->GetDecoderBuffer(
+    driver_call_result_ = context_->GetDecoderBuffer(
         decoder_, type_, &size, reinterpret_cast<void**>(&buffer));
-    if (FAILED(hr)) {
+    if (FAILED(driver_call_result_)) {
       MEDIA_LOG(ERROR, media_log_)
           << "ScopedDecoderBuffer(" << type_
-          << ")=" << logging::SystemErrorCodeToString(hr);
+          << ")=" << logging::SystemErrorCodeToString(driver_call_result_);
       return;
     }
 
@@ -353,11 +354,11 @@ class D3D11AV1Accelerator::ScopedDecoderBuffer {
   void Commit() {
     if (buffer_.empty())
       return;
-    auto hr = context_->ReleaseDecoderBuffer(decoder_, type_);
-    if (FAILED(hr)) {
+    driver_call_result_ = context_->ReleaseDecoderBuffer(decoder_, type_);
+    if (FAILED(driver_call_result_)) {
       MEDIA_LOG(ERROR, media_log_)
           << "~ScopedDecoderBuffer(" << type_
-          << ")=" << logging::SystemErrorCodeToString(hr);
+          << ")=" << logging::SystemErrorCodeToString(driver_call_result_);
     }
     buffer_ = base::span<uint8_t>();
   }
@@ -365,6 +366,7 @@ class D3D11AV1Accelerator::ScopedDecoderBuffer {
   bool empty() const { return buffer_.empty(); }
   uint8_t* data() const { return buffer_.data(); }
   size_t size() const { return buffer_.size(); }
+  HRESULT error() const { return driver_call_result_; }
 
  private:
   MediaLog* const media_log_;
@@ -372,6 +374,7 @@ class D3D11AV1Accelerator::ScopedDecoderBuffer {
   ID3D11VideoDecoder* const decoder_;
   const D3D11_VIDEO_DECODER_BUFFER_TYPE type_;
   base::span<uint8_t> buffer_;
+  HRESULT driver_call_result_ = S_OK;
 };
 
 D3D11AV1Accelerator::D3D11AV1Accelerator(
@@ -392,9 +395,11 @@ D3D11AV1Accelerator::D3D11AV1Accelerator(
 D3D11AV1Accelerator::~D3D11AV1Accelerator() {}
 
 void D3D11AV1Accelerator::RecordFailure(const std::string& fail_type,
-                                        const std::string& reason) {
+                                        const std::string& message,
+                                        StatusCode reason) {
   MEDIA_LOG(ERROR, media_log_)
-      << "DX11AV1Failure(" << fail_type << ")=" << reason;
+      << "DX11AV1Failure(" << fail_type << ")=" << message;
+  base::UmaHistogramSparse("Media.D3D11.AV1Status", static_cast<int>(reason));
 }
 
 scoped_refptr<AV1Picture> D3D11AV1Accelerator::CreateAV1Picture(
@@ -416,16 +421,24 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
     const libgav1::Vector<libgav1::TileBuffer>& tile_buffers) {
   // Buffer #1 - AV1 specific picture parameters.
   auto params_buffer = GetBuffer(D3D11_VIDEO_DECODER_BUFFER_PICTURE_PARAMETERS);
-  if (params_buffer.empty() || params_buffer.size() < sizeof(pic_params))
+  if (params_buffer.empty() || params_buffer.size() < sizeof(pic_params)) {
+    RecordFailure("SubmitDecoderBuffers",
+                  logging::SystemErrorCodeToString(params_buffer.error()),
+                  StatusCode::kGetPicParamBufferFailed);
     return false;
+  }
 
   memcpy(params_buffer.data(), &pic_params, sizeof(pic_params));
 
   // Buffer #2 - Slice control data.
   const auto tile_size = sizeof(DXVA_Tile_AV1) * tile_buffers.size();
   auto tile_buffer = GetBuffer(D3D11_VIDEO_DECODER_BUFFER_SLICE_CONTROL);
-  if (tile_buffer.empty() || tile_buffer.size() < tile_size)
+  if (tile_buffer.empty() || tile_buffer.size() < tile_size) {
+    RecordFailure("SubmitDecoderBuffers",
+                  logging::SystemErrorCodeToString(tile_buffer.error()),
+                  StatusCode::kGetSliceControlBufferFailed);
     return false;
+  }
 
   auto* tiles = reinterpret_cast<DXVA_Tile_AV1*>(tile_buffer.data());
 
@@ -434,8 +447,12 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
       tile_buffers.begin(), tile_buffers.end(), 0,
       [](size_t acc, const auto& buffer) { return acc + buffer.size; });
   auto bitstream_buffer = GetBuffer(D3D11_VIDEO_DECODER_BUFFER_BITSTREAM);
-  if (bitstream_buffer.empty() || bitstream_buffer.size() < bitstream_size)
+  if (bitstream_buffer.empty() || bitstream_buffer.size() < bitstream_size) {
+    RecordFailure("SubmitDecoderBuffers",
+                  logging::SystemErrorCodeToString(bitstream_buffer.error()),
+                  StatusCode::kGetBitstreamBufferFailed);
     return false;
+  }
 
   size_t tile_offset = 0;
   for (size_t i = 0; i < tile_buffers.size(); ++i) {
@@ -467,7 +484,8 @@ bool D3D11AV1Accelerator::SubmitDecoderBuffer(
   const auto hr = video_context_->SubmitDecoderBuffers(video_decoder_.Get(),
                                                        kBuffersCount, buffers);
   if (FAILED(hr)) {
-    RecordFailure("SubmitDecoderBuffers", logging::SystemErrorCodeToString(hr));
+    RecordFailure("SubmitDecoderBuffers", logging::SystemErrorCodeToString(hr),
+                  StatusCode::kSubmitDecoderBuffersFailed);
     return false;
   }
 
@@ -490,7 +508,8 @@ bool D3D11AV1Accelerator::SubmitDecode(
     } else if (hr == E_PENDING || hr == D3DERR_WASSTILLDRAWING) {
       base::PlatformThread::YieldCurrentThread();
     } else if (FAILED(hr)) {
-      RecordFailure("DecoderBeginFrame", logging::SystemErrorCodeToString(hr));
+      RecordFailure("DecoderBeginFrame", logging::SystemErrorCodeToString(hr),
+                    StatusCode::kDecoderBeginFrameFailed);
       return false;
     }
   } while (true);
@@ -505,7 +524,8 @@ bool D3D11AV1Accelerator::SubmitDecode(
 
   const auto hr = video_context_->DecoderEndFrame(video_decoder_.Get());
   if (FAILED(hr)) {
-    RecordFailure("DecoderEndFrame", logging::SystemErrorCodeToString(hr));
+    RecordFailure("DecoderEndFrame", logging::SystemErrorCodeToString(hr),
+                  StatusCode::kDecoderEndFrameFailed);
     return false;
   }
 
