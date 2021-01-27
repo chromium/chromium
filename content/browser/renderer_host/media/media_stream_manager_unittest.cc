@@ -231,7 +231,7 @@ class MediaStreamManagerTest : public ::testing::Test {
     blink::StreamControls controls(true, true);
     return media_stream_manager_->MakeMediaAccessRequest(
         render_process_id, render_frame_id, requester_id, page_request_id,
-        controls, security_origin, std::move(callback));
+        controls, GURL(), security_origin, std::move(callback));
   }
 
   void RequestAndStopGetDisplayMedia(bool request_audio) {
@@ -472,7 +472,7 @@ TEST_F(MediaStreamManagerTest, MakeMultipleRequests) {
       &MediaStreamManagerTest::ResponseCallback, base::Unretained(this), 1);
   std::string label2 = media_stream_manager_->MakeMediaAccessRequest(
       render_process_id, render_frame_id, requester_id, page_request_id,
-      controls, security_origin, std::move(callback));
+      controls, GURL(), security_origin, std::move(callback));
 
   // Expecting the callbackS from requests will be triggered and quit the test.
   // Note, the callbacks might come in a different order depending on the

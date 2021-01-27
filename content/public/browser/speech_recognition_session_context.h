@@ -10,6 +10,7 @@
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "ui/gfx/geometry/rect.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
@@ -44,6 +45,9 @@ struct CONTENT_EXPORT SpeechRecognitionSessionContext {
 
   // A list of devices being used by the recognition session.
   blink::MediaStreamDevices devices;
+
+  // TODO(https://crbug.com/1140187): temporary while tracking down bug.
+  GURL url;
 };
 
 }  // namespace content

@@ -227,13 +227,13 @@ class MockMediaStreamUIProxy : public FakeMediaStreamUIProxy {
  public:
   MockMediaStreamUIProxy()
       : FakeMediaStreamUIProxy(/*tests_use_fake_render_frame_hosts=*/true) {}
-  void OnStarted(
-      base::OnceClosure stop,
-      content::MediaStreamUI::SourceCallback source,
-      MediaStreamUIProxy::WindowIdCallback window_id_callback,
-      const std::string& label,
-      std::vector<DesktopMediaID> screen_share_ids,
-      MediaStreamUI::StateChangeCallback state_change_callback) override {
+  void OnStarted(base::OnceClosure stop,
+                 content::MediaStreamUI::SourceCallback source,
+                 MediaStreamUIProxy::WindowIdCallback window_id_callback,
+                 const std::string& label,
+                 std::vector<DesktopMediaID> screen_share_ids,
+                 MediaStreamUI::StateChangeCallback state_change_callback,
+                 const GURL& url) override {
     // gmock cannot handle move-only types, so no std::move().
     MockOnStarted(stop);
   }
@@ -319,7 +319,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
   MediaDeviceSaltAndOrigin GetSaltAndOrigin(int /* process_id */,
                                             int /* frame_id */) {
     return MediaDeviceSaltAndOrigin(browser_context_->GetMediaDeviceIDSalt(),
-                                    "fake_group_id_salt", origin_);
+                                    "fake_group_id_salt", origin_, GURL());
   }
 
  protected:

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 using blink::mojom::MediaDeviceType;
@@ -27,13 +28,19 @@ CONTENT_EXPORT void GetDefaultMediaDeviceID(
 
 struct CONTENT_EXPORT MediaDeviceSaltAndOrigin {
   MediaDeviceSaltAndOrigin();
+  MediaDeviceSaltAndOrigin(const MediaDeviceSaltAndOrigin&);
+  MediaDeviceSaltAndOrigin& operator=(const MediaDeviceSaltAndOrigin&);
   MediaDeviceSaltAndOrigin(std::string device_id_salt,
                            std::string group_id_salt,
-                           url::Origin origin);
+                           url::Origin origin,
+                           GURL url);
+  ~MediaDeviceSaltAndOrigin();
 
   std::string device_id_salt;
   std::string group_id_salt;
   url::Origin origin;
+  // TODO(https://crbug.com/1140187): temporary while tracking down bug.
+  GURL url;
 };
 
 // Returns the current media device ID salt and security origin for the given

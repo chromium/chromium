@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/debug/alias.h"
 #include "base/macros.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
@@ -293,12 +294,15 @@ void MediaStreamUIProxy::OnStarted(
     WindowIdCallback window_id_callback,
     const std::string& label,
     std::vector<DesktopMediaID> screen_share_ids,
-    MediaStreamUI::StateChangeCallback state_change_callback) {
+    MediaStreamUI::StateChangeCallback state_change_callback,
+    const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   stop_callback_ = std::move(stop_callback);
   source_callback_ = std::move(source_callback);
   state_change_callback_ = std::move(state_change_callback);
+  last_url_ = url;
+  ++start_count_;
 
   // Owned by the PostTaskAndReply callback.
   gfx::NativeViewId* window_id = new gfx::NativeViewId(0);
@@ -333,8 +337,10 @@ void MediaStreamUIProxy::ProcessAccessRequestResponse(
 
 void MediaStreamUIProxy::ProcessStopRequestFromUI() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(!stop_callback_.is_null());
-
+  const int start_count_copy = start_count_;
+  base::debug::Alias(&start_count_copy);
+  DEBUG_ALIAS_FOR_GURL(last_url_copy, last_url_);
+  CHECK(stop_callback_);
   std::move(stop_callback_).Run();
 }
 
@@ -453,7 +459,8 @@ void FakeMediaStreamUIProxy::OnStarted(
     WindowIdCallback window_id_callback,
     const std::string& label,
     std::vector<DesktopMediaID> screen_share_ids,
-    MediaStreamUI::StateChangeCallback state_change_callback) {}
+    MediaStreamUI::StateChangeCallback state_change_callback,
+    const GURL& url) {}
 
 void FakeMediaStreamUIProxy::OnDeviceStopped(const std::string& label,
                                              const DesktopMediaID& media_id) {}

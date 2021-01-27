@@ -200,7 +200,7 @@ TEST_F(MediaStreamUIProxyTest, AcceptAndStart) {
   proxy_->OnStarted(base::OnceClosure(), MediaStreamUI::SourceCallback(),
                     MediaStreamUIProxy::WindowIdCallback(),
                     /*label=*/std::string(), /*screen_capture_ids=*/{},
-                    MediaStreamUI::StateChangeCallback());
+                    MediaStreamUI::StateChangeCallback(), GURL());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -279,7 +279,7 @@ TEST_F(MediaStreamUIProxyTest, StopFromUI) {
                     MediaStreamUI::SourceCallback(),
                     MediaStreamUIProxy::WindowIdCallback(),
                     /*label=*/std::string(), /*screen_capture_ids=*/{},
-                    MediaStreamUI::StateChangeCallback());
+                    MediaStreamUI::StateChangeCallback(), GURL());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(stop_callback);
@@ -326,7 +326,7 @@ TEST_F(MediaStreamUIProxyTest, WindowIdCallbackCalled) {
                     base::BindOnce(&MockStopStreamHandler::OnWindowId,
                                    base::Unretained(&handler)),
                     /*label=*/std::string(), /*screen_capture_ids=*/{},
-                    MediaStreamUI::StateChangeCallback());
+                    MediaStreamUI::StateChangeCallback(), GURL());
   base::RunLoop().RunUntilIdle();
 }
 
@@ -378,7 +378,7 @@ TEST_F(MediaStreamUIProxyTest, ChangeSourceFromUI) {
       base::BindRepeating(&MockChangeSourceStreamHandler::OnChangeSource,
                           base::Unretained(&source_handler)),
       MediaStreamUIProxy::WindowIdCallback(), /*label=*/std::string(),
-      /*screen_capture_ids=*/{}, MediaStreamUI::StateChangeCallback());
+      /*screen_capture_ids=*/{}, MediaStreamUI::StateChangeCallback(), GURL());
   base::RunLoop().RunUntilIdle();
 
   ASSERT_FALSE(source_callback.is_null());

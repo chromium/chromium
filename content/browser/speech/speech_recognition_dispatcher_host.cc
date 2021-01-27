@@ -138,7 +138,8 @@ void SpeechRecognitionDispatcherHost::StartRequestOnUI(
           &SpeechRecognitionDispatcherHost::StartSessionOnIO,
           speech_recognition_dispatcher_host, std::move(params),
           embedder_render_process_id, embedder_render_frame_id,
-          rfh->GetLastCommittedOrigin(), filter_profanities,
+          rfh->GetLastCommittedURL(), rfh->GetLastCommittedOrigin(),
+          filter_profanities,
           storage_partition->GetURLLoaderFactoryForBrowserProcessIOThread(),
           GetContentClient()->browser()->GetAcceptLangs(browser_context)));
 }
@@ -147,6 +148,7 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
     blink::mojom::StartSpeechRecognitionRequestParamsPtr params,
     int embedder_render_process_id,
     int embedder_render_frame_id,
+    const GURL& url,
     const url::Origin& origin,
     bool filter_profanities,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
@@ -156,6 +158,7 @@ void SpeechRecognitionDispatcherHost::StartSessionOnIO(
 
   SpeechRecognitionSessionContext context;
   context.security_origin = origin;
+  context.url = url;
   context.render_process_id = render_process_id_;
   context.render_frame_id = render_frame_id_;
   context.embedder_render_process_id = embedder_render_process_id;

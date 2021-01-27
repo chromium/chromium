@@ -15,6 +15,7 @@
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "ui/gfx/native_widget_types.h"
+#include "url/gurl.h"
 
 namespace content {
 
@@ -64,7 +65,8 @@ class CONTENT_EXPORT MediaStreamUIProxy {
       WindowIdCallback window_id_callback,
       const std::string& label,
       std::vector<DesktopMediaID> screen_share_ids,
-      MediaStreamUI::StateChangeCallback state_change_callback);
+      MediaStreamUI::StateChangeCallback state_change_callback,
+      const GURL& url);
 
   virtual void OnDeviceStopped(const std::string& label,
                                const DesktopMediaID& media_id);
@@ -93,6 +95,10 @@ class CONTENT_EXPORT MediaStreamUIProxy {
   MediaStreamUI::SourceCallback source_callback_;
   MediaStreamUI::StateChangeCallback state_change_callback_;
 
+  // TODO(https://crbug.com/1140187): temporary while tracking down bug.
+  GURL last_url_;
+  int start_count_ = 0;
+
   base::WeakPtrFactory<MediaStreamUIProxy> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(MediaStreamUIProxy);
@@ -113,13 +119,13 @@ class CONTENT_EXPORT FakeMediaStreamUIProxy : public MediaStreamUIProxy {
   // MediaStreamUIProxy overrides.
   void RequestAccess(std::unique_ptr<MediaStreamRequest> request,
                      ResponseCallback response_callback) override;
-  void OnStarted(
-      base::OnceClosure stop_callback,
-      MediaStreamUI::SourceCallback source_callback,
-      WindowIdCallback window_id_callback,
-      const std::string& label,
-      std::vector<DesktopMediaID> screen_share_ids,
-      MediaStreamUI::StateChangeCallback state_change_callback) override;
+  void OnStarted(base::OnceClosure stop_callback,
+                 MediaStreamUI::SourceCallback source_callback,
+                 WindowIdCallback window_id_callback,
+                 const std::string& label,
+                 std::vector<DesktopMediaID> screen_share_ids,
+                 MediaStreamUI::StateChangeCallback state_change_callback,
+                 const GURL& url) override;
   void OnDeviceStopped(const std::string& label,
                        const DesktopMediaID& media_id) override;
 
