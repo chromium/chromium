@@ -328,7 +328,7 @@ guestMessagePipe.registerHandler(Message.OPEN_FILE, async () => {
 function pickWritableFile(suggestedName, mimeType) {
   const extension = '.' + suggestedName.split('.').reverse()[0];
   // TODO(b/161087799): Add a default filename when it's supported by the
-  // native file api.
+  // File System Access API.
   /** @type {!FilePickerOptions} */
   const options = {
     types: [
@@ -554,7 +554,7 @@ async function isHandleInCurrentDirectory(handle) {
   }
 
   // It's unclear if getFile will always give us a NotFoundError if the file has
-  // been moved as it's not explicitly stated in the native file system API
+  // been moved as it's not explicitly stated in the File System Access API
   // spec. As such we perform an additional check here to make sure the file
   // returned by the handle is in fact in the current directory.
   // TODO(b/172628918): Remove this once we have more assurances getFile() does
@@ -860,7 +860,7 @@ async function launchWithDirectory(directory, handle) {
   // The app is operable with the first file now.
 
   // Process other files in directory.
-  // TODO(https://github.com/WICG/native-file-system/issues/215): Don't process
+  // TODO(https://github.com/WICG/file-system-access/issues/215): Don't process
   // other files if there is only 1 file which is already loaded by
   // `sendSnapshotToGuest()` above.
   await loadOtherRelatedFiles(
