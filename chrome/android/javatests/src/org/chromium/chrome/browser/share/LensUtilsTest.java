@@ -928,8 +928,9 @@ public class LensUtilsTest {
         final String titleOrAltText = "Image Title";
         final String pageUrl = "https://www.google.com";
         final boolean requiresConfirmation = false;
+        final int intentType = 0;
         LensIntentParams lensIntentParams = LensUtils.buildLensIntentParams(Uri.parse(contentUrl),
-                isIncognito, srcUrl, titleOrAltText, pageUrl, requiresConfirmation);
+                isIncognito, srcUrl, titleOrAltText, pageUrl, requiresConfirmation, intentType);
 
         Assert.assertEquals("Lens intent parameters has incorrect image URI.", contentUrl,
                 lensIntentParams.getImageUri().toString());
@@ -943,6 +944,8 @@ public class LensUtilsTest {
                 lensIntentParams.getPageUrl());
         Assert.assertEquals("Lens intent parameters has incorrect requires confirmation value.",
                 requiresConfirmation, lensIntentParams.getRequiresConfirmation());
+        Assert.assertEquals("Lens intent parameters has incorrect intent type value.", intentType,
+                lensIntentParams.getIntentType());
     }
 
     private boolean isInShoppingAllowlistOnUiThread(GURL imageUri) {
