@@ -529,10 +529,6 @@ source_set("browser_sources") {
     ]
   }
 
-  if (is_win) {
-    sources += [ "ax_inspect_factory_win.cc" ]
-  }
-
   if (use_atk) {
     sources += [ "ax_inspect_factory_auralinux.cc" ]
   }
