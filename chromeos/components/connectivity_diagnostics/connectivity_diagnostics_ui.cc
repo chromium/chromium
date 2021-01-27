@@ -8,7 +8,7 @@
 
 #include "chromeos/components/connectivity_diagnostics/url_constants.h"
 #include "chromeos/components/network_ui/network_diagnostics_resource_provider.h"
-#include "chromeos/components/network_ui/network_health_localized_strings.h"
+#include "chromeos/components/network_ui/network_health_resource_provider.h"
 #include "chromeos/grit/connectivity_diagnostics_resources.h"
 #include "chromeos/grit/connectivity_diagnostics_resources_map.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
@@ -79,13 +79,17 @@ ConnectivityDiagnosticsUI::ConnectivityDiagnosticsUI(
   SetUpWebUIDataSource(source, resources, kGeneratedPath,
                        IDR_CONNECTIVITY_DIAGNOSTICS_INDEX_HTML);
   source->AddLocalizedString("appTitle", IDS_CONNECTIVITY_DIAGNOSTICS_TITLE);
+  source->AddLocalizedString("networkDevicesLabel",
+                             IDS_CONNECTIVITY_DIAGNOSTICS_NETWORK_DEVICES);
+  source->AddLocalizedString("diagnosticRoutinesLabel",
+                             IDS_CONNECTIVITY_DIAGNOSTICS_DIAGNOSTIC_ROUTINES);
   source->AddLocalizedString("rerunRoutinesBtn",
                              IDS_CONNECTIVITY_DIAGNOSTICS_RERUN_ROUTINES);
   source->AddLocalizedString("closeBtn", IDS_CONNECTIVITY_DIAGNOSTICS_CLOSE);
   source->AddLocalizedString("sendFeedbackBtn",
                              IDS_CONNECTIVITY_DIAGNOSTICS_SEND_FEEDBACK);
   network_diagnostics::AddResources(source);
-  network_health::AddLocalizedStrings(source);
+  network_health::AddResources(source);
 
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);

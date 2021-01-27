@@ -27,7 +27,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/components/network_ui/network_diagnostics_resource_provider.h"
-#include "chromeos/components/network_ui/network_health_localized_strings.h"
+#include "chromeos/components/network_ui/network_health_resource_provider.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_device_handler.h"
@@ -533,7 +533,7 @@ NetworkUI::NetworkUI(content::WebUI* web_ui)
   html->DisableTrustedTypesCSP();
 
   html->AddLocalizedStrings(localized_strings);
-  network_health::AddLocalizedStrings(html);
+  network_health::AddResources(html);
   network_diagnostics::AddResources(html);
 
   network_element::AddLocalizedStrings(html);

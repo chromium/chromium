@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const TechnologyIcons = {
+  CELLULAR: 'cellular_0.svg',
+  ETHERNET: 'ethernet.svg',
+  VPN: 'vpn.svg',
+  WIFI: 'wifi_0.svg',
+};
+
 /**
  * @fileoverview Polymer element for displaying NetworkHealth properties.
  */
@@ -93,6 +100,29 @@ Polymer({
   },
 
   /**
+   * Returns a icon for the given NetworkType.
+   * @private
+   * @param {chromeos.networkConfig.mojom.NetworkType} type
+   * @return {string}
+   */
+  getNetworkTypeIcon_(type) {
+    switch (type) {
+      case chromeos.networkConfig.mojom.NetworkType.kEthernet:
+        return TechnologyIcons.ETHERNET;
+      case chromeos.networkConfig.mojom.NetworkType.kWiFi:
+        return TechnologyIcons.WIFI;
+      case chromeos.networkConfig.mojom.NetworkType.kVPN:
+        return TechnologyIcons.VPN;
+      case chromeos.networkConfig.mojom.NetworkType.kTether:
+      case chromeos.networkConfig.mojom.NetworkType.kMobile:
+      case chromeos.networkConfig.mojom.NetworkType.kCellular:
+        return TechnologyIcons.CELLULAR;
+      default:
+        return '';
+    }
+  },
+
+  /**
    * Returns a string for the given signal strength.
    * @private
    * @param {?chromeos.networkHealth.mojom.UInt32Value} signalStrength
@@ -100,5 +130,31 @@ Polymer({
    */
   getSignalStrengthString_(signalStrength) {
     return signalStrength ? signalStrength.value.toString() : '';
+  },
+
+  /**
+   * Returns a boolean flag if the open to settings link should be shown.
+   * @private
+   * @param {chromeos.networkHealth.mojom.Network} network
+   * @return {boolean}
+   */
+  showSettingsLink_(network) {
+    const validStates = [
+      chromeos.networkHealth.mojom.NetworkState.kConnected,
+      chromeos.networkHealth.mojom.NetworkState.kConnecting,
+      chromeos.networkHealth.mojom.NetworkState.kPortal,
+      chromeos.networkHealth.mojom.NetworkState.kOnline
+    ];
+    return validStates.includes(network.state);
+  },
+
+  /**
+   * Returns a URL for the network's settings page.
+   * @private
+   * @param {chromeos.networkHealth.mojom.Network} network
+   * @return {string}
+   */
+  getNetworkUrl_(network) {
+    return 'chrome://os-settings/networkDetail?guid=' + network.guid;
   },
 });

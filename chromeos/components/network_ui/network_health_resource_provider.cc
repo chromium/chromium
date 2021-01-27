@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/network_ui/network_health_localized_strings.h"
+#include "chromeos/components/network_ui/network_health_resource_provider.h"
 
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/resources/grit/webui_generated_resources.h"
 
 namespace chromeos {
 namespace network_health {
@@ -24,6 +25,7 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"NetworkHealthStatePortal", IDS_NETWORK_HEALTH_STATE_PORTAL},
     {"NetworkHealthStateConnected", IDS_NETWORK_HEALTH_STATE_CONNECTED},
     {"NetworkHealthStateOnline", IDS_NETWORK_HEALTH_STATE_ONLINE},
+    {"OpenInSettings", IDS_NETWORK_HEALTH_OPEN_IN_SETTINGS},
 
     {"OncType", IDS_NETWORK_TYPE},
     {"OncName", IDS_ONC_NAME},
@@ -36,13 +38,29 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
     {"OncTypeWiFi", IDS_NETWORK_TYPE_WIFI},
     {"OncWiFi-SignalStrength", IDS_ONC_WIFI_SIGNAL_STRENGTH},
     {"OncMacAddress", IDS_ONC_MAC_ADDRESS},
+
+};
+
+struct WebUiResource {
+  const char* name;
+  int id;
+};
+
+constexpr WebUiResource kResources[] = {
+    {"ethernet.svg", IDR_CR_COMPONENTS_CHROMEOS_NETWORK_ETHERNET_SVG},
+    {"vpn.svg", IDR_CR_COMPONENTS_CHROMEOS_NETWORK_VPN_SVG},
+    {"wifi_0.svg", IDR_CR_COMPONENTS_CHROMEOS_NETWORK_WIFI_0_SVG},
+    {"cellular_0.svg", IDR_CR_COMPONENTS_CHROMEOS_NETWORK_CELLULAR_0_SVG},
 };
 
 }  // namespace
 
-void AddLocalizedStrings(content::WebUIDataSource* html_source) {
+void AddResources(content::WebUIDataSource* html_source) {
   for (const auto& str : kLocalizedStrings)
     html_source->AddLocalizedString(str.name, str.id);
+
+  for (const auto& resource : kResources)
+    html_source->AddResourcePath(resource.name, resource.id);
 }
 
 }  // namespace network_health

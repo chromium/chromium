@@ -1153,10 +1153,19 @@ Try tapping the mic to ask me anything.
       <message name="IDS_NETWORK_HEALTH_STATE_ONLINE" desc="Network State - Online. This state is when a network device is connected to a network and can access the internet.">
         Online
       </message>
+      <message name="IDS_NETWORK_HEALTH_OPEN_IN_SETTINGS" desc="Link label to view the current network in the settings app">
+        Open in settings
+      </message>
 
       <!-- Network / Connectivity Diagnostics -->
       <message name="IDS_CONNECTIVITY_DIAGNOSTICS_TITLE" desc="The label for connectivity diagnostics application that shows potential issues with the network connections">
         Connectivity Diagnostics
+      </message>
+      <message name="IDS_CONNECTIVITY_DIAGNOSTICS_NETWORK_DEVICES" desc="The label for the network devices section of the connectivity diagnostics app">
+        Network Devices
+      </message>
+      <message name="IDS_CONNECTIVITY_DIAGNOSTICS_DIAGNOSTIC_ROUTINES" desc="The label for the diagnostic routines section of the connectivity diagnostics app">
+        Diagnostic Routines
       </message>
       <message name="IDS_CONNECTIVITY_DIAGNOSTICS_RERUN_ROUTINES" desc="Label for connectivity diagnostics application rerun routines button">
         Rerun Routines
