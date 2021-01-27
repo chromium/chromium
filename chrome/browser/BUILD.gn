@@ -3743,7 +3743,7 @@ static_library("browser") {
       "metrics/incognito_observer_desktop.cc",
       "metrics/tab_stats_data_store.cc",
       "metrics/tab_stats_data_store.h",
-      "metrics/tab_stats_handler.h",
+      "metrics/tab_stats_observer.h",
       "metrics/tab_stats_tracker.cc",
       "metrics/tab_stats_tracker.h",
       "metrics/tab_stats_tracker_delegate.h",

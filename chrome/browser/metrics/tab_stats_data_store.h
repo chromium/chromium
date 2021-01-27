@@ -12,8 +12,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/metrics/tab_stats_handler.h"
+#include "chrome/browser/metrics/tab_stats_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
+#include "content/public/browser/visibility.h"
 
 using mojom::LifecycleUnitDiscardReason;
 
@@ -30,7 +31,7 @@ FORWARD_DECLARE_TEST(TabStatsTrackerBrowserTest,
 
 // Keeps track of all the information needed by TabStatsTracker. Stats are
 // stored internally to be retrieved at a later point.
-class TabStatsDataStore : public TabStatsHandler {
+class TabStatsDataStore : public TabStatsObserver {
  public:
   // Houses all of the statistics gathered by the TabStatsTracker.
   struct TabsStats {
@@ -81,9 +82,9 @@ class TabStatsDataStore : public TabStatsHandler {
       base::flat_map<TabID, TabStateDuringInterval>;
 
   explicit TabStatsDataStore(PrefService* pref_service);
-  virtual ~TabStatsDataStore();
+  ~TabStatsDataStore() override;
 
-  // TabStatsHandler:
+  // TabStatsObserver:
   void OnWindowAdded() override;
   void OnWindowRemoved() override;
   void OnTabAdded(content::WebContents* web_contents) override;
@@ -92,7 +93,8 @@ class TabStatsDataStore : public TabStatsHandler {
                      content::WebContents* new_contents) override;
   void OnTabInteraction(content::WebContents* web_contents) override;
   void OnTabAudible(content::WebContents* web_contents) override;
-  void OnTabVisible(content::WebContents* web_contents) override;
+  void OnTabVisibilityChanged(content::WebContents* web_contents,
+                              content::Visibility visibility) override;
 
   // Update the maximum number of tabs in a single window if |value| exceeds
   // this.

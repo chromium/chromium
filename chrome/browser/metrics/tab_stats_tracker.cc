@@ -31,6 +31,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/ukm/content/source_url_recorder.h"
+#include "content/public/browser/visibility.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "ui/gfx/geometry/rect.h"
@@ -128,6 +129,9 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
                                        ::prefs::kTabStatsDailySample,
                                        kTabStatsDailyEventHistogramName)) {
   DCHECK(pref_service);
+
+  tab_stats_observers_.AddObserver(tab_stats_data_store_.get());
+
   // Get the list of existing windows/tabs. There shouldn't be any if this is
   // initialized at startup but this will ensure that the counts stay accurate
   // if the initialization gets moved to after the creation of the first tab.
@@ -143,8 +147,10 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
   browser_list->AddObserver(this);
   base::PowerMonitor::AddObserver(this);
 
+  // Setup daily reporting of the stats aggregated in |tab_stats_data_store|.
   daily_event_->AddObserver(std::make_unique<TabStatsDailyObserver>(
       reporting_delegate_.get(), tab_stats_data_store_.get()));
+
   // Call the CheckInterval method to see if the data need to be immediately
   // reported.
   daily_event_->CheckInterval();
@@ -152,6 +158,8 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
                            daily_event_.get(), &DailyEvent::CheckInterval);
 
   // Initialize the interval maps and timers associated with them.
+  // Only |tab_stats_data_store_| (and not other observers) is registered for
+  // callbacks since only it computes intervals.
   for (base::TimeDelta interval : kTabUsageReportingIntervals) {
     TabStatsDataStore::TabsStateDuringIntervalMap* interval_map =
         tab_stats_data_store_->AddInterval();
@@ -227,8 +235,10 @@ class TabStatsTracker::WebContentsUsageObserver
       content::NavigationHandle* navigation_handle) override {
     // Treat browser-initiated navigations as user interactions.
     if (!navigation_handle->IsRendererInitiated()) {
-      tab_stats_tracker_->tab_stats_data_store()->OnTabInteraction(
-          web_contents());
+      for (TabStatsObserver& tab_stats_observer :
+           tab_stats_tracker_->tab_stats_observers_) {
+        tab_stats_observer.OnTabInteraction(web_contents());
+      }
     }
   }
 
@@ -246,13 +256,17 @@ class TabStatsTracker::WebContentsUsageObserver
   }
 
   void DidGetUserInteraction(const blink::WebInputEvent& event) override {
-    tab_stats_tracker_->tab_stats_data_store()->OnTabInteraction(
-        web_contents());
+    for (TabStatsObserver& tab_stats_observer :
+         tab_stats_tracker_->tab_stats_observers_) {
+      tab_stats_observer.OnTabInteraction(web_contents());
+    }
   }
 
   void OnVisibilityChanged(content::Visibility visibility) override {
-    if (visibility == content::Visibility::VISIBLE)
-      tab_stats_tracker_->tab_stats_data_store()->OnTabVisible(web_contents());
+    for (TabStatsObserver& tab_stats_observer :
+         tab_stats_tracker_->tab_stats_observers_) {
+      tab_stats_observer.OnTabVisibilityChanged(web_contents(), visibility);
+    }
   }
 
   void WebContentsDestroyed() override {
@@ -280,13 +294,17 @@ class TabStatsTracker::WebContentsUsageObserver
 
 void TabStatsTracker::OnBrowserAdded(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  tab_stats_data_store_->OnWindowAdded();
+  for (TabStatsObserver& tab_stats_observer : tab_stats_observers_) {
+    tab_stats_observer.OnWindowAdded();
+  }
   browser->tab_strip_model()->AddObserver(this);
 }
 
 void TabStatsTracker::OnBrowserRemoved(Browser* browser) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  tab_stats_data_store_->OnWindowRemoved();
+  for (TabStatsObserver& tab_stats_observer : tab_stats_observers_) {
+    tab_stats_observer.OnWindowRemoved();
+  }
   browser->tab_strip_model()->RemoveObserver(this);
 }
 
@@ -307,8 +325,10 @@ void TabStatsTracker::OnTabStripModelChanged(
 
   if (change.type() == TabStripModelChange::kReplaced) {
     auto* replace = change.GetReplace();
-    tab_stats_data_store_->OnTabReplaced(replace->old_contents,
-                                         replace->new_contents);
+    for (TabStatsObserver& tab_stats_observer : tab_stats_observers_) {
+      tab_stats_observer.OnTabReplaced(replace->old_contents,
+                                       replace->new_contents);
+    }
     web_contents_usage_observers_.insert(std::make_pair(
         replace->new_contents, std::make_unique<WebContentsUsageObserver>(
                                    replace->new_contents, this)));
@@ -323,8 +343,11 @@ void TabStatsTracker::TabChangedAt(content::WebContents* web_contents,
   // Ignore 'loading' and 'title' changes, we're only interested in audio here.
   if (change_type != TabChangeType::kAll)
     return;
-  if (web_contents->IsCurrentlyAudible())
-    tab_stats_data_store_->OnTabAudible(web_contents);
+  if (web_contents->IsCurrentlyAudible()) {
+    for (TabStatsObserver& tab_stats_observer : tab_stats_observers_) {
+      tab_stats_observer.OnTabAudible(web_contents);
+    }
+  }
 }
 
 void TabStatsTracker::OnResume() {
@@ -339,7 +362,9 @@ void TabStatsTracker::OnInterval(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(interval_map);
   reporting_delegate_->ReportUsageDuringInterval(*interval_map, interval);
-  // Reset the interval data.
+
+  // Only |tab_stats_data_store_| (and not other obsevers) resets since only it
+  // computes intervals.
   tab_stats_data_store_->ResetIntervalData(interval_map);
 }
 
@@ -350,7 +375,9 @@ void TabStatsTracker::OnInitialOrInsertedTab(
   // it's already tracked and it's being dragged into a new window, there's
   // nothing to do here.
   if (!base::Contains(web_contents_usage_observers_, web_contents)) {
-    tab_stats_data_store_->OnTabAdded(web_contents);
+    for (TabStatsObserver& tab_stats_observer : tab_stats_observers_) {
+      tab_stats_observer.OnTabAdded(web_contents);
+    }
     web_contents_usage_observers_.insert(std::make_pair(
         web_contents,
         std::make_unique<WebContentsUsageObserver>(web_contents, this)));
@@ -363,7 +390,9 @@ void TabStatsTracker::OnWebContentsDestroyed(
   DCHECK(base::Contains(web_contents_usage_observers_, web_contents));
   web_contents_usage_observers_.erase(
       web_contents_usage_observers_.find(web_contents));
-  tab_stats_data_store_->OnTabRemoved(web_contents);
+  for (TabStatsObserver& tab_stats_observer : tab_stats_observers_) {
+    tab_stats_observer.OnTabRemoved(web_contents);
+  }
 }
 
 void TabStatsTracker::OnHeartbeatEvent() {

@@ -14,6 +14,7 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/observer_list.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
@@ -174,6 +175,9 @@ class TabStatsTracker : public TabStripModelObserver,
   // when it's about to be destroyed.
   class WebContentsUsageObserver;
 
+  // For access to |tab_stats_observers_|
+  friend class WebContentsUsageObserver;
+
   // The delegate that reports the events.
   std::unique_ptr<UmaStatsReportingDelegate> reporting_delegate_;
 
@@ -185,6 +189,9 @@ class TabStatsTracker : public TabStripModelObserver,
 
   // A daily event for collecting metrics once a day.
   std::unique_ptr<DailyEvent> daily_event_;
+
+  // The list of registered observers.
+  base::ObserverList<TabStatsObserver> tab_stats_observers_;
 
   // The timer used to periodically check if the daily event should be
   // triggered.

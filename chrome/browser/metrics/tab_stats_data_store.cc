@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 
 namespace metrics {
@@ -116,8 +117,11 @@ void TabStatsDataStore::OnTabAudible(content::WebContents* web_contents) {
   OnTabAudibleOrVisible(web_contents);
 }
 
-void TabStatsDataStore::OnTabVisible(content::WebContents* web_contents) {
-  OnTabAudibleOrVisible(web_contents);
+void TabStatsDataStore::OnTabVisibilityChanged(
+    content::WebContents* web_contents,
+    content::Visibility visibility) {
+  if (visibility == content::Visibility::VISIBLE)
+    OnTabAudibleOrVisible(web_contents);
 }
 
 void TabStatsDataStore::UpdateMaxTabsPerWindowIfNeeded(size_t value) {

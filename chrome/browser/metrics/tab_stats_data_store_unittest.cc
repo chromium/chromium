@@ -9,6 +9,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -127,7 +128,8 @@ TEST_F(TabStatsDataStoreTest, TrackTabUsageDuringInterval) {
 
   // Make the first WebContents visible.
   web_contents_vec[0].get()->WasShown();
-  data_store_->OnTabVisible(web_contents_vec[0].get());
+  data_store_->OnTabVisibilityChanged(web_contents_vec[0].get(),
+                                      content::Visibility::VISIBLE);
   EXPECT_TRUE(interval_map->find(web_contents_id_vec[0])
                   ->second.visible_or_audible_during_interval);
   EXPECT_FALSE(interval_map->find(web_contents_id_vec[1])

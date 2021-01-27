@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_METRICS_TAB_STATS_HANDLER_H_
-#define CHROME_BROWSER_METRICS_TAB_STATS_HANDLER_H_
+#ifndef CHROME_BROWSER_METRICS_TAB_STATS_OBSERVER_H_
+#define CHROME_BROWSER_METRICS_TAB_STATS_OBSERVER_H_
+
+#include "base/observer_list_types.h"
+#include "content/public/browser/visibility.h"
 
 namespace content {
 class WebContents;
@@ -15,7 +18,7 @@ namespace metrics {
 // Handling the events can be either storing them for logging purposes,
 // forwarding them to another class or taking reactive measures when certain
 // criteria are met.
-class TabStatsHandler {
+class TabStatsObserver : public base::CheckedObserver {
  public:
   // Functions used to update the window/tab count.
   virtual void OnWindowAdded() = 0;
@@ -34,10 +37,11 @@ class TabStatsHandler {
   // Records that a tab became audible.
   virtual void OnTabAudible(content::WebContents* web_contents) = 0;
 
-  // Records that a tab became visible.
-  virtual void OnTabVisible(content::WebContents* web_contents) = 0;
+  // Records that a tab's visibility changed.
+  virtual void OnTabVisibilityChanged(content::WebContents* web_contents,
+                                      content::Visibility visibility) = 0;
 };
 
 }  // namespace metrics
 
-#endif  // CHROME_BROWSER_METRICS_TAB_STATS_HANDLER_H_
+#endif  // CHROME_BROWSER_METRICS_TAB_STATS_OBSERVER_H_
