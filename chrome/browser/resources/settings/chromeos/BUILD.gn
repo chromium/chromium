@@ -307,6 +307,8 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/crostini_page/crostini_arc_adb.m.js",
     "chromeos/crostini_page/crostini_arc_adb_confirmation_dialog.m.js",
     "chromeos/crostini_page/crostini_browser_proxy.m.js",
+    "chromeos/crostini_page/crostini_disk_resize_confirmation_dialog.m.js",
+    "chromeos/crostini_page/crostini_disk_resize_dialog.m.js",
     "chromeos/date_time_page/date_time_page.m.js",
     "chromeos/date_time_page/date_time_types.m.js",
     "chromeos/date_time_page/timezone_browser_proxy.m.js",
