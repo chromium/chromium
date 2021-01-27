@@ -25,6 +25,14 @@ BluetoothServerSocket::~BluetoothServerSocket() {
 }
 
 std::unique_ptr<api::BluetoothSocket> BluetoothServerSocket::Accept() {
+  // Check if Close() has already been called which can happen when quickly
+  // toggling between high-viz and contact based advertising.
+  if (!server_socket_) {
+    VLOG(1) << "BluetoothServerSocket::Accept() called but mojo remote was"
+            << " already closed.";
+    return nullptr;
+  }
+
   bluetooth::mojom::AcceptConnectionResultPtr result;
   bool success = server_socket_->Accept(&result);
 

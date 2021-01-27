@@ -169,6 +169,14 @@ TEST_F(BluetoothServerSocketTest, TestClose) {
   run_loop.Run();
 }
 
+TEST_F(BluetoothServerSocketTest, TestCloseThenAccept) {
+  base::RunLoop run_loop;
+  fake_server_socket_->SetOnDestroyCallback(run_loop.QuitClosure());
+  bluetooth_server_socket_->Close();
+  run_loop.Run();
+  ASSERT_FALSE(bluetooth_server_socket_->Accept());
+}
+
 TEST_F(BluetoothServerSocketTest, TestDestroy) {
   base::RunLoop run_loop;
   fake_server_socket_->SetOnDestroyCallback(run_loop.QuitClosure());
