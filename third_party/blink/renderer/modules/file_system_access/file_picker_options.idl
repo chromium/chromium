@@ -6,7 +6,6 @@ enum CommonDirectory {
   "desktop",
   "documents",
   "downloads",
-  "home",
   "music",
   "pictures",
   "videos",

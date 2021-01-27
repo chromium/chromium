@@ -491,9 +491,6 @@ base::FilePath ChromeFileSystemAccessPermissionContext::GetCommonDirectoryPath(
     case blink::mojom::CommonDirectory::kDirDownloads:
       key = chrome::DIR_DEFAULT_DOWNLOADS;
       break;
-    case blink::mojom::CommonDirectory::kDirHome:
-      key = base::DIR_HOME;
-      break;
     case blink::mojom::CommonDirectory::kDirMusic:
       key = chrome::DIR_USER_MUSIC;
       break;

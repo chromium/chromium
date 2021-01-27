@@ -179,8 +179,6 @@ mojom::blink::CommonDirectory ConvertCommonDirectory(
     return mojom::blink::CommonDirectory::kDirDocuments;
   else if (starting_directory == "downloads")
     return mojom::blink::CommonDirectory::kDirDownloads;
-  else if (starting_directory == "home")
-    return mojom::blink::CommonDirectory::kDirHome;
   else if (starting_directory == "music")
     return mojom::blink::CommonDirectory::kDirMusic;
   else if (starting_directory == "pictures")

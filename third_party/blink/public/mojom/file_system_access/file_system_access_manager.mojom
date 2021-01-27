@@ -23,7 +23,6 @@ enum CommonDirectory {
   kDirDesktop,
   kDirDocuments,
   kDirDownloads,
-  kDirHome,
   kDirMusic,
   kDirPictures,
   kDirVideos,
