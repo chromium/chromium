@@ -15,6 +15,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountUtils;
@@ -25,6 +26,7 @@ import java.util.concurrent.CountDownLatch;
 
 /** Tests for {@link ProfileOAuth2TokenServiceDelegate}. */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class ProfileOAuth2TokenServiceDelegateTest {
     private FakeAccountManagerFacade mAccountManagerFacade;
 
