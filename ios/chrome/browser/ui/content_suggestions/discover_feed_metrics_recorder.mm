@@ -87,8 +87,16 @@ const char kDiscoverFeedUserActionHideStory[] =
     "ContentSuggestions.Feed.CardAction.HideStory";
 const char kDiscoverFeedUserActionCloseContextMenu[] =
     "ContentSuggestions.Feed.CardAction.ClosedContextMenu";
+const char kDiscoverFeedUserActionNativeActionSheetOpened[] =
+    "ContentSuggestions.Feed.CardAction.OpenNativeActionSheet";
 const char kDiscoverFeedUserActionNativeContextMenuOpened[] =
-    "ContentSuggestions.Feed.CardAction.NativeContextMenu";
+    "ContentSuggestions.Feed.CardAction.OpenNativeContextMenu";
+const char kDiscoverFeedUserActionNativeContextMenuClosed[] =
+    "ContentSuggestions.Feed.CardAction.CloseNativeContextMenu";
+const char kDiscoverFeedUserActionNativePulldownMenuOpened[] =
+    "ContentSuggestions.Feed.CardAction.OpenNativePulldownMenu";
+const char kDiscoverFeedUserActionNativePulldownMenuClosed[] =
+    "ContentSuggestions.Feed.CardAction.CloseNativePulldownMenu";
 const char kDiscoverFeedUserActionReportContentOpened[] =
     "ContentSuggestions.Feed.CardAction.ReportContent";
 const char kDiscoverFeedUserActionReportContentClosed[] =
@@ -276,9 +284,9 @@ const int kMinutesBetweenSessions = 5;
 
 - (void)recordOpenNativeBackOfCardMenu {
   [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kOpenedNativeContextMenu];
+                                                  kOpenedNativeActionSheet];
   base::RecordAction(
-      base::UserMetricsAction(kDiscoverFeedUserActionNativeContextMenuOpened));
+      base::UserMetricsAction(kDiscoverFeedUserActionNativeActionSheetOpened));
 }
 
 - (void)recordShowDialog {
@@ -363,6 +371,34 @@ const int kMinutesBetweenSessions = 5;
                                base::TimeDelta::FromSeconds(durationInSeconds));
   }
   [self recordNetworkRequestDurationInSeconds:durationInSeconds];
+}
+
+- (void)recordNativeContextMenuVisibilityChanged:(BOOL)shown {
+  if (shown) {
+    [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                    kOpenedNativeContextMenu];
+    base::RecordAction(base::UserMetricsAction(
+        kDiscoverFeedUserActionNativeContextMenuOpened));
+  } else {
+    [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                    kClosedNativeContextMenu];
+    base::RecordAction(base::UserMetricsAction(
+        kDiscoverFeedUserActionNativeContextMenuClosed));
+  }
+}
+
+- (void)recordNativePulldownMenuVisibilityChanged:(BOOL)shown {
+  if (shown) {
+    [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                    kOpenedNativePulldownMenu];
+    base::RecordAction(base::UserMetricsAction(
+        kDiscoverFeedUserActionNativePulldownMenuOpened));
+  } else {
+    [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
+                                                    kClosedNativePulldownMenu];
+    base::RecordAction(base::UserMetricsAction(
+        kDiscoverFeedUserActionNativePulldownMenuClosed));
+  }
 }
 
 #pragma mark - Private
