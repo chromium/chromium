@@ -115,8 +115,8 @@ TEST_F('ChromeVoxTutorialTest', 'LessonSetTest', function() {
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Quick Orientation Tutorial, [0-9]+ Lessons/)
         .expectSpeech(
-            ' Press Search + Right Arrow, or Search + Left Arrow to browse ' +
-            'lessons for this topic ')
+            'Press Search + Right Arrow, or Search + Left Arrow to browse ' +
+            'lessons for this topic')
         .call(doCmd('nextObject'))
         .expectSpeech('Welcome to ChromeVox!')
         .call(() => {
@@ -488,18 +488,18 @@ TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
         .call(doCmd('forceClickOnCurrentItem'))
         .expectSpeech(/Welcome to the ChromeVox tutorial./)
         .call(() => {
-          assertEquals(0, tutorial.activeLessonNum);
+          assertEquals(0, tutorial.activeLessonId);
           firstLessonNode = getRangeStartNode();
         })
         .call(simulateKeyPress.bind(this, KeyCode.RIGHT, {searchKeyHeld: true}))
         .call(() => {
           assertEquals(firstLessonNode, getRangeStartNode());
-          assertEquals(0, tutorial.activeLessonNum);
+          assertEquals(0, tutorial.activeLessonId);
         })
         .call(simulateKeyPress.bind(this, KeyCode.LEFT, {searchKeyHeld: true}))
         .call(() => {
           assertEquals(firstLessonNode, getRangeStartNode());
-          assertEquals(0, tutorial.activeLessonNum);
+          assertEquals(0, tutorial.activeLessonId);
         })
         // Pressing space, which is the desired key sequence, should move us to
         // the next lesson.
@@ -507,7 +507,7 @@ TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
         .expectSpeech('Essential Keys: Control')
         .expectSpeech(/Let's start with a few keys you'll use regularly./)
         .call(() => {
-          assertEquals(1, tutorial.activeLessonNum);
+          assertEquals(1, tutorial.activeLessonId);
           assertNotEquals(firstLessonNode, getRangeStartNode());
         })
         // Pressing control, which is the desired key sequence, should move us
@@ -515,7 +515,7 @@ TEST_F('ChromeVoxTutorialTest', 'QuickOrientationLessonTest', function() {
         .call(simulateKeyPress.bind(this, KeyCode.CONTROL, {}))
         .expectSpeech('Essential Keys: Shift')
         .call(() => {
-          assertEquals(2, tutorial.activeLessonNum);
+          assertEquals(2, tutorial.activeLessonId);
         })
         .replay();
   });

@@ -14,47 +14,10 @@
   top: 0;
 }
 
-#lessonMenu,
 #lessonContainer {
   margin: auto;
   text-align: start;
   width: 800px;
-}
-
-#lessonShortcuts {
-  background: #FFF;
-  border-radius: 4px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 2px 6px rgba(0, 0, 0, 0.15);
-  font-size: 22px;
-}
-
-#lessonShortcuts {
-  max-height: 400px;
-  overflow: scroll;
-}
-
-cr-button,
-cr-link-row {
-  font-family: 'Roboto';
-  font-weight: medium;
-}
-
-h1 {
-  font-family: 'Google Sans', 'Roboto';
-  font-size: 32px;
-  font-weight: medium;
-  line-height: 40px;
-  margin-bottom: 32px;
-}
-
-cr-button {
-  font-size: 16px;
-  font-style: normal;
-  line-height: 24px;
-  margin-bottom: 40px;
-  margin-inline-end: 8px;
-  margin-inline-start: 8px;
-  margin-top: 40px;
 }
 
 </style>
@@ -69,17 +32,14 @@ cr-button {
     on-button-clicked="onMainMenuButtonClicked_">
 </main-menu>
 
-<div id="lessonMenu"
-    hidden$="[[ shouldHideLessonMenu(activeScreen) ]]">
-  <h1 id="lessonMenuHeader"
-      tabindex="-1" aria-describedby="lessonMenuHeaderHint">
-    [[ computeLessonMenuHeader(curriculum) ]]
-  </h1>
-  <div id="lessonMenuHeaderHint" hidden>
-    [[ getMsg('tutorial_lesson_menu_header_description') ]]
-  </div>
-  <div id="lessonShortcuts"></div>
-</div>
+<lesson-menu
+    curriculum="[[ curriculum ]]"
+    num-lessons="[[ numLessons ]]"
+    header-description_="tutorial_lesson_menu_header_description"
+    button-data_="[[ computeLessonMenuButtonData_() ]]"
+    active-screen="[[ activeScreen ]]"
+    on-button-clicked="onLessonMenuButtonClicked_">
+</lesson-menu>
 
 <div id="lessonContainer"
     hidden$="[[ shouldHideLessonContainer(activeScreen) ]]">
@@ -88,7 +48,7 @@ cr-button {
   <template id="lessonTemplate" is="dom-repeat" items="[[ lessonData ]]"
       as="lesson" index-as="index">
     <tutorial-lesson
-    lesson-num="[[ index ]]"
+    lesson-id="[[ index ]]"
     title="[[ lesson.title ]]"
     content="[[ lesson.content ]]"
     medium="[[ lesson.medium ]]"
@@ -100,7 +60,7 @@ cr-button {
     events="[[ lesson.events ]]"
     actions="[[ lesson.actions ]]"
     auto-interactive="[[ lesson.autoInteractive ]]"
-    active-lesson-num="[[ activeLessonNum ]]">
+    active-lesson-id="[[ activeLessonId ]]">
     </tutorial-lesson>
   </template>
 </div>

@@ -21,6 +21,16 @@ export const Curriculum = {
 };
 
 /**
+ * The user’s interaction medium. Influences tutorial content.
+ * @enum {string}
+ */
+export const InteractionMedium = {
+  KEYBOARD: 'keyboard',
+  TOUCH: 'touch',
+  BRAILLE: 'braille',
+};
+
+/**
  * The various screens within the tutorial.
  * @enum {string}
  */

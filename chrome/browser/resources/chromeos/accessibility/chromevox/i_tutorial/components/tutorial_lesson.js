@@ -24,7 +24,7 @@ export const TutorialLesson = Polymer({
   behaviors: [TutorialCommon],
 
   properties: {
-    lessonNum: {type: Number},
+    lessonId: {type: Number},
 
     title: {type: String},
 
@@ -51,8 +51,8 @@ export const TutorialLesson = Polymer({
     autoInteractive: {type: Boolean, value: false},
 
     // Observed properties.
-
-    activeLessonNum: {type: Number, observer: 'setVisibility'},
+    /** @type {number} */
+    activeLessonId: {type: Number, observer: 'setVisibility'},
   },
 
   /** @override */
@@ -88,7 +88,7 @@ export const TutorialLesson = Polymer({
    * @private
    */
   setVisibility() {
-    if (this.lessonNum === this.activeLessonNum) {
+    if (this.lessonId === this.activeLessonId) {
       this.show();
     } else {
       this.hide();
