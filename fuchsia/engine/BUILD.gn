@@ -6,6 +6,7 @@ assert(is_fuchsia)
 
 import("//build/config/fuchsia/generate_runner_scripts.gni")
 import("//build/config/fuchsia/symbol_archive.gni")
+import("//build/config/locales.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 import("//tools/grit/repack.gni")
@@ -30,7 +31,6 @@ mojom("mojom") {
 repack("web_engine_pak") {
   sources = [
     "$root_gen_dir/components/components_resources.pak",
-    "$root_gen_dir/components/strings/components_strings_en-US.pak",
     "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
     "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
@@ -39,15 +39,11 @@ repack("web_engine_pak") {
     "$root_gen_dir/net/net_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
-    "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
-    "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
-    "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
   ]
 
   deps = [
     "//components/resources:components_resources",
-    "//components/strings",
     "//content:content_resources",
     "//content:dev_ui_content_resources",
     "//content/app/resources",
@@ -57,13 +53,34 @@ repack("web_engine_pak") {
     "//net:net_resources",
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources_100_percent",
-    "//third_party/blink/public/strings",
     "//ui/resources",
-    "//ui/strings",
   ]
 
-  output = "$root_out_dir/web_engine.pak"
+  # TODO(crbug.com/1092804): Move this into ${target_gen_dir} and have a
+  # GN SDK fuchsia_resource() rule map it into place in the web_engine package.
+  output = "$root_gen_dir/common_resources.pak"
   visibility = [ ":*" ]
+}
+
+foreach(locale, locales_with_fake_bidi) {
+  repack("web_engine_locale_${locale}_pak") {
+    # WebEngine requires the following locale-specific resources:
+    # 1. Blink strings for UI elements, e.g. drop-down lists.
+    # 2. //ui strings used to configure e.g. preferred font family.
+
+    sources = [
+      "$root_gen_dir/third_party/blink/public/strings/blink_strings_${locale}.pak",
+      "$root_gen_dir/ui/strings/app_locale_settings_${locale}.pak",
+    ]
+
+    deps = [
+      "//third_party/blink/public/strings",
+      "//ui/strings:app_locale_settings",
+    ]
+
+    output = "$root_gen_dir/locales/${locale}.pak"
+    visibility = [ ":*" ]
+  }
 }
 
 component("web_engine_core") {
@@ -80,6 +97,7 @@ component("web_engine_core") {
     "//components/on_load_script_injector/browser",
     "//components/on_load_script_injector/renderer",
     "//components/policy/content:safe_sites_navigation_throttle",
+    "//components/strings:components_locale_settings",
     "//components/version_info",
     "//content/public/app",
     "//content/public/browser",
@@ -125,13 +143,24 @@ component("web_engine_core") {
     "//ui/wm",
     "//ui/wm/public",
   ]
-  data_deps = [ ":web_engine_pak" ]
+
+  # Technically the PAK files are only data dependencies, but specifying them
+  # as |data_deps| causes metadata (.info) files to also be pulled-in to the
+  # package.
+  deps += [ ":web_engine_pak" ]
+  data = [ "$root_gen_dir/common_resources.pak" ]
+  foreach(locale, locales_with_fake_bidi) {
+    deps += [ ":web_engine_locale_${locale}_pak" ]
+    data += [ "$root_gen_dir/locales/${locale}.pak" ]
+  }
+
   public_deps = [
     "//content/public/browser",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
   ]
-  data = [ "$root_out_dir/web_engine.pak" ]
+
   configs += [ ":web_engine_implementation" ]
+
   sources = [
     "browser/accessibility_bridge.cc",
     "browser/accessibility_bridge.h",
