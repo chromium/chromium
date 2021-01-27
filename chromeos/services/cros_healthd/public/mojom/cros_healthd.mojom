@@ -414,6 +414,25 @@ interface CrosHealthdDiagnosticsService {
   // * |response| - contains a unique identifier and status for the created
   //                routine.
   RunHttpsLatencyRoutine() => (RunRoutineResponse response);
+
+  // Requests that the VideoConferencing routine is created and started on the
+  // platform. This routine checks the device's video conferencing capabalities
+  // by testing whether the device can:
+  // (1) Contact either a default or specified STUN server via UDP.
+  // (2) Contact either a default or specified STUN server via TCP.
+  // (3) Reach common media endpoints.
+  // This routine is only available if GetAvailableRoutines returned
+  // kVideoConferencing.
+  //
+  // The request:
+  // * |stun_server_hostname| - if specified, represents the custom STUN server
+  //                            hostname.
+  //
+  // The response:
+  // * |response| - contains a unique identifier and status for the created
+  //                routine.
+  RunVideoConferencingRoutine(string? stun_server_hostname)
+      => (RunRoutineResponse response);
 };
 
 // Event interface exposed by the cros_healthd daemon.

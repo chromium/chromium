@@ -124,6 +124,9 @@ class FakeCrosHealthdService final
   void RunHttpsFirewallRoutine(
       RunHttpsFirewallRoutineCallback callback) override;
   void RunHttpsLatencyRoutine(RunHttpsLatencyRoutineCallback callback) override;
+  void RunVideoConferencingRoutine(
+      const base::Optional<std::string>& stun_server_hostname,
+      RunVideoConferencingRoutineCallback callback) override;
 
   // CrosHealthdEventService overrides:
   void AddBluetoothObserver(

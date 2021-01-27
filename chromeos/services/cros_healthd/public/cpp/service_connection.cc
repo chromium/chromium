@@ -132,6 +132,10 @@ class ServiceConnectionImpl : public ServiceConnection {
   void RunHttpsLatencyRoutine(
       mojom::CrosHealthdDiagnosticsService::RunHttpsLatencyRoutineCallback
           callback) override;
+  void RunVideoConferencingRoutine(
+      const base::Optional<std::string>& stun_server_hostname,
+      mojom::CrosHealthdDiagnosticsService::RunVideoConferencingRoutineCallback
+          callback) override;
   void AddBluetoothObserver(
       mojo::PendingRemote<mojom::CrosHealthdBluetoothObserver> pending_observer)
       override;
@@ -497,6 +501,16 @@ void ServiceConnectionImpl::RunHttpsLatencyRoutine(
   BindCrosHealthdDiagnosticsServiceIfNeeded();
   cros_healthd_diagnostics_service_->RunHttpsLatencyRoutine(
       std::move(callback));
+}
+
+void ServiceConnectionImpl::RunVideoConferencingRoutine(
+    const base::Optional<std::string>& stun_server_hostname,
+    mojom::CrosHealthdDiagnosticsService::RunVideoConferencingRoutineCallback
+        callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindCrosHealthdDiagnosticsServiceIfNeeded();
+  cros_healthd_diagnostics_service_->RunVideoConferencingRoutine(
+      stun_server_hostname, std::move(callback));
 }
 
 void ServiceConnectionImpl::AddBluetoothObserver(

@@ -148,6 +148,7 @@ bool IsKnownRoutine(healthd::DiagnosticRoutineEnum routine_enum) {
     case healthd::DiagnosticRoutineEnum::kSignalStrength:
     case healthd::DiagnosticRoutineEnum::kSmartctlCheck:
     case healthd::DiagnosticRoutineEnum::kUrandom:
+    case healthd::DiagnosticRoutineEnum::kVideoConferencing:
       return false;
   }
 }
@@ -188,6 +189,7 @@ mojom::RoutineType DiagnosticRoutineEnumToRoutineType(
     case healthd::DiagnosticRoutineEnum::kSignalStrength:
     case healthd::DiagnosticRoutineEnum::kSmartctlCheck:
     case healthd::DiagnosticRoutineEnum::kUrandom:
+    case healthd::DiagnosticRoutineEnum::kVideoConferencing:
       NOTREACHED() << "DiagnosticRoutineEnumToRoutineType called with "
                       "unsupported routine.";
       return mojom::RoutineType::kBatteryCharge;

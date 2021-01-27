@@ -67,7 +67,6 @@ constexpr char kMaximumDischargePercentAllowedFieldName[] =
 constexpr char kMinimumChargePercentRequiredFieldName[] =
     "minimumChargePercentRequired";
 
-// Dummy values to populate cros_healthd's RunRoutineResponse.
 constexpr uint32_t kId = 11;
 constexpr auto kStatus =
     chromeos::cros_healthd::mojom::DiagnosticRoutineStatusEnum::kRunning;
@@ -81,6 +80,7 @@ constexpr auto kValidAcPowerStatusEnum =
 constexpr char kValidExpectedAcPowerType[] = "power_type";
 constexpr auto kValidDiskReadRoutineTypeEnum =
     chromeos::cros_healthd::mojom::DiskReadRoutineTypeEnum::kLinearRead;
+constexpr char kValidStunServerHostname[] = "www.stun_server_name";
 
 em::RemoteCommand GenerateCommandProto(
     RemoteCommandJob::UniqueIDType unique_id,
@@ -1326,6 +1326,48 @@ TEST_F(DeviceCommandRunRoutineJobTest, RunHttpsLatencyRoutineSuccess) {
   base::Value params_dict(base::Value::Type::DICTIONARY);
   EXPECT_TRUE(RunJob(
       chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kHttpsLatency,
+      std::move(params_dict),
+      base::BindLambdaForTesting([](RemoteCommandJob* job) {
+        EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+        std::unique_ptr<std::string> payload = job->GetResultPayload();
+        EXPECT_TRUE(payload);
+        EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+      })));
+}
+
+// Test that the video conferencing routine succeeds with all parameters
+// specified.
+TEST_F(DeviceCommandRunRoutineJobTest, RunVideoConferencingRoutineSuccess) {
+  auto run_routine_response =
+      chromeos::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetRunRoutineResponseForTesting(run_routine_response);
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  params_dict.SetStringKey(
+      DeviceCommandRunRoutineJob::kStunServerHostnameFieldName,
+      kValidStunServerHostname);
+  EXPECT_TRUE(RunJob(
+      chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kVideoConferencing,
+      std::move(params_dict),
+      base::BindLambdaForTesting([](RemoteCommandJob* job) {
+        EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);
+        std::unique_ptr<std::string> payload = job->GetResultPayload();
+        EXPECT_TRUE(payload);
+        EXPECT_EQ(CreateSuccessPayload(kId, kStatus), *payload);
+      })));
+}
+
+// Test that the video conferencing routine succeeds without the optional
+// parameter stunServerHostname specified.
+TEST_F(DeviceCommandRunRoutineJobTest,
+       RunVideoConferencingRoutineNoOptionalStunServerHostname) {
+  auto run_routine_response =
+      chromeos::cros_healthd::mojom::RunRoutineResponse::New(kId, kStatus);
+  chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+      ->SetRunRoutineResponseForTesting(run_routine_response);
+  base::Value params_dict(base::Value::Type::DICTIONARY);
+  EXPECT_TRUE(RunJob(
+      chromeos::cros_healthd::mojom::DiagnosticRoutineEnum::kVideoConferencing,
       std::move(params_dict),
       base::BindLambdaForTesting([](RemoteCommandJob* job) {
         EXPECT_EQ(job->status(), RemoteCommandJob::SUCCEEDED);

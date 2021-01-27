@@ -16,6 +16,10 @@ namespace policy {
 // the platform. The RemoteCommandsQueue owns all instances of this class.
 class DeviceCommandRunRoutineJob : public RemoteCommandJob {
  public:
+  // String constant identifying the parameter field for the video conferencing
+  // routine. Note that stunServerHostname is an optional parameter.
+  static constexpr char kStunServerHostnameFieldName[] = "stunServerHostname";
+
   DeviceCommandRunRoutineJob();
   DeviceCommandRunRoutineJob(const DeviceCommandRunRoutineJob&) = delete;
   DeviceCommandRunRoutineJob& operator=(const DeviceCommandRunRoutineJob&) =
