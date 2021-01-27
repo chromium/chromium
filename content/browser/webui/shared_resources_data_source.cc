@@ -60,15 +60,11 @@ const std::map<std::string, std::string> CreatePathPrefixAliasesMap() {
   std::map<std::string, std::string> aliases = {
     {"../../views/resources/default_100_percent/common/", "images/apps/"},
     {"../../views/resources/default_200_percent/common/", "images/2x/apps/"},
-    {"@out_folder@/gen/ui/webui/resources/", ""},
 #if defined(OS_ANDROID)
     // This is a temporary fix for `target_cpu = "arm64"`. See the bug for
     // more context: crbug.com/1020284.
     {"@out_folder@/android_clang_arm/gen/ui/webui/resources/", ""},
 #endif  // defined(OS_ANDROID)
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"@out_folder@/gen/ui/chromeos/", "chromeos/"},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   };
 
 #if !defined(OS_ANDROID)
