@@ -82,10 +82,10 @@ process.
 
 ### Landing changes
 
-When you need to land a change to a branch, you'll need to go through the same
-merge approval process as other cherry-picks (see exception for flaky tests
-above). You should feel free to ping the relevant release TPM as listed on
-[chromiumdash][chromiumdash-schedule].
+When you need to land a change to a branch, you'll need to go through [the same
+merge approval process](./process/merge_request.md) as other cherry-picks (see
+exception for flaky tests above). You should feel free to ping the relevant
+release TPM as listed on [chromiumdash][chromiumdash-schedule].
 
 ## Tools
 
