@@ -178,15 +178,14 @@ void CacheStorageContextImpl::SetBlobParametersForCache(
 }
 
 void CacheStorageContextImpl::GetAllOriginsInfo(
-    CacheStorageContext::GetUsageInfoCallback callback) {
+    storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback) {
   // Can be called on any sequence.
-
   callback = base::BindOnce(
       [](scoped_refptr<base::SequencedTaskRunner> reply_task_runner,
-         GetUsageInfoCallback inner,
-         const std::vector<StorageUsageInfo>& entries) {
-        reply_task_runner->PostTask(FROM_HERE,
-                                    base::BindOnce(std::move(inner), entries));
+         storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback inner,
+         std::vector<storage::mojom::StorageUsageInfoPtr> entries) {
+        reply_task_runner->PostTask(
+            FROM_HERE, base::BindOnce(std::move(inner), std::move(entries)));
       },
       base::SequencedTaskRunnerHandle::Get(), std::move(callback));
 
@@ -194,11 +193,13 @@ void CacheStorageContextImpl::GetAllOriginsInfo(
       FROM_HERE,
       base::BindOnce(
           [](scoped_refptr<CacheStorageContextImpl> context,
-             GetUsageInfoCallback callback) {
+             storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback
+                 callback) {
             scoped_refptr<CacheStorageManager> manager =
                 context->CacheManager();
             if (!manager) {
-              std::move(callback).Run(std::vector<StorageUsageInfo>());
+              std::move(callback).Run(
+                  std::vector<storage::mojom::StorageUsageInfoPtr>());
               return;
             }
             manager->GetAllOriginsUsage(
@@ -262,14 +263,16 @@ void CacheStorageContextImpl::ShutdownOnTaskRunner() {
             [](scoped_refptr<CacheStorageManager> cache_manager,
                scoped_refptr<storage::SpecialStoragePolicy>
                    special_storage_policy,
-               const std::vector<StorageUsageInfo>& usage_info) {
+               const std::vector<storage::mojom::StorageUsageInfoPtr>
+                   usage_info) {
               for (const auto& info : usage_info) {
                 if (special_storage_policy->IsStorageSessionOnly(
-                        info.origin.GetURL()) &&
+                        info->origin.GetURL()) &&
                     !special_storage_policy->IsStorageProtected(
-                        info.origin.GetURL())) {
+                        info->origin.GetURL())) {
                   cache_manager->DeleteOriginData(
-                      info.origin, storage::mojom::CacheStorageOwner::kCacheAPI,
+                      info->origin,
+                      storage::mojom::CacheStorageOwner::kCacheAPI,
 
                       // Retain a reference to the manager until the deletion is
                       // complete, since it internally uses weak pointers for

@@ -25,15 +25,16 @@ namespace {
 
 void GetAllOriginsInfoForCacheStorageCallback(
     CacheStorageHelper::FetchCallback callback,
-    const std::vector<StorageUsageInfo>& origins) {
+    std::vector<storage::mojom::StorageUsageInfoPtr> usage_info) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!callback.is_null());
 
   std::list<content::StorageUsageInfo> result;
-  for (const StorageUsageInfo& origin : origins) {
-    if (!HasWebScheme(origin.origin.GetURL()))
+  for (const storage::mojom::StorageUsageInfoPtr& usage : usage_info) {
+    if (!HasWebScheme(usage->origin.GetURL()))
       continue;  // Non-websafe state is not considered browsing data.
-    result.push_back(origin);
+    result.emplace_back(content::StorageUsageInfo(
+        usage->origin, usage->total_size_bytes, usage->last_modified));
   }
 
   std::move(callback).Run(result);

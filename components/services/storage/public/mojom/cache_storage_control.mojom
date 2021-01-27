@@ -4,6 +4,8 @@
 
 module storage.mojom;
 
+import "components/services/storage/public/mojom/storage_usage_info.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
 import "third_party/blink/public/mojom/cache_storage/cache_storage.mojom";
 import "url/mojom/origin.mojom";
@@ -32,4 +34,11 @@ interface CacheStorageControl {
       url.mojom.Origin origin,
       CacheStorageOwner owner,
       pending_receiver<blink.mojom.CacheStorage> receiver);
+
+  // Deletes the data for a given origin.
+  DeleteForOrigin(url.mojom.Origin origin);
+
+  // Used in response to browsing data and quota manager requests to get
+  // the per-origin size and last time used data.
+  GetAllOriginsInfo() => (array<StorageUsageInfo> usage_info);
 };

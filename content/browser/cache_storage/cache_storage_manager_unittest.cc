@@ -259,11 +259,21 @@ class TestCacheStorageContext : public CacheStorageContextWithManager {
     return manager_;
   }
 
-  void GetAllOriginsInfo(GetUsageInfoCallback callback) override {
+  void AddReceiver(
+      const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+      mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+          coep_reporter_remote,
+      const url::Origin& origin,
+      storage::mojom::CacheStorageOwner owner,
+      mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override {
     NOTREACHED();
   }
-
   void DeleteForOrigin(const url::Origin& origin) override { NOTREACHED(); }
+  void GetAllOriginsInfo(
+      storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback)
+      override {
+    NOTREACHED();
+  }
 
  private:
   ~TestCacheStorageContext() override = default;
@@ -438,7 +448,6 @@ class CacheStorageManagerTest : public testing::Test {
     callback_bool_ = false;
     callback_cache_handle_response_ = nullptr;
     cache_names_.clear();
-    callback_all_origins_usage_.clear();
 
     base::RunLoop().RunUntilIdle();
     quota_manager_proxy_ = nullptr;
@@ -759,18 +768,19 @@ class CacheStorageManagerTest : public testing::Test {
     run_loop->Quit();
   }
 
-  std::vector<StorageUsageInfo> GetAllOriginsUsage(
+  std::vector<storage::mojom::StorageUsageInfoPtr> GetAllOriginsUsage(
       storage::mojom::CacheStorageOwner owner =
           storage::mojom::CacheStorageOwner::kCacheAPI) {
     base::RunLoop loop;
+    std::vector<storage::mojom::StorageUsageInfoPtr> usage;
     cache_manager_->GetAllOriginsUsage(
         owner, base::BindLambdaForTesting(
-                   [&](const std::vector<StorageUsageInfo>& usage) {
-                     callback_all_origins_usage_ = usage;
+                   [&](std::vector<storage::mojom::StorageUsageInfoPtr> inner) {
+                     usage = std::move(inner);
                      loop.Quit();
                    }));
     loop.Run();
-    return callback_all_origins_usage_;
+    return usage;
   }
 
   int64_t GetSizeThenCloseAllCaches(const url::Origin& origin) {
@@ -843,7 +853,6 @@ class CacheStorageManagerTest : public testing::Test {
   const url::Origin origin2_;
 
   int64_t callback_usage_;
-  std::vector<StorageUsageInfo> callback_all_origins_usage_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CacheStorageManagerTest);
@@ -1694,23 +1703,23 @@ TEST_P(CacheStorageManagerTestP, GetAllOriginsUsage) {
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/bar")));
 
-  std::vector<StorageUsageInfo> usage = GetAllOriginsUsage();
+  std::vector<storage::mojom::StorageUsageInfoPtr> usage = GetAllOriginsUsage();
   EXPECT_EQ(2ULL, usage.size());
 
-  int origin1_index = usage[0].origin == origin1_ ? 0 : 1;
-  int origin2_index = usage[1].origin == origin2_ ? 1 : 0;
+  int origin1_index = usage[0]->origin == origin1_ ? 0 : 1;
+  int origin2_index = usage[1]->origin == origin2_ ? 1 : 0;
   EXPECT_NE(origin1_index, origin2_index);
 
-  int64_t origin1_size = usage[origin1_index].total_size_bytes;
-  int64_t origin2_size = usage[origin2_index].total_size_bytes;
+  int64_t origin1_size = usage[origin1_index]->total_size_bytes;
+  int64_t origin2_size = usage[origin2_index]->total_size_bytes;
   EXPECT_EQ(2 * origin1_size, origin2_size);
 
   if (MemoryOnly()) {
-    EXPECT_TRUE(usage[origin1_index].last_modified.is_null());
-    EXPECT_TRUE(usage[origin2_index].last_modified.is_null());
+    EXPECT_TRUE(usage[origin1_index]->last_modified.is_null());
+    EXPECT_TRUE(usage[origin2_index]->last_modified.is_null());
   } else {
-    EXPECT_FALSE(usage[origin1_index].last_modified.is_null());
-    EXPECT_FALSE(usage[origin2_index].last_modified.is_null());
+    EXPECT_FALSE(usage[origin1_index]->last_modified.is_null());
+    EXPECT_FALSE(usage[origin2_index]->last_modified.is_null());
   }
 }
 
@@ -1724,9 +1733,9 @@ TEST_F(CacheStorageManagerTest, GetAllOriginsUsageWithPadding) {
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
 
-  std::vector<StorageUsageInfo> usage = GetAllOriginsUsage();
-  EXPECT_EQ(1ULL, usage.size());
-  int64_t unpadded_size = usage[0].total_size_bytes;
+  auto usage = GetAllOriginsUsage();
+  ASSERT_EQ(1ULL, usage.size());
+  int64_t unpadded_size = usage[0]->total_size_bytes;
 
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(),
                        GURL("http://example.com/foo"),
@@ -1745,8 +1754,8 @@ TEST_F(CacheStorageManagerTest, GetAllOriginsUsageWithPadding) {
     EXPECT_TRUE(base::TouchFile(index_path, t, t));
 
     usage = GetAllOriginsUsage();
-    EXPECT_EQ(1ULL, usage.size());
-    int64_t padded_size = usage[0].total_size_bytes;
+    ASSERT_EQ(1ULL, usage.size());
+    int64_t padded_size = usage[0]->total_size_bytes;
     EXPECT_GT(padded_size, unpadded_size);
   } while (!IsIndexFileCurrent(storage_dir));
 }
@@ -1775,32 +1784,32 @@ TEST_P(CacheStorageManagerTestP, GetAllOriginsUsageDifferentOwners) {
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/bar")));
 
-  std::vector<StorageUsageInfo> usage_cache =
+  std::vector<storage::mojom::StorageUsageInfoPtr> usage_cache =
       GetAllOriginsUsage(storage::mojom::CacheStorageOwner::kCacheAPI);
   EXPECT_EQ(1ULL, usage_cache.size());
-  std::vector<StorageUsageInfo> usage_bgf =
+  std::vector<storage::mojom::StorageUsageInfoPtr> usage_bgf =
       GetAllOriginsUsage(storage::mojom::CacheStorageOwner::kBackgroundFetch);
   EXPECT_EQ(2ULL, usage_bgf.size());
 
-  int origin1_index = usage_bgf[0].origin == origin1_ ? 0 : 1;
-  int origin2_index = usage_bgf[1].origin == origin2_ ? 1 : 0;
+  int origin1_index = usage_bgf[0]->origin == origin1_ ? 0 : 1;
+  int origin2_index = usage_bgf[1]->origin == origin2_ ? 1 : 0;
   EXPECT_NE(origin1_index, origin2_index);
 
-  EXPECT_EQ(usage_cache[0].origin, origin1_);
-  EXPECT_EQ(usage_bgf[origin1_index].origin, origin1_);
-  EXPECT_EQ(usage_bgf[origin2_index].origin, origin2_);
+  EXPECT_EQ(usage_cache[0]->origin, origin1_);
+  EXPECT_EQ(usage_bgf[origin1_index]->origin, origin1_);
+  EXPECT_EQ(usage_bgf[origin2_index]->origin, origin2_);
 
-  EXPECT_EQ(usage_cache[0].total_size_bytes,
-            usage_bgf[origin1_index].total_size_bytes);
+  EXPECT_EQ(usage_cache[0]->total_size_bytes,
+            usage_bgf[origin1_index]->total_size_bytes);
 
   if (MemoryOnly()) {
-    EXPECT_TRUE(usage_cache[0].last_modified.is_null());
-    EXPECT_TRUE(usage_bgf[origin1_index].last_modified.is_null());
-    EXPECT_TRUE(usage_bgf[origin2_index].last_modified.is_null());
+    EXPECT_TRUE(usage_cache[0]->last_modified.is_null());
+    EXPECT_TRUE(usage_bgf[origin1_index]->last_modified.is_null());
+    EXPECT_TRUE(usage_bgf[origin2_index]->last_modified.is_null());
   } else {
-    EXPECT_FALSE(usage_cache[0].last_modified.is_null());
-    EXPECT_FALSE(usage_bgf[origin1_index].last_modified.is_null());
-    EXPECT_FALSE(usage_bgf[origin2_index].last_modified.is_null());
+    EXPECT_FALSE(usage_cache[0]->last_modified.is_null());
+    EXPECT_FALSE(usage_bgf[origin1_index]->last_modified.is_null());
+    EXPECT_FALSE(usage_bgf[origin2_index]->last_modified.is_null());
   }
 }
 
@@ -1844,9 +1853,9 @@ TEST_F(CacheStorageManagerTest, DISABLED_GetAllOriginsUsageWithOldIndex) {
   original_handle = CacheStorageCacheHandle();
 
   // Capture the size before the index has necessarily flushed to disk.
-  std::vector<StorageUsageInfo> usage = GetAllOriginsUsage();
+  std::vector<storage::mojom::StorageUsageInfoPtr> usage = GetAllOriginsUsage();
   ASSERT_EQ(1ULL, usage.size());
-  int64_t usage_before_close = usage[0].total_size_bytes;
+  int64_t usage_before_close = usage[0]->total_size_bytes;
   EXPECT_GT(usage_before_close, 0);
 
   // Flush the index to ensure we can read it correctly from the index file.
@@ -1863,7 +1872,7 @@ TEST_F(CacheStorageManagerTest, DISABLED_GetAllOriginsUsageWithOldIndex) {
   CreateStorageManager();
   usage = GetAllOriginsUsage();
   ASSERT_EQ(1ULL, usage.size());
-  EXPECT_EQ(usage_before_close, usage[0].total_size_bytes);
+  EXPECT_EQ(usage_before_close, usage[0]->total_size_bytes);
 
   DestroyStorageManager();
 
@@ -1880,9 +1889,9 @@ TEST_F(CacheStorageManagerTest, DISABLED_GetAllOriginsUsageWithOldIndex) {
   usage = GetAllOriginsUsage();
   ASSERT_EQ(1ULL, usage.size());
 
-  EXPECT_EQ(usage_before_close, usage[0].total_size_bytes);
+  EXPECT_EQ(usage_before_close, usage[0]->total_size_bytes);
 
-  EXPECT_FALSE(usage[0].last_modified.is_null());
+  EXPECT_FALSE(usage[0]->last_modified.is_null());
 }
 
 // TODO(crbug.com/760687): Flaky on Fuchsia.

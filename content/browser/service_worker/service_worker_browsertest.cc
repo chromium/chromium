@@ -2398,6 +2398,12 @@ class CacheStorageControlForBadOrigin
     // bad.
     NOTREACHED();
   }
+  void DeleteForOrigin(const url::Origin& origin) override { NOTREACHED(); }
+  void GetAllOriginsInfo(
+      storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback)
+      override {
+    NOTREACHED();
+  }
 };
 
 }  // namespace

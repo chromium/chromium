@@ -25,8 +25,9 @@ class CrossSequenceCacheStorageManager::Inner {
     DCHECK(target_manager_);
   }
 
-  void GetAllOriginsUsage(storage::mojom::CacheStorageOwner owner,
-                          CacheStorageContext::GetUsageInfoCallback callback) {
+  void GetAllOriginsUsage(
+      storage::mojom::CacheStorageOwner owner,
+      storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     target_manager_->GetAllOriginsUsage(owner, std::move(callback));
   }
@@ -89,7 +90,7 @@ CacheStorageHandle CrossSequenceCacheStorageManager::OpenCacheStorage(
 
 void CrossSequenceCacheStorageManager::GetAllOriginsUsage(
     storage::mojom::CacheStorageOwner owner,
-    CacheStorageContext::GetUsageInfoCallback callback) {
+    storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   inner_.Post(FROM_HERE, &Inner::GetAllOriginsUsage, owner,
               WrapCallbackForCurrentSequence(std::move(callback)));

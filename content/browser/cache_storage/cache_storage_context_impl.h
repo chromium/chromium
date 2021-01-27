@@ -14,7 +14,6 @@
 #include "base/synchronization/lock.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
-#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/cache_storage_context.h"
@@ -66,8 +65,7 @@ class CONTENT_EXPORT CacheStorageContextWithManager
 // CacheStorageManager instance, which is only accessed on the target
 // sequence.
 class CONTENT_EXPORT CacheStorageContextImpl
-    : public CacheStorageContextWithManager,
-      public storage::mojom::CacheStorageControl {
+    : public CacheStorageContextWithManager {
  public:
   CacheStorageContextImpl();
 
@@ -92,7 +90,7 @@ class CONTENT_EXPORT CacheStorageContextImpl
 
   void Bind(mojo::PendingReceiver<storage::mojom::CacheStorageControl> control);
 
-  // Only callable on the UI thread.
+  // storage::mojom::CacheStorageControl implementation.
   void AddReceiver(
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
@@ -100,6 +98,10 @@ class CONTENT_EXPORT CacheStorageContextImpl
       const url::Origin& origin,
       storage::mojom::CacheStorageOwner owner,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) override;
+  void DeleteForOrigin(const url::Origin& origin) override;
+  void GetAllOriginsInfo(
+      storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback)
+      override;
 
   // If called on the cache_storage target sequence the real manager will be
   // returned directly.  If called on any other sequence then a cross-sequence
@@ -118,10 +120,6 @@ class CONTENT_EXPORT CacheStorageContextImpl
   // forwarding to the CacheStorageManager.
   void SetBlobParametersForCache(
       ChromeBlobStorageContext* blob_storage_context);
-
-  // CacheStorageContext
-  void GetAllOriginsInfo(GetUsageInfoCallback callback) override;
-  void DeleteForOrigin(const url::Origin& origin) override;
 
   // Callable on any sequence.
   void AddObserver(CacheStorageContextImpl::Observer* observer);

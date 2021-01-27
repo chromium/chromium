@@ -19,6 +19,7 @@ mojom("mojom") {
     "service_worker_storage_control.mojom",
     "session_storage_control.mojom",
     "storage_service.mojom",
+    "storage_usage_info.mojom",
   ]
 
   public_deps = [

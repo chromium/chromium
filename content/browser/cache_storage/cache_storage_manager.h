@@ -39,7 +39,8 @@ class CONTENT_EXPORT CacheStorageManager
   // QuotaClient and Browsing Data Deletion support.
   virtual void GetAllOriginsUsage(
       storage::mojom::CacheStorageOwner owner,
-      CacheStorageContext::GetUsageInfoCallback callback) = 0;
+      storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback
+          callback) = 0;
   virtual void GetOriginUsage(
       const url::Origin& origin_url,
       storage::mojom::CacheStorageOwner owner,

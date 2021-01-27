@@ -34,7 +34,8 @@ class CONTENT_EXPORT CrossSequenceCacheStorageManager
       storage::mojom::CacheStorageOwner owner) override;
   void GetAllOriginsUsage(
       storage::mojom::CacheStorageOwner owner,
-      CacheStorageContext::GetUsageInfoCallback callback) override;
+      storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback)
+      override;
   void GetOriginUsage(
       const url::Origin& origin_url,
       storage::mojom::CacheStorageOwner owner,
