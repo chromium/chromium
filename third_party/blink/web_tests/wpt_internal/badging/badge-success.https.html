@@ -2,14 +2,12 @@
 <html>
 <head>
 <title>Correct interpretation of valid badge values.</title>
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/third_party/blink/public/mojom/badging/badging.mojom.js"></script>
-<script src="resources/mock-badge-service.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
-<script>
+<script type="module">
+import {badge_test} from './resources/mock-badge-service.js';
 
 badge_test(() => navigator.setAppBadge(), 'flag');
 

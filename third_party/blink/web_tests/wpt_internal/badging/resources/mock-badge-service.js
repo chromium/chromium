@@ -1,12 +1,12 @@
-'use strict';
+import {BadgeService, BadgeServiceReceiver} from '/gen/third_party/blink/public/mojom/badging/badging.mojom.m.js';
 
 class MockBadgeService {
   constructor() {
-    this.bindingSet_ = new mojo.BindingSet(blink.mojom.BadgeService);
+    this.receiver_ = new BadgeServiceReceiver(this);
     this.interceptor_ =
-        new MojoInterfaceInterceptor(blink.mojom.BadgeService.name);
+        new MojoInterfaceInterceptor(BadgeService.$interfaceName);
     this.interceptor_.oninterfacerequest =
-        e => this.bindingSet_.addBinding(this, e.handle);
+        e => this.receiver_.$.bindHandle(e.handle);
     this.interceptor_.start();
   }
 
@@ -49,7 +49,7 @@ class MockBadgeService {
 
 let mockBadgeService = new MockBadgeService();
 
-function badge_test(func, expectedAction, expectedError) {
+export function badge_test(func, expectedAction, expectedError) {
   promise_test(async () => {
     let mockPromise = mockBadgeService.init_(expectedAction);
 
