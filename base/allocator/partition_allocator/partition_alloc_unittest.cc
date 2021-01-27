@@ -1753,7 +1753,7 @@ TEST_F(PartitionAllocDeathTest, DirectMapGuardPages) {
 }
 
 // These tests rely on precise layout. We handle cookies, not reference counts.
-#if !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR && defined(PA_HAS_FREELIST_HARDENING)
+#if !BUILDFLAG(USE_BACKUP_REF_PTR) && defined(PA_HAS_FREELIST_HARDENING)
 
 namespace {
 
@@ -1825,8 +1825,7 @@ TEST_F(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
 }
 #endif  // !DCHECK_IS_ON()
 
-#endif  // !ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR &&
-        // defined(PA_HAS_FREELIST_HARDENING
+#endif  // !BUILDFLAG(USE_BACKUP_REF_PTR) && defined(PA_HAS_FREELIST_HARDENING)
 
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 

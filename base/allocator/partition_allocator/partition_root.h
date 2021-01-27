@@ -687,7 +687,7 @@ ALWAYS_INLINE size_t PartitionAllocGetSlotOffset(void* ptr) {
 // (thread-safe or not) of the allocator. This relies on the two PartitionRoot<>
 // having the same layout, which is enforced by static_assert().
 ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
-#if ENABLE_REF_COUNT_FOR_BACKUP_REF_PTR
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   // Adjust to support pointers right past the end of an allocation, which in
   // some cases appear to point outside the designated allocation slot.
   // There is no risk of going too far i.e. confusing |ptr -
@@ -695,7 +695,7 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
   // is a pointer within the user-accessible area, is at least
   // |kPartitionRefCountOffset| bytes away from the beginning of its slot.
   ptr = reinterpret_cast<char*>(ptr) - kPartitionRefCountOffset;
-#endif
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
   internal::DCheckIfManagedByPartitionAllocNormalBuckets(ptr);
   auto* slot_span =
