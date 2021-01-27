@@ -4308,6 +4308,9 @@ inline bool LayoutObject::CanTraversePhysicalFragments() const {
     if (!IsInLayoutNGInlineFormattingContext())
       return false;
   }
+  // The NG paint system currently doesn't support replaced content.
+  if (IsLayoutReplaced())
+    return false;
   // The NG paint system currently doesn't support table-cells.
   if (IsTableCellLegacy())
     return false;
