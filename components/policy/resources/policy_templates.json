@@ -2394,7 +2394,7 @@
     },
     {
       'name': 'DeviceAllowMGSToStoreDisplayProperties',
-      'owners' : ['file://chrome/browser/chromeos/app_mode/OWNERS', 'apotapchuk@chromium.org'],
+      'owners' : ['file://chrome/browser/ash/app_mode/OWNERS', 'apotapchuk@chromium.org'],
       'type' : 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:90-'],
