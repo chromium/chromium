@@ -124,26 +124,8 @@ uint32_t WaylandEventSource::OnKeyboardKeyEvent(EventType type,
   return DispatchEvent(&event);
 }
 
-void WaylandEventSource::OnPointerCreated(WaylandPointer* pointer) {
-  DCHECK(pointer);
-  pointer_ = pointer;
-}
-
-void WaylandEventSource::OnPointerDestroyed(WaylandPointer* pointer) {
-  DCHECK_EQ(pointer_, pointer);
-
-  // Clear focused window, if any.
-  HandlePointerFocusChange(nullptr);
-
-  ResetPointerFlags();
-  pointer_ = nullptr;
-}
-
 void WaylandEventSource::OnPointerFocusChanged(WaylandWindow* window,
                                                const gfx::PointF& location) {
-  if (!pointer_)
-    return;
-
   // Save new pointer location.
   pointer_location_ = location;
 
@@ -165,9 +147,6 @@ void WaylandEventSource::OnPointerButtonEvent(EventType type,
                                               WaylandWindow* window) {
   DCHECK(type == ET_MOUSE_PRESSED || type == ET_MOUSE_RELEASED);
   DCHECK(HasAnyPointerButtonFlag(changed_button));
-
-  if (!pointer_)
-    return;
 
   auto* prev_focused_window = window_with_pointer_focus_;
   if (window)
@@ -202,6 +181,10 @@ void WaylandEventSource::OnPointerAxisEvent(const gfx::Vector2d& offset) {
   DispatchEvent(&event);
   current_pointer_frame_.dx += offset.x();
   current_pointer_frame_.dy += offset.y();
+}
+
+void WaylandEventSource::OnResetPointerFlags() {
+  ResetPointerFlags();
 }
 
 void WaylandEventSource::OnPointerFrameEvent() {

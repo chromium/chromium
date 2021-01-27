@@ -90,8 +90,6 @@ class WaylandEventSource : public PlatformEventSource,
                               int device_id) override;
 
   // WaylandPointer::Delegate
-  void OnPointerCreated(WaylandPointer* pointer) override;
-  void OnPointerDestroyed(WaylandPointer* pointer) override;
   void OnPointerFocusChanged(WaylandWindow* window,
                              const gfx::PointF& location) override;
   void OnPointerButtonEvent(EventType evtype,
@@ -102,6 +100,7 @@ class WaylandEventSource : public PlatformEventSource,
   void OnPointerFrameEvent() override;
   void OnPointerAxisSourceEvent(uint32_t axis_source) override;
   void OnPointerAxisStopEvent(uint32_t axis) override;
+  void OnResetPointerFlags() override;
 
   // WaylandTouch::Delegate
   void OnTouchCreated(WaylandTouch* touch) override;
@@ -146,7 +145,6 @@ class WaylandEventSource : public PlatformEventSource,
   WaylandWindowManager* const window_manager_;
 
   // Input device objects. Owned by WaylandConnection.
-  WaylandPointer* pointer_ = nullptr;
   WaylandTouch* touch_ = nullptr;
 
   // Bitmask of EventFlags used to keep track of the the pointer state.

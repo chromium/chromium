@@ -80,8 +80,6 @@ class WaylandPointer {
 
 class WaylandPointer::Delegate {
  public:
-  virtual void OnPointerCreated(WaylandPointer* pointer) = 0;
-  virtual void OnPointerDestroyed(WaylandPointer* pointer) = 0;
   virtual void OnPointerFocusChanged(WaylandWindow* window,
                                      const gfx::PointF& location) = 0;
   virtual void OnPointerButtonEvent(EventType evtype,
@@ -92,6 +90,7 @@ class WaylandPointer::Delegate {
   virtual void OnPointerFrameEvent() = 0;
   virtual void OnPointerAxisSourceEvent(uint32_t axis_source) = 0;
   virtual void OnPointerAxisStopEvent(uint32_t axis) = 0;
+  virtual void OnResetPointerFlags() = 0;
 };
 
 }  // namespace ui
