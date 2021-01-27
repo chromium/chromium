@@ -24,6 +24,8 @@ source_set("fakes") {
     "crw_fake_back_forward_list.mm",
     "crw_fake_nsurl_session_task.h",
     "crw_fake_nsurl_session_task.mm",
+    "crw_fake_script_message_handler.h",
+    "crw_fake_script_message_handler.mm",
     "crw_fake_wk_frame_info.h",
     "crw_fake_wk_frame_info.mm",
     "crw_fake_wk_navigation_action.h",

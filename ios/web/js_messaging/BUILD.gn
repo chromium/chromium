@@ -7,6 +7,8 @@ import("//ios/build/config.gni")
 source_set("js_messaging") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
+    ":java_script_content_world_header",
+    ":web_frames_manager_impl_header",
     "//base",
     "//crypto",
     "//ios/web/common:features",
@@ -14,6 +16,7 @@ source_set("js_messaging") {
     "//ios/web/public",
     "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging",
+    "//ios/web/web_state:web_state_impl_header",
     "//ios/web/web_view:util",
     "//url",
   ]
@@ -30,15 +33,24 @@ source_set("js_messaging") {
     "web_frame_impl.h",
     "web_frame_impl.mm",
     "web_frame_util.mm",
-    "web_frames_manager_impl.h",
     "web_frames_manager_impl.mm",
     "web_view_js_utils.h",
     "web_view_js_utils.mm",
   ]
 }
 
+source_set("web_frames_manager_impl_header") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    "//base",
+    "//ios/web/public/js_messaging",
+  ]
+  sources = [ "web_frames_manager_impl.h" ]
+}
+
 source_set("java_script_feature") {
   configs += [ "//build/config/compiler:enable_arc" ]
+  public_deps = [ ":java_script_content_world_header" ]
   deps = [
     ":js_messaging",
     "//base",
@@ -48,12 +60,17 @@ source_set("java_script_feature") {
   ]
 
   sources = [
-    "java_script_content_world.h",
     "java_script_content_world.mm",
     "java_script_feature.mm",
     "java_script_feature_manager.h",
     "java_script_feature_manager.mm",
   ]
+}
+
+source_set("java_script_content_world_header") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  sources = [ "java_script_content_world.h" ]
 }
 
 source_set("java_script_feature_util") {
@@ -74,6 +91,7 @@ source_set("unittests") {
     ":java_script_feature",
     ":java_script_feature_util",
     ":js_messaging",
+    ":web_frames_manager_impl_header",
     "//base",
     "//base/test:test_support",
     "//crypto",
@@ -81,6 +99,7 @@ source_set("unittests") {
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//ios/web/test/fakes",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider",
     "//testing/gtest",
     "//third_party/ocmock",
@@ -96,6 +115,7 @@ source_set("unittests") {
     "web_frame_impl_unittest.mm",
     "web_frame_util_unittest.mm",
     "web_frames_manager_impl_unittest.mm",
+    "web_view_js_utils_unittest.mm",
   ]
 }
 
@@ -103,11 +123,11 @@ source_set("inttests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
+    ":js_messaging",
     "//base",
     "//base/test:test_support",
     "//ios/testing:embedded_test_server_support",
     "//ios/web/common",
-    "//ios/web/js_messaging",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",

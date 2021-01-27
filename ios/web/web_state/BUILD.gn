@@ -13,11 +13,13 @@ source_set("web_state") {
     "//ios/third_party/webkit",
     "//ios/web/common",
     "//ios/web/js_messaging",
+    "//ios/web/js_messaging:java_script_feature",
     "//ios/web/navigation",
     "//ios/web/navigation:core",
     "//ios/web/navigation:wk_navigation_util",
     "//ios/web/public",
     "//ios/web/public/deprecated",
+    "//ios/web/public/js_messaging",
     "//ios/web/public/session",
     "//ios/web/public/webui",
     "//ios/web/security",
@@ -51,10 +53,9 @@ source_set("web_state") {
 source_set("web_state_impl_header") {
   deps = [
     "//base",
-    "//ios/web/js_messaging",
+    "//ios/web/js_messaging:web_frames_manager_impl_header",
     "//ios/web/navigation:core",
     "//ios/web/public",
-    "//ios/web/public/js_messaging",
   ]
 
   sources = [ "web_state_impl.h" ]

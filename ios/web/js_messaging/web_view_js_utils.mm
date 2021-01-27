@@ -75,6 +75,21 @@ std::unique_ptr<base::Value> ValueResultFromWKResult(id wk_result,
   return result;
 }
 
+// Runs completion_handler with an error representing that no web view currently
+// exists so Javascript could not be executed.
+void NotifyCompletionHandlerNullWebView(void (^completion_handler)(id,
+                                                                   NSError*)) {
+  dispatch_async(dispatch_get_main_queue(), ^{
+    NSString* error_message =
+        @"JS evaluation failed because there is no web view.";
+    NSError* error = [[NSError alloc]
+        initWithDomain:web::kJSEvaluationErrorDomain
+                  code:web::JS_EVALUATION_ERROR_CODE_NO_WEB_VIEW
+              userInfo:@{NSLocalizedDescriptionKey : error_message}];
+    completion_handler(nil, error);
+  });
+}
+
 }  // namespace
 
 namespace web {
@@ -91,19 +106,49 @@ void ExecuteJavaScript(WKWebView* web_view,
                        void (^completion_handler)(id, NSError*)) {
   DCHECK([script length]);
   if (!web_view && completion_handler) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      NSString* error_message =
-          @"JS evaluation failed because there is no web view.";
-      NSError* error = [[NSError alloc]
-          initWithDomain:kJSEvaluationErrorDomain
-                    code:JS_EVALUATION_ERROR_CODE_NO_WEB_VIEW
-                userInfo:@{NSLocalizedDescriptionKey : error_message}];
-      completion_handler(nil, error);
-    });
+    NotifyCompletionHandlerNullWebView(completion_handler);
     return;
   }
 
   [web_view evaluateJavaScript:script completionHandler:completion_handler];
 }
+
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+void ExecuteJavaScript(WKWebView* web_view,
+                       WKContentWorld* content_world,
+                       WKFrameInfo* frame_info,
+                       NSString* script,
+                       void (^completion_handler)(id, NSError*))
+    API_AVAILABLE(ios(14.0)) {
+  if (!content_world && !frame_info) {
+    // The -[WKWebView evaluateJavaScript:inFrame:inContentWorld:
+    // completionHandler:] API requires a content_world. However, if no specific
+    // world or frame is specified, this implies executing the JavaScript in the
+    // main frame of the page content world and can be executed.
+    ExecuteJavaScript(web_view, script, completion_handler);
+    return;
+  }
+
+  DCHECK([script length] > 0);
+  DCHECK(content_world);
+  if (!web_view && completion_handler) {
+    NotifyCompletionHandlerNullWebView(completion_handler);
+    return;
+  }
+
+  // If |content_world| is not the page world, a |frame_info| must be specified.
+  // |frame_info| is required to ensure |script| is executed on the correct
+  // webpage.
+  // NOTE: The page content world uses windowID to ensure that |script| is being
+  // executed on the intended page. Both windowID and |frame_info| are
+  // associated with the loaded page and are destroyed on navigation.
+  DCHECK(content_world == WKContentWorld.pageWorld || frame_info);
+
+  [web_view evaluateJavaScript:script
+                       inFrame:frame_info
+                inContentWorld:content_world
+             completionHandler:completion_handler];
+}
+#endif  // defined(__IPHONE14_0)
 
 }  // namespace web

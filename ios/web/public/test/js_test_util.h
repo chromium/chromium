@@ -29,6 +29,22 @@ id ExecuteJavaScript(WKWebView* web_view,
 // Fails if there was an error during script execution.
 id ExecuteJavaScript(WKWebView* web_view, NSString* script);
 
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+// Executes JavaScript in |frame| within |content_world| and returns the result
+// as an id. |error| can be null and will be updated only if script execution
+// fails.
+id ExecuteJavaScript(WKWebView* web_view,
+                     WKContentWorld* content_world,
+                     NSString* script,
+                     NSError* __autoreleasing* error) API_AVAILABLE(ios(14.0));
+
+// Executes JavaScript in |frame| and returns the result as an id.
+// Fails if there was an error during script execution.
+id ExecuteJavaScript(WKWebView* web_view,
+                     WKContentWorld* content_world,
+                     NSString* script) API_AVAILABLE(ios(14.0));
+#endif  // defined(__IPHONE14_0)
+
 // Synchronously loads |html| into |web_view|. Returns true is successful or
 // false if the |web_view| never finishes loading.
 bool LoadHtml(WKWebView* web_view,

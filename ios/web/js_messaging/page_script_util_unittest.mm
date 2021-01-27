@@ -26,14 +26,17 @@ using base::test::ios::kWaitForPageLoadTimeout;
 
 namespace {
 
-void AddSharedScriptsToWebView(WKWebView* web_view) {
+NSString* GetSharedScripts() {
   // Scripts must be all injected at once because as soon as __gCrWeb exists,
   // injection is assumed to be done and __gCrWeb.message is used.
-  NSString* scripts = [NSString
-      stringWithFormat:@"%@; %@; %@", web::test::GetPageScript(@"base_js"),
-                       web::test::GetPageScript(@"common_js"),
-                       web::test::GetPageScript(@"message_js")];
-  web::test::ExecuteJavaScript(web_view, scripts);
+  return [NSString stringWithFormat:@"%@; %@; %@",
+                                    web::test::GetPageScript(@"base_js"),
+                                    web::test::GetPageScript(@"common_js"),
+                                    web::test::GetPageScript(@"message_js")];
+}
+
+void AddSharedScriptsToWebView(WKWebView* web_view) {
+  web::test::ExecuteJavaScript(web_view, GetSharedScripts());
 }
 
 }  // namespace
@@ -74,6 +77,21 @@ TEST_F(PageScriptUtilTest, WKWebViewEarlyPageScript) {
   test::ExecuteJavaScript(
       web_view, GetDocumentStartScriptForAllFrames(GetBrowserState()));
   EXPECT_NSEQ(@"object", test::ExecuteJavaScript(web_view, @"typeof __gCrWeb"));
+}
+
+// Tests that WKWebView shared scripts are valid scripts that injects global
+// __gCrWeb object in an isolated world.
+TEST_F(PageScriptUtilTest, WKWebViewEarlyPageScriptIsolatedWorld) {
+  if (@available(iOS 14, *)) {
+    WKWebView* web_view = BuildWKWebView(CGRectZero, GetBrowserState());
+    WKContentWorld* content_world = WKContentWorld.defaultClientWorld;
+    web::test::ExecuteJavaScript(web_view, content_world, GetSharedScripts());
+    test::ExecuteJavaScript(
+        web_view, content_world,
+        GetDocumentStartScriptForAllFrames(GetBrowserState()));
+    EXPECT_NSEQ(@"object", test::ExecuteJavaScript(web_view, content_world,
+                                                   @"typeof __gCrWeb"));
+  }
 }
 
 // Tests that embedder's WKWebView script is included into early script.

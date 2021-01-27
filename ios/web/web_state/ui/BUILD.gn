@@ -19,6 +19,7 @@ source_set("ui") {
     "//ios/web/favicon",
     "//ios/web/find_in_page",
     "//ios/web/js_messaging",
+    "//ios/web/js_messaging:web_frames_manager_impl_header",
     "//ios/web/navigation",
     "//ios/web/navigation:core",
     "//ios/web/navigation:navigation_manager_util",

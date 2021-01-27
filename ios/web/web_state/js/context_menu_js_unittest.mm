@@ -14,6 +14,7 @@
 #import "ios/web/common/web_view_creation_util.h"
 #import "ios/web/public/test/js_test_util.h"
 #include "ios/web/public/test/web_test.h"
+#import "ios/web/test/fakes/crw_fake_script_message_handler.h"
 #import "ios/web/web_state/context_menu_constants.h"
 #import "net/base/mac/url_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,21 +28,6 @@
 
 using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::WaitUntilConditionOrTimeout;
-
-// A class which handles receiving script message responses by implementing the
-// WKScriptMessageHandler protocol.
-@interface CRWFakeScriptMessageHandler : NSObject<WKScriptMessageHandler>
-@property(nonatomic) WKScriptMessage* lastReceivedScriptMessage;
-@end
-
-@implementation CRWFakeScriptMessageHandler
-@synthesize lastReceivedScriptMessage = _lastReceivedScriptMessage;
-
-- (void)userContentController:(WKUserContentController*)userContentController
-      didReceiveScriptMessage:(WKScriptMessage*)message {
-  _lastReceivedScriptMessage = message;
-}
-@end
 
 namespace {
 

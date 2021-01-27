@@ -445,6 +445,7 @@ source_set("ios_web_web_state_js_unittests") {
     "//ios/web/test:mojo_bindings",
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
+    "//ios/web/test/fakes",
     "//ios/web/web_state:context_menu",
     "//ios/web/web_state/js",
     "//net:test_support",
@@ -506,7 +507,6 @@ source_set("ios_web_web_state_ui_unittests") {
     "web_state/ui/crw_web_view_content_view_unittest.mm",
     "web_state/ui/crw_web_view_proxy_impl_unittest.mm",
     "web_state/ui/crw_web_view_scroll_view_proxy_unittest.mm",
-    "web_state/ui/web_view_js_utils_unittest.mm",
     "web_state/ui/wk_content_rule_list_util_unittest.mm",
     "web_state/ui/wk_web_view_configuration_provider_unittest.mm",
   ]

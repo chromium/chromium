@@ -8,6 +8,7 @@ source_set("favicon") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
     "//ios/web/web_state:web_state_impl_header",
   ]
   sources = [
