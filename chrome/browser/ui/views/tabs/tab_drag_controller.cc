@@ -2164,27 +2164,11 @@ void TabDragController::UpdateGroupForDraggedTabs() {
   const base::Optional<tab_groups::TabGroupId> updated_group =
       GetTabGroupForTargetIndex(selected_unpinned);
 
-  // Removing a tab from a group could change the index of the selected tabs.
-  // Store this to move the tab back to the proper position.
-  const int to_index = selected[0];
-
-  // All selected tabs should all be in the same group unless it is the initial
-  // move.
-  if (initial_move_) {
-    attached_model->RemoveFromGroup(selected_unpinned);
-    attached_model->MoveSelectedTabsTo(to_index);
-  }
-
   if (updated_group == attached_model->GetTabGroupForTab(selected_unpinned[0]))
     return;
 
-  if (updated_group.has_value()) {
-    attached_model->MoveTabsAndSetGroup(selected_unpinned, selected_unpinned[0],
-                                        updated_group.value());
-  } else {
-    attached_model->RemoveFromGroup(selected_unpinned);
-    attached_model->MoveSelectedTabsTo(to_index);
-  }
+  attached_model->MoveTabsAndSetGroup(selected_unpinned, selected_unpinned[0],
+                                      updated_group);
 }
 
 base::Optional<tab_groups::TabGroupId>

@@ -1074,9 +1074,10 @@ void TabStripModel::AddToExistingGroup(const std::vector<int>& indices,
   AddToExistingGroupImpl(indices, group);
 }
 
-void TabStripModel::MoveTabsAndSetGroup(const std::vector<int>& indices,
-                                        int destination_index,
-                                        const tab_groups::TabGroupId& group) {
+void TabStripModel::MoveTabsAndSetGroup(
+    const std::vector<int>& indices,
+    int destination_index,
+    base::Optional<tab_groups::TabGroupId> group) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
   MoveTabsAndSetGroupImpl(indices, destination_index, group);
