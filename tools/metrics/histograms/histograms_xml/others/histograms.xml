@@ -12604,6 +12604,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Number of unread entries in reading list.</summary>
 </histogram>
 
+<histogram name="ReadingList.WebUI.InitialEntriesRenderTime" units="ms"
+    expires_after="M92">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    Records the time taken to load the Read Later WebUI and render (at least)
+    the initial list of entries. This is roughly equivalent to 'time to first
+    meaningful paint' for the Read Later UI.
+  </summary>
+</histogram>
+
 <histogram name="ReadingList.WebUI.LoadCompletedTime" units="ms"
     expires_after="M92">
   <owner>corising@chromium.org</owner>
@@ -12622,6 +12633,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The amount of time between the render frame host StartProvisionalLoad and
     DidFinishDocumentLoad events for the Read Later WebUI page.
+  </summary>
+</histogram>
+
+<histogram name="ReadingList.WebUI.ReadingListDataReceived" units="ms"
+    expires_after="M92">
+  <owner>corising@chromium.org</owner>
+  <owner>chrome-desktop-ui-sea@google.com</owner>
+  <summary>
+    The time taken for the WebUI in the renderer to receive the full list of
+    entries for the current user profile. This is measured as the time from when
+    the data was first requested by the WebUI to when the data was received by
+    the WebUI.
   </summary>
 </histogram>
 

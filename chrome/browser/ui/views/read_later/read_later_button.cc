@@ -86,7 +86,8 @@ ReadLaterButton::ReadLaterButton(Browser* browser)
           IDS_READ_LATER_TITLE,
           this,
           browser->profile(),
-          GURL(chrome::kChromeUIReadLaterURL))),
+          GURL(chrome::kChromeUIReadLaterURL),
+          true)),
       widget_open_timer_(base::BindRepeating([](base::TimeDelta time_elapsed) {
         base::UmaHistogramMediumTimes("ReadingList.WindowDisplayedDuration",
                                       time_elapsed);
