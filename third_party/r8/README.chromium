@@ -23,6 +23,7 @@ Local Modifications:
   * Plus: https://r8-review.googlesource.com/c/r8/+/56708
 * Added "playground" directory for quick "how does this optimize" tests.
 * Removed references to ConcurrentHashMap and TimeZone#getTimeZone in desugar_jdk_libs.json.
+* Cherry-pick fix for M89: 6d54693bc5725b8d1ce362368b1b1ad87f92e74a
 
 Update Instructions:
 # Download R8:
