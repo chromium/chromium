@@ -216,6 +216,7 @@ class HistoryMenuBridge : public sessions::TabRestoreServiceObserver,
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
   void OnHistoryServiceLoaded(history::HistoryService* service) override;
+  void HistoryServiceBeingDeleted(history::HistoryService* service) override;
 
   base::scoped_nsobject<HistoryMenuCocoaController> controller_;  // strong
 

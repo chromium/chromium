@@ -326,12 +326,12 @@ void HistoryMenuBridge::Init() {
 void HistoryMenuBridge::CreateMenu() {
   // If we're currently running CreateMenu(), wait until it finishes.
   // If the menu is currently open, wait until it closes.
-  if (create_in_progress_ || is_menu_open_)
+  // If the history service got torn down while our async task was queued, don't
+  // do anything - the browser is exiting anyway.
+  if (create_in_progress_ || is_menu_open_ || !history_service_)
     return;
   create_in_progress_ = true;
   need_recreate_ = false;
-
-  DCHECK(history_service_);
 
   history::QueryOptions options;
   options.max_count = kVisitedCount;
@@ -456,4 +456,10 @@ void HistoryMenuBridge::OnHistoryServiceLoaded(
     history::HistoryService* history_service) {
   history_service_ = history_service;
   Init();
+}
+
+void HistoryMenuBridge::HistoryServiceBeingDeleted(
+    history::HistoryService* history_service) {
+  if (history_service_ == history_service)
+    history_service_ = nullptr;
 }
