@@ -15468,7 +15468,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
   ActionsParser actions_parser(std::move(*parsed_json.value));
 
-  ASSERT_TRUE(actions_parser.ParsePointerActionSequence());
+  ASSERT_TRUE(actions_parser.Parse());
   auto synthetic_gesture_doubletap =
       SyntheticGesture::Create(actions_parser.gesture_params());
 
@@ -16153,7 +16153,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
   ActionsParser actions_parser(std::move(*parsed_json.value));
 
-  ASSERT_TRUE(actions_parser.ParsePointerActionSequence());
+  ASSERT_TRUE(actions_parser.Parse());
   auto synthetic_scroll_gesture =
       SyntheticGesture::Create(actions_parser.gesture_params());
 

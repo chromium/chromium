@@ -1195,7 +1195,7 @@ bool GpuBenchmarking::PointerActionSequence(gin::Arguments* args) {
   // SyntheticPointerActionListParams object.
   ActionsParser actions_parser(
       base::Value::FromUniquePtrValue(std::move(value)));
-  if (!actions_parser.ParsePointerActionSequence()) {
+  if (!actions_parser.Parse()) {
     // TODO(dtapuska): Throw an error here, some web tests start
     // failing when this is done though.
     // args->ThrowTypeError(actions_parser.error_message());
@@ -1212,10 +1212,22 @@ bool GpuBenchmarking::PointerActionSequence(gin::Arguments* args) {
       new CallbackAndContext(args->isolate(), callback,
                              context.web_frame()->MainWorldScriptContext());
   EnsureRemoteInterface();
-  input_injector_->QueueSyntheticPointerAction(
-      actions_parser.gesture_params(),
-      base::BindOnce(&OnSyntheticGestureCompleted,
-                     base::RetainedRef(callback_and_context)));
+  if (actions_parser.gesture_params().GetGestureType() ==
+      SyntheticGestureParams::SMOOTH_SCROLL_GESTURE) {
+    input_injector_->QueueSyntheticSmoothScroll(
+        static_cast<const SyntheticSmoothScrollGestureParams&>(
+            actions_parser.gesture_params()),
+        base::BindOnce(&OnSyntheticGestureCompleted,
+                       base::RetainedRef(callback_and_context)));
+  } else {
+    DCHECK(actions_parser.gesture_params().GetGestureType() ==
+           SyntheticGestureParams::POINTER_ACTION_LIST);
+    input_injector_->QueueSyntheticPointerAction(
+        static_cast<const SyntheticPointerActionListParams&>(
+            actions_parser.gesture_params()),
+        base::BindOnce(&OnSyntheticGestureCompleted,
+                       base::RetainedRef(callback_and_context)));
+  }
   return true;
 }
 

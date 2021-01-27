@@ -222,7 +222,9 @@
           }
         }
 
-        if (actions[i].actions[j].type == "pointerDown" || actions[i].actions[j].type == "pointerMove") {
+        if (actions[i].actions[j].type == "pointerDown" ||
+            actions[i].actions[j].type == "pointerMove" ||
+            actions[i].actions[j].type == "scroll") {
           actions[i].actions[j].x = last_x_position;
           actions[i].actions[j].y = last_y_position;
         }

@@ -362,7 +362,7 @@ class TouchActionBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
     ActionsParser actions_parser(std::move(*parsed_json.value));
 
-    ASSERT_TRUE(actions_parser.ParsePointerActionSequence());
+    ASSERT_TRUE(actions_parser.Parse());
 
     run_loop_ = std::make_unique<base::RunLoop>();
 
@@ -400,7 +400,7 @@ class TouchActionBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
     ActionsParser actions_parser(std::move(*parsed_json.value));
 
-    ASSERT_TRUE(actions_parser.ParsePointerActionSequence());
+    ASSERT_TRUE(actions_parser.Parse());
 
     run_loop_ = std::make_unique<base::RunLoop>();
 
