@@ -1268,6 +1268,77 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
   ASSERT_EQ(0u, final_last_active_profile_list->GetSize());
 }
 
+TEST_P(ProfileManagerGuestTest, CleanUpGuestEphemeralProfile) {
+  // Create two profiles, one of them is guest.
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  ProfileAttributesStorage& storage =
+      profile_manager->GetProfileAttributesStorage();
+  ASSERT_EQ(0u, storage.GetNumberOfProfiles());
+
+  // Create the guest profile and register it.
+  base::FilePath guest_path = ProfileManager::GetGuestProfilePath();
+  const std::string guest_profile_name = guest_path.BaseName().MaybeAsASCII();
+  TestingProfile::Builder builder;
+  builder.SetGuestSession();
+  builder.SetPath(guest_path);
+  builder.SetProfileName(guest_profile_name);
+  std::unique_ptr<TestingProfile> guest_profile = builder.Build();
+  profile_manager->RegisterTestingProfile(std::move(guest_profile), true);
+
+  // Create a regular profile.
+  const std::string profile_name = "Homer";
+  base::FilePath path =
+      profile_manager->user_data_dir().AppendASCII(profile_name);
+  storage.AddProfile(path, base::UTF8ToUTF16(profile_name), std::string(),
+                     base::UTF8ToUTF16(profile_name), true, 0, std::string(),
+                     EmptyAccountId());
+  ASSERT_TRUE(base::CreateDirectory(path));
+
+  size_t profiles_count = IsEphemeral() ? 2u : 1u;
+  ASSERT_EQ(profiles_count,
+            storage.GetNumberOfProfiles(/*include_guest_profile=*/true));
+
+  // Set the active profile.
+  PrefService* local_state = g_browser_process->local_state();
+  local_state->SetString(prefs::kProfileLastUsed, guest_profile_name);
+
+  // Set the last used profiles.
+  ListPrefUpdate update(local_state, prefs::kProfilesLastActive);
+  base::ListValue* initial_last_active_profile_list = update.Get();
+  initial_last_active_profile_list->Append(
+      std::make_unique<base::Value>(guest_path.BaseName().MaybeAsASCII()));
+  initial_last_active_profile_list->Append(
+      std::make_unique<base::Value>(path.BaseName().MaybeAsASCII()));
+
+  profile_manager->CleanUpEphemeralProfiles();
+  content::RunAllTasksUntilIdle();
+  const base::ListValue* final_last_active_profile_list =
+      local_state->GetList(prefs::kProfilesLastActive);
+
+  if (IsEphemeral()) {
+    // The ephemeral guest profile should be deleted, and the last used profile
+    // set to the other one. Also, the guest ephemeral profile should be removed
+    // from the kProfilesLastActive list.
+    EXPECT_FALSE(base::DirectoryExists(guest_path));
+    EXPECT_TRUE(base::DirectoryExists(path));
+    EXPECT_EQ(profile_name, local_state->GetString(prefs::kProfileLastUsed));
+    ASSERT_EQ(1u, storage.GetNumberOfProfiles(/*include_guest_profile=*/true));
+    ASSERT_EQ(1u, final_last_active_profile_list->GetSize());
+    ASSERT_EQ(path.BaseName().MaybeAsASCII(),
+              (final_last_active_profile_list->GetList())[0].GetString());
+  } else {
+    // The regular guest profile isn't impacted.
+    EXPECT_TRUE(base::DirectoryExists(guest_path));
+    EXPECT_TRUE(base::DirectoryExists(path));
+    EXPECT_EQ(guest_profile_name,
+              local_state->GetString(prefs::kProfileLastUsed));
+    ASSERT_EQ(1u, storage.GetNumberOfProfiles(/*include_guest_profile=*/true));
+    ASSERT_EQ(2u, final_last_active_profile_list->GetSize());
+    ASSERT_EQ(guest_path.BaseName().MaybeAsASCII(),
+              (final_last_active_profile_list->GetList())[0].GetString());
+  }
+}
+
 TEST_F(ProfileManagerTest, CleanUpEphemeralProfilesWithGuestLastUsedProfile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   ProfileAttributesStorage& storage =
