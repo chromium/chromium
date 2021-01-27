@@ -8,7 +8,8 @@ Creation issue: {
                 isWarning : true
                 sourceCodeLocation : {
                     columnNumber : 13
-                    lineNumber : 1
+                    lineNumber : 0
+                    scriptId : <string>
                     url : 
                 }
                 type : CreationIssue
@@ -24,7 +25,8 @@ Transfer issue: {
                 isWarning : true
                 sourceCodeLocation : {
                     columnNumber : 1
-                    lineNumber : 1
+                    lineNumber : 0
+                    scriptId : <string>
                     url : 
                 }
                 type : TransferIssue

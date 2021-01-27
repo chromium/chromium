@@ -441,6 +441,19 @@ protocol::String BuildSABIssueType(
   }
 }
 
+std::unique_ptr<protocol::Audits::SourceCodeLocation> BuildAffectedLocation(
+    const blink::mojom::blink::AffectedLocationPtr& affected_location) {
+  auto protocol_affected_location =
+      protocol::Audits::SourceCodeLocation::create()
+          .setUrl(affected_location->url)
+          .setColumnNumber(affected_location->column)
+          .setLineNumber(affected_location->line)
+          .build();
+  if (!affected_location->script_id.IsEmpty())
+    protocol_affected_location->setScriptId(affected_location->script_id);
+  return protocol_affected_location;
+}
+
 }  // namespace
 
 void InspectorAuditsAgent::InspectorIssueAdded(InspectorIssue* issue) {
@@ -520,13 +533,9 @@ void InspectorAuditsAgent::InspectorIssueAdded(InspectorIssue* issue) {
     }
     if (d->frame_ancestor)
       cspDetails.setFrameAncestor(BuildAffectedFrame(d->frame_ancestor));
-    if (d->source_location) {
-      auto source_location = protocol::Audits::SourceCodeLocation::create()
-                                 .setUrl(d->source_location->url)
-                                 .setColumnNumber(d->source_location->column)
-                                 .setLineNumber(d->source_location->line)
-                                 .build();
-      cspDetails.setSourceCodeLocation(std::move(source_location));
+    if (d->affected_location) {
+      cspDetails.setSourceCodeLocation(
+          BuildAffectedLocation(d->affected_location));
     }
     if (d->violating_node_id)
       cspDetails.setViolatingNodeId(d->violating_node_id);
@@ -535,16 +544,12 @@ void InspectorAuditsAgent::InspectorIssueAdded(InspectorIssue* issue) {
 
   if (issue->Details()->sab_issue_details) {
     const auto* d = issue->Details()->sab_issue_details.get();
-    auto source_location = protocol::Audits::SourceCodeLocation::create()
-                               .setUrl(d->source_location->url)
-                               .setColumnNumber(d->source_location->column)
-                               .setLineNumber(d->source_location->line)
-                               .build();
-    auto details = protocol::Audits::SharedArrayBufferIssueDetails::create()
-                       .setIsWarning(d->is_warning)
-                       .setType(BuildSABIssueType(d->type))
-                       .setSourceCodeLocation(std::move(source_location))
-                       .build();
+    auto details =
+        protocol::Audits::SharedArrayBufferIssueDetails::create()
+            .setIsWarning(d->is_warning)
+            .setType(BuildSABIssueType(d->type))
+            .setSourceCodeLocation(BuildAffectedLocation(d->affected_location))
+            .build();
     issueDetails.setSharedArrayBufferIssueDetails(std::move(details));
   }
 

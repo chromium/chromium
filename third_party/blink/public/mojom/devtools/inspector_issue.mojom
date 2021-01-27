@@ -7,7 +7,6 @@ module blink.mojom;
 import "url/mojom/url.mojom";
 import "services/network/public/mojom/cookie_manager.mojom";
 import "services/network/public/mojom/blocked_by_response_reason.mojom";
-import "services/network/public/mojom/source_location.mojom";
 import "third_party/blink/public/mojom/fetch/fetch_api_request.mojom";
 
 // A code that uniquely identifies an issue. This type should be descriptive
@@ -35,6 +34,13 @@ struct AffectedRequest {
 
 struct AffectedFrame {
   string frame_id;
+};
+
+struct AffectedLocation {
+  string? script_id;
+  string? url;
+  uint32 line = 0;  // Zero-based as the DevTools front-end expects it.
+  uint32 column = 0;
 };
 
 struct BlockedByResponseIssueDetails {
@@ -84,7 +90,7 @@ struct ContentSecurityPolicyIssueDetails {
   bool is_report_only;
   ContentSecurityPolicyViolationType content_security_policy_violation_type;
   AffectedFrame? frame_ancestor;
-  network.mojom.SourceLocation? source_location;
+  AffectedLocation? affected_location;
   // 0 is not a valid node id and is used to indicate absence.
   int32 violating_node_id = 0;
 };
@@ -128,7 +134,7 @@ enum SharedArrayBufferIssueType {
 };
 
 struct SharedArrayBufferIssueDetails {
-  network.mojom.SourceLocation? source_location;
+  AffectedLocation? affected_location;
   bool is_warning;
   SharedArrayBufferIssueType type;
 };

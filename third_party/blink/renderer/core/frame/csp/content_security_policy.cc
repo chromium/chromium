@@ -1508,12 +1508,13 @@ void ContentSecurityPolicy::ReportContentSecurityPolicyIssue(
     cspDetails->frame_ancestor = std::move(affected_frame);
   }
   if (violation_data.sourceFile() && violation_data.lineNumber()) {
-    auto source_location = network::mojom::blink::SourceLocation::New();
-    source_location->url = violation_data.sourceFile();
+    // TODO(chromium:1158782): Try to get a scriptId here as well.
+    auto affected_location = mojom::blink::AffectedLocation::New();
+    affected_location->url = violation_data.sourceFile();
     // The frontend expects 0-based line numbers.
-    source_location->line = violation_data.lineNumber() - 1;
-    source_location->column = violation_data.columnNumber();
-    cspDetails->source_location = std::move(source_location);
+    affected_location->line = violation_data.lineNumber() - 1;
+    affected_location->column = violation_data.columnNumber();
+    cspDetails->affected_location = std::move(affected_location);
   }
   if (element) {
     cspDetails->violating_node_id = DOMNodeIds::IdForNode(element);

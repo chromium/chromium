@@ -645,6 +645,7 @@ experimental domain Audits
 
   type SourceCodeLocation extends object
     properties
+      optional Runtime.ScriptId scriptId
       string url
       integer lineNumber
       integer columnNumber

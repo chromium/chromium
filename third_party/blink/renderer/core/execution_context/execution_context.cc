@@ -193,11 +193,13 @@ mojom::blink::InspectorIssueInfoPtr CreateSharedArrayBufferIssue(
     const SourceLocation* source_location) {
   auto details = mojom::blink::InspectorIssueDetails::New();
   auto issue_details = mojom::blink::SharedArrayBufferIssueDetails::New();
-  auto mojo_source_location = network::mojom::blink::SourceLocation::New();
-  mojo_source_location->url = source_location->Url();
-  mojo_source_location->line = source_location->LineNumber();
-  mojo_source_location->column = source_location->ColumnNumber();
-  issue_details->source_location = std::move(mojo_source_location);
+  auto affected_location = mojom::blink::AffectedLocation::New();
+  affected_location->url = source_location->Url();
+  affected_location->line = source_location->LineNumber() - 1;
+  affected_location->column = source_location->ColumnNumber();
+  affected_location->script_id =
+      WTF::String::Number(source_location->ScriptId());
+  issue_details->affected_location = std::move(affected_location);
   details->sab_issue_details = std::move(issue_details);
   return mojom::blink::InspectorIssueInfo::New(
       mojom::blink::InspectorIssueCode::kSharedArrayBufferIssue,
