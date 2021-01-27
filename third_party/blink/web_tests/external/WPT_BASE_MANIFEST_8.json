@@ -175770,7 +175770,7 @@
       "338bea13b84a2f5c4d95b778637409e2bf8d3263",
       []
      ],
-     "frame-src-same-document.html.headers": [
+     "frame-src-same-document.sub.html.headers": [
       "6502444407f59e6ea08da63c8dcdb22978e5ae83",
       []
      ],
@@ -220907,7 +220907,7 @@
     ],
     "resources": {
      "test-expectations.js": [
-      "cc9b4ca3d121413ca4fa4bae5f255ff1e6dbe68e",
+      "844eb92f95eaf5f2406eb60a8cccb78a5c8484b3",
       []
      ],
      "window-tests-blob.js": [
@@ -229700,12 +229700,6 @@
        ],
        "helper-scroll-then-drop-input.xhtml": [
         "af2aeae393cc2e517cbffb306e3a50735bf8fee2",
-        []
-       ]
-      },
-      "synthetic": {
-       "001-expected.txt": [
-        "008e019cfd2cb7b8d3dd55b617cd575262e471d4",
         []
        ]
       },
@@ -361027,7 +361021,7 @@
       ],
       "synthetic": {
        "001.html": [
-        "f90c345740df3f9c4366d01a3d47e323b30069fc",
+        "c0bf8a5776a53954d2e40945cc4ddf6577910236",
         [
          null,
          {}

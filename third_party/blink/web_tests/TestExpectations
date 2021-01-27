@@ -2467,6 +2467,7 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-206.xht [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] virtual/threaded/external/wpt/css/css-animations/nested-scale-animations.html [ Failure ]
 crbug.com/626703 external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-1.html [ Failure ]
 crbug.com/626703 external/wpt/shadow-dom/focus/focus-pseudo-on-shadow-host-2.html [ Failure ]
 crbug.com/1170337 [ Mac ] external/wpt/html/canvas/element/drawing-text-to-the-canvas/2d.text.draw.fill.maxWidth.small.html [ Pass Timeout ]
