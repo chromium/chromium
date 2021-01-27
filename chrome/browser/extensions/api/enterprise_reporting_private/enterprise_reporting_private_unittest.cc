@@ -304,4 +304,34 @@ TEST_F(EnterpriseReportingPrivateGetDeviceInfoTest, GetDeviceInfo) {
 #endif
 }
 
+using EnterpriseReportingPrivateGetContextInfoTest = ExtensionApiUnittest;
+
+TEST_F(EnterpriseReportingPrivateGetContextInfoTest, NoSpecialContext) {
+  // This tests the data returned by the API is correct when no special context
+  // is present, ie no policies are set, the browser is unamanaged, etc.
+  auto function =
+      base::MakeRefCounted<EnterpriseReportingPrivateGetContextInfoFunction>();
+  std::unique_ptr<base::Value> context_info_value =
+      RunFunctionAndReturnValue(function.get(), "[]");
+  ASSERT_TRUE(context_info_value.get());
+
+  enterprise_reporting_private::ContextInfo info;
+  ASSERT_TRUE(enterprise_reporting_private::ContextInfo::Populate(
+      *context_info_value, &info));
+
+  EXPECT_TRUE(info.browser_affiliation_ids.empty());
+  EXPECT_TRUE(info.profile_affiliation_ids.empty());
+  EXPECT_TRUE(info.on_file_attached_providers.empty());
+  EXPECT_TRUE(info.on_file_downloaded_providers.empty());
+  EXPECT_TRUE(info.on_bulk_data_entry_providers.empty());
+  EXPECT_EQ(enterprise_reporting_private::REALTIME_URL_CHECK_MODE_DISABLED,
+            info.realtime_url_check_mode);
+  EXPECT_TRUE(info.on_security_event_providers.empty());
+
+  // TODO(crbug.com/1169222): Change this assertion once this attribute is
+  // implemented, as it should be returned even when no special context applies
+  // to the browser.
+  EXPECT_EQ("", info.browser_version);
+}
+
 }  // namespace extensions

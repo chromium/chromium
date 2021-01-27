@@ -37,6 +37,24 @@ namespace enterprise.reportingPrivate {
   // Invoked by <code>getDeviceInfo</code> to return device information.
   callback GetDeviceInfoCallback = void(DeviceInfo deviceInfo);
 
+  // Possible states for the EnterpriseRealTimeUrlCheckMode policy.
+  enum RealtimeUrlCheckMode { DISABLED = 0, ENABLED_MAIN_FRAME = 1 };
+
+  // Context info fields returned by the getContextInfo API.
+  dictionary ContextInfo {
+    DOMString[] browserAffiliationIds;
+    DOMString[] profileAffiliationIds;
+    DOMString[] onFileAttachedProviders;
+    DOMString[] onFileDownloadedProviders;
+    DOMString[] onBulkDataEntryProviders;
+    RealtimeUrlCheckMode realtimeUrlCheckMode;
+    DOMString[] onSecurityEventProviders;
+    DOMString browserVersion;
+  };
+
+  // Invoked by <code>getContextInfo</code> to return context information.
+  callback GetContextInfoCallback = void(ContextInfo contextInfo);
+
   interface Functions {
     // Gets the identity of device that Chrome browser is running on. The ID is
     // retrieved from the local device and used by the Google admin console.
@@ -63,6 +81,10 @@ namespace enterprise.reportingPrivate {
     // Gets the device information (including disk encryption status,
     // screen lock status, serial number, model).
     static void getDeviceInfo(optional GetDeviceInfoCallback callback);
+
+    // Gets the context information (including management status of the browser,
+    // state of key security policies, browser version).
+    static void getContextInfo(GetContextInfoCallback callback);
   };
 
 };

@@ -26140,6 +26140,7 @@ Called by update_extension_histograms.py.-->
   <int value="1538" label="VIRTUALKEYBOARDPRIVATE_DELETECLIPBOARDITEM"/>
   <int value="1539" label="FILEMANAGERPRIVATE_ISTABLETMODEENABLED"/>
   <int value="1540" label="FILEMANAGERPRIVATE_NOTIFYDRIVEDIALOGRESULT"/>
+  <int value="1541" label="ENTERPRISEREPORTINGPRIVATE_GETCONTEXTINFO"/>
 </enum>
 
 <enum name="ExtensionIconState">

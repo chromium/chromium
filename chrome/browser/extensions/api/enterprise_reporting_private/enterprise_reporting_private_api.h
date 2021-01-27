@@ -135,6 +135,29 @@ class EnterpriseReportingPrivateGetDeviceInfoFunction
       const api::enterprise_reporting_private::DeviceInfo& device_info);
 };
 
+class EnterpriseReportingPrivateGetContextInfoFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("enterprise.reportingPrivate.getContextInfo",
+                             ENTERPRISEREPORTINGPRIVATE_GETCONTEXTINFO)
+
+  EnterpriseReportingPrivateGetContextInfoFunction();
+  EnterpriseReportingPrivateGetContextInfoFunction(
+      const EnterpriseReportingPrivateGetContextInfoFunction&) = delete;
+  EnterpriseReportingPrivateGetContextInfoFunction& operator=(
+      const EnterpriseReportingPrivateGetContextInfoFunction&) = delete;
+
+ private:
+  ~EnterpriseReportingPrivateGetContextInfoFunction() override;
+
+  // ExtensionFunction
+  ExtensionFunction::ResponseAction Run() override;
+
+  // Callback once the context data is retrieved.
+  void OnContextInfoRetrieved(
+      api::enterprise_reporting_private::ContextInfo context_info);
+};
+
 }  // namespace extensions
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_REPORTING_PRIVATE_ENTERPRISE_REPORTING_PRIVATE_API_H_

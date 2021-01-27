@@ -13,6 +13,8 @@
 #include "base/task/thread_pool.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/extensions/api/enterprise_reporting_private/context_info_fetcher.h"
 #include "chrome/browser/extensions/api/enterprise_reporting_private/device_info_fetcher.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 
@@ -47,7 +49,6 @@ EnterpriseReportingPrivateGetDeviceIdFunction::
     ~EnterpriseReportingPrivateGetDeviceIdFunction() = default;
 
 // getPersistentSecret
-
 EnterpriseReportingPrivateGetPersistentSecretFunction::
     EnterpriseReportingPrivateGetPersistentSecretFunction() = default;
 EnterpriseReportingPrivateGetPersistentSecretFunction::
@@ -235,6 +236,47 @@ EnterpriseReportingPrivateGetDeviceInfoFunction::Run() {
 void EnterpriseReportingPrivateGetDeviceInfoFunction::OnDeviceInfoRetrieved(
     const api::enterprise_reporting_private::DeviceInfo& device_info) {
   Respond(OneArgument(base::Value::FromUniquePtrValue(device_info.ToValue())));
+}
+
+// getContextInfo
+
+EnterpriseReportingPrivateGetContextInfoFunction::
+    EnterpriseReportingPrivateGetContextInfoFunction() = default;
+EnterpriseReportingPrivateGetContextInfoFunction::
+    ~EnterpriseReportingPrivateGetContextInfoFunction() = default;
+
+ExtensionFunction::ResponseAction
+EnterpriseReportingPrivateGetContextInfoFunction::Run() {
+  auto* connectors_service =
+      enterprise_connectors::ConnectorsServiceFactory::GetInstance()
+          ->GetForBrowserContext(browser_context());
+  DCHECK(connectors_service);
+#if defined(OS_WIN)
+  base::PostTaskAndReplyWithResult(
+      base::ThreadPool::CreateCOMSTATaskRunner({}).get(), FROM_HERE,
+      base::BindOnce(&enterprise_reporting::ContextInfoFetcher::Fetch,
+                     enterprise_reporting::ContextInfoFetcher::CreateInstance(
+                         connectors_service)),
+      base::BindOnce(&EnterpriseReportingPrivateGetContextInfoFunction::
+                         OnContextInfoRetrieved,
+                     this));
+#else
+  base::PostTaskAndReplyWithResult(
+      base::ThreadPool::CreateTaskRunner({}).get(), FROM_HERE,
+      base::BindOnce(&enterprise_reporting::ContextInfoFetcher::Fetch,
+                     enterprise_reporting::ContextInfoFetcher::CreateInstance(
+                         connectors_service)),
+      base::BindOnce(&EnterpriseReportingPrivateGetContextInfoFunction::
+                         OnContextInfoRetrieved,
+                     this));
+#endif  // defined(OS_WIN)
+
+  return RespondLater();
+}
+
+void EnterpriseReportingPrivateGetContextInfoFunction::OnContextInfoRetrieved(
+    api::enterprise_reporting_private::ContextInfo context_info) {
+  Respond(OneArgument(base::Value::FromUniquePtrValue(context_info.ToValue())));
 }
 
 }  // namespace extensions
