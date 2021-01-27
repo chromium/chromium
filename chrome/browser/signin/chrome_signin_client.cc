@@ -184,10 +184,10 @@ void ChromeSigninClient::PreSignOut(
     } else {
       BrowserList::CloseAllBrowsersWithProfile(
           profile_,
-          base::Bind(&ChromeSigninClient::OnCloseBrowsersSuccess,
-                     base::Unretained(this), signout_source_metric),
-          base::Bind(&ChromeSigninClient::OnCloseBrowsersAborted,
-                     base::Unretained(this)),
+          base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersSuccess,
+                              base::Unretained(this), signout_source_metric),
+          base::BindRepeating(&ChromeSigninClient::OnCloseBrowsersAborted,
+                              base::Unretained(this)),
           signout_source_metric == signin_metrics::ABORT_SIGNIN ||
               signout_source_metric ==
                   signin_metrics::AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN ||
