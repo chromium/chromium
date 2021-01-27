@@ -1938,11 +1938,6 @@
       status: "experimental",
     },
     {
-      name: "TableCellNewPercents",
-      depends_on: ["LayoutNG"],
-      status: "stable",
-    },
-    {
       // TODO(crbug.com/898942): Remove this in Chrome 95.
       name: "TargetBlankImpliesNoOpener",
       status: "stable",

@@ -134,11 +134,10 @@ bool LayoutReplaced::HasReplacedLogicalHeight() const {
   if (StyleRef().LogicalHeight().IsAuto())
     return StretchBlockSizeIfAuto();
 
-  if (RuntimeEnabledFeatures::TableCellNewPercentsEnabled() &&
-      StyleRef().LogicalHeight().IsFixed())
+  if (StyleRef().LogicalHeight().IsFixed())
     return true;
 
-  if (StyleRef().LogicalHeight().IsSpecified()) {
+  if (StyleRef().LogicalHeight().IsPercentOrCalc()) {
     if (HasAutoHeightOrContainingBlockWithAutoHeight())
       return false;
     return true;

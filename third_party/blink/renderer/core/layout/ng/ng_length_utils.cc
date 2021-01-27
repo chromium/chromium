@@ -120,11 +120,11 @@ LayoutUnit ResolveInlineLengthInternal(
           constraint_space.PercentageResolutionInlineSize();
       LayoutUnit value =
           MinimumValueForLength(length, percentage_resolution_size);
-      if (style.BoxSizing() == EBoxSizing::kContentBox) {
-        value += border_padding.InlineSum();
-      } else {
+
+      if (style.BoxSizing() == EBoxSizing::kBorderBox)
         value = std::max(border_padding.InlineSum(), value);
-      }
+      else
+        value += border_padding.InlineSum();
       return value;
     }
     case Length::kMinContent:
@@ -190,19 +190,10 @@ LayoutUnit ResolveBlockLengthInternal(
       LayoutUnit value =
           MinimumValueForLength(length, percentage_resolution_block_size);
 
-      // Percentage-sized children of table cells, in the table "layout" phase,
-      // pretend they have box-sizing: border-box.
-      // TODO(crbug.com/285744): FF/Edge don't do this. Determine if there
-      // would be compat issues for matching their behavior.
-      if (style.BoxSizing() == EBoxSizing::kBorderBox ||
-          (!RuntimeEnabledFeatures::TableCellNewPercentsEnabled() &&
-           length.IsPercentOrCalc() &&
-           constraint_space.TableCellChildLayoutMode() ==
-               NGTableCellChildLayoutMode::kLayout)) {
+      if (style.BoxSizing() == EBoxSizing::kBorderBox)
         value = std::max(border_padding.BlockSum(), value);
-      } else {
+      else
         value += border_padding.BlockSum();
-      }
       return value;
     }
     case Length::kMinContent:

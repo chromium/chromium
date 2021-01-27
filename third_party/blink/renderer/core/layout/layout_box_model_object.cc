@@ -759,11 +759,8 @@ bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight(
   }
   if (this_box && this_box->IsGridItem() &&
       this_box->HasOverrideContainingBlockContentLogicalHeight()) {
-    if (RuntimeEnabledFeatures::TableCellNewPercentsEnabled()) {
-      return this_box->OverrideContainingBlockContentLogicalHeight() ==
-             kIndefiniteSize;
-    }
-    return false;
+    return this_box->OverrideContainingBlockContentLogicalHeight() ==
+           kIndefiniteSize;
   }
   if (this_box && this_box->IsCustomItem() &&
       (this_box->HasOverrideContainingBlockContentLogicalHeight() ||
