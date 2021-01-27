@@ -12,6 +12,7 @@
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/chromeos/child_accounts/family_features.h"
 #include "chrome/browser/chromeos/login/screens/assistant_optin_flow_screen.h"
 #include "chrome/browser/chromeos/login/screens/edu_coexistence_login_screen.h"
 #include "chrome/browser/chromeos/login/test/fake_gaia_mixin.h"
@@ -103,7 +104,9 @@ class ParentalHandoffScreenBrowserTest : public OobeBaseTest {
 };
 
 ParentalHandoffScreenBrowserTest::ParentalHandoffScreenBrowserTest() {
-  feature_list_.InitAndEnableFeature(supervised_users::kEduCoexistenceFlowV2);
+  feature_list_.InitWithFeatures(
+      {supervised_users::kEduCoexistenceFlowV2, kFamilyLinkOobeHandoff},
+      {} /*disable_features*/);
 }
 
 void ParentalHandoffScreenBrowserTest::SetUpOnMainThread() {
