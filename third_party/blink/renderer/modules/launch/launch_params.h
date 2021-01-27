@@ -9,10 +9,9 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
-
-class Visitor;
 
 class LaunchParams final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();

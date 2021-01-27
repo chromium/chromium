@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/dawn_control_client_holder.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 #define DAWN_OBJECTS                          \
   X(BindGroup, bindGroup)                     \
@@ -60,7 +61,6 @@ DAWN_OBJECTS
 #undef X
 
 class GPUDevice;
-class Visitor;
 
 // This class allows objects to hold onto a DawnControlClientHolder.
 // The DawnControlClientHolder is used to hold the WebGPUInterface and keep

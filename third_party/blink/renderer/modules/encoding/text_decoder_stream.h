@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/streams/transform_stream.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -17,7 +18,6 @@ class ExceptionState;
 class ReadableStream;
 class ScriptState;
 class TextDecoderOptions;
-class Visitor;
 class WritableStream;
 
 // Implements the TextDecoderStream interface as specified at

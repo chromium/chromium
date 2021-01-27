@@ -9,9 +9,9 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
-class Visitor;
 class LocalFrameView;
 class LayoutObject;
 struct ViewportDescription;

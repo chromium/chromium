@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "v8/include/v8.h"
 
@@ -24,7 +25,6 @@ class ScriptPromise;
 class ScriptPromiseResolver;
 class ScriptState;
 class ScriptValue;
-class Visitor;
 class WebSocketChannel;
 class WebSocketCloseInfo;
 class WebSocketStreamOptions;

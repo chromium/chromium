@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
@@ -25,7 +26,6 @@ class ScriptState;
 class StreamAbortInfo;
 class ReadableStream;
 class ReadableStreamDefaultControllerWithScriptScope;
-class Visitor;
 
 // Implementation of the IncomingStream mixin from the standard:
 // https://wicg.github.io/web-transport/#incoming-stream. ReceiveStream and
