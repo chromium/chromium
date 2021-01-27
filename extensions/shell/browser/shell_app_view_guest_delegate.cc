@@ -21,7 +21,8 @@ bool ShellAppViewGuestDelegate::HandleContextMenu(
   return true;
 }
 
-AppDelegate* ShellAppViewGuestDelegate::CreateAppDelegate() {
+AppDelegate* ShellAppViewGuestDelegate::CreateAppDelegate(
+    content::WebContents* web_contents) {
   return new ShellAppDelegate();
 }
 

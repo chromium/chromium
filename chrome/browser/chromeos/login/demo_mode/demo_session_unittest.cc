@@ -447,7 +447,7 @@ TEST_F(DemoSessionTest, ShowAndRemoveSplashScreen) {
           .SetID(DemoSession::GetScreensaverAppId())
           .Build();
   extensions::AppWindow* app_window = new extensions::AppWindow(
-      profile, new ChromeAppDelegate(true /* keep_alive */),
+      profile, new ChromeAppDelegate(profile, true /* keep_alive */),
       screensaver_app.get());
   demo_session->OnAppWindowActivated(app_window);
   // The splash screen is not removed until active session starts.
@@ -507,7 +507,7 @@ TEST_F(DemoSessionTest, RemoveSplashScreenWhenTimeout) {
           .SetID(DemoSession::GetScreensaverAppId())
           .Build();
   extensions::AppWindow* app_window = new extensions::AppWindow(
-      profile, new ChromeAppDelegate(true /* keep_alive */),
+      profile, new ChromeAppDelegate(profile, true /* keep_alive */),
       screensaver_app.get());
   demo_session->OnAppWindowActivated(app_window);
   EXPECT_EQ(1, test_wallpaper_controller_.show_always_on_top_wallpaper_count());

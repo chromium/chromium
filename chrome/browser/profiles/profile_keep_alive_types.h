@@ -45,7 +45,10 @@ enum class ProfileKeepAliveOrigin {
   // ClearBrowsingDataOnExistList policy.
   kClearingBrowsingData = 6,
 
-  kMaxValue = kClearingBrowsingData,
+  // An app (Chrome app, web app, etc.) has a window open.
+  kAppWindow = 7,
+
+  kMaxValue = kAppWindow,
 };
 
 std::ostream& operator<<(std::ostream& out,

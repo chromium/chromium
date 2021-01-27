@@ -19,7 +19,7 @@ class ShellAppViewGuestDelegate : public AppViewGuestDelegate {
   // AppViewGuestDelegate:
   bool HandleContextMenu(content::WebContents* web_contents,
                          const content::ContextMenuParams& params) override;
-  AppDelegate* CreateAppDelegate() override;
+  AppDelegate* CreateAppDelegate(content::WebContents* web_contents) override;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(ShellAppViewGuestDelegate);

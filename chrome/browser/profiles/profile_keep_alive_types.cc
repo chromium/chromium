@@ -23,6 +23,8 @@ std::ostream& operator<<(std::ostream& out,
       return out << "kAppControllerMac";
     case ProfileKeepAliveOrigin::kClearingBrowsingData:
       return out << "kClearingBrowsingData";
+    case ProfileKeepAliveOrigin::kAppWindow:
+      return out << "kAppWindow";
   }
   NOTREACHED();
   return out << static_cast<int>(origin);
