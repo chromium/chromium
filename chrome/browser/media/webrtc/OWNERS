@@ -8,8 +8,8 @@ braveyao@chromium.org
 per-file *webrtc*browsertest*=hbos@chromium.org
 
 # For changes related to the tab media indicators.
-per-file media_stream_capture_indicator*=miu@chromium.org
 per-file media_stream_capture_indicator*=mfoltz@chromium.org
+per-file media_stream_capture_indicator*=jophba@chromium.org
 
 # For permissions related code.
 per-file media_stream_device*=raymes@chromium.org

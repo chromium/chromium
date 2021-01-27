@@ -10,9 +10,6 @@ danakj@chromium.org
 vmpstr@chromium.org
 weiliangc@chromium.org
 
-# CopyOutputRequests/Results and FrameSinkVideoCapture
-miu@chromium.org
-
 # renderers (GL/Skia/Software)
 weiliangc@chromium.org
 rjkroege@chromium.org
