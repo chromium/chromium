@@ -33,9 +33,25 @@ namespace {
 
 const char kSelectDecoderTrace[] = "DecoderSelector::SelectDecoder";
 
+bool SkipDecoderForRTC(const AudioDecoderConfig& /*config*/,
+                       const AudioDecoder& /*decoder*/) {
+  return false;
+}
+
+bool SkipDecoderForRTC(const VideoDecoderConfig& config,
+                       const VideoDecoder& decoder) {
+  // For now, we assume that RTC decoders are able to decode non-RTC streams,
+  // presumably by configuring themselves based on the config's rtc bit.  Since
+  // no decoders take any action at all based on it, this is as good as any.
+  return config.is_rtc() && !decoder.IsOptimizedForRTC();
+}
+
 template <typename ConfigT, typename DecoderT>
-DecoderPriority NormalDecoderPriority(const ConfigT& /*config*/,
-                                      const DecoderT& /*decoder*/) {
+DecoderPriority NormalDecoderPriority(const ConfigT& config,
+                                      const DecoderT& decoder) {
+  if (SkipDecoderForRTC(config, decoder))
+    return DecoderPriority::kSkipped;
+
   return DecoderPriority::kNormal;
 }
 
@@ -48,6 +64,9 @@ DecoderPriority ResolutionBasedDecoderPriority(const VideoDecoderConfig& config,
 #else
   constexpr auto kSoftwareDecoderHeightCutoff = 720;
 #endif
+
+  if (SkipDecoderForRTC(config, decoder))
+    return DecoderPriority::kSkipped;
 
   // We only do a height check to err on the side of prioritizing platform
   // decoders.
@@ -62,8 +81,11 @@ DecoderPriority ResolutionBasedDecoderPriority(const VideoDecoderConfig& config,
 }
 
 template <typename ConfigT, typename DecoderT>
-DecoderPriority SkipNonPlatformDecoders(const ConfigT& /*config*/,
+DecoderPriority SkipNonPlatformDecoders(const ConfigT& config,
                                         const DecoderT& decoder) {
+  if (SkipDecoderForRTC(config, decoder))
+    return DecoderPriority::kSkipped;
+
   return decoder.IsPlatformDecoder() ? DecoderPriority::kNormal
                                      : DecoderPriority::kSkipped;
 }

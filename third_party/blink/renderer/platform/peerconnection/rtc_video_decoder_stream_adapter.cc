@@ -258,6 +258,8 @@ RTCVideoDecoderStreamAdapter::Create(
       kDefaultSize, media::EmptyExtraData(),
       media::EncryptionScheme::kUnencrypted);
 
+  config.set_is_rtc(true);
+
   // InitializeSync doesn't really initialize anything; it just posts the work
   // to the media thread.  If init fails, then we'll fall back on the first
   // decode after we notice.

@@ -352,6 +352,11 @@ int MojoVideoDecoder::GetMaxDecodeRequests() const {
   return max_decode_requests_;
 }
 
+bool MojoVideoDecoder::IsOptimizedForRTC() const {
+  DVLOG(3) << __func__;
+  return true;
+}
+
 void MojoVideoDecoder::BindRemoteDecoder() {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
