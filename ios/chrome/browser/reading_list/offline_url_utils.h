@@ -23,6 +23,10 @@ GURL OfflineURLForPath(const base::FilePath& distilled_path,
                        const GURL& entry_url,
                        const GURL& virtual_url);
 
+// Create a chrome://offline/ URL that embeds entry_url in a "reload"
+// parameters.
+GURL OfflineReloadURLForURL(const GURL& entry_url);
+
 // If |offline_url| has a "entryURL" query params that is a URL, returns it.
 // If not, return GURL::EmptyURL().
 GURL EntryURLForOfflineURL(const GURL& offline_url);
@@ -39,8 +43,18 @@ GURL FileURLForDistilledURL(const GURL& distilled_url,
                             const base::FilePath& offline_path,
                             GURL* resources_root_url);
 
+// If |offline_url| has a "reload" query params that is a URL, returns it.
+// If not, return GURL::EmptyURL().
+GURL ReloadURLForOfflineURL(const GURL& offline_url);
+
 // Returns whether the URL points to a chrome offline URL.
 bool IsOfflineURL(const GURL& url);
+
+// Returns whether the URL points to a chrome offline URL with entry data.
+bool IsOfflineEntryURL(const GURL& url);
+
+// Returns whether the URL points to a chrome offline URL with reload data.
+bool IsOfflineReloadURL(const GURL& url);
 
 }  // namespace reading_list
 

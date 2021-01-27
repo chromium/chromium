@@ -14,6 +14,10 @@ enum class CookieBlockingMode;
 // expected by the Content Blocker API.
 NSString* CreateCookieBlockingJsonRuleList(CookieBlockingMode block_mode);
 
+// Creates the rules json as a string for blocking all online resources loaded
+// from file:// or application specific scheme:// pages.
+NSString* CreateLocalBlockingJsonRuleList();
+
 }  // namespace web
 
 #endif  // IOS_WEB_WEB_STATE_UI_WK_CONTENT_RULE_LIST_UTIL_H_

@@ -11,7 +11,9 @@
 #include "base/bind.h"
 #include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "base/test/ios/wait_util.h"
@@ -37,6 +39,7 @@
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/test/ios/ui_image_test_utils.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -53,6 +56,8 @@ const char kContentToKeep[] = "Text that distillation should keep.";
 NSString* const kDistillableTitle = @"Tomato";
 const char kDistillableURL[] = "/potato";
 const char kNonDistillableURL[] = "/beans";
+const char kRedImageURL[] = "/redimage";
+const char kGreenImageURL[] = "/greenimage";
 NSString* const kReadTitle = @"foobar";
 NSString* const kReadURL = @"http://readfoobar.com";
 NSString* const kUnreadTitle = @"I am an unread entry";
@@ -72,6 +77,18 @@ const CFTimeInterval kDistillationTimeout = 5;
 const CFTimeInterval kServerOperationDelay = 1;
 NSString* const kReadHeader = @"Read";
 NSString* const kUnreadHeader = @"Unread";
+
+NSString* const kCheckImagesJS =
+    @"function checkImages() {"
+    @"  for (img of document.getElementsByTagName('img')) {"
+    @"    s = img.src;"
+    @"    data = s.startsWith('data:');"
+    @"    loaded = img.complete && (img.naturalWidth > 0);"
+    @"    if (data != loaded) return false;"
+    @"  }"
+    @"  return true;"
+    @"}"
+    @"checkImages();";
 
 // Returns the string concatenated |n| times.
 std::string operator*(const std::string& s, unsigned int n) {
@@ -363,20 +380,70 @@ std::unique_ptr<net::test_server::HttpResponse> HandleQueryOrCloseSocket(
   }
   auto response = std::make_unique<net::test_server::DelayedHttpResponse>(
       base::TimeDelta::FromSeconds(delay));
-  response->set_content_type("text/html");
-  if (distillable) {
+
+  if (base::StartsWith(request.relative_url, kDistillableURL)) {
+    response->set_content_type("text/html");
     std::string page_title = "Tomato";
 
     std::string content_to_remove(kContentToRemove);
     std::string content_to_keep(kContentToKeep);
+    std::string green_image_url(kGreenImageURL);
+    std::string red_image_url(kRedImageURL);
 
     response->set_content("<html><head><title>" + page_title +
                           "</title></head>" + content_to_remove * 20 +
-                          "<article>" + content_to_keep * 20 + "</article>" +
+                          "<article>" + content_to_keep * 20 + "<img src='" +
+                          green_image_url +
+                          "'/>"
+                          "<img src='" +
+                          red_image_url +
+                          "'/>"
+                          "</article>" +
                           content_to_remove * 20 + "</html>");
-  } else {
-    response->set_content("<html><head><title>greens</title></head></html>");
+    return std::move(response);
   }
+  if (base::StartsWith(request.relative_url, kNonDistillableURL)) {
+    response->set_content_type("text/html");
+    response->set_content("<html><head><title>greens</title></head></html>");
+    return std::move(response);
+  }
+  NOTREACHED();
+  return std::move(response);
+}
+
+// Serves image URLs.
+// If |serve_red_image| is false, 404 error is returned when red image is
+// requested.
+// |served_red_image| will be set to true whenever red image is requested.
+std::unique_ptr<net::test_server::HttpResponse> HandleImageQueryOrCloseSocket(
+    const bool& serve_red_image,
+    bool& served_red_image,
+    const net::test_server::HttpRequest& request) {
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  if (base::StartsWith(request.relative_url, kGreenImageURL)) {
+    response->set_content_type("image/png");
+    UIImage* image = ui::test::uiimage_utils::UIImageWithSizeAndSolidColor(
+        CGSizeMake(10, 10), [UIColor greenColor]);
+    NSData* image_data = UIImagePNGRepresentation(image);
+    response->set_content(std::string(
+        static_cast<const char*>(image_data.bytes), image_data.length));
+    return std::move(response);
+  }
+  if (base::StartsWith(request.relative_url, kRedImageURL)) {
+    served_red_image = true;
+    if (!serve_red_image) {
+      response->set_code(net::HTTP_NOT_FOUND);
+      return std::move(response);
+    }
+    response->set_content_type("image/png");
+    UIImage* image = ui::test::uiimage_utils::UIImageWithSizeAndSolidColor(
+        CGSizeMake(10, 10), [UIColor redColor]);
+    NSData* image_data = UIImagePNGRepresentation(image);
+    response->set_content(std::string(
+        static_cast<const char*>(image_data.bytes), image_data.length));
+    return std::move(response);
+  }
+  NOTREACHED();
   return std::move(response);
 }
 
@@ -421,10 +488,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 @interface ReadingListTestCase : ChromeTestCase
 // YES if test server is replying with valid HTML content (URL query). NO if
 // test server closes the socket.
-@property(atomic) bool serverRespondsWithContent;
+@property(nonatomic, assign) bool serverRespondsWithContent;
+// YES if test server is replying with valid read image. NO if it responds with
+// 404 error.
+@property(nonatomic, assign) bool serverServesRedImage;
+// Server sets this to true when it is requested the red image.
+@property(nonatomic, assign) bool serverServedRedImage;
 
 // The delay after which self.testServer will send a response.
-@property(atomic) NSTimeInterval serverResponseDelay;
+@property(nonatomic, assign) NSTimeInterval serverResponseDelay;
 @end
 
 @implementation ReadingListTestCase
@@ -457,7 +529,18 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
       base::BindRepeating(&HandleQueryOrCloseSocket,
                           std::cref(_serverRespondsWithContent),
                           std::cref(_serverResponseDelay), false)));
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kGreenImageURL,
+      base::BindRepeating(&HandleImageQueryOrCloseSocket,
+                          std::cref(_serverServesRedImage),
+                          std::ref(_serverServedRedImage))));
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, kRedImageURL,
+      base::BindRepeating(&HandleImageQueryOrCloseSocket,
+                          std::cref(_serverServesRedImage),
+                          std::ref(_serverServedRedImage))));
   self.serverRespondsWithContent = true;
+  self.serverServesRedImage = true;
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 
@@ -573,6 +656,51 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
           IDS_IOS_PAGE_INFO_OFFLINE_PAGE_LABEL);
   [[EarlGrey selectElementWithMatcher:pageInfoTitleMatcher]
       assertWithMatcher:grey_notNil()];
+
+  // Verify that the webState's title is correct.
+  GREYAssertEqualObjects([ChromeEarlGreyAppInterface currentTabTitle],
+                         kDistillableTitle, @"Wrong page name");
+}
+
+// Tests that offline page does not request online resources.
+- (void)testSavingToReadingListAndLoadDistilledNoOnlineResource {
+  self.serverServesRedImage = false;
+  [ReadingListAppInterface forceConnectionToWifi];
+  GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
+  GURL nonDistillablePageURL(self.testServer->GetURL(kNonDistillableURL));
+  // Open http://potato
+  [ChromeEarlGrey loadURL:distillablePageURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  AddCurrentPageToReadingList();
+
+  // Navigate to http://beans
+  [ChromeEarlGrey loadURL:nonDistillablePageURL];
+  [ChromeEarlGrey waitForPageToFinishLoading];
+
+  // Verify that an entry with the correct title is present in the reading list.
+  OpenReadingList();
+  AssertEntryVisible(kDistillableTitle);
+
+  WaitForDistillation();
+  self.serverServesRedImage = true;
+  self.serverServedRedImage = false;
+
+  // Long press the entry, and open it offline.
+  LongPressEntry(kDistillableTitle);
+
+  int offlineStringId = IDS_IOS_READING_LIST_CONTENT_CONTEXT_OFFLINE;
+  if ([ChromeEarlGrey isNativeContextMenusEnabled]) {
+    offlineStringId = IDS_IOS_READING_LIST_OPEN_OFFLINE_BUTTON;
+  }
+
+  TapContextMenuButtonWithA11yLabelID(offlineStringId);
+  [ChromeEarlGrey waitForPageToFinishLoading];
+  AssertIsShowingDistillablePage(false, distillablePageURL);
+  GREYAssertFalse(self.serverServedRedImage,
+                  @"Offline page accessed online resource.");
+
+  id checkImage = [ChromeEarlGrey executeJavaScript:kCheckImagesJS];
+  GREYAssert([checkImage isEqual:@YES], @"Incorrect image loading.");
 
   // Verify that the webState's title is correct.
   GREYAssertEqualObjects([ChromeEarlGreyAppInterface currentTabTitle],

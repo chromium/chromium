@@ -122,4 +122,66 @@ TEST_F(OfflineURLUtilsTest, IsOfflineURL) {
   EXPECT_TRUE(reading_list::IsOfflineURL(GURL("chrome://offline/foobar")));
   EXPECT_TRUE(
       reading_list::IsOfflineURL(GURL("chrome://offline/foobar?foo=bar")));
+  EXPECT_TRUE(reading_list::IsOfflineURL(
+      GURL("chrome://offline/foobar?entryURL=http%3A%2F%2Ffoo.bar%2F")));
+  EXPECT_TRUE(reading_list::IsOfflineURL(
+      GURL("chrome://offline/foobar?reload=http%3A%2F%2Ffoo.bar%2F")));
+}
+
+// Checks that the offline URLs are correctly detected by |IsOfflineEntryURL|.
+TEST_F(OfflineURLUtilsTest, IsOfflineEntryURL) {
+  EXPECT_FALSE(reading_list::IsOfflineEntryURL(GURL()));
+  EXPECT_FALSE(reading_list::IsOfflineEntryURL(GURL("chrome://")));
+  EXPECT_FALSE(
+      reading_list::IsOfflineEntryURL(GURL("chrome://offline-foobar")));
+  EXPECT_FALSE(reading_list::IsOfflineEntryURL(GURL("http://offline/")));
+  EXPECT_FALSE(
+      reading_list::IsOfflineEntryURL(GURL("http://chrome://offline/")));
+  EXPECT_FALSE(reading_list::IsOfflineEntryURL(GURL("chrome://offline")));
+  EXPECT_FALSE(reading_list::IsOfflineEntryURL(GURL("chrome://offline/")));
+  EXPECT_FALSE(
+      reading_list::IsOfflineEntryURL(GURL("chrome://offline/foobar")));
+  EXPECT_FALSE(
+      reading_list::IsOfflineEntryURL(GURL("chrome://offline/foobar?foo=bar")));
+  EXPECT_TRUE(reading_list::IsOfflineEntryURL(
+      GURL("chrome://offline/foobar?entryURL=http%3A%2F%2Ffoo.bar%2F")));
+  EXPECT_FALSE(reading_list::IsOfflineEntryURL(
+      GURL("chrome://offline/foobar?reload=http%3A%2F%2Ffoo.bar%2F")));
+}
+
+// Checks that the offline URLs are correctly detected by |IsOfflineReloadURL|.
+TEST_F(OfflineURLUtilsTest, IsOfflineReloadURL) {
+  EXPECT_FALSE(reading_list::IsOfflineReloadURL(GURL()));
+  EXPECT_FALSE(reading_list::IsOfflineReloadURL(GURL("chrome://")));
+  EXPECT_FALSE(
+      reading_list::IsOfflineReloadURL(GURL("chrome://offline-foobar")));
+  EXPECT_FALSE(reading_list::IsOfflineReloadURL(GURL("http://offline/")));
+  EXPECT_FALSE(
+      reading_list::IsOfflineReloadURL(GURL("http://chrome://offline/")));
+  EXPECT_FALSE(reading_list::IsOfflineReloadURL(GURL("chrome://offline")));
+  EXPECT_FALSE(reading_list::IsOfflineReloadURL(GURL("chrome://offline/")));
+  EXPECT_FALSE(
+      reading_list::IsOfflineReloadURL(GURL("chrome://offline/foobar")));
+  EXPECT_FALSE(reading_list::IsOfflineReloadURL(
+      GURL("chrome://offline/foobar?foo=bar")));
+  EXPECT_FALSE(reading_list::IsOfflineReloadURL(
+      GURL("chrome://offline/foobar?entryURL=http%3A%2F%2Ffoo.bar%2F")));
+  EXPECT_TRUE(reading_list::IsOfflineReloadURL(
+      GURL("chrome://offline/foobar?reload=http%3A%2F%2Ffoo.bar%2F")));
+}
+
+// Checks the offline URL to reload URL is
+// chrome://offline?reload=URL
+TEST_F(OfflineURLUtilsTest, OfflineReloadURLForURLTest) {
+  GURL reload_url = GURL("http://foo.bar");
+  GURL offline_url = reading_list::OfflineReloadURLForURL(reload_url);
+  EXPECT_EQ("chrome://offline/?reload=http%3A%2F%2Ffoo.bar%2F",
+            offline_url.spec());
+}
+
+// Extracts the reload URL from chrome://offline?reload=URL
+TEST_F(OfflineURLUtilsTest, ReloadURLForOfflineURLTest) {
+  GURL offline_url = GURL("chrome://offline?reload=http%3A%2F%2Ffoo.bar%2F");
+  GURL reload_url = reading_list::ReloadURLForOfflineURL(offline_url);
+  EXPECT_EQ("http://foo.bar/", reload_url.spec());
 }

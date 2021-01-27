@@ -333,7 +333,7 @@ void ChromeWebClient::PrepareErrorPage(
   // WebState that are not attached to a tab may not have an
   // OfflinePageTabHelper.
   if (offline_page_tab_helper &&
-      offline_page_tab_helper->HasDistilledVersionForOnlineUrl(url)) {
+      (offline_page_tab_helper->CanHandleErrorLoadingURL(url))) {
     // An offline version of the page will be displayed to replace this error
     // page. Loading an error page here can cause a race between the
     // navigation to load the error page and the navigation to display the
