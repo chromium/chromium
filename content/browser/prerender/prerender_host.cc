@@ -6,6 +6,8 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_conversion_helper.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -30,6 +32,8 @@ PrerenderHost::~PrerenderHost() {
 // no-state-prefetch implementation. See PrerenderContents::StartPrerendering()
 // for example.
 void PrerenderHost::StartPrerendering(BrowserContext& browser_context) {
+  TRACE_EVENT1("navigation", "PrerenderHost::StartPrerendering",
+               "browser_context", &browser_context);
   // Create a new WebContents for prerendering.
   WebContents::CreateParams web_contents_params(&browser_context);
   // TODO(https://crbug.com/1132746): Set up other fields of
@@ -60,6 +64,9 @@ void PrerenderHost::DidFinishNavigation(NavigationHandle* navigation_handle) {
 
 bool PrerenderHost::ActivatePrerenderedContents(
     RenderFrameHostImpl& current_render_frame_host) {
+  TRACE_EVENT1("navigation", "PrerenderHost::ActivatePrerenderedContents",
+               "render_frame_host",
+               base::trace_event::ToTracedValue(&current_render_frame_host));
   DCHECK_EQ(blink::features::kPrerender2Param.Get(),
             blink::features::Prerender2ActivationMode::kEnabled);
 

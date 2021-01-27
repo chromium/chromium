@@ -69,6 +69,7 @@ void PrerenderProcessor::Cancel() {
 }
 
 void PrerenderProcessor::CancelPrerendering() {
+  TRACE_EVENT0("navigation", "PrerenderProcessor::CancelPrerendering");
   DCHECK_EQ(state_, State::kStarted);
   state_ = State::kCancelled;
   GetPrerenderHostRegistry().AbandonHost(prerender_host_id_);

@@ -7,6 +7,8 @@
 #include "base/check.h"
 #include "base/feature_list.h"
 #include "base/stl_util.h"
+#include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_conversion_helper.h"
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -28,6 +30,11 @@ int64_t PrerenderHostRegistry::CreateAndStartHost(
 
   // Ignore prerendering requests for the same URL.
   const GURL prerendering_url = attributes->url;
+  TRACE_EVENT2("navigation", "PrerenderHostRegistry::CreateAndStartHost",
+               "Prerender Attributes",
+               base::trace_event::ToTracedValue(*attributes),
+               "initiator_origin", initiator_origin.GetURL().spec());
+
   auto found = prerender_host_id_by_url_.find(prerendering_url);
   if (found != prerender_host_id_by_url_.end())
     return found->second;
@@ -59,6 +66,8 @@ int64_t PrerenderHostRegistry::CreateAndStartHost(
 }
 
 void PrerenderHostRegistry::AbandonHost(int64_t prerender_host_id) {
+  TRACE_EVENT1("navigation", "PrerenderHostRegistry::AbandonHost",
+               "prerender_host_id", prerender_host_id);
   auto found = prerender_host_by_id_.find(prerender_host_id);
   if (found != prerender_host_by_id_.end()) {
     auto initial_url = found->second->GetInitialUrl();
@@ -71,6 +80,9 @@ std::unique_ptr<PrerenderHost> PrerenderHostRegistry::FindHostToActivate(
     const GURL& navigation_url,
     FrameTreeNode& frame_tree_node) {
   RenderFrameHostImpl* render_frame_host = frame_tree_node.current_frame_host();
+  TRACE_EVENT2("navigation", "PrerenderHostRegistry::FindHostToActivate",
+               "navigation_url", navigation_url.spec(), "render_frame_host",
+               base::trace_event::ToTracedValue(render_frame_host));
 
   // Disallow activation when the navigation is for prerendering.
   if (render_frame_host->IsPrerendering())
