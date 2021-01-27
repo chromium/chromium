@@ -32,6 +32,8 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/test/desktop_test_views_delegate.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -73,11 +75,14 @@ namespace {
 // Maintain the UI controls and web view for content shell
 class ShellView : public views::View, public views::TextfieldController {
  public:
+  METADATA_HEADER(ShellView);
+
   enum UIControl { BACK_BUTTON, FORWARD_BUTTON, STOP_BUTTON };
 
   explicit ShellView(Shell* shell) : shell_(shell) { InitShellWindow(); }
-
-  ~ShellView() override {}
+  ShellView(const ShellView&) = delete;
+  ShellView& operator=(const ShellView&) = delete;
+  ~ShellView() override = default;
 
   // Update the state of UI controls
   void SetAddressBarURL(const GURL& url) {
@@ -300,9 +305,10 @@ class ShellView : public views::View, public views::TextfieldController {
   // Contents view contains the web contents view
   View* contents_view_ = nullptr;
   views::WebView* web_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellView);
 };
+
+BEGIN_METADATA(ShellView, views::View)
+END_METADATA
 
 ShellView* ShellViewForWidget(views::Widget* widget) {
   return static_cast<ShellView*>(widget->widget_delegate()->GetContentsView());

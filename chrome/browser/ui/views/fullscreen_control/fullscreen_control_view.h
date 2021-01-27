@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_FULLSCREEN_CONTROL_FULLSCREEN_CONTROL_VIEW_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 // FullscreenControlView shows a FAB (floating action button from the material
@@ -16,7 +16,10 @@
 // |callback| will be called when the user taps the button.
 class FullscreenControlView : public views::View {
  public:
+  METADATA_HEADER(FullscreenControlView);
   explicit FullscreenControlView(views::Button::PressedCallback callback);
+  FullscreenControlView(const FullscreenControlView&) = delete;
+  FullscreenControlView& operator=(const FullscreenControlView&) = delete;
   ~FullscreenControlView() override;
 
   static constexpr int kCircleButtonDiameter = 48;
@@ -27,8 +30,6 @@ class FullscreenControlView : public views::View {
 
  private:
   views::Button* exit_fullscreen_button_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenControlView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FULLSCREEN_CONTROL_FULLSCREEN_CONTROL_VIEW_H_

@@ -29,11 +29,14 @@
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/view_class_properties.h"
 
 class OmniboxSuggestionRowButton : public views::MdTextButton {
  public:
+  METADATA_HEADER(OmniboxSuggestionRowButton);
   OmniboxSuggestionRowButton(PressedCallback callback,
                              const base::string16& text,
                              const gfx::VectorIcon& icon,
@@ -125,6 +128,9 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   OmniboxPopupModel::Selection selection_;
   base::Optional<SkColor> omnibox_bg_color_;
 };
+
+BEGIN_METADATA(OmniboxSuggestionRowButton, views::MdTextButton)
+END_METADATA
 
 OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
     OmniboxPopupContentsView* popup_contents_view,
@@ -276,3 +282,6 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(
                                                           event.time_stamp());
   }
 }
+
+BEGIN_METADATA(OmniboxSuggestionButtonRowView, views::View)
+END_METADATA

@@ -21,6 +21,8 @@
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 
 namespace {
@@ -32,6 +34,7 @@ constexpr int kCloseIconSize = 24;
 
 class CloseFullscreenButton : public views::Button {
  public:
+  METADATA_HEADER(CloseFullscreenButton);
   explicit CloseFullscreenButton(PressedCallback callback)
       : views::Button(std::move(callback)) {
     std::unique_ptr<views::ImageView> close_image_view =
@@ -44,6 +47,8 @@ class CloseFullscreenButton : public views::Button {
     AddChildView(close_image_view.release());
     SetLayoutManager(std::make_unique<views::FillLayout>());
   }
+  CloseFullscreenButton(const CloseFullscreenButton&) = delete;
+  CloseFullscreenButton& operator=(const CloseFullscreenButton&) = delete;
 
  private:
   void PaintButtonContents(gfx::Canvas* canvas) override {
@@ -55,9 +60,10 @@ class CloseFullscreenButton : public views::Button {
     float radius = FullscreenControlView::kCircleButtonDiameter / 2.0f;
     canvas->DrawCircle(gfx::PointF(radius, radius), radius, flags);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CloseFullscreenButton);
 };
+
+BEGIN_METADATA(CloseFullscreenButton, views::Button)
+END_METADATA
 
 }  // namespace
 
@@ -71,3 +77,6 @@ FullscreenControlView::FullscreenControlView(
 }
 
 FullscreenControlView::~FullscreenControlView() = default;
+
+BEGIN_METADATA(FullscreenControlView, views::View)
+END_METADATA

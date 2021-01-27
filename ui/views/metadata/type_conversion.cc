@@ -151,7 +151,7 @@ base::string16 TypeConverter<GURL>::ToString(const GURL& source_value) {
 base::string16 TypeConverter<url::Component>::ToString(
     const url::Component& source_value) {
   return base::ASCIIToUTF16(
-      base::StringPrintf("{%d, %d}", source_value.begin, source_value.len));
+      base::StringPrintf("{%d,%d}", source_value.begin, source_value.len));
 }
 
 base::Optional<int8_t> TypeConverter<int8_t>::FromString(

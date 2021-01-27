@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_RING_PROGRESS_BAR_H_
 
 #include "ui/gfx/animation/animation_delegate.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -16,6 +17,7 @@ class LinearAnimation;
 // A progress bar that takes the shape of a ring.
 class RingProgressBar : public views::View, public gfx::AnimationDelegate {
  public:
+  METADATA_HEADER(RingProgressBar);
   RingProgressBar();
   ~RingProgressBar() override;
 

@@ -7,14 +7,18 @@
 
 #include <stdint.h>
 
+#include <algorithm>  // Silence broken lint check
 #include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/no_destructor.h"
 #include "base/optional.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -187,7 +191,7 @@ struct VIEWS_EXPORT TypeConverter<bool> : BaseTypeConverter<true> {
   static ValidStrings GetValidStrings();
 };
 
-// Special Conversions for base::Optional<T> type ------------------------------
+// Special conversions for wrapper types --------------------------------------
 
 VIEWS_EXPORT const base::string16& GetNullOptStr();
 
@@ -234,6 +238,37 @@ struct TypeConverter<T*> : BaseTypeConverter<false, true> {
   static base::Optional<T*> FromString(const base::string16& source_value) {
     DCHECK(false) << "Type converter cannot convert from string.";
     return base::nullopt;
+  }
+  static ValidStrings GetValidStrings() { return {}; }
+};
+
+template <typename T>
+struct TypeConverter<std::vector<T>>
+    : BaseTypeConverter<TypeConverter<T>::is_serializable> {
+  static base::string16 ToString(ArgType<std::vector<T>> source_value) {
+    std::vector<base::string16> serialized;
+    base::ranges::transform(source_value, std::back_inserter(serialized),
+                            &TypeConverter<T>::ToString);
+    return STRING16_LITERAL("{") +
+           base::JoinString(serialized, STRING16_LITERAL(",")) +
+           STRING16_LITERAL("}");
+  }
+  static base::Optional<std::vector<T>> FromString(
+      const base::string16& source_value) {
+    if (source_value.empty() || source_value.front() != STRING16_LITERAL('{') ||
+        source_value.back() != STRING16_LITERAL('}'))
+      return base::nullopt;
+    const auto values = base::SplitString(
+        source_value.substr(1, source_value.length() - 2),
+        base::ASCIIToUTF16(","), base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    std::vector<T> output;
+    for (const auto& value : values) {
+      auto ret = TypeConverter<T>::FromString(value);
+      if (!ret)
+        return base::nullopt;
+      output.push_back(*ret);
+    }
+    return base::make_optional(output);
   }
   static ValidStrings GetValidStrings() { return {}; }
 };

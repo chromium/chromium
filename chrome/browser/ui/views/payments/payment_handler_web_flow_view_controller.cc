@@ -48,6 +48,8 @@
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace payments {
 namespace {
@@ -70,6 +72,7 @@ base::string16 GetPaymentHandlerDialogTitle(
 
 class ReadOnlyOriginView : public views::View {
  public:
+  METADATA_HEADER(ReadOnlyOriginView);
   ReadOnlyOriginView(const base::string16& page_title,
                      const GURL& origin,
                      const SkBitmap* icon_bitmap,
@@ -184,6 +187,9 @@ class ReadOnlyOriginView : public views::View {
   ReadOnlyOriginView& operator=(const ReadOnlyOriginView&) = delete;
   ~ReadOnlyOriginView() override = default;
 };
+
+BEGIN_METADATA(ReadOnlyOriginView, views::View)
+END_METADATA
 
 PaymentHandlerWebFlowViewController::PaymentHandlerWebFlowViewController(
     base::WeakPtr<PaymentRequestSpec> spec,

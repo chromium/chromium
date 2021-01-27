@@ -129,6 +129,21 @@ TEST_F(TypeConversionTest, TestConversion_StringToInsets) {
             gfx::Insets(2, 3, 4, 5));
 }
 
+TEST_F(TypeConversionTest, TestConversion_VectorToString) {
+  const std::vector<int> kVector{3, 5, 7, 9};
+
+  base::string16 to_string =
+      metadata::TypeConverter<std::vector<int>>::ToString(kVector);
+
+  EXPECT_EQ(to_string, STRING16_LITERAL("{3,5,7,9}"));
+}
+
+TEST_F(TypeConversionTest, TestConversion_StringToVector) {
+  base::string16 from_string = base::ASCIIToUTF16("{2,3,4,5}");
+  EXPECT_EQ(metadata::TypeConverter<std::vector<int>>::FromString(from_string),
+            std::vector<int>({2, 3, 4, 5}));
+}
+
 TEST_F(TypeConversionTest, CheckIsSerializable) {
   // Test types with explicitly added converters.
   EXPECT_TRUE(metadata::TypeConverter<int8_t>::IsSerializable());

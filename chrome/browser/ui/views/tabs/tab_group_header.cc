@@ -42,6 +42,7 @@
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -299,7 +300,7 @@ TabSlotView::ViewType TabGroupHeader::GetTabSlotViewType() const {
 TabSizeInfo TabGroupHeader::GetTabSizeInfo() const {
   TabSizeInfo size_info;
   // Group headers have a fixed width based on |title_|'s width.
-  const int width = CalculateWidth();
+  const int width = GetDesiredWidth();
   size_info.pinned_tab_width = width;
   size_info.min_active_width = width;
   size_info.min_inactive_width = width;
@@ -357,7 +358,7 @@ bool TabGroupHeader::DoesIntersectRect(const views::View* target,
   return contents_rect.Intersects(rect);
 }
 
-int TabGroupHeader::CalculateWidth() const {
+int TabGroupHeader::GetDesiredWidth() const {
   // If the tab group is collapsed, we want the right margin of the title to
   // match the left margin. The left margin is always the group stroke inset.
   // Using these values also guarantees the chip aligns with the collapsed
@@ -453,6 +454,10 @@ void TabGroupHeader::VisualsChanged() {
 void TabGroupHeader::RemoveObserverFromWidget(views::Widget* widget) {
   widget->RemoveObserver(&editor_bubble_tracker_);
 }
+
+BEGIN_METADATA(TabGroupHeader, views::View)
+ADD_READONLY_PROPERTY_METADATA(int, DesiredWidth)
+END_METADATA
 
 TabGroupHeader::EditorBubbleTracker::~EditorBubbleTracker() {
   if (is_open_) {

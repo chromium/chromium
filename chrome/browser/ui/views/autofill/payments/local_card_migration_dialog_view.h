@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_DIALOG_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_DIALOG_VIEW_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/dialog_view_ids.h"
 #include "components/autofill/core/browser/ui/payments/local_card_migration_dialog_controller.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -25,8 +25,12 @@ class LocalCardMigrationOfferView;
 class LocalCardMigrationDialogView : public LocalCardMigrationDialog,
                                      public views::BubbleDialogDelegateView {
  public:
+  METADATA_HEADER(LocalCardMigrationDialogView);
   LocalCardMigrationDialogView(LocalCardMigrationDialogController* controller,
                                content::WebContents* web_contents);
+  LocalCardMigrationDialogView(const LocalCardMigrationDialogView&) = delete;
+  LocalCardMigrationDialogView& operator=(const LocalCardMigrationDialogView&) =
+      delete;
   ~LocalCardMigrationDialogView() override;
 
   // LocalCardMigrationDialog:
@@ -46,7 +50,7 @@ class LocalCardMigrationDialogView : public LocalCardMigrationDialog,
   void OnDialogAccepted();
   void OnDialogCancelled();
   void OnWindowClosing();
-  bool ShouldOkButtonBeEnabled() const;
+  bool GetEnableOkButton() const;
 
   base::string16 GetOkButtonLabel() const;
   base::string16 GetCancelButtonLabel() const;
@@ -62,8 +66,6 @@ class LocalCardMigrationDialogView : public LocalCardMigrationDialog,
   // The view containing a list of cards. It is the content of the scroll bar.
   // Owned by the LocalCardMigrationOfferView.
   views::View* card_list_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalCardMigrationDialogView);
 };
 
 }  // namespace autofill
