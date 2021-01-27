@@ -152,8 +152,9 @@ group("build") {
   deps = [
     ":chromevox_copied_files",
     ":chromevox_phonetic_dictionaries_js",
-    ":lesson_component",
-    ":tutorial_component",
+    ":i_tutorial",
+    ":tutorial_lesson",
+    ":tutorial_navigation_buttons",
     "//chrome/browser/resources/chromeos/accessibility/braille_ime:braille_ime_manifest",
     "//third_party/chromevox:chromevox_third_party_resources",
     "//third_party/liblouis",
@@ -195,6 +196,7 @@ run_jsbundler("chromevox_copied_files") {
     "background/keymaps/default_keymap.json",
     "background/logging/log.css",
     "background/logging/log.html",
+    "i_tutorial/components/constants.js",
     "i_tutorial/components/tutorial_common.js",
     "i_tutorial/practice_areas/jump_commands.html",
     "i_tutorial/practice_areas/selects.html",
@@ -494,7 +496,7 @@ if (is_chromeos_ash) {
   }
 }
 
-copy("lesson_component") {
+copy("tutorial_lesson") {
   sources = [ "$chromevox_gen_dir/i_tutorial/components/tutorial_lesson.js" ]
   outputs = [ "$chromevox_out_dir/i_tutorial/components/tutorial_lesson.js" ]
   deps = [
@@ -503,7 +505,17 @@ copy("lesson_component") {
   ]
 }
 
-copy("tutorial_component") {
+copy("tutorial_navigation_buttons") {
+  sources = [ "$chromevox_gen_dir/i_tutorial/components/navigation_buttons.js" ]
+  outputs = [ "$chromevox_out_dir/i_tutorial/components/navigation_buttons.js" ]
+
+  deps = [
+    "i_tutorial/components:closure_compile",
+    "i_tutorial/components:components",
+  ]
+}
+
+copy("i_tutorial") {
   sources = [ "$chromevox_gen_dir/i_tutorial/components/i_tutorial.js" ]
   outputs = [ "$chromevox_out_dir/i_tutorial/components/i_tutorial.js" ]
 

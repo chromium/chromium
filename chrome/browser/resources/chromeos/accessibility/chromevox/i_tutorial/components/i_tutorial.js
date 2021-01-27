@@ -14,19 +14,11 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {Curriculum, Screen} from './constants.js';
+import {NavigationButtons} from './navigation_buttons.js';
 import {TutorialCommon} from './tutorial_common.js';
 import {TutorialLesson} from './tutorial_lesson.js';
-
-/** @enum {string} */
-const Curriculum = {
-  NONE: 'none',
-  QUICK_ORIENTATION: 'quick_orientation',
-  ESSENTIAL_KEYS: 'essential_keys',
-  NAVIGATION: 'navigation',
-  COMMAND_REFERENCES: 'command_references',
-  SOUNDS_AND_SETTINGS: 'sounds_and_settings',
-  RESOURCES: 'resources',
-};
 
 /**
  * The user’s interaction medium. Influences tutorial content.
@@ -36,17 +28,6 @@ const InteractionMedium = {
   KEYBOARD: 'keyboard',
   TOUCH: 'touch',
   BRAILLE: 'braille',
-};
-
-/**
- * The various screens within the tutorial.
- * @enum {string}
- */
-const Screen = {
-  NONE: 'none',
-  MAIN_MENU: 'main_menu',
-  LESSON_MENU: 'lesson_menu',
-  LESSON: 'lesson',
 };
 
 /**
@@ -510,61 +491,6 @@ Polymer({
   // Methods for computing attributes and properties.
 
   /**
-   * @param {number} activeLessonIndex
-   * @param {Screen} activeScreen
-   * @return {boolean}
-   * @private
-   */
-  shouldHideNextLessonButton(activeLessonIndex, activeScreen) {
-    return activeLessonIndex === this.numLessons - 1 ||
-        activeScreen !== Screen.LESSON;
-  },
-
-  /**
-   * @param {number} activeLessonIndex
-   * @param {Screen} activeScreen
-   * @return {boolean}
-   * @private
-   */
-  shouldHidePreviousLessonButton(activeLessonIndex, activeScreen) {
-    return activeLessonIndex === 0 || activeScreen !== Screen.LESSON;
-  },
-
-  /**
-   * @param {Screen} activeScreen
-   * @return {boolean}
-   * @private
-   */
-  shouldHideLessonMenuButton(activeScreen) {
-    return !this.curriculum || this.curriculum === Curriculum.NONE ||
-        activeScreen === Screen.MAIN_MENU ||
-        activeScreen === Screen.LESSON_MENU ||
-        this.includedLessons.length === 1;
-  },
-
-  /**
-   * @param {Screen} activeScreen
-   * @return {boolean}
-   * @private
-   */
-  shouldHideMainMenuButton(activeScreen) {
-    return activeScreen === Screen.MAIN_MENU;
-  },
-
-  /**
-   * @param {number} activeLessonIndex
-   * @return {boolean}
-   * @private
-   */
-  shouldHideRestartQuickOrientationButton(activeLessonIndex, activeScreen) {
-    // Only show when the user is on the last screen of the basic orientation.
-    return !(
-        this.curriculum === Curriculum.QUICK_ORIENTATION &&
-        activeLessonIndex === this.numLessons - 1 &&
-        this.activeScreen === Screen.LESSON);
-  },
-
-  /**
    * @param {Screen} activeScreen
    * @return {boolean}
    * @private
@@ -589,10 +515,6 @@ Polymer({
    */
   shouldHideLessonMenu(activeScreen) {
     return activeScreen !== Screen.LESSON_MENU;
-  },
-
-  shouldHideNavSeparator(activeScreen) {
-    return activeScreen !== Screen.LESSON;
   },
 
   /**

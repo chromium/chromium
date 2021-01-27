@@ -9,19 +9,31 @@ html_to_js("components") {
   js_files = [
     "tutorial_lesson.js",
     "i_tutorial.js",
+    "navigation_buttons.js",
   ]
 }
 
 js_type_check("closure_compile") {
   is_polymer3 = true
   deps = [
+    ":constants",
     ":i_tutorial",
+    ":navigation_buttons",
     ":tutorial_common",
     ":tutorial_lesson",
   ]
 }
 
+js_library("constants") {
+}
+
 js_library("tutorial_lesson") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("navigation_buttons") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

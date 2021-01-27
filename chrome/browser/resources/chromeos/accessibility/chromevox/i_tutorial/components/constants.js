@@ -1,0 +1,32 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview Defines constants used throughout the tutorial.
+ */
+
+/**
+ * The various curriculums for the ChromeVox tutorial.
+ * @enum {string}
+ */
+export const Curriculum = {
+  NONE: 'none',
+  QUICK_ORIENTATION: 'quick_orientation',
+  ESSENTIAL_KEYS: 'essential_keys',
+  NAVIGATION: 'navigation',
+  COMMAND_REFERENCES: 'command_references',
+  SOUNDS_AND_SETTINGS: 'sounds_and_settings',
+  RESOURCES: 'resources',
+};
+
+/**
+ * The various screens within the tutorial.
+ * @enum {string}
+ */
+export const Screen = {
+  NONE: 'none',
+  MAIN_MENU: 'main_menu',
+  LESSON_MENU: 'lesson_menu',
+  LESSON: 'lesson',
+};

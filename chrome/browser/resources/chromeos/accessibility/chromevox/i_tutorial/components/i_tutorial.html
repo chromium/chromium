@@ -17,8 +17,7 @@
 #mainMenu,
 #lessonMenu,
 #lessonContainer,
-#mainMenuButtons,
-#nav {
+#mainMenuButtons {
   margin: auto;
   text-align: start;
   width: 800px;
@@ -59,39 +58,6 @@ cr-button {
   margin-inline-end: 8px;
   margin-inline-start: 8px;
   margin-top: 40px;
-}
-
-#navSeparator {
-  background: rgb(232, 234, 237);
-  height: 1px;
-  width: 800px;
-}
-
-/* Styling for bottom navigation buttons */
-#lessonNav {
-  display: inline-block;
-  float: right;
-}
-
-#lessonNav cr-button {
-  float: right;
-}
-
-#menuNav {
-  display: inline-block;
-  float: left;
-}
-
-#menuNav cr-button {
-  float: right;
-}
-
-#exitTutorial {
-  margin-inline-start: 0;
-}
-
-#nextLesson {
-  margin-inline-end: 0;
 }
 
 </style>
@@ -167,42 +133,17 @@ cr-button {
   </template>
 </div>
 
-<div id="nav">
-  <div id="navSeparator" hidden$="[[
-      shouldHideNavSeparator(activeScreen) ]]"></div>
-  <div id="navButtons">
-    <div id="lessonNav">
-      <cr-button id="nextLesson" class="action-button" on-click="showNextLesson"
-          hidden$="[[
-        shouldHideNextLessonButton(activeLessonIndex, activeScreen) ]]">
-        [[ getMsg('tutorial_next_lesson_button') ]]
-      </cr-button>
-      <cr-button on-click="showPreviousLesson"
-          hidden$="[[
-        shouldHidePreviousLessonButton(activeLessonIndex, activeScreen) ]]">
-        [[ getMsg('tutorial_previous_lesson_button') ]]
-      </cr-button>
-    </div>
-    <div id="menuNav">
-      <cr-button on-click="showFirstLesson"
-          hidden$="[[
-        shouldHideRestartQuickOrientationButton(activeLessonIndex, activeScreen)
-          ]]">
-        [[ getMsg('tutorial_restart_quick_orientation_button') ]]
-      </cr-button>
-      <cr-button on-click="showLessonMenu"
-          hidden$="[[ shouldHideLessonMenuButton(activeScreen) ]]">
-        [[ getMsg('tutorial_lesson_menu_button') ]]
-      </cr-button>
-      <cr-button on-click="showMainMenu"
-          hidden$="[[ shouldHideMainMenuButton(activeScreen) ]]">
-        [[ getMsg('tutorial_main_menu_button') ]]
-      </cr-button>
-      <cr-button id="exitTutorial" on-click="exit">
-        [[ getMsg('tutorial_exit_button') ]]
-      </cr-button>
-    </div>
-  </div>
-</div>
+<navigation-buttons
+    active-screen="[[ activeScreen ]]"
+    active-lesson-index="[[ activeLessonIndex ]]"
+    curriculum="[[ curriculum ]]"
+    num-lessons="[[ numLessons ]]"
+    on-next-lesson-button-clicked="showNextLesson"
+    on-previous-lesson-button-clicked="showPreviousLesson"
+    on-restart-quick-orientation-button-clicked="showFirstLesson"
+    on-lesson-menu-button-clicked="showLessonMenu"
+    on-main-menu-button-clicked="showMainMenu"
+    on-exit-button-clicked="exit">
+</navigation-buttons>
 
 </div>
