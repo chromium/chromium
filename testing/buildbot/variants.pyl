@@ -309,7 +309,7 @@
   },
   'WEBLAYER_10_AND_M_IMPL_SKEW_TESTS_NTH_MILESTONE': {
     'args': [
-      '--webview-apk-path=apks/AOSP_SystemWebView.apk',
+      '--webview-apk-path=apks/AOSP_SystemWebview.apk',
       '--test-runner-outdir',
       '.',
       '--client-outdir',
@@ -320,13 +320,13 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--impl-version=89',
     ],
-    'identifier': 'Implementation Tests For 89.0.4389.9',
+    'identifier': 'Implementation Tests For 89.0.4389.23',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M89',
-          'revision': 'version:89.0.4389.9',
+          'revision': 'version:89.0.4389.23',
         }
       ],
     },
@@ -392,13 +392,13 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--impl-version=89',
     ],
-    'identifier': 'Implementation Tests For 89.0.4389.9',
+    'identifier': 'Implementation Tests For 89.0.4389.23',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M89',
-          'revision': 'version:89.0.4389.9',
+          'revision': 'version:89.0.4389.23',
         }
       ],
     },
@@ -464,13 +464,13 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--client-version=89',
     ],
-    'identifier': 'Client Tests For 89.0.4389.9',
+    'identifier': 'Client Tests For 89.0.4389.23',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M89',
-          'revision': 'version:89.0.4389.9',
+          'revision': 'version:89.0.4389.23',
         }
       ],
     },
