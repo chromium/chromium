@@ -3390,7 +3390,7 @@ ci.fyi_builder(
         short_name = "re",
     ),
     goma_backend = None,
-    reclient_instance = "goma-foundry-experiments",
+    reclient_instance = "goma-rbe-chromium",
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_DEFAULT,
