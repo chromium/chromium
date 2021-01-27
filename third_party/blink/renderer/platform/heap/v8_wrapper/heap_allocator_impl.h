@@ -40,9 +40,9 @@ class PLATFORM_EXPORT HeapAllocator {
   }
 
   template <typename T>
-  static T* AllocateVectorBacking(size_t) {
-    // TODO(1056170): Implement.
-    return nullptr;
+  static T* AllocateVectorBacking(size_t size) {
+    return reinterpret_cast<T*>(
+        MakeGarbageCollected<HeapVectorBacking<T>>(size / sizeof(T)));
   }
 
   static void FreeVectorBacking(void*) {
@@ -60,9 +60,12 @@ class PLATFORM_EXPORT HeapAllocator {
   }
 
   template <typename T, typename HashTable>
-  static T* AllocateHashTableBacking(size_t) {
-    // TODO(1056170): Implement.
-    return nullptr;
+  static T* AllocateHashTableBacking(size_t size) {
+    static_assert(sizeof(T) == sizeof(typename HashTable::ValueType),
+                  "T must match ValueType.");
+    return reinterpret_cast<T*>(
+        MakeGarbageCollected<HeapHashTableBacking<HashTable>>(size /
+                                                              sizeof(T)));
   }
 
   template <typename T, typename HashTable>

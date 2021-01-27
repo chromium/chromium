@@ -55,9 +55,11 @@ class PLATFORM_EXPORT HeapAllocator {
 
   template <typename T, typename HashTable>
   static T* AllocateHashTableBacking(size_t size) {
+    static_assert(sizeof(T) == sizeof(typename HashTable::ValueType),
+                  "T must match ValueType.");
     return reinterpret_cast<T*>(
-        MakeGarbageCollected<HeapHashTableBacking<HashTable>>(
-            size / sizeof(typename HashTable::ValueType)));
+        MakeGarbageCollected<HeapHashTableBacking<HashTable>>(size /
+                                                              sizeof(T)));
   }
   template <typename T, typename HashTable>
   static T* AllocateZeroedHashTableBacking(size_t size) {

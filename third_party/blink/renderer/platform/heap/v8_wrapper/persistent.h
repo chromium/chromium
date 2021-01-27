@@ -43,7 +43,7 @@ WeakPersistent<T> WrapWeakPersistent(
 }
 
 template <typename T>
-CrossThreadPersistent<T> WrapCrossthreadPersistent(
+CrossThreadPersistent<T> WrapCrossThreadPersistent(
     T* value,
     const cppgc::SourceLocation& loc = cppgc::SourceLocation::Current()) {
   return CrossThreadPersistent<T>(value, loc);

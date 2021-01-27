@@ -154,19 +154,22 @@ struct SpaceTrait<blink::HeapVectorBacking<T>> {
 // backing array.
 template <typename T>
 class MakeGarbageCollectedTrait<blink::HeapVectorBacking<T>>
-    : public MakeGarbageCollectedTraitBase<T> {
+    : public MakeGarbageCollectedTraitBase<blink::HeapVectorBacking<T>> {
+  using Backing = blink::HeapVectorBacking<T>;
+
  public:
   template <typename... Args>
-  static T* Call(AllocationHandle& handle, size_t num_elements) {
+  static Backing* Call(AllocationHandle& handle, size_t num_elements) {
     static_assert(!std::is_polymorphic<blink::HeapVectorBacking<T>>::value,
                   "HeapVectorBacking must not be polymorphic as it is "
                   "converted to a raw array of buckets for certain operation");
     CHECK_GT(num_elements, 0u);
     // Allocate automatically considers the custom space via SpaceTrait.
-    void* memory = MakeGarbageCollectedTraitBase<T>::Allocate(
+    void* memory = MakeGarbageCollectedTraitBase<Backing>::Allocate(
         handle, sizeof(T) * num_elements);
-    T* object = ::new (memory) T();
-    MakeGarbageCollectedTraitBase<T>::MarkObjectAsFullyConstructed(object);
+    Backing* object = ::new (memory) Backing();
+    MakeGarbageCollectedTraitBase<Backing>::MarkObjectAsFullyConstructed(
+        object);
     return object;
   }
 };
