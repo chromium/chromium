@@ -141,22 +141,7 @@ class FragmentTreeDumper {
         if (flags_ & NGPhysicalFragment::DumpLegacyDescendants &&
             layout_object && !layout_object->IsLayoutNGObject()) {
           DCHECK(box->Children().empty());
-          for (const LayoutObject* descendant = layout_object->SlowFirstChild();
-               descendant;) {
-            if (!descendant->IsLayoutNGObject()) {
-              descendant = descendant->NextInPreOrder(layout_object);
-              continue;
-            }
-            if (flags_ & NGPhysicalFragment::DumpHeaderText) {
-              AppendIndentation(indent + 2);
-              builder_->Append("(NG fragment root inside legacy subtree:)\n");
-            }
-            const LayoutBox* box_descendant = To<LayoutBox>(descendant);
-            DCHECK_EQ(box_descendant->PhysicalFragmentCount(), 1u);
-            Append(box_descendant->GetPhysicalFragment(0), base::nullopt,
-                   indent + 4);
-            descendant = descendant->NextInPreOrderAfterChildren(layout_object);
-          }
+          AppendLegacySubtree(*layout_object, indent);
           return;
         }
         for (auto& child : box->Children()) {
@@ -190,6 +175,42 @@ class FragmentTreeDumper {
     }
     has_content = AppendOffsetAndSize(fragment, fragment_offset, has_content);
     builder_->Append("\n");
+  }
+
+  void AppendLegacySubtree(const LayoutObject& layout_object,
+                           unsigned indent = 0) {
+    for (const LayoutObject* descendant = &layout_object; descendant;) {
+      if (!descendant->IsLayoutNGObject()) {
+        if (const auto* block = DynamicTo<LayoutBlock>(descendant)) {
+          if (const auto* positioned_descendants = block->PositionedObjects()) {
+            for (const auto* positioned_object : *positioned_descendants) {
+              if (positioned_object->IsLayoutNGObject())
+                AppendNGRootInLegacySubtree(*positioned_object, indent);
+              else
+                AppendLegacySubtree(*positioned_object, indent);
+            }
+          }
+        }
+        if (descendant->IsOutOfFlowPositioned() && descendant != &layout_object)
+          descendant = descendant->NextInPreOrderAfterChildren(&layout_object);
+        else
+          descendant = descendant->NextInPreOrder(&layout_object);
+        continue;
+      }
+      AppendNGRootInLegacySubtree(*descendant, indent);
+      descendant = descendant->NextInPreOrderAfterChildren(&layout_object);
+    }
+  }
+
+  void AppendNGRootInLegacySubtree(const LayoutObject& layout_object,
+                                   unsigned indent) {
+    if (flags_ & NGPhysicalFragment::DumpHeaderText) {
+      AppendIndentation(indent + 2);
+      builder_->Append("(NG fragment root inside legacy subtree:)\n");
+    }
+    const LayoutBox& box_descendant = To<LayoutBox>(layout_object);
+    DCHECK_EQ(box_descendant.PhysicalFragmentCount(), 1u);
+    Append(box_descendant.GetPhysicalFragment(0), base::nullopt, indent + 4);
   }
 
  private:
@@ -621,10 +642,33 @@ String NGPhysicalFragment::DumpFragmentTree(
   return string_builder.ToString();
 }
 
+String NGPhysicalFragment::DumpFragmentTree(const LayoutObject& root,
+                                            DumpFlags flags) {
+  if (root.IsLayoutNGObject()) {
+    const LayoutBox& root_box = To<LayoutBox>(root);
+    DCHECK_EQ(root_box.PhysicalFragmentCount(), 1u);
+    return root_box.GetPhysicalFragment(0)->DumpFragmentTree(flags);
+  }
+  StringBuilder string_builder;
+  if (flags & DumpHeaderText) {
+    string_builder.Append(
+        ".:: LayoutNG Physical Fragment Tree at legacy root ");
+    string_builder.Append(root.DebugName());
+    string_builder.Append(" ::.\n");
+  }
+  FragmentTreeDumper(&string_builder, flags).AppendLegacySubtree(root);
+  return string_builder.ToString();
+}
+
 #if DCHECK_IS_ON()
 void NGPhysicalFragment::ShowFragmentTree() const {
   DumpFlags dump_flags = DumpAll;
   LOG(INFO) << "\n" << DumpFragmentTree(dump_flags).Utf8();
+}
+
+void NGPhysicalFragment::ShowFragmentTree(const LayoutObject& root) {
+  DumpFlags dump_flags = DumpAll;
+  LOG(INFO) << "\n" << DumpFragmentTree(root, dump_flags).Utf8();
 }
 #endif
 
