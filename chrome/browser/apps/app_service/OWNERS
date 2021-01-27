@@ -6,3 +6,6 @@ per-file web_app*=cmp@chromium.org
 per-file web_app*=dmurph@chromium.org
 per-file web_app*=msw@chromium.org
 per-file plugin_vm*=file://chrome/browser/chromeos/guest_os/OWNERS
+
+# For intent handling system:
+per-file intent*=mxcai@chromium.org
