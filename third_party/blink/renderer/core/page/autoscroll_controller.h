@@ -84,7 +84,7 @@ class CORE_EXPORT AutoscrollController final
 
   // Middle-click autoscroll.
   void StartMiddleClickAutoscroll(LocalFrame*,
-                                  LayoutBox*,
+                                  LayoutBox* scrollable,
                                   const FloatPoint& position,
                                   const FloatPoint& position_global);
   void HandleMouseMoveForMiddleClickAutoscroll(
@@ -102,15 +102,17 @@ class CORE_EXPORT AutoscrollController final
 
   Member<Page> page_;
   AutoscrollType autoscroll_type_ = kNoAutoscroll;
-  LayoutBox* autoscroll_layout_object_ = nullptr;
 
   // Selection and drag-and-drop autoscroll.
   void ScheduleMainThreadAnimation();
+  LayoutBox* autoscroll_layout_object_ = nullptr;
   LayoutBox* pressed_layout_object_ = nullptr;
   PhysicalOffset drag_and_drop_autoscroll_reference_position_;
   base::TimeTicks drag_and_drop_autoscroll_start_time_;
 
   // Middle-click autoscroll.
+  LayoutBox* horizontal_autoscroll_layout_box_ = nullptr;
+  LayoutBox* vertical_autoscroll_layout_box_ = nullptr;
   FloatPoint middle_click_autoscroll_start_pos_global_;
   gfx::Vector2dF last_velocity_;
   MiddleClickMode middle_click_mode_ = kMiddleClickInitial;
@@ -120,6 +122,9 @@ class CORE_EXPORT AutoscrollController final
   FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest,
                            ContinueAutoscrollAfterMouseLeaveEvent);
   FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest, StopAutoscrollOnResize);
+  FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest, AutoscrollIsNotPropagated);
+  FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest,
+                           AutoscrollIsPropagatedInYDirection);
 };
 
 }  // namespace blink

@@ -1842,6 +1842,7 @@ ScrollNode* ThreadedInputHandler::FindNodeToLatch(ScrollState* scroll_state,
                                                   ui::ScrollInputType type) {
   ScrollTree& scroll_tree = GetScrollTree();
   ScrollNode* scroll_node = nullptr;
+  ScrollNode* first_scrollable_node = nullptr;
   for (ScrollNode* cur_node = starting_node; cur_node;
        cur_node = scroll_tree.parent(cur_node)) {
     if (GetViewport().ShouldScroll(*cur_node)) {
@@ -1855,10 +1856,11 @@ ScrollNode* ThreadedInputHandler::FindNodeToLatch(ScrollState* scroll_state,
     if (!cur_node->scrollable)
       continue;
 
-    // For UX reasons, autoscrolling should always latch to the top-most
-    // scroller, even if it can't scroll in the initial direction.
-    if (type == ui::ScrollInputType::kAutoscroll ||
-        CanConsumeDelta(*scroll_state, *cur_node)) {
+    if (!first_scrollable_node) {
+      first_scrollable_node = cur_node;
+    }
+
+    if (CanConsumeDelta(*scroll_state, *cur_node)) {
       scroll_node = cur_node;
       break;
     }
@@ -1878,6 +1880,14 @@ ScrollNode* ThreadedInputHandler::FindNodeToLatch(ScrollState* scroll_state,
       scroll_state->set_is_scroll_chain_cut(true);
       break;
     }
+  }
+
+  // If the root scroller can not consume delta in an autoscroll, latch on
+  // to the top most autoscrollable scroller. See https://crbug.com/969150
+  if ((type == ui::ScrollInputType::kAutoscroll) && first_scrollable_node) {
+    // If scroll_node is nullptr or delta can not be consumed
+    if (!(scroll_node && CanConsumeDelta(*scroll_state, *scroll_node)))
+      scroll_node = first_scrollable_node;
   }
 
   return scroll_node;
