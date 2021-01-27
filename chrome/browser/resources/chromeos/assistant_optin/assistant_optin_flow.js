@@ -72,9 +72,21 @@ Polymer({
    * @param {?string} type The type of the flow.
    * @param {?string} captionBarHeight The height of the caption bar.
    */
-  onShow(type, captionBarHeight) {
+  onShow(type, captionBarHeight, oobeDialogHeight, oobeDialogWidth) {
     captionBarHeight = captionBarHeight ? captionBarHeight + 'px' : '0px';
     this.style.setProperty('--caption-bar-height', captionBarHeight);
+
+    if (oobeDialogHeight && oobeDialogWidth) {
+      document.documentElement.style.setProperty(
+          '--oobe-oobe-dialog-height-base', oobeDialogHeight + 'px');
+      document.documentElement.style.setProperty(
+          '--oobe-oobe-dialog-width-base', oobeDialogWidth + 'px');
+      if (parseInt(oobeDialogWidth) > parseInt(oobeDialogHeight)) {
+        document.documentElement.setAttribute('orientation', 'horizontal');
+      } else {
+        document.documentElement.setAttribute('orientation', 'vertical');
+      }
+    }
 
     type = type ? type : this.FlowType.CONSENT_FLOW.toString();
     var flowType = Number(type);

@@ -8,11 +8,13 @@
 #include <string>
 #include <utility>
 
+#include "ash/public/cpp/shelf_config.h"
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/buildflag.h"
 #include "chrome/browser/chromeos/assistant/assistant_util.h"
+#include "chrome/browser/chromeos/login/ui/oobe_dialog_size_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/ash_util.h"
@@ -22,6 +24,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
 #include "chromeos/assistant/buildflags.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "components/prefs/pref_service.h"
@@ -58,15 +61,8 @@ constexpr gfx::Insets kDialogInsets =
 
 constexpr char kFlowTypeParamKey[] = "flow-type";
 constexpr char kCaptionBarHeightParamKey[] = "caption-bar-height";
-
-GURL CreateAssistantOptInURL(ash::FlowType type) {
-  GURL gurl(chrome::kChromeUIAssistantOptInURL);
-  gurl = net::AppendQueryParameter(
-      gurl, kFlowTypeParamKey, base::NumberToString(static_cast<int>(type)));
-  gurl = net::AppendQueryParameter(gurl, kCaptionBarHeightParamKey,
-                                   base::NumberToString(kCaptionBarHeight));
-  return gurl;
-}
+constexpr char kOobeDialogHeightParamKey[] = "oobe-dialog-height";
+constexpr char kOobeDialogWidthParamKey[] = "oobe-dialog-width";
 
 }  // namespace
 
@@ -184,12 +180,35 @@ void AssistantOptInDialog::AdjustWidgetInitParams(
   params->z_order = ui::ZOrderLevel::kNormal;
 }
 
+GURL AssistantOptInDialog::CreateAssistantOptInURL(ash::FlowType type) {
+  GURL gurl(chrome::kChromeUIAssistantOptInURL);
+  gurl = net::AppendQueryParameter(
+      gurl, kFlowTypeParamKey, base::NumberToString(static_cast<int>(type)));
+  gurl = net::AppendQueryParameter(gurl, kCaptionBarHeightParamKey,
+                                   base::NumberToString(kCaptionBarHeight));
+  gfx::Size size;
+  GetDialogSize(&size);
+  gurl = net::AppendQueryParameter(gurl, kOobeDialogHeightParamKey,
+                                   base::NumberToString(size.height()));
+  gurl = net::AppendQueryParameter(gurl, kOobeDialogWidthParamKey,
+                                   base::NumberToString(size.width()));
+  return gurl;
+}
+
 void AssistantOptInDialog::GetDialogSize(gfx::Size* size) const {
   auto bounds = display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
-  bounds.Inset(kDialogInsets);
-  auto dialog_size = bounds.size();
-  dialog_size.SetToMin(kDialogMaxSize);
-  dialog_size.SetToMax(kDialogMinSize);
+  gfx::Size dialog_size;
+  if (features::IsNewOobeLayoutEnabled()) {
+    const bool is_horizontal = bounds.width() > bounds.height();
+    dialog_size = CalculateOobeDialogSize(
+        display::Screen::GetScreen()->GetPrimaryDisplay().size(),
+        ash::ShelfConfig::Get()->shelf_size(), is_horizontal);
+  } else {
+    bounds.Inset(kDialogInsets);
+    dialog_size = bounds.size();
+    dialog_size.SetToMin(kDialogMaxSize);
+    dialog_size.SetToMax(kDialogMinSize);
+  }
   size->SetSize(dialog_size.width(), dialog_size.height());
 }
 

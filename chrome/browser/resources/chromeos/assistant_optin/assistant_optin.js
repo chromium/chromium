@@ -21,7 +21,9 @@ cr.define('login.AssistantOptInFlowScreen', function() {
       $('assistant-optin-flow-card')
           .onShow(
               url.searchParams.get('flow-type'),
-              url.searchParams.get('caption-bar-height'));
+              url.searchParams.get('caption-bar-height'),
+              url.searchParams.get('oobe-dialog-height'),
+              url.searchParams.get('oobe-dialog-width'));
     },
 
     /**
