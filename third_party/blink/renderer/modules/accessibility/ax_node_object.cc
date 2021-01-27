@@ -3271,6 +3271,9 @@ void AXNodeObject::AddChildren() {
 
   have_children_ = true;
 
+  if (!CanHaveChildren())
+    return;
+
   if (RoleValue() == ax::mojom::blink::Role::kStaticText ||
       RoleValue() == ax::mojom::blink::Role::kLineBreak) {
     AddInlineTextBoxChildren();
@@ -3361,8 +3364,10 @@ void AXNodeObject::AddChildAndCheckIncluded(AXObject* child,
 void AXNodeObject::InsertChild(AXObject* child,
                                unsigned index,
                                bool is_from_aria_owns) {
-  if (!child || !CanHaveChildren())
+  if (!child)
     return;
+
+  DCHECK(CanHaveChildren());
 
   DCHECK(!child->IsDetached())
       << "Cannot add a detached child: " << child->ToString(true, true);
