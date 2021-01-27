@@ -629,26 +629,30 @@ const OFFLINE_INFO_BANNER_COUNTER_LIMIT = 3;
    * @private
    */
   async maybeShowHoldingSpaceWelcomeBanner_() {
-    if (!this.showWelcome_) {
-      return;
-    }
-
     if (!HoldingSpaceUtil.isFeatureEnabled()) {
       return;
     }
 
     await this.ready_;
 
+    if (!this.showWelcome_) {
+      this.showHoldingSpaceWelcomeBanner_(false);
+      return;
+    }
+
     // The holding space feature is only allowed for specific volume types so
     // its banner should only be shown for those volumes. Note that the holding
     // space banner is explicitly disallowed from showing in `DRIVE` to prevent
     // the possibility of it being shown alongside the Drive banner.
     const allowedVolumeTypes = HoldingSpaceUtil.getAllowedVolumeTypes();
-    const currentVolumeInfo = this.directoryModel_.getCurrentVolumeInfo();
-    if (!currentVolumeInfo ||
-        !allowedVolumeTypes.includes(currentVolumeInfo.volumeType) ||
-        currentVolumeInfo.volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
-      return;
+    const currentRootType = this.directoryModel_.getCurrentRootType();
+    if (!util.isRecentRootType(currentRootType)) {
+      const volumeInfo = this.directoryModel_.getCurrentVolumeInfo();
+      if (!volumeInfo || !allowedVolumeTypes.includes(volumeInfo.volumeType) ||
+          volumeInfo.volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
+        this.showHoldingSpaceWelcomeBanner_(false);
+        return;
+      }
     }
 
     // The holding space banner should not be shown after having been shown
