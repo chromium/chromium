@@ -356,10 +356,10 @@ int main() {
   delete loader;
 
   // Process shutdown is hard and some process types have been crashing during
-  // shutdown. TerminateProcess is safer and faster.
+  // shutdown. TerminateCurrentProcessImmediately is safer and faster.
   if (process_type == switches::kUtilityProcess ||
       process_type == switches::kPpapiPluginProcess) {
-    TerminateProcess(GetCurrentProcess(), rc);
+    base::Process::TerminateCurrentProcessImmediately(rc);
   }
   return rc;
 }
