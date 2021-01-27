@@ -331,10 +331,6 @@ std::set<SystemAppType> GetDisabledSystemWebApps() {
 }  // namespace
 
 SystemAppInfo::SystemAppInfo(const std::string& internal_name,
-                             const GURL& install_url)
-    : internal_name(internal_name), install_url(install_url) {}
-
-SystemAppInfo::SystemAppInfo(const std::string& internal_name,
                              const GURL& install_url,
                              const WebApplicationInfoFactory& app_info_factory)
     : internal_name(internal_name),

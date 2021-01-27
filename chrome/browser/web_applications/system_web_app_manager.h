@@ -50,7 +50,6 @@ using WebApplicationInfoFactory =
 
 // The configuration options for a System App.
 struct SystemAppInfo {
-  SystemAppInfo(const std::string& internal_name, const GURL& install_url);
   // When installing via a WebApplicationInfo, the url is never loaded. It's
   // needed only for various legacy reasons, maps for tracking state, and
   // generating the AppId and things of that nature.

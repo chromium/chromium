@@ -297,7 +297,9 @@ TestSystemWebAppInstallation::SetUpChromeUntrustedApp() {
 // static
 std::unique_ptr<TestSystemWebAppInstallation>
 TestSystemWebAppInstallation::SetUpNonResizeableApp() {
-  SystemAppInfo app_info("Test", GURL("chrome://test-system-app/pwa.html"));
+  SystemAppInfo app_info(
+      "Test", GURL("chrome://test-system-app/pwa.html"),
+      base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   app_info.is_resizeable = false;
 
   return base::WrapUnique(new TestSystemWebAppInstallation(
