@@ -8,7 +8,10 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+class PrefRegistrySimple;
 
 namespace base {
 class OneShotTimer;
@@ -26,6 +29,8 @@ class ASH_EXPORT CellularSetupNotifier : public SessionObserver {
   CellularSetupNotifier& operator=(const CellularSetupNotifier&) = delete;
   ~CellularSetupNotifier() override;
 
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
+
  private:
   friend class CellularSetupNotifierTest;
   FRIEND_TEST_ALL_PREFIXES(CellularSetupNotifierTest,
@@ -36,6 +41,12 @@ class ASH_EXPORT CellularSetupNotifier : public SessionObserver {
                            DontShowNotificationActivatedNetwork);
   FRIEND_TEST_ALL_PREFIXES(CellularSetupNotifierTest,
                            ShowNotificationMultipleUnactivatedNetworks);
+  FRIEND_TEST_ALL_PREFIXES(CellularSetupNotifierTest,
+                           LogOutBeforeNotificationShowsLogInAgain);
+  FRIEND_TEST_ALL_PREFIXES(CellularSetupNotifierTest,
+                           LogInAgainAfterShowingNotification);
+  FRIEND_TEST_ALL_PREFIXES(CellularSetupNotifierTest,
+                           LogInAgainAfterCheckingNonCellularDevice);
 
   // SessionObserver:
   void OnSessionStateChanged(session_manager::SessionState state) override;

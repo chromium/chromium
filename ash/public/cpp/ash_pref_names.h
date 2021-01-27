@@ -99,6 +99,8 @@ ASH_PUBLIC_EXPORT extern const char kShownPaletteWelcomeBubble[];
 ASH_PUBLIC_EXPORT extern const char kEnableStylusTools[];
 ASH_PUBLIC_EXPORT extern const char kLaunchPaletteOnEjectEvent[];
 
+ASH_PUBLIC_EXPORT extern const char kCanCellularSetupNotificationBeShown[];
+
 // Managed-guest session privacy warning.
 ASH_PUBLIC_EXPORT extern const char
     kManagedGuestSessionPrivacyWarningsEnabled[];

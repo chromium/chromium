@@ -243,6 +243,13 @@ const char kEnableStylusTools[] = "settings.enable_stylus_tools";
 const char kLaunchPaletteOnEjectEvent[] =
     "settings.launch_palette_on_eject_event";
 
+// A boolean pref that specifies if the cellular setup notification can be
+// shown or not. This notification should be shown post-OOBE if the user has a
+// cellular-capable device but no available cellular networks. It should only be
+// shown at most once per user.
+const char kCanCellularSetupNotificationBeShown[] =
+    "ash.cellular_setup.can_setup_notification_be_shown";
+
 // Boolean pref indicating whether the privacy warning of the managed-guest
 // session on both; the login screen and inside the auto-launched session,
 // should be displayed or not.

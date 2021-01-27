@@ -4,6 +4,8 @@
 
 #include "ash/system/network/cellular_setup_notifier.h"
 
+#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/system_notification_controller.h"
 #include "ash/test/ash_test_base.h"
@@ -16,6 +18,7 @@
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_helper.h"
+#include "components/prefs/pref_service.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -76,12 +79,30 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
         CellularSetupNotifier::kCellularSetupNotificationId);
   }
 
-  void LogInAndFireTimer() {
-    SimulateNewUserFirstLogin("user1@test.com");
+  void LogIn() { SimulateUserLogin("user1@test.com"); }
 
+  void LogOut() { ClearLogin(); }
+
+  void LogInAndFireTimer() {
+    LogIn();
+    EXPECT_TRUE(GetCanCellularSetupNotificationBeShown());
+
+    ASSERT_TRUE(mock_notification_timer_->IsRunning());
     mock_notification_timer_->Fire();
     // Wait for the async network calls to complete.
     base::RunLoop().RunUntilIdle();
+  }
+
+  bool GetCanCellularSetupNotificationBeShown() {
+    PrefService* prefs =
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+    return prefs->GetBoolean(prefs::kCanCellularSetupNotificationBeShown);
+  }
+
+  void SetCanCellularSetupNotificationBeShown(bool value) {
+    PrefService* prefs =
+        Shell::Get()->session_controller()->GetLastActiveUserPrefService();
+    prefs->SetBoolean(prefs::kCanCellularSetupNotificationBeShown, value);
   }
 
   // Ownership passed to Shell owned CellularSetupNotifier instance.
@@ -107,6 +128,7 @@ TEST_F(CellularSetupNotifierTest, ShowNotificationUnactivatedNetwork) {
 
   message_center::Notification* notification = GetCellularSetupNotification();
   EXPECT_TRUE(notification);
+  EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
 }
 
 TEST_F(CellularSetupNotifierTest, DontShowNotificationActivatedNetwork) {
@@ -125,6 +147,7 @@ TEST_F(CellularSetupNotifierTest, DontShowNotificationActivatedNetwork) {
 
   message_center::Notification* notification = GetCellularSetupNotification();
   EXPECT_FALSE(notification);
+  EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
 }
 
 TEST_F(CellularSetupNotifierTest, ShowNotificationMultipleUnactivatedNetworks) {
@@ -142,6 +165,57 @@ TEST_F(CellularSetupNotifierTest, ShowNotificationMultipleUnactivatedNetworks) {
 
   message_center::Notification* notification = GetCellularSetupNotification();
   EXPECT_TRUE(notification);
+  EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
+}
+
+TEST_F(CellularSetupNotifierTest, LogOutBeforeNotificationShowsLogInAgain) {
+  network_config_helper_->network_state_helper().AddDevice(
+      kShillManagerClientStubCellularDevice, shill::kTypeCellular,
+      kShillManagerClientStubCellularDeviceName);
+
+  LogIn();
+  ASSERT_TRUE(mock_notification_timer_->IsRunning());
+
+  LogOut();
+  ASSERT_FALSE(mock_notification_timer_->IsRunning());
+
+  LogInAndFireTimer();
+
+  message_center::Notification* notification = GetCellularSetupNotification();
+  EXPECT_TRUE(notification);
+  EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
+}
+
+TEST_F(CellularSetupNotifierTest, LogInAgainAfterShowingNotification) {
+  network_config_helper_->network_state_helper().AddDevice(
+      kShillManagerClientStubCellularDevice, shill::kTypeCellular,
+      kShillManagerClientStubCellularDeviceName);
+
+  LogInAndFireTimer();
+
+  message_center::Notification* notification = GetCellularSetupNotification();
+  EXPECT_TRUE(notification);
+  EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
+
+  message_center::MessageCenter::Get()->RemoveNotification(
+      CellularSetupNotifier::kCellularSetupNotificationId, false);
+  LogOut();
+  LogIn();
+
+  ASSERT_FALSE(mock_notification_timer_->IsRunning());
+}
+
+TEST_F(CellularSetupNotifierTest, LogInAgainAfterCheckingNonCellularDevice) {
+  LogInAndFireTimer();
+
+  message_center::Notification* notification = GetCellularSetupNotification();
+  EXPECT_FALSE(notification);
+  EXPECT_FALSE(GetCanCellularSetupNotificationBeShown());
+
+  LogOut();
+  LogIn();
+
+  ASSERT_FALSE(mock_notification_timer_->IsRunning());
 }
 
 }  // namespace ash
