@@ -84,7 +84,8 @@ void ExternalVkImageOverlayRepresentation::EndReadAccess(
   // EndReadAccess without waiting for the fence.
   if (!release_fence.is_null()) {
     read_end_semaphore = ExternalSemaphore::CreateFromHandle(
-        nullptr, GpuFenceHandleToSemaphoreHandle(std::move(release_fence)));
+        vk_image_backing_->context_provider(),
+        GpuFenceHandleToSemaphoreHandle(std::move(release_fence)));
   }
 
   vk_image_backing_->EndAccess(/*readonly=*/true, std::move(read_end_semaphore),
