@@ -11,13 +11,16 @@
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_app_factory.h"
 #include "components/webdata/common/web_data_service_consumer.h"
+#include "content/public/browser/web_contents_observer.h"
 
 namespace payments {
 
 struct SecurePaymentConfirmationInstrument;
 
-class SecurePaymentConfirmationAppFactory : public PaymentAppFactory,
-                                            public WebDataServiceConsumer {
+class SecurePaymentConfirmationAppFactory
+    : public PaymentAppFactory,
+      public WebDataServiceConsumer,
+      public content::WebContentsObserver {
  public:
   SecurePaymentConfirmationAppFactory();
   ~SecurePaymentConfirmationAppFactory() override;
@@ -38,16 +41,20 @@ class SecurePaymentConfirmationAppFactory : public PaymentAppFactory,
       WebDataServiceBase::Handle handle,
       std::unique_ptr<WDTypedResult> result) override;
 
+  // WebContentsObserver:
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+
   void OnIsUserVerifyingPlatformAuthenticatorAvailable(
       base::WeakPtr<PaymentAppFactory::Delegate> delegate,
       mojom::SecurePaymentConfirmationRequestPtr request,
-      std::unique_ptr<autofill::InternalAuthenticator> authenticator,
       bool is_available);
 
   void OnAppIconDecoded(
       std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
       std::unique_ptr<Request> request,
       const SkBitmap& decoded_image);
+
+  std::unique_ptr<autofill::InternalAuthenticator> authenticator_;
 
   std::map<WebDataServiceBase::Handle, std::unique_ptr<Request>> requests_;
   base::WeakPtrFactory<SecurePaymentConfirmationAppFactory> weak_ptr_factory_{

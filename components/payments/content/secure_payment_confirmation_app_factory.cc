@@ -72,13 +72,13 @@ void SecurePaymentConfirmationAppFactory::
     OnIsUserVerifyingPlatformAuthenticatorAvailable(
         base::WeakPtr<PaymentAppFactory::Delegate> delegate,
         mojom::SecurePaymentConfirmationRequestPtr request,
-        std::unique_ptr<autofill::InternalAuthenticator> authenticator,
         bool is_available) {
   if (!delegate || !delegate->GetWebContents())
     return;
 
-  if (!is_available && !base::FeatureList::IsEnabled(
-                           features::kSecurePaymentConfirmationDebug)) {
+  if (!authenticator_ ||
+      (!is_available && !base::FeatureList::IsEnabled(
+                            features::kSecurePaymentConfirmationDebug))) {
     delegate->OnDoneCreatingPaymentApps();
     return;
   }
@@ -98,8 +98,9 @@ void SecurePaymentConfirmationAppFactory::
   WebDataServiceBase::Handle handle =
       web_data_service->GetSecurePaymentConfirmationInstruments(
           std::move(request->credential_ids), this);
-  requests_[handle] = std::make_unique<Request>(
-      delegate, web_data_service, std::move(request), std::move(authenticator));
+  requests_[handle] =
+      std::make_unique<Request>(delegate, web_data_service, std::move(request),
+                                std::move(authenticator_));
 }
 
 SecurePaymentConfirmationAppFactory::SecurePaymentConfirmationAppFactory()
@@ -133,21 +134,29 @@ void SecurePaymentConfirmationAppFactory::Create(
         return;
       }
 
-      std::unique_ptr<autofill::InternalAuthenticator> authenticator =
-          delegate->CreateInternalAuthenticator();
-      auto* authenticator_ptr = authenticator.get();
+      // Observe the web contents to ensure the authenticator outlives it.
+      Observe(delegate->GetWebContents());
 
-      authenticator_ptr->IsUserVerifyingPlatformAuthenticatorAvailable(
+      authenticator_ = delegate->CreateInternalAuthenticator();
+
+      authenticator_->IsUserVerifyingPlatformAuthenticatorAvailable(
           base::BindOnce(&SecurePaymentConfirmationAppFactory::
                              OnIsUserVerifyingPlatformAuthenticatorAvailable,
                          weak_ptr_factory_.GetWeakPtr(), delegate,
-                         method_data->secure_payment_confirmation.Clone(),
-                         std::move(authenticator)));
+                         method_data->secure_payment_confirmation.Clone()));
       return;
     }
   }
 
   delegate->OnDoneCreatingPaymentApps();
+}
+
+void SecurePaymentConfirmationAppFactory::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  if (authenticator_ &&
+      authenticator_->GetRenderFrameHost() == render_frame_host) {
+    authenticator_.reset();
+  }
 }
 
 struct SecurePaymentConfirmationAppFactory::Request
@@ -167,6 +176,15 @@ struct SecurePaymentConfirmationAppFactory::Request
 
   Request(const Request& other) = delete;
   Request& operator=(const Request& other) = delete;
+
+  // WebContentsObserver:
+  void RenderFrameDeleted(
+      content::RenderFrameHost* render_frame_host) override {
+    if (authenticator &&
+        authenticator->GetRenderFrameHost() == render_frame_host) {
+      authenticator.reset();
+    }
+  }
 
   base::WeakPtr<PaymentAppFactory::Delegate> delegate;
   scoped_refptr<payments::PaymentManifestWebDataService> web_data_service;
@@ -224,7 +242,7 @@ void SecurePaymentConfirmationAppFactory::OnAppIconDecoded(
     const SkBitmap& decoded_icon) {
   DCHECK(request);
   if (!request->delegate || !request->web_contents() ||
-      !request->delegate->GetSpec() ||
+      !request->delegate->GetSpec() || !request->authenticator ||
       request->authenticator->GetRenderFrameHost() !=
           request->web_contents()->GetMainFrame()) {
     request->delegate->OnDoneCreatingPaymentApps();
