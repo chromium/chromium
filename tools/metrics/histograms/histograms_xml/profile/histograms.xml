@@ -461,7 +461,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Profile.PercentageOfManagedProfiles" units="units"
-    expires_after="2021-01-24">
+    expires_after="2022-01-24">
   <owner>agawronska@chromium.org</owner>
   <owner>michaelpg@chromium.org</owner>
   <owner>cros-families@google.com</owner>
