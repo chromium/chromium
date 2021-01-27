@@ -11,6 +11,11 @@
 // Called when the Discover Feed changes it visibility.
 - (void)setDiscoverFeedVisible:(BOOL)visible;
 
+// Called when the Discover Feed layout needs updating. e.g. An inner view like
+// ContentSuggestions height might have changed and the Feed needs to update its
+// layout to reflect this.
+- (void)updateDiscoverFeedLayout;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_COMMANDS_H_

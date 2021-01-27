@@ -160,18 +160,7 @@ const CGFloat kFakeOmniboxTopOffset = 3;
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
-  [self updateFeedInsetsForContentSuggestions];
-
-  self.headerSynchronizer.showing = YES;
-  // Reload data to ensure the Most Visited tiles and fake omnibox are correctly
-  // positioned, in particular during a rotation while a ViewController is
-  // presented in front of the NTP.
-  [self.headerSynchronizer
-      updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
-  [self.contentSuggestionsViewController.collectionView
-          .collectionViewLayout invalidateLayout];
-  // Ensure initial fake omnibox layout.
-  [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
+  [self updateContentSuggestionForCurrentLayout];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -234,6 +223,10 @@ const CGFloat kFakeOmniboxTopOffset = 3;
 
 - (void)setContentOffset:(CGFloat)offset {
   [self setContentOffset:offset fromSavedState:YES];
+}
+
+- (void)updateLayoutForContentSuggestions {
+  [self updateContentSuggestionForCurrentLayout];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -389,6 +382,23 @@ const CGFloat kFakeOmniboxTopOffset = 3;
   self.scrolledIntoFeed =
       self.discoverFeedWrapperViewController.feedCollectionView.contentOffset
           .y > kOffsetToPinOmnibox;
+}
+
+// Updates the ContentSuggestionsViewController and its header for the current
+// layout.
+- (void)updateContentSuggestionForCurrentLayout {
+  [self updateFeedInsetsForContentSuggestions];
+
+  self.headerSynchronizer.showing = YES;
+  // Reload data to ensure the Most Visited tiles and fake omnibox are correctly
+  // positioned, in particular during a rotation while a ViewController is
+  // presented in front of the NTP.
+  [self.headerSynchronizer
+      updateFakeOmniboxOnNewWidth:self.collectionView.bounds.size.width];
+  [self.contentSuggestionsViewController.collectionView
+          .collectionViewLayout invalidateLayout];
+  // Ensure initial fake omnibox layout.
+  [self.headerSynchronizer updateFakeOmniboxOnCollectionScroll];
 }
 
 // Sets an inset to the Discover feed equal to the content suggestions height,

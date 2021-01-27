@@ -344,6 +344,14 @@
   [self.containerViewController.view layoutIfNeeded];
 }
 
+- (void)updateDiscoverFeedLayout {
+  if ([self isNTPRefactoredAndFeedVisible]) {
+    [self.containedViewController.view setNeedsLayout];
+    [self.containedViewController.view layoutIfNeeded];
+    [self.ntpViewController updateLayoutForContentSuggestions];
+  }
+}
+
 #pragma mark - LogoAnimationControllerOwnerOwner
 
 - (id<LogoAnimationControllerOwner>)logoAnimationControllerOwner {
