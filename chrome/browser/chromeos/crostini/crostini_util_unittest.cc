@@ -111,11 +111,12 @@ TEST_F(CrostiniUtilTest, LaunchCallbackRunsOnRestartError) {
   fake_concierge_client_->set_start_vm_response({});
 
   // Launch should fail and invoke callback.
-  LaunchCrostiniApp(profile_.get(), app_id_, kDisplayId, {},
-                    base::Bind(&CrostiniUtilTest::SuccessCallback,
-                               base::Unretained(this), false,
-                               "crostini restart to launch app "
-                               "pfdnkhehloenlegacemoalhjljmpllpc failed: 5"));
+  LaunchCrostiniApp(
+      profile_.get(), app_id_, kDisplayId, {},
+      base::BindOnce(&CrostiniUtilTest::SuccessCallback, base::Unretained(this),
+                     false,
+                     "crostini restart to launch app "
+                     "pfdnkhehloenlegacemoalhjljmpllpc failed: 5"));
 
   run_loop_->Run();
 }

@@ -2621,9 +2621,9 @@ void CrostiniManager::OnContainerStarted(
   if (signal.vm_name() == kCrostiniDefaultVmName) {
     AddShutdownContainerCallback(
         container_id,
-        base::Bind(&CrostiniManager::DeallocateForwardedPortsCallback,
-                   weak_ptr_factory_.GetWeakPtr(), std::move(profile_),
-                   ContainerId(signal.vm_name(), signal.container_name())));
+        base::BindOnce(&CrostiniManager::DeallocateForwardedPortsCallback,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(profile_),
+                       ContainerId(signal.vm_name(), signal.container_name())));
     if (signal.container_name() == kCrostiniDefaultContainerName) {
       for (auto& observer : container_started_observers_) {
         observer.OnContainerStarted(container_id);
