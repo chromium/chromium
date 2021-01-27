@@ -22,6 +22,7 @@
 #include "net/base/isolation_info.h"
 #include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_store_test_callbacks.h"
@@ -45,11 +46,28 @@ class RecordingCookieObserver : public network::mojom::CookieAccessObserver {
     bool get = false;
     GURL url;
     GURL site_for_cookies;
-    // The vector is merely to permit use of MatchesCookieLine, there is always
-    // one thing.
-    std::vector<net::CanonicalCookie> cookie;
+    mojom::CookieOrLinePtr cookie_or_line;
     net::CookieInclusionStatus status;
     base::Optional<std::string> devtools_request_id;
+
+    friend void PrintTo(const CookieOp& op, std::ostream* os) {
+      *os << "{get=" << op.get << ", url=" << op.url
+          << ", site_for_cookies=" << op.site_for_cookies
+          << ", cookie_or_line=(" << CookieOrLineToString(op.cookie_or_line)
+          << ", " << static_cast<int>(op.cookie_or_line->which()) << ")"
+          << ", status=" << op.status.GetDebugString() << "}";
+    }
+
+    static std::string CookieOrLineToString(
+        const mojom::CookieOrLinePtr& cookie_or_line) {
+      switch (cookie_or_line->which()) {
+        case mojom::CookieOrLine::Tag::COOKIE:
+          return net::CanonicalCookie::BuildCookieLine(
+              {cookie_or_line->get_cookie()});
+        case mojom::CookieOrLine::Tag::COOKIE_STRING:
+          return cookie_or_line->get_cookie_string();
+      }
+    }
   };
 
   RecordingCookieObserver() = default;
@@ -69,10 +87,10 @@ class RecordingCookieObserver : public network::mojom::CookieAccessObserver {
       op.get = details->type == mojom::CookieAccessDetails::Type::kRead;
       op.url = details->url;
       op.site_for_cookies = details->site_for_cookies.RepresentativeUrl();
-      op.cookie.push_back(cookie_and_access_result.cookie);
-      op.status = cookie_and_access_result.access_result.status;
+      op.cookie_or_line = std::move(cookie_and_access_result->cookie_or_line);
+      op.status = cookie_and_access_result->access_result.status;
       op.devtools_request_id = details->devtools_request_id;
-      recorded_activity_.push_back(op);
+      recorded_activity_.push_back(std::move(op));
     }
   }
 
@@ -154,6 +172,17 @@ class RestrictedCookieManagerSync {
         }));
     run_loop.Run();
     return result;
+  }
+
+  void SetCookieFromString(const GURL& url,
+                           const net::SiteForCookies& site_for_cookies,
+                           const url::Origin& top_frame_origin,
+                           const std::string& cookie) {
+    base::RunLoop run_loop;
+    cookie_service_->SetCookieFromString(
+        url, site_for_cookies, top_frame_origin, cookie,
+        base::BindLambdaForTesting([&run_loop]() { run_loop.Quit(); }));
+    run_loop.Run();
   }
 
   void AddChangeListener(
@@ -340,9 +369,50 @@ INSTANTIATE_TEST_SUITE_P(
                     mojom::RestrictedCookieManagerRole::NETWORK));
 
 namespace {
+
 bool CompareCanonicalCookies(const net::CanonicalCookie& c1,
                              const net::CanonicalCookie& c2) {
   return c1.PartialCompare(c2);
+}
+
+MATCHER_P6(MatchesCookieOp,
+           get,
+           url,
+           site_for_cookies,
+           cookie_or_line,
+           status,
+           devtools_request_id,
+           "") {
+  return testing::ExplainMatchResult(
+      testing::AllOf(
+          testing::Field(&RecordingCookieObserver::CookieOp::get, get),
+          testing::Field(&RecordingCookieObserver::CookieOp::url, url),
+          testing::Field(&RecordingCookieObserver::CookieOp::site_for_cookies,
+                         site_for_cookies),
+          testing::Field(&RecordingCookieObserver::CookieOp::cookie_or_line,
+                         cookie_or_line),
+          testing::Field(&RecordingCookieObserver::CookieOp::status, status),
+          testing::Field(
+              &RecordingCookieObserver::CookieOp::devtools_request_id,
+              devtools_request_id)),
+      arg, result_listener);
+}
+
+// Helper for checking that status.HasExactlyExclusionReasonsForTesting(reasons)
+// == true.
+MATCHER_P(HasExactlyExclusionReasonsForTesting, reasons, "") {
+  net::CookieInclusionStatus status = arg;
+  return testing::ExplainMatchResult(
+      true, status.HasExactlyExclusionReasonsForTesting(reasons),
+      result_listener);
+}
+
+MATCHER_P2(CookieOrLine, string, type, "") {
+  return type == arg->which() &&
+         testing::ExplainMatchResult(
+             string,
+             RecordingCookieObserver::CookieOp::CookieOrLineToString(arg),
+             result_listener);
 }
 
 }  // anonymous namespace
@@ -580,8 +650,9 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
   EXPECT_EQ(recorded_activity()[0].get, true);
   EXPECT_EQ(recorded_activity()[0].url, "https://example.com/test/");
   EXPECT_EQ(recorded_activity()[0].site_for_cookies, "https://notexample.com/");
-  EXPECT_THAT(recorded_activity()[0].cookie,
-              net::MatchesCookieLine("cookie-name=cookie-value"));
+  EXPECT_THAT(recorded_activity()[0].cookie_or_line,
+              CookieOrLine("cookie-name=cookie-value",
+                           mojom::CookieOrLine::Tag::COOKIE));
   EXPECT_TRUE(recorded_activity()[0].status.IsInclude());
   EXPECT_FALSE(recorded_activity()[0].status.ShouldWarn());
 
@@ -602,8 +673,9 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicy) {
   EXPECT_EQ(recorded_activity()[1].get, true);
   EXPECT_EQ(recorded_activity()[1].url, "https://example.com/test/");
   EXPECT_EQ(recorded_activity()[1].site_for_cookies, "https://notexample.com/");
-  EXPECT_THAT(recorded_activity()[1].cookie,
-              net::MatchesCookieLine("cookie-name=cookie-value"));
+  EXPECT_THAT(recorded_activity()[1].cookie_or_line,
+              CookieOrLine("cookie-name=cookie-value",
+                           mojom::CookieOrLine::Tag::COOKIE));
   EXPECT_TRUE(
       recorded_activity()[1].status.HasExactlyExclusionReasonsForTesting(
           {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
@@ -648,8 +720,9 @@ TEST_P(RestrictedCookieManagerTest, GetAllForUrlPolicyWarnActual) {
   EXPECT_EQ(recorded_activity()[0].get, true);
   EXPECT_EQ(recorded_activity()[0].url, "https://example.com/test/");
   EXPECT_EQ(recorded_activity()[0].site_for_cookies, "https://notexample.com/");
-  EXPECT_THAT(recorded_activity()[0].cookie,
-              net::MatchesCookieLine("cookie-name=cookie-value"));
+  EXPECT_THAT(recorded_activity()[0].cookie_or_line,
+              CookieOrLine("cookie-name=cookie-value",
+                           mojom::CookieOrLine::Tag::COOKIE));
   EXPECT_TRUE(
       recorded_activity()[0].status.HasExactlyExclusionReasonsForTesting(
           {net::CookieInclusionStatus::EXCLUDE_SAMESITE_NONE_INSECURE}));
@@ -863,7 +936,8 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
   EXPECT_EQ(recorded_activity()[0].get, false);
   EXPECT_EQ(recorded_activity()[0].url, "https://example.com/");
   EXPECT_EQ(recorded_activity()[0].site_for_cookies, "https://notexample.com/");
-  EXPECT_THAT(recorded_activity()[0].cookie, net::MatchesCookieLine("A=B"));
+  EXPECT_THAT(recorded_activity()[0].cookie_or_line,
+              CookieOrLine("A=B", mojom::CookieOrLine::Tag::COOKIE));
   EXPECT_TRUE(recorded_activity()[0].status.IsInclude());
   EXPECT_FALSE(recorded_activity()[0].status.ShouldWarn());
 
@@ -885,7 +959,8 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
   EXPECT_EQ(recorded_activity()[1].url, "https://example.com/");
   EXPECT_EQ(recorded_activity()[1].site_for_cookies,
             "https://otherexample.com/");
-  EXPECT_THAT(recorded_activity()[1].cookie, net::MatchesCookieLine("A2=B2"));
+  EXPECT_THAT(recorded_activity()[1].cookie_or_line,
+              CookieOrLine("A2=B2", mojom::CookieOrLine::Tag::COOKIE));
   EXPECT_TRUE(
       recorded_activity()[1].status.HasExactlyExclusionReasonsForTesting(
           {net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES}));
@@ -908,7 +983,8 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicy) {
   EXPECT_EQ(recorded_activity()[2].get, true);
   EXPECT_EQ(recorded_activity()[2].url, "https://example.com/test/");
   EXPECT_EQ(recorded_activity()[2].site_for_cookies, "https://example.com/");
-  EXPECT_THAT(recorded_activity()[2].cookie, net::MatchesCookieLine("A=B"));
+  EXPECT_THAT(recorded_activity()[2].cookie_or_line,
+              CookieOrLine("A=B", mojom::CookieOrLine::Tag::COOKIE));
   EXPECT_TRUE(recorded_activity()[2].status.IsInclude());
 }
 
@@ -931,11 +1007,31 @@ TEST_P(RestrictedCookieManagerTest, SetCanonicalCookiePolicyWarnActual) {
   EXPECT_EQ(recorded_activity()[0].get, false);
   EXPECT_EQ(recorded_activity()[0].url, "https://example.com/");
   EXPECT_EQ(recorded_activity()[0].site_for_cookies, "https://notexample.com/");
-  EXPECT_THAT(recorded_activity()[0].cookie, net::MatchesCookieLine("A=B"));
+  EXPECT_THAT(recorded_activity()[0].cookie_or_line,
+              CookieOrLine("A=B", mojom::CookieOrLine::Tag::COOKIE));
   EXPECT_TRUE(
       recorded_activity()[0].status.HasExactlyExclusionReasonsForTesting(
           {net::CookieInclusionStatus::
                EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
+}
+
+TEST_P(SamePartyEnabledRestrictedCookieManagerTest,
+       SetCookieFromString_SameParty_ReportsInvalid) {
+  // Invalid. Should be reported.
+  sync_service_->SetCookieFromString(
+      GURL("https://example.com/test/"), net::SiteForCookies(),
+      url::Origin::Create(GURL("https://example.com")), "name=value;SameParty");
+
+  EXPECT_THAT(
+      recorded_activity(),
+      testing::ElementsAre(MatchesCookieOp(
+          false /* get */, GURL("https://example.com/test/"), GURL(),
+          CookieOrLine("name=value;SameParty",
+                       mojom::CookieOrLine::Tag::COOKIE_STRING),
+          HasExactlyExclusionReasonsForTesting(
+              std::vector<net::CookieInclusionStatus::ExclusionReason>{
+                  net::CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY}),
+          testing::_)));
 }
 
 TEST_P(SamePartyEnabledRestrictedCookieManagerTest,
@@ -1000,8 +1096,9 @@ TEST_P(SamePartyEnabledRestrictedCookieManagerTest,
     EXPECT_EQ(recorded_activity()[2].get, false);
     EXPECT_EQ(recorded_activity()[2].url, "https://example.com/test/");
     EXPECT_EQ(recorded_activity()[2].site_for_cookies, GURL());
-    EXPECT_THAT(recorded_activity()[2].cookie,
-                net::MatchesCookieLine("new-name=new-value"));
+    EXPECT_THAT(
+        recorded_activity()[2].cookie_or_line,
+        CookieOrLine("new-name=new-value", mojom::CookieOrLine::Tag::COOKIE));
     EXPECT_TRUE(
         recorded_activity()[2].status.HasExactlyExclusionReasonsForTesting(
             {net::CookieInclusionStatus::

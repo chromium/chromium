@@ -64,6 +64,7 @@
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/origin_policy_manager.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -311,7 +312,9 @@ bool ShouldNotifyAboutCookie(net::CookieInclusionStatus status) {
   // SameSite features, in order to issue a deprecation warning for them.
   return status.IsInclude() || status.ShouldWarn() ||
          status.HasExclusionReason(
-             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES);
+             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES) ||
+         status.HasExclusionReason(
+             net::CookieInclusionStatus::EXCLUDE_INVALID_SAMEPARTY);
 }
 
 mojom::HttpRawRequestResponseInfoPtr BuildRawRequestResponseInfo(
@@ -1919,20 +1922,21 @@ void URLLoader::SetRawRequestHeadersAndNotify(
   }
 
   if (cookie_observer_) {
-    net::CookieAccessResultList reported_cookies;
+    std::vector<mojom::CookieOrLineWithAccessResultPtr> reported_cookies;
     for (const auto& cookie_with_access_result :
          url_request_->maybe_sent_cookies()) {
       if (ShouldNotifyAboutCookie(
               cookie_with_access_result.access_result.status)) {
-        reported_cookies.push_back({cookie_with_access_result.cookie,
-                                    cookie_with_access_result.access_result});
+        reported_cookies.push_back(mojom::CookieOrLineWithAccessResult::New(
+            mojom::CookieOrLine::NewCookie(cookie_with_access_result.cookie),
+            cookie_with_access_result.access_result));
       }
     }
 
     if (!reported_cookies.empty()) {
       cookie_observer_->OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kRead, url_request_->url(),
-          url_request_->site_for_cookies(), reported_cookies,
+          url_request_->site_for_cookies(), std::move(reported_cookies),
           devtools_request_id()));
     }
   }
@@ -2138,22 +2142,30 @@ void URLLoader::ReportFlaggedResponseCookies() {
   }
 
   if (cookie_observer_) {
-    net::CookieAccessResultList reported_cookies;
+    std::vector<mojom::CookieOrLineWithAccessResultPtr> reported_cookies;
     for (const auto& cookie_line_and_access_result :
          url_request_->maybe_stored_cookies()) {
       if (ShouldNotifyAboutCookie(
-              cookie_line_and_access_result.access_result.status) &&
-          cookie_line_and_access_result.cookie) {
-        reported_cookies.push_back(
-            {cookie_line_and_access_result.cookie.value(),
-             cookie_line_and_access_result.access_result});
+              cookie_line_and_access_result.access_result.status)) {
+        mojom::CookieOrLinePtr cookie_or_line = mojom::CookieOrLine::New();
+        if (cookie_line_and_access_result.cookie.has_value()) {
+          cookie_or_line->set_cookie(
+              cookie_line_and_access_result.cookie.value());
+        } else {
+          cookie_or_line->set_cookie_string(
+              cookie_line_and_access_result.cookie_string);
+        }
+
+        reported_cookies.push_back(mojom::CookieOrLineWithAccessResult::New(
+            std::move(cookie_or_line),
+            cookie_line_and_access_result.access_result));
       }
     }
 
     if (!reported_cookies.empty()) {
       cookie_observer_->OnCookiesAccessed(mojom::CookieAccessDetails::New(
           mojom::CookieAccessDetails::Type::kChange, url_request_->url(),
-          url_request_->site_for_cookies(), reported_cookies,
+          url_request_->site_for_cookies(), std::move(reported_cookies),
           devtools_request_id()));
     }
   }

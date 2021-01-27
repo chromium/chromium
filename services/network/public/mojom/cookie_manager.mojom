@@ -170,6 +170,16 @@ struct CookieAndLineWithAccessResult {
   CookieAccessResult access_result;
 };
 
+union CookieOrLine {
+  CanonicalCookie cookie;
+  string cookie_string;
+};
+
+struct CookieOrLineWithAccessResult {
+  CookieOrLine cookie_or_line;
+  CookieAccessResult access_result;
+};
+
 // See net/cookies/cookie_access_result.{cc,h} for documentation.
 struct CookieAccessResult {
   CookieEffectiveSameSite effective_same_site;

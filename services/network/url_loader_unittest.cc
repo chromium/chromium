@@ -25,6 +25,7 @@
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
@@ -485,6 +486,25 @@ WARN_UNUSED_RESULT bool StartMonitorBodyReadFromNetBeforePausedHistogram(
 void StopMonitorBodyReadFromNetBeforePausedHistogram() {
   base::StatisticsRecorder::ClearCallback(
       kBodyReadFromNetBeforePausedHistogram);
+}
+
+std::string CookieOrLineToString(const mojom::CookieOrLinePtr& cookie_or_line) {
+  switch (cookie_or_line->which()) {
+    case mojom::CookieOrLine::Tag::COOKIE:
+      return base::StrCat({
+          cookie_or_line->get_cookie().Name(),
+          "=",
+          cookie_or_line->get_cookie().Value(),
+      });
+    case mojom::CookieOrLine::Tag::COOKIE_STRING:
+      return cookie_or_line->get_cookie_string();
+  }
+}
+
+MATCHER_P2(CookieOrLine, string, type, "") {
+  return type == arg->which() &&
+         testing::ExplainMatchResult(string, CookieOrLineToString(arg),
+                                     result_listener);
 }
 
 }  // namespace
@@ -3186,28 +3206,15 @@ class MockCookieObserver : public network::mojom::CookieAccessObserver {
 
   struct CookieDetails {
     CookieDetails(const mojom::CookieAccessDetailsPtr& details,
-                  const net::CookieWithAccessResult cookie)
+                  const mojom::CookieOrLineWithAccessResultPtr& cookie)
         : type(details->type),
-          name(cookie.cookie.Name()),
-          value(cookie.cookie.Value()),
-          is_include(cookie.access_result.status.IsInclude()),
+          cookie_or_line(std::move(cookie->cookie_or_line)),
+          is_include(cookie->access_result.status.IsInclude()),
           url(details->url),
-          status(cookie.access_result.status) {}
-
-    CookieDetails(CookieAccessType type,
-                  std::string name,
-                  std::string value,
-                  bool is_include)
-        : type(type), name(name), value(value), is_include(is_include) {}
-
-    bool operator==(const CookieDetails& other) const {
-      return type == other.type && name == other.name && value == other.value &&
-             is_include == other.is_include;
-    }
+          status(cookie->access_result.status) {}
 
     CookieAccessType type;
-    std::string name;
-    std::string value;
+    mojom::CookieOrLinePtr cookie_or_line;
     bool is_include;
 
     // The full details are available for the tests to query manually, but
@@ -3261,6 +3268,17 @@ class MockCookieObserver : public network::mojom::CookieAccessObserver {
   std::vector<CookieDetails> observed_cookies_;
   mojo::ReceiverSet<mojom::CookieAccessObserver> receivers_;
 };
+
+MATCHER_P3(MatchesCookieDetails, type, cookie_or_line, is_include, "") {
+  return testing::ExplainMatchResult(
+      testing::AllOf(
+          testing::Field(&MockCookieObserver::CookieDetails::type, type),
+          testing::Field(&MockCookieObserver::CookieDetails::cookie_or_line,
+                         cookie_or_line),
+          testing::Field(&MockCookieObserver::CookieDetails::is_include,
+                         is_include)),
+      arg, result_listener);
+}
 
 class MockNetworkServiceClient : public TestNetworkServiceClient {
  public:
@@ -4606,9 +4624,11 @@ TEST_F(URLLoaderTest, CookieReporting) {
     EXPECT_EQ(net::OK, loader_client.completion_status().error_code);
 
     cookie_observer.WaitForCookies(1u);
-    EXPECT_THAT(cookie_observer.observed_cookies(),
-                testing::ElementsAre(MockCookieObserver::CookieDetails{
-                    CookieAccessType::kChange, "a", "b", true}));
+    EXPECT_THAT(
+        cookie_observer.observed_cookies(),
+        testing::ElementsAre(MatchesCookieDetails(
+            CookieAccessType::kChange,
+            CookieOrLine("a=b", mojom::CookieOrLine::Tag::COOKIE), true)));
   }
 
   {
@@ -4641,9 +4661,54 @@ TEST_F(URLLoaderTest, CookieReporting) {
     EXPECT_EQ(net::OK, loader_client.completion_status().error_code);
 
     cookie_observer.WaitForCookies(1u);
-    EXPECT_THAT(cookie_observer.observed_cookies(),
-                testing::ElementsAre(MockCookieObserver::CookieDetails{
-                    CookieAccessType::kRead, "a", "b", true}));
+    EXPECT_THAT(
+        cookie_observer.observed_cookies(),
+        testing::ElementsAre(MatchesCookieDetails(
+            CookieAccessType::kRead,
+            CookieOrLine("a=b", mojom::CookieOrLine::Tag::COOKIE), true)));
+  }
+
+  {
+    TestURLLoaderClient loader_client;
+    ResourceRequest request = CreateResourceRequest(
+        "GET", test_server()->GetURL("/set-cookie?invalid=foo;SameParty"));
+
+    MockCookieObserver cookie_observer;
+    base::RunLoop delete_run_loop;
+    mojo::PendingRemote<mojom::URLLoader> loader;
+    mojom::URLLoaderFactoryParams params;
+    params.process_id = kProcessId;
+    params.is_corb_enabled = false;
+    std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
+        context(), &network_service_client, &network_context_client,
+        DeleteLoaderCallback(&delete_run_loop, &url_loader),
+        loader.InitWithNewPipeAndPassReceiver(), mojom::kURLLoadOptionNone,
+        request, loader_client.CreateRemote(),
+        /*reponse_body_use_tracker=*/base::nullopt,
+        TRAFFIC_ANNOTATION_FOR_TESTS, &params, /*coep_reporter=*/nullptr,
+        0 /* request_id */, 0 /* keepalive_request_size */,
+        false /* require_network_isolation_key */, resource_scheduler_client(),
+        nullptr, nullptr /* network_usage_accumulator */,
+        nullptr /* header_client */, nullptr /* origin_policy_manager */,
+        nullptr /* trust_token_helper */, kEmptyOriginAccessList,
+        cookie_observer.GetRemote());
+
+    delete_run_loop.Run();
+    loader_client.RunUntilComplete();
+    EXPECT_EQ(net::OK, loader_client.completion_status().error_code);
+
+    cookie_observer.WaitForCookies(2u);
+    EXPECT_THAT(
+        cookie_observer.observed_cookies(),
+        testing::ElementsAre(
+            MatchesCookieDetails(
+                CookieAccessType::kRead,
+                CookieOrLine("a=b", mojom::CookieOrLine::Tag::COOKIE), true),
+            MatchesCookieDetails(
+                CookieAccessType::kChange,
+                CookieOrLine("invalid=foo;SameParty",
+                             mojom::CookieOrLine::Tag::COOKIE_STRING),
+                false)));
   }
 }
 
@@ -4685,8 +4750,11 @@ TEST_F(URLLoaderTest, CookieReportingRedirect) {
 
   cookie_observer.WaitForCookies(1u);
   EXPECT_THAT(cookie_observer.observed_cookies(),
-              testing::ElementsAre(MockCookieObserver::CookieDetails{
-                  CookieAccessType::kChange, "server-redirect", "true", true}));
+              testing::ElementsAre(MatchesCookieDetails(
+                  CookieAccessType::kChange,
+                  CookieOrLine("server-redirect=true",
+                               mojom::CookieOrLine::Tag::COOKIE),
+                  true)));
   // Make sure that this has the pre-redirect URL, not the post-redirect one.
   EXPECT_EQ(redirecting_url, cookie_observer.observed_cookies()[0].url);
 }
@@ -4729,10 +4797,12 @@ TEST_F(URLLoaderTest, CookieReportingAuth) {
     EXPECT_EQ(net::OK, loader_client.completion_status().error_code);
 
     cookie_observer.WaitForCookies(1u);
-    EXPECT_THAT(
-        cookie_observer.observed_cookies(),
-        testing::ElementsAre(MockCookieObserver::CookieDetails{
-            CookieAccessType::kChange, "got_challenged", "true", true}));
+    EXPECT_THAT(cookie_observer.observed_cookies(),
+                testing::ElementsAre(MatchesCookieDetails(
+                    CookieAccessType::kChange,
+                    CookieOrLine("got_challenged=true",
+                                 mojom::CookieOrLine::Tag::COOKIE),
+                    true)));
   }
 }
 
@@ -5234,9 +5304,10 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
 
     cookie_observer.WaitForCookies(1u);
     EXPECT_THAT(cookie_observer.observed_cookies(),
-                testing::ElementsAre(MockCookieObserver::CookieDetails{
-                    CookieAccessType::kChange, "a", "b",
-                    !net::cookie_util::IsSameSiteByDefaultCookiesEnabled()}));
+                testing::ElementsAre(MatchesCookieDetails(
+                    CookieAccessType::kChange,
+                    CookieOrLine("a=b", mojom::CookieOrLine::Tag::COOKIE),
+                    !net::cookie_util::IsSameSiteByDefaultCookiesEnabled())));
     // This is either included or rejected as implicitly-cross-site, depending
     // on flags.
     if (net::cookie_util::IsSameSiteByDefaultCookiesEnabled()) {
@@ -5291,9 +5362,11 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
     EXPECT_EQ(net::OK, loader_client.completion_status().error_code);
 
     cookie_observer.WaitForCookies(1u);
-    EXPECT_THAT(cookie_observer.observed_cookies(),
-                testing::ElementsAre(MockCookieObserver::CookieDetails{
-                    CookieAccessType::kChange, "a", "b", false}));
+    EXPECT_THAT(
+        cookie_observer.observed_cookies(),
+        testing::ElementsAre(MatchesCookieDetails(
+            CookieAccessType::kChange,
+            CookieOrLine("a=b", mojom::CookieOrLine::Tag::COOKIE), false)));
     EXPECT_TRUE(
         cookie_observer.observed_cookies()[0]
             .status.HasExactlyExclusionReasonsForTesting(
@@ -5336,9 +5409,11 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
     EXPECT_EQ(net::OK, loader_client.completion_status().error_code);
 
     cookie_observer.WaitForCookies(1u);
-    EXPECT_THAT(cookie_observer.observed_cookies(),
-                testing::ElementsAre(MockCookieObserver::CookieDetails{
-                    CookieAccessType::kChange, "d", "e", true}));
+    EXPECT_THAT(
+        cookie_observer.observed_cookies(),
+        testing::ElementsAre(MatchesCookieDetails(
+            CookieAccessType::kChange,
+            CookieOrLine("d=e", mojom::CookieOrLine::Tag::COOKIE), true)));
   }
 }
 

@@ -56,13 +56,13 @@ void SplitCookiesIntoAllowedAndBlocked(
                            /* blocked_by_policy=*/true});
 
   for (auto& cookie_and_access_result : cookie_details->cookie_list) {
-    if (cookie_and_access_result.access_result.status.HasOnlyExclusionReason(
+    if (cookie_and_access_result->access_result.status.HasOnlyExclusionReason(
             net::CookieInclusionStatus::EXCLUDE_USER_PREFERENCES)) {
       blocked->cookie_list.push_back(
-          std::move(cookie_and_access_result.cookie));
-    } else if (cookie_and_access_result.access_result.status.IsInclude()) {
+          std::move(cookie_and_access_result->cookie_or_line->get_cookie()));
+    } else if (cookie_and_access_result->access_result.status.IsInclude()) {
       allowed->cookie_list.push_back(
-          std::move(cookie_and_access_result.cookie));
+          std::move(cookie_and_access_result->cookie_or_line->get_cookie()));
     }
   }
 }
@@ -83,10 +83,10 @@ void EmitCookieWarningsAndMetrics(
   bool same_party_exclusion_overruled_samesite = false;
   bool same_party_inclusion_overruled_samesite = false;
 
-  for (const net::CookieWithAccessResult& cookie :
+  for (const network::mojom::CookieOrLineWithAccessResultPtr& cookie :
        cookie_details->cookie_list) {
-    if (cookie.access_result.status.ShouldWarn()) {
-      const net::CookieInclusionStatus& status = cookie.access_result.status;
+    if (cookie->access_result.status.ShouldWarn()) {
+      const net::CookieInclusionStatus& status = cookie->access_result.status;
       samesite_treated_as_lax_cookies =
           samesite_treated_as_lax_cookies ||
           status.HasWarningReason(
@@ -101,13 +101,17 @@ void EmitCookieWarningsAndMetrics(
           status.HasWarningReason(
               net::CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE);
 
-      devtools_instrumentation::ReportSameSiteCookieIssue(
-          root_frame_host, cookie, cookie_details->url,
-          cookie_details->site_for_cookies,
-          cookie_details->type == CookieAccessDetails::Type::kRead
-              ? blink::mojom::SameSiteCookieOperation::kReadCookie
-              : blink::mojom::SameSiteCookieOperation::kSetCookie,
-          cookie_details->devtools_request_id);
+      if (cookie->cookie_or_line->is_cookie()) {
+        // TODO(sigurds): report issues on cookie line problems as well.
+        devtools_instrumentation::ReportSameSiteCookieIssue(
+            root_frame_host,
+            {cookie->cookie_or_line->get_cookie(), cookie->access_result},
+            cookie_details->url, cookie_details->site_for_cookies,
+            cookie_details->type == CookieAccessDetails::Type::kRead
+                ? blink::mojom::SameSiteCookieOperation::kReadCookie
+                : blink::mojom::SameSiteCookieOperation::kSetCookie,
+            cookie_details->devtools_request_id);
+      }
 
       same_party = same_party ||
                    status.HasWarningReason(
@@ -128,12 +132,12 @@ void EmitCookieWarningsAndMetrics(
 
     breaking_context_downgrade =
         breaking_context_downgrade ||
-        cookie.access_result.status.HasDowngradeWarning();
+        cookie->access_result.status.HasDowngradeWarning();
 
-    if (cookie.access_result.status.HasDowngradeWarning()) {
+    if (cookie->access_result.status.HasDowngradeWarning()) {
       // Unlike with UMA, do not record cookies that have no downgrade warning.
       RecordContextDowngradeUKM(rfh, cookie_details->type,
-                                cookie.access_result.status,
+                                cookie->access_result.status,
                                 cookie_details->url);
     }
   }
