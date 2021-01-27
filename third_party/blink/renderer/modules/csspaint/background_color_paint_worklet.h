@@ -8,9 +8,11 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
 #include "third_party/blink/renderer/modules/csspaint/native_paint_worklet.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace blink {
@@ -29,7 +31,17 @@ class MODULES_EXPORT BackgroundColorPaintWorklet : public NativePaintWorklet {
   ~BackgroundColorPaintWorklet() final;
 
   // The |container_size| is without subpixel snapping.
-  scoped_refptr<Image> Paint(const FloatSize& container_size, const Node*);
+  scoped_refptr<Image> Paint(const FloatSize& container_size,
+                             const Node*,
+                             const Vector<Color>& animated_colors,
+                             const Vector<double>& offsets);
+
+  // Get the animated colors and offsets from the animation keyframes.
+  // Returning false meaning that we need to fall back to the main thread for
+  // the animation.
+  static bool GetBGColorPaintWorkletParams(Node* node,
+                                           Vector<Color>* animated_colors,
+                                           Vector<double>* offsets);
 };
 
 }  // namespace blink

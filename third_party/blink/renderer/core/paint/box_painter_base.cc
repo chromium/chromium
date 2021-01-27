@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
 
 #include "base/optional.h"
+#include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -555,16 +556,38 @@ void DrawTiledBackground(GraphicsContext& context,
                          respect_orientation);
 }
 
+// Returning false meaning that we need to fall back to the main thread for the
+// background color animation.
+bool GetBGColorPaintWorkletParams(const BoxPainterBase::FillLayerInfo& info,
+                                  const Document* document,
+                                  Node* node,
+                                  Vector<Color>* animated_colors,
+                                  Vector<double>* offsets) {
+  if (info.should_paint_color_with_paint_worklet_image) {
+    static_cast<Element*>(node)
+        ->EnsureElementAnimations()
+        .ResetDidBGColorAnimFallBack();
+  }
+  if (!info.should_paint_color_with_paint_worklet_image)
+    return false;
+  BackgroundColorPaintImageGenerator* generator =
+      document->GetFrame()->GetBackgroundColorPaintImageGenerator();
+  return generator->GetBGColorPaintWorkletParams(node, animated_colors,
+                                                 offsets);
+}
+
 void FillRectWithPaintWorklet(const Document* document,
                               const BoxPainterBase::FillLayerInfo& info,
                               Node* node,
                               const FloatRoundedRect& dest_rect,
-                              GraphicsContext& context) {
+                              GraphicsContext& context,
+                              const Vector<Color>& animated_colors,
+                              const Vector<double>& offsets) {
   FloatRect src_rect = dest_rect.Rect();
   BackgroundColorPaintImageGenerator* generator =
       document->GetFrame()->GetBackgroundColorPaintImageGenerator();
   scoped_refptr<Image> paint_worklet_image =
-      generator->Paint(src_rect.Size(), node);
+      generator->Paint(src_rect.Size(), node, animated_colors, offsets);
   context.DrawImageRRect(
       paint_worklet_image.get(), Image::kSyncDecode, dest_rect, src_rect,
       node && node->ComputedStyleRef().HasFilterInducingProperty(),
@@ -658,8 +681,12 @@ inline bool PaintFastBottomLayer(const Document* document,
 
   // Paint the color if needed.
   if (info.should_paint_color) {
-    if (info.should_paint_color_with_paint_worklet_image) {
-      FillRectWithPaintWorklet(document, info, node, color_border, context);
+    Vector<Color> animated_colors;
+    Vector<double> offsets;
+    if (GetBGColorPaintWorkletParams(info, document, node, &animated_colors,
+                                     &offsets)) {
+      FillRectWithPaintWorklet(document, info, node, color_border, context,
+                               animated_colors, offsets);
     } else {
       context.FillRoundedRect(color_border, info.color);
     }
@@ -836,9 +863,13 @@ void PaintFillLayerBackground(const Document* document,
   // painting area.
   if (info.is_bottom_layer && info.color.Alpha() && info.should_paint_color) {
     IntRect background_rect(PixelSnappedIntRect(scrolled_paint_rect));
-    if (info.should_paint_color_with_paint_worklet_image) {
+    Vector<Color> animated_colors;
+    Vector<double> offsets;
+    if (GetBGColorPaintWorkletParams(info, document, node, &animated_colors,
+                                     &offsets)) {
       FillRectWithPaintWorklet(document, info, node,
-                               FloatRoundedRect(background_rect), context);
+                               FloatRoundedRect(background_rect), context,
+                               animated_colors, offsets);
     } else {
       context.FillRect(background_rect, info.color);
     }

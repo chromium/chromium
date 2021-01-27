@@ -304,6 +304,7 @@ source_set("unit_tests") {
     "content_index/content_description_type_converter_test.cc",
     "credentialmanager/credentials_container_test.cc",
     "credentialmanager/password_credential_test.cc",
+    "csspaint/background_color_paint_worklet_test.cc",
     "csspaint/document_paint_definition_test.cc",
     "csspaint/paint_rendering_context_2d_test.cc",
     "csspaint/paint_worklet_global_scope_test.cc",
