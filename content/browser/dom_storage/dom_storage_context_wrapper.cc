@@ -22,6 +22,7 @@
 #include "components/services/storage/dom_storage/local_storage_impl.h"
 #include "components/services/storage/dom_storage/session_storage_impl.h"
 #include "components/services/storage/public/mojom/partition.mojom.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/dom_storage/session_storage_namespace_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -53,14 +54,14 @@ void AdaptSessionStorageUsageInfo(
   std::move(callback).Run(result);
 }
 
-void AdaptLocalStorageUsageInfo(
+void AdaptStorageUsageInfo(
     DOMStorageContext::GetLocalStorageUsageCallback callback,
-    std::vector<storage::mojom::LocalStorageUsageInfoPtr> usage) {
+    std::vector<storage::mojom::StorageUsageInfoPtr> usage) {
   std::vector<StorageUsageInfo> result;
   result.reserve(usage.size());
   for (const auto& info : usage) {
-    result.emplace_back(info->origin, info->size_in_bytes,
-                        info->last_modified_time);
+    result.emplace_back(info->origin, info->total_size_bytes,
+                        info->last_modified);
   }
   std::move(callback).Run(result);
 }
@@ -163,7 +164,7 @@ void DOMStorageContextWrapper::GetLocalStorageUsage(
   }
 
   local_storage_control_->GetUsage(
-      base::BindOnce(&AdaptLocalStorageUsageInfo, std::move(callback)));
+      base::BindOnce(&AdaptStorageUsageInfo, std::move(callback)));
 }
 
 void DOMStorageContextWrapper::GetSessionStorageUsage(
@@ -389,7 +390,7 @@ void DOMStorageContextWrapper::PurgeMemory(PurgeOption purge_option) {
 }
 
 void DOMStorageContextWrapper::OnStartupUsageRetrieved(
-    std::vector<storage::mojom::LocalStorageUsageInfoPtr> usage) {
+    std::vector<storage::mojom::StorageUsageInfoPtr> usage) {
   for (const auto& info : usage)
     EnsureLocalStorageOriginIsTracked(info->origin);
   OnStoragePolicyChanged();

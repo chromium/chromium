@@ -28,6 +28,7 @@
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "components/services/storage/indexed_db/scopes/varint_coding.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
 #include "content/browser/indexed_db/indexed_db_database.h"
@@ -193,12 +194,10 @@ void IndexedDBContextImpl::BindIndexedDB(
 void IndexedDBContextImpl::GetUsage(GetUsageCallback usage_callback) {
   DCHECK(IDBTaskRunner()->RunsTasksInCurrentSequence());
   std::vector<Origin> origins = GetAllOrigins();
-  std::vector<storage::mojom::IndexedDBStorageUsageInfoPtr> result;
+  std::vector<storage::mojom::StorageUsageInfoPtr> result;
   for (const auto& origin : origins) {
-    storage::mojom::IndexedDBStorageUsageInfoPtr usage_info =
-        storage::mojom::IndexedDBStorageUsageInfo::New(
-            origin, GetOriginDiskUsage(origin), GetOriginLastModified(origin));
-    result.push_back(std::move(usage_info));
+    result.emplace_back(storage::mojom::StorageUsageInfo::New(
+        origin, GetOriginDiskUsage(origin), GetOriginLastModified(origin)));
   }
   std::move(usage_callback).Run(std::move(result));
 }

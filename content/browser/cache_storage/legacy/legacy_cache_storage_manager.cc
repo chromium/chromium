@@ -183,7 +183,7 @@ GetOriginsAndLastModifiedOnTaskRunner(
     base::UmaHistogramBoolean("ServiceWorkerCache.UsedIndexFileSize",
                               storage_size != CacheStorage::kSizeUnknown);
 
-    usages.push_back(storage::mojom::StorageUsageInfo::New(
+    usages.emplace_back(storage::mojom::StorageUsageInfo::New(
         origin, storage_size, file_info.last_modified));
     RecordIndexValidationResult(IndexResult::kOk);
   }
@@ -354,7 +354,7 @@ void LegacyCacheStorageManager::GetAllOriginsUsage(
     for (const auto& origin_details : cache_storage_map_) {
       if (origin_details.first.second != owner)
         continue;
-      usages.push_back(storage::mojom::StorageUsageInfo::New(
+      usages.emplace_back(storage::mojom::StorageUsageInfo::New(
           origin_details.first.first,
           /*total_size_bytes=*/0,
           /*last_modified=*/base::Time()));

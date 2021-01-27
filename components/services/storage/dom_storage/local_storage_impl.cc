@@ -213,7 +213,7 @@ void RecordCachePurgedHistogram(CachePurgeReason reason,
 const base::FilePath::CharType kLegacyDatabaseFileExtension[] =
     FILE_PATH_LITERAL(".localstorage");
 
-std::vector<mojom::LocalStorageUsageInfoPtr> GetLegacyLocalStorageUsage(
+std::vector<mojom::StorageUsageInfoPtr> GetLegacyLocalStorageUsage(
     const base::FilePath& directory) {
   std::unique_ptr<FilesystemProxy> fs = CreateFilesystemProxy();
   FileErrorOr<std::vector<base::FilePath>> result = fs->GetDirectoryEntries(
@@ -221,14 +221,14 @@ std::vector<mojom::LocalStorageUsageInfoPtr> GetLegacyLocalStorageUsage(
   if (result.is_error())
     return {};
 
-  std::vector<mojom::LocalStorageUsageInfoPtr> infos;
+  std::vector<mojom::StorageUsageInfoPtr> infos;
   for (const auto& path : result.value()) {
     if (!path.MatchesExtension(kLegacyDatabaseFileExtension))
       continue;
     base::Optional<base::File::Info> info = fs->GetFileInfo(path);
     if (!info)
       continue;
-    infos.push_back(mojom::LocalStorageUsageInfo::New(
+    infos.emplace_back(mojom::StorageUsageInfo::New(
         LocalStorageImpl::OriginFromLegacyDatabaseFileName(path), info->size,
         info->last_modified));
   }
@@ -237,14 +237,13 @@ std::vector<mojom::LocalStorageUsageInfoPtr> GetLegacyLocalStorageUsage(
 
 void InvokeLocalStorageUsageCallbackHelper(
     LocalStorageImpl::GetUsageCallback callback,
-    std::unique_ptr<std::vector<mojom::LocalStorageUsageInfoPtr>> infos) {
+    std::unique_ptr<std::vector<mojom::StorageUsageInfoPtr>> infos) {
   std::move(callback).Run(std::move(*infos));
 }
 
-void CollectLocalStorageUsage(
-    std::vector<mojom::LocalStorageUsageInfoPtr>* out_info,
-    base::OnceClosure done_callback,
-    std::vector<mojom::LocalStorageUsageInfoPtr> in_info) {
+void CollectLocalStorageUsage(std::vector<mojom::StorageUsageInfoPtr>* out_info,
+                              base::OnceClosure done_callback,
+                              std::vector<mojom::StorageUsageInfoPtr> in_info) {
   out_info->reserve(out_info->size() + in_info.size());
   for (auto& info : in_info)
     out_info->push_back(std::move(info));
@@ -998,7 +997,7 @@ LocalStorageImpl::StorageAreaHolder* LocalStorageImpl::GetOrCreateStorageArea(
 }
 
 void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
-  auto infos = std::make_unique<std::vector<mojom::LocalStorageUsageInfoPtr>>();
+  auto infos = std::make_unique<std::vector<mojom::StorageUsageInfoPtr>>();
   auto* infos_ptr = infos.get();
   base::RepeatingClosure got_local_storage_usage = base::BarrierClosure(
       2, base::BindOnce(&InvokeLocalStorageUsageCallbackHelper,
@@ -1020,10 +1019,10 @@ void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
   if (!database_) {
     // If for whatever reason no leveldb database is available, no storage is
     // used, so return an array only containing the current areas.
-    std::vector<mojom::LocalStorageUsageInfoPtr> result;
+    std::vector<mojom::StorageUsageInfoPtr> result;
     base::Time now = base::Time::Now();
     for (const auto& it : areas_) {
-      result.push_back(mojom::LocalStorageUsageInfo::New(it.first, 0, now));
+      result.emplace_back(mojom::StorageUsageInfo::New(it.first, 0, now));
     }
     collect_callback.Run(std::move(result));
   } else {
@@ -1042,7 +1041,7 @@ void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
 void LocalStorageImpl::OnGotMetaData(
     GetUsageCallback callback,
     std::vector<DomStorageDatabase::KeyValuePair> data) {
-  std::vector<mojom::LocalStorageUsageInfoPtr> result;
+  std::vector<mojom::StorageUsageInfoPtr> result;
   std::set<url::Origin> origins;
   for (const auto& row : data) {
     base::Optional<url::Origin> origin = ExtractOriginFromMetaDataKey(row.key);
@@ -1058,7 +1057,7 @@ void LocalStorageImpl::OnGotMetaData(
       continue;
     }
 
-    result.push_back(mojom::LocalStorageUsageInfo::New(
+    result.emplace_back(mojom::StorageUsageInfo::New(
         *origin, row_data.size_bytes(),
         base::Time::FromInternalValue(row_data.last_modified())));
   }
@@ -1073,13 +1072,13 @@ void LocalStorageImpl::OnGotMetaData(
         it.second->storage_area()->empty()) {
       continue;
     }
-    result.push_back(mojom::LocalStorageUsageInfo::New(it.first, 0, now));
+    result.emplace_back(mojom::StorageUsageInfo::New(it.first, 0, now));
   }
   std::move(callback).Run(std::move(result));
 }
 
 void LocalStorageImpl::OnGotStorageUsageForShutdown(
-    std::vector<mojom::LocalStorageUsageInfoPtr> usage) {
+    std::vector<mojom::StorageUsageInfoPtr> usage) {
   std::vector<url::Origin> origins_to_delete;
   for (const auto& info : usage) {
     if (base::Contains(origins_to_purge_on_shutdown_, info->origin.GetURL()))

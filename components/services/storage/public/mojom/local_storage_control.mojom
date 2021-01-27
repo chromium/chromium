@@ -4,21 +4,10 @@
 
 module storage.mojom;
 
+import "components/services/storage/public/mojom/storage_usage_info.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/dom_storage/storage_area.mojom";
 import "url/mojom/origin.mojom";
-
-// Conveys basic information about a single origin's data in Local Storage.
-struct LocalStorageUsageInfo {
-  // The origin whose metadata is represented by this structure.
-  url.mojom.Origin origin;
-
-  // The total size in bytes occupied by this origin within Local Storage.
-  uint64 size_in_bytes;
-
-  // The last time any Local Storage data was modified for this origin.
-  mojo_base.mojom.Time last_modified_time;
-};
 
 // Indicates a policy update for a specific origin.
 struct LocalStoragePolicyUpdate {
@@ -41,7 +30,7 @@ interface LocalStorageControl {
                   pending_receiver<blink.mojom.StorageArea> receiver);
 
   // Retrieves some basic usage information about the Local Storage state.
-  GetUsage() => (array<LocalStorageUsageInfo> info);
+  GetUsage() => (array<StorageUsageInfo> info);
 
   // Deletes all Local State state for the given origin. Responds when the
   // deletion is complete.

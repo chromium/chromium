@@ -5,6 +5,7 @@
 module storage.mojom;
 
 import "components/services/storage/public/mojom/indexed_db_control_test.mojom";
+import "components/services/storage/public/mojom/storage_usage_info.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/values.mojom";
@@ -21,18 +22,6 @@ enum ForceCloseReason {
   FORCE_SCHEMA_DOWNGRADE_INTERNALS_PAGE = 4,
   // Append new values here and update IDBContextForcedCloseReason in
   // enums.xml.
-};
-
-// Conveys basic information about a single origin's data in IndexedDB.
-struct IndexedDBStorageUsageInfo {
-  // The origin whose metadata is represented by this structure.
-  url.mojom.Origin origin;
-
-  // The total size in bytes occupied by this origin within IndexedDB.
-  uint64 size_in_bytes;
-
-  // The last time any IndexedDB data was modified for this origin.
-  mojo_base.mojom.Time last_modified_time;
 };
 
 // Indicates a policy update for a specific origin.
@@ -69,9 +58,9 @@ interface IndexedDBControl {
                 pending_receiver<blink.mojom.IDBFactory> receiver);
 
   // Retrieves some basic usage information about the IndexedDB state. The
-  // returned array has one IndexedDBStorageUsageInfo per origin in the
+  // returned array has one StorageUsageInfo per origin in the
   // partition that has IndexedDB usage data.
-  GetUsage() => (array<IndexedDBStorageUsageInfo> info);
+  GetUsage() => (array<StorageUsageInfo> info);
 
   // Deletes all indexed db files for the given origin.
   DeleteForOrigin(url.mojom.Origin origin) => (bool success);

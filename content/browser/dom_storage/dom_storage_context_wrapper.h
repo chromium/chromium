@@ -18,6 +18,7 @@
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/session_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/dom_storage_context.h"
@@ -140,7 +141,7 @@ class CONTENT_EXPORT DOMStorageContextWrapper
   void PurgeMemory(PurgeOption purge_option);
 
   void OnStartupUsageRetrieved(
-      std::vector<storage::mojom::LocalStorageUsageInfoPtr> usage);
+      std::vector<storage::mojom::StorageUsageInfoPtr> usage);
   void EnsureLocalStorageOriginIsTracked(const url::Origin& origin);
   void OnStoragePolicyChanged();
   bool ShouldPurgeLocalStorageOnShutdown(const url::Origin& origin);

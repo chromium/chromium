@@ -48,15 +48,15 @@ void IndexedDBHelper::DeleteIndexedDB(const url::Origin& origin,
 
 void IndexedDBHelper::IndexedDBUsageInfoReceived(
     FetchCallback callback,
-    std::vector<storage::mojom::IndexedDBStorageUsageInfoPtr> origins) {
+    std::vector<storage::mojom::StorageUsageInfoPtr> origins) {
   DCHECK(!callback.is_null());
   std::list<content::StorageUsageInfo> result;
   for (const auto& origin_usage : origins) {
     if (!HasWebScheme(origin_usage->origin.GetURL()))
       continue;  // Non-websafe state is not considered browsing data.
-    result.push_back(StorageUsageInfo(origin_usage->origin,
-                                      origin_usage->size_in_bytes,
-                                      origin_usage->last_modified_time));
+    result.emplace_back(StorageUsageInfo(origin_usage->origin,
+                                         origin_usage->total_size_bytes,
+                                         origin_usage->last_modified));
   }
   std::move(callback).Run(std::move(result));
 }

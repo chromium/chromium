@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/transactional_leveldb_database.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom-test-utils.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/web_contents/web_contents_impl.h"
@@ -211,9 +212,9 @@ class IndexedDBBrowserTest : public ContentBrowserTest,
     int64_t size = 0;
     auto& control = GetControl(browser);
     control.GetUsage(base::BindOnce(base::BindLambdaForTesting(
-        [&](std::vector<storage::mojom::IndexedDBStorageUsageInfoPtr> usages) {
+        [&](std::vector<storage::mojom::StorageUsageInfoPtr> usages) {
           for (auto& usage : usages)
-            size += usage->size_in_bytes;
+            size += usage->total_size_bytes;
           loop.Quit();
         })));
     loop.Run();

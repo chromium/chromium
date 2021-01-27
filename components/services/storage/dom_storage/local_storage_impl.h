@@ -22,6 +22,7 @@
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "components/services/storage/public/mojom/local_storage_control.mojom.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -134,7 +135,7 @@ class LocalStorageImpl : public base::trace_event::MemoryDumpProvider,
                      std::vector<DomStorageDatabase::KeyValuePair> data);
 
   void OnGotStorageUsageForShutdown(
-      std::vector<mojom::LocalStorageUsageInfoPtr> usage);
+      std::vector<mojom::StorageUsageInfoPtr> usage);
   void OnOriginsDeleted(leveldb::Status status);
   void OnShutdownComplete();
 

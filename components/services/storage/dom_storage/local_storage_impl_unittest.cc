@@ -21,6 +21,7 @@
 #include "components/services/storage/dom_storage/storage_area_test_util.h"
 #include "components/services/storage/public/cpp/constants.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -41,8 +42,8 @@ std::string Uint8VectorToStdString(const std::vector<uint8_t>& v) {
 
 void GetStorageUsageCallback(
     const base::RepeatingClosure& callback,
-    std::vector<mojom::LocalStorageUsageInfoPtr>* out_result,
-    std::vector<mojom::LocalStorageUsageInfoPtr> result) {
+    std::vector<mojom::StorageUsageInfoPtr>* out_result,
+    std::vector<mojom::StorageUsageInfoPtr> result) {
   *out_result = std::move(result);
   callback.Run();
 }
@@ -199,9 +200,9 @@ class LocalStorageImplTest : public testing::Test {
     return contents;
   }
 
-  std::vector<mojom::LocalStorageUsageInfoPtr> GetStorageUsageSync() {
+  std::vector<mojom::StorageUsageInfoPtr> GetStorageUsageSync() {
     base::RunLoop run_loop;
-    std::vector<mojom::LocalStorageUsageInfoPtr> result;
+    std::vector<mojom::StorageUsageInfoPtr> result;
     context()->GetUsage(base::BindOnce(&GetStorageUsageCallback,
                                        run_loop.QuitClosure(), &result));
     run_loop.Run();
@@ -425,7 +426,7 @@ TEST_F(LocalStorageImplTest, VersionOnlyWrittenOnCommit) {
 }
 
 TEST_F(LocalStorageImplTest, GetStorageUsage_NoData) {
-  std::vector<mojom::LocalStorageUsageInfoPtr> info = GetStorageUsageSync();
+  std::vector<mojom::StorageUsageInfoPtr> info = GetStorageUsageSync();
   EXPECT_EQ(0u, info.size());
 }
 
@@ -454,17 +455,17 @@ TEST_F(LocalStorageImplTest, GetStorageUsage_Data) {
 
   base::Time after_write = base::Time::Now();
 
-  std::vector<mojom::LocalStorageUsageInfoPtr> info = GetStorageUsageSync();
+  std::vector<mojom::StorageUsageInfoPtr> info = GetStorageUsageSync();
   ASSERT_EQ(2u, info.size());
   if (info[0]->origin == origin2)
     std::swap(info[0], info[1]);
   EXPECT_EQ(origin1, info[0]->origin);
   EXPECT_EQ(origin2, info[1]->origin);
-  EXPECT_LE(before_write, info[0]->last_modified_time);
-  EXPECT_LE(before_write, info[1]->last_modified_time);
-  EXPECT_GE(after_write, info[0]->last_modified_time);
-  EXPECT_GE(after_write, info[1]->last_modified_time);
-  EXPECT_GT(info[0]->size_in_bytes, info[1]->size_in_bytes);
+  EXPECT_LE(before_write, info[0]->last_modified);
+  EXPECT_LE(before_write, info[1]->last_modified);
+  EXPECT_GE(after_write, info[0]->last_modified);
+  EXPECT_GE(after_write, info[1]->last_modified);
+  EXPECT_GT(info[0]->total_size_bytes, info[1]->total_size_bytes);
 }
 
 TEST_F(LocalStorageImplTest, MetaDataClearedOnDelete) {
