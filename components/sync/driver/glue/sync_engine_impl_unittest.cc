@@ -191,7 +191,7 @@ class SyncEngineImplTest : public testing::Test {
 
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
 
-    sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
+    prefs_ = std::make_unique<SyncTransportDataPrefs>(&pref_service_);
     ON_CALL(invalidator_, UpdateInterestedTopics)
         .WillByDefault(testing::Return(true));
     auto sync_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
@@ -200,7 +200,7 @@ class SyncEngineImplTest : public testing::Test {
     backend_ = std::make_unique<SyncEngineImpl>(
         "dummyDebugName", &invalidator_, GetSyncInvalidationsService(),
         std::make_unique<NiceMock<MockActiveDevicesProvider>>(),
-        sync_prefs_->AsWeakPtr(),
+        prefs_->AsWeakPtr(),
         temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir)),
         sync_task_runner);
 
@@ -225,7 +225,7 @@ class SyncEngineImplTest : public testing::Test {
       backend_->Shutdown(STOP_SYNC);
     }
     backend_.reset();
-    sync_prefs_.reset();
+    prefs_.reset();
     // Pump messages posted by the sync thread.
     base::RunLoop().RunUntilIdle();
   }
@@ -239,7 +239,7 @@ class SyncEngineImplTest : public testing::Test {
     params.http_factory_getter = base::BindOnce(&CreateHttpBridgeFactory);
     params.authenticated_account_id = CoreAccountId("account_id");
     params.sync_manager_factory = std::move(fake_manager_factory_);
-    params.invalidation_versions = sync_prefs_->GetInvalidationVersions();
+    params.invalidation_versions = prefs_->GetInvalidationVersions();
 
     backend_->Initialize(std::move(params));
 
@@ -304,7 +304,7 @@ class SyncEngineImplTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple pref_service_;
   TestSyncEngineHost host_;
-  std::unique_ptr<SyncPrefs> sync_prefs_;
+  std::unique_ptr<SyncTransportDataPrefs> prefs_;
   std::unique_ptr<SyncEngineImpl> backend_;
   std::unique_ptr<FakeSyncManagerFactory> fake_manager_factory_;
   FakeSyncManager* fake_manager_ = nullptr;
@@ -373,7 +373,6 @@ TEST_F(SyncEngineImplTest, FirstTimeSync) {
 // Test the restart after setting up sync scenario. No enabled types should be
 // downloaded.
 TEST_F(SyncEngineImplTest, Restart) {
-  sync_prefs_->SetFirstSetupComplete();
   fake_manager_factory_->set_progress_marker_types(enabled_types_);
   fake_manager_factory_->set_initial_sync_ended_types(enabled_types_);
   InitializeBackend(true);
@@ -455,7 +454,6 @@ TEST_F(SyncEngineImplTest, AddDisableTypes) {
 // Test restarting the browser to newly supported datatypes. The new datatypes
 // should be downloaded on the configuration after backend initialization.
 TEST_F(SyncEngineImplTest, NewlySupportedTypes) {
-  sync_prefs_->SetFirstSetupComplete();
   // Set sync manager behavior before passing it down. All types have progress
   // markers and initial sync ended except the new types.
   ModelTypeSet old_types = enabled_types_;
@@ -481,7 +479,6 @@ TEST_F(SyncEngineImplTest, NewlySupportedTypes) {
 // Verify that downloading control types only downloads those types that do
 // not have initial sync ended set.
 TEST_F(SyncEngineImplTest, DownloadControlTypes) {
-  sync_prefs_->SetFirstSetupComplete();
   // Set sync manager behavior before passing it down. Experiments and device
   // info are new types without progress markers or initial sync ended, while
   // all other types have been fully downloaded and applied.
@@ -533,7 +530,6 @@ TEST_F(SyncEngineImplTest, DownloadControlTypesNewClient) {
 
 // Test that configuration on restart sends the proper GU source.
 TEST_F(SyncEngineImplTest, DownloadControlTypesRestart) {
-  sync_prefs_->SetFirstSetupComplete();
   fake_manager_factory_->set_progress_marker_types(enabled_types_);
   fake_manager_factory_->set_initial_sync_ended_types(enabled_types_);
   InitializeBackend(true);

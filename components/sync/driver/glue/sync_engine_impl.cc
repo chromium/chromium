@@ -41,12 +41,12 @@ SyncEngineImpl::SyncEngineImpl(
     invalidation::InvalidationService* invalidator,
     SyncInvalidationsService* sync_invalidations_service,
     std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
-    const base::WeakPtr<SyncPrefs>& sync_prefs,
+    const base::WeakPtr<SyncTransportDataPrefs>& prefs,
     const base::FilePath& sync_data_folder,
     scoped_refptr<base::SequencedTaskRunner> sync_task_runner)
     : sync_task_runner_(std::move(sync_task_runner)),
       name_(name),
-      sync_prefs_(sync_prefs),
+      prefs_(prefs),
       invalidator_(invalidator),
       sync_invalidations_service_(sync_invalidations_service),
 #if defined(OS_ANDROID)
@@ -120,12 +120,12 @@ void SyncEngineImpl::StartConfiguration() {
 
 void SyncEngineImpl::StartSyncingWithServer() {
   DVLOG(1) << name_ << ": SyncEngineImpl::StartSyncingWithServer called.";
-  base::Time last_poll_time = sync_prefs_->GetLastPollTime();
+  base::Time last_poll_time = prefs_->GetLastPollTime();
   // If there's no known last poll time (e.g. on initial start-up), we treat
   // this as if a poll just happened.
   if (last_poll_time.is_null()) {
     last_poll_time = base::Time::Now();
-    sync_prefs_->SetLastPollTime(last_poll_time);
+    prefs_->SetLastPollTime(last_poll_time);
   }
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoStartSyncing, backend_,
@@ -378,7 +378,7 @@ void SyncEngineImpl::HandleProtocolEventOnFrontendLoop(
 void SyncEngineImpl::UpdateInvalidationVersions(
     const std::map<ModelType, int64_t>& invalidation_versions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  sync_prefs_->UpdateInvalidationVersions(invalidation_versions);
+  prefs_->UpdateInvalidationVersions(invalidation_versions);
 }
 
 void SyncEngineImpl::HandleSyncStatusChanged(const SyncStatus& status) {

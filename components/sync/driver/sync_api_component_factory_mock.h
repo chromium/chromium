@@ -36,7 +36,7 @@ class SyncApiComponentFactoryMock : public SyncApiComponentFactory {
               (const std::string& name,
                invalidation::InvalidationService* invalidator,
                syncer::SyncInvalidationsService* sync_invalidations_service,
-               const base::WeakPtr<SyncPrefs>& sync_prefs),
+               const base::WeakPtr<SyncTransportDataPrefs>& sync_prefs),
               (override));
   MOCK_METHOD(void, DeleteLegacyDirectoryFilesAndNigoriStorage, (), (override));
 };

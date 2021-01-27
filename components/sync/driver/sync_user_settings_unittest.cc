@@ -55,11 +55,13 @@ class SyncUserSettingsTest : public testing::Test {
   SyncUserSettingsTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
     sync_prefs_ = std::make_unique<SyncPrefs>(&pref_service_);
+    transport_data_prefs_ =
+        std::make_unique<SyncTransportDataPrefs>(&pref_service_);
 
     sync_service_crypto_ = std::make_unique<SyncServiceCrypto>(
         /*notify_observers=*/base::DoNothing(),
         /*notify_required_user_action_changed=*/base::DoNothing(),
-        /*reconfigure=*/base::DoNothing(), sync_prefs_.get(),
+        /*reconfigure=*/base::DoNothing(), transport_data_prefs_.get(),
         /*trusted_vault_client=*/nullptr);
   }
 
@@ -76,6 +78,7 @@ class SyncUserSettingsTest : public testing::Test {
   // fields are dependent.
   TestingPrefServiceSimple pref_service_;
   std::unique_ptr<SyncPrefs> sync_prefs_;
+  std::unique_ptr<SyncTransportDataPrefs> transport_data_prefs_;
   std::unique_ptr<SyncServiceCrypto> sync_service_crypto_;
 };
 

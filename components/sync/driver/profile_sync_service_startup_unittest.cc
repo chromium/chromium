@@ -178,7 +178,7 @@ TEST_F(ProfileSyncServiceStartupTest, StartFirstTime) {
             sync_service()->GetTransportState());
 
   // Preferences should be back to defaults.
-  EXPECT_EQ(base::Time(), sync_prefs()->GetLastSyncedTime());
+  EXPECT_EQ(base::Time(), sync_service()->GetLastSyncedTimeForDebugging());
   EXPECT_FALSE(sync_prefs()->IsFirstSetupComplete());
 
   // This tells the ProfileSyncService that setup is now in progress, which

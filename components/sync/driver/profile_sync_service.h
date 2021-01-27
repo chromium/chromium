@@ -376,6 +376,7 @@ class ProfileSyncService : public SyncService,
 
   // The class that handles getting, setting, and persisting sync preferences.
   SyncPrefs sync_prefs_;
+  SyncTransportDataPrefs sync_transport_data_prefs_;
 
   // Encapsulates user signin - used to set/get the user's authenticated
   // email address and sign-out upon error.

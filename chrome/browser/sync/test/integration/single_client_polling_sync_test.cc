@@ -24,7 +24,6 @@ using testing::Ge;
 using testing::Le;
 using sessions_helper::CheckInitialState;
 using sessions_helper::OpenTab;
-using syncer::SyncPrefs;
 
 namespace {
 
@@ -42,14 +41,16 @@ class SingleClientPollingSyncTest : public SyncTest {
 IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest, ShouldInitializePollPrefs) {
   // Setup clients and verify no poll interval is present yet.
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
-  SyncPrefs sync_prefs(GetProfile(0)->GetPrefs());
-  EXPECT_TRUE(sync_prefs.GetPollInterval().is_zero());
-  ASSERT_TRUE(sync_prefs.GetLastPollTime().is_null());
+  syncer::SyncTransportDataPrefs transport_data_prefs(
+      GetProfile(0)->GetPrefs());
+  EXPECT_TRUE(transport_data_prefs.GetPollInterval().is_zero());
+  ASSERT_TRUE(transport_data_prefs.GetLastPollTime().is_null());
 
   // Execute a sync cycle and verify the client set up (and persisted) the
   // default value.
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  EXPECT_THAT(sync_prefs.GetPollInterval(), Eq(syncer::kDefaultPollInterval));
+  EXPECT_THAT(transport_data_prefs.GetPollInterval(),
+              Eq(syncer::kDefaultPollInterval));
 }
 
 // This test verifies that updates of the poll interval get persisted
@@ -72,8 +73,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
       GetSyncService(0), GetFakeServer());
   ASSERT_TRUE(checker.Wait());
 
-  SyncPrefs sync_prefs(GetProfile(0)->GetPrefs());
-  EXPECT_THAT(sync_prefs.GetPollInterval().InSeconds(), Eq(67));
+  syncer::SyncTransportDataPrefs transport_data_prefs(
+      GetProfile(0)->GetPrefs());
+  EXPECT_THAT(transport_data_prefs.GetPollInterval().InSeconds(), Eq(67));
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
@@ -98,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
 
   ASSERT_TRUE(SetupClients()) << "SetupClients() failed.";
 
-  SyncPrefs remote_prefs(GetProfile(0)->GetPrefs());
+  syncer::SyncTransportDataPrefs remote_prefs(GetProfile(0)->GetPrefs());
   // Set small polling interval to make random delays introduced in
   // SyncSchedulerImpl::ComputeLastPollOnStart() negligible, but big enough to
   // avoid periodic polls during a test run.
@@ -134,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPollingSyncTest,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
 
-  SyncPrefs remote_prefs(GetProfile(0)->GetPrefs());
+  syncer::SyncTransportDataPrefs remote_prefs(GetProfile(0)->GetPrefs());
   ASSERT_FALSE(remote_prefs.GetLastPollTime().is_null());
 
   // After restart, the last sync cycle snapshot should be empty.

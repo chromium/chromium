@@ -156,7 +156,7 @@ std::string GenerateCacheGUID() {
   return guid;
 }
 
-bool IsLocalSyncTransportDataValid(const SyncPrefs& sync_prefs,
+bool IsLocalSyncTransportDataValid(const SyncTransportDataPrefs& sync_prefs,
                                    const CoreAccountInfo& core_account_info) {
   // If the cache GUID is empty, it most probably is because local sync data
   // has been fully cleared via ClearLocalSyncTransportData() due to
@@ -204,6 +204,7 @@ ProfileSyncService::InitParams::~InitParams() = default;
 ProfileSyncService::ProfileSyncService(InitParams init_params)
     : sync_client_(std::move(init_params.sync_client)),
       sync_prefs_(sync_client_->GetPrefService()),
+      sync_transport_data_prefs_(sync_client_->GetPrefService()),
       identity_manager_(init_params.identity_manager),
       auth_manager_(std::make_unique<SyncAuthManager>(
           identity_manager_,
@@ -222,7 +223,7 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
                               base::Unretained(this)),
           base::BindRepeating(&ProfileSyncService::ReconfigureDueToPassphrase,
                               base::Unretained(this)),
-          &sync_prefs_,
+          &sync_transport_data_prefs_,
           sync_client_->GetTrustedVaultClient()),
       network_time_update_callback_(
           std::move(init_params.network_time_update_callback)),
@@ -250,9 +251,9 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
   // shouldn't be instantiated.
   DCHECK(switches::IsSyncAllowedByFlag());
 
-  std::string last_version = sync_prefs_.GetLastRunVersion();
+  std::string last_version = sync_transport_data_prefs_.GetLastRunVersion();
   std::string current_version = PRODUCT_VERSION;
-  sync_prefs_.SetLastRunVersion(current_version);
+  sync_transport_data_prefs_.SetLastRunVersion(current_version);
 
   // Check for a major version change. Note that the versions have format
   // MAJOR.MINOR.BUILD.PATCH.
@@ -544,29 +545,31 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
 
   engine_ = sync_client_->GetSyncApiComponentFactory()->CreateSyncEngine(
       debug_identifier_, sync_client_->GetInvalidationService(),
-      sync_client_->GetSyncInvalidationsService(), sync_prefs_.AsWeakPtr());
+      sync_client_->GetSyncInvalidationsService(),
+      sync_transport_data_prefs_.AsWeakPtr());
 
   // Clear any old errors the first time sync starts.
   if (!user_settings_->IsFirstSetupComplete()) {
     last_actionable_error_ = SyncProtocolError();
   }
 
-  // The gaia ID in SyncPrefs was introduced with M81, so having an empty value
+  // The gaia ID in sync prefs was introduced with M81, so having an empty value
   // is legitimate and should be populated as a one-off migration.
   // TODO(mastiz): Clean up this migration code after a grace period (e.g. 1
   // year).
-  if (sync_prefs_.GetGaiaId().empty()) {
-    sync_prefs_.SetGaiaId(authenticated_account_info.gaia);
+  if (sync_transport_data_prefs_.GetGaiaId().empty()) {
+    sync_transport_data_prefs_.SetGaiaId(authenticated_account_info.gaia);
   }
 
-  if (!IsLocalSyncTransportDataValid(sync_prefs_, authenticated_account_info)) {
+  if (!IsLocalSyncTransportDataValid(sync_transport_data_prefs_,
+                                     authenticated_account_info)) {
     // Either the local data is uninitialized or corrupt, so let's throw
     // everything away and start from scratch with a new cache GUID, which also
     // cascades into datatypes throwing away their dangling sync metadata due to
     // cache GUID mismatches.
     ClearLocalTransportDataAndNotify();
-    sync_prefs_.SetCacheGuid(GenerateCacheGUID());
-    sync_prefs_.SetGaiaId(authenticated_account_info.gaia);
+    sync_transport_data_prefs_.SetCacheGuid(GenerateCacheGUID());
+    sync_transport_data_prefs_.SetGaiaId(authenticated_account_info.gaia);
   }
 
   SyncEngine::InitParams params;
@@ -594,17 +597,18 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
         sync_client_->GetLocalSyncBackendFolder();
   }
   params.restored_key_for_bootstrapping =
-      sync_prefs_.GetEncryptionBootstrapToken();
+      sync_transport_data_prefs_.GetEncryptionBootstrapToken();
   params.restored_keystore_key_for_bootstrapping =
-      sync_prefs_.GetKeystoreEncryptionBootstrapToken();
-  params.cache_guid = sync_prefs_.GetCacheGuid();
-  params.birthday = sync_prefs_.GetBirthday();
-  params.bag_of_chips = sync_prefs_.GetBagOfChips();
+      sync_transport_data_prefs_.GetKeystoreEncryptionBootstrapToken();
+  params.cache_guid = sync_transport_data_prefs_.GetCacheGuid();
+  params.birthday = sync_transport_data_prefs_.GetBirthday();
+  params.bag_of_chips = sync_transport_data_prefs_.GetBagOfChips();
   params.engine_components_factory =
       std::make_unique<EngineComponentsFactoryImpl>(
           EngineSwitchesFromCommandLine());
-  params.invalidation_versions = sync_prefs_.GetInvalidationVersions();
-  params.poll_interval = sync_prefs_.GetPollInterval();
+  params.invalidation_versions =
+      sync_transport_data_prefs_.GetInvalidationVersions();
+  params.poll_interval = sync_transport_data_prefs_.GetPollInterval();
   if (params.poll_interval.is_zero()) {
     params.poll_interval = kDefaultPollInterval;
   }
@@ -643,7 +647,7 @@ void ProfileSyncService::ShutdownImpl(ShutdownReason reason) {
       // triggered consistently upon browser startup (which is the case for
       // certain codepaths such as the user being signed out). To avoid that,
       // SyncPrefs is used to determine whether it's worth it.
-      if (!sync_prefs_.GetCacheGuid().empty()) {
+      if (!sync_transport_data_prefs_.GetCacheGuid().empty()) {
         sync_client_->GetSyncApiComponentFactory()
             ->DeleteLegacyDirectoryFilesAndNigoriStorage();
       }
@@ -722,7 +726,7 @@ void ProfileSyncService::StopImpl(SyncStopDataFate data_fate) {
       SetSyncRequestedAndIgnoreNotification(false);
       // For explicit passphrase users, clear the encryption key, such that they
       // will need to reenter it if sync gets re-enabled.
-      sync_prefs_.ClearEncryptionBootstrapToken();
+      sync_transport_data_prefs_.ClearEncryptionBootstrapToken();
       // Also let observers know that Sync-the-feature is now fully disabled
       // (before it possibly starts up again in transport-only mode).
       NotifyObservers();
@@ -825,7 +829,7 @@ SyncService::TransportState ProfileSyncService::GetTransportState() const {
 }
 
 void ProfileSyncService::UpdateLastSyncedTime() {
-  sync_prefs_.SetLastSyncedTime(base::Time::Now());
+  sync_transport_data_prefs_.SetLastSyncedTime(base::Time::Now());
 }
 
 void ProfileSyncService::NotifyObservers() {
@@ -906,7 +910,8 @@ void ProfileSyncService::OnEngineInitialized(
   // The very first time the backend initializes is effectively the first time
   // we can say we successfully "synced".  LastSyncedTime will only be null in
   // this case, because the pref wasn't restored on StartUp.
-  is_first_time_sync_configure_ = sync_prefs_.GetLastSyncedTime().is_null();
+  is_first_time_sync_configure_ =
+      sync_transport_data_prefs_.GetLastSyncedTime().is_null();
 
   UpdateEngineInitUMA(success);
 
@@ -921,8 +926,8 @@ void ProfileSyncService::OnEngineInitialized(
   sync_js_controller_.AttachJsBackend(js_backend);
 
   // Save initialization data to preferences.
-  sync_prefs_.SetBirthday(birthday);
-  sync_prefs_.SetBagOfChips(bag_of_chips);
+  sync_transport_data_prefs_.SetBirthday(birthday);
+  sync_transport_data_prefs_.SetBagOfChips(bag_of_chips);
 
   if (!protocol_event_observers_.empty()) {
     engine_->RequestBufferedProtocolEventsAndEnableForwarding();
@@ -975,11 +980,11 @@ void ProfileSyncService::OnSyncCycleCompleted(
 
   UpdateLastSyncedTime();
   if (!snapshot.poll_finish_time().is_null())
-    sync_prefs_.SetLastPollTime(snapshot.poll_finish_time());
+    sync_transport_data_prefs_.SetLastPollTime(snapshot.poll_finish_time());
   DCHECK(!snapshot.poll_interval().is_zero());
-  sync_prefs_.SetPollInterval(snapshot.poll_interval());
+  sync_transport_data_prefs_.SetPollInterval(snapshot.poll_interval());
 
-  sync_prefs_.SetBagOfChips(snapshot.bag_of_chips());
+  sync_transport_data_prefs_.SetBagOfChips(snapshot.bag_of_chips());
 
   DVLOG(2) << "Notifying observers sync cycle completed";
   NotifySyncCycleCompleted();
@@ -1195,7 +1200,7 @@ bool ProfileSyncService::IsSignedIn() const {
 }
 
 base::Time ProfileSyncService::GetLastSyncedTimeForDebugging() const {
-  return sync_prefs_.GetLastSyncedTime();
+  return sync_transport_data_prefs_.GetLastSyncedTime();
 }
 
 void ProfileSyncService::OnPreferredDataTypesPrefChange() {
@@ -1279,7 +1284,7 @@ void ProfileSyncService::ConfigureDataTypeManager(ConfigureReason reason) {
   ConfigureContext configure_context;
   configure_context.authenticated_account_id =
       GetAuthenticatedAccountInfo().account_id;
-  configure_context.cache_guid = sync_prefs_.GetCacheGuid();
+  configure_context.cache_guid = sync_transport_data_prefs_.GetCacheGuid();
   configure_context.sync_mode = SyncMode::kFull;
   configure_context.reason = reason;
   configure_context.configuration_start_time = base::Time::Now();
@@ -1884,11 +1889,11 @@ void ProfileSyncService::OverrideNetworkForTest(
 }
 
 bool ProfileSyncService::IsPassphrasePrompted() const {
-  return sync_prefs_.IsPassphrasePrompted();
+  return sync_transport_data_prefs_.IsPassphrasePrompted();
 }
 
 void ProfileSyncService::SetPassphrasePrompted(bool prompted) {
-  sync_prefs_.SetPassphrasePrompted(prompted);
+  sync_transport_data_prefs_.SetPassphrasePrompted(prompted);
 }
 
 #if defined(OS_ANDROID)
@@ -1912,8 +1917,8 @@ void ProfileSyncService::RemoveClientFromServer() const {
   if (!engine_ || !engine_->IsInitialized()) {
     return;
   }
-  const std::string cache_guid = sync_prefs_.GetCacheGuid();
-  const std::string birthday = sync_prefs_.GetBirthday();
+  const std::string cache_guid = sync_transport_data_prefs_.GetCacheGuid();
+  const std::string birthday = sync_transport_data_prefs_.GetBirthday();
   DCHECK(!cache_guid.empty());
   const std::string& access_token = auth_manager_->access_token();
   if (!access_token.empty() && !birthday.empty()) {
@@ -1993,7 +1998,7 @@ void ProfileSyncService::OnRequiredUserActionChanged() {
 }
 
 void ProfileSyncService::ClearLocalTransportDataAndNotify() {
-  sync_prefs_.ClearLocalSyncTransportData();
+  sync_transport_data_prefs_.ClearAll();
   sync_client_->OnLocalSyncTransportDataCleared();
 }
 

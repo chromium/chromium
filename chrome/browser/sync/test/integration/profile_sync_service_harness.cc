@@ -219,7 +219,7 @@ void ResetAccount(network::SharedURLLoaderFactory* url_loader_factory,
 }
 
 void ProfileSyncServiceHarness::ResetSyncForPrimaryAccount() {
-  syncer::SyncPrefs sync_prefs(profile_->GetPrefs());
+  syncer::SyncTransportDataPrefs transport_data_prefs(profile_->GetPrefs());
   // Generate the https url.
   // CLEAR_SERVER_DATA isn't enabled on the prod Sync server,
   // so --sync-url-clear-server-data can be used to specify an
@@ -231,13 +231,14 @@ void ProfileSyncServiceHarness::ResetSyncForPrimaryAccount() {
       << "Missing switch " << kSyncUrlClearServerDataKey;
   GURL base_url(cmd_line->GetSwitchValueASCII(kSyncUrlClearServerDataKey) +
                 "/command/?");
-  GURL url = syncer::AppendSyncQueryString(base_url, sync_prefs.GetCacheGuid());
+  GURL url = syncer::AppendSyncQueryString(base_url,
+                                           transport_data_prefs.GetCacheGuid());
 
   // Call sync server to clear sync data.
   std::string access_token = service()->GetAccessTokenForTest();
   DCHECK(access_token.size()) << "Access token is not available.";
   ResetAccount(profile_->GetURLLoaderFactory().get(), access_token, url,
-               username_, sync_prefs.GetBirthday());
+               username_, transport_data_prefs.GetBirthday());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)

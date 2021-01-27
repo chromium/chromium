@@ -76,7 +76,7 @@ class SingleClientDeviceInfoSyncTest : public SyncTest {
   ~SingleClientDeviceInfoSyncTest() override {}
 
   std::string GetLocalCacheGuid() {
-    syncer::SyncPrefs prefs(GetProfile(0)->GetPrefs());
+    syncer::SyncTransportDataPrefs prefs(GetProfile(0)->GetPrefs());
     return prefs.GetCacheGuid();
   }
 

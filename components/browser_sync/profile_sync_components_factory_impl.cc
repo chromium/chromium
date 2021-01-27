@@ -415,13 +415,13 @@ ProfileSyncComponentsFactoryImpl::CreateSyncEngine(
     const std::string& name,
     invalidation::InvalidationService* invalidator,
     syncer::SyncInvalidationsService* sync_invalidation_service,
-    const base::WeakPtr<syncer::SyncPrefs>& sync_prefs) {
+    const base::WeakPtr<syncer::SyncTransportDataPrefs>& prefs) {
   return std::make_unique<syncer::SyncEngineImpl>(
       name, invalidator, sync_invalidation_service,
       std::make_unique<browser_sync::ActiveDevicesProviderImpl>(
           sync_client_->GetDeviceInfoSyncService()->GetDeviceInfoTracker(),
           base::DefaultClock::GetInstance()),
-      sync_prefs, sync_client_->GetModelTypeStoreService()->GetSyncDataPath(),
+      prefs, sync_client_->GetModelTypeStoreService()->GetSyncDataPath(),
       engines_and_directory_deletion_thread_);
 }
 

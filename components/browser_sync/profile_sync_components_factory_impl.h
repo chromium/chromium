@@ -81,7 +81,7 @@ class ProfileSyncComponentsFactoryImpl
       const std::string& name,
       invalidation::InvalidationService* invalidator,
       syncer::SyncInvalidationsService* sync_invalidation_service,
-      const base::WeakPtr<syncer::SyncPrefs>& sync_prefs) override;
+      const base::WeakPtr<syncer::SyncTransportDataPrefs>& prefs) override;
   void DeleteLegacyDirectoryFilesAndNigoriStorage() override;
 
  private:

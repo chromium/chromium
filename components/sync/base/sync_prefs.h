@@ -56,24 +56,95 @@ class CryptoSyncPrefs {
       const std::string& token) = 0;
 };
 
+// Thin wrapper for "bookkeeping" sync preferences, such as the last synced
+// time, whether the last shutdown was clean, etc. Does *NOT* include sync
+// preferences which are directly user-controlled, such as the set of selected
+// types.
+//
+// In order to use this class SyncPrefs::RegisterProfilePrefs() needs to be
+// invoked first.
+// TODO(crbug.com/938894): Move to dedicated file, possibly next to
+// SyncEngineImpl and introduce a separate pref registration function.
+class SyncTransportDataPrefs
+    : public base::SupportsWeakPtr<SyncTransportDataPrefs>,
+      public CryptoSyncPrefs {
+ public:
+  // |pref_service| must not be null and must outlive this object.
+  explicit SyncTransportDataPrefs(PrefService* pref_service);
+  SyncTransportDataPrefs(const SyncTransportDataPrefs&) = delete;
+  SyncTransportDataPrefs& operator=(const SyncTransportDataPrefs&) = delete;
+  ~SyncTransportDataPrefs() override;
+
+  // Clears all preferences in this class, which excludes
+  void ClearAll();
+
+  void SetGaiaId(const std::string& gaia_id);
+  std::string GetGaiaId() const;
+  void SetCacheGuid(const std::string& cache_guid);
+  std::string GetCacheGuid() const;
+  void SetBirthday(const std::string& birthday);
+  std::string GetBirthday() const;
+  void SetBagOfChips(const std::string& bag_of_chips);
+  std::string GetBagOfChips() const;
+
+  // Out of band sync passphrase prompt getter/setter.
+  bool IsPassphrasePrompted() const;
+  void SetPassphrasePrompted(bool value);
+
+  base::Time GetLastSyncedTime() const;
+  void SetLastSyncedTime(base::Time time);
+
+  base::Time GetLastPollTime() const;
+  void SetLastPollTime(base::Time time);
+
+  base::TimeDelta GetPollInterval() const;
+  void SetPollInterval(base::TimeDelta interval);
+
+  // The encryption bootstrap token is used for explicit passphrase users
+  // (usually custom passphrase) and represents a user-entered passphrase.
+  // Hence, it gets treated as user-controlled similarly to sync datatype
+  // selection settings (i.e. doesn't get cleared in
+  // ClearLocalSyncTransportData()).
+  std::string GetEncryptionBootstrapToken() const override;
+  void SetEncryptionBootstrapToken(const std::string& token) override;
+  void ClearEncryptionBootstrapToken();
+
+  // Use this keystore bootstrap token if we're not using an explicit
+  // passphrase.
+  std::string GetKeystoreEncryptionBootstrapToken() const override;
+  void SetKeystoreEncryptionBootstrapToken(const std::string& token) override;
+
+  // Get/set for the last known sync invalidation versions.
+  std::map<ModelType, int64_t> GetInvalidationVersions() const;
+  void UpdateInvalidationVersions(
+      const std::map<ModelType, int64_t>& invalidation_versions);
+
+  // Will return the contents of the LastRunVersion preference. This may be an
+  // empty string if no version info was present, and is only valid at
+  // Sync startup time (after which the LastRunVersion preference will have been
+  // updated to the current version).
+  std::string GetLastRunVersion() const;
+  void SetLastRunVersion(const std::string& current_version);
+
+ private:
+  // Never null.
+  PrefService* const pref_service_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
+};
+
 // SyncPrefs is a helper class that manages getting, setting, and persisting
 // global sync preferences. It is not thread-safe, and lives on the UI thread.
-class SyncPrefs : public CryptoSyncPrefs,
-                  public base::SupportsWeakPtr<SyncPrefs> {
+class SyncPrefs {
  public:
   // |pref_service| must not be null and must outlive this object.
   explicit SyncPrefs(PrefService* pref_service);
-  ~SyncPrefs() override;
+  ~SyncPrefs();
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   void AddSyncPrefObserver(SyncPrefObserver* sync_pref_observer);
   void RemoveSyncPrefObserver(SyncPrefObserver* sync_pref_observer);
-
-  // Clears "bookkeeping" sync preferences, such as the last synced time,
-  // whether the last shutdown was clean, etc. Does *not* clear sync preferences
-  // which are directly user-controlled, such as the set of selected types.
-  void ClearLocalSyncTransportData();
 
   // Getters and setters for global sync prefs.
 
@@ -86,15 +157,6 @@ class SyncPrefs : public CryptoSyncPrefs,
   bool IsSyncRequested() const;
   void SetSyncRequested(bool is_requested);
   void SetSyncRequestedIfNotSetExplicitly();
-
-  base::Time GetLastSyncedTime() const;
-  void SetLastSyncedTime(base::Time time);
-
-  base::Time GetLastPollTime() const;
-  void SetLastPollTime(base::Time time);
-
-  base::TimeDelta GetPollInterval() const;
-  void SetPollInterval(base::TimeDelta interval);
 
   bool HasKeepEverythingSynced() const;
 
@@ -135,35 +197,8 @@ class SyncPrefs : public CryptoSyncPrefs,
   // policy, is handled directly in ProfileSyncService.
   bool IsManaged() const;
 
-  // The encryption bootstrap token is used for explicit passphrase users
-  // (usually custom passphrase) and represents a user-entered passphrase.
-  // Hence, it gets treated as user-controlled similarly to sync datatype
-  // selection settings (i.e. doesn't get cleared in
-  // ClearLocalSyncTransportData()).
-  std::string GetEncryptionBootstrapToken() const override;
-  void SetEncryptionBootstrapToken(const std::string& token) override;
-  void ClearEncryptionBootstrapToken();
-
-  // Use this keystore bootstrap token if we're not using an explicit
-  // passphrase.
-  std::string GetKeystoreEncryptionBootstrapToken() const override;
-  void SetKeystoreEncryptionBootstrapToken(const std::string& token) override;
-
   // Maps |type| to its corresponding preference name.
   static const char* GetPrefNameForType(UserSelectableType type);
-
-  void SetGaiaId(const std::string& gaia_id);
-  std::string GetGaiaId() const;
-  void SetCacheGuid(const std::string& cache_guid);
-  std::string GetCacheGuid() const;
-  void SetBirthday(const std::string& birthday);
-  std::string GetBirthday() const;
-  void SetBagOfChips(const std::string& bag_of_chips);
-  std::string GetBagOfChips() const;
-
-  // Out of band sync passphrase prompt getter/setter.
-  bool IsPassphrasePrompted() const;
-  void SetPassphrasePrompted(bool value);
 
 #if defined(OS_ANDROID)
   // Sets a boolean pref representing that Sync should no longer respect whether
@@ -179,18 +214,6 @@ class SyncPrefs : public CryptoSyncPrefs,
 
   // For testing.
   void SetManagedForTest(bool is_managed);
-
-  // Get/set for the last known sync invalidation versions.
-  std::map<ModelType, int64_t> GetInvalidationVersions() const;
-  void UpdateInvalidationVersions(
-      const std::map<ModelType, int64_t>& invalidation_versions);
-
-  // Will return the contents of the LastRunVersion preference. This may be an
-  // empty string if no version info was present, and is only valid at
-  // Sync startup time (after which the LastRunVersion preference will have been
-  // updated to the current version).
-  std::string GetLastRunVersion() const;
-  void SetLastRunVersion(const std::string& current_version);
 
   // Gets the local sync backend enabled state.
   bool IsLocalSyncEnabled() const;

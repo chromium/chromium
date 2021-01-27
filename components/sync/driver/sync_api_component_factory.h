@@ -25,7 +25,7 @@ class DataTypeManager;
 class DataTypeManagerObserver;
 class SyncEngine;
 class SyncInvalidationsService;
-class SyncPrefs;
+class SyncTransportDataPrefs;
 
 // This factory provides sync driver code with the model type specific sync/api
 // service (like SyncableService) implementations.
@@ -50,7 +50,7 @@ class SyncApiComponentFactory {
       const std::string& name,
       invalidation::InvalidationService* invalidator,
       syncer::SyncInvalidationsService* sync_invalidation_service,
-      const base::WeakPtr<SyncPrefs>& sync_prefs) = 0;
+      const base::WeakPtr<SyncTransportDataPrefs>& sync_prefs) = 0;
 
   // Deletes the directory database files from the sync data folder to cleanup
   // all files. The main purpose is to delete the legacy Directory files

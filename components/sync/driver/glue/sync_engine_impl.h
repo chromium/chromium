@@ -47,7 +47,7 @@ class ModelTypeConnector;
 class ProtocolEvent;
 class SyncEngineBackend;
 class SyncInvalidationsService;
-class SyncPrefs;
+class SyncTransportDataPrefs;
 
 // The only real implementation of the SyncEngine. See that interface's
 // definition for documentation of public methods.
@@ -61,7 +61,7 @@ class SyncEngineImpl : public SyncEngine,
                  invalidation::InvalidationService* invalidator,
                  SyncInvalidationsService* sync_invalidations_service,
                  std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
-                 const base::WeakPtr<SyncPrefs>& sync_prefs,
+                 const base::WeakPtr<SyncTransportDataPrefs>& prefs,
                  const base::FilePath& sync_data_folder,
                  scoped_refptr<base::SequencedTaskRunner> sync_task_runner);
   ~SyncEngineImpl() override;
@@ -186,7 +186,7 @@ class SyncEngineImpl : public SyncEngine,
 
   bool initialized_ = false;
 
-  const base::WeakPtr<SyncPrefs> sync_prefs_;
+  const base::WeakPtr<SyncTransportDataPrefs> prefs_;
 
   // The host which we serve (and are owned by). Set in Initialize() and nulled
   // out in StopSyncingForShutdown().
