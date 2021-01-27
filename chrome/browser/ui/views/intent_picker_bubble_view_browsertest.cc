@@ -61,15 +61,6 @@ class IntentPickerBubbleViewBrowserTest
     return IntentPickerBubbleView::intent_picker_bubble();
   }
 
-  void ClickIconToShowBubble() {
-    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                         "IntentPickerBubbleView");
-    GetIntentPickerIcon()->ExecuteForTesting();
-    waiter.WaitIfNeededAndGet();
-    ASSERT_TRUE(intent_picker_bubble());
-    EXPECT_TRUE(intent_picker_bubble()->GetVisible());
-  }
-
   void VerifyBubbleWithTestWebApp() {
     EXPECT_EQ(1U, intent_picker_bubble()->GetScrollViewSize());
     auto& app_info = intent_picker_bubble()->app_info_for_testing();
@@ -94,6 +85,9 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   NavigateToLaunchingPage(browser());
+
+  views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                       "IntentPickerBubbleView");
   TestTabActionDoesNotOpenAppWindow(
       in_scope_url, base::BindOnce(&ClickLinkAndWait, web_contents,
                                    in_scope_url, LinkTarget::SELF, GetParam()));
@@ -101,9 +95,15 @@ IN_PROC_BROWSER_TEST_P(IntentPickerBubbleViewBrowserTest,
   PageActionIconView* intent_picker_view = GetIntentPickerIcon();
   EXPECT_TRUE(intent_picker_view->GetVisible());
 
-  EXPECT_FALSE(intent_picker_bubble());
+  if (!base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence)) {
+    EXPECT_FALSE(intent_picker_bubble());
+    GetIntentPickerIcon()->ExecuteForTesting();
+  }
 
-  ClickIconToShowBubble();
+  waiter.WaitIfNeededAndGet();
+  ASSERT_TRUE(intent_picker_bubble());
+  EXPECT_TRUE(intent_picker_bubble()->GetVisible());
+
   VerifyBubbleWithTestWebApp();
 
   intent_picker_bubble()->AcceptDialog();
