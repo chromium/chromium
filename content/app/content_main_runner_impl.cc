@@ -14,10 +14,6 @@
 #include <vector>
 
 #include "base/allocator/allocator_check.h"
-#include "base/allocator/allocator_extension.h"
-#include "base/allocator/allocator_shim.h"
-#include "base/allocator/buildflags.h"
-#include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "base/at_exit.h"
 #include "base/base_switches.h"
 #include "base/bind.h"
@@ -25,7 +21,6 @@
 #include "base/debug/debugger.h"
 #include "base/debug/leak_annotations.h"
 #include "base/debug/stack_trace.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/i18n/icu_util.h"
 #include "base/lazy_instance.h"
@@ -33,7 +28,6 @@
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_base.h"
-#include "base/partition_alloc_buildflags.h"
 #include "base/path_service.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_device_source.h"
@@ -54,6 +48,7 @@
 #include "components/download/public/common/download_task_runner.h"
 #include "content/app/mojo/mojo_init.h"
 #include "content/app/mojo_ipc_support.h"
+#include "content/app/partition_alloc_support.h"
 #include "content/browser/browser_main.h"
 #include "content/browser/browser_process_sub_thread.h"
 #include "content/browser/browser_thread_impl.h"
@@ -174,11 +169,6 @@
 #include "content/common/android/cpu_affinity.h"
 #endif
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-#include "base/allocator/partition_allocator/extended_api.h"
-#include "base/allocator/partition_allocator/thread_cache.h"
-#endif
-
 namespace content {
 extern int GpuMain(const content::MainFunctionParams&);
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -241,41 +231,6 @@ void InitializeV8IfNeeded(const base::CommandLine& command_line,
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
   LoadV8SnapshotFile();
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA
-}
-
-void EnablePCScanForMallocPartitionsIfNeeded() {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && ALLOW_PCSCAN
-  CHECK(base::FeatureList::GetInstance());
-  if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan)) {
-    base::allocator::EnablePCScan();
-  }
-#endif
-}
-
-void EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && ALLOW_PCSCAN
-  CHECK(base::FeatureList::GetInstance());
-  if (base::FeatureList::IsEnabled(
-          base::features::kPartitionAllocPCScanBrowserOnly)) {
-    base::allocator::EnablePCScan();
-  }
-#endif
-}
-
-// This function should be executed as early as possible once we can get the
-// command line arguments and determine whether the process needs BRP support.
-// Until that moment, all heap allocations end up in a slower temporary
-// partition with no thread cache and cause heap fragmentation.
-//
-// Furthermore, since the function has to allocate a new partition, it must
-// only run once.
-void ConfigurePartitionRefCountSupportIfNeeded(bool enable_ref_count) {
-// Note that ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL implies that
-// USE_BACKUP_REF_PTR is true.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
-  base::allocator::ConfigurePartitionRefCountSupport(enable_ref_count);
-#endif
 }
 
 #if BUILDFLAG(USE_ZYGOTE_HANDLE)
@@ -517,9 +472,9 @@ int RunZygote(ContentMainDelegate* delegate) {
       *base::CommandLine::ForCurrentProcess();
   std::string process_type =
       command_line.GetSwitchValueASCII(switches::kProcessType);
-  // Must run as early as possible. See the definition comment.
-  ConfigurePartitionRefCountSupportIfNeeded(process_type !=
-                                            switches::kRendererProcess);
+
+  internal::ReconfigurePartitionAllocAfterZygoteFork(process_type);
+
   ContentClientInitializer::Set(process_type, delegate);
 
   MainFunctionParams main_params(command_line);
@@ -528,9 +483,7 @@ int RunZygote(ContentMainDelegate* delegate) {
   InitializeFieldTrialAndFeatureList();
   delegate->PostFieldTrialInitialization();
 
-  // After feature list has been initialized, enable pcscan on malloc
-  // partitions.
-  EnablePCScanForMallocPartitionsIfNeeded();
+  internal::ReconfigurePartitionAllocAfterFeatureListInit(process_type);
 
   mojo::core::InitFeatures();
 
@@ -732,27 +685,7 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
   // unexpected absence has security implications.
   CHECK(base::allocator::IsAllocatorInitialized());
 
-  if (process_type != switches::kZygoteProcess) {
-    // Must run as early as possible. See the definition comment.
-    // In case of zygote, this is called in RunZygote().
-    ConfigurePartitionRefCountSupportIfNeeded(process_type !=
-                                              switches::kRendererProcess);
-  }
-
-  // These initializations are only relevant for PartitionAlloc-Everywhere
-  // builds.
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  base::allocator::EnablePartitionAllocMemoryReclaimer();
-
-#if defined(OS_ANDROID)
-  // The thread cache consumes more memory, especially when periodic purge is
-  // disabled. Don't use it on low-memory devices.
-  if (base::SysInfo::IsLowEndDevice()) {
-    base::DisablePartitionAllocThreadCacheForProcess();
-  }
-#endif  // defined(OS_ANDROID)
-
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  internal::ReconfigurePartitionAllocEarlyish(process_type);
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
   if (!process_type.empty()) {
@@ -906,9 +839,7 @@ int ContentMainRunnerImpl::Run(bool start_minimal_browser) {
       InitializeFieldTrialAndFeatureList();
       delegate_->PostFieldTrialInitialization();
 
-      // After feature list has been initialized, enable pcscan on malloc
-      // partitions.
-      EnablePCScanForMallocPartitionsIfNeeded();
+      internal::ReconfigurePartitionAllocAfterFeatureListInit(process_type);
 
       mojo::core::InitFeatures();
     }
@@ -1048,9 +979,8 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
 #endif
   }
 
-  // Enable PCScan once we are certain that FeatureList was initialized.
-  EnablePCScanForMallocPartitionsIfNeeded();
-  EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded();
+  // No specified process type means this is the Browser process.
+  internal::ReconfigurePartitionAllocAfterFeatureListInit("");
 
   if (should_start_minimal_browser) {
     DVLOG(0) << "Chrome is running in minimal browser mode.";

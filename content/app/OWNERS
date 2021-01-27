@@ -1,2 +1,4 @@
 rockot@google.com
+
+per-file partition_alloc_support.*=file://base/allocator/partition_allocator/OWNERS
 per-file sandbox_helper_win.cc=file://sandbox/win/OWNERS
