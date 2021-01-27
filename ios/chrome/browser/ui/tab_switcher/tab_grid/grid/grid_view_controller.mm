@@ -568,7 +568,11 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
           self.blockingView.alpha = 0;
         }
         completion:^(BOOL finished) {
-          [self.blockingView removeFromSuperview];
+          if (self.contentNeedsAuthentication) {
+            self.blockingView.alpha = 1;
+          } else {
+            [self.blockingView removeFromSuperview];
+          }
         }];
   }
 }

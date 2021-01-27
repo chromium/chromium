@@ -125,7 +125,7 @@
 }
 
 - (void)updateWindowHasIncognitoContent:(SceneState*)sceneState {
-  BOOL hasIncognitoContent = NO;
+  BOOL hasIncognitoContent = YES;
   if (sceneState.interfaceProvider.hasIncognitoInterface) {
     hasIncognitoContent =
         sceneState.interfaceProvider.incognitoInterface.browser

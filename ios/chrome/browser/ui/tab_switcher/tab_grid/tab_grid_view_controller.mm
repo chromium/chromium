@@ -209,11 +209,6 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self setInsetForGridViews];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
-  self.incognitoTabsViewController.handler = self.reauthHandler;
-}
-
 - (void)viewWillTransitionToSize:(CGSize)size
        withTransitionCoordinator:
            (id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -451,6 +446,13 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (id<RecentTabsConsumer>)remoteTabsConsumer {
   return self.remoteTabsViewController;
+}
+
+- (void)setReauthHandler:(id<IncognitoReauthCommands>)reauthHandler {
+  if (_reauthHandler == reauthHandler)
+    return;
+  _reauthHandler = reauthHandler;
+  self.incognitoTabsViewController.handler = self.reauthHandler;
 }
 
 #pragma mark - TabGridPaging
