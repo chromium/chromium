@@ -23,17 +23,24 @@ using base::android::ScopedJavaLocalRef;
 
 namespace {
 
+// Keep in sync with DevTools frontend: front_end/resources/AppManifestView.js
+const int kDescriptionMinLength = 80;
+const int kDescriptionMaxLength = 324;
+
 bool CanShowBottomSheet(content::WebContents* web_contents,
                         const base::string16& description,
                         const std::vector<base::string16>& categories,
                         const std::map<GURL, SkBitmap>& screenshots) {
   if (!base::FeatureList::IsEnabled(
-          webapps::features::kPwaInstallUseBottomSheet))
+          webapps::features::kPwaInstallUseBottomSheet)) {
     return false;
+  }
 
-  if (description.size() == 0 || categories.size() == 0 ||
-      screenshots.size() == 0)
+  if (description.length() < kDescriptionMinLength ||
+      description.length() > kDescriptionMaxLength || categories.size() == 0 ||
+      screenshots.size() == 0) {
     return false;
+  }
 
   bool all_screenshots_draw_nothing = true;
   for (const auto& item : screenshots) {
