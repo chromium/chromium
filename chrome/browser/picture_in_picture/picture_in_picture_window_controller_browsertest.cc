@@ -414,10 +414,16 @@ IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest,
   EXPECT_TRUE(CompareImages(GetResultBitmap(), expected_image));
 }
 
+// This is disabled due to flakiness: https://crbug.com/1171245.
+#if defined(OS_MAC)
+#define MAYBE_PlayAndPauseControls DISABLED_PlayAndPauseControls
+#else
+#define MAYBE_PlayAndPauseControls PlayAndPauseControls
+#endif
 // Plays a video in PiP. Trigger the play and pause control in PiP by using a
 // mouse move. Capture the images and verift they are expected.
 IN_PROC_BROWSER_TEST_F(PictureInPicturePixelComparisonBrowserTest,
-                       PlayAndPauseControls) {
+                       MAYBE_PlayAndPauseControls) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   LoadTabAndEnterPictureInPicture(
       browser(), base::FilePath(FILE_PATH_LITERAL(
