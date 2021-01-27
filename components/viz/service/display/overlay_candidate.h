@@ -138,6 +138,10 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // will be absent from the |SurfaceDamageRectList|.
   bool assume_damaged = false;
 
+  // Identifier passed through by the video decoder that allows us to validate
+  // if a protected surface can still be displayed. Non-zero when valid.
+  uint32_t hw_protected_validation_id = 0;
+
  private:
   static bool FromDrawQuadResource(
       DisplayResourceProvider* resource_provider,

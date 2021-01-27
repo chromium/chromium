@@ -176,6 +176,7 @@ source_set("common") {
   ]
   public_deps = [
     "//base",
+    "//build/config/linux/libdrm",
     "//gpu",
     "//media",
     "//media/gpu:common",

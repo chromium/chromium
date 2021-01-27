@@ -134,6 +134,10 @@ struct MEDIA_EXPORT VideoFrameMetadata {
   // PROTECTED_VIDEO is also set to true.
   bool hw_protected = false;
 
+  // Identifier used to query if a HW protected video frame can still be
+  // properly displayed or not. Non-zero when valid.
+  uint32_t hw_protected_validation_id = 0;
+
   // An UnguessableToken that identifies VideoOverlayFactory that created
   // this VideoFrame. It's used by Cast to help with video hole punch.
   base::Optional<base::UnguessableToken> overlay_plane_id;

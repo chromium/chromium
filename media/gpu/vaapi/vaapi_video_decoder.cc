@@ -569,6 +569,14 @@ void VaapiVideoDecoder::SurfaceReady(scoped_refptr<VASurface> va_surface,
     video_frame = std::move(wrapped_frame);
   }
 
+  if (cdm_context_ref_) {
+    // For protected content we also need to set the ID for validating protected
+    // surfaces in the VideoFrame metadata so we can check if the surface is
+    // still valid once we get to the compositor stage.
+    uint32_t protected_instance_id = vaapi_wrapper_->GetProtectedInstanceID();
+    video_frame->metadata().hw_protected_validation_id = protected_instance_id;
+  }
+
   const auto gfx_color_space = color_space.ToGfxColorSpace();
   if (gfx_color_space.IsValid())
     video_frame->set_color_space(gfx_color_space);

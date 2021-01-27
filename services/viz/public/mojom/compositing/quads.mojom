@@ -89,6 +89,7 @@ struct TextureQuadState {
   bool secure_output_only;
   bool is_video_frame;
   ProtectedVideoState protected_video_type;
+  uint32 hw_protected_validation_id;
 };
 
 struct TileQuadState {

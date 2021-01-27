@@ -160,6 +160,7 @@ bool StructTraits<viz::mojom::TextureQuadStateDataView, viz::DrawQuad>::Read(
   quad->nearest_neighbor = data.nearest_neighbor();
   quad->secure_output_only = data.secure_output_only();
   quad->is_video_frame = data.is_video_frame();
+  quad->hw_protected_validation_id = data.hw_protected_validation_id();
   return true;
 }
 

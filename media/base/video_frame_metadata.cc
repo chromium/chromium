@@ -57,6 +57,7 @@ void VideoFrameMetadata::MergeMetadataFrom(
   MERGE_FIELD(receive_time, metadata_source);
   MERGE_FIELD(wallclock_frame_duration, metadata_source);
   MERGE_FIELD(maximum_composition_delay_in_frames, metadata_source);
+  MERGE_FIELD(hw_protected_validation_id, metadata_source);
 }
 
 }  // namespace media

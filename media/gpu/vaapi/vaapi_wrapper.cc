@@ -12,6 +12,7 @@
 #include <va/va_drmcommon.h>
 #include <va/va_str.h>
 #include <va/va_version.h>
+#include <xf86drm.h>
 
 #include <algorithm>
 #include <string>
@@ -52,6 +53,7 @@
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "third_party/libva_protected_content/va_protected_content.h"
 #include "third_party/libyuv/include/libyuv.h"
+#include "third_party/minigbm/src/external/i915_drm.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
@@ -480,6 +482,9 @@ class VADisplayState {
   VAImplementation implementation_type() const { return implementation_type_; }
 
   void SetDrmFd(base::PlatformFile fd) { drm_fd_.reset(HANDLE_EINTR(dup(fd))); }
+  base::ScopedFD GetDrmFd() {
+    return base::ScopedFD(HANDLE_EINTR(dup(drm_fd_.get())));
+  }
 
  private:
   friend class base::NoDestructor<VADisplayState>;
@@ -1891,6 +1896,62 @@ bool VaapiWrapper::CreateProtectedSession(
   NOTIMPLEMENTED() << "Protected content mode not supported";
   return false;
 #endif
+}
+
+// static
+uint32_t VaapiWrapper::GetProtectedInstanceID() {
+  // This sends an ioctl to query for the current instance ID of the protected
+  // system. This allows us to track if it was torn down and rebuilt which
+  // invalidates everything from prior instances.
+
+  // This is the struct/union used to setup the bitfields properly.
+  struct pxp_tag {
+    union {
+      uint32_t value;
+      struct {
+        uint32_t session_id : 8;
+        uint32_t instance_id : 8;
+        uint32_t enable : 1;
+        uint32_t hm : 1;
+        uint32_t reserved_1 : 1;
+        uint32_t sm : 1;
+        uint32_t reserved_2 : 12;
+      };
+    };
+  };
+  pxp_tag query_tag;
+  query_tag.value = 0;
+  query_tag.session_id = 0xf;
+  query_tag.instance_id = 1;
+  query_tag.enable = 1;
+  query_tag.hm = 1;
+
+  // Setup the structure for the ioctl.
+  struct pxp_info pxp_info;
+  pxp_info.action = 0;  // PXP_ACTION_QUERY_PXP_TAG
+  pxp_info.query_pxp_tag.session_is_alive = 1;
+  pxp_info.query_pxp_tag.pxp_tag = query_tag.value;
+  struct drm_i915_pxp_ops pxp_ops = {.info_ptr = &pxp_info,
+                                     .info_size = sizeof(pxp_info)};
+
+  base::ScopedFD drm_fd = VADisplayState::Get()->GetDrmFd();
+  if (drmIoctl(drm_fd.get(), DRM_IOCTL_I915_PXP_OPS, &pxp_ops)) {
+    PLOG(ERROR) << "Error issuing ioctl to get protected instance ID";
+    // Zero indicates no protected instance, if we can't query it, then we
+    // should behave like we don't have it.
+    return 0;
+  }
+
+  if (!pxp_info.query_pxp_tag.session_is_alive) {
+    // This means that the instance is not alive, return as if there is no
+    // instance.
+    return 0;
+  }
+
+  // Put the result back in the bitfield so we can extract the instance ID.
+  query_tag.value = pxp_info.query_pxp_tag.pxp_tag;
+  DCHECK_NE(query_tag.instance_id, 0u);
+  return query_tag.instance_id;
 }
 
 void VaapiWrapper::DestroyContextAndSurfaces(
