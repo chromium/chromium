@@ -4835,6 +4835,9 @@
 
     'weblayer_instrumentation_version_tests': {
       'weblayer_instrumentation_test_versions_apk': {
+        'swarming': {
+          'shards': 2,
+        }
       },
     },
 

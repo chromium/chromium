@@ -230,7 +230,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -308,7 +309,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -386,7 +388,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -464,7 +467,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -542,7 +546,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -620,7 +625,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -702,7 +708,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -780,7 +787,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -858,7 +866,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -936,7 +945,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -1014,7 +1024,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -1092,7 +1103,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -1237,7 +1249,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -1315,7 +1328,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -1393,7 +1407,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -1471,7 +1486,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -1549,7 +1565,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -1627,7 +1644,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -1772,7 +1790,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -1850,7 +1869,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -1928,7 +1948,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -2006,7 +2027,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -2084,7 +2106,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
@@ -2162,7 +2185,8 @@
               "name": "shard #${SHARD_INDEX} logcats"
             }
           ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
+          "shards": 2
         },
         "test": "weblayer_instrumentation_test_versions_apk",
         "test_id_prefix": "ninja://weblayer/browser/android/javatests:weblayer_instrumentation_test_versions_apk/"
