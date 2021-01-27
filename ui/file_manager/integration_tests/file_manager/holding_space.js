@@ -23,9 +23,16 @@ testcase.holdingSpaceWelcomeBannerWithFeatureEnabled = async () => {
   // Open Files app on Downloads.
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
-  // Check: the holding space welcome banner should appear.
+  // Check: the holding space welcome banner should be hidden until dynamic
+  // styles are loaded. Note that inline styles are used until dynamic styles
+  // have finished loading.
   await remoteCall.waitForElement(
-      appId, '.holding-space-welcome:not([hidden])');
+      appId, `.holding-space-welcome[style="height: 0; opacity: 0;"]`);
+
+  // Check: the holding space welcome banner should appear. Note that inline
+  // styles are removed once dynamic styles have finished loading.
+  await remoteCall.waitForElement(
+      appId, '.holding-space-welcome:not([hidden][style])');
 
   // Dismiss the holding space welcome banner.
   await remoteCall.waitAndClickElement(
