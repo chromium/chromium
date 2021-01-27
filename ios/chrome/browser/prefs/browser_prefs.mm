@@ -270,8 +270,6 @@ void MigrateObsoleteBrowserStatePrefs(PrefService* prefs) {
 
   // Added 07/2019.
   syncer::MigrateSyncSuppressedPref(prefs);
-  syncer::MigrateSessionsToProxyTabsPrefs(prefs);
-  syncer::ClearObsoleteUserTypePrefs(prefs);
   syncer::ClearObsoleteClearServerDataPrefs(prefs);
   syncer::ClearObsoleteAuthErrorPrefs(prefs);
   syncer::ClearObsoleteFirstSyncTime(prefs);

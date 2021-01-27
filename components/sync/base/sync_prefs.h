@@ -223,8 +223,6 @@ class SyncPrefs : public CryptoSyncPrefs,
   DISALLOW_COPY_AND_ASSIGN(SyncPrefs);
 };
 
-void MigrateSessionsToProxyTabsPrefs(PrefService* pref_service);
-void ClearObsoleteUserTypePrefs(PrefService* pref_service);
 void ClearObsoleteClearServerDataPrefs(PrefService* pref_service);
 void ClearObsoleteAuthErrorPrefs(PrefService* pref_service);
 void ClearObsoleteFirstSyncTime(PrefService* pref_service);
