@@ -2,7 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
 js_type_check("closure_compile") {
   deps = [ ":apps_page" ]
@@ -50,4 +53,46 @@ js_library("apps_page") {
     "$externs_path/chrome.js",
     "$externs_path/chrome_send.js",
   ]
+}
+
+grit("apps_resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/apps_resources.grd"
+  deps = [ ":build_apps_grd" ]
+
+  outputs = [
+    "grit/apps_resources.h",
+    "grit/apps_resources_map.cc",
+    "grit/apps_resources_map.h",
+    "apps_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_apps_grd") {
+  grd_prefix = "apps"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+  input_files = [
+    "apps_page.css",
+    "apps_page.js",
+    "card_slider.js",
+    "dot_list.js",
+    "images/trash.png",
+    "nav_dot.css",
+    "nav_dot.js",
+    "new_tab.css",
+    "new_tab.html",
+    "new_tab.js",
+    "page_list_view.js",
+    "page_switcher.js",
+    "tile_page.css",
+    "tile_page.js",
+    "touch_handler.js",
+    "trash.css",
+    "trash.js",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
 }

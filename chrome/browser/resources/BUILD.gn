@@ -56,6 +56,7 @@ group("resources") {
 
   if (!is_android && !is_chromeos_ash) {
     public_deps += [
+      "ntp4:apps_resources",
       "signin/profile_picker:resources",
       "welcome:resources",
     ]

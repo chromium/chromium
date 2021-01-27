@@ -24,7 +24,8 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "chrome/grit/browser_resources.h"
+#include "chrome/grit/apps_resources.h"
+#include "chrome/grit/apps_resources_map.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
@@ -83,7 +84,10 @@ AppLauncherPageUI::AppLauncherPageUI(content::WebUI* web_ui)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIAppLauncherPageHost);
   content::WebUIDataSource::Add(GetProfile(), source);
-  source->SetDefaultResource(IDR_NEW_TAB_4_HTML);
+
+  webui::AddResourcePathsBulk(
+      source, base::make_span(kAppsResources, kAppsResourcesSize));
+  source->SetDefaultResource(IDR_APPS_NEW_TAB_HTML);
   source->UseStringsJs();
 
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
@@ -170,7 +174,7 @@ AppLauncherPageUI::AppLauncherPageUI(content::WebUI* web_ui)
       "'unsafe-inline';");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ImgSrc,
-      "img-src chrome://extension-icon chrome://app-icon chrome://theme "
+      "img-src 'self' chrome://extension-icon chrome://app-icon chrome://theme "
       "chrome://resources data:;");
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,

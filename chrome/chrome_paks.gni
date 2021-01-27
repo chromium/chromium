@@ -245,10 +245,12 @@ template("chrome_extra_paks") {
     }
     if (!is_android && !is_chromeos_ash) {
       sources += [
+        "$root_gen_dir/chrome/apps_resources.pak",
         "$root_gen_dir/chrome/profile_picker_resources.pak",
         "$root_gen_dir/chrome/welcome_resources.pak",
       ]
       deps += [
+        "//chrome/browser/resources/ntp4:apps_resources",
         "//chrome/browser/resources/signin/profile_picker:resources",
         "//chrome/browser/resources/welcome:resources",
       ]

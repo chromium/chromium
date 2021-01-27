@@ -159,6 +159,10 @@
     "META": {"sizes": {"includes": [200]}},
     "includes": [1680],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/ntp4/apps_resources.grd": {
+    "META": {"sizes": {"includes": [40]}},
+    "includes": [1705],
+  },
   "chrome/browser/resources/preinstalled_web_apps/resources.grd": {
     "includes": [1710],
   },
