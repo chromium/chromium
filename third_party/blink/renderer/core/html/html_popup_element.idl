@@ -5,7 +5,7 @@
 // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Popup/explainer.md
 [Exposed=Window,HTMLConstructor,RuntimeEnabled=HTMLPopupElement]
 interface HTMLPopupElement : HTMLElement {
-    [CEReactions, Reflect] attribute boolean open;
+    [CEReactions] readonly attribute boolean open;
     [CEReactions, Measure] void show();
     [CEReactions, Measure] void hide();
 };

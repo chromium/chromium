@@ -3952,7 +3952,6 @@ interface HTMLPopupElement : HTMLElement
     method constructor
     method hide
     method show
-    setter open
 interface HTMLPreElement : HTMLElement
     attribute @@toStringTag
     getter width

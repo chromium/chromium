@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/html_popup_element.h"
 
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -11,7 +12,7 @@
 namespace blink {
 
 HTMLPopupElement::HTMLPopupElement(Document& document)
-    : HTMLElement(html_names::kPopupTag, document) {
+    : HTMLElement(html_names::kPopupTag, document), open_(false) {
   DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
   UseCounter::Count(document, WebFeature::kPopupElement);
 }
@@ -24,12 +25,23 @@ void HTMLPopupElement::PopUntilElementReached(HTMLPopupElement* endpoint) {
   }
 }
 
+void HTMLPopupElement::MarkStyleDirty() {
+  SetNeedsStyleRecalc(kLocalStyleChange,
+                      StyleChangeReasonForTracing::Create(
+                          style_change_reason::kPopupVisibilityChange));
+}
+
+bool HTMLPopupElement::open() const {
+  return open_;
+}
+
 void HTMLPopupElement::hide() {
-  if (!FastHasAttribute(html_names::kOpenAttr))
+  if (!open_)
     return;
   PopUntilElementReached(this);
   GetDocument().PopPopupElement(this);
-  SetBooleanAttribute(html_names::kOpenAttr, false);
+  open_ = false;
+  MarkStyleDirty();
   ScheduleHideEvent();
 }
 
@@ -40,9 +52,7 @@ void HTMLPopupElement::ScheduleHideEvent() {
 }
 
 void HTMLPopupElement::show() {
-  if (FastHasAttribute(html_names::kOpenAttr))
-    return;
-  if (!isConnected())
+  if (open_ || !isConnected())
     return;
 
   // Only hide popups up to the anchor element's nearest shadow-including
@@ -59,8 +69,9 @@ void HTMLPopupElement::show() {
     }
   }
   PopUntilElementReached(parent_popup);
-  SetBooleanAttribute(html_names::kOpenAttr, true);
+  open_ = true;
   GetDocument().PushNewPopupElement(this);
+  MarkStyleDirty();
 }
 
 Element* HTMLPopupElement::AnchorElement() const {

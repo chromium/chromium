@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
+#include "third_party/blink/renderer/core/html/html_popup_element.h"
 #include "third_party/blink/renderer/core/html/html_table_cell_element.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
@@ -404,6 +405,15 @@ static void AdjustStyleForHTMLElement(ComputedStyle& style,
     // to 'display: block'. This adjustment should go away with bug 590014.
     if (style.Display() == EDisplay::kListItem)
       style.SetDisplay(EDisplay::kBlock);
+    return;
+  }
+
+  if (auto* html_popup_element = DynamicTo<HTMLPopupElement>(element)) {
+    // <popup> should be display:none if it is not open. Author CSS might
+    // cascade a non-none value, but the content still should not be shown.
+    DCHECK(RuntimeEnabledFeatures::HTMLPopupElementEnabled());
+    if (!html_popup_element->open())
+      style.SetDisplay(EDisplay::kNone);
     return;
   }
 

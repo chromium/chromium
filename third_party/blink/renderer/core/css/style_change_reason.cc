@@ -32,6 +32,7 @@ const char kLanguage[] = "Language";
 const char kLinkColorChange[] = "LinkColorChange";
 const char kPlatformColorChange[] = "PlatformColorChange";
 const char kPluginChanged[] = "Plugin Changed";
+const char kPopupVisibilityChange[] = "Popup Visibility Change";
 const char kPropertyRegistration[] = "PropertyRegistration";
 const char kPseudoClass[] = "PseudoClass";
 const char kScrollTimeline[] = "ScrollTimeline";

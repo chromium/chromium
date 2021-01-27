@@ -1230,15 +1230,8 @@ dialog::backdrop {
     background: rgba(0,0,0,0.1)
 }
 
-popup:not([open]) {
-    /* TODO(crbug.com/1169784): The used value for display for hidden popups
-       should always be "none", even if page style cascade another value
-       onto the popup. */
-    display: none;
-}
-
 popup {
-    display: block;
+    display: block; /* Overridden with "none" if popup isn't open */
     position: fixed;
     top: 0;
     left: 0;

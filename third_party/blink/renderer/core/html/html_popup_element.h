@@ -24,14 +24,18 @@ class HTMLPopupElement final : public HTMLElement {
  public:
   explicit HTMLPopupElement(Document&);
 
-  void show();
+  bool open() const;
   void hide();
+  void show();
 
   Element* AnchorElement() const;
 
  private:
   void PopUntilElementReached(HTMLPopupElement*);
   void ScheduleHideEvent();
+  void MarkStyleDirty();
+
+  bool open_;
 };
 
 }  // namespace blink
