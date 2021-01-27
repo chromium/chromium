@@ -49,6 +49,7 @@
 // shown here to indicate where ideal conversions are currently missing.
 #if SK_B32_SHIFT == 0 && SK_G32_SHIFT == 8 && SK_R32_SHIFT == 16 && \
     SK_A32_SHIFT == 24
+#define OUTPUT_ARGB 1
 #define LIBYUV_I400_TO_ARGB libyuv::I400ToARGB
 #define LIBYUV_I420_TO_ARGB libyuv::I420ToARGB
 #define LIBYUV_I422_TO_ARGB libyuv::I422ToARGB
@@ -86,8 +87,11 @@
 // #define LIBYUV_U410_TO_ARGB libyuv::U410ToARGB
 
 #define LIBYUV_NV12_TO_ARGB libyuv::NV12ToARGB
+
+#define LIBYUV_ABGR_TO_ARGB libyuv::ABGRToARGB
 #elif SK_R32_SHIFT == 0 && SK_G32_SHIFT == 8 && SK_B32_SHIFT == 16 && \
     SK_A32_SHIFT == 24
+#define OUTPUT_ARGB 0
 #define LIBYUV_I400_TO_ARGB libyuv::I400ToARGB
 #define LIBYUV_I420_TO_ARGB libyuv::I420ToABGR
 #define LIBYUV_I422_TO_ARGB libyuv::I422ToABGR
@@ -125,6 +129,8 @@
 // #define LIBYUV_U410_TO_ARGB libyuv::U410ToABGR
 
 #define LIBYUV_NV12_TO_ARGB libyuv::NV12ToABGR
+
+#define LIBYUV_ABGR_TO_ARGB libyuv::ARGBToABGR
 #else
 #error Unexpected Skia ARGB_8888 layout!
 #endif
@@ -390,10 +396,20 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
       format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR) {
     DCHECK_LE(width, static_cast<int>(row_bytes));
     const uint8_t* data = plane_meta[VideoFrame::kARGBPlane].data;
-    for (size_t i = 0; i < rows; i++) {
-      memcpy(pixels, data, width * 4);
-      pixels += row_bytes;
-      data += plane_meta[VideoFrame::kARGBPlane].stride;
+
+    if ((OUTPUT_ARGB &&
+         (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_XRGB)) ||
+        (!OUTPUT_ARGB &&
+         (format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR))) {
+      for (size_t i = 0; i < rows; i++) {
+        memcpy(pixels, data, width * 4);
+        pixels += row_bytes;
+        data += plane_meta[VideoFrame::kARGBPlane].stride;
+      }
+    } else {
+      LIBYUV_ABGR_TO_ARGB(plane_meta[VideoFrame::kARGBPlane].data,
+                          plane_meta[VideoFrame::kARGBPlane].stride, pixels,
+                          row_bytes, width, rows);
     }
     done->Run();
     return;

@@ -943,13 +943,25 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
 
   size_t bits_per_channel = video_frame->BitDepth();
 
-  // Only YUV and Y16 software video frames are supported.
+  const bool is_rgb = input_frame_format == PIXEL_FORMAT_XBGR ||
+                      input_frame_format == PIXEL_FORMAT_XRGB ||
+                      input_frame_format == PIXEL_FORMAT_ABGR ||
+                      input_frame_format == PIXEL_FORMAT_ARGB;
+
   DCHECK(IsYuvPlanar(input_frame_format) ||
-         input_frame_format == PIXEL_FORMAT_Y16);
+         input_frame_format == PIXEL_FORMAT_Y16 || is_rgb);
 
   viz::ResourceFormat output_resource_format;
   gfx::ColorSpace output_color_space = video_frame->ColorSpace();
-  if (input_frame_format == PIXEL_FORMAT_Y16) {
+  if (input_frame_format == PIXEL_FORMAT_XBGR) {
+    output_resource_format = viz::RGBX_8888;
+  } else if (input_frame_format == PIXEL_FORMAT_XRGB) {
+    output_resource_format = viz::BGRX_8888;
+  } else if (input_frame_format == PIXEL_FORMAT_ABGR) {
+    output_resource_format = viz::RGBA_8888;
+  } else if (input_frame_format == PIXEL_FORMAT_ARGB) {
+    output_resource_format = viz::BGRA_8888;
+  } else if (input_frame_format == PIXEL_FORMAT_Y16) {
     // Unable to display directly as yuv planes so convert it to RGBA for
     // compositing.
     output_resource_format = viz::RGBA_8888;
@@ -963,9 +975,10 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
   // returned by the resource provider is viz::RGBA_8888, then a GPU driver
   // bug workaround requires that YUV frames must be converted to RGB
   // before texture upload.
-  bool texture_needs_rgb_conversion =
-      !software_compositor() &&
-      output_resource_format == viz::ResourceFormat::RGBA_8888;
+  const bool texture_needs_rgb_conversion =
+      input_frame_format == PIXEL_FORMAT_Y16 ||
+      (!software_compositor() && IsYuvPlanar(input_frame_format) &&
+       output_resource_format == viz::ResourceFormat::RGBA_8888);
 
   size_t output_plane_count = VideoFrame::NumPlanes(input_frame_format);
 
@@ -1026,14 +1039,15 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
 
   external_resources.bits_per_channel = bits_per_channel;
 
-  if (software_compositor() || texture_needs_rgb_conversion) {
+  if (software_compositor() || texture_needs_rgb_conversion || is_rgb) {
     DCHECK_EQ(plane_resources.size(), 1u);
     PlaneResource* plane_resource = plane_resources[0];
-    DCHECK_EQ(plane_resource->resource_format(), viz::RGBA_8888);
 
     if (!plane_resource->Matches(video_frame->unique_id(), 0)) {
       // We need to transfer data from |video_frame| to the plane resource.
       if (software_compositor()) {
+        DCHECK_EQ(plane_resource->resource_format(), viz::RGBA_8888);
+
         if (!video_renderer_)
           video_renderer_ = std::make_unique<PaintCanvasVideoRenderer>();
 
@@ -1062,7 +1076,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
       } else {
         HardwarePlaneResource* hardware_resource = plane_resource->AsHardware();
         size_t bytes_per_row = viz::ResourceSizes::CheckedWidthInBytes<size_t>(
-            video_frame->coded_size().width(), viz::ResourceFormat::RGBA_8888);
+            video_frame->coded_size().width(), output_resource_format);
         size_t needed_size = bytes_per_row * video_frame->coded_size().height();
         if (upload_pixels_size_ < needed_size) {
           // Free the existing data first so that the memory can be reused,
@@ -1084,8 +1098,8 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
                           scope.texture_id());
           gl->TexSubImage2D(
               hardware_resource->texture_target(), 0, 0, 0, plane_size.width(),
-              plane_size.height(), GLDataFormat(viz::ResourceFormat::RGBA_8888),
-              GLDataType(viz::ResourceFormat::RGBA_8888), upload_pixels_.get());
+              plane_size.height(), GLDataFormat(output_resource_format),
+              GLDataType(output_resource_format), upload_pixels_.get());
         }
       }
       plane_resource->SetUniqueId(video_frame->unique_id(), 0);
@@ -1113,7 +1127,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
     }
 
     transferable_resource.color_space = output_color_space;
-    transferable_resource.format = viz::ResourceFormat::RGBA_8888;
+    transferable_resource.format = output_resource_format;
     external_resources.resources.push_back(std::move(transferable_resource));
     external_resources.release_callbacks.push_back(base::BindOnce(
         &VideoResourceUpdater::RecycleResource, weak_ptr_factory_.GetWeakPtr(),
