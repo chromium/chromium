@@ -13,7 +13,6 @@
 #include "extensions/browser/api/declarative_net_request/constants.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
-#include "extensions/common/api/declarative_net_request/utils.h"
 
 namespace extensions {
 namespace declarative_net_request {

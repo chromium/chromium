@@ -14,7 +14,6 @@
 #include "extensions/browser/api/declarative_net_request/ruleset_matcher.h"
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
-#include "extensions/common/api/declarative_net_request/utils.h"
 #include "extensions/common/extension.h"
 #include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
 #include "url/gurl.h"

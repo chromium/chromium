@@ -44,9 +44,9 @@
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/constants.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
-#include "extensions/common/api/declarative_net_request/utils.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension_id.h"
+#include "extensions/common/permissions/api_permission.h"
 #include "tools/json_schema_compiler/util.h"
 
 namespace extensions {
@@ -70,6 +70,11 @@ bool RulesetInfoCompareByID(const RulesetInfo& lhs, const RulesetInfo& rhs) {
 
 void LogLoadRulesetResult(LoadRulesetResult result) {
   UMA_HISTOGRAM_ENUMERATION(kLoadRulesetResultHistogram, result);
+}
+
+bool HasAPIPermission(const Extension& extension) {
+  return extension.permissions_data()->HasAPIPermission(
+      APIPermission::kDeclarativeNetRequest);
 }
 
 // Returns whether the extension's allocation should be released. This would
@@ -393,12 +398,7 @@ RulesMonitorService::RulesMonitorService(
       ruleset_manager_(browser_context),
       action_tracker_(browser_context),
       global_rules_tracker_(prefs_, extension_registry_) {
-  // Don't monitor extension lifecycle if the API is not available. This is
-  // useful since we base some of our actions (like loading dynamic ruleset on
-  // extension load) on the presence of certain extension prefs. These may still
-  // be remaining from an earlier install on which the feature was available.
-  if (IsAPIAvailable())
-    registry_observer_.Add(extension_registry_);
+  registry_observer_.Add(extension_registry_);
 }
 
 RulesMonitorService::~RulesMonitorService() = default;
@@ -425,6 +425,9 @@ void RulesMonitorService::OnExtensionWillBeInstalled(
     const Extension* extension,
     bool is_update,
     const std::string& old_name) {
+  if (!HasAPIPermission(*extension))
+    return;
+
   if (!is_update || Manifest::IsUnpackedLocation(extension->location()))
     return;
 
@@ -441,6 +444,9 @@ void RulesMonitorService::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
   DCHECK_EQ(context_, browser_context);
+
+  if (!HasAPIPermission(*extension))
+    return;
 
   LoadRequestData load_data(extension->id());
   int expected_ruleset_checksum;
@@ -511,6 +517,9 @@ void RulesMonitorService::OnExtensionUnloaded(
     UnloadedExtensionReason reason) {
   DCHECK_EQ(context_, browser_context);
 
+  if (!HasAPIPermission(*extension))
+    return;
+
   // If the extension is unloaded for any reason other than an update, the
   // unused rule allocation should not be kept for this extension the next
   // time its rulesets are loaded, as it is no longer "the first load after an
@@ -538,6 +547,9 @@ void RulesMonitorService::OnExtensionUninstalled(
     const Extension* extension,
     UninstallReason reason) {
   DCHECK_EQ(context_, browser_context);
+
+  if (!HasAPIPermission(*extension))
+    return;
 
   session_rules_.erase(extension->id());
 

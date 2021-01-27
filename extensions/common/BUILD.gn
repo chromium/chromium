@@ -97,8 +97,6 @@ if (enable_extensions) {
       "api/declarative_net_request/dnr_manifest_data.h",
       "api/declarative_net_request/dnr_manifest_handler.cc",
       "api/declarative_net_request/dnr_manifest_handler.h",
-      "api/declarative_net_request/utils.cc",
-      "api/declarative_net_request/utils.h",
       "api/extension_action/action_info.cc",
       "api/extension_action/action_info.h",
       "api/messaging/message.h",

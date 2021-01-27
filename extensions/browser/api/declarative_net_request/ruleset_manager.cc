@@ -29,7 +29,6 @@
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/common/api/declarative_net_request.h"
-#include "extensions/common/api/declarative_net_request/utils.h"
 #include "extensions/common/constants.h"
 #include "url/origin.h"
 
@@ -82,7 +81,6 @@ RulesetManager::~RulesetManager() {
 void RulesetManager::AddRuleset(const ExtensionId& extension_id,
                                 std::unique_ptr<CompositeMatcher> matcher) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsAPIAvailable());
 
   bool inserted =
       rulesets_
@@ -101,7 +99,6 @@ void RulesetManager::AddRuleset(const ExtensionId& extension_id,
 
 void RulesetManager::RemoveRuleset(const ExtensionId& extension_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsAPIAvailable());
 
   auto compare_by_id =
       [&extension_id](const ExtensionRulesetData& ruleset_data) {
@@ -131,7 +128,6 @@ std::set<ExtensionId> RulesetManager::GetExtensionsWithRulesets() const {
 CompositeMatcher* RulesetManager::GetMatcherForExtension(
     const ExtensionId& extension_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(IsAPIAvailable());
 
   // This is O(n) but it's ok since the number of extensions will be small and
   // we have to maintain the rulesets sorted in decreasing order of installation
@@ -428,11 +424,6 @@ bool RulesetManager::ShouldEvaluateRequest(
 
   // Ensure clients filter out sensitive requests.
   DCHECK(!WebRequestPermissions::HideRequest(permission_helper_, request));
-
-  if (!IsAPIAvailable()) {
-    DCHECK(rulesets_.empty());
-    return false;
-  }
 
   // Prevent extensions from modifying any resources on the chrome-extension
   // scheme. Practically, this has the effect of not allowing an extension to

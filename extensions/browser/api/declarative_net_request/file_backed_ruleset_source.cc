@@ -30,7 +30,6 @@
 #include "extensions/browser/api/declarative_net_request/utils.h"
 #include "extensions/common/api/declarative_net_request.h"
 #include "extensions/common/api/declarative_net_request/dnr_manifest_data.h"
-#include "extensions/common/api/declarative_net_request/utils.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/file_util.h"
 #include "extensions/common/install_warning.h"
@@ -398,8 +397,6 @@ FileBackedRulesetSource FileBackedRulesetSource::Clone() const {
 
 IndexAndPersistJSONRulesetResult
 FileBackedRulesetSource::IndexAndPersistJSONRulesetUnsafe() const {
-  DCHECK(IsAPIAvailable());
-
   base::ElapsedTimer timer;
   return IndexAndPersistRuleset(*this, ReadJSONRulesUnsafe(), timer);
 }
@@ -407,8 +404,6 @@ FileBackedRulesetSource::IndexAndPersistJSONRulesetUnsafe() const {
 void FileBackedRulesetSource::IndexAndPersistJSONRuleset(
     data_decoder::DataDecoder* decoder,
     IndexAndPersistJSONRulesetCallback callback) const {
-  DCHECK(IsAPIAvailable());
-
   if (!base::PathExists(json_path_)) {
     std::move(callback).Run(IndexAndPersistJSONRulesetResult::CreateErrorResult(
         GetErrorWithFilename(json_path_, kFileDoesNotExistError)));
