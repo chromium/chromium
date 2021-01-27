@@ -140,7 +140,10 @@ PowerButtonController::~PowerButtonController() {
 
 void PowerButtonController::OnPreShutdownTimeout() {
   lock_state_controller_->StartShutdownAnimation(ShutdownReason::POWER_BUTTON);
-  DCHECK(menu_widget_);
+  // |menu_widget_| might be reset on login status change while shutting down.
+  if (!menu_widget_)
+    return;
+
   static_cast<PowerButtonMenuScreenView*>(menu_widget_->GetContentsView())
       ->power_button_menu_view()
       ->FocusPowerOffButton();
