@@ -340,10 +340,15 @@ void SlotAssignment::RecalcAssignment() {
       candidate_assigned_slot_map_.swap(candidate_map);
   }
 
+  // Update an dir=auto flag from a host of slots to its all descendants.
+  // We should call below functions outside FlatTreeTraversalForbiddenScope
+  // because we can go a tree walk to either their ancestors or descendants
+  // if needed.
+  if (auto* element = DynamicTo<HTMLElement>(owner_->host())) {
+    element->UpdateDescendantsHasDirAutoAttribute(
+        element->SelfOrAncestorHasDirAutoAttribute());
+  }
   // Resolve the directionality of elements deferred their adjustment.
-  // We should call AdjustCandidateDirectionalityForSlot below outside
-  // FlatTreeTraversalForbiddenScope because we can go a tree walk to either
-  // their ancestors or descendants if needed.
   HTMLElement::AdjustCandidateDirectionalityForSlot(
       std::move(candidate_directionality_set_));
 }

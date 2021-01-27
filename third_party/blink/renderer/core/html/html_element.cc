@@ -1124,7 +1124,8 @@ HTMLFormElement* HTMLElement::FindFormAncestor() const {
 static inline bool ElementAffectsDirectionality(const Node* node) {
   auto* html_element = DynamicTo<HTMLElement>(node);
   return html_element && (IsA<HTMLBDIElement>(*html_element) ||
-                          html_element->FastHasAttribute(html_names::kDirAttr));
+                          IsValidDirAttribute(html_element->FastGetAttribute(
+                              html_names::kDirAttr)));
 }
 
 void HTMLElement::ChildrenChanged(const ChildrenChange& change) {
@@ -1204,15 +1205,6 @@ TextDirection HTMLElement::ResolveAutoDirectionality(bool& is_deferred) const {
   return TextDirection::kLtr;
 }
 
-bool HTMLElement::SelfOrAncestorHasDirAutoAttribute() const {
-  // TODO(esprehn): Storing this state in the computed style is bad, we
-  // should be able to answer questions about the shape of the DOM and the
-  // text contained inside it without having style.
-  if (const ComputedStyle* style = GetComputedStyle())
-    return style->SelfOrAncestorHasDirAutoAttribute();
-  return false;
-}
-
 void HTMLElement::AdjustDirectionalityIfNeededAfterChildAttributeChanged(
     Element* child) {
   DCHECK(SelfOrAncestorHasDirAutoAttribute());
@@ -1267,16 +1259,20 @@ void HTMLElement::AdjustDirectionalityIfNeededAfterChildrenChanged() {
   if (!SelfOrAncestorHasDirAutoAttribute())
     return;
 
+  UpdateDescendantsHasDirAutoAttribute(true /* has_dir_auto */);
+
   for (Element* element_to_adjust = this; element_to_adjust;
        element_to_adjust =
            FlatTreeTraversal::ParentElement(*element_to_adjust)) {
     if (ElementAffectsDirectionality(element_to_adjust)) {
-      if (To<HTMLElement>(element_to_adjust)
-              ->CalculateAndAdjustAutoDirectionality() &&
-          RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
-        SetNeedsStyleRecalc(kLocalStyleChange,
-                            StyleChangeReasonForTracing::Create(
-                                style_change_reason::kPseudoClass));
+      if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {
+        if (To<HTMLElement>(element_to_adjust)
+                ->CalculateAndAdjustAutoDirectionality()) {
+          SetNeedsStyleRecalc(kLocalStyleChange,
+                              StyleChangeReasonForTracing::Create(
+                                  style_change_reason::kPseudoClass));
+        }
+        element_to_adjust->PseudoStateChanged(CSSSelector::kPseudoDir);
       }
       return;
     }
@@ -1646,18 +1642,76 @@ Element* HTMLElement::unclosedOffsetParent() {
   return layout_object->OffsetParent(this);
 }
 
+void HTMLElement::UpdateDescendantsHasDirAutoAttribute(bool has_dir_auto) {
+  Node* node = FlatTreeTraversal::FirstChild(*this);
+  while (node) {
+    if (auto* element = DynamicTo<Element>(node)) {
+      AtomicString dir_attribute_value =
+          element->FastGetAttribute(html_names::kDirAttr);
+      if (IsValidDirAttribute(dir_attribute_value)) {
+        node = FlatTreeTraversal::NextSkippingChildren(*node, this);
+        continue;
+      }
+
+      if (auto* slot = ToHTMLSlotElementIfSupportsAssignmentOrNull(node)) {
+        ShadowRoot* root = slot->ContainingShadowRoot();
+        // Defer to adjust the directionality to avoid recalcuating slot
+        // assignment in FlatTreeTraversal when updating slot.
+        // Slot and its children will be updated after recalculating children.
+        if (root->NeedsSlotAssignmentRecalc()) {
+          node = FlatTreeTraversal::NextSkippingChildren(*node, this);
+          continue;
+        }
+      }
+
+      if (!has_dir_auto) {
+        if (!element->SelfOrAncestorHasDirAutoAttribute()) {
+          node = FlatTreeTraversal::NextSkippingChildren(*node, this);
+          continue;
+        }
+
+        element->ClearSelfOrAncestorHasDirAutoAttribute();
+      } else {
+        if (element->SelfOrAncestorHasDirAutoAttribute()) {
+          node = FlatTreeTraversal::NextSkippingChildren(*node, this);
+          continue;
+        }
+        element->SetSelfOrAncestorHasDirAutoAttribute();
+      }
+    }
+    node = FlatTreeTraversal::Next(*node, this);
+  }
+}
+
 void HTMLElement::OnDirAttrChanged(const AttributeModificationParams& params) {
   // If an ancestor has dir=auto, and this node has the first character,
   // changes to dir attribute may affect the ancestor.
   if (!CanParticipateInFlatTree())
     return;
-  auto* parent =
-      DynamicTo<HTMLElement>(FlatTreeTraversal::ParentElement(*this));
-  if (parent && parent->SelfOrAncestorHasDirAutoAttribute()) {
-    parent->AdjustDirectionalityIfNeededAfterChildAttributeChanged(this);
+
+  if (!IsValidDirAttribute(params.old_value) &&
+      !IsValidDirAttribute(params.new_value))
+    return;
+
+  bool is_old_auto = SelfOrAncestorHasDirAutoAttribute();
+  bool is_new_auto = HasDirectionAuto();
+  if (!is_old_auto || !is_new_auto) {
+    auto* parent =
+        DynamicTo<HTMLElement>(FlatTreeTraversal::ParentElement(*this));
+    if (parent && parent->SelfOrAncestorHasDirAutoAttribute()) {
+      parent->AdjustDirectionalityIfNeededAfterChildAttributeChanged(this);
+    }
   }
 
-  if (EqualIgnoringASCIICase(params.new_value, "auto"))
+  if (is_old_auto && !is_new_auto) {
+    ClearSelfOrAncestorHasDirAutoAttribute();
+    UpdateDescendantsHasDirAutoAttribute(false /* has_dir_auto */);
+  } else if (!is_old_auto && is_new_auto) {
+    SetSelfOrAncestorHasDirAutoAttribute();
+    UpdateDescendantsHasDirAutoAttribute(true /* has_dir_auto */);
+  }
+
+  if (is_new_auto)
     CalculateAndAdjustAutoDirectionality();
 
   if (RuntimeEnabledFeatures::CSSPseudoDirEnabled()) {

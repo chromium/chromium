@@ -4831,32 +4831,6 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
   return style.Display() == EDisplay::kContents;
 }
 
-bool Element::ComputeInheritedDirPseudoClass(TextDirection direction) const {
-  const Node* n = this;
-  // The dir property is inherited, so we iterate over the parents to find
-  // the first dir attribute.
-  do {
-    if (auto* element_node = DynamicTo<Element>(n)) {
-      AtomicString dir_attribute_value =
-          element_node->FastGetAttribute(html_names::kDirAttr);
-      if ((IsA<HTMLBDIElement>(*element_node) && !dir_attribute_value) ||
-          (IsHTMLElement() &&
-           EqualIgnoringASCIICase(dir_attribute_value, "auto"))) {
-        return element_node->MatchesDirPseudoClassForDirAutoAttribute(
-            direction);
-      }
-
-      if (EqualIgnoringASCIICase(dir_attribute_value, "ltr"))
-        return IsLtr(direction);
-      else if (EqualIgnoringASCIICase(dir_attribute_value, "rtl"))
-        return IsRtl(direction);
-    }
-    n = n->ParentOrShadowHostNode();
-  } while (n);
-
-  return IsLtr(direction);
-}
-
 AtomicString Element::ComputeInheritedLanguage() const {
   const Node* n = this;
   AtomicString value;

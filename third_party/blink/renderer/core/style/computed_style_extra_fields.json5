@@ -384,14 +384,6 @@
       default_value: "false",
       field_group: "*",
     },
-    {
-      name: "SelfOrAncestorHasDirAutoAttribute",
-      inherited: true,
-      field_template: "primitive",
-      type_name: "bool",
-      default_value: "false",
-      field_group: "*",
-    },
     // Though position: sticky is not itself an inherited property, being a
     // descendent of a sticky element changes some document lifecycle logic.
     {

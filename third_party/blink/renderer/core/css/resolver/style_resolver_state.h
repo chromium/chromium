@@ -165,9 +165,6 @@ class CORE_EXPORT StyleResolverState {
   void SetWritingMode(WritingMode);
   void SetTextOrientation(ETextOrientation);
 
-  void SetHasDirAutoAttribute(bool value) { has_dir_auto_attribute_ = value; }
-  bool HasDirAutoAttribute() const { return has_dir_auto_attribute_; }
-
   CSSParserMode GetParserMode() const;
 
   // If the input CSSValue is a CSSLightDarkValuePair, return the light or dark
@@ -258,7 +255,6 @@ class CORE_EXPORT StyleResolverState {
 
   CSSAnimationUpdate animation_update_;
   bool is_animation_interpolation_map_ready_ = false;
-  bool has_dir_auto_attribute_ = false;
   PseudoElementStyleRequest::RequestType pseudo_request_type_;
 
   FontBuilder font_builder_;

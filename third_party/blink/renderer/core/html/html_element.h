@@ -157,6 +157,7 @@ class CORE_EXPORT HTMLElement : public Element {
   void AddCandidateDirectionalityForSlot();
   static void AdjustCandidateDirectionalityForSlot(
       HeapHashSet<Member<HTMLElement>> candidate_set);
+  void UpdateDescendantsHasDirAutoAttribute(bool has_dir_auto);
 
  protected:
   enum AllowPercentage { kDontAllowPercentageValues, kAllowPercentageValues };
@@ -211,7 +212,6 @@ class CORE_EXPORT HTMLElement : public Element {
 
   DocumentFragment* TextToFragment(const String&, ExceptionState&);
 
-  bool SelfOrAncestorHasDirAutoAttribute() const;
   void AdjustDirectionalityIfNeededAfterChildAttributeChanged(Element* child);
   void AdjustDirectionalityIfNeededAfterChildrenChanged();
   TextDirection ResolveAutoDirectionality(bool& is_deferred) const;

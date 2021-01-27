@@ -592,12 +592,6 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
            GetCustomElementState() == CustomElementState::kCustom;
   }
 
-  bool ComputeInheritedDirPseudoClass(TextDirection direction) const;
-  virtual bool MatchesDirPseudoClassForDirAutoAttribute(
-      TextDirection direction) const {
-    return false;
-  }
-
   AtomicString ComputeInheritedLanguage() const;
   Locale& GetLocale() const;
 

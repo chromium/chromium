@@ -895,6 +895,16 @@ class CORE_EXPORT Node : public EventTarget {
   void SetHasDisplayLockContext() { SetFlag(kHasDisplayLockContext); }
   bool HasDisplayLockContext() const { return GetFlag(kHasDisplayLockContext); }
 
+  bool SelfOrAncestorHasDirAutoAttribute() const {
+    return GetFlag(kSelfOrAncestorHasDirAutoAttribute);
+  }
+  void SetSelfOrAncestorHasDirAutoAttribute() {
+    SetFlag(kSelfOrAncestorHasDirAutoAttribute);
+  }
+  void ClearSelfOrAncestorHasDirAutoAttribute() {
+    ClearFlag(kSelfOrAncestorHasDirAutoAttribute);
+  }
+
   void Trace(Visitor*) const override;
 
  private:
@@ -942,9 +952,11 @@ class CORE_EXPORT Node : public EventTarget {
 
     kHasDisplayLockContext = 1 << 26,
 
+    kSelfOrAncestorHasDirAutoAttribute = 1 << 27,
+
     kDefaultNodeFlags = kIsFinishedParsingChildrenFlag,
 
-    // 6 bits remaining.
+    // 5 bits remaining.
   };
 
   ALWAYS_INLINE bool GetFlag(NodeFlags mask) const {

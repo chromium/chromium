@@ -616,7 +616,6 @@ void StyleResolver::MatchAllRules(StyleResolverState& state,
       TextDirection text_direction =
           html_element->DirectionalityIfhasDirAutoAttribute(is_auto);
       if (is_auto) {
-        state.SetHasDirAutoAttribute(true);
         collector.AddElementStyleProperties(
             text_direction == TextDirection::kLtr ? LeftToRightDeclaration()
                                                   : RightToLeftDeclaration());
@@ -895,9 +894,6 @@ void StyleResolver::ApplyBaseStyle(
       state.Style()->SetTextAutosizingMultiplier(
           element->GetComputedStyle()->TextAutosizingMultiplier());
     }
-
-    if (state.HasDirAutoAttribute())
-      state.Style()->SetSelfOrAncestorHasDirAutoAttribute(true);
 
     CascadeAndApplyMatchedProperties(state, cascade);
 
