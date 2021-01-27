@@ -85,10 +85,7 @@ variations::Study::FormFactor
 ChromeVariationsServiceClient::GetCurrentFormFactor() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #if BUILDFLAG(PLATFORM_CFM)
-  bool is_meet_device =
-      policy::EnrollmentRequisitionManager::IsRemoraRequisition();
-  if (is_meet_device)
-    return variations::Study::MEET_DEVICE;
+  return variations::Study::MEET_DEVICE;
 #endif  // BUILDFLAG(PLATFORM_CFM)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
