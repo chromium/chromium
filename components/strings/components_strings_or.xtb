@@ -178,6 +178,7 @@
 <translation id="1559572115229829303">&lt;p&gt;<ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />କୁ ଏକ ବ୍ୟକ୍ତିଗତ ସଂଯୋଗ ସ୍ଥାପନ କରାଯାଇପାରିବ ନାହିଁ କାରଣ, ଆପଣଙ୍କ ଡିଭାଇସ୍‌ର ତାରିଖ ଏବଂ ସମୟ (<ph name="DATE_AND_TIME" />) ଭୁଲ ଅଛି।&lt;/p&gt;
 
       &lt;p&gt;ଦୟାକରି &lt;strong&gt;ସେଟିଂସ୍&lt;/strong&gt; ଆପ୍‌ର &lt;strong&gt;ସାଧାରଣ&lt;/strong&gt; ବିଭାଗରୁ ତାରିଖ ଏବଂ ସମୟ ଆଡ୍‌ଜଷ୍ଟ କରନ୍ତୁ।&lt;/p&gt;</translation>
+<translation id="1567040042588613346">ଏହି ନୀତି ଆଶାନୁରୂପ ଭାବେ କାର୍ଯ୍ୟ କରୁଛି କିନ୍ତୁ ସମାନ ମୂଲ୍ୟ ଅନ୍ୟ କୌଣସି ସ୍ଥାନରେ ସେଟ୍ କରାଯାଇଛି ଏବଂ ଏହି ନୀତି ଦ୍ୱାରା ସ୍ଥାନ ଅଧିକାର କରାଯାଇଛି।</translation>
 <translation id="1569487616857761740">ମିଆଦ ଶେଷର ତାରିଖ ଲେଖନ୍ତୁ</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">ଏହି ୱେବ୍ ପୃଷ୍ଠାଟି ପ୍ରଦର୍ଶନ କରୁଥିବା ବେଳେ କିଛି ତ୍ରୁଟି ହୋଇଛି।</translation>
@@ -309,6 +310,7 @@
 <translation id="2114841414352855701"><ph name="POLICY_NAME" /> ଦ୍ୱାରା ଓଭର୍‍ରାଇଡ୍ ହୋଇଥିବାରୁ ଏହାକୁ ଅଣଦେଖା କରାଯାଇଛି।</translation>
 <translation id="2119505898009119320">ଏହାଙ୍କୁ ଜାରି କରାଯାଇଛି: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">ତଳ ଡାହାଣ ପଟରେ ପଞ୍ଚ୍</translation>
+<translation id="2122719317867821810">ଏହି ନୀତି ଆଶାନୁରୂପ ଭାବେ କାର୍ଯ୍ୟ କରୁଛି କିନ୍ତୁ ଏକ ଦ୍ୱନ୍ଦ୍ୱ ସୃଷ୍ଟି କରୁଥିବା ମୂଲ୍ୟ ଅନ୍ୟ କୌଣସି ସ୍ଥାନରେ ସେଟ୍ କରାଯାଇଛି ଏବଂ ଏହି ନୀତି ଦ୍ୱାରା ଓଭରରାଇଡ୍ ହୋଇଛି।</translation>
 <translation id="2126374524350484896">PDF ପ୍ରଯୋଜକ:</translation>
 <translation id="2129079103035905234">ମୋସନ୍ ସେନ୍ସର୍</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode ନୀତି ସେଟ୍ କରାଯାଇନଥିବା ଯୋଗୁଁ, ଆପଣଙ୍କ ଦ୍ୱାରା ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଥିବା ଟେମ୍ପଲେଟ୍‍ଗୁଡ଼ିକ ଲାଗୁ ହୋଇନପାରେ।</translation>
@@ -573,6 +575,7 @@
 <translation id="3229041911291329567">ଆପଣଙ୍କର ଡିଭାଇସ୍ ଏବଂ ବ୍ରାଉଜର୍ ସଂସ୍କରଣ ବିଷୟରେ ସୂଚନା</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> ପାଇଁ CVC ଲେଖନ୍ତୁ</translation>
 <translation id="3234666976984236645">ସର୍ବଦା ଏହି ସାଇଟ୍‍‍ରେ ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ବିଷୟବସ୍ତୁ ଚିହ୍ନଟ କରେ</translation>
+<translation id="3266793032086590337">ମୂଲ୍ୟ (ବିବାଦରେ ଅଛି)</translation>
 <translation id="3270847123878663523">ପୁନଃକ୍ରମକୁ &amp;ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282497668470633863">କାର୍ଡରେ ନାମକୁ ଯୋଗ କରନ୍ତୁ</translation>
@@ -725,6 +728,7 @@
 <translation id="3807873520724684969">ହାନିକାରକ ବିଷୟବସ୍ତୁକୁ ଅବରୋଧ କରାଗଲା।</translation>
 <translation id="3808375843007691220">ଚେତାବନୀ: ଆଗକୁ ପରୀକ୍ଷଣ ଫିଚର୍‌ଗୁଡ଼ିକ ଅଛି!</translation>
 <translation id="3810973564298564668">ପରିଚାଳନା</translation>
+<translation id="3816482573645936981">ମୂଲ୍ୟ (ଏହାର ସ୍ଥାନ ଅଧିକାର କରାଯାଇଛି)</translation>
 <translation id="382518646247711829">ଯଦି ଆପଣ ଏକ ପ୍ରକ୍ସି ସର୍ଭର ବ୍ୟବହାର କରନ୍ତି...</translation>
 <translation id="3827112369919217609">ସମ୍ପୂର୍ଣ୍ଣ</translation>
 <translation id="3828924085048779000">ଶୂନ୍ୟ ପାସ୍‌ଫ୍ରେଜ୍‌ର ଅନୁମତି ନାହିଁ।</translation>
@@ -914,6 +918,7 @@
 <translation id="4579056131138995126">ବ୍ୟକ୍ତିଗତ (ଏନଭଲପ୍)</translation>
 <translation id="4582204425268416675">କାର୍ଡ କାଢ଼ନ୍ତୁ</translation>
 <translation id="4587425331216688090">Chromeରୁ ଠିକଣା କାଢ଼ିବେ?</translation>
+<translation id="459089498662672729"><ph name="ORIGIN_NAME" />ରୁ ଏହି ଲୋକେସନରେ ପେଷ୍ଟ କରିବା ଆଡମିନିଷ୍ଟ୍ରେଟର୍ ନୀତି ଦ୍ୱାରା ସୁପାରିଶ କରାଯାଇନାହିଁ</translation>
 <translation id="4592951414987517459">କୌଣସି ଗୋଟିଏ ଆଧୁନିକ ସାଇଫର୍‌ ସୁଟ୍‍ର ବ୍ୟବହାର କରି ଆପଣଙ୍କର ସଂଯୋଗକୁ <ph name="DOMAIN" />ରେ ଏନ୍‌କ୍ରିପ୍ଟ କରାଯାଇଛି।</translation>
 <translation id="4594403342090139922">&amp;ଡିଲିଟ୍‌କୁ ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
 <translation id="4597348597567598915">ଆକାର 8</translation>
@@ -1076,6 +1081,7 @@
 <translation id="519422657042045905">ବ୍ୟାଖ୍ୟା ଉପଲବ୍ଧ ନାହିଁ</translation>
 <translation id="5201306358585911203">ଏହି ପୃଷ୍ଠାରେ ଏକ ଏମ୍ବାଡ୍ ହୋଇଥିବା ପୃଷ୍ଠା ଏହା ଜଣାଏ</translation>
 <translation id="5205222826937269299">ନାମ ଆବଶ୍ୟକ</translation>
+<translation id="5208899478506185232"><ph name="TOP_ORIGIN" /> ପାଇଁ <ph name="ONE_TIME_CODE" /> ହେଉଛି ଆପଣଙ୍କ କୋଡ୍ (<ph name="EMBEDDED_ORIGIN" /> ମାଧ୍ୟମରେ)</translation>
 <translation id="5209518306177824490">SHA-1 ଟିପ ଚିହ୍ନ</translation>
 <translation id="5215116848420601511">Google Pay ବ୍ୟବହାର କରୁଥିବା ପେମେଣ୍ଟ ପଦ୍ଧତି ଏବଂ ଠିକଣାଗୁଡ଼ିକ</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
@@ -1205,6 +1211,7 @@
 <translation id="5689199277474810259">JSONକୁ ଏକ୍ସପୋର୍ଟ କରନ୍ତୁ</translation>
 <translation id="5689516760719285838">ଲୋକେସନ୍</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates ମୂଲ୍ୟ ପ୍ରାସଙ୍ଗିକ ନୁହେଁ, DnsOverHttpsMode ନୀତି <ph name="SECURE_DNS_MODE_AUTOMATIC" /> କିମ୍ବା <ph name="SECURE_DNS_MODE_SECURE" />କୁ ସେଟ୍ କରାନଯିବା ପର୍ଯ୍ୟନ୍ତ ଏହା ବ୍ୟବହାର କରାଯିବ ନାହିଁ।</translation>
+<translation id="5695542892312572833">ଆପଣଙ୍କ କ୍ରୟକୁ ଯାଞ୍ଚ କରିବା ଏବଂ ସମ୍ପୂର୍ଣ୍ଣ କରିବାକୁ Windows Hello ବ୍ୟବହାର କରିବେ?</translation>
 <translation id="5701381305118179107">କେନ୍ଦ୍ର</translation>
 <translation id="570530837424789914">ପରିଚାଳନା…</translation>
 <translation id="57094364128775171">ଜଟିଳ ପାସ୍‌ୱର୍ଡ ପରାମର୍ଶ କରନ୍ତୁ…</translation>
@@ -1395,6 +1402,7 @@
 <translation id="6447842834002726250">କୁକୀଗୁଡିକ</translation>
 <translation id="6451458296329894277">ଫର୍ମ ପୁନଃଦାଖଲକରଣ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
 <translation id="6457206614190510200">ସାଡାଲ୍ ଷ୍ଟିଚ୍</translation>
+<translation id="6458606150257356946">ଯେ କୌଣସି ମତେ ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="6465306955648956876">ପାସ୍‌ୱାର୍ଡଗୁଡ଼ିକୁ ପରିଚାଳିତ କରନ୍ତୁ…</translation>
 <translation id="6468485451923838994">ଫଣ୍ଟଗୁଡ଼ିକ</translation>
 <translation id="647261751007945333">ଡିଭାଇସ୍ ନୀତି</translation>
@@ -1490,6 +1498,7 @@
 <translation id="6950684638814147129">JSON ମୂଲ୍ୟ ପାର୍ସ କରିବାରେ ତ୍ରୁଟି: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">ସବୁ ରିସେଟ୍ କରନ୍ତୁ</translation>
 <translation id="6957887021205513506">ସର୍ଭର୍‌ର ସାର୍ଟିଫିକେଟ୍‌ ଏକ ଜାଲ୍‌ ପରି ଲାଗୁଛି।</translation>
+<translation id="6963520811470373926">ସ୍ଥାନ ଅଧିକାର କରାଯାଇଛି</translation>
 <translation id="6964255747740675745">ନେଟ୍‌ୱର୍କ କନ୍‌ଫିଗରେସନ୍‌ ବିଶ୍ଳେଷଣ ହେବାରେ ବିଫଳ ହେଲା (ଅବୈଧ JSON)।</translation>
 <translation id="6965382102122355670">ଓକେ ବଟନ୍</translation>
 <translation id="6965978654500191972">ଡିଭାଇସ୍</translation>

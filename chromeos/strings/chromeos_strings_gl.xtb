@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Pasarela</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Axustar á zona de escaneo</translation>
+<translation id="1387854245479784695">Esta é a suma de todos os núcleos</translation>
 <translation id="1397738625398125236">Pódeselle facer ping á pasarela</translation>
 <translation id="1398634363027580500">Latencia de HTTPS moi alta</translation>
 <translation id="1413240736185167732">Produciuse un erro: fallo no filtro</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Produciuse un erro descoñecido</translation>
 <translation id="357889014807611375">wifi de pago por consumo</translation>
 <translation id="360565022852130722">A rede wifi está protexida co protocolo WEP 802.1x, que non é moi seguro</translation>
+<translation id="3712633734921637892">Nestes momentos, a velocidade da CPU está limitada para aforrar batería ou baixar a temperatura</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensións)</translation>
 <translation id="3748026146096797577">Non conectado</translation>
 <translation id="3749289110408117711">Nome de ficheiro</translation>
@@ -230,6 +232,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6146993107019042706">Para finalizar, introduce o teu novo contrasinal</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Máis información</translation>
+<translation id="6189418609903030344">A capacidade da batería diminúe co uso</translation>
 <translation id="6191293864534840972">Os servidores de nomes teñen un formato incorrecto</translation>
 <translation id="6232017090690406397">Batería</translation>
 <translation id="6325525973963619867">Produciuse un erro</translation>
@@ -327,6 +330,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Predeterminado</translation>
 <translation id="8798441408945964110">Nome do fornecedor</translation>
+<translation id="880791622116642296">Este é o número de veces que a batería se someteu a un ciclo de carga completo</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="8845001906332463065">Obter axuda</translation>
 <translation id="8881098542468797602">Superouse a proba</translation>

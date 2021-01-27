@@ -1045,6 +1045,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2154710561487035718">Kopiera webbadress</translation>
 <translation id="2155772377859296191">Ser ut som <ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Tjänstefunktion: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Kontrollera säkerheten igen</translation>
 <translation id="2157474325782140681">Använd en dockningsstation som är gjord för att användas med denna Chromebook om du vill ha tillgång till ytterligare funktioner.</translation>
 <translation id="215753907730220065">Avsluta helskärmsläge</translation>
 <translation id="2157875535253991059">Denna sida visas nu i helskärm.</translation>
@@ -1989,6 +1990,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3225319735946384299">Kodsignering</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233271424239923319">Säkerhetskopiera Linux-appar och Linux-filer</translation>
+<translation id="3238192140106069382">Ansluter och verifierar</translation>
 <translation id="3239373508713281971">Tidsgränsen för <ph name="APP_NAME" /> har tagits bort</translation>
 <translation id="3241680850019875542">Välj rotkatalogen för tillägget som ska paketeras. Om du vill uppdatera ett tillägg väljer du också den privata nyckel som ska återanvändas.</translation>
 <translation id="3244294424315804309">Ljud fortsatt av</translation>
@@ -2585,7 +2587,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3882165008614329320">Befintlig video från kamera eller fil</translation>
 <translation id="3884152383786131369">Det första språk som stöds i den här listan kommer att användas för webbinnehåll som är tillgängligt på flera språk. Dessa inställningar synkroniseras med inställningarna för webbläsaren. <ph name="BEGIN_LINK_LEARN_MORE" />Läs mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Din begäran om att få tillgång till denna webbplats har skickats till <ph name="NAME" /></translation>
-<translation id="3888364689515978571">Av. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Anteckna med <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Aktivera Chrome Sync om du vill använda Wi-Fi-synkronisering</translation>
 <translation id="3892414795099177503">Lägg till OpenVPN/L2TP …</translation>
@@ -2669,7 +2670,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3958088479270651626">Importera bokmärken och inställningar</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Inaktivera mobilnätverk</translation>
-<translation id="3965730875470565266">På, <ph name="MINUTES" /> min</translation>
 <translation id="3965811923470826124">Med</translation>
 <translation id="3965965397408324205">Stäng <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Välj en annan mapp...</translation>
@@ -4219,7 +4219,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5832813618714645810">Profiler</translation>
 <translation id="583281660410589416">Okänd</translation>
 <translation id="5833397272224757657">Använder innehåll på webbplatser du besöker, samt aktivitet i och interaktion med webbläsaren, i anpassningssyfte</translation>
-<translation id="5833551944249825624">Din Chromebook är synlig för alla i närheten i 5 min</translation>
 <translation id="5833726373896279253">Inställningarna kan bara ändras av ägaren:</translation>
 <translation id="5834581999798853053">Ca <ph name="TIME" /> minuter kvar</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – kameran eller mikrofonen spelar in</translation>

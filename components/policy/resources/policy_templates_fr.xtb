@@ -1359,6 +1359,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="2886969306951284125">Si les appareils enregistrés sont compatibles avec les applications Android et que cette règle est définie sur "True", ils communiquent des informations sur l'état d'Android.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, les appareils enregistrés ne communiquent pas ces informations.</translation>
+<translation id="288923520817177650">Autoriser la création des sessions <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> de <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="2890645751406497668">Autoriser automatiquement ces sites à se connecter à des appareils USB correspondant au fournisseur et aux ID de produit indiqués.</translation>
 <translation id="2893546967669465276">Envoyer des journaux système au serveur de gestion</translation>
 <translation id="2899002520262095963">Les applications Android peuvent utiliser les configurations réseau et les certificats CA définis par cette règle, mais elles n'ont pas accès à certaines options de configuration.</translation>
@@ -1421,6 +1422,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Pour en savoir plus sur les formats d'URL valides, consultez cette page : https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2976429807269247880">Paramètres du comportement vis-à-vis des anciens cookies <ph name="ATTRIBUTE_SAMESITE_NAME" /></translation>
+<translation id="2981998788751314539">Autoriser l'accès au site malgré l'affichage d'une page d'avertissement SSL</translation>
 <translation id="2985927503455169394">Utiliser le mode par défaut du processus de prise en main de l'Assistant</translation>
 <translation id="2987155890997901449">Activer ARC</translation>
 <translation id="2987227569419001736">Contrôler l'utilisation de l'API Web Bluetooth</translation>
@@ -1571,9 +1573,6 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3122082892722698079">Contrôler l'utilisation des exceptions liées au contenu non sécurisé</translation>
 <translation id="3128072319047570212">Paramètres de keygen</translation>
 <translation id="3142410959002029864">Lorsque cette règle est définie, le mode d'impression recto verso par défaut est ignoré. Si le mode est indisponible, cette règle est ignorée.</translation>
-<translation id="3143265893557969814">Si cette règle est configurée, tous les types de données spécifiés ne seront pas synchronisés avec Google Sync ni avec le profil itinérant. Cela peut permettre de réduire la taille du profil itinérant ou de limiter les types de données importés sur les serveurs Google Sync.
-
-      Les types de données actuels pour cette règle sont les suivants : "bookmarks", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs" et "wifiConfigurations". Ces noms sont sensibles à la casse.</translation>
 <translation id="3144173889708944482">Si <ph name="PRINTERS_BLOCKLIST" /> est choisi pour <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, le fait de définir <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> indique les imprimantes indisponibles pour les utilisateurs. Toutes les imprimantes sont proposées aux utilisateurs, sauf celles dont les ID sont répertoriés dans cette règle. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3152425128389603870">Rendre le mode bureau unifié disponible et l'activer par défaut</translation>
 <translation id="3159375329008977062">L'utilisateur est autorisé à exporter/importer des conteneurs Crostini via l'UI</translation>
@@ -2060,6 +2059,13 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
 <translation id="377044054160169374">Application de l'intervention en cas d'expérience abusive</translation>
 <translation id="3778689139323007309">Procéder à des vérifications de la révocation des certificats de serveur qui sont validés et signés par des certificats CA installés localement</translation>
 <translation id="3780152581321609624">Inclure un port non standard dans le SPN Kerberos</translation>
+<translation id="378495749480642482">Configure si les sites auxquels l'utilisateur accède sont autorisés à créer des sessions de réalité augmentée immersive avec <ph name="WEBXR_API_NAME" />.
+
+      Si cette règle n'est pas configurée ou qu'elle est activée, <ph name="WEBXR_API_NAME" /> accepte <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> lors de la création de sessions. Ceci permet aux utilisateurs d'accéder aux expériences de réalité augmentée.
+
+      Si cette règle est désactivée, <ph name="WEBXR_API_NAME" /> refuse les demandes de création de sessions avec le mode défini sur <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />. Les sessions <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> (le cas échéant) ne prendront pas fin.
+
+      Pour en savoir plus sur les sessions <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />, veuillez consulter la spécification<ph name="WEBXR_AR_MODULE_API_NAME" />.</translation>
 <translation id="3788662722837364290">Paramètres de gestion de l'alimentation en cas d'inactivité de l'utilisateur</translation>
 <translation id="3790085888761753785">Si ce paramètre est activé, les utilisateurs seront autorisés à se connecter à leur compte avec Smart Lock. Ce paramètre est plus permissif que le comportement normal de Smart Lock qui permet seulement aux utilisateurs de déverrouiller leur écran.
 
@@ -4173,6 +4179,13 @@ Si vous sélectionnez les options suivantes :
       Spécifie les indicateurs à appliquer à <ph name="PRODUCT_NAME" /> au démarrage. Ceux-ci ne sont appliqués que sur l'écran de connexion. Les indicateurs définis par cette règle ne sont pas répercutés dans les sessions utilisateur.</translation>
 <translation id="685769593149966548">Appliquer le mode restreint strict sur YouTube</translation>
 <translation id="686079137349561371">Microsoft Windows 7 ou version ultérieure</translation>
+<translation id="6877233375929006871">Cette règle permet de dresser une liste de formats d'URL afin d'autoriser les utilisateurs qui arrivent sur les sites concernés à passer les pages d'avertissement affichées par <ph name="PRODUCT_NAME" /> en cas d'erreur SSL. Les utilisateurs ne pourront pas passer les pages d'avertissement SSL des sites qui ne figurent pas dans cette liste.
+
+      Si la règle <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> est désactivée, cette règle n'a aucun effet.
+
+      Si cette règle n'est pas configurée, la règle <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> s'applique pour tous les sites.
+
+      Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, consultez la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="68818134518270542">Permet de spécifier les applications que les utilisateurs peuvent activer comme applications de prise de notes sur l'écran de verrouillage <ph name="PRODUCT_OS_NAME" />.
 
       Si l'application de prise de notes préférée est activée sur l'écran de verrouillage, un élément d'interface utilisateur destiné à la lancer s'affiche à l'écran. Une fois démarrée, l'application peut ouvrir une fenêtre au-dessus de l'écran de verrouillage et créer des notes dans ce contexte. L'application peut importer les notes créées dans la session de l'utilisateur principal (lorsque la session est déverrouillée). Seules les applications de prise de notes <ph name="PRODUCT_NAME" /> sont acceptées sur l'écran de verrouillage.
@@ -4240,6 +4253,7 @@ Si vous sélectionnez les options suivantes :
       Si la présente règle est activée, chacune des origines identifiées figurant dans une liste d'éléments séparés par une virgule exécute son propre processus. Elle isole également ces origines par sous-domaines. Par exemple, si vous indiquez https://example.com/, https://foo.example.com/ est aussi isolé en tant que partie du site https://example.com/.
       Si cette règle n'est pas configurée ou si elle est désactivée, les paramètres par défaut d'isolation de sites de la plate-forme sont utilisés pour l'écran de connexion.
       </translation>
+<translation id="6947587367703216074">Empêcher la création de sessions <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="6949867264289339206">La définition de cette règle fournit les configurations des imprimantes d'entreprise associées à des appareils. Son format correspond au dictionnaire <ph name="PRINTERS_POLICY_NAME" />, avec un champ supplémentaire "id" ou "guid" obligatoire pour chaque imprimante à ajouter à la liste d'autorisation ou à la liste de refus. Le fichier est au format JSON et sa taille ne peut pas dépasser 5 Mo. Un fichier encodé de 5 Mo peut contenir environ 21 000 imprimantes. Le hachage cryptographique permet de valider l'intégrité du téléchargement. Le fichier est téléchargé, mis en cache, puis téléchargé à nouveau à chaque modification de l'URL ou du hachage. <ph name="PRODUCT_OS_NAME" /> télécharge le fichier des configurations d'imprimante et rend les imprimantes accessibles avec <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> et <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Cette règle :

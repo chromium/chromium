@@ -1046,6 +1046,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2154710561487035718">Kopier webadresse</translation>
 <translation id="2155772377859296191">Ligner <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Scripttjeneste: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Kør sikkerhedstjek igen</translation>
 <translation id="2157474325782140681">Hvis du vil have yderligere funktioner, skal du bruge en Dell-dockingstation, som er udviklet til at fungere sammen med denne Chromebook.</translation>
 <translation id="215753907730220065">Afslut fuld skærm</translation>
 <translation id="2157875535253991059">Denne side er nu i fuld skærm.</translation>
@@ -1990,6 +1991,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3225319735946384299">Kodesignering</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233271424239923319">Sikkerhedskopiér Linux-apps og -filer</translation>
+<translation id="3238192140106069382">Opretter forbindelse og verificerer</translation>
 <translation id="3239373508713281971">Tidsgrænsen blev fjernet for <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Vælg rodmappen for udvidelsen, der skal pakkes. Opdater en udvidelse ved også at vælge den private nøglefil til genbrug.</translation>
 <translation id="3244294424315804309">Lad lyden forblive slået fra</translation>
@@ -2586,7 +2588,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3882165008614329320">Eksisterende video fra kamera eller fil</translation>
 <translation id="3884152383786131369">Webindhold, som er tilgængeligt på flere sprog, vises på det første understøttede sprog på denne liste. Disse præferencer synkroniseres med dine browserindstillinger. <ph name="BEGIN_LINK_LEARN_MORE" />Få flere oplysninger<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Din anmodning om adgang til dette website er blevet sendt til <ph name="NAME" />.</translation>
-<translation id="3888364689515978571">Fra. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Notetagning med <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Aktivér Chrome-synkronisering for at bruge Wi-Fi-synkronisering</translation>
 <translation id="3892414795099177503">Tilføj OpenVPN/L2TP...</translation>
@@ -2670,7 +2671,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="3958088479270651626">Importér bogmærker og indstillinger</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Deaktiver mobilnetværk</translation>
-<translation id="3965730875470565266">Til, <ph name="MINUTES" /> min.</translation>
 <translation id="3965811923470826124">Med</translation>
 <translation id="3965965397408324205">Log <ph name="PROFILE_NAME" /> ud</translation>
 <translation id="3966072572894326936">Vælg en anden mappe...</translation>
@@ -4220,7 +4220,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5832813618714645810">Profiler</translation>
 <translation id="583281660410589416">Ukendt</translation>
 <translation id="5833397272224757657">Anvender indhold på websites, du besøger, samt browseraktivitet og -interaktioner, så din brugeroplevelse tilpasses</translation>
-<translation id="5833551944249825624">Din Chromebook vil være synlig for alle i nærheden i fem minutter</translation>
 <translation id="5833726373896279253">Disse indstillinger kan kun ændres af ejeren:</translation>
 <translation id="5834581999798853053">Omkring <ph name="TIME" /> minutter tilbage</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – kameraet eller mikrofonen optager</translation>

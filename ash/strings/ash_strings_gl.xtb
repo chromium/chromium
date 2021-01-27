@@ -669,6 +669,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="6818242057446442178">Retroceder unha palabra</translation>
 <translation id="6820676911989879663">Fai unha pausa!</translation>
 <translation id="6850010208275816200">A aplicación actual está aberta a pantalla completa. Se che pide o contrasinal, primeiro tes que saír do modo de pantalla completa.</translation>
+<translation id="6852052252232534364">Facer clic para activar</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780">Activar <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Falta un díxito}other{Faltan # díxitos}}</translation>
@@ -729,6 +730,7 @@ Todos os usuarios deben pechar sesión para poder continuar.</translation>
 <translation id="742594950370306541">Estase utilizando a cámara.</translation>
 <translation id="742608627846767349">Bos días!</translation>
 <translation id="743058460480092004">Estanse utilizando a cámara e o micrófono.</translation>
+<translation id="7434543979546293336">Marcouse como idea clave</translation>
 <translation id="7452560014878697800">Unha aplicación está utilizando a túa cámara</translation>
 <translation id="7456049842111127849">Modo de captura. A configuración predeterminada é <ph name="TYPE" /> <ph name="SOURCE" />.</translation>
 <translation id="7461924472993315131">Marcar cun alfinete</translation>

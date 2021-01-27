@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">ഗേറ്റ്‌വേ</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">സ്‌കാൻ ഏരിയയ്‌ക്ക് അനുയോജ്യമാക്കുക</translation>
+<translation id="1387854245479784695">ഇത് എല്ലാ കോറുകളുടെയും സംഗ്രഹമാണ്</translation>
 <translation id="1397738625398125236">ഗേറ്റ്‌വേ പിംഗ് ചെയ്യാൻ കഴിയും</translation>
 <translation id="1398634363027580500">വളരെ ഉയർന്ന HTTPS പ്രതികരണ സമയം</translation>
 <translation id="1413240736185167732">പ്രിന്റ് ചെയ്യാനായില്ല - ഫിൽട്ടർ പ്രവർത്തിക്കുന്നില്ല</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">പ്രിന്റ് ചെയ്യാനായില്ല - അജ്ഞാതമായ പിശക്</translation>
 <translation id="357889014807611375">മീറ്റർ ചെയ്‌ത വൈഫൈ</translation>
 <translation id="360565022852130722">ദുർബലമായ WEP 802.1x പ്രോട്ടോക്കോൾ ഉപയോഗിച്ചാണ് വെെഫെെ നെറ്റ്‌വർക്ക് സുരക്ഷിതമാക്കിയിരിക്കുന്നത്</translation>
+<translation id="3712633734921637892">ബാറ്ററി സംരക്ഷിക്കാനോ താപനില കുറയ്‌ക്കാനോ CPU വേഗത നിലവിൽ പരിമിതപ്പെടുത്തിയിരിക്കുന്നു</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> റിവ്യൂകൾ)</translation>
 <translation id="3748026146096797577">കണക്റ്റുചെയ്‌തിട്ടില്ല</translation>
 <translation id="3749289110408117711">ഫയല്‍ നാമം</translation>
@@ -229,6 +231,7 @@
 <translation id="6146993107019042706">പൂർത്തിയാക്കാൻ നിങ്ങളുടെ പുതിയ പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">കൂടുതലറിയുക</translation>
+<translation id="6189418609903030344">ഉപയോഗത്തിനനുസരിച്ച് ബാറ്ററി ശേഷി കുറയുന്നു</translation>
 <translation id="6191293864534840972">തകരാറുള്ള നെയിം സെർവറുകൾ</translation>
 <translation id="6232017090690406397">ബാറ്ററി</translation>
 <translation id="6325525973963619867">പരാജയപ്പെട്ടു</translation>
@@ -326,6 +329,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ഡിഫോൾട്ട്</translation>
 <translation id="8798441408945964110">പ്രൊവൈഡറിന്റെ പേര്</translation>
+<translation id="880791622116642296">നിങ്ങളുടെ ബാറ്ററി പൂർണ്ണമായി ചാർജ് ചെയ്തതിന്റെ എണ്ണമാണിത്</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">സഹായം നേടുക</translation>
 <translation id="8881098542468797602">ടെസ്റ്റ് പൂർത്തിയായി</translation>

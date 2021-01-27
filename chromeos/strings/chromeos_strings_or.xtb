@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">ଗେଟ୍‌ୱେ</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">ସ୍କାନ୍ କ୍ଷେତ୍ର ଅନୁସାରେ ଫିଟ୍ କରନ୍ତୁ</translation>
+<translation id="1387854245479784695">ଏହା ସମସ୍ତ କୋରର ଏକ ଏକତ୍ରୀକରଣ ଅଟେ</translation>
 <translation id="1397738625398125236">ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରାଯାଇପାରିବ</translation>
 <translation id="1398634363027580500">HTTPSର ଅଧିକ ଲାଟେନ୍ସି</translation>
 <translation id="1413240736185167732">ବିଫଳ ହୋଇଛି - ଫିଲ୍ଟର୍ ବିଫଳ ହୋଇଛି</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">ବିଫଳ ହୋଇଛି - ଅଜଣା ତ୍ରୁଟି</translation>
 <translation id="357889014807611375">ମିଟର୍ ହୋଇଥିବା ୱାଇ-ଫାଇ</translation>
 <translation id="360565022852130722">ଦୁର୍ବଳ ପ୍ରୋଟୋକଲ୍ WEP 802.1x ବ୍ୟବହାର କରି ୱାଇଫାଇ ନେଟୱାର୍କକୁ ସୁରକ୍ଷିତ କରାଯାଇଛି</translation>
+<translation id="3712633734921637892">ବ୍ୟାଟେରୀକୁ ସଂରକ୍ଷିତ ରଖିବା କିମ୍ବା ତାପମାତ୍ରାକୁ କମ୍ କରିବାକୁ ବର୍ତ୍ତମାନ CPUର ସ୍ପିଡ୍ ସୀମିତ କରାଯାଇଛି</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" />ଟି ସମୀକ୍ଷା)</translation>
 <translation id="3748026146096797577">ସଂଯୁକ୍ତ ହୋଇନାହିଁ</translation>
 <translation id="3749289110408117711">ଫାଇଲ୍ ନାମ</translation>
@@ -230,6 +232,7 @@
 <translation id="6146993107019042706">ସମ୍ପୂର୍ଣ୍ଣ କରିବା ପାଇଁ, ଆପଣଙ୍କର ନୂଆ ପାସ୍‍ୱାର୍ଡ ଲେଖନ୍ତୁ</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">ଅଧିକ ଜାଣନ୍ତୁ</translation>
+<translation id="6189418609903030344">ବ୍ୟବହାର ଯୋଗୁଁ ବ୍ୟାଟେରୀର କ୍ଷମତା ହ୍ରାସ ପାଏ</translation>
 <translation id="6191293864534840972">ତ୍ରୁଟିପୂର୍ଣ୍ଣ ନେମ୍ ସର୍ଭର୍</translation>
 <translation id="6232017090690406397">ବ୍ୟାଟେରୀ</translation>
 <translation id="6325525973963619867">ବିଫଳ ହୋଇଛି</translation>
@@ -327,6 +330,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ଡିଫଲ୍ଟ</translation>
 <translation id="8798441408945964110">ପ୍ରଦାତାଙ୍କ ନାମ</translation>
+<translation id="880791622116642296">ଏହା ହେଉଛି ଆପଣଙ୍କ ବ୍ୟାଟେରୀ କେତେ ଥର ଏକ ସମ୍ପୂର୍ଣ୍ଣ ଚାର୍ଜିଂ ସାଇକଲରେ ଗତି କରିଛି</translation>
 <translation id="8814190375133053267">ୱାଇ-ଫାଇ</translation>
 <translation id="8845001906332463065">ସାହାଯ୍ୟ ପାଆନ୍ତୁ</translation>
 <translation id="8881098542468797602">ଟେଷ୍ଟ ସଫଳ ହୋଇଛି</translation>

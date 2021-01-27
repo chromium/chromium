@@ -1042,6 +1042,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2154710561487035718">Copiar URL</translation>
 <translation id="2155772377859296191">Resolución: <ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Volver a ejecutar la verificación de seguridad</translation>
 <translation id="2157474325782140681">Para obtener más funciones, usa una estación de conexión Dell diseñada para funcionar con esta Chromebook.</translation>
 <translation id="215753907730220065">Salir de pantalla completa</translation>
 <translation id="2157875535253991059">Esta página está en modo de pantalla completa.</translation>
@@ -1986,6 +1987,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3225319735946384299">Firma de código</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3233271424239923319">Crear una copia de seguridad de los archivos y apps de Linux</translation>
+<translation id="3238192140106069382">Conectando y verificando</translation>
 <translation id="3239373508713281971">Se quitó el límite de tiempo para <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Seleccionar el directorio de raíz de la extensión que debe empaquetarse. Para actualizar una extensión, también debes seleccionar el archivo de clave privada que será reutilizado.</translation>
 <translation id="3244294424315804309">Continuar silenciando el sonido</translation>
@@ -2582,7 +2584,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3882165008614329320">Video existente de la cámara o archivo</translation>
 <translation id="3884152383786131369">El contenido web disponible en múltiples idiomas usará el primer idioma compatible de esta lista. Estas preferencias están sincronizadas con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Tu solicitud de acceso a este sitio se envió a <ph name="NAME" /></translation>
-<translation id="3888364689515978571">Desactivado. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Tomar notas con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Activa la Sincronización de Chrome para usar la Sincronización Wi-Fi</translation>
 <translation id="3892414795099177503">Agregar OpenVPN/L2TP…</translation>
@@ -2666,7 +2667,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3958088479270651626">Importar favoritos y configuración</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Desactivar la red móvil</translation>
-<translation id="3965730875470565266">Activado: <ph name="MINUTES" /> min</translation>
 <translation id="3965811923470826124">Con</translation>
 <translation id="3965965397408324205">Salir de <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Seleccionar otra carpeta...</translation>
@@ -4216,7 +4216,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5832813618714645810">Perfiles</translation>
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5833397272224757657">Usa el contenido de los sitios que visitas, tus interacciones y actividad de navegación para personalizar las opciones</translation>
-<translation id="5833551944249825624">Tu Chromebook estará visible para todas las personas que estén cerca durante 5 min</translation>
 <translation id="5833726373896279253">Esta configuración sólo puede ser modificada por el propietario:</translation>
 <translation id="5834581999798853053">Faltan aproximadamente <ph name="TIME" /> minutos.</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" />: La cámara o el micrófono están grabando</translation>

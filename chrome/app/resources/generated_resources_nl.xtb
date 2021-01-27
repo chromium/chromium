@@ -2587,7 +2587,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3882165008614329320">Bestaande video van camera of uit bestand</translation>
 <translation id="3884152383786131369">Voor webcontent die in meerdere talen beschikbaar is, wordt de eerste ondersteunde taal in deze lijst gebruikt. Deze voorkeuren worden gesynchroniseerd met je browserinstellingen. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Je verzoek voor toegang tot deze website is verzonden naar <ph name="NAME" /></translation>
-<translation id="3888364689515978571">Uit. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Notities maken met <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Chrome-synchronisatie inschakelen om wifi-synchronisatie te gebruiken</translation>
 <translation id="3892414795099177503">OpenVPN/L2TP toevoegen...</translation>
@@ -2671,7 +2670,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3958088479270651626">Bookmarks en instellingen importeren</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Mobiel netwerk uitschakelen</translation>
-<translation id="3965730875470565266">Aan, <ph name="MINUTES" /> min</translation>
 <translation id="3965811923470826124">Met</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> sluiten</translation>
 <translation id="3966072572894326936">Een andere map kiezen...</translation>
@@ -4221,7 +4219,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5832813618714645810">Profielen</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5833397272224757657">Maakt gebruik van content op sites die je bezoekt en browseractiviteit en -interactie voor personalisatie</translation>
-<translation id="5833551944249825624">Je Chromebook is 5 minuten lang zichtbaar voor iedereen in de buurt</translation>
 <translation id="5833726373896279253">Deze instellingen kunnen alleen worden aangepast door de eigenaar:</translation>
 <translation id="5834581999798853053">Ongeveer <ph name="TIME" /> minuten resterend</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" />: camera of microfoon neemt op</translation>

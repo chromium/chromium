@@ -1042,6 +1042,7 @@
 <translation id="2154710561487035718">URL сілтемесін көшіру</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> болып көрінеді</translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Қауіпсіздік шарасын қайта қолдану</translation>
 <translation id="2157474325782140681">Қосымша функцияларды пайдалану үшін осы Chromebook құрылғысымен жұмыс істеуге арналған қондыру станциясын пайдаланыңыз.</translation>
 <translation id="215753907730220065">Толық экраннан шығу</translation>
 <translation id="2157875535253991059">Бұл бет енді толық экранға ауысты.</translation>
@@ -1986,6 +1987,7 @@
 <translation id="3225319735946384299">Кодты белгілеу</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3233271424239923319">Linux қолданбалары мен файлдарының сақтық көшірмесін жасау</translation>
+<translation id="3238192140106069382">Қосылуда және расталуда</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> үшін уақыт шектеуі алынды.</translation>
 <translation id="3241680850019875542">Бумаға салу үшін кеңейтімнің түпкі каталогін таңдаңыз. Кеңейтімді жаңарту үшін қайта пайдалану мақсатында жеке кілтті таңдаңыз.</translation>
 <translation id="3244294424315804309">Дыбысын қоспау</translation>
@@ -2582,7 +2584,6 @@
 <translation id="3882165008614329320">Камерадан немесе файлдан алынған бейне</translation>
 <translation id="3884152383786131369">Бірнеше тілдегі веб-мазмұн осы тізімдегі бірінші тілді пайдаланады. Бұл параметрлер браузер параметрлерімен синхрондалады. <ph name="BEGIN_LINK_LEARN_MORE" />Толығырақ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Бұл сайтқа кіру сұрауыңыз <ph name="NAME" /> деген контактіге жіберілді</translation>
-<translation id="3888364689515978571">Өшірулі. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> қолданбасымен жазбалар жазу</translation>
 <translation id="3890064827463908288">Wi-Fi деректерін синхрондау үшін Chrome Sync функциясын қосыңыз.</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP енгізу…</translation>
@@ -2666,7 +2667,6 @@
 <translation id="3958088479270651626">Бетбелгілер мен параметрлерді импорттау</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Ұялы байланыс желісін өшіру</translation>
-<translation id="3965730875470565266">Қосулы, <ph name="MINUTES" /> минутқа</translation>
 <translation id="3965811923470826124">Бекіту құралы</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> профилінен шығу</translation>
 <translation id="3966072572894326936">Басқа қалтаны таңдау…</translation>
@@ -4215,7 +4215,6 @@
 <translation id="5832813618714645810">Профильдер</translation>
 <translation id="583281660410589416">Белгісіз</translation>
 <translation id="5833397272224757657">Жекелендіру үшін кірген сайттардағы мазмұнды, браузерде жасалған әрекеттерді және өзара әрекеттестікті пайдаланады</translation>
-<translation id="5833551944249825624">Chromebook құрылғыңыз 5 минут бойы маңайдағы барлық құрылғыға көрінеді.</translation>
 <translation id="5833726373896279253">Бұл параметрлерді тек иеленуші ғана өзгерте алады:</translation>
 <translation id="5834581999798853053">Шамамен <ph name="TIME" /> минут қалды</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – камерадан не микрофоннан жазу</translation>

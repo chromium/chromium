@@ -18,7 +18,7 @@
 <translation id="2759453070259087442">Išskleisti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra tiek skirtukų: <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="2977480621796371840">Pašalinti iš grupės</translation>
 <translation id="3328308545011660196">Pasiūlymas: skirtukai (iš viso: <ph name="NUMBER_OF_TABS" />) atrodo susiję. Grupuoti juos?</translation>
-<translation id="3340978935015468852">nustatymų</translation>
+<translation id="3340978935015468852">Nustatymai</translation>
 <translation id="3819916404117584598">{TABS_COUNT,plural, =1{Sutraukti <ph name="TABS_COUNT_ONE" /> skirtuką.}one{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukas.}few{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukai.}many{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtuko.}other{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukų.}}</translation>
 <translation id="3940195383040445971">Stebėti kainas skirtukuose</translation>
 <translation id="3996880007329611795">Pranešti</translation>

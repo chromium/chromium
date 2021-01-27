@@ -1356,6 +1356,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="2886969306951284125">Si habilitas el dispositivo para ejecutar apps para Android y estableces la política como verdadera, los dispositivos inscritos informarán sobre el estado de Android.
 
       Si inhabilitas la política o no la estableces, los dispositivos inscritos no informarán sobre el estado de Android.</translation>
+<translation id="288923520817177650">Permite crear sesiones <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> de <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="2890645751406497668">Otorgar permiso automáticamente a estos sitios para conectarse a dispositivos USB con los ID de producto y proveedor correspondientes</translation>
 <translation id="2893546967669465276">Enviar registros del sistema al servidor de administración</translation>
 <translation id="2899002520262095963">A través de esta política, las apps de Android pueden usar la configuración de red y los Certificados de CA, pero no tienen acceso a algunas opciones de configuración.</translation>
@@ -1569,9 +1570,6 @@ Esta política solo se puede establecer en la Consola del administrador de Googl
 <translation id="3122082892722698079">Controla el uso de excepciones de contenido no seguro</translation>
 <translation id="3128072319047570212">Configuración de keygen</translation>
 <translation id="3142410959002029864">Si estableces la política, se anulará el modo predeterminado de impresión doble. Si el modo no está disponible, se ignorará esta política.</translation>
-<translation id="3143265893557969814">Si estableces esta política, se excluirán todos los tipos de datos especificados de la sincronización para Google Sync y de la sincronización de perfiles en roaming. Es política puede ayudar a reducir el tamaño del perfil en roaming o limitar los tipos de datos que se suben a los servidores de Google Sync.
-
-      Los tipos de datos actuales para esta política son los siguientes: "bookmarks", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs" y "wifiConfigurations". Estos nombres distinguen entre mayúsculas y minúsculas.</translation>
 <translation id="3144173889708944482">Si eliges <ph name="PRINTERS_BLOCKLIST" /> para <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, la configuración de <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> especificará las impresoras que no podrán utilizar los usuarios. Los usuarios podrán acceder a todas las impresoras, excepto aquellas con los ID mencionados en esta política. Los ID deben coincidir con los valores de los campos <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> en el archivo que se especifica en <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3152425128389603870">Habilitar el modo de escritorio unificado y activarlo de forma predeterminada</translation>
 <translation id="3159375329008977062">El usuario está habilitado para exportar o importar contenedores de Crostini mediante la IU</translation>
@@ -2061,6 +2059,13 @@ Si se establece como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificaci
 <translation id="377044054160169374">Intervención ante experiencias abusivas</translation>
 <translation id="3778689139323007309">Comprueba la revocación de los certificados del servidor validados correctamente y firmados por certificados de CA instalados de manera local</translation>
 <translation id="3780152581321609624">Incluir puerto no estándar en el SPN de Kerberos</translation>
+<translation id="378495749480642482">Determina si los sitios que visita el usuario pueden crear sesiones de realidad aumentada inmersiva mediante la <ph name="WEBXR_API_NAME" />.
+
+      Si no estableces esta política o la habilitas, la <ph name="WEBXR_API_NAME" /> aceptará <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> durante la creación de sesiones. De esta manera, los usuarios podrán disfrutar de experiencias de realidad aumentada.
+
+      Si inhabilitas la política, la <ph name="WEBXR_API_NAME" /> rechazará las solicitudes para crear sesiones con el modo establecido en <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />. No se finalizarán las sesiones <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> existentes (en caso de haberlas).
+
+      Para obtener más información sobre las sesiones <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />, consulta la especificación de la <ph name="WEBXR_AR_MODULE_API_NAME" />.</translation>
 <translation id="3788662722837364290">Configuración de la administración de energía cuando el usuario está inactivo</translation>
 <translation id="3790085888761753785">Si se habilita esta configuración, los usuarios podrán acceder a sus cuentas mediante Smart Lock. Este método es más permisivo que el comportamiento normal de Smart Lock, que solo permite a los usuarios desbloquear las pantallas.
 
@@ -4245,6 +4250,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Esta política se aplica a la pantalla de acceso. Consulta también la política <ph name="ISOLATE_ORIGINS_POLICY_NAME" />, que se aplica a la sesión de usuario.
       Si habilitas la política, cada origen designado en una lista de elementos separados por comas se ejecutará en su propio proceso. Esta acción también aislará los orígenes designados mediante subdominios; p. ej., al especificar https://example.com/, también se aislará https://foo.example.com/ como parte del sitio https://example.com/.
       Si inhabilitas la política o no la estableces, se usará la configuración predeterminada de aislamiento de sitios de la plataforma para la pantalla de acceso.</translation>
+<translation id="6947587367703216074">Impide crear sesiones <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> de <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="6949867264289339206">Si estableces la política, se proporcionan configuraciones para las impresoras empresariales vinculadas a dispositivos. Su formato coincide con el diccionario de <ph name="PRINTERS_POLICY_NAME" />, con un campo "id" o "guid" obligatorio adicional para cada impresora para la lista de impresoras permitidas o bloqueadas. El tamaño del archivo no puede superar los 5 MB y está en formato JSON (un archivo de ese tamaño contiene aproximadamente 21,000 impresoras). El hash criptográfico permite verificar la integridad de la descarga. Cada vez que cambie la URL o el hash, se descargará el archivo, se almacenará en caché y se volverá a descargar. <ph name="PRODUCT_OS_NAME" /> descargará el archivo para las configuraciones de impresoras y hará que las impresoras estén disponibles junto con <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> y <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Esta política:

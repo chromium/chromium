@@ -668,6 +668,7 @@
 <translation id="6818242057446442178">ଗୋଟିଏ ଶବ୍ଦ ପଛକୁ ଫେରନ୍ତୁ</translation>
 <translation id="6820676911989879663">ଏକ ବିରତି ନିଅନ୍ତୁ!</translation>
 <translation id="6850010208275816200">ଆପଣଙ୍କ ବର୍ତ୍ତମାନର ଆପ୍ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ମୋଡରେ ଅଛି। ଯଦି ଆପ୍ ଆପଣଙ୍କ ପାସୱାର୍ଡ ପଚାରେ ତେବେ ପ୍ରଥମେ ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍ ମୋଡରୁ ବାହାରି ଯାଆନ୍ତୁ।</translation>
+<translation id="6852052252232534364">ସକ୍ରିୟ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> ସେ</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> ସକ୍ରିୟ କରନ୍ତୁ</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{ଗୋଟିଏ ଅଙ୍କ ବାକି ଅଛି}other{#ଟି ଅଙ୍କ ବାକି ଅଛି}}</translation>
@@ -728,6 +729,7 @@
 <translation id="742594950370306541">କ୍ୟାମେରା ବ୍ୟବହାରରେ ଅଛି।</translation>
 <translation id="742608627846767349">ସୁପ୍ରଭାତ,</translation>
 <translation id="743058460480092004">କ୍ୟାମେରା ଓ ମାଇକ୍ରୋଫୋନ୍ ବ୍ୟବହାରରେ ଅଛି।</translation>
+<translation id="7434543979546293336">ମୁଖ୍ୟ ଆଇଡିଆ ଭାବରେ ଚିହ୍ନଟ କରାଯାଇଛି</translation>
 <translation id="7452560014878697800">ଏକ ଆପ୍ଲିକେସନ୍ ଆପଣଙ୍କ କ୍ୟାମେରାକୁ ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="7456049842111127849">କ୍ୟାପଚର୍ ମୋଡ୍, ଡିଫଲ୍ଟ ହେଉଛି <ph name="SOURCE" /> <ph name="TYPE" />।</translation>
 <translation id="7461924472993315131">ପିନ୍‍</translation>

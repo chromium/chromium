@@ -411,7 +411,7 @@
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5327248766486351172">名稱</translation>
 <translation id="5339316356165661760">開啟同步處理功能</translation>
-<translation id="5351284593342054342">從這部裝置清除</translation>
+<translation id="5351284593342054342">從此裝置清除</translation>
 <translation id="5388358297987318779">開啟圖片</translation>
 <translation id="5407969256130905701">捨棄變更</translation>
 <translation id="5409365236829784218">未安裝可開啟這個檔案的應用程式。</translation>
@@ -482,7 +482,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">請在這裡控制您的報導和活動</translation>
 <translation id="6066301408025741299">輕觸即可取消。</translation>
-<translation id="6085282545406522838">已同步處理的資料會繼續保留在你的 Google 帳戶中。</translation>
+<translation id="6085282545406522838">已同步處理的資料會繼續保留在 Google 帳戶中。</translation>
 <translation id="6108923351542677676">設定中…</translation>
 <translation id="6119050551270742952">目前的網頁已處於無痕模式</translation>
 <translation id="6122191549521593678">線上</translation>
@@ -633,7 +633,7 @@
 <translation id="7514365320538308">下載</translation>
 <translation id="7537586195939242955">很抱歉，目前無法將您的通行票證加到 Passbook。</translation>
 <translation id="7554791636758816595">新分頁</translation>
-<translation id="7558943807639707687">你打算如何處理這部裝置上的書籤、歷史記錄和其他資料？</translation>
+<translation id="7558943807639707687">您想如何處理此裝置上的書籤、記錄和其他資料？</translation>
 <translation id="7561196759112975576">永遠使用</translation>
 <translation id="7583004045319035904">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖無痕式分頁。</translation>
 <translation id="7600965453749440009">永遠不要翻譯<ph name="LANGUAGE" /></translation>

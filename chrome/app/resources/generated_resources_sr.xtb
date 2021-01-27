@@ -1044,6 +1044,7 @@
 <translation id="2154710561487035718">Копирање URL адресе</translation>
 <translation id="2155772377859296191">Изгледа да је у питању <ph name="WIDTH" />×<ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Сервисер: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Поново покрени безбедносну проверу</translation>
 <translation id="2157474325782140681">Да бисте користили додатне функције, користите Dell базну станицу компатибилну са овим Chromebook-ом.</translation>
 <translation id="215753907730220065">Изађи из режима целог екрана</translation>
 <translation id="2157875535253991059">Ова страница је сада у режиму целог екрана.</translation>
@@ -1988,6 +1989,7 @@
 <translation id="3225319735946384299">Потписивање кода</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3233271424239923319">Направите резервне копије Linux апликација и датотека</translation>
+<translation id="3238192140106069382">Повезује се и верификује</translation>
 <translation id="3239373508713281971">Временско ограничење је уклоњено за апликацију <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Изаберите основни директоријум додатка за паковање. Да бисте ажурирали додатак, изаберите и датотеку приватног кључа која ће се поново користити.</translation>
 <translation id="3244294424315804309">Не укључуј звук</translation>
@@ -2584,7 +2586,6 @@
 <translation id="3882165008614329320">Постојећи видео из камере или датотеке</translation>
 <translation id="3884152383786131369">Веб-садржај који је доступан на више језика користи први подржани језик са ове листе. Ова подешавања се синхронизују са подешавањима прегледача. <ph name="BEGIN_LINK_LEARN_MORE" />Сазнајте више<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Захтев за приступ овом сајту је послат кориснику <ph name="NAME" /></translation>
-<translation id="3888364689515978571">Искључено је. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Прављење бележака помоћу апликације <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Укључите Chrome синхронизацију да бисте користили WiFi синхронизацију</translation>
 <translation id="3892414795099177503">Додај OpenVPN/L2TP...</translation>
@@ -2668,7 +2669,6 @@
 <translation id="3958088479270651626">Увезите обележиваче и подешавања</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Искључи мобилну мрежу</translation>
-<translation id="3965730875470565266">Укључено је, <ph name="MINUTES" /> мин</translation>
 <translation id="3965811923470826124">Са разрешивачем</translation>
 <translation id="3965965397408324205">Затвори <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Одабери други директоријум...</translation>
@@ -4219,7 +4219,6 @@
 <translation id="5832813618714645810">Профили</translation>
 <translation id="583281660410589416">Непознато</translation>
 <translation id="5833397272224757657">Користи садржај на сајтовима које посећујете, као и активности и интеракције у прегледачу ради персонализације</translation>
-<translation id="5833551944249825624">Chromebook ће 5 мин бити видљив свима у близини</translation>
 <translation id="5833726373896279253">Ова подешавања може да измени само власник:</translation>
 <translation id="5834581999798853053">Остало је око <ph name="TIME" /> минута</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – Камера или микрофон снимају</translation>

@@ -992,7 +992,7 @@
 <translation id="2099686503067610784">要刪除伺服器憑證「<ph name="CERTIFICATE_NAME" />」嗎？</translation>
 <translation id="2100273922101894616">自動登入</translation>
 <translation id="2101225219012730419">版本：</translation>
-<translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 組電話號碼}}</translation>
+<translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 個電話號碼}}</translation>
 <translation id="211144231511833662">清除類型</translation>
 <translation id="2111670510994270194">在右側新增分頁</translation>
 <translation id="21133533946938348">固定分頁</translation>
@@ -1045,6 +1045,7 @@
 <translation id="2154710561487035718">複製網址</translation>
 <translation id="2155772377859296191">解像度：<ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker：<ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">再次執行安全檢查</translation>
 <translation id="2157474325782140681">如要取得其他功能，請使用此 Chromebook 的專用插座。</translation>
 <translation id="215753907730220065">結束全螢幕</translation>
 <translation id="2157875535253991059">這個頁面已顯示為全螢幕。</translation>
@@ -1437,7 +1438,7 @@
 <translation id="2604255671529671813">網絡連線錯誤</translation>
 <translation id="2606246518223360146">連結資料</translation>
 <translation id="2606454609872547359">否，不啟動 ChromeVox 並繼續操作</translation>
-<translation id="2606568927909309675">自動建立英文音訊和視訊的字幕。音訊和字幕絕不會外洩。</translation>
+<translation id="2606568927909309675">自動建立英文音訊和影片字幕。音訊和字幕絕不會外洩。</translation>
 <translation id="2607101320794533334">主體公開金鑰資料</translation>
 <translation id="2609896558069604090">建立捷徑…</translation>
 <translation id="2609980095400624569">無法建立連線</translation>
@@ -1702,7 +1703,7 @@
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">使用其他程式開啟連結…</translation>
 <translation id="2889925978073739256">繼續封鎖無沙箱防護的外掛程式</translation>
-<translation id="2891922230654533301">要從這部裝置登入「<ph name="APP_NAME" />」嗎？</translation>
+<translation id="2891922230654533301">要使用裝置登入 <ph name="APP_NAME" /> 嗎？</translation>
 <translation id="2893168226686371498">預設瀏覽器</translation>
 <translation id="2894757982205307093">在群組中新增分頁</translation>
 <translation id="289644616180464099">SIM 卡已鎖定</translation>
@@ -1988,6 +1989,7 @@
 <translation id="3225319735946384299">代碼簽名</translation>
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3233271424239923319">備份 Linux 應用程式和檔案</translation>
+<translation id="3238192140106069382">正在連線及驗證</translation>
 <translation id="3239373508713281971">已移除 <ph name="APP_NAME" /> 的時間限制</translation>
 <translation id="3241680850019875542">請選取要封裝的擴充功能根目錄。如要更新擴充功能，請一併選取要重複使用的私密金鑰。</translation>
 <translation id="3244294424315804309">繼續保持靜音</translation>
@@ -2310,7 +2312,7 @@
 <translation id="3600792891314830896">將播放音效的網站設為靜音</translation>
 <translation id="360180734785106144">即時提供可用的新功能</translation>
 <translation id="3602290021589620013">預覽</translation>
-<translation id="3602870520245633055">列印及掃描</translation>
+<translation id="3602870520245633055">列印並掃瞄</translation>
 <translation id="3603622770190368340">取得網絡憑證</translation>
 <translation id="3604193429970465812">次要帳戶</translation>
 <translation id="3604713164406837697">變更桌布</translation>
@@ -2584,7 +2586,6 @@
 <translation id="3882165008614329320">相機或檔案中的現有影片</translation>
 <translation id="3884152383786131369">支援多種語言的網站內容會使用此清單上的第一個支援語言。這些偏好設定會與您的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">您想存取此網站的要求已傳送至<ph name="NAME" /></translation>
-<translation id="3888364689515978571">已關閉。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">正在使用「<ph name="LOCK_SCREEN_APP_NAME" />」寫筆記</translation>
 <translation id="3890064827463908288">開啟 Chrome 同步功能以使用 Wi-Fi Sync</translation>
 <translation id="3892414795099177503">新增 OpenVPN/L2TP…</translation>
@@ -2668,7 +2669,6 @@
 <translation id="3958088479270651626">匯入書籤和設定</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">關閉流動網絡</translation>
-<translation id="3965730875470565266">已開啟，剩餘 <ph name="MINUTES" /> 分鐘</translation>
 <translation id="3965811923470826124">包含</translation>
 <translation id="3965965397408324205">退出「<ph name="PROFILE_NAME" />」</translation>
 <translation id="3966072572894326936">選擇其他資料夾…</translation>
@@ -2738,7 +2738,7 @@
 <translation id="4047726037116394521">前往主畫面</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{無法連接 # 個聯絡人。如要與他們使用「咫尺共享」，請將他們的 Google 帳戶電郵地址加入您的通訊錄。}other{無法連接 # 個聯絡人。如要與他們使用「咫尺共享」，請將其 Google 帳戶電郵地址加入您的通訊錄。}}</translation>
 <translation id="4050225813016893843">驗證方法</translation>
-<translation id="4050534976465737778">請確認兩部裝置都已解鎖且彼此相鄰，並已開啟藍牙功能。如果要與未設為聯絡人的 Chromebook 分享內容，請確認該裝置已啟用鄰近分享瀏覽權限 (開啟狀態區，再啟用鄰近分享瀏覽權限)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="4050534976465737778">請確保兩部裝置都已解鎖並放在一起，確保藍牙功能已開啟。如果要與未設定為聯絡人的 Chromebook 分享內容，請確認該裝置已啟用「咫尺共享」分享設定 (開啟狀態區，然後啟動「咫尺共享」分享設定)。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">最小</translation>
 <translation id="4054070260844648638">向所有人顯示</translation>
 <translation id="4056908315660577142">您已達到家長為「<ph name="APP_NAME" />」Chrome 應用程式設定的使用時間限制。明天可以使用 <ph name="TIME_LIMIT" />。</translation>
@@ -3237,7 +3237,7 @@
 <translation id="4651484272688821107">無法使用示範模式的資源載入網上組件。</translation>
 <translation id="4652935475563630866">Parallels Desktop 需要重新啟動，相機設定的變更才會生效。重新啟動 Parallels Desktop 即可繼續。</translation>
 <translation id="4653405415038586100">設定 Linux 時發生錯誤</translation>
-<translation id="4654236001025007561">將檔案分享給附近的 Chromebook 和 Android 裝置</translation>
+<translation id="4654236001025007561">與附近的 Chromebook 和 Android 裝置分享檔案</translation>
 <translation id="4657914796247705218">TrackPoint 速度</translation>
 <translation id="465878909996028221">瀏覽器重新導向僅支援 http、https 和 file 通訊協定。</translation>
 <translation id="4659077111144409915">主要帳戶</translation>
@@ -4218,7 +4218,6 @@
 <translation id="5832813618714645810">設定檔</translation>
 <translation id="583281660410589416">不明</translation>
 <translation id="5833397272224757657">使用您瀏覽的網站內容、瀏覽器活動及互動記錄，以提供個人化使用體驗</translation>
-<translation id="5833551944249825624">您的 Chromebook 將會向附近所有人顯示 5 分鐘</translation>
 <translation id="5833726373896279253">只有擁有者才能修改這些設定：</translation>
 <translation id="5834581999798853053">還有大約 <ph name="TIME" /> 分鐘</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 相機或麥克風錄製中</translation>
@@ -4369,7 +4368,7 @@
 <translation id="6011074160056912900">以太網絡</translation>
 <translation id="6011193465932186973">指紋</translation>
 <translation id="6011449291337289699">清除網站資料</translation>
-<translation id="6013027779243312217">取得音訊和視訊的字幕</translation>
+<translation id="6013027779243312217">取得音訊和影片的字幕</translation>
 <translation id="6015796118275082299">年</translation>
 <translation id="6016178549409952427">導覽第 <ph name="CURRENT_ELEMENT" /> 個額外內容，共 <ph name="TOTAL_ELEMENTS" /> 個</translation>
 <translation id="6016551720757758985">確認執行 Powerwash 以重設為上個版本</translation>
@@ -4879,7 +4878,7 @@
 <translation id="6605847144724004692">尚未有使用者評分。</translation>
 <translation id="6607831829715835317">更多工具(&amp;L)</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> 目前已由 <ph name="DOMAIN" /> 管理。如要以其他 Google 帳戶使用家長監護功能，請在設定後登出，然後在登入畫面上選取「新增使用者」。</translation>
-<translation id="6609478180749378879">系統會在無痕模式結束後將登入資料儲存在這部裝置上。你可以再次透過這部裝置登入這個網站。</translation>
+<translation id="6609478180749378879">離開無痕模式後，登入資料會儲存在此裝置中。您可在日後透過裝置再次登入此網站。</translation>
 <translation id="6611972847767394631">您的分頁會在這裡顯示</translation>
 <translation id="6612358246767739896">受保護內容</translation>
 <translation id="6615455863669487791">顯示</translation>
@@ -4898,7 +4897,7 @@
 <translation id="6628328486509726751">上載時間：<ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630043285902923878">正在尋找 USB 裝置…</translation>
 <translation id="6630752851777525409">「<ph name="EXTENSION_NAME" />」要求憑證的永久存取權，以便代替您自我驗證。</translation>
-<translation id="6635362468090274700">你必須讓其他裝置可以偵測到這部裝置，其他人才能與你分享內容。<ph name="BR" /><ph name="BR" />如要暫時讓其他裝置可以偵測到這部裝置，請開啟狀態區，再啟用鄰近分享瀏覽權限。</translation>
+<translation id="6635362468090274700">您需要將自己的狀態設定為顯示，其他人才能與您分享內容。<ph name="BR" /><ph name="BR" />如要將狀態設定為暫時顯示，請開啟狀態區，再啟用「咫尺共享」分享設定。</translation>
 <translation id="6635944431854494329">擁有者可前往「設定」&gt;「進階」&gt;「自動將診斷和使用情況資料傳送給 Google」，以控制此功能。</translation>
 <translation id="6635956300022133031">選取及自訂文字轉語音的聲音</translation>
 <translation id="6636588250634969791">請先插入 SIM 卡再繼續</translation>
@@ -5071,7 +5070,7 @@
 <translation id="6835762382653651563">請連接互聯網以更新 <ph name="DEVICE_TYPE" />。</translation>
 <translation id="6838034009068684089">在網站要求在您的螢幕上開啟並放置視窗時詢問您 (建議)</translation>
 <translation id="6838694093138907871">代碼無效，請再試一次。</translation>
-<translation id="6838860780238890144">{COUNT,plural, =1{電話號碼}other{# 組電話號碼}}</translation>
+<translation id="6838860780238890144">{COUNT,plural, =1{電話號碼}other{# 個電話號碼}}</translation>
 <translation id="6839225236531462745">憑證刪除錯誤</translation>
 <translation id="6839916869147598086">登入方式已變更</translation>
 <translation id="6840155290835956714">傳送前先詢問</translation>
@@ -6253,7 +6252,7 @@
 <translation id="8157704005178149728">正在設定監控功能</translation>
 <translation id="8158117992543756526">此裝置已在 <ph name="MONTH_AND_YEAR" />停止自動更新軟件和安全性。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">憑證信任設定錯誤</translation>
-<translation id="8160775796528709999">只要在設定中啟用即時字幕功能，即可取得音訊和視訊的字幕</translation>
+<translation id="8160775796528709999">透過啟用設定入面嘅即時字幕，為您嘅音訊同影片產生字幕</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />，<ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">使用閱讀器模式查看網頁</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{將分頁移至新視窗}other{將分頁移至新視窗}}</translation>
@@ -7102,7 +7101,7 @@
 <translation id="9128870381267983090">連線至網路</translation>
 <translation id="9130015405878219958">輸入的模式無效。</translation>
 <translation id="9131487537093447019">透過藍牙裝置傳送及接收訊息。</translation>
-<translation id="9134119143784876218">自動建立英文音訊和視訊的字幕 (目前僅支援 Chrome 瀏覽器)。音訊和字幕絕不會外洩。</translation>
+<translation id="9134119143784876218">自動建立英文音訊和影片字幕 (目前僅支援 Chrome 瀏覽器)。音訊和字幕絕不會外洩。</translation>
 <translation id="9137013805542155359">顯示原文</translation>
 <translation id="9137157311132182254">偏好的搜尋引擎</translation>
 <translation id="9137248913990643158">使用此應用程式前，請先啟動 Chrome 並登入帳戶。</translation>

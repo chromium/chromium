@@ -257,6 +257,7 @@ En revanche, lorsque vous êtes en mode navigation privée, les sites ne peuvent
 <translation id="3533436815740441613">Nouvel onglet</translation>
 <translation id="3551320343578183772">Fermer l'onglet</translation>
 <translation id="3581564640715911333">Proposer de traduire les pages dans d'autres langues</translation>
+<translation id="3588492282865875287">Se déconnecter ?</translation>
 <translation id="3588820906588687999">Ouvrir l'image dans un nouvel onglet</translation>
 <translation id="359441731697487922">Vous pouvez définir Chrome comme votre navigateur par défaut pour y ouvrir des liens automatiquement.
       
@@ -410,6 +411,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5339316356165661760">Activer la synchronisation</translation>
+<translation id="5351284593342054342">Supprimer de cet appareil</translation>
 <translation id="5388358297987318779">Ouvrir l'image</translation>
 <translation id="5407969256130905701">Supprimer les modifications</translation>
 <translation id="5409365236829784218">Aucune application installée ne peut ouvrir ce fichier.</translation>
@@ -465,6 +467,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5948291296578561264">Cela vous permet d'enregistrer des photos dans votre photothèque.</translation>
 <translation id="5955891643922670672">Affichage de la version hors connexion</translation>
 <translation id="5957613098218939406">Plus d'options</translation>
+<translation id="5961521066940389233">Stocker sur l'appareil</translation>
 <translation id="5964480694698977962">Créer un onglet de navigation privée</translation>
 <translation id="5965679971710331625">Vous êtes connecté</translation>
 <translation id="5979837087407522202">Rechercher des mots de passe</translation>
@@ -479,6 +482,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Contrôlez vos articles et votre activité via ce menu</translation>
 <translation id="6066301408025741299">Appuyez sur l'écran pour annuler.</translation>
+<translation id="6085282545406522838">En revanche, vos données synchronisées resteront dans votre compte Google.</translation>
 <translation id="6108923351542677676">Configuration en cours…</translation>
 <translation id="6119050551270742952">La page Web actuelle est en mode navigation privée</translation>
 <translation id="6122191549521593678">En ligne</translation>
@@ -631,6 +635,7 @@ Toutefois, évitez d'utiliser un même mot de passe pour plusieurs sites.</trans
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7537586195939242955">Impossible d'installer votre Pass dans Passbook actuellement.</translation>
 <translation id="7554791636758816595">Nouvel onglet</translation>
+<translation id="7558943807639707687">Que souhaitez-vous faire avec vos favoris, votre historique et les autres données de cet appareil ?</translation>
 <translation id="7561196759112975576">Toujours</translation>
 <translation id="7583004045319035904">Utilisez "<ph name="BIOMETRIC_AUTHENITCATION_TYPE" />" pour déverrouiller vos onglets de navigation privée.</translation>
 <translation id="7600965453749440009">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /> </translation>

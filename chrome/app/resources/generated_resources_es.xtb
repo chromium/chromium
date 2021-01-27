@@ -1045,6 +1045,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2154710561487035718">Copiar URL</translation>
 <translation id="2155772377859296191">Resolución de <ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Volver a ejecutar la comprobación de seguridad</translation>
 <translation id="2157474325782140681">Si quieres obtener funciones adicionales, usa una base Dell que se haya diseñado para funcionar con este Chromebook.</translation>
 <translation id="215753907730220065">Desactivar pantalla completa</translation>
 <translation id="2157875535253991059">Esta página se muestra ahora en pantalla completa.</translation>
@@ -1989,6 +1990,7 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3225319735946384299">Code Signing</translation>
 <translation id="3227137524299004712">Micrófono</translation>
 <translation id="3233271424239923319">Copia de seguridad de las aplicaciones y archivos de Linux</translation>
+<translation id="3238192140106069382">Conectando y verificando</translation>
 <translation id="3239373508713281971">Se ha quitado el límite de tiempo de <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Selecciona el directorio raíz de las extensiones que quieras empaquetar. Para actualizar una extensión, debes seleccionar también el archivo de clave privada que se va a volver a usar.</translation>
 <translation id="3244294424315804309">Seguir silenciando el sonido</translation>
@@ -2585,7 +2587,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3882165008614329320">Vídeo de la cámara o un archivo</translation>
 <translation id="3884152383786131369">El contenido web que esté disponible en varios idiomas usará el primer idioma admitido de esta lista. Estas preferencias se sincronizan con la configuración de tu navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Más información<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Tu solicitud de acceso a este sitio web se ha enviado a <ph name="NAME" /></translation>
-<translation id="3888364689515978571">Desactivado. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Tomando notas con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Activa la Sincronización de Chrome para usar la Sincronización Wi‑Fi</translation>
 <translation id="3892414795099177503">Añadir OpenVPN / L2TP...</translation>
@@ -2668,7 +2669,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="3958088479270651626">Importar marcadores y configuración</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Desactivar red móvil</translation>
-<translation id="3965730875470565266">Activado, <ph name="MINUTES" /> min</translation>
 <translation id="3965811923470826124">Con</translation>
 <translation id="3965965397408324205">Salir de <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Seleccionar otra carpeta...</translation>
@@ -4218,7 +4218,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="5832813618714645810">Perfiles</translation>
 <translation id="583281660410589416">Desconocido</translation>
 <translation id="5833397272224757657">Utiliza el contenido de los sitios que visitas, así como las interacciones y la actividad del navegador, para ofrecer una experiencia personalizada</translation>
-<translation id="5833551944249825624">Tu Chromebook será visible para todos los usuarios cercanos durante 5 minutos.</translation>
 <translation id="5833726373896279253">Esta configuración solo puede modificarla el propietario:</translation>
 <translation id="5834581999798853053">Unos <ph name="TIME" /> minutos</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" />: grabación de la cámara o del micrófono</translation>

@@ -1045,6 +1045,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2154710561487035718">Sao chép URL</translation>
 <translation id="2155772377859296191">Có vẻ như là <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Trình chạy dịch vụ: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Chạy lại tính năng kiểm tra an toàn</translation>
 <translation id="2157474325782140681">Để có thêm tính năng, hãy sử dụng đế sạc Dell tương thích với Chromebook này.</translation>
 <translation id="215753907730220065">Thoát khỏi Chế độ Toàn màn hình</translation>
 <translation id="2157875535253991059">Trang này hiện ở chế độ toàn màn hình.</translation>
@@ -1989,6 +1990,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3225319735946384299">Ký Mã</translation>
 <translation id="3227137524299004712">Micrô</translation>
 <translation id="3233271424239923319">Sao lưu các ứng dụng và tệp Linux</translation>
+<translation id="3238192140106069382">Đang kết nối và xác minh</translation>
 <translation id="3239373508713281971">Đã xóa giới hạn thời gian đối với <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Chọn thư mục gốc của tiện ích để đóng gói. Để cập nhật tiện ích, bạn cũng chọn tệp khóa cá nhân để sử dụng lại.</translation>
 <translation id="3244294424315804309">Tiếp tục tắt tiếng</translation>
@@ -2585,7 +2587,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3882165008614329320">Video hiện có từ camera hoặc tệp</translation>
 <translation id="3884152383786131369">Nội dung web có nhiều phiên bản ngôn ngữ sẽ dùng ngôn ngữ đầu tiên được hỗ trợ trong danh sách này. Những tùy chọn này được đồng bộ hóa với tùy chọn cài đặt của trình duyệt. <ph name="BEGIN_LINK_LEARN_MORE" />Tìm hiểu thêm<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Yêu cầu truy cập trang web này của bạn đã được gửi tới <ph name="NAME" /></translation>
-<translation id="3888364689515978571">Tắt. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Ghi chú bằng <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Bật Chrome Sync để dùng tính năng Đồng bộ hóa Wi-Fi</translation>
 <translation id="3892414795099177503">Thêm OpenVPN / L2TP...</translation>
@@ -2669,7 +2670,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3958088479270651626">Nhập dấu trang và các mục cài đặt</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Tắt Mạng di động</translation>
-<translation id="3965730875470565266">Bật, <ph name="MINUTES" /> phút</translation>
 <translation id="3965811923470826124">Với</translation>
 <translation id="3965965397408324205">Thoát khỏi <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Chọn một thư mục khác...</translation>
@@ -4219,7 +4219,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5832813618714645810">Hồ sơ</translation>
 <translation id="583281660410589416">Không xác định</translation>
 <translation id="5833397272224757657">Dùng nội dung trên trang web bạn truy cập cũng như các tương tác và hoạt động trên trình duyệt để cá nhân hóa</translation>
-<translation id="5833551944249825624">Tất cả những người ở gần có thể nhìn thấy Chromebook của bạn trong vòng 5 phút</translation>
 <translation id="5833726373896279253">Chỉ chủ sở hữu mới có thể sửa đổi các tùy chọn cài đặt này:</translation>
 <translation id="5834581999798853053">Còn khoảng <ph name="TIME" /> phút</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Đang ghi âm hoặc quay phim</translation>

@@ -1048,6 +1048,7 @@
 <translation id="2154710561487035718">Скапіраваць URL-адрас</translation>
 <translation id="2155772377859296191">Здаецца, <ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Выканаць праверку бяспекі яшчэ раз</translation>
 <translation id="2157474325782140681">Каб карыстацца дадатковымі функцыямі, знайдзіце док-станцыю Dell, сумяшчальную з гэтым Chromebook.</translation>
 <translation id="215753907730220065">Выключыць поўнаэкранны рэжым</translation>
 <translation id="2157875535253991059">Старонка ў поўнаэкранным рэжыме.</translation>
@@ -1992,6 +1993,7 @@
 <translation id="3225319735946384299">Падпісванне кода</translation>
 <translation id="3227137524299004712">Мікрафон</translation>
 <translation id="3233271424239923319">Стварыць рэзервовую копію файлаў і праграм Linux</translation>
+<translation id="3238192140106069382">Ідзе падключэнне і спраўджанне</translation>
 <translation id="3239373508713281971">Абмежаванне часу выдалена для праграмы "<ph name="APP_NAME" />"</translation>
 <translation id="3241680850019875542">Выберыце каранёвы каталог, куды трэба ўпакаваць пашырэнне. Каб абнавіць пашырэнне, таксама выберыце файл закрытага ключа, які трэба ўжыць.</translation>
 <translation id="3244294424315804309">Працягнуць блакіраваць гук</translation>
@@ -2588,7 +2590,6 @@
 <translation id="3882165008614329320">Існуючае відэа з камеры або файла</translation>
 <translation id="3884152383786131369">Вэб-змесціва, даступнае на некалькіх мовах, будзе адлюстроўвацца на першай мове з дадзенага спіса. Гэтыя параметры сінхранізуюцца з наладамі вашага браўзера. <ph name="BEGIN_LINK_LEARN_MORE" />Даведацца больш<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Запыт на доступ да гэтага сайта адпраўлены карыстальніку <ph name="NAME" /></translation>
-<translation id="3888364689515978571">Выключана. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Нататкі ў <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Каб выкарыстоўваць функцыю сінхранізацыі параметраў Wi-Fi, уключыце Сінхранізацыю Chrome</translation>
 <translation id="3892414795099177503">Дадаць OpenVPN/L2TP...</translation>
@@ -2672,7 +2673,6 @@
 <translation id="3958088479270651626">Імпарт закладак і налад</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Выключыць сотавую сетку</translation>
-<translation id="3965730875470565266">Уключана, <ph name="MINUTES" /> хв</translation>
 <translation id="3965811923470826124">З дапамогай</translation>
 <translation id="3965965397408324205">Выйсці з профілю <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Выбраць іншую папку...</translation>
@@ -4222,7 +4222,6 @@
 <translation id="5832813618714645810">Профілі</translation>
 <translation id="583281660410589416">Невядома</translation>
 <translation id="5833397272224757657">Для персаналізацыі выкарыстоўвае змесціва з сайтаў, якія вы праглядалі, а таксама дзеянні ў браўзеры</translation>
-<translation id="5833551944249825624">Ваш Chromebook на працягу пяці хвілін будзе бачны ўсім, хто паблізу</translation>
 <translation id="5833726373896279253">Гэтыя налады можа змяняць толькі ўладальнік:</translation>
 <translation id="5834581999798853053">Засталося каля <ph name="TIME" /> хв</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – ідзе запіс з камеры або мікрафона</translation>

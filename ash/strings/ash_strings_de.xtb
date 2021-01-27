@@ -668,6 +668,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="6818242057446442178">Zurück um ein Wort</translation>
 <translation id="6820676911989879663">Zeit für eine Pause.</translation>
 <translation id="6850010208275816200">Ihre aktuelle App wird im Vollbildmodus angezeigt. Wenn Sie von der App nach Ihrem Passwort gefragt werden, beenden Sie zuerst den Vollbildmodus.</translation>
+<translation id="6852052252232534364">Zum Aktivieren klicken</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> Sek.</translation>
 <translation id="6857811139397017780"><ph name="NETWORKSERVICE" /> aktivieren</translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Noch eine Ziffer}other{Noch # Ziffern}}</translation>
@@ -728,6 +729,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="742594950370306541">Kamera wird verwendet.</translation>
 <translation id="742608627846767349">Guten Morgen,</translation>
 <translation id="743058460480092004">Kamera und Mikrofon werden verwendet.</translation>
+<translation id="7434543979546293336">Als wichtige Idee markiert</translation>
 <translation id="7452560014878697800">Eine Anwendung verwendet Ihre Kamera</translation>
 <translation id="7456049842111127849">Aufnahmemodus – die Standardeinstellung ist <ph name="TYPE" /> (<ph name="SOURCE" />).</translation>
 <translation id="7461924472993315131">Anpinnen</translation>

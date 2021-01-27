@@ -70,6 +70,7 @@
 <translation id="7890287942691234100">Commencer à utiliser le lecteur Chromium</translation>
 <translation id="8013573822802650211">Pour retrouver vos onglets Chromium quel que soit l'appareil utilisé, connectez-vous à votre compte</translation>
 <translation id="8073677936375100957">Supprimer vos données Chromium sur cet appareil ?</translation>
+<translation id="8097322092271030751">Votre compte étant géré par <ph name="HOSTED_DOMAIN" />, vos données Chromium seront supprimées de cet appareil lorsque vous vous déconnecterez. En revanche, vos données synchronisées resteront dans votre compte Google.</translation>
 <translation id="8175055321229419309">Conseil : <ph name="BEGIN_LINK" />Placez Chromium dans le dock.<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">Pour définir Chromium comme votre navigateur par défaut, ouvrez "Paramètres", appuyez sur "Navigateur par défaut", puis sélectionnez "Chromium".</translation>
 <translation id="8240981428553046115">Chromium n'est pas parvenu à rechercher les mises à jour. Réessayez plus tard.</translation>

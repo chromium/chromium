@@ -1045,6 +1045,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2154710561487035718">Copia URL</translation>
 <translation id="2155772377859296191">Risoluzione di <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Ripeti il controllo di sicurezza</translation>
 <translation id="2157474325782140681">Per avere a disposizione funzionalità aggiuntive, usa una dock station Dell progettata per supportare questo Chromebook.</translation>
 <translation id="215753907730220065">Esci da schermo intero</translation>
 <translation id="2157875535253991059">Questa pagina ora è a schermo intero.</translation>
@@ -1988,6 +1989,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3225319735946384299">Firma codice</translation>
 <translation id="3227137524299004712">Microfono</translation>
 <translation id="3233271424239923319">Backup app e file Linux</translation>
+<translation id="3238192140106069382">Connessione e verifica in corso…</translation>
 <translation id="3239373508713281971">Limite di tempo per l'app <ph name="APP_NAME" /> rimosso</translation>
 <translation id="3241680850019875542">Seleziona la directory principale dell'estensione di cui creare il pacchetto. Per aggiornare un'estensione, seleziona anche il file delle chiave privata da riutilizzare.</translation>
 <translation id="3244294424315804309">Continua a tenere l'audio disattivato</translation>
@@ -2584,7 +2586,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3882165008614329320">Video esistente da fotocamera o file</translation>
 <translation id="3884152383786131369">I contenuti web che sono disponibili in più lingue utilizzeranno la prima lingua supportata nell'elenco. Queste preferenze sono sincronizzate con le impostazioni del browser. <ph name="BEGIN_LINK_LEARN_MORE" />Ulteriori informazioni<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">La tua richiesta di accesso al sito è stata inviata a <ph name="NAME" /></translation>
-<translation id="3888364689515978571">Off. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Creazione di appunti con <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Per utilizzare Sync Wi-Fi, attiva Sincronizzazione Chrome</translation>
 <translation id="3892414795099177503">Aggiungi L2TP/OpenVPN</translation>
@@ -2668,7 +2669,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3958088479270651626">Importa preferiti e impostazioni</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Disattiva rete mobile</translation>
-<translation id="3965730875470565266">On, <ph name="MINUTES" /> minuti</translation>
 <translation id="3965811923470826124">Con</translation>
 <translation id="3965965397408324205">Esci da <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Scegli un'altra cartella...</translation>
@@ -4218,7 +4218,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5832813618714645810">Profili</translation>
 <translation id="583281660410589416">Sconosciuto</translation>
 <translation id="5833397272224757657">Utilizza i contenuti dei siti visitati oltre ad attività e interazioni relative al browser per la personalizzazione</translation>
-<translation id="5833551944249825624">Il tuo Chromebook sarà visibile a chiunque è nelle vicinanze per 5 minuti</translation>
 <translation id="5833726373896279253">Queste impostazioni possono essere modificate solo dal proprietario:</translation>
 <translation id="5834581999798853053">Circa <ph name="TIME" /> minuti rimanenti</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Registrazione tramite fotocamera o microfono in corso</translation>

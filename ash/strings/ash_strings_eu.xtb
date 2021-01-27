@@ -669,6 +669,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6818242057446442178">Joan aurreko hitzera</translation>
 <translation id="6820676911989879663">Hartu atseden</translation>
 <translation id="6850010208275816200">Pantaila osoko moduan dago uneko aplikazioa. Aplikazioak pasahitza eskatzen badizu, lehenik atera pantaila osoko modutik.</translation>
+<translation id="6852052252232534364">Sakatu aktibatzeko</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780">Aktibatu <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{1 zenbaki geratzen da}other{# zenbaki geratzen dira}}</translation>
@@ -729,6 +730,7 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="742594950370306541">Kamera abian da.</translation>
 <translation id="742608627846767349">Egun on:</translation>
 <translation id="743058460480092004">Norbait kamera eta mikrofonoa erabiltzen ari da.</translation>
+<translation id="7434543979546293336">Ideia nagusi gisa markatu da</translation>
 <translation id="7452560014878697800">Aplikazio bat kamera erabiltzen ari da</translation>
 <translation id="7456049842111127849">Edukia kapturatzeko modua. Balio lehenetsia <ph name="TYPE" /> <ph name="SOURCE" /> da.</translation>
 <translation id="7461924472993315131">Ainguratu</translation>

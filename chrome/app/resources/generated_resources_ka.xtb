@@ -1045,6 +1045,7 @@
 <translation id="2154710561487035718">დააკოპიე URL</translation>
 <translation id="2155772377859296191">როგორც ჩანს, გარჩევადობა არის <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">სერვისის დამმუშავებელი: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">უსაფრთხოების შემოწმების ხელახლა გაშვება</translation>
 <translation id="2157474325782140681">დამატებითი ფუნქციებით სარგებლობისთვის გამოიყენეთ Dell-ის სამაგრი, რომელიც შექმნილია ამ Chromebook-თან მუშაობისთვის.</translation>
 <translation id="215753907730220065">სრულეკრანიანი რეჟიმიდან გამოსვლა</translation>
 <translation id="2157875535253991059">ეს გვერდი ახლა მთელ ეკრანზეა.</translation>
@@ -1988,6 +1989,7 @@
 <translation id="3225319735946384299">კოდის ხელმოწერა</translation>
 <translation id="3227137524299004712">მიკროფონი</translation>
 <translation id="3233271424239923319">Linux აპებისა და ფაილების სარეზერვო კოპირება</translation>
+<translation id="3238192140106069382">დაკავშირება და დადასტურება</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" />-ისთვის დაყენებული დროის ლიმიტი გაუქმდა</translation>
 <translation id="3241680850019875542">აირჩიეთ გაფართოების ძირითადი დირექტორია შეფუთვისთვის. გაფართოების განსაახლებლად, აირჩიეთ პირადი გასაღების ფაილი ხელახლა გამოსაყენებლად.</translation>
 <translation id="3244294424315804309">ხმის დადუმების გაგრძელება</translation>
@@ -2584,7 +2586,6 @@
 <translation id="3882165008614329320">არსებული ვიდეო კამერიდან ან ფაილიდან</translation>
 <translation id="3884152383786131369">რამდენიმე ენაზე ხელმისაწვდომი ვებკონტენტი ამ სიიდან პირველ მხარდაჭერილ ენას გამოიყენებს. ეს პარამეტრები სინქრონიზდება თქვენი ბრაუზერის პარამეტრებთან. <ph name="BEGIN_LINK_LEARN_MORE" />შეიტყვეთ მეტი<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">ამ საიტზე წვდომის მოთხოვნა გაეგზავნა <ph name="NAME" />-ს</translation>
-<translation id="3888364689515978571">გამორთული. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">ჩანიშვნა <ph name="LOCK_SCREEN_APP_NAME" />-ის მეშვეობით</translation>
 <translation id="3890064827463908288">Wi-Fi სინქრონიზაციის გამოსაყენებლად ჩართეთ Chrome სინქრონიზაცია</translation>
 <translation id="3892414795099177503">OpenVPN/L2TP-ის დამატება…</translation>
@@ -2668,7 +2669,6 @@
 <translation id="3958088479270651626">სანიშნეების და პარამეტრების იმპორტი</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">ფიჭური ქსელის გამორთვა</translation>
-<translation id="3965730875470565266">ჩართული, <ph name="MINUTES" /> წთ</translation>
 <translation id="3965811923470826124">მეთოდი:</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" />-იდან გასვლა</translation>
 <translation id="3966072572894326936">აირჩიეთ სხვა საქაღალდე...</translation>
@@ -4217,7 +4217,6 @@
 <translation id="5832813618714645810">პროფილები</translation>
 <translation id="583281660410589416">უცნობი</translation>
 <translation id="5833397272224757657">პერსონალიზებისთვის იყენებს თქვენ მიერ მონახულებული ვებსაიტების კონტენტს, ასევე ბრაუზერის აქტივობასა და მასთან ინტერაქციას</translation>
-<translation id="5833551944249825624">თქვენი Chromebook 5 წუთის განმავლობაში იქნება ხილული ყველა გარშემომყოფისთვის</translation>
 <translation id="5833726373896279253">ამ პარამეტრების შეცვლა მხოლოდ მფლობელს შეუძლია.</translation>
 <translation id="5834581999798853053">დარჩენილია დაახლოებით <ph name="TIME" /> წუთი</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> — მიმდინარეობს ჩაწერა კამერიდან ან მიკროფონიდან</translation>

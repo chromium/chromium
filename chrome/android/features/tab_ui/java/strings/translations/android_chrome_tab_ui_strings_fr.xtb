@@ -59,7 +59,7 @@
 <translation id="8304833501377495048">Ne plus afficher la barre d'onglets ?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{Fermer l'onglet sélectionné (<ph name="TABS_COUNT_ONE" />)}one{Fermer l'onglet sélectionné (<ph name="TABS_COUNT_MANY" />)}other{Fermer les onglets sélectionnés (<ph name="TABS_COUNT_MANY" />)}}</translation>
 <translation id="8557923272772633250">Développez le groupe d'onglets qui contient <ph name="NUMBER_OF_TABS" /> onglets.</translation>
-<translation id="860282621117673749">Alertes de baisse de prix</translation>
+<translation id="860282621117673749">Alertes de prix en baisse</translation>
 <translation id="8714939927607906138">Prix inférieur</translation>
 <translation id="8749939518995770034">Barre d'onglets fermée</translation>
 <translation id="8820741577754260431">Consultez les baisses de prix dans les onglets</translation>

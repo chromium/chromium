@@ -1045,6 +1045,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2154710561487035718">Kopieer URL</translation>
 <translation id="2155772377859296191">Lyk soos <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Dienswerker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Doen veiligheidskontrole weer</translation>
 <translation id="2157474325782140681">Gebruik 'n Dell-dokstasie wat ontwerp is om saam met hierdie Chromebook te gebruik om bykomende kenmerke te kry.</translation>
 <translation id="215753907730220065">Gaan by Volskerm uit</translation>
 <translation id="2157875535253991059">Hierdie bladsy is nou volskerm.</translation>
@@ -1989,6 +1990,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3225319735946384299">Kode-ondertekening</translation>
 <translation id="3227137524299004712">Mikrofoon</translation>
 <translation id="3233271424239923319">Rugsteun- Linux-programme en lêers</translation>
+<translation id="3238192140106069382">Koppel en verifieer tans</translation>
 <translation id="3239373508713281971">Tydlimiet vir <ph name="APP_NAME" /> is verwyder</translation>
 <translation id="3241680850019875542">Kies die wortelgids vir die uitbreiding om te pak. Om 'n uitbreiding op te dateer, kies ook die private sleutel om te hergebruik.</translation>
 <translation id="3244294424315804309">Hou aan om klank te demp</translation>
@@ -2585,7 +2587,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3882165008614329320">Bestaande video van kamera of lêer af</translation>
 <translation id="3884152383786131369">Webinhoud wat in veelvuldige tale beskikbaar is, sal die eerste gesteunde taal op hierdie lys gebruik. Hierdie voorkeure word met jou blaaierinstellings gesinkroniseer. <ph name="BEGIN_LINK_LEARN_MORE" />Kom meer te wete<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Jou versoek om by hierdie werf in te gaan, is na <ph name="NAME" /> gestuur</translation>
-<translation id="3888364689515978571">Af. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Maak tans notas met <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Skakel Chrome-sinkronisering aan om Wi-fi-sinkronisering te gebruik</translation>
 <translation id="3892414795099177503">Voeg OpenVPN / L2TP by …</translation>
@@ -2669,7 +2670,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3958088479270651626">Voer boekmerke en instellings in</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Skakel sellulêre netwerk af</translation>
-<translation id="3965730875470565266">Aan, <ph name="MINUTES" /> minute</translation>
 <translation id="3965811923470826124">Met</translation>
 <translation id="3965965397408324205">Verlaat <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Kies 'n ander vouer …</translation>
@@ -4219,7 +4219,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5832813618714645810">Profiele</translation>
 <translation id="583281660410589416">Onbekend</translation>
 <translation id="5833397272224757657">Gebruik inhoud op werwe wat jy besoek, asook blaaieraktiwiteit en -interaksies vir personalisering</translation>
-<translation id="5833551944249825624">Almal in die omtrek sal jou Chromebook vir 5 minute kan sien</translation>
 <translation id="5833726373896279253">Hierdie instellings kan slegs deur die eienaar verander word:</translation>
 <translation id="5834581999798853053">Ongeveer <ph name="TIME" /> minute oor</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – Kamera- of mikrofoonopname</translation>

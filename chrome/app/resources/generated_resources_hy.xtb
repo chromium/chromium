@@ -1047,6 +1047,7 @@
 <translation id="2154710561487035718">Պատճենել URL-ը</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" />x<ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker՝ <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Նորից անցնել անվտանգություն ստուգում</translation>
 <translation id="2157474325782140681">Լրացուցիչ գործառույթների համար օգտագործեք այս Chromebook-ի համար նախատեսված Dell դոկ-կայան:</translation>
 <translation id="215753907730220065">Ելնել լիաէկրան ռեժիմից</translation>
 <translation id="2157875535253991059">Այս էջն այժմ լիաէկրան ռեժիմում է:</translation>
@@ -1991,6 +1992,7 @@
 <translation id="3225319735946384299">Կոդի ստորագրում</translation>
 <translation id="3227137524299004712">Խոսափող</translation>
 <translation id="3233271424239923319">Լինուքսի հավելվածների ու ֆայլերի պահուստավորում</translation>
+<translation id="3238192140106069382">Միացում և ստուգում</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> հավելվածի համար ժամանակի սահմանաչափը հեռացվել է</translation>
 <translation id="3241680850019875542">Ընտրեք արմատային գրացուցակը՝ փաթեթավորվող ընդլայնման համար: Ընդլայնումը թարմացնելու համար ընտրեք նաև մասնավոր բանալու ֆայլը:</translation>
 <translation id="3244294424315804309">Անջատել ձայնը</translation>
@@ -2587,7 +2589,6 @@
 <translation id="3882165008614329320">Տեսանյութ տեսախցիկից կամ ֆայլից</translation>
 <translation id="3884152383786131369">Տարբեր լեզուներով հասանելի վեբ բովանդակությունը կօգտագործի ցանկում նշված աջակցվող առաջին լեզուն։ Այս պարամետրերը համաժամացվում են ձեր դիտարկիչի կարգավորումների հետ։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Այս կայք մուտք գործելու ձեր հարցումն ուղարկվել է <ph name="NAME" />-ին</translation>
-<translation id="3888364689515978571">Անջատված է։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Կատարեք նշումներ <ph name="LOCK_SCREEN_APP_NAME" />-ի միջոցով</translation>
 <translation id="3890064827463908288">Միացրեք Chrome Sync-ը՝ Wi-Fi համաժամացումն օգտագործելու համար։</translation>
 <translation id="3892414795099177503">Ավելացնել OpenVPN կամ L2TP...</translation>
@@ -2671,7 +2672,6 @@
 <translation id="3958088479270651626">Էջանիշների և կարգավորումների ներմուծում</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Անջատել բջջային ցանցը</translation>
-<translation id="3965730875470565266">Միացված է <ph name="MINUTES" /> րոպեով</translation>
 <translation id="3965811923470826124">Ինչով՝</translation>
 <translation id="3965965397408324205">Դուրս գալ պրոֆիլից (<ph name="PROFILE_NAME" />)</translation>
 <translation id="3966072572894326936">Ընտրել մեկ այլ պանակ...</translation>
@@ -4223,7 +4223,6 @@
 <translation id="5832813618714645810">Պրոֆիլներ</translation>
 <translation id="583281660410589416">Անհայտ</translation>
 <translation id="5833397272224757657">Անհատականացման նպատակով օգտագործում է ձեր այցելած կայքերի բովանդակությունը, այցելությունների պատմությունը և դիտարկիչով կատարած գործողությունները</translation>
-<translation id="5833551944249825624">Ձեր Chromebook-ը 5 րոպե տեսանելի կլինի մոտակայքում գտնվող բոլոր օգտատերերին։</translation>
 <translation id="5833726373896279253">Այս կարգավորումները կարող են միայն փոփոխվել սեփականատիրոջ կողմից՝</translation>
 <translation id="5834581999798853053">Մնացել է մոտ <ph name="TIME" /> րոպե</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – Տեսախցիկը կամ խոսափողը ներկայումս ձայնագրում է</translation>

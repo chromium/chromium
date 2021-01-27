@@ -178,6 +178,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="1559572115229829303">&lt;p&gt;Ezin da ezarri <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> domeinurako konexio pribatua, gailuaren data eta ordua (<ph name="DATE_AND_TIME" />) okerrak direlako.&lt;/p&gt;
 
           &lt;p&gt;Doitu data eta ordua &lt;strong&gt;Ezarpenak&lt;/strong&gt; aplikazioko &lt;strong&gt;Orokorra&lt;/strong&gt; atalean.&lt;/p&gt;</translation>
+<translation id="1567040042588613346">Gidalerroak espero bezala funtzionatzen du, baina beste nonbait balio bera dago ezarrita, eta gidalerro honek hura ordezten du.</translation>
 <translation id="1569487616857761740">Adierazi iraungitze-data</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Arazoren bat izan da web-orria bistaratzean.</translation>
@@ -309,6 +310,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="2114841414352855701">Ez ikusi egin zaio <ph name="POLICY_NAME" /> gidalerroak gainidatzi duelako.</translation>
 <translation id="2119505898009119320">Honi jaulkia: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Zulo bat behean, eskuinetara</translation>
+<translation id="2122719317867821810">Gidalerroak espero bezala funtzionatzen du, baina gatazka sortzen duen balioa beste nonbait dago ezarrita, eta gidalerro honek hura ordezten du.</translation>
 <translation id="2126374524350484896">PDFaren egilea:</translation>
 <translation id="2129079103035905234">Mugimendu-sentsoreak</translation>
 <translation id="2130448033692577677">Baliteke zehaztu dituzun txantiloiak ez aplikatzea, DnsOverHttpsMode gidalerroa ez delako ezarri.</translation>
@@ -572,6 +574,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3229041911291329567">Gailuaren eta arakatzailearen bertsioari buruzko informazioa</translation>
 <translation id="323107829343500871">Idatzi <ph name="CREDIT_CARD" /> txartelaren CVC kodea</translation>
 <translation id="3234666976984236645">Hauteman beti webgune honetako eduki garrantzitsua</translation>
+<translation id="3266793032086590337">Balioa (gatazka)</translation>
 <translation id="3270847123878663523">&amp;Desegin berrantolatzea</translation>
 <translation id="3274521967729236597">Pa-Kai</translation>
 <translation id="3282497668470633863">Gehitu titularra</translation>
@@ -724,6 +727,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3807873520724684969">Eduki kaltegarria blokeatu da.</translation>
 <translation id="3808375843007691220">Abisua: eginbide esperimentalak daude hemen!</translation>
 <translation id="3810973564298564668">Kudeatu</translation>
+<translation id="3816482573645936981">Balioa (ordeztua)</translation>
 <translation id="382518646247711829">Proxy-zerbitzari bat erabiltzen baduzu…</translation>
 <translation id="3827112369919217609">Absolutua</translation>
 <translation id="3828924085048779000">Pasaesaldia ezin da hutsik utzi.</translation>
@@ -913,6 +917,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="4579056131138995126">Personal (gutun-azala)</translation>
 <translation id="4582204425268416675">Kendu txartela</translation>
 <translation id="4587425331216688090">Helbidea Chrome-tik kendu nahi duzu?</translation>
+<translation id="459089498662672729">Administratzailearen gidalerroek ez dute gomendatzen <ph name="ORIGIN_NAME" /> domeinuko edukia kokapen honetan itsastea</translation>
 <translation id="4592951414987517459"><ph name="DOMAIN" /> domeinurako konexioa enkriptatze multzo moderno bat erabilita enkriptatu da.</translation>
 <translation id="4594403342090139922">&amp;Desegin ezabatzea</translation>
 <translation id="4597348597567598915">Tamaina: 8</translation>
@@ -1075,6 +1080,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="519422657042045905">Oharpena ez dago erabilgarri</translation>
 <translation id="5201306358585911203">Orriko orri kapsulatu batek hau dio:</translation>
 <translation id="5205222826937269299">Nahitaez zehaztu behar duzu izena</translation>
+<translation id="5208899478506185232"><ph name="ONE_TIME_CODE" /> da <ph name="TOP_ORIGIN" /> helbideko kodea (<ph name="EMBEDDED_ORIGIN" /> bidez)</translation>
 <translation id="5209518306177824490">SHA-1 erreferentzia-gako digitala</translation>
 <translation id="5215116848420601511">Google Pay-rekin erabiltzen dituzun ordainketa-metodoak eta helbideak</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
@@ -1204,6 +1210,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="5689199277474810259">Esportatu JSON formatura</translation>
 <translation id="5689516760719285838">Kokapena</translation>
 <translation id="569000877158168851">DnsOverHttpsTemplates aukerako balioa ez da egokia, eta ez da erabiliko DnsOverHttpsMode gidalerroan <ph name="SECURE_DNS_MODE_AUTOMATIC" /> edo <ph name="SECURE_DNS_MODE_SECURE" /> ezarri ezean.</translation>
+<translation id="5695542892312572833">Windows Hello erabili nahi duzu erosketa egiaztatzeko eta osatzeko?</translation>
 <translation id="5701381305118179107">Erdiratu</translation>
 <translation id="570530837424789914">Kudeatu…</translation>
 <translation id="57094364128775171">Iradoki pasahitz seguru bat…</translation>
@@ -1394,6 +1401,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6447842834002726250">Cookieak</translation>
 <translation id="6451458296329894277">Berretsi inprimakia berriro bidali nahi duzula</translation>
 <translation id="6457206614190510200">Grapa bidezko koadernatzea</translation>
+<translation id="6458606150257356946">Itsatsi halere</translation>
 <translation id="6465306955648956876">Kudeatu pasahitzak…</translation>
 <translation id="6468485451923838994">Letrak</translation>
 <translation id="647261751007945333">Gailuaren gidalerroak</translation>
@@ -1489,6 +1497,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6950684638814147129">Errore bat gertatu da JSON balio bat analizatzean: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">Berrezarri guztiak</translation>
 <translation id="6957887021205513506">Zerbitzariaren ziurtagiriak faltsifikazioa dirudi.</translation>
+<translation id="6963520811470373926">Ordezten</translation>
 <translation id="6964255747740675745">Ezin izan da analizatu sarearen konfigurazioa (JSON formatuak ez du balio).</translation>
 <translation id="6965382102122355670">Ados</translation>
 <translation id="6965978654500191972">Gailua</translation>

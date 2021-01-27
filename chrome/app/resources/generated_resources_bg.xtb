@@ -1042,6 +1042,7 @@
 <translation id="2154710561487035718">Копиране на URL адреса</translation>
 <translation id="2155772377859296191">Разделителната способност е <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Повторно стартиране на функцията за проверка на безопасността</translation>
 <translation id="2157474325782140681">За да получите още функции, използвайте докинг станция от Dell, предназначена да работи с този Chromebook.</translation>
 <translation id="215753907730220065">Изход от цял екран</translation>
 <translation id="2157875535253991059">Тази страница сега е на цял екран.</translation>
@@ -1986,6 +1987,7 @@
 <translation id="3225319735946384299">Подписване на код</translation>
 <translation id="3227137524299004712">Микрофон</translation>
 <translation id="3233271424239923319">Създаване на резервно копие за приложенията и файловете на Linux</translation>
+<translation id="3238192140106069382">Установява се връзка и се потвърждава</translation>
 <translation id="3239373508713281971">Времевото ограничение за <ph name="APP_NAME" /> бе премахнато</translation>
 <translation id="3241680850019875542">Изберете основната директория на разширението, което ще се пакетира. За да актуализирате разширение, изберете и файла с личен ключ за повторно използване.</translation>
 <translation id="3244294424315804309">Продължаване без звук</translation>
@@ -2583,7 +2585,6 @@
 <translation id="3882165008614329320">Съществуващ видеоклип от камерата или от файл</translation>
 <translation id="3884152383786131369">За показване на уеб съдържанието, което се предлага на няколко езика, ще се използва първият поддържан от този списък. Тези предпочитания се синхронизират с настройките на браузъра. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Заявката ви за достъп до този сайт бе изпратена до <ph name="NAME" /></translation>
-<translation id="3888364689515978571">Изкл. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Водене на бележки с/ъс <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Включете синхронизирането в Chrome, за да използвате синхронизирането на Wi-Fi</translation>
 <translation id="3892414795099177503">Добавяне на OpenVPN/L2TP...</translation>
@@ -2667,7 +2668,6 @@
 <translation id="3958088479270651626">Импортиране на отметки и настройки</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Изключване на мобилната мрежа</translation>
-<translation id="3965730875470565266">Вкл., <ph name="MINUTES" /> мин</translation>
 <translation id="3965811923470826124">Със</translation>
 <translation id="3965965397408324205">Изход от <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Изберете друга папка...</translation>
@@ -4218,7 +4218,6 @@
 <translation id="5832813618714645810">Потребителски профили</translation>
 <translation id="583281660410589416">Неизвестно</translation>
 <translation id="5833397272224757657">Използва за персонализиране съдържанието на посещаваните от вас сайтове, както и активността в браузъра и взаимодействията с него</translation>
-<translation id="5833551944249825624">Вашият Chromebook ще бъде видим за всички в близост в продължение на 5 мин</translation>
 <translation id="5833726373896279253">Тези настройки могат да се променят само от собственика:</translation>
 <translation id="5834581999798853053">Остават около <ph name="TIME" /> минути</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – записва се чрез камерата или микрофона</translation>

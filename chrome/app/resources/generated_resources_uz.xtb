@@ -1043,6 +1043,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2154710561487035718">URL manzilni nusxalash</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> x <ph name="HEIGHT" /> kabi</translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Yana xavfsizlik tekshiruvini ishga tushirish</translation>
 <translation id="2157474325782140681">Qoʻshimcha funksiyalardan foydalanish uchun bu Chromebook bilan sinalgan Dell dok stansiyasini ishlating.</translation>
 <translation id="215753907730220065">To‘liq ekran rejimidan chiqish</translation>
 <translation id="2157875535253991059">Ushbu sahifa hozir to‘liq ekran rejimida.</translation>
@@ -1987,6 +1988,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3225319735946384299">Kodni imzolash</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233271424239923319">Linux ilova va fayllarini zaxiralash</translation>
+<translation id="3238192140106069382">Ulanmoqda va tekshirmoqda</translation>
 <translation id="3239373508713281971"><ph name="APP_NAME" /> uchun vaqt cheklovi olib tashlandi</translation>
 <translation id="3241680850019875542">To‘plamga qo‘shilayotgan kengaytmaning ildiz jildini tanlang. Kengaytmani yangilash uchun esa xususiy kalitni ko‘rsating.</translation>
 <translation id="3244294424315804309">Ovoz o‘chirib qo‘yilsin</translation>
@@ -2583,7 +2585,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3882165008614329320">Kamera yoki galereyadan olingan video</translation>
 <translation id="3884152383786131369">Bir nechta tilda chiqadigan veb kontent shu roʻyxatdagi birinchi mos tilni ishlatadi. Bu parametrlar brauzeringiz sozlamalari bilan sinxronlanadi. <ph name="BEGIN_LINK_LEARN_MORE" />Batafsil<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Bu saytni ochishga ruxsat so‘rovi <ph name="NAME" />ga yuborildi</translation>
-<translation id="3888364689515978571">Oʻchiq. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Qaydlar <ph name="LOCK_SCREEN_APP_NAME" /> dasturida yoziladi</translation>
 <translation id="3890064827463908288">Wi-Fi Sync ishlatish uchun Chrome Sync funksiyasini yoqing</translation>
 <translation id="3892414795099177503">OpenVPN yoki L2TP qo‘shish...</translation>
@@ -2667,7 +2668,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3958088479270651626">Xatcho‘plar va sozlamalarni import qilish</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Mobil tarmoqni faolsizlantirish</translation>
-<translation id="3965730875470565266">Yoniq, <ph name="MINUTES" /> daq</translation>
 <translation id="3965811923470826124">Bu bilan:</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> profilidan chiqish</translation>
 <translation id="3966072572894326936">Boshqa jildni tanlang...</translation>
@@ -4216,7 +4216,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5832813618714645810">Profillar</translation>
 <translation id="583281660410589416">Noma’lum</translation>
 <translation id="5833397272224757657">Moslashtirish uchun brauzerdagi faoliyatingiz, siz kirgan sahifalar va brauzerda amalga oshirilgan ishlardan foydalanadi.</translation>
-<translation id="5833551944249825624">Chromebook qurilmangiz 5 daqiqa davomida atrofdagi hammaga koʻrinadi</translation>
 <translation id="5833726373896279253">Bu sozlashlarni faqat egasi o‘zgartirishi mumkin.</translation>
 <translation id="5834581999798853053">Taxminan <ph name="TIME" /> daqiqa qoldi</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – kamera yoki mikrofon yozib olmoqda</translation>

@@ -2586,7 +2586,6 @@
 <translation id="3882165008614329320">ಕ್ಯಾಮರಾ ಅಥವಾ ಫೈಲ್‌ನಲ್ಲಿರುವ ಪ್ರಸ್ತುತ ವೀಡಿಯೊ</translation>
 <translation id="3884152383786131369">ಹಲವು ಭಾಷೆಗಳಲ್ಲಿ ಲಭ್ಯವಿರುವ ವೆಬ್ ವಿಷಯವನ್ನು ಈ ಪಟ್ಟಿಯಿಂದ ಮೊದಲು ಬೆಂಬಲಿಸುವ ಭಾಷೆಯನ್ನು ಬಳಸುತ್ತವೆ. ಈ ಆದ್ಯತೆಗಳನ್ನು ನಿಮ್ಮ ಬ್ರೌಸರ್ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತದೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">ಈ ಸೈಟ್‌ಗೆ ಪ್ರವೇಶಿಸುವ ನಿಮ್ಮ ವಿನಂತಿಯನ್ನು <ph name="NAME" /> ಅವರಿಗೆ ಕಳುಹಿಸಲಾಗಿದೆ</translation>
-<translation id="3888364689515978571">ಆಫ್. <ph name="LINK_BEGIN" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" /> ಮೂಲಕ ಟಿಪ್ಪಣಿಗಳನ್ನು ತೆಗೆದುಕೊಳ್ಳಲಾಗುತ್ತಿದೆ</translation>
 <translation id="3890064827463908288">Wi-Fi ಸಿಂಕ್ ಅನ್ನು ಬಳಸಲು Chrome ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="3892414795099177503">OpenVPN / L2TP ಸೇರಿಸಿ...</translation>
@@ -2670,7 +2669,6 @@
 <translation id="3958088479270651626">ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು ಮತ್ತು ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಆಮದು ಮಾಡಿ</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">ಸೆಲ್ಯುಲರ್ ನೆಟ್‌ವರ್ಕ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
-<translation id="3965730875470565266">ಆನ್, <ph name="MINUTES" /> ನಿಮಿ</translation>
 <translation id="3965811923470826124">ಮೂಲಕ</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> ಪ್ರೊಫೈಲ್‌ನಿಂದ ನಿರ್ಗಮಿಸಿ</translation>
 <translation id="3966072572894326936">ಮತ್ತೊಂದು ಫೋಲ್ಡರ್ ಆಯ್ಕೆ ಮಾಡಿ...</translation>
@@ -4222,7 +4220,6 @@
 <translation id="5832813618714645810">ಪ್ರೊಫೈಲ್‌ಗಳು</translation>
 <translation id="583281660410589416">ಅಪರಿಚಿತ</translation>
 <translation id="5833397272224757657">ನೀವು ಭೇಟಿ ನೀಡುವ ವೆಬ್‌ಸೈಟ್‌ಗಳ ವಿಷಯ, ಜೊತೆಗೆ ಬ್ರೌಸರ್ ಚಟುವಟಿಕೆ ಹಾಗೂ ಸಂವಹನಗಳನ್ನು ವೈಯಕ್ತೀಕರಣಕ್ಕಾಗಿ ಬಳಸುತ್ತದೆ</translation>
-<translation id="5833551944249825624">5 ನಿಮಿಷಗಳಿಗಾಗಿ ಸಮೀಪದಲ್ಲಿರುವ ಪ್ರತಿಯೊಬ್ಬರಿಗೂ ನಿಮ್ಮ Chromebook ಗೋಚರಿಸುತ್ತದೆ</translation>
 <translation id="5833726373896279253">ಈ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ಮಾಲೀಕರಿಂದ ಮಾತ್ರ ನವೀಕರಿಸಬಹುದಾಗಿದೆ:</translation>
 <translation id="5834581999798853053">ಸುಮಾರು <ph name="TIME" /> ನಿಮಿಷಗಳು ಉಳಿದಿವೆ</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - ಕ್ಯಾಮರಾ ಅಥವಾ ಮೈಕ್ರೊಫೋನ್ ರೆಕಾರ್ಡಿಂಗ್</translation>

@@ -1538,9 +1538,6 @@
 <translation id="3122082892722698079">控制对不安全内容例外情况的使用</translation>
 <translation id="3128072319047570212">Keygen 设置</translation>
 <translation id="3142410959002029864">通过设置此政策，您可以替换默认双面打印模式。如果这种模式不适用，系统会忽略此政策。</translation>
-<translation id="3143265893557969814">如果您设置了此政策，所有指定的数据类型都会从同步操作（无论是 Google 同步还是漫游个人资料同步）中排除。这有助于缩减漫游个人资料的大小，或者限制向 Google 同步服务器上传的数据类型。
-
-      此政策当前可用的数据类型为：“bookmarks”、“preferences”、“passwords”、“autofill”、“themes”、“typedUrls”、“extensions”、“apps”、“tabs”、“wifiConfiguration”。这些名称区分大小写！</translation>
 <translation id="3144173889708944482">如果为 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 选择了 <ph name="PRINTERS_BLOCKLIST" />，您便可通过设置 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 来指定用户不能使用哪些打印机。除了与此政策中所列 ID 对应的打印机之外，其他所有打印机都可供用户使用。ID 必须与 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 所指定文件内的<ph name="ID_FIELD" />或<ph name="GUID_FIELD" />字段相符。</translation>
 <translation id="3152425128389603870">使“统一桌面”功能可供用户使用，并使其在默认情况下处于启用状态</translation>
 <translation id="3159375329008977062">允许用户通过界面导出/导入 Crostini 容器</translation>
@@ -5494,7 +5491,7 @@
       如果未设置，此政策会处于开启状态，而且无法被用户关闭。</translation>
 <translation id="879697755145469671">不检测被遮挡的窗口</translation>
 <translation id="8798099450830957504">默认</translation>
-<translation id="8799492680917278474">如果您设置了此政策，当会话时长达到此政策中指定的分钟数之后，远程访问连接将会自动断开。这不会阻止客户端在达到会话时长上限后重新建立连接。如果您为此政策指定的值不在下限值/上限值范围内，则可能会导致主机无法启动。此政策不影响远程支持场景。
+<translation id="8799492680917278474">如果您设置了此政策，当会话时长达到此政策中指定的分钟数之后，远程访问连接将会自动断开。这不会阻止客户端在达到会话时长上限后重新建立连接。如果您为此政策指定的值不在下限值/上限值范围内，主机可能会因此无法启动。此政策不影响远程支持场景。
 
           如果未设置，此政策将不会产生任何影响。在这种情况下，此计算机上的远程访问连接将不会受到任何时长上限的制约。</translation>
 <translation id="8800453707696044281">设置电池充电自定义停止充电值（以百分比表示）</translation>

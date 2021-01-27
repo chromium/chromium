@@ -2587,7 +2587,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3882165008614329320">Vídeo existente de uma câmera ou de um arquivo</translation>
 <translation id="3884152383786131369">Conteúdos da Web disponíveis em vários idiomas usarão o primeiro idioma compatível desta lista. Estas preferências são sincronizadas com as configurações do navegador. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Sua solicitação para acessar este site foi enviada para <ph name="NAME" /></translation>
-<translation id="3888364689515978571">Desativado. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Tomando notas com <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Ativar a Sincronização do Chrome para usar o recurso Sincronizar Wi-Fi</translation>
 <translation id="3892414795099177503">Adicionar OpenVPN / L2TP…</translation>
@@ -2671,7 +2670,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3958088479270651626">Importar favoritos e configurações</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Desativar a rede celular</translation>
-<translation id="3965730875470565266">Ativado, <ph name="MINUTES" /> min</translation>
 <translation id="3965811923470826124">Com</translation>
 <translation id="3965965397408324205">Sair de <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Escolher outra pasta...</translation>
@@ -4222,7 +4220,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5832813618714645810">Perfis</translation>
 <translation id="583281660410589416">Desconhecido</translation>
 <translation id="5833397272224757657">Usa o conteúdo dos sites que você visita, além das interações e atividades do navegador, para personalização</translation>
-<translation id="5833551944249825624">O Chromebook ficará visível para qualquer pessoa por perto por 5 minutos</translation>
 <translation id="5833726373896279253">Estas definições somente poderão ser alteradas pelo proprietário:</translation>
 <translation id="5834581999798853053">Cerca de <ph name="TIME" /> minutos restantes</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Gravação de câmera ou microfone</translation>

@@ -668,6 +668,7 @@
 <translation id="6818242057446442178">कर्सरलाई एक शब्द पछाडि लैजानुहोस्</translation>
 <translation id="6820676911989879663">विश्राम लिनुहोस्!</translation>
 <translation id="6850010208275816200">तपाईंले अहिले प्रयोग गरिरहनुभएको एप फुल स्क्रिन मोडमा चलिरहेको छ। तपाईंले यो एपमा पासवर्ड हाल्नु पर्ने भएमा फुल स्क्रिन मोडबाट बाहिरिएपछि मात्र पासवर्ड हाल्नुहोला।</translation>
+<translation id="6852052252232534364">सक्रिय गर्न क्लिक गर्नुहोस्</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> सेकेन्ड</translation>
 <translation id="6857811139397017780">सक्रिय <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{एउटा अङ्क बाँकी छ}other{# वटा अङ्क बाँकी छन्}}</translation>
@@ -728,6 +729,7 @@
 <translation id="742594950370306541">क्यामेरा प्रयोगमा छ।</translation>
 <translation id="742608627846767349">नमस्ते,</translation>
 <translation id="743058460480092004">क्यामेरा र माइक्रोफोन प्रयोगमा छ।</translation>
+<translation id="7434543979546293336">यो मुख्य विचारका रूपमा चिन्ह लगाइएको छ</translation>
 <translation id="7452560014878697800">कुनै एपले तपाईंको यन्त्रको क्यामेरा प्रयोग गरिरहेको छ</translation>
 <translation id="7456049842111127849">क्याप्चर मोड, पूर्वनिर्धारित मोड <ph name="SOURCE" /> <ph name="TYPE" /> हो।</translation>
 <translation id="7461924472993315131">पिन</translation>

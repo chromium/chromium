@@ -117,7 +117,7 @@
 <translation id="1128109161498068552">禁止任何网站使用系统专有消息访问 MIDI 设备</translation>
 <translation id="1128591060186966949">修改搜索引擎</translation>
 <translation id="1129850422003387628">管理应用</translation>
-<translation id="113050636487300043">欢迎选择名字和颜色主题，以便区分各份个人资料</translation>
+<translation id="113050636487300043">欢迎选择名字和颜色主题，以便区分个人资料</translation>
 <translation id="1130589222747246278"><ph name="WINDOW_TITLE" /> - 属于“<ph name="GROUP_NAME" />”群组</translation>
 <translation id="1134009406053225289">在无痕式窗口中打开</translation>
 <translation id="1136179794690960030"><ph name="EMOJI_NAME" />。第 <ph name="EMOJI_INDEX" /> 个，共 <ph name="EMOJI_COUNT" /> 个。</translation>
@@ -2571,7 +2571,6 @@
 <translation id="3882165008614329320">来自摄像头或文件的现有视频</translation>
 <translation id="3884152383786131369">能以多种语言显示的网页内容将会使用此列表中第一项受支持的语言。这些偏好设置会与您的浏览器设置同步。<ph name="BEGIN_LINK_LEARN_MORE" />了解详情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">系统已将您想访问此网站的请求发送给<ph name="NAME" /></translation>
-<translation id="3888364689515978571">已关闭。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">使用“<ph name="LOCK_SCREEN_APP_NAME" />”创建记事</translation>
 <translation id="3890064827463908288">您需要开启 Chrome 同步才能使用 Wi-Fi 同步功能</translation>
 <translation id="3892414795099177503">添加 OpenVPN / L2TP…</translation>
@@ -2654,7 +2653,6 @@
 <translation id="3958088479270651626">导入书签和设置</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">关闭移动网络</translation>
-<translation id="3965730875470565266">已开启，<ph name="MINUTES" /> 分钟后关闭</translation>
 <translation id="3965811923470826124">使用</translation>
 <translation id="3965965397408324205">退出<ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">选择其他文件夹...</translation>
@@ -4195,7 +4193,6 @@
 <translation id="5832813618714645810">个人资料</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5833397272224757657">根据您访问的网站上的内容以及您在浏览器中的活动和互动行为，提供个性化的使用体验</translation>
-<translation id="5833551944249825624">您的 Chromebook 将会对附近所有人可见，时长为 5 分钟</translation>
 <translation id="5833726373896279253">这些设置的修改权仅限于所有者：</translation>
 <translation id="5834581999798853053">约剩 <ph name="TIME" /> 分钟</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 摄像头或麦克风正在录制/录音</translation>

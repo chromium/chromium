@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Gateway</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">An Scanbereich anpassen</translation>
+<translation id="1387854245479784695">Alle Kerne zusammengerechnet</translation>
 <translation id="1397738625398125236">Gateway kann kontaktiert werden</translation>
 <translation id="1398634363027580500">Sehr hohe HTTPS-Latenz</translation>
 <translation id="1413240736185167732">Fehlgeschlagen – Filter funktioniert nicht</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Fehlgeschlagen – Unbekannter Fehler</translation>
 <translation id="357889014807611375">Kostenpflichtiges WLAN</translation>
 <translation id="360565022852130722">Das WLAN ist mit dem schwachen Protokoll WEP 802.1x gesichert</translation>
+<translation id="3712633734921637892">Die CPU-Geschwindigkeit ist derzeit eingeschränkt, um den Akku zu schonen oder die Temperatur zu senken</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> Rezensionen)</translation>
 <translation id="3748026146096797577">Nicht verbunden</translation>
 <translation id="3749289110408117711">Dateiname</translation>
@@ -230,6 +232,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="6146993107019042706">Geben Sie zum Schluss Ihr neues Passwort ein</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">Weitere Informationen</translation>
+<translation id="6189418609903030344">Die Akkukapazität sinkt mit fortschreitender Nutzung</translation>
 <translation id="6191293864534840972">Nameserver hat fehlerhaftes Format</translation>
 <translation id="6232017090690406397">Akku</translation>
 <translation id="6325525973963619867">Fehlgeschlagen</translation>
@@ -327,6 +330,7 @@ Tippe auf das Mikrofon und sag mir, was du wissen möchtest.</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Standard</translation>
 <translation id="8798441408945964110">Name des Anbieters</translation>
+<translation id="880791622116642296">Wie oft der Akku vollständig aufgeladen wurde</translation>
 <translation id="8814190375133053267">WLAN</translation>
 <translation id="8845001906332463065">Hilfe aufrufen</translation>
 <translation id="8881098542468797602">Test abgeschlossen</translation>

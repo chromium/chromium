@@ -1045,6 +1045,7 @@
 <translation id="2154710561487035718">複製網址</translation>
 <translation id="2155772377859296191">螢幕解析度：<ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker：<ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">再次執行安全檢查</translation>
 <translation id="2157474325782140681">如要取得其他功能，請使用這部 Chromebook 的專用座架。</translation>
 <translation id="215753907730220065">結束全螢幕</translation>
 <translation id="2157875535253991059">這個頁面已顯示為全螢幕。</translation>
@@ -1988,6 +1989,7 @@
 <translation id="3225319735946384299">程式碼簽署</translation>
 <translation id="3227137524299004712">麥克風</translation>
 <translation id="3233271424239923319">備份 Linux 應用程式和檔案</translation>
+<translation id="3238192140106069382">正在連線及驗證</translation>
 <translation id="3239373508713281971">已解除「<ph name="APP_NAME" />」的時間限制</translation>
 <translation id="3241680850019875542">請選取要封裝的擴充功能根目錄。如要更新擴充功能，請一併選取要重複使用的秘密金鑰。</translation>
 <translation id="3244294424315804309">繼續維持靜音</translation>
@@ -2584,7 +2586,6 @@
 <translation id="3882165008614329320">相機或檔案中的現有影片</translation>
 <translation id="3884152383786131369">支援多種語言的網站內容會使用這個清單上第一個支援的語言。這些偏好設定會與你的瀏覽器設定同步。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">你想存取這個網站的要求已傳送給<ph name="NAME" /></translation>
-<translation id="3888364689515978571">已關閉。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">使用「<ph name="LOCK_SCREEN_APP_NAME" />」寫筆記</translation>
 <translation id="3890064827463908288">開啟 Chrome 同步功能以使用 Wi-Fi 同步功能</translation>
 <translation id="3892414795099177503">新增 OpenVPN/L2TP...</translation>
@@ -2667,7 +2668,6 @@
 <translation id="3958088479270651626">匯入書籤和設定</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">關閉行動數據網路</translation>
-<translation id="3965730875470565266">已開啟，剩餘 <ph name="MINUTES" /> 分鐘</translation>
 <translation id="3965811923470826124">包含</translation>
 <translation id="3965965397408324205">離開<ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">選擇其他資料夾...</translation>
@@ -4217,7 +4217,6 @@
 <translation id="5832813618714645810">設定檔</translation>
 <translation id="583281660410589416">未知</translation>
 <translation id="5833397272224757657">使用你所造訪網站的內容、瀏覽器活動和瀏覽器互動行為，提供個人化的使用體驗</translation>
-<translation id="5833551944249825624">你的 Chromebook 會向附近的所有人顯示 5 分鐘</translation>
 <translation id="5833726373896279253">你必須是擁有者，才能修改這些設定：</translation>
 <translation id="5834581999798853053">剩下 <ph name="TIME" /> 分鐘</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - 攝影機或麥克風錄影/錄音中</translation>

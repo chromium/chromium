@@ -257,6 +257,7 @@
 <translation id="3533436815740441613">പുതിയ ടാബ്</translation>
 <translation id="3551320343578183772">ടാബ് അടയ്‌ക്കുക</translation>
 <translation id="3581564640715911333">പേജുകൾ മറ്റ് ഭാഷകളിലേക്ക് വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ</translation>
+<translation id="3588492282865875287">സൈൻ ഔട്ട് ചെയ്യണോ?</translation>
 <translation id="3588820906588687999">ചിത്രം പുതിയ ടാബിൽ തുറക്കുക</translation>
 <translation id="359441731697487922">Chrome നിങ്ങളുടെ ഡിഫോൾട്ട് ബ്രൗസർ ആപ്പ് ആയി സജ്ജീകരിച്ച്, അതിൽ ലിങ്കുകൾ സ്വയമേവ തുറക്കാം.
       
@@ -410,6 +411,7 @@
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5327248766486351172">പേര്</translation>
 <translation id="5339316356165661760">സമന്വയിപ്പിക്കൽ ഓണാക്കുക</translation>
+<translation id="5351284593342054342">ഈ ഉപകരണത്തിൽ നിന്ന് മായ്‌ക്കുക</translation>
 <translation id="5388358297987318779">ചിത്രം തുറക്കുക</translation>
 <translation id="5407969256130905701">മാറ്റങ്ങൾ നിരസിക്കുക</translation>
 <translation id="5409365236829784218">ഈ ഫയലിൽ തുറക്കാൻ കഴിയുന്ന അപ്ലിക്കേഷനുകളൊന്നും ഇൻസ്റ്റാൾ ചെയ്‌തില്ല.</translation>
@@ -465,6 +467,7 @@
 <translation id="5948291296578561264">നിങ്ങളുടെ ഫോട്ടോ ലൈബ്രറിയിലേക്ക് ഫോട്ടോകൾ സംരക്ഷിക്കാൻ അനുവദിക്കുന്നു.</translation>
 <translation id="5955891643922670672">ഓഫ്‌ലൈൻ പതിപ്പ് കാണുന്നു</translation>
 <translation id="5957613098218939406">കൂടുതൽ ഓപ്‌ഷനുകൾ</translation>
+<translation id="5961521066940389233">ഈ ഉപകരണത്തിൽ നിലനിർത്തുക</translation>
 <translation id="5964480694698977962">പുതിയ അദൃശ്യ ടാബ് സൃഷ്‌ടിക്കുക.</translation>
 <translation id="5965679971710331625">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തു</translation>
 <translation id="5979837087407522202">പാസ്‌വേഡുകൾ തിരയുക</translation>
@@ -479,6 +482,7 @@
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">നിങ്ങളുടെ സ്‌റ്റോറികളും ആക്റ്റിവിറ്റികളും ഇവിടെ നിയന്ത്രിക്കുക</translation>
 <translation id="6066301408025741299">റദ്ദാക്കുന്നതിന് ടാപ്പ് ചെയ്യുക.</translation>
+<translation id="6085282545406522838">നിങ്ങളുടെ സമന്വയിപ്പിച്ച ഡാറ്റ Google അക്കൗണ്ടിൽ നിലനിൽക്കും.</translation>
 <translation id="6108923351542677676">സജ്ജീകരണം പുരോഗതിയിലാണ്...</translation>
 <translation id="6119050551270742952">നിലവിലെ വെബ്‌പേജ് അദൃശ്യ മോഡിലാണ്</translation>
 <translation id="6122191549521593678">ഓൺലൈൻ</translation>
@@ -631,6 +635,7 @@
 <translation id="7514365320538308">ഡൗൺലോഡ് ചെയ്യുക</translation>
 <translation id="7537586195939242955">ക്ഷമിക്കണം, നിങ്ങളുടെ പാസ് ഈ സമയം പാസ്‌ബുക്കിൽ ഇൻസ്റ്റാൾ ചെയ്യാൻ കഴിയില്ല.</translation>
 <translation id="7554791636758816595">പുതിയ ടാബ്</translation>
+<translation id="7558943807639707687">ഈ ഉപകരണത്തിലെ നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകൾ, ചരിത്രം, മറ്റ് ഡാറ്റ എന്നിവ എന്താണ് ചെയ്യേണ്ടത്?</translation>
 <translation id="7561196759112975576">എല്ലായ്പ്പോഴും</translation>
 <translation id="7583004045319035904">നിങ്ങളുടെ അദൃശ്യ ടാബുകൾ അൺലോക്ക് ചെയ്യാൻ <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ഉപയോഗിക്കുക.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> ഒരിക്കലും വിവര്‍‌ത്തനം ചെയ്യരുത്</translation>

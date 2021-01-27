@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">गेटवे</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">स्क्यान गर्ने क्षेत्रमा मिलाउनुहोस्</translation>
+<translation id="1387854245479784695">यसमा सबै कोरहरूको डेटा समावेश हुन्छ</translation>
 <translation id="1397738625398125236">गेटवे पिङ गर्न सकिन्छ</translation>
 <translation id="1398634363027580500">HTTPS को विलम्बता अति धेरै छ</translation>
 <translation id="1413240736185167732">प्रिन्ट गर्न सकिएन - फिल्टरमा समस्या आयो</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">प्रिन्ट गर्न सकिएन - अज्ञात त्रुटि भयो</translation>
 <translation id="357889014807611375">मिटर चढ्ने Wi-Fi</translation>
 <translation id="360565022852130722">WiFi नेटवर्क WEP 802.1x नामक कमजोर प्रोटोकोल प्रयोग गरी सुरक्षित गरिएको छ</translation>
+<translation id="3712633734921637892">ब्याट्री लामो समयसम्म टिक्ने बनाउन वा यसको तापक्रम घटाउन CPU को गति हाल सीमित पारिएको छ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> वटा समीक्षा)</translation>
 <translation id="3748026146096797577">जोडिएको छैन</translation>
 <translation id="3749289110408117711">फाइल नाम</translation>
@@ -229,6 +231,7 @@
 <translation id="6146993107019042706">यो कार्य पूरा गर्न आफ्नो नयाँ पासवर्ड प्रविष्टि गर्नुहोस्</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">थप जान्नुहोस्</translation>
+<translation id="6189418609903030344">प्रयोग गर्दै जाँदा ब्याट्री टिक्ने दर घट्दै जान्छ</translation>
 <translation id="6191293864534840972">डोमेन नेम सर्भरहरूको ढाँचा मिलेको छैन</translation>
 <translation id="6232017090690406397">ब्याटरी</translation>
 <translation id="6325525973963619867">चलाउन सकिएन</translation>
@@ -326,6 +329,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">पूर्वनिर्धारित</translation>
 <translation id="8798441408945964110">प्रदायकको नाम</translation>
+<translation id="880791622116642296">चक्रको गिन्ती तपाईंको ब्याट्री कति पटक पूरा चार्ज भएको छ भन्ने तथ्याङ्क हो</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">मद्दत प्राप्त गर्नुहोस्</translation>
 <translation id="8881098542468797602">परीक्षण सफल भयो</translation>

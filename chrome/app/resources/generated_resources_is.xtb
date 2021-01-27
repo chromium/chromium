@@ -1046,6 +1046,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2154710561487035718">Afrita vefslóð</translation>
 <translation id="2155772377859296191">Virðist vera <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Þjónustuaðili: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Keyra öryggisathugun aftur</translation>
 <translation id="2157474325782140681">Til að fá viðbótareiginleika skaltu nota Dell-dokku sem er hönnuð fyrir þessa Chromebook tölvu.</translation>
 <translation id="215753907730220065">Hætta að nota allan skjáinn</translation>
 <translation id="2157875535253991059">Þessi síða birtist núna á öllum skjánum.</translation>
@@ -1990,6 +1991,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3225319735946384299">Kóðaundirritun</translation>
 <translation id="3227137524299004712">Hljóðnemi</translation>
 <translation id="3233271424239923319">Afrita Linux-forrit og -skrár</translation>
+<translation id="3238192140106069382">Tengist og staðfestir</translation>
 <translation id="3239373508713281971">Tímamörk fjarlægð fyrir <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Veldu rótarmöppu viðbótarinnar sem á að pakka. Til að uppfæra viðbót skaltu líka velja einkalykilsskrána til að endurnýta.</translation>
 <translation id="3244294424315804309">Hafa áfram slökkt á hljóði</translation>
@@ -2586,7 +2588,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3882165008614329320">Fyrirliggjandi myndskeið úr myndavél eða skrá</translation>
 <translation id="3884152383786131369">Vefefni sem er í boði á mörgum tungumálum mun nota fyrsta studda tungumálið á listanum. Þessar kjörstillingar eru samstilltar vafrastillingunum. <ph name="BEGIN_LINK_LEARN_MORE" />Frekari upplýsingar<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Beiðni þín um aðgang að þessu vefsvæði hefur verið send til <ph name="NAME" /></translation>
-<translation id="3888364689515978571">Slökkt. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Glósur með <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Kveiktu á Chrome samstillingu til að nota Wi-Fi-samstillingu</translation>
 <translation id="3892414795099177503">Bæta við OpenVPN / L2TP...</translation>
@@ -2670,7 +2671,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3958088479270651626">Flytja inn bókamerki og stillingar</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Slökkva á farsímakerfi</translation>
-<translation id="3965730875470565266">Kveikt, <ph name="MINUTES" /> mín.</translation>
 <translation id="3965811923470826124">Með</translation>
 <translation id="3965965397408324205">Hætta sem <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Veldu aðra möppu...</translation>
@@ -4219,7 +4219,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5832813618714645810">Prófílar</translation>
 <translation id="583281660410589416">Óþekkt</translation>
 <translation id="5833397272224757657">Notar efni af vefsvæðum sem þú heimsækir auk virkni og samskipta í vafra til að bjóða upp á sérsniðna notkun</translation>
-<translation id="5833551944249825624">Allir sem eru nálægt Chromebook tölvunni munu geta séð hana í 5 mínútur</translation>
 <translation id="5833726373896279253">Einungis eigandinn getur breytt þessum stillingum:</translation>
 <translation id="5834581999798853053">Um <ph name="TIME" /> mínútur eftir</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – upptaka á myndavél eða hljóðnema</translation>

@@ -1362,6 +1362,7 @@ Khi chính sách này được đặt thành false hoặc không được địn
 <translation id="2886969306951284125">Nếu thiết bị được phép chạy trên các ứng dụng Android, thì khi bạn đặt chính sách thành Bật, thiết bị đã đăng ký sẽ báo cáo thông tin về trạng thái của Android.
 
       Nếu bạn không đặt hoặc đặt chính sách này thành Tắt, thì thiết bị đã đăng ký sẽ không báo cáo thông tin về trạng thái của Android</translation>
+<translation id="288923520817177650">Cho phép tạo các phiên <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> trong <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="2890645751406497668">Tự động cấp quyền cho những trang web này để kết nối với các thiết bị USB bằng ID sản phẩm và nhà cung cấp cụ thể.</translation>
 <translation id="2893546967669465276">Gửi nhật ký hệ thống đến máy chủ quản lý</translation>
 <translation id="2899002520262095963">Các ứng dụng Android có thể sử dụng cấu hình mạng và chứng chỉ CA được đặt qua chính sách này nhưng không có quyền truy cập vào một số tùy chọn cấu hình.</translation>
@@ -1574,9 +1575,6 @@ Khi chính sách này được đặt thành false hoặc không được địn
 <translation id="3122082892722698079">Kiểm soát việc sử dụng trường hợp ngoại lệ cho nội dung không an toàn</translation>
 <translation id="3128072319047570212">Cài đặt chương trình tạo khóa</translation>
 <translation id="3142410959002029864">Việc đặt chính sách này sẽ ghi đè chế độ in hai mặt mặc định. Nếu không có chế độ nêu trên, chính sách này sẽ bị bỏ qua.</translation>
-<translation id="3143265893557969814">Nếu bạn đặt chính sách này thì tất cả các loại dữ liệu đã chỉ định sẽ bị loại trừ khỏi cả quá trình đồng bộ hóa của Google Sync lẫn quá trình đồng bộ hóa cấu hình chuyển vùng. Điều này có thể giúp giảm kích thước của cấu hình chuyển vùng hoặc giới hạn loại dữ liệu đã tải lên các máy chủ Google Sync.
-
-      Chính sách này hiện áp dụng cho các loại dữ liệu sau: "bookmarks", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Tên của các loại dữ liệu đó phân biệt chữ hoa chữ thường!</translation>
 <translation id="3144173889708944482">Nếu bạn chọn <ph name="PRINTERS_BLOCKLIST" /> cho <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, thì việc đặt <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> sẽ chỉ định những máy in mà người dùng không thể sử dụng. Tất cả máy in sẽ được cung cấp cho người dùng, ngoại trừ những mã nhận dạng được liệt kê trong chính sách này. Các mã nhận dạng này phải tương ứng với trường <ph name="ID_FIELD" /> hoặc <ph name="GUID_FIELD" /> ở tệp được chỉ định trong <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3152425128389603870">Cho phép Màn hình hợp nhất và chính sách này bật theo mặc định.</translation>
 <translation id="3159375329008977062">Người dùng được phép xuất/nhập các vùng chứa Crostini qua giao diện người dùng</translation>
@@ -2069,6 +2067,13 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="377044054160169374">Thực thi can thiệp trải nghiệm lạm dụng</translation>
 <translation id="3778689139323007309">Thực hiện quá trình kiểm tra trạng thái thu hồi đối của các chứng chỉ máy chủ đã xác thực thành công, được ký theo chứng chỉ CA đã cài đặt trên máy</translation>
 <translation id="3780152581321609624">Bao gồm cổng không chuẩn trong  Kerberos SPN</translation>
+<translation id="378495749480642482">Định cấu hình liệu các trang web mà người dùng chuyển đến có được phép tạo các phiên Thực tế tăng cường sống động bằng cách sử dụng <ph name="WEBXR_API_NAME" /> không.
+
+      Khi bạn đặt thành bật hoặc không đặt chính sách này, <ph name="WEBXR_API_NAME" /> sẽ chấp nhận <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> trong quá trình tạo phiên, qua đó cho phép người dùng tham gia các trải nghiệm Thực tế tăng cường.
+
+      Khi bạn tắt chính sách này, <ph name="WEBXR_API_NAME" /> sẽ từ chối các yêu cầu tạo phiên có chế độ được đặt thành <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />. Các phiên <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> hiện tại (nếu có) sẽ không bị chấm dứt.
+
+      Để biết thêm thông tin chi tiết về các phiên <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />, vui lòng xem thông số kỹ thuật của <ph name="WEBXR_AR_MODULE_API_NAME" />.</translation>
 <translation id="3788662722837364290">Cài đặt quản lý nguồn khi người dùng không sử dụng</translation>
 <translation id="3790085888761753785">Nếu bạn bật tùy chọn cài đặt này, thì người dùng sẽ được phép đăng nhập vào tài khoản của họ bằng tính năng Smart Lock. Tùy chọn này cấp nhiều quyền hơn so với hành vi Smart Lock thông thường (chỉ cho phép người dùng mở khóa màn hình).
 
@@ -4262,6 +4267,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn bật chính sách này, thì mỗi nguồn gốc có tên trong danh sách được phân tách bằng dấu phẩy sẽ chạy ở quy trình riêng. Điều này cũng sẽ cách ly các nguồn gốc được đặt tên theo miền con. Ví dụ: việc chỉ định https://example.com/ cũng sẽ khiến https://foo.example.com/ bị cách ly vì là một phần của trang web https://example.com/.
       Nếu bạn tắt hoặc không định cấu hình chính sách này, thì các tùy chọn cài đặt cách ly trang web mặc định của nền tảng sẽ được dùng cho màn hình đăng nhập.
       </translation>
+<translation id="6947587367703216074">Ngăn tạo các phiên <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> trong <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="6949867264289339206">Việc đặt chính sách này sẽ cung cấp các cấu hình máy in dành cho doanh nghiệp được kết nối với các thiết bị. Định dạng của chính sách khớp với định dạng của từ điển <ph name="PRINTERS_POLICY_NAME" />, có thêm trường "id" hoặc "guid" bắt buộc trên từng máy in để đưa vào danh sách cho phép hoặc danh sách cấm. Kích thước tệp không được vượt quá 5 MB và phải ở định dạng JSON. Một tệp có khoảng 21.000 máy in sẽ mã hóa dưới dạng tệp 5 MB. Hàm băm mật mã giúp xác minh tính toàn vẹn của tệp tải xuống. Tệp này được tải xuống, lưu vào bộ nhớ đệm và tải lại xuống khi URL hoặc hàm băm thay đổi. <ph name="PRODUCT_OS_NAME" /> tải tệp này xuống để định cấu hình máy in và cung cấp các máy in theo đúng <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />, và <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Chính sách này:

@@ -178,6 +178,7 @@
 <translation id="1559572115229829303">&lt;p&gt;നിങ്ങളുടെ ഉപകരണത്തിന്റെ തീയതിയും സമയവും (<ph name="DATE_AND_TIME" />) തെറ്റായതിനാൽ <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> എന്നതിലേക്ക് ഒരു സ്വകാര്യ കണക്ഷൻ സ്ഥാപിക്കാനാകില്ല.&lt;/p&gt;
 
           &lt;p&gt;&lt;strong&gt;ക്രമീകരണ&lt;/strong&gt; ആപ്പിന്റെ &lt;strong&gt;പൊതുവായവ&lt;/strong&gt; വിഭാഗത്തിൽ നിന്ന് തീയതിയും സമയവും ക്രമീകരിക്കുക.&lt;/p&gt;</translation>
+<translation id="1567040042588613346">ഈ നയം ഉദ്ദേശിച്ചത് പോലെ പ്രവർത്തിക്കുന്നുണ്ട്, എന്നാൽ മറ്റൊരു ഉറവിടത്തിൽ അതേ മൂല്യം സജ്ജീകരിച്ചതിനെ തുടർന്ന് ഈ നയത്തിന് പകരം മറ്റൊന്ന് സജീവമായി.</translation>
 <translation id="1569487616857761740">കാലഹരണപ്പെടുന്ന തീയതി നൽകുക</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">ഈ വെബ്‌പേജ് പ്രദർശിപ്പിക്കുമ്പോൾ എന്തോ കുഴപ്പം സംഭവിച്ചു.</translation>
@@ -312,6 +313,7 @@
 <translation id="2114841414352855701"> <ph name="POLICY_NAME" /> എന്നതിനാൽ മറികടന്നതിനാൽ ഇത് അവഗണിച്ചു.</translation>
 <translation id="2119505898009119320">ഇതിന് നല്‍‌കി: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">താഴെ വലതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
+<translation id="2122719317867821810">ഈ നയം ഉദ്ദേശിച്ചത് പോലെ പ്രവർത്തിക്കുന്നുണ്ട്, എന്നാൽ മറ്റൊരു ഉറവിടത്തിൽ വൈരുദ്ധ്യമുള്ള മൂല്യം സജ്ജീകരിച്ചതിനെ തുടർന്ന് ഈ നയം അസാധുവാക്കി.</translation>
 <translation id="2126374524350484896">PDF പ്രൊഡ്യൂസർ:</translation>
 <translation id="2129079103035905234">ചലന സെൻസറുകൾ</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode നയം സജ്ജീകരിക്കാത്തതിനാൽ നിങ്ങൾ വ്യക്തമാക്കിയ ടെംപ്ലേറ്റുകൾ ബാധകമാക്കാനായേക്കില്ല.</translation>
@@ -577,6 +579,7 @@
 <translation id="3229041911291329567">നിങ്ങളുടെ ഉപകരണത്തെയും ബ്രൗസറിനെയും കുറിച്ചുള്ള പതിപ്പ് വിവരങ്ങൾ</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" />-ന്‍റെ CVC നൽകുക</translation>
 <translation id="3234666976984236645">ഈ സൈറ്റിൽ എപ്പോഴും പ്രധാന ഉള്ളടക്കം കണ്ടെത്തുക</translation>
+<translation id="3266793032086590337">മൂല്യം (വൈരുദ്ധ്യം)</translation>
 <translation id="3270847123878663523">&amp;പുനഃക്രമീകരിക്കുന്നത് പഴയപടിയാക്കുക</translation>
 <translation id="3274521967729236597">പാ-കായ്</translation>
 <translation id="3282497668470633863">കാർഡിൽ പേര് ചേർക്കുക</translation>
@@ -730,6 +733,7 @@
 <translation id="3807873520724684969">ദോഷകരമായ ഉള്ളടക്കം ബ്ലോക്ക് ചെയ്‌തു.</translation>
 <translation id="3808375843007691220">മുന്നറിയിപ്പ്: പരീക്ഷണാത്മക ഫീച്ചറുകൾ കണ്ടേക്കാം, ജാഗ്രത പുലർത്തുക!</translation>
 <translation id="3810973564298564668">മാനേജ് ചെയ്യുക</translation>
+<translation id="3816482573645936981">മൂല്യം (പകരം മറ്റൊന്ന് സജീവം)</translation>
 <translation id="382518646247711829">നിങ്ങൾ ഒരു പ്രോക്‌സി സെർവർ ഉപയോഗിക്കുന്നെങ്കിൽ...</translation>
 <translation id="3827112369919217609">അബ്‌സല്യൂട്ട്</translation>
 <translation id="3828924085048779000">പാസ്ഫ്രെയ്‍സ് പൂരിപ്പിക്കാതിരിക്കാനാവില്ല.</translation>
@@ -922,6 +926,7 @@
 <translation id="4579056131138995126">വ്യക്തിപരം (എൻവലപ്പ്)</translation>
 <translation id="4582204425268416675">കാർഡ് നീക്കം ചെയ്യുക</translation>
 <translation id="4587425331216688090">Chrome-ൽ നിന്ന് വിലാസം നീക്കംചെയ്യണോ?</translation>
+<translation id="459089498662672729"><ph name="ORIGIN_NAME" /> എന്നതിൽ നിന്ന് ഈ ലൊക്കേഷനിലേക്ക് ഒട്ടിക്കുന്നത് അഡ്‌മിൻ നയം ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>
 <translation id="4592951414987517459"><ph name="DOMAIN" /> എന്നതിലേക്കുള്ള നിങ്ങളുടെ കണക്ഷനെ ആധുനിക സൈഫർ സ്യൂട്ട് ഉപയോഗിച്ച് എൻക്രിപ്റ്റുചെയ്‌തിരിക്കുന്നു.</translation>
 <translation id="4594403342090139922">&amp;ഇല്ലാതാക്കുന്നത് പഴയപടിയാക്കുക</translation>
 <translation id="4597348597567598915">വലുപ്പം 8</translation>
@@ -1084,6 +1089,7 @@
 <translation id="519422657042045905">കുറിപ്പ് ലഭ്യമല്ല</translation>
 <translation id="5201306358585911203">ഈ പേജിലെ ഉൾച്ചേർത്ത പേജ് പറയുന്നത്:</translation>
 <translation id="5205222826937269299">പേര് ആവശ്യമാണ്</translation>
+<translation id="5208899478506185232"><ph name="TOP_ORIGIN" /> എന്നതിനുള്ള നിങ്ങളുടെ കോഡ് <ph name="ONE_TIME_CODE" /> ആണ് (<ph name="EMBEDDED_ORIGIN" /> വഴി)</translation>
 <translation id="5209518306177824490">SHA-1 ഫിംഗര്‍‌പ്രിന്‍റ്</translation>
 <translation id="5215116848420601511">Google Pay ഉപയോഗിക്കുന്ന വിലാസങ്ങളും പേയ്മെന്റ് രീതികളും</translation>
 <translation id="5215363486134917902">ഫോളിയോ-Sp</translation>
@@ -1213,6 +1219,7 @@
 <translation id="5689199277474810259">JSON-ലേക്ക് ‌എക്‌സ്‌പോർട്ട് ചെയ്യുക</translation>
 <translation id="5689516760719285838">ലൊക്കേഷൻ</translation>
 <translation id="569000877158168851">DnsOverHttpsMode നയം <ph name="SECURE_DNS_MODE_AUTOMATIC" /> എന്നതിലേക്ക് അല്ലെങ്കിൽ <ph name="SECURE_DNS_MODE_SECURE" /> എന്നതിലേക്ക് സജ്ജീകരിക്കുന്നില്ലെങ്കിൽ DnsOverHttpsTemplates മൂല്യം പ്രസക്തമായിരിക്കില്ല, അത് ഉപയോഗിക്കുകയുമില്ല.</translation>
+<translation id="5695542892312572833">പരിശോധിച്ചുറപ്പിക്കാനും വാങ്ങൽ പൂർത്തിയാക്കാനും Windows Hello ഉപയോഗിക്കണോ?</translation>
 <translation id="5701381305118179107">മധ്യഭാഗം</translation>
 <translation id="570530837424789914">മാനേജ് ചെയ്യുക...</translation>
 <translation id="57094364128775171">ശക്തമായ പാസ്‌വേഡ് നിർദ്ദേശിക്കുക…</translation>
@@ -1404,6 +1411,7 @@
 <translation id="6447842834002726250">കുക്കികള്‍</translation>
 <translation id="6451458296329894277">വീണ്ടും സമര്‍പ്പിക്കല്‍ അപേക്ഷ ഉറപ്പാക്കുക</translation>
 <translation id="6457206614190510200">സാഡിൽ സ്‌റ്റിച്ച്</translation>
+<translation id="6458606150257356946">എന്തായാലും ഒട്ടിക്കുക</translation>
 <translation id="6465306955648956876">പാസ്‌വേഡുകൾ മാനേജ് ചെയ്യുക...</translation>
 <translation id="6468485451923838994">ഫോണ്ടുകൾ</translation>
 <translation id="647261751007945333">ഉപകരണ നയങ്ങൾ</translation>
@@ -1499,6 +1507,7 @@
 <translation id="6950684638814147129">JSON മൂല്യം വിശകലനം ചെയ്യുമ്പോൾ പിശക്: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">എല്ലാം റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="6957887021205513506">സെർവറിന്റെ സർട്ടിഫിക്കറ്റ് വിശ്വസിക്കാൻ കൊള്ളാത്ത ഒന്നായി തോന്നുന്നു.</translation>
+<translation id="6963520811470373926">പകരം മറ്റൊന്ന് സജീവം</translation>
 <translation id="6964255747740675745">നെറ്റ്‌വർക്ക് കോൺഫിഗറേഷൻ വിശകലനം ചെയ്യാനായില്ല (അസാധുവായ JSON).</translation>
 <translation id="6965382102122355670">ശരി</translation>
 <translation id="6965978654500191972">ഉപകരണം</translation>

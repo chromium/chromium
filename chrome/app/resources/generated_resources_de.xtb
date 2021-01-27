@@ -218,6 +218,7 @@
 <translation id="1234808891666923653">Service Workers</translation>
 <translation id="1235458158152011030">Bekannte Netzwerke</translation>
 <translation id="123578888592755962">Datenträger voll</translation>
+<translation id="1235924639474699896">{COUNT,plural, =1{Text}other{# Texte}}</translation>
 <translation id="1239594683407221485">Sie können die Inhalte in der App "Dateien" ansehen.</translation>
 <translation id="124116460088058876">Weitere Sprachen</translation>
 <translation id="1241753985463165747">Beim Aufrufen alle Ihre Daten auf der aktuellen Website lesen und ändern</translation>
@@ -440,6 +441,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1486096554574027028">Passwörter suchen</translation>
 <translation id="1487335504823219454">An – benutzerdefinierte Einstellungen</translation>
 <translation id="1489664337021920575">Andere Option auswählen</translation>
+<translation id="1490491397986065675">Ihr Administrator sagt „<ph name="CUSTOM_MESSAGE" />“.</translation>
 <translation id="1492417797159476138">Sie haben diesen Nutzernamen für diese Website bereits gespeichert</translation>
 <translation id="1493892686965953381">Warten auf <ph name="LOAD_STATE_PARAMETER" />...</translation>
 <translation id="1495677929897281669">Zurück zum Tab</translation>
@@ -731,7 +733,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1803545009660609783">Neu trainieren</translation>
 <translation id="1805738995123446102">Tab im Hintergrund verwendet Ihr Mikrofon</translation>
 <translation id="1805822111539868586">Ansichten prüfen</translation>
-<translation id="1805888043020974594">Druckerserver</translation>
+<translation id="1805888043020974594">Druckserver</translation>
 <translation id="1805967612549112634">PIN bestätigen</translation>
 <translation id="1806335016774576568">Zu einer anderen geöffneten App wechseln</translation>
 <translation id="1809483812148634490">Die bei Google Play heruntergeladenen Apps werden von diesem Chromebook gelöscht.
@@ -808,6 +810,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1879000426787380528">Anmelden als</translation>
 <translation id="1880905663253319515">Zertifikat "<ph name="CERTIFICATE_NAME" />" löschen?</translation>
 <translation id="1881445033931614352">Tastaturlayout</translation>
+<translation id="1881577802939775675">{COUNT,plural, =1{Element}other{# Elemente}}</translation>
 <translation id="1884013283844450420">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Verbinden</translation>
 <translation id="1884340228047885921">Die aktuelle Sichtbarkeitseinstellung ist "Einige Kontakte"</translation>
 <translation id="1884705339276589024">Größe des Linux-Laufwerks anpassen</translation>
@@ -986,6 +989,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2099686503067610784">Serverzertifikat "<ph name="CERTIFICATE_NAME" />" löschen?</translation>
 <translation id="2100273922101894616">Automatisch anmelden</translation>
 <translation id="2101225219012730419">Version:</translation>
+<translation id="2108349519800154983">{COUNT,plural, =1{Telefonnummer}other{# Telefonnummern}}</translation>
 <translation id="211144231511833662">Häkchen für Typen entfernen</translation>
 <translation id="2111670510994270194">Neuer Tab rechts</translation>
 <translation id="21133533946938348">Tab anpinnen</translation>
@@ -1038,6 +1042,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2154710561487035718">URL kopieren</translation>
 <translation id="2155772377859296191">Auflösung <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Sicherheitscheck noch einmal durchführen</translation>
 <translation id="2157474325782140681">Verwenden Sie eine für dieses Chromebook entwickelte Dockingstation von Dell, um zusätzliche Funktionen nutzen zu können.</translation>
 <translation id="215753907730220065">Vollbildmodus aus</translation>
 <translation id="2157875535253991059">Diese Seite wird nun im Vollbildmodus angezeigt.</translation>
@@ -1281,6 +1286,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2435457462613246316">Passwort anzeigen</translation>
 <translation id="2435579801172349831">Alle (<ph name="URL_COUNT" />) in Inkognitofenster öffnen</translation>
 <translation id="2436186046335138073">Öffnen aller <ph name="PROTOCOL" />-Links durch <ph name="HANDLER_HOSTNAME" /> zulassen?</translation>
+<translation id="2440366609912234507">{COUNT,plural, =1{App}other{# Apps}}</translation>
 <translation id="2440604414813129000">Quelltext an&amp;zeigen</translation>
 <translation id="244231003699905658">Ungültige Adresse. Prüfen Sie die Adresse und versuchen Sie es noch einmal.</translation>
 <translation id="2442916515643169563">Textschatten</translation>
@@ -1429,6 +1435,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2604255671529671813">Fehler bei der Netzwerkverbindung</translation>
 <translation id="2606246518223360146">Daten verknüpfen</translation>
 <translation id="2606454609872547359">Nein, ohne ChromeVox fortfahren</translation>
+<translation id="2606568927909309675">Erstellt automatisch Untertitel für englischsprachige Audioinhalte und Videos. Audioinhalte und Untertitel werden ausschließlich auf dem Gerät gespeichert.</translation>
 <translation id="2607101320794533334">Informationen zum öffentlichen Schlüssel des Antragstellers</translation>
 <translation id="2609896558069604090">Verknüpfungen erstellen...</translation>
 <translation id="2609980095400624569">Es konnte keine Verbindung hergestellt werden</translation>
@@ -1693,6 +1700,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2886771036282400576">• <ph name="PERMISSION" /></translation>
 <translation id="2889064240420137087">Link öffnen mit...</translation>
 <translation id="2889925978073739256">Plug-ins ohne Sandbox weiterhin blockieren</translation>
+<translation id="2891922230654533301">Möchten Sie sich mit Ihrem Gerät auf <ph name="APP_NAME" /> anmelden?</translation>
 <translation id="2893168226686371498">Standardbrowser</translation>
 <translation id="2894757982205307093">Neuer Tab in Gruppe</translation>
 <translation id="289644616180464099">SIM-Karte ist gesperrt</translation>
@@ -1978,6 +1986,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3225319735946384299">Codesignatur</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233271424239923319">Linux-Apps und -Dateien sichern</translation>
+<translation id="3238192140106069382">Verbindung wird hergestellt und geprüft</translation>
 <translation id="3239373508713281971">Zeitlimit entfernt für <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Wählen Sie das Stammverzeichnis der Erweiterung, die gepackt werden soll. Zur Aktualisierung einer Erweiterung wählen Sie außerdem den privaten Schlüssel zur Wiederverwendung.</translation>
 <translation id="3244294424315804309">Töne weiterhin stummschalten</translation>
@@ -2004,6 +2013,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3269069891205016797">Ihre Daten werden von dem Gerät entfernt, wenn Sie sich abmelden.</translation>
 <translation id="3269093882174072735">Bild laden</translation>
 <translation id="3269612321104318480">Helles Blaugrün und Weiß</translation>
+<translation id="3269689705184377744">{COUNT,plural, =1{Datei}other{# Dateien}}</translation>
 <translation id="326999365752735949">DIFF-Datei wird heruntergeladen.</translation>
 <translation id="3270965368676314374">Fotos, Musik und andere Medien auf Ihrem Computer lesen, ändern und löschen</translation>
 <translation id="327147043223061465">Alle Cookies und Websitedaten anzeigen</translation>
@@ -2193,7 +2203,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="347785443197175480"><ph name="HOST" /> weiterhin Zugriff auf Kamera und Mikrofon gestatten</translation>
 <translation id="3478685642445675458">Entsperren Sie Ihr Profil, bevor Sie eine Person entfernen.</translation>
 <translation id="3479552764303398839">Jetzt nicht</translation>
-<translation id="3479685872808224578">Der Druckerserver wurde nicht erkannt. Prüfen Sie die Adresse und versuchen Sie es noch einmal.</translation>
+<translation id="3479685872808224578">Der Druckserver wurde nicht erkannt. Prüfen Sie die Adresse und versuchen Sie es noch einmal.</translation>
 <translation id="3480827850068960424"><ph name="NUM" /> Tabs gefunden</translation>
 <translation id="3481268647794498892">Wird in <ph name="COUNTDOWN_SECONDS" /> Sekunden in <ph name="ALTERNATIVE_BROWSER_NAME" /> geöffnet</translation>
 <translation id="3482719661246593752"><ph name="ORIGIN" /> darf die folgenden Dateien aufrufen</translation>
@@ -2299,6 +2309,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3600792891314830896">Websites stummschalten, die Ton wiedergeben</translation>
 <translation id="360180734785106144">Neue Funktionen anbieten, sobald sie verfügbar sind</translation>
 <translation id="3602290021589620013">Vorschau</translation>
+<translation id="3602870520245633055">Drucken und scannen</translation>
 <translation id="3603622770190368340">Netzwerkzertifikat anfordern</translation>
 <translation id="3604193429970465812">Sekundäre Konten</translation>
 <translation id="3604713164406837697">Hintergrund ändern</translation>
@@ -2314,6 +2325,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3615579745882581859"><ph name="FILE_NAME" /> wird gegenwärtig gescannt</translation>
 <translation id="3616741288025931835">&amp;Browserdaten löschen...</translation>
 <translation id="3617891479562106823">Hintergründe sind nicht verfügbar. Bitte versuchen Sie es später noch einmal.</translation>
+<translation id="3618800144880386250">{COUNT,plural, =1{Video}other{# Videos}}</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
 <translation id="362333465072914957">Es wird darauf gewartet, dass die Zertifizierungsstelle ein Zertifikat ausstellt</translation>
 <translation id="3624567683873126087">Gerät entsperren und im Google-Konto anmelden</translation>
@@ -2400,7 +2412,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3707163604290651814">Derzeit angemeldet als <ph name="NAME" /></translation>
 <translation id="3709244229496787112">Der Browser wurde beendet, bevor der Download abgeschlossen war.</translation>
 <translation id="3711931198657368127">Einfügen und <ph name="URL" /> aufrufen</translation>
-<translation id="3711945201266135623">Auf dem Druckerserver wurden <ph name="NUM_PRINTERS" /> Drucker gefunden</translation>
+<translation id="3711945201266135623">Auf dem Druckserver wurden <ph name="NUM_PRINTERS" /> Drucker gefunden</translation>
 <translation id="3712050472459130149">Kontoaktualisierung erforderlich</translation>
 <translation id="3712217561553024354">Zulassen, dass dieses Gerät nach anderen Geräten mit Ihrem Google-Konto sucht, die eine Mobilfunkverbindung haben</translation>
 <translation id="3712897371525859903">Seite speichern &amp;unter...</translation>
@@ -2571,7 +2583,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3882165008614329320">Vorhandenes Video von der Kamera oder als Datei</translation>
 <translation id="3884152383786131369">Für Webinhalte in mehreren Sprachen wird die erste unterstützte Sprache aus dieser Liste verwendet. Diese Einstellungen werden mit den Browsereinstellungen synchronisiert. <ph name="BEGIN_LINK_LEARN_MORE" />Weitere Informationen<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Deine Anfrage zum Zugriff auf diese Website wurde an <ph name="NAME" /> gesendet</translation>
-<translation id="3888364689515978571">Ausgeschaltet. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Notizerstellung mit <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Chrome-Synchronisierung aktivieren, um WLAN-Synchronisation zu verwenden</translation>
 <translation id="3892414795099177503">OpenVPN/L2TP hinzufügen…</translation>
@@ -2655,7 +2666,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="3958088479270651626">Lesezeichen und Einstellungen importieren</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Mobilfunknetz ausschalten</translation>
-<translation id="3965730875470565266">Eingeschaltet, <ph name="MINUTES" /> min</translation>
 <translation id="3965811923470826124">Mit</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" /> beenden</translation>
 <translation id="3966072572894326936">Anderen Ordner wählen...</translation>
@@ -2725,6 +2735,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4047726037116394521">Zur Startseite</translation>
 <translation id="4049783682480068824">{COUNT,plural, =1{# Kontakt ist nicht verfügbar. Wenn Sie Nearby Share mit ihm verwenden möchten, müssen Sie in Ihren Kontakten die mit seinem Google-Konto verknüpfte E-Mail-Adresse hinzufügen.}other{# Kontakte sind nicht verfügbar. Wenn Sie Nearby Share mit ihnen verwenden möchten, müssen Sie in Ihren Kontakten die mit ihren Google-Konten verknüpften E-Mail-Adressen hinzufügen.}}</translation>
 <translation id="4050225813016893843">Authentifizierungsmethode</translation>
+<translation id="4050534976465737778">Beide Geräte müssen entsperrt sein und sich nah beieinander befinden. Außerdem muss Bluetooth aktiviert sein. Wenn Sie Inhalte mit einem Chromebook teilen möchten, das sich nicht in Ihren Kontakten befindet, muss die Nearby-Sichtbarkeit aktiviert sein. Öffnen Sie dazu den Statusbereich und schalten Sie „Nearby-Sichtbarkeit“ ein. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="4052120076834320548">Winzig</translation>
 <translation id="4054070260844648638">Für alle sichtbar</translation>
 <translation id="4056908315660577142">Du hast das Zeitlimit erreicht, das deine Eltern für die Chrome-App <ph name="APP_NAME" /> festgelegt haben. Morgen kannst du die App wieder <ph name="TIME_LIMIT" /> lang nutzen.</translation>
@@ -2959,6 +2970,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4364327530094270451">Melone</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> hat ein Fenster freigegeben.</translation>
 <translation id="4364830672918311045">Benachrichtigungen einblenden</translation>
+<translation id="4366138410738374926">Druckvorgang gestartet</translation>
 <translation id="437004882363131692">Hier können Sie angeben, ob Sie Tipps, Angebote und Neuigkeiten rund um <ph name="DEVICE_TYPE" /> erhalten und Feedback geben möchten. Sie können sich jederzeit wieder abmelden.</translation>
 <translation id="4370425812909262207">Einkaufswagen ausgeblendet. Sie werden wieder angezeigt, wenn Sie Änderungen vornehmen.</translation>
 <translation id="4370975561335139969">Die E-Mail-Adresse und das Passwort, die Sie eingegeben haben, stimmen nicht überein.</translation>
@@ -3146,6 +3158,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4568025708905928793">Ein Sicherheitsschlüssel wird angefordert</translation>
 <translation id="4568213207643490790">Google-Konten sind auf diesem Gerät nicht zugelassen.</translation>
 <translation id="4569747168316751899">Bei Inaktivität</translation>
+<translation id="4569830245132310845">{COUNT,plural, =1{Adresse}other{# Adressen}}</translation>
 <translation id="4570387585180509432">Adressen, Telefonnummern…</translation>
 <translation id="4572659312570518089">Beim Herstellen der Verbindung zu "<ph name="DEVICE_NAME" />" wurde die Authentifizierung abgebrochen.</translation>
 <translation id="4572779512957829735">Geben Sie die PIN für Ihren Sicherheitsschlüssel ein</translation>
@@ -3205,6 +3218,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4635444580397524003">Die Linux-Sicherung wurde erfolgreich wiederhergestellt.</translation>
 <translation id="4636930964841734540">Info</translation>
 <translation id="4637083375689622795">Weitere Aktionen, <ph name="EMAIL" /></translation>
+<translation id="4637252186848840278">{COUNT,plural, =1{Text}other{# Texte}}</translation>
 <translation id="4638930039313743000">ADB-Fehlerbehebung aktivieren</translation>
 <translation id="4641539339823703554">Die Systemzeit konnte nicht eingestellt werden. Bitte überprüfen Sie die unten angegebene Uhrzeit und korrigieren Sie sie gegebenenfalls.</translation>
 <translation id="4642769377300286600">Mobiles Profil wird installiert, Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /></translation>
@@ -3220,10 +3234,12 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4651484272688821107">Die Onlinekomponente konnte mit den Ressourcen des Demomodus nicht geladen werden.</translation>
 <translation id="4652935475563630866">Nach dem Ändern der Kameraeinstellung muss Parallels Desktop neu gestartet werden. Starten Sie Parallels Desktop neu, um fortzufahren.</translation>
 <translation id="4653405415038586100">Fehler bei der Konfiguration von Linux</translation>
+<translation id="4654236001025007561">Sie können Dateien ganz einfach mit Chromebooks und Android-Geräten in der Nähe teilen</translation>
 <translation id="4657914796247705218">TrackPoint-Geschwindigkeit</translation>
 <translation id="465878909996028221">Nur HTTP-, HTTPS- und Dateiprotokolle werden für Browserweiterleitungen unterstützt.</translation>
 <translation id="4659077111144409915">Primäres Konto</translation>
 <translation id="4659126640776004816">Wenn Sie sich in Ihrem Google-Konto anmelden, ist diese Funktion eingeschaltet.</translation>
+<translation id="4660465405448977105">{COUNT,plural, =1{Bild}other{# Bilder}}</translation>
 <translation id="4660476621274971848">Erwartete Version: "<ph name="EXPECTED_VERSION" />", tatsächliche Version "<ph name="NEW_ID" />"</translation>
 <translation id="4660540330091848931">Größenanpassung läuft</translation>
 <translation id="4661407454952063730">App-Daten können alle Daten sein, die eine App aufgrund der Einstellungen des Entwicklers gespeichert hat, wie z. B. Kontakte, Nachrichten und Fotos.</translation>
@@ -3324,6 +3340,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4794810983896241342">Updates werden von <ph name="BEGIN_LINK" />Ihrem Administrator<ph name="END_LINK" /> verwaltet</translation>
 <translation id="479536056609751218">Webseite, nur HTML</translation>
 <translation id="4798236378408895261"><ph name="BEGIN_LINK" />Bluetooth-Protokolle<ph name="END_LINK" /> anhängen (Google-intern)</translation>
+<translation id="4798543057539040565">{COUNT,plural, =1{Element}other{# Elemente}}</translation>
 <translation id="4801448226354548035">Konten ausblenden</translation>
 <translation id="4801512016965057443">Mobilfunk-Roaming zulassen</translation>
 <translation id="4804818685124855865">Verbindung trennen</translation>
@@ -3352,7 +3369,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4830121310592638841">Nachfragen, wenn eine Website Fenster auf meinen Bildschirmen öffnen und platzieren möchte</translation>
 <translation id="4830502475412647084">Betriebssystem-Update wird installiert</translation>
 <translation id="4830573902900904548">Ihr Gerät (<ph name="DEVICE_TYPE" />) kann über <ph name="NETWORK_NAME" /> keine Internetverbindung herstellen. Bitte wählen Sie ein anderes Netzwerk aus. <ph name="LEARN_MORE_LINK_START" />Weitere Informationen<ph name="LEARN_MORE_LINK_END" /></translation>
-<translation id="4833683849865011483">Auf dem Druckerserver wurde 1 Drucker gefunden</translation>
+<translation id="4833683849865011483">Auf dem Druckserver wurde 1 Drucker gefunden</translation>
 <translation id="4836504898754963407">Fingerabdrücke verwalten</translation>
 <translation id="4837128290434901661">Wieder zur Google Suche wechseln?</translation>
 <translation id="4837926214103741331">Sie sind nicht zur Verwendung dieses Geräts berechtigt. Bitten Sie den Geräteinhaber um eine Anmeldeberechtigung.</translation>
@@ -3754,6 +3771,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="531118851858162334">Wir zeigen Ihnen diesen Eintrag auf der Grundlage Ihrer bisherigen Nutzung von Google-Diensten. Auf <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> können Sie Ihre Daten einsehen, sie löschen und Ihre Einstellungen ändern.</translation>
 <translation id="5311304534597152726">Anmeldung als</translation>
 <translation id="5311565231560644461">Websites nicht erlauben, meine Virtual-Reality-Geräte und ‑Daten zu verwenden</translation>
+<translation id="5312876166662946389">{COUNT,plural, =1{Bild}other{# Bilder}}</translation>
 <translation id="5314381603623123224">Die Nutzungsbedingungen von Chrome ändern sich am 31. März</translation>
 <translation id="5315738755890845852">Zusätzliche geschweifte Klammer: <ph name="ERROR_LINE" /></translation>
 <translation id="5317780077021120954">Speichern</translation>
@@ -3819,6 +3837,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5390677308841849479">Dunkelrot und Orange</translation>
 <translation id="5390743329570580756">Senden für</translation>
 <translation id="5392192690789334093">Dürfen Benachrichtigungen senden</translation>
+<translation id="5393761864111565424">{COUNT,plural, =1{Link}other{# Links}}</translation>
 <translation id="5397794290049113714">Ich</translation>
 <translation id="5398497406011404839">Ausgeblendete Lesezeichen</translation>
 <translation id="5398572795982417028">Der Seitenbereich ist zu groß. Die maximale Seitenanzahl liegt bei <ph name="MAXIMUM_PAGE" /></translation>
@@ -4196,7 +4215,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5832813618714645810">Profile</translation>
 <translation id="583281660410589416">Unbekannt</translation>
 <translation id="5833397272224757657">Inhalte von besuchten Websites sowie Browseraktivitäten und -interaktionen werden zur Personalisierung verwendet</translation>
-<translation id="5833551944249825624">Ihr Chromebook wird für alle in der Nähe 5 min lang sichtbar</translation>
 <translation id="5833726373896279253">Diese Einstellungen können nur vom Eigentümer geändert werden:</translation>
 <translation id="5834581999798853053">Noch etwa <ph name="TIME" /> Minuten</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – Kamera oder Mikrofon nimmt auf</translation>
@@ -4347,6 +4365,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6011074160056912900">Ethernet-Netzwerk</translation>
 <translation id="6011193465932186973">Fingerabdruck</translation>
 <translation id="6011449291337289699">Websitedaten löschen</translation>
+<translation id="6013027779243312217">Untertitel für Audioinhalte und Videos</translation>
 <translation id="6015796118275082299">Jahr</translation>
 <translation id="6016178549409952427">Zu zusätzlichem Inhalt <ph name="CURRENT_ELEMENT" /> von <ph name="TOTAL_ELEMENTS" /> gehen</translation>
 <translation id="6016551720757758985">Powerwash und Zurücksetzen auf vorherige Version bestätigen</translation>
@@ -4856,6 +4875,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6605847144724004692">Noch nicht von Nutzern bewertet.</translation>
 <translation id="6607831829715835317">Weitere Too&amp;ls</translation>
 <translation id="6607890859198268021"><ph name="USER_EMAIL" /> wird schon von <ph name="DOMAIN" /> verwaltet. Wenn du die Jugendschutzeinstellungen auf ein anderes Google-Konto anwenden möchtest, melde dich nach der Einrichtung ab und wähle auf dem Anmeldebildschirm "Person hinzufügen" aus.</translation>
+<translation id="6609478180749378879">Nach dem Verlassen des Inkognitomodus werden Anmeldedaten auf diesem Gerät gespeichert. Sie können sich später erneut mit Ihrem Gerät auf dieser Website anmelden.</translation>
 <translation id="6611972847767394631">Hier finden Sie Ihre Tabs</translation>
 <translation id="6612358246767739896">Geschützte Inhalte</translation>
 <translation id="6615455863669487791">Zeigen</translation>
@@ -4874,6 +4894,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6628328486509726751">Hochgeladen am <ph name="WEBRTC_LOG_UPLOAD_TIME" /></translation>
 <translation id="6630043285902923878">USB-Geräte werden gesucht…</translation>
 <translation id="6630752851777525409"><ph name="EXTENSION_NAME" /> fordert ständigen Zugriff auf ein Zertifikat an, um sich in Ihrem Namen zu authentifizieren.</translation>
+<translation id="6635362468090274700">Andere Personen können nur Daten mit Ihnen teilen, wenn Sie sich sichtbar machen.<ph name="BR" /><ph name="BR" />Wenn Sie sich vorübergehend sichtbar machen möchten, öffnen Sie den Statusbereich und schalten Sie „Nearby-Sichtbarkeit“ ein.</translation>
 <translation id="6635944431854494329">Diese Funktion kann vom Inhaber über "Einstellungen" &gt; "Erweitert" &gt; "Diagnose- und Nutzungsdaten automatisch an Google senden" gesteuert werden.</translation>
 <translation id="6635956300022133031">Stimmen für die Sprachausgabe auswählen und anpassen</translation>
 <translation id="6636588250634969791">SIM-Karte einlegen, um fortzufahren</translation>
@@ -5025,6 +5046,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6811332638216701903">DHCP-Hostname</translation>
 <translation id="6812349420832218321"><ph name="PRODUCT_NAME" /> kann nicht als Root ausgeführt werden.</translation>
 <translation id="6812841287760418429">Änderungen beibehalten</translation>
+<translation id="681584224457905309">{COUNT,plural, =1{Datei}other{# Dateien}}</translation>
 <translation id="6817174620439930047">Nachfragen, wenn eine Website versucht, mit systemexklusiven Meldungen auf MIDI-Geräte zuzugreifen (empfohlen)</translation>
 <translation id="6818198425579322765">Sprache der Seite, die übersetzt wird</translation>
 <translation id="6818802132960437751">Integrierter Virenschutz</translation>
@@ -5045,6 +5067,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6835762382653651563">Stellen Sie eine Internetverbindung her, um Ihr Gerät (<ph name="DEVICE_TYPE" />) zu aktualisieren.</translation>
 <translation id="6838034009068684089">Nachfragen, wenn eine Website Fenster auf meinen Bildschirmen öffnen und platzieren möchte (empfohlen)</translation>
 <translation id="6838694093138907871">Ungültiger Code. Bitte noch einmal versuchen.</translation>
+<translation id="6838860780238890144">{COUNT,plural, =1{Telefonnummer}other{# Telefonnummern}}</translation>
 <translation id="6839225236531462745">Fehler beim Löschen des Zertifikats</translation>
 <translation id="6839916869147598086">Anmeldung hat sich geändert</translation>
 <translation id="6840155290835956714">Vor dem Senden nachfragen</translation>
@@ -5150,6 +5173,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6955446738988643816">Pop-up prüfen</translation>
 <translation id="6955535239952325894">Diese Einstellung ist bei verwalteten Browsern deaktiviert</translation>
 <translation id="6957044667612803194">Der Sicherheitsschlüssel unterstützt keine PINs</translation>
+<translation id="6957914043905853560">{COUNT,plural, =1{Link}other{# Links}}</translation>
 <translation id="6960507406838246615">Linux-Update erforderlich</translation>
 <translation id="696103774840402661">Alle Dateien und lokalen Daten für alle Nutzer auf diesem <ph name="DEVICE_TYPE" /> wurden dauerhaft gelöscht.</translation>
 <translation id="6964390816189577014">Held</translation>
@@ -5540,7 +5564,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="740624631517654988">Pop-up blockiert</translation>
 <translation id="7407430846095439694">Importieren und binden</translation>
 <translation id="7407504355934009739">Die meisten Nutzer blockieren Benachrichtigungen von dieser Website</translation>
-<translation id="740810853557944681">Druckerserver hinzufügen</translation>
+<translation id="740810853557944681">Druckserver hinzufügen</translation>
 <translation id="7409549334477097887">Sehr groß</translation>
 <translation id="7409735910987429903">Websites senden möglicherweise Pop-ups zum Anzeigen von Werbung oder bringen Sie mithilfe von Weiterleitungen zu Websites, die Sie möglicherweise gar nicht besuchen möchten</translation>
 <translation id="7410344089573941623">Nachfragen, wenn <ph name="HOST" /> auf Kamera und Mikrofon zugreifen möchte</translation>
@@ -5564,7 +5588,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="7434509671034404296">Entwickler</translation>
 <translation id="7434635829372401939">Einstellungen synchronisieren</translation>
 <translation id="7434757724413878233">Mausbeschleunigung</translation>
-<translation id="7434969625063495310">Der Druckerserver konnte nicht hinzugefügt werden. Prüfen Sie die Konfiguration des Servers und versuchen Sie es noch einmal.</translation>
+<translation id="7434969625063495310">Der Druckserver konnte nicht hinzugefügt werden. Prüfen Sie die Konfiguration des Servers und versuchen Sie es noch einmal.</translation>
 <translation id="7436921188514130341">Oh nein! Beim Umbenennen ist ein Fehler aufgetreten.</translation>
 <translation id="7439519621174723623">Geben Sie einen Gerätenamen ein, um fortzufahren</translation>
 <translation id="7441736921018636843">Wenn Sie diese Einstellung ändern möchten, müssen Sie die <ph name="BEGIN_LINK" />Synchronisierung zurücksetzen<ph name="END_LINK" />, um die Synchronisierungspassphrase zu entfernen</translation>
@@ -6059,6 +6083,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="797394244396603170">Wähle das Gerät aus, mit dem du Dateien teilen möchtest</translation>
 <translation id="7973962044839454485">Fehler bei PPP-Authentifizierung aufgrund eines falschen Nutzernamens oder Passworts</translation>
 <translation id="7974566588408714340">Über <ph name="EXTENSIONNAME" /> erneut versuchen</translation>
+<translation id="7974713334845253259">Standardfarbe</translation>
 <translation id="7974936243149753750">Overscan</translation>
 <translation id="7975504106303186033">Sie müssen dieses Chrome Education-Gerät im Konto einer Bildungseinrichtung anmelden. Unter g.co/workspace/edusignup können Sie sich für ein neues Konto registrieren.</translation>
 <translation id="7978412674231730200">Privater Schlüssel</translation>
@@ -6224,6 +6249,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8157704005178149728">Elternaufsicht wird eingerichtet</translation>
 <translation id="8158117992543756526">Dieses Gerät erhält seit <ph name="MONTH_AND_YEAR" /> keine automatischen Software- und Sicherheitsupdates mehr. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Fehler beim Festlegen der Vertrauenswürdigkeit des Zertifikats</translation>
+<translation id="8160775796528709999">Aktivieren Sie „Automatische Untertitel“ in den Einstellungen, um Ihre Audioinhalte und Videos zu untertiteln</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Lesemodus für Webseiten</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Tab in ein neues Fenster verschieben}other{Tabs in ein neues Fenster verschieben}}</translation>
@@ -6348,6 +6374,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8300011035382349091">Lesezeichen für diesen Tab bearbeiten</translation>
 <translation id="8300374739238450534">Mitternachtsblau</translation>
 <translation id="8300849813060516376">OTASP fehlgeschlagen</translation>
+<translation id="8303616404642252802">{COUNT,plural, =1{Adresse}other{# Adressen}}</translation>
 <translation id="8304383784961451596">Du bist nicht zur Verwendung dieses Geräts berechtigt. Bitte den Administrator um eine Anmeldeberechtigung oder melde dich mit einem Google-Konto an, das über Family Link beaufsichtigt wird.</translation>
 <translation id="8308179586020895837">Nachfragen, wenn <ph name="HOST" /> auf Ihre Kamera zugreifen möchte</translation>
 <translation id="830868413617744215">Beta</translation>
@@ -6525,7 +6552,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8540136935098276800">Bitte geben Sie eine korrekt formatierte URL ein</translation>
 <translation id="8540608333167683902">Netzwerk <ph name="NETWORK_INDEX" /> von <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Signalstärke bei <ph name="SIGNAL_STRENGTH" /> %, Details</translation>
 <translation id="854071720451629801">Als gelesen markieren</translation>
-<translation id="8541462173655894684">Auf dem Druckerserver wurden keine Drucker gefunden</translation>
+<translation id="8541462173655894684">Auf dem Druckserver wurden keine Drucker gefunden</translation>
 <translation id="8542618328173222274">Nachfragen, wenn eine Website meine Virtual-Reality-Geräte und ‑Daten verwenden möchte</translation>
 <translation id="8543556556237226809">Fragen? Wenden Sie sich an die Person, die Ihr Profil überwacht.</translation>
 <translation id="8546186510985480118">Ihr Gerät hat wenig freien Speicherplatz</translation>
@@ -6646,6 +6673,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="867085395664725367">Ein temporärer Serverfehler ist aufgetreten.</translation>
 <translation id="8673026256276578048">Im Web suchen...</translation>
 <translation id="8673383193459449849">Serverfehler</translation>
+<translation id="8676152597179121671">{COUNT,plural, =1{Video}other{# Videos}}</translation>
 <translation id="8676374126336081632">Eingabe löschen</translation>
 <translation id="8676770494376880701">Leistungsschwaches Ladegerät angeschlossen</translation>
 <translation id="8677212948402625567">Alle minimieren...</translation>
@@ -7071,6 +7099,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="9128870381267983090">Mit Netzwerk verbinden</translation>
 <translation id="9130015405878219958">Eingegebener Modus ist ungültig.</translation>
 <translation id="9131487537093447019">Nachrichten an Bluetooth-Geräte senden und von diesen erhalten</translation>
+<translation id="9134119143784876218">Erstellt automatisch Untertitel für englischsprachige Audioinhalte und Videos (zurzeit nur im Chrome-Browser verfügbar). Audioinhalte und Untertitel werden ausschließlich auf dem Gerät gespeichert.</translation>
 <translation id="9137013805542155359">Original anzeigen</translation>
 <translation id="9137157311132182254">Bevorzugte Suchmaschine</translation>
 <translation id="9137248913990643158">Melden Sie sich in Chrome an, bevor Sie diese App nutzen.</translation>
@@ -7118,6 +7147,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="9179524979050048593">Nutzername auf Anmeldebildschirm</translation>
 <translation id="9180281769944411366">Der Vorgang kann einige Minuten dauern. Linux-Container wird gestartet.</translation>
 <translation id="9180380851667544951">Die Website kann Ihren Bildschirm freigeben</translation>
+<translation id="918352324374649435">{COUNT,plural, =1{App}other{# Apps}}</translation>
 <translation id="9186963452600581158">Mit dem Google-Konto eines Kindes anmelden</translation>
 <translation id="9188732951356337132">Sie haben die Möglichkeit, Nutzungsdaten &amp; Fehlerberichte zu senden. Dieses Gerät sendet momentan automatisch Diagnose- sowie Geräte- und App-Nutzungsdaten an Google. Ihr Kind wird mithilfe dieser Daten nicht identifiziert, sie helfen jedoch beispielsweise dabei, die Stabilität des Systems und der Apps zu verbessern. Einige aggregierte Daten sind auch für Apps und Partner von Google, beispielsweise Android-Entwickler, nützlich. Wenn zusätzlich die Einstellung "Web- &amp; App-Aktivitäten" für Ihr Kind aktiviert ist, werden diese Daten in seinem Google-Konto gespeichert. <ph name="BEGIN_LINK2" />Weitere Informationen<ph name="END_LINK2" /></translation>
 <translation id="9198090666959937775">Android-Smartphone als Sicherheitsschlüssel verwenden</translation>

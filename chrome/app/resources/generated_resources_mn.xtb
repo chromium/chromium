@@ -2582,7 +2582,6 @@
 <translation id="3882165008614329320">Камер эсвэл файлд байгаа видео</translation>
 <translation id="3884152383786131369">Олон хэл дээр ашиглах боломжтой веб контент энэ жагсаалтын эхний дэмжигдсэн хэлийг ашиглана. Эдгээр сонголтыг таны хөтчийн тохиргоотой синк хийдэг. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Таны энэ сайтад нэвтрэх хүсэлтийг <ph name="NAME" />-д илгээсэн</translation>
-<translation id="3888364689515978571">Унтраалттай. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209"><ph name="LOCK_SCREEN_APP_NAME" />-р тэмдэглэл бичиж байна</translation>
 <translation id="3890064827463908288">Wi-Fi синкийг ашиглахын тулд Chrome Синкийг асаана уу</translation>
 <translation id="3892414795099177503">Нээлттэй VPN / L2TP-г нэмэх...</translation>
@@ -2665,7 +2664,6 @@
 <translation id="3958088479270651626">Хайлтын жагсаалтууд болон тохиргоонуудыг импортолж авах</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Үүрэн холбооны сүлжээг унтраах</translation>
-<translation id="3965730875470565266">Асаалттай, <ph name="MINUTES" /> минут</translation>
 <translation id="3965811923470826124">Хамт</translation>
 <translation id="3965965397408324205"><ph name="PROFILE_NAME" />-с гарах</translation>
 <translation id="3966072572894326936">Өөр хавтас сонгох ...</translation>
@@ -4215,7 +4213,6 @@
 <translation id="5832813618714645810">Профайлууд</translation>
 <translation id="583281660410589416">Үл мэдэгдэх</translation>
 <translation id="5833397272224757657">Таны зочилдог сайтын агуулга, хөтчийн үйл ажиллагаа болон харилцан үйлдлийг хувийн болгоход ашигладаг</translation>
-<translation id="5833551944249825624">Таны Chromebook ойролцоох бүх хүнд 5 минутын турш харагдана</translation>
 <translation id="5833726373896279253">Эдгээр тохиргоонуудийг зөвхөн эзэмшигч нь өөрчилж болно:</translation>
 <translation id="5834581999798853053"><ph name="TIME" /> үлдсэн минутын тухай</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Камер, эсвэл микрофоны бичлэг</translation>

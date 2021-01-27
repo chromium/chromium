@@ -1320,6 +1320,7 @@
 <translation id="2886969306951284125">如果執行 Android 應用程式的功能已啟用，將這項政策設為 True 會讓已註冊的裝置回報 Android 狀態資訊。
 
       如果將這項政策設為停用或不設定，已註冊的裝置不會回報 Android 狀態資訊</translation>
+<translation id="288923520817177650">允許建立 <ph name="WEBXR_API_NAME_SHORT" /> 的 <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> 工作階段</translation>
 <translation id="2890645751406497668">自動授予權限給這些網站，以連結至指定廠商和產品 ID 的 USB 裝置。</translation>
 <translation id="2893546967669465276">將系統記錄傳送到管理伺服器</translation>
 <translation id="2899002520262095963">Android 應用程式可以使用透過這項政策指定的網路設定和 CA 憑證，但無法存取部分設定選項。</translation>
@@ -1532,9 +1533,6 @@
 <translation id="3122082892722698079">控管可使用不安全內容的例外網站</translation>
 <translation id="3128072319047570212">Keygen 設定</translation>
 <translation id="3142410959002029864">如果設定這項政策，將覆寫預設的雙面列印模式。如果系統不支援設定的模式，將會忽略這項政策。</translation>
-<translation id="3143265893557969814">如果設定了這項政策，系統會將所有指定的資料類型從同步處理作業 (包含 Google Sync 和漫遊設定檔的同步處理作業) 中排除。這有助於縮減漫遊設定檔的大小，或限制上傳到 Google Sync 伺服器的資料類型。
-
-      這項政策目前涵蓋的資料類型為：「bookmarks」、「preferences」、「passwords」、「autofill」、「themes」、「typedUrls」、「extensions」、「apps」、「tabs」、「wifiConfigurations」。這些名稱有大小寫之分。</translation>
 <translation id="3144173889708944482">如果在 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_BLOCKLIST" />，系統會根據 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 的設定指定使用者不能操作的印表機。除了這項政策所列 ID 的印表機外，其他印表機皆可供使用。印表機 ID 必須與 <ph name="DEVICE_PRINTERS_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
 <translation id="3152425128389603870">允許使用整合桌面並預設為啟用。</translation>
 <translation id="3159375329008977062">允許使用者透過 UI 匯出/匯入 Crostini 容器</translation>
@@ -2014,6 +2012,13 @@
 <translation id="377044054160169374">強制干預濫用行為</translation>
 <translation id="3778689139323007309">針對由本機裝載 CA 憑證所簽署並經過成功驗證的伺服器憑證，執行撤銷檢查</translation>
 <translation id="3780152581321609624">Kerberos SPN 包含非標準通訊埠</translation>
+<translation id="378495749480642482">設定使用者前往的網站是否能透過 <ph name="WEBXR_API_NAME" /> 建立沉浸式擴增實境工作階段。
+
+      如果未設定這項政策或設為啟用，<ph name="WEBXR_API_NAME" /> 會在工作階段建立期間接受 <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />，為使用者提供擴增實境體驗。
+
+      如果停用這項政策，<ph name="WEBXR_API_NAME" /> 便會拒絕工作階段的建立要求 (模式設為 <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />)，但現有的 <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> 工作階段 (如果有的話) 並不會終止。
+
+      如要進一步瞭解 <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> 工作階段，請參閱 <ph name="WEBXR_AR_MODULE_API_NAME" />規範。</translation>
 <translation id="3788662722837364290">使用者進入閒置狀態時的電源管理設定</translation>
 <translation id="3790085888761753785">如果啟用這項設定，使用者將可透過 Smart Lock 登入帳戶。一般 Smart Lock 只能讓使用者解鎖螢幕畫面，相較之下這項設定提供了更高的權限。
 
@@ -4189,6 +4194,7 @@
       如果啟用這項政策，系統會以獨立程序分別執行逗號分隔清單中指定的每個來源。這也會讓系統隔離以子網域命名的來源，例如指定 https://example.com/ 也會導致 https://foo.example.com/ 遭到隔離，因為後者屬於 https://example.com/ 網站的一部分。
       如果不設定或停用這項政策，系統會將平台預設的網站隔離設定套用至登入畫面。
       </translation>
+<translation id="6947587367703216074">禁止建立 <ph name="WEBXR_API_NAME_SHORT" /> 的 <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> 工作階段</translation>
 <translation id="6949867264289339206">你可以透過這項政策設定已連接到裝置的企業印表機。其格式與 <ph name="PRINTERS_POLICY_NAME" /> 條目相符，且針對每台印表機另外設有「id」或「guid」必填欄位，用於指明要加入許可清單或拒絕清單。相關檔案大小不得超過 5 MB，且必須採用 JSON 格式。一個 5 MB 的編碼檔案可包含約 21,000 台印表機的資料。加密編譯雜湊的作用是驗證下載內容的完整性。系統會下載及快取這個檔案，而且只要網址或雜湊一有變動，就會重新下載檔案。<ph name="PRODUCT_OS_NAME" />會下載這個檔案來設定印表機，並依據 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 和 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 開放使用印表機。
 
       這項政策：

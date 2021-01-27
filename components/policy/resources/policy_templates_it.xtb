@@ -1344,6 +1344,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 <translation id="2886969306951284125">Se le app Android sono attive e il criterio viene impostato su Vero, i dispositivi registrati segnalano informazioni sullo stato di Android.
 
       Se il criterio viene impostato su Disattivato o se non viene configurato, i dispositivi registrati non segnalano informazioni sullo stato di Android.</translation>
+<translation id="288923520817177650">È consentita la creazione di sessioni <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> di <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="2890645751406497668">Concede automaticamente a questi siti l'autorizzazione a connettersi a dispositivi USB usando gli ID fornitore e prodotto forniti.</translation>
 <translation id="2893546967669465276">Consente di inviare log di sistema al server di gestione</translation>
 <translation id="2899002520262095963">Le app Android possono utilizzare le configurazioni di rete e i certificati CA impostati tramite questa norma ma non hanno accesso ad alcune opzioni di configurazione.</translation>
@@ -1557,9 +1558,6 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="3122082892722698079">Controlla l'utilizzo delle eccezioni per i contenuti non sicuri</translation>
 <translation id="3128072319047570212">Impostazioni keygen</translation>
 <translation id="3142410959002029864">La configurazione di questo criterio consente di sostituire la modalità di stampa fronte/retro predefinita. Se la modalità non è disponibile, questo criterio viene ignorato.</translation>
-<translation id="3143265893557969814">Se questo criterio viene impostato, tutti i tipi di dati specificati verranno esclusi dalla sincronizzazione sia per Google Sync sia per la sincronizzazione del profilo di roaming. Questa operazione può essere utile per ridurre le dimensioni del profilo di roaming o per limitare il tipo di dati caricati sui server di Google Sync.
-
-      Attualmente i tipi di dati per questo criterio sono: "bookmarks", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Per tali nomi viene fatta distinzione tra maiuscole e minuscole.</translation>
 <translation id="3144173889708944482">Se per il criterio <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene scelta l'opzione <ph name="PRINTERS_BLOCKLIST" />, la configurazione del criterio <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> consente di specificare le stampanti che gli utenti non possono usare. Gli utenti avranno a disposizione tutte le stampanti, tranne quelle i cui ID sono elencati in questo criterio. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nel criterio <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3152425128389603870">Rendi disponibile la modalità Desktop unificato e attivala per impostazione predefinita</translation>
 <translation id="3159375329008977062">L'utente è abilitato a importare/esportare contenitori Crostini tramite l'interfaccia</translation>
@@ -2049,6 +2047,13 @@ Se questo criterio viene impostato su False, <ph name="PRODUCT_NAME" /> non util
 <translation id="377044054160169374">Applicazione dell'intervento in caso di esperienza intrusiva</translation>
 <translation id="3778689139323007309">Esegui i controlli delle revoche per i certificati dei server che vengono convalidati correttamente e firmati tramite certificati CA installati localmente</translation>
 <translation id="3780152581321609624">Includi porta non standard in Kerberos SPN</translation>
+<translation id="378495749480642482">Consente di stabilire se i siti visitati dagli utenti possono creare sessioni di realtà aumentata immersive usando <ph name="WEBXR_API_NAME" />.
+
+      Se questo criterio non viene configurato o se viene attivato, <ph name="WEBXR_API_NAME" /> accetterà <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> durante la creazione delle sessioni, consentendo così agli utenti di vivere esperienze di realtà aumentata.
+
+      Se questo criterio viene disattivato, <ph name="WEBXR_API_NAME" /> rifiuterà le richieste di creazione di sessioni con la modalità <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />. Le sessioni <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> esistenti (se presenti) non verranno chiuse.
+
+      Per ulteriori informazioni sulle sessioni <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />, consulta la specifica <ph name="WEBXR_AR_MODULE_API_NAME" />.</translation>
 <translation id="3788662722837364290">Impostazioni di gestione dell'alimentazione quando l'utente diventa inattivo</translation>
 <translation id="3790085888761753785">Se questa impostazione viene attivata, gli utenti potranno accedere ai propri account con Smart Lock. Questa impostazione è più permissiva rispetto al normale comportamento di Smart Lock che consente agli utenti soltanto di sbloccare lo schermo.
 
@@ -4238,6 +4243,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
       Se il criterio è attivato, ciascuna delle origini denominate all'interno di un elenco separato da virgole viene eseguita nel proprio processo. In questo modo, si isolano anche le origini indicate dai sottodomini; ad esempio specificando https://example.com/ si isola anche https://foo.example.com/, perché fa parte del sito https://example.com/.
       Se il criterio non è configurato o è disattivato, per la schermata di accesso vengono utilizzate le impostazioni di isolamento dei siti predefinite della piattaforma.
       </translation>
+<translation id="6947587367703216074">Non è consentita la creazione di sessioni <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> di <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="6949867264289339206">La configurazione del criterio consente di specificare le configurazioni delle stampanti aziendali associate ai dispositivi. Il formato corrisponde a quello del dizionario <ph name="PRINTERS_POLICY_NAME" />, con un campo "id" o "guid" aggiuntivo obbligatorio per ogni stampante ai fini dell'inserimento in una lista consentita o in una lista bloccata. Le dimensioni del file non possono superare i 5 MB e il formato deve essere JSON. Un file con circa 21.000 stampanti viene codificato come file di 5 MB. L'hash di crittografia consente di verificare l'integrità del download. Il file viene scaricato, memorizzato nella cache e riscaricato ogni volta che l'URL o l'hash cambiano. <ph name="PRODUCT_OS_NAME" /> scarica il file per le configurazioni delle stampanti e rende disponibili le stampanti in base ai criteri <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> e <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Questo criterio:

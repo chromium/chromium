@@ -1045,6 +1045,7 @@
 <translation id="2154710561487035718">ចម្លង URL</translation>
 <translation id="2155772377859296191">មើល​ទៅដូចជា <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">បុគ្គលិក​បម្រើសេវាកម្ម៖ <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">ដំណើរការ​ការពិនិត្យសុវត្ថិភាព​ម្ដងទៀត</translation>
 <translation id="2157474325782140681">ដើម្បីទទួលបាន​មុខងារបន្ថែម សូមប្រើឧបករណ៍ភ្ជាប់ Dell​ ដែលរចនាឡើងសម្រាប់ដំណើរការជាមួយ​ Chromebook នេះ។</translation>
 <translation id="215753907730220065">ចាកចេញពីអេក្រង់ពេញ</translation>
 <translation id="2157875535253991059">ឥឡូវនេះទំព័រនេះពេញអេក្រង់ហើយ។</translation>
@@ -1989,6 +1990,7 @@
 <translation id="3225319735946384299">ការចុះហត្ថលេខាជាលេខកូដ</translation>
 <translation id="3227137524299004712">ម៉ៃក្រូហ្វូន</translation>
 <translation id="3233271424239923319">បម្រុងទុក​កម្មវិធី និង​ឯកសារ Linux</translation>
+<translation id="3238192140106069382">កំពុងភ្ជាប់ និងកំពុងផ្ទៀងផ្ទាត់</translation>
 <translation id="3239373508713281971">បានលុប​រយៈពេល​កំណត់​សម្រាប់ <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">ជ្រើសរើសថតឯកសារគោលនៃកម្មវិធីបន្ថែមដើម្បីវិចខ្ចប់។ ដើម្បីធ្វើបច្ចុប្បន្នភាព ផ្នែកបន្ថែម ជ្រើសរើសថតឯកសារប៊ូតុងឯកជន ដើម្បីប្រើម្តងទៀតផងដែរ។</translation>
 <translation id="3244294424315804309">បន្ត​បិទ​សំឡេង</translation>
@@ -2585,7 +2587,6 @@
 <translation id="3882165008614329320">វីដេអូដែល​មានស្រាប់​ពីកាមេរ៉ា ឬឯកសារ</translation>
 <translation id="3884152383786131369">ខ្លឹមសារបណ្ដាញ​ដែលមានជាច្រើន​ភាសា នឹងប្រើភាសាដែល​អាចប្រើបាន​ទីមួយនៅក្នុង​បញ្ជីនេះ។ ចំណូលចិត្តទាំងនេះ​ត្រូវបានធ្វើសមកាលកម្ម​ជាមួយការកំណត់​កម្មវិធីរុករកតាមអ៊ីនធឺណិត​របស់អ្នក។ <ph name="BEGIN_LINK_LEARN_MORE" />ស្វែងយល់បន្ថែម<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">សំណើរបស់អ្នកដើម្បីចូលទៅកាន់ទំព័រនេះត្រូវបានផ្ញើទៅ <ph name="NAME" /></translation>
-<translation id="3888364689515978571">បិទ។ សូម<ph name="LINK_BEGIN" />ស្វែងយល់បន្ថែម<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">កត់ត្រាចំណាំដោយប្រើ <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">បើក Chrome សមកាលកម្ម ដើម្បីប្រើ Wi-Fi Sync</translation>
 <translation id="3892414795099177503">បន្ថែម OpenVPN / L2TP...</translation>
@@ -2669,7 +2670,6 @@
 <translation id="3958088479270651626">នាំចូលចំណាំ និងការកំណត់</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">បិទ​បណ្ដាញ​ចល័ត</translation>
-<translation id="3965730875470565266">បើក <ph name="MINUTES" /> នាទី</translation>
 <translation id="3965811923470826124">ជាមួយ</translation>
 <translation id="3965965397408324205">ចាក​ចេញពី <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">ជ្រើសរើសថតឯកសារដ៏ទៃទៀត...</translation>
@@ -4219,7 +4219,6 @@
 <translation id="5832813618714645810">កម្រងព័ត៌មាន</translation>
 <translation id="583281660410589416">មិនស្គាល់</translation>
 <translation id="5833397272224757657">ប្រើប្រាស់​ខ្លឹមសារ​នៅលើគេហ​ទំព័រដែល​អ្នកចូលមើល ព្រមទាំងអន្តរកម្ម និង​សកម្មភាពនៅ​លើ​កម្មវិធី​​រុករកតាមអ៊ីនធឺណិត ​ដើម្បី​ផ្ដល់​ការកំណត់ដែល​ស្រប​នឹង​អ្នក</translation>
-<translation id="5833551944249825624">អ្នកគ្រប់គ្នាដែលនៅជិត​នឹងអាចមើលឃើញ Chromebook របស់អ្នក​រយៈពេល 5 នាទី</translation>
 <translation id="5833726373896279253">ការកំណត់នេះអាចត្រូវបានកែសម្រួលដោយអ្នកគ្រប់គ្រង។</translation>
 <translation id="5834581999798853053">នៅសល់ <ph name="TIME" /> ប្រហែលនាទីទៀត</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - កាមេរ៉ា ឬ​មីក្រូហ្វូន​កំពុង​ថត​</translation>

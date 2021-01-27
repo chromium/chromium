@@ -1362,6 +1362,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="2886969306951284125">Jika aplikasi Android aktif, menyetel kebijakan ke Benar (True) akan membuat perangkat yang terdaftar melaporkan informasi status Android.
 
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, perangkat yang terdaftar tidak akan melaporkan informasi status Android</translation>
+<translation id="288923520817177650">Izinkan pembuatan sesi <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="2890645751406497668">Otomatis berikan izin ke situs ini untuk terhubung ke perangkat USB dengan ID produk dan vendor yang ditentukan.</translation>
 <translation id="2893546967669465276">Mengirim log sistem ke server pengelolaan</translation>
 <translation id="2899002520262095963">Aplikasi Android dapat menggunakan konfigurasi jaringan dan sertifikat CA yang disetel melalui kebijakan ini, namun tidak memiliki akses ke beberapa opsi konfigurasi.</translation>
@@ -1575,9 +1576,6 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3122082892722698079">Mengontrol penggunaan pengecualian konten tidak aman</translation>
 <translation id="3128072319047570212">Setelan keygen</translation>
 <translation id="3142410959002029864">Jika kebijakan disetel, mode dupleks persentase cetakan default akan ditimpa. Jika mode ini tidak tersedia, kebijakan ini akan diabaikan.</translation>
-<translation id="3143265893557969814">Jika kebijakan ini disetel, semua jenis data yang ditentukan akan dikecualikan dari sinkronisasi, baik untuk Google Sync maupun sinkronisasi profil roaming. Hal ini berguna untuk mengurangi ukuran profil roaming atau membatasi jenis data yang diupload ke Server Google Sync.
-
-      Jenis data saat ini untuk kebijakan ini adalah: "bookmarks", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Nama-nama tersebut peka huruf besar atau kecil.</translation>
 <translation id="3144173889708944482">Jika <ph name="PRINTERS_BLOCKLIST" /> dipilih untuk <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, menyetel <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> akan menentukan printer yang tidak dapat digunakan oleh pengguna. Semua printer diberikan kepada pengguna kecuali ID yang tercantum dalam kebijakan ini. ID harus sesuai dengan kolom <ph name="ID_FIELD" /> atau <ph name="GUID_FIELD" /> dalam file yang ditentukan di <ph name="DEVICE_PRINTERS_POLICY_NAME" />.</translation>
 <translation id="3152425128389603870">Membuat Desktop Terpadu tersedia dan aktif secara default</translation>
 <translation id="3159375329008977062">Pengguna diaktifkan untuk mengekspor/mengimpor container Crostini melalui UI</translation>
@@ -2070,6 +2068,13 @@ Jika ditetapkan ke False, <ph name="PRODUCT_NAME" /> tidak akan menggunakan noti
 <translation id="377044054160169374">Penerapan Pencegahan Pengalaman yang Menyinggung</translation>
 <translation id="3778689139323007309">Lakukan pemeriksaan pembatalan sertifikat server yang berhasil divalidasi yang ditandatangani oleh sertifikat CA yang diinstal secara lokal</translation>
 <translation id="3780152581321609624">Sertakan port non-standar di SPN Kerberos</translation>
+<translation id="378495749480642482">Mengonfigurasi apakah situs yang dibuka pengguna akan diizinkan untuk membuat sesi Augmented Reality yang imersif menggunakan <ph name="WEBXR_API_NAME" />.
+
+      Jika kebijakan ini diaktifkan atau tidak disetel, <ph name="WEBXR_API_NAME" /> akan menerima <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> selama pembuatan sesi, sehingga memungkinkan pengguna merasakan pengalaman Augmented Reality.
+
+      Jika kebijakan dinonaktifkan, <ph name="WEBXR_API_NAME" /> akan menolak permintaan pembuatan sesi dengan mode yang disetel ke <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />. Sesi <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> yang sudah ada (jika ada) tidak akan dihentikan.
+
+      Untuk detail selengkapnya tentang sesi <ph name="WEBXR_AR_SESSION_ENUM_VALUE" />, lihat spesifikasi <ph name="WEBXR_AR_MODULE_API_NAME" />.</translation>
 <translation id="3788662722837364290">Setelan pengelolaan daya saat pengguna sedang menganggur</translation>
 <translation id="3790085888761753785">Jika setelan ini diaktifkan, pengguna akan diizinkan untuk login ke akunnya dengan Smart Lock. Setelan ini lebih longgar dibandingkan perilaku Smart Lock biasa yang hanya mengizinkan pengguna membuka kunci layarnya.
 
@@ -4259,6 +4264,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
       Jika kebijakan diaktifkan, setiap asal bernama dalam daftar yang dipisahkan koma akan dijalankan dalam prosesnya sendiri. Hal ini juga akan mengisolasi asal yang diberi nama berdasarkan subdomain; mis. menentukan https://example.com/ juga akan menyebabkan https://foo.example.com/ diisolasi sebagai bagian dari situs https://example.com/.
       Jika kebijakan dinonaktifkan atau tidak dikonfigurasi, setelan isolasi situs default platform akan digunakan untuk layar login.
       </translation>
+<translation id="6947587367703216074">Cegah pembuatan sesi <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> <ph name="WEBXR_API_NAME_SHORT" /></translation>
 <translation id="6949867264289339206">Jika kebijakan disetel, konfigurasi untuk printer perusahaan yang terikat ke perangkat akan tersedia. Jika formatnya cocok dengan kamus <ph name="PRINTERS_POLICY_NAME" />, dengan tambahan kolom "id" atau "guid" yang diperlukan agar setiap printer dapat mengizinkan atau menolak daftar. Ukuran file tidak boleh lebih dari 5 MB dan dalam format JSON. File yang berisi sekitar 21.000 printer dienkode sebagai file 5 MB. Hash kriptografi membantu memverifikasi integritas download. File didownload, disimpan dalam cache, dan didownload ulang ketika URL atau hash berubah. <ph name="PRODUCT_OS_NAME" /> mendownload file untuk konfigurasi printer dan menyediakan printer beserta <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />, <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />, dan <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" />.
 
       Kebijakan ini:

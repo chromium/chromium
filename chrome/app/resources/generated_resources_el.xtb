@@ -1045,6 +1045,7 @@
 <translation id="2154710561487035718">Αντιγραφή διεύθυνσης URL</translation>
 <translation id="2155772377859296191">Θα εμφανίζεται ως <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service Worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Επανάληψη εκτέλεσης ελέγχου ασφαλείας</translation>
 <translation id="2157474325782140681">Για επιπλέον λειτουργίες, χρησιμοποιήστε μια βάση σύνδεσης Dell που έχει σχεδιαστεί για χρήση με αυτό το Chromebook.</translation>
 <translation id="215753907730220065">Έξοδος από πλήρη οθόνη</translation>
 <translation id="2157875535253991059">Αυτή η σελίδα εμφανίζεται σε πλήρη οθόνη</translation>
@@ -1989,6 +1990,7 @@
 <translation id="3225319735946384299">Υπογραφή κώδικα</translation>
 <translation id="3227137524299004712">Μικρόφωνο</translation>
 <translation id="3233271424239923319">Δημιουργία αντιγράφων ασφαλείας για εφαρμογές και αρχεία Linux</translation>
+<translation id="3238192140106069382">Σύνδεση και επαλήθευση</translation>
 <translation id="3239373508713281971">Το χρονικό όριο για την εφαρμογή <ph name="APP_NAME" /> καταργήθηκε.</translation>
 <translation id="3241680850019875542">Επιλέξτε τον κατάλογο ρίζας της επέκτασης που θέλετε να στοιβάξετε. Για να ενημερώσετε μια επέκταση, επιλέξτε επίσης το αρχείο ιδιωτικού κλειδιού που θα επαναχρησιμοποιηθεί.</translation>
 <translation id="3244294424315804309">Συνέχιση σίγασης ήχου</translation>
@@ -2585,7 +2587,6 @@
 <translation id="3882165008614329320">Υπάρχον βίντεο από την κάμερα ή από αρχείο</translation>
 <translation id="3884152383786131369">Το περιεχόμενο ιστού που είναι διαθέσιμο σε πολλές γλώσσες θα χρησιμοποιεί την πρώτη υποστηριζόμενη γλώσσα από αυτήν τη λίστα. Αυτές οι προτιμήσεις συγχρονίζονται με τις ρυθμίσεις του προγράμματος περιήγησης. <ph name="BEGIN_LINK_LEARN_MORE" />Μάθετε περισσότερα<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Το αίτημά σας για να αποκτήσετε πρόσβαση σε αυτόν τον ιστότοπο έχει σταλεί στον/η(ν) <ph name="NAME" /></translation>
-<translation id="3888364689515978571">Ανενεργή. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Λήψη σημειώσεων με την εφαρμογή <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Ενεργοποιήστε τον Συγχρονισμό Chrome για να χρησιμοποιήσετε τον Συγχρονισμό Wi-Fi</translation>
 <translation id="3892414795099177503">Προσθήκη OpenVPN / L2TP…</translation>
@@ -2669,7 +2670,6 @@
 <translation id="3958088479270651626">Εισαγωγή σελιδοδεικτών και ρυθμίσεων</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Απενεργοποίηση δικτύου κινητής τηλεφωνίας</translation>
-<translation id="3965730875470565266">Ενεργή, <ph name="MINUTES" /> λ.</translation>
 <translation id="3965811923470826124">Με</translation>
 <translation id="3965965397408324205">Έξοδος από <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Επιλέξτε άλλο φάκελο...</translation>
@@ -4220,7 +4220,6 @@
 <translation id="5832813618714645810">Προφίλ</translation>
 <translation id="583281660410589416">Άγνωστο</translation>
 <translation id="5833397272224757657">Χρησιμοποιεί περιεχόμενο στους ιστότοπους που επισκέπτεστε, καθώς και δραστηριότητα και αλληλεπιδράσεις του προγράμματος περιήγησης, για εξατομίκευση</translation>
-<translation id="5833551944249825624">Το Chromebook θα είναι ορατό σε όλους τους χρήστες σε κοντινή απόσταση για 5 λεπτά.</translation>
 <translation id="5833726373896279253">Οι ρυθμίσεις αυτές μπορούν να τροποποιηθούν μόνο από τον κάτοχο:</translation>
 <translation id="5834581999798853053">Απομένουν περίπου <ph name="TIME" /> λεπτά</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - Εγγραφή κάμερας ή μικροφώνου</translation>

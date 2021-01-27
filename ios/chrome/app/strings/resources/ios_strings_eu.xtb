@@ -257,6 +257,7 @@ Ezkutuko moduan zaudenean, webguneek ezin dituzte erabili cookieak beste webgune
 <translation id="3533436815740441613">Fitxa berria</translation>
 <translation id="3551320343578183772">Itxi fitxa</translation>
 <translation id="3581564640715911333">Eskaini beste hizkuntzetan dauden orriak itzultzea</translation>
+<translation id="3588492282865875287">Saioa amaitu nahi duzu?</translation>
 <translation id="3588820906588687999">Ireki irudia beste fitxa batean</translation>
 <translation id="359441731697487922">Estekak automatikoki ireki ditzakezu Chrome-n arakatzaile lehenetsi gisa ezartzen baduzu.
       
@@ -410,6 +411,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5317780077021120954">Gorde</translation>
 <translation id="5327248766486351172">Izena</translation>
 <translation id="5339316356165661760">Aktibatu sinkronizazioa</translation>
+<translation id="5351284593342054342">Garbitu gailu honetatik</translation>
 <translation id="5388358297987318779">Ireki irudia</translation>
 <translation id="5407969256130905701">Baztertu aldaketak</translation>
 <translation id="5409365236829784218">Ez dago fitxategi hori ireki dezakeen aplikazioak instalatuta.</translation>
@@ -465,6 +467,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="5948291296578561264">Honekin, argazkien liburutegian gorde ahalko dituzu argazkiak.</translation>
 <translation id="5955891643922670672">Konexiorik gabeko bertsioa da hau</translation>
 <translation id="5957613098218939406">Aukera gehiago</translation>
+<translation id="5961521066940389233">Mantendu gailu honetan</translation>
 <translation id="5964480694698977962">Sortu ezkutuko beste fitxa bat.</translation>
 <translation id="5965679971710331625">Hasi duzu saioa</translation>
 <translation id="5979837087407522202">Bilatu pasahitzak</translation>
@@ -479,6 +482,7 @@ Ezarpena aldatzeko, <ph name="BEGIN_LINK" />berrezarri sinkronizazioa<ph name="E
 <translation id="605721222689873409">UU</translation>
 <translation id="6059830886158432458">Kontrolatu istorioak eta jarduerak hemen</translation>
 <translation id="6066301408025741299">Sakatu bertan behera uzteko</translation>
+<translation id="6085282545406522838">Sinkronizatutako datuek Google-ko kontuan jarraituko dute.</translation>
 <translation id="6108923351542677676">Konfigurazioa abian da…</translation>
 <translation id="6119050551270742952">Web-orri hau ezkutuko moduan dago</translation>
 <translation id="6122191549521593678">Konektatu</translation>
@@ -631,6 +635,7 @@ Erabili pasahitz esklusibo bat webgune bakoitzerako.</translation>
 <translation id="7514365320538308">Deskargatu</translation>
 <translation id="7537586195939242955">Dokumentua ezin izan da instalatu Passbook-en.</translation>
 <translation id="7554791636758816595">Fitxa berria</translation>
+<translation id="7558943807639707687">Zer egin nahi duzu gailu honetan gordetako laster-marka, historia eta bestelako datuekin?</translation>
 <translation id="7561196759112975576">Beti</translation>
 <translation id="7583004045319035904">Erabili <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ezkutuko moduko fitxak desblokeatzeko.</translation>
 <translation id="7600965453749440009">Ez itzuli <ph name="LANGUAGE" /> inoiz</translation>

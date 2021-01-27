@@ -1049,6 +1049,7 @@
 <translation id="2154710561487035718">‏نسخ عنوان URL</translation>
 <translation id="2155772377859296191">‏تبدو كـ <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">مشغّل الخدمات: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">تشغيل اختبار "التحقق من الأمان" مرة أخرى</translation>
 <translation id="2157474325782140681">‏للحصول على ميزات إضافية، يُرجى استخدام محطة إرساء Dell المصمّمة للعمل مع جهاز Chromebook هذا.</translation>
 <translation id="215753907730220065">إنهاء وضع ملء الشاشة</translation>
 <translation id="2157875535253991059">هذه الصفحة في وضع ملء الشاشة الآن.</translation>
@@ -1994,6 +1995,7 @@
 <translation id="3225319735946384299">التوقيع بالرمز</translation>
 <translation id="3227137524299004712">الميكروفون</translation>
 <translation id="3233271424239923319">‏الاحتفاظ بنسخة احتياطية من تطبيقات وملفات Linux</translation>
+<translation id="3238192140106069382">جارٍ الاتصال والتحقق</translation>
 <translation id="3239373508713281971">تمت إزالة المهلة المحددّة لتطبيق <ph name="APP_NAME" />.</translation>
 <translation id="3241680850019875542">حدد الدليل الجذر للإضافة المراد إنشاء حزمة لها، ولتحديث إضافة، حدد أيضًا ملف المفتاح الخاص لإعادة استخدامه.</translation>
 <translation id="3244294424315804309">استمرار كتم الصوت</translation>
@@ -2591,7 +2593,6 @@
 <translation id="3882165008614329320">الفيديو الحالي من الكاميرا أو الملف</translation>
 <translation id="3884152383786131369">سيستخدم محتوى الويب المتوفّر بلغات متعدّدة أول لغة معتمَدة من القائمة. وستتم مزامنة هذه الإعدادات المفضّلة مع إعدادات المتصفّح. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">تمّ إرسال طلبك للدخول إلى هذا الموقع إلى <ph name="NAME" /></translation>
-<translation id="3888364689515978571">غير مفعَّلة. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">تسجيل الملاحظات من خلال <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">‏تفعيل ميزة "مزامنة Chrome" لاستخدام "مزامنة الواي فاي"</translation>
 <translation id="3892414795099177503">‏إضافة OpenVPN / L2TP...</translation>
@@ -2672,7 +2673,6 @@
 <translation id="3958088479270651626">استيراد الإشارات المرجعية والإعدادات</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">إيقاف شبكة الجوّال</translation>
-<translation id="3965730875470565266">مفعَّلة لمدة <ph name="MINUTES" /> دقيقة.</translation>
 <translation id="3965811923470826124">مع</translation>
 <translation id="3965965397408324205">الخروج من <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">اختيار مجلد آخر...</translation>
@@ -4223,7 +4223,6 @@
 <translation id="5832813618714645810">الملفات الشخصية</translation>
 <translation id="583281660410589416">غير معروف</translation>
 <translation id="5833397272224757657">يتم استخدام المحتوى على المواقع الإلكترونية التي تزورها، بالإضافة إلى نشاط المتصفِّح وتفاعلاته للتخصيص.</translation>
-<translation id="5833551944249825624">‏سيكون Chromebook مرئيًا لجميع المستخدمين القريبين منك لمدة 5 دقائق.</translation>
 <translation id="5833726373896279253">يمكن تعديل هذه الإعدادات بواسطة المالك فقط: </translation>
 <translation id="5834581999798853053">تتبقى <ph name="TIME" /> دقيقة تقريبًا</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> - تسجيل الكاميرا أو الميكروفون</translation>

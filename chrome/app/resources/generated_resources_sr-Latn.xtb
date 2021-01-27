@@ -1044,6 +1044,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2154710561487035718">Kopiranje URL adrese</translation>
 <translation id="2155772377859296191">Izgleda da je u pitanju <ph name="WIDTH" />×<ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Serviser: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156877321344104010">Ponovo pokreni bezbednosnu proveru</translation>
 <translation id="2157474325782140681">Da biste koristili dodatne funkcije, koristite Dell baznu stanicu kompatibilnu sa ovim Chromebook-om.</translation>
 <translation id="215753907730220065">Izađi iz režima celog ekrana</translation>
 <translation id="2157875535253991059">Ova stranica je sada u režimu celog ekrana.</translation>
@@ -1988,6 +1989,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3225319735946384299">Potpisivanje koda</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3233271424239923319">Napravite rezervne kopije Linux aplikacija i datoteka</translation>
+<translation id="3238192140106069382">Povezuje se i verifikuje</translation>
 <translation id="3239373508713281971">Vremensko ograničenje je uklonjeno za aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="3241680850019875542">Izaberite osnovni direktorijum dodatka za pakovanje. Da biste ažurirali dodatak, izaberite i datoteku privatnog ključa koja će se ponovo koristiti.</translation>
 <translation id="3244294424315804309">Ne uključuj zvuk</translation>
@@ -2584,7 +2586,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3882165008614329320">Postojeći video iz kamere ili datoteke</translation>
 <translation id="3884152383786131369">Veb-sadržaj koji je dostupan na više jezika koristi prvi podržani jezik sa ove liste. Ova podešavanja se sinhronizuju sa podešavanjima pregledača. <ph name="BEGIN_LINK_LEARN_MORE" />Saznajte više<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3886446263141354045">Zahtev za pristup ovom sajtu je poslat korisniku <ph name="NAME" /></translation>
-<translation id="3888364689515978571">Isključeno je. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="3888550877729210209">Pravljenje beležaka pomoću aplikacije <ph name="LOCK_SCREEN_APP_NAME" /></translation>
 <translation id="3890064827463908288">Uključite Chrome sinhronizaciju da biste koristili WiFi sinhronizaciju</translation>
 <translation id="3892414795099177503">Dodaj OpenVPN/L2TP...</translation>
@@ -2668,7 +2669,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3958088479270651626">Uvezite obeleživače i podešavanja</translation>
 <translation id="3960566196862329469">ONC</translation>
 <translation id="3964480518399667971">Isključi mobilnu mrežu</translation>
-<translation id="3965730875470565266">Uključeno je, <ph name="MINUTES" /> min</translation>
 <translation id="3965811923470826124">Sa razrešivačem</translation>
 <translation id="3965965397408324205">Zatvori <ph name="PROFILE_NAME" /></translation>
 <translation id="3966072572894326936">Odaberi drugi direktorijum...</translation>
@@ -4219,7 +4219,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5832813618714645810">Profili</translation>
 <translation id="583281660410589416">Nepoznato</translation>
 <translation id="5833397272224757657">Koristi sadržaj na sajtovima koje posećujete, kao i aktivnosti i interakcije u pregledaču radi personalizacije</translation>
-<translation id="5833551944249825624">Chromebook će 5 min biti vidljiv svima u blizini</translation>
 <translation id="5833726373896279253">Ova podešavanja može da izmeni samo vlasnik:</translation>
 <translation id="5834581999798853053">Ostalo je oko <ph name="TIME" /> minuta</translation>
 <translation id="5835486486592033703"><ph name="WINDOW_TITLE" /> – Kamera ili mikrofon snimaju</translation>

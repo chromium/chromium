@@ -71,7 +71,7 @@
 <translation id="7890287942691234100">開始使用 Chromium 掃瞄器</translation>
 <translation id="8013573822802650211">如要在任何使用 Chromium 的裝置上查看分頁，請在所有裝置上登入</translation>
 <translation id="8073677936375100957">要清除此裝置上的 Chromium 資料嗎？</translation>
-<translation id="8097322092271030751">由於你的帳戶是由 <ph name="HOSTED_DOMAIN" /> 管理，因此當你登出帳戶時，系統會將你的 Chromium 資料從這部裝置上刪除，但是已同步處理的資料會繼續保留在你的 Google 帳戶中。</translation>
+<translation id="8097322092271030751">由於您的帳戶由 <ph name="HOSTED_DOMAIN" /> 管理，當您登出帳戶時，Chromium 資料亦會從此裝置上刪除，已同步處理的資料會繼續保留在 Google 帳戶中。</translation>
 <translation id="8175055321229419309">提示：<ph name="BEGIN_LINK" />請將 Chromium 移至工具列<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">如要將 Chromium 設定為預設瀏覽器，請開啟「設定」，然後輕按 [預設的瀏覽器應用程式] 並選取 Chromium。</translation>
 <translation id="8240981428553046115">Chromium 無法檢查更新，請稍後再試。</translation>

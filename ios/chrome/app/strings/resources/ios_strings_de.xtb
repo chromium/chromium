@@ -257,6 +257,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites Cookies nicht verwenden,
 <translation id="3533436815740441613">Neuer Tab</translation>
 <translation id="3551320343578183772">Tab schließen</translation>
 <translation id="3581564640715911333">Übersetzung für Seiten in andere Sprachen anbieten</translation>
+<translation id="3588492282865875287">Abmelden?</translation>
 <translation id="3588820906588687999">Bild in neuem Tab öffnen</translation>
 <translation id="359441731697487922">Links werden automatisch in Chrome geöffnet, wenn Sie es als Standard-Browser-App festlegen.
       
@@ -410,6 +411,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="5317780077021120954">Speichern</translation>
 <translation id="5327248766486351172">Name</translation>
 <translation id="5339316356165661760">Synchronisierung aktivieren</translation>
+<translation id="5351284593342054342">Von diesem Gerät löschen</translation>
 <translation id="5388358297987318779">Bild öffnen</translation>
 <translation id="5407969256130905701">Änderungen verwerfen</translation>
 <translation id="5409365236829784218">Es sind keine Apps inst., die diese Datei öffnen können.</translation>
@@ -465,6 +467,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="5948291296578561264">Dadurch können Sie Fotos in der Fotogalerie speichern.</translation>
 <translation id="5955891643922670672">Offlineversion wird angezeigt</translation>
 <translation id="5957613098218939406">Weitere Optionen</translation>
+<translation id="5961521066940389233">Auf diesem Gerät speichern</translation>
 <translation id="5964480694698977962">Neuen Inkognitotab erstellen.</translation>
 <translation id="5965679971710331625">Sie sind angemeldet</translation>
 <translation id="5979837087407522202">Passwörter suchen</translation>
@@ -479,6 +482,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="605721222689873409">JJ</translation>
 <translation id="6059830886158432458">Hier können Sie festlegen, welche Meldungen und Aktivitäten Ihnen angezeigt werden</translation>
 <translation id="6066301408025741299">Zum Abbrechen tippen</translation>
+<translation id="6085282545406522838">Ihre synchronisierten Daten verbleiben in Ihrem Google-Konto.</translation>
 <translation id="6108923351542677676">Einrichtung läuft...</translation>
 <translation id="6119050551270742952">Die aktuelle Webseite ist im Inkognitomodus</translation>
 <translation id="6122191549521593678">Online</translation>
@@ -631,6 +635,7 @@ Es empfiehlt sich aber, für jede Website ein eigenes Passwort zu verwenden.</tr
 <translation id="7514365320538308">Herunterladen</translation>
 <translation id="7537586195939242955">Ihr Pass kann derzeit nicht in Passbook installiert werden.</translation>
 <translation id="7554791636758816595">Neuer Tab</translation>
+<translation id="7558943807639707687">Was möchten Sie mit Ihren Lesezeichen, Ihrem Verlauf und anderen Daten auf diesem Gerät tun?</translation>
 <translation id="7561196759112975576">Immer</translation>
 <translation id="7583004045319035904">Nutzen Sie <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />, um Ihre Inkognitotabs zu entsperren.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" /> nie übersetzen</translation>
