@@ -365,4 +365,34 @@ suite('PasswordsDeviceSection', function() {
     assertTrue(firstPasswordItem.$.moreActionsButton.hidden);
   });
 
+
+  test(
+      'moveMultiplePasswordsBannerHiddenWhenNoLocalPasswords',
+      async function() {
+        loadTimeData.overrideValues(
+            {enableMovingMultiplePasswordsToAccount: true});
+
+        const passwordsDeviceSection = await createPasswordsDeviceSection(
+            syncBrowserProxy, passwordManager, []);
+
+        assertTrue(passwordsDeviceSection.shadowRoot
+                       .querySelector('#moveMultiplePasswordsBanner')
+                       .hidden);
+      });
+
+  test(
+      'moveMultiplePasswordsBannerVisibleWhenLocalPasswords', async function() {
+        loadTimeData.overrideValues(
+            {enableMovingMultiplePasswordsToAccount: true});
+
+        const devicePassword = createPasswordEntry(
+            {username: 'device', id: 0, fromAccountStore: false});
+        const passwordsDeviceSection = await createPasswordsDeviceSection(
+            syncBrowserProxy, passwordManager, [devicePassword]);
+
+        assertFalse(passwordsDeviceSection.shadowRoot
+                        .querySelector('#moveMultiplePasswordsBanner')
+                        .hidden);
+      });
+
 });

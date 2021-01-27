@@ -124,6 +124,20 @@ Polymer({
       observer: 'onAllDevicePasswordsChanged_',
     },
 
+    /**
+     * Whether the entry point leading to the dialog to move multiple passwords
+     * to the Google Account should be shown. It's shown only where there is at
+     * least one password store on device.
+     * @private
+     */
+    shouldShowMoveMultiplePasswordsBanner_: {
+      type: Boolean,
+      value: false,
+      computed: 'computeShouldShowMoveMultiplePasswordsBanner_(' +
+          'allDevicePasswords_)',
+    },
+
+
     /** @private {!MultiStorePasswordUiEntry} */
     lastFocused_: Object,
 
@@ -183,14 +197,6 @@ Polymer({
       value: '',
     },
 
-    /** @private */
-    movingMultiplePasswordsToAccountFeatureEnabled_: {
-      type: Boolean,
-      value() {
-        return loadTimeData.getBoolean(
-            'enableMovingMultiplePasswordsToAccount');
-      }
-    },
   },
 
   keyBindings: {
@@ -267,6 +273,15 @@ Polymer({
         (this.syncDisabled_ === null || !!this.syncDisabled_) &&
         (this.optedInForAccountStorage_ === null ||
          !!this.optedInForAccountStorage_);
+  },
+
+  /**
+   * @private
+   * @return {boolean}
+   */
+  computeShouldShowMoveMultiplePasswordsBanner_() {
+    return loadTimeData.getBoolean('enableMovingMultiplePasswordsToAccount') &&
+        (this.allDevicePasswords_.length > 0);
   },
 
   /**
