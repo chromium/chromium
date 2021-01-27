@@ -4111,12 +4111,6 @@ extern const char kEnhancedClipboardNudgeSessionResetDescription[] =
     "When enabled, this will reset the clipboard nudge shown data on every new "
     "user session, allowing the nudge to be shown again.";
 
-const char kEnhancedClipboardSimpleRenderName[] =
-    "Only renders html in the Enhanced Clipboard if there are img or table "
-    "tags";
-const char kEnhancedClipboardSimpleRenderDescription[] =
-    "This will result in less HTML rendering in the Enhanced Clipboard menu.";
-
 const char kEnableCrOSActionRecorderName[] = "Enable CrOS action recorder";
 const char kEnableCrOSActionRecorderDescription[] =
     "When enabled, each app launching, file opening, setting change, and url "

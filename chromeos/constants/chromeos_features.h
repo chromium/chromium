@@ -170,8 +170,6 @@ extern const base::Feature kClipboardHistory;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kClipboardHistoryNudgeSessionReset;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-extern const base::Feature kClipboardHistorySimpleRender;
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kClipboardHistoryContextMenuNudge;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kEnableFilesAppCopyImage;
@@ -354,8 +352,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsNewOobeLayoutEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsClipboardHistoryEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsClipboardHistoryNudgeSessionResetEnabled();
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
-bool IsClipboardHistorySimpleRenderEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 bool IsClipboardHistoryContextMenuNudgeEnabled();
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) bool IsOobeChromeVoxHintEnabled();

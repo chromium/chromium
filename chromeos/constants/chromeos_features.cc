@@ -380,11 +380,6 @@ const base::Feature kClipboardHistory{"ClipboardHistory",
 const base::Feature kClipboardHistoryNudgeSessionReset{
     "ClipboardHistoryNudgeSessionReset", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables rendering html in Clipboard History only if an img or table tag is
-// present.
-const base::Feature kClipboardHistorySimpleRender{
-    "ClipboardHistorySimpleRender", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // If enabled, a blue new nudge will show on the context menu option for
 // clipboard history.
 const base::Feature kClipboardHistoryContextMenuNudge{
@@ -804,17 +799,11 @@ bool IsOobeChromeVoxHintEnabled() {
 }
 
 bool IsClipboardHistoryEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistory) ||
-         base::FeatureList::IsEnabled(kClipboardHistorySimpleRender);
+  return base::FeatureList::IsEnabled(kClipboardHistory);
 }
 
 bool IsClipboardHistoryNudgeSessionResetEnabled() {
   return base::FeatureList::IsEnabled(kClipboardHistoryNudgeSessionReset);
-}
-
-bool IsClipboardHistorySimpleRenderEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistory) ||
-         base::FeatureList::IsEnabled(kClipboardHistorySimpleRender);
 }
 
 bool IsClipboardHistoryContextMenuNudgeEnabled() {
