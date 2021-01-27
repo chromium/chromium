@@ -42,7 +42,8 @@ void SetUpFontUniqueLookupIfNecessary() {
 FontMetadata::FontMetadata(const FontEnumerationEntry& entry)
     : postscriptName_(entry.postscript_name),
       fullName_(entry.full_name),
-      family_(entry.family) {}
+      family_(entry.family),
+      style_(entry.style) {}
 
 FontMetadata* FontMetadata::Create(const FontEnumerationEntry& entry) {
   return MakeGarbageCollected<FontMetadata>(entry);

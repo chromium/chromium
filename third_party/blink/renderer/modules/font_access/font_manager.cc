@@ -116,7 +116,8 @@ void FontManager::DidGetEnumerationResponse(
     auto entry = FontEnumerationEntry{
         String::FromUTF8(element.postscript_name().c_str()),
         String::FromUTF8(element.full_name().c_str()),
-        String::FromUTF8(element.family().c_str())};
+        String::FromUTF8(element.family().c_str()),
+        String::FromUTF8(element.style().c_str())};
     entries.push_back(FontMetadata::Create(std::move(entry)));
   }
 

@@ -94,6 +94,8 @@ void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
           GetLocalizedString(fd, kCTFontDisplayNameAttribute);
       base::ScopedCFTypeRef<CFStringRef> cf_family =
           GetString(fd, kCTFontFamilyNameAttribute);
+      base::ScopedCFTypeRef<CFStringRef> cf_style =
+          GetString(fd, kCTFontStyleNameAttribute);
 
       std::string postscript_name =
           base::SysCFStringRefToUTF8(cf_postscript_name.get());
@@ -110,6 +112,7 @@ void FontEnumerationCacheMac::PrepareFontEnumerationCache() {
       metadata.set_full_name(
           base::SysCFStringRefToUTF8(cf_full_name.get()).c_str());
       metadata.set_family(base::SysCFStringRefToUTF8(cf_family.get()).c_str());
+      metadata.set_style(base::SysCFStringRefToUTF8(cf_style.get()).c_str());
 
       blink::FontEnumerationTable_FontMetadata* added_font_meta =
           font_enumeration_table->add_fonts();
