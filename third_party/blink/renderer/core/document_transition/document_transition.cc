@@ -120,6 +120,7 @@ void DocumentTransition::start() {
   pending_request_ = Request::CreateStart(ConvertToBaseOnceCallback(
       CrossThreadBindOnce(&DocumentTransition::NotifyStartCommitted,
                           WrapCrossThreadWeakPersistent(this))));
+  NotifyHasChangesToCommit();
 }
 
 void DocumentTransition::NotifyHasChangesToCommit() {

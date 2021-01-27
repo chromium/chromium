@@ -227,4 +227,33 @@ TEST_F(DocumentTransitionTest, StartAfterPrepare) {
   EXPECT_FALSE(transition->TakePendingRequest());
 }
 
+TEST_F(DocumentTransitionTest, StartIsPropagated) {
+  auto* transition =
+      DocumentTransitionSupplement::documentTransition(GetDocument());
+
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+
+  DocumentTransitionInit init;
+  ScriptPromiseTester prepare_tester(script_state,
+                                     transition->prepare(script_state, &init));
+  EXPECT_EQ(GetState(transition), State::kPreparing);
+
+  UpdateAllLifecyclePhasesAndSimulateCommit();
+  prepare_tester.WaitUntilSettled();
+  EXPECT_TRUE(prepare_tester.IsFulfilled());
+  EXPECT_EQ(GetState(transition), State::kPrepared);
+
+  transition->start();
+
+  EXPECT_EQ(GetState(transition), State::kStarted);
+  UpdateAllLifecyclePhasesAndSimulateCommit();
+
+  // TODO(vmpstr): This test relies on the fact that the commit callback will
+  // switch the state to kIdle. Long term, the state should only switch to
+  // kStarted here, and have a separate callback for when the transition is
+  // finished. When that happens, the expectations of this test should change.
+  EXPECT_EQ(GetState(transition), State::kIdle);
+}
+
 }  // namespace blink
