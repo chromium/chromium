@@ -55,7 +55,10 @@ namespace {
 bool g_disable_initial_delay = false;
 
 // Shield rounded corner radius
-constexpr gfx::RoundedCornersF kBackgroundCornerRadius{4.f};
+constexpr gfx::RoundedCornersF kBackgroundCornerRadius{16.f};
+
+// Shield horizontal inset.
+constexpr int kBackgroundHorizontalInsetDp = 8;
 
 // Shield background blur sigma.
 constexpr float kBackgroundBlurSigma =
@@ -277,6 +280,7 @@ class WindowCycleView : public views::WidgetDelegateView,
     layer->SetBackgroundBlur(kBackgroundBlurSigma);
     layer->SetBackdropFilterQuality(kBackgroundBlurQuality);
     layer->SetName("WindowCycleView");
+    layer->SetMasksToBounds(true);
 
     if (Shell::Get()
             ->window_cycle_controller()
@@ -451,6 +455,16 @@ class WindowCycleView : public views::WidgetDelegateView,
   // views::WidgetDelegateView:
   gfx::Size CalculatePreferredSize() const override {
     gfx::Size size = mirror_container_->GetPreferredSize();
+    // |mirror_container_| can have window list that overflow out of the
+    // screen, but the window cycle view with a bandshield, cropping the
+    // overflow window list, should remain within the specified horizontal
+    // insets of the screen width.
+    size.set_width(
+        std::min(size.width(), Shell::GetRootWindowForNewWindows()
+                                       ->GetBoundsInScreen()
+                                       .size()
+                                       .width() -
+                                   2 * kBackgroundHorizontalInsetDp));
     if (Shell::Get()
             ->window_cycle_controller()
             ->IsInteractiveAltTabModeAllowed()) {
@@ -470,11 +484,7 @@ class WindowCycleView : public views::WidgetDelegateView,
     // work properly.
     if (first_layout) {
       mirror_container_->SizeToPreferredSize();
-      // Give rounded corners to our layer if it takes up less space than the
-      // width of the screen (our width will match |mirror_container_|'s if the
-      // widget's width is less than that of the screen).
-      if (mirror_container_->GetPreferredSize().width() <= width())
-        layer()->SetRoundedCornerRadius(kBackgroundCornerRadius);
+      layer()->SetRoundedCornerRadius(kBackgroundCornerRadius);
     }
 
     views::View* target_view = window_view_map_[current_window_];
