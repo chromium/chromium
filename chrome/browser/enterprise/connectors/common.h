@@ -59,7 +59,7 @@ struct AnalysisSettings {
   bool block_password_protected_files = false;
   bool block_large_files = false;
   bool block_unsupported_file_types = false;
-  std::string custom_message_text;
+  base::string16 custom_message_text;
   GURL custom_message_learn_more_url;
 
   // Minimum text size for BulkDataEntry scans. 0 means no minimum.

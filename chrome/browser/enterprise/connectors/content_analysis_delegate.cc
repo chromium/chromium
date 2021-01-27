@@ -291,10 +291,6 @@ void ContentAnalysisDelegate::CreateForWebContents(
   Factory* testing_factory = GetFactoryStorage();
   bool wait_for_verdict = data.settings.block_until_verdict ==
                           enterprise_connectors::BlockUntilVerdict::BLOCK;
-  std::string custom_message_text = data.settings.custom_message_text;
-  GURL custom_message_learn_more_url =
-      data.settings.custom_message_learn_more_url;
-
   // Using new instead of std::make_unique<> to access non public constructor.
   auto delegate =
       testing_factory->is_null()

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/connectors/analysis_service_settings.h"
 
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "components/policy/core/browser/url_util.h"
 
@@ -72,7 +73,11 @@ AnalysisServiceSettings::AnalysisServiceSettings(
     // browser's locales or other signals.
     const base::Value& value = custom_messages->GetList()[0];
     const std::string* message = value.FindStringKey(kKeyCustomMessagesMessage);
-    custom_message_text_ = message ? *message : "";
+    // This string originates as a protobuf string on the server, which are utf8
+    // and it's used in the UI where it needs to be encoded as utf16. Do the
+    // conversion now, otherwise code down the line may not be able to determine
+    // if the std::string is ASCII or UTF8 before passing it to the UI.
+    custom_message_text_ = base::UTF8ToUTF16(message ? *message : "");
 
     const std::string* url =
         value.FindStringKey(kKeyCustomMessagesLearnMoreUrl);

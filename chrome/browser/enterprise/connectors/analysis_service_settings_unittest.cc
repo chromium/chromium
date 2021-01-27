@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/analysis_service_settings.h"
 #include "base/json/json_reader.h"
 #include "base/no_destructor.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,6 +83,27 @@ constexpr char kNoEnabledPatternsSettings[] = R"({
   "block_unsupported_file_types": true,
 })";
 
+constexpr char kNormalSettingsWithCustomMessage[] = R"({
+  "service_provider": "google",
+  "enable": [
+    {"url_list": ["*"], "tags": ["dlp", "malware"]},
+  ],
+  "disable": [
+    {"url_list": ["no.dlp.com", "no.dlp.or.malware.ca"], "tags": ["dlp"]},
+    {"url_list": ["no.malware.com", "no.dlp.or.malware.ca"],
+         "tags": ["malware"]},
+    {"url_list": ["scan2.com"], "tags": ["dlp", "malware"]},
+  ],
+  "block_until_verdict": 1,
+  "block_password_protected": true,
+  "block_large_files": true,
+  "block_unsupported_file_types": true,
+  "minimum_data_size": 123,
+  "custom_messages": [
+    {"message": "abcèéç"},
+  ],
+})";
+
 constexpr char kScan1DotCom[] = "https://scan1.com";
 constexpr char kScan2DotCom[] = "https://scan2.com";
 constexpr char kNoDlpDotCom[] = "https://no.dlp.com";
@@ -123,6 +145,15 @@ AnalysisSettings* NormalMalwareSettings() {
 AnalysisSettings* NormalDlpAndMalwareSettings() {
   static base::NoDestructor<AnalysisSettings> settings(
       NormalSettingsWithTags({"dlp", "malware"}));
+  return settings.get();
+}
+
+AnalysisSettings* NormalSettingsWithCustomMessage() {
+  static base::NoDestructor<AnalysisSettings> settings([]() {
+    AnalysisSettings settings = NormalSettingsWithTags({"dlp", "malware"});
+    settings.custom_message_text = base::UTF8ToUTF16("abcèéç");
+    return settings;
+  }());
   return settings.get();
 }
 
@@ -215,6 +246,9 @@ INSTANTIATE_TEST_CASE_P(
         TestParam(kNoMalwareDotCom, kNoEnabledPatternsSettings, NoSettings()),
         TestParam(kNoDlpOrMalwareDotCa,
                   kNoEnabledPatternsSettings,
-                  NoSettings())));
+                  NoSettings()),
+        TestParam(kScan1DotCom,
+                  kNormalSettingsWithCustomMessage,
+                  NormalSettingsWithCustomMessage())));
 
 }  // namespace enterprise_connectors

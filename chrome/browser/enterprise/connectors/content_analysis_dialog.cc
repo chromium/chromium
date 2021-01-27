@@ -338,7 +338,7 @@ void ContentAnalysisDialog::WebContentsDestroyed() {
 
 void ContentAnalysisDialog::ShowResult(
     ContentAnalysisDelegate::FinalResult result,
-    const std::string& custom_message,
+    const base::string16& custom_message,
     const GURL& learn_more_url) {
   DCHECK(is_pending());
   final_result_ = result;
@@ -688,7 +688,7 @@ base::string16 ContentAnalysisDialog::GetCustomMessage() const {
   DCHECK(is_warning() || is_failure());
   DCHECK(has_custom_message());
   return l10n_util::GetStringFUTF16(IDS_DEEP_SCANNING_DIALOG_CUSTOM_MESSAGE,
-                                    base::ASCIIToUTF16(final_custom_message_));
+                                    final_custom_message_);
 }
 
 const gfx::ImageSkia* ContentAnalysisDialog::GetTopImage() const {

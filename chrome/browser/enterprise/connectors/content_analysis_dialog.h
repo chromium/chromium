@@ -125,7 +125,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // Updates the dialog with the result, and simply delete it from memory if
   // nothing should be shown.
   void ShowResult(ContentAnalysisDelegate::FinalResult result,
-                  const std::string& custom_message,
+                  const base::string16& custom_message,
                   const GURL& learn_more_url);
 
   // Accessors to simplify |dialog_status_| checking.
@@ -247,7 +247,7 @@ class ContentAnalysisDialog : public views::DialogDelegate,
   // Used to show the appropriate message.
   ContentAnalysisDelegate::FinalResult final_result_ =
       ContentAnalysisDelegate::FinalResult::SUCCESS;
-  std::string final_custom_message_;
+  base::string16 final_custom_message_;
   GURL final_learn_more_url_;
 
   // Used to animate dialog height changes.
