@@ -153,6 +153,9 @@ def GenerateBundleApks(bundle_path,
     if mode is not None:
       input_strings.append(mode)
 
+    # Avoid rebuilding (saves ~20s) when the input files have not changed. This
+    # is essential when calling the apk_operations.py script multiple times with
+    # the same bundle (e.g. out/Debug/bin/monochrome_public_bundle run).
     md5_check.CallAndRecordIfStale(
         rebuild,
         input_paths=input_paths,

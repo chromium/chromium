@@ -598,6 +598,8 @@ def main(args):
   if options.force_enable_assertions:
     dex_cmd += ['--force-enable-assertions']
 
+  # The changes feature from md5_check allows us to only re-dex the class files
+  # that have changed and the class files that need to be re-desugared by D8.
   md5_check.CallAndWriteDepfileIfStale(
       lambda changes: _OnStaleMd5(changes, options, final_dex_inputs, dex_cmd),
       options,

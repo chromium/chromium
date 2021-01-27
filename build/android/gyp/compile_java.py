@@ -4,8 +4,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import distutils.spawn
-import functools
 import logging
 import multiprocessing
 import optparse
@@ -730,6 +728,8 @@ def main(argv):
       options.warnings_as_errors, options.jar_info_exclude_globs
   ]
 
+  # Keep md5_check since we plan to use its changes feature to implement a build
+  # speed improvement for non-signature compiles: https://crbug.com/1170778
   md5_check.CallAndWriteDepfileIfStale(
       lambda: _OnStaleMd5(options, javac_cmd, javac_args, java_files),
       options,
