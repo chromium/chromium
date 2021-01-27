@@ -100,20 +100,10 @@ MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin() = default;
 
 MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin(std::string device_id_salt,
                                                    std::string group_id_salt,
-                                                   url::Origin origin,
-                                                   GURL url)
+                                                   url::Origin origin)
     : device_id_salt(std::move(device_id_salt)),
       group_id_salt(std::move(group_id_salt)),
-      origin(std::move(origin)),
-      url(std::move(url)) {}
-
-MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin(
-    const MediaDeviceSaltAndOrigin&) = default;
-
-MediaDeviceSaltAndOrigin& MediaDeviceSaltAndOrigin::operator=(
-    const MediaDeviceSaltAndOrigin&) = default;
-
-MediaDeviceSaltAndOrigin::~MediaDeviceSaltAndOrigin() = default;
+      origin(std::move(origin)) {}
 
 void GetDefaultMediaDeviceID(
     MediaDeviceType device_type,
@@ -185,7 +175,7 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
   group_id_salt += frame_salt + "groupid";
 
   return {std::move(device_id_salt), std::move(group_id_salt),
-          std::move(origin), std::move(url)};
+          std::move(origin)};
 }
 
 blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(

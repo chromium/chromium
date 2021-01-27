@@ -849,7 +849,6 @@ std::string MediaStreamManager::MakeMediaAccessRequest(
     int requester_id,
     int page_request_id,
     const StreamControls& controls,
-    const GURL& url,
     const url::Origin& security_origin,
     MediaAccessRequestCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -864,7 +863,7 @@ std::string MediaStreamManager::MakeMediaAccessRequest(
       blink::MEDIA_DEVICE_ACCESS, controls,
       MediaDeviceSaltAndOrigin{std::string() /* salt */,
                                std::string() /* group_id_salt */,
-                               security_origin, url});
+                               security_origin});
 
   request->media_access_request_cb = std::move(callback);
   const std::string& label = AddRequest(std::move(request));
@@ -2698,8 +2697,7 @@ void MediaStreamManager::OnStreamStarted(const std::string& label) {
                        request->devices),
         label, screen_share_ids,
         base::BindRepeating(&MediaStreamManager::RequestStateChangeFromBrowser,
-                            base::Unretained(this), label),
-        request->salt_and_origin.url);
+                            base::Unretained(this), label));
   }
 }
 

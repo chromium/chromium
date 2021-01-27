@@ -61,7 +61,6 @@ class CONTENT_EXPORT SpeechRecognitionDispatcherHost
       blink::mojom::StartSpeechRecognitionRequestParamsPtr params,
       int embedder_render_process_id,
       int embedder_render_frame_id,
-      const GURL& url,
       const url::Origin& origin,
       bool filter_profanities,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>

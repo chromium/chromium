@@ -352,8 +352,7 @@ void SpeechRecognitionManagerImpl::RecognitionAllowedCallback(int session_id,
     SpeechRecognitionSessionContext& context = session->context;
     context.label = media_stream_manager_->MakeMediaAccessRequest(
         context.render_process_id, context.render_frame_id, requester_id_,
-        session_id, blink::StreamControls(true, false), context.url,
-        context.security_origin,
+        session_id, blink::StreamControls(true, false), context.security_origin,
         base::BindOnce(
             &SpeechRecognitionManagerImpl::MediaRequestPermissionCallback,
             weak_factory_.GetWeakPtr(), session_id));
@@ -485,8 +484,7 @@ void SpeechRecognitionManagerImpl::OnRecognitionStart(int session_id) {
     iter->second->ui->OnStarted(
         base::OnceClosure(), MediaStreamUI::SourceCallback(),
         MediaStreamUIProxy::WindowIdCallback(), /*label=*/std::string(),
-        /*screen_capture_ids=*/{}, MediaStreamUI::StateChangeCallback(),
-        GURL());
+        /*screen_capture_ids=*/{}, MediaStreamUI::StateChangeCallback());
   }
 
   DCHECK_EQ(primary_session_id_, session_id);

@@ -175,7 +175,6 @@ class CONTENT_EXPORT MediaStreamManager
                                      int requester_id,
                                      int page_request_id,
                                      const blink::StreamControls& controls,
-                                     const GURL& url,
                                      const url::Origin& security_origin,
                                      MediaAccessRequestCallback callback);
 
