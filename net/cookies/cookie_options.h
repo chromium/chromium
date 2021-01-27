@@ -7,6 +7,7 @@
 #ifndef NET_COOKIES_COOKIE_OPTIONS_H_
 #define NET_COOKIES_COOKIE_OPTIONS_H_
 
+#include <ostream>
 #include <set>
 
 #include "base/optional.h"
@@ -189,6 +190,23 @@ class NET_EXPORT CookieOptions {
   // TODO(https://crbug.com/1163990): remove this field.
   bool is_in_nontrivial_first_party_set_ = false;
 };
+
+// Allows gtest to print more helpful error messages instead of printing hex.
+// (No need to null-check `os` because we can assume gtest will properly pass a
+// non-null pointer, and it is dereferenced immediately anyway.)
+inline void PrintTo(CookieOptions::SameSiteCookieContext::ContextType ct,
+                    std::ostream* os) {
+  *os << static_cast<int>(ct);
+}
+
+inline void PrintTo(const CookieOptions::SameSiteCookieContext& sscc,
+                    std::ostream* os) {
+  *os << "{ context: ";
+  PrintTo(sscc.context(), os);
+  *os << ", schemeful_context: ";
+  PrintTo(sscc.schemeful_context(), os);
+  *os << " }";
+}
 
 }  // namespace net
 
