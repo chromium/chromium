@@ -629,6 +629,10 @@ const OFFLINE_INFO_BANNER_COUNTER_LIMIT = 3;
    * @private
    */
   async maybeShowHoldingSpaceWelcomeBanner_() {
+    if (!this.showWelcome_) {
+      return;
+    }
+
     if (!HoldingSpaceUtil.isFeatureEnabled()) {
       return;
     }
