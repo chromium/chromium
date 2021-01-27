@@ -1694,6 +1694,7 @@ component("base") {
   if (is_nacl) {
     # Explicitly include the linux file.
     sources += [
+      "debug/stack_trace_nacl.cc",
       "files/file_path_watcher_stub.cc",
       "process/process_metrics_nacl.cc",
       "process/process_stubs.cc",

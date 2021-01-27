@@ -4,6 +4,10 @@
 
 #include "base/memory/weak_ptr.h"
 
+#if DCHECK_IS_ON()
+#include "base/debug/stack_trace.h"
+#endif
+
 namespace base {
 namespace internal {
 
@@ -18,8 +22,12 @@ void WeakReference::Flag::Invalidate() {
   // The flag being invalidated with a single ref implies that there are no
   // weak pointers in existence. Allow deletion on other thread in this case.
 #if DCHECK_IS_ON()
-  DCHECK(sequence_checker_.CalledOnValidSequence() || HasOneRef())
-      << "WeakPtrs must be invalidated on the same sequenced thread.";
+  std::unique_ptr<debug::StackTrace> bound_at;
+  DCHECK(sequence_checker_.CalledOnValidSequence(&bound_at) || HasOneRef())
+      << "WeakPtrs must be invalidated on the same sequenced thread as where "
+      << "they are bound.\n"
+      << (bound_at ? "This was bound at:\n" + bound_at->ToString() : "")
+      << "Check failed at:";
 #endif
   invalidated_.Set();
 }

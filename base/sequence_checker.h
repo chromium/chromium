@@ -10,6 +10,10 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
+#if DCHECK_IS_ON()
+#include "base/debug/stack_trace.h"
+#endif
+
 // SequenceChecker is a helper class used to help verify that some methods of a
 // class are called sequentially (for thread-safety). It supports thread safety
 // annotations (see base/thread_annotations.h).
@@ -21,6 +25,12 @@
 // This class is much prefered to ThreadChecker for thread-safety checks.
 // ThreadChecker should only be used for classes that are truly thread-affine
 // (use thread-local-storage or a third-party API that does).
+//
+// Debugging:
+//   If SequenceChecker::EnableStackLogging() is called beforehand, then when
+//   SequenceChecker fails, in addition to crashing with a stack trace of where
+//   the violation occurred, it will also dump a stack trace of where the
+//   checker was bound to a sequence.
 //
 // Usage:
 //   class MyClass {
@@ -93,6 +103,8 @@ namespace base {
 class THREAD_ANNOTATION_ATTRIBUTE__(capability("context"))
     SequenceCheckerDoNothing {
  public:
+  static void EnableStackLogging() {}
+
   SequenceCheckerDoNothing() = default;
 
   // Moving between matching sequences is allowed to help classes with
@@ -103,7 +115,9 @@ class THREAD_ANNOTATION_ATTRIBUTE__(capability("context"))
   SequenceCheckerDoNothing(const SequenceCheckerDoNothing&) = delete;
   SequenceCheckerDoNothing& operator=(const SequenceCheckerDoNothing&) = delete;
 
-  bool CalledOnValidSequence() const WARN_UNUSED_RESULT { return true; }
+  bool CalledOnValidSequence(void* = nullptr) const WARN_UNUSED_RESULT {
+    return true;
+  }
   void DetachFromSequence() {}
 };
 
@@ -113,23 +127,32 @@ using SequenceChecker = SequenceCheckerImpl;
 using SequenceChecker = SequenceCheckerDoNothing;
 #endif  // DCHECK_IS_ON()
 
+#if DCHECK_IS_ON()
 class SCOPED_LOCKABLE ScopedValidateSequenceChecker {
  public:
   explicit ScopedValidateSequenceChecker(const SequenceChecker& checker)
       EXCLUSIVE_LOCK_FUNCTION(checker) {
-    DCHECK(checker.CalledOnValidSequence());
+    std::unique_ptr<debug::StackTrace> bound_at;
+    DCHECK(checker.CalledOnValidSequence(&bound_at))
+        << (bound_at ? "\nWas attached to sequence at:\n" + bound_at->ToString()
+                     : "");
   }
 
   explicit ScopedValidateSequenceChecker(const SequenceChecker& checker,
                                          const StringPiece& msg)
       EXCLUSIVE_LOCK_FUNCTION(checker) {
-    DCHECK(checker.CalledOnValidSequence()) << msg;
+    std::unique_ptr<debug::StackTrace> bound_at;
+    DCHECK(checker.CalledOnValidSequence(&bound_at))
+        << msg
+        << (bound_at ? "\nWas attached to sequence at:\n" + bound_at->ToString()
+                     : "");
   }
 
   ~ScopedValidateSequenceChecker() UNLOCK_FUNCTION() {}
 
  private:
 };
+#endif
 
 }  // namespace base
 
