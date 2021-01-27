@@ -2682,8 +2682,12 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SnapAnimationTargetUpdated) {
       AnimatedUpdateState(gfx::Point(10, 10), gfx::Vector2dF(0, -10)).get());
   EXPECT_FALSE(GetInputHandler().animating_for_snap_for_testing());
   // Finish the smooth scroll animation for wheel.
+  const int scroll_animation_duration_ms =
+      base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 300
+                                                                       : 150;
   BeginImplFrameAndAnimate(begin_frame_args,
-                           start_time + base::TimeDelta::FromMilliseconds(150));
+                           start_time + base::TimeDelta::FromMilliseconds(
+                                            scroll_animation_duration_ms));
 
   // At the end of the previous scroll animation, a new animation for the
   // snapping should have started.
@@ -14847,7 +14851,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollAnimatedWithDelay) {
   begin_frame_args.frame_id.sequence_number++;
   host_impl_->WillBeginImplFrame(begin_frame_args);
   host_impl_->UpdateAnimationState(true);
-  EXPECT_EQ(50, CurrentScrollOffset(scrolling_layer).y());
+  EXPECT_NEAR(
+      (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 87
+                                                                        : 50),
+      CurrentScrollOffset(scrolling_layer).y(), 1);
   host_impl_->DidFinishImplFrame(begin_frame_args);
 
   // Update target.

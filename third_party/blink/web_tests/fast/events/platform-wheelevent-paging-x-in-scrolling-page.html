@@ -28,7 +28,7 @@ promise_test(async () => {
     document.body.addEventListener("mousewheel", mousewheelHandler, false);
 
     await smoothScroll(givenScrollLeft, 100, 110, source, 'right', SPEED_INSTANT, false /* precise_scrolling_deltas */, true /* scroll_by_page */);
-    await waitFor( () => {
+    await waitForAnimationEndTimeBased( () => {
         return document.scrollingElement.scrollLeft == window.expectedScrollLeft;
     });
     assert_equals(last_event.wheelDeltaX, -Math.floor(expectedWheelDeltaX));

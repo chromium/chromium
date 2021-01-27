@@ -29,7 +29,9 @@
 namespace blink {
 
 namespace {
-constexpr double kBeginFrameDelaySeconds = 0.5;
+const double kBeginFrameDelaySeconds =
+    (base::FeatureList::IsEnabled(features::kImpulseScrollAnimations) ? 1.5
+                                                                      : 0.5);
 }
 
 class FractionalScrollSimTest : public SimTest {

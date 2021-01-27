@@ -217,6 +217,8 @@ crbug.com/853977 [ Linux ] http/tests/fetch/chromium/release-handle-crash.html [
 crbug.com/864887 [ Mac ] fast/scroll-snap/snaps-after-scrollbar-scrolling-vertical.html [ Slow ]
 crbug.com/864887 [ Mac ] fast/scroll-snap/snaps-after-scrollbar-scrolling-horizontal.html [ Slow ]
 
+crbug.com/1047164 [ Mac ] fast/scroll-snap/snaps-after-keyboard-scrolling.html [ Slow ]
+
 crbug.com/865262 [ Mac ] media/controls/text-track-menu-pointer-selection.html [ Slow ]
 
 crbug.com/942951 media/controls/controls-layout-in-different-size.html [ Slow ]
