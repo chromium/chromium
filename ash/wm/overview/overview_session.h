@@ -320,7 +320,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
  private:
   friend class DesksAcceleratorsTest;
   friend class OverviewSessionTest;
-  class AccessibilityFocusAnnotator;
 
   // Helper function that moves the highlight forward or backward on the
   // corresponding window grid.
@@ -339,6 +338,11 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void RefreshNoWindowsWidgetBounds(bool animate);
 
   void OnItemAdded(aura::Window* window);
+
+  // Updates the focusable overview widgets so that they point to the correct
+  // next and previous widgets for a11y purposes. Needs to be updated when an
+  // overview item is added or removed.
+  void UpdateAccessibilityFocus();
 
   // Weak pointer to the overview delegate which will be called when a selection
   // is made.
@@ -401,10 +405,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   std::unique_ptr<ScopedOverviewHideWindows> hide_overview_windows_;
 
   std::unique_ptr<OverviewHighlightController> highlight_controller_;
-
-  // Updates accessibility with the correct focus order among all overview
-  // widgets.
-  std::unique_ptr<AccessibilityFocusAnnotator> accessibility_focus_annotator_;
 
   DISALLOW_COPY_AND_ASSIGN(OverviewSession);
 };
