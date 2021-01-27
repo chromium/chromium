@@ -44,6 +44,8 @@
         <structure name="IDR_OOBE_COMPONENTS_I18N_BEHAVIOR_JS" file="resources/chromeos/login/components/oobe_i18n_behavior/oobe_i18n_behavior.js" type="chrome_html" />
         <structure name="IDR_OOBE_COMPONENTS_FOCUS_BEHAVIOR_HTML" file="resources/chromeos/login/components/oobe_focus_behavior/oobe_focus_behavior.html" type="chrome_html" />
         <structure name="IDR_OOBE_COMPONENTS_FOCUS_BEHAVIOR_JS" file="resources/chromeos/login/components/oobe_focus_behavior/oobe_focus_behavior.js" type="chrome_html" />
+        <structure name="IDR_OOBE_COMPONENTS_SCROLLABLE_BEHAVIOR_HTML" file="resources/chromeos/login/components/oobe_scrollable_behavior/oobe_scrollable_behavior.html" type="chrome_html" />
+        <structure name="IDR_OOBE_COMPONENTS_SCROLLABLE_BEHAVIOR_JS" file="resources/chromeos/login/components/oobe_scrollable_behavior/oobe_scrollable_behavior.js" type="chrome_html" />
 
         <!-- OOBE CSS Vars -->
         <structure name="IDR_OOBE_COMPONENTS_OOBE_CUSTOM_VARS_OLD_CSS_HTML" file="resources/chromeos/login/components/oobe_vars/oobe_custom_vars_old_css.html" type="chrome_html" />
