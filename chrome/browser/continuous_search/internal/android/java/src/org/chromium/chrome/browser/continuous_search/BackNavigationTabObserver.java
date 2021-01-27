@@ -4,12 +4,15 @@
 
 package org.chromium.chrome.browser.continuous_search;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /**
@@ -75,6 +78,11 @@ public class BackNavigationTabObserver extends EmptyTabObserver {
     public void onDestroyed(Tab tab) {
         recordMetricAndClearCache();
         tab.removeObserver(this);
+    }
+
+    @Override
+    public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+        // Intentionally do nothing to prevent automatic observer removal on detachment.
     }
 
     private void recordMetricAndClearCache() {

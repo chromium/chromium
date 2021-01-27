@@ -6,12 +6,15 @@ package org.chromium.chrome.browser.tab;
 
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * User data for a {@link Tab} managing an ID of an external application that opened it.
@@ -54,6 +57,11 @@ public final class TabAssociatedApp extends TabWebContentsUserData implements Im
             @Override
             public void onDestroyed(Tab tab) {
                 tab.removeObserver(this);
+            }
+
+            @Override
+            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+                // Intentionally do nothing to prevent automatic observer removal on detachment.
             }
         });
     }

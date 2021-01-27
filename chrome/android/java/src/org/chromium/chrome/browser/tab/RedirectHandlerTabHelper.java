@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.external_intents.RedirectHandler;
+import org.chromium.ui.base.WindowAndroid;
 
 /**
  * This class glues RedirectHandler instances to Tabs.
@@ -23,6 +24,7 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
     private static final Class<RedirectHandlerTabHelper> USER_DATA_KEY =
             RedirectHandlerTabHelper.class;
 
+    private Tab mTab;
     private RedirectHandler mRedirectHandler;
 
     /**
@@ -36,7 +38,7 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
         UserDataHost host = tab.getUserDataHost();
         RedirectHandlerTabHelper helper = host.getUserData(USER_DATA_KEY);
         if (helper == null) {
-            helper = new RedirectHandlerTabHelper();
+            helper = new RedirectHandlerTabHelper(tab);
             host.setUserData(USER_DATA_KEY, helper);
             tab.addObserver(helper);
         }
@@ -62,7 +64,7 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
         UserDataHost host = tab.getUserDataHost();
         RedirectHandlerTabHelper oldHelper = host.getUserData(USER_DATA_KEY);
         if (newHandler != null) {
-            RedirectHandlerTabHelper newHelper = new RedirectHandlerTabHelper(newHandler);
+            RedirectHandlerTabHelper newHelper = new RedirectHandlerTabHelper(tab, newHandler);
             host.setUserData(USER_DATA_KEY, newHelper);
         } else {
             host.removeUserData(USER_DATA_KEY);
@@ -72,17 +74,30 @@ public class RedirectHandlerTabHelper extends EmptyTabObserver implements UserDa
         return oldHelper.mRedirectHandler;
     }
 
-    private RedirectHandlerTabHelper() {
+    private RedirectHandlerTabHelper(Tab tab) {
+        mTab = tab;
         mRedirectHandler = RedirectHandler.create();
     }
 
-    private RedirectHandlerTabHelper(RedirectHandler handler) {
+    private RedirectHandlerTabHelper(Tab tab, RedirectHandler handler) {
+        mTab = tab;
         mRedirectHandler = handler;
+    }
+
+    @Override
+    public void destroy() {
+        mTab.removeObserver(this);
+        mTab = null;
     }
 
     @Override
     public void onHidden(Tab tab, @TabHidingType int type) {
         mRedirectHandler.clear();
+    }
+
+    @Override
+    public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+        // Intentionally do nothing to prevent automatic observer removal on detachment.
     }
 
     /**

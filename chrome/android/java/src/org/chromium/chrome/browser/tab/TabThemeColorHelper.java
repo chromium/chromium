@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.tab;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.base.Callback;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.net.NetError;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
 /**
@@ -56,5 +59,10 @@ public class TabThemeColorHelper extends EmptyTabObserver {
     @Override
     public void onDestroyed(Tab tab) {
         tab.removeObserver(this);
+    }
+
+    @Override
+    public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+        // Intentionally do nothing to prevent automatic observer removal on detachment.
     }
 }
