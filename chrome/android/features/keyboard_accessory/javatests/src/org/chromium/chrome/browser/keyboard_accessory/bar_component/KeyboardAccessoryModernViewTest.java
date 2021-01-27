@@ -365,7 +365,7 @@ public class KeyboardAccessoryModernViewTest {
     public void testDismissesPaymentOfferEducationBubbleOnFilling() {
         String itemTag = "Cashback linked";
         AutofillBarItem itemWithIPH = new AutofillBarItem(
-                new AutofillSuggestion("Johnathan", "Smith", itemTag, R.drawable.ic_offer_tag_green,
+                new AutofillSuggestion("Johnathan", "Smith", itemTag, R.drawable.ic_offer_tag,
                         false, 70000, false, false, false),
                 new KeyboardAccessoryData.Action("", AUTOFILL_SUGGESTION, unused -> {}));
         itemWithIPH.setFeatureForIPH(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE);

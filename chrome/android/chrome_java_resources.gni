@@ -644,7 +644,7 @@ chrome_java_resources = [
   "java/res/drawable/ic_logo_assistant_24dp.xml",
   "java/res/drawable/ic_logo_googleg_20dp.xml",
   "java/res/drawable/ic_loop_round.xml",
-  "java/res/drawable/ic_offer_tag_green.xml",
+  "java/res/drawable/ic_offer_tag.xml",
   "java/res/drawable/ic_offline_pin_blue_white.xml",
   "java/res/drawable/ic_offline_pin_white.xml",
   "java/res/drawable/ic_open_in_browser.xml",
