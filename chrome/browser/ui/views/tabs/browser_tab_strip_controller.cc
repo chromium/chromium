@@ -422,13 +422,6 @@ bool BrowserTabStripController::ToggleTabGroupCollapsedState(
   }
   tabstrip_->ToggleTabGroup(group, !is_currently_collapsed, origin);
 
-  gfx::Range tabs_in_group = ListTabsInGroup(group);
-  for (auto i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
-    tabstrip_->tab_at(i)->SetVisible(is_currently_collapsed);
-    if (base::FeatureList::IsEnabled(features::kTabGroupsCollapseFreezing))
-      model_->GetWebContentsAt(i)->SetPageFrozen(!is_currently_collapsed);
-  }
-
   tab_groups::TabGroupVisualData new_data(
       GetGroupTitle(group), GetGroupColorId(group), !is_currently_collapsed);
   model_->group_model()->GetTabGroup(group)->SetVisualData(new_data, true);
@@ -707,6 +700,33 @@ void BrowserTabStripController::OnTabGroupChanged(
       break;
     }
     case TabGroupChange::kVisualsChanged: {
+      const TabGroupChange::VisualsChange* visuals_delta =
+          change.GetVisualsChange();
+      const tab_groups::TabGroupVisualData* old_visuals =
+          visuals_delta->old_visuals;
+      const tab_groups::TabGroupVisualData* new_visuals =
+          visuals_delta->new_visuals;
+      if (old_visuals &&
+          old_visuals->is_collapsed() != new_visuals->is_collapsed()) {
+        gfx::Range tabs_in_group = ListTabsInGroup(change.group);
+        for (auto i = tabs_in_group.start(); i < tabs_in_group.end(); ++i) {
+          tabstrip_->tab_at(i)->SetVisible(!new_visuals->is_collapsed());
+          if (base::FeatureList::IsEnabled(
+                  features::kTabGroupsCollapseFreezing)) {
+            if (visuals_delta->new_visuals->is_collapsed()) {
+              freezing_token_ =
+                  performance_manager::freezing::EmitFreezingVoteForWebContents(
+                      model_->GetWebContentsAt(i),
+                      performance_manager::freezing::FreezingVoteValue::
+                          kCanFreeze,
+                      "Collapsed Tab Group");
+            } else {
+              freezing_token_.reset();
+            }
+          }
+        }
+      }
+
       tabstrip_->OnGroupVisualsChanged(change.group);
       break;
     }

@@ -1185,8 +1185,10 @@ void TabStripModel::ChangeTabGroupContents(
     observer.OnTabGroupChanged(change);
 }
 
-void TabStripModel::ChangeTabGroupVisuals(const tab_groups::TabGroupId& group) {
-  TabGroupChange change(group, TabGroupChange::kVisualsChanged);
+void TabStripModel::ChangeTabGroupVisuals(
+    const tab_groups::TabGroupId& group,
+    const TabGroupChange::VisualsChange& visuals) {
+  TabGroupChange change(group, visuals);
   for (auto& observer : observers_)
     observer.OnTabGroupChanged(change);
 }

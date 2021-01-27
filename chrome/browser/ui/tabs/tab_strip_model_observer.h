@@ -11,6 +11,7 @@
 #include "base/optional.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "ui/base/models/list_selection_model.h"
 
 class TabStripModel;
@@ -216,11 +217,32 @@ struct TabGroupChange {
     kClosed
   };
 
-  TabGroupChange(tab_groups::TabGroupId group, Type type);
+  // Base class for all changes. Similar to TabStripModelChange::Delta.
+  struct Delta {
+    virtual ~Delta() = default;
+  };
+
+  // The TabGroupVisualData that was changed at the specified group.
+  struct VisualsChange : public Delta {
+    VisualsChange();
+    ~VisualsChange() override;
+    const tab_groups::TabGroupVisualData* old_visuals;
+    const tab_groups::TabGroupVisualData* new_visuals;
+  };
+
+  TabGroupChange(tab_groups::TabGroupId group,
+                 Type type,
+                 std::unique_ptr<Delta> deltap = nullptr);
+  explicit TabGroupChange(tab_groups::TabGroupId group, VisualsChange deltap);
   ~TabGroupChange();
+
+  const VisualsChange* GetVisualsChange() const;
 
   tab_groups::TabGroupId group;
   Type type;
+
+ private:
+  std::unique_ptr<Delta> delta;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

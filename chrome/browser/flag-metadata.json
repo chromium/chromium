@@ -4676,7 +4676,7 @@
   {
     "name": "tab-groups-collapse-freezing",
     "owners": [ "chrome-desktop-ui-sea@google.com", "cyan" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 92
   },
   {
     "name": "tab-groups-feedback",
