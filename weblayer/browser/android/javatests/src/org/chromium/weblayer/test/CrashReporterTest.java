@@ -119,4 +119,23 @@ public class CrashReporterTest {
         Assert.assertFalse(mCrashReport.exists());
         Assert.assertFalse(mCrashSidecar.exists());
     }
+
+    @Test
+    @SmallTest
+    public void testBogusCrashId() throws Exception {
+        CallbackHelper callbackHelper = new CallbackHelper();
+        InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            CrashReporterController crashReporterController =
+                    CrashReporterController.getInstance(activity);
+            crashReporterController.registerCallback(new CrashReporterCallback() {
+                @Override
+                public void onCrashUploadFailed(String localId, String message) {
+                    callbackHelper.notifyCalled();
+                }
+            });
+            crashReporterController.uploadCrash("bogus-crash-id");
+        });
+        callbackHelper.waitForFirst();
+    }
 }
