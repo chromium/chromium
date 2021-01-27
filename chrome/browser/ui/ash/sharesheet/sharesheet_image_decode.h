@@ -8,12 +8,20 @@
 #include "base/memory/weak_ptr.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
+class Profile;
+
 class SharesheetImageDecode {
  public:
+  using DecodeCallback = base::OnceCallback<void(gfx::ImageSkia)>;
+
   SharesheetImageDecode();
   ~SharesheetImageDecode();
   SharesheetImageDecode(const SharesheetImageDecode&) = delete;
   SharesheetImageDecode& operator=(const SharesheetImageDecode&) = delete;
+
+  void DecodeImage(apps::mojom::IntentPtr intent,
+                   Profile* profile,
+                   DecodeCallback callback);
 
  private:
   // Encodes the FilePath |url| into encoded bytes.
@@ -26,6 +34,7 @@ class SharesheetImageDecode {
   // Converts the |decoded_image| into an ImageSkia.
   void BitMapToImage(const SkBitmap& decoded_image);
 
+  DecodeCallback callback_;
   base::WeakPtrFactory<SharesheetImageDecode> weak_ptr_factory_{this};
 };
 

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/ash_typography.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_bubble_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
@@ -17,13 +18,17 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/view_class_properties.h"
 
+namespace {
+constexpr char kImagePrefix[] = "image/";
+
 constexpr SkColor kShareTitleColor = gfx::kGoogleGrey900;
 constexpr SkColor kTitlePreviewColor = gfx::kGoogleGrey700;
+}  // namespace
 
 SharesheetContentPreviews::SharesheetContentPreviews(
-    apps::mojom::IntentPtr intent) {
-  intent_ = std::move(intent);
-
+    apps::mojom::IntentPtr intent,
+    Profile* profile)
+    : profile_(profile), intent_(std::move(intent)) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       /* inside_border_insets */ gfx::Insets(),
@@ -31,11 +36,16 @@ SharesheetContentPreviews::SharesheetContentPreviews(
 
   ShowShareTitle();
 
-  // SharesheetContentPreviews will display the Share title as
-  // well as preview of the shared data when the
+  // SharesheetContentPreviews will display the share title as
+  // well as a preview of the shared data when the
   // features::kSharesheetContentPreviews flag is enabled.
   if (base::FeatureList::IsEnabled(features::kSharesheetContentPreviews)) {
     ShowFileTitlePreview();
+    // Image previews is displayed only if the intent contains an image.
+    if (base::StartsWith(intent_->mime_type.value(), kImagePrefix,
+                         base::CompareCase::SENSITIVE)) {
+      ExecuteImageDecoder();
+    }
   }
 }
 
@@ -71,9 +81,16 @@ void SharesheetContentPreviews::ShowFileTitlePreview() {
   }
 }
 
-void SharesheetContentPreviews::ShowImagePreview() {
-  // TODO(crbug.com/2631548): Add code to add a new
-  // image view to show image preview to the
-  // content previews view.
-  NOTIMPLEMENTED();
+void SharesheetContentPreviews::ExecuteImageDecoder() {
+  // Invokes the image decoder and executes OnImageDecoded
+  // upon completion.
+  decoder_.DecodeImage(
+      intent_->Clone(), profile_,
+      base::BindOnce(&SharesheetContentPreviews::OnImageDecoded,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SharesheetContentPreviews::OnImageDecoded(gfx::ImageSkia image) {
+  auto* imagePreview = AddChildView(std::make_unique<views::ImageView>());
+  imagePreview->SetImage(image);
 }

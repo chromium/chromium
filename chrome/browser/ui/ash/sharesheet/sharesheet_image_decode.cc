@@ -4,23 +4,80 @@
 
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_image_decode.h"
 
-SharesheetImageDecode::SharesheetImageDecode() = default;
+#include <utility>
 
-void SharesheetImageDecode::URLToEncodedBytes(const base::FilePath& url) {
-  // TODO(crbug.com/2631548): Add code to encode the url by adding
-  // a new task to the main thread, use FileToString() function and
-  // pass the result into DecodeURLForPreview.
-  NOTIMPLEMENTED();
+#include "base/bind.h"
+#include "base/files/file_util.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/chromeos/file_manager/app_id.h"
+#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
+#include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "services/data_decoder/public/cpp/decode_image.h"
+#include "storage/browser/file_system/file_system_context.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "ui/gfx/image/image.h"
+#include "ui/gfx/image/image_skia.h"
+
+namespace {
+std::string ReadFileToString(const base::FilePath& path) {
+  std::string data;
+  base::ReadFileToString(path, &data);
+  return data;
+}
+}  // namespace
+
+constexpr base::TaskTraits kBlockingTaskTraits = {
+    base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+    base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
+
+SharesheetImageDecode::SharesheetImageDecode() {}
+SharesheetImageDecode::~SharesheetImageDecode() = default;
+
+void SharesheetImageDecode::DecodeImage(apps::mojom::IntentPtr intent,
+                                        Profile* profile,
+                                        DecodeCallback callback) {
+  callback_ = std::move(callback);
+
+  base::FilePath file_paths;
+  storage::FileSystemContext* fs_context =
+      file_manager::util::GetFileSystemContextForExtensionId(
+          profile, file_manager::kFileManagerAppId);
+
+  // Extracts the file path from intent.
+  storage::FileSystemURL fs_url =
+      fs_context->CrackURL(std::move(intent)->file_urls.value().front());
+  file_paths = fs_url.path();
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&SharesheetImageDecode::URLToEncodedBytes,
+                                weak_ptr_factory_.GetWeakPtr(), file_paths));
+}
+
+void SharesheetImageDecode::URLToEncodedBytes(
+    const base::FilePath& image_path) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, kBlockingTaskTraits,
+      base::BindOnce(&ReadFileToString, image_path),
+      base::BindOnce(&SharesheetImageDecode::DecodeURLForPreview,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SharesheetImageDecode::DecodeURLForPreview(std::string image_data) {
-  // TODO(crbug.com/2631548): Run sandboxed process using
-  // DecodeImageIsolated and pass result into BitMapToImage.
-  NOTIMPLEMENTED();
+  // Decode the image in sandboxed process because decode image_data comes from
+  // external storage.
+  data_decoder::DecodeImageIsolated(
+      std::vector<uint8_t>(image_data.begin(), image_data.end()),
+      data_decoder::mojom::ImageCodec::DEFAULT, false,
+      data_decoder::kDefaultMaxSizeInBytes, gfx::Size(),
+      base::BindOnce(&SharesheetImageDecode::BitMapToImage,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SharesheetImageDecode::BitMapToImage(const SkBitmap& decoded_image) {
-  // TODO(crbug.com/2631548): Use CreateFrom1xBitmap function to convert
-  // encoded bitmap into type imageskia and add to content previews view.
-  NOTIMPLEMENTED();
+  // Once decoding image process has completed, invoke the specified
+  // callback.
+  std::move(callback_).Run(
+      gfx::Image::CreateFrom1xBitmap(decoded_image).AsImageSkia());
 }

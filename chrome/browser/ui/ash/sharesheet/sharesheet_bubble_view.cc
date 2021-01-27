@@ -158,8 +158,8 @@ void SharesheetBubbleView::ShowBubble(
 
   // Adds view for content previews including the title, text descriptor
   // and image preview.
-  main_view_->AddChildView(
-      std::make_unique<SharesheetContentPreviews>(intent_->Clone()));
+  main_view_->AddChildView(std::make_unique<SharesheetContentPreviews>(
+      intent_->Clone(), delegate_->GetProfile()));
 
   if (targets.empty()) {
     auto* image =
@@ -207,7 +207,7 @@ void SharesheetBubbleView::ShowBubble(
   }
   UpdateAnchorPosition();
 
-  // Expanding the sharesheet is needed for content previews
+  // Expanding the sharesheet is needed for content previews.
   if (base::FeatureList::IsEnabled(features::kSharesheetContentPreviews)) {
     ResizeBubble(kDefaultBubbleWidth, GetBubbleHeight());
   }
