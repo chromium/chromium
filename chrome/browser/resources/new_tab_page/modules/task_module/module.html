@@ -211,7 +211,8 @@
         <template is="dom-if" if="[[isShopping_(taskModuleType)]]">
           <div class="image-background">
             <div class="image-container">
-              <img is="ntp-img" auto-src="[[item.imageUrl.url]]"></img>
+              <img is="ntp-img" auto-src="[[item.imageUrl.url]]"
+                  draggable="false"></img>
             </div>
           </div>
           <div class="price" hidden$="[[!item.price]]">[[item.price]]</div>
@@ -219,7 +220,8 @@
           <div class="secondary">[[item.info]]</div>
         </template>
         <template is="dom-if" if="[[isRecipe_(taskModuleType)]]">
-          <img is="ntp-img" auto-src="[[item.imageUrl.url]]"></img>
+          <img is="ntp-img" auto-src="[[item.imageUrl.url]]" draggable="false">
+          </img>
           <div class="tag">[[item.info]]</div>
           <div class="name" title="[[item.name]]">[[item.name]]</div>
           <div class="secondary">[[item.siteName]]</div>
