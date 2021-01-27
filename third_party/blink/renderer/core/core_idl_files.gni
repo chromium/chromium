@@ -663,6 +663,7 @@ core_dictionary_idl_files =
                     "dom/mutation_observer_init.idl",
                     "dom/pointer_lock_options.idl",
                     "dom/shadow_root_init.idl",
+                    "dom/static_range_init.idl",
                     "dom/events/add_event_listener_options.idl",
                     "dom/events/custom_event_init.idl",
                     "dom/events/event_init.idl",

@@ -16,6 +16,7 @@ namespace blink {
 
 class Document;
 class ExceptionState;
+class StaticRangeInit;
 
 class CORE_EXPORT StaticRange final : public AbstractRange {
   DEFINE_WRAPPERTYPEINFO();
@@ -27,6 +28,9 @@ class CORE_EXPORT StaticRange final : public AbstractRange {
         range->endContainer(), range->endOffset());
   }
   static StaticRange* Create(const EphemeralRange&);
+  static StaticRange* Create(Document&,
+                             const StaticRangeInit*,
+                             ExceptionState&);
 
   explicit StaticRange(Document&);
   StaticRange(Document&,

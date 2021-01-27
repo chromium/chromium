@@ -4,7 +4,7 @@
 
 // https://w3c.github.io/staticrange/#interface-staticrange
 
-[
-    Exposed=Window
-] interface StaticRange : AbstractRange {
+[Exposed=Window]
+interface StaticRange : AbstractRange {
+  [CallWith=Document, RaisesException] constructor(StaticRangeInit init);
 };

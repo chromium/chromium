@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1252 tests; 1247 PASS, 5 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1252 tests; 1248 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Window: original interface defined
@@ -896,7 +896,7 @@ PASS AbstractRange interface: attribute endContainer
 PASS AbstractRange interface: attribute endOffset
 PASS AbstractRange interface: attribute collapsed
 PASS StaticRange interface: existence and properties of interface object
-FAIL StaticRange interface object length assert_equals: wrong value for StaticRange.length expected 1 but got 0
+PASS StaticRange interface object length
 PASS StaticRange interface object name
 PASS StaticRange interface: existence and properties of interface prototype object
 PASS StaticRange interface: existence and properties of interface prototype object's "constructor" property

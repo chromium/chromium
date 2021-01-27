@@ -170,6 +170,7 @@ static_idl_files_in_core = get_path_info(
           "//third_party/blink/renderer/core/dom/shadow_root.idl",
           "//third_party/blink/renderer/core/dom/shadow_root_init.idl",
           "//third_party/blink/renderer/core/dom/static_range.idl",
+          "//third_party/blink/renderer/core/dom/static_range_init.idl",
           "//third_party/blink/renderer/core/dom/text.idl",
           "//third_party/blink/renderer/core/dom/tree_walker.idl",
           "//third_party/blink/renderer/core/dom/void_function.idl",
