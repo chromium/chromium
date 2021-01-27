@@ -33,6 +33,7 @@ import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.VoiceRecognitionUtil;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -590,7 +591,7 @@ public class VoiceRecognitionHandler {
             mDelegate.clearOmniboxFocus();
             AssistantVoiceSearchConsentUi.show(windowAndroid,
                     SharedPreferencesManager.getInstance(), new SettingsLauncherImpl(),
-                    (useAssistant) -> {
+                    BottomSheetControllerProvider.from(windowAndroid), (useAssistant) -> {
                         // Notify the service about the consent completion.
                         mAssistantVoiceSearchService.onAssistantConsentDialogComplete(useAssistant);
 

@@ -88,6 +88,15 @@ public class AssistantVoiceSearchConsentUiTest {
 
     @Test
     @MediumTest
+    public void testNoBottomSheetControllerAvailable() {
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        AssistantVoiceSearchConsentUi.show(cta.getWindowAndroid(), mSharedPreferencesManager,
+                new SettingsLauncherImpl(), null, mCallback);
+        Mockito.verify(mCallback, Mockito.timeout(1000)).onResult(false);
+    }
+
+    @Test
+    @MediumTest
     public void testDialogInteractivity_AcceptButton() {
         showConsentUi();
 

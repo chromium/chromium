@@ -17,13 +17,14 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantPreferenceFragment;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.settings.SettingsLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.ui.base.WindowAndroid;
@@ -44,15 +45,29 @@ class AssistantVoiceSearchConsentUi
      * @param windowAndroid The current {@link WindowAndroid} for the app.
      * @param sharedPreferencesManager The {@link SharedPreferencesManager} to read/write prefs.
      * @param settingsLauncher The {@link SettingsLauncher}, used to launch settings.
+     * @param bottomSheetController The {@link BottomSheetController} used to show the consent ui.
+     *                              This can be null when starting the consent flow from
+     *                              SearchActivity.
      * @param completionCallback A callback to be invoked if the user is continuing with the
      *                           requested voice search.
      */
-    static void show(WindowAndroid windowAndroid, SharedPreferencesManager sharedPreferencesManager,
-            SettingsLauncher settingsLauncher, Callback<Boolean> completionCallback) {
-        // TODO(wylieb): Inject BottomSheetController into this class properly.
-        AssistantVoiceSearchConsentUi consentUi = new AssistantVoiceSearchConsentUi(windowAndroid,
-                windowAndroid.getContext().get(), sharedPreferencesManager, settingsLauncher,
-                BottomSheetControllerProvider.from(windowAndroid));
+    static void show(@NonNull WindowAndroid windowAndroid,
+            @NonNull SharedPreferencesManager sharedPreferencesManager,
+            @NonNull SettingsLauncher settingsLauncher,
+            @Nullable BottomSheetController bottomSheetController,
+            @NonNull Callback<Boolean> completionCallback) {
+        // When attempting voice search through the search widget, the bottom sheet isn't
+        // available. When this happens, bail out of the consent flow and fallback to system-ui.
+        // Consent will be retried the next time.
+
+        if (bottomSheetController == null) {
+            PostTask.postTask(TaskTraits.USER_VISIBLE,
+                    () -> { completionCallback.onResult(/* useAssistant= */ false); });
+            return;
+        }
+        AssistantVoiceSearchConsentUi consentUi =
+                new AssistantVoiceSearchConsentUi(windowAndroid, windowAndroid.getContext().get(),
+                        sharedPreferencesManager, settingsLauncher, bottomSheetController);
         consentUi.show(completionCallback);
     }
 
@@ -82,9 +97,10 @@ class AssistantVoiceSearchConsentUi
     private @Nullable Callback<Boolean> mCompletionCallback;
 
     @VisibleForTesting
-    AssistantVoiceSearchConsentUi(WindowAndroid windowAndroid, Context context,
-            SharedPreferencesManager sharedPreferencesManager, SettingsLauncher settingsLauncher,
-            BottomSheetController bottomSheetController) {
+    AssistantVoiceSearchConsentUi(@NonNull WindowAndroid windowAndroid, @NonNull Context context,
+            @NonNull SharedPreferencesManager sharedPreferencesManager,
+            @NonNull SettingsLauncher settingsLauncher,
+            @NonNull BottomSheetController bottomSheetController) {
         mContext = context;
         mSharedPreferencesManager = sharedPreferencesManager;
         mSettingsLauncher = settingsLauncher;
