@@ -300,6 +300,9 @@ class StorageQueueTest : public ::testing::TestWithParam<size_t> {
     ResetTestStorageQueue();
     // Make sure all memory is deallocated.
     ASSERT_THAT(GetMemoryResource()->GetUsed(), Eq(0u));
+    // Make sure all disk is not reserved (files remain, but Storage is not
+    // responsible for them anymore).
+    ASSERT_THAT(GetDiskResource()->GetUsed(), Eq(0u));
   }
 
   void CreateTestStorageQueueOrDie(const QueueOptions& options) {

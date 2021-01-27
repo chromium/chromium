@@ -61,9 +61,6 @@ constexpr size_t FRAME_SIZE = 16u;
 size_t RoundUpToFrameSize(size_t size) {
   return (size + FRAME_SIZE - 1) / FRAME_SIZE * FRAME_SIZE;
 }
-size_t GetPaddingToNextFrameSize(size_t size) {
-  return FRAME_SIZE - (size % FRAME_SIZE);
-}
 
 // Internal structure of the record header. Must fit in FRAME_SIZE.
 struct RecordHeader {
@@ -143,8 +140,9 @@ StorageQueue::~StorageQueue() {
   upload_timer_.AbandonAndStop();
   // Make sure no pending writes is present.
   DCHECK(write_contexts_queue_.empty());
-  // Close all opened files.
-  files_.clear();
+
+  // Release all files.
+  ReleaseAllFileInstances();
 }
 
 Status StorageQueue::Init() {
@@ -196,8 +194,7 @@ Status StorageQueue::Init() {
       first_sequencing_id_ = 0;
       first_unconfirmed_sequencing_id_ = base::nullopt;
       last_record_digest_ = base::nullopt;
-      // Delete all files.
-      files_.clear();
+      ReleaseAllFileInstances();
       used_files_set.clear();
     }
   }
@@ -247,10 +244,11 @@ StatusOr<int64_t> StorageQueue::AddDataFile(
                   base::StrCat({"File extension does not parse: '",
                                 full_name.MaybeAsASCII(), "'"}));
   }
-  if (!files_
-           .emplace(file_sequencing_id, base::MakeRefCounted<SingleFile>(
-                                            full_name, file_info.GetSize()))
-           .second) {
+  auto file_or_status = SingleFile::Create(full_name, file_info.GetSize());
+  if (!file_or_status.ok()) {
+    return file_or_status.status();
+  }
+  if (!files_.emplace(file_sequencing_id, file_or_status.ValueOrDie()).second) {
     return Status(error::ALREADY_EXISTS,
                   base::StrCat({"Sequencing duplicated: '",
                                 full_name.MaybeAsASCII(), "'"}));
@@ -276,11 +274,6 @@ Status StorageQueue::EnumerateDataFiles(
     if (!file_sequencing_id_result.ok()) {
       LOG(WARNING) << "Failed to add file " << full_name.MaybeAsASCII()
                    << ", status=" << file_sequencing_id_result.status();
-      continue;
-    }
-    if (!GetDiskResource()->Reserve(dir_enum.GetInfo().GetSize())) {
-      LOG(WARNING) << "Disk space exceeded adding file "
-                   << full_name.MaybeAsASCII();
       continue;
     }
     used_files_set->emplace(full_name);  // File is in use.
@@ -385,14 +378,15 @@ StatusOr<scoped_refptr<StorageQueue::SingleFile>> StorageQueue::AssignLastFile(
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
   if (files_.empty()) {
     // Create the very first file (empty).
-    next_sequencing_id_ = 0;
-    auto insert_result = files_.emplace(
-        next_sequencing_id_,
-        base::MakeRefCounted<SingleFile>(
+    ASSIGN_OR_RETURN(
+        scoped_refptr<SingleFile> file,
+        SingleFile::Create(
             options_.directory()
                 .Append(options_.file_prefix())
                 .AddExtensionASCII(base::NumberToString(next_sequencing_id_)),
             /*size=*/0));
+    next_sequencing_id_ = 0;
+    auto insert_result = files_.emplace(next_sequencing_id_, file);
     DCHECK(insert_result.second);
   }
   if (size > options_.max_record_size()) {
@@ -413,11 +407,13 @@ StatusOr<scoped_refptr<StorageQueue::SingleFile>> StorageQueue::AssignLastFile(
 StatusOr<scoped_refptr<StorageQueue::SingleFile>>
 StorageQueue::OpenNewWriteableFile() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
-  auto new_file = base::MakeRefCounted<SingleFile>(
-      options_.directory()
-          .Append(options_.file_prefix())
-          .AddExtensionASCII(base::NumberToString(next_sequencing_id_)),
-      /*size=*/0);
+  ASSIGN_OR_RETURN(
+      scoped_refptr<SingleFile> new_file,
+      SingleFile::Create(
+          options_.directory()
+              .Append(options_.file_prefix())
+              .AddExtensionASCII(base::NumberToString(next_sequencing_id_)),
+          /*size=*/0));
   RETURN_IF_ERROR(new_file->Open(/*read_only=*/false));
   auto insert_result = files_.emplace(next_sequencing_id_, new_file);
   if (!insert_result.second) {
@@ -436,8 +432,7 @@ Status StorageQueue::WriteHeaderAndBlock(
   // Prepare header.
   RecordHeader header;
   // Pad to the whole frame, if necessary.
-  const size_t pad_size =
-      GetPaddingToNextFrameSize(sizeof(header) + data.size());
+  const size_t total_size = RoundUpToFrameSize(sizeof(header) + data.size());
   // Assign sequencing id.
   header.record_sequencing_id = next_sequencing_id_++;
   header.record_hash = base::PersistentHash(data.data(), data.size());
@@ -449,7 +444,7 @@ Status StorageQueue::WriteHeaderAndBlock(
                   base::StrCat({"Cannot open file=", file->name(),
                                 " status=", open_status.ToString()}));
   }
-  if (!GetDiskResource()->Reserve(pad_size)) {
+  if (!GetDiskResource()->Reserve(total_size)) {
     return Status(
         error::RESOURCE_EXHAUSTED,
         base::StrCat({"Not enough disk space available to write into file=",
@@ -470,17 +465,17 @@ Status StorageQueue::WriteHeaderAndBlock(
           base::StrCat({"Cannot write file=", file->name(),
                         " status=", write_status.status().ToString()}));
     }
-    if (pad_size != FRAME_SIZE) {
-      // Fill in with random bytes.
-      char junk_bytes[FRAME_SIZE];
-      crypto::RandBytes(junk_bytes, pad_size);
-      write_status = file->Append(base::StringPiece(&junk_bytes[0], pad_size));
-      if (!write_status.ok()) {
-        return Status(
-            error::RESOURCE_EXHAUSTED,
-            base::StrCat({"Cannot pad file=", file->name(),
-                          " status=", write_status.status().ToString()}));
-      }
+  }
+  if (total_size > sizeof(header) + data.size()) {
+    // Fill in with random bytes.
+    const size_t pad_size = total_size - (sizeof(header) + data.size());
+    char junk_bytes[FRAME_SIZE];
+    crypto::RandBytes(junk_bytes, pad_size);
+    write_status = file->Append(base::StringPiece(&junk_bytes[0], pad_size));
+    if (!write_status.ok()) {
+      return Status(error::RESOURCE_EXHAUSTED,
+                    base::StrCat({"Cannot pad file=", file->name(), " status=",
+                                  write_status.status().ToString()}));
     }
   }
   return Status::StatusOK();
@@ -489,11 +484,13 @@ Status StorageQueue::WriteHeaderAndBlock(
 Status StorageQueue::WriteMetadata() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(storage_queue_sequence_checker_);
   // Synchronously write the metafile.
-  auto meta_file = base::MakeRefCounted<SingleFile>(
-      options_.directory()
-          .Append(METADATA_NAME)
-          .AddExtensionASCII(base::NumberToString(next_sequencing_id_)),
-      /*size=*/0);
+  ASSIGN_OR_RETURN(
+      scoped_refptr<SingleFile> meta_file,
+      SingleFile::Create(
+          options_.directory()
+              .Append(METADATA_NAME)
+              .AddExtensionASCII(base::NumberToString(next_sequencing_id_)),
+          /*size=*/0));
   RETURN_IF_ERROR(meta_file->Open(/*read_only=*/false));
   // Account for the metadata file size.
   DCHECK(last_record_digest_.has_value());  // Must be set by now.
@@ -526,6 +523,8 @@ Status StorageQueue::WriteMetadata() {
                                                   meta_file->name()}));
   }
   meta_file->Close();
+  // Switch the latest metafile.
+  meta_file_ = std::move(meta_file);
   // Asynchronously delete all earlier metafiles. Do not wait for this to
   // happen.
   base::ThreadPool::PostTask(
@@ -572,8 +571,9 @@ Status StorageQueue::RestoreMetadata(
   }
   // Match found. Load the metadata.
   const base::FilePath meta_file_path = it->second.first;
-  auto meta_file = base::MakeRefCounted<SingleFile>(meta_file_path,
-                                                    /*size=*/it->second.second);
+  ASSIGN_OR_RETURN(scoped_refptr<SingleFile> meta_file,
+                   SingleFile::Create(meta_file_path,
+                                      /*size=*/it->second.second));
   RETURN_IF_ERROR(meta_file->Open(/*read_only=*/true));
   // Read generation id.
   constexpr size_t max_buffer_size =
@@ -600,11 +600,8 @@ Status StorageQueue::RestoreMetadata(
   // Everything read successfully, set the queue up.
   generation_id_ = generation_id;
   last_record_digest_ = std::string(read_result.ValueOrDie());
+  meta_file_ = std::move(meta_file);
   // Store used metadata file.
-  if (!GetDiskResource()->Reserve(meta_file->size())) {
-    LOG(WARNING) << "Disk space exceeded adding file " << meta_file->name();
-    return Status::StatusOK();  // Ignore lack of space.
-  }
   used_files_set->emplace(meta_file_path);
   return Status::StatusOK();
 }
@@ -650,9 +647,9 @@ void StorageQueue::DeleteOutdatedMetadata(int64_t sequencing_id_to_keep) {
         std::make_pair(full_name, dir_enum.GetInfo().GetSize()));
   }
   for (const auto& file_to_delete : files_to_delete) {
-    if (base::DeleteFile(file_to_delete.first)) {
-      GetDiskResource()->Discard(file_to_delete.second);
-    }
+    // Delete file on disk. Note: disk space has already been released when the
+    // metafile was destructed, and so we don't need to do that here.
+    base::DeleteFile(file_to_delete.first);  // ignore result
   }
 }
 
@@ -1351,7 +1348,6 @@ Status StorageQueue::RemoveConfirmedData(int64_t sequencing_id) {
     // Delete it.
     files_.begin()->second->Close();
     if (files_.begin()->second->Delete().ok()) {
-      GetDiskResource()->Discard(files_.begin()->second->size());
       files_.erase(files_.begin());
     }
   }
@@ -1371,6 +1367,11 @@ void StorageQueue::Flush() {
   Start<ReadContext>(std::move(uploader.ValueOrDie()), this);
 }
 
+void StorageQueue::ReleaseAllFileInstances() {
+  files_.clear();
+  meta_file_.reset();
+}
+
 void StorageQueue::TestInjectBlockReadErrors(
     std::initializer_list<int64_t> sequencing_ids) {
   test_injected_fail_sequencing_ids_ = sequencing_ids;
@@ -1379,11 +1380,27 @@ void StorageQueue::TestInjectBlockReadErrors(
 //
 // SingleFile implementation
 //
+StatusOr<scoped_refptr<StorageQueue::SingleFile>>
+StorageQueue::SingleFile::Create(const base::FilePath& filename, int64_t size) {
+  if (!GetDiskResource()->Reserve(size)) {
+    LOG(WARNING) << "Disk space exceeded adding file "
+                 << filename.MaybeAsASCII();
+    return Status(
+        error::RESOURCE_EXHAUSTED,
+        base::StrCat({"Not enough disk space available to include file=",
+                      filename.MaybeAsASCII()}));
+  }
+  // Cannot use base::MakeRefCounted, since the constructor is private.
+  return scoped_refptr<StorageQueue::SingleFile>(
+      new SingleFile(filename, size));
+}
+
 StorageQueue::SingleFile::SingleFile(const base::FilePath& filename,
                                      int64_t size)
     : filename_(filename), size_(size) {}
 
 StorageQueue::SingleFile::~SingleFile() {
+  GetDiskResource()->Discard(size_);
   Close();
   handle_.reset();
 }
@@ -1430,6 +1447,7 @@ void StorageQueue::SingleFile::Close() {
 
 Status StorageQueue::SingleFile::Delete() {
   DCHECK(!handle_);
+  GetDiskResource()->Discard(size_);
   size_ = 0;
   if (!base::DeleteFile(filename_)) {
     return Status(error::DATA_LOSS,

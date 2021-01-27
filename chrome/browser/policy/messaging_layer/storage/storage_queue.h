@@ -152,7 +152,12 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // Private envelope class for single file in a StorageQueue.
   class SingleFile : public base::RefCountedThreadSafe<SingleFile> {
    public:
-    SingleFile(const base::FilePath& filename, int64_t size);
+    // Factory method creates a SingleFile object for existing
+    // or new file (of zero size). In case of any error (e.g. insufficient disk
+    // space) returns status.
+    static StatusOr<scoped_refptr<SingleFile>> Create(
+        const base::FilePath& filename,
+        int64_t size);
 
     Status Open(bool read_only);  // No-op if already opened.
     void Close();                 // No-op if not opened.
@@ -185,6 +190,9 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
 
    private:
     friend class base::RefCountedThreadSafe<SingleFile>;
+
+    // Private constructor, called by factory method only.
+    SingleFile(const base::FilePath& filename, int64_t size);
 
     // Flag (valid for opened file only): true if file was opened for reading
     // only, false otherwise.
@@ -296,6 +304,10 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // ids below or equal to |sequencing_id| (below |first_sequencing_id_|).
   Status RemoveConfirmedData(int64_t sequencing_id);
 
+  // Helper method to release all file instances held by the queue.
+  // Files on the disk remain as they were.
+  void ReleaseAllFileInstances();
+
   // Immutable options, stored at the time of creation.
   const QueueOptions options_;
 
@@ -330,6 +342,9 @@ class StorageQueue : public base::RefCountedThreadSafe<StorageQueue> {
   // [first_unconfirmed_sequencing_id_, first_sequencing_id_) is a gap
   // that cannot be filled in and is uploaded as such.
   base::Optional<int64_t> first_unconfirmed_sequencing_id_;
+
+  // Latest metafile. May be null.
+  scoped_refptr<SingleFile> meta_file_;
 
   // Ordered map of the files by ascending sequencing id.
   std::map<int64_t, scoped_refptr<SingleFile>> files_;
