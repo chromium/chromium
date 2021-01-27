@@ -97,7 +97,7 @@ public class TabIdManager {
     }
 
     @VisibleForTesting
-    static void resetInstanceForTesting() {
+    public static void resetInstanceForTesting() {
         sInstance = null;
     }
 }

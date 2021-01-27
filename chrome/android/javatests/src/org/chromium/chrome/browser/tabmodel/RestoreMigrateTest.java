@@ -85,6 +85,7 @@ public class RestoreMigrateTest {
                                                            .getTargetContext()
                                                            .getApplicationContext());
         ContextUtils.initApplicationContextForTests(mAppContext);
+        TabIdManager.resetInstanceForTesting();
     }
 
     static class AdvancedMockContextWithTestDir extends AdvancedMockContext {

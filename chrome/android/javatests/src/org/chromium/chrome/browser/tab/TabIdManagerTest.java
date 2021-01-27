@@ -9,6 +9,7 @@ import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +31,11 @@ public class TabIdManagerTest {
     @Before
     public void setUp() {
         mContext = new AdvancedMockContext(InstrumentationRegistry.getTargetContext());
+        TabIdManager.resetInstanceForTesting();
+    }
+
+    @After
+    public void tearDown() {
         TabIdManager.resetInstanceForTesting();
     }
 
