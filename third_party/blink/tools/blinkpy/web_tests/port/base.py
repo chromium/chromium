@@ -184,7 +184,7 @@ class Port(object):
     WEBDRIVER_SUBTEST_PYTEST_SEPARATOR = '::'
 
     # The following two constants must match. When adding a new WPT root, also
-    # remember to add an alias rule to third_party/wpt/wpt.config.json.
+    # remember to add an alias rule to //third_party/wpt_tools/wpt.config.json.
     # WPT_DIRS maps WPT roots on the file system to URL prefixes on wptserve.
     # The order matters: '/' MUST be the last URL prefix.
     WPT_DIRS = collections.OrderedDict([

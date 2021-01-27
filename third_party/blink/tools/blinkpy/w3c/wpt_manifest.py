@@ -330,8 +330,9 @@ class WPTManifest(object):
     @staticmethod
     def generate_manifest(port, dest_path):
         """Generates MANIFEST.json on the specified directory."""
-        wpt_exec_path = PathFinder(port.host.filesystem).path_from_blink_tools(
-            'blinkpy', 'third_party', 'wpt', 'wpt', 'wpt')
+        wpt_exec_path = PathFinder(
+            port.host.filesystem).path_from_chromium_base(
+                'third_party', 'wpt_tools', 'wpt', 'wpt')
         cmd = [
             port.python3_command(), wpt_exec_path, 'manifest', '-v',
             '--no-download', '--tests-root', dest_path

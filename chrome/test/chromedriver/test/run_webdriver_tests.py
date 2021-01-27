@@ -39,8 +39,8 @@ from blinkpy.w3c.common import CHROMIUM_WPT_DIR
 from blinkpy.web_tests.models.test_expectations import TestExpectations
 from blinkpy.web_tests.models.typ_types import ResultType
 
-WD_CLIENT_PATH = 'blinkpy/third_party/wpt/wpt/tools/webdriver'
-WEBDRIVER_CLIENT_ABS_PATH = os.path.join(BLINK_TOOLS_ABS_PATH, WD_CLIENT_PATH)
+WD_CLIENT_PATH = 'third_party/wpt_tools/wpt/tools/webdriver'
+WEBDRIVER_CLIENT_ABS_PATH = os.path.join(SRC_DIR, WD_CLIENT_PATH)
 
 
 class TestShard(object):
