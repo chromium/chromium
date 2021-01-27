@@ -4113,22 +4113,6 @@
           'gtest_tests': 'gpu_angle_gtests',
         },
       },
-      'Linux FYI Release (AMD R7 240)': {
-        'os_type': 'linux',
-        'browser_config': 'release',
-        # There's only one bot of this type in the Swarming pool right now, so
-        # we have to increase the default expiration time of 1 hour (3600
-        # seconds) to prevent webgl2_conformance_tests' shards from timing
-        # out.
-        'mixins': [
-          'limited_capacity_bot',
-          'linux_amd_r7_240',
-        ],
-        'test_suites': {
-          'gtest_tests': 'gpu_fyi_linux_release_gtests',
-          'gpu_telemetry_tests': 'gpu_fyi_linux_amd_r7_240_release_telemetry_tests',
-        },
-      },
       'Linux FYI Release (AMD RX 5500 XT)': {
         'os_type': 'linux',
         'browser_config': 'release',

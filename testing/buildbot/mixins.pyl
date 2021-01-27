@@ -432,15 +432,6 @@
       },
     },
   },
-  'linux_amd_r7_240': {
-    'swarming': {
-      'dimensions': {
-        'gpu': '1002:6613',
-        'os': 'Ubuntu',
-        'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
   'linux_amd_rx_5500_xt': {
     'swarming': {
       'dimensions': {

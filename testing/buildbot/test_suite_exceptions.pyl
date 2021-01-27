@@ -75,8 +75,6 @@
       'Android FYI Release (Nexus 5)',
       'Android FYI Release (Nexus 6)',
       'Android FYI Release (Nexus 9)',
-      # Temporarily disabled due to AMDGPU-PRO issues crbug.com/786219
-      'Linux FYI Release (AMD R7 240)',
       # Temporarily disabled due to bad NVIDIA driver upgrade crbug.com/950542
       'Linux FYI Debug (NVIDIA)',
     ],
@@ -123,10 +121,6 @@
     ],
   },
   'angle_white_box_tests': {
-    'remove_from': [
-      # https://crbug.com/1094629
-      'Linux FYI Release (AMD R7 240)',
-    ],
     'modifications': {
       # anglebug.com/5328 suspecting blue screen caused by multiprocess
       'ANGLE GPU Win10 x64 Release (Intel HD 630)': {
@@ -1225,11 +1219,6 @@
       },
     },
   },
-  'dawn_end2end_tests': {
-    'remove_from': [
-      'Linux FYI Release (AMD R7 240)', # https://crbug.com/915430
-    ],
-  },
   'depth_capture_tests': {
     # TODO(https://crbug.com/850107): Remove the Android FYI Release (Pixel 2)
     # exception once there is enough capacity to run these tests.
@@ -1413,8 +1402,6 @@
       # On Android, these are already run on the main waterfall.
       # Run them on the one-off Android FYI bots, though.
       'Android FYI Release (Nexus 5X)',
-      # Temporarily disabled due to AMDGPU-PRO issues crbug.com/786219
-      'Linux FYI Release (AMD R7 240)',
       # Can't run on MSAN because gl_unittests uses the hardware driver,
       # which isn't instrumented.
       'Linux MSan Tests',

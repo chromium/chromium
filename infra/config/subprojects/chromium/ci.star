@@ -4148,15 +4148,6 @@ ci.gpu_fyi_thin_tester(
 )
 
 ci.gpu_fyi_thin_tester(
-    name = "Linux FYI Release (AMD R7 240)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux|AMD",
-        short_name = "240",
-    ),
-    triggered_by = ["GPU FYI Linux Builder"],
-)
-
-ci.gpu_fyi_thin_tester(
     name = "Linux FYI Release (AMD RX 5500 XT)",
     console_view_entry = consoles.console_view_entry(
         category = "Linux|AMD",
