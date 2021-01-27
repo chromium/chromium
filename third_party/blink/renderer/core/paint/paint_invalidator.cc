@@ -263,7 +263,7 @@ void PaintInvalidator::UpdateLayoutShiftTracking(
   new_rect.Move(tree_builder_context.current.paint_offset);
   old_rect.Move(context.old_paint_offset);
   // Adjust old_visual_rect so that LayoutShiftTracker can see the change of
-  // offset caused by change of transforms below the 2d translation root.
+  // offset caused by change of transforms below the layout shift root.
   old_rect.Move(-tree_builder_context.current
                      .additional_offset_to_layout_shift_root_delta);
 
