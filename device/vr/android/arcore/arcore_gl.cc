@@ -235,11 +235,18 @@ bool ArCoreGl::InitializeGl(gfx::AcceleratedWidget drawing_widget) {
   DCHECK(IsOnGlThread());
   DCHECK(!is_initialized_);
 
+  // We can only share native GL resources with GVR, and GVR doesn't support
+  // ANGLE, so disable it.
+  // TODO(crbug.com/1170580): support ANGLE with cardboard?
+  gl::init::DisableANGLE();
+
   if (gl::GetGLImplementation() == gl::kGLImplementationNone &&
       !gl::init::InitializeGLOneOff()) {
     DLOG(ERROR) << "gl::init::InitializeGLOneOff failed";
     return false;
   }
+
+  DCHECK(gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE);
 
   scoped_refptr<gl::GLSurface> surface =
       gl::init::CreateViewGLSurface(drawing_widget);

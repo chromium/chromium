@@ -102,6 +102,9 @@ GL_INIT_EXPORT scoped_refptr<GLSurface> CreateOffscreenGLSurfaceWithFormat(
 GL_INIT_EXPORT void SetDisabledExtensionsPlatform(
     const std::string& disabled_extensions);
 
+// Disable ANGLE and force to use native or other GL implementation.
+GL_INIT_EXPORT void DisableANGLE();
+
 }  // namespace init
 }  // namespace gl
 
