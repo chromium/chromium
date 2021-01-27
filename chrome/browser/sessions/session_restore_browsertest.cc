@@ -2292,10 +2292,8 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank1) {
   }
   EXPECT_EQ(GURL(url::kAboutBlankURL),
             new_popup->GetMainFrame()->GetLastCommittedURL());
-  // TODO(lukasza): https://crbug.com/888079: The browser process should tell
-  // the renderer which (initiator-based) origin to commit.  Right now, Blink
-  // just falls back to an opaque origin.
-  EXPECT_TRUE(new_popup->GetMainFrame()->GetLastCommittedOrigin().opaque());
+  EXPECT_EQ(initial_origin,
+            new_popup->GetMainFrame()->GetLastCommittedOrigin());
 }
 
 // Test that it is possible to navigate back to a restored about:blank history
@@ -2380,10 +2378,8 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank2) {
   // Verify that the restored popup hosts about:blank#foo.
   EXPECT_EQ(GURL("about:blank#foo"),
             new_popup->GetMainFrame()->GetLastCommittedURL());
-  // TODO(lukasza): https://crbug.com/888079: The browser process should tell
-  // the renderer which (initiator-based) origin to commit.  Right now, Blink
-  // just falls back to an opaque origin.
-  EXPECT_TRUE(new_popup->GetMainFrame()->GetLastCommittedOrigin().opaque());
+  EXPECT_EQ(initial_origin,
+            new_popup->GetMainFrame()->GetLastCommittedOrigin());
 
   // Navigate the popup to another site.
   GURL other_url = embedded_test_server()->GetURL("bar.com", "/title1.html");
@@ -2406,10 +2402,8 @@ IN_PROC_BROWSER_TEST_F(MultiOriginSessionRestoreTest, BackToAboutBlank2) {
   }
   EXPECT_EQ(GURL("about:blank#foo"),
             new_popup->GetMainFrame()->GetLastCommittedURL());
-  // TODO(lukasza): https://crbug.com/888079: The browser process should tell
-  // the renderer which (initiator-based) origin to commit.  Right now, Blink
-  // just falls back to an opaque origin.
-  EXPECT_TRUE(new_popup->GetMainFrame()->GetLastCommittedOrigin().opaque());
+  EXPECT_EQ(initial_origin,
+            new_popup->GetMainFrame()->GetLastCommittedOrigin());
 }
 
 // Test that it is possible to navigate back to a subframe with a restored

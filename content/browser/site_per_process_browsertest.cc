@@ -752,6 +752,12 @@ SitePerProcessBrowserTest::SitePerProcessBrowserTest() {
   InitAndEnableRenderDocumentFeature(&feature_list_, GetParam());
 }
 
+std::string SitePerProcessBrowserTest::GetExpectedOrigin(
+    const std::string& host) {
+  GURL url = embedded_test_server()->GetURL(host, "/");
+  return url::Origin::Create(url).Serialize();
+}
+
 //
 // SitePerProcessHighDPIBrowserTest
 //
@@ -6855,8 +6861,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Check that the grandchild frame isn't sandboxed on the renderer side.  If
   // sandboxed, its origin would be unique ("null").
-  std::string expected_origin = url::Origin::Create(frame_url).Serialize();
-  EXPECT_EQ(expected_origin, GetOriginFromRenderer(grandchild));
+  EXPECT_EQ(GetExpectedOrigin("b.com"), GetOriginFromRenderer(grandchild));
 }
 
 // Verify that popups opened from sandboxed frames inherit sandbox flags from
@@ -7994,16 +7999,12 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
                 ->GetLastCommittedOrigin()
                 .GetTupleOrPrecursorTupleIfOpaque());
 
-  // Origin for child frames should be opaque.
+  // Origin for child frames should match the navigation initiators.
   EXPECT_EQ(
       new_root->current_frame_host()->GetLastCommittedOrigin().Serialize(),
       GetOriginFromRenderer(new_root));
-  EXPECT_TRUE(
-      new_child_0->current_frame_host()->GetLastCommittedOrigin().opaque());
-  EXPECT_EQ("null", GetOriginFromRenderer(new_child_0));
-  EXPECT_TRUE(
-      new_child_1->current_frame_host()->GetLastCommittedOrigin().opaque());
-  EXPECT_EQ("null", GetOriginFromRenderer(new_child_1));
+  EXPECT_EQ(GetExpectedOrigin("bar.com"), GetOriginFromRenderer(new_child_0));
+  EXPECT_EQ(GetExpectedOrigin("baz.com"), GetOriginFromRenderer(new_child_1));
 
   // Since the origin for the frames are different, they all end up in different
   // SiteInstances.

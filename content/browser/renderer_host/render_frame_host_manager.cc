@@ -1917,7 +1917,27 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
 
   // If a swap is required, we need to force the SiteInstance AND
   // BrowsingInstance to be different ones, using CreateForURL.
+  bool can_use_source_instance = CanUseSourceSiteInstance(
+      dest_url_info.url, source_instance, was_server_redirect, is_failure,
+      cross_origin_isolated_info, is_speculative);
   if (force_browsing_instance_swap) {
+    // In rare cases, |source_instance| maybe be already in another
+    // BrowsingInstance from |current_instance| (e.g. see how the
+    // ExtensionApiTabTest.HostPermission test uses |chrome.tabs.update| API to
+    // navigate from "chrome://new-tab-page/" to "about:blank").  In such cases,
+    // using |source_instance| will 1) effectively force browsing instance swap
+    // and 2) use a process compatible with "about:blank"'s origin (unlike a
+    // new, unrelated SiteInstance that might use an unlocked process even
+    // when the origin requires a locked process).
+    if (can_use_source_instance &&
+        !source_instance->IsRelatedSiteInstance(current_instance)) {
+      AppendReason(reason,
+                   "DetermineSiteInstanceForURL => source_instance"
+                   " (browsing-instance-swap)");
+      return SiteInstanceDescriptor(source_instance);
+    }
+
+    // Force browsing instance_swap by asking for a new, unrelated SiteInstance.
     AppendReason(reason,
                  "DetermineSiteInstanceForURL / browsing-instance-swap");
     return SiteInstanceDescriptor(dest_url_info,
@@ -1945,9 +1965,7 @@ RenderFrameHostManager::DetermineSiteInstanceForURL(
   // URLs.  Preferring |source_instance| over a site-less |current_instance| is
   // important in session restore scenarios which should commit in the
   // SiteInstance based on FrameNavigationEntry's initiator_origin.
-  if (CanUseSourceSiteInstance(dest_url_info.url, source_instance,
-                               was_server_redirect, is_failure,
-                               cross_origin_isolated_info, is_speculative)) {
+  if (can_use_source_instance) {
     AppendReason(reason, "DetermineSiteInstanceForURL => source_instance");
     return SiteInstanceDescriptor(source_instance);
   }

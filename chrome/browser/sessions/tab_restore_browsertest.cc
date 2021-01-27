@@ -1501,8 +1501,6 @@ IN_PROC_BROWSER_TEST_F(TabRestoreTest, BackToAboutBlank) {
   GoBack(browser());
   EXPECT_EQ(GURL(url::kAboutBlankURL),
             new_popup->GetMainFrame()->GetLastCommittedURL());
-  // TODO(lukasza): https://crbug.com/888079: The browser process should tell
-  // the renderer which (initiator-based) origin to commit.  Right now, Blink
-  // just falls back to an opaque origin.
-  EXPECT_TRUE(new_popup->GetMainFrame()->GetLastCommittedOrigin().opaque());
+  EXPECT_EQ(initial_origin,
+            new_popup->GetMainFrame()->GetLastCommittedOrigin());
 }

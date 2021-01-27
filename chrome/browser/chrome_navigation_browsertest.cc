@@ -793,11 +793,13 @@ IN_PROC_BROWSER_TEST_F(
   //    this navigation to an about:blank URL.
   //
   // This step would have hit the CHECK from https://crbug.com/1026738.
+  url::Origin cross_site_origin = cross_site_subframe->GetLastCommittedOrigin();
   content::TestNavigationObserver nav_observer(popup, 1);
   ASSERT_TRUE(ExecJs(cross_site_subframe,
                      content::JsReplace("top.location = $1", kRedirectedUrl)));
   nav_observer.Wait();
   EXPECT_EQ(url::kAboutBlankURL, popup->GetLastCommittedURL());
+  EXPECT_EQ(cross_site_origin, popup->GetMainFrame()->GetLastCommittedOrigin());
 
   // 5. Verify that the about:blank URL is hosted in the same process
   //    as the navigation initiator (and separate from the opener and the old
@@ -818,23 +820,6 @@ IN_PROC_BROWSER_TEST_F(
               popup->GetSiteInstance()->GetSiteURL().scheme());
     EXPECT_NE(url::kDataScheme,
               popup->GetSiteInstance()->GetSiteURL().scheme());
-  }
-
-  // 6. Verify the origin of the about:blank URL in the popup.
-  //
-  // Blink calculates the origin of an about:blank frame based on the
-  // opener-or-parent (rather than based on the navigation initiator's origin
-  // as required by the spec).
-  // TODO(lukasza): https://crbug.com/585649: Once Blink is fixed, adjust test
-  // expectations below to make sure the initiator's origin has been committed.
-  // Consider also adding verification that the about:blank page can be scripted
-  // by other frames with the initiator's origin.
-  if (content::AreAllSitesIsolatedForTesting()) {
-    // If the opener is a blink::RemoteFrame, then Blink uses an opaque origin.
-    EXPECT_TRUE(popup->GetMainFrame()->GetLastCommittedOrigin().opaque());
-  } else {
-    EXPECT_EQ(url::Origin::Create(kOpenerUrl),
-              popup->GetMainFrame()->GetLastCommittedOrigin());
   }
 }
 

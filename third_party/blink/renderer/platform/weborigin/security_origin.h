@@ -74,7 +74,10 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
   // contains a standard (scheme, host, port) tuple, |reference_origin| is
   // ignored. If |reference_origin| is provided and an opaque origin is returned
   // (for example, if |url| has the "data:" scheme), the opaque origin will be
-  // derived from |reference_origin|, retaining the precursor information.
+  // derived from |reference_origin|, retaining the precursor information.  If
+  // |url| is "about:blank", a copy of |reference_origin| is returned.  If no
+  // |reference_origin| has been provided, then "data:" and "about:blank" URLs
+  // will resolve into an opaque, unique origin.
   static scoped_refptr<SecurityOrigin> CreateWithReferenceOrigin(
       const KURL& url,
       const SecurityOrigin* reference_origin);

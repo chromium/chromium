@@ -1143,22 +1143,25 @@ NavigationRequest::NavigationRequest(
       dest_site_instance_ = frame_entry->site_instance();
       bindings_ = frame_entry->bindings();
 
-      // Handle history subframe and restore navigations that require a
-      // |source_site_instance| but do not have one set yet. This can happen
-      // when navigation entries are restored from PageState objects, because
-      // the serialized state does not contain a SiteInstance so we need to use
-      // the |initiator_origin| to get an appropriate source SiteInstance.
+      // Handle navigations that require a |source_site_instance| but do not
+      // have one set yet. This can happen when navigation entries are restored
+      // from PageState objects, because the serialized state does not contain a
+      // SiteInstance so we need to use the |initiator_origin| to get an
+      // appropriate source SiteInstance. This can also happen when the
+      // |source_site_instance| was suppressed because of navigating in
+      // "noopener" mode.
       //
-      // History subframe and restore navigations are the only cases where
-      // SetSourceSiteInstanceToInitiatorIfNeeded needs to be called (i.e. the
-      // only cases that may have no |source_site_instance_| even though
-      // RequiresInitiatorBasedSourceSiteInstance returns true).  We verify that
-      // other cases which require a |source_site_instance_| indeed have one
-      // with a DCHECK below.
+      // History subframe, restore navigations and |was_opener_suppressed| are
+      // the only cases where SetSourceSiteInstanceToInitiatorIfNeeded needs to
+      // be called (i.e. the only cases that may have no |source_site_instance_|
+      // even though RequiresInitiatorBasedSourceSiteInstance returns true).  We
+      // verify that other cases which require a |source_site_instance_| indeed
+      // have one with a DCHECK below.
       if (common_params_->is_history_navigation_in_new_child_frame ||
           common_params_->navigation_type == mojom::NavigationType::RESTORE ||
           common_params_->navigation_type ==
-              mojom::NavigationType::RESTORE_WITH_POST) {
+              mojom::NavigationType::RESTORE_WITH_POST ||
+          was_opener_suppressed) {
         SetSourceSiteInstanceToInitiatorIfNeeded();
       }
     }
@@ -5314,8 +5317,7 @@ bool NavigationRequest::RequiresInitiatorBasedSourceSiteInstance() const {
       common_params_->initiator_origin->GetTupleOrPrecursorTupleIfOpaque()
           .IsValid();
 
-  return is_data_or_about && has_valid_initiator && !was_opener_suppressed_ &&
-         !dest_site_instance_;
+  return is_data_or_about && has_valid_initiator && !dest_site_instance_;
 }
 
 void NavigationRequest::SetSourceSiteInstanceToInitiatorIfNeeded() {

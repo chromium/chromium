@@ -213,6 +213,12 @@ scoped_refptr<SecurityOrigin> SecurityOrigin::CreateWithReferenceOrigin(
       return origin;
   }
 
+  if (url.IsAboutBlankURL()) {
+    if (!reference_origin)
+      return CreateUniqueOpaque();
+    return reference_origin->IsolatedCopy();
+  }
+
   if (ShouldTreatAsOpaqueOrigin(url)) {
     if (!reference_origin)
       return CreateUniqueOpaque();

@@ -50,6 +50,8 @@ class SitePerProcessBrowserTest
  public:
   SitePerProcessBrowserTest();
 
+  std::string GetExpectedOrigin(const std::string& host);
+
  private:
   base::test::ScopedFeatureList feature_list_;
 

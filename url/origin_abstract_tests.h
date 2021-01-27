@@ -163,10 +163,13 @@ class AbstractOriginTest : public testing::Test {
     EXPECT_EQ(this->GetTupleOrPrecursorTupleIfOpaque(origin),
               this->GetTupleOrPrecursorTupleIfOpaque(derived_via_data_url));
 
-    // TODO(https://crbug.com/1020201): Unify how
-    // blink::SecurityOrigin::CreateWithReferenceOrigin and url::Origin::Resolve
-    // handle "about:blank" URLs and then add the following assertion below:
-    // EXPECT_EQ(origin, this->CreateWithReferenceOrigin("about:blank", origin))
+    // Deriving an origin for "about:blank".
+    auto about_blank_origin1 =
+        this->CreateWithReferenceOrigin("about:blank", origin);
+    auto about_blank_origin2 =
+        this->CreateWithReferenceOrigin("about:blank?bar#foo", origin);
+    EXPECT_SAME_ORIGIN(origin, about_blank_origin1);
+    EXPECT_SAME_ORIGIN(origin, about_blank_origin2);
   }
 
   void VerifyUniqueOpaqueOriginInvariants(const OriginType& origin) {

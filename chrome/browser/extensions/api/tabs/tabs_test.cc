@@ -2397,16 +2397,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, TabsUpdate_WebToAboutBlank) {
   EXPECT_EQ(about_blank_url, test_frame->GetLastCommittedURL());
   EXPECT_EQ(extension_contents->GetMainFrame()->GetProcess(),
             test_contents->GetMainFrame()->GetProcess());
-
-  // The expectations below preserve the behavior at r704251.  It is not clear
-  // whether these are the right expectations - maybe about:blank should commit
-  // with an extension origin?  OTOH, committing with the extension origin
-  // wouldn't be possible when targeting an incognito window (see also
-  // IncognitoApiTest.Incognito test).
-  EXPECT_TRUE(test_frame->GetLastCommittedOrigin().opaque());
-  EXPECT_EQ(
-      extension_origin.GetTupleOrPrecursorTupleIfOpaque(),
-      test_frame->GetLastCommittedOrigin().GetTupleOrPrecursorTupleIfOpaque());
+  // Note that committing with the extension origin wouldn't be possible when
+  // targeting an incognito window (see also IncognitoApiTest.Incognito test).
+  EXPECT_EQ(extension_origin, test_frame->GetLastCommittedOrigin());
 }
 
 // Tests updating a URL of a web tab to an about:newtab.  Verify that the new

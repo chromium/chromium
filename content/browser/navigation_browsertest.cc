@@ -4306,4 +4306,297 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
   console_observer.Wait();
 }
 
+// The test below verifies that an "about:blank" navigation commits with the
+// right origin, even when the initiator of the navigation is not the parent or
+// opener of the frame targeted by the navigation.  In the
+// GrandchildToAboutBlank... testcases, the navigation is initiated by the
+// grandparent of the target frame.
+//
+// In this test case there are no process swaps and the parent of the navigated
+// frame is a local frame (even in presence of site-per-process).  See also
+// GrandchildToAboutBlank_ABA_CrossSite and
+// GrandchildToAboutBlank_ABB_CrossSite.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       GrandchildToAboutBlank_ABA_SameSite) {
+  GURL url(embedded_test_server()->GetURL(
+      "a.example.com",
+      "/cross_site_iframe_factory.html?"
+      "a.example.com(b.example.com(a.example.com))"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Verify the desired properties of the test setup.
+  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+  RenderFrameHostImpl* child_frame =
+      main_frame->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* grandchild_frame =
+      child_frame->child_at(0)->current_frame_host();
+  EXPECT_EQ(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
+  EXPECT_EQ(main_frame->GetSiteInstance(), grandchild_frame->GetSiteInstance());
+  EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
+            grandchild_frame->GetLastCommittedOrigin());
+  EXPECT_NE(main_frame->GetLastCommittedOrigin(),
+            child_frame->GetLastCommittedOrigin());
+
+  // Navigate the grandchild frame to about:blank
+  ASSERT_TRUE(ExecJs(grandchild_frame, "window.name = 'grandchild'"));
+  TestNavigationObserver nav_observer(shell()->web_contents(), 1);
+  ASSERT_TRUE(
+      ExecJs(main_frame,
+             "grandchild_window = window.open('about:blank', 'grandchild')"));
+  nav_observer.Wait();
+
+  // Verify that the grandchild has the same origin as the main frame (*not* the
+  // origin of the parent frame).
+  main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+  child_frame = main_frame->child_at(0)->current_frame_host();
+  grandchild_frame = child_frame->child_at(0)->current_frame_host();
+  // TODO(https://crbug.com/585649): The correct test expectation below is
+  // EXPECT_EQ (the 2 origins should be the same).  To fix this we need to avoid
+  // blindly using the local parent frame as an `owner_document_` and make sure
+  // to inherit the origin from the initiator of the navigation.  One way to fix
+  // this is to change DocumentLoader::CommitNavigation to leave
+  // `owner_document` set to nullptr if it is cross-origin from
+  // `requestor_origin_`.
+  EXPECT_NE(main_frame->GetLastCommittedOrigin(),
+            grandchild_frame->GetLastCommittedOrigin());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), grandchild_frame->GetLastCommittedURL());
+  EXPECT_EQ(main_frame->GetSiteInstance(), grandchild_frame->GetSiteInstance());
+}
+
+// The test below verifies that an "about:blank" navigation commits with the
+// right origin, even when the initiator of the navigation is not the parent or
+// opener of the frame targeted by the navigation.  In the
+// GrandchildToAboutBlank... testcases, the navigation is initiated by the
+// grandparent of the target frame.
+//
+// In this test case there are no process swaps and the parent of the navigated
+// frame is a remote frame (in presence of site-per-process).  See also
+// GrandchildToAboutBlank_ABA_SameSite and GrandchildToAboutBlank_ABB_CrossSite.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       GrandchildToAboutBlank_ABA_CrossSite) {
+  GURL url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(a))"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Verify the desired properties of the test setup.
+  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+  RenderFrameHostImpl* child_frame =
+      main_frame->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* grandchild_frame =
+      child_frame->child_at(0)->current_frame_host();
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
+  } else {
+    EXPECT_EQ(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
+  }
+  EXPECT_EQ(main_frame->GetSiteInstance(), grandchild_frame->GetSiteInstance());
+  EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
+            grandchild_frame->GetLastCommittedOrigin());
+  EXPECT_NE(main_frame->GetLastCommittedOrigin(),
+            child_frame->GetLastCommittedOrigin());
+
+  // Navigate the grandchild frame to about:blank
+  ASSERT_TRUE(ExecJs(grandchild_frame, "window.name = 'grandchild'"));
+  TestNavigationObserver nav_observer(shell()->web_contents(), 1);
+  ASSERT_TRUE(
+      ExecJs(main_frame,
+             "grandchild_window = window.open('about:blank', 'grandchild')"));
+  nav_observer.Wait();
+
+  // Verify that the grandchild has the same origin as the main frame (*not* the
+  // origin of the parent frame).
+  main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+  child_frame = main_frame->child_at(0)->current_frame_host();
+  grandchild_frame = child_frame->child_at(0)->current_frame_host();
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
+              grandchild_frame->GetLastCommittedOrigin());
+  } else {
+    // TODO(https://crbug.com/585649): The correct test expectation below is
+    // EXPECT_EQ (the 2 origins should be the same).  To fix this we need to
+    // avoid blindly using the local parent frame as an `owner_document_` and
+    // make sure to inherit the origin from the initiator of the navigation.
+    // One way to fix this is to change DocumentLoader::CommitNavigation to
+    // leave `owner_document` set to nullptr if it is cross-origin from
+    // `requestor_origin_`.
+    EXPECT_EQ(child_frame->GetLastCommittedOrigin(),
+              grandchild_frame->GetLastCommittedOrigin());
+  }
+  EXPECT_EQ(GURL(url::kAboutBlankURL), grandchild_frame->GetLastCommittedURL());
+  EXPECT_EQ(main_frame->GetSiteInstance(), grandchild_frame->GetSiteInstance());
+}
+
+// The test below verifies that an "about:blank" navigation commits with the
+// right origin, even when the initiator of the navigation is not the parent or
+// opener of the frame targeted by the navigation.  In the
+// GrandchildToAboutBlank... testcases, the navigation is initiated by the
+// grandparent of the target frame.
+//
+// In this test case the navigation forces a process swap of the target frame.
+// See also GrandchildToAboutBlank_ABA_SameSite and
+// GrandchildToAboutBlank_ABA_CrossSite.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       GrandchildToAboutBlank_ABB_CrossSite) {
+  GURL url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b(b))"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Verify the desired properties of the test setup.
+  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+  RenderFrameHostImpl* child_frame =
+      main_frame->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* grandchild_frame =
+      child_frame->child_at(0)->current_frame_host();
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
+  } else {
+    EXPECT_EQ(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
+  }
+  EXPECT_EQ(child_frame->GetSiteInstance(),
+            grandchild_frame->GetSiteInstance());
+  EXPECT_EQ(child_frame->GetLastCommittedOrigin(),
+            grandchild_frame->GetLastCommittedOrigin());
+  EXPECT_NE(main_frame->GetLastCommittedOrigin(),
+            grandchild_frame->GetLastCommittedOrigin());
+
+  // Navigate the grandchild frame to about:blank
+  ASSERT_TRUE(ExecJs(grandchild_frame, "window.name = 'grandchild'"));
+  TestNavigationObserver nav_observer(shell()->web_contents(), 1);
+  ASSERT_TRUE(
+      ExecJs(main_frame,
+             "grandchild_window = window.open('about:blank', 'grandchild')"));
+  nav_observer.Wait();
+
+  // Verify that the grandchild has the same origin as the main frame (*not* the
+  // origin of the parent frame).
+  main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+  child_frame = main_frame->child_at(0)->current_frame_host();
+  grandchild_frame = child_frame->child_at(0)->current_frame_host();
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
+              grandchild_frame->GetLastCommittedOrigin());
+  } else {
+    // TODO(https://crbug.com/585649): The correct test expectation below is
+    // EXPECT_EQ (the 2 origins should be the same).  To fix this we need to
+    // avoid blindly using the local parent frame as an `owner_document_` and
+    // make sure to inherit the origin from the initiator of the navigation.
+    // One way to fix this is to change DocumentLoader::CommitNavigation to
+    // leave `owner_document` set to nullptr if it is cross-origin from
+    // `requestor_origin_`.
+    EXPECT_EQ(child_frame->GetLastCommittedOrigin(),
+              grandchild_frame->GetLastCommittedOrigin());
+  }
+  EXPECT_EQ(GURL(url::kAboutBlankURL), grandchild_frame->GetLastCommittedURL());
+  EXPECT_EQ(main_frame->GetSiteInstance(), grandchild_frame->GetSiteInstance());
+}
+
+// The test below verifies that an "about:blank" navigation commits with the
+// right origin, even when the initiator of the navigation is not the parent or
+// opener of the frame targeted by the navigation.  In the
+// TopToAboutBlank_CrossSite testcase, the top-level navigation is initiated by
+// a cross-site subframe.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, TopToAboutBlank_CrossSite) {
+  GURL url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Verify the desired properties of the test setup.
+  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+  RenderFrameHostImpl* child_frame =
+      main_frame->child_at(0)->current_frame_host();
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_NE(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
+  } else {
+    EXPECT_EQ(main_frame->GetSiteInstance(), child_frame->GetSiteInstance());
+  }
+  url::Origin a_origin =
+      url::Origin::Create(embedded_test_server()->GetURL("a.com", "/"));
+  url::Origin b_origin =
+      url::Origin::Create(embedded_test_server()->GetURL("b.com", "/"));
+  EXPECT_EQ(a_origin, main_frame->GetLastCommittedOrigin());
+  EXPECT_EQ(b_origin, child_frame->GetLastCommittedOrigin());
+
+  // Have the subframe initiate navigation of the main frame to about:blank.
+  //
+  // (Note that this scenario is a bit artificial/silly, because the final
+  // about:blank frame won't have any same-origin friends that could populate
+  // it.  OTOH, it is still important to maintain all the invariants in this
+  // scenario.  And it is still possible that a same-origin frame (e.g. in
+  // another window in the same BrowsingInstance) exists and can populate the
+  // about:blank frame.
+  TestNavigationObserver nav_observer(shell()->web_contents(), 1);
+  ASSERT_TRUE(ExecJs(child_frame, "window.top.location = 'about:blank'"));
+  nav_observer.Wait();
+
+  // Verify that the main frame is the only remaining frame and that it has the
+  // same origin as the navigation initiator.
+  main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+  EXPECT_EQ(0u, main_frame->child_count());
+  EXPECT_EQ(b_origin, main_frame->GetLastCommittedOrigin());
+  EXPECT_EQ(GURL(url::kAboutBlankURL), main_frame->GetLastCommittedURL());
+}
+
+// The test below verifies that an "about:blank" navigation commits with the
+// right origin, even when the initiator of the navigation is not the parent or
+// opener of the frame targeted by the navigation.  In the
+// SameSiteSiblingToAboutBlank_CrossSiteTop testcase, the navigation is
+// initiated by a same-origin sibling (notably, not by one of target frame's
+// ancestors) and both siblings are subframes of a cross-site main frame.
+IN_PROC_BROWSER_TEST_F(NavigationBrowserTest,
+                       SameSiteSiblingToAboutBlank_CrossSiteTop) {
+  GURL url(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b,b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Name the 2nd child.
+  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+  RenderFrameHostImpl* child_frame1 =
+      main_frame->child_at(0)->current_frame_host();
+  RenderFrameHostImpl* child_frame2 =
+      main_frame->child_at(1)->current_frame_host();
+  ASSERT_TRUE(ExecJs(child_frame2, "window.name = 'child2'"));
+
+  // Grab `child2` window from the 1st child...
+  ASSERT_TRUE(ExecJs(child_frame1, "child2 = window.open('', 'child2')"));
+  // ...but make sure that child2's opener doesn't point to child1.
+  ASSERT_TRUE(ExecJs(main_frame, "child2 = window.open('', 'child2')"));
+  EXPECT_EQ(true, EvalJs(child_frame2, "window.opener == window.top"));
+
+  // From child1 initiate navigation of child2 to about:blank.
+  TestNavigationObserver nav_observer(shell()->web_contents(), 1);
+  ASSERT_TRUE(ExecJs(child_frame1, "child2.location = 'about:blank'"));
+  nav_observer.Wait();
+
+  // Verify that child2 has the origin of the initiator of the navigation.
+  main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+  child_frame1 = main_frame->child_at(0)->current_frame_host();
+  child_frame2 = main_frame->child_at(1)->current_frame_host();
+  EXPECT_EQ(GURL(url::kAboutBlankURL), child_frame2->GetLastCommittedURL());
+  if (AreAllSitesIsolatedForTesting()) {
+    EXPECT_EQ(child_frame1->GetLastCommittedOrigin(),
+              child_frame2->GetLastCommittedOrigin());
+  } else {
+    // TODO(https://crbug.com/585649): The correct test expectation below is
+    // EXPECT_EQ (the 2 origins should be the same).  To fix this we need to
+    // avoid blindly using the local parent frame as an `owner_document_` and
+    // make sure to inherit the origin from the initiator of the navigation.
+    // One way to fix this is to change DocumentLoader::CommitNavigation to
+    // leave `owner_document` set to nullptr if it is cross-origin from
+    // `requestor_origin_`.
+    EXPECT_EQ(main_frame->GetLastCommittedOrigin(),
+              child_frame2->GetLastCommittedOrigin());
+  }
+  EXPECT_EQ(child_frame1->GetSiteInstance(), child_frame2->GetSiteInstance());
+}
+
 }  // namespace content
