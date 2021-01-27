@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
@@ -31,6 +32,9 @@ namespace metrics {
 namespace {
 
 const char kCWPFieldTrialName[] = "ChromeOSWideProfilingCollection";
+
+const base::Feature kCWPCollectionOnHostAndGuest{
+    "CWPCollectionOnHostAndGuest", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Name the histogram that represents the success and various failure modes for
 // parsing CPU frequencies.
@@ -113,10 +117,18 @@ const char kPerfCommandDelimiter[] = " ";
 const char kPerfFPCallgraphPPPCmd[] =
     "perf record -a -e cycles:ppp -g -c 4000037";
 
+const char kPerfFPCallgraphPPPDHGCmd[] =
+    "perf record -a -e cycles:pppDHG -g -c 4000037";
+
 // Collect default (imprecise) cycle events everywhere else.
 const char kPerfCyclesCmd[] = "perf record -a -e cycles -c 1000003";
 
+const char kPerfCyclesDHGCmd[] = "perf record -a -e cycles:DHG -c 1000003";
+
 const char kPerfFPCallgraphCmd[] = "perf record -a -e cycles -g -c 4000037";
+
+const char kPerfFPCallgraphDHGCmd[] =
+    "perf record -a -e cycles:DHG -g -c 4000037";
 
 const char kPerfLBRCallgraphCmd[] =
     "perf record -a -e cycles -c 4000037 --call-graph lbr";
@@ -185,8 +197,14 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
       cpu_uarch == "Goldmont" || cpu_uarch == "GoldmontPlus") {
     lbr_cmd = kPerfLBRCmdAtom;
   }
+  if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest)) {
+    cycles_cmd = kPerfCyclesDHGCmd;
+    fp_callgraph_cmd = kPerfFPCallgraphDHGCmd;
+  }
   if (MicroarchitectureHasCyclesPPPEvent(cpu_uarch)) {
     fp_callgraph_cmd = kPerfFPCallgraphPPPCmd;
+    if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest))
+      fp_callgraph_cmd = kPerfFPCallgraphPPPDHGCmd;
   }
 
   cmds.emplace_back(WeightAndValue(50.0, cycles_cmd));
@@ -264,13 +282,22 @@ std::vector<RandomSelector::WeightAndValue> GetDefaultCommandsForCpu(
   if (cpuid.arch == "x86" ||      // 32-bit x86, or...
       cpuid.arch == "armv7l" ||   // ARM32
       cpuid.arch == "aarch64") {  // ARM64
-    cmds.emplace_back(WeightAndValue(80.0, kPerfCyclesCmd));
-    cmds.emplace_back(WeightAndValue(20.0, kPerfFPCallgraphCmd));
+    if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest)) {
+      cmds.emplace_back(WeightAndValue(80.0, kPerfCyclesDHGCmd));
+      cmds.emplace_back(WeightAndValue(20.0, kPerfFPCallgraphDHGCmd));
+    } else {
+      cmds.emplace_back(WeightAndValue(80.0, kPerfCyclesCmd));
+      cmds.emplace_back(WeightAndValue(20.0, kPerfFPCallgraphCmd));
+    }
     return cmds;
   }
 
   // Unknown CPUs
-  cmds.emplace_back(WeightAndValue(1.0, kPerfCyclesCmd));
+  if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest)) {
+    cmds.emplace_back(WeightAndValue(1.0, kPerfCyclesDHGCmd));
+  } else {
+    cmds.emplace_back(WeightAndValue(1.0, kPerfCyclesCmd));
+  }
   return cmds;
 }
 

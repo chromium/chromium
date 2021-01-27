@@ -18,6 +18,7 @@
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/metrics/perf/cpu_identity.h"
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
 #include "components/variations/variations_associated_data.h"
@@ -33,11 +34,16 @@ namespace {
 const char kPerfCommandDelimiter[] = " ";
 
 const char kPerfCyclesCmd[] = "perf record -a -e cycles -c 1000003";
+const char kPerfCyclesDHGCmd[] = "perf record -a -e cycles:DHG -c 1000003";
 const char kPerfFPCallgraphCmd[] = "perf record -a -e cycles -g -c 4000037";
+const char kPerfFPCallgraphDHGCmd[] =
+    "perf record -a -e cycles:DHG -g -c 4000037";
 const char kPerfLBRCallgraphCmd[] =
     "perf record -a -e cycles -c 4000037 --call-graph lbr";
 const char kPerfFPCallgraphPPPCmd[] =
     "perf record -a -e cycles:ppp -g -c 4000037";
+const char kPerfFPCallgraphPPPDHGCmd[] =
+    "perf record -a -e cycles:pppDHG -g -c 4000037";
 const char kPerfLBRCmd[] = "perf record -a -e r20c4 -b -c 200011";
 const char kPerfLBRCmdAtom[] = "perf record -a -e rc4 -b -c 300001";
 const char kPerfITLBMissCyclesCmdIvyBridge[] =
@@ -261,6 +267,8 @@ class PerfCollectorTest : public testing::Test {
 
   std::unique_ptr<TestPerfCollector> perf_collector_;
 
+  base::test::ScopedFeatureList feature_list_;
+
   DISALLOW_COPY_AND_ASSIGN(PerfCollectorTest);
 };
 
@@ -396,6 +404,26 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_IvyBridge) {
                          return cmd.value == kPerfITLBMissCyclesCmdIvyBridge;
                        });
   EXPECT_NE(cmds.end(), found);
+}
+
+TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_IvyBridge_HostAndGuest) {
+  const base::Feature kCWPCollectionOnHostAndGuest{
+      "CWPCollectionOnHostAndGuest", base::FEATURE_DISABLED_BY_DEFAULT};
+  feature_list_.InitAndEnableFeature(kCWPCollectionOnHostAndGuest);
+  CPUIdentity cpuid;
+  cpuid.arch = "x86_64";
+  cpuid.vendor = "GenuineIntel";
+  cpuid.family = 0x06;
+  cpuid.model = 0x3a;  // IvyBridge
+  cpuid.model_name = "";
+  cpuid.release = "3.8.11";
+  std::vector<RandomSelector::WeightAndValue> cmds =
+      internal::GetDefaultCommandsForCpu(cpuid);
+  ASSERT_GE(cmds.size(), 2UL);
+  EXPECT_EQ(cmds[0].value, kPerfCyclesDHGCmd);
+  EXPECT_TRUE(DoesCommandSampleCycles(cmds[0].value));
+  EXPECT_EQ(cmds[1].value, kPerfFPCallgraphDHGCmd);
+  EXPECT_TRUE(DoesCommandSampleCycles(cmds[1].value));
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_SandyBridge) {
@@ -538,6 +566,28 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tigerlake) {
                          return cmd.value == kPerfITLBMissCyclesCmdSkylake;
                        });
   EXPECT_NE(cmds.end(), found);
+}
+
+TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Tigerlake_HostAndGuest) {
+  const base::Feature kCWPCollectionOnHostAndGuest{
+      "CWPCollectionOnHostAndGuest", base::FEATURE_DISABLED_BY_DEFAULT};
+  feature_list_.InitAndEnableFeature(kCWPCollectionOnHostAndGuest);
+  CPUIdentity cpuid;
+  cpuid.arch = "x86_64";
+  cpuid.vendor = "GenuineIntel";
+  cpuid.family = 0x06;
+  cpuid.model = 0x8C;  // Tigerlake
+  cpuid.model_name = "";
+  cpuid.release = "5.4.64";
+  std::vector<RandomSelector::WeightAndValue> cmds =
+      internal::GetDefaultCommandsForCpu(cpuid);
+  ASSERT_GE(cmds.size(), 3UL);
+  EXPECT_EQ(cmds[0].value, kPerfCyclesDHGCmd);
+  // We have both FP and LBR based callstacks.
+  EXPECT_EQ(cmds[1].value, kPerfFPCallgraphPPPDHGCmd);
+  EXPECT_TRUE(DoesCommandSampleCycles(cmds[0].value));
+  EXPECT_EQ(cmds[2].value, kPerfLBRCallgraphCmd);
+  EXPECT_TRUE(DoesCommandSampleCycles(cmds[1].value));
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnUarch_Goldmont) {
@@ -692,6 +742,25 @@ TEST_F(PerfCollectorTest, DefaultCommandsBasedOnArch_Arm64) {
                          return cmd.value == kPerfLLCMissesCmd;
                        });
   EXPECT_EQ(cmds.end(), found) << "ARM64 does not support this command";
+}
+
+TEST_F(PerfCollectorTest, DefaultCommandsBasedOnArch_Arm64_HostAndGuest) {
+  const base::Feature kCWPCollectionOnHostAndGuest{
+      "CWPCollectionOnHostAndGuest", base::FEATURE_DISABLED_BY_DEFAULT};
+  feature_list_.InitAndEnableFeature(kCWPCollectionOnHostAndGuest);
+  CPUIdentity cpuid;
+  cpuid.arch = "aarch64";
+  cpuid.vendor = "";
+  cpuid.family = 0;
+  cpuid.model = 0;
+  cpuid.model_name = "";
+  std::vector<RandomSelector::WeightAndValue> cmds =
+      internal::GetDefaultCommandsForCpu(cpuid);
+  ASSERT_GE(cmds.size(), 2UL);
+  EXPECT_EQ(cmds[0].value, kPerfCyclesDHGCmd);
+  EXPECT_TRUE(DoesCommandSampleCycles(cmds[0].value));
+  EXPECT_EQ(cmds[1].value, kPerfFPCallgraphDHGCmd);
+  EXPECT_TRUE(DoesCommandSampleCycles(cmds[1].value));
 }
 
 TEST_F(PerfCollectorTest, DefaultCommandsBasedOnArch_x86_32) {
