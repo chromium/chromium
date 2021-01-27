@@ -153,6 +153,7 @@ class HTMLHeadElement;
 class HTMLImportLoader;
 class HTMLImportsController;
 class HTMLLinkElement;
+class HTMLPopupElement;
 class HTMLScriptElementOrSVGScriptElement;
 class HitTestRequest;
 class HttpRefreshScheduler;
@@ -1362,7 +1363,14 @@ class CORE_EXPORT Document : public ContainerNode,
   const HeapVector<Member<Element>>& TopLayerElements() const {
     return top_layer_elements_;
   }
+  const HeapVector<Member<HTMLPopupElement>>& PopupElementStack() const {
+    return popup_element_stack_;
+  }
   HTMLDialogElement* ActiveModalDialog() const;
+
+  void PushNewPopupElement(HTMLPopupElement*);
+  void PopPopupElement(HTMLPopupElement*);
+  HTMLPopupElement* TopmostPopupElement();
 
   // A non-null template_document_host_ implies that |this| was created by
   // EnsureTemplateDocument().
@@ -2019,6 +2027,10 @@ class CORE_EXPORT Document : public ContainerNode,
   // The last element in |top_layer_elements_| is topmost in the top layer
   // stack and is thus the one that will be visually on top.
   HeapVector<Member<Element>> top_layer_elements_;
+
+  // The stack of currently-displayed popup elements. Elements in the stack
+  // go from earliest (bottom-most) to latest (top-most).
+  HeapVector<Member<HTMLPopupElement>> popup_element_stack_;
 
   int load_event_delay_count_;
   HeapTaskRunnerTimer<Document> load_event_delay_timer_;

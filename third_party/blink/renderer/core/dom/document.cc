@@ -214,6 +214,7 @@
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
 #include "third_party/blink/renderer/core/html/html_plugin_element.h"
+#include "third_party/blink/renderer/core/html/html_popup_element.h"
 #include "third_party/blink/renderer/core/html/html_script_element.h"
 #include "third_party/blink/renderer/core/html/html_title_element.h"
 #include "third_party/blink/renderer/core/html/html_unknown_element.h"
@@ -7360,6 +7361,22 @@ HTMLDialogElement* Document::ActiveModalDialog() const {
   return nullptr;
 }
 
+void Document::PushNewPopupElement(HTMLPopupElement* popup) {
+  DCHECK(!popup_element_stack_.Contains(popup));
+  popup_element_stack_.push_back(popup);
+  AddToTopLayer(popup);
+}
+
+void Document::PopPopupElement(HTMLPopupElement* popup) {
+  DCHECK(popup_element_stack_.back() == popup);
+  popup_element_stack_.pop_back();
+  RemoveFromTopLayer(popup);
+}
+
+HTMLPopupElement* Document::TopmostPopupElement() {
+  return popup_element_stack_.IsEmpty() ? nullptr : popup_element_stack_.back();
+}
+
 void Document::exitPointerLock() {
   if (!GetPage())
     return;
@@ -8143,6 +8160,7 @@ void Document::Trace(Visitor* visitor) const {
   visitor->Trace(lists_invalidated_at_document_);
   visitor->Trace(node_lists_);
   visitor->Trace(top_layer_elements_);
+  visitor->Trace(popup_element_stack_);
   visitor->Trace(load_event_delay_timer_);
   visitor->Trace(plugin_loading_timer_);
   visitor->Trace(elem_sheet_);

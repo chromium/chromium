@@ -26,9 +26,11 @@ class HTMLPopupElement final : public HTMLElement {
 
   void show();
   void hide();
-  void RemovedFrom(ContainerNode&) override;
+
+  Element* AnchorElement() const;
 
  private:
+  void PopUntilElementReached(HTMLPopupElement*);
   void ScheduleHideEvent();
 };
 
