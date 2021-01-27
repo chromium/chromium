@@ -31,3 +31,27 @@ export {TaskModuleHandlerProxy} from './modules/task_module/task_module_handler_
 export {PromoBrowserCommandProxy} from './promo_browser_command_proxy.js';
 export {RealboxBrowserProxy} from './realbox/realbox_browser_proxy.js';
 export {$$, createScrollBorders, decodeString16, mojoString16} from './utils.js';
+
+/**
+ * Tracks scrolls of the NTP and logs the maximum scroll amount when the NTP
+ * unloads.
+ */
+function trackScroll() {
+  let documentScrollTop = 0;
+  document.addEventListener('scroll', () => {
+    documentScrollTop =
+        Math.max(documentScrollTop, document.scrollingElement.scrollTop);
+  });
+  window.addEventListener('unload', () => {
+    chrome.metricsPrivate.recordValue(
+        {
+          metricName: 'NewTabPage.ScrollTop',
+          type: chrome.metricsPrivate.MetricTypeType.HISTOGRAM_LOG,
+          min: 1,  // Choose 1 if real min is 0.
+          max: 10000,
+          buckets: 100,
+        },
+        documentScrollTop);
+  });
+}
+trackScroll();
