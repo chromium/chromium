@@ -275,8 +275,8 @@ JumpList::JumpList(Profile* profile)
   // pref_change_registrar_.
   pref_change_registrar_->Add(
       prefs::kIncognitoModeAvailability,
-      base::Bind(&JumpList::OnIncognitoAvailabilityChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&JumpList::OnIncognitoAvailabilityChanged,
+                          base::Unretained(this)));
 }
 
 JumpList::~JumpList() {

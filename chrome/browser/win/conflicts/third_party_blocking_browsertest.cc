@@ -39,7 +39,7 @@ class ThirdPartyRegistryKeyObserver {
                       KEY_CREATE_SUB_KEY | KEY_READ | KEY_NOTIFY) {}
 
   bool StartWatching() {
-    return registry_key_.StartWatching(base::Bind(
+    return registry_key_.StartWatching(base::BindOnce(
         &ThirdPartyRegistryKeyObserver::OnChange, base::Unretained(this)));
   }
 
@@ -74,7 +74,7 @@ class ThirdPartyRegistryKeyObserver {
   // callback is invoked before WaitForCachePathWritten() was called.
   bool path_written_ = false;
 
-  base::Closure run_loop_quit_closure_;
+  base::OnceClosure run_loop_quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(ThirdPartyRegistryKeyObserver);
 };

@@ -61,7 +61,7 @@ class ModuleLoadAttemptLogListenerTest : public testing::Test {
 
   bool notified_ = false;
 
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
 
   std::vector<std::tuple<base::FilePath, uint32_t, uint32_t>> blocked_modules_;
 

@@ -62,7 +62,7 @@ class ThirdPartyConflictsManagerTest : public testing::Test,
   }
 
   void OnManagerInitializationComplete(
-      base::Closure quit_closure,
+      base::OnceClosure quit_closure,
       ThirdPartyConflictsManager::State final_state) {
     final_state_ = final_state;
     std::move(quit_closure).Run();

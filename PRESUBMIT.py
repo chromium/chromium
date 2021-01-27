@@ -363,7 +363,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/sync_file_system/',
   '^chrome/browser/translate/',
   '^chrome/browser/web_applications/',
-  '^chrome/browser/win/',
   '^components/search_engines/',
   '^extensions/browser/',
   '^extensions/renderer/',
