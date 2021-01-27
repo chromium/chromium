@@ -33,10 +33,9 @@ class SpecialStoragePolicy;
 
 // Stores all origin scoped quota managed data and metadata.
 //
-// Instances are owned by QuotaManager. There is one instance per QuotaManager
-// instance.
-// All the methods of this class, except the constructor, must called on the DB
-// thread.
+// Instances are owned by QuotaManagerImpl. There is one instance per
+// QuotaManagerImpl instance. All the methods of this class, except the
+// constructor, must called on the DB thread.
 class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
  public:
   struct COMPONENT_EXPORT(STORAGE_BROWSER) OriginInfoTableEntry {
@@ -208,7 +207,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   base::OneShotTimer timer_;
 
   friend class QuotaDatabaseTest;
-  friend class QuotaManager;
+  friend class QuotaManagerImpl;
 
   static const TableSchema kTables[];
   static const IndexSchema kIndexes[];

@@ -17,11 +17,11 @@ which will run on its own process on desktop platforms.
 ## Interface
 The quota system's interface is comprised of the following classes:
 
-### QuotaManager
+### QuotaManagerImpl
 The "heart" of the quota system. This class lives on the browser
 process' IO thread, but is primarily accessed through QuotaManagerProxy, which
 handles thread hops. In the future, QuotaManagerProxy will turn into
-mojom::QuotaManager, and the QuotaManager class will become QuotaManagerImpl.
+mojom::QuotaManager, and the quota system will be accessed exclusively via mojo.
 
 ### QuotaClient
 This interface must be implemented by any storage backend that wants to
@@ -41,7 +41,7 @@ change an origin's quota.
 The quota system's implementation is made up of the following components:
 
 ### UsageTracker, ClientUsageTracker
-QuotaManager helpers that distribute tasks (e.g. measure an origin's quota
+QuotaManagerImpl helpers that distribute tasks (e.g. measure an origin's quota
 usage) across QuotaClient instances, and cache results as needed.
 
 ### QuotaDatabase
@@ -57,7 +57,7 @@ webkitStorageInfo.requestQuota(PERSISTENT,...).
 Handles eviction and records stats about eviction rounds.
 
 ### QuotaTask
-Implementation detail of QuotaManager.
+Implementation detail of QuotaManagerImpl.
 
 # Glossary
 

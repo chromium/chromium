@@ -22,7 +22,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/quota/quota_callbacks.h"
 #include "storage/browser/quota/quota_client_type.h"
-#include "storage/browser/quota/quota_manager.h"
+#include "storage/browser/quota/quota_manager_impl.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 
 namespace base {
@@ -42,24 +42,24 @@ namespace storage {
 class QuotaClient;
 class QuotaOverrideHandle;
 
-// Thread-safe proxy for QuotaManager.
+// Thread-safe proxy for QuotaManagerImpl.
 //
 // Most methods can be called from any thread. The few exceptions are marked
 // accordingly in the associated comments.
 class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
     : public base::RefCountedThreadSafe<QuotaManagerProxy> {
  public:
-  using UsageAndQuotaCallback = QuotaManager::UsageAndQuotaCallback;
+  using UsageAndQuotaCallback = QuotaManagerImpl::UsageAndQuotaCallback;
 
-  // The caller is responsible for calling InvalidateQuotaManager() before
-  // `quota_manager` is destroyed. `quota_manager_task_runner` must be
-  // associated with the sequence that `quota_manager` may be used on.
+  // The caller is responsible for calling InvalidateQuotaManagerImpl() before
+  // `quota_manager_impl` is destroyed. `quota_manager_impl_task_runner` must be
+  // associated with the sequence that `quota_manager_impl` may be used on.
   //
-  // See the comment on `quota_manager_` for an explanation why `quota_manager`
-  // isn't a base::WeakPtr<QuotaManager>.
+  // See the comment on `quota_manager_impl_` for an explanation why
+  // `quota_manager_impl` isn't a base::WeakPtr<QuotaManagerImpl>.
   QuotaManagerProxy(
-      QuotaManager* quota_manager,
-      scoped_refptr<base::SequencedTaskRunner> quota_manager_task_runner);
+      QuotaManagerImpl* quota_manager_impl,
+      scoped_refptr<base::SequencedTaskRunner> quota_manager_impl_task_runner);
 
   QuotaManagerProxy(const QuotaManagerProxy&) = delete;
   QuotaManagerProxy& operator=(const QuotaManagerProxy&) = delete;
@@ -117,9 +117,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
       base::OnceClosure callback);
   void WithdrawOverridesForHandle(int handle_id);
 
-  // Called right before the QuotaManager is destroyed.
-  // This method may only be called on the QuotaManager sequence.
-  void InvalidateQuotaManager(base::PassKey<QuotaManager>);
+  // Called right before the QuotaManagerImpl is destroyed.
+  // This method may only be called on the QuotaManagerImpl sequence.
+  void InvalidateQuotaManagerImpl(base::PassKey<QuotaManagerImpl>);
 
  protected:
   friend class base::RefCountedThreadSafe<QuotaManagerProxy>;
@@ -128,38 +128,39 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
   virtual ~QuotaManagerProxy();
 
  private:
-  // Bound to QuotaManager's sequence.
+  // Bound to QuotaManagerImpl's sequence.
   //
   // At the time this code is written, there is no way to explicitly bind a
   // SequenceChecker to a sequence. The implementation ensures that the
   // SequenceChecker binds to the right sequence by DCHECKing that
-  // `quota_manager_task_runner_` runs on the current sequence before calling
-  // DCHECK_CALLED_ON_VALID_SEQUENCE(). New methods added to QuotaManagerProxy
-  // must follow the same pattern.
-  SEQUENCE_CHECKER(quota_manager_sequence_checker_);
+  // `quota_manager_impl_task_runner_` runs on the current sequence before
+  // calling DCHECK_CALLED_ON_VALID_SEQUENCE(). New methods added to
+  // QuotaManagerProxy must follow the same pattern.
+  SEQUENCE_CHECKER(quota_manager_impl_sequence_checker_);
 
-  // Conceptually, this member is a base::WeakPtr<QuotaManager>. Like a WeakPtr,
-  // it becomes null after the target QuotaManager is destroyed.
+  // Conceptually, this member is a base::WeakPtr<QuotaManagerImpl>. Like a
+  // WeakPtr, it becomes null after the target QuotaManagerImpl is destroyed.
   //
   // base::WeakPtr cannot be used here for two reasons:
   // 1) QuotaManagerProxy can be deleted on any thread, whereas WeakPtrs must be
   //    invalidated on the same sequence where they are accessed. In this case,
-  //    the WeakPtr would need to be accessed on the QuotaManager sequence, and
-  //    then invalidated wherever the destructor happens to run.
-  // 2) QuotaManagerProxy instances must be created during the QuotaManager
-  //    constructor, before the QuotaManager's WeakPtrFactory is constructed.
-  //    This is because the easiest way to ensure that QuotaManager exposes its
-  //    QuotaManagerProxy in a thread-safe manner is to have the QuotaManager's
-  //    QuotaManagerProxy reference be const.
-  QuotaManager* quota_manager_
-      GUARDED_BY_CONTEXT(quota_manager_sequence_checker_);
+  //    the WeakPtr would need to be accessed on the QuotaManagerImpl sequence,
+  //    and then invalidated wherever the destructor happens to run.
+  // 2) QuotaManagerProxy instances must be created during the QuotaManagerImpl
+  //    constructor, before the QuotaManagerImpl's WeakPtrFactory is
+  //    constructed. This is because the easiest way to ensure that
+  //    QuotaManagerImpl exposes its QuotaManagerProxy in a thread-safe manner
+  //    is to have the QuotaManagerImpl's QuotaManagerProxy reference be const.
+  QuotaManagerImpl* quota_manager_impl_
+      GUARDED_BY_CONTEXT(quota_manager_impl_sequence_checker_);
 
-  // TaskRunner that accesses QuotaManager's sequence.
+  // TaskRunner that accesses QuotaManagerImpl's sequence.
   //
   // This member is not GUARDED_BY_CONTEXT() and may be accessed from any
   // thread. This is safe because the scoped_refptr is immutable (always points
   // to the same object), and the object it points to is thread-safe.
-  const scoped_refptr<base::SequencedTaskRunner> quota_manager_task_runner_;
+  const scoped_refptr<base::SequencedTaskRunner>
+      quota_manager_impl_task_runner_;
 };
 
 }  // namespace storage

@@ -102,21 +102,21 @@ struct UsageInfo {
 
 // Entry point into the Quota System
 //
-// Each StoragePartition has exactly one QuotaManager instance, which
+// Each StoragePartition has exactly one QuotaManagerImpl instance, which
 // coordinates quota across the Web platform features subject to quota.
 // Each storage system interacts with quota via their own implementations of
 // the QuotaClient interface.
 //
 // The class sets limits and defines the parameters of the systems heuristics.
-// QuotaManager coordinates clients to orchestrate the collection of usage
+// QuotaManagerImpl coordinates clients to orchestrate the collection of usage
 // information, enforce quota limits, and evict stale data.
 //
 // The constructor and proxy() methods can be called on any thread. All other
 // methods must be called on the IO thread.
-class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
+class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
     : public QuotaTaskObserver,
       public QuotaEvictionHandler,
-      public base::RefCountedDeleteOnSequence<QuotaManager> {
+      public base::RefCountedDeleteOnSequence<QuotaManagerImpl> {
  public:
   using UsageAndQuotaCallback = base::OnceCallback<
       void(blink::mojom::QuotaStatusCode, int64_t usage, int64_t quota)>;
@@ -145,14 +145,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   static constexpr int64_t kMBytes = 1024 * 1024;
   static constexpr int kMinutesInMilliSeconds = 60 * 1000;
 
-  QuotaManager(bool is_incognito,
-               const base::FilePath& profile_path,
-               scoped_refptr<base::SingleThreadTaskRunner> io_thread,
-               base::RepeatingClosure quota_change_callback,
-               scoped_refptr<SpecialStoragePolicy> special_storage_policy,
-               const GetQuotaSettingsFunc& get_settings_function);
-  QuotaManager(const QuotaManager&) = delete;
-  QuotaManager& operator=(const QuotaManager&) = delete;
+  QuotaManagerImpl(bool is_incognito,
+                   const base::FilePath& profile_path,
+                   scoped_refptr<base::SingleThreadTaskRunner> io_thread,
+                   base::RepeatingClosure quota_change_callback,
+                   scoped_refptr<SpecialStoragePolicy> special_storage_policy,
+                   const GetQuotaSettingsFunc& get_settings_function);
+  QuotaManagerImpl(const QuotaManagerImpl&) = delete;
+  QuotaManagerImpl& operator=(const QuotaManagerImpl&) = delete;
 
   const QuotaSettings& settings() const { return settings_; }
   void SetQuotaSettings(const QuotaSettings& settings);
@@ -326,18 +326,18 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   }
 
  protected:
-  ~QuotaManager() override;
+  ~QuotaManagerImpl() override;
   void SetQuotaChangeCallbackForTesting(
       base::RepeatingClosure storage_pressure_event_callback);
 
  private:
-  friend class base::DeleteHelper<QuotaManager>;
-  friend class base::RefCountedDeleteOnSequence<QuotaManager>;
+  friend class base::DeleteHelper<QuotaManagerImpl>;
+  friend class base::RefCountedDeleteOnSequence<QuotaManagerImpl>;
   friend class quota_internals::QuotaInternalsProxy;
   friend class MockQuotaManager;
   friend class MockQuotaClient;
   friend class QuotaManagerProxy;
-  friend class QuotaManagerTest;
+  friend class QuotaManagerImplTest;
   friend class QuotaTemporaryStorageEvictor;
 
   class EvictionRoundInfoHelper;
@@ -597,13 +597,14 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManager
   base::RepeatingTimer histogram_timer_;
 
   // Pointer to the function used to get volume information. This is
-  // overwritten by QuotaManagerTest in order to attain deterministic reported
-  // values. The default value points to QuotaManager::GetVolumeInfo.
+  // overwritten by QuotaManagerImplTest in order to attain deterministic
+  // reported values. The default value points to
+  // QuotaManagerImpl::GetVolumeInfo.
   GetVolumeInfoFn get_volume_info_fn_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  base::WeakPtrFactory<QuotaManager> weak_factory_{this};
+  base::WeakPtrFactory<QuotaManagerImpl> weak_factory_{this};
 };
 
 }  // namespace storage

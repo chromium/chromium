@@ -33,10 +33,9 @@ class ClientUsageTracker;
 // A helper class that gathers and tracks the amount of data stored in
 // all quota clients.
 //
-// Ownership: Each QuotaManager instance owns 3 instances of this class (one per
-// storage type: Persistent, Temporary, Syncable).
-// Thread-safety: All methods except the constructor must be called on the same
-// sequence.
+// Ownership: Each QuotaManagerImpl instance owns 3 instances of this class (one
+// per storage type: Persistent, Temporary, Syncable). Thread-safety: All
+// methods except the constructor must be called on the same sequence.
 class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
     : public QuotaTaskObserver {
  public:
