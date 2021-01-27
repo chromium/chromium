@@ -1415,9 +1415,6 @@ TEST_P(CompositingSimTest, NoRenderSurfaceWithAxisAlignedTransformAnimation) {
 }
 
 TEST_P(CompositingSimTest, PromoteCrossOriginIframe) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(
-      blink::features::kCompositeCrossOriginIframes, true);
   InitializeWithHTML("<!DOCTYPE html><iframe id=iframe sandbox></iframe>");
   Compositor().BeginFrame();
   Document* iframe_doc =
@@ -1434,10 +1431,6 @@ TEST_P(CompositingSimTest, PromoteCrossOriginIframe) {
 // cross origin. This test ensures the iframe is promoted due to being cross
 // origin after the iframe loads.
 TEST_P(CompositingSimTest, PromoteCrossOriginIframeAfterLoading) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(
-      blink::features::kCompositeCrossOriginIframes, true);
-
   SimRequest main_resource("https://origin-a.com/a.html", "text/html");
   SimRequest frame_resource("https://origin-b.com/b.html", "text/html");
 
@@ -1461,10 +1454,6 @@ TEST_P(CompositingSimTest, PromoteCrossOriginIframeAfterLoading) {
 // sets up nested frames with domains A -> B -> A. Both the child and grandchild
 // frames should be composited because they are cross-origin to their parent.
 TEST_P(CompositingSimTest, PromoteCrossOriginToParent) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(
-      blink::features::kCompositeCrossOriginIframes, true);
-
   SimRequest main_resource("https://origin-a.com/a.html", "text/html");
   SimRequest child_resource("https://origin-b.com/b.html", "text/html");
   SimRequest grandchild_resource("https://origin-a.com/c.html", "text/html");
@@ -1498,10 +1487,6 @@ TEST_P(CompositingSimTest, PromoteCrossOriginToParent) {
 // Initially the iframe is cross-origin and should be composited. After changing
 // to same-origin, the frame should no longer be composited.
 TEST_P(CompositingSimTest, PromoteCrossOriginIframeAfterDomainChange) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(
-      blink::features::kCompositeCrossOriginIframes, true);
-
   SimRequest main_resource("https://origin-a.com/a.html", "text/html");
   SimRequest frame_resource("https://sub.origin-a.com/b.html", "text/html");
 
@@ -1544,10 +1529,6 @@ TEST_P(CompositingSimTest, PromoteCrossOriginIframeAfterDomainChange) {
 // child frame to A (same-origin), both child and grandchild frames should no
 // longer be composited.
 TEST_P(CompositingSimTest, PromoteCrossOriginToParentIframeAfterDomainChange) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(
-      blink::features::kCompositeCrossOriginIframes, true);
-
   SimRequest main_resource("https://origin-a.com/a.html", "text/html");
   SimRequest child_resource("https://sub.origin-a.com/b.html", "text/html");
   SimRequest grandchild_resource("https://origin-a.com/c.html", "text/html");
@@ -1668,10 +1649,6 @@ TEST_P(CompositingSimTest, ImplSideScrollSkipsCommit) {
 }
 
 TEST_P(CompositingSimTest, FrameAttribution) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(
-      blink::features::kCompositeCrossOriginIframes, true);
-
   InitializeWithHTML(R"HTML(
     <div id='child' style='will-change: transform;'>test</div>
     <iframe id='iframe' sandbox></iframe>
@@ -1722,10 +1699,6 @@ TEST_P(CompositingSimTest, FrameAttribution) {
 }
 
 TEST_P(CompositingSimTest, VisibleFrameRootLayers) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(
-      blink::features::kCompositeCrossOriginIframes, true);
-
   SimRequest main_resource("https://origin-a.com/a.html", "text/html");
   SimRequest frame_resource("https://origin-b.com/b.html", "text/html");
 

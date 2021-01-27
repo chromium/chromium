@@ -147,8 +147,6 @@ BLINK_COMMON_EXPORT extern const base::Feature
 
 BLINK_COMMON_EXPORT extern const base::Feature kDisableForceDeferInChildFrames;
 
-BLINK_COMMON_EXPORT extern const base::Feature kCompositeCrossOriginIframes;
-
 BLINK_COMMON_EXPORT extern const base::Feature kTransformInterop;
 
 BLINK_COMMON_EXPORT extern const base::Feature kSubresourceRedirect;

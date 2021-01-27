@@ -783,7 +783,6 @@
     "prefix": "threaded-composited-iframes",
     "bases": ["external/wpt/is-input-pending"],
     "args": ["--enable-threaded-compositing",
-             "--enable-features=CompositeCrossOriginIframes",
              "--disable-auto-wpt-origin-isolation"]
   },
   {

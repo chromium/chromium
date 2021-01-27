@@ -951,12 +951,8 @@ CompositingReasons LayoutView::AdditionalCompositingReasons() const {
   NOT_DESTROYED();
   // TODO(lfg): Audit for portals
   const LocalFrame& frame = frame_view_->GetFrame();
-  if (frame.OwnerLayoutObject() &&
-      base::FeatureList::IsEnabled(
-          blink::features::kCompositeCrossOriginIframes) &&
-      frame.IsCrossOriginToParentFrame()) {
+  if (frame.OwnerLayoutObject() && frame.IsCrossOriginToParentFrame())
     return CompositingReason::kIFrame;
-  }
   return CompositingReason::kNone;
 }
 

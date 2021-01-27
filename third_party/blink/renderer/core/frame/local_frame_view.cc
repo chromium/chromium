@@ -4391,12 +4391,9 @@ void LocalFrameView::CrossOriginToMainFrameChanged() {
 }
 
 void LocalFrameView::CrossOriginToParentFrameChanged() {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kCompositeCrossOriginIframes)) {
-    if (LayoutView* layout_view = GetLayoutView()) {
-      if (PaintLayer* root_layer = layout_view->Layer())
-        root_layer->SetNeedsCompositingInputsUpdate();
-    }
+  if (LayoutView* layout_view = GetLayoutView()) {
+    if (PaintLayer* root_layer = layout_view->Layer())
+      root_layer->SetNeedsCompositingInputsUpdate();
   }
 }
 

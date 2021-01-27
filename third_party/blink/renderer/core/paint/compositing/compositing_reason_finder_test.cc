@@ -247,9 +247,6 @@ TEST_F(CompositingReasonFinderTest, DontPromoteEmptyIframe) {
 }
 
 TEST_F(CompositingReasonFinderTest, PromoteCrossOriginIframe) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatureState(
-      blink::features::kCompositeCrossOriginIframes, true);
   SetBodyInnerHTML(R"HTML(
     <!DOCTYPE html>
     <iframe id=iframe></iframe>

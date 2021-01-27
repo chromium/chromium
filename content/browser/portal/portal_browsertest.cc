@@ -217,41 +217,6 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, CreatePortal) {
   EXPECT_NE(nullptr, portal);
 }
 
-// This fixture enables CompositeCrossOriginIframes for the following regression
-// test. Since we're testing stability and not behaviour specific to this flag,
-// this fixture and its test may be removed upon removal of the
-// CompositeCrossOriginIframes flag.
-class PortalCompositeCrossOriginIframesBrowserTest : public PortalBrowserTest {
- protected:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PortalBrowserTest::SetUpCommandLine(command_line);
-    scoped_feature_list_.InitAndEnableFeature(
-        blink::features::kCompositeCrossOriginIframes);
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-// Regression test for https://crbug.com/1028269
-// Tests that the renderer can create a portal without crashing when
-// CompositeCrossOriginIframes is enabled.
-IN_PROC_BROWSER_TEST_F(PortalCompositeCrossOriginIframesBrowserTest,
-                       CreatePortal) {
-  EXPECT_TRUE(NavigateToURL(
-      shell(), embedded_test_server()->GetURL("portal.test", "/title1.html")));
-  WebContentsImpl* web_contents_impl =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-  RenderFrameHostImpl* main_frame = web_contents_impl->GetMainFrame();
-
-  GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  Portal* portal = CreatePortalToUrl(web_contents_impl, a_url);
-  EXPECT_NE(nullptr, portal);
-
-  // Ensure that the renderer is still alive.
-  EXPECT_EQ(true, EvalJs(main_frame, "true"));
-}
-
 // Tests the the renderer can navigate a Portal.
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NavigatePortal) {
   EXPECT_TRUE(NavigateToURL(
