@@ -101,6 +101,10 @@ namespace url {
 class Origin;
 }
 
+namespace tracing {
+class SystemTracingService;
+}
+
 namespace viz {
 class GpuClient;
 }
@@ -1119,6 +1123,11 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Keeps this process registered with the tracing subsystem.
   std::unique_ptr<TracingServiceController::ClientRegistration>
       tracing_registration_;
+
+#if defined(OS_POSIX) && !defined(OS_ANDROID)
+  // For the render process to connect to the system tracing service.
+  std::unique_ptr<tracing::SystemTracingService> system_tracing_service_;
+#endif
 
   // IOThreadHostImpl owns some IO-thread state associated with this
   // RenderProcessHostImpl. This is mainly to allow various IPCs from the

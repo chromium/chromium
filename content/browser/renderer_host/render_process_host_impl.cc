@@ -244,6 +244,10 @@
 #include "content/common/sandbox_support_mac.mojom.h"
 #endif
 
+#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#include "services/tracing/public/cpp/system_tracing_service.h"
+#endif
+
 #if defined(OS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_version.h"
@@ -4898,6 +4902,12 @@ void RenderProcessHostImpl::OnProcessLaunched() {
       GetProcess().Pid(),
       base::BindRepeating(&RenderProcessHostImpl::BindTracedProcess,
                           instance_weak_factory_->GetWeakPtr()));
+
+#if defined(OS_POSIX) && !defined(OS_ANDROID)
+  system_tracing_service_ = std::make_unique<tracing::SystemTracingService>();
+  child_process_->EnableSystemTracingService(
+      system_tracing_service_->BindAndPassPendingRemote());
+#endif
 }
 
 void RenderProcessHostImpl::OnProcessLaunchFailed(int error_code) {

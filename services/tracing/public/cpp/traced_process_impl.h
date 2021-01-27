@@ -12,6 +12,8 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/shared_remote.h"
+#include "services/tracing/public/mojom/system_tracing_service.mojom.h"
 #include "services/tracing/public/mojom/traced_process.mojom.h"
 
 namespace tracing {
@@ -30,6 +32,8 @@ class COMPONENT_EXPORT(TRACING_CPP) TracedProcessImpl
   void ResetTracedProcessReceiver();
   void OnTracedProcessRequest(
       mojo::PendingReceiver<mojom::TracedProcess> receiver);
+  void EnableSystemTracingService(
+      mojo::PendingRemote<mojom::SystemTracingService> remote);
 
   // Set which taskrunner to bind any incoming requests on.
   void SetTaskRunner(scoped_refptr<base::SequencedTaskRunner> task_runner);
@@ -39,6 +43,10 @@ class COMPONENT_EXPORT(TRACING_CPP) TracedProcessImpl
 
   // Populate categories from all of the registered agents.
   void GetCategories(std::set<std::string>* category_set);
+
+  mojo::SharedRemote<mojom::SystemTracingService> system_tracing_service() {
+    return system_tracing_service_;
+  }
 
  private:
   friend class base::NoDestructor<TracedProcessImpl>;
@@ -52,6 +60,7 @@ class COMPONENT_EXPORT(TRACING_CPP) TracedProcessImpl
 
   std::set<BaseAgent*> agents_;
   mojo::Receiver<tracing::mojom::TracedProcess> receiver_{this};
+  mojo::SharedRemote<mojom::SystemTracingService> system_tracing_service_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   SEQUENCE_CHECKER(sequence_checker_);

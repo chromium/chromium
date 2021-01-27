@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/trace_event/trace_log.h"
@@ -27,8 +28,14 @@
 #include "base/android/build_info.h"
 #endif  // defined(OS_ANDROID)
 
+#if !defined(OS_ANDROID)
+#include "mojo/public/cpp/bindings/shared_remote.h"
+#include "services/tracing/public/cpp/system_tracing_service.h"
+#endif
+
 namespace tracing {
 namespace {
+
 constexpr uint32_t kInitialConnectionBackoffMs = 100;
 constexpr uint32_t kMaxConnectionBackoffMs = 30 * 1000;
 
@@ -48,6 +55,7 @@ perfetto::DataSourceConfig EnsureGuardRailsAreFollowed(
 uint32_t IncreaseBackoff(uint32_t current, uint32_t max) {
   return std::min(current * 2, max);
 }
+
 }  // namespace
 
 PosixSystemProducer::PosixSystemProducer(const char* socket,
@@ -402,12 +410,54 @@ void PosixSystemProducer::ConnectSocket() {
              base::trace_event::TraceLog::GetInstance()->process_id())});
   }
 
-  auto service = perfetto::ProducerIPCClient::Connect(
-      socket_name_.c_str(), this, std::move(producer_name), task_runner(),
-      perfetto::TracingService::ProducerSMBScrapingMode::kEnabled);
+  // If the security sandbox allows making socket connections, open the producer
+  // socket directly. Otherwise, use Mojo to open the socket in the browser
+  // process.
+  if (!SandboxForbidsSocketConnection()) {
+    auto service = perfetto::ProducerIPCClient::Connect(
+        socket_name_.c_str(), this, std::move(producer_name), task_runner(),
+        perfetto::TracingService::ProducerSMBScrapingMode::kEnabled);
 
-  base::AutoLock lock(lock_);
-  services_.push_back(std::move(service));
+    base::AutoLock lock(lock_);
+    services_.push_back(std::move(service));
+    return;
+  }
+
+#if !defined(OS_ANDROID)
+  // If the child process hasn't received the Mojo remote, try again later.
+  auto shared_remote =
+      TracedProcessImpl::GetInstance()->system_tracing_service();
+  if (!shared_remote.is_bound()) {
+    DelayedReconnect();
+    return;
+  }
+
+  auto callback = base::BindOnce(
+      [](std::string producer_name, base::WeakPtr<PosixSystemProducer> self,
+         base::File file) {
+        if (!self)
+          return;
+
+        if (!file.IsValid()) {
+          self->DelayedReconnect();
+          return;
+        }
+
+        // Connect using an already connected socket.
+        auto service = perfetto::ProducerIPCClient::Connect(
+            perfetto::ipc::Client::ConnArgs(
+                perfetto::base::ScopedFile(file.TakePlatformFile())),
+            self.get(), std::move(producer_name), self->task_runner(),
+            perfetto::TracingService::ProducerSMBScrapingMode::kEnabled);
+
+        base::AutoLock lock(self->lock_);
+        self->services_.push_back(std::move(service));
+      },
+      std::move(producer_name), weak_ptr_factory_.GetWeakPtr());
+
+  // Open the socket remotely using Mojo.
+  shared_remote->OpenProducerSocket(std::move(callback));
+#endif  // !defined(OS_ANDROID)
 }
 
 bool PosixSystemProducer::SkipIfOnAndroidAndPreAndroidPie() const {
@@ -451,6 +501,20 @@ void PosixSystemProducer::Connect() {
       OnConnect();
       break;
   }
+}
+
+bool PosixSystemProducer::SandboxForbidsSocketConnection() {
+#if defined(OS_ANDROID)
+  // Android renderer can connect to the producer socket directly.
+  return false;
+#else
+  // Connect to the system tracing service using Mojo from non-browser
+  // processes. Note that the network utility process can make socket
+  // connections, but we make it connect using Mojo for simplicity.
+  auto type =
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("type");
+  return !type.empty();
+#endif
 }
 
 void PosixSystemProducer::DelayedReconnect() {

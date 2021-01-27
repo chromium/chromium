@@ -80,7 +80,11 @@
 #if defined(OS_POSIX)
 #include "base/posix/global_descriptors.h"
 #include "content/public/common/content_descriptors.h"
-#endif
+#if !defined(OS_ANDROID)
+#include "services/tracing/public/cpp/system_tracing_service.h"
+#include "services/tracing/public/cpp/traced_process.h"
+#endif  // !defined(OS_ANDROID)
+#endif  // defined(OS_POSIX)
 
 #if defined(OS_MAC)
 #include "base/mac/mach_port_rendezvous.h"
@@ -315,6 +319,14 @@ class ChildThreadImpl::IOThreadState
         base::BindOnce(&ChildThreadImpl::GetBackgroundTracingAgentProvider,
                        weak_main_thread_, std::move(receiver)));
   }
+
+#if defined(OS_POSIX) && !defined(OS_ANDROID)
+  void EnableSystemTracingService(
+      mojo::PendingRemote<tracing::mojom::SystemTracingService> remote)
+      override {
+    tracing::TracedProcess::EnableSystemTracingService(std::move(remote));
+  }
+#endif
 
   // Make sure this isn't inlined so it shows up in stack traces, and also make
   // the function body unique by adding a log line, so it doesn't get merged

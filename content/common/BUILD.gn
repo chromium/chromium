@@ -468,6 +468,9 @@ mojom("mojo_bindings") {
   if (use_clang_profiling_inside_sandbox) {
     enabled_features += [ "clang_profiling_inside_sandbox" ]
   }
+  if (is_posix && !is_android) {
+    enabled_features += [ "is_non_android_posix" ]
+  }
 
   if (enable_plugins) {
     sources += [ "pepper_plugin.mojom" ]
