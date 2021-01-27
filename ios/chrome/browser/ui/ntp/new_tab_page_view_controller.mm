@@ -29,6 +29,9 @@ namespace {
 // it look smooth). Otherwise, the omnibox hides beneath the feed before
 // changing ownership.
 const CGFloat kOffsetToPinOmnibox = 100;
+// Offset so the FakeOmnibox owned by this ViewController completely covers the
+// top of the screen.
+const CGFloat kFakeOmniboxTopOffset = 3;
 }
 
 @interface NewTabPageViewController ()
@@ -326,6 +329,12 @@ const CGFloat kOffsetToPinOmnibox = 100;
   [self.headerController removeFromParentViewController];
   [self.headerController.view removeFromSuperview];
 
+  // If |self.headerController| is nil after removing it from the view hierarchy
+  // it means its no longer owned by anyone (e.g. The coordinator might have
+  // been stopped.) and we shouldn't try to add it again.
+  if (!self.headerController)
+    return;
+
   [self.view addSubview:self.headerController.view];
 
   [NSLayoutConstraint activateConstraints:@[
@@ -333,8 +342,8 @@ const CGFloat kOffsetToPinOmnibox = 100;
         constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
                                     .topAnchor
                        constant:-([self.ntpContentDelegate
-                                          heightAboveFakeOmnibox] +
-                                  2)],
+                                        heightAboveFakeOmnibox]) -
+                                kFakeOmniboxTopOffset],
     [self.headerController.view.leadingAnchor
         constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
                                     .leadingAnchor],
