@@ -8,6 +8,8 @@ per-file BUILD.gn=*
 per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
 # Strings
 per-file chromeos_strings.grd=*
+# Tast test control
+per-file tast_control.gni=*
 
 # PST
 achuith@chromium.org

@@ -807,6 +807,9 @@
                   'ui/chromeos/network/|'\
                   'ui/webui/resources/cr_components/chromeos/network/'
     },
+    'chromeos_tast_control': {
+      'filepath': 'chromeos/tast_control.gni',
+    },
     'chromeos_timezone': {
       'filepath': 'chromeos/timezone/',
     },
@@ -2409,6 +2412,8 @@
                      'jonmann+watch-network@chromium.org',
                      'stevenjb+watch-network@chromium.org',
                      'vecore+watch-network@google.com'],
+    'chromeos_tast_control': ['chromeos-engprod+watch@google.com',
+                              'bpastene+watch@chromium.org'],
     'chromeos_timezone': ['alemate+watch@chromium.org'],
     'chromeos_webui': ['alemate+watch@chromium.org'],
     'chromeos_wifi_sync': ['jonmann+watch@chromium.org',

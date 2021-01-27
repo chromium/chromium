@@ -8,6 +8,7 @@ import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("./tast_control.gni")
 
 assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 
@@ -260,40 +261,10 @@ if (is_chromeos_device) {
   # Tast test sources live in the Chromium OS repository.
   # To diagnose tast failures or disable tests, see go/tast-failures
   tast_test("chrome_all_tast_tests") {
-    # To disable a specific test, add it the following list and cite a bug.
-    tast_disabled_tests = [
-      # crbug.com/1162346
-      "ui.WindowControl",
-
-      # crbug.com/1167243
-      "ui.ChromeLogin",
-
-      # crbug.com/1115622
-      "ui.ChromeLoginGAIA",
-
-      # crbug.com/1099695
-      "platform.Drivefs",
-
-      # crbug.com/1131496
-      "apps.LaunchHelpApp.clamshell_oobe_stable",
-      "apps.LaunchHelpApp.tablet_oobe_stable",
-
-      # crbug.com/1148036
-      "ui.ExistingUserLogin",
-      "ui.SigninProfileExtension",
-
-      # crbug.com/1154794
-      "policy.DefaultGeolocationSetting",
-
-      # crbug.com/1115622
-      "inputs.VirtualKeyboardOOBE",
-
-      # crbug.com/1156006
-      "filemanager.DragDrop",
-
-      # crbug.com/1158051
-      "policy.AllowDinosaurEasterEgg",
-    ]
+    # To disable a specific test, add it to the
+    # tast_disabled_tests_from_chrome_all list in "tast_control.gni" and cite
+    # a bug.
+    tast_disabled_tests = tast_disabled_tests_from_chrome_all
   }
 
   tast_test("chrome_all_tast_tests_informational") {
