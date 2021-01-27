@@ -157,6 +157,7 @@
 #include "media/media_buildflags.h"
 #include "media/midi/midi_switches.h"
 #include "media/webrtc/webrtc_switches.h"
+#include "mojo/core/embedder/features.h"
 #include "net/base/features.h"
 #include "net/net_buildflags.h"
 #include "net/nqe/effective_connection_type.h"
@@ -3232,6 +3233,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(performance_manager::features::kDynamicTcmallocTuning)},
 #endif  // BUILDFLAG(USE_TCMALLOC)
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+#if (defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_ANDROID)) && \
+    !defined(OS_NACL)
+    {"mojo-linux-sharedmem", flag_descriptions::kMojoLinuxChannelSharedMemName,
+     flag_descriptions::kMojoLinuxChannelSharedMemDescription,
+     kOsCrOS | kOsLinux | kOsAndroid,
+     FEATURE_VALUE_TYPE(mojo::core::kMojoLinuxChannelSharedMem)},
+#endif
 #if defined(OS_ANDROID)
     {"enable-site-isolation-for-password-sites",
      flag_descriptions::kSiteIsolationForPasswordSitesName,

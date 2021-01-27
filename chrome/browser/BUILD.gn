@@ -2307,6 +2307,7 @@ static_library("browser") {
     "//media/mojo/services",
     "//media/webrtc",
     "//mojo/core/embedder",
+    "//mojo/core/embedder:features",
     "//mojo/public/cpp/bindings",
     "//net",
     "//net:extras",

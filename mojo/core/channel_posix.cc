@@ -31,7 +31,12 @@
 #if !defined(OS_NACL)
 #include <limits.h>
 #include <sys/uio.h>
+
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID))
+#include "mojo/core/channel_linux.h"
 #endif
+
+#endif  // !defined(OS_NACL)
 
 namespace mojo {
 namespace core {
@@ -39,7 +44,7 @@ namespace core {
 namespace {
 #if !defined(OS_NACL)
 std::atomic<bool> g_use_writev{false};
-#endif
+#endif  // !defined(OS_NACL)
 
 const size_t kMaxBatchReadCapacity = 256 * 1024;
 }  // namespace
@@ -256,11 +261,11 @@ void ChannelPosix::ShutDownOnIOThread() {
     ignore_result(server_.TakePlatformHandle());
   }
 #if defined(OS_IOS)
-    fds_to_close_.clear();
+  fds_to_close_.clear();
 #endif
 
-    // May destroy the |this| if it was the last reference.
-    self_ = nullptr;
+  // May destroy the |this| if it was the last reference.
+  self_ = nullptr;
 }
 
 void ChannelPosix::WillDestroyCurrentMessageLoop() {
@@ -273,68 +278,67 @@ void ChannelPosix::OnFileCanReadWithoutBlocking(int fd) {
   if (server_.is_valid()) {
     CHECK_EQ(fd, server_.platform_handle().GetFD().get());
 #if !defined(OS_NACL)
-      read_watcher_.reset();
-      base::CurrentThread::Get()->RemoveDestructionObserver(this);
+    read_watcher_.reset();
+    base::CurrentThread::Get()->RemoveDestructionObserver(this);
 
-      AcceptSocketConnection(server_.platform_handle().GetFD().get(), &socket_);
-      ignore_result(server_.TakePlatformHandle());
-      if (!socket_.is_valid()) {
-        OnError(Error::kConnectionFailed);
-        return;
-      }
-      StartOnIOThread();
-#else
-      NOTREACHED();
-#endif
+    AcceptSocketConnection(server_.platform_handle().GetFD().get(), &socket_);
+    ignore_result(server_.TakePlatformHandle());
+    if (!socket_.is_valid()) {
+      OnError(Error::kConnectionFailed);
       return;
-  }
-    CHECK_EQ(fd, socket_.get());
-
-    bool validation_error = false;
-    bool read_error = false;
-    size_t next_read_size = 0;
-    size_t buffer_capacity = 0;
-    size_t total_bytes_read = 0;
-    size_t bytes_read = 0;
-    do {
-      buffer_capacity = next_read_size;
-      char* buffer = GetReadBuffer(&buffer_capacity);
-      DCHECK_GT(buffer_capacity, 0u);
-
-      std::vector<base::ScopedFD> incoming_fds;
-      ssize_t read_result =
-          SocketRecvmsg(socket_.get(), buffer, buffer_capacity, &incoming_fds);
-      for (auto& incoming_fd : incoming_fds)
-        incoming_fds_.emplace_back(std::move(incoming_fd));
-
-      if (read_result > 0) {
-        bytes_read = static_cast<size_t>(read_result);
-        total_bytes_read += bytes_read;
-        if (!OnReadComplete(bytes_read, &next_read_size)) {
-          read_error = true;
-          validation_error = true;
-          break;
-        }
-      } else if (read_result == 0 ||
-                 (errno != EAGAIN && errno != EWOULDBLOCK)) {
-        read_error = true;
-        break;
-      } else {
-        // We expect more data but there is none to read. The
-        // FileDescriptorWatcher will wake us up again once there is.
-        DCHECK(errno == EAGAIN || errno == EWOULDBLOCK);
-        return;
-      }
-    } while (bytes_read == buffer_capacity &&
-             total_bytes_read < kMaxBatchReadCapacity && next_read_size > 0);
-    if (read_error) {
-      // Stop receiving read notifications.
-      read_watcher_.reset();
-      if (validation_error)
-        OnError(Error::kReceivedMalformedData);
-      else
-        OnError(Error::kDisconnected);
     }
+    StartOnIOThread();
+#else
+    NOTREACHED();
+#endif
+    return;
+  }
+  CHECK_EQ(fd, socket_.get());
+
+  bool validation_error = false;
+  bool read_error = false;
+  size_t next_read_size = 0;
+  size_t buffer_capacity = 0;
+  size_t total_bytes_read = 0;
+  size_t bytes_read = 0;
+  do {
+    buffer_capacity = next_read_size;
+    char* buffer = GetReadBuffer(&buffer_capacity);
+    DCHECK_GT(buffer_capacity, 0u);
+
+    std::vector<base::ScopedFD> incoming_fds;
+    ssize_t read_result =
+        SocketRecvmsg(socket_.get(), buffer, buffer_capacity, &incoming_fds);
+    for (auto& incoming_fd : incoming_fds)
+      incoming_fds_.emplace_back(std::move(incoming_fd));
+
+    if (read_result > 0) {
+      bytes_read = static_cast<size_t>(read_result);
+      total_bytes_read += bytes_read;
+      if (!OnReadComplete(bytes_read, &next_read_size)) {
+        read_error = true;
+        validation_error = true;
+        break;
+      }
+    } else if (read_result == 0 || (errno != EAGAIN && errno != EWOULDBLOCK)) {
+      read_error = true;
+      break;
+    } else {
+      // We expect more data but there is none to read. The
+      // FileDescriptorWatcher will wake us up again once there is.
+      DCHECK(errno == EAGAIN || errno == EWOULDBLOCK);
+      return;
+    }
+  } while (bytes_read == buffer_capacity &&
+           total_bytes_read < kMaxBatchReadCapacity && next_read_size > 0);
+  if (read_error) {
+    // Stop receiving read notifications.
+    read_watcher_.reset();
+    if (validation_error)
+      OnError(Error::kReceivedMalformedData);
+    else
+      OnError(Error::kDisconnected);
+  }
 }
 
 void ChannelPosix::OnFileCanWriteWithoutBlocking(int fd) {
@@ -377,29 +381,29 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
       result = SendmsgWithHandles(socket_.get(), &iov, 1, fds);
       if (result >= 0) {
 #if defined(OS_IOS)
-          // There is a bug in XNU which makes it dangerous to close
-          // a file descriptor while it is in transit. So instead we
-          // store the file descriptor in a set and send a message to
-          // the recipient, which is queued AFTER the message that
-          // sent the FD. The recipient will reply to the message,
-          // letting us know that it is now safe to close the file
-          // descriptor. For more information, see:
-          // http://crbug.com/298276
-          MessagePtr fds_message(new Channel::Message(
-              sizeof(int) * fds.size(), 0, Message::MessageType::HANDLES_SENT));
-          int* fd_data = reinterpret_cast<int*>(fds_message->mutable_payload());
-          for (size_t i = 0; i < fds.size(); ++i)
-            fd_data[i] = fds[i].get();
-          outgoing_messages_.emplace_back(std::move(fds_message), 0);
-          {
-            base::AutoLock l(fds_to_close_lock_);
-            for (auto& fd : fds)
-              fds_to_close_.emplace_back(std::move(fd));
-          }
+        // There is a bug in XNU which makes it dangerous to close
+        // a file descriptor while it is in transit. So instead we
+        // store the file descriptor in a set and send a message to
+        // the recipient, which is queued AFTER the message that
+        // sent the FD. The recipient will reply to the message,
+        // letting us know that it is now safe to close the file
+        // descriptor. For more information, see:
+        // http://crbug.com/298276
+        MessagePtr fds_message(new Channel::Message(
+            sizeof(int) * fds.size(), 0, Message::MessageType::HANDLES_SENT));
+        int* fd_data = reinterpret_cast<int*>(fds_message->mutable_payload());
+        for (size_t i = 0; i < fds.size(); ++i)
+          fd_data[i] = fds[i].get();
+        outgoing_messages_.emplace_back(std::move(fds_message), 0);
+        {
+          base::AutoLock l(fds_to_close_lock_);
+          for (auto& fd : fds)
+            fds_to_close_.emplace_back(std::move(fd));
+        }
 #endif  // defined(OS_IOS)
-          handles_written += num_handles_to_send;
-          DCHECK_LE(handles_written, num_handles);
-          message_view.set_num_handles_sent(handles_written);
+        handles_written += num_handles_to_send;
+        DCHECK_LE(handles_written, num_handles);
+        message_view.set_num_handles_sent(handles_written);
       } else {
         // Message transmission failed, so pull the FDs back into |handles|
         // so they can be held by the Message again.
@@ -413,76 +417,86 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
                            message_view.data_num_bytes());
     }
 
-      if (result < 0) {
-        if (errno != EAGAIN &&
-            errno != EWOULDBLOCK
+    if (result < 0) {
+      if (errno != EAGAIN &&
+          errno != EWOULDBLOCK
 #if defined(OS_IOS)
-            // On iOS if sendmsg() is trying to send fds between processes and
-            // there isn't enough room in the output buffer to send the fd
-            // structure over atomically then EMSGSIZE is returned.
-            //
-            // EMSGSIZE presents a problem since the system APIs can only call
-            // us when there's room in the socket buffer and not when there is
-            // "enough" room.
-            //
-            // The current behavior is to return to the event loop when EMSGSIZE
-            // is received and hopefull service another FD.  This is however
-            // still technically a busy wait since the event loop will call us
-            // right back until the receiver has read enough data to allow
-            // passing the FD over atomically.
-            && errno != EMSGSIZE
+          // On iOS if sendmsg() is trying to send fds between processes and
+          // there isn't enough room in the output buffer to send the fd
+          // structure over atomically then EMSGSIZE is returned.
+          //
+          // EMSGSIZE presents a problem since the system APIs can only call
+          // us when there's room in the socket buffer and not when there is
+          // "enough" room.
+          //
+          // The current behavior is to return to the event loop when EMSGSIZE
+          // is received and hopefully service another FD.  This is however
+          // still technically a busy wait since the event loop will call us
+          // right back until the receiver has read enough data to allow
+          // passing the FD over atomically.
+          && errno != EMSGSIZE
 #endif
-        ) {
-          return false;
-        }
-        message_view.SetHandles(std::move(handles));
-        outgoing_messages_.emplace_front(std::move(message_view));
-        WaitForWriteOnIOThreadNoLock();
-        return true;
+      ) {
+        return false;
       }
+      message_view.SetHandles(std::move(handles));
+      outgoing_messages_.emplace_front(std::move(message_view));
+      WaitForWriteOnIOThreadNoLock();
+      return true;
+    }
 
-      bytes_written = static_cast<size_t>(result);
+    bytes_written = static_cast<size_t>(result);
   } while (handles_written < num_handles ||
            bytes_written < message_view.data_num_bytes());
 
-    return FlushOutgoingMessagesNoLock();
+  return FlushOutgoingMessagesNoLock();
 }
 
 bool ChannelPosix::FlushOutgoingMessagesNoLock() {
 #if !defined(OS_NACL)
-    if (g_use_writev)
-      return FlushOutgoingMessagesWritevNoLock();
+  if (g_use_writev)
+    return FlushOutgoingMessagesWritevNoLock();
 #endif
 
-    base::circular_deque<MessageView> messages;
-    std::swap(outgoing_messages_, messages);
+  base::circular_deque<MessageView> messages;
+  std::swap(outgoing_messages_, messages);
 
-    if (!messages.empty()) {
-      UMA_HISTOGRAM_COUNTS_1000("Mojo.Channel.WriteQueuePendingMessages",
-                                messages.size());
-    }
+  if (!messages.empty()) {
+    UMA_HISTOGRAM_COUNTS_1000("Mojo.Channel.WriteQueuePendingMessages",
+                              messages.size());
+  }
 
-    while (!messages.empty()) {
-      if (!WriteNoLock(std::move(messages.front())))
-        return false;
+  while (!messages.empty()) {
+    if (!WriteNoLock(std::move(messages.front())))
+      return false;
 
-      messages.pop_front();
-      if (!outgoing_messages_.empty()) {
-        // The message was requeued by WriteNoLock(), so we have to wait for
-        // pipe to become writable again. Repopulate the message queue and exit.
-        // If sending the message triggered any control messages, they may be
-        // in |outgoing_messages_| in addition to or instead of the message
-        // being sent.
-        std::swap(messages, outgoing_messages_);
-        while (!messages.empty()) {
-          outgoing_messages_.push_front(std::move(messages.back()));
-          messages.pop_back();
-        }
-        return true;
+    messages.pop_front();
+    if (!outgoing_messages_.empty()) {
+      // The message was requeued by WriteNoLock(), so we have to wait for
+      // pipe to become writable again. Repopulate the message queue and exit.
+      // If sending the message triggered any control messages, they may be
+      // in |outgoing_messages_| in addition to or instead of the message
+      // being sent.
+      std::swap(messages, outgoing_messages_);
+      while (!messages.empty()) {
+        outgoing_messages_.push_front(std::move(messages.back()));
+        messages.pop_back();
       }
+      return true;
     }
+  }
 
-    return true;
+  return true;
+}
+
+void ChannelPosix::RejectUpgradeOffer() {
+  Write(std::make_unique<Channel::Message>(
+      0, 0, Message::MessageType::UPGRADE_REJECT));
+}
+
+void ChannelPosix::AcceptUpgradeOffer() {
+  Write(std::make_unique<Channel::Message>(
+      0, 0, Message::MessageType::UPGRADE_ACCEPT));
 }
 
 void ChannelPosix::OnWriteError(Error error) {
@@ -607,12 +621,19 @@ bool ChannelPosix::FlushOutgoingMessagesWritevNoLock() {
 }
 #endif  // !defined(OS_NACL)
 
-#if defined(OS_IOS)
 bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
                                     const void* payload,
                                     size_t payload_size,
                                     std::vector<PlatformHandle> handles) {
   switch (message_type) {
+    case Message::MessageType::UPGRADE_OFFER: {
+      // ChannelPosix itself does not support upgrades, if the message was
+      // delivered here it could have been when this channel was created we
+      // didn't support upgrades but another process does.
+      RejectUpgradeOffer();
+      return true;
+    }
+#if defined(OS_IOS)
     case Message::MessageType::HANDLES_SENT: {
       if (payload_size == 0)
         break;
@@ -633,7 +654,7 @@ bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
         break;
       return true;
     }
-
+#endif
     default:
       break;
   }
@@ -641,6 +662,7 @@ bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
   return false;
 }
 
+#if defined(OS_IOS)
 // Closes handles referenced by |fds|. Returns false if |num_fds| is 0, or if
 // |fds| does not match a sequence of handles in |fds_to_close_|.
 bool ChannelPosix::CloseHandles(const int* fds, size_t num_fds) {
@@ -675,12 +697,12 @@ bool ChannelPosix::CloseHandles(const int* fds, size_t num_fds) {
 }
 #endif  // defined(OS_IOS)
 
-// static
 #if !defined(OS_NACL)
+// static
 void Channel::set_posix_use_writev(bool use_writev) {
   g_use_writev = use_writev;
 }
-#endif
+#endif  // !defined(OS_NACL)
 
 // static
 scoped_refptr<Channel> Channel::Create(
@@ -688,9 +710,33 @@ scoped_refptr<Channel> Channel::Create(
     ConnectionParams connection_params,
     HandlePolicy handle_policy,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
+#if !defined(OS_NACL)
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID))
+  return new ChannelLinux(delegate, std::move(connection_params), handle_policy,
+                          io_task_runner);
+#endif
+#endif
+
   return new ChannelPosix(delegate, std::move(connection_params), handle_policy,
                           io_task_runner);
 }
+
+#if !defined(OS_NACL)
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID))
+// static
+bool Channel::SupportsChannelUpgrade() {
+  return ChannelLinux::KernelSupportsUpgradeRequirements() &&
+         ChannelLinux::UpgradesEnabled();
+}
+
+void Channel::OfferChannelUpgrade() {
+  if (!SupportsChannelUpgrade()) {
+    return;
+  }
+  static_cast<ChannelLinux*>(this)->OfferSharedMemUpgrade();
+}
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#endif  // !defined(OS_NACL)
 
 }  // namespace core
 }  // namespace mojo

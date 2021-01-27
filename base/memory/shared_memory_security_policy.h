@@ -7,7 +7,14 @@
 
 #include <stddef.h>
 
+#include "base/base_export.h"
 #include "base/compiler_specific.h"
+
+namespace mojo {
+namespace core {
+class ChannelLinux;
+}  // namespace core
+}  // namespace mojo
 
 namespace base {
 
@@ -19,10 +26,11 @@ class PlatformSharedMemoryRegion;
 // mapped. This can help prevent an attacker from spraying the address space of
 // a process with shared memory mappings to bypass ASLR. For more details, see
 // https://googleprojectzero.blogspot.com/2019/04/virtually-unlimited-memory-escaping.html
-class SharedMemorySecurityPolicy {
+class BASE_EXPORT SharedMemorySecurityPolicy {
  private:
   friend class subtle::PlatformSharedMemoryRegion;
   friend class SharedMemoryMapping;
+  friend class mojo::core::ChannelLinux;
 
   // Checks that a mapping with |size| can be created. Returns false if there is
   // an overflow in internal calculations, or the max limit has been reached.

@@ -1433,6 +1433,12 @@ const char kMobilePwaInstallUseBottomSheetName[] =
 const char kMobilePwaInstallUseBottomSheetDescription[] =
     "Enables use of a rich bottom sheet when offering mobile PWA installation.";
 
+const char kMojoLinuxChannelSharedMemName[] =
+    "Enable Mojo Shared Memory Channel";
+const char kMojoLinuxChannelSharedMemDescription[] =
+    "If enabled Mojo on Linux based platforms can use shared memory as an "
+    "alternate channel for most messages.";
+
 const char kMouseSubframeNoImplicitCaptureName[] =
     "Disable mouse implicit capture for iframe";
 const char kMouseSubframeNoImplicitCaptureDescription[] =
