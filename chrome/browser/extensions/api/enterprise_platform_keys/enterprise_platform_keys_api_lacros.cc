@@ -345,10 +345,11 @@ EnterprisePlatformKeysChallengeMachineKeyFunction::Run() {
                           this);
   chromeos::LacrosChromeServiceImpl::Get()
       ->keystore_service_remote()
-      ->ChallengeAttestationOnlyKeystore(StringFromVector(params->challenge),
-                                         crosapi::mojom::KeystoreType::kDevice,
-                                         /*migrate=*/*params->register_key,
-                                         std::move(c));
+      ->ChallengeAttestationOnlyKeystore(
+          StringFromVector(params->challenge),
+          crosapi::mojom::KeystoreType::kDevice,
+          /*migrate=*/params->register_key ? *params->register_key : false,
+          std::move(c));
   return RespondLater();
 }
 
