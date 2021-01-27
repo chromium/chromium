@@ -7716,16 +7716,17 @@ void WebContentsImpl::ReattachOuterDelegateIfNeeded() {
 bool WebContentsImpl::CreateRenderViewForRenderManager(
     RenderViewHost* render_view_host,
     const base::Optional<base::UnguessableToken>& opener_frame_token,
-    int proxy_routing_id) {
+    RenderFrameProxyHost* proxy_host) {
   TRACE_EVENT1("browser,navigation",
                "WebContentsImpl::CreateRenderViewForRenderManager",
                "render_view_host", render_view_host);
-
   auto* rvh_impl = static_cast<RenderViewHostImpl*>(render_view_host);
 
-  if (proxy_routing_id == MSG_ROUTING_NONE)
+  if (!proxy_host)
     CreateRenderWidgetHostViewForRenderManager(render_view_host);
 
+  const auto proxy_routing_id =
+      proxy_host ? proxy_host->GetRoutingID() : MSG_ROUTING_NONE;
   if (!rvh_impl->CreateRenderView(opener_frame_token, proxy_routing_id,
                                   created_with_opener_)) {
     return false;
@@ -7734,17 +7735,12 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
   // but only if it's not for the main frame. Main frame renderers should create
   // this state themselves from up-to-date values, so we shouldn't override it
   // with the cached values.
-  if (!render_view_host->GetMainFrame()) {
-    auto* proxy_host =
-        rvh_impl->frame_tree()
-            ->root()
-            ->render_manager()
-            ->GetRenderFrameProxyHost(render_view_host->GetSiteInstance());
+  if (!render_view_host->GetMainFrame() && proxy_host) {
     proxy_host->GetAssociatedRemoteMainFrame()->UpdateTextAutosizerPageInfo(
         text_autosizer_page_info_.Clone());
   }
 
-  if (proxy_routing_id == MSG_ROUTING_NONE)
+  if (!proxy_host)
     ReattachOuterDelegateIfNeeded();
 
   // TODO(https://crbug.com/1170273): Handle multiple controllers (MPArch)

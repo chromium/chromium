@@ -16,6 +16,7 @@
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/navigator.h"
+#include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/site_instance_impl.h"
@@ -230,7 +231,9 @@ bool TestWebContents::CrossProcessNavigationPending() {
 bool TestWebContents::CreateRenderViewForRenderManager(
     RenderViewHost* render_view_host,
     const base::Optional<base::UnguessableToken>& opener_frame_token,
-    int proxy_routing_id) {
+    RenderFrameProxyHost* proxy_host) {
+  const auto proxy_routing_id =
+      proxy_host ? proxy_host->GetRoutingID() : MSG_ROUTING_NONE;
   // This will go to a TestRenderViewHost.
   static_cast<RenderViewHostImpl*>(render_view_host)
       ->CreateRenderView(opener_frame_token, proxy_routing_id, false);
