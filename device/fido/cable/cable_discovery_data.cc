@@ -94,7 +94,7 @@ base::Optional<std::unique_ptr<Pairing>> Pairing::Parse(
       map.find(cbor::Value(5));
   if (name_it == map.end() || !name_it->second.is_string() ||
       std::any_of(
-          &its[0], &its[its.size()],
+          its.begin(), its.end(),
           [&map](const cbor::Value::MapValue::const_iterator& it) -> bool {
             return it == map.end() || !it->second.is_bytestring();
           }) ||

@@ -151,7 +151,8 @@ CreateHidConnectionWithHidInitExpectations(
   EXPECT_CALL(*mock_connection, ReadPtr(_))
       .InSequence(sequence)
       // Response to HID_INIT request.
-      .WillOnce(Invoke([&](device::mojom::HidConnection::ReadCallback* cb) {
+      .WillOnce(Invoke([mock_connection = mock_connection.get()](
+                           device::mojom::HidConnection::ReadCallback* cb) {
         std::move(*cb).Run(
             true, 0,
             CreateMockInitResponse(mock_connection->nonce(),
