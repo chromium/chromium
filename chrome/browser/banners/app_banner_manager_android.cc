@@ -527,7 +527,7 @@ void AppBannerManagerAndroid::MaybeShowAmbientBadge() {
     PwaBottomSheetController::MaybeCreateAndShow(
         weak_factory_.GetWeakPtr(), web_contents(), GetAppName(), primary_icon_,
         has_maskable_primary_icon_, manifest_.start_url, screenshots_,
-        manifest_.description.value_or(base::string16()), manifest_.categories,
+        manifest_.description.value_or(base::string16()),
         /* show_expaned= */ false);
   }
 }

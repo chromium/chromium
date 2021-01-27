@@ -84,10 +84,6 @@ void ShortcutInfo::UpdateFromManifest(const blink::Manifest& manifest) {
 
   description = manifest.description.value_or(base::string16());
 
-  categories.clear();
-  for (const auto& category : manifest.categories)
-    categories.push_back(category);
-
   // Set the url based on the manifest value, if any.
   if (manifest.start_url.is_valid())
     url = manifest.start_url;

@@ -40,7 +40,6 @@ class PwaBottomSheetController {
       const GURL& start_url,
       const std::map<GURL, SkBitmap>& screenshots,
       const base::string16& description,
-      const std::vector<base::string16>& categories,
       bool show_expanded);
 
   virtual ~PwaBottomSheetController();
@@ -60,7 +59,6 @@ class PwaBottomSheetController {
                            const GURL& start_url,
                            const std::map<GURL, SkBitmap>& screenshots,
                            const base::string16& description,
-                           const std::vector<base::string16>& categories,
                            bool show_expanded);
   PwaBottomSheetController(const PwaBottomSheetController&) = delete;
   PwaBottomSheetController& operator=(const PwaBottomSheetController&) = delete;
@@ -79,7 +77,6 @@ class PwaBottomSheetController {
   const GURL& start_url_;
   const std::map<GURL, SkBitmap>& screenshots_;
   const base::string16 description_;
-  const std::vector<base::string16>& categories_;
   bool show_expanded_;
 };
 

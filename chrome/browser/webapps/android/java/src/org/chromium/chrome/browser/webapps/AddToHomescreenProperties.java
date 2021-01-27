@@ -19,8 +19,6 @@ public class AddToHomescreenProperties {
             new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<String> URL =
             new PropertyModel.WritableObjectPropertyKey<>();
-    public static final PropertyModel.WritableObjectPropertyKey<String> CATEGORIES =
-            new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<String> DESCRIPTION =
             new PropertyModel.WritableObjectPropertyKey<>();
     public static final PropertyModel.WritableObjectPropertyKey<Pair<Bitmap, Boolean>> ICON =
@@ -36,6 +34,6 @@ public class AddToHomescreenProperties {
     public static final PropertyModel.WritableFloatPropertyKey NATIVE_APP_RATING =
             new PropertyModel.WritableFloatPropertyKey();
 
-    public static final PropertyKey[] ALL_KEYS = {TITLE, URL, CATEGORIES, DESCRIPTION, ICON, TYPE,
-            CAN_SUBMIT, CLICK_LISTENER, NATIVE_INSTALL_BUTTON_TEXT, NATIVE_APP_RATING};
+    public static final PropertyKey[] ALL_KEYS = {TITLE, URL, DESCRIPTION, ICON, TYPE, CAN_SUBMIT,
+            CLICK_LISTENER, NATIVE_INSTALL_BUTTON_TEXT, NATIVE_APP_RATING};
 }

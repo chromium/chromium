@@ -2230,9 +2230,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       <message name="IDS_PWA_INSTALL_BOTTOM_SHEET_ACCESSIBILITY" desc="The content description for the bottom sheet install UI.">
         Install this app
       </message>
-      <message name="IDS_PWA_INSTALL_BOTTOM_SHEET_CATEGORIES" desc="The content description for the bottom sheet install UI.">
-        Categories: <ph name="COMMA_SEPERATED_CATEGORY_LIST">%1$s<ex>cats, memes</ex></ph>.
-      </message>
 
       <!-- Page info popup -->
       <message name="IDS_PAGE_INFO_CONNECTION_OFFLINE" desc="Message to display in the page info bubble when viewing and offline page.">

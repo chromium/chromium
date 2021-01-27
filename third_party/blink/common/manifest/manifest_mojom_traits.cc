@@ -59,9 +59,6 @@ bool StructTraits<blink::mojom::ManifestDataView, ::blink::Manifest>::Read(
     return false;
   out->description = std::move(string.string);
 
-  if (!data.ReadCategories(&out->categories))
-    return false;
-
   if (!data.ReadGcmSenderId(&string))
     return false;
   out->gcm_sender_id = std::move(string.string);

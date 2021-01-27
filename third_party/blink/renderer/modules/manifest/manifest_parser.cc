@@ -84,7 +84,6 @@ void ManifestParser::Parse() {
   manifest_->name = ParseName(root_object.get());
   manifest_->short_name = ParseShortName(root_object.get());
   manifest_->description = ParseDescription(root_object.get());
-  manifest_->categories = ParseCategories(root_object.get());
   manifest_->start_url = ParseStartURL(root_object.get());
   manifest_->scope = ParseScope(root_object.get(), manifest_->start_url);
   manifest_->display = ParseDisplay(root_object.get());
@@ -275,28 +274,6 @@ String ManifestParser::ParseShortName(const JSONObject* object) {
 String ManifestParser::ParseDescription(const JSONObject* object) {
   base::Optional<String> description = ParseString(object, "description", Trim);
   return description.has_value() ? *description : String();
-}
-
-Vector<String> ManifestParser::ParseCategories(const JSONObject* object) {
-  Vector<String> categories;
-
-  JSONValue* json_value = object->Get("categories");
-  if (!json_value)
-    return categories;
-
-  JSONArray* categories_list = object->GetArray("categories");
-  if (!categories_list) {
-    AddErrorInfo("property 'categories' ignored, type array expected.");
-    return categories;
-  }
-
-  for (wtf_size_t i = 0; i < categories_list->size(); ++i) {
-    String category_string;
-    categories_list->at(i)->AsString(&category_string);
-    categories.push_back(category_string.StripWhiteSpace().LowerASCII());
-  }
-
-  return categories;
 }
 
 KURL ManifestParser::ParseStartURL(const JSONObject* object) {

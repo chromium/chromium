@@ -29,7 +29,6 @@ const int kDescriptionMaxLength = 324;
 
 bool CanShowBottomSheet(content::WebContents* web_contents,
                         const base::string16& description,
-                        const std::vector<base::string16>& categories,
                         const std::map<GURL, SkBitmap>& screenshots) {
   if (!base::FeatureList::IsEnabled(
           webapps::features::kPwaInstallUseBottomSheet)) {
@@ -37,8 +36,7 @@ bool CanShowBottomSheet(content::WebContents* web_contents,
   }
 
   if (description.length() < kDescriptionMinLength ||
-      description.length() > kDescriptionMaxLength || categories.size() == 0 ||
-      screenshots.size() == 0) {
+      description.length() > kDescriptionMaxLength || screenshots.size() == 0) {
     return false;
   }
 
@@ -78,7 +76,7 @@ void JNI_PwaBottomSheetController_CreateAndShowBottomSheetInstaller(
       app_banner_manager->primary_icon(),
       app_banner_manager->has_maskable_primary_icon(),
       app_banner_manager->validated_url(), app_banner_manager->screenshots(),
-      manifest.description.value_or(base::string16()), manifest.categories,
+      manifest.description.value_or(base::string16()),
       /* show_expanded= */ true);
 }
 
@@ -92,15 +90,14 @@ void PwaBottomSheetController::MaybeCreateAndShow(
     const GURL& start_url,
     const std::map<GURL, SkBitmap>& screenshots,
     const base::string16& description,
-    const std::vector<base::string16>& categories,
     bool show_expanded) {
-  if (CanShowBottomSheet(web_contents, description, categories, screenshots)) {
+  if (CanShowBottomSheet(web_contents, description, screenshots)) {
     // Lifetime of this object is managed by the Java counterpart, iff bottom
     // sheets can be shown (otherwise an infobar is used and this class is no
     // longer needed).
     PwaBottomSheetController* controller = new PwaBottomSheetController(
         app_name, primary_icon, is_primary_icon_maskable, start_url,
-        screenshots, description, categories, show_expanded);
+        screenshots, description, show_expanded);
     controller->ShowBottomSheetInstaller(web_contents);
     return;
   }
@@ -117,7 +114,6 @@ PwaBottomSheetController::PwaBottomSheetController(
     const GURL& start_url,
     const std::map<GURL, SkBitmap>& screenshots,
     const base::string16& description,
-    const std::vector<base::string16>& categories,
     bool show_expanded)
     : app_name_(app_name),
       primary_icon_(primary_icon),
@@ -125,7 +121,6 @@ PwaBottomSheetController::PwaBottomSheetController(
       start_url_(start_url),
       screenshots_(screenshots),
       description_(description),
-      categories_(categories),
       show_expanded_(show_expanded) {}
 
 void PwaBottomSheetController::Destroy(JNIEnv* env) {
@@ -160,18 +155,13 @@ void PwaBottomSheetController::ShowBottomSheetInstaller(
   ScopedJavaLocalRef<jstring> j_description =
       ConvertUTF16ToJavaString(env, description_);
 
-  base::string16 category_list =
-      base::JoinString(categories_, ASCIIToUTF16(", "));
-  ScopedJavaLocalRef<jstring> j_categories =
-      ConvertUTF16ToJavaString(env, category_list);
-
   ScopedJavaLocalRef<jobject> j_bitmap =
       gfx::ConvertToJavaBitmap(primary_icon_);
 
   Java_PwaBottomSheetControllerProvider_showPwaBottomSheetInstaller(
       env, reinterpret_cast<intptr_t>(this), web_contents->GetJavaWebContents(),
       show_expanded_, j_bitmap, is_primary_icon_maskable_, j_user_title, j_url,
-      j_description, j_categories);
+      j_description);
 
   for (const auto& item : screenshots_) {
     if (!item.second.isNull())

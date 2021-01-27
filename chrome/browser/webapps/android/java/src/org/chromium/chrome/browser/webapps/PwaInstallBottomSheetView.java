@@ -83,14 +83,6 @@ public class PwaInstallBottomSheetView {
         descriptionView.setVisibility(description.isEmpty() ? View.GONE : View.VISIBLE);
     }
 
-    void setCategories(String categories) {
-        TextView categoriesView = mContentView.findViewById(R.id.categories);
-        categoriesView.setText(
-                mContext.getString(R.string.pwa_install_bottom_sheet_categories, categories));
-
-        categoriesView.setVisibility(categories.isEmpty() ? View.GONE : View.VISIBLE);
-    }
-
     void setIcon(Bitmap icon, boolean isAdaptive) {
         ImageView imageView = mToolbarView.findViewById(R.id.app_icon);
         if (isAdaptive && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -126,8 +118,5 @@ public class PwaInstallBottomSheetView {
     }
     public static int getDescViewIdForTesting() {
         return R.id.description;
-    }
-    public static int getCategoriesViewIdForTesting() {
-        return R.id.categories;
     }
 }

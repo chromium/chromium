@@ -60,11 +60,6 @@ struct BLINK_COMMON_EXPORT
     return internal::TruncateOptionalString16(manifest.description);
   }
 
-  static const std::vector<base::string16>& categories(
-      const ::blink::Manifest& manifest) {
-    return manifest.categories;
-  }
-
   static base::Optional<base::StringPiece16> gcm_sender_id(
       const ::blink::Manifest& manifest) {
     return internal::TruncateOptionalString16(manifest.gcm_sender_id);

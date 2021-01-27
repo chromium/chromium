@@ -24,8 +24,6 @@ struct Manifest {
 
   mojo_base.mojom.String16? description;
 
-  array<mojo_base.mojom.String16> categories;
-
   url.mojom.Url start_url;
 
   DisplayMode display;

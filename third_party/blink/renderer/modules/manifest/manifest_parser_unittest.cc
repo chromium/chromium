@@ -207,53 +207,6 @@ TEST_F(ManifestParserTest, DescriptionParseRules) {
   }
 }
 
-TEST_F(ManifestParserTest, CategoriesParseRules) {
-  // Smoke test.
-  {
-    auto& manifest = ParseManifest(R"({ "categories": ["cats", "memes"] })");
-    ASSERT_EQ(2u, manifest->categories.size());
-    ASSERT_EQ(manifest->categories[0], "cats");
-    ASSERT_EQ(manifest->categories[1], "memes");
-    ASSERT_FALSE(IsManifestEmpty(manifest));
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-
-  // Trim whitespaces.
-  {
-    auto& manifest =
-        ParseManifest(R"({ "categories": ["  cats  ", "  memes  "] })");
-    ASSERT_EQ(2u, manifest->categories.size());
-    ASSERT_EQ(manifest->categories[0], "cats");
-    ASSERT_EQ(manifest->categories[1], "memes");
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-
-  // Categories should be lower-cased.
-  {
-    auto& manifest = ParseManifest(R"({ "categories": ["CaTs", "Memes"] })");
-    ASSERT_EQ(2u, manifest->categories.size());
-    ASSERT_EQ(manifest->categories[0], "cats");
-    ASSERT_EQ(manifest->categories[1], "memes");
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-
-  // Empty array.
-  {
-    auto& manifest = ParseManifest(R"({ "categories": [] })");
-    ASSERT_EQ(0u, manifest->categories.size());
-    EXPECT_EQ(0u, GetErrorCount());
-  }
-
-  // Detect error if categories isn't an array.
-  {
-    auto& manifest = ParseManifest(R"({ "categories": {} })");
-    ASSERT_EQ(0u, manifest->categories.size());
-    ASSERT_EQ(1u, GetErrorCount());
-    EXPECT_EQ("property 'categories' ignored, type array expected.",
-              errors()[0]);
-  }
-}
-
 TEST_F(ManifestParserTest, ShortNameParseRules) {
   // Smoke test.
   {

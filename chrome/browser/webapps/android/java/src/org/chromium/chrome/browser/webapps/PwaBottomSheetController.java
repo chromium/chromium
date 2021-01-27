@@ -155,12 +155,10 @@ public class PwaBottomSheetController
      * @param title The title of the app represented by the UI.
      * @param origin The origin of the PWA app.
      * @param description The app description.
-     * @param categories The categories this app falls under.
      */
     public void requestBottomSheetInstaller(long nativePwaBottomSheetController,
             WindowAndroid windowAndroid, WebContents webContents, boolean showExpanded, Bitmap icon,
-            boolean isAdaptiveIcon, String title, String origin, String description,
-            String categories) {
+            boolean isAdaptiveIcon, String title, String origin, String description) {
         mNativePwaBottomSheetController = nativePwaBottomSheetController;
         mWebContents = webContents;
 
@@ -179,7 +177,6 @@ public class PwaBottomSheetController
                          .with(AddToHomescreenProperties.TITLE, title)
                          .with(AddToHomescreenProperties.URL, origin)
                          .with(AddToHomescreenProperties.DESCRIPTION, description)
-                         .with(AddToHomescreenProperties.CATEGORIES, categories)
                          .with(AddToHomescreenProperties.CAN_SUBMIT, true)
                          .with(AddToHomescreenProperties.CLICK_LISTENER, this)
                          .build();

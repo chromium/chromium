@@ -119,12 +119,6 @@ class MODULES_EXPORT ManifestParser {
   // Returns the parsed string if any, a null string if the parsing failed.
   String ParseDescription(const JSONObject* object);
 
-  // Parses the 'categories' field of the manifest, as defined in:
-  // https://w3c.github.io/manifest/#dfn-processing-the-categories-member
-  // Returns a vector of the parsed strings if any, or empty if the parsing
-  // failed.
-  Vector<String> ParseCategories(const JSONObject* object);
-
   // Parses the 'scope' field of the manifest, as defined in:
   // https://w3c.github.io/manifest/#scope-member. Returns the parsed KURL if
   // any, or start URL (falling back to document URL) without filename, path,

@@ -764,15 +764,12 @@ public class AppBannerManagerTest {
                 toolbar.findViewById(PwaInstallBottomSheetView.getAppOriginViewIdForTesting());
         TextView description =
                 content.findViewById(PwaInstallBottomSheetView.getDescViewIdForTesting());
-        TextView categories =
-                content.findViewById(PwaInstallBottomSheetView.getCategoriesViewIdForTesting());
 
         Assert.assertEquals("PWA Bottom Sheet", appName.getText());
         Assert.assertTrue(appOrigin.getText().toString().startsWith("http://127.0.0.1:"));
         Assert.assertEquals("Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
                         + "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua",
                 description.getText());
-        Assert.assertEquals("Categories: cats, memes.", categories.getText());
 
         // Collapse the bottom sheet.
         TestThreadUtils.runOnUiThreadBlocking(() -> {

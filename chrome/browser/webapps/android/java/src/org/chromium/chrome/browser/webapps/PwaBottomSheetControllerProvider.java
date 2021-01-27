@@ -63,16 +63,15 @@ public class PwaBottomSheetControllerProvider {
      * @param title The title of the app represented by the UI.
      * @param origin The origin of the PWA app.
      * @param description The app description.
-     * @param categories The categories this app falls under.
      */
     @CalledByNative
     private static void showPwaBottomSheetInstaller(long nativePwaBottomSheetController,
             WebContents webContents, boolean showExpanded, Bitmap icon, boolean isAdaptiveIcon,
-            String title, String origin, String description, String categories) {
+            String title, String origin, String description) {
         PwaBottomSheetController controller = fromWebContents(webContents);
         if (controller == null) return;
         controller.requestBottomSheetInstaller(nativePwaBottomSheetController,
                 webContents.getTopLevelNativeWindow(), webContents, showExpanded, icon,
-                isAdaptiveIcon, title, origin, description, categories);
+                isAdaptiveIcon, title, origin, description);
     }
 }

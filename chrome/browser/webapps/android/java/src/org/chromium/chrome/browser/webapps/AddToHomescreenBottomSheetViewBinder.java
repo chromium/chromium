@@ -19,8 +19,6 @@ class AddToHomescreenBottomSheetViewBinder {
             view.setTitle(model.get(AddToHomescreenProperties.TITLE));
         } else if (propertyKey.equals(AddToHomescreenProperties.URL)) {
             view.setUrl(model.get(AddToHomescreenProperties.URL));
-        } else if (propertyKey.equals(AddToHomescreenProperties.CATEGORIES)) {
-            view.setCategories(model.get(AddToHomescreenProperties.CATEGORIES));
         } else if (propertyKey.equals(AddToHomescreenProperties.DESCRIPTION)) {
             view.setDescription(model.get(AddToHomescreenProperties.DESCRIPTION));
         } else if (propertyKey.equals(AddToHomescreenProperties.ICON)) {
