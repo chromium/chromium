@@ -1181,8 +1181,9 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    @DisableIf.
+    Build(message = "Flaky, see crbug.com/1170671", sdk_is_less_than = Build.VERSION_CODES.Q)
     public void testEmbargoedNotificationSiteSettings() throws Exception {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
         final String url = mPermissionRule.getURLWithHostName(
                 "example.com", "/chrome/test/data/notifications/notification_tester.html");
 
