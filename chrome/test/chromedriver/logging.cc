@@ -373,7 +373,9 @@ Status CreateLogs(
       if (level != Log::kOff) {
         logs.push_back(std::make_unique<WebDriverLog>(type, Log::kAll));
         devtools_listeners.push_back(std::make_unique<PerformanceLogger>(
-            logs.back().get(), session, capabilities.perf_logging_prefs));
+            logs.back().get(), session, capabilities.perf_logging_prefs,
+            base::Contains(capabilities.window_types,
+                           WebViewInfo::kServiceWorker)));
         PerformanceLogger* perf_log =
             static_cast<PerformanceLogger*>(devtools_listeners.back().get());
         // We use a proxy for |perf_log|'s |CommandListener| interface.

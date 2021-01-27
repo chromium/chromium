@@ -96,6 +96,10 @@ void StubDevToolsClient::SetDetached() {}
 
 void StubDevToolsClient::SetOwner(WebViewImpl* owner) {}
 
+WebViewImpl* StubDevToolsClient::GetOwner() const {
+  return nullptr;
+}
+
 DevToolsClient* StubDevToolsClient::GetRootClient() {
   return this;
 }

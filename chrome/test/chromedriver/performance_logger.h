@@ -36,7 +36,8 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
   // Creates a |PerformanceLogger| with specific preferences.
   PerformanceLogger(Log* log,
                     const Session* session,
-                    const PerfLoggingPrefs& prefs);
+                    const PerfLoggingPrefs& prefs,
+                    bool enable_service_worker = false);
 
   // PerformanceLogger subscribes to browser-wide |DevToolsClient| for tracing.
   bool subscribes_to_browser() override;
@@ -86,6 +87,7 @@ class PerformanceLogger : public DevToolsEventListener, public CommandListener {
   PerfLoggingPrefs prefs_;
   DevToolsClient* browser_client_; // Pointer to browser-wide |DevToolsClient|.
   bool trace_buffering_;  // True unless trace stopped and all events received.
+  bool enable_service_worker_;
 
   DISALLOW_COPY_AND_ASSIGN(PerformanceLogger);
 };

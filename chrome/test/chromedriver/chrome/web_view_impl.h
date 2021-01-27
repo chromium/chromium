@@ -41,6 +41,12 @@ class WebViewImpl : public WebView {
               const bool w3c_compliant,
               const WebViewImpl* parent,
               const BrowserInfo* browser_info,
+              std::unique_ptr<DevToolsClient> client);
+
+  WebViewImpl(const std::string& id,
+              const bool w3c_compliant,
+              const WebViewImpl* parent,
+              const BrowserInfo* browser_info,
               std::unique_ptr<DevToolsClient> client,
               const DeviceMetrics* device_metrics,
               std::string page_load_strategy);
@@ -49,6 +55,7 @@ class WebViewImpl : public WebView {
                            const std::string& target_id) const;
 
   // Overridden from WebView:
+  bool IsServiceWorker() const override;
   std::string GetId() override;
   bool WasCrashed() override;
   Status ConnectIfNecessary() override;
@@ -224,6 +231,7 @@ class WebViewImpl : public WebView {
       download_directory_override_manager_;
   std::unique_ptr<HeapSnapshotTaker> heap_snapshot_taker_;
   std::unique_ptr<CastTracker> cast_tracker_;
+  bool is_service_worker_;
 };
 
 // Responsible for locking a WebViewImpl and its associated data structure to

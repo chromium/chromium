@@ -64,7 +64,8 @@ Status EvaluateScriptAndIgnoreResult(Session* session,
   Status status = session->GetTargetWindow(&web_view);
   if (status.IsError())
     return status;
-  if (web_view->GetJavaScriptDialogManager()->IsDialogOpen()) {
+  if (!web_view->IsServiceWorker() &&
+      web_view->GetJavaScriptDialogManager()->IsDialogOpen()) {
     std::string alert_text;
     status =
         web_view->GetJavaScriptDialogManager()->GetDialogMessage(&alert_text);

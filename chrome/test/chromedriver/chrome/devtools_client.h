@@ -88,6 +88,8 @@ class DevToolsClient {
   // Set the owning WebViewImpl, if any.
   virtual void SetOwner(WebViewImpl* owner) = 0;
 
+  virtual WebViewImpl* GetOwner() const = 0;
+
   virtual DevToolsClient* GetRootClient() = 0;
 
   virtual bool IsMainPage();

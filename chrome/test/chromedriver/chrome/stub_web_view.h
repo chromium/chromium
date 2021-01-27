@@ -17,6 +17,7 @@ class StubWebView : public WebView {
   ~StubWebView() override;
 
   // Overridden from WebView:
+  bool IsServiceWorker() const override;
   std::string GetId() override;
   bool WasCrashed() override;
   Status ConnectIfNecessary() override;
