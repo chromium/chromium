@@ -71,6 +71,10 @@ class AXInlineTextBox final : public AXObject {
   bool IsLineBreakingObject() const override;
   int TextLength() const override;
 
+  // Always a leaf.
+  bool CanHaveChildren() const override { return false; }
+  void AddChildren() override {}
+
  private:
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
 

@@ -58,18 +58,20 @@ bool AXMenuList::OnNativeClickAction() {
 }
 
 void AXMenuList::ClearChildren() {
-  children_dirty_ = false;
   if (children_.IsEmpty())
     return;
 
-  // There's no reason to clear our AXMenuListPopup child. If we get a
-  // call to clearChildren, it's because the options might have changed,
-  // so call it on our popup. Clearing the AXMenuListPopup child would cause
-  // additional thrashing and events that the AT would need to process,
-  // potentially causing the AT to believe that the popup had closed and a
-  // new popup and reopened.
+  // Unless the menu list is detached, there's no reason to clear our
+  // AXMenuListPopup child. If we get a call to clearChildren, it's because the
+  // options might have changed, so call it on our popup. Clearing the
+  // AXMenuListPopup child would cause additional thrashing and events that the
+  // AT would need to process, potentially causing the AT to believe that the
+  // popup had closed and a new popup and reopened.
   DCHECK_EQ(children_.size(), 1U);
   children_[0]->ClearChildren();
+
+  if (IsDetached())
+    AXObject::ClearChildren();
 }
 
 void AXMenuList::AddChildren() {
@@ -77,20 +79,30 @@ void AXMenuList::AddChildren() {
   DCHECK(!IsDetached());
   DCHECK(!is_adding_children_) << " Reentering method on " << GetNode();
   base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
-  DCHECK_EQ(children_.size(), 0U)
+  // ClearChildren() does not clear the menulist popup chld.
+  DCHECK_LE(children_.size(), 1U)
       << "Parent still has " << children_.size() << " children before adding:"
       << "\nParent is " << ToString(true, true) << "\nFirst child is "
       << children_[0]->ToString(true, true);
 #endif
-  have_children_ = true;
 
-  AXObjectCacheImpl& cache = AXObjectCache();
-  AXObject* popup =
-      cache.CreateAndInit(ax::mojom::blink::Role::kMenuListPopup, this);
-  DCHECK(popup);
-  DCHECK(!popup->IsDetached());
-  children_.push_back(popup);
-  popup->AddChildren();
+  DCHECK(children_dirty_);
+  children_dirty_ = false;
+
+  // Ensure mock AXMenuListPopup exists.
+  if (children_.IsEmpty()) {
+    AXObjectCacheImpl& cache = AXObjectCache();
+    AXObject* popup =
+        cache.CreateAndInit(ax::mojom::blink::Role::kMenuListPopup, this);
+    DCHECK(popup);
+    DCHECK(!popup->IsDetached());
+    DCHECK(popup->CachedParentObject());
+    children_.push_back(popup);
+  }
+
+  // Update mock AXMenuListPopup children.
+  children_[0]->SetNeedsToUpdateChildren();
+  children_[0]->UpdateChildrenIfNecessary();
 }
 
 bool AXMenuList::IsCollapsed() const {
@@ -113,7 +125,10 @@ void AXMenuList::DidUpdateActiveOption(int option_index) {
   bool suppress_notifications =
       (GetNode() && !GetNode()->IsFinishedParsingChildren());
 
-  if (HasChildren()) {
+  // TODO(aleventhal) The  NeedsToUpdateChildren() check is necessary to avoid a
+  // illegal lifecycle while adding children, since this can be called at any
+  // time by AXObjectCacheImpl(). Look into calling with clean layout.
+  if (!NeedsToUpdateChildren()) {
     const auto& child_objects = ChildrenIncludingIgnored();
     if (!child_objects.IsEmpty()) {
       DCHECK_EQ(child_objects.size(), 1ul);

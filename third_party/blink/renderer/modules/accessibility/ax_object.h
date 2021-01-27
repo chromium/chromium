@@ -1073,19 +1073,17 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   AXObject* ContainerWidget() const;
   bool IsContainerWidget() const;
 
-  virtual void AddChildren() {}
   // There are two types of traversal for obtaining children:
   // 1. LayoutTreeBuilderTraversal. Despite the name, this traverses a flattened
   // DOM tree that includes pseudo element children such as ::before, and where
   // shadow DOM slotting has been run.
   // 2. LayoutObject traversal. This is necessary if there is no parent node,
-  // or if the parent node is a pseudo element.
+  // or in a pseudo element subtree.
   bool ShouldUseLayoutObjectTraversalForChildren() const;
   virtual bool CanHaveChildren() const { return true; }
-  bool HasChildren() const { return have_children_; }
-  virtual void UpdateChildrenIfNecessary();
-  virtual bool NeedsToUpdateChildren() const { return false; }
-  virtual void SetNeedsToUpdateChildren() {}
+  void UpdateChildrenIfNecessary();
+  bool NeedsToUpdateChildren() const { return children_dirty_; }
+  void SetNeedsToUpdateChildren() { children_dirty_ = true; }
   virtual void ClearChildren();
   void DetachFromParent() { parent_ = nullptr; }
   virtual void SelectedOptions(AXObjectVector&) const {}
@@ -1245,11 +1243,13 @@ class MODULES_EXPORT AXObject : public GarbageCollected<AXObject> {
   mutable Member<AXObject> parent_;
   // Only children that are included in tree, maybe rename to children_in_tree_.
   AXObjectVector children_;
-  mutable bool have_children_;
+  bool children_dirty_;
   ax::mojom::blink::Role role_;
   ax::mojom::blink::Role aria_role_;
   LayoutRect explicit_element_rect_;
   AXID explicit_container_id_;
+
+  virtual void AddChildren() = 0;
 
   // Used only inside textAlternative():
   static String CollapseWhitespace(const String&);

@@ -107,7 +107,8 @@ void AXMenuListPopup::AddChildren() {
   if (!html_select_element)
     return;
 
-  have_children_ = true;
+  DCHECK(children_dirty_);
+  children_dirty_ = false;
 
   if (active_index_ == -1)
     active_index_ = GetSelectedIndex();
@@ -119,14 +120,6 @@ void AXMenuListPopup::AddChildren() {
       children_.push_back(option);
     }
   }
-}
-
-void AXMenuListPopup::UpdateChildrenIfNecessary() {
-  if (have_children_ && parent_ && parent_->NeedsToUpdateChildren())
-    ClearChildren();
-
-  if (!have_children_)
-    AddChildren();
 }
 
 void AXMenuListPopup::DidUpdateActiveOption(int option_index,
@@ -165,8 +158,7 @@ void AXMenuListPopup::DidHide() {
 }
 
 void AXMenuListPopup::DidShow() {
-  if (!have_children_)
-    AddChildren();
+  UpdateChildrenIfNecessary();
 
   AXObjectCacheImpl& cache = AXObjectCache();
   cache.PostNotification(this, ax::mojom::Event::kShow);

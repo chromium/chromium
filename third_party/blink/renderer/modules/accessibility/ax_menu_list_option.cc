@@ -73,9 +73,10 @@ AXObject* AXMenuListOption::ComputeParentImpl() const {
   if (!menu_list)
     return select_ax_object;
 
-  if (!menu_list->HasChildren()) {
+  // In order to return the popup, which is a mock object, we need to grab
+  // the AXMenuList itself, and get its only child.
+  if (menu_list->NeedsToUpdateChildren())
     menu_list->UpdateChildrenIfNecessary();
-  }
 
   const auto& child_objects = menu_list->ChildrenIncludingIgnored();
   if (child_objects.IsEmpty())

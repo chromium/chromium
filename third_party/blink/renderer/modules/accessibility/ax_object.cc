@@ -609,7 +609,7 @@ unsigned AXObject::number_of_live_ax_objects_ = 0;
 AXObject::AXObject(AXObjectCacheImpl& ax_object_cache)
     : id_(0),
       parent_(nullptr),
-      have_children_(false),
+      children_dirty_(true),
       role_(ax::mojom::blink::Role::kUnknown),
       aria_role_(ax::mojom::blink::Role::kUnknown),
       explicit_container_id_(0),
@@ -3708,8 +3708,64 @@ bool AXObject::ShouldUseLayoutObjectTraversalForChildren() const {
 }
 
 void AXObject::UpdateChildrenIfNecessary() {
-  if (!HasChildren())
-    AddChildren();
+#if DCHECK_IS_ON()
+  DCHECK(GetDocument());
+  DCHECK(GetDocument()->IsActive());
+  DCHECK(!GetDocument()->IsDetached());
+  DCHECK(GetDocument()->GetPage());
+  DCHECK(GetDocument()->View());
+  DCHECK(!AXObjectCache().HasBeenDisposed());
+
+  // Store previous children for DCHECK to ensure no lost children, left
+  // without parents.
+  HashSet<AXID> prev_children_axids;
+  for (const auto& child : children_) {
+    if (!child->IsDetached()) {
+      AXID prev_child_axid = child->AXObjectID();
+      prev_children_axids.insert(prev_child_axid);
+      DCHECK(AXObjectCache().ObjectFromAXID(prev_child_axid));
+    }
+  }
+#endif
+
+  if (!NeedsToUpdateChildren())
+    return;
+
+  // Clear current children and get new children.
+  ClearChildren();
+  if (IsMenuList()) {
+    // AXMenuList is special and keeps its popup child.
+    DCHECK_LE(children_.size(), 1U);
+  } else {
+    // Ensure children have been correctly cleared.
+    DCHECK_EQ(children_.size(), 0U)
+        << GetNode() << "  with " << children_.size() << " children";
+  }
+  AddChildren();
+
+#if DCHECK_IS_ON()
+  // Remove current children's AXIDs from set so that we can see what children
+  // have been lost.
+  for (const auto& child : children_)
+    prev_children_axids.erase(child->AXObjectID());
+
+  // Report lost children. These are children that had |this| as a parent at
+  // the start of this method, but no longer do, yet the cache still considers
+  // them alive.
+  bool has_lost_children = false;
+  for (AXID prev_child_axid : prev_children_axids) {
+    AXObject* prev_child = nullptr;
+    if (prev_child_axid)
+      AXObjectCache().ObjectFromAXID(prev_child_axid);
+    if (prev_child) {
+      has_lost_children = true;
+      LOG(ERROR) << "Lost child: " << prev_child->ToString(true, true)
+                 << "\nThis: " << ToString(true, true);
+    }
+  }
+
+  DCHECK(!has_lost_children);
+#endif
 }
 
 void AXObject::ClearChildren() {
@@ -3727,11 +3783,6 @@ void AXObject::ClearChildren() {
   // AccessibilityExposeIgnoredNodes().
 
   // Loop through AXObject children.
-
-  if (!have_children_) {
-    DCHECK_EQ(children_.size(), 0U);
-    return;
-  }
 
   for (const auto& child : children_) {
     if (child->CachedParentObject() == this)
@@ -3758,7 +3809,6 @@ void AXObject::ClearChildren() {
   }
 
   children_.clear();
-  have_children_ = false;
 }
 
 Element* AXObject::GetElement() const {
@@ -5022,8 +5072,12 @@ String AXObject::ToString(bool verbose, bool cached_values_only) const {
     }
     if (AriaHiddenRoot())
       string_builder = string_builder + " isAriaHidden";
-    if (IsHiddenViaStyle())
+    if (GetDocument() && GetDocument()->Lifecycle().GetState() <
+                             DocumentLifecycle::kLayoutClean) {
+      string_builder = string_builder + " styleInfoUnavailable";
+    } else if (IsHiddenViaStyle()) {
       string_builder = string_builder + " isHiddenViaCSS";
+    }
     if (GetNode() && GetNode()->IsInert())
       string_builder = string_builder + " isInert";
     if (NeedsToUpdateChildren())

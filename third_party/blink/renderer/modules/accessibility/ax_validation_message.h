@@ -24,7 +24,9 @@ class AXValidationMessage final : public AXMockObject {
 
  private:
   // AXObject:
+  // Always a leaf.
   bool CanHaveChildren() const override { return false; }
+  void AddChildren() override {}
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
   void GetRelativeBounds(AXObject** out_container,
                          FloatRect& out_bounds_in_container,

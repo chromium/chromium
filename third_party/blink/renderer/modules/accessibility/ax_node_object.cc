@@ -198,7 +198,6 @@ const int kDefaultHeadingLevel = 2;
 
 AXNodeObject::AXNodeObject(Node* node, AXObjectCacheImpl& ax_object_cache)
     : AXObject(ax_object_cache),
-      children_dirty_(false),
       native_role_(ax::mojom::blink::Role::kUnknown),
       node_(node) {}
 
@@ -3122,7 +3121,7 @@ void AXNodeObject::LoadInlineTextBoxes() {
   if (GetLayoutObject()->IsText()) {
     ClearChildren();
     AddInlineTextBoxChildren(true);
-    have_children_ = true;  // Avoid adding these children twice.
+    children_dirty_ = false;  // Avoid adding these children twice.
     return;
   }
 
@@ -3256,6 +3255,10 @@ void AXNodeObject::AddChildren() {
   DCHECK(!IsDetached());
   DCHECK(!is_adding_children_) << " Reentering method on " << GetNode();
   base::AutoReset<bool> reentrancy_protector(&is_adding_children_, true);
+  // If the need to add more children in addition to existing children arises,
+  // childrenChanged should have been called, which leads to children_dirty_
+  // being true, then UpdateChildrenIfNecessary() clears the children before
+  // calling AddChildren().
   DCHECK_EQ(children_.size(), 0U)
       << "\nParent still has " << children_.size() << " children before adding:"
       << "\nParent is " << ToString(true, true) << "\nFirst child is "
@@ -3264,12 +3267,8 @@ void AXNodeObject::AddChildren() {
 #define CHECK_ATTACHED() \
   DCHECK(!IsDetached()) << "Detached adding children: " << ToString(true, true)
 
-  // If the need to add more children in addition to existing children arises,
-  // childrenChanged should have been called, leaving the object with no
-  // children.
-  DCHECK(!have_children_);
-
-  have_children_ = true;
+  DCHECK(children_dirty_);
+  children_dirty_ = false;
 
   if (!CanHaveChildren())
     return;
@@ -3436,11 +3435,6 @@ void AXNodeObject::InsertChild(AXObject* child,
         << " of parent: " << child->ParentObject()->ToString(true, true);
     children_.insert(index, child);
   }
-}
-
-void AXNodeObject::ClearChildren() {
-  AXObject::ClearChildren();
-  children_dirty_ = false;
 }
 
 bool AXNodeObject::CanHaveChildren() const {
@@ -3851,73 +3845,6 @@ void AXNodeObject::ChildrenChanged() {
 
   AXObjectCache().PostNotification(this,
                                    ax::mojom::blink::Event::kChildrenChanged);
-}
-
-void AXNodeObject::UpdateChildrenIfNecessary() {
-#if DCHECK_IS_ON()
-  DCHECK(GetDocument());
-  DCHECK(GetDocument()->IsActive());
-  DCHECK(!GetDocument()->IsDetached());
-  DCHECK(GetDocument()->GetPage());
-  DCHECK(GetDocument()->View());
-  DCHECK(!AXObjectCache().HasBeenDisposed());
-
-  // Store previous children for DCHECK to ensure no lost children, left
-  // without parents.
-  HashSet<AXID> prev_children_axids;
-  for (const auto& child : children_) {
-    if (!child->IsDetached()) {
-      AXID prev_child_axid = child->AXObjectID();
-      prev_children_axids.insert(prev_child_axid);
-      DCHECK(AXObjectCache().ObjectFromAXID(prev_child_axid));
-    }
-  }
-#endif
-
-  // Clear current children and get new children.
-  // TODO(accessibility) is it necessary to have a separate
-  // NeedsToUpdateChildren() from HasChildren()?
-  if (NeedsToUpdateChildren()) {
-    ClearChildren();
-    if (!IsMenuList()) {  // AXMenuList is special and keeps its popup child.
-      // Ensure children have been correctly cleared.
-      DCHECK(!HasChildren())
-          << GetNode() << "  with " << children_.size() << " children";
-      DCHECK_EQ(children_.size(), 0U);
-    }
-  } else if (HasChildren()) {
-    return;  // Keep existing children.
-  } else {
-    // Will update children even though NeedsToUpdateChildren() was not true.
-    // Cannot have children otherwise will end up adding to them.
-    DCHECK_EQ(children_.size(), 0U);
-  }
-
-  AXObject::UpdateChildrenIfNecessary();
-
-#if DCHECK_IS_ON()
-  // Remove current children's AXIDs from set so that we can see what children
-  // have been lost.
-  for (const auto& child : children_)
-    prev_children_axids.erase(child->AXObjectID());
-
-  // Report lost children. These are children that had |this| as a parent at
-  // the start of this method, but no longer do, yet the cache still considers
-  // them alive.
-  bool has_last_children = false;
-  for (AXID prev_child_axid : prev_children_axids) {
-    AXObject* prev_child = nullptr;
-    if (prev_child_axid)
-      AXObjectCache().ObjectFromAXID(prev_child_axid);
-    if (prev_child) {
-      has_last_children = true;
-      LOG(ERROR) << "Lost child: " << prev_child->ToString(true, true)
-                 << "\nThis: " << ToString(true, true);
-    }
-  }
-
-  DCHECK(!has_last_children);
-#endif
 }
 
 void AXNodeObject::SelectedOptions(AXObjectVector& options) const {

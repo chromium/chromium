@@ -66,6 +66,7 @@ class MockAXObject : public AXObject {
   void ChildrenChanged() final { num_children_changed_calls_++; }
   AXObject* ComputeParentImpl() const final { return nullptr; }
   Document* GetDocument() const final { return &AXObjectCache().GetDocument(); }
+  void AddChildren() final {}
 };
 
 unsigned MockAXObject::num_children_changed_calls_ = 0;

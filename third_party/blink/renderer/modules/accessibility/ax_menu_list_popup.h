@@ -46,7 +46,6 @@ class AXMenuListPopup final : public AXMockObject {
   void DidShow();
   void DidHide();
   AXObject* ActiveDescendant() final;
-  void UpdateChildrenIfNecessary() override;
 
  private:
   bool IsMenuListPopup() const override { return true; }

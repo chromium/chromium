@@ -1418,6 +1418,7 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
 
 #if DCHECK_IS_ON()
   Document* document = obj ? obj->GetDocument() : &optional_node->GetDocument();
+  DCHECK(document);
   DCHECK(document->Lifecycle().GetState() >= DocumentLifecycle::kLayoutClean)
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
@@ -2537,7 +2538,7 @@ void AXObjectCacheImpl::HandleValueChanged(Node* node) {
   // If it's a slider, invalidate the thumb's bounding box.
   AXObject* ax_object = Get(node);
   if (ax_object && ax_object->RoleValue() == ax::mojom::blink::Role::kSlider &&
-      ax_object->HasChildren() && !ax_object->NeedsToUpdateChildren() &&
+      !ax_object->NeedsToUpdateChildren() &&
       ax_object->ChildCountIncludingIgnored() == 1) {
     changed_bounds_ids_.insert(
         ax_object->ChildAtIncludingIgnored(0)->AXObjectID());
