@@ -2361,7 +2361,6 @@
       name: "image-orientation",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
-      runtime_flag: "ImageOrientation",
       field_group: "*",
       field_template: "primitive",
       default_value: "true",

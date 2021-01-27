@@ -1035,10 +1035,6 @@
       status: "experimental",
     },
     {
-      name: "ImageOrientation",
-      status: "stable",
-    },
-    {
       name: "ImplicitRootScroller",
       settable_from_internals: true,
       status: {"Android": "stable"},
