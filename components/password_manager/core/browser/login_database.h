@@ -148,6 +148,12 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   FormRetrievalResult GetAllLogins(PrimaryKeyToFormMap* key_to_form_map)
       WARN_UNUSED_RESULT;
 
+  // Gets list of logins which match |signon_realm| and |username|.
+  FormRetrievalResult GetLoginsBySignonRealmAndUsername(
+      const std::string& signon_realm,
+      const base::string16& username,
+      PrimaryKeyToFormMap& key_to_form_map) WARN_UNUSED_RESULT;
+
   // Gets the complete list of all compromised credentials for the password form
   // with primary key `parent_key`.
   std::vector<CompromisedCredentials> GetCompromisedCredentials(
@@ -357,6 +363,7 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   std::string get_statement_psl_;
   std::string get_statement_federated_;
   std::string get_statement_psl_federated_;
+  std::string get_statement_username_;
   std::string created_statement_;
   std::string blocklisted_statement_;
   std::string encrypted_password_statement_by_id_;

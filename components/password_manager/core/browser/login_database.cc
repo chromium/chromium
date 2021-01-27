@@ -1665,6 +1665,21 @@ FormRetrievalResult LoginDatabase::GetAllLogins(
   return StatementToForms(&s, nullptr, key_to_form_map);
 }
 
+FormRetrievalResult LoginDatabase::GetLoginsBySignonRealmAndUsername(
+    const std::string& signon_realm,
+    const base::string16& username,
+    PrimaryKeyToFormMap& key_to_form_map) {
+  TRACE_EVENT0("passwords", "LoginDatabase::GetLoginsBySignonRealmAndUsername");
+  key_to_form_map.clear();
+
+  sql::Statement s(
+      db_.GetCachedStatement(SQL_FROM_HERE, get_statement_username_.c_str()));
+  s.BindString(0, signon_realm);
+  s.BindString16(1, username);
+
+  return StatementToForms(&s, nullptr, &key_to_form_map);
+}
+
 std::vector<CompromisedCredentials> LoginDatabase::GetCompromisedCredentials(
     FormPrimaryKey parent_key) {
   TRACE_EVENT0("passwords", "LoginDatabase::GetCompromisedCredentials");
@@ -2128,6 +2143,8 @@ void LoginDatabase::InitializeStatementStrings(const SQLTableBuilder& builder) {
   DCHECK(get_statement_psl_federated_.empty());
   get_statement_psl_federated_ =
       get_statement_ + psl_statement + psl_federated_statement;
+  DCHECK(get_statement_username_.empty());
+  get_statement_username_ = get_statement_ + " AND username_value == ?";
   DCHECK(created_statement_.empty());
   created_statement_ =
       "SELECT " + all_column_names +

@@ -2626,6 +2626,50 @@ TEST_F(LoginDatabaseTest, RemovingLoginRemovesCompromisedCredentials) {
               testing::IsEmpty());
 }
 
+// Test retrieving password forms by supplied signon_realm and username.
+TEST_F(LoginDatabaseTest, GetLoginsBySignonRealmAndUsername) {
+  std::string signon_realm = "https://test.com";
+  base::string16 username1 = base::ASCIIToUTF16("username1");
+  base::string16 username2 = base::ASCIIToUTF16("username2");
+
+  // Insert first login.
+  PasswordForm form1;
+  GenerateExamplePasswordForm(&form1);
+  form1.signon_realm = signon_realm;
+  form1.username_value = username1;
+  ASSERT_EQ(AddChangeForForm(form1), db().AddLogin(form1));
+
+  PasswordForm form2;
+  GenerateExamplePasswordForm(&form2);
+  form2.signon_realm = signon_realm;
+  form2.username_value = username2;
+  ASSERT_EQ(AddChangeForForm(form2), db().AddLogin(form2));
+
+  PrimaryKeyToFormMap key_to_form_map;
+  // Check if there is exactly one form with this signon_realm & username1.
+  EXPECT_EQ(FormRetrievalResult::kSuccess,
+            db().GetLoginsBySignonRealmAndUsername(signon_realm, username1,
+                                                   key_to_form_map));
+  EXPECT_THAT(key_to_form_map,
+              testing::ElementsAre(testing::Pair(1, Pointee(form1))));
+
+  // Insert another form with the same username as form1.
+  PasswordForm form3;
+  GenerateExamplePasswordForm(&form3);
+  form3.signon_realm = signon_realm;
+  form3.username_value = username1;
+  form3.username_element = base::ASCIIToUTF16("another_element");
+  ASSERT_EQ(AddChangeForForm(form3), db().AddLogin(form3));
+
+  // Check if there are exactly two forms with given username and signon_realm.
+  EXPECT_EQ(FormRetrievalResult::kSuccess,
+            db().GetLoginsBySignonRealmAndUsername(signon_realm, username1,
+                                                   key_to_form_map));
+  EXPECT_THAT(key_to_form_map,
+              testing::ElementsAre(testing::Pair(1, Pointee(form1)),
+                                   testing::Pair(3, Pointee(form3))));
+}
+
 class LoginDatabaseForAccountStoreTest : public testing::Test {
  protected:
   void SetUp() override {

@@ -20,17 +20,12 @@ namespace {
 
 // Generates PasswordStoreChangeList for affected signon_realm and username.
 PasswordStoreChangeList BuildPasswordChangeListForCompromisedCredentialUpdate(
-    PrimaryKeyToFormMap& key_to_form_map,
-    const std::string& signon_realm,
-    const base::string16& username) {
+    PrimaryKeyToFormMap key_to_form_map) {
   PasswordStoreChangeList changes;
-
+  changes.reserve(key_to_form_map.size());
   for (auto& pair : key_to_form_map) {
-    if (pair.second->username_value == username &&
-        pair.second->signon_realm == signon_realm) {
-      changes.emplace_back(PasswordStoreChange::UPDATE, std::move(*pair.second),
-                           pair.first);
-    }
+    changes.emplace_back(PasswordStoreChange::UPDATE, std::move(*pair.second),
+                         pair.first);
   }
   return changes;
 }
@@ -251,15 +246,14 @@ PasswordStoreChangeList PasswordStoreImpl::AddCompromisedCredentialsImpl(
   }
 
   PrimaryKeyToFormMap key_to_form_map;
-  // TODO(vsemeneiuk): Replace with a function to obtain logins by signon_realm
-  // and username.
-  if (login_db_->GetAllLogins(&key_to_form_map) !=
+  if (login_db_->GetLoginsBySignonRealmAndUsername(
+          credentials.signon_realm, credentials.username, key_to_form_map) !=
       FormRetrievalResult::kSuccess) {
     return {};
   }
 
   return BuildPasswordChangeListForCompromisedCredentialUpdate(
-      key_to_form_map, credentials.signon_realm, credentials.username);
+      std::move(key_to_form_map));
 }
 
 PasswordStoreChangeList PasswordStoreImpl::RemoveCompromisedCredentialsImpl(
@@ -273,15 +267,14 @@ PasswordStoreChangeList PasswordStoreImpl::RemoveCompromisedCredentialsImpl(
   }
 
   PrimaryKeyToFormMap key_to_form_map;
-  // TODO(vsemeneiuk): Replace with a function to obtain logins by signon_realm
-  // and username.
-  if (login_db_->GetAllLogins(&key_to_form_map) !=
+  if (login_db_->GetLoginsBySignonRealmAndUsername(signon_realm, username,
+                                                   key_to_form_map) !=
       FormRetrievalResult::kSuccess) {
     return {};
   }
 
   return BuildPasswordChangeListForCompromisedCredentialUpdate(
-      key_to_form_map, signon_realm, username);
+      std::move(key_to_form_map));
 }
 
 std::vector<CompromisedCredentials>
