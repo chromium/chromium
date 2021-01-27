@@ -36,13 +36,17 @@ ChromeVoxPrefs = class {
     }
     localStorage['lastRunVersion'] = chrome.runtime.getManifest().version;
 
-    /**
-     * The current mapping from keys to command.
-     * @type {!KeyMap}
-     * @private
-     */
-    this.keyMap_ = KeyMap.fromLocalStorage() || KeyMap.fromDefaults();
-    this.keyMap_.merge(KeyMap.fromDefaults());
+    (async () => {
+      const defaultKeyMap = await KeyMap.fromDefaults();
+
+      /**
+       * The current mapping from keys to command.
+       * @type {!KeyMap}
+       * @private
+       */
+      this.keyMap_ = KeyMap.fromLocalStorage() || defaultKeyMap;
+      this.keyMap_.merge(defaultKeyMap);
+    })();
 
     // Clear per session preferences.
     // This is to keep the position dictionary from growing excessively large.
@@ -77,7 +81,7 @@ ChromeVoxPrefs = class {
    * @param {string} selectedKeyMap The id of the keymap in
    * KeyMap.AVAIABLE_KEYMAP_INFO.
    */
-  switchToKeyMap(selectedKeyMap) {
+  async switchToKeyMap(selectedKeyMap) {
     // Switching key maps potentially affects the key codes that involve
     // sequencing. Without resetting this list, potentially stale key
     // codes remain. The key codes themselves get pushed in
@@ -87,7 +91,7 @@ ChromeVoxPrefs = class {
     // TODO(dtseng): Leaking state about multiple key maps here until we have a
     // class to manage multiple key maps.
     localStorage['currentKeyMap'] = selectedKeyMap;
-    this.keyMap_ = KeyMap.fromCurrentKeyMap();
+    this.keyMap_ = await KeyMap.fromCurrentKeyMap();
     ChromeVoxKbHandler.handlerKeyMap = this.keyMap_;
     this.keyMap_.toLocalStorage();
     this.keyMap_.resetModifier();
@@ -104,37 +108,6 @@ ChromeVoxPrefs = class {
     }
     prefs['version'] = chrome.runtime.getManifest().version;
     return prefs;
-  }
-
-  /**
-   * Reloads the key map from local storage.
-   */
-  reloadKeyMap() {
-    // Get the current key map from localStorage.
-    // TODO(dtseng): We currently don't support merges since we write the entire
-    // map back to local storage.
-    let currentKeyMap = KeyMap.fromLocalStorage();
-    if (!currentKeyMap) {
-      currentKeyMap = KeyMap.fromCurrentKeyMap();
-      currentKeyMap.toLocalStorage();
-    }
-    this.keyMap_ = currentKeyMap;
-  }
-
-  /**
-   * Get the key map, from key binding to an array of [command, description].
-   * @return {KeyMap} The key map.
-   */
-  getKeyMap() {
-    return this.keyMap_;
-  }
-
-  /**
-   * Reset to the default key bindings.
-   */
-  resetKeys() {
-    this.keyMap_ = KeyMap.fromDefaults();
-    this.keyMap_.toLocalStorage();
   }
 
   /**

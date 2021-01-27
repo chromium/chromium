@@ -210,16 +210,19 @@ void SpeechMonitor::MaybeContinueReplay() {
 
   auto it = replay_queue_.begin();
   while (it != replay_queue_.end()) {
-    if (it->first()) {
+    ReplayArgs current = *it;
+    it = replay_queue_.erase(it);
+    if (current.first()) {
       // Careful here; the above callback may have triggered more speech which
       // causes |MaybeContinueReplay| to be called recursively. We have to
       // ensure to check |replay_queue_| here.
       if (replay_queue_.empty())
         break;
 
-      replayed_queue_.push_back(it->second);
-      it = replay_queue_.erase(it);
+      replayed_queue_.push_back(current.second);
     } else {
+      replay_queue_.insert(replay_queue_.begin(), current);
+      it = replay_queue_.begin();
       break;
     }
   }

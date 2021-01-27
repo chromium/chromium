@@ -31,19 +31,6 @@ ChromeVoxKbHandler.handlerKeyMap;
 ChromeVoxKbHandler.commandHandler;
 
 /**
- * Loads the key bindings into the keyToFunctionsTable.
- *
- * @param {string} keyToFunctionsTable The key bindings table in JSON form.
- */
-ChromeVoxKbHandler.loadKeyToFunctionsTable = function(keyToFunctionsTable) {
-  if (!window.JSON) {
-    return;
-  }
-
-  ChromeVoxKbHandler.handlerKeyMap = KeyMap.fromJSON(keyToFunctionsTable);
-};
-
-/**
  * Converts the key bindings table into an array that is sorted by the lengths
  * of the key bindings. After the sort, the key bindings that describe single
  * keys will come before the key bindings that describe multiple keys.

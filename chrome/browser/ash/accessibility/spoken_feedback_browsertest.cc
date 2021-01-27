@@ -38,6 +38,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "chrome/test/base/extension_load_waiter_one_shot.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -156,6 +157,32 @@ void LoggedInSpokenFeedbackTest::EnableChromeVox() {
   // |console_observer_| here.
 
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
+  base::RunLoop loop;
+  ExtensionLoadWaiterOneShot waiter;
+  waiter.WaitForExtension(extension_misc::kChromeVoxExtensionId,
+                          loop.QuitClosure());
+  loop.Run();
+
+  // Keyboard mappings are async loaded, so we need to wait until they are fully
+  // loaded to start testing.
+  std::string script =
+      R"JS(
+          function waitForKeyMapLoad() {
+            if (ChromeVoxKbHandler.handlerKeyMap) {
+              window.domAutomationController.send('ok');
+              return;
+            }
+            setTimeout(waitForKeyMapLoad, 0);
+          }
+          waitForKeyMapLoad();
+        )JS";
+
+  std::string result =
+      extensions::browsertest_util::ExecuteScriptInBackgroundPage(
+          browser()->profile(), extension_misc::kChromeVoxExtensionId, script,
+          extensions::browsertest_util::ScriptUserActivation::kDontActivate);
+  ASSERT_EQ(result, "ok");
+
   sm_.ExpectSpeechPattern("*");
   sm_.Call([this]() { DisableEarcons(); });
 }

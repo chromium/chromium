@@ -261,34 +261,34 @@ KeyMap = class {
 
   /**
    * Convenience method for getting a default key map.
-   * @return {!KeyMap} The default key map.
+   * @return {!Promise<!KeyMap>} The default key map.
    */
-  static fromDefaults() {
-    return /** @type {!KeyMap} */ (KeyMap.fromPath(
-        KeyMap.KEYMAP_PATH + KeyMap.AVAILABLE_MAP_INFO['keymap_default'].file));
+  static async fromDefaults() {
+    const map = await KeyMap.fromPath(
+        KeyMap.KEYMAP_PATH + KeyMap.AVAILABLE_MAP_INFO['keymap_default'].file);
+
+    if (!map) {
+      throw new Error('Expected valid default key map.');
+    }
+
+    return map;
   }
 
   /**
    * Convenience method for creating a key map based on a JSON (key, value)
    * Object where the key is a literal keyboard string and value is a command
    * string.
-   * @param {string} json The JSON.
+   * @param {!Object} json The JSON.
    * @return {KeyMap} The resulting object; null if unable to parse.
    */
   static fromJSON(json) {
     let commandsAndKeySequences = null;
-    try {
-      commandsAndKeySequences =
-          /**
-           * @type {Array<Object<{command: string,
-           *                       sequence: KeySequence}>>}
-           */
-          (JSON.parse(json).bindings);
-    } catch (e) {
-      console.error('Failed to load key map from JSON');
-      console.error(e);
-      return null;
-    }
+    commandsAndKeySequences =
+        /**
+         * @type {Array<Object<{command: string,
+         *                       sequence: KeySequence}>>}
+         */
+        (json.bindings);
 
     // Validate the type of the commandsAndKeySequences array.
     if (typeof (commandsAndKeySequences) !== 'object') {
@@ -322,21 +322,27 @@ KeyMap = class {
    * Warning: you should only call this within a background page context.
    * @param {string} path A valid path of the form
    * chromevox/background/keymaps/*.json.
-   * @return {KeyMap} A valid KeyMap object; null on error.
+   * @return {!Promise<KeyMap>} A valid KeyMap object; null on error.
    */
-  static fromPath(path) {
-    return KeyMap.fromJSON(KeyMap.readJSON_(path));
+  static async fromPath(path) {
+    const json = await KeyMap.readJSON_(path);
+    return KeyMap.fromJSON(json);
   }
 
   /**
    * Convenience method for getting a currently selected key map.
-   * @return {!KeyMap} The currently selected key map.
+   * @return {!Promise<!KeyMap>} The currently selected key map.
    */
-  static fromCurrentKeyMap() {
+  static async fromCurrentKeyMap() {
     const map = localStorage['currentKeyMap'];
     if (map && KeyMap.AVAILABLE_MAP_INFO[map]) {
-      return /** @type {!KeyMap} */ (KeyMap.fromPath(
-          KeyMap.KEYMAP_PATH + KeyMap.AVAILABLE_MAP_INFO[map].file));
+      const keyMapObject = await KeyMap.fromPath(
+          KeyMap.KEYMAP_PATH + KeyMap.AVAILABLE_MAP_INFO[map].file);
+      if (!keyMapObject) {
+        throw new Error('Expected valid key map.');
+      }
+
+      return keyMapObject;
     } else {
       return KeyMap.fromDefaults();
     }
@@ -345,20 +351,18 @@ KeyMap = class {
   /**
    * Takes a path to a JSON file and returns a JSON Object.
    * @param {string} path Contains the path to a JSON file.
-   * @return {string} JSON.
+   * @return {!Promise<!Object>} JSON.
    * @private
    * @suppress {missingProperties}
    */
-  static readJSON_(path) {
+  static async readJSON_(path) {
     const url = chrome.extension.getURL(path);
     if (!url) {
       throw 'Invalid path: ' + path;
     }
 
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', url, false);
-    xhr.send();
-    return xhr.responseText;
+    const response = await fetch(url, {method: 'GET'});
+    return response.json();
   }
 
   /**
