@@ -51,11 +51,15 @@
 
 .holding-space-welcome .holding-space-welcome-title {
   margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .holding-space-welcome .holding-space-welcome-text {
-  align-items: center;
-  display: inline-flex;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .holding-space-welcome .holding-space-welcome-text span.icon {
@@ -65,8 +69,7 @@
   -webkit-mask-size: 100%;
   background-color: var(--cros-text-color-primary);
   display: inline-block;
-  flex: 0 0 auto;
-  height: 13px;
+  height: 100%;
   width: 13px;
 }
 
