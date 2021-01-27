@@ -31,6 +31,10 @@ class CookieStore;
 class IsolationInfo;
 }
 
+namespace url {
+class Origin;
+}
+
 namespace extensions {
 
 // Manages cookie store for chrome-extension:// URLs, and associated
@@ -48,6 +52,7 @@ class ChromeExtensionCookies
   // with origin |origin|, bound to |receiver|. Whether this will use disk
   // storage or not depends on the Profile |this| was created for.
   void CreateRestrictedCookieManager(
+      const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       mojo::PendingReceiver<network::mojom::RestrictedCookieManager> receiver);
 
@@ -70,6 +75,7 @@ class ChromeExtensionCookies
     ~IOData();
 
     void CreateRestrictedCookieManager(
+        const url::Origin& origin,
         const net::IsolationInfo& isolation_info,
         mojo::PendingReceiver<network::mojom::RestrictedCookieManager>
             receiver);

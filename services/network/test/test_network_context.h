@@ -59,6 +59,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       mojo::PendingReceiver<mojom::RestrictedCookieManager>
           restricted_cookie_manager,
       mojom::RestrictedCookieManagerRole role,
+      const url::Origin& origin,
       const net::IsolationInfo& isolation_info,
       mojo::PendingRemote<mojom::CookieAccessObserver> observer) override {}
   void GetHasTrustTokensAnswerer(

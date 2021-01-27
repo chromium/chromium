@@ -799,6 +799,7 @@ void ContentBrowserClient::CreateWebSocket(
 bool ContentBrowserClient::WillCreateRestrictedCookieManager(
     network::mojom::RestrictedCookieManagerRole role,
     BrowserContext* browser_context,
+    const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
     bool is_service_worker,
     int process_id,
