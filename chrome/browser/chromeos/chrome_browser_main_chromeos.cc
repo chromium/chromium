@@ -59,7 +59,6 @@
 #include "chrome/browser/chromeos/dbus/libvda_service_provider.h"
 #include "chrome/browser/chromeos/dbus/lock_to_single_user_service_provider.h"
 #include "chrome/browser/chromeos/dbus/machine_learning_decision_service_provider.h"
-#include "chrome/browser/chromeos/dbus/memory_pressure_service_provider.h"
 #include "chrome/browser/chromeos/dbus/metrics_event_service_provider.h"
 #include "chrome/browser/chromeos/dbus/mojo_connection_service_provider.h"
 #include "chrome/browser/chromeos/dbus/plugin_vm_service_provider.h"
@@ -372,12 +371,6 @@ class DBusServices {
         CrosDBusService::CreateServiceProviderList(
             std::make_unique<LockToSingleUserServiceProvider>()));
 
-    memory_pressure_service_ = CrosDBusService::Create(
-        system_bus, memory_pressure::kMemoryPressureServiceName,
-        dbus::ObjectPath(memory_pressure::kMemoryPressureServicePath),
-        CrosDBusService::CreateServiceProviderList(
-            std::make_unique<MemoryPressureServiceProvider>()));
-
     mojo_connection_service_ = CrosDBusService::Create(
         system_bus,
         ::mojo_connection_service::kMojoConnectionServiceServiceName,
@@ -449,7 +442,6 @@ class DBusServices {
     drive_file_stream_service_.reset();
     cryptohome_key_delegate_service_.reset();
     lock_to_single_user_service_.reset();
-    memory_pressure_service_.reset();
     mojo_connection_service_.reset();
     ProcessDataCollector::Shutdown();
     PowerDataCollector::Shutdown();
@@ -480,7 +472,6 @@ class DBusServices {
   std::unique_ptr<CrosDBusService> machine_learning_decision_service_;
   std::unique_ptr<CrosDBusService> smb_fs_service_;
   std::unique_ptr<CrosDBusService> lock_to_single_user_service_;
-  std::unique_ptr<CrosDBusService> memory_pressure_service_;
   std::unique_ptr<CrosDBusService> mojo_connection_service_;
 
   DISALLOW_COPY_AND_ASSIGN(DBusServices);
