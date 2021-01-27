@@ -22,6 +22,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "content/browser/font_access/font_enumeration_cache.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/common/content_navigation_policy.h"
@@ -302,6 +303,10 @@ void AwaitDocumentOnLoadCompleted(WebContents* web_contents) {
   };
 
   Awaiter(web_contents).Await();
+}
+
+void ResetFontEnumerationCache() {
+  FontEnumerationCache::GetInstance()->ResetStateForTesting();
 }
 
 MessageLoopRunner::MessageLoopRunner(QuitMode quit_mode)
