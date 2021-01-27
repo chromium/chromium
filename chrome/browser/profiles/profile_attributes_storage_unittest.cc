@@ -339,9 +339,12 @@ TEST_F(ProfileAttributesStorageTest, EntryAccessors) {
   TEST_BOOL_ACCESSORS(ProfileAttributesEntry, entry, IsUsingGAIAPicture);
   VerifyAndResetCallExpectations();
 
+  // IsOmitted() should be set only on ephemeral profiles.
+  entry->SetIsEphemeral(true);
   EXPECT_CALL(observer(), OnProfileIsOmittedChanged(path)).Times(2);
   TEST_BOOL_ACCESSORS(ProfileAttributesEntry, entry, IsOmitted);
   VerifyAndResetCallExpectations();
+  entry->SetIsEphemeral(false);
 
   EXPECT_CALL(observer(), OnProfileHostedDomainChanged(path)).Times(2);
   TEST_STRING_ACCESSORS(ProfileAttributesEntry, entry, HostedDomain);

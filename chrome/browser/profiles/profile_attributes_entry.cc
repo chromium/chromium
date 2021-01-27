@@ -380,7 +380,7 @@ bool ProfileAttributesEntry::IsLegacySupervised() const {
 }
 
 bool ProfileAttributesEntry::IsOmitted() const {
-  return GetBool(kIsOmittedFromProfileListKey);
+  return is_omitted_ || GetBool(kIsOmittedFromProfileListKey);
 }
 
 bool ProfileAttributesEntry::IsSigninRequired() const {
@@ -515,7 +515,13 @@ void ProfileAttributesEntry::SetActiveTimeToNow() {
 }
 
 void ProfileAttributesEntry::SetIsOmitted(bool is_omitted) {
-  if (SetBool(kIsOmittedFromProfileListKey, is_omitted))
+  bool old_value = IsOmitted();
+  // Set the in-memory bool as the only source of truth.
+  ClearValue(kIsOmittedFromProfileListKey);
+  is_omitted_ = is_omitted;
+
+  // Send a notification only if the value has really changed.
+  if (old_value != is_omitted_)
     profile_info_cache_->NotifyProfileIsOmittedChanged(GetPath());
 }
 

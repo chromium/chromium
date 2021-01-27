@@ -4724,6 +4724,7 @@ test("unit_tests") {
       "../browser/ui/webui/settings/site_settings_handler_unittest.cc",
       "../browser/ui/webui/settings/site_settings_helper_unittest.cc",
       "../browser/ui/webui/signin/login_ui_service_unittest.cc",
+      "../browser/ui/webui/signin/profile_picker_handler_unittest.cc",
       "../browser/ui/webui/sync_internals/sync_internals_message_handler_unittest.cc",
       "../browser/ui/webui/tab_search/tab_search_page_handler_unittest.cc",
       "../browser/ui/webui/theme_source_unittest.cc",
@@ -4963,6 +4964,7 @@ test("unit_tests") {
       "../browser/signin/chrome_signin_status_metrics_provider_delegate_unittest.cc",
       "../browser/ui/passwords/account_storage_auth_helper_unittest.cc",
       "../browser/ui/webui/settings/settings_manage_profile_handler_unittest.cc",
+      "../browser/ui/webui/signin/profile_picker_handler_unittest.cc",
 
       # Chrome OS uses window_sizer_chromeos_unittest.cc
       "../browser/ui/window_sizer/window_sizer_unittest.cc",
