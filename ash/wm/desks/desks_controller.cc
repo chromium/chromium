@@ -196,6 +196,12 @@ class DesksController::DeskTraversalsMetricsHelper {
       count_ += visible_desk_changes;
   }
 
+  // Fires |timer_| immediately.
+  void FireTimerForTesting() {
+    if (timer_.IsRunning())
+      timer_.FireNow();
+  }
+
  private:
   void OnTimerStop() {
     // If an animation is still running, add its current visible desk change
@@ -718,6 +724,10 @@ void DesksController::OnFirstSessionStarted() {
   current_account_id_ =
       Shell::Get()->session_controller()->GetActiveAccountId();
   desks_restore_util::RestorePrimaryUserDesks();
+}
+
+void DesksController::FireMetricsTimerForTesting() {
+  metrics_helper_->FireTimerForTesting();
 }
 
 void DesksController::OnAnimationFinished(DeskAnimationBase* animation) {

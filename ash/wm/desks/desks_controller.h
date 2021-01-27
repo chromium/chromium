@@ -218,6 +218,9 @@ class ASH_EXPORT DesksController : public DesksHelper,
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
   void OnFirstSessionStarted() override;
 
+  // Fires the timer used for recording desk traversals immediately.
+  void FireMetricsTimerForTesting();
+
  private:
   class DeskTraversalsMetricsHelper;
   friend class DeskAnimationBase;
