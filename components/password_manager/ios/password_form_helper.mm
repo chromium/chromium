@@ -326,10 +326,10 @@ constexpr char kCommandPrefix[] = "passwordForm";
                password:UTF16ToUTF8(passwordValue)
       completionHandler:^(BOOL success) {
         if (success) {
-          weakSelf.fieldDataManager->UpdateFieldDataWithAutofilledValue(
+          weakSelf.fieldDataManager->UpdateFieldDataMap(
               usernameID, usernameValue,
               FieldPropertiesFlags::kAutofilledOnPageLoad);
-          weakSelf.fieldDataManager->UpdateFieldDataWithAutofilledValue(
+          weakSelf.fieldDataManager->UpdateFieldDataMap(
               passwordID, passwordValue,
               FieldPropertiesFlags::kAutofilledOnPageLoad);
         }
@@ -354,11 +354,11 @@ constexpr char kCommandPrefix[] = "passwordForm";
               generatedPassword:generatedPassword
               completionHandler:^(BOOL success) {
                 if (success) {
-                  weakSelf.fieldDataManager->UpdateFieldDataWithAutofilledValue(
+                  weakSelf.fieldDataManager->UpdateFieldDataMap(
                       newPasswordIdentifier,
                       SysNSStringToUTF16(generatedPassword),
                       FieldPropertiesFlags::kAutofilledOnUserTrigger);
-                  weakSelf.fieldDataManager->UpdateFieldDataWithAutofilledValue(
+                  weakSelf.fieldDataManager->UpdateFieldDataMap(
                       confirmPasswordIdentifier,
                       SysNSStringToUTF16(generatedPassword),
                       FieldPropertiesFlags::kAutofilledOnUserTrigger);
@@ -391,10 +391,10 @@ constexpr char kCommandPrefix[] = "passwordForm";
                password:UTF16ToUTF8(passwordValue)
       completionHandler:^(BOOL success) {
         if (success) {
-          weakSelf.fieldDataManager->UpdateFieldDataWithAutofilledValue(
+          weakSelf.fieldDataManager->UpdateFieldDataMap(
               usernameID, usernameValue,
               FieldPropertiesFlags::kAutofilledOnUserTrigger);
-          weakSelf.fieldDataManager->UpdateFieldDataWithAutofilledValue(
+          weakSelf.fieldDataManager->UpdateFieldDataMap(
               passwordID, passwordValue,
               FieldPropertiesFlags::kAutofilledOnUserTrigger);
         }

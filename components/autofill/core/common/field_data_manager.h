@@ -52,24 +52,12 @@ class FieldDataManager : public base::RefCounted<FieldDataManager> {
     return field_value_and_properties_map_;
   }
 
-  bool WasAutofilledOnPageLoad(FieldRendererId id) const;
-
-  // Update data with autofilled value.
-  void UpdateFieldDataWithAutofilledValue(FieldRendererId id,
-                                          const base::string16& value,
-                                          FieldPropertiesMask mask);
-
-  base::Optional<base::string16> GetAutofilledValue(FieldRendererId id) const;
-
  private:
   friend class base::RefCounted<FieldDataManager>;
 
   ~FieldDataManager();
 
   FieldDataMap field_value_and_properties_map_;
-
-  // Stores values autofilled either on page load or on user trigger.
-  std::map<FieldRendererId, base::string16> autofilled_values_map_;
 };
 
 }  // namespace autofill

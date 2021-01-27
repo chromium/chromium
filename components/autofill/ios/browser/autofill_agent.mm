@@ -114,9 +114,9 @@ void UpdateFieldManagerWithFillingResults(
   std::map<uint32_t, base::string16> fillingResults;
   if (autofill::ExtractFillingResults(jsonString, &fillingResults)) {
     for (auto& fillData : fillingResults) {
-      fieldDataManager->UpdateFieldDataWithAutofilledValue(
-          FieldRendererId(fillData.first), fillData.second,
-          kAutofilledOnUserTrigger);
+      fieldDataManager->UpdateFieldDataMap(FieldRendererId(fillData.first),
+                                           fillData.second,
+                                           kAutofilledOnUserTrigger);
     }
   }
   // TODO(crbug/1131038): Remove once the experiment is over.
@@ -129,9 +129,9 @@ void UpdateFieldManagerForClearedIDs(
   std::vector<uint32_t> clearingResults;
   if (autofill::ExtractIDs(jsonString, &clearingResults)) {
     for (auto uniqueID : clearingResults) {
-      fieldDataManager->UpdateFieldDataWithAutofilledValue(
-          FieldRendererId(uniqueID), base::string16(),
-          kAutofilledOnUserTrigger);
+      fieldDataManager->UpdateFieldDataMap(FieldRendererId(uniqueID),
+                                           base::string16(),
+                                           kAutofilledOnUserTrigger);
     }
   }
 }
@@ -934,7 +934,7 @@ autofillManagerFromWebState:(web::WebState*)webState
           if (!strongSelf)
             return;
           if (success) {
-            strongSelf->_fieldDataManager->UpdateFieldDataWithAutofilledValue(
+            strongSelf->_fieldDataManager->UpdateFieldDataMap(
                 uniqueFieldID, value, kAutofilledOnUserTrigger);
           }
           suggestionHandledCompletionCopy();
