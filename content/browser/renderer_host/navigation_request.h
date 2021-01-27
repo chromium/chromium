@@ -727,6 +727,10 @@ class CONTENT_EXPORT NavigationRequest
   // properly determine SiteInstances and process allocation.
   UrlInfo GetUrlInfo();
 
+  // Whether this navigation request waits for the result of beforeunload before
+  // proceeding.
+  bool IsWaitingForBeforeUnload();
+
  private:
   friend class NavigationRequestTest;
 

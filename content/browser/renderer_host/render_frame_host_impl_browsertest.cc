@@ -1223,6 +1223,51 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
 
 namespace {
 
+class OnDidStartNavigation : public WebContentsObserver {
+ public:
+  OnDidStartNavigation(WebContents* web_contents,
+                       base::RepeatingClosure callback)
+      : WebContentsObserver(web_contents), callback_(callback) {}
+
+  void DidStartNavigation(NavigationHandle* navigation) override {
+    callback_.Run();
+  }
+
+ private:
+  base::RepeatingClosure callback_;
+};
+
+}  // namespace
+
+// This test closes beforeunload dialog due to a new navigation starting from
+// within WebContentsObserver::DidStartNavigation. This test succeeds if it
+// doesn't crash with a UAF while loading the second page.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBeforeUnloadBrowserTest,
+                       DidStartNavigationClosesDialog) {
+  GURL url1 = embedded_test_server()->GetURL("a.com", "/title1.html");
+  GURL url2 = embedded_test_server()->GetURL("b.com", "/title1.html");
+
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
+
+  // This matches the behaviour of TabModalDialogManager in
+  // components/javascript_dialogs.
+  OnDidStartNavigation close_dialog(web_contents(),
+                                    base::BindLambdaForTesting([&]() {
+                                      CloseDialogAndCancel();
+
+                                      // Check that web_contents() were not
+                                      // deleted.
+                                      DCHECK(web_contents()->GetMainFrame());
+                                    }));
+
+  web_contents()->GetMainFrame()->RunBeforeUnloadConfirm(true,
+                                                         base::DoNothing());
+
+  EXPECT_TRUE(NavigateToURL(shell(), url2));
+}
+
+namespace {
+
 // A helper to execute some script in a frame just before it is deleted, such
 // that no message loops are pumped and no sync IPC messages are processed
 // between script execution and the destruction of the RenderFrameHost  .

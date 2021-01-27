@@ -629,10 +629,12 @@ void FrameTreeNode::BeforeUnloadCanceled() {
       render_manager_.speculative_frame_host();
   if (speculative_frame_host)
     speculative_frame_host->ResetLoadingState();
-  // Note: there is no need to set an error code on the NavigationHandle here
-  // as it has not been created yet. It is only created when the
-  // BeforeUnloadCompleted callback is invoked.
-  if (navigation_request_)
+  // Note: there is no need to set an error code on the NavigationHandle as
+  // the observers have not been notified about its creation.
+  // We also reset navigation request only when this navigation request was
+  // responsible for this dialog, as a new navigation request might cancel
+  // existing unrelated dialog.
+  if (navigation_request_ && navigation_request_->IsWaitingForBeforeUnload())
     ResetNavigationRequest(false);
 }
 
