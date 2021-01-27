@@ -1,4 +1,4 @@
-'use strict';
+import {InstalledAppProvider, InstalledAppProviderReceiver} from '/gen/third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.m.js';
 
 function assert_relatedapplication_equals(actual, expected, description) {
   assert_equals(actual.platform, expected.platform, description);
@@ -6,7 +6,7 @@ function assert_relatedapplication_equals(actual, expected, description) {
   assert_equals(actual.id, expected.id, description);
 }
 
-function assert_array_relatedapplication_equals(
+export function assert_array_relatedapplication_equals(
     actual, expected, description) {
   assert_equals(actual.length, expected.length, description);
 
@@ -16,12 +16,12 @@ function assert_array_relatedapplication_equals(
 
 class MockInstalledAppProvider {
   constructor(interfaceProvider) {
-    this.bindingSet_ = new mojo.BindingSet(blink.mojom.InstalledAppProvider);
+    this.receiver_ = new InstalledAppProviderReceiver(this);
 
     this.interceptor_ =
-        new MojoInterfaceInterceptor(blink.mojom.InstalledAppProvider.name);
+        new MojoInterfaceInterceptor(InstalledAppProvider.$interfaceName);
     this.interceptor_.oninterfacerequest =
-        e => this.bindingSet_.addBinding(this, e.handle);
+        e => this.receiver_.$.bindHandle(e.handle);
     this.interceptor_.start();
   }
 
@@ -63,7 +63,7 @@ let mockInstalledAppProvider = new MockInstalledAppProvider();
 // pushExpectedCall. It should return a promise, the result of
 // getInstalledRelatedApps().
 // |name| and |properties| are standard testharness arguments.
-function installedapp_test(func, name, properties) {
+export function installedapp_test(func, name, properties) {
   promise_test(t => {
     let mockPromise = mockInstalledAppProvider.init_();
     return Promise.race([func(t, mockInstalledAppProvider), mockPromise]);

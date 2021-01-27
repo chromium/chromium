@@ -727,15 +727,14 @@ mojo.internal.Decoder = class {
   }
 
   decodeString(offset) {
+    const data = this.decodeArray({elementType: mojo.internal.Uint8}, offset);
+    if (!data)
+      return null;
+
     if (!mojo.internal.Decoder.textDecoder)
       mojo.internal.Decoder.textDecoder = new TextDecoder('utf-8');
     return mojo.internal.Decoder.textDecoder.decode(
-        new Uint8Array(this.decodeArray(
-                           {
-                             elementType: mojo.internal.Uint8,
-                           },
-                           offset))
-            .buffer);
+        new Uint8Array(data).buffer);
   }
 
   decodeOffset(offset) {

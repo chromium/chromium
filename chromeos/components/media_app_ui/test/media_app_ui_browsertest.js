@@ -512,7 +512,7 @@ TEST_F('MediaAppUIBrowserTest', 'FileThatBecomesDirectory', async () => {
 TEST_F('MediaAppUIBrowserTest', 'CanOpenFeedbackDialog', async () => {
   const result = await mediaAppPageHandler.openFeedbackDialog();
 
-  assertEquals(result.errorMessage, '');
+  assertEquals(result.errorMessage, null);
   testDone();
 });
 

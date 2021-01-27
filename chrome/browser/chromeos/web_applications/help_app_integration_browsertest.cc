@@ -309,16 +309,17 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest, HelpAppV2OpenFeedbackDialog) {
     (async () => {
       const app = document.querySelector('showoff-app');
       const res = await app.getDelegate().openFeedbackDialog();
-      window.domAutomationController.send(res);
+      window.domAutomationController.send(res === null);
     })();
   )";
-  std::string result;
+  bool error_is_null;
   // Use ExecuteScript instead of EvalJsInAppFrame because the script needs to
   // run in the same world as the page's code.
-  EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript, &result));
-  // A result of empty string means no error in opening feedback.
-  EXPECT_EQ(result, "");
+  EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
+      SandboxedWebUiAppTestBase::GetAppFrame(web_contents), kScript,
+      &error_is_null));
+  // A null string result means no error in opening feedback.
+  EXPECT_TRUE(error_is_null);
 }
 
 // Test that the Help App opens the OS Settings family link page.

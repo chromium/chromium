@@ -1,11 +1,9 @@
 <!DOCTYPE html>
 <link rel="manifest" href="resources/manifest.json">
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/third_party/blink/public/mojom/installedapp/installed_app_provider.mojom.js"></script>
-<script src="resources/installedapp-test-helper.js"></script>
-<script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {assert_array_relatedapplication_equals, installedapp_test} from './resources/installedapp-test-helper.js';
 
 installedapp_test((t, mock) => {
   // The expected input to the Mojo method FilterInstalledRelatedApps is the
