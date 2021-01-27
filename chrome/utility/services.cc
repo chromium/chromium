@@ -23,12 +23,15 @@
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "components/services/unzip/unzipper_impl.h"
+#include "components/webapps/services/web_app_origin_association/public/mojom/web_app_origin_association_parser.mojom.h"
+#include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser_impl.h"
 #include "content/public/common/content_features.h"
 #include "content/public/utility/utility_thread.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/service_factory.h"
 #include "printing/buildflags/buildflags.h"
+#include "third_party/blink/public/common/features.h"
 
 #if defined(OS_WIN)
 #include "chrome/services/util_win/public/mojom/util_read_icon.mojom.h"
@@ -134,6 +137,13 @@ auto RunMachineLearningService(
     mojo::PendingReceiver<machine_learning::mojom::MachineLearningService>
         receiver) {
   return std::make_unique<machine_learning::MachineLearningService>(
+      std::move(receiver));
+}
+
+auto RunWebAppOriginAssociationParser(
+    mojo::PendingReceiver<webapps::mojom::WebAppOriginAssociationParser>
+        receiver) {
+  return std::make_unique<webapps::WebAppOriginAssociationParserImpl>(
       std::move(receiver));
 }
 
@@ -299,6 +309,9 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunLanguageDetectionService);
   services.Add(RunQRCodeGeneratorService);
   services.Add(RunMachineLearningService);
+
+  if (base::FeatureList::IsEnabled(blink::features::kWebAppEnableUrlHandlers))
+    services.Add(RunWebAppOriginAssociationParser);
 
 #if !defined(OS_ANDROID)
   services.Add(RunProfileImporter);

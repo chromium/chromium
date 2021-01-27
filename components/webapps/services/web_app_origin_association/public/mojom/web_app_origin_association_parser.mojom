@@ -1,0 +1,41 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module webapps.mojom;
+
+import "url/mojom/url.mojom";
+
+// The WebAppOriginAssociation structure is an internal representation of the
+// web app origin association file described in the "PWAs as URL Handlers"
+// explainer: https://github.com/WICG/pwa-url-handler/blob/master/explainer.md
+struct WebAppOriginAssociation {
+  array<AssociatedWebApp> apps;
+};
+
+// |paths| contains allowed path strings relative to the origin, and
+// |exclude_paths| contains disallowed paths.
+// |paths| is null if "paths" doesn't exist, and |exclude_paths| is null if
+// "exclude_paths" doesn't exist.
+struct AssociatedWebApp {
+  url.mojom.Url manifest_url;
+  array<string>? paths;
+  array<string>? exclude_paths;
+};
+
+struct WebAppOriginAssociationError {
+  string message;
+  int32 line;
+  int32 column;
+};
+
+// Interface for parsing web app origin association files. Lives in a utility
+// process, and used as part of the "PWAs as URL Handlers" feature.
+interface WebAppOriginAssociationParser {
+  // Parses the |raw_json| into a WebAppOriginAssociation object, along
+  // with any errors. If parsing failed, |association| will be null. If no
+  // errors are found, |errors| will be empty.
+  ParseWebAppOriginAssociation(string raw_json)
+    => (WebAppOriginAssociation? association,
+        array<WebAppOriginAssociationError> errors);
+};

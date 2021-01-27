@@ -511,6 +511,9 @@
       <message name="IDS_UNZIP_SERVICE_DISPLAY_NAME" desc="The display name (in the system task manager, etc) of the service process used for unzipping files.">
         Unzip Service
       </message>
+      <message name="IDS_WEB_APP_ORIGIN_ASSOCIATION_PARSER_SERVICE_DISPLAY_NAME" desc="The display name (in the system task manager, etc) of the service process used for web app origin association parsing.">
+        Web App Origin Association Parser Service
+      </message>
     </messages>
   </release>
 </grit>

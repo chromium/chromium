@@ -316,6 +316,7 @@ test("components_unittests") {
       "//components/web_cache/browser:unit_tests",
       "//components/web_package:unit_tests",
       "//components/webapps/browser:unit_tests",
+      "//components/webapps/services/web_app_origin_association:unit_tests",
       "//components/webcrypto:unit_tests",
       "//components/webrtc_logging/browser:unit_tests",
       "//components/webrtc_logging/common:unit_tests",
