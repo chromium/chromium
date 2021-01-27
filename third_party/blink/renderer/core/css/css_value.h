@@ -24,6 +24,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/style/data_equivalency.h"
+#include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -33,6 +34,7 @@ class Length;
 
 class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
  public:
+#if !BUILDFLAG(USE_V8_OILPAN)
   template <typename T>
   static void* AllocateObject(size_t size) {
     ThreadState* state =
@@ -42,6 +44,7 @@ class CORE_EXPORT CSSValue : public GarbageCollected<CSSValue> {
         state, size, BlinkGC::kCSSValueArenaIndex,
         GCInfoTrait<GCInfoFoldedType<CSSValue>>::Index(), type_name);
   }
+#endif  // !USE_V8_OILPAN
 
   // TODO(sashab): Remove this method and move logic to the caller.
   static CSSValue* Create(const Length& value, float zoom);
@@ -339,5 +342,17 @@ inline bool CompareCSSValueVector(
 }
 
 }  // namespace blink
+
+#if BUILDFLAG(USE_V8_OILPAN)
+namespace cppgc {
+// Assign CSSValue to be allocated on custom CSSValueSpace.
+template <typename T>
+struct SpaceTrait<
+    T,
+    std::enable_if_t<std::is_base_of<blink::CSSValue, T>::value>> {
+  using Space = blink::CSSValueSpace;
+};
+}  // namespace cppgc
+#endif  // !USE_V8_OILPAN
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_H_

@@ -34,6 +34,11 @@ class NodeSpace : public cppgc::CustomSpace<NodeSpace> {
   static constexpr cppgc::CustomSpaceIndex kSpaceIndex = 2;
 };
 
+class CSSValueSpace : public cppgc::CustomSpace<CSSValueSpace> {
+ public:
+  static constexpr cppgc::CustomSpaceIndex kSpaceIndex = 3;
+};
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_CUSTOM_SPACES_H_
