@@ -614,6 +614,15 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
   if (widget_delegate_ && !widget_delegate_->OnCloseRequested(closed_reason))
     return;
 
+  // Cancel widget close on focus lost. This is used in UI Devtools to lock
+  // bubbles and in some tests where we want to ignore spurious deactivation.
+  if (closed_reason == ClosedReason::kLostFocus &&
+      (g_disable_activation_change_handling_ ==
+           DisableActivationChangeHandlingType::kIgnore ||
+       g_disable_activation_change_handling_ ==
+           DisableActivationChangeHandlingType::kIgnoreDeactivationOnly))
+    return;
+
   // The actions below can cause this function to be called again, so mark
   // |this| as closed early. See crbug.com/714334
   widget_closed_ = true;
