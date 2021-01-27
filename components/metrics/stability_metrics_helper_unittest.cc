@@ -47,6 +47,7 @@ class StabilityMetricsHelperTest : public testing::Test {
 
 TEST_F(StabilityMetricsHelperTest, BrowserChildProcessCrashed) {
   StabilityMetricsHelper helper(prefs());
+  base::HistogramTester histogram_tester;
 
   helper.BrowserChildProcessCrashed();
   helper.BrowserChildProcessCrashed();
@@ -62,6 +63,8 @@ TEST_F(StabilityMetricsHelperTest, BrowserChildProcessCrashed) {
       system_profile.stability();
 
   EXPECT_EQ(2, stability.child_process_crash_count());
+  histogram_tester.ExpectUniqueSample(
+      "Stability.Counts2", StabilityEventType::kChildProcessCrash, 2);
 }
 
 TEST_F(StabilityMetricsHelperTest, LogRendererCrash) {
@@ -97,6 +100,12 @@ TEST_F(StabilityMetricsHelperTest, LogRendererCrash) {
   histogram_tester.ExpectUniqueSample("CrashExitCodes.Renderer", 1, 3);
   histogram_tester.ExpectBucketCount("BrowserRenderProcessHost.ChildCrashes",
                                      RENDERER_TYPE_RENDERER, 3);
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kRendererCrash, 3);
+  histogram_tester.ExpectBucketCount(
+      "Stability.Counts2", StabilityEventType::kRendererFailedLaunch, 1);
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kExtensionCrash, 0);
 
   // One launch failure each.
   histogram_tester.ExpectBucketCount(
@@ -131,9 +140,17 @@ TEST_F(StabilityMetricsHelperTest, LogRendererCrashEnableExtensions) {
   helper.ProvideStabilityMetrics(&system_profile);
 
   EXPECT_EQ(0, system_profile.stability().renderer_crash_count());
-  EXPECT_EQ(2, system_profile.stability().extension_renderer_crash_count());
   EXPECT_EQ(
       1, system_profile.stability().extension_renderer_failed_launch_count());
+  EXPECT_EQ(2, system_profile.stability().extension_renderer_crash_count());
+
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kRendererCrash, 0);
+  histogram_tester.ExpectBucketCount(
+      "Stability.Counts2", StabilityEventType::kExtensionRendererFailedLaunch,
+      1);
+  histogram_tester.ExpectBucketCount("Stability.Counts2",
+                                     StabilityEventType::kExtensionCrash, 2);
 
   histogram_tester.ExpectBucketCount(
       "BrowserRenderProcessHost.ChildLaunchFailureCodes", 1, 1);

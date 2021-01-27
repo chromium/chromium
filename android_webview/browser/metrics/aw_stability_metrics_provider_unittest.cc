@@ -71,9 +71,8 @@ TEST_F(AwStabilityMetricsProviderTest, PageLoadCount) {
 
   provider.ProvideStabilityMetrics(&system_profile);
   EXPECT_EQ(1, system_profile.stability().page_load_count());
-  histogram_tester.ExpectUniqueSample("Stability.Experimental.Counts",
-                                      metrics::StabilityEventType::kPageLoad,
-                                      1);
+  histogram_tester.ExpectUniqueSample(
+      "Stability.Counts2", metrics::StabilityEventType::kPageLoad, 1);
 }
 
 TEST_F(AwStabilityMetricsProviderTest, RendererHangCount) {

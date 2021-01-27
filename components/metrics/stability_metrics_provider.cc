@@ -191,6 +191,8 @@ void StabilityMetricsProvider::RecordBreakpadHasDebugger(bool has_debugger) {
 void StabilityMetricsProvider::CheckLastSessionEndCompleted() {
   if (!local_state_->GetBoolean(prefs::kStabilitySessionEndCompleted)) {
     IncrementPrefValue(prefs::kStabilityIncompleteSessionEndCount);
+    StabilityMetricsHelper::RecordStabilityEvent(
+        StabilityEventType::kIncompleteShutdown);
     // This is marked false when we get a WM_ENDSESSION.
     MarkSessionEndCompleted(true);
   }
@@ -222,6 +224,7 @@ void StabilityMetricsProvider::LogCrash(base::Time last_live_timestamp) {
 
 void StabilityMetricsProvider::LogLaunch() {
   IncrementPrefValue(prefs::kStabilityLaunchCount);
+  StabilityMetricsHelper::RecordStabilityEvent(StabilityEventType::kLaunch);
 }
 
 #if defined(OS_WIN)
