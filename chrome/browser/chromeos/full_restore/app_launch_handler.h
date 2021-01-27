@@ -65,7 +65,7 @@ class AppLaunchHandler : public apps::AppRegistryCache::Observer {
 
   void LaunchApp(apps::mojom::AppType app_type, const std::string& app_id);
 
-  void LaunchWebAppOrExtension(
+  void LaunchSystemWebApp(
       const std::string& app_id,
       const ::full_restore::RestoreData::LaunchList& launch_list);
 

@@ -108,6 +108,7 @@ class FullRestoreServiceTest : public testing::Test {
           return std::make_unique<FullRestoreService>(
               Profile::FromBrowserContext(context));
         }));
+    content::RunAllTasksUntilIdle();
   }
 
   bool HasNotificationFor(const std::string& notification_id) {

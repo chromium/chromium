@@ -14,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_save_handler.h"
@@ -92,6 +93,14 @@ void AppLaunchHandler::OnGetRestoreData(
   ::full_restore::FullRestoreSaveHandler::GetInstance()->Flush(
       profile_->GetPath());
 
+  if (ProfileHelper::Get()->GetUserByProfile(profile_) ==
+      user_manager::UserManager::Get()->GetPrimaryUser()) {
+    // In Multi-Profile mode, only set for the primary user. For other users,
+    // active profile path is set when switch users.
+    ::full_restore::FullRestoreSaveHandler::GetInstance()->SetActiveProfilePath(
+        profile_->GetPath());
+  }
+
   MaybePostRestore();
 }
 
@@ -167,8 +176,10 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
       // TODO(crbug.com/1146900): Handle ARC apps
       break;
     case apps::mojom::AppType::kExtension:
+      // TODO(crbug.com/1146900): Handle Chrome apps
+      break;
     case apps::mojom::AppType::kWeb:
-      LaunchWebAppOrExtension(app_id, it->second);
+      LaunchSystemWebApp(app_id, it->second);
       break;
     case apps::mojom::AppType::kBuiltIn:
     case apps::mojom::AppType::kCrostini:
@@ -184,7 +195,7 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
   restore_data_->RemoveApp(app_id);
 }
 
-void AppLaunchHandler::LaunchWebAppOrExtension(
+void AppLaunchHandler::LaunchSystemWebApp(
     const std::string& app_id,
     const ::full_restore::RestoreData::LaunchList& launch_list) {
   auto* launcher = apps::AppServiceProxyFactory::GetForProfile(profile_)

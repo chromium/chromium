@@ -48,6 +48,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   FullRestoreSaveHandler(const FullRestoreSaveHandler&) = delete;
   FullRestoreSaveHandler& operator=(const FullRestoreSaveHandler&) = delete;
 
+  void SetActiveProfilePath(const base::FilePath& profile_path);
+
   // aura::EnvObserver:
   void OnWindowInitialized(aura::Window* window) override;
 
@@ -86,6 +88,13 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   base::SequencedTaskRunner* BackendTaskRunner(
       const base::FilePath& profile_path);
 
+  // Add |app_launch_info| to |app_id_to_launch_list_|.
+  void AddAppLaunchInfo(const base::FilePath& profile_path,
+                        std::unique_ptr<AppLaunchInfo> app_launch_info);
+
+  // Removes AppRestoreData for |window_id|.
+  void RemoveAppRestoreData(int window_id);
+
   // Records whether there are new updates for saving between each saving delay.
   // |pending_save_profile_paths_| is cleared when Save is invoked.
   std::set<base::FilePath> pending_save_profile_paths_;
@@ -103,6 +112,9 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   // file path and the app id when save the window info.
   std::map<int32_t, std::pair<base::FilePath, std::string>>
       window_id_to_app_restore_info_;
+
+  // The current active user profile path.
+  base::FilePath active_profile_path_;
 
   // Timer used to delay the restore data writing to the full restore file.
   base::OneShotTimer save_timer_;

@@ -35,6 +35,7 @@ component("full_restore") {
     "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/mojom",
     "//components/sessions",
+    "//extensions/common:common_constants",
     "//ui/aura",
   ]
 }
