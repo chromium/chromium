@@ -20,11 +20,9 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
-
-// TODO: Remove these definitions when upgrading to an NDK that includes them.
-// They were copied from <malloc.h> in Bionic master.
+// TODO: Remove this definition by targeting version 22+ NDK at build time.
+// This was copied from <malloc.h> in Bionic master.
 extern "C" int mallopt(int __option, int __value) __attribute__((weak));
-#define M_PURGE -101
 #endif
 
 using testing::Le;
