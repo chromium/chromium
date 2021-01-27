@@ -54,6 +54,12 @@ GPURenderBundleEncoder::GPURenderBundleEncoder(
     WGPURenderBundleEncoder render_bundle_encoder)
     : DawnObject<WGPURenderBundleEncoder>(device, render_bundle_encoder) {}
 
+void GPURenderBundleEncoder::setBindGroup(uint32_t index,
+                                          GPUBindGroup* bindGroup) {
+  GetProcs().renderBundleEncoderSetBindGroup(
+      GetHandle(), index, bindGroup->GetHandle(), 0, nullptr);
+}
+
 void GPURenderBundleEncoder::setBindGroup(
     uint32_t index,
     GPUBindGroup* bindGroup,

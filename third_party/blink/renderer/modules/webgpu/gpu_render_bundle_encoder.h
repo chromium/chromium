@@ -33,6 +33,7 @@ class GPURenderBundleEncoder : public DawnObject<WGPURenderBundleEncoder>,
       WGPURenderBundleEncoder render_bundle_encoder);
 
   // gpu_render_bundle_encoder.idl
+  void setBindGroup(uint32_t index, GPUBindGroup* bindGroup);
   void setBindGroup(uint32_t index,
                     GPUBindGroup* bindGroup,
                     const Vector<uint32_t>& dynamicOffsets);

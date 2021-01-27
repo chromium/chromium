@@ -25,6 +25,7 @@ class GPUComputePassEncoder : public DawnObject<WGPUComputePassEncoder>,
                                  WGPUComputePassEncoder compute_pass_encoder);
 
   // gpu_compute_pass_encoder.idl
+  void setBindGroup(uint32_t index, GPUBindGroup* bindGroup);
   void setBindGroup(uint32_t index,
                     GPUBindGroup* bindGroup,
                     const Vector<uint32_t>& dynamicOffsets);

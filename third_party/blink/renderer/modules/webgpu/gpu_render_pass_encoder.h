@@ -29,6 +29,7 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
                                 WGPURenderPassEncoder render_pass_encoder);
 
   // gpu_render_pass_encoder.idl
+  void setBindGroup(uint32_t index, GPUBindGroup* bindGroup);
   void setBindGroup(uint32_t index,
                     GPUBindGroup* bindGroup,
                     const Vector<uint32_t>& dynamicOffsets);

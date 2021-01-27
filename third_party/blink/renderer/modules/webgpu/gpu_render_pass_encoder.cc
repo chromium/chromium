@@ -22,6 +22,12 @@ GPURenderPassEncoder::GPURenderPassEncoder(
     WGPURenderPassEncoder render_pass_encoder)
     : DawnObject<WGPURenderPassEncoder>(device, render_pass_encoder) {}
 
+void GPURenderPassEncoder::setBindGroup(uint32_t index,
+                                        GPUBindGroup* bindGroup) {
+  GetProcs().renderPassEncoderSetBindGroup(GetHandle(), index,
+                                           bindGroup->GetHandle(), 0, nullptr);
+}
+
 void GPURenderPassEncoder::setBindGroup(
     uint32_t index,
     GPUBindGroup* bindGroup,
