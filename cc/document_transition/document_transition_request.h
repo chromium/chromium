@@ -6,6 +6,7 @@
 #define CC_DOCUMENT_TRANSITION_DOCUMENT_TRANSITION_REQUEST_H_
 
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/callback.h"
@@ -47,6 +48,9 @@ class CC_EXPORT DocumentTransitionRequest {
   // would create a new sequence id for the directive, which means it would be
   // processed again by viz.
   viz::CompositorFrameTransitionDirective ConstructDirective() const;
+
+  // Testing / debugging functionality.
+  std::string ToString() const;
 
  private:
   using Type = viz::CompositorFrameTransitionDirective::Type;
