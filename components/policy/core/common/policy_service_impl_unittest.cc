@@ -1163,8 +1163,6 @@ TEST_F(PolicyServiceTest, DictionaryPoliciesMerging) {
                           POLICY_SOURCE_MERGED, std::move(result), nullptr);
   merged.AddConflictingPolicy(entry_dict_1.DeepCopy());
   merged.AddConflictingPolicy(entry_dict_2.DeepCopy());
-  merged.AddMessage(PolicyMap::MessageType::kWarning,
-                    IDS_POLICY_CONFLICT_DIFF_VALUE);
   expected_chrome.Set(key::kExtensionSettings, std::move(merged));
 
   provider0_.UpdatePolicy(std::move(policy_bundle1));
@@ -1218,8 +1216,6 @@ TEST_F(PolicyServiceTest, ListsPoliciesMerging) {
                           POLICY_SOURCE_MERGED, std::move(result), nullptr);
   merged.AddConflictingPolicy(entry_list_2.DeepCopy());
   merged.AddConflictingPolicy(entry_list_1.DeepCopy());
-  merged.AddMessage(PolicyMap::MessageType::kWarning,
-                    IDS_POLICY_CONFLICT_DIFF_VALUE);
   expected_chrome.Set(key::kExtensionInstallForcelist, std::move(merged));
 
   provider0_.UpdatePolicy(std::move(policy_bundle1));
@@ -1283,8 +1279,6 @@ TEST_F(PolicyServiceTest, GroupPoliciesMergingDisabledForCloudUsers) {
                           POLICY_SOURCE_MERGED, std::move(result), nullptr);
   merged.AddConflictingPolicy(entry_list_2.DeepCopy());
   merged.AddConflictingPolicy(entry_list_1.DeepCopy());
-  merged.AddMessage(PolicyMap::MessageType::kWarning,
-                    IDS_POLICY_CONFLICT_DIFF_VALUE);
   expected_chrome.Set(key::kExtensionInstallForcelist, merged.DeepCopy());
   expected_chrome.Set(key::kExtensionInstallBlocklist, std::move(merged));
   expected_chrome.Set(key::kExtensionInstallAllowlist, std::move(entry_list_3));
@@ -1352,8 +1346,6 @@ TEST_F(PolicyServiceTest, GroupPoliciesMergingEnabled) {
                           POLICY_SOURCE_MERGED, std::move(result), nullptr);
   merged.AddConflictingPolicy(entry_list_2.DeepCopy());
   merged.AddConflictingPolicy(entry_list_1.DeepCopy());
-  merged.AddMessage(PolicyMap::MessageType::kWarning,
-                    IDS_POLICY_CONFLICT_DIFF_VALUE);
   entry_list_3.SetIgnoredByPolicyAtomicGroup();
   expected_chrome.Set(key::kExtensionInstallForcelist, merged.DeepCopy());
   expected_chrome.Set(key::kExtensionInstallBlocklist, std::move(merged));

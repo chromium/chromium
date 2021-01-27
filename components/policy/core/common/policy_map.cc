@@ -152,7 +152,7 @@ void PolicyMap::Entry::AddConflictingPolicy(Entry&& conflict) {
 void PolicyMap::Entry::ClearConflicts() {
   conflicts.clear();
   ClearMessage(MessageType::kInfo, IDS_POLICY_CONFLICT_SAME_VALUE);
-  ClearMessage(MessageType::kError, IDS_POLICY_CONFLICT_DIFF_VALUE);
+  ClearMessage(MessageType::kWarning, IDS_POLICY_CONFLICT_DIFF_VALUE);
 }
 
 base::string16 PolicyMap::Entry::GetLocalizedMessages(
