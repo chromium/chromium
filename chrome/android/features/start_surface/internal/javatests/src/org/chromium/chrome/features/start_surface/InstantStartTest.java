@@ -762,6 +762,8 @@ public class InstantStartTest {
             "/exclude_mv_tiles/true" +
             "/show_last_active_tab_only/true" +
             "/show_stack_tab_switcher/true"})
+    @DisableIf.Build(message = "Flaky. See https://crbug.com/1170054",
+            sdk_is_less_than = Build.VERSION_CODES.O)
     public void renderSingleAsHomepageV2_PageInfoIconShown()
         throws IOException {
         // clang-format on
