@@ -117,10 +117,9 @@ public final class ProfileOAuth2TokenServiceDelegate
     @CalledByNative
     private void getAccessTokenFromNative(
             String accountEmail, String scope, final long nativeCallback) {
-        final Account account = accountEmail == null
-                ? null
-                : AccountUtils.findAccountByName(
-                        mAccountManagerFacade.tryGetGoogleAccounts(), accountEmail);
+        assert accountEmail != null : "Account email cannot be null!";
+        final Account account = AccountUtils.findAccountByName(
+                mAccountManagerFacade.tryGetGoogleAccounts(), accountEmail);
         if (account == null) {
             ThreadUtils.postOnUiThread(() -> {
                 ProfileOAuth2TokenServiceDelegateJni.get().onOAuth2TokenFetched(
