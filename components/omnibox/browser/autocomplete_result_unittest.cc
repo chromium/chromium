@@ -122,6 +122,9 @@ class AutocompleteResultTest : public testing::Test {
 
     // Suggestion Group ID for this suggeston
     base::Optional<int> suggestion_group_id;
+
+    // Inline autocompletion.
+    std::string inline_autocompletion;
   };
 
   AutocompleteResultTest() {
@@ -169,6 +172,13 @@ class AutocompleteResultTest : public testing::Test {
                                  size_t current_size,
                                  const TestData* expected,
                                  size_t expected_size);
+  void RunTransferOldMatchesTest(const TestData* last,
+                                 size_t last_size,
+                                 const TestData* current,
+                                 size_t current_size,
+                                 const TestData* expected,
+                                 size_t expected_size,
+                                 AutocompleteInput input);
 
   void SortMatchesAndVerifyOrder(
       const std::string& input_text,
@@ -205,6 +215,7 @@ void AutocompleteResultTest::PopulateAutocompleteMatch(
   match->allowed_to_be_default_match = data.allowed_to_be_default_match;
   match->duplicate_matches = data.duplicate_matches;
   match->suggestion_group_id = data.suggestion_group_id;
+  match->inline_autocompletion = base::UTF8ToUTF16(data.inline_autocompletion);
 }
 
 void AutocompleteResultTest::PopulateAutocompleteMatches(
@@ -240,6 +251,8 @@ void AutocompleteResultTest::AssertMatch(AutocompleteMatch match,
       << i;
   EXPECT_EQ(expected_match.destination_url.spec(), match.destination_url.spec())
       << i;
+  EXPECT_EQ(expected_match.inline_autocompletion, match.inline_autocompletion)
+      << i;
 }
 
 void AutocompleteResultTest::RunTransferOldMatchesTest(const TestData* last,
@@ -251,7 +264,18 @@ void AutocompleteResultTest::RunTransferOldMatchesTest(const TestData* last,
   AutocompleteInput input(base::ASCIIToUTF16("a"),
                           metrics::OmniboxEventProto::OTHER,
                           TestSchemeClassifier());
+  RunTransferOldMatchesTest(last, last_size, current, current_size, expected,
+                            expected_size, input);
+}
 
+void AutocompleteResultTest::RunTransferOldMatchesTest(
+    const TestData* last,
+    size_t last_size,
+    const TestData* current,
+    size_t current_size,
+    const TestData* expected,
+    size_t expected_size,
+    AutocompleteInput input) {
   ACMatches last_matches;
   PopulateAutocompleteMatches(last, last_size, &last_matches);
   AutocompleteResult last_result;
@@ -436,6 +460,141 @@ TEST_F(AutocompleteResultTest, TransferOldMatchesAllowedToBeDefault) {
   ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(
       last, base::size(last), current, base::size(current), result,
       base::size(result)));
+}
+
+// Tests |TransferOldMatches()| with an |AutocompleteInput| with
+// |prevent_inline_autocomplete| set to true. Noteworthy, expect that resulting
+// matches must have effectively empty autocompletions; i.e. either empty
+// |inline_autocompletion|, or false |allowed_to_be_default|. Tests all 12
+// combinations of 1) last match has a lower or higher relevance than current
+// match, 2) last match was allowed to be default, 3) last match had
+// autocompletion (only possible if its allowed to be default), and 4) current
+// match is allowed to be default.
+TEST_F(AutocompleteResultTest,
+       TransferOldMatchesAllowedToBeDefaultWithPreventInlineAutocompletion) {
+  AutocompleteInput input(base::ASCIIToUTF16("a"),
+                          metrics::OmniboxEventProto::OTHER,
+                          TestSchemeClassifier());
+  input.set_prevent_inline_autocomplete(true);
+
+  {
+    SCOPED_TRACE(
+        "Current matches not allowed to be default and scored higher.");
+    // 1) |allowed_to_be_default| should be true only for |last| matches without
+    // autocompletion.
+    // 2) When |allowed_to_be_default| is false, |current| matches should be
+    // preferred as they're scored higher.
+    // clang-format off
+    TestData last[] = {
+        {0, 1, 1020, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, {}, "autocompletion"},
+        {1, 1, 1010, true},
+        {2, 1, 1000, false},
+    };
+    TestData current[] = {
+        {0, 2, 1520, false},
+        {1, 2, 1510, false},
+        {2, 2, 1500, false},
+    };
+    TestData result[] = {
+        {1, 1, 1510, true},
+        {0, 2, 1520, false},
+        {2, 1, 1500, true},
+    };
+    // clang-format on
+
+    ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(
+        last, base::size(last), current, base::size(current), result,
+        base::size(result), input));
+  }
+
+  {
+    SCOPED_TRACE("Current matches not allowed to be default and scored lower.");
+    // Similar to above, except |last| matches should be preferred in deduping
+    // as they're scored higher.
+    // clang-format off
+    TestData last[] = {
+        {0, 1, 1020, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, {}, "autocompletion"},
+        {1, 1, 1010, true},
+        {2, 1, 1000, false},
+    };
+    TestData current[] = {
+        // Need a high-scoring current match to avoid demoting last matches.
+        {3, 2, 1500, false},
+        {0, 2, 520, false},
+        {1, 2, 510, false},
+        {2, 2, 500, false},
+    };
+    TestData result[] = {
+        {1, 1, 1010, true},
+        {3, 2, 1500, false},
+        {0, 1, 1020, false, {}, AutocompleteMatchType::SEARCH_SUGGEST, {}, "autocompletion"},
+        {2, 1, 1000, true},
+    };
+    // clang-format on
+
+    ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(
+        last, base::size(last), current, base::size(current), result,
+        base::size(result), input));
+  }
+
+  {
+    SCOPED_TRACE("Current matches allowed to be default and scored higher.");
+    // Deduping should prefer the |current| matches as they're both allowed to
+    // be default and scored higher.
+    // clang-format off
+    TestData last[] = {
+        {0, 1, 1020, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, {}, "autocompletion"},
+        {1, 1, 1010, true},
+        {2, 1, 1000, false},
+    };
+    TestData current[] = {
+        {0, 2, 1520, true},
+        {1, 2, 1510, true},
+        {2, 2, 1500, true},
+    };
+    TestData result[] = {
+        {0, 2, 1520, true},
+        {1, 2, 1510, true},
+        {2, 2, 1500, true},
+    };
+    // clang-format on
+
+    ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(
+        last, base::size(last), current, base::size(current), result,
+        base::size(result), input));
+  }
+
+  {
+    SCOPED_TRACE("Current matches allowed to be default and scored lower.");
+    // |last| matches with empty autocompletion should be made allowed to be
+    // default and preferred in deduping as they're scored higher. Otherwise,
+    // |current| matches should be preferred in deduping as they're allowed to
+    // be default.
+    // clang-format off
+    TestData last[] = {
+        {0, 1, 1020, true, {}, AutocompleteMatchType::SEARCH_SUGGEST, {}, "autocompletion"},
+        {1, 1, 1010, true},
+        {2, 1, 1000, false},
+    };
+    TestData current[] = {
+        // Need a high-scoring current match to avoid demoting last matches.
+        {3, 2, 1500, true},
+        {0, 2, 520, true},
+        {1, 2, 510, true},
+        {2, 2, 500, true},
+    };
+    TestData result[] = {
+        {3, 2, 1500, true},
+        {0, 2, 1020, true},
+        {1, 1, 1010, true},
+        {2, 1, 1000, true},
+    };
+    // clang-format on
+
+    ASSERT_NO_FATAL_FAILURE(RunTransferOldMatchesTest(
+        last, base::size(last), current, base::size(current), result,
+        base::size(result), input));
+  }
 }
 
 // Tests that matches are copied correctly from two distinct providers.

@@ -171,6 +171,17 @@ void AutocompleteResult::TransferOldMatches(
     MergeMatchesByProvider(&pair.second, matches_per_provider[pair.first]);
   }
 
+  // Make sure previous matches adhere to |input.prevent_inline_autocomplete()|.
+  // Previous matches are demoted in |MergeMatchesByProvider()| anyways, making
+  // them unlikely to be default; however, without this safeguard, they may
+  // still be deduped with a higher-relevance yet not-allowed-to-be-default
+  // match later, resulting in a default match with autocompletion when
+  // |prevent_inline_autocomplete| is false.
+  for (auto& m : matches_) {
+    if (input.prevent_inline_autocomplete() && m.from_previous)
+      m.SetAllowedToBeDefault(input);
+  }
+
   SortAndCull(input, template_url_service);
 }
 
