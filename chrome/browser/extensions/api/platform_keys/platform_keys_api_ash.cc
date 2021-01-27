@@ -222,9 +222,9 @@ PlatformKeysInternalSelectClientCertificatesFunction::Run() {
   service->SelectClientCertificates(
       request, std::move(client_certs), params->details.interactive,
       extension_id(),
-      base::Bind(&PlatformKeysInternalSelectClientCertificatesFunction::
-                     OnSelectedCertificates,
-                 this),
+      base::BindOnce(&PlatformKeysInternalSelectClientCertificatesFunction::
+                         OnSelectedCertificates,
+                     this),
       web_contents);
   return RespondLater();
 }
@@ -302,7 +302,7 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
         std::string(params->data.begin(), params->data.end()),
         std::string(params->public_key.begin(), params->public_key.end()),
         extension_id(),
-        base::Bind(&PlatformKeysInternalSignFunction::OnSigned, this));
+        base::BindOnce(&PlatformKeysInternalSignFunction::OnSigned, this));
   } else {
     chromeos::platform_keys::HashAlgorithm hash_algorithm;
     if (params->hash_algorithm_name == "SHA-1") {
@@ -333,7 +333,7 @@ ExtensionFunction::ResponseAction PlatformKeysInternalSignFunction::Run() {
         std::string(params->data.begin(), params->data.end()),
         std::string(params->public_key.begin(), params->public_key.end()),
         key_type, hash_algorithm, extension_id(),
-        base::Bind(&PlatformKeysInternalSignFunction::OnSigned, this));
+        base::BindOnce(&PlatformKeysInternalSignFunction::OnSigned, this));
   }
 
   return RespondLater();
@@ -365,9 +365,9 @@ PlatformKeysVerifyTLSServerCertificateFunction::Run() {
   VerifyTrustAPI::GetFactoryInstance()
       ->Get(browser_context())
       ->Verify(std::move(params), extension_id(),
-               base::Bind(&PlatformKeysVerifyTLSServerCertificateFunction::
-                              FinishedVerification,
-                          this));
+               base::BindOnce(&PlatformKeysVerifyTLSServerCertificateFunction::
+                                  FinishedVerification,
+                              this));
 
   return RespondLater();
 }
