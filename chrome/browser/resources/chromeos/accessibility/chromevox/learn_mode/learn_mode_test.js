@@ -20,19 +20,23 @@ ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
   }
 
   runOnLearnModePage(callback) {
+    callback = this.newCallback(callback);
     const mockFeedback = this.createMockFeedback();
     chrome.automation.getDesktop((desktop) => {
-      desktop.addEventListener(
-          chrome.automation.EventType.LOAD_COMPLETE, (evt) => {
-            if (evt.target.docUrl.indexOf('learn_mode/kbexplorer.html') ===
-                    -1 ||
-                !evt.target.docLoaded) {
-              return;
-            }
+      function listener(evt) {
+        if (evt.target.docUrl.indexOf('learn_mode/kbexplorer.html') === -1 ||
+            !evt.target.docLoaded) {
+          return;
+        }
+        desktop.removeEventListener(
+            chrome.automation.EventType.LOAD_COMPLETE, listener);
 
-            mockFeedback.expectSpeech(/Press a qwerty key/);
-            callback(mockFeedback, evt);
-          });
+        mockFeedback.expectSpeech(/Press a qwerty key/);
+        callback(mockFeedback, evt);
+      }
+
+      desktop.addEventListener(
+          chrome.automation.EventType.LOAD_COMPLETE, listener);
       CommandHandler.onCommand('showKbExplorerPage');
     });
   }

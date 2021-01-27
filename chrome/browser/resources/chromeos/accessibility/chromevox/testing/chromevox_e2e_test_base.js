@@ -38,8 +38,9 @@ ChromeVoxE2ETest = class extends E2ETestBase {
             base::Unretained(AccessibilityManager::Get()),
             true);
       `);
-    // TODO(accessibility): fix errors and enable fail on console errors.
+
     super.testGenPreambleCommon(
-        'kChromeVoxExtensionId', false /* don't fail on console error */);
+        'kChromeVoxExtensionId', ChromeVoxE2ETest.prototype.failOnConsoleError);
   }
 };
+ChromeVoxE2ETest.prototype.failOnConsoleError = true;

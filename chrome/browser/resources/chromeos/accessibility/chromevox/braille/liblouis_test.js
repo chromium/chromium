@@ -21,6 +21,9 @@ ChromeVoxLibLouisTest = class extends ChromeVoxE2ETest {
     liblouis.getTranslator(tableNames, this.newCallback(callback));
   }
 };
+// TODO(accessibility): The native LibLouis wasm emits errors.
+// See https://crbug.com/1170991.
+ChromeVoxE2ETest.prototype.failOnConsoleError = false;
 
 
 function assertEqualsUint8Array(expected, actual) {

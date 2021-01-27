@@ -109,7 +109,7 @@ MockFeedback = class {
    * to collect feedback.
    */
   install() {
-    assertFalse(this.replaying_);
+    assertFalse(this.replaying_, 'install: Should not already be replaying.');
 
     const MockTts = function() {};
     MockTts.prototype = {
@@ -160,7 +160,8 @@ MockFeedback = class {
    * @return {MockFeedback} |this| for chaining
    */
   expectSpeech() {
-    assertFalse(this.replaying_);
+    assertFalse(
+        this.replaying_, 'expectSpeech: Should not already be replaying.');
     Array.prototype.forEach.call(arguments, function(text) {
       this.pendingActions_.push({
         perform: function() {
@@ -232,7 +233,9 @@ MockFeedback = class {
    * @return {MockFeedback} |this| for chaining
    */
   expectSpeechWithProperties(expectedProps, ...rest) {
-    assertFalse(this.replaying_);
+    assertFalse(
+        this.replaying_,
+        'expectSpeechWithProperties: Should not already be replaying.');
     Array.prototype.forEach.call(rest, function(text) {
       this.pendingActions_.push({
         perform: function() {
@@ -261,7 +264,9 @@ MockFeedback = class {
    * @return {MockFeedback} |this| for chaining
    */
   expectNextSpeechUtteranceIsNot() {
-    assertFalse(this.replaying_);
+    assertFalse(
+        this.replaying_,
+        'expectNextSpeechUtteranceIsNot: Should not already be replaying.');
     Array.prototype.forEach.call(arguments, function(text) {
       this.pendingActions_.push({
         perform: function() {
@@ -290,7 +295,8 @@ MockFeedback = class {
    * @return {MockFeedback} |this| for chaining
    */
   expectBraille(text, opt_props) {
-    assertFalse(this.replaying_);
+    assertFalse(
+        this.replaying_, 'expectBraille: Should not already be replaying.');
     const props = opt_props || {};
     this.pendingActions_.push({
       perform: function() {
@@ -314,7 +320,8 @@ MockFeedback = class {
    * @return {MockFeedback} |this| for chaining
    */
   expectEarcon(earconName, opt_props) {
-    assertFalse(this.replaying_);
+    assertFalse(
+        this.replaying_, 'expectEarcon: Should not already be replaying.');
     this.pendingActions_.push({
       perform: function() {
         const match =
@@ -336,7 +343,7 @@ MockFeedback = class {
    * @return {MockFeedback} |this| for chaining
    */
   call(callback) {
-    assertFalse(this.replaying_);
+    assertFalse(this.replaying_, 'call: Should not already be replaying.');
     this.pendingActions_.push({
       perform() {
         callback();
@@ -374,7 +381,7 @@ MockFeedback = class {
    * @return {!Promise} Mandatory to await on if used in async functions.
    */
   replay() {
-    assertFalse(this.replaying_);
+    assertFalse(this.replaying_, 'replay: Should not already be replaying.');
     this.replaying_ = true;
 
     const promise = new Promise((resolve, reject) => {
@@ -394,7 +401,8 @@ MockFeedback = class {
    * @type {NavBraille}
    */
   get lastMatchedBraille() {
-    assertTrue(this.replaying_);
+    assertTrue(
+        this.replaying_, 'Should already be replaying when getting braille.');
     return this.lastMatchedBraille_;
   }
 
