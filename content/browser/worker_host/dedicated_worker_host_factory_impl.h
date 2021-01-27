@@ -40,6 +40,7 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
       const blink::DedicatedWorkerToken& token,
       mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker>
           broker_receiver,
+      mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host_receiver,
       base::OnceCallback<void(const network::CrossOriginEmbedderPolicy&)>
           callback) override;
 
@@ -52,7 +53,9 @@ class CONTENT_EXPORT DedicatedWorkerHostFactoryImpl
           outside_fetch_client_settings_object,
       mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
       mojo::PendingRemote<blink::mojom::DedicatedWorkerHostFactoryClient>
-          client) override;
+          client,
+      mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host_receiver)
+      override;
 
  private:
   // The ID of the RenderProcessHost where the worker will live.

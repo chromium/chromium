@@ -46,7 +46,7 @@ void DedicatedWorkerHostFactoryClient::CreateWorkerHostDeprecated(
   factory_->CreateWorkerHost(
       dedicated_worker_token,
       browser_interface_broker.InitWithNewPipeAndPassReceiver(),
-      std::move(callback));
+      remote_host_.BindNewPipeAndPassReceiver(), std::move(callback));
   OnWorkerHostCreated(std::move(browser_interface_broker));
 }
 
@@ -61,7 +61,8 @@ void DedicatedWorkerHostFactoryClient::CreateWorkerHost(
   factory_->CreateWorkerHostAndStartScriptLoad(
       dedicated_worker_token, script_url, credentials_mode,
       FetchClientSettingsObjectFromWebToMojom(fetch_client_settings_object),
-      std::move(blob_url_token), receiver_.BindNewPipeAndPassRemote());
+      std::move(blob_url_token), receiver_.BindNewPipeAndPassRemote(),
+      remote_host_.BindNewPipeAndPassReceiver());
 }
 
 scoped_refptr<blink::WebWorkerFetchContext>

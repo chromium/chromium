@@ -193,6 +193,7 @@ mojom("mojom_platform") {
     "widget/screen_orientation.mojom",
     "widget/visual_properties.mojom",
     "window_features/window_features.mojom",
+    "worker/dedicated_worker_host.mojom",
     "worker/shared_worker_client.mojom",
     "worker/shared_worker_creation_context_type.mojom",
     "worker/shared_worker_host.mojom",

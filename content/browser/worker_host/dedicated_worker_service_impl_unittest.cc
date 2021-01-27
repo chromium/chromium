@@ -55,11 +55,13 @@ class MockDedicatedWorker
           /*script_url=*/GURL(), network::mojom::CredentialsMode::kSameOrigin,
           blink::mojom::FetchClientSettingsObject::New(),
           mojo::PendingRemote<blink::mojom::BlobURLToken>(),
-          receiver_.BindNewPipeAndPassRemote());
+          receiver_.BindNewPipeAndPassRemote(),
+          remote_host_.BindNewPipeAndPassReceiver());
     } else {
       factory_->CreateWorkerHost(
           blink::DedicatedWorkerToken(),
           browser_interface_broker_.BindNewPipeAndPassReceiver(),
+          remote_host_.BindNewPipeAndPassReceiver(),
           base::BindOnce([](const network::CrossOriginEmbedderPolicy&) {}));
     }
   }
@@ -96,6 +98,7 @@ class MockDedicatedWorker
   mojo::Remote<blink::mojom::DedicatedWorkerHostFactory> factory_;
 
   mojo::Remote<blink::mojom::BrowserInterfaceBroker> browser_interface_broker_;
+  mojo::Remote<blink::mojom::DedicatedWorkerHost> remote_host_;
 };
 
 class DedicatedWorkerServiceImplTest

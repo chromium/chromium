@@ -28,6 +28,7 @@
 #include "third_party/blink/public/mojom/wake_lock/wake_lock.mojom-forward.h"
 #include "third_party/blink/public/mojom/websockets/websocket_connector.mojom-forward.h"
 #include "third_party/blink/public/mojom/webtransport/quic_transport_connector.mojom-forward.h"
+#include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom.h"
 #include "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom.h"
 #include "url/origin.h"
@@ -47,7 +48,8 @@ class StoragePartitionImpl;
 // A host for a single dedicated worker. It deletes itself upon Mojo
 // disconnection from the worker in the renderer or when the RenderProcessHost
 // of the worker is destroyed. This lives on the UI thread.
-class DedicatedWorkerHost final : public RenderProcessHostObserver {
+class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
+                                  public RenderProcessHostObserver {
  public:
   DedicatedWorkerHost(
       DedicatedWorkerServiceImpl* service,
@@ -60,7 +62,8 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
       const net::IsolationInfo& isolation_info,
       const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
-          coep_reporter);
+          coep_reporter,
+      mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host);
   ~DedicatedWorkerHost() final;
 
   void BindBrowserInterfaceBrokerReceiver(
@@ -228,6 +231,7 @@ class DedicatedWorkerHost final : public RenderProcessHostObserver {
       this};
   mojo::Receiver<blink::mojom::BrowserInterfaceBroker> broker_receiver_{
       &broker_};
+  mojo::Receiver<blink::mojom::DedicatedWorkerHost> host_receiver_;
 
   // Indicates if subresource loaders of this worker support file URLs.
   bool file_url_support_ = false;

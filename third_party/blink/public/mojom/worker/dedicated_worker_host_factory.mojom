@@ -11,6 +11,7 @@ import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom";
 import "third_party/blink/public/mojom/worker/subresource_loader_updater.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
+import "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom";
 import "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
 import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
@@ -77,7 +78,8 @@ interface DedicatedWorkerHostFactory {
   CreateWorkerHost(
       blink.mojom.DedicatedWorkerToken token,
       pending_receiver<blink.mojom.BrowserInterfaceBroker>
-          browser_interface_broker) =>
+          browser_interface_broker,
+      pending_receiver<DedicatedWorkerHost> host) =>
     (network.mojom.CrossOriginEmbedderPolicy parent_coep);
 
   // PlzDedicatedWorker:
@@ -97,5 +99,6 @@ interface DedicatedWorkerHostFactory {
       blink.mojom.FetchClientSettingsObject
           outside_fetch_client_settings_object,
       pending_remote<blink.mojom.BlobURLToken>? blob_url_token,
-      pending_remote<DedicatedWorkerHostFactoryClient> client);
+      pending_remote<DedicatedWorkerHostFactoryClient> client,
+      pending_receiver<DedicatedWorkerHost> host);
 };

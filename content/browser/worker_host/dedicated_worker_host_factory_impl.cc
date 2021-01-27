@@ -63,6 +63,7 @@ DedicatedWorkerHostFactoryImpl::~DedicatedWorkerHostFactoryImpl() = default;
 void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
     const blink::DedicatedWorkerToken& token,
     mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> broker_receiver,
+    mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host_receiver,
     base::OnceCallback<void(const network::CrossOriginEmbedderPolicy&)>
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -97,7 +98,8 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHost(
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_render_frame_host_id_,
       creator_worker_token_, ancestor_render_frame_host_id_, creator_origin_,
-      isolation_info_, cross_origin_embedder_policy_, std::move(coep_reporter));
+      isolation_info_, cross_origin_embedder_policy_, std::move(coep_reporter),
+      std::move(host_receiver));
   host->BindBrowserInterfaceBrokerReceiver(std::move(broker_receiver));
 }
 
@@ -109,8 +111,8 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
     mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
-    mojo::PendingRemote<blink::mojom::DedicatedWorkerHostFactoryClient>
-        client) {
+    mojo::PendingRemote<blink::mojom::DedicatedWorkerHostFactoryClient> client,
+    mojo::PendingReceiver<blink::mojom::DedicatedWorkerHost> host_receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
     mojo::ReportBadMessage("DWH_BROWSER_SCRIPT_FETCH_DISABLED");
@@ -139,7 +141,8 @@ void DedicatedWorkerHostFactoryImpl::CreateWorkerHostAndStartScriptLoad(
   auto* host = new DedicatedWorkerHost(
       service, token, worker_process_host, creator_render_frame_host_id_,
       creator_worker_token_, ancestor_render_frame_host_id_, creator_origin_,
-      isolation_info_, cross_origin_embedder_policy_, std::move(coep_reporter));
+      isolation_info_, cross_origin_embedder_policy_, std::move(coep_reporter),
+      std::move(host_receiver));
   mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> broker;
   host->BindBrowserInterfaceBrokerReceiver(
       broker.InitWithNewPipeAndPassReceiver());
