@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">Dispositivo USB-C (porta frontal)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> alterado para <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Clique em confirmar para manter as alterações. As definições anteriores serão restauradas dentro de <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">O dispositivo Bluetooth "<ph name="DEVICE_NAME" />" necessita de autorização para sincronizar. Introduza este código PIN nesse dispositivo: <ph name="PINCODE" /></translation>
+<translation id="1024261588257374085">Captura de ecrã parcial selecionada</translation>
 <translation id="1032891413405719768">A pilha da caneta stylus está fraca</translation>
 <translation id="1036672894875463507">Sou a sua Assistente Google e estou aqui para ajudar ao longo do seu dia!
 Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> adicionado</translation>
+<translation id="1047017786576569492">parcial</translation>
 <translation id="1047773237499189053">Nova funcionalidade disponível, utilize a tecla da seta para cima para saber mais.</translation>
 <translation id="1056775291175587022">Nenhuma rede</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1195412055398077112">overscan</translation>
 <translation id="119944043368869598">Limpar tudo</translation>
 <translation id="1199716647557067911">Tem a certeza de que pretende desativar o acesso por comutador?</translation>
+<translation id="1210557957257435379">gravação de ecrã</translation>
 <translation id="121097972571826261">Avançar por palavra</translation>
 <translation id="1225748608451425081">O seu Chromebook está bloqueado devido a um problema conhecido. Poderá iniciar sessão dentro de <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Parar seleção</translation>
@@ -112,6 +115,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1923539912171292317">Cliques automáticos</translation>
 <translation id="1928739107511554905">Para obter a atualização, utilize o ecrã tátil para reiniciar o Chromebook com o teclado ligado.</translation>
 <translation id="1951012854035635156">Assistente</translation>
+<translation id="1954252331066828794">Gravação de ecrã concluída</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Definir o idioma</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -203,6 +207,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2727175239389218057">Responder</translation>
 <translation id="2727977024730340865">Ligado a um carregador de baixo consumo. O carregamento da bateria pode não ser fiável.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gerido por <ph name="MANAGER" /></translation>
+<translation id="2782591952652094792">Sair do modo de captura</translation>
 <translation id="2792498699870441125">Alt + Pesquisar</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
 <translation id="2819276065543622893">A sessão será terminada agora.</translation>
@@ -228,6 +233,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="2996462380875591307">Lupa ancorada ativada. Prima Ctrl + Pesquisa + D novamente para a desativar.</translation>
 <translation id="3000461861112256445">Áudio mono</translation>
 <translation id="3009178788565917040">Saída</translation>
+<translation id="3017687597151988916">Área de seleção definida para a janela</translation>
 <translation id="3033545621352269033">Ativada</translation>
 <translation id="3036649622769666520">Abrir ficheiros</translation>
 <translation id="3038571455154067151">Para iniciar sessão, introduza o código de acesso parental do Family Link</translation>
@@ -271,6 +277,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> pode iniciar sessão mais tarde.</translation>
 <translation id="3321628682574733415">Código parental incorreto</translation>
 <translation id="332587331255250389">Substitua a bateria</translation>
+<translation id="3341303451326249809">Captura de ecrã efetuada</translation>
 <translation id="334252345105450327">Tira uma captura de ecrã</translation>
 <translation id="3351879221545518001">Está a transmitir atualmente o ecrã.</translation>
 <translation id="3364721542077212959">Ferramentas da caneta stylus</translation>
@@ -359,6 +366,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="4072264167173457037">Sinal médio</translation>
 <translation id="4112140312785995938">Procurar para trás</translation>
 <translation id="4114315158543974537">Ative o Centro do telemóvel</translation>
+<translation id="412298498316631026">janela</translation>
 <translation id="4129129681837227511">Para ver notificações no ecrã de bloqueio, desbloqueie o mesmo para alterar a definição</translation>
 <translation id="4146833061457621061">Tocar música</translation>
 <translation id="4157822100366708405">Definições do tema escuro</translation>
@@ -631,6 +639,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="6570902864550063460">A carregar através de USB…</translation>
 <translation id="6585808820553845416">A sessão termina em <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidade do sinal: <ph name="SIGNAL_STRENGTH" />, gerida pelo administrador</translation>
+<translation id="6612802754306526077">Modo de gravação de ecrã selecionado</translation>
 <translation id="6614169507485700968">O ecrã de privacidade está ligado</translation>
 <translation id="6627638273713273709">Pesquisar+Shift+K</translation>
 <translation id="6637729079642709226">Altere a hora</translation>
@@ -689,6 +698,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="7076293881109082629">Iniciar sessão</translation>
 <translation id="7088960765736518739">Acesso por comutador</translation>
 <translation id="7098389117866926363">Dispositivo USB-C (porta traseira esquerda)</translation>
+<translation id="7118268675952955085">captura de ecrã</translation>
 <translation id="7131634465328662194">A sessão será terminada automaticamente.</translation>
 <translation id="7143207342074048698">A ligar</translation>
 <translation id="7144878232160441200">Tentar novamente</translation>
@@ -721,12 +731,15 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="742608627846767349">Bom dia,</translation>
 <translation id="743058460480092004">A câmara e o microfone estão a ser utilizados.</translation>
 <translation id="7452560014878697800">Uma aplicação está a utilizar a sua câmara.</translation>
+<translation id="7456049842111127849">Modo de captura, a predefinição é <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Fixar</translation>
 <translation id="746232733191930409">Modo de gravação de ecrã</translation>
 <translation id="7466449121337984263">Toque no sensor.</translation>
 <translation id="7477793887173910789">Controle a sua música, vídeos e muito mais.</translation>
+<translation id="7483025031359818980">Área de seleção definida para ecrã inteiro</translation>
 <translation id="7497767806359279797">Escolher idioma e teclado</translation>
 <translation id="7509246181739783082">Valide a sua identidade</translation>
+<translation id="7513622367902644023">Modo de captura de ecrã selecionado</translation>
 <translation id="7526573455193969409">A rede pode ser monitorizada</translation>
 <translation id="7536035074519304529">Endereço IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Hora de dormir</translation>
@@ -832,6 +845,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8388750414311082622">Não é possível remover o último espaço de trabalho.</translation>
 <translation id="8394567579869570560">Os teus pais bloquearam este dispositivo</translation>
 <translation id="8412677897383510995">Mostrar definições de visualização</translation>
+<translation id="8413272770729657668">A gravação vai começar em 3, 2, 1</translation>
 <translation id="8425213833346101688">Alterar</translation>
 <translation id="8426708595819210923">Boa noite, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">A introdução por voz envia a sua voz para o Google para permitir a digitação por voz em qualquer campo de texto.</translation>
@@ -910,6 +924,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="8990809378771970590">A utilizar <ph name="IME_NAME" />…</translation>
 <translation id="899350903320462459">Desbloqueie o dispositivo como <ph name="LOGIN_ID" /> para realizar a ação de notificação.</translation>
 <translation id="9017320285115481645">Introduza o código de acesso parental do Family Link.</translation>
+<translation id="9024331582947483881">ecrã inteiro</translation>
 <translation id="9047624247355796468">Abrir as definições de <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">O dispositivo voltará à versão anterior</translation>
 <translation id="9063800855227801443">Não é possível capturar conteúdo confidencial</translation>

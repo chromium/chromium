@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">Peranti USB-C (port depan)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> diubah kepada <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik sahkan untuk menyimpan perubahan. Tetapan terdahulu akan dipulihkan dalam masa <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Peranti Bluetooth "<ph name="DEVICE_NAME" />" ingin kebenaran untuk berpasangan. Sila masukkan kod PIN ini pada peranti tersebut: <ph name="PINCODE" /></translation>
+<translation id="1024261588257374085">Tangkapan skrin separa dipilih</translation>
 <translation id="1032891413405719768">Bateri stilus lemah</translation>
 <translation id="1036672894875463507">Saya Google Assistant anda. Saya sedia membantu anda sepanjang hari anda!
 Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ditambahkan</translation>
+<translation id="1047017786576569492">separa</translation>
 <translation id="1047773237499189053">Ciri baharu tersedia, gunakan kekunci Anak panah ke atas untuk mengetahui lebih lanjut.</translation>
 <translation id="1056775291175587022">0 rangkaian</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1195412055398077112">imbas lampau</translation>
 <translation id="119944043368869598">Kosongkan semua</translation>
 <translation id="1199716647557067911">Adakah anda pasti mahu mematikan Akses Suis?</translation>
+<translation id="1210557957257435379">rakaman skrin</translation>
 <translation id="121097972571826261">Maju satu perkataan</translation>
 <translation id="1225748608451425081">Chromebook anda dikunci kerana isu yang diketahui. Anda akan dapat log masuk selepas: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Berhenti memilih</translation>
@@ -112,6 +115,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1923539912171292317">Klik automatik</translation>
 <translation id="1928739107511554905">Untuk mendapatkan kemas kini, gunakan skrin sentuh untuk memulakan semula Chromebook anda dengan papan kekunci yang dipasang.</translation>
 <translation id="1951012854035635156">Pembantu</translation>
+<translation id="1954252331066828794">Rakaman skrin selesai</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Tetapkan bahasa anda</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -203,6 +207,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2727175239389218057">Balas</translation>
 <translation id="2727977024730340865">Dipalamkan pada pengecas berkuasa rendah. Pengecasan bateri mungkin tidak boleh diharapkan.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> diurus oleh <ph name="MANAGER" /></translation>
+<translation id="2782591952652094792">Keluar daripada mod tangkap</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2814448776515246190">Tangkapan separa</translation>
 <translation id="2819276065543622893">Anda akan dilog keluar sekarang.</translation>
@@ -228,6 +233,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="2996462380875591307">Penggadang Didok didayakan. Tekan Ctrl+Cari+D semula untuk mematikannya.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Output</translation>
+<translation id="3017687597151988916">Kawasan pilihan ditetapkan kepada tetingkap</translation>
 <translation id="3033545621352269033">Dihidupkan</translation>
 <translation id="3036649622769666520">Buka Fail</translation>
 <translation id="3038571455154067151">Untuk log masuk, masukkan kod akses ibu bapa Family Link anda</translation>
@@ -271,6 +277,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> masih dapat log masuk nanti.</translation>
 <translation id="3321628682574733415">Kod ibu bapa salah</translation>
 <translation id="332587331255250389">Sila gantikan bateri</translation>
+<translation id="3341303451326249809">Tangkapan skrin ditangkap</translation>
 <translation id="334252345105450327">Ambil tangkapan skrin</translation>
 <translation id="3351879221545518001">Anda sedang menghantar skrin.</translation>
 <translation id="3364721542077212959">Alatan stilus</translation>
@@ -360,6 +367,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4072264167173457037">Isyarat sederhana</translation>
 <translation id="4112140312785995938">Cari Ke Belakang</translation>
 <translation id="4114315158543974537">Hidupkan Hab Telefon</translation>
+<translation id="412298498316631026">tetingkap</translation>
 <translation id="4129129681837227511">Untuk melihat pemberitahuan pada skrin kunci anda, buka kunci untuk menukar tetapan</translation>
 <translation id="4146833061457621061">Mainkan muzik</translation>
 <translation id="4157822100366708405">Tetapan Tema Gelap</translation>
@@ -632,6 +640,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="6570902864550063460">Mengecas melalui USB</translation>
 <translation id="6585808820553845416">Sesi berakhir dalam <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Kekuatan Isyarat <ph name="SIGNAL_STRENGTH" />, Diurus oleh Pentadbir anda</translation>
+<translation id="6612802754306526077">Mod rakaman skrin dipilih</translation>
 <translation id="6614169507485700968">Skrin privasi dihidupkan</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6637729079642709226">Tukar masa</translation>
@@ -690,6 +699,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="7076293881109082629">Melog masuk</translation>
 <translation id="7088960765736518739">Akses Suis</translation>
 <translation id="7098389117866926363">Peranti USB-C (port kiri di belakang)</translation>
+<translation id="7118268675952955085">tangkapan skrin</translation>
 <translation id="7131634465328662194">Anda akan dilog keluar secara automatik.</translation>
 <translation id="7143207342074048698">Menyambung</translation>
 <translation id="7144878232160441200">Cuba semula</translation>
@@ -722,12 +732,15 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="742608627846767349">Selamat pagi,</translation>
 <translation id="743058460480092004">Kamera dan mikrofon sedang digunakan.</translation>
 <translation id="7452560014878697800">Satu aplikasi sedang menggunakan kamera anda</translation>
+<translation id="7456049842111127849">Mod Tangkap, pilihan lalai ialah <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">Mod rakaman skrin</translation>
 <translation id="7466449121337984263">Sila sentuh penderia</translation>
 <translation id="7477793887173910789">Kawal muzik, video anda dan banyak lagi</translation>
+<translation id="7483025031359818980">Kawasan pilihan ditetapkan kepada skrin penuh</translation>
 <translation id="7497767806359279797">Pilih bahasa dan papan kekunci</translation>
 <translation id="7509246181739783082">Sahkan identiti anda</translation>
+<translation id="7513622367902644023">Mod tangkapan skrin dipilih</translation>
 <translation id="7526573455193969409">Rangkaian mungkin dipantau</translation>
 <translation id="7536035074519304529">Alamat IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Masa untuk tidur</translation>
@@ -833,6 +846,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8388750414311082622">Meja terakhir tidak boleh dialih keluar.</translation>
 <translation id="8394567579869570560">Ibu/bapa anda mengunci peranti ini</translation>
 <translation id="8412677897383510995">Tunjukkan tetapan paparan</translation>
+<translation id="8413272770729657668">Rakaman akan bermula dalam masa 3, 2, 1</translation>
 <translation id="8425213833346101688">Tukar</translation>
 <translation id="8426708595819210923">Selamat petang <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">Pengimlakan menghantar suara anda kepada Google untuk membolehkan penaipan suara dalam mana-mana medan teks.</translation>
@@ -911,6 +925,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="8990809378771970590">Menggunakan <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Buka kunci peranti sebagai <ph name="LOGIN_ID" /> untuk melaksanakan tindakan pemberitahuan</translation>
 <translation id="9017320285115481645">Masukkan kod akses ibu bapa Family Link.</translation>
+<translation id="9024331582947483881">skrin penuh</translation>
 <translation id="9047624247355796468">Buka tetapan untuk <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Peranti akan dibalikkan</translation>
 <translation id="9063800855227801443">Tidak dapat menangkap kandungan sulit</translation>

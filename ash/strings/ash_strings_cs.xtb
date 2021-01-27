@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">Zařízení USB Type-C (přední port)</translation>
 <translation id="1013598600051641573">Rozlišení monitoru <ph name="DISPLAY_NAME" /> bylo změněno na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Chcete-li změny ponechat, potvrďte je. Předchozí nastavení bude obnoveno za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Zařízení Bluetooth „<ph name="DEVICE_NAME" />“ žádá o povolení ke spárování. Zadejte prosím v zařízení tento kód PIN: <ph name="PINCODE" /></translation>
+<translation id="1024261588257374085">Byl vybrán částečný snímek obrazovky</translation>
 <translation id="1032891413405719768">Baterie dotykového pera je slabá</translation>
 <translation id="1036672894875463507">Jsem váš Asistent Google a můžu vám celý den pomáhat!
 Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1037492556044956303">Bylo přidáno zařízení <ph name="DEVICE_NAME" /></translation>
+<translation id="1047017786576569492">částečný</translation>
 <translation id="1047773237499189053">K dispozici je nová funkce, další informace zobrazíte šipkou nahoru.</translation>
 <translation id="1056775291175587022">Žádné sítě</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1195412055398077112">přesah obrazu</translation>
 <translation id="119944043368869598">Vymazat vše</translation>
 <translation id="1199716647557067911">Opravdu chcete přístup pomocí přepínačů vypnout?</translation>
+<translation id="1210557957257435379">nahrávání obrazovky</translation>
 <translation id="121097972571826261">Dopředu o slovo</translation>
 <translation id="1225748608451425081">Chromebook je zamknut kvůli známému problému. Budete se moci přihlásit po: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ukončit výběr</translation>
@@ -112,6 +115,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1923539912171292317">Automatická kliknutí</translation>
 <translation id="1928739107511554905">K získání aktualizace Chromebook pomocí dotykové obrazovky restartujte s připojenou klávesnicí.</translation>
 <translation id="1951012854035635156">Asistent</translation>
+<translation id="1954252331066828794">Záznam obrazovky byl dokončen</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Nastavit jazyk</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -203,6 +207,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2727175239389218057">Odpovědět</translation>
 <translation id="2727977024730340865">Byla připojena nabíječka s nízkým výkonem. Nabíjení baterie nemusí probíhat spolehlivě.</translation>
 <translation id="2778650143428714839">Zařízení <ph name="DEVICE_TYPE" /> spravované doménou <ph name="MANAGER" /></translation>
+<translation id="2782591952652094792">Ukončit režim nahrávání</translation>
 <translation id="2792498699870441125">Alt + Vyhledávání</translation>
 <translation id="2814448776515246190">Částečný záznam</translation>
 <translation id="2819276065543622893">Nyní budete odhlášeni.</translation>
@@ -228,6 +233,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="2996462380875591307">Zabudovaná lupa je zapnutá. Vypnete ji opětovným stisknutím kombinace kláves Ctrl+Hledat+D.</translation>
 <translation id="3000461861112256445">Zvuk mono</translation>
 <translation id="3009178788565917040">Výstup</translation>
+<translation id="3017687597151988916">Oblast výběru nastavena na okno</translation>
 <translation id="3033545621352269033">Zapnuto</translation>
 <translation id="3036649622769666520">Otevřít soubory</translation>
 <translation id="3038571455154067151">Pokud se chcete přihlásit, zadejte rodičovský přístupový kód Family Link</translation>
@@ -271,6 +277,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se i nadále bude moci přihlásit.</translation>
 <translation id="3321628682574733415">Nesprávný kód rodiče</translation>
 <translation id="332587331255250389">Vyměňte prosím baterii</translation>
+<translation id="3341303451326249809">Snímek obrazovky byl pořízen</translation>
 <translation id="334252345105450327">Pořídit snímek obrazovky</translation>
 <translation id="3351879221545518001">Právě odesíláte obrazovku.</translation>
 <translation id="3364721542077212959">Nástroje pro dotykové pero</translation>
@@ -359,6 +366,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="4072264167173457037">Střední signál</translation>
 <translation id="4112140312785995938">Přetočit dozadu</translation>
 <translation id="4114315158543974537">Zapnutí funkce Phone Hub</translation>
+<translation id="412298498316631026">okno</translation>
 <translation id="4129129681837227511">Chcete-li zobrazovat oznámení na obrazovce uzamčení, odemkněte zařízení a změňte příslušné nastavení.</translation>
 <translation id="4146833061457621061">Přehrát hudbu</translation>
 <translation id="4157822100366708405">Nastavení tmavého motivu</translation>
@@ -631,6 +639,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="6570902864550063460">Nabíjení přes USB</translation>
 <translation id="6585808820553845416">Relace skončí za <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno administrátorem</translation>
+<translation id="6612802754306526077">Je vybrán režim nahrávání obrazovky</translation>
 <translation id="6614169507485700968">Obrazovka ochrany soukromí je zapnutá</translation>
 <translation id="6627638273713273709">Vyhledávací tlačítko + Shift + K</translation>
 <translation id="6637729079642709226">Změnit čas</translation>
@@ -689,6 +698,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="7076293881109082629">Přihlášení</translation>
 <translation id="7088960765736518739">Přístup pomocí přepínačů</translation>
 <translation id="7098389117866926363">Zařízení USB Type-C (levý zadní port)</translation>
+<translation id="7118268675952955085">snímek obrazovky</translation>
 <translation id="7131634465328662194">Budete automaticky odhlášeni.</translation>
 <translation id="7143207342074048698">Připojování</translation>
 <translation id="7144878232160441200">Opakovat</translation>
@@ -721,12 +731,15 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="742608627846767349">Dobré ráno,</translation>
 <translation id="743058460480092004">Kamera a mikrofon jsou používány.</translation>
 <translation id="7452560014878697800">Váš fotoaparát používá nějaká aplikace</translation>
+<translation id="7456049842111127849">Režim nahrávání, výchozí nastavení je <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Připnout</translation>
 <translation id="746232733191930409">Režim nahrávání obrazovky</translation>
 <translation id="7466449121337984263">Dotkněte se senzoru</translation>
 <translation id="7477793887173910789">Ovládejte hudbu, videa a další obsah</translation>
+<translation id="7483025031359818980">Oblast výběru je nastavena na celou obrazovku</translation>
 <translation id="7497767806359279797">Vybrat jazyk a klávesnici</translation>
 <translation id="7509246181739783082">Ověření identity</translation>
+<translation id="7513622367902644023">Byl vybrán režim snímku obrazovky</translation>
 <translation id="7526573455193969409">Síť může být sledována</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Čas jít spát</translation>
@@ -832,6 +845,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8388750414311082622">Poslední plochu nelze odstranit.</translation>
 <translation id="8394567579869570560">Rodič toto zařízení uzamkl</translation>
 <translation id="8412677897383510995">Zobrazit nastavení displeje</translation>
+<translation id="8413272770729657668">Nahrávání začne za 3, 2, 1</translation>
 <translation id="8425213833346101688">Změnit</translation>
 <translation id="8426708595819210923">Dobrý večer, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">Diktování odesílá váš hlas do Googlu, aby bylo možné hlasově zadávat do libovolného textového pole.</translation>
@@ -910,6 +924,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8990809378771970590">Metoda zadávání: <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Chcete-li provést akci s oznámením, odemkněte zařízení jako <ph name="LOGIN_ID" /></translation>
 <translation id="9017320285115481645">Zadejte svůj rodičovský přístupový kód služby Family Link.</translation>
+<translation id="9024331582947483881">celá obrazovka</translation>
 <translation id="9047624247355796468">Otevřít nastavení sítě <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">V zařízení bude obnovena předchozí verze systému</translation>
 <translation id="9063800855227801443">Snímek důvěrného obsahu pořídit nelze</translation>

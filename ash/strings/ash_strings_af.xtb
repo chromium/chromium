@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">USB C-toestel (poort aan voorkant)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> het verander na <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik Bevestig om veranderinge te hou. Die vorige instellings sal oor <ph name="TIMEOUT_SECONDS" /> teruggestel word.</translation>
 <translation id="1013923882670373915">Bluetooth-toestel "<ph name="DEVICE_NAME" />" vra toestemming om saam te bind. Voer asseblief hierdie PIN-kode op daardie toestel in: <ph name="PINCODE" /></translation>
+<translation id="1024261588257374085">Gedeeltelike skermkiekie gekies</translation>
 <translation id="1032891413405719768">Stilus se battery is amper pap</translation>
 <translation id="1036672894875463507">Ek is jou Google Assistent en ek is hier om jou deur die loop van jou dag te help!
 Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> is bygevoeg</translation>
+<translation id="1047017786576569492">gedeeltelik</translation>
 <translation id="1047773237499189053">Nuwe kenmerk is beskikbaar. Gebruik oppylsleutel om meer te wete te kom.</translation>
 <translation id="1056775291175587022">Geen netwerke nie</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1195412055398077112">oorskandeer</translation>
 <translation id="119944043368869598">Vee alles uit</translation>
 <translation id="1199716647557067911">Is jy seker jy wil Skakelaartoegang afskakel?</translation>
+<translation id="1210557957257435379">skermopname</translation>
 <translation id="121097972571826261">Vorentoe per woord</translation>
 <translation id="1225748608451425081">Jou Chromebook is gesluit weens 'n bekende probleem. Jy sal kan aanmeld ná: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Hou op kies</translation>
@@ -112,6 +115,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1923539912171292317">Outomatiese klikke</translation>
 <translation id="1928739107511554905">Vir 'n opdatering van jou sleutelbord moet jy die raakskerm gebruik om jou Chromebook met die sleutelbord aangeheg, te herbegin.</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1954252331066828794">Skermopname is voltooi</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Stel jou taal</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -203,6 +207,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2727175239389218057">Antwoord</translation>
 <translation id="2727977024730340865">By 'n laekrag-laaier ingeprop. Laai van battery is dalk nie betroubaar nie.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> bestuur deur <ph name="MANAGER" /></translation>
+<translation id="2782591952652094792">Verlaat vasvangmodus</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2814448776515246190">Gedeeltelike opname</translation>
 <translation id="2819276065543622893">Jy sal nou afgemeld word.</translation>
@@ -228,6 +233,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2996462380875591307">Gedokte vergrootglas is geaktiveer. Druk weer Ctrl+Search+D om dit af te skakel.</translation>
 <translation id="3000461861112256445">Mono-oudio</translation>
 <translation id="3009178788565917040">Uitvoer</translation>
+<translation id="3017687597151988916">Seleksiearea is gestel op venster</translation>
 <translation id="3033545621352269033">Aan</translation>
 <translation id="3036649622769666520">Maak lêers oop</translation>
 <translation id="3038571455154067151">Voer jou Family Link-ouertoegangskode in om aan te meld</translation>
@@ -271,6 +277,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan steeds later aanmeld.</translation>
 <translation id="3321628682574733415">Verkeerde ouerkode</translation>
 <translation id="332587331255250389">Vervang asseblief die battery</translation>
+<translation id="3341303451326249809">Skermkiekie is geneem</translation>
 <translation id="334252345105450327">Neem 'n skermkiekie</translation>
 <translation id="3351879221545518001">Jy saai tans die skerm uit.</translation>
 <translation id="3364721542077212959">Stilusnutsgoed</translation>
@@ -360,6 +367,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="4072264167173457037">Medium sein</translation>
 <translation id="4112140312785995938">Soek agtertoe</translation>
 <translation id="4114315158543974537">Skakel Foonsentrum aan</translation>
+<translation id="412298498316631026">venster</translation>
 <translation id="4129129681837227511">Om kennisgewings op jou sluitskerm te sien, ontsluit om die instelling te verander</translation>
 <translation id="4146833061457621061">Speel musiek</translation>
 <translation id="4157822100366708405">Donkertema-instellings</translation>
@@ -632,6 +640,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="6570902864550063460">Laai tans deur USB</translation>
 <translation id="6585808820553845416">Sessie eindig oor <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
+<translation id="6612802754306526077">Skermopnamemodus gekies</translation>
 <translation id="6614169507485700968">Privaatheidskerm is aan</translation>
 <translation id="6627638273713273709">Soek+Shift+K</translation>
 <translation id="6637729079642709226">Verander tyd</translation>
@@ -690,6 +699,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="7076293881109082629">Meld tans aan</translation>
 <translation id="7088960765736518739">Skakelaartoegang</translation>
 <translation id="7098389117866926363">USB C-toestel (linkerpoort aan agterkant)</translation>
+<translation id="7118268675952955085">skermkiekie</translation>
 <translation id="7131634465328662194">Jy sal outomaties afgemeld word.</translation>
 <translation id="7143207342074048698">Koppel tans</translation>
 <translation id="7144878232160441200">Probeer weer</translation>
@@ -722,12 +732,15 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="742608627846767349">Goeiemôre</translation>
 <translation id="743058460480092004">Kamera en mikrofoon word gebruik.</translation>
 <translation id="7452560014878697800">'n Program gebruik tans jou kamera</translation>
+<translation id="7456049842111127849">Vasvangmodus; verstek is <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">Skermopnamemodus</translation>
 <translation id="7466449121337984263">Raak asseblief die sensor</translation>
 <translation id="7477793887173910789">Beheer jou musiek, video's en meer</translation>
+<translation id="7483025031359818980">Seleksiearea is gestel op volskerm</translation>
 <translation id="7497767806359279797">Kies taal en sleutelbord</translation>
 <translation id="7509246181739783082">Verifieer jou identiteit</translation>
+<translation id="7513622367902644023">Skermkiekiemodus gekies</translation>
 <translation id="7526573455193969409">Netwerk kan gemonitor word</translation>
 <translation id="7536035074519304529">IP-adres: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Slaaptyd</translation>
@@ -833,6 +846,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8388750414311082622">Jongste lessenaar kan nie verwyder word nie.</translation>
 <translation id="8394567579869570560">Jou ouer het hierdie toestel gesluit</translation>
 <translation id="8412677897383510995">Wys vertoonskerminstellings</translation>
+<translation id="8413272770729657668">Opname begin oor 3, 2, 1</translation>
 <translation id="8425213833346101688">Verander</translation>
 <translation id="8426708595819210923">Goeienaand <ph name="GIVEN_NAME" /></translation>
 <translation id="8427213022735114808">Diktee stuur jou stem na Google om steminvoer in enige teksveld moontlik te maak.</translation>
@@ -911,6 +925,7 @@ Alle gebruikers moet afmeld om voort te gaan.</translation>
 <translation id="8990809378771970590">Gebruik tans <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Ontsluit toestel as <ph name="LOGIN_ID" /> om die kennisgewinghandeling uit te voer</translation>
 <translation id="9017320285115481645">Voer die Family Link-ouertoegangskode in.</translation>
+<translation id="9024331582947483881">volskerm</translation>
 <translation id="9047624247355796468">Maak instellings oop vir <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Toestel sal teruggerol word</translation>
 <translation id="9063800855227801443">Kan nie vertroulike inhoud vasvang nie</translation>

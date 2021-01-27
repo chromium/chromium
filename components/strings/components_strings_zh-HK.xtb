@@ -590,6 +590,12 @@
 <translation id="3338095232262050444">安全</translation>
 <translation id="3355823806454867987">變更 Proxy 設定…</translation>
 <translation id="3360103848165129075">付款處理常式工作表</translation>
+<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />以下資料：
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />您的瀏覽記錄
+          <ph name="LIST_ITEM" />Cookie 和網站資料
+          <ph name="LIST_ITEM" />在表格中輸入的資料
+        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">此政策是從已淘汰的 <ph name="OLD_POLICY" /> 政策自動複製而來，請改用此政策。</translation>
 <translation id="3364869320075768271"><ph name="URL" /> 要求使用您的虛擬實境裝置和資料</translation>
 <translation id="3366477098757335611">查看付款卡</translation>
@@ -921,6 +927,7 @@
 <translation id="4644670975240021822">相反順序 (正面朝下)</translation>
 <translation id="4646534391647090355">立即前往下載中心</translation>
 <translation id="4658638640878098064">釘裝 (左上方)</translation>
+<translation id="4660119392514473465">現在您可私下瀏覽內容，而使用這部電腦的其他使用者將無法看到您的活動。不過，您的下載檔案、書籤和閱讀清單項目仍會保留在裝置上。</translation>
 <translation id="4668929960204016307">，</translation>
 <translation id="4670064810192446073">虛擬實境</translation>
 <translation id="4675657451653251260">在訪客模式中，您將不會看到任何 Chrome 設定檔的資料。您可<ph name="LINK_BEGIN" />登入<ph name="LINK_END" />以存取 Google 帳戶資料，例如密碼和付款方法。</translation>
@@ -1317,6 +1324,7 @@
 <translation id="6151417162996330722">這個伺服器憑證的有效期過長。</translation>
 <translation id="6157877588268064908">如要查看運送方式和要求，請選取一個地址</translation>
 <translation id="6165508094623778733">瞭解更多資料</translation>
+<translation id="6169916984152623906">現在您可私下瀏覽了。共用此裝置的其他使用者將無法看到您的活動，但您下載的檔案和加入的書籤仍會儲存在裝置上。</translation>
 <translation id="6177128806592000436">您與此網站的連線並非完全安全</translation>
 <translation id="6180316780098470077">重試間隔</translation>
 <translation id="6196640612572343990">封鎖第三方 Cookie</translation>
@@ -1338,12 +1346,6 @@
 <translation id="6272383483618007430">Google 更新</translation>
 <translation id="6276112860590028508">您的閱讀清單中的網頁將會在這裡顯示</translation>
 <translation id="627746635834430766">只要將此付款卡和帳單地址儲存至您的 Google 帳戶，下次即可更快完成付款程序。</translation>
-<translation id="6279516281132775660">Chrome <ph name="BEGIN_EMPHASIS" />不會儲存<ph name="END_EMPHASIS" />以下資料：
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />您的瀏覽記錄
-          <ph name="LIST_ITEM" />Cookie 和網站資料
-          <ph name="LIST_ITEM" />輸入到表格中的資料
-        <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">無法送貨至此地址，請選取其他地址。</translation>
 <translation id="6282194474023008486">郵遞區號</translation>
 <translation id="6289939620939689042">頁面顏色</translation>
@@ -1840,7 +1842,6 @@
 <translation id="8265992338205884890">可顯示的資料</translation>
 <translation id="8267698848189296333">正在以 <ph name="USERNAME" /> 登入</translation>
 <translation id="8269242089528251720">個別文件/已自動分頁的副本</translation>
-<translation id="8269981117540303696">現在您可私下瀏覽內容，而使用這部電腦的其他使用者將無法看到您的活動。不過，您的下載檔案和新增的書籤仍會保留在裝置上。</translation>
 <translation id="8275952078857499577">不要詢問是否翻譯此網站</translation>
 <translation id="8277900682056760511">付款處理常式工作表開咗</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
@@ -1990,7 +1991,6 @@
 <translation id="8903921497873541725">放大</translation>
 <translation id="890485472659500557">Engineering-C</translation>
 <translation id="890493561996401738">移除建議按鈕，㩒一下 Enter 鍵就可以移除「<ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" />」</translation>
-<translation id="8910670906166981838">您已啟用無痕模式</translation>
 <translation id="8912362522468806198">Google 帳戶</translation>
 <translation id="8913778647360618320">管理付款方法按鈕，㩒一下 Enter 鍵就可以喺 Chrome 設定度管理付款同信用卡資料</translation>
 <translation id="8918231688545606538">此網頁包含可疑的內容</translation>

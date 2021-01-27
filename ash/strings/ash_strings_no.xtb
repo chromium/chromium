@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">USB-C-enhet (porten foran)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> endret til <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klikk på bekreft for å beholde endringene. De forrige innstillingene blir gjenopprettet om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth-enheten «<ph name="DEVICE_NAME" />» ber om tillatelse til å koble til. Skriv inn denne PIN-koden på den aktuelle enheten: <ph name="PINCODE" /></translation>
+<translation id="1024261588257374085">Delvis skjermdump er valgt</translation>
 <translation id="1032891413405719768">Pekepennen har lite batteri</translation>
 <translation id="1036672894875463507">Jeg er Google-assistenten, og jeg er her for å hjelpe deg i løpet av dagen!
 Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> er lagt til</translation>
+<translation id="1047017786576569492">delvis</translation>
 <translation id="1047773237499189053">En ny funksjon er tilgjengelig. Bruk oppoverpilen for å finne ut mer.</translation>
 <translation id="1056775291175587022">Ingen nettverk</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1195412055398077112">overscan</translation>
 <translation id="119944043368869598">Fjern alle</translation>
 <translation id="1199716647557067911">Er du sikker på at du vil slå av brytertilgang?</translation>
+<translation id="1210557957257435379">skjermopptak</translation>
 <translation id="121097972571826261">Ett ord frem</translation>
 <translation id="1225748608451425081">Chromebooken er låst på grunn av en kjent feil. Du kan logge på om <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Slutt å merke</translation>
@@ -112,6 +115,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1923539912171292317">Automatiske klikk</translation>
 <translation id="1928739107511554905">For å laste ned oppdateringen, bruk berøringsskjermen til å starte Chromebooken på nytt med tastaturet tilkoblet.</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1954252331066828794">Skjermopptaket er fullført</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Velg språk</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -203,6 +207,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2727175239389218057">Svar</translation>
 <translation id="2727977024730340865">Tilkoblet laveffektslader. Batteriladingen kan være upålitelig.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> administreres av <ph name="MANAGER" /></translation>
+<translation id="2782591952652094792">Avslutt opptaksmodus</translation>
 <translation id="2792498699870441125">Alt + Søk</translation>
 <translation id="2814448776515246190">Delvis opptak</translation>
 <translation id="2819276065543622893">Du blir nå logget av.</translation>
@@ -228,6 +233,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="2996462380875591307">Dokket lupe er slått på. Trykk på Ctrl + Søk + D igjen for å slå det av.</translation>
 <translation id="3000461861112256445">Monolyd</translation>
 <translation id="3009178788565917040">Utdata</translation>
+<translation id="3017687597151988916">Vinduet er valgt som kilde</translation>
 <translation id="3033545621352269033">På</translation>
 <translation id="3036649622769666520">Åpne filer</translation>
 <translation id="3038571455154067151">For å logge på, skriv inn koden din for foreldretilgang til Family Link</translation>
@@ -271,6 +277,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan fortsatt logge på senere.</translation>
 <translation id="3321628682574733415">Feil kode for foreldertilgang</translation>
 <translation id="332587331255250389">Bytt ut batteriet</translation>
+<translation id="3341303451326249809">Skjermdumpen er lagret</translation>
 <translation id="334252345105450327">Ta en skjermdump</translation>
 <translation id="3351879221545518001">Du caster for øyeblikket skjermen.</translation>
 <translation id="3364721542077212959">Pekepennverktøy</translation>
@@ -359,6 +366,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="4072264167173457037">Middels sterkt signal</translation>
 <translation id="4112140312785995938">Spol bakover</translation>
 <translation id="4114315158543974537">Slå på Phone Hub</translation>
+<translation id="412298498316631026">vindu</translation>
 <translation id="4129129681837227511">For å se varsler på låseskjermen, lås opp for å endre innstillingen</translation>
 <translation id="4146833061457621061">Spill av musikk</translation>
 <translation id="4157822100366708405">Innstillinger for mørkt tema</translation>
@@ -631,6 +639,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="6570902864550063460">Lader via USB</translation>
 <translation id="6585808820553845416">Økten slutter om <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>
+<translation id="6612802754306526077">Skjermopptaksmodus er valgt</translation>
 <translation id="6614169507485700968">Personvernskjermen er på</translation>
 <translation id="6627638273713273709">Søk + Shift + K</translation>
 <translation id="6637729079642709226">Endre tiden</translation>
@@ -689,6 +698,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="7076293881109082629">Pålogging</translation>
 <translation id="7088960765736518739">Brytertilgang</translation>
 <translation id="7098389117866926363">USB-C-enhet (venstre port på baksiden)</translation>
+<translation id="7118268675952955085">skjermdump</translation>
 <translation id="7131634465328662194">Du logges av automatisk.</translation>
 <translation id="7143207342074048698">Kobler til</translation>
 <translation id="7144878232160441200">Prøv på nytt</translation>
@@ -721,12 +731,15 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="742608627846767349">God morgen</translation>
 <translation id="743058460480092004">Kameraet og mikrofonen er i bruk.</translation>
 <translation id="7452560014878697800">Et program bruker kameraet ditt</translation>
+<translation id="7456049842111127849">Opptaksmodus – standard er <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Fest</translation>
 <translation id="746232733191930409">Skjermopptaksmodus</translation>
 <translation id="7466449121337984263">Trykk på sensoren</translation>
 <translation id="7477793887173910789">Styr musikk, video og mer</translation>
+<translation id="7483025031359818980">Hele skjermen er valgt som kilde</translation>
 <translation id="7497767806359279797">Velg språk og tastatur</translation>
 <translation id="7509246181739783082">Bekreft identiteten din</translation>
+<translation id="7513622367902644023">Skjermdumpmodus er valgt</translation>
 <translation id="7526573455193969409">Nettverket kan være overvåket</translation>
 <translation id="7536035074519304529">IP-adresse: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Nå er det sengetid</translation>
@@ -832,6 +845,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8388750414311082622">Det siste skrivebordet kan ikke fjernes.</translation>
 <translation id="8394567579869570560">Forelderen din har låst denne enheten</translation>
 <translation id="8412677897383510995">Vis skjerminnstillinger</translation>
+<translation id="8413272770729657668">Opptaket starter om 3, 2, 1</translation>
 <translation id="8425213833346101688">Endre</translation>
 <translation id="8426708595819210923">God kveld, <ph name="GIVEN_NAME" /></translation>
 <translation id="8427213022735114808">Diktat sender stemmen din til Google for å muliggjøre stemmestyrt skriving i alle tekstfelt.</translation>
@@ -910,6 +924,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="8990809378771970590">Bruker <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Lås opp enheten som <ph name="LOGIN_ID" /> for å utføre varselhandlingen</translation>
 <translation id="9017320285115481645">Skriv inn koden for foreldretilgang til Family Link.</translation>
+<translation id="9024331582947483881">full skjerm</translation>
 <translation id="9047624247355796468">Åpne innstillinger for <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Enheten blir tilbakestilt til forrige versjon</translation>
 <translation id="9063800855227801443">Kan ikke ta bilde av konfidensielt innhold</translation>

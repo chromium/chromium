@@ -596,6 +596,12 @@
 <translation id="3338095232262050444">Безбедно</translation>
 <translation id="3355823806454867987">Промени прокси-поставки...</translation>
 <translation id="3360103848165129075">Лист на ракувачот со плаќања</translation>
+<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />нема да ги зачува<ph name="END_EMPHASIS" /> следниве информации:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />историјата на прелистување
+          <ph name="LIST_ITEM" />колачињата и податоците за локацијата
+          <ph name="LIST_ITEM" />внесените информации во формуларите
+        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Правилово беше автоматски копирано од неподдржаното правило <ph name="OLD_POLICY" />. Наместо него, треба да го користите ова правило.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> сака да ги користи уредот и податоците за виртуелна реалност</translation>
 <translation id="3366477098757335611">Прикажи ги картичките</translation>
@@ -933,6 +939,7 @@
 <translation id="4644670975240021822">Обратен редослед со лицето надолу</translation>
 <translation id="4646534391647090355">Однеси ме таму сега</translation>
 <translation id="4658638640878098064">Спојување горе лево</translation>
+<translation id="4660119392514473465">Сега може да прелистувате приватно, а другите луѓе кои го користат уредов нема да ја гледаат вашата активност. Меѓутоа, преземањата, обележувачите и ставките на списокот за читање ќе се зачуваат.</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Виртуелна реалност</translation>
 <translation id="4675657451653251260">Во режим на гостин нема да гледате податоци за профили на Chrome. Може да се <ph name="LINK_BEGIN" />најавите<ph name="LINK_END" /> за да пристапите до податоците на сметката на Google, како лозинките и начините на плаќање.</translation>
@@ -1329,6 +1336,7 @@
 <translation id="6151417162996330722">Сертификатот на серверот има период на важност што е премногу долг.</translation>
 <translation id="6157877588268064908">За да ги видите методите и условите за испорака, изберете адреса</translation>
 <translation id="6165508094623778733">Дознајте повеќе</translation>
+<translation id="6169916984152623906">Сега може да прелистувате приватно, а другите луѓе кои го користат уредов нема да ја видат вашата активност. Сепак, преземањата и обележувачите ќе се зачуваат.</translation>
 <translation id="6177128806592000436">Врската со овој сајт не е безбедна</translation>
 <translation id="6180316780098470077">Обиди се повторно со интервалот</translation>
 <translation id="6196640612572343990">Блокирај колачиња од трети лица</translation>
@@ -1350,12 +1358,6 @@
 <translation id="6272383483618007430">Ажурирање од Google</translation>
 <translation id="6276112860590028508">Страниците од списокот за читање се појавуваат тука</translation>
 <translation id="627746635834430766">За да платите побрзо следниот пат, зачувајте ја картичката и адресата за наплата на вашата сметка на Google.</translation>
-<translation id="6279516281132775660">Chrome <ph name="BEGIN_EMPHASIS" />нема да ги зачувува<ph name="END_EMPHASIS" /> следниве податоци:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Вашата историја на прелистување
-          <ph name="LIST_ITEM" />Колачиња и податоци од сајтовите
-          <ph name="LIST_ITEM" />Податоци внесени во формулари
-        <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Не може да се достави на оваа адреса. Изберете друга.</translation>
 <translation id="6282194474023008486">Поштенски број</translation>
 <translation id="6289939620939689042">Боја на страницата</translation>
@@ -1852,7 +1854,6 @@
 <translation id="8265992338205884890">Видливи податоци</translation>
 <translation id="8267698848189296333">Се најавувате како <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Одделни документи/подредени примероци</translation>
-<translation id="8269981117540303696">Сега може да прелистувате приватно, а другите луѓе кои го користат уредов нема да ја видат вашата активност. Сепак, преземањата и обележувачите ќе се зачуваат.</translation>
 <translation id="8275952078857499577">Не нуди превод на сајтов</translation>
 <translation id="8277900682056760511">Листот на ракувачот со плаќања е отворен</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
@@ -2002,7 +2003,6 @@
 <translation id="8903921497873541725">Зумирај</translation>
 <translation id="890485472659500557">Engineering-C</translation>
 <translation id="890493561996401738">Копче за отстранување предлог, притиснете Enter за да отстраните, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
-<translation id="8910670906166981838">Се наоѓате во режим инкогнито</translation>
 <translation id="8912362522468806198">Сметка на Google</translation>
 <translation id="8913778647360618320">Копче „Управувајте со начините на плаќање“, притиснете Enter за да управувате со податоците за плаќањата и кредитната картичка во поставките за Chrome</translation>
 <translation id="8918231688545606538">Страницава е сомнителна</translation>

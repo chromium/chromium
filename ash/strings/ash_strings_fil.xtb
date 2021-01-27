@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">USB-C device (port sa harap)</translation>
 <translation id="1013598600051641573">Ginawang <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz) ang <ph name="DISPLAY_NAME" />. I-click ang kumpirmahin para panatilihin ang mga pagbabago. Ire-restore ang mga nakaraang setting pagkalipas ng <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Gusto ng bluetooth device na "<ph name="DEVICE_NAME" />" ng pahintulot na magpares. Pakilagay ang PIN na ito sa device na iyon: <ph name="PINCODE" /></translation>
+<translation id="1024261588257374085">Pinili ang screenshot ng isang bahagi ng screen</translation>
 <translation id="1032891413405719768">Mahina na ang baterya ng stylus</translation>
 <translation id="1036672894875463507">Ako ang iyong Google Assistant, narito ako para tulungan ka sa buong araw mo!
 Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1037492556044956303">Idinagdag ang <ph name="DEVICE_NAME" /></translation>
+<translation id="1047017786576569492">hindi buo</translation>
 <translation id="1047773237499189053">May available na bagong feature, gamitin ang Pataas na arrow key para matuto pa.</translation>
 <translation id="1056775291175587022">Walang network</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1195412055398077112">overscan</translation>
 <translation id="119944043368869598">I-clear lahat</translation>
 <translation id="1199716647557067911">Sigurado ka bang gusto mong i-off ang Switch Access?</translation>
+<translation id="1210557957257435379">pag-record ng screen</translation>
 <translation id="121097972571826261">Sumulong nang paisa-isang salita</translation>
 <translation id="1225748608451425081">Na-lock ang iyong Chromebook dahil sa hindi alam na isyu. Makakapag-sign in ka pagkalipas ng: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Ihinto ang pagpili</translation>
@@ -112,6 +115,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1923539912171292317">Mga awtomatikong pag-click</translation>
 <translation id="1928739107511554905">Para makuha ang update, gamitin ang touchscreen para i-restart ang iyong Chromebook nang nakakabit ang keyboard.</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1954252331066828794">Tapos na ang pag-record ng screen</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Itakda ang iyong wika</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -203,6 +207,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2727175239389218057">Sumagot</translation>
 <translation id="2727977024730340865">Naka-saksak sa isang low-power charger. Maaaring hindi maging tiyak ang pag-charge ng baterya.</translation>
 <translation id="2778650143428714839">Pinapamahalaan ng <ph name="MANAGER" /> ang <ph name="DEVICE_TYPE" /></translation>
+<translation id="2782591952652094792">Lumabas sa capture mode</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2814448776515246190">Pag-capture ng isang bahagi ng screen</translation>
 <translation id="2819276065543622893">Masa-sign out ka ngayon.</translation>
@@ -228,6 +233,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2996462380875591307">Na-enable ang Naka-dock na Magnifier. Pinduting muli ang Ctrl+Search+D para i-off ito.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3009178788565917040">Output</translation>
+<translation id="3017687597151988916">Itinakda sa window ang selection area</translation>
 <translation id="3033545621352269033">Naka-on</translation>
 <translation id="3036649622769666520">Buksan ang Mga File</translation>
 <translation id="3038571455154067151">Para mag-sign in, ilagay ang iyong access code ng magulang sa Family Link</translation>
@@ -271,6 +277,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="3308453408813785101">Maaari pa ring mag-sign in si <ph name="USER_EMAIL_ADDRESS" /> sa ibang pagkakataon.</translation>
 <translation id="3321628682574733415">Maling code ng magulang</translation>
 <translation id="332587331255250389">Pakipalitan ang baterya</translation>
+<translation id="3341303451326249809">Na-capture na ang screenshot</translation>
 <translation id="334252345105450327">Kumuha ng screenshot</translation>
 <translation id="3351879221545518001">Kasalukuyan kang nagka-cast ng screen.</translation>
 <translation id="3364721542077212959">Mga stylus tool</translation>
@@ -359,6 +366,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="4072264167173457037">Katamtaman ang signal</translation>
 <translation id="4112140312785995938">Mag-seek Pabalik</translation>
 <translation id="4114315158543974537">I-on ang Phone Hub</translation>
+<translation id="412298498316631026">window</translation>
 <translation id="4129129681837227511">Para makakita ng mga notification sa iyong screen ng lock, i-unlock para baguhin ang setting</translation>
 <translation id="4146833061457621061">Mag-play ng musika</translation>
 <translation id="4157822100366708405">Mga Setting ng Madilim na Tema</translation>
@@ -631,6 +639,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="6570902864550063460">Nagcha-charge sa pamamagitan ng USB</translation>
 <translation id="6585808820553845416">Matatapos ang session pagkalipas ng <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Lakas ng Signal <ph name="SIGNAL_STRENGTH" />, Pinapamahalaan ng iyong Administrator</translation>
+<translation id="6612802754306526077">Pinili ang screen recording mode</translation>
 <translation id="6614169507485700968">Naka-on ang privacy screen</translation>
 <translation id="6627638273713273709">Maghanap+Shift+K</translation>
 <translation id="6637729079642709226">Baguhin ang oras</translation>
@@ -689,6 +698,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="7076293881109082629">Nagsa-sign in</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7098389117866926363">USB-C device (kaliwang port sa likod)</translation>
+<translation id="7118268675952955085">screenshot</translation>
 <translation id="7131634465328662194">Awtomatiko kang masa-sign out.</translation>
 <translation id="7143207342074048698">Kumokonekta</translation>
 <translation id="7144878232160441200">Subukang muli</translation>
@@ -721,12 +731,15 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="742608627846767349">Magandang umaga,</translation>
 <translation id="743058460480092004">Ginagamit ang camera at mikropono.</translation>
 <translation id="7452560014878697800">May application na gumagamit ng iyong camera</translation>
+<translation id="7456049842111127849">Capture Mode, <ph name="SOURCE" /> <ph name="TYPE" /> ang default.</translation>
 <translation id="7461924472993315131">I-pin</translation>
 <translation id="746232733191930409">Screen recording mode</translation>
 <translation id="7466449121337984263">Pakipindot ang sensor</translation>
 <translation id="7477793887173910789">Kontrolin ang iyong musika, mga video, at higit pa</translation>
+<translation id="7483025031359818980">Itinakda sa full screen ang selection area</translation>
 <translation id="7497767806359279797">Pumili ng wika at keyboard</translation>
 <translation id="7509246181739783082">I-verify ang iyong pagkakakilanlan</translation>
+<translation id="7513622367902644023">Pinili ang screenshot mode</translation>
 <translation id="7526573455193969409">Maaaring sinusubaybayan ang network</translation>
 <translation id="7536035074519304529">IP address: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Oras nang matulog</translation>
@@ -832,6 +845,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8388750414311082622">Hindi puwedeng alisin ang huling desk.</translation>
 <translation id="8394567579869570560">Ni-lock ng iyong magulang ang device na ito</translation>
 <translation id="8412677897383510995">Ipakita ang mga setting ng display</translation>
+<translation id="8413272770729657668">Magsisimula ang pag-record pagkalipas ng 3, 2, 1</translation>
 <translation id="8425213833346101688">Baguhin</translation>
 <translation id="8426708595819210923">Magandang gabi <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">Ipinapadala ng Dictation ang iyong boses sa Google para mabigyang-daan ang voice-typing sa anumang field ng text.</translation>
@@ -910,6 +924,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="8990809378771970590">Gamit ang <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">I-unlock ang device bilang <ph name="LOGIN_ID" /> para maisagawa ang pagkilos sa notification</translation>
 <translation id="9017320285115481645">Ilagay ang access code ng magulang sa Family Link.</translation>
+<translation id="9024331582947483881">buong screen</translation>
 <translation id="9047624247355796468">Buksan ang mga setting para sa <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Iro-roll back ang device</translation>
 <translation id="9063800855227801443">Hindi puwedeng mag-capture ng kumpidensyal na content</translation>

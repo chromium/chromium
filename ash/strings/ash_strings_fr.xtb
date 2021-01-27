@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">Appareil USB de type C (port situé sur l'avant de l'appareil)</translation>
 <translation id="1013598600051641573">La résolution de "<ph name="DISPLAY_NAME" />" est passée à <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Cliquez sur "Confirmer" pour valider cette modification. Les paramètres précédents seront restaurés dans <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" demande l'autorisation de s'associer. Veuillez saisir le code suivant sur l'appareil : <ph name="PINCODE" />.</translation>
+<translation id="1024261588257374085">Capture d'écran partielle sélectionnée</translation>
 <translation id="1032891413405719768">Le niveau de charge des piles du stylet est faible</translation>
 <translation id="1036672894875463507">Je suis votre Assistant Google, à votre service tout au long de la journée.
 Pour commencer, voici des exemples de ce que vous pouvez me demander.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> ajouté</translation>
+<translation id="1047017786576569492">partiel</translation>
 <translation id="1047773237499189053">Nouvelle fonctionnalité disponible. Cliquez sur la flèche vers le haut pour en savoir plus.</translation>
 <translation id="1056775291175587022">Aucun réseau</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" /> : <ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1195412055398077112">Surbalayage</translation>
 <translation id="119944043368869598">Tout effacer</translation>
 <translation id="1199716647557067911">Voulez-vous vraiment désactiver Switch Access ?</translation>
+<translation id="1210557957257435379">enregistrement de l'écran en cours</translation>
 <translation id="121097972571826261">Avancer par mot</translation>
 <translation id="1225748608451425081">Votre Chromebook est verrouillé en raison d'un problème connu. Vous pourrez vous connecter dans <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Arrêter la sélection</translation>
@@ -112,6 +115,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1923539912171292317">Clics automatiques</translation>
 <translation id="1928739107511554905">Pour télécharger la mise à jour, utilisez l'écran tactile pour redémarrer votre Chromebook avec le clavier branché.</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1954252331066828794">Enregistrement d'écran terminé</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Définir la langue</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -203,6 +207,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2727175239389218057">Répondre</translation>
 <translation id="2727977024730340865">L'appareil est branché à un chargeur de faible puissance. Il se peut que la charge ne soit pas fiable.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> géré par <ph name="MANAGER" /></translation>
+<translation id="2782591952652094792">Quitter le mode de capture</translation>
 <translation id="2792498699870441125">Alt + Recherche</translation>
 <translation id="2814448776515246190">Capture partielle</translation>
 <translation id="2819276065543622893">Vous allez être déconnecté maintenant.</translation>
@@ -228,6 +233,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2996462380875591307">Le mode Loupe ancrée est activé. Appuyez de nouveau sur Ctrl+Recherche+D pour le désactiver.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Sortie</translation>
+<translation id="3017687597151988916">Zone de sélection définie sur fenêtre</translation>
 <translation id="3033545621352269033">Activé</translation>
 <translation id="3036649622769666520">Ouvrir les fichiers</translation>
 <translation id="3038571455154067151">Pour vous connecter, saisissez le code d'accès parental Family Link</translation>
@@ -271,6 +277,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> pourra toujours se connecter plus tard.</translation>
 <translation id="3321628682574733415">Code parental incorrect</translation>
 <translation id="332587331255250389">Veuillez remplacer la batterie</translation>
+<translation id="3341303451326249809">Capture d'écran réussie</translation>
 <translation id="334252345105450327">Faire une capture d'écran</translation>
 <translation id="3351879221545518001">Vous êtes actuellement en train de caster l'écran.</translation>
 <translation id="3364721542077212959">Outils de stylet</translation>
@@ -359,6 +366,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="4072264167173457037">Signal de moyenne intensité</translation>
 <translation id="4112140312785995938">Retour rapide</translation>
 <translation id="4114315158543974537">Activer Phone Hub</translation>
+<translation id="412298498316631026">fenêtre</translation>
 <translation id="4129129681837227511">Pour afficher les notifications sur l'écran de verrouillage, déverrouillez votre appareil afin de modifier ce paramètre</translation>
 <translation id="4146833061457621061">Joue de la musique</translation>
 <translation id="4157822100366708405">Paramètres du thème sombre</translation>
@@ -631,6 +639,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="6570902864550063460">En charge via USB</translation>
 <translation id="6585808820553845416">Fin de la session dans <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
+<translation id="6612802754306526077">Mode d'enregistreur d'écran sélectionné</translation>
 <translation id="6614169507485700968">L'écran de confidentialité est activé</translation>
 <translation id="6627638273713273709">Rechercher+Maj+K</translation>
 <translation id="6637729079642709226">Changer l'heure</translation>
@@ -689,6 +698,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="7076293881109082629">Connexion</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7098389117866926363">Appareil USB de type C (port situé sur l'arrière de l'appareil, à gauche)</translation>
+<translation id="7118268675952955085">capture d'écran</translation>
 <translation id="7131634465328662194">Vous allez être déconnecté automatiquement.</translation>
 <translation id="7143207342074048698">Connexion</translation>
 <translation id="7144878232160441200">Réessayer</translation>
@@ -721,12 +731,15 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="742608627846767349">Bonjour,</translation>
 <translation id="743058460480092004">La caméra et le micro sont en cours d'utilisation.</translation>
 <translation id="7452560014878697800">Une application utilise la caméra</translation>
+<translation id="7456049842111127849">Mode de capture, la valeur par défaut est : <ph name="TYPE" /> <ph name="SOURCE" />.</translation>
 <translation id="7461924472993315131">Épingler</translation>
 <translation id="746232733191930409">Mode d'enregistrement d'écran</translation>
 <translation id="7466449121337984263">Veuillez toucher le capteur</translation>
 <translation id="7477793887173910789">Contrôler votre musique, vos vidéos et d'autres contenus</translation>
+<translation id="7483025031359818980">Zone de sélection définie sur l'écran entier</translation>
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
 <translation id="7509246181739783082">Valider votre identité</translation>
+<translation id="7513622367902644023">Mode de capture d'écran sélectionné</translation>
 <translation id="7526573455193969409">Il est possible que le réseau soit surveillé</translation>
 <translation id="7536035074519304529">Adresse IP : <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Il est l'heure d'aller au lit</translation>
@@ -832,6 +845,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8388750414311082622">Impossible de supprimer le dernier bureau.</translation>
 <translation id="8394567579869570560">Ton parent a verrouillé cet appareil</translation>
 <translation id="8412677897383510995">Paramètres d'affichage</translation>
+<translation id="8413272770729657668">L'enregistrement commence dans 3 2, 1</translation>
 <translation id="8425213833346101688">Modifier</translation>
 <translation id="8426708595819210923">Bonsoir <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">La fonctionnalité de dictée transmet votre voix à Google et permet d'utiliser ainsi la saisie vocale dans n'importe quelle zone de texte.</translation>
@@ -910,6 +924,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="8990809378771970590"><ph name="IME_NAME" /> en cours d'utilisation</translation>
 <translation id="899350903320462459">Déverrouiller l'appareil en tant que <ph name="LOGIN_ID" /> pour effectuer l'action de notification</translation>
 <translation id="9017320285115481645">Saisissez le code d'accès parental Family Link.</translation>
+<translation id="9024331582947483881">plein écran</translation>
 <translation id="9047624247355796468">Ouvrir les paramètres du réseau <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">L'appareil va être rétabli</translation>
 <translation id="9063800855227801443">Impossible de capturer un contenu confidentiel</translation>

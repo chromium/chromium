@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">Прылада USB-C (пярэдні порт)</translation>
 <translation id="1013598600051641573">Для дысплэя "<ph name="DISPLAY_NAME" />" зададзена раздзяляльнасць <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Прылада Bluetooth "<ph name="DEVICE_NAME" />" запытвае дазвол на спалучэнне. Увядзіце на гэтай прыладзе PIN-код: <ph name="PINCODE" /></translation>
+<translation id="1024261588257374085">Быў выбраны здымак часткі экрана</translation>
 <translation id="1032891413405719768">Нізкі зарад акумулятара стыла</translation>
 <translation id="1036672894875463507">Я ваш Памочнік Google і буду дапамагаць вам на працягу ўсяго дня!
 Вось што можна паспрабаваць для пачатку.</translation>
 <translation id="1037492556044956303">Прылада "<ph name="DEVICE_NAME" />" дададзена</translation>
+<translation id="1047017786576569492">частка экрана</translation>
 <translation id="1047773237499189053">З'явілася новая функцыя, націсніце стрэлку ўверх, каб даведацца больш.</translation>
 <translation id="1056775291175587022">Няма сетак</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@
 <translation id="1195412055398077112">вылет разгорткі</translation>
 <translation id="119944043368869598">Выдаліць усё</translation>
 <translation id="1199716647557067911">Сапраўды выключыць доступ праз пераключальнікі?</translation>
+<translation id="1210557957257435379">запіс экрана</translation>
 <translation id="121097972571826261">Уперад на адно слова</translation>
 <translation id="1225748608451425081">Chromebook заблакіраваны з-за вядомай праблемы. Вы зможаце ўвайсці праз: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Спыніць выбар</translation>
@@ -112,6 +115,7 @@
 <translation id="1923539912171292317">Аўтаматычныя націсканні</translation>
 <translation id="1928739107511554905">Для абнаўлення падключыце клавіятуру і перазапусціце Chromebook, выкарыстоўваючы сэнсарны экран.</translation>
 <translation id="1951012854035635156">Памочнік</translation>
+<translation id="1954252331066828794">Запіс экрана завершаны</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Задайце мову</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -203,6 +207,7 @@
 <translation id="2727175239389218057">Адказаць</translation>
 <translation id="2727977024730340865">Падключана зарадная прылада нізкай магутнасці. Зарадка акумулятара можа быць нестабільнай.</translation>
 <translation id="2778650143428714839">Прыладай <ph name="DEVICE_TYPE" /> кіруе <ph name="MANAGER" /></translation>
+<translation id="2782591952652094792">Выйсці з рэжыму здымання</translation>
 <translation id="2792498699870441125">Alt+Пошук</translation>
 <translation id="2814448776515246190">Здыманне часткі экрана</translation>
 <translation id="2819276065543622893">Вы выйдзеце з уліковага запісу зараз.</translation>
@@ -228,6 +233,7 @@
 <translation id="2996462380875591307">Прыстыкаваная лупа ўключана. Каб выключыць яе, зноў націсніце Ctrl + Пошук + D.</translation>
 <translation id="3000461861112256445">Монафанія</translation>
 <translation id="3009178788565917040">Выхад</translation>
+<translation id="3017687597151988916">У якасці вобласці вылучэння выбрана акно</translation>
 <translation id="3033545621352269033">Уключана</translation>
 <translation id="3036649622769666520">Адкрыццё файлаў</translation>
 <translation id="3038571455154067151">Каб увайсці, увядзіце бацькоўскі код доступу Family Link</translation>
@@ -271,6 +277,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> зможа ўвайсці пазней.</translation>
 <translation id="3321628682574733415">Няправільны бацькоўскі код</translation>
 <translation id="332587331255250389">Замяніце акумулятар</translation>
+<translation id="3341303451326249809">Здымак экрана зроблены</translation>
 <translation id="334252345105450327">Зрабіць здымак экрана</translation>
 <translation id="3351879221545518001">Вы трансліруеце экран.</translation>
 <translation id="3364721542077212959">Інструменты стыла</translation>
@@ -359,6 +366,7 @@
 <translation id="4072264167173457037">Умераны сігнал</translation>
 <translation id="4112140312785995938">Перайсці назад</translation>
 <translation id="4114315158543974537">Уключэнне Phone Hub</translation>
+<translation id="412298498316631026">акно</translation>
 <translation id="4129129681837227511">Каб бачыць апавяшчэнні на экране блакіроўкі, разблакіруйце прыладу і змяніце адпаведную наладу</translation>
 <translation id="4146833061457621061">Уключыць музыку</translation>
 <translation id="4157822100366708405">Налады цёмнай тэмы</translation>
@@ -631,6 +639,7 @@
 <translation id="6570902864550063460">Ідзе зарадка праз USB</translation>
 <translation id="6585808820553845416">Сеанс скончыцца праз <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />, знаходзіцца пад кіраваннем адміністратара</translation>
+<translation id="6612802754306526077">Выбраны рэжым запісу экрана</translation>
 <translation id="6614169507485700968">Экран прыватнасці ўключаны</translation>
 <translation id="6627638273713273709">Пошук+Shift+K</translation>
 <translation id="6637729079642709226">Змена часу</translation>
@@ -689,6 +698,7 @@
 <translation id="7076293881109082629">Уваход</translation>
 <translation id="7088960765736518739">Доступ праз пераключальнікі</translation>
 <translation id="7098389117866926363">Прылада USB-C (задні порт злева)</translation>
+<translation id="7118268675952955085">здымак экрана</translation>
 <translation id="7131634465328662194">Будзе выкананы аўтаматычны выхад.</translation>
 <translation id="7143207342074048698">Падключэнне</translation>
 <translation id="7144878232160441200">Паўтарыць</translation>
@@ -721,12 +731,15 @@
 <translation id="742608627846767349">Добрай раніцы,</translation>
 <translation id="743058460480092004">Камера і мікрафон выкарыстоўваюцца.</translation>
 <translation id="7452560014878697800">Камера выкарыстоўваецца адной з праграм</translation>
+<translation id="7456049842111127849">Рэжым здымання, стандартна гэта <ph name="TYPE" /> (<ph name="SOURCE" />).</translation>
 <translation id="7461924472993315131">PIN-код</translation>
 <translation id="746232733191930409">Рэжым запісу экрана</translation>
 <translation id="7466449121337984263">Дакраніцеся да сканера</translation>
 <translation id="7477793887173910789">Кіруйце музыкай, відэа і шмат чым іншым</translation>
+<translation id="7483025031359818980">У якасці вобласці вылучэння выбраны ўвесь экран</translation>
 <translation id="7497767806359279797">Выбраць мову і клавіятуру</translation>
 <translation id="7509246181739783082">Спраўдзіце сваю асобу</translation>
+<translation id="7513622367902644023">Быў выбраны рэжым здымка экрана</translation>
 <translation id="7526573455193969409">За сеткай могуць сачыць</translation>
 <translation id="7536035074519304529">IP-адрас: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Час класціся спаць</translation>
@@ -832,6 +845,7 @@
 <translation id="8388750414311082622">Нельга выдаліць віртуальны стол, які з'яўляецца апошнім.</translation>
 <translation id="8394567579869570560">Бацькі заблакіравалі гэту прыладу</translation>
 <translation id="8412677897383510995">Паказаць налады дысплэя</translation>
+<translation id="8413272770729657668">Запіс пачнецца праз 3, 2, 1</translation>
 <translation id="8425213833346101688">Змяніць</translation>
 <translation id="8426708595819210923">Добры вечар, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8427213022735114808">Функцыя дыктавання адпраўляе запісы вашага голасу сэрвісам Google, што дазваляе вам уводзіць тэкст голасам у тэкставых палях.</translation>
@@ -910,6 +924,7 @@
 <translation id="8990809378771970590">Выкарыстоўваецца <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Разблакіруйце прыладу як <ph name="LOGIN_ID" />, каб выканаць дзеянне па апавяшчэнні</translation>
 <translation id="9017320285115481645">Увядзіце бацькоўскі код доступу Family Link.</translation>
+<translation id="9024331582947483881">увесь экран</translation>
 <translation id="9047624247355796468">Адкрыць налады для сеткі <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Версія АС прылады будзе адкочана</translation>
 <translation id="9063800855227801443">Здыманне немагчымае з-за наяўнасці на экране прыватнага змесціва</translation>

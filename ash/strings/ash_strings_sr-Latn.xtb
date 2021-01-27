@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">Uređaj sa USB priključkom tipa C (prednji port)</translation>
 <translation id="1013598600051641573">Rezolucija prikaza <ph name="DISPLAY_NAME" /> je promenjena u <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Kliknite na Potvrdi da biste zadržali promene. Prethodna podešavanja će biti vraćena za <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth uređaj „<ph name="DEVICE_NAME" />“ želi dozvolu za uparivanje. Unesite ovaj PIN kôd na tom uređaju: <ph name="PINCODE" /></translation>
+<translation id="1024261588257374085">Delimičan snimak ekrana je izabran</translation>
 <translation id="1032891413405719768">Baterija pisaljke je skoro prazna</translation>
 <translation id="1036672894875463507">Ja sam vaš Google pomoćnik i tu sam da vam pomognem tokom celog dana!
 Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" />: dodato</translation>
+<translation id="1047017786576569492">delimično</translation>
 <translation id="1047773237499189053">Dostupna je nova funkcija. Koristite taster sa strelicom nagore da biste saznali više.</translation>
 <translation id="1056775291175587022">Nema mreža</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1195412055398077112">ivično područje ekrana</translation>
 <translation id="119944043368869598">Obriši sve</translation>
 <translation id="1199716647557067911">Želite li stvarno da isključite pristup pomoću prekidača?</translation>
+<translation id="1210557957257435379">snimanje ekrana</translation>
 <translation id="121097972571826261">Reč unapred</translation>
 <translation id="1225748608451425081">Chromebook je zaključan zbog poznatog problema. Moći ćete da se prijavite za: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Izađi iz režima biranja</translation>
@@ -112,6 +115,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1923539912171292317">Automatski klikovi</translation>
 <translation id="1928739107511554905">Da biste preuzeli ažuriranje, restartujte Chromebook sa priključenom tastaturom na dodirnom ekranu.</translation>
 <translation id="1951012854035635156">Pomoćnik</translation>
+<translation id="1954252331066828794">Snimanje ekrana je dovršeno</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Podesite jezik</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -203,6 +207,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2727175239389218057">Odgovori</translation>
 <translation id="2727977024730340865">Uređaj je uključen u punjač male snage. Punjenje baterije možda neće biti pouzdano.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" />-om upravlja <ph name="MANAGER" /></translation>
+<translation id="2782591952652094792">Izađite iz režima snimanja</translation>
 <translation id="2792498699870441125">Alt + taster za pretragu</translation>
 <translation id="2814448776515246190">Delimično snimanje</translation>
 <translation id="2819276065543622893">Bićete odmah odjavljeni.</translation>
@@ -228,6 +233,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2996462380875591307">Montirana lupa ekrana je omogućena. Pritisnite Ctrl + taster za pretragu + D ponovo da biste je isključili.</translation>
 <translation id="3000461861112256445">Mono zvuk</translation>
 <translation id="3009178788565917040">Izlaz</translation>
+<translation id="3017687597151988916">Oblast za izbor je podešena na prozor</translation>
 <translation id="3033545621352269033">Uključeno</translation>
 <translation id="3036649622769666520">Otvaranje datoteka</translation>
 <translation id="3038571455154067151">Da biste se prijavili, unesite pristupni kôd roditelja za Family Link</translation>
@@ -271,6 +277,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> će i dalje moći da se prijavi kasnije.</translation>
 <translation id="3321628682574733415">Netačan kôd roditelja</translation>
 <translation id="332587331255250389">Zamenite bateriju</translation>
+<translation id="3341303451326249809">Snimak ekrana je napravljen</translation>
 <translation id="334252345105450327">Napravi snimak ekrana</translation>
 <translation id="3351879221545518001">Trenutno prebacujete ekran.</translation>
 <translation id="3364721542077212959">Alatke za pisaljku</translation>
@@ -359,6 +366,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="4072264167173457037">Signal srednje jačine</translation>
 <translation id="4112140312785995938">Premotaj unazad</translation>
 <translation id="4114315158543974537">Uključite Phone Hub</translation>
+<translation id="412298498316631026">prozor</translation>
 <translation id="4129129681837227511">Da biste videli obaveštenja na zaključanom ekranu, otključajte ga kako biste promenili podešavanje</translation>
 <translation id="4146833061457621061">Pusti muziku</translation>
 <translation id="4157822100366708405">Podešavanja tamne teme</translation>
@@ -631,6 +639,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="6570902864550063460">Puni se preko USB-a</translation>
 <translation id="6585808820553845416">Sesija se završava za <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, jačina signala <ph name="SIGNAL_STRENGTH" />, upravlja administrator</translation>
+<translation id="6612802754306526077">Režim snimanja ekrana je izabran</translation>
 <translation id="6614169507485700968">Ekran za privatnost je uključen</translation>
 <translation id="6627638273713273709">Taster za pretragu+Shift+K</translation>
 <translation id="6637729079642709226">Promenite vreme</translation>
@@ -689,6 +698,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="7076293881109082629">Prijavljivanje</translation>
 <translation id="7088960765736518739">Pristup pomoću prekidača</translation>
 <translation id="7098389117866926363">Uređaj sa USB priključkom tipa C (levi zadnji port)</translation>
+<translation id="7118268675952955085">snimak ekrana</translation>
 <translation id="7131634465328662194">Odjavićemo vas automatski.</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="7144878232160441200">Probaj ponovo</translation>
@@ -721,12 +731,15 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="742608627846767349">Dobro jutro,</translation>
 <translation id="743058460480092004">Kamera i mikrofon se koriste.</translation>
 <translation id="7452560014878697800">Aplikacija koristi kameru</translation>
+<translation id="7456049842111127849">Režim snimanja, podrazumevana vrednost je <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Zakači</translation>
 <translation id="746232733191930409">Režim snimanja ekrana</translation>
 <translation id="7466449121337984263">Dodirnite senzor</translation>
 <translation id="7477793887173910789">Kontrolišite muziku, video snimke i drugo</translation>
+<translation id="7483025031359818980">Oblast za izbor je podešena na ceo ekran</translation>
 <translation id="7497767806359279797">Odaberite jezik i tastaturu</translation>
 <translation id="7509246181739783082">Verifikujte identitet</translation>
+<translation id="7513622367902644023">Izabran je režim snimka ekrana</translation>
 <translation id="7526573455193969409">Mreža se možda nadgleda</translation>
 <translation id="7536035074519304529">IP adresa: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Vreme je za spavanje</translation>
@@ -832,6 +845,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="8388750414311082622">Ne možemo da uklonimo poslednju radnu površinu.</translation>
 <translation id="8394567579869570560">Roditelj je zaključao ovaj uređaj</translation>
 <translation id="8412677897383510995">Prikažite podešavanja ekrana</translation>
+<translation id="8413272770729657668">Snimanje počinje za 3, 2, 1</translation>
 <translation id="8425213833346101688">Promeni</translation>
 <translation id="8426708595819210923">Dobro veče, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">Diktiranje šalje glas Google-u da bi se omogućilo pisanje glasom u poljima za tekst.</translation>
@@ -910,6 +924,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="8990809378771970590">Koristi se <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Otključajte uređaj pomoću ID-a prijavljivanja <ph name="LOGIN_ID" /> da biste dobili obaveštenje</translation>
 <translation id="9017320285115481645">Unesite pristupni kôd roditelja za Family Link.</translation>
+<translation id="9024331582947483881">ceo ekran</translation>
 <translation id="9047624247355796468">Otvorite podešavanja za <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Uređaj će biti vraćen na raniju verziju</translation>
 <translation id="9063800855227801443">Snimanje poverljivog sadržaja nije uspelo</translation>

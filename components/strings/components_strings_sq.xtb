@@ -593,6 +593,12 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3338095232262050444">E sigurt</translation>
 <translation id="3355823806454867987">Ndrysho cilësimet e përfaqësuesit...</translation>
 <translation id="3360103848165129075">Fleta e përpunuesit të pagesës</translation>
+<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />nuk do të ruajë<ph name="END_EMPHASIS" /> informacionet e mëposhtme:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Historikun tënd të shfletimit
+          <ph name="LIST_ITEM" />Kukit dhe të dhënat e sajteve
+          <ph name="LIST_ITEM" />Informacionet e futura në formularë
+        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Kjo politikë është kopjuar automatikisht nga politika e vjetruar <ph name="OLD_POLICY" />. Duhet të përdorësh këtë politikë më mirë.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> kërkon të përdorë pajisjen dhe të dhënat e tua të realitetit virtual</translation>
 <translation id="3366477098757335611">Shiko kartat</translation>
@@ -928,6 +934,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4644670975240021822">Renditja e kundërt e kthyer poshtë</translation>
 <translation id="4646534391647090355">Më ço atje tani</translation>
 <translation id="4658638640878098064">Kapje me tel lart majtas</translation>
+<translation id="4660119392514473465">Tani mund të shfletosh në mënyrë private dhe personat e tjerë që përdorin këtë pajisje nuk do ta shikojnë aktivitetin tënd. Sidoqoftë, shkarkimet dhe faqeshënuesit do të ruhen.</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realiteti virtual</translation>
 <translation id="4675657451653251260">Në modalitetin e vizitorit, nuk do të shikosh informacione të profilit të Chrome. Mund <ph name="LINK_BEGIN" />të identifikohesh<ph name="LINK_END" /> për t'u qasur tek informacionet e "Llogarisë sate të Google" si fjalëkalimet dhe mënyrat e pagesës.</translation>
@@ -1323,6 +1330,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6151417162996330722">Certifikata e serverit ka një periudhë vlefshmërie që është tepër e gjatë.</translation>
 <translation id="6157877588268064908">Për të parë mënyrat dhe kërkesat e dërgimit, zgjidh një adresë</translation>
 <translation id="6165508094623778733">Mëso më shumë</translation>
+<translation id="6169916984152623906">Tani mund të shfletosh në mënyrë private dhe personat e tjerë që përdorin këtë pajisje nuk do të shikojnë aktivitetin tënd. Sidoqoftë, shkarkimet dhe faqeshënuesit do të ruhen.</translation>
 <translation id="6177128806592000436">Lidhja jote me këtë sajt nuk është e sigurt</translation>
 <translation id="6180316780098470077">Intervali i ripërpjekjes</translation>
 <translation id="6196640612572343990">Blloko kukit e palëve të treta</translation>
@@ -1344,12 +1352,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6272383483618007430">Përditësimi i Google</translation>
 <translation id="6276112860590028508">Faqet nga lista jote e leximit shfaqen këtu</translation>
 <translation id="627746635834430766">Për të paguar më shpejt herën tjetër, ruaje kartën dhe adresën tënde të faturimit në llogarinë tënde të Google.</translation>
-<translation id="6279516281132775660">Chrome <ph name="BEGIN_EMPHASIS" />nuk do të ruajë<ph name="END_EMPHASIS" /> informacionet e mëposhtme:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Historikun tënd të shfletimit
-          <ph name="LIST_ITEM" />Kukit dhe të dhënat e sajteve
-          <ph name="LIST_ITEM" />Informacionet e futura në formularë
-        <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Nuk mund të dorëzohet në këtë adresë. Zgjidh një adresë tjetër.</translation>
 <translation id="6282194474023008486">Kodi postar</translation>
 <translation id="6289939620939689042">Ngjyra e faqes</translation>
@@ -1846,7 +1848,6 @@ Detaje shtesë:
 <translation id="8265992338205884890">Të dhënat e dukshme</translation>
 <translation id="8267698848189296333">Po identifikohet si <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Dokumente të ndara/kopje të renditura</translation>
-<translation id="8269981117540303696">Tani mund të shfletosh në mënyrë private dhe personat e tjerë që përdorin këtë pajisje nuk do ta shikojnë aktivitetin tënd. Sidoqoftë, shkarkimet dhe faqeshënuesit do të ruhen.</translation>
 <translation id="8275952078857499577">Mos ofro ta përkthesh këtë sajt</translation>
 <translation id="8277900682056760511">Fleta e përpunuesit të pagesës është hapur</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
@@ -1996,7 +1997,6 @@ Detaje shtesë:
 <translation id="8903921497873541725">Zmadho</translation>
 <translation id="890485472659500557">Engineering-C</translation>
 <translation id="890493561996401738">Butoni "Hiq sugjerimin", shtyp Enter për ta hequr, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
-<translation id="8910670906166981838">Ke kaluar në modalitetin "e fshehtë"</translation>
 <translation id="8912362522468806198">Llogaria e Google</translation>
 <translation id="8913778647360618320">Butoni "Menaxho mënyrat e pagesës", shtyp "Enter" për të menaxhuar informacionet e pagesave dhe të kartës së kreditit te cilësimet e Chrome</translation>
 <translation id="8918231688545606538">Kjo faqe është e dyshimtë</translation>

@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">USB-C-enhet (främre port)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> har ändrats till <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klicka på bekräfta om du vill behålla ändringarna. De gamla inställningarna återställs om <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth-enheten <ph name="DEVICE_NAME" /> har begärt tillstånd för koppling. Ange den här pinkoden på den enheten: <ph name="PINCODE" /></translation>
+<translation id="1024261588257374085">Skärmbild av en del av skärmen har valts</translation>
 <translation id="1032891413405719768">Batteriet håller på att ta slut i e-pennan</translation>
 <translation id="1036672894875463507">Jag är Google-assistenten och jag kan hjälpa dig under hela dagen.
 Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> har lagts till</translation>
+<translation id="1047017786576569492">partiell</translation>
 <translation id="1047773237499189053">Det finns en ny funktion. Tryck på uppåtpilen om du vill läsa mer.</translation>
 <translation id="1056775291175587022">Inga nätverk</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1195412055398077112">överskanning</translation>
 <translation id="119944043368869598">Ta bort alla</translation>
 <translation id="1199716647557067911">Vill du inaktivera brytarstyrning?</translation>
+<translation id="1210557957257435379">skärminspelning</translation>
 <translation id="121097972571826261">Framåt ord för ord</translation>
 <translation id="1225748608451425081">Chromebook har låsts på grund av ett känt problem. Du kan logga in om <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Sluta markera</translation>
@@ -112,6 +115,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1923539912171292317">Automatiska klick</translation>
 <translation id="1928739107511554905">Starta om Chromebook-enheten via pekskärmen med tangentbordet tillkopplat för att uppdatera.</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1954252331066828794">Skärminspelningen har slutförts</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Ställ in språk</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -203,6 +207,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2727175239389218057">Svara</translation>
 <translation id="2727977024730340865">Ansluten till en laddare med låg effekt. Batteriet kanske inte laddas ordentligt.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> hanteras av <ph name="MANAGER" /></translation>
+<translation id="2782591952652094792">Stäng läget för skärmbild/skärminspelning</translation>
 <translation id="2792498699870441125">Alt + Sök</translation>
 <translation id="2814448776515246190">Skärmbild/skärminspelning av en del av skärmen</translation>
 <translation id="2819276065543622893">Du loggas nu ut.</translation>
@@ -228,6 +233,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="2996462380875591307">Dockad skärmförstoring har aktiverats. Tryck på Ctrl + Sök + D igen om du vill inaktivera funktionen.</translation>
 <translation id="3000461861112256445">Monoljud</translation>
 <translation id="3009178788565917040">Utgång</translation>
+<translation id="3017687597151988916">Markeringsområdet har ställts in på fönster</translation>
 <translation id="3033545621352269033">På</translation>
 <translation id="3036649622769666520">Öppna filer</translation>
 <translation id="3038571455154067151">Ange föräldraåtkomstkoden för Family Link om du vill logga in</translation>
@@ -271,6 +277,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> kan ändå logga in igen senare.</translation>
 <translation id="3321628682574733415">Felaktig föräldrakod</translation>
 <translation id="332587331255250389">Byt batteri</translation>
+<translation id="3341303451326249809">Skärmbilden har tagits</translation>
 <translation id="334252345105450327">Ta en skärmbild</translation>
 <translation id="3351879221545518001">Skärmen castas.</translation>
 <translation id="3364721542077212959">Verktyg för e-penna</translation>
@@ -359,6 +366,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="4072264167173457037">medelstark signal</translation>
 <translation id="4112140312785995938">Sök bakåt</translation>
 <translation id="4114315158543974537">Aktivera Phone Hub</translation>
+<translation id="412298498316631026">fönster</translation>
 <translation id="4129129681837227511">Lås upp enheten för att ändra inställningen för aviseringar på låsskärmen</translation>
 <translation id="4146833061457621061">Spela upp musik</translation>
 <translation id="4157822100366708405">Inställningar för mörkt tema</translation>
@@ -631,6 +639,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="6570902864550063460">Laddas via USB</translation>
 <translation id="6585808820553845416">Sessionen upphör om <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" />, hanteras av administratören</translation>
+<translation id="6612802754306526077">Skärminspelningsläget har valts</translation>
 <translation id="6614169507485700968">Sekretesskärmen är aktiverad</translation>
 <translation id="6627638273713273709">Söktangenten + Skift + K</translation>
 <translation id="6637729079642709226">Ändra tid</translation>
@@ -689,6 +698,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="7076293881109082629">Logga in</translation>
 <translation id="7088960765736518739">Brytarstyrning</translation>
 <translation id="7098389117866926363">USB-C-enhet (vänstra porten på baksidan)</translation>
+<translation id="7118268675952955085">skärmbild</translation>
 <translation id="7131634465328662194">Du loggas ut automatiskt.</translation>
 <translation id="7143207342074048698">Ansluter</translation>
 <translation id="7144878232160441200">Försök igen</translation>
@@ -721,12 +731,15 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="742608627846767349">Hej!</translation>
 <translation id="743058460480092004">Kameran och mikrofonen används.</translation>
 <translation id="7452560014878697800">Kameran används av en app</translation>
+<translation id="7456049842111127849">Läge för skärmbild/skärminspelning, standard är <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Fäst</translation>
 <translation id="746232733191930409">Skärminspelningsläge</translation>
 <translation id="7466449121337984263">Tryck på sensorn</translation>
 <translation id="7477793887173910789">Styr uppspelningen av musik, videor med mera</translation>
+<translation id="7483025031359818980">Markeringsområdet är inställt på helskärm</translation>
 <translation id="7497767806359279797">Välj språk och tangentbord</translation>
 <translation id="7509246181739783082">Verifiera din identitet</translation>
+<translation id="7513622367902644023">Skärmbildsläget har valts</translation>
 <translation id="7526573455193969409">Nätverket kan vara övervakat</translation>
 <translation id="7536035074519304529">IP-adress: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Läggdags</translation>
@@ -832,6 +845,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8388750414311082622">Det sista skrivbordet går inte att ta bort.</translation>
 <translation id="8394567579869570560">Din förälder har låst enheten</translation>
 <translation id="8412677897383510995">Visa skärminställningar</translation>
+<translation id="8413272770729657668">Inspelningen startar om 3, 2, 1</translation>
 <translation id="8425213833346101688">Ändra</translation>
 <translation id="8426708595819210923">Hej <ph name="GIVEN_NAME" />!</translation>
 <translation id="8427213022735114808">Med diktering skickas det du säger till Google så att du kan tala in text i vilket textfält som helst.</translation>
@@ -910,6 +924,7 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="8990809378771970590">Använder <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Lås upp enheten som <ph name="LOGIN_ID" /> så att aviseringen kan göras</translation>
 <translation id="9017320285115481645">Ange föräldraåtkomstkoden för Family Link.</translation>
+<translation id="9024331582947483881">helskärm</translation>
 <translation id="9047624247355796468">Öppnar inställningarna för <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Enheten återställs</translation>
 <translation id="9063800855227801443">Det går inte att ta bilder på konfidentiellt innehåll</translation>

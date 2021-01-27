@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">Dispozitiv USB-C (portul din față)</translation>
 <translation id="1013598600051641573">Rezoluția pentru <ph name="DISPLAY_NAME" /> a fost modificată la <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Dă clic pe Confirmă pentru a păstra modificările. Setările anterioare vor fi restabilite în <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Dispozitivul Bluetooth „<ph name="DEVICE_NAME" />” solicită permisiunea de a se conecta. Introduceți acest cod PIN pe dispozitivul respectiv: <ph name="PINCODE" /></translation>
+<translation id="1024261588257374085">Modul Captură de ecran parțială selectat</translation>
 <translation id="1032891413405719768">Bateria creionului este descărcată</translation>
 <translation id="1036672894875463507">Sunt Asistentul tău Google și îți stau la dispoziție pe toată durata zilei!
 Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1037492556044956303">S-a adăugat <ph name="DEVICE_NAME" /></translation>
+<translation id="1047017786576569492">parțială</translation>
 <translation id="1047773237499189053">Funcție nouă disponibilă; folosește tasta săgeată în sus ca să afli mai multe.</translation>
 <translation id="1056775291175587022">Nicio rețea</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1195412055398077112">suprascanare</translation>
 <translation id="119944043368869598">Șterge-le pe toate</translation>
 <translation id="1199716647557067911">Sigur vrei să dezactivezi accesul prin comutare?</translation>
+<translation id="1210557957257435379">înregistrarea ecranului</translation>
 <translation id="121097972571826261">Înainte cu un cuvânt</translation>
 <translation id="1225748608451425081">Chromebookul este blocat din cauza unei probleme cunoscute. Vei putea să te conectezi după <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Nu mai selecta</translation>
@@ -112,6 +115,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1923539912171292317">Clicuri automate</translation>
 <translation id="1928739107511554905">Pentru a obține actualizarea, folosește ecranul tactil ca să repornești Chromebookul cu tastatura atașată.</translation>
 <translation id="1951012854035635156">Asistent</translation>
+<translation id="1954252331066828794">S-a înregistrat ecranul</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Setează limba</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -203,6 +207,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2727175239389218057">Răspunde</translation>
 <translation id="2727977024730340865">V-ați conectat la un încărcător de putere joasă. Încărcarea bateriei poate fi nesigură.</translation>
 <translation id="2778650143428714839">Dispozitivul <ph name="DEVICE_TYPE" /> gestionat de <ph name="MANAGER" /></translation>
+<translation id="2782591952652094792">Ieși din modul de capturare</translation>
 <translation id="2792498699870441125">Alt+Căutare</translation>
 <translation id="2814448776515246190">Captură parțială</translation>
 <translation id="2819276065543622893">Veți fi deconectat(ă) acum.</translation>
@@ -228,6 +233,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="2996462380875591307">Lupa andocată este activată. Apasă din nou pe Ctrl + tasta de căutare + D pentru a o dezactiva.</translation>
 <translation id="3000461861112256445">Audio mono</translation>
 <translation id="3009178788565917040">Ieșiri</translation>
+<translation id="3017687597151988916">Zona de selectare este setată la fereastră</translation>
 <translation id="3033545621352269033">Activat</translation>
 <translation id="3036649622769666520">Deschide fișierele</translation>
 <translation id="3038571455154067151">Pentru a te conecta, introdu codul de acces pentru părinte Family Link</translation>
@@ -271,6 +277,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> se poate conecta în continuare mai târziu.</translation>
 <translation id="3321628682574733415">Codul pentru părinte este incorect</translation>
 <translation id="332587331255250389">Înlocuiește bateria</translation>
+<translation id="3341303451326249809">Captură de ecran realizată</translation>
 <translation id="334252345105450327">Fă o captură de ecran</translation>
 <translation id="3351879221545518001">În prezent proiectezi ecranul.</translation>
 <translation id="3364721542077212959">Instrumente pentru creion</translation>
@@ -359,6 +366,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="4072264167173457037">Semnal mediu</translation>
 <translation id="4112140312785995938">Derulează înapoi</translation>
 <translation id="4114315158543974537">Activează Phone Hub</translation>
+<translation id="412298498316631026">fereastră</translation>
 <translation id="4129129681837227511">Pentru a vedea notificările pe ecranul de blocare, deblochează pentru a modifica setarea</translation>
 <translation id="4146833061457621061">Redă muzică</translation>
 <translation id="4157822100366708405">Setări pentru tema întunecată</translation>
@@ -631,6 +639,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="6570902864550063460">Se încarcă prin USB</translation>
 <translation id="6585808820553845416">Sesiunea se încheie peste <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, puterea semnalului: <ph name="SIGNAL_STRENGTH" />, gestionată de administratorul tău</translation>
+<translation id="6612802754306526077">Modul de înregistrare a ecranului selectat</translation>
 <translation id="6614169507485700968">Ecranul de confidențialitate este activat</translation>
 <translation id="6627638273713273709">Tasta de căutare + Shift + K</translation>
 <translation id="6637729079642709226">Schimbă ora</translation>
@@ -689,6 +698,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="7076293881109082629">Conectare</translation>
 <translation id="7088960765736518739">Acces prin comutare</translation>
 <translation id="7098389117866926363">Dispozitiv USB-C (portul din stânga în spate)</translation>
+<translation id="7118268675952955085">captură de ecran</translation>
 <translation id="7131634465328662194">Vei fi deconectat(ă) automat.</translation>
 <translation id="7143207342074048698">Se conectează</translation>
 <translation id="7144878232160441200">Reîncearcă</translation>
@@ -721,12 +731,15 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="742608627846767349">Bună dimineața!</translation>
 <translation id="743058460480092004">Camera foto și microfonul sunt în uz.</translation>
 <translation id="7452560014878697800">O aplicație folosește camera</translation>
+<translation id="7456049842111127849">Modul de capturare, setarea prestabilită este <ph name="TYPE" /><ph name="SOURCE" />.</translation>
 <translation id="7461924472993315131">Fixează</translation>
 <translation id="746232733191930409">Modul de înregistrare a ecranului</translation>
 <translation id="7466449121337984263">Atinge senzorul</translation>
 <translation id="7477793887173910789">Gestionează muzica, videoclipurile și altele</translation>
+<translation id="7483025031359818980">Zona de selectare este setată la ecran complet</translation>
 <translation id="7497767806359279797">Alege limba și tastatura</translation>
 <translation id="7509246181739783082">Confirmă-ți identitatea</translation>
+<translation id="7513622367902644023">Modul Captură de ecran selectat</translation>
 <translation id="7526573455193969409">Este posibil ca rețeaua să fie monitorizată</translation>
 <translation id="7536035074519304529">Adresă IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Este timpul pentru culcare</translation>
@@ -832,6 +845,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8388750414311082622">Ultimul desktop nu poate fi eliminat.</translation>
 <translation id="8394567579869570560">Părintele tău a blocat dispozitivul</translation>
 <translation id="8412677897383510995">Afișează setările de afișare</translation>
+<translation id="8413272770729657668">Înregistrarea începe în 3, 2, 1</translation>
 <translation id="8425213833346101688">Modificați</translation>
 <translation id="8426708595819210923">Bună seara, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8427213022735114808">Dictarea îți trimite vocea la Google pentru a permite tastarea vocală în orice câmp de text.</translation>
@@ -910,6 +924,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="8990809378771970590">Se folosește <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Deblochează dispozitivul ca <ph name="LOGIN_ID" /> pentru efectuarea acțiunii de notificare</translation>
 <translation id="9017320285115481645">Introdu codul de acces parental pentru Family Link.</translation>
+<translation id="9024331582947483881">ecran complet</translation>
 <translation id="9047624247355796468">Deschide setările pentru <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">SO de pe dispozitiv va fi adus la o versiune anterioară</translation>
 <translation id="9063800855227801443">Capturarea conținutului confidențial nu este permisă</translation>

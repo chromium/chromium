@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">Dispositiu USB-C (port frontal)</translation>
 <translation id="1013598600051641573">La resolució de la pantalla <ph name="DISPLAY_NAME" /> ha canviat a <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Fes clic a Confirma per conservar els canvis. La configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per emparellar-se. Introduïu aquest codi PIN al dispositiu: <ph name="PINCODE" />.</translation>
+<translation id="1024261588257374085">S'ha seleccionat la captura de pantalla parcial</translation>
 <translation id="1032891413405719768">El llapis òptic té poca bateria</translation>
 <translation id="1036672894875463507">Soc el teu Assistent de Google i et puc ajudar en qualsevol moment del dia.
 A continuació t'indico algunes coses que pots provar per començar.</translation>
 <translation id="1037492556044956303">S'ha afegit <ph name="DEVICE_NAME" /></translation>
+<translation id="1047017786576569492">parcial</translation>
 <translation id="1047773237499189053">Hi ha una nova funció disponible. Fes servir la tecla de fletxa amunt per obtenir més informació.</translation>
 <translation id="1056775291175587022">Cap xarxa</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1195412055398077112">ajusta la mida</translation>
 <translation id="119944043368869598">Esborra-ho tot</translation>
 <translation id="1199716647557067911">Confirmes que vols desactivar l'accés amb interruptors?</translation>
+<translation id="1210557957257435379">gravació de pantalla</translation>
 <translation id="121097972571826261">Endavant per paraula</translation>
 <translation id="1225748608451425081">El Chromebook està bloquejat a causa d'un problema conegut. Podràs iniciar-hi la sessió d'aquí a: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Deixa de seleccionar</translation>
@@ -112,6 +115,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="1923539912171292317">Clics automàtics</translation>
 <translation id="1928739107511554905">Per obtenir l'actualització, utilitza la pantalla tàctil per reiniciar Chromebook amb el teclat connectat.</translation>
 <translation id="1951012854035635156">Assistent</translation>
+<translation id="1954252331066828794">La gravació de pantalla s'ha completat</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Estableix el teu idioma</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -203,6 +207,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2727175239389218057">Respon</translation>
 <translation id="2727977024730340865">S'ha connectat a un carregador de baix consum. És possible que la càrrega de la bateria no sigui fiable.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> gestionat per <ph name="MANAGER" /></translation>
+<translation id="2782591952652094792">Surt del mode de captura</translation>
 <translation id="2792498699870441125">Alt+Cerca</translation>
 <translation id="2814448776515246190">Captura parcial</translation>
 <translation id="2819276065543622893">Ara se us tancarà la sessió.</translation>
@@ -228,6 +233,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2996462380875591307">La lupa acoblada està activada. Torna a prémer Ctrl+Cerca+D per desactivar-la.</translation>
 <translation id="3000461861112256445">Àudio mono</translation>
 <translation id="3009178788565917040">Sortida</translation>
+<translation id="3017687597151988916">S'ha establert la finestra com a àrea de selecció</translation>
 <translation id="3033545621352269033">Activada</translation>
 <translation id="3036649622769666520">Obre fitxers</translation>
 <translation id="3038571455154067151">Per iniciar la sessió, introdueix el codi d'accés parental de Family Link</translation>
@@ -271,6 +277,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> pot iniciar la sessió més tard.</translation>
 <translation id="3321628682574733415">Codi parental incorrecte</translation>
 <translation id="332587331255250389">Canvia la bateria</translation>
+<translation id="3341303451326249809">La pantalla s'ha capturat</translation>
 <translation id="334252345105450327">Fes una captura de pantalla</translation>
 <translation id="3351879221545518001">Estàs emetent la pantalla.</translation>
 <translation id="3364721542077212959">Eines del llapis òptic</translation>
@@ -359,6 +366,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="4072264167173457037">Senyal mitjà</translation>
 <translation id="4112140312785995938">Retrocedeix</translation>
 <translation id="4114315158543974537">Activa Phone Hub</translation>
+<translation id="412298498316631026">finestra</translation>
 <translation id="4129129681837227511">Per veure notificacions a la pantalla de bloqueig, desbloqueja el dispositiu per canviar aquesta opció</translation>
 <translation id="4146833061457621061">Reprodueix música</translation>
 <translation id="4157822100366708405">Configuració del tema fosc</translation>
@@ -631,6 +639,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="6570902864550063460">S'està carregant per USB</translation>
 <translation id="6585808820553845416">La sessió finalitzarà d'aquí a <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, <ph name="SIGNAL_STRENGTH" /> d'intensitat del senyal, xarxa gestionada per l'administrador</translation>
+<translation id="6612802754306526077">S'ha seleccionat el mode de gravació de pantalla</translation>
 <translation id="6614169507485700968">La pantalla de privadesa està activada</translation>
 <translation id="6627638273713273709">Cerca+Maj+K</translation>
 <translation id="6637729079642709226">Canvia l'hora</translation>
@@ -689,6 +698,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="7076293881109082629">Inicia la sessió</translation>
 <translation id="7088960765736518739">Accés amb interruptors</translation>
 <translation id="7098389117866926363">Dispositiu USB-C (port posterior esquerre)</translation>
+<translation id="7118268675952955085">captura de pantalla</translation>
 <translation id="7131634465328662194">La sessió es tancarà automàticament.</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="7144878232160441200">Torna-ho a provar</translation>
@@ -721,12 +731,15 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="742608627846767349">Bon dia,</translation>
 <translation id="743058460480092004">La càmera i el micròfon s'estan utilitzant.</translation>
 <translation id="7452560014878697800">Una aplicació està utilitzant la càmera</translation>
+<translation id="7456049842111127849">Mode de captura, l'opció predeterminada és <ph name="TYPE" /> <ph name="SOURCE" />.</translation>
 <translation id="7461924472993315131">Fixa</translation>
 <translation id="746232733191930409">Mode de gravació de pantalla</translation>
 <translation id="7466449121337984263">Toca el sensor</translation>
 <translation id="7477793887173910789">Controla la música, els vídeos i molt més</translation>
+<translation id="7483025031359818980">S'ha establert la pantalla completa com a àrea de selecció</translation>
 <translation id="7497767806359279797">Tria l'idioma i el teclat</translation>
 <translation id="7509246181739783082">Verifica la teva identitat</translation>
+<translation id="7513622367902644023">S'ha seleccionat el mode de captura de pantalla</translation>
 <translation id="7526573455193969409">És possible que la xarxa estigui supervisada</translation>
 <translation id="7536035074519304529">Adreça IP: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Ara toca anar a dormir</translation>
@@ -832,6 +845,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8388750414311082622">L'últim escriptori no es pot suprimir.</translation>
 <translation id="8394567579869570560">El teu pare o la teva mare han bloquejat aquest dispositiu</translation>
 <translation id="8412677897383510995">Mostra la configuració de la pantalla</translation>
+<translation id="8413272770729657668">La gravació començarà d'aquí a 3, 2, 1</translation>
 <translation id="8425213833346101688">Canvia</translation>
 <translation id="8426708595819210923">Bon vespre, <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">El dictat envia la teva veu a Google per permetre l'escriptura per veu en qualsevol camp de text.</translation>
@@ -910,6 +924,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="8990809378771970590">S'està utilitzant <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Desbloqueja el dispositiu com a <ph name="LOGIN_ID" /> per dur a terme l'acció que indica la notificació</translation>
 <translation id="9017320285115481645">Introdueix el codi d'accés parental de Family Link.</translation>
+<translation id="9024331582947483881">pantalla completa</translation>
 <translation id="9047624247355796468">Obre la configuració de la xarxa <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">El dispositiu es revertirà a una versió anterior</translation>
 <translation id="9063800855227801443">No es pot capturar contingut confidencial</translation>

@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">USB-C 裝置 (前方連接埠)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> 已變更為 <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz)。請按一下 [確認] 以保留變更。系統會在 <ph name="TIMEOUT_SECONDS" />後還原先前的設定。</translation>
 <translation id="1013923882670373915">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限，請在裝置上輸入以下 PIN：<ph name="PINCODE" /></translation>
+<translation id="1024261588257374085">揀咗部分螢幕截圖</translation>
 <translation id="1032891413405719768">觸控筆電量偏低</translation>
 <translation id="1036672894875463507">我是您的「Google 助理」，可協助您處理處理日常事務！
 如要開始使用，您可先嘗試以下幾種功能。</translation>
 <translation id="1037492556044956303">已新增 <ph name="DEVICE_NAME" /></translation>
+<translation id="1047017786576569492">局部</translation>
 <translation id="1047773237499189053">推出咗新功能，請用向上箭咀掣了解詳情。</translation>
 <translation id="1056775291175587022">沒有網絡</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />：<ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@
 <translation id="1195412055398077112">溢出掃描描</translation>
 <translation id="119944043368869598">全部清除</translation>
 <translation id="1199716647557067911">確定要關閉「按鈕控制」功能嗎？</translation>
+<translation id="1210557957257435379">螢幕錄影</translation>
 <translation id="121097972571826261">往前一個字詞</translation>
 <translation id="1225748608451425081">由於發生已知問題，因此 Chromebook 已鎖定。您將可在 <ph name="TIME_LEFT" />後登入。</translation>
 <translation id="1229194443904279055">停止選取</translation>
@@ -112,6 +115,7 @@
 <translation id="1923539912171292317">自動按一下</translation>
 <translation id="1928739107511554905">如要下載更新，請連接鍵盤並使用觸控螢幕重新啟動 Chromebook。</translation>
 <translation id="1951012854035635156">助理</translation>
+<translation id="1954252331066828794">錄咗螢幕畫面</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">設定語言</translation>
 <translation id="1961832440516943645"><ph name="DATE" /> <ph name="TIME" /></translation>
@@ -203,6 +207,7 @@
 <translation id="2727175239389218057">回覆</translation>
 <translation id="2727977024730340865">使用低功率充電器，可能導致充電狀態不穩定。</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> 由 <ph name="MANAGER" /> 管理</translation>
+<translation id="2782591952652094792">結束擷取模式</translation>
 <translation id="2792498699870441125">Alt + 搜尋鍵</translation>
 <translation id="2814448776515246190">局部擷取</translation>
 <translation id="2819276065543622893">現在即將登出。</translation>
@@ -228,6 +233,7 @@
 <translation id="2996462380875591307">已啟用固定的放大鏡。再次按下 Search+Shift+D 鍵即可停用。</translation>
 <translation id="3000461861112256445">單聲道音效</translation>
 <translation id="3009178788565917040">輸出</translation>
+<translation id="3017687597151988916">揀咗視窗作為來源</translation>
 <translation id="3033545621352269033">已開啟</translation>
 <translation id="3036649622769666520">開啟檔案</translation>
 <translation id="3038571455154067151">如要登入帳戶，請輸入 Family Link 家長存取碼</translation>
@@ -271,6 +277,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> 稍後仍可登入。</translation>
 <translation id="3321628682574733415">家長存取碼錯誤</translation>
 <translation id="332587331255250389">請更換電池</translation>
+<translation id="3341303451326249809">擷取咗螢幕畫面</translation>
 <translation id="334252345105450327">擷取螢幕擷圖</translation>
 <translation id="3351879221545518001">您目前正在投放畫面。</translation>
 <translation id="3364721542077212959">觸控筆工具</translation>
@@ -359,6 +366,7 @@
 <translation id="4072264167173457037">訊號中等</translation>
 <translation id="4112140312785995938">向後回轉</translation>
 <translation id="4114315158543974537">開啟 Phone Hub</translation>
+<translation id="412298498316631026">視窗</translation>
 <translation id="4129129681837227511">如要在上鎖畫面上查看通知，請將裝置解鎖並變更相關設定</translation>
 <translation id="4146833061457621061">播音樂</translation>
 <translation id="4157822100366708405">深色主題背景設定</translation>
@@ -631,6 +639,7 @@
 <translation id="6570902864550063460">正在透過 USB 充電</translation>
 <translation id="6585808820553845416">這個工作階段將在 <ph name="SESSION_TIME_REMAINING" />後結束。</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />，訊號強度係 <ph name="SIGNAL_STRENGTH" />，由管理員管理</translation>
+<translation id="6612802754306526077">揀咗螢幕錄影模式</translation>
 <translation id="6614169507485700968">已啟用私隱保護畫面</translation>
 <translation id="6627638273713273709">搜尋鍵 + Shift + K 鍵</translation>
 <translation id="6637729079642709226">變更時間</translation>
@@ -689,6 +698,7 @@
 <translation id="7076293881109082629">登入中</translation>
 <translation id="7088960765736518739">按鈕控制</translation>
 <translation id="7098389117866926363">USB-C 裝置 (後方左側連接埠)</translation>
+<translation id="7118268675952955085">螢幕截圖</translation>
 <translation id="7131634465328662194">您將會自動登出。</translation>
 <translation id="7143207342074048698">正在連接</translation>
 <translation id="7144878232160441200">重試</translation>
@@ -721,12 +731,15 @@
 <translation id="742608627846767349">早晨，</translation>
 <translation id="743058460480092004">相機和麥克風正在使用中。</translation>
 <translation id="7452560014878697800">某個應用程式正在使用攝錄機</translation>
+<translation id="7456049842111127849">擷取模式，預設係<ph name="SOURCE" /><ph name="TYPE" />。</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">螢幕錄影模式</translation>
 <translation id="7466449121337984263">請輕觸感應器</translation>
 <translation id="7477793887173910789">控制音樂、影片及其他內容</translation>
+<translation id="7483025031359818980">揀咗全螢幕作為來源</translation>
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
 <translation id="7509246181739783082">驗證您的身分</translation>
+<translation id="7513622367902644023">揀咗螢幕截圖模式</translation>
 <translation id="7526573455193969409">網絡可能會受到監控</translation>
 <translation id="7536035074519304529">IP 位址：<ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">睡覺時間到了</translation>
@@ -832,6 +845,7 @@
 <translation id="8388750414311082622">無法移除最後一個桌面。</translation>
 <translation id="8394567579869570560">您的家長已鎖定此裝置</translation>
 <translation id="8412677897383510995">顯示螢幕設定</translation>
+<translation id="8413272770729657668">3、2、1，開始錄影</translation>
 <translation id="8425213833346101688">變更</translation>
 <translation id="8426708595819210923"><ph name="GIVEN_NAME" />，晚安：</translation>
 <translation id="8427213022735114808">「語音聽寫」將您的語音傳送給 Google，以便透過語音輸入填寫任何文字欄位。</translation>
@@ -910,6 +924,7 @@
 <translation id="8990809378771970590">正在使用<ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">以 <ph name="LOGIN_ID" /> 身份解鎖裝置即可執行有關通知的動作</translation>
 <translation id="9017320285115481645">請輸入 Family Link 家長存取碼。</translation>
+<translation id="9024331582947483881">全螢幕</translation>
 <translation id="9047624247355796468">打開<ph name="NETWORK_NAME" />設定</translation>
 <translation id="9056839673611986238">系統將回復裝置</translation>
 <translation id="9063800855227801443">無法擷取機密內容</translation>

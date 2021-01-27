@@ -596,6 +596,12 @@
 <translation id="3338095232262050444">Անվտանգ է</translation>
 <translation id="3355823806454867987">Փոխել պրոքսի-սերվերի կարգավորումները…</translation>
 <translation id="3360103848165129075">Վճարման մշակման թերթ</translation>
+<translation id="3361596688432910856">Chrome-ում <ph name="BEGIN_EMPHASIS" />չեն պահվի<ph name="END_EMPHASIS" />՝
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />ձեր այցելությունների պատմությունը,
+          <ph name="LIST_ITEM" />քուքիներն ու կայքերի տվյալները,
+          <ph name="LIST_ITEM" />ձևերում լրացրած տեղեկությունները։
+        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Այս կանոնն ավտոմատ պատճենվել է <ph name="OLD_POLICY" /> կանոնից, որն արդեն հնացել է։ Վերջինիս փոխարեն օգտագործեք այս կանոնը։</translation>
 <translation id="3364869320075768271"><ph name="URL" /> կայքն ուզում է օգտագործել վիրտուալ իրականության ձեր սարքերն ու տվյալները</translation>
 <translation id="3366477098757335611">Դիտել քարտերը</translation>
@@ -933,6 +939,7 @@
 <translation id="4644670975240021822">Հակառակ հերթականությամբ՝ երեսի կողմով ներքև</translation>
 <translation id="4646534391647090355">Անցնել հիմա</translation>
 <translation id="4658638640878098064">Ամրակ վերևի ձախ կողմում</translation>
+<translation id="4660119392514473465">Ինկոգնիտո ռեժիմում ձեր գործողությունները տեսանելի չեն լինի այս սարքի մյուս օգտատերերին, սակայն ներբեռնումներն ու էջանիշները կպահվեն։</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Վիրտուալ իրականություն</translation>
 <translation id="4675657451653251260">Հյուրի ռեժիմում դուք չեք տեսնի Chrome-ի պրոֆիլի տեղեկությունները։ <ph name="LINK_BEGIN" />Մուտք գործեք<ph name="LINK_END" />՝ ձեր տեղեկությունները, օրինակ՝ գաղտնաբառերն ու վճարման եղանակները օգտագործելու համար։</translation>
@@ -1329,6 +1336,7 @@
 <translation id="6151417162996330722">Սերվերի վկայականը չափազանց երկար վավերականության ժամկետ ունի:</translation>
 <translation id="6157877588268064908">Ուղարկման եղանակներն ու պայմանները տեսնելու համար ընտրեք հասցե</translation>
 <translation id="6165508094623778733">Իմանալ ավելին</translation>
+<translation id="6169916984152623906">Ինկոգնիտո ռեժիմում ձեր գործողությունները տեսանելի չեն լինի այս սարքի մյուս օգտատերերին: Սակայն ներբեռնումներն ու էջանիշները կպահվեն։</translation>
 <translation id="6177128806592000436">Կայքին կապակցումը պաշտպանված չէ</translation>
 <translation id="6180316780098470077">Կրկնության միջակայք</translation>
 <translation id="6196640612572343990">Արգելափակել երրորդ կողմի քուքիները</translation>
@@ -1350,12 +1358,6 @@
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6276112860590028508">Ձեր ընթերցանության ցանկի էջերը կցուցադրվեն այստեղ</translation>
 <translation id="627746635834430766">Հաջորդ անգամ ավելի արագ վճարելու համար պահեք ձեր քարտը և վճարային հասցեն Google հաշվում:</translation>
-<translation id="6279516281132775660">Chrome-ում <ph name="BEGIN_EMPHASIS" />չեն պահվի<ph name="END_EMPHASIS" />՝
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />ձեր այցելությունների պատմությունը,
-          <ph name="LIST_ITEM" />քուքիներն ու կայքերի տվյալները,
-          <ph name="LIST_ITEM" />ձևերում լրացրած տեղեկությունները։
-        <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Այս հասցեով հնարավոր չէ առաքել: Ընտրեք այլ հասցե:</translation>
 <translation id="6282194474023008486">Փոստային դասիչ</translation>
 <translation id="6289939620939689042">Էջի գույնը</translation>
@@ -1852,7 +1854,6 @@
 <translation id="8265992338205884890">Տեսանելի տվյալներ</translation>
 <translation id="8267698848189296333">Մուտք եք գործում <ph name="USERNAME" /> հաշվով</translation>
 <translation id="8269242089528251720">Մի քանի փաստաթուղթ/առանձնացված պատճեններ</translation>
-<translation id="8269981117540303696">Ինկոգնիտո ռեժիմում ձեր գործողությունները տեսանելի չեն լինի այս սարքի մյուս օգտատերերին: Սակայն ներբեռնումներն ու էջանիշները կպահվեն։</translation>
 <translation id="8275952078857499577">Չառաջարկել թարգմանել այս կայքը</translation>
 <translation id="8277900682056760511">Վճարման մշակման թերթը բացված է</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
@@ -2002,7 +2003,6 @@
 <translation id="8903921497873541725">Խոշորացնել</translation>
 <translation id="890485472659500557">Engineering-C</translation>
 <translation id="890493561996401738">Հուշումը հեռացնելու կոճակ։ Սեղմեք Enter՝ հեռացնելու համար։ <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
-<translation id="8910670906166981838">Դուք ինկոգնիտո ռեժիմում եք</translation>
 <translation id="8912362522468806198">Google հաշիվ</translation>
 <translation id="8913778647360618320">«Կառավարել վճարման եղանակները» կոճակ։ Ձեր վճարումները և վարկային քարտերի տվյալները Chrome-ի կարգավորումներում կառավարելու համար սեղմեք Enter։</translation>
 <translation id="8918231688545606538">Այս էջը կասկածելի է</translation>

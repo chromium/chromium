@@ -591,6 +591,12 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3338095232262050444">Seguro</translation>
 <translation id="3355823806454867987">Cambiar la configuración del proxy...</translation>
 <translation id="3360103848165129075">Hoja del controlador de pagos</translation>
+<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />no guardará<ph name="END_EMPHASIS" /> la siguiente información:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />El historial de navegación
+          <ph name="LIST_ITEM" />Cookies y datos de sitios
+          <ph name="LIST_ITEM" />Información que ingreses en formularios
+        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Se copió esta política de forma automática a partir de la política obsoleta <ph name="OLD_POLICY" />. En su lugar, debes usar esta política.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> quiere usar tus datos y dispositivos de realidad virtual</translation>
 <translation id="3366477098757335611">Ver tarjetas</translation>
@@ -923,6 +929,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4644670975240021822">Orden inverso hacia abajo</translation>
 <translation id="4646534391647090355">Ir ahora</translation>
 <translation id="4658638640878098064">Grapa en la esquina superior izquierda</translation>
+<translation id="4660119392514473465">Ahora puedes navegar de forma privada; las demás personas que usan este dispositivo no verán tu actividad. Sin embargo, se guardarán las descargas, los favoritos y los elementos de la lista de lectura.</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realidad virtual</translation>
 <translation id="4675657451653251260">En el modo de invitado, no verás información de perfil de Chrome. Puedes <ph name="LINK_BEGIN" />acceder<ph name="LINK_END" /> para ingresar a la información de tu Cuenta de Google, como contraseñas y formas de pago.</translation>
@@ -1319,6 +1326,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6151417162996330722">El certificado de servidor tiene un período de validez demasiado extenso.</translation>
 <translation id="6157877588268064908">Para ver los requisitos y métodos de envío, selecciona una dirección</translation>
 <translation id="6165508094623778733">Más información</translation>
+<translation id="6169916984152623906">Ahora puedes navegar con privacidad. Si otras personas usan este dispositivo, no verán tu actividad. Sin embargo, se guardarán las descargas y los favoritos.</translation>
 <translation id="6177128806592000436">Tu conexión con este sitio no es segura</translation>
 <translation id="6180316780098470077">Intervalo entre reintentos</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceros</translation>
@@ -1340,12 +1348,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6272383483618007430">Google Actualización</translation>
 <translation id="6276112860590028508">Las páginas de tu lista de lectura aparecen aquí</translation>
 <translation id="627746635834430766">Para realizar pagos de forma más rápida la próxima vez, guarda tu tarjeta y dirección de facturación en tu cuenta de Google.</translation>
-<translation id="6279516281132775660">Chrome <ph name="BEGIN_EMPHASIS" />no guardará<ph name="END_EMPHASIS" /> la siguiente información:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />El historial de navegación
-          <ph name="LIST_ITEM" />Cookies y datos de sitios
-          <ph name="LIST_ITEM" />Información que ingreses en formularios
-        <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">La dirección de envío no es válida. Selecciona una dirección diferente.</translation>
 <translation id="6282194474023008486">Código postal</translation>
 <translation id="6289939620939689042">Color de la página</translation>
@@ -1842,7 +1844,6 @@ Detalles adicionales:
 <translation id="8265992338205884890">Datos visibles</translation>
 <translation id="8267698848189296333">Acceder como <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Documentos separados/copias intercaladas</translation>
-<translation id="8269981117540303696">Ahora puedes navegar de forma privada. Si otras personas usan este dispositivo, no verán tu actividad. Sin embargo, se guardarán las descargas y los favoritos.</translation>
 <translation id="8275952078857499577">No ofrecer la traducción de este sitio</translation>
 <translation id="8277900682056760511">La hoja del controlador de pagos está abierta</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
@@ -1993,7 +1994,6 @@ Detalles adicionales:
 <translation id="8903921497873541725">Acercar</translation>
 <translation id="890485472659500557">Engineering-C</translation>
 <translation id="890493561996401738">Botón Quitar sugerencia; presiona Intro para quitarla, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
-<translation id="8910670906166981838">Estás en modo Incógnito</translation>
 <translation id="8912362522468806198">Cuenta de Google</translation>
 <translation id="8913778647360618320">Botón Administrar formas de pago: presiona Intro para administrar tus datos de pago y de tarjetas de crédito en la configuración de Chrome</translation>
 <translation id="8918231688545606538">Esta página es sospechosa</translation>

@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">USB-C device (front port)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> changed to <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Please enter this PIN code on that device: <ph name="PINCODE" /></translation>
+<translation id="1024261588257374085">Partial screenshot selected</translation>
 <translation id="1032891413405719768">Stylus battery is low</translation>
 <translation id="1036672894875463507">I'm your Google Assistant, here to help you throughout your day!
 Here are some things that you can try to get started.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> added</translation>
+<translation id="1047017786576569492">partial</translation>
 <translation id="1047773237499189053">New feature available; use the up arrow key to learn more.</translation>
 <translation id="1056775291175587022">No networks</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1195412055398077112">overscan</translation>
 <translation id="119944043368869598">Clear all</translation>
 <translation id="1199716647557067911">Are you sure that you want to turn off switch access?</translation>
+<translation id="1210557957257435379">screen recording</translation>
 <translation id="121097972571826261">Forward by word</translation>
 <translation id="1225748608451425081">Your Chromebook is locked due to a known issue. You will be able to sign in after: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Stop selecting</translation>
@@ -112,6 +115,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="1923539912171292317">Automatic clicks</translation>
 <translation id="1928739107511554905">To get the update, use the touchscreen to restart your Chromebook with the keyboard attached.</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1954252331066828794">Screen recording completed</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Set your language</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -203,6 +207,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2727175239389218057">Reply</translation>
 <translation id="2727977024730340865">Plugged in to a low-power charger. Battery charging may not be reliable.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> managed by <ph name="MANAGER" /></translation>
+<translation id="2782591952652094792">Exit capture mode</translation>
 <translation id="2792498699870441125">Alt+Search</translation>
 <translation id="2814448776515246190">Partial capture</translation>
 <translation id="2819276065543622893">You will be signed out now.</translation>
@@ -228,6 +233,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="2996462380875591307">Docked Magnifier enabled. Press Ctrl+Search+D again to toggle it off.</translation>
 <translation id="3000461861112256445">Mono audio</translation>
 <translation id="3009178788565917040">Output</translation>
+<translation id="3017687597151988916">Selection area set to window</translation>
 <translation id="3033545621352269033">On</translation>
 <translation id="3036649622769666520">Open Files</translation>
 <translation id="3038571455154067151">To sign in, enter your Family Link parental access code</translation>
@@ -271,6 +277,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> can still sign in later.</translation>
 <translation id="3321628682574733415">Incorrect parent code</translation>
 <translation id="332587331255250389">Please replace the battery</translation>
+<translation id="3341303451326249809">Screenshot captured</translation>
 <translation id="334252345105450327">Take a screenshot</translation>
 <translation id="3351879221545518001">You are currently casting the screen.</translation>
 <translation id="3364721542077212959">Stylus tools</translation>
@@ -359,6 +366,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="4072264167173457037">Medium signal</translation>
 <translation id="4112140312785995938">Seek backwards</translation>
 <translation id="4114315158543974537">Turn on Phone Hub</translation>
+<translation id="412298498316631026">window</translation>
 <translation id="4129129681837227511">To see notifications on your lock screen, unlock to change the setting</translation>
 <translation id="4146833061457621061">Play music</translation>
 <translation id="4157822100366708405">Dark theme settings</translation>
@@ -631,6 +639,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="6570902864550063460">Charging via USB</translation>
 <translation id="6585808820553845416">Session ends in <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />, managed by your administrator</translation>
+<translation id="6612802754306526077">Screen recording mode selected</translation>
 <translation id="6614169507485700968">Privacy screen is on</translation>
 <translation id="6627638273713273709">Search+Shift+K</translation>
 <translation id="6637729079642709226">Change time</translation>
@@ -689,6 +698,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="7076293881109082629">Signing in</translation>
 <translation id="7088960765736518739">Switch access</translation>
 <translation id="7098389117866926363">USB-C device (left port in the back)</translation>
+<translation id="7118268675952955085">screenshot</translation>
 <translation id="7131634465328662194">You will automatically be signed out.</translation>
 <translation id="7143207342074048698">Connecting</translation>
 <translation id="7144878232160441200">Retry</translation>
@@ -721,12 +731,15 @@ Here are some things that you can try to get started.</translation>
 <translation id="742608627846767349">Good morning,</translation>
 <translation id="743058460480092004">Camera and microphone are in use.</translation>
 <translation id="7452560014878697800">An application is using your camera</translation>
+<translation id="7456049842111127849">Capture mode, default is <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Pin</translation>
 <translation id="746232733191930409">Screen recording mode</translation>
 <translation id="7466449121337984263">Please touch the sensor</translation>
 <translation id="7477793887173910789">Control your music, videos and more</translation>
+<translation id="7483025031359818980">Selection area set to full screen</translation>
 <translation id="7497767806359279797">Choose language and keyboard</translation>
 <translation id="7509246181739783082">Verify your identity</translation>
+<translation id="7513622367902644023">Screenshot mode selected</translation>
 <translation id="7526573455193969409">Network may be monitored</translation>
 <translation id="7536035074519304529">IP address: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Time for bed</translation>
@@ -832,6 +845,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8388750414311082622">Last desk can't be removed.</translation>
 <translation id="8394567579869570560">Your parent has locked this device</translation>
 <translation id="8412677897383510995">Show display settings</translation>
+<translation id="8413272770729657668">Recording starting in 3, 2, 1</translation>
 <translation id="8425213833346101688">Change</translation>
 <translation id="8426708595819210923">Good evening <ph name="GIVEN_NAME" />,</translation>
 <translation id="8427213022735114808">Dictation sends your voice to Google to allow voice typing in any text field.</translation>
@@ -910,6 +924,7 @@ Here are some things that you can try to get started.</translation>
 <translation id="8990809378771970590">Using <ph name="IME_NAME" /></translation>
 <translation id="899350903320462459">Unlock device as <ph name="LOGIN_ID" /> to perform the notification action</translation>
 <translation id="9017320285115481645">Enter Family Link parent access code.</translation>
+<translation id="9024331582947483881">full screen</translation>
 <translation id="9047624247355796468">Open settings for <ph name="NETWORK_NAME" /></translation>
 <translation id="9056839673611986238">Device will be rolled back</translation>
 <translation id="9063800855227801443">Can't capture confidential content</translation>

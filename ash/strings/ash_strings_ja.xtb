@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">USB-C デバイス（前面のポート）</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> を <ph name="RESOLUTION" />（<ph name="REFRESH_RATE" /> Hz）に変更しました。変更を保存するには確定してください。<ph name="TIMEOUT_SECONDS" /> 秒後に以前の設定に戻ります。</translation>
 <translation id="1013923882670373915">Bluetooth デバイス「<ph name="DEVICE_NAME" />」がペア設定の権限をリクエストしています。このデバイスに次の PIN コードを入力してください: <ph name="PINCODE" /></translation>
+<translation id="1024261588257374085">画面の一部のスクリーンショットを選択しました</translation>
 <translation id="1032891413405719768">タッチペンのバッテリー残量が少なくなっています</translation>
 <translation id="1036672894875463507">私は Google アシスタント、あなたの 1 日をサポートします。
 使用できるフレーズをいくつか紹介します。</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> が追加されました</translation>
+<translation id="1047017786576569492">画面の一部</translation>
 <translation id="1047773237499189053">新しい機能があります。上矢印キーで詳細を確認できます。</translation>
 <translation id="1056775291175587022">なし</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@
 <translation id="1195412055398077112">オーバースキャン</translation>
 <translation id="119944043368869598">すべて削除</translation>
 <translation id="1199716647557067911">スイッチ アクセスをオフにしてもよろしいですか？</translation>
+<translation id="1210557957257435379">画面の録画</translation>
 <translation id="121097972571826261">1 語進む</translation>
 <translation id="1225748608451425081">既知の問題により、Chromebook はロックされています。<ph name="TIME_LEFT" /> 後にログインできるようになります。</translation>
 <translation id="1229194443904279055">選択を終了</translation>
@@ -112,6 +115,7 @@
 <translation id="1923539912171292317">自動クリック</translation>
 <translation id="1928739107511554905">アップデートを取得するには、キーボードが接続された状態で、タッチスクリーンを使って Chromebook を再起動してください。</translation>
 <translation id="1951012854035635156">アシスタント</translation>
+<translation id="1954252331066828794">画面の録画が完了しました</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">言語を設定</translation>
 <translation id="1961832440516943645"><ph name="DATE" />、<ph name="TIME" /></translation>
@@ -203,6 +207,7 @@
 <translation id="2727175239389218057">返信</translation>
 <translation id="2727977024730340865">低電力の充電器に接続しています。バッテリーが充電されない可能性があります。</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> は <ph name="MANAGER" /> によって管理されています</translation>
+<translation id="2782591952652094792">キャプチャ モードを終了</translation>
 <translation id="2792498699870441125">Alt+ 検索</translation>
 <translation id="2814448776515246190">画面の一部のキャプチャ</translation>
 <translation id="2819276065543622893">ログアウトします。</translation>
@@ -228,6 +233,7 @@
 <translation id="2996462380875591307">ドッキング拡大鏡がオンになっています。オフにするには Ctrl+検索+D キーをもう一度押します。</translation>
 <translation id="3000461861112256445">モノラル音声</translation>
 <translation id="3009178788565917040">出力</translation>
+<translation id="3017687597151988916">選択領域をウィンドウに設定しました</translation>
 <translation id="3033545621352269033">オン</translation>
 <translation id="3036649622769666520">ファイルを開く</translation>
 <translation id="3038571455154067151">ログインするには、ファミリー リンクの保護者のアクセスコードを入力してください</translation>
@@ -271,6 +277,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> が後でログインすることは引き続き可能です。</translation>
 <translation id="3321628682574733415">保護者のコードが間違っています</translation>
 <translation id="332587331255250389">バッテリーを交換してください</translation>
+<translation id="3341303451326249809">スクリーンショットをキャプチャしました</translation>
 <translation id="334252345105450327">スクリーンショットを撮って</translation>
 <translation id="3351879221545518001">現在、画面をキャストしています。</translation>
 <translation id="3364721542077212959">タッチペン ツール</translation>
@@ -359,6 +366,7 @@
 <translation id="4072264167173457037">電波: 中程度</translation>
 <translation id="4112140312785995938">後方に移動</translation>
 <translation id="4114315158543974537">Phone Hub をオンにする</translation>
+<translation id="412298498316631026">ウィンドウ</translation>
 <translation id="4129129681837227511">ロック画面に通知を表示するには、ロックを解除して設定を変更してください</translation>
 <translation id="4146833061457621061">音楽を再生して</translation>
 <translation id="4157822100366708405">ダークテーマの設定</translation>
@@ -631,6 +639,7 @@
 <translation id="6570902864550063460">USB 経由で充電しています</translation>
 <translation id="6585808820553845416">セッション終了まであと <ph name="SESSION_TIME_REMAINING" />です。</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />、管理者によって管理</translation>
+<translation id="6612802754306526077">画面の録画モードを選択しました</translation>
 <translation id="6614169507485700968">プライバシー スクリーンはオンになっています</translation>
 <translation id="6627638273713273709">検索+Shift+K</translation>
 <translation id="6637729079642709226">時間を変更</translation>
@@ -689,6 +698,7 @@
 <translation id="7076293881109082629">ログイン中</translation>
 <translation id="7088960765736518739">スイッチ アクセス</translation>
 <translation id="7098389117866926363">USB-C デバイス（背面左のポート）</translation>
+<translation id="7118268675952955085">スクリーンショット</translation>
 <translation id="7131634465328662194">制限時間になると自動的にログアウトします。</translation>
 <translation id="7143207342074048698">接続中</translation>
 <translation id="7144878232160441200">再読み込み</translation>
@@ -722,12 +732,15 @@
 <translation id="742608627846767349">おはようございます</translation>
 <translation id="743058460480092004">カメラとマイクが使用中です。</translation>
 <translation id="7452560014878697800">アプリケーションがカメラを使用しています</translation>
+<translation id="7456049842111127849">キャプチャ モードです。デフォルトは <ph name="SOURCE" /> の <ph name="TYPE" /> です。</translation>
 <translation id="7461924472993315131">固定</translation>
 <translation id="746232733191930409">画面の録画モード</translation>
 <translation id="7466449121337984263">センサーをタッチしてください</translation>
 <translation id="7477793887173910789">音楽、動画、その他のメディアを操作します</translation>
+<translation id="7483025031359818980">選択領域を全画面に設定しました</translation>
 <translation id="7497767806359279797">言語とキーボードを選択</translation>
 <translation id="7509246181739783082">本人確認</translation>
+<translation id="7513622367902644023">スクリーンショット モードを選択しました</translation>
 <translation id="7526573455193969409">ネットワークが監視されている可能性があります</translation>
 <translation id="7536035074519304529">IP アドレス: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">おやすみの時間です</translation>
@@ -833,6 +846,7 @@
 <translation id="8388750414311082622">最後のデスクは削除できません。</translation>
 <translation id="8394567579869570560">保護者の方がこのデバイスをロックしました</translation>
 <translation id="8412677897383510995">ディスプレイの設定を表示</translation>
+<translation id="8413272770729657668">録画開始まで 3、2、1</translation>
 <translation id="8425213833346101688">変更</translation>
 <translation id="8426708595819210923">こんばんは、<ph name="GIVEN_NAME" /> さん</translation>
 <translation id="8427213022735114808">音声入力では、テキスト欄で音声入力できるように Google に音声を送信します。</translation>
@@ -911,6 +925,7 @@
 <translation id="8990809378771970590"><ph name="IME_NAME" /> を使用しています</translation>
 <translation id="899350903320462459">通知に関する操作を行うには、<ph name="LOGIN_ID" /> でデバイスのロックを解除してください</translation>
 <translation id="9017320285115481645">ファミリー リンクの保護者のアクセスコードを入力してください。</translation>
+<translation id="9024331582947483881">全画面表示</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> の設定を開く</translation>
 <translation id="9056839673611986238">デバイスはロールバックされます</translation>
 <translation id="9063800855227801443">機密コンテンツはキャプチャできません</translation>

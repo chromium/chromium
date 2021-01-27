@@ -4,10 +4,12 @@
 <translation id="1012876632442809908">USB-C құрылғысы (алдыңғы ұяшық)</translation>
 <translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> дисплейі <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц) ажыратымдылығына өзгерді. Өзгерістерді сақтау үшін "Растау" түймесін басыңыз. Алдыңғы параметрлер <ph name="TIMEOUT_SECONDS" /> кейін қалпына келтіріледі.</translation>
 <translation id="1013923882670373915">"<ph name="DEVICE_NAME" />" Bluetooth құрылғысы жұптауды сұрайды. Аталмыш құрылғыда осы PIN кодын енгізіңіз. <ph name="PINCODE" /></translation>
+<translation id="1024261588257374085">Экран скриншотының бір бөлігі таңдалды.</translation>
 <translation id="1032891413405719768">Стилус батареясының заряды аз қалды</translation>
 <translation id="1036672894875463507">Мен Google Assistant-пін, сізге күні бойы көмекке дайынмын!
 Пайдалана бастау үшін кейбір функцияларды қолданып көрсеңіз болады.</translation>
 <translation id="1037492556044956303"><ph name="DEVICE_NAME" /> қосылды</translation>
+<translation id="1047017786576569492">экранның бір бөлігі</translation>
 <translation id="1047773237499189053">Жаңа функция қолжетімді. Толығырақ ақпарат алу үшін жоғарыға бағыттауыш пернені қолданыңыз.</translation>
 <translation id="1056775291175587022">Желі табылмады</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
@@ -27,6 +29,7 @@
 <translation id="1195412055398077112">көрінбейтін бөлік</translation>
 <translation id="119944043368869598">Барлығын өшіру</translation>
 <translation id="1199716647557067911">Switch Access функциясын шынымен өшіргіңіз келе ме?</translation>
+<translation id="1210557957257435379">экранды жазу</translation>
 <translation id="121097972571826261">Бір сөзге алға жүру</translation>
 <translation id="1225748608451425081">Белгілі мәселеге байланысты Chromebook құлыпталды. Келесі уақыттан кейін есептік жазбаға кіре аласыз: <ph name="TIME_LEFT" />.</translation>
 <translation id="1229194443904279055">Таңдауды тоқтату</translation>
@@ -112,6 +115,7 @@
 <translation id="1923539912171292317">Автоматты басу әрекеттері</translation>
 <translation id="1928739107511554905">Жаңартылған нұсқаны алу үшін, пернетақта жалғанған күйі Chromebook ноутбугын сенсорлық экран арқылы қайта қосыңыз.</translation>
 <translation id="1951012854035635156">Assistant</translation>
+<translation id="1954252331066828794">Экранды жазу аяқталды.</translation>
 <translation id="1957803754585243749">0°</translation>
 <translation id="1957958912175573503">Тіліңізді орнатыңыз</translation>
 <translation id="1961832440516943645"><ph name="DATE" />, <ph name="TIME" /></translation>
@@ -203,6 +207,7 @@
 <translation id="2727175239389218057">Жауап беру</translation>
 <translation id="2727977024730340865">Төмен қуатты зарядтағышқа жалғанған. Батареяны зарядтау кезінде қиындықтар болуы мүмкін.</translation>
 <translation id="2778650143428714839"><ph name="DEVICE_TYPE" /> құрылғысын <ph name="MANAGER" /> басқарады.</translation>
+<translation id="2782591952652094792">Түсіру режимінен шығу</translation>
 <translation id="2792498699870441125">Alt+Іздеу</translation>
 <translation id="2814448776515246190">Экранның бір бөлігін түсіру</translation>
 <translation id="2819276065543622893">Жүйеден қазір шығасыз.</translation>
@@ -228,6 +233,7 @@
 <translation id="2996462380875591307">Бекітілген ұлғайтқыш қосылды. Оны өшіру үшін Ctrl+Search+D пернелер тіркесімін қайта басыңыз.</translation>
 <translation id="3000461861112256445">Моно аудио</translation>
 <translation id="3009178788565917040">Шығыс</translation>
+<translation id="3017687597151988916">Таңдау аймағы терезеге орнатылды.</translation>
 <translation id="3033545621352269033">Қосулы</translation>
 <translation id="3036649622769666520">Файлдарды ашу</translation>
 <translation id="3038571455154067151">Есептік жазбаға кіру үшін Family Link ата-ананың рұқсат кодын енгізіңіз.</translation>
@@ -271,6 +277,7 @@
 <translation id="3308453408813785101"><ph name="USER_EMAIL_ADDRESS" /> кейінірек те кіре алады.</translation>
 <translation id="3321628682574733415">Ата-ана коды дұрыс емес</translation>
 <translation id="332587331255250389">Батареяны ауыстырыңыз</translation>
+<translation id="3341303451326249809">Скриншот түсірілді.</translation>
 <translation id="334252345105450327">Скриншот түсіру</translation>
 <translation id="3351879221545518001">Экранды трансляциялап жатырсыз.</translation>
 <translation id="3364721542077212959">Стилус құралдары</translation>
@@ -359,6 +366,7 @@
 <translation id="4072264167173457037">Орташа сигнал</translation>
 <translation id="4112140312785995938">Артқа</translation>
 <translation id="4114315158543974537">Телефон хабын қосу</translation>
+<translation id="412298498316631026">терезе</translation>
 <translation id="4129129681837227511">Құлып экранында хабарландыруларды көру және параметрді өзгерту үшін құлыпты ашыңыз.</translation>
 <translation id="4146833061457621061">Музыка ойнату</translation>
 <translation id="4157822100366708405">Қараңғы тақырып параметрлері</translation>
@@ -631,6 +639,7 @@
 <translation id="6570902864550063460">USB арқылы зарядталып жатыр.</translation>
 <translation id="6585808820553845416">Сеанс <ph name="SESSION_TIME_REMAINING" /> уақыттан кейін аяқталады.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, сигнал күші: <ph name="SIGNAL_STRENGTH" />, әкімші басқарады</translation>
+<translation id="6612802754306526077">Экранды жазу режимі таңдалды.</translation>
 <translation id="6614169507485700968">Құпиялылық экраны қосулы.</translation>
 <translation id="6627638273713273709">Іздеу+Shift+K</translation>
 <translation id="6637729079642709226">Уақытты өзгерту</translation>
@@ -689,6 +698,7 @@
 <translation id="7076293881109082629">Кіру</translation>
 <translation id="7088960765736518739">Switch Access</translation>
 <translation id="7098389117866926363">USB-C құрылғысы (артқы сол жақ порты)</translation>
+<translation id="7118268675952955085">скриншот</translation>
 <translation id="7131634465328662194">Есептік жазбадан автоматты түрде шығасыз.</translation>
 <translation id="7143207342074048698">Қосылып жатыр</translation>
 <translation id="7144878232160441200">Қайталау</translation>
@@ -721,12 +731,15 @@
 <translation id="742608627846767349">Қайырлы таң!</translation>
 <translation id="743058460480092004">Камера және микрофон пайдаланылуда.</translation>
 <translation id="7452560014878697800">Қолданба камераңызды пайдаланып жатыр.</translation>
+<translation id="7456049842111127849">Түсіру режимі, әдепкі параметр – <ph name="SOURCE" /> <ph name="TYPE" />.</translation>
 <translation id="7461924472993315131">Бекіту</translation>
 <translation id="746232733191930409">Экран жазу режимі</translation>
 <translation id="7466449121337984263">Саусақ ізін оқу сканерін түртіңіз.</translation>
 <translation id="7477793887173910789">Музыканы, бейнелерді және т.б. басқарыңыз.</translation>
+<translation id="7483025031359818980">Таңдау аймағы толық экранға орнатылды.</translation>
 <translation id="7497767806359279797">Тілді және пернетақтаны таңдау</translation>
 <translation id="7509246181739783082">Жеке басыңызды растаңыз</translation>
+<translation id="7513622367902644023">Скриншот режимі таңдалды.</translation>
 <translation id="7526573455193969409">Желі бақылануы мүмкін</translation>
 <translation id="7536035074519304529">IP мекенжайы: <ph name="ADDRESS" /></translation>
 <translation id="7548434653388805669">Ұйықтайтын уақыт болды</translation>
@@ -832,6 +845,7 @@
 <translation id="8388750414311082622">Соңғы жұмыс үстелін өшіру мүмкін емес.</translation>
 <translation id="8394567579869570560">Ата-анаңыз бұл құрылғыны құлыптады</translation>
 <translation id="8412677897383510995">Дисплей параметрлерін көрсету</translation>
+<translation id="8413272770729657668">Жазу басталайын деп жатыр. 3, 2, 1</translation>
 <translation id="8425213833346101688">Өзгерту</translation>
 <translation id="8426708595819210923">Қайырлы кеш, <ph name="GIVEN_NAME" />!</translation>
 <translation id="8427213022735114808">Дауыспен теруге рұқсат ету үшін мәтінді дауыспен енгізу функциясы даусыңызды Google жүйесіне жібереді.</translation>
@@ -910,6 +924,7 @@
 <translation id="8990809378771970590"><ph name="IME_NAME" /> пайдалану</translation>
 <translation id="899350903320462459">Хабарландыруда ұсынылған әрекетті орындау үшін <ph name="LOGIN_ID" /> арқылы құрылғының құлпын ашыңыз</translation>
 <translation id="9017320285115481645">Family Link ата-ананың рұқсат кодын енгізіңіз.</translation>
+<translation id="9024331582947483881">толық экран</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> желісіне арналған параметрлерді ашу</translation>
 <translation id="9056839673611986238">Құрылғы алдыңғы нұсқаға қайтарылды</translation>
 <translation id="9063800855227801443">Құпия мазмұнды түсіру мүмкін емес</translation>

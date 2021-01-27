@@ -590,6 +590,12 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3338095232262050444">Seguro</translation>
 <translation id="3355823806454867987">Alterar configurações de proxy...</translation>
 <translation id="3360103848165129075">Página do gerenciador de pagamento</translation>
+<translation id="3361596688432910856">O Chrome <ph name="BEGIN_EMPHASIS" />não salvará<ph name="END_EMPHASIS" /> as seguintes informações:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />seu histórico de navegação
+          <ph name="LIST_ITEM" />cookies e dados de sites
+          <ph name="LIST_ITEM" />informações fornecidas em formulários
+        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">Esta política foi copiada automaticamente da política <ph name="OLD_POLICY" /> obsoleta. Use esta política.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> quer usar seus dispositivos e dados de realidade virtual</translation>
 <translation id="3366477098757335611">Ver cartões</translation>
@@ -922,6 +928,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4644670975240021822">Ordem reversa virada para baixo</translation>
 <translation id="4646534391647090355">Acessar agora</translation>
 <translation id="4658638640878098064">Grampo na parte superior direita</translation>
+<translation id="4660119392514473465">Agora você pode navegar com privacidade, e as outras pessoas que usarem este dispositivo não verão suas atividades. No entanto, os downloads, favoritos e itens da Lista de leitura ainda serão salvos.</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Realidade virtual</translation>
 <translation id="4675657451653251260">Você não verá informações de perfis do Chrome no modo visitante. <ph name="LINK_BEGIN" />Faça login<ph name="LINK_END" /> para acessar informações da sua Conta do Google, como senhas e formas de pagamento.</translation>
@@ -1318,6 +1325,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6151417162996330722">O certificado do servidor tem um período de validade excessivamente longo.</translation>
 <translation id="6157877588268064908">Para ver métodos e requisitos de envio, selecione um endereço</translation>
 <translation id="6165508094623778733">Saiba mais</translation>
+<translation id="6169916984152623906">Agora você pode navegar com privacidade. Outras pessoas que usarem este dispositivo não verão sua atividade, mas os downloads e favoritos serão salvos.</translation>
 <translation id="6177128806592000436">Sua conexão com esse site não é segura</translation>
 <translation id="6180316780098470077">Intervalo entre novas tentativas</translation>
 <translation id="6196640612572343990">Bloquear cookies de terceiros</translation>
@@ -1339,12 +1347,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6272383483618007430">Google Update</translation>
 <translation id="6276112860590028508">As páginas da sua lista de leitura são exibidas aqui</translation>
 <translation id="627746635834430766">Para agilizar o pagamento na próxima vez, salve o cartão e o endereço de faturamento na sua Conta do Google.</translation>
-<translation id="6279516281132775660">O Chrome <ph name="BEGIN_EMPHASIS" />não salvará<ph name="END_EMPHASIS" /> as seguintes informações:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Seu histórico de navegação
-          <ph name="LIST_ITEM" />Cookies e dados de sites
-          <ph name="LIST_ITEM" />Informações fornecidas em formulários
-        <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Não é possível entregar nesse endereço. Selecione um endereço diferente.</translation>
 <translation id="6282194474023008486">CEP</translation>
 <translation id="6289939620939689042">Cor da página</translation>
@@ -1841,7 +1843,6 @@ Mais detalhes:
 <translation id="8265992338205884890">Dados visíveis</translation>
 <translation id="8267698848189296333">Fazendo login como <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Documentos separados/Cópias reunidas</translation>
-<translation id="8269981117540303696">Agora você pode navegar com privacidade. Outras pessoas que usarem este dispositivo não verão sua atividade, mas os downloads e favoritos serão salvos.</translation>
 <translation id="8275952078857499577">Não oferecer a opção de traduzir este site</translation>
 <translation id="8277900682056760511">A página do gerenciador de pagamento está aberta</translation>
 <translation id="8281084378435768645">Large photo</translation>
@@ -1992,7 +1993,6 @@ Mais detalhes:
 <translation id="8903921497873541725">Aumentar zoom</translation>
 <translation id="890485472659500557">Engineering C</translation>
 <translation id="890493561996401738">Botão "Remover sugestão", pressione Enter para remover, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
-<translation id="8910670906166981838">Você entrou no modo de navegação anônima</translation>
 <translation id="8912362522468806198">Conta do Google</translation>
 <translation id="8913778647360618320">Botão "Gerenciar formas de pagamento". Pressione "Enter" para gerenciar suas informações de pagamento e de cartão de crédito nas configurações do Chrome</translation>
 <translation id="8918231688545606538">Esta página é suspeita</translation>

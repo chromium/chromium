@@ -595,6 +595,12 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3338095232262050444">Secure</translation>
 <translation id="3355823806454867987">Change proxy settings...</translation>
 <translation id="3360103848165129075">Payment handler sheet</translation>
+<translation id="3361596688432910856">Chrome <ph name="BEGIN_EMPHASIS" />won’t save<ph name="END_EMPHASIS" /> the following information:
+        <ph name="BEGIN_LIST" />
+          <ph name="LIST_ITEM" />Your browsing history
+          <ph name="LIST_ITEM" />Cookies and site data
+          <ph name="LIST_ITEM" />Information entered in forms
+        <ph name="END_LIST" /></translation>
 <translation id="3362968246557010467">This policy was automatically copied from the deprecated <ph name="OLD_POLICY" /> policy. You should use this policy instead.</translation>
 <translation id="3364869320075768271"><ph name="URL" /> wants to use your virtual reality device and data</translation>
 <translation id="3366477098757335611">View cards</translation>
@@ -932,6 +938,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4644670975240021822">Reverse order face down</translation>
 <translation id="4646534391647090355">Take me there now</translation>
 <translation id="4658638640878098064">Staple top left</translation>
+<translation id="4660119392514473465">Now you can browse privately, and other people who use this device won’t see your activity. However, downloads, bookmarks and reading list items will be saved.</translation>
 <translation id="4668929960204016307">,</translation>
 <translation id="4670064810192446073">Virtual reality</translation>
 <translation id="4675657451653251260">In guest mode, you won't see any Chrome profile information. You can <ph name="LINK_BEGIN" />sign in<ph name="LINK_END" /> to access your Google Account info like passwords and payment methods.</translation>
@@ -1328,6 +1335,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6151417162996330722">The server certificate has a validity period that is too long.</translation>
 <translation id="6157877588268064908">To see delivery methods and requirements, select an address</translation>
 <translation id="6165508094623778733">Learn more</translation>
+<translation id="6169916984152623906">Now you can browse privately, and other people who use this device won’t see your activity. However, downloads and bookmarks will be saved.</translation>
 <translation id="6177128806592000436">Your connection to this site is not secure</translation>
 <translation id="6180316780098470077">Retry interval</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
@@ -1349,12 +1357,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6272383483618007430">Google update</translation>
 <translation id="6276112860590028508">Pages from your reading list appear here</translation>
 <translation id="627746635834430766">To pay faster next time, save your card and billing address to your Google Account.</translation>
-<translation id="6279516281132775660">Chrome <ph name="BEGIN_EMPHASIS" />won't save<ph name="END_EMPHASIS" /> the following information:
-        <ph name="BEGIN_LIST" />
-          <ph name="LIST_ITEM" />Your browsing history
-          <ph name="LIST_ITEM" />Cookies and site data
-          <ph name="LIST_ITEM" />Information entered in forms
-        <ph name="END_LIST" /></translation>
 <translation id="6280223929691119688">Can’t deliver to this address. Select a different address.</translation>
 <translation id="6282194474023008486">Postcode</translation>
 <translation id="6289939620939689042">Page colour</translation>
@@ -1851,7 +1853,6 @@ Additional details:
 <translation id="8265992338205884890">Visible data</translation>
 <translation id="8267698848189296333">Signing in as <ph name="USERNAME" /></translation>
 <translation id="8269242089528251720">Separate documents/Collated copies</translation>
-<translation id="8269981117540303696">Now you can browse privately, and other people who use this device won't see your activity. However, downloads and bookmarks will be saved.</translation>
 <translation id="8275952078857499577">Don‘t offer to translate this site</translation>
 <translation id="8277900682056760511">Payment handler sheet is opened</translation>
 <translation id="8281084378435768645">Large-Photo</translation>
@@ -2001,7 +2002,6 @@ Additional details:
 <translation id="8903921497873541725">Zoom in</translation>
 <translation id="890485472659500557">Engineering-C</translation>
 <translation id="890493561996401738">Remove Suggestion button, press Enter to remove, <ph name="REMOVE_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
-<translation id="8910670906166981838">You've gone incognito</translation>
 <translation id="8912362522468806198">Google Account</translation>
 <translation id="8913778647360618320">Manage payment methods button; press enter to manage your payments and credit card info in Chrome settings</translation>
 <translation id="8918231688545606538">This page is suspicious</translation>
