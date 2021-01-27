@@ -5807,6 +5807,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_ACCDESCRIPTION_BACK" desc="Help text that explains to keyboard users how to interact with the back button, similar to the tooltip presented to mouse users.">
         Press to go back, context menu to see history
       </message>
+      <message name="IDS_TOOLTIP_CHROMELABS_BUTTON" desc="The tooltip for the Chrome Labs button in the toolbar">
+      Experiments
+      </message>
       <message name="IDS_TOOLTIP_FORWARD" desc="The tooltip for forward button">
         Click to go forward, hold to see history
       </message>

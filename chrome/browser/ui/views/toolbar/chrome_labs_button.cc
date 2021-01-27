@@ -6,12 +6,16 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/button_controller.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 ChromeLabsButton::ChromeLabsButton()
     : ToolbarButton(base::BindRepeating(&ChromeLabsButton::ButtonPressed,
                                         base::Unretained(this))) {
+  SetAccessibleName(l10n_util::GetStringUTF16(IDS_TOOLTIP_CHROMELABS_BUTTON));
+  SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_CHROMELABS_BUTTON));
   button_controller()->set_notify_action(
       views::ButtonController::NotifyAction::kOnPress);
 }
