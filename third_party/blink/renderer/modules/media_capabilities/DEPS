@@ -12,6 +12,7 @@ include_rules = [
     "-third_party/blink/renderer/modules",
     "+third_party/blink/renderer/modules/encryptedmedia",
     "+third_party/blink/renderer/modules/media_capabilities",
+    "+third_party/blink/renderer/modules/media_capabilities_names.h",
     "+third_party/blink/renderer/modules/mediarecorder/media_recorder_handler.h",
     "+third_party/blink/renderer/modules/modules_export.h",
 ]
