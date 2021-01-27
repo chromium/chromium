@@ -94,6 +94,21 @@ testcase.holdingSpaceWelcomeBannerWontShowAfterReachingLimit = async () => {
 };
 
 /**
+ * Tests that the holding space welcome banner will not show for modal dialogs.
+ */
+testcase.holdingSpaceWelcomeBannerWontShowForModalDialogs = async () => {
+  // Open Save as dialog.
+  chrome.fileSystem.chooseEntry({type: 'saveFile'}, entry => {});
+  const appId = await waitForDialog();
+
+  // Wait to finish initial load.
+  await remoteCall.waitFor('isFileManagerLoaded', appId, true);
+
+  // Check: the holding space welcome banner should be hidden.
+  await remoteCall.waitForElement(appId, '.holding-space-welcome[hidden]');
+};
+
+/**
  * Tests that the holding space welcome banner will not show on Drive.
  */
 testcase.holdingSpaceWelcomeBannerWontShowOnDrive = async () => {
