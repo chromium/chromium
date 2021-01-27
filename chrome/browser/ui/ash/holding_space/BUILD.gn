@@ -30,6 +30,7 @@ source_set("browser_tests") {
     "//ui/aura",
     "//ui/base",
     "//ui/events:test_support",
+    "//ui/gfx:test_support",
     "//ui/views",
     "//ui/wm/public",
   ]

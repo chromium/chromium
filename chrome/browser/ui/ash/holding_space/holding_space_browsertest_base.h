@@ -80,6 +80,12 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
   // Removes the specified holding space `item`.
   void RemoveItem(const HoldingSpaceItem* item);
 
+  // Creates a file at the root of the Downloads mount point with the specified
+  // extension. If extension is omitted, the created file will have an extension
+  // of `.txt`. Returns the file path of the created file.
+  base::FilePath CreateFile(
+      const base::Optional<std::string>& extension = base::nullopt);
+
   // Returns the collection of download chips in holding space UI.
   // If holding space UI is not visible, an empty collection is returned.
   std::vector<views::View*> GetDownloadChips();
@@ -91,6 +97,9 @@ class HoldingSpaceBrowserTestBase : public InProcessBrowserTest {
   // Returns the collection of screen capture views in holding space UI.
   // If holding space UI is not visible, an empty collection is returned.
   std::vector<views::View*> GetScreenCaptureViews();
+
+  // Returns the holding space tray in the shelf.
+  views::View* GetTray();
 
   // Getter for the holding space tray icons in the shelf.
   views::View* GetDefaultTrayIcon();

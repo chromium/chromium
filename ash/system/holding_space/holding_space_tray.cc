@@ -8,6 +8,7 @@
 
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/public/cpp/ash_features.h"
+#include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
 #include "ash/public/cpp/holding_space/holding_space_metrics.h"
@@ -24,6 +25,7 @@
 #include "ash/system/tray/tray_container.h"
 #include "base/containers/adapters.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
@@ -35,6 +37,29 @@ namespace ash {
 namespace {
 
 // Helpers ---------------------------------------------------------------------
+
+// Returns the file paths extracted from the specified `data` which are *not*
+// pinned to the attached holding space model.
+std::vector<base::FilePath> ExtractUnpinnedFilePaths(
+    const ui::OSExchangeData& data) {
+  if (!data.HasFile())
+    return {};
+
+  std::vector<ui::FileInfo> filenames;
+  if (!data.GetFilenames(&filenames))
+    return {};
+
+  HoldingSpaceModel* const model = HoldingSpaceController::Get()->model();
+
+  std::vector<base::FilePath> unpinned_file_paths;
+  for (const ui::FileInfo& filename : filenames) {
+    const base::FilePath& file_path = filename.path;
+    if (!model->ContainsItem(HoldingSpaceItem::Type::kPinnedFile, file_path))
+      unpinned_file_paths.push_back(file_path);
+  }
+
+  return unpinned_file_paths;
+}
 
 // Returns whether previews are enabled.
 bool IsPreviewsEnabled() {
@@ -204,6 +229,37 @@ void HoldingSpaceTray::SetVisiblePreferred(bool visible_preferred) {
 
   if (!visible_preferred)
     CloseBubble();
+}
+
+bool HoldingSpaceTray::GetDropFormats(
+    int* formats,
+    std::set<ui::ClipboardFormatType>* format_types) {
+  *formats = ui::OSExchangeData::FILE_NAME;
+  return true;
+}
+
+bool HoldingSpaceTray::AreDropTypesRequired() {
+  return true;
+}
+
+bool HoldingSpaceTray::CanDrop(const ui::OSExchangeData& data) {
+  return !ExtractUnpinnedFilePaths(data).empty();
+}
+
+int HoldingSpaceTray::OnDragUpdated(const ui::DropTargetEvent& event) {
+  return ExtractUnpinnedFilePaths(event.data()).empty()
+             ? ui::DragDropTypes::DRAG_NONE
+             : ui::DragDropTypes::DRAG_COPY;
+}
+
+int HoldingSpaceTray::OnPerformDrop(const ui::DropTargetEvent& event) {
+  std::vector<base::FilePath> unpinned_file_paths(
+      ExtractUnpinnedFilePaths(event.data()));
+  if (unpinned_file_paths.empty())
+    return ui::DragDropTypes::DRAG_NONE;
+
+  HoldingSpaceController::Get()->client()->PinFiles(unpinned_file_paths);
+  return ui::DragDropTypes::DRAG_COPY;
 }
 
 void HoldingSpaceTray::FirePreviewsUpdateTimerIfRunningForTesting() {

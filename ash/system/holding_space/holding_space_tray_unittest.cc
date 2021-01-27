@@ -97,6 +97,10 @@ class MockHoldingSpaceClient : public HoldingSpaceClient {
               (const HoldingSpaceItem& item, SuccessCallback callback),
               (override));
   MOCK_METHOD(void,
+              PinFiles,
+              (const std::vector<base::FilePath>& file_paths),
+              (override));
+  MOCK_METHOD(void,
               PinItems,
               (const std::vector<const HoldingSpaceItem*>& items),
               (override));

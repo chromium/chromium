@@ -69,6 +69,12 @@ class ASH_EXPORT HoldingSpaceTray : public TrayBackgroundView,
   void ShowBubble(bool show_by_click) override;
   TrayBubbleView* GetBubbleView() override;
   void SetVisiblePreferred(bool visible_preferred) override;
+  bool GetDropFormats(int* formats,
+                      std::set<ui::ClipboardFormatType>* format_types) override;
+  bool AreDropTypesRequired() override;
+  bool CanDrop(const ui::OSExchangeData& data) override;
+  int OnDragUpdated(const ui::DropTargetEvent& event) override;
+  int OnPerformDrop(const ui::DropTargetEvent& event) override;
 
   void set_use_zero_previews_update_delay_for_testing(bool zero_delay) {
     use_zero_previews_update_delay_ = zero_delay;

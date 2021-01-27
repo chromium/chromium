@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/ash/clipboard_util.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
+#include "chrome/browser/ui/ash/holding_space/holding_space_util.h"
 #include "net/base/mime_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 
@@ -218,6 +219,25 @@ void HoldingSpaceClientImpl::ShowItemInFolder(const HoldingSpaceItem& item,
             std::move(callback).Run(success);
           },
           std::move(callback)));
+}
+
+void HoldingSpaceClientImpl::PinFiles(
+    const std::vector<base::FilePath>& file_paths) {
+  std::vector<storage::FileSystemURL> file_system_urls;
+
+  HoldingSpaceKeyedService* service = GetHoldingSpaceKeyedService(profile_);
+  for (const base::FilePath& file_path : file_paths) {
+    const storage::FileSystemURL& file_system_url =
+        file_manager::util::GetFileSystemContextForExtensionId(
+            profile_, file_manager::kFileManagerAppId)
+            ->CrackURL(
+                holding_space_util::ResolveFileSystemUrl(profile_, file_path));
+    if (!service->ContainsPinnedFile(file_system_url))
+      file_system_urls.push_back(file_system_url);
+  }
+
+  if (!file_system_urls.empty())
+    service->AddPinnedFiles(file_system_urls);
 }
 
 void HoldingSpaceClientImpl::PinItems(

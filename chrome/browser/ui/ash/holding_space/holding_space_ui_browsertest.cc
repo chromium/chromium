@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/capture_mode_test_api.h"
+#include "ash/public/cpp/holding_space/holding_space_client.h"
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_controller.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
@@ -18,6 +19,7 @@
 #include "base/scoped_observation.h"
 #include "base/scoped_observer.h"
 #include "base/test/bind.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -25,10 +27,13 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/aura/window.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/os_exchange_data_provider_factory.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/views/controls/menu/menu_controller.h"
+#include "ui/views/drag_controller.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -79,7 +84,11 @@ void GestureDrag(const views::View* from, const views::View* to) {
       ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
   event_generator.Dispatch(&long_press);
 
-  event_generator.MoveTouch(to->GetBoundsInScreen().CenterPoint());
+  // NOTE: The `ash::DragDropController` applies a vertical offset when
+  // determining the target view for touch initiated dragging so that needs to
+  // be compensated for here.
+  event_generator.MoveTouch(
+      gfx::Point(to->GetBoundsInScreen().CenterPoint() + gfx::Vector2d(0, 25)));
   event_generator.ReleaseTouch();
 }
 
@@ -135,6 +144,45 @@ class MockActivationChangeObserver : public wm::ActivationChangeObserver {
               (override));
 };
 
+class MockHoldingSpaceClient : public HoldingSpaceClient {
+ public:
+  MOCK_METHOD(void,
+              AddScreenshot,
+              (const base::FilePath& file_path),
+              (override));
+  MOCK_METHOD(void,
+              AddScreenRecording,
+              (const base::FilePath& file_path),
+              (override));
+  MOCK_METHOD(void,
+              CopyImageToClipboard,
+              (const HoldingSpaceItem& item, SuccessCallback callback),
+              (override));
+  MOCK_METHOD(void, OpenDownloads, (SuccessCallback callback), (override));
+  MOCK_METHOD(void, OpenMyFiles, (SuccessCallback callback), (override));
+  MOCK_METHOD(void,
+              OpenItems,
+              (const std::vector<const HoldingSpaceItem*>& items,
+               SuccessCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              ShowItemInFolder,
+              (const HoldingSpaceItem& item, SuccessCallback callback),
+              (override));
+  MOCK_METHOD(void,
+              PinFiles,
+              (const std::vector<base::FilePath>& file_paths),
+              (override));
+  MOCK_METHOD(void,
+              PinItems,
+              (const std::vector<const HoldingSpaceItem*>& items),
+              (override));
+  MOCK_METHOD(void,
+              UnpinItems,
+              (const std::vector<const HoldingSpaceItem*>& items),
+              (override));
+};
+
 class MockHoldingSpaceModelObserver : public HoldingSpaceModelObserver {
  public:
   MOCK_METHOD(void,
@@ -149,6 +197,82 @@ class MockHoldingSpaceModelObserver : public HoldingSpaceModelObserver {
               OnHoldingSpaceItemFinalized,
               (const HoldingSpaceItem* item),
               (override));
+};
+
+// DropSenderView --------------------------------------------------------------
+
+class DropSenderView : public views::WidgetDelegateView,
+                       public views::DragController {
+ public:
+  DropSenderView(const DropSenderView&) = delete;
+  DropSenderView& operator=(const DropSenderView&) = delete;
+  ~DropSenderView() override = default;
+
+  static DropSenderView* Create(aura::Window* context) {
+    return new DropSenderView(context);
+  }
+
+  void SetData(const std::vector<base::FilePath> file_paths) {
+    std::vector<ui::FileInfo> filenames;
+    for (const base::FilePath& file_path : file_paths)
+      filenames.emplace_back(file_path, /*display_name=*/base::FilePath());
+    data_provider_->SetFilenames(filenames);
+  }
+
+ private:
+  explicit DropSenderView(aura::Window* context) {
+    InitWidget(context);
+
+    set_drag_controller(this);
+    data_provider_ = ui::OSExchangeDataProviderFactory::CreateProvider();
+
+    // NOTE: Gesture drag is only enabled if a drag image is specified.
+    data_provider_->SetDragImage(
+        /*image=*/gfx::test::CreateImageSkia(/*width=*/10, /*height=*/10),
+        /*cursor_offset=*/gfx::Vector2d());
+  }
+
+  // views::DragController:
+  bool CanStartDragForView(views::View* sender,
+                           const gfx::Point& press_pt,
+                           const gfx::Point& current_pt) override {
+    DCHECK_EQ(sender, this);
+    return true;
+  }
+
+  int GetDragOperationsForView(views::View* sender,
+                               const gfx::Point& press_pt) override {
+    DCHECK_EQ(sender, this);
+    return ui::DragDropTypes::DRAG_COPY;
+  }
+
+  void WriteDragDataForView(views::View* sender,
+                            const gfx::Point& press_pt,
+                            ui::OSExchangeData* data) override {
+    // Drag image.
+    data->provider().SetDragImage(data_provider_->GetDragImage(),
+                                  data_provider_->GetDragImageOffset());
+
+    // Payload.
+    std::vector<ui::FileInfo> filenames;
+    ASSERT_TRUE(data_provider_->GetFilenames(&filenames));
+    data->provider().SetFilenames(filenames);
+  }
+
+  void InitWidget(aura::Window* context) {
+    views::Widget::InitParams params;
+    params.accept_events = true;
+    params.activatable = views::Widget::InitParams::ACTIVATABLE_NO;
+    params.context = context;
+    params.delegate = this;
+    params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+    params.wants_mouse_events_when_inactive = true;
+
+    views::Widget* widget = new views::Widget();
+    widget->Init(std::move(params));
+  }
+
+  std::unique_ptr<ui::OSExchangeDataProvider> data_provider_;
 };
 
 // DropTargetView --------------------------------------------------------------
@@ -292,6 +416,9 @@ class HoldingSpaceUiDragAndDropBrowserTest
     GetParam().Run(from, to);
   }
 
+  // Returns the view serving as the drop sender for tests.
+  DropSenderView* sender() { return drop_sender_view_; }
+
   // Returns the view serving as the drop target for tests.
   const DropTargetView* target() const { return drop_target_view_; }
 
@@ -300,17 +427,24 @@ class HoldingSpaceUiDragAndDropBrowserTest
   void SetUpOnMainThread() override {
     HoldingSpaceUiBrowserTest::SetUpOnMainThread();
 
+    // Initialize `drop_sender_view_`.
+    drop_sender_view_ = DropSenderView::Create(GetRootWindowForNewWindows());
+    drop_sender_view_->GetWidget()->SetBounds(gfx::Rect(0, 0, 100, 100));
+    drop_sender_view_->GetWidget()->ShowInactive();
+
     // Initialize `drop_target_view_`.
     drop_target_view_ = DropTargetView::Create(GetRootWindowForNewWindows());
-    drop_target_view_->GetWidget()->SetBounds(gfx::Rect(0, 0, 100, 100));
+    drop_target_view_->GetWidget()->SetBounds(gfx::Rect(100, 100, 100, 100));
     drop_target_view_->GetWidget()->ShowInactive();
   }
 
   void TearDownOnMainThread() override {
+    drop_sender_view_->GetWidget()->Close();
     drop_target_view_->GetWidget()->Close();
     HoldingSpaceUiBrowserTest::TearDownOnMainThread();
   }
 
+  DropSenderView* drop_sender_view_ = nullptr;
   DropTargetView* drop_target_view_ = nullptr;
 };
 
@@ -371,6 +505,80 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDrop) {
   // Drag-and-drop should close holding space UI.
   FlushMessageLoop();
   ASSERT_FALSE(IsShowing());
+}
+
+// Verifies that drag-and-drop to pin holding space items works.
+IN_PROC_BROWSER_TEST_P(HoldingSpaceUiDragAndDropBrowserTest, DragAndDropToPin) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  // Add an item to holding space to cause the holding space tray to appear.
+  AddDownloadFile();
+  ASSERT_TRUE(IsShowingInShelf());
+
+  // Bind an observer to watch for updates to the holding space model.
+  testing::NiceMock<MockHoldingSpaceModelObserver> mock;
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      observer{&mock};
+  observer.Observe(HoldingSpaceController::Get()->model());
+
+  // Create a file to be dragged into the holding space.
+  std::vector<base::FilePath> file_paths;
+  file_paths.push_back(CreateFile());
+  sender()->SetData(file_paths);
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock, OnHoldingSpaceItemsAdded)
+        .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
+          ASSERT_EQ(items.size(), 1u);
+          ASSERT_EQ(items[0]->type(), HoldingSpaceItem::Type::kPinnedFile);
+          ASSERT_EQ(items[0]->file_path(), file_paths[0]);
+          run_loop.Quit();
+        });
+
+    // Perform and verify the ability to pin a file via drag-and-drop.
+    PerformDragAndDrop(/*from=*/sender(), /*to=*/GetTray());
+    run_loop.Run();
+  }
+
+  // Create a few more files to be dragged into the holding space.
+  file_paths.push_back(CreateFile());
+  file_paths.push_back(CreateFile());
+  sender()->SetData(file_paths);
+
+  {
+    base::RunLoop run_loop;
+    EXPECT_CALL(mock, OnHoldingSpaceItemsAdded)
+        .WillOnce([&](const std::vector<const HoldingSpaceItem*>& items) {
+          ASSERT_EQ(items.size(), 2u);
+          ASSERT_EQ(items[0]->type(), HoldingSpaceItem::Type::kPinnedFile);
+          ASSERT_EQ(items[0]->file_path(), file_paths[1]);
+          ASSERT_EQ(items[1]->type(), HoldingSpaceItem::Type::kPinnedFile);
+          ASSERT_EQ(items[1]->file_path(), file_paths[2]);
+          run_loop.Quit();
+        });
+
+    // Perform and verify the ability to pin multiple files via drag-and-drop.
+    // Note that any already pinned files in the drop payload are ignored.
+    PerformDragAndDrop(/*from=*/sender(), /*to=*/GetTray());
+    run_loop.Run();
+  }
+
+  // Swap out the registered holding space client with a mock.
+  testing::NiceMock<MockHoldingSpaceClient> client;
+  HoldingSpaceController::Get()->RegisterClientAndModelForUser(
+      ProfileHelper::Get()->GetUserByProfile(GetProfile())->GetAccountId(),
+      &client, HoldingSpaceController::Get()->model());
+  ASSERT_EQ(&client, HoldingSpaceController::Get()->client());
+
+  {
+    // Verify that attempting to drag-and-drop a payload which contains only
+    // files that are already pinned will not result in a client interaction.
+    EXPECT_CALL(client, PinFiles).Times(0);
+    PerformDragAndDrop(/*from=*/sender(), /*to=*/GetTray());
+    testing::Mock::VerifyAndClearExpectations(&client);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

@@ -54,6 +54,9 @@ class ASH_PUBLIC_EXPORT HoldingSpaceClient {
   virtual void ShowItemInFolder(const HoldingSpaceItem& item,
                                 SuccessCallback callback) = 0;
 
+  // Pins the specified `file_paths`.
+  virtual void PinFiles(const std::vector<base::FilePath>& file_paths) = 0;
+
   // Pins the specified holding space `items`.
   virtual void PinItems(const std::vector<const HoldingSpaceItem*>& items) = 0;
 
