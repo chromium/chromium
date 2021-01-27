@@ -162,8 +162,10 @@ RunOnOsLoginMode ToRunOnOsLoginMode(WebAppProto::RunOnOsLoginMode mode) {
       return RunOnOsLoginMode::kMinimized;
     case WebAppProto::WINDOWED:
       return RunOnOsLoginMode::kWindowed;
+    case WebAppProto::NOT_RUN:
+    default:
+      return RunOnOsLoginMode::kNotRun;
   }
-  return RunOnOsLoginMode::kUndefined;
 }
 
 WebAppProto::RunOnOsLoginMode ToWebAppProtoRunOnOsLoginMode(
@@ -171,11 +173,10 @@ WebAppProto::RunOnOsLoginMode ToWebAppProtoRunOnOsLoginMode(
   switch (mode) {
     case RunOnOsLoginMode::kMinimized:
       return WebAppProto::MINIMIZED;
-    case RunOnOsLoginMode::kUndefined:
-      NOTREACHED();
-      FALLTHROUGH;
     case RunOnOsLoginMode::kWindowed:
       return WebAppProto::WINDOWED;
+    case RunOnOsLoginMode::kNotRun:
+      return WebAppProto::NOT_RUN;
   }
 }
 

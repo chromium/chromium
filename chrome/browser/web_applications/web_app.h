@@ -274,7 +274,7 @@ class WebApp {
   std::vector<apps::ProtocolHandlerInfo> protocol_handlers_;
   base::Time last_launch_time_;
   base::Time install_time_;
-  RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kUndefined;
+  RunOnOsLoginMode run_on_os_login_mode_ = RunOnOsLoginMode::kNotRun;
   SyncFallbackData sync_fallback_data_;
   apps::UrlHandlers url_handlers_;
   blink::mojom::CaptureLinks capture_links_ =

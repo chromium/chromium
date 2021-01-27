@@ -28,7 +28,7 @@ cr.define('ntp', function() {
 
   // Run on OS Login available modes
   const RUN_ON_OS_LOGIN_MODE = {
-    NONE: 'run_on_os_login_mode_none',
+    NOT_RUN: 'run_on_os_login_mode_not_run',
     WINDOWED: 'run_on_os_login_mode_windowed',
     MINIMIZED: 'run_on_os_login_mode_minimized'
   };
@@ -203,7 +203,7 @@ cr.define('ntp', function() {
 
       this.runOnOsLogin_.hidden = !app.appData.mayShowRunOnOsLoginMode;
       this.runOnOsLogin_.checked =
-          app.appData.runOnOsLoginMode != RUN_ON_OS_LOGIN_MODE.NONE;
+          app.appData.runOnOsLoginMode != RUN_ON_OS_LOGIN_MODE.NOT_RUN;
     },
 
     /** @private */
@@ -270,7 +270,7 @@ cr.define('ntp', function() {
     onRunOnOsLoginModeChanged_(e) {
       const pressed = e.currentTarget;
       const app = this.app_;
-      let mode = RUN_ON_OS_LOGIN_MODE.NONE;
+      let mode = RUN_ON_OS_LOGIN_MODE.NOT_RUN;
 
       if (pressed == this.runOnOsLogin_ && !pressed.checked) {
         mode = RUN_ON_OS_LOGIN_MODE.WINDOWED;

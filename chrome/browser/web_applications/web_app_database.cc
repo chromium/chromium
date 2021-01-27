@@ -238,11 +238,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
             swa_data.system_app_type));
   }
 
-  if (web_app.run_on_os_login_mode() != RunOnOsLoginMode::kUndefined) {
-    local_data->set_user_run_on_os_login_mode(
-        ToWebAppProtoRunOnOsLoginMode(web_app.run_on_os_login_mode()));
-  }
-
+  local_data->set_user_run_on_os_login_mode(
+      ToWebAppProtoRunOnOsLoginMode(web_app.run_on_os_login_mode()));
   local_data->set_is_in_sync_install(web_app.is_in_sync_install());
 
   for (const WebApplicationIconInfo& icon_info : web_app.icon_infos())

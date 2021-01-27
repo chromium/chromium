@@ -161,8 +161,8 @@ std::string RunOnOsLoginModeToString(RunOnOsLoginMode mode) {
       return "windowed";
     case RunOnOsLoginMode::kMinimized:
       return "minimized";
-    case RunOnOsLoginMode::kUndefined:
-      return "undefined";
+    case RunOnOsLoginMode::kNotRun:
+      return "not run";
   }
 }
 

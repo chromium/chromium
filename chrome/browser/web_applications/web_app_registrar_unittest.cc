@@ -917,7 +917,7 @@ TEST_F(WebAppRegistrarTest, RunOnOsLoginModes) {
   const AppId app_id = web_app->app_id();
   RegisterApp(std::move(web_app));
 
-  EXPECT_EQ(RunOnOsLoginMode::kUndefined,
+  EXPECT_EQ(RunOnOsLoginMode::kNotRun,
             registrar().GetAppRunOnOsLoginMode(app_id));
 
   sync_bridge().SetAppRunOnOsLoginMode(app_id, RunOnOsLoginMode::kWindowed);

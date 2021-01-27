@@ -130,7 +130,7 @@ const int kWebAppIconSmallNonDefault = 16;
 
 // These Run on OS Login mode strings need to be in sync with
 // chrome/browser/resources/ntp4/apps_page.js:RUN_ON_OS_LOGIN_MODE enum.
-const char kRunOnOsLoginModeNone[] = "run_on_os_login_mode_none";
+const char kRunOnOsLoginModeNotRun[] = "run_on_os_login_mode_not_run";
 const char kRunOnOsLoginModeWindowed[] = "run_on_os_login_mode_windowed";
 
 // The Youtube app is incorrectly harded to be a 'bookmark app'. However, it is
@@ -286,8 +286,8 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
           is_locally_installed);
   std::string runOnOsLoginModeString =
       (registrar.GetAppRunOnOsLoginMode(app_id) ==
-       web_app::RunOnOsLoginMode::kUndefined)
-          ? kRunOnOsLoginModeNone
+       web_app::RunOnOsLoginMode::kNotRun)
+          ? kRunOnOsLoginModeNotRun
           : kRunOnOsLoginModeWindowed;
   value->SetString("runOnOsLoginMode", runOnOsLoginModeString);
 }
@@ -1174,8 +1174,8 @@ void AppLauncherHandler::HandleRunOnOsLogin(const base::ListValue* args) {
   CHECK(args->GetString(0, &app_id));
   CHECK(args->GetString(1, &mode_string));
 
-  if (mode_string == kRunOnOsLoginModeNone) {
-    mode = web_app::RunOnOsLoginMode::kUndefined;
+  if (mode_string == kRunOnOsLoginModeNotRun) {
+    mode = web_app::RunOnOsLoginMode::kNotRun;
   } else if (mode_string == kRunOnOsLoginModeWindowed) {
     mode = web_app::RunOnOsLoginMode::kWindowed;
   } else {
@@ -1188,7 +1188,7 @@ void AppLauncherHandler::HandleRunOnOsLogin(const base::ListValue* args) {
 
   web_app_provider_->registry_controller().SetAppRunOnOsLoginMode(app_id, mode);
 
-  if (mode == web_app::RunOnOsLoginMode::kUndefined) {
+  if (mode == web_app::RunOnOsLoginMode::kNotRun) {
     web_app::OsHooksResults os_hooks;
     os_hooks[web_app::OsHookType::kRunOnOsLogin] = true;
     web_app_provider_->os_integration_manager().UninstallOsHooks(

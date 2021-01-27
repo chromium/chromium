@@ -189,8 +189,7 @@ std::vector<AppId> WebAppRegistrar::GetAppIds() const {
 RunOnOsLoginMode WebAppRegistrar::GetAppRunOnOsLoginMode(
     const AppId& app_id) const {
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->run_on_os_login_mode()
-                 : RunOnOsLoginMode::kUndefined;
+  return web_app ? web_app->run_on_os_login_mode() : RunOnOsLoginMode::kNotRun;
 }
 
 WebAppRegistrar* WebAppRegistrar::AsWebAppRegistrar() {

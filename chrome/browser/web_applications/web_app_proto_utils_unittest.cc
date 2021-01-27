@@ -132,9 +132,12 @@ TEST(WebAppProtoUtilsTest, RunOnOsLoginModes) {
   mode = ToRunOnOsLoginMode(WebAppProto::WINDOWED);
   EXPECT_EQ(RunOnOsLoginMode::kWindowed, mode);
 
-  // Any value other than Windowed and Minimized should return kUndefined,
+  mode = ToRunOnOsLoginMode(WebAppProto::NOT_RUN);
+  EXPECT_EQ(RunOnOsLoginMode::kNotRun, mode);
+
+  // Any other value should return kNotRun.
   mode = ToRunOnOsLoginMode(static_cast<WebAppProto::RunOnOsLoginMode>(0xCAFE));
-  EXPECT_EQ(RunOnOsLoginMode::kUndefined, mode);
+  EXPECT_EQ(RunOnOsLoginMode::kNotRun, mode);
 
   WebAppProto::RunOnOsLoginMode proto_mode =
       ToWebAppProtoRunOnOsLoginMode(RunOnOsLoginMode::kWindowed);
@@ -142,6 +145,9 @@ TEST(WebAppProtoUtilsTest, RunOnOsLoginModes) {
 
   proto_mode = ToWebAppProtoRunOnOsLoginMode(RunOnOsLoginMode::kMinimized);
   EXPECT_EQ(WebAppProto::MINIMIZED, proto_mode);
+
+  proto_mode = ToWebAppProtoRunOnOsLoginMode(RunOnOsLoginMode::kNotRun);
+  EXPECT_EQ(WebAppProto::NOT_RUN, proto_mode);
 }
 
 }  // namespace web_app

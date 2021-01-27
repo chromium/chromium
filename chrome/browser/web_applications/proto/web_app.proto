@@ -178,7 +178,8 @@ message WebAppProto {
   // for web_app::RunOnOsLoginMode definition, which this enum should be in sync
   // with.
   enum RunOnOsLoginMode {
-    // UNDEFINED if optional |user_run_on_os_login_mode| is absent.
+    // NOT_RUN if optional |user_run_on_os_login_mode| is absent.
+    NOT_RUN = 0;
     WINDOWED = 1;
     MINIMIZED = 2;
   }
