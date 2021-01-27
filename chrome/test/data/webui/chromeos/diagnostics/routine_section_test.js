@@ -429,8 +429,10 @@ export function routineSectionTestSuite() {
 
           // Text is visible saying test succeeded.
           assertFalse(getStatusTextElement().hidden);
-          assertEquals(
-              getStatusTextElement().textContent.trim(), 'Test succeeded');
+          dx_utils.assertElementContainsText(
+              getStatusTextElement(), 'Test succeeded');
+          dx_utils.assertElementContainsText(
+              getStatusTextElement(), 'Learn more');
         });
   });
 
@@ -502,8 +504,10 @@ export function routineSectionTestSuite() {
 
           // Text is visible saying test failed.
           assertFalse(getStatusTextElement().hidden);
-          assertEquals(
-              getStatusTextElement().textContent.trim(), 'Test failed');
+          dx_utils.assertElementContainsText(
+              getStatusTextElement(), 'Test failed');
+          dx_utils.assertElementContainsText(
+              getStatusTextElement(), 'Learn more');
         });
   });
 
