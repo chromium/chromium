@@ -214,6 +214,8 @@ void FakeLocalFrameHost::DidAddMessageToConsole(
     const WTF::String& source_id,
     const WTF::String& untrusted_stack_trace) {}
 
+void FakeLocalFrameHost::FrameSizeChanged(const gfx::Size& frame_size) {}
+
 void FakeLocalFrameHost::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {
   receiver_.Bind(mojo::PendingAssociatedReceiver<mojom::blink::LocalFrameHost>(

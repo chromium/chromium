@@ -1759,6 +1759,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
       int32_t line_no,
       const base::Optional<base::string16>& source_id,
       const base::Optional<base::string16>& untrusted_stack_trace) override;
+  void FrameSizeChanged(const gfx::Size& frame_size) override;
 
   // blink::LocalMainFrameHost overrides:
   void ScaleFactorChanged(float scale) override;
@@ -2165,7 +2166,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
                      const std::string& unique_name) override;
   void CancelInitialHistoryLoad() override;
   void UpdateEncoding(const std::string& encoding) override;
-  void FrameSizeChanged(const gfx::Size& frame_size) override;
   void UpdateState(const blink::PageState& state) override;
   void OpenURL(mojom::OpenURLParamsPtr params) override;
   void DidStopLoading() override;

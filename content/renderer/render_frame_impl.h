@@ -573,7 +573,6 @@ class CONTENT_EXPORT RenderFrameImpl
   void ShowContextMenu(
       const blink::ContextMenuData& data,
       const base::Optional<gfx::Point>& host_context_menu_location) override;
-  void FrameRectsChanged(const gfx::Rect& frame_rect) override;
   void FocusedElementChanged(const blink::WebElement& element) override;
   void OnMainFrameIntersectionChanged(const gfx::Rect& intersect_rect) override;
   void WillSendRequest(blink::WebURLRequest& request,
@@ -1414,10 +1413,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // Contains a representation of the accessibility tree stored in content for
   // use inside of Blink.
   std::unique_ptr<blink::WebComputedAXTree> computed_ax_tree_;
-
-  // Used for tracking the frame's size and replicating it to the browser
-  // process when it changes.
-  base::Optional<gfx::Size> frame_size_;
 
   // Used for tracking a frame's main frame document intersection and
   // and replicating it to the browser when it changes.

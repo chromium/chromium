@@ -193,8 +193,6 @@ class MockFrameHost : public mojom::FrameHost {
 
   void UpdateEncoding(const std::string& encoding_name) override {}
 
-  void FrameSizeChanged(const gfx::Size& frame_size) override {}
-
   void UpdateState(const blink::PageState& state) override {
     is_page_state_updated_ = true;
   }

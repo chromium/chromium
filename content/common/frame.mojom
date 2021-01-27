@@ -573,11 +573,6 @@ interface FrameHost {
   // proper encoding name. Sent for top-level frames.
   UpdateEncoding(string encoding_name);
 
-  // The frame's size is replicated in the browser so that the browser can
-  // correctly set the initial size of the frame in case of a cross-process
-  // navigation.
-  FrameSizeChanged(gfx.mojom.Size size);
-
   // Updates information to determine whether a user gesture should carryover to
   // future navigations. This is needed so navigations within a certain
   // timeframe of a request initiated by a gesture will be treated as if they

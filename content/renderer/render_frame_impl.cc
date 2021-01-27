@@ -4441,17 +4441,6 @@ void RenderFrameImpl::ShowDeferredContextMenu(
   Send(new FrameHostMsg_ContextMenu(routing_id_, params));
 }
 
-void RenderFrameImpl::FrameRectsChanged(const gfx::Rect& frame_rect) {
-  // To limit the number of IPCs, only notify the browser when the rect's size
-  // changes, not when the position changes. The size needs to be replicated if
-  // the iframe goes out-of-process.
-  gfx::Size frame_size = frame_rect.size();
-  if (!frame_size_ || *frame_size_ != frame_size) {
-    frame_size_ = frame_size;
-    GetFrameHost()->FrameSizeChanged(frame_size);
-  }
-}
-
 void RenderFrameImpl::OnMainFrameIntersectionChanged(
     const gfx::Rect& mainframe_intersection_rect) {
   if (!mainframe_intersection_rect_ ||

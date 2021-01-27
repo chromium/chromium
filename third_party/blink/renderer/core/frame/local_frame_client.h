@@ -356,8 +356,6 @@ class CORE_EXPORT LocalFrameClient : public FrameClient {
 
   virtual Frame* FindFrame(const AtomicString& name) const = 0;
 
-  virtual void FrameRectsChanged(const IntRect&) {}
-
   virtual void OnOverlayPopupAdDetected() {}
 
   virtual void OnLargeStickyAdDetected() {}

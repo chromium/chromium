@@ -466,9 +466,6 @@ class BLINK_EXPORT WebLocalFrameClient {
   virtual void ShowContextMenu(const ContextMenuData&,
                                const base::Optional<gfx::Point>&) {}
 
-  // Called when the frame rects changed.
-  virtual void FrameRectsChanged(const gfx::Rect&) {}
-
   // Called when a new element gets focused. |from_element| is the previously
   // focused element, |to_element| is the newly focused one. Either can be null.
   virtual void FocusedElementChanged(const WebElement& element) {}

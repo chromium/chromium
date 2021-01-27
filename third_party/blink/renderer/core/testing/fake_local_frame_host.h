@@ -140,6 +140,7 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       int32_t line_no,
       const WTF::String& source_id,
       const WTF::String& untrusted_stack_trace) override;
+  void FrameSizeChanged(const gfx::Size& frame_size) override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

@@ -482,6 +482,11 @@ interface LocalFrameHost {
       int32 line_number,
       mojo_base.mojom.String16? source_id,
       mojo_base.mojom.BigString16? untrusted_stack_trace);
+
+  // The frame's size is replicated in the browser so that the browser can
+  // correctly set the initial size of the frame in case of a cross-process
+  // navigation.
+  FrameSizeChanged(gfx.mojom.Size size);
 };
 
 // Implemented in Blink, this interface defines frame-specific methods that will

@@ -2704,6 +2704,11 @@ void RenderFrameHostImpl::DidAddMessageToConsole(
                     is_off_the_record, updated_source_id);
 }
 
+void RenderFrameHostImpl::FrameSizeChanged(const gfx::Size& frame_size) {
+  frame_size_ = frame_size;
+  delegate_->FrameSizeChanged(this, frame_size);
+}
+
 void RenderFrameHostImpl::OnCreateChildFrame(
     int new_routing_id,
     mojo::PendingAssociatedRemote<mojom::Frame> frame_remote,
@@ -4320,11 +4325,6 @@ void RenderFrameHostImpl::UpdateEncoding(const std::string& encoding_name) {
 
   canonical_encoding_ =
       base::GetCanonicalEncodingNameByAliasName(encoding_name);
-}
-
-void RenderFrameHostImpl::FrameSizeChanged(const gfx::Size& frame_size) {
-  frame_size_ = frame_size;
-  delegate_->FrameSizeChanged(this, frame_size);
 }
 
 void RenderFrameHostImpl::FullscreenStateChanged(

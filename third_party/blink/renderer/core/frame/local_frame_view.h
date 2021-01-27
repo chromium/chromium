@@ -1014,6 +1014,10 @@ class CORE_EXPORT LocalFrameView final
   IntSize last_viewport_size_;
   float last_zoom_factor_;
 
+  // Used for tracking the frame's size and replicating it to the browser
+  // process when it changes.
+  base::Optional<IntSize> frame_size_;
+
   AtomicString media_type_;
   AtomicString media_type_when_not_printing_;
 
