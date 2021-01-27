@@ -14,6 +14,8 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
+@class WKContentWorld;
+
 namespace web {
 
 class WebClient;
@@ -63,6 +65,11 @@ class WebTestWithWebState : public WebTest, public base::TaskObserver {
   void WaitForCondition(ConditionBlock condition);
   // Synchronously executes JavaScript and returns result as id.
   id ExecuteJavaScript(NSString* script);
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+  // Synchronously executes |script| in |content_world| and returns result.
+  id ExecuteJavaScript(WKContentWorld* content_world, NSString* script)
+      API_AVAILABLE(ios(14.0));
+#endif  // defined(__IPHONE14_0)
 
   // Returns the base URL of the loaded page.
   std::string BaseUrl() const;

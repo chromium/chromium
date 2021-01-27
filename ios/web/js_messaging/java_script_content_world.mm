@@ -40,6 +40,11 @@ JavaScriptContentWorld::JavaScriptContentWorld(
     WKContentWorld* content_world)
     : user_content_controller_(user_content_controller),
       content_world_(content_world) {}
+
+WKContentWorld* JavaScriptContentWorld::GetWKContentWorld()
+    API_AVAILABLE(ios(14.0)) {
+  return content_world_;
+}
 #endif  // defined(__IPHONE14_0)
 
 JavaScriptContentWorld::~JavaScriptContentWorld() {}

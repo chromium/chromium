@@ -4,15 +4,19 @@
 
 #include "ios/web/js_messaging/web_frame_impl.h"
 
+#import <WebKit/WebKit.h>
+
 #include "base/bind.h"
 #include "base/ios/ios_util.h"
+#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/web/js_messaging/java_script_content_world.h"
+#include "ios/web/js_messaging/page_script_util.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
-#import "ios/web/public/test/js_test_util.h"
-#import "ios/web/public/test/web_js_test.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -248,4 +252,93 @@ TEST_F(WebFrameImplIntTest, JavaScriptMessageFromFrame) {
     return command_received;
   }));
 }
+
+// Tests that the expected result is received from executing a JavaScript
+// function via |CallJavaScriptFunction| on the main frame in the page content
+// world.
+TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFramePageContentWorld) {
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    return;
+  }
+
+  ASSERT_TRUE(LoadHtml("<p>"));
+  ExecuteJavaScript(@"__gCrWeb = {};"
+                    @"__gCrWeb['fakeFunction'] = function() {"
+                    @"  return '10';"
+                    @"}");
+
+  web::WebFrameImpl* main_frame_impl = static_cast<web::WebFrameImpl*>(
+      web_state()->GetWebFramesManager()->GetMainWebFrame());
+  ASSERT_TRUE(main_frame_impl);
+
+  NSTimeInterval js_timeout = kWaitForJSCompletionTimeout;
+  __block bool called = false;
+
+  if (@available(ios 14, *)) {
+    JavaScriptContentWorld world([[WKUserContentController alloc] init],
+                                 WKContentWorld.pageWorld);
+
+    std::vector<base::Value> function_params;
+    EXPECT_TRUE(main_frame_impl->CallJavaScriptFunction(
+        "fakeFunction", function_params, &world,
+        base::BindOnce(^(const base::Value* value) {
+          ASSERT_TRUE(value->is_string());
+          EXPECT_EQ(value->GetString(), "10");
+          called = true;
+        }),
+        // Increase feature timeout in order to fail on test specific timeout.
+        base::TimeDelta::FromSeconds(2 * js_timeout)));
+  }
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(js_timeout, ^bool {
+    return called;
+  }));
 }
+
+// Tests that the expected result is received from executing a JavaScript
+// function via |CallJavaScriptFunction| on the main frame in an isolated
+// world.
+TEST_F(WebFrameImplIntTest, CallJavaScriptFunctionMainFrameIsolatedWorld) {
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    return;
+  }
+
+  ASSERT_TRUE(LoadHtml("<p>"));
+
+  if (@available(ios 14, *)) {
+    ExecuteJavaScript(WKContentWorld.defaultClientWorld,
+                      @"__gCrWeb = {};"
+                      @"__gCrWeb['fakeFunction'] = function() {"
+                      @"  return '10';"
+                      @"}");
+  }
+
+  web::WebFrameImpl* main_frame_impl = static_cast<web::WebFrameImpl*>(
+      web_state()->GetWebFramesManager()->GetMainWebFrame());
+  ASSERT_TRUE(main_frame_impl);
+
+  NSTimeInterval js_timeout = kWaitForJSCompletionTimeout;
+  __block bool called = false;
+
+  if (@available(ios 14, *)) {
+    JavaScriptContentWorld world([[WKUserContentController alloc] init],
+                                 WKContentWorld.defaultClientWorld);
+
+    std::vector<base::Value> function_params;
+    EXPECT_TRUE(main_frame_impl->CallJavaScriptFunction(
+        "fakeFunction", function_params, &world,
+        base::BindOnce(^(const base::Value* value) {
+          ASSERT_TRUE(value->is_string());
+          EXPECT_EQ(value->GetString(), "10");
+          called = true;
+        }),
+        // Increase feature timeout in order to fail on test specific timeout.
+        base::TimeDelta::FromSeconds(2 * js_timeout)));
+  }
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(js_timeout, ^bool {
+    return called;
+  }));
+}
+
+}  // namespace web

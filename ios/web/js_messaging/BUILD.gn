@@ -123,6 +123,8 @@ source_set("inttests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   deps = [
+    ":java_script_content_world_header",
+    ":java_script_feature",
     ":js_messaging",
     "//base",
     "//base/test:test_support",
@@ -134,11 +136,14 @@ source_set("inttests") {
     "//ios/web/public/test:util",
     "//ios/web/public/test/fakes",
     "//ios/web/test:test_support",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
   sources = [
+    "java_script_feature_inttest.mm",
     "web_frame_impl_inttest.mm",
     "web_frame_web_state_observer_inttest.mm",
     "web_frames_manager_inttest.mm",

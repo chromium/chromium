@@ -24,6 +24,12 @@ TEST_F(JavaScriptContentWorldTest, AddFeature) {
       web::JavaScriptFeature::ContentWorld::kAnyContentWorld, {});
   world.AddFeature(&feature);
   EXPECT_TRUE(world.HasFeature(&feature));
+
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+  if (@available(iOS 14, *)) {
+    EXPECT_FALSE(world.GetWKContentWorld());
+  }
+#endif  // defined(__IPHONE14_0)
 }
 
 // Tests adding a JavaScriptFeature to a specific JavaScriptContentWorld.
@@ -39,6 +45,7 @@ TEST_F(JavaScriptContentWorldTest, AddFeatureToSpecificWKContentWorld) {
         web::JavaScriptFeature::ContentWorld::kAnyContentWorld, {});
     world.AddFeature(&feature);
     EXPECT_TRUE(world.HasFeature(&feature));
+    EXPECT_EQ([WKContentWorld defaultClientWorld], world.GetWKContentWorld());
   }
 #endif  // defined(__IPHONE14_0)
 }

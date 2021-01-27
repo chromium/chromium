@@ -19,14 +19,19 @@
 #include "ios/web/public/web_state_observer.h"
 #include "url/gurl.h"
 
+@class WKFrameInfo;
+
 namespace web {
+
+class JavaScriptContentWorld;
 
 class WebFrameImpl : public WebFrame, public web::WebStateObserver {
  public:
   // Creates a new WebFrame. |initial_message_id| will be used as the message ID
   // of the next message sent to the frame with the |CallJavaScriptFunction|
   // API.
-  WebFrameImpl(const std::string& frame_id,
+  WebFrameImpl(WKFrameInfo* frame_info,
+               const std::string& frame_id,
                bool is_main_frame,
                GURL security_origin,
                web::WebState* web_state);
@@ -38,6 +43,18 @@ class WebFrameImpl : public WebFrame, public web::WebStateObserver {
   void SetEncryptionKey(std::unique_ptr<crypto::SymmetricKey> frame_key);
   // The associated web state.
   WebState* GetWebState();
+
+  // Executes the JavaScript function |name| with |parameters| in
+  // |content_world|.
+  bool CallJavaScriptFunction(const std::string& name,
+                              const std::vector<base::Value>& parameters,
+                              JavaScriptContentWorld* content_world);
+  bool CallJavaScriptFunction(
+      const std::string& name,
+      const std::vector<base::Value>& parameters,
+      JavaScriptContentWorld* content_world,
+      base::OnceCallback<void(const base::Value*)> callback,
+      base::TimeDelta timeout);
 
   // WebFrame implementation
   std::string GetFrameId() const override;
@@ -59,11 +76,13 @@ class WebFrameImpl : public WebFrame, public web::WebStateObserver {
 
  private:
   // Calls the JavaScript function |name| in the frame context in the same
-  // manner as the inherited CallJavaScriptFunction functions. If
-  // |reply_with_result| is true, the return value of executing the function
-  // will be sent back to the receiver and handled by |OnJavaScriptReply|.
+  // manner as the inherited CallJavaScriptFunction functions. |content_world|
+  // is optional, but if specified, the function will be executed within that
+  // world. If |reply_with_result| is true, the return value of executing the
+  // function will be sent back to the receiver with |CompleteRequest()|.
   bool CallJavaScriptFunction(const std::string& name,
                               const std::vector<base::Value>& parameters,
+                              JavaScriptContentWorld* content_world,
                               bool reply_with_result);
 
   // Detaches the receiver from the associated  WebState.
@@ -99,6 +118,16 @@ class WebFrameImpl : public WebFrame, public web::WebStateObserver {
                                  int message_id,
                                  bool reply_with_result);
 
+  // Calls the JavaScript function |name| in the web state. If |content_world|
+  // is specified, the function will be executed within |content_world|. If
+  // |reply_with_result| is true, the return value of executing the function
+  // will be sent back to the receiver.
+  bool ExecuteJavaScriptFunction(JavaScriptContentWorld* content_world,
+                                 const std::string& name,
+                                 const std::vector<base::Value>& parameters,
+                                 int message_id,
+                                 bool reply_with_result);
+
   // Runs the request associated with the message with id |message_id|. The
   // completion callback, if any, associated with |message_id| will be called
   // with |result|.
@@ -129,6 +158,8 @@ class WebFrameImpl : public WebFrame, public web::WebStateObserver {
   std::map<uint32_t, std::unique_ptr<struct RequestCallbacks>>
       pending_requests_;
 
+  // The frame info instance associated with this web frame.
+  WKFrameInfo* frame_info_;
   // The frame identifier which uniquely identifies this frame across the
   // application's lifetime.
   std::string frame_id_;

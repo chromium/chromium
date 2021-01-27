@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
+#include "base/ios/ios_util.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,6 +20,8 @@
 #include "base/values.h"
 #include "crypto/aead.h"
 #include "crypto/random.h"
+#import "ios/web/js_messaging/java_script_content_world.h"
+#import "ios/web/js_messaging/web_view_js_utils.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "url/gurl.h"
 
@@ -28,22 +31,42 @@
 
 namespace {
 const char kJavaScriptReplyCommandPrefix[] = "frameMessaging_";
+
+// Creates a JavaScript string for executing the function __gCrWeb.|name| with
+// |parameters|.
+NSString* CreateFunctionCallWithParamaters(
+    const std::string& name,
+    const std::vector<base::Value>& parameters) {
+  NSMutableArray* parameter_strings = [[NSMutableArray alloc] init];
+  for (const auto& value : parameters) {
+    std::string string_value;
+    base::JSONWriter::Write(value, &string_value);
+    [parameter_strings addObject:base::SysUTF8ToNSString(string_value)];
+  }
+
+  return [NSString
+      stringWithFormat:@"__gCrWeb.%s(%@)", name.c_str(),
+                       [parameter_strings componentsJoinedByString:@","]];
+}
 }
 
 namespace web {
 
 const double kJavaScriptFunctionCallDefaultTimeout = 100.0;
 
-WebFrameImpl::WebFrameImpl(const std::string& frame_id,
+WebFrameImpl::WebFrameImpl(WKFrameInfo* frame_info,
+                           const std::string& frame_id,
                            bool is_main_frame,
                            GURL security_origin,
                            web::WebState* web_state)
-    : frame_id_(frame_id),
+    : frame_info_(frame_info),
+      frame_id_(frame_id),
       is_main_frame_(is_main_frame),
       security_origin_(security_origin),
       web_state_(web_state),
       weak_ptr_factory_(this) {
-  DCHECK(web_state);
+  DCHECK(frame_info_);
+  DCHECK(web_state_);
   web_state->AddObserver(this);
 
   subscription_ = web_state->AddScriptCommandCallback(
@@ -123,13 +146,23 @@ const std::string WebFrameImpl::EncryptPayload(
 bool WebFrameImpl::CallJavaScriptFunction(
     const std::string& name,
     const std::vector<base::Value>& parameters,
+    JavaScriptContentWorld* content_world,
     bool reply_with_result) {
+  int message_id = next_message_id_;
+  next_message_id_++;
+
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+  if (@available(iOS 14, *)) {
+    if (content_world && content_world->GetWKContentWorld()) {
+      return ExecuteJavaScriptFunction(content_world, name, parameters,
+                                       message_id, reply_with_result);
+    }
+  }
+#endif  // defined(__IPHONE14_0)
+
   if (!CanCallJavaScriptFunction()) {
     return false;
   }
-
-  int message_id = next_message_id_;
-  next_message_id_++;
 
   if (!frame_key_) {
     return ExecuteJavaScriptFunction(name, parameters, message_id,
@@ -166,12 +199,31 @@ bool WebFrameImpl::CallJavaScriptFunction(
 bool WebFrameImpl::CallJavaScriptFunction(
     const std::string& name,
     const std::vector<base::Value>& parameters) {
-  return CallJavaScriptFunction(name, parameters, /*reply_with_result=*/false);
+  return CallJavaScriptFunction(name, parameters, /*content_world=*/nullptr,
+                                /*reply_with_result=*/false);
 }
 
 bool WebFrameImpl::CallJavaScriptFunction(
     const std::string& name,
     const std::vector<base::Value>& parameters,
+    JavaScriptContentWorld* content_world) {
+  return CallJavaScriptFunction(name, parameters, content_world,
+                                /*reply_with_result=*/false);
+}
+
+bool WebFrameImpl::CallJavaScriptFunction(
+    const std::string& name,
+    const std::vector<base::Value>& parameters,
+    base::OnceCallback<void(const base::Value*)> callback,
+    base::TimeDelta timeout) {
+  return CallJavaScriptFunction(name, parameters, /*content_world=*/nullptr,
+                                std::move(callback), timeout);
+}
+
+bool WebFrameImpl::CallJavaScriptFunction(
+    const std::string& name,
+    const std::vector<base::Value>& parameters,
+    JavaScriptContentWorld* content_world,
     base::OnceCallback<void(const base::Value*)> callback,
     base::TimeDelta timeout) {
   int message_id = next_message_id_;
@@ -185,8 +237,8 @@ bool WebFrameImpl::CallJavaScriptFunction(
   base::PostDelayedTask(
       FROM_HERE, {web::WebThread::UI},
       pending_requests_[message_id]->timeout_callback->callback(), timeout);
-  bool called =
-      CallJavaScriptFunction(name, parameters, /*reply_with_result=*/true);
+  bool called = CallJavaScriptFunction(name, parameters, content_world,
+                                       /*reply_with_result=*/true);
   if (!called) {
     // Remove callbacks if the call failed.
     auto request = pending_requests_.find(message_id);
@@ -198,6 +250,50 @@ bool WebFrameImpl::CallJavaScriptFunction(
 }
 
 bool WebFrameImpl::ExecuteJavaScriptFunction(
+    JavaScriptContentWorld* content_world,
+    const std::string& name,
+    const std::vector<base::Value>& parameters,
+    int message_id,
+    bool reply_with_result) {
+  DCHECK(content_world);
+  DCHECK(base::ios::IsRunningOnIOS14OrLater());
+  DCHECK(frame_info_);
+
+  NSString* script = CreateFunctionCallWithParamaters(name, parameters);
+
+  void (^completion_handler)(id, NSError*) = nil;
+  if (reply_with_result) {
+    base::WeakPtr<WebFrameImpl> weak_frame = weak_ptr_factory_.GetWeakPtr();
+    completion_handler = ^void(id value, NSError* error) {
+      if (error) {
+        DLOG(WARNING) << "Script execution of:"
+                      << base::SysNSStringToUTF16(script)
+                      << "\nfailed with error: "
+                      << base::SysNSStringToUTF16(
+                             error.userInfo[NSLocalizedDescriptionKey]);
+      }
+      if (weak_frame) {
+        weak_frame->CompleteRequest(message_id,
+                                    ValueResultFromWKResult(value).get());
+      }
+    };
+  }
+
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+  if (@available(iOS 14.0, *)) {
+    WKContentWorld* world = content_world->GetWKContentWorld();
+    DCHECK(world);
+
+    web::ExecuteJavaScript(frame_info_.webView, world, frame_info_, script,
+                           completion_handler);
+    return true;
+  }
+#endif  // defined(__IPHONE14_0)
+
+  return false;
+}
+
+bool WebFrameImpl::ExecuteJavaScriptFunction(
     const std::string& name,
     const std::vector<base::Value>& parameters,
     int message_id,
@@ -206,16 +302,12 @@ bool WebFrameImpl::ExecuteJavaScriptFunction(
     return false;
   }
 
-  NSMutableArray* parameter_strings = [[NSMutableArray alloc] init];
-  for (const auto& value : parameters) {
-    std::string string_value;
-    base::JSONWriter::Write(value, &string_value);
-    [parameter_strings addObject:base::SysUTF8ToNSString(string_value)];
+  NSString* script = CreateFunctionCallWithParamaters(name, parameters);
+  if (!reply_with_result) {
+    GetWebState()->ExecuteJavaScript(base::SysNSStringToUTF16(script));
+    return true;
   }
 
-  NSString* script = [NSString
-      stringWithFormat:@"__gCrWeb.%s(%@)", name.c_str(),
-                       [parameter_strings componentsJoinedByString:@","]];
   base::WeakPtr<WebFrameImpl> weak_frame = weak_ptr_factory_.GetWeakPtr();
   GetWebState()->ExecuteJavaScript(base::SysNSStringToUTF16(script),
                                    base::BindOnce(^(const base::Value* result) {
@@ -224,7 +316,6 @@ bool WebFrameImpl::ExecuteJavaScriptFunction(
                                                                    result);
                                      }
                                    }));
-
   return true;
 }
 
@@ -279,18 +370,7 @@ void WebFrameImpl::OnJavaScriptReply(web::WebState* web_state,
   }
 
   int message_id = static_cast<int>(message_id_value->GetDouble());
-
-  auto request = pending_requests_.find(message_id);
-  if (request == pending_requests_.end()) {
-    // Request may have already been processed due to timeout.
-    return;
-  }
-
-  auto callbacks = std::move(request->second);
-  pending_requests_.erase(request);
-  callbacks->timeout_callback->Cancel();
-  const base::Value* result = command_json.FindKey("result");
-  std::move(callbacks->completion).Run(result);
+  CompleteRequest(message_id, command_json.FindKey("result"));
 }
 
 void WebFrameImpl::DetachFromWebState() {

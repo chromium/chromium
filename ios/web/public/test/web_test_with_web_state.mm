@@ -16,6 +16,7 @@
 #import "ios/web/navigation/navigation_manager_impl.h"
 #import "ios/web/navigation/wk_navigation_util.h"
 #include "ios/web/public/deprecated/url_verification_constants.h"
+#import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/web_client.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
@@ -244,6 +245,22 @@ id WebTestWithWebState::ExecuteJavaScript(NSString* script) {
 
   return execution_result;
 }
+
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+// Synchronously executes |script| in |content_world| and returns result.
+id WebTestWithWebState::ExecuteJavaScript(WKContentWorld* content_world,
+                                          NSString* script) {
+  DCHECK(base::ios::IsRunningOnIOS14OrLater());
+
+  WKWebView* web_view = [GetWebController(web_state()) ensureWebViewCreated];
+
+  if (@available(ios 14, *)) {
+    return web::test::ExecuteJavaScript(web_view, content_world, script);
+  }
+
+  return nil;
+}
+#endif  // defined(__IPHONE14_0)
 
 void WebTestWithWebState::DestroyWebState() {
   web_state_.reset();

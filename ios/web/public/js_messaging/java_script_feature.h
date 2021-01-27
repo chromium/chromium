@@ -10,7 +10,13 @@
 
 @class NSString;
 
+namespace base {
+class Value;
+}  // namespace base
+
 namespace web {
+
+class WebFrame;
 
 // Describes a feature implemented in Javascript and native<->JS communication
 // (if any). It is intended to be instantiated directly for simple features
@@ -93,6 +99,10 @@ class JavaScriptFeature {
 
  protected:
   explicit JavaScriptFeature(ContentWorld supported_world);
+
+  bool CallJavaScriptFunction(WebFrame* web_frame,
+                              const std::string& function_name,
+                              const std::vector<base::Value>& parameters);
 
  private:
   ContentWorld supported_world_;

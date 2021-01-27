@@ -37,6 +37,10 @@ class JavaScriptFeatureManager : public base::SupportsUserData::Data {
   // NOTE: |page_content_world_| and |isolated_world_| will be recreated.
   void ConfigureFeatures(std::vector<JavaScriptFeature*> features);
 
+  // Returns the content world associated with |feature| or null if the feature
+  // has not be added to the associated |browser_state_|.
+  JavaScriptContentWorld* GetContentWorldForFeature(JavaScriptFeature* feature);
+
   JavaScriptFeatureManager(const JavaScriptFeatureManager&) = delete;
   JavaScriptFeatureManager& operator=(const JavaScriptFeatureManager&) = delete;
 

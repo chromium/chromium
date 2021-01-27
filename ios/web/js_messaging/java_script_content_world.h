@@ -33,6 +33,9 @@ class JavaScriptContentWorld {
   JavaScriptContentWorld(WKUserContentController* user_content_controller,
                          WKContentWorld* content_world)
       API_AVAILABLE(ios(14.0));
+
+  // Returns the associated WKContentWorld.
+  WKContentWorld* GetWKContentWorld() API_AVAILABLE(ios(14.0));
 #endif  // defined(__IPHONE14_0)
 
   // Adds |feature| by configuring the feature scripts and communication

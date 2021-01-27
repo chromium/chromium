@@ -186,8 +186,8 @@ void WebFramesManagerImpl::OnFrameBecameAvailable(WKScriptMessage* message) {
     }
 
     auto new_frame = std::make_unique<web::WebFrameImpl>(
-        frame_id, message.frameInfo.mainFrame, message_frame_origin,
-        delegate_.GetWebState());
+        message.frameInfo, frame_id, message.frameInfo.mainFrame,
+        message_frame_origin, delegate_.GetWebState());
     if (frame_key) {
       new_frame->SetEncryptionKey(std::move(frame_key));
     }

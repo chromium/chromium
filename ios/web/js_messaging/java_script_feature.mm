@@ -60,8 +60,7 @@ JavaScriptFeature::FeatureScript::~FeatureScript() = default;
 
 NSString* JavaScriptFeature::FeatureScript::GetScriptString() const {
   NSString* script_filename = base::SysUTF8ToNSString(script_filename_);
-  NSString* injection_token = InjectionTokenForScript(script_filename);
-  return MakeScriptInjectableOnce(injection_token,
+  return MakeScriptInjectableOnce(InjectionTokenForScript(script_filename),
                                   GetPageScript(script_filename));
 }
 
@@ -98,6 +97,23 @@ JavaScriptFeature::GetScripts() const {
 const std::vector<const JavaScriptFeature*>
 JavaScriptFeature::GetDependentFeatures() const {
   return dependent_features_;
+}
+
+bool JavaScriptFeature::CallJavaScriptFunction(
+    WebFrame* web_frame,
+    const std::string& function_name,
+    const std::vector<base::Value>& parameters) {
+  WebFrameImpl* web_frame_impl = static_cast<WebFrameImpl*>(web_frame);
+  JavaScriptFeatureManager* feature_manager =
+      JavaScriptFeatureManager::FromBrowserState(
+          web_frame_impl->GetWebState()->GetBrowserState());
+  DCHECK(feature_manager);
+  JavaScriptContentWorld* content_world =
+      feature_manager->GetContentWorldForFeature(this);
+  // A feature can still ExecuteJavaScript even if there are no initial scripts,
+  // so a nil content_world here will execute JS in the main page content world.
+  return web_frame_impl->CallJavaScriptFunction(function_name, parameters,
+                                                content_world);
 }
 
 }  // namespace web
