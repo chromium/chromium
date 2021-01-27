@@ -188,7 +188,9 @@ IN_PROC_BROWSER_TEST_F(
                                                  UkmEntry::kNumSessionsName, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest, NonWebApp_RecordsNothing) {
+// Flaky test: crbug.com/1170786
+IN_PROC_BROWSER_TEST_F(WebAppMetricsBrowserTest,
+                       DISABLED_NonWebApp_RecordsNothing) {
   ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   NavigateAndAwaitInstallabilityCheck(browser(), GetNonWebAppUrl());
