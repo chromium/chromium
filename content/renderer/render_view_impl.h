@@ -178,7 +178,6 @@ class CONTENT_EXPORT RenderViewImpl : public blink::WebViewClient,
   bool AcceptsLoadDrops() override;
   bool CanUpdateLayout() override;
   void DidUpdateMainFrameLayout() override;
-  blink::WebString AcceptLanguages() override;
   int HistoryBackListCount() override;
   int HistoryForwardListCount() override;
   void OnPageVisibilityChanged(PageVisibilityState visibility) override;

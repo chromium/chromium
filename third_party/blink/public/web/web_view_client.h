@@ -121,9 +121,6 @@ class WebViewClient {
   // notification unless the view did not need a layout.
   virtual void DidUpdateMainFrameLayout() {}
 
-  // Returns comma separated list of accept languages.
-  virtual WebString AcceptLanguages() { return WebString(); }
-
   // Called when the View has changed size as a result of an auto-resize.
   virtual void DidAutoResize(const gfx::Size& new_size) {}
 

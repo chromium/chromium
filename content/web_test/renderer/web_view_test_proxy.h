@@ -73,7 +73,6 @@ class WebViewTestProxy : public RenderViewImpl {
       bool& consumed_user_gesture,
       const base::Optional<blink::WebImpression>& impression) override;
   void PrintPage(blink::WebLocalFrame* frame) override;
-  blink::WebString AcceptLanguages() override;
 
   TestRunner* GetTestRunner() { return test_runner_; }
   AccessibilityController* accessibility_controller() {

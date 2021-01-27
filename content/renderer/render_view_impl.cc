@@ -619,10 +619,6 @@ bool RenderViewImpl::CanUpdateLayout() {
   return true;
 }
 
-blink::WebString RenderViewImpl::AcceptLanguages() {
-  return WebString::FromUTF8(GetRendererPreferences().accept_languages);
-}
-
 // RenderView implementation ---------------------------------------------------
 
 bool RenderViewImpl::Send(IPC::Message* message) {

@@ -2894,8 +2894,12 @@ void TestRunner::SetAcceptLanguages(const std::string& accept_languages) {
   web_test_runtime_flags_.set_accept_languages(accept_languages);
   OnWebTestRuntimeFlagsChanged();
 
-  for (WebViewTestProxy* view : render_views_)
-    view->GetWebView()->AcceptLanguagesChanged();
+  for (WebViewTestProxy* view : render_views_) {
+    blink::RendererPreferences prefs =
+        view->GetWebView()->GetRendererPreferences();
+    prefs.accept_languages = accept_languages;
+    view->GetWebView()->SetRendererPreferences(prefs);
+  }
 }
 
 void TestRunner::DumpEditingCallbacks() {

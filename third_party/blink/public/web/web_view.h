@@ -366,13 +366,6 @@ class WebView {
       mojom::PageVisibilityState visibility,
       mojom::PagehideDispatch pagehide_dispatch) = 0;
 
-  // i18n -----------------------------------------------------------------
-
-  // Inform the WebView that the accept languages have changed.
-  // If the WebView wants to get the accept languages value, it will have
-  // to call the WebViewClient::acceptLanguages().
-  virtual void AcceptLanguagesChanged() = 0;
-
   // Lifecycle state ------------------------------------------------------
 
   // Freezes or unfreezes the page and all the local frames.
