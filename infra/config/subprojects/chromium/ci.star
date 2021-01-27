@@ -3487,6 +3487,7 @@ ci.fyi_coverage_builder(
         short_name = "lnx",
     ),
     use_clang_coverage = True,
+    coverage_test_types = ["overall", "unit"],
     triggered_by = [],
 )
 
