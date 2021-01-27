@@ -214,7 +214,6 @@ test("app_list_unittests") {
   sources = [
     "folder_image_unittest.cc",
     "test/run_all_unittests.cc",
-    "views/app_list_item_view_unittest.cc",
     "views/app_list_main_view_unittest.cc",
     "views/app_list_menu_model_adapter_unittest.cc",
     "views/app_list_view_unittest.cc",

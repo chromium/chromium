@@ -2187,7 +2187,6 @@ test("ash_unittests") {
     "shelf/login_shelf_gesture_controller_unittest.cc",
     "shelf/login_shelf_view_unittest.cc",
     "shelf/scrollable_shelf_view_unittest.cc",
-    "shelf/shelf_app_button_unittest.cc",
     "shelf/shelf_application_menu_model_unittest.cc",
     "shelf/shelf_background_animator_unittest.cc",
     "shelf/shelf_button_pressed_metric_tracker_unittest.cc",

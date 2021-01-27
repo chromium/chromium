@@ -83,32 +83,6 @@ constexpr float kNotificationIndicatorWidthRatio = 14.0f / 64.0f;
 // icon.
 constexpr float kNotificationIndicatorPaddingRatio = 4.0f / 64.0f;
 
-constexpr SkColor kDefaultIndicatorColor = SK_ColorWHITE;
-
-// Uses the icon image to calculate the light vibrant color to be used for
-// the notification indicator.
-base::Optional<SkColor> CalculateNotificationColor(gfx::ImageSkia image) {
-  const SkBitmap* source = image.bitmap();
-  if (!source || source->empty() || source->isNull())
-    return base::nullopt;
-
-  std::vector<color_utils::ColorProfile> color_profiles;
-  color_profiles.push_back(color_utils::ColorProfile(
-      color_utils::LumaRange::LIGHT, color_utils::SaturationRange::VIBRANT));
-
-  std::vector<color_utils::Swatch> best_swatches =
-      color_utils::CalculateProminentColorsOfBitmap(
-          *source, color_profiles, nullptr /* bitmap region */,
-          color_utils::ColorSwatchFilter());
-
-  // If the best swatch color is transparent, then
-  // CalculateProminentColorsOfBitmap() failed to find a suitable color.
-  if (best_swatches.empty() || best_swatches[0].color == SK_ColorTRANSPARENT)
-    return base::nullopt;
-
-  return best_swatches[0].color;
-}
-
 // The class clips the provided folder icon image.
 class ClippedFolderIconImageSource : public gfx::CanvasImageSource {
  public:
@@ -181,8 +155,6 @@ class AppListItemView::AppNotificationIndicatorView : public views::View {
     indicator_color_ = new_color;
     SchedulePaint();
   }
-
-  SkColor GetColorForTest() { return indicator_color_; }
 
  private:
   const gfx::ShadowValues shadow_values_;
@@ -316,8 +288,9 @@ AppListItemView::AppListItemView(AppsGridView* apps_grid_view,
   }
 
   if (is_notification_indicator_enabled_ && !is_folder_) {
-    notification_indicator_ = AddChildView(
-        std::make_unique<AppNotificationIndicatorView>(kDefaultIndicatorColor));
+    notification_indicator_ =
+        AddChildView(std::make_unique<AppNotificationIndicatorView>(
+            item->notification_badge_color()));
     notification_indicator_->SetPaintToLayer();
     notification_indicator_->layer()->SetFillsBoundsOpaquely(false);
     notification_indicator_->SetVisible(item->has_notification_badge());
@@ -361,13 +334,6 @@ void AppListItemView::SetIcon(const gfx::ImageSkia& icon) {
   gfx::ImageSkia resized = gfx::ImageSkiaOperations::CreateResizedImage(
       icon, skia::ImageOperations::RESIZE_BEST, icon_bounds);
   icon_->SetImage(resized);
-
-  if (is_notification_indicator_enabled_ && notification_indicator_) {
-    base::Optional<SkColor> notification_color =
-        CalculateNotificationColor(icon_image_);
-    notification_indicator_->SetColor(
-        notification_color.value_or(kDefaultIndicatorColor));
-  }
 
   Layout();
 }
@@ -964,10 +930,6 @@ bool AppListItemView::IsNotificationIndicatorShownForTest() const {
   return notification_indicator_ && notification_indicator_->GetVisible();
 }
 
-SkColor AppListItemView::GetNotificationIndicatorColorForTest() const {
-  return notification_indicator_->GetColorForTest();
-}
-
 void AppListItemView::AnimationProgressed(const gfx::Animation* animation) {
   DCHECK(!is_folder_);
 
@@ -1091,6 +1053,11 @@ void AppListItemView::ItemNameChanged() {
 void AppListItemView::ItemBadgeVisibilityChanged() {
   if (is_notification_indicator_enabled_ && notification_indicator_ && icon_)
     notification_indicator_->SetVisible(item_weak_->has_notification_badge());
+}
+
+void AppListItemView::ItemBadgeColorChanged() {
+  if (notification_indicator_)
+    notification_indicator_->SetColor(item_weak_->notification_badge_color());
 }
 
 void AppListItemView::ItemBeingDestroyed() {

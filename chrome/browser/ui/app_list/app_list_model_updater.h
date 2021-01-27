@@ -79,6 +79,8 @@ class AppListModelUpdater {
   virtual void SetItemIsPersistent(const std::string& id, bool is_persistent) {}
   virtual void SetItemFolderId(const std::string& id,
                                const std::string& folder_id) {}
+  virtual void SetNotificationBadgeColor(const std::string& id,
+                                         const SkColor color) {}
 
   virtual void SetSearchResultMetadata(
       const std::string& id,

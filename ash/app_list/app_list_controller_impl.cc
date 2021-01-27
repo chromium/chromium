@@ -335,6 +335,13 @@ void AppListControllerImpl::SetItemIcon(const std::string& id,
     item->SetIcon(AppListConfigType::kShared, icon);
 }
 
+void AppListControllerImpl::SetItemNotificationBadgeColor(const std::string& id,
+                                                          const SkColor color) {
+  AppListItem* item = model_->FindItem(id);
+  if (item)
+    item->SetNotificationBadgeColor(color);
+}
+
 void AppListControllerImpl::SetModelData(
     int profile_id,
     std::vector<std::unique_ptr<AppListItemMetadata>> apps,

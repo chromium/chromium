@@ -83,6 +83,9 @@ class ASH_PUBLIC_EXPORT AppListController {
   virtual void SetItemIcon(const std::string& id,
                            const gfx::ImageSkia& icon) = 0;
 
+  virtual void SetItemNotificationBadgeColor(const std::string& id,
+                                             const SkColor color) = 0;
+
   // Update the whole model, usually when profile changes happen in Chrome.
   virtual void SetModelData(
       int profile_id,

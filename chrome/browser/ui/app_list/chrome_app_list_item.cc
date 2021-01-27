@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_model_updater.h"
+#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
 #include "extensions/browser/app_sorting.h"
 #include "extensions/browser/extension_system.h"
 #include "ui/gfx/color_utils.h"
@@ -171,6 +172,17 @@ void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon) {
   AppListModelUpdater* updater = model_updater();
   if (updater)
     updater->SetItemIcon(id(), metadata_->icon);
+
+  // Calculate and set the notification badge color.
+  ChromeLauncherController* chrome_launcher_controller =
+      ChromeLauncherController::instance();
+  if (chrome_launcher_controller) {
+    SkColor current_badge_color =
+        chrome_launcher_controller->CalculateNotificationBadgeColorForApp(id(),
+                                                                          icon);
+    if (updater)
+      updater->SetNotificationBadgeColor(id(), current_badge_color);
+  }
 }
 
 void ChromeAppListItem::SetName(const std::string& name) {

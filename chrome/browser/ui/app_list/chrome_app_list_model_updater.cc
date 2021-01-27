@@ -264,6 +264,13 @@ void ChromeAppListModelUpdater::SetItemFolderId(const std::string& id,
   app_list_controller_->SetItemMetadata(id, std::move(data));
 }
 
+void ChromeAppListModelUpdater::SetNotificationBadgeColor(const std::string& id,
+                                                          const SkColor color) {
+  if (!app_list_controller_)
+    return;
+  app_list_controller_->SetItemNotificationBadgeColor(id, color);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Methods only used by ChromeSearchResult that talk to ash directly.
 

@@ -70,30 +70,6 @@ constexpr float kAppIconScale = 1.2f;
 // The drag and drop app icon scaling up or down animation transition duration.
 constexpr int kDragDropAppIconScaleTransitionMs = 200;
 
-// Uses the icon image to calculate the light vibrant color to be used for
-// the notification indicator.
-base::Optional<SkColor> CalculateNotificationColor(gfx::ImageSkia image) {
-  const SkBitmap* source = image.bitmap();
-  if (!source || source->empty() || source->isNull())
-    return base::nullopt;
-
-  std::vector<color_utils::ColorProfile> color_profiles;
-  color_profiles.push_back(color_utils::ColorProfile(
-      color_utils::LumaRange::LIGHT, color_utils::SaturationRange::VIBRANT));
-
-  std::vector<color_utils::Swatch> best_swatches =
-      color_utils::CalculateProminentColorsOfBitmap(
-          *source, color_profiles, nullptr /* bitmap region */,
-          color_utils::ColorSwatchFilter());
-
-  // If the best swatch color is transparent, then
-  // CalculateProminentColorsOfBitmap() failed to find a suitable color.
-  if (best_swatches.empty() || best_swatches[0].color == SK_ColorTRANSPARENT)
-    return base::nullopt;
-
-  return best_swatches[0].color;
-}
-
 // Simple AnimationDelegate that owns a single ThrobAnimation instance to
 // keep all Draw Attention animations in sync.
 class ShelfAppButtonAnimation : public gfx::AnimationDelegate {
@@ -206,8 +182,6 @@ class ShelfAppButton::AppNotificationIndicatorView : public views::View {
     indicator_color_ = new_color;
     SchedulePaint();
   }
-
-  SkColor GetColorForTest() { return indicator_color_; }
 
  private:
   SkColor indicator_color_;
@@ -419,13 +393,6 @@ void ShelfAppButton::SetImage(const gfx::ImageSkia& image) {
     return;
   }
   icon_image_ = image;
-
-  if (is_notification_indicator_enabled_) {
-    base::Optional<SkColor> notification_color =
-        CalculateNotificationColor(icon_image_);
-    notification_indicator_->SetColor(
-        notification_color.value_or(kDefaultIndicatorColor));
-  }
 
   const int icon_size = shelf_view_->GetButtonIconSize() * icon_scale_;
 
@@ -1009,8 +976,9 @@ void ShelfAppButton::SetInkDropAnimationStarted(bool started) {
   }
 }
 
-SkColor ShelfAppButton::GetNotificationIndicatorColorForTest() {
-  return notification_indicator_->GetColorForTest();
+void ShelfAppButton::SetNotificationBadgeColor(SkColor color) {
+  if (notification_indicator_)
+    notification_indicator_->SetColor(color);
 }
 
 }  // namespace ash

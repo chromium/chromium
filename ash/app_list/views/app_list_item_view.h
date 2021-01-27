@@ -150,8 +150,6 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
 
   bool IsNotificationIndicatorShownForTest() const;
 
-  SkColor GetNotificationIndicatorColorForTest() const;
-
  private:
   class IconImageView;
   class AppNotificationIndicatorView;
@@ -229,6 +227,7 @@ class APP_LIST_EXPORT AppListItemView : public views::Button,
   void ItemIconChanged(AppListConfigType config_type) override;
   void ItemNameChanged() override;
   void ItemBadgeVisibilityChanged() override;
+  void ItemBadgeColorChanged() override;
   void ItemBeingDestroyed() override;
 
   // ui::ImplicitAnimationObserver:

@@ -107,6 +107,8 @@ class ASH_EXPORT AppListControllerImpl
   void SetItemMetadata(const std::string& id,
                        std::unique_ptr<AppListItemMetadata> data) override;
   void SetItemIcon(const std::string& id, const gfx::ImageSkia& icon) override;
+  void SetItemNotificationBadgeColor(const std::string& id,
+                                     const SkColor color) override;
   void SetModelData(int profile_id,
                     std::vector<std::unique_ptr<AppListItemMetadata>> apps,
                     bool is_search_engine_google) override;

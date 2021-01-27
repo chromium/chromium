@@ -33,6 +33,8 @@ struct ASH_PUBLIC_EXPORT ShelfItem {
   // The title to display for tooltips, etc.
   base::string16 title;
 
+  SkColor notification_badge_color = SK_ColorWHITE;
+
   // App status.
   AppStatus app_status = AppStatus::kReady;
 

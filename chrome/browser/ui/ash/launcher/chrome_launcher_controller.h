@@ -266,6 +266,9 @@ class ChromeLauncherController
   // CanDoShowAppInfoFlow() returns true.
   void DoShowAppInfoFlow(Profile* profile, const std::string& app_id);
 
+  SkColor CalculateNotificationBadgeColorForApp(const std::string& app_id,
+                                                const gfx::ImageSkia& icon);
+
   // LauncherAppUpdater::Delegate:
   void OnAppInstalled(content::BrowserContext* browser_context,
                       const std::string& app_id) override;
@@ -447,6 +450,9 @@ class ChromeLauncherController
   using RunningAppListIds = std::vector<std::string>;
   using RunningAppListIdMap = std::map<std::string, RunningAppListIds>;
   RunningAppListIdMap last_used_running_application_order_;
+
+  using AppIdBadgeColor = std::map<std::string, SkColor>;
+  AppIdBadgeColor app_id_badge_color_map_;
 
   base::WeakPtrFactory<ChromeLauncherController> weak_ptr_factory_{this};
 

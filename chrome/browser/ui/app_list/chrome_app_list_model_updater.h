@@ -58,6 +58,8 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   void SetItemIsPersistent(const std::string& id, bool is_persistent) override;
   void SetItemFolderId(const std::string& id,
                        const std::string& folder_id) override;
+  void SetNotificationBadgeColor(const std::string& id,
+                                 const SkColor color) override;
 
   // Methods only used by ChromeSearchResult that talk to ash directly.
   void SetSearchResultMetadata(
