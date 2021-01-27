@@ -176,10 +176,8 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
       // TODO(crbug.com/1146900): Handle ARC apps
       break;
     case apps::mojom::AppType::kExtension:
-      // TODO(crbug.com/1146900): Handle Chrome apps
-      break;
     case apps::mojom::AppType::kWeb:
-      LaunchSystemWebApp(app_id, it->second);
+      LaunchSystemWebAppOrChromeApp(app_id, it->second);
       break;
     case apps::mojom::AppType::kBuiltIn:
     case apps::mojom::AppType::kCrostini:
@@ -195,7 +193,7 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
   restore_data_->RemoveApp(app_id);
 }
 
-void AppLaunchHandler::LaunchSystemWebApp(
+void AppLaunchHandler::LaunchSystemWebAppOrChromeApp(
     const std::string& app_id,
     const ::full_restore::RestoreData::LaunchList& launch_list) {
   auto* launcher = apps::AppServiceProxyFactory::GetForProfile(profile_)

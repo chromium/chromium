@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -72,6 +74,25 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
       extension && extension->from_bookmark()) {
     web_app::RecordAppWindowLaunch(profile_, params.app_id);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // If the restore id is available, save the launch parameters to the full
+  // restore file.
+  if (SessionID::IsValidValue(params.restore_id)) {
+    AppLaunchParams params_for_restore(
+        params.app_id, params.container, params.disposition, params.source,
+        params.display_id, params.launch_files, params.intent);
+
+    auto launch_info = std::make_unique<full_restore::AppLaunchInfo>(
+        params_for_restore.app_id, params_for_restore.container,
+        params_for_restore.disposition, params_for_restore.display_id,
+        std::move(params_for_restore.launch_files),
+        std::move(params_for_restore.intent));
+    full_restore::SaveAppLaunchInfo(profile_->GetPath(),
+                                    std::move(launch_info));
+  }
+#endif
+
   return ::OpenApplication(profile_, std::move(params));
 }
 
