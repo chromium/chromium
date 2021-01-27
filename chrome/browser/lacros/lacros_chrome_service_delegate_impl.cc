@@ -160,8 +160,8 @@ void LacrosChromeServiceDelegateImpl::OnSystemInformationReady(
       system_log_entries.SetStringKey(std::move(it.first),
                                       std::move(it.second));
     }
-
-    DCHECK(!callback.is_null());
-    std::move(callback).Run(std::move(system_log_entries));
   }
+
+  DCHECK(!callback.is_null());
+  std::move(callback).Run(std::move(system_log_entries));
 }
