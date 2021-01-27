@@ -367,6 +367,15 @@ base::TimeTicks ComputeSafeDeadlineForFrame(const viz::BeginFrameArgs& args) {
     }                                                                          \
   }
 
+bool IsScrollActive(const CompositorFrameReporter::ActiveTrackers& trackers) {
+  return trackers.test(
+             static_cast<size_t>(FrameSequenceTrackerType::kWheelScroll)) ||
+         trackers.test(
+             static_cast<size_t>(FrameSequenceTrackerType::kTouchScroll)) ||
+         trackers.test(
+             static_cast<size_t>(FrameSequenceTrackerType::kScrollbarScroll));
+}
+
 }  // namespace
 
 CompositorFrameReporter::CompositorFrameReporter(
@@ -384,7 +393,7 @@ CompositorFrameReporter::CompositorFrameReporter(
       dropped_frame_counter_(dropped_frame_counter),
       smooth_thread_(smooth_thread),
       layer_tree_host_id_(layer_tree_host_id) {
-  dropped_frame_counter_->OnBeginFrame(args);
+  dropped_frame_counter_->OnBeginFrame(args, IsScrollActive(active_trackers_));
 }
 
 std::unique_ptr<CompositorFrameReporter>

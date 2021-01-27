@@ -64,7 +64,7 @@ class CC_EXPORT DroppedFrameCounter {
   void AddDroppedFrame();
   void ReportFrames();
 
-  void OnBeginFrame(const viz::BeginFrameArgs& args);
+  void OnBeginFrame(const viz::BeginFrameArgs& args, bool is_scroll_active);
   void OnEndFrame(const viz::BeginFrameArgs& args, bool is_dropped);
   void SetUkmSmoothnessDestination(UkmSmoothnessDataShared* smoothness_data);
   void OnFcpReceived();
@@ -110,6 +110,17 @@ class CC_EXPORT DroppedFrameCounter {
   UkmSmoothnessDataShared* ukm_smoothness_data_ = nullptr;
   FrameSorter frame_sorter_;
   TotalFrameCounter* total_counter_ = nullptr;
+
+  struct ScrollStartInfo {
+    // The timestamp of when the scroll started.
+    base::TimeTicks timestamp;
+
+    // The vsync corresponding to the scroll-start.
+    viz::BeginFrameId frame_id;
+  };
+  base::Optional<ScrollStartInfo> scroll_start_;
+
+  std::map<viz::BeginFrameId, ScrollStartInfo> scroll_start_per_frame_;
 };
 
 }  // namespace cc
