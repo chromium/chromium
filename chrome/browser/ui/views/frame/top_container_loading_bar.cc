@@ -10,6 +10,7 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 LoadingBarView::LoadingBarView() {
   SetPaintToLayer();
@@ -84,6 +85,9 @@ void LoadingBarView::AnimationProgressed(const gfx::Animation* animation) {
   SchedulePaint();
 }
 
+BEGIN_METADATA(LoadingBarView, views::View)
+END_METADATA
+
 TopContainerLoadingBar::TopContainerLoadingBar(Browser* browser)
     : browser_(browser) {}
 
@@ -148,7 +152,7 @@ void TopContainerLoadingBar::UpdateLoadingProgress() {
   }
 }
 
-double TopContainerLoadingBar::GetLoadingProgress() {
+double TopContainerLoadingBar::GetLoadingProgress() const {
   DCHECK(web_contents());
   return std::min(web_contents()->GetLoadProgress(), 0.9);
 }
@@ -156,3 +160,7 @@ double TopContainerLoadingBar::GetLoadingProgress() {
 void TopContainerLoadingBar::LoadProgressChanged(double progress) {
   UpdateLoadingProgress();
 }
+
+BEGIN_METADATA(TopContainerLoadingBar, LoadingBarView)
+ADD_READONLY_PROPERTY_METADATA(double, LoadingProgress)
+END_METADATA

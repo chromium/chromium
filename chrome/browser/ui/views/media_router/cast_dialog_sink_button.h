@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/views/hover_button.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 
 class Profile;
 
@@ -23,7 +24,10 @@ namespace media_router {
 // hovered.
 class CastDialogSinkButton : public HoverButton {
  public:
+  METADATA_HEADER(CastDialogSinkButton);
   CastDialogSinkButton(PressedCallback callback, const UIMediaSink& sink);
+  CastDialogSinkButton(const CastDialogSinkButton&) = delete;
+  CastDialogSinkButton& operator=(const CastDialogSinkButton&) = delete;
   ~CastDialogSinkButton() override;
 
   void OverrideStatusText(const base::string16& status_text);
@@ -67,8 +71,6 @@ class CastDialogSinkButton : public HoverButton {
       AddEnabledChangedCallback(
           base::BindRepeating(&CastDialogSinkButton::OnEnabledChanged,
                               base::Unretained(this)));
-
-  DISALLOW_COPY_AND_ASSIGN(CastDialogSinkButton);
 };
 
 }  // namespace media_router

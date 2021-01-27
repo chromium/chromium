@@ -20,6 +20,7 @@
 #include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 #include "url/gurl.h"
@@ -49,6 +50,8 @@ class WebUILoginView : public views::View,
                        public web_modal::WebContentsModalDialogHost,
                        public ash::SystemTrayFocusObserver {
  public:
+  METADATA_HEADER(WebUILoginView);
+
   struct WebViewSettings {
     // If true, this will check for and consume a preloaded views::WebView
     // instance.
@@ -59,9 +62,6 @@ class WebUILoginView : public views::View,
     base::string16 web_view_title;
   };
 
-  // Internal class name.
-  static const char kViewClassName[];
-
   WebUILoginView(const WebViewSettings& settings,
                  base::WeakPtr<LoginDisplayHostWebUI> controller);
   ~WebUILoginView() override;
@@ -71,7 +71,6 @@ class WebUILoginView : public views::View,
 
   // Overridden from views::View:
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
-  const char* GetClassName() const override;
   void RequestFocus() override;
 
   // Overridden from ChromeWebModalDialogManagerDelegate:

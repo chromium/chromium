@@ -9,12 +9,14 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/linear_animation.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 class Browser;
 
 class LoadingBarView : public views::View, public gfx::AnimationDelegate {
  public:
+  METADATA_HEADER(LoadingBarView);
   LoadingBarView();
   LoadingBarView(const LoadingBarView&) = delete;
   LoadingBarView& operator=(const LoadingBarView&) = delete;
@@ -46,6 +48,7 @@ class LoadingBarView : public views::View, public gfx::AnimationDelegate {
 class TopContainerLoadingBar : public LoadingBarView,
                                public content::WebContentsObserver {
  public:
+  METADATA_HEADER(TopContainerLoadingBar);
   explicit TopContainerLoadingBar(Browser*);
   TopContainerLoadingBar(const TopContainerLoadingBar&) = delete;
   TopContainerLoadingBar& operator=(const TopContainerLoadingBar&) = delete;
@@ -54,7 +57,7 @@ class TopContainerLoadingBar : public LoadingBarView,
 
  private:
   void UpdateLoadingProgress();
-  double GetLoadingProgress();
+  double GetLoadingProgress() const;
 
   // content::WebContentsObserver:
   void LoadProgressChanged(double progress) override;

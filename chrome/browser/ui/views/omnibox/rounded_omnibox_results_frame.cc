@@ -15,6 +15,7 @@
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 
 #if defined(USE_AURA)
@@ -64,6 +65,7 @@ WidgetEventPair GetParentWidgetAndEvent(views::View* this_view,
 // theme changes.
 class OmniboxResultsContentsView : public views::View {
  public:
+  METADATA_HEADER(OmniboxResultsContentsView);
   OmniboxResultsContentsView() = default;
   ~OmniboxResultsContentsView() override = default;
 
@@ -75,10 +77,14 @@ class OmniboxResultsContentsView : public views::View {
   }
 };
 
+BEGIN_METADATA(OmniboxResultsContentsView, views::View)
+END_METADATA
+
 // View at the top of the frame which paints transparent pixels to make a hole
 // so that the location bar shows through.
 class TopBackgroundView : public views::View {
  public:
+  METADATA_HEADER(TopBackgroundView);
   explicit TopBackgroundView(const LocationBarView* location_bar)
       : location_bar_(location_bar) {}
 
@@ -136,6 +142,9 @@ class TopBackgroundView : public views::View {
  private:
   const LocationBarView* location_bar_;
 };
+
+BEGIN_METADATA(TopBackgroundView, views::View)
+END_METADATA
 
 // Insets used to position |contents_| within |contents_host_|.
 gfx::Insets GetContentInsets() {

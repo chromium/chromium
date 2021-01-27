@@ -55,6 +55,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/controls/webview/webview.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/widget.h"
 
 using chromeos::AutoEnrollmentController;
@@ -87,10 +88,6 @@ class ScopedArrowKeyTraversal {
 }  // namespace
 
 namespace chromeos {
-
-// static
-const char WebUILoginView::kViewClassName[] =
-    "browser/chromeos/login/WebUILoginView";
 
 // WebUILoginView public: ------------------------------------------------------
 
@@ -192,10 +189,6 @@ void WebUILoginView::Init() {
   WebContentsModalDialogManager::FromWebContents(web_contents)
       ->SetDelegate(this);
   web_contents->SetDelegate(this);
-}
-
-const char* WebUILoginView::GetClassName() const {
-  return kViewClassName;
 }
 
 void WebUILoginView::RequestFocus() {
@@ -443,5 +436,8 @@ void WebUILoginView::OnLoginPromptVisible() {
 
   webui_visible_ = true;
 }
+
+BEGIN_METADATA(WebUILoginView, views::View)
+END_METADATA
 
 }  // namespace chromeos

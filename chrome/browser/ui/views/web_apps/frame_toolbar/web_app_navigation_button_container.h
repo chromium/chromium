@@ -7,6 +7,7 @@
 
 #include "chrome/browser/command_observer.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace {
@@ -23,6 +24,7 @@ class BrowserView;
 class WebAppNavigationButtonContainer : public views::View,
                                         public CommandObserver {
  public:
+  METADATA_HEADER(WebAppNavigationButtonContainer);
   explicit WebAppNavigationButtonContainer(BrowserView* browser_view);
   ~WebAppNavigationButtonContainer() override;
 
@@ -30,9 +32,6 @@ class WebAppNavigationButtonContainer : public views::View,
   ReloadButton* reload_button();
 
   void SetIconColor(SkColor icon_color);
-
-  // views::View:
-  const char* GetClassName() const override;
 
  protected:
   // CommandObserver:

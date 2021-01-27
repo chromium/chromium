@@ -13,6 +13,10 @@
 #include "chrome/common/chrome_switches.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
+
+BEGIN_NESTED_METADATA(DesktopMediaListController, ListView, views::View)
+END_METADATA
 
 DesktopMediaListController::DesktopMediaListController(
     DesktopMediaPickerDialogView* parent,

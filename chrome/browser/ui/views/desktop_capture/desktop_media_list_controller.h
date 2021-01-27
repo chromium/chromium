@@ -42,6 +42,8 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // controller.
   class ListView : public views::View {
    public:
+    METADATA_HEADER(ListView);
+
     // Returns the DesktopMediaID of the selected element of this list, or
     // nullopt if no element is selected.
     virtual base::Optional<content::DesktopMediaID> GetSelection() = 0;

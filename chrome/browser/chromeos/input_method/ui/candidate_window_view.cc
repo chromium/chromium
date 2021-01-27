@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/input_method/ui/candidate_view.h"
 #include "chrome/browser/chromeos/input_method/ui/candidate_window_constants.h"
@@ -28,6 +27,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/wm/core/window_animations.h"
 
@@ -45,7 +45,9 @@ class CandidateWindowBorder : public views::BubbleBorder {
         offset_(0) {
     set_use_theme_background_color(true);
   }
-  ~CandidateWindowBorder() override {}
+  CandidateWindowBorder(const CandidateWindowBorder&) = delete;
+  CandidateWindowBorder& operator=(const CandidateWindowBorder&) = delete;
+  ~CandidateWindowBorder() override = default;
 
   void set_offset(int offset) { offset_ = offset; }
 
@@ -75,8 +77,6 @@ class CandidateWindowBorder : public views::BubbleBorder {
   gfx::Insets GetInsets() const override { return gfx::Insets(); }
 
   int offset_;
-
-  DISALLOW_COPY_AND_ASSIGN(CandidateWindowBorder);
 };
 
 // Computes the page index. For instance, if the page size is 9, and the
@@ -92,6 +92,8 @@ int ComputePageIndex(const ui::CandidateWindow& candidate_window) {
 
 class InformationTextArea : public views::View {
  public:
+  METADATA_HEADER(InformationTextArea);
+
   // InformationTextArea's border is drawn as a separator, it should appear
   // at either top or bottom.
   enum BorderPosition { TOP, BOTTOM };
@@ -111,6 +113,9 @@ class InformationTextArea : public views::View {
                                     ui::NativeTheme::kColorId_WindowBackground),
                                 0.0625f)));
   }
+
+  InformationTextArea(const InformationTextArea&) = delete;
+  InformationTextArea& operator=(const InformationTextArea&) = delete;
 
   // Sets the text alignment.
   void SetAlignment(gfx::HorizontalAlignment alignment) {
@@ -138,9 +143,10 @@ class InformationTextArea : public views::View {
  private:
   views::Label* label_;
   int min_width_;
-
-  DISALLOW_COPY_AND_ASSIGN(InformationTextArea);
 };
+
+BEGIN_METADATA(InformationTextArea, views::View)
+END_METADATA
 
 CandidateWindowView::CandidateWindowView(gfx::NativeView parent)
     : selected_candidate_index_in_page_(-1),

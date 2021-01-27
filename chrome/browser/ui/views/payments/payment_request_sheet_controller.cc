@@ -22,6 +22,8 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 
 namespace payments {
@@ -45,6 +47,7 @@ class DummyEvent : public ui::Event {
 // this SheetView's RequestFocus() is called.
 class SheetView : public views::View, public views::FocusTraversable {
  public:
+  METADATA_HEADER(SheetView);
   explicit SheetView(const base::RepeatingCallback<void(bool*)>&
                          enter_key_accelerator_callback)
       : enter_key_accelerator_callback_(enter_key_accelerator_callback) {
@@ -129,11 +132,16 @@ class SheetView : public views::View, public views::FocusTraversable {
   base::RepeatingCallback<void(bool*)> enter_key_accelerator_callback_;
 };
 
+BEGIN_METADATA(SheetView, views::View)
+END_METADATA
+
 // A scroll view that displays a separator on the bounds where content is
 // scrolled out of view. For example, if the view can be scrolled up to reveal
 // more content, the top of the content area will display a separator.
 class BorderedScrollView : public views::ScrollView {
  public:
+  METADATA_HEADER(BorderedScrollView);
+
   // The painter used by the scroll view to display the border.
   class BorderedScrollViewBorderPainter : public views::Painter {
    public:
@@ -151,12 +159,12 @@ class BorderedScrollView : public views::ScrollView {
     gfx::Size GetMinimumSize() const override { return gfx::Size(0, 2); }
 
     void Paint(gfx::Canvas* canvas, const gfx::Size& size) override {
-      if (scroll_view_->HasTopBorder()) {
+      if (scroll_view_->GetTopBorder()) {
         canvas->Draw1pxLine(gfx::PointF(), gfx::PointF(size.width(), 0),
                             color_);
       }
 
-      if (scroll_view_->HasBottomBorder()) {
+      if (scroll_view_->GetBottomBorder()) {
         canvas->Draw1pxLine(gfx::PointF(0, size.height() - 1),
                             gfx::PointF(size.width(), size.height() - 1),
                             color_);
@@ -180,9 +188,9 @@ class BorderedScrollView : public views::ScrollView {
         gfx::Insets(1, 0)));
   }
 
-  bool HasTopBorder() const { return GetVisibleRect().y() > 0; }
+  bool GetTopBorder() const { return GetVisibleRect().y() > 0; }
 
-  bool HasBottomBorder() const {
+  bool GetBottomBorder() const {
     return GetVisibleRect().bottom() < contents()->height();
   }
 
@@ -192,6 +200,11 @@ class BorderedScrollView : public views::ScrollView {
     SchedulePaint();
   }
 };
+
+BEGIN_METADATA(BorderedScrollView, views::ScrollView)
+ADD_READONLY_PROPERTY_METADATA(bool, TopBorder)
+ADD_READONLY_PROPERTY_METADATA(bool, BottomBorder)
+END_METADATA
 
 }  // namespace
 

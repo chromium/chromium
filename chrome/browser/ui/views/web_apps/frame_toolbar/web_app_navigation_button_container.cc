@@ -19,6 +19,8 @@
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/hit_test_utils.h"
 
 #if defined(OS_WIN)
@@ -84,6 +86,7 @@ class WebAppToolbarButton : public BaseClass {
 
 class WebAppToolbarBackButton : public WebAppToolbarButton<BackForwardButton> {
  public:
+  METADATA_HEADER(WebAppToolbarBackButton);
   WebAppToolbarBackButton(PressedCallback callback, Browser* browser);
   WebAppToolbarBackButton(const WebAppToolbarBackButton&) = delete;
   WebAppToolbarBackButton& operator=(const WebAppToolbarBackButton&) = delete;
@@ -111,8 +114,12 @@ const gfx::VectorIcon* WebAppToolbarBackButton::GetAlternativeIcon() const {
   return nullptr;
 }
 
+BEGIN_METADATA(WebAppToolbarBackButton, BackForwardButton)
+END_METADATA
+
 class WebAppToolbarReloadButton : public WebAppToolbarButton<ReloadButton> {
  public:
+  METADATA_HEADER(WebAppToolbarReloadButton);
   using WebAppToolbarButton<ReloadButton>::WebAppToolbarButton;
   WebAppToolbarReloadButton(const WebAppToolbarReloadButton&) = delete;
   WebAppToolbarReloadButton& operator=(const WebAppToolbarReloadButton&) =
@@ -136,6 +143,9 @@ const gfx::VectorIcon* WebAppToolbarReloadButton::GetAlternativeIcon() const {
 #endif
   return nullptr;
 }
+
+BEGIN_METADATA(WebAppToolbarReloadButton, ReloadButton)
+END_METADATA
 
 }  // namespace
 
@@ -195,10 +205,6 @@ void WebAppNavigationButtonContainer::SetIconColor(SkColor icon_color) {
   reload_button_->SetIconColor(icon_color);
 }
 
-const char* WebAppNavigationButtonContainer::GetClassName() const {
-  return "WebAppNavigationButtonContainer";
-}
-
 void WebAppNavigationButtonContainer::EnabledStateChangedForCommand(
     int id,
     bool enabled) {
@@ -213,3 +219,6 @@ void WebAppNavigationButtonContainer::EnabledStateChangedForCommand(
       NOTREACHED();
   }
 }
+
+BEGIN_METADATA(WebAppNavigationButtonContainer, views::View)
+END_METADATA

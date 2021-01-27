@@ -10,6 +10,8 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/grid_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/style/typography.h"
 
 namespace {
@@ -20,6 +22,7 @@ namespace {
 // by that class is incompatible with the WebAuthn UI spec.
 class IconWrapper : public views::View {
  public:
+  METADATA_HEADER(IconWrapper);
   explicit IconWrapper(std::unique_ptr<views::View> icon)
       : icon_(AddChildView(std::move(icon))) {
     SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -34,6 +37,9 @@ class IconWrapper : public views::View {
  private:
   views::View* icon_;
 };
+
+BEGIN_METADATA(IconWrapper, views::View)
+END_METADATA
 
 }  // namespace
 
@@ -136,3 +142,6 @@ WebAuthnHoverButton::WebAuthnHoverButton(
 
   Layout();
 }
+
+BEGIN_METADATA(WebAuthnHoverButton, HoverButton)
+END_METADATA

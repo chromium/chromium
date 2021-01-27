@@ -35,6 +35,8 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/throbber.h"
 #include "ui/views/layout/box_layout.h"
+#include "ui/views/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/vector_icons.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -157,6 +159,7 @@ void ShowMeetTab(Profile* profile,
 
 class CastToMeetingDeprecationWarningView : public views::View {
  public:
+  METADATA_HEADER(CastToMeetingDeprecationWarningView);
   CastToMeetingDeprecationWarningView(const std::string& sink_id,
                                       Profile* profile) {
     DCHECK(profile);
@@ -195,6 +198,9 @@ class CastToMeetingDeprecationWarningView : public views::View {
     label->AddStyleRange(link_range, link_style);
   }
 };
+
+BEGIN_METADATA(CastToMeetingDeprecationWarningView, views::View)
+END_METADATA
 
 }  // namespace
 
@@ -355,5 +361,8 @@ const gfx::VectorIcon* CastDialogSinkButton::GetVectorIcon(
   }
   return vector_icon;
 }
+
+BEGIN_METADATA(CastDialogSinkButton, HoverButton)
+END_METADATA
 
 }  // namespace media_router
