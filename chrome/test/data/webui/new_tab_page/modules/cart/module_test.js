@@ -22,6 +22,9 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     testProxy.handler =
         TestBrowserProxy.fromClass(chromeCart.mojom.CartHandlerRemote);
     ChromeCartProxy.instance_ = testProxy;
+    // Not show welcome surface by default.
+    testProxy.handler.setResultFor(
+        'getWarmWelcomeVisible', Promise.resolve({visible: false}));
   });
 
   test('creates no module if no cart item', async () => {
@@ -124,34 +127,37 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
     assertEquals(null, cartItems[1].querySelector('.thumbnail-fallback'));
   });
 
-  test('cart module header chip', async () => {
+  test('shows welcome surface in cart module', async () => {
     const carts = [
       {
-        merchant: 'Amazon',
-        cartUrl: {url: 'https://amazon.com'},
-        productImageUrls: [
-          {url: 'https://image1.com'}, {url: 'https://image2.com'},
-          {url: 'https://image3.com'}
-        ],
+        merchant: 'Foo',
+        cartUrl: {url: 'https://foo.com'},
+        productImageUrls: [],
       },
     ];
     testProxy.handler.setResultFor(
         'getMerchantCarts', Promise.resolve({carts}));
+    testProxy.handler.setResultFor(
+        'getWarmWelcomeVisible', Promise.resolve({visible: true}));
 
-    // Act.
+    // Arrange.
     await chromeCartDescriptor.initialize();
     const moduleElement = chromeCartDescriptor.element;
     document.body.append(moduleElement);
     moduleElement.$.cartItemRepeat.render();
 
     // Assert.
-    const cartItems = moduleElement.shadowRoot.querySelectorAll('.cart-item');
-    assertEquals(1, cartItems.length);
     const headerChip =
         moduleElement.shadowRoot.querySelector('ntp-module-header')
             .shadowRoot.querySelector('#chip');
+    const headerDescription =
+        moduleElement.shadowRoot.querySelector('ntp-module-header')
+            .shadowRoot.querySelector('#description');
     assertEquals(
         loadTimeData.getString('modulesCartHeaderNew'), headerChip.innerText);
+    assertEquals(
+        loadTimeData.getString('modulesCartWarmWelcome'),
+        headerDescription.innerText);
   });
 
   test('Backend is notified when module is dismissed or restored', async () => {

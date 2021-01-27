@@ -82,3 +82,8 @@ void CartHandler::GetCartDataCallback(GetMerchantCartsCallback callback,
   }
   std::move(callback).Run(std::move(carts));
 }
+
+void CartHandler::GetWarmWelcomeVisible(
+    GetWarmWelcomeVisibleCallback callback) {
+  std::move(callback).Run(false);
+}

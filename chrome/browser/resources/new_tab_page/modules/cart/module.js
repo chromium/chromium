@@ -35,6 +35,12 @@ class ChromeCartModuleElement extends PolymerElement {
       /** @type {!Array<!chromeCart.mojom.MerchantCart>} */
       cartItems: Array,
 
+      /** @type {string} */
+      headerChipText: String,
+
+      /** @type {string} */
+      headerDescriptionText: String,
+
       /** @private {boolean} */
       showLeftScrollButton_: Boolean,
 
@@ -317,12 +323,19 @@ customElements.define(ChromeCartModuleElement.is, ChromeCartModuleElement);
 
 /** @return {!Promise<?HTMLElement>} */
 async function createCartElement() {
+  const {visible} =
+      await ChromeCartProxy.getInstance().handler.getWarmWelcomeVisible();
   const {carts} =
       await ChromeCartProxy.getInstance().handler.getMerchantCarts();
   if (carts.length === 0) {
     return null;
   }
   const element = new ChromeCartModuleElement();
+  if (visible) {
+    element.headerChipText = loadTimeData.getString('modulesCartHeaderNew');
+    element.headerDescriptionText =
+        loadTimeData.getString('modulesCartWarmWelcome');
+  }
   element.cartItems = carts;
   return element;
 }
@@ -330,4 +343,4 @@ async function createCartElement() {
 /** @type {!ModuleDescriptor} */
 export const chromeCartDescriptor = new ModuleDescriptor(
     /*id=*/ 'chrome_cart',
-    /*heightPx=*/ 230, createCartElement);
+    /*heightPx=*/ 238, createCartElement);

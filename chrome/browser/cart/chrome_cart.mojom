@@ -40,4 +40,6 @@ interface CartHandler {
   // Restores removed cart for certain domain
   // and returns if the operation is successful.
   RestoreRemovedCart(url.mojom.Url cart_url) => (bool success);
+  // Returns whether to show welcome surface in the module.
+  GetWarmWelcomeVisible() => (bool visible);
 };
