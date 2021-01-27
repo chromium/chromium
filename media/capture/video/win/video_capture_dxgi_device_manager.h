@@ -5,6 +5,7 @@
 #ifndef MEDIA_CAPTURE_VIDEO_WIN_VIDEO_CAPTURE_DXGI_DEVICE_MANAGER_H_
 #define MEDIA_CAPTURE_VIDEO_WIN_VIDEO_CAPTURE_DXGI_DEVICE_MANAGER_H_
 
+#include <d3d11.h>
 #include <mfapi.h>
 #include <mfidl.h>
 #include <wrl/client.h>
@@ -22,7 +23,7 @@ class CAPTURE_EXPORT VideoCaptureDXGIDeviceManager
   static scoped_refptr<VideoCaptureDXGIDeviceManager> Create();
 
   // Associates a new D3D device with the DXGI Device Manager
-  bool ResetDevice();
+  virtual bool ResetDevice();
 
   // Registers this manager in capture engine attributes.
   void RegisterInCaptureEngineAttributes(IMFAttributes* attributes);
@@ -33,6 +34,9 @@ class CAPTURE_EXPORT VideoCaptureDXGIDeviceManager
   // Registers this manager with a media source
   void RegisterWithMediaSource(
       Microsoft::WRL::ComPtr<IMFMediaSource> media_source);
+
+  // Directly access D3D device stored in DXGI device manager
+  virtual Microsoft::WRL::ComPtr<ID3D11Device> GetDevice();
 
  protected:
   friend class base::RefCounted<VideoCaptureDXGIDeviceManager>;

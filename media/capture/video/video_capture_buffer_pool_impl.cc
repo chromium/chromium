@@ -15,6 +15,10 @@
 #include "media/capture/video/video_capture_buffer_tracker_factory_impl.h"
 #include "ui/gfx/buffer_format_util.h"
 
+#if defined(OS_WIN)
+#include "media/capture/video/win/video_capture_buffer_tracker_factory_win.h"
+#endif  // defined(OS_WIN)
+
 namespace media {
 
 VideoCaptureBufferPoolImpl::VideoCaptureBufferPoolImpl(
@@ -22,8 +26,14 @@ VideoCaptureBufferPoolImpl::VideoCaptureBufferPoolImpl(
     int count)
     : buffer_type_(buffer_type),
       count_(count),
+#if defined(OS_WIN)
       buffer_tracker_factory_(
-          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>()) {
+          std::make_unique<media::VideoCaptureBufferTrackerFactoryWin>())
+#else
+      buffer_tracker_factory_(
+          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>())
+#endif
+{
   DCHECK_GT(count, 0);
 }
 

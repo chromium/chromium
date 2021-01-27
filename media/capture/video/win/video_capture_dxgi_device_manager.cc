@@ -8,13 +8,59 @@
 #include <mfcaptureengine.h>
 #include <mfreadwrite.h>
 #include "base/logging.h"
+#include "base/win/windows_version.h"
 
 using Microsoft::WRL::ComPtr;
 
 namespace media {
 
+namespace {
+class ScopedDeviceHandle {
+ public:
+  ScopedDeviceHandle(IMFDXGIDeviceManager* device_manager)
+      : device_manager_(device_manager) {
+    HRESULT hr = device_manager_->OpenDeviceHandle(&device_handle_);
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Failed to open device handle on MF DXGI device manager: "
+                  << logging::SystemErrorCodeToString(hr);
+    }
+  }
+
+  virtual ~ScopedDeviceHandle() {
+    if (device_handle_) {
+      device_manager_->CloseDeviceHandle(device_handle_);
+    }
+  }
+
+  ComPtr<ID3D11Device> GetDevice() {
+    if (!device_handle_) {
+      return nullptr;
+    }
+    ComPtr<ID3D11Device> device;
+    HRESULT hr =
+        device_manager_->GetVideoService(device_handle_, IID_PPV_ARGS(&device));
+    if (FAILED(hr)) {
+      DLOG(ERROR) << "Failed to get device from MF DXGI device manager: "
+                  << logging::SystemErrorCodeToString(hr);
+      return nullptr;
+    }
+    return device;
+  }
+
+ private:
+  ComPtr<IMFDXGIDeviceManager> device_manager_;
+  HANDLE device_handle_ = nullptr;
+};
+}  // namespace
+
 scoped_refptr<VideoCaptureDXGIDeviceManager>
 VideoCaptureDXGIDeviceManager::Create() {
+  if (base::win::GetVersion() < base::win::Version::WIN8) {
+    // The MF DXGI Device manager is only supported on Win8 or later
+    DLOG(ERROR)
+        << "MF DXGI Device Manager not supported on current version of Windows";
+    return scoped_refptr<VideoCaptureDXGIDeviceManager>();
+  }
   ComPtr<IMFDXGIDeviceManager> mf_dxgi_device_manager;
   UINT d3d_device_reset_token = 0;
   HRESULT hr = MFCreateDXGIDeviceManager(&d3d_device_reset_token,
@@ -87,6 +133,11 @@ void VideoCaptureDXGIDeviceManager::RegisterWithMediaSource(
     return;
   }
   source_ext->SetD3DManager(mf_dxgi_device_manager_.Get());
+}
+
+ComPtr<ID3D11Device> VideoCaptureDXGIDeviceManager::GetDevice() {
+  ScopedDeviceHandle device_handle(mf_dxgi_device_manager_.Get());
+  return device_handle.GetDevice();
 }
 
 }  // namespace media

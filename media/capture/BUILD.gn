@@ -216,6 +216,8 @@ component("capture_lib") {
       "video/win/capability_list_win.h",
       "video/win/filter_base_win.cc",
       "video/win/filter_base_win.h",
+      "video/win/gpu_memory_buffer_tracker.cc",
+      "video/win/gpu_memory_buffer_tracker.h",
       "video/win/metrics.cc",
       "video/win/metrics.h",
       "video/win/pin_base_win.cc",
@@ -225,6 +227,8 @@ component("capture_lib") {
       "video/win/sink_filter_win.h",
       "video/win/sink_input_pin_win.cc",
       "video/win/sink_input_pin_win.h",
+      "video/win/video_capture_buffer_tracker_factory_win.cc",
+      "video/win/video_capture_buffer_tracker_factory_win.h",
       "video/win/video_capture_device_factory_win.cc",
       "video/win/video_capture_device_factory_win.h",
       "video/win/video_capture_device_mf_win.cc",
@@ -510,6 +514,7 @@ test("capture_unittests") {
 
   if (is_win) {
     sources += [
+      "video/win/gpu_memory_buffer_tracker_unittest.cc",
       "video/win/video_capture_device_factory_win_unittest.cc",
       "video/win/video_capture_device_mf_win_unittest.cc",
     ]
