@@ -128,8 +128,8 @@ TokensLoadedCallbackRunner::TokensLoadedCallbackRunner(
   shutdown_subscription_ =
       DiceSignedInProfileCreatorShutdownNotifierFactory::GetInstance()
           ->Get(profile)
-          ->Subscribe(base::Bind(&TokensLoadedCallbackRunner::OnShutdown,
-                                 base::Unretained(this)));
+          ->Subscribe(base::BindRepeating(
+              &TokensLoadedCallbackRunner::OnShutdown, base::Unretained(this)));
   scoped_identity_manager_observer_.Add(identity_manager_);
 }
 
