@@ -5,6 +5,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/strings/string_piece.h"
@@ -231,12 +232,9 @@ class CorsRfc1918BrowserTestBase : public ContentBrowserTest {
 
  protected:
   // Allows subclasses to construct instances with different features enabled.
-  explicit CorsRfc1918BrowserTestBase(const base::Feature* feature) {
-    if (feature) {
-      feature_list_.InitAndEnableFeature(*feature);
-    } else {
-      feature_list_.Init();
-    }
+  explicit CorsRfc1918BrowserTestBase(
+      const std::vector<base::Feature>& enabled_features) {
+    feature_list_.InitWithFeatures(enabled_features, {});
 
     StartServer();
   }
@@ -256,25 +254,36 @@ class CorsRfc1918BrowserTestBase : public ContentBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// Test with insecure private network requests blocked.
+// Test with insecure private network requests blocked, excluding navigations.
 class CorsRfc1918BrowserTest : public CorsRfc1918BrowserTestBase {
  public:
   CorsRfc1918BrowserTest()
       : CorsRfc1918BrowserTestBase(
-            &features::kBlockInsecurePrivateNetworkRequests) {}
+            {features::kBlockInsecurePrivateNetworkRequests}) {}
+};
+
+// Test with insecure private network requests blocked, including navigations.
+class CorsRfc1918BrowserTestBlockNavigations
+    : public CorsRfc1918BrowserTestBase {
+ public:
+  CorsRfc1918BrowserTestBlockNavigations()
+      : CorsRfc1918BrowserTestBase({
+            features::kBlockInsecurePrivateNetworkRequests,
+            features::kBlockInsecurePrivateNetworkRequestsForNavigations,
+        }) {}
 };
 
 // Test with insecure private network requests allowed.
 class CorsRfc1918BrowserTestNoBlocking : public CorsRfc1918BrowserTestBase {
  public:
-  CorsRfc1918BrowserTestNoBlocking() : CorsRfc1918BrowserTestBase(nullptr) {}
+  CorsRfc1918BrowserTestNoBlocking() : CorsRfc1918BrowserTestBase({}) {}
 };
 
 // This test verifies that when the right feature is enabled, iframe requests:
 //  - from an insecure page with the "treat-as-public-address" CSP directive
 //  - to a local IP address
 // are blocked.
-IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTestBlockNavigations,
                        IframeFromInsecureTreatAsPublicToLocalIsBlocked) {
   EXPECT_TRUE(NavigateToURL(
       shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
@@ -305,6 +314,35 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
   // hand is opaque, which it would not be if the navigation had succeeded.
   EXPECT_EQ(url, child_frame->GetLastCommittedURL());
   EXPECT_TRUE(child_frame->GetLastCommittedOrigin().opaque());
+}
+
+// This test mimics the one above, only it is executed without enabling the
+// BlockInsecurePrivateNetworkRequestsForNavigations feature. It asserts that
+// the navigation is not blocked in this case.
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       IframeFromInsecureTreatAsPublicToLocalIsNotBlocked) {
+  EXPECT_TRUE(NavigateToURL(
+      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  GURL url = InsecureURL(*embedded_test_server(), "/empty.html");
+
+  TestNavigationManager child_navigation_manager(shell()->web_contents(), url);
+
+  EXPECT_TRUE(ExecJs(root_frame_host(), R"(
+    const iframe = document.createElement("iframe");
+    iframe.src = "/empty.html";
+    document.body.appendChild(iframe);
+  )"));
+
+  child_navigation_manager.WaitForNavigationFinished();
+
+  // Check that the child iframe navigated successfully.
+  EXPECT_TRUE(child_navigation_manager.was_successful());
+
+  ASSERT_EQ(1ul, root_frame_host()->child_count());
+  RenderFrameHostImpl* child_frame =
+      root_frame_host()->child_at(0)->current_frame_host();
+  EXPECT_EQ(url, EvalJs(child_frame, "document.location.href"));
 }
 
 // Similar to IframeFromInsecureTreatAsPublicToLocalIsBlocked, but in
@@ -342,7 +380,7 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 // TODO(https://crbug.com/1129326): Revisit this when main-frame navigations are
 // subject to CORS-RFC1918 checks.
 IN_PROC_BROWSER_TEST_F(
-    CorsRfc1918BrowserTest,
+    CorsRfc1918BrowserTestBlockNavigations,
     FormSubmissionFromInsecurePublictoLocalIsNotBlockedInMainFrame) {
   EXPECT_TRUE(NavigateToURL(
       shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
@@ -371,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    CorsRfc1918BrowserTest,
+    CorsRfc1918BrowserTestBlockNavigations,
     FormSubmissionFromInsecurePublictoLocalIsBlockedInChildFrame) {
   EXPECT_TRUE(NavigateToURL(
       shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
@@ -413,7 +451,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    CorsRfc1918BrowserTest,
+    CorsRfc1918BrowserTestBlockNavigations,
     FormSubmissionGetFromInsecurePublictoLocalIsBlockedInChildFrame) {
   EXPECT_TRUE(NavigateToURL(
       shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));

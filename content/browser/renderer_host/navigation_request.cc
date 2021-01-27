@@ -2976,21 +2976,29 @@ void NavigationRequest::OnStartChecksComplete(
   // a ClientSecurityState to use instead.
   //
   // We currently define the client of the fetch as the parent frame, if any.
-  // This is probably incorrect: frames can cause others in the same browsing
-  // context group to navigate to pages, without being the parent. Additionally
+  // This is incorrect: frames can cause others in the same browsing context
+  // group to navigate to pages, without being the parent. Additionally
   // there is no client security state for top-level navigations, which mainly
   // means that CORS-RFC1918 checks are skipped for such requests.
   //
-  // TODO(https://crbug.com/1129326): Figure out the UX story for top-level
-  // navigations and spooky-action-at-a-distance navigations, then revisit this.
-  // The client security state might need to be that of the initiator of the
-  // navigation, or we might need to take into account both the parent frame and
-  // the initiator's client security states. In any case, we should probably
-  // always provide a client security state.
+  // TODO(https://crbug.com/1170335): Pass the client security state of the
+  // navigation initiator to this navigation request somehow and use that
+  // instead.
+  //
+  // TODO(https://crbug.com/1129326): Figure out the UX story for main-frame
+  // navigations, then revisit the exception made in that case.
   network::mojom::ClientSecurityStatePtr client_security_state = nullptr;
   RenderFrameHostImpl* parent = GetParentFrame();
   if (parent) {
     client_security_state = parent->BuildClientSecurityState();
+
+    // Selectively disable blocking of insecure private network requests if the
+    // right feature is not enabled.
+    if (!base::FeatureList::IsEnabled(
+            features::kBlockInsecurePrivateNetworkRequestsForNavigations)) {
+      client_security_state->private_network_request_policy =
+          network::mojom::PrivateNetworkRequestPolicy::kAllow;
+    }
   }
 
   auto loader_type = NavigationURLLoader::LoaderType::kRegular;
