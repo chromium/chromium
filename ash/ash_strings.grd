@@ -1574,6 +1574,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_NETWORK_AUTOCONNECT_NOTIFICATION_MESSAGE" desc="Message displayed in the system notification shown when a network has been auto-connected (e.g., when an enterprise policy is applied which initiates a connection to a corporate network like Google-A).">
         Your connection has switched to a more secure network
       </message>
+      <message name="IDS_ASH_NETWORK_CELLULAR_SETUP_NOTIFICATION_TITLE" desc="Title used for the system notification shown post-OOBE if a user has no activated mobile networks.">
+        Finish setting up your mobile network
+      </message>
+      <message name="IDS_ASH_NETWORK_CELLULAR_SETUP_NOTIFICATION_MESSAGE" desc="Message displayed in the system notification shown post-OOBE if a user has no activated mobile networks.">
+        Tap to complete set up
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_NETWORK_DISCONNECTED_LABEL" desc="The label text used when network is not connected. [CHAR_LIMIT=14]">
         Not connected
       </message>
