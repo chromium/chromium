@@ -67,10 +67,14 @@ void WindowShapeUpdater::UpdateWindowShapeFromWindowMask(aura::Window* window) {
   SkPath path = tree_host_->GetWindowMaskForWindowShapeInPixels();
   if (path.isEmpty()) {
     window->layer()->SetAlphaShape(nullptr);
-  } else {
-    // SetAlphaShape to the layer of |content_window_|
-    window->layer()->SetAlphaShape(ConvertToShapeRects(path));
+    return;
   }
+  SkPath path_in_dips;
+  path.transform(SkMatrix(tree_host_->GetInverseRootTransform().matrix()),
+                 &path_in_dips);
+
+  // SetAlphaShape to the layer of |content_window_|
+  window->layer()->SetAlphaShape(ConvertToShapeRects(path_in_dips));
 }
 
 }  // namespace views
