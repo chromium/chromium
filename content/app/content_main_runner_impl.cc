@@ -473,7 +473,8 @@ int RunZygote(ContentMainDelegate* delegate) {
   std::string process_type =
       command_line.GetSwitchValueASCII(switches::kProcessType);
 
-  internal::ReconfigurePartitionAllocAfterZygoteFork(process_type);
+  internal::PartitionAllocSupport::Get()->ReconfigureAfterZygoteFork(
+      process_type);
 
   ContentClientInitializer::Set(process_type, delegate);
 
@@ -483,7 +484,8 @@ int RunZygote(ContentMainDelegate* delegate) {
   InitializeFieldTrialAndFeatureList();
   delegate->PostFieldTrialInitialization();
 
-  internal::ReconfigurePartitionAllocAfterFeatureListInit(process_type);
+  internal::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
+      process_type);
 
   mojo::core::InitFeatures();
 
@@ -685,7 +687,7 @@ int ContentMainRunnerImpl::Initialize(const ContentMainParams& params) {
   // unexpected absence has security implications.
   CHECK(base::allocator::IsAllocatorInitialized());
 
-  internal::ReconfigurePartitionAllocEarlyish(process_type);
+  internal::PartitionAllocSupport::Get()->ReconfigureEarlyish(process_type);
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
   if (!process_type.empty()) {
@@ -839,7 +841,8 @@ int ContentMainRunnerImpl::Run(bool start_minimal_browser) {
       InitializeFieldTrialAndFeatureList();
       delegate_->PostFieldTrialInitialization();
 
-      internal::ReconfigurePartitionAllocAfterFeatureListInit(process_type);
+      internal::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
+          process_type);
 
       mojo::core::InitFeatures();
     }
@@ -980,7 +983,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
   }
 
   // No specified process type means this is the Browser process.
-  internal::ReconfigurePartitionAllocAfterFeatureListInit("");
+  internal::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit("");
 
   if (should_start_minimal_browser) {
     DVLOG(0) << "Chrome is running in minimal browser mode.";

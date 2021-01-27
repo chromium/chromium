@@ -7,26 +7,50 @@
 
 #include <string>
 
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
+
 namespace content {
 namespace internal {
 
-// ReconfigurePartitionAlloc* functions re-configure PartitionAlloc. It is
-// impossible to configure PartitionAlloc before/at its initialization using
-// information not known at compile-time (e.g. process type, Finch), because by
-// the time this information is available memory allocations would have surely
-// happened, that requiring a functioning allocator.
-//
-// *Earlyish() is called as early as it is reasonably possible.
-// *AfterZygoteFork() is its complement to finish configuring process-specific
-// stuff that had to be postponed due to *Earlyish() being called with
-// |process_type==kZygoteProcess|.
-// *AfterFeatureListInit() is called in addition to the above, once
-// FeatureList has been initialized and ready to use. It is guaranteed to be
-// called on non-zygote processes or after the zygote has been forked.
-void ReconfigurePartitionAllocEarlyish(const std::string& process_type);
-void ReconfigurePartitionAllocAfterZygoteFork(const std::string& process_type);
-void ReconfigurePartitionAllocAfterFeatureListInit(
-    const std::string& process_type);
+// Allows to re-configure PartitionAlloc at run-time.
+class PartitionAllocSupport {
+ public:
+  // Reconfigure* functions re-configure PartitionAlloc. It is impossible to
+  // configure PartitionAlloc before/at its initialization using information not
+  // known at compile-time (e.g. process type, Finch), because by the time this
+  // information is available memory allocations would have surely happened,
+  // that requiring a functioning allocator.
+  //
+  // *Earlyish() is called as early as it is reasonably possible.
+  // *AfterZygoteFork() is its complement to finish configuring process-specific
+  // stuff that had to be postponed due to *Earlyish() being called with
+  // |process_type==kZygoteProcess|.
+  // *AfterFeatureListInit() is called in addition to the above, once
+  // FeatureList has been initialized and ready to use. It is guaranteed to be
+  // called on non-zygote processes or after the zygote has been forked.
+  //
+  // *Earlyish() must be called exactly once. *AfterZygoteFork() must be called
+  // once iff *Earlyish() was called before with |process_type==kZygoteProcess|.
+  //
+  // *AfterFeatureListInit() may be called more than once, but will perform its
+  // re-configuration steps exactly once.
+  void ReconfigureEarlyish(const std::string& process_type);
+  void ReconfigureAfterZygoteFork(const std::string& process_type);
+  void ReconfigureAfterFeatureListInit(const std::string& process_type);
+
+  static PartitionAllocSupport* Get() {
+    static auto* singleton = new PartitionAllocSupport();
+    return singleton;
+  }
+
+ private:
+  base::Lock lock_;
+  bool called_earlyish_ GUARDED_BY(lock_) = false;
+  bool called_after_zygote_fork_ GUARDED_BY(lock_) = false;
+  bool called_after_feature_list_init_ GUARDED_BY(lock_) = false;
+  std::string established_process_type_ GUARDED_BY(lock_) = "INVALID";
+};
 
 }  // namespace internal
 }  // namespace content

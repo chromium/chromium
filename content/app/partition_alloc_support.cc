@@ -68,7 +68,20 @@ void ReconfigurePartitionForKnownProcess(const std::string& process_type) {
 
 }  // namespace
 
-void ReconfigurePartitionAllocEarlyish(const std::string& process_type) {
+void PartitionAllocSupport::ReconfigureEarlyish(
+    const std::string& process_type) {
+  {
+    base::AutoLock scoped_lock(lock_);
+    // TODO(bartekn): Switch to DCHECK once confirmed there are no issues.
+    CHECK(!called_earlyish_)
+        << "ReconfigureEarlyish was already called for process '"
+        << established_process_type_ << "'; current process: '" << process_type
+        << "'";
+
+    called_earlyish_ = true;
+    established_process_type_ = process_type;
+  }
+
   if (process_type != switches::kZygoteProcess) {
     ReconfigurePartitionForKnownProcess(process_type);
   }
@@ -90,12 +103,62 @@ void ReconfigurePartitionAllocEarlyish(const std::string& process_type) {
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
-void ReconfigurePartitionAllocAfterZygoteFork(const std::string& process_type) {
+void PartitionAllocSupport::ReconfigureAfterZygoteFork(
+    const std::string& process_type) {
+  {
+    base::AutoLock scoped_lock(lock_);
+    // TODO(bartekn): Switch to DCHECK once confirmed there are no issues.
+    CHECK(!called_after_zygote_fork_)
+        << "ReconfigureAfterZygoteFork was already called for process '"
+        << established_process_type_ << "'; current process: '" << process_type
+        << "'";
+    DCHECK(called_earlyish_)
+        << "Attempt to call ReconfigureAfterZygoteFork without calling "
+           "ReconfigureEarlyish; current process: '"
+        << process_type << "'";
+    DCHECK_EQ(established_process_type_, switches::kZygoteProcess)
+        << "Attempt to call ReconfigureAfterZygoteFork while "
+           "ReconfigureEarlyish was called on non-zygote process '"
+        << established_process_type_ << "'; current process: '" << process_type
+        << "'";
+
+    called_after_zygote_fork_ = true;
+    established_process_type_ = process_type;
+  }
+
   ReconfigurePartitionForKnownProcess(process_type);
 }
 
-void ReconfigurePartitionAllocAfterFeatureListInit(
+void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
     const std::string& process_type) {
+  {
+    base::AutoLock scoped_lock(lock_);
+    // Avoid initializing more than once.
+    // TODO(bartekn): See if can be converted to (D)CHECK.
+    if (called_after_feature_list_init_) {
+      DCHECK_EQ(established_process_type_, process_type)
+          << "ReconfigureAfterFeatureListInit was already called for process '"
+          << established_process_type_ << "'; current process: '"
+          << process_type << "'";
+      return;
+    }
+    DCHECK(called_earlyish_)
+        << "Attempt to call ReconfigureAfterFeatureListInit without calling "
+           "ReconfigureEarlyish; current process: '"
+        << process_type << "'";
+    DCHECK_NE(established_process_type_, switches::kZygoteProcess)
+        << "Attempt to call ReconfigureAfterFeatureListInit without calling "
+           "ReconfigureAfterZygoteFork; current process: '"
+        << process_type << "'";
+    DCHECK_EQ(established_process_type_, process_type)
+        << "ReconfigureAfterFeatureListInit wasn't called for an already "
+           "established process '"
+        << established_process_type_ << "'; current process: '" << process_type
+        << "'";
+
+    called_after_feature_list_init_ = true;
+  }
+
   DCHECK_NE(process_type, switches::kZygoteProcess);
   // TODO(bartekn): Switch to DCHECK once confirmed there are no issues.
   CHECK(base::FeatureList::GetInstance());
