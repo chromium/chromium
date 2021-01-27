@@ -82,7 +82,8 @@ public class ChromeContextMenuPopulatorTest {
 
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
 
-        when(mItemDelegate.getPageUrl()).thenReturn(new GURL(PAGE_URL));
+        GURL pageUrl = new GURL(PAGE_URL);
+        when(mItemDelegate.getPageUrl()).thenReturn(pageUrl);
         when(mItemDelegate.isIncognitoSupported()).thenReturn(true);
         when(mItemDelegate.isOpenInOtherWindowSupported()).thenReturn(true);
         when(mItemDelegate.supportsCall()).thenReturn(true);
