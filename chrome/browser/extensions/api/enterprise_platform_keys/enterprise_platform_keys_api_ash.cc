@@ -72,7 +72,7 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
     service->GenerateRSAKey(
         platform_keys_token_id.value(), *(params->algorithm.modulus_length),
         extension_id(),
-        base::Bind(
+        base::BindOnce(
             &EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey,
             this));
   } else if (params->algorithm.name == "ECDSA") {
@@ -80,7 +80,7 @@ EnterprisePlatformKeysInternalGenerateKeyFunction::Run() {
     service->GenerateECKey(
         platform_keys_token_id.value(), *(params->algorithm.named_curve),
         extension_id(),
-        base::Bind(
+        base::BindOnce(
             &EnterprisePlatformKeysInternalGenerateKeyFunction::OnGeneratedKey,
             this));
   } else {

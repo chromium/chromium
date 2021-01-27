@@ -232,14 +232,14 @@ class EnterprisePlatformKeysTest
         profile(), mock_policy_provider());
   }
 
-  void DidGetCertDatabase(const base::Closure& done_callback,
+  void DidGetCertDatabase(base::OnceClosure done_callback,
                           net::NSSCertDatabase* cert_db) {
     // In order to use a prepared certificate, import a private key to the
     // user's token for which the Javscript test will import the certificate.
     ImportPrivateKeyPKCS8ToSlot(privateKeyPkcs8User,
                                 base::size(privateKeyPkcs8User),
                                 cert_db->GetPrivateSlot().get());
-    done_callback.Run();
+    std::move(done_callback).Run();
   }
 
  protected:
