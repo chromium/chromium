@@ -500,6 +500,31 @@ bool ArcTracingModel::ConvertSysTraces(const std::string& sys_traces) {
 
   GraphicsEventsContext graphics_events_context;
 
+  // Trace events have the following format depending on whether TGID is used.
+  // TGID support can be added to trace_options as an optional param (see
+  // /src/third_party/kernel/<version>/kernel/trace/trace.c for details).
+  // Without TGID:
+  //                               _-----=> irqs-off
+  //                              / _----=> need-resched
+  //                             | / _---=> hardirq/softirq
+  //                             || / _--=> preempt-depth
+  //                             ||| /      delay
+  //            TASK-PID   CPU#  ||||    TIMESTAMP  FUNCTION
+  //               | |       |   ||||       |         |
+  //           <...>-32043 [000] ...1 14196.099290: tracing_mark_write
+  //
+  // With TGID (max digits allowed may vary depending on kernel version):
+  //                                       _-----=> irqs-off
+  //                                      / _----=> need-resched
+  //                                     | / _---=> hardirq/softirq
+  //                                     || / _--=> preempt-depth
+  //                                     ||| /      delay
+  //            TASK-PID    TGID   CPU#  ||||    TIMESTAMP  FUNCTION
+  //               | |        |      |   ||||       |         |
+  //           <...>-32043 (-----) [000] ...1 14196.099290: tracing_mark_write
+  constexpr int kPidPosition = 16;
+  size_t cpu_pos = 0;
+  bool cpu_pos_found = false;
   while (true) {
     // Get end of line.
     size_t end_line_pos = sys_traces.find('\n', new_line_pos);
@@ -510,23 +535,31 @@ bool ArcTracingModel::ConvertSysTraces(const std::string& sys_traces) {
         sys_traces.substr(new_line_pos, end_line_pos - new_line_pos);
     new_line_pos = end_line_pos + 1;
 
-    // Skip comments and empty lines
+    // Skip comments and empty lines.
     if (line.empty() || line[0] == '#')
       continue;
 
-    // Trace event has following format.
-    //            TASK-PID   CPU#  ||||    TIMESTAMP  FUNCTION
-    //               | |       |   ||||       |         |
-    // Until TIMESTAMP we have fixed position for elements.
-    if (line.length() < 35 || line[16] != '-' || line[22] != ' ' ||
-        line[23] != '[' || line[27] != ']' || line[28] != ' ' ||
-        line[33] != ' ') {
+    // Spacing between TASK-PID and CPU# can vary between kernel versions
+    // and depending on whether TGID option is enabled in trace_options.
+    if (!cpu_pos_found) {
+      cpu_pos = line.find('[', kPidPosition + 1);
+      if (cpu_pos == std::string::npos) {
+        LOG(ERROR) << "Cannot find CPU id in trace event: " << line;
+        return false;
+      }
+      cpu_pos_found = true;
+    }
+
+    // From CPU# to the TIMESTAMP marker, we have fixed positions for elements.
+    if (line.length() < (cpu_pos + 12) || line[kPidPosition] != '-' ||
+        line[cpu_pos - 1] != ' ' || line[cpu_pos + 4] != ']' ||
+        line[cpu_pos + 5] != ' ' || line[cpu_pos + 10] != ' ') {
       LOG(ERROR) << "Cannot recognize trace event: " << line;
       return false;
     }
 
     uint32_t tid;
-    if (ParseUint32(line, 17, ' ', &tid) == std::string::npos) {
+    if (ParseUint32(line, kPidPosition + 1, ' ', &tid) == std::string::npos) {
       LOG(ERROR) << "Cannot parse tid in trace event: " << line;
       return false;
     }
@@ -538,18 +571,19 @@ bool ArcTracingModel::ConvertSysTraces(const std::string& sys_traces) {
         ++thread_name_start;
       system_model_.thread_map()[tid] = ArcSystemModel::ThreadInfo(
           ArcSystemModel::kUnknownPid,
-          line.substr(thread_name_start, 16 - thread_name_start));
+          line.substr(thread_name_start, kPidPosition - thread_name_start));
     }
 
     uint32_t cpu_id;
-    if (ParseUint32(line, 24, ']', &cpu_id) == std::string::npos) {
+    if (ParseUint32(line, cpu_pos + 1, ']', &cpu_id) == std::string::npos) {
       LOG(ERROR) << "Cannot parse CPU id in trace event: " << line;
       return false;
     }
 
     uint32_t timestamp_high;
     uint32_t timestamp_low;
-    const size_t pos_dot = ParseUint32(line, 34, '.', &timestamp_high);
+    const size_t pos_dot =
+        ParseUint32(line, cpu_pos + 11, '.', &timestamp_high);
     if (pos_dot == std::string::npos) {
       LOG(ERROR) << "Cannot parse timestamp in trace event: " << line;
       return false;

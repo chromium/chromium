@@ -73,7 +73,7 @@ class ArcPowerControlHandler : public content::WebUIMessageHandler,
   base::Time timestamp_;
   base::TimeTicks tracing_time_min_;
   base::OneShotTimer stop_tracing_timer_;
-  std::unique_ptr<arc::ArcSystemStatCollector> system_stat_colletor_;
+  std::unique_ptr<arc::ArcSystemStatCollector> system_stat_collector_;
 
   // It collects power mode and throttling events in case tracing is active.
   WakefulnessModeEvents wakefulness_mode_events_;

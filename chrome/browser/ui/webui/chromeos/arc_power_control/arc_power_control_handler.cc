@@ -300,27 +300,27 @@ void ArcPowerControlHandler::StartTracing() {
   throttling_events_.clear();
   throttling_events_.emplace_back(
       std::make_pair(tracing_time_min_, instance_throttle_->level()));
-  system_stat_colletor_ = std::make_unique<arc::ArcSystemStatCollector>();
-  system_stat_colletor_->Start(kMaxIntervalToDisplay);
-  stop_tracing_timer_.Start(FROM_HERE, system_stat_colletor_->max_interval(),
+  system_stat_collector_ = std::make_unique<arc::ArcSystemStatCollector>();
+  system_stat_collector_->Start(kMaxIntervalToDisplay);
+  stop_tracing_timer_.Start(FROM_HERE, system_stat_collector_->max_interval(),
                             base::BindOnce(&ArcPowerControlHandler::StopTracing,
                                            base::Unretained(this)));
 }
 
 void ArcPowerControlHandler::StopTracing() {
-  if (!system_stat_colletor_)
+  if (!system_stat_collector_)
     return;
 
   const base::TimeTicks tracing_time_max = TRACE_TIME_TICKS_NOW();
   stop_tracing_timer_.Stop();
-  system_stat_colletor_->Stop();
+  system_stat_collector_->Stop();
 
   SetTracingStatus("Building model...");
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&BuildTracingModel, timestamp_, tracing_time_min_,
-                     tracing_time_max, std::move(system_stat_colletor_),
+                     tracing_time_max, std::move(system_stat_collector_),
                      std::move(wakefulness_mode_events_),
                      std::move(throttling_events_)),
       base::BindOnce(&ArcPowerControlHandler::OnTracingModelReady,
