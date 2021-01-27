@@ -30,9 +30,6 @@ namespace extensions {
 
 namespace {
 
-const char kRendererDestroyed[] = "The tab was closed.";
-const char kFrameRemoved[] = "The frame was removed.";
-
 // Generates an injection key based on the host ID and either the file URL, if
 // available, or the code string. The format of the key is
 // "<type><host_id><digest>", where <type> is one of "F" (file) and "C" (code),
@@ -70,20 +67,27 @@ class Handler : public content::WebContentsObserver {
       content::RenderFrameHost* frame =
           ExtensionApiFrameIdMap::GetRenderFrameHostById(web_contents,
                                                          frame_id);
-      if (!frame)
+      if (!frame) {
+        AddWillNotInjectResult(
+            frame_id, base::StringPrintf("No frame with ID: %d", frame_id));
         continue;
+      }
 
       DCHECK(!base::Contains(pending_render_frames_, frame));
-      if (frame->IsRenderFrameLive())
-        pending_render_frames_.push_back(frame);
+      if (!frame->IsRenderFrameLive()) {
+        AddWillNotInjectResult(
+            frame_id,
+            base::StringPrintf("Frame with ID %d is not ready", frame_id));
+        continue;
+      }
+
+      pending_render_frames_.push_back(frame);
     }
 
     // If there is a single frame specified (and it was valid), we consider it
     // the "root" frame, which is used in result ordering and error collection.
-    if (frame_ids.size() == 1 && pending_render_frames_.size() == 1) {
-      root_rfh_ = pending_render_frames_[0];
-      root_is_main_frame_ = root_rfh_->GetParent() == nullptr;
-    }
+    if (frame_ids.size() == 1 && pending_render_frames_.size() == 1)
+      root_rfh_id_ = frame_ids[0];
 
     // If we are to include subframes, iterate over all frames in the
     // WebContents and add them iff they are a child of an included frame.
@@ -119,7 +123,19 @@ class Handler : public content::WebContentsObserver {
   ~Handler() override {}
 
   // content::WebContentsObserver:
-  void WebContentsDestroyed() override { Finish(); }
+  // TODO(devlin): Could we just rely on the RenderFrameDeleted() notification?
+  // If so, we could remove this.
+  void WebContentsDestroyed() override {
+    for (content::RenderFrameHost* frame : pending_render_frames_) {
+      int frame_id = ExtensionApiFrameIdMap::GetFrameId(frame);
+      AddWillNotInjectResult(
+          frame_id,
+          base::StringPrintf("Tab containing frame with ID %d was removed.",
+                             frame_id));
+    }
+    pending_render_frames_.clear();
+    Finish();
+  }
 
   bool OnMessageReceived(const IPC::Message& message,
                          content::RenderFrameHost* render_frame_host) override {
@@ -144,10 +160,24 @@ class Handler : public content::WebContentsObserver {
 
   void RenderFrameDeleted(
       content::RenderFrameHost* render_frame_host) override {
-    if (base::Erase(pending_render_frames_, render_frame_host) == 1 &&
-        pending_render_frames_.empty()) {
+    int erased_count = base::Erase(pending_render_frames_, render_frame_host);
+    DCHECK_LE(erased_count, 1);
+    if (erased_count == 0)
+      return;
+
+    int frame_id = ExtensionApiFrameIdMap::GetFrameId(render_frame_host);
+    AddWillNotInjectResult(
+        frame_id,
+        base::StringPrintf("Frame with ID %d was removed.", frame_id));
+    if (pending_render_frames_.empty())
       Finish();
-    }
+  }
+
+  void AddWillNotInjectResult(int frame_id, std::string error) {
+    ScriptExecutor::FrameResult result;
+    result.frame_id = frame_id;
+    result.error = std::move(error);
+    results_.push_back(std::move(result));
   }
 
   // Sends an ExecuteCode message to the given frame host, and increments
@@ -161,6 +191,7 @@ class Handler : public content::WebContentsObserver {
   }
 
   // Handles the ExecuteCodeFinished message.
+  // TODO(devlin): Change this to a base::Value, rather than a ListValue.
   void OnExecuteCodeFinished(content::RenderFrameHost* render_frame_host,
                              int request_id,
                              const std::string& error,
@@ -170,24 +201,19 @@ class Handler : public content::WebContentsObserver {
     DCHECK(!pending_render_frames_.empty());
     size_t erased = base::Erase(pending_render_frames_, render_frame_host);
     DCHECK_EQ(1u, erased);
-    bool is_root_frame = root_rfh_ == render_frame_host;
-    finished_any_execution_ = true;
 
-    // Set the result, if there is one.
-    const base::Value* script_value = nullptr;
-    if (result_list.Get(0u, &script_value)) {
-      // If this is the main result, we put it at index 0. Otherwise, we just
-      // append it at the end.
-      if (is_root_frame && !results_.empty())
-        CHECK(results_.Insert(0u, script_value->CreateDeepCopy()));
-      else
-        results_.Append(script_value->CreateDeepCopy());
-    }
+    ScriptExecutor::FrameResult frame_result;
+    frame_result.frame_responded = true;
+    frame_result.frame_id =
+        ExtensionApiFrameIdMap::GetFrameId(render_frame_host);
+    frame_result.error = error;
+    // TODO(devlin): Do we need to trust the renderer for the URL here? Is there
+    // a risk of the frame having navigated since the injection happened?
+    frame_result.url = on_url;
+    if (!result_list.GetList().empty())
+      frame_result.value = result_list.GetList()[0].Clone();
 
-    if (is_root_frame) {  // Only use the root frame's error and url.
-      root_frame_error_ = error;
-      root_frame_url_ = on_url;
-    }
+    results_.push_back(std::move(frame_result));
 
     // Wait until the final request finishes before reporting back.
     if (pending_render_frames_.empty())
@@ -195,24 +221,28 @@ class Handler : public content::WebContentsObserver {
   }
 
   void Finish() {
-    if (root_rfh_ && root_frame_url_.is_empty()) {
-      // We never finished the root frame injection.
-      root_frame_error_ =
-          root_is_main_frame_ ? kRendererDestroyed : kFrameRemoved;
-      results_.Clear();
-    } else if (!finished_any_execution_) {
-      // We never executed in any frame.
-      root_frame_error_ = kFrameRemoved;
-    }
+    DCHECK(pending_render_frames_.empty());
+    DCHECK(!results_.empty());
 
-    if (observer_ && root_frame_error_.empty() &&
-        host_id_.type() == HostID::EXTENSIONS) {
-      std::move(observer_).Run(web_contents(), {{host_id_.id(), {}}},
-                               root_frame_url_);
+    // TODO(devlin): This would be simpler (and more thorough) if we could just
+    // invoke the observer for each frame. Investigate.
+    if (observer_ && root_rfh_id_) {
+      auto root_frame_result =
+          std::find_if(results_.begin(), results_.end(),
+                       [root_rfh_id = *root_rfh_id_](const auto& frame_result) {
+                         return frame_result.frame_id == root_rfh_id;
+                       });
+      DCHECK(root_frame_result != results_.end());
+      if (root_frame_result->error.empty() &&
+          host_id_.type() == HostID::EXTENSIONS) {
+        std::move(observer_).Run(web_contents(), {{host_id_.id(), {}}},
+                                 root_frame_result->url);
+      }
     }
 
     if (callback_)
-      std::move(callback_).Run(root_frame_error_, root_frame_url_, results_);
+      std::move(callback_).Run(std::move(results_));
+
     delete this;
   }
 
@@ -224,15 +254,9 @@ class Handler : public content::WebContentsObserver {
   // The request id of the injection.
   int request_id_ = 0;
 
-  // The primary frame of the injection, if only a single frame is explicitly
-  // specified.
-  content::RenderFrameHost* root_rfh_ = nullptr;
-
-  // Whether |root_rfh_| is the main frame of a tab.
-  bool root_is_main_frame_ = false;
-
-  // Whether execution has finished in any frame.
-  bool finished_any_execution_ = false;
+  // The id of the primary frame of the injection, if only a single frame is
+  // explicitly specified.
+  base::Optional<int> root_rfh_id_;
 
   // The hosts of the still-running injections. Note: this is a vector because
   // order matters (some tests - and therefore perhaps some extensions - rely on
@@ -244,13 +268,7 @@ class Handler : public content::WebContentsObserver {
   std::vector<content::RenderFrameHost*> pending_render_frames_;
 
   // The results of the injection.
-  base::ListValue results_;
-
-  // The error from injecting into the root frame.
-  std::string root_frame_error_;
-
-  // The url of the root frame.
-  GURL root_frame_url_;
+  std::vector<ScriptExecutor::FrameResult> results_;
 
   // The callback to run after all injections complete.
   ScriptExecutor::ScriptFinishedCallback callback_;
@@ -259,6 +277,11 @@ class Handler : public content::WebContentsObserver {
 };
 
 }  // namespace
+
+ScriptExecutor::FrameResult::FrameResult() = default;
+ScriptExecutor::FrameResult::FrameResult(FrameResult&&) = default;
+ScriptExecutor::FrameResult& ScriptExecutor::FrameResult::operator=(
+    FrameResult&&) = default;
 
 ScriptExecutor::ScriptExecutor(content::WebContents* web_contents)
     : web_contents_(web_contents) {

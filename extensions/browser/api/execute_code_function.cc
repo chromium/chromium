@@ -7,6 +7,7 @@
 
 #include "extensions/browser/api/execute_code_function.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
@@ -88,8 +89,9 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
           ? ScriptExecutor::INCLUDE_SUB_FRAMES
           : ScriptExecutor::SPECIFIED_FRAMES;
 
-  int frame_id = details_->frame_id.get() ? *details_->frame_id
-                                          : ExtensionApiFrameIdMap::kTopFrameId;
+  root_frame_id_ = details_->frame_id.get()
+                       ? *details_->frame_id
+                       : ExtensionApiFrameIdMap::kTopFrameId;
 
   ScriptExecutor::MatchAboutBlank match_about_blank =
       details_->match_about_blank.get() && *details_->match_about_blank
@@ -118,7 +120,7 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
     css_origin = CSS_ORIGIN_AUTHOR;
 
   executor->ExecuteScript(
-      host_id_, action_type, code_string, frame_scope, {frame_id},
+      host_id_, action_type, code_string, frame_scope, {root_frame_id_},
       match_about_blank, run_at,
       IsWebView() ? ScriptExecutor::WEB_VIEW_PROCESS
                   : ScriptExecutor::DEFAULT_PROCESS,
@@ -183,19 +185,52 @@ bool ExecuteCodeFunction::LoadFile(const std::string& file,
   return true;
 }
 
-void ExecuteCodeFunction::OnExecuteCodeFinished(const std::string& error,
-                                                const GURL& on_url,
-                                                const base::ListValue& result) {
-  if (!error.empty()) {
-    Respond(Error(error));
+void ExecuteCodeFunction::OnExecuteCodeFinished(
+    std::vector<ScriptExecutor::FrameResult> results) {
+  DCHECK(!results.empty());
+
+  auto root_frame_result =
+      std::find_if(results.begin(), results.end(),
+                   [root_frame_id = root_frame_id_](const auto& frame_result) {
+                     return frame_result.frame_id == root_frame_id;
+                   });
+
+  DCHECK(root_frame_result != results.end());
+
+  // We just error out if we never injected in the root frame.
+  // TODO(devlin): That's a bit odd, because other injections may have
+  // succeeded. It seems like it might be worth passing back the values
+  // anyway.
+  if (!root_frame_result->error.empty()) {
+    // If the frame never responded (e.g. the frame was removed or didn't
+    // exist), we provide a different error message for backwards
+    // compatibility.
+    if (!root_frame_result->frame_responded) {
+      root_frame_result->error =
+          root_frame_id_ == ExtensionApiFrameIdMap::kTopFrameId
+              ? "The tab was closed."
+              : "The frame was removed.";
+    }
+
+    Respond(Error(std::move(root_frame_result->error)));
     return;
   }
 
-  // insertCSS and removeCSS don't have a result argument.
-  Respond(ShouldInsertCSS() || ShouldRemoveCSS()
-              ? NoArguments()
-              : OneArgument(
-                    base::Value::FromUniquePtrValue(result.CreateDeepCopy())));
+  if (ShouldInsertCSS() || ShouldRemoveCSS()) {
+    // insertCSS and removeCSS don't have a result argument.
+    Respond(NoArguments());
+    return;
+  }
+
+  // Place the root frame result at the beginning.
+  std::iter_swap(root_frame_result, results.begin());
+  base::Value result_list(base::Value::Type::LIST);
+  for (auto& result : results) {
+    if (result.error.empty())
+      result_list.Append(std::move(result.value));
+  }
+
+  Respond(OneArgument(std::move(result_list)));
 }
 
 }  // namespace extensions

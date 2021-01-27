@@ -62,9 +62,13 @@ chrome.test.runTests([
     // frame.
     const url1 = new URL(results[0].result);
     chrome.test.assertEq('a.com', url1.hostname);
+    chrome.test.assertEq(0, results[0].frameId);
 
     const url2 = new URL(results[1].result);
     chrome.test.assertEq('b.com', url2.hostname);
+    // Verify the subframe has any non-main-frame ID. Note: specific frame IDs
+    // are exercised more heavily below.
+    chrome.test.assertFalse(results[1].frameId == 0);
     chrome.test.succeed();
   },
 
@@ -109,6 +113,7 @@ chrome.test.runTests([
 
     const resultUrl = new URL(results[0].result);
     chrome.test.assertEq('b.com', resultUrl.hostname);
+    chrome.test.assertEq(frameId, results[0].frameId);
     chrome.test.succeed();
   },
 
@@ -142,6 +147,36 @@ chrome.test.runTests([
       return (new URL(result.result)).hostname;
     });
     chrome.test.assertEq(['a.com', 'b.com'], resultUrls.sort());
+    chrome.test.assertEq(
+        frameIds,
+        results.map(result => result.frameId).sort());
+    chrome.test.succeed();
+  },
+
+  // Tests injecting with duplicate frame IDs specified.
+  async function duplicateSpecificFrames() {
+    const query = {url: 'http://a.com/*'};
+    const tab = await getSingleTab(query);
+    const frames = await getFramesInTab(tab.id);
+    const frameId = findFrameIdWithHostname(frames, 'b.com');
+
+    const results = await new Promise(resolve => {
+      chrome.scripting.executeScript(
+          {
+            target: {
+              tabId: tab.id,
+              frameIds: [frameId, frameId],
+            },
+            function: injectedFunction,
+          },
+          resolve);
+    });
+    chrome.test.assertNoLastError();
+    chrome.test.assertEq(1, results.length);
+
+    const resultUrl = new URL(results[0].result);
+    chrome.test.assertEq('b.com', resultUrl.hostname);
+    chrome.test.assertEq(frameId, results[0].frameId);
     chrome.test.succeed();
   },
 

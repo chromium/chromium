@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/scripting/scripting_api.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/check.h"
@@ -93,17 +94,19 @@ bool CanAccessTarget(const PermissionsData& permissions,
 
   std::vector<int> frame_ids;
   if (target.frame_ids) {
-    // NOTE: This creates a copy, but it's should always be very cheap, and it
-    // lets us keep |target| const.
+    // Ensure IDs are unique.
     frame_ids = *target.frame_ids;
+    std::sort(frame_ids.begin(), frame_ids.end());
+    auto new_end = std::unique(frame_ids.begin(), frame_ids.end());
+    frame_ids.erase(new_end, frame_ids.end());
   } else {
     frame_ids.push_back(ExtensionApiFrameIdMap::kTopFrameId);
   }
 
-  // TODO(devlin): We error out if the extension doesn't have access to the top
-  // frame, even if it may inject in child frames if allFrames is true. This is
-  // inconsistent with content scripts (which can execute on child frames), but
-  // consistent with the old tabs.executeScript() API.
+  // TODO(devlin): If `allFrames` is true, we error out if the extension
+  // doesn't have access to the top frame (even if it may inject in child
+  // frames). This is inconsistent with content scripts (which can execute on
+  // child frames), but consistent with the old tabs.executeScript() API.
   for (int frame_id : frame_ids) {
     content::RenderFrameHost* frame =
         ExtensionApiFrameIdMap::GetRenderFrameHostById(tab, frame_id);
@@ -263,22 +266,33 @@ bool ScriptingExecuteScriptFunction::Execute(std::string code_to_execute,
 }
 
 void ScriptingExecuteScriptFunction::OnScriptExecuted(
-    const std::string& error,
-    const GURL& frame_url,
-    const base::ListValue& result) {
-  if (!error.empty()) {
-    Respond(Error(error));
+    std::vector<ScriptExecutor::FrameResult> frame_results) {
+  // If only a single frame was included and the injection failed, respond with
+  // an error.
+  if (frame_results.size() == 1 && !frame_results[0].error.empty()) {
+    Respond(Error(std::move(frame_results[0].error)));
     return;
   }
 
+  // Otherwise, respond successfully. We currently just skip over individual
+  // frames that failed. In the future, we can bubble up these error messages
+  // to the extension.
   std::vector<api::scripting::InjectionResult> injection_results;
-
-  // TODO(devlin): This results in a few copies of values. It'd be better if our
-  // auto-generated code supported moved-in parameters for result construction.
-  for (const auto& value : result.GetList()) {
+  for (auto& result : frame_results) {
+    if (!result.error.empty())
+      continue;
     api::scripting::InjectionResult injection_result;
-    injection_result.result = std::make_unique<base::Value>(value.Clone());
-    injection_results.push_back(std::move(injection_result));
+    injection_result.result =
+        base::Value::ToUniquePtrValue(std::move(result.value));
+    injection_result.frame_id = result.frame_id;
+
+    // Put the top frame first; otherwise, any order.
+    if (result.frame_id == ExtensionApiFrameIdMap::kTopFrameId) {
+      injection_results.insert(injection_results.begin(),
+                               std::move(injection_result));
+    } else {
+      injection_results.push_back(std::move(injection_result));
+    }
   }
 
   Respond(ArgumentList(
@@ -386,14 +400,15 @@ bool ScriptingInsertCSSFunction::Execute(std::string code_to_execute,
   return true;
 }
 
-void ScriptingInsertCSSFunction::OnCSSInserted(const std::string& error,
-                                               const GURL& frame_url,
-                                               const base::ListValue& result) {
-  DCHECK(result.GetList().empty());
-  if (!error.empty()) {
-    Respond(Error(error));
+void ScriptingInsertCSSFunction::OnCSSInserted(
+    std::vector<ScriptExecutor::FrameResult> results) {
+  // If only a single frame was included and the injection failed, respond with
+  // an error.
+  if (results.size() == 1 && !results[0].error.empty()) {
+    Respond(Error(std::move(results[0].error)));
     return;
   }
+
   Respond(NoArguments());
 }
 

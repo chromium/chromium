@@ -79,9 +79,7 @@ class ExecuteCodeFunction : public ExtensionFunction {
   base::Optional<std::string> init_error_;
 
  private:
-  void OnExecuteCodeFinished(const std::string& error,
-                             const GURL& on_url,
-                             const base::ListValue& result);
+  void OnExecuteCodeFinished(std::vector<ScriptExecutor::FrameResult> results);
 
   // Run in UI thread.  Code string contains the code to be executed. Returns
   // true on success. If true is returned, this does an AddRef. Returns false on
@@ -94,6 +92,9 @@ class ExecuteCodeFunction : public ExtensionFunction {
 
   // The ID of the injection host.
   HostID host_id_;
+
+  // The ID of the root frame to inject into.
+  int root_frame_id_ = -1;
 
   DISALLOW_COPY_AND_ASSIGN(ExecuteCodeFunction);
 };

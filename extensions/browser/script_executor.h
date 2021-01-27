@@ -18,10 +18,6 @@
 class GURL;
 struct ExtensionMsg_ExecuteCode_Params;
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace content {
 class WebContents;
 }
@@ -72,10 +68,30 @@ class ScriptExecutor {
     JSON_SERIALIZED_RESULT,
   };
 
-  // Callback from ExecuteScript. The arguments are (error, on_url, result).
-  // Success is implied by an empty error.
-  using ScriptFinishedCallback = base::OnceCallback<
-      void(const std::string&, const GURL&, const base::ListValue&)>;
+  struct FrameResult {
+    FrameResult();
+    FrameResult(FrameResult&&);
+    FrameResult& operator=(FrameResult&&);
+
+    // The ID of the frame of the injection.
+    int frame_id = -1;
+    // The error associated with the injection, if any. Empty if the injection
+    // succeeded.
+    std::string error;
+    // The URL of the frame from the injection. Only set if the frame exists.
+    GURL url;
+    // The result value from the injection, or null if the injection failed (or
+    // had no result).
+    base::Value value;
+    // Whether the frame responded to the attempted injection (which can fail if
+    // the frame was removed or never existed). Note this doesn't necessarily
+    // mean the injection succeeded, since it could fail due to other reasons
+    // (like permissions).
+    bool frame_responded = false;
+  };
+
+  using ScriptFinishedCallback =
+      base::OnceCallback<void(std::vector<FrameResult> frame_results)>;
 
   // Executes a script. The arguments match ExtensionMsg_ExecuteCode_Params in
   // extension_messages.h (request_id is populated automatically).
@@ -88,6 +104,7 @@ class ScriptExecutor {
   // |callback| will always be called even if the IPC'd renderer is destroyed
   // before a response is received (in this case the callback will be with a
   // failure and appropriate error message).
+  // TODO(devlin): Make |frame_ids| a std::set<> (since they must be unique).
   void ExecuteScript(const HostID& host_id,
                      UserScript::ActionType action_type,
                      const std::string& code,
