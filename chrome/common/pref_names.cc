@@ -3177,6 +3177,10 @@ const char kSecurityTokenSessionNotificationScheduledDomain[] =
 const char kCartModuleHidden[] = "cart_module_hidden";
 // Boolean pref indicating whether user has removed the cart module on NTP.
 const char kCartModuleRemoved[] = "cart_module_removed";
+// An integer that keeps track of how many times welcome surface has shown in
+// cart module.
+const char kCartModuleWelcomeSurfaceShownTimes[] =
+    "cart_module_welcome_surface_shown_times";
 #endif
 
 #if defined(OS_ANDROID)

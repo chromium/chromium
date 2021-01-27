@@ -52,6 +52,7 @@ CartService::~CartService() = default;
 void CartService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kCartModuleHidden, false);
   registry->RegisterBooleanPref(prefs::kCartModuleRemoved, false);
+  registry->RegisterIntegerPref(prefs::kCartModuleWelcomeSurfaceShownTimes, 0);
 }
 
 void CartService::Hide() {
@@ -131,6 +132,21 @@ void CartService::RestoreRemovedCart(const GURL& cart_url,
                      base::BindOnce(&CartService::SetCartRemovedStatus,
                                     weak_ptr_factory_.GetWeakPtr(), false,
                                     std::move(callback)));
+}
+
+void CartService::IncreaseWelcomeSurfaceCounter() {
+  if (!ShouldShowWelcomSurface())
+    return;
+  int times = profile_->GetPrefs()->GetInteger(
+      prefs::kCartModuleWelcomeSurfaceShownTimes);
+  profile_->GetPrefs()->SetInteger(prefs::kCartModuleWelcomeSurfaceShownTimes,
+                                   times + 1);
+}
+
+bool CartService::ShouldShowWelcomSurface() {
+  return profile_->GetPrefs()->GetInteger(
+             prefs::kCartModuleWelcomeSurfaceShownTimes) <
+         kWelcomSurfaceShowLimit;
 }
 
 void CartService::LoadCartsWithFakeData(CartDB::LoadCallback callback) {
