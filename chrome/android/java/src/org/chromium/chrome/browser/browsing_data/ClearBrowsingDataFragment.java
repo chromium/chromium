@@ -20,6 +20,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import androidx.collection.ArraySet;
+import androidx.fragment.app.FragmentActivity;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
@@ -429,7 +430,8 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                 && mFetcher.isDialogAboutOtherFormsOfBrowsingHistoryEnabled()
                 && !OtherFormsOfHistoryDialogFragment.wasDialogShown()) {
             mDialogAboutOtherFormsOfBrowsingHistory = new OtherFormsOfHistoryDialogFragment();
-            mDialogAboutOtherFormsOfBrowsingHistory.show(getActivity());
+            FragmentActivity fragmentActivity = (FragmentActivity) getActivity();
+            mDialogAboutOtherFormsOfBrowsingHistory.show(fragmentActivity);
             dismissProgressDialog();
             RecordHistogram.recordBooleanHistogram(DIALOG_HISTOGRAM, true);
         } else {

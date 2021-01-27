@@ -4,9 +4,7 @@
 
 package org.chromium.chrome.browser.browsing_data;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.SpannableString;
@@ -17,6 +15,8 @@ import android.widget.TextView;
 
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AlertDialog;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -38,8 +38,8 @@ public class OtherFormsOfHistoryDialogFragment
      * Show the dialog.
      * @param activity The activity in which to show the dialog.
      */
-    public void show(Activity activity) {
-        show(activity.getFragmentManager(), TAG);
+    public void show(FragmentActivity activity) {
+        show(activity.getSupportFragmentManager(), TAG);
     }
 
     @Override
