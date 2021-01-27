@@ -119,7 +119,7 @@ declare_args() {
   # the space overhead is too great. We should use some mixture of profiles and
   # optimization settings to better tune the size increase.
   thin_lto_enable_optimizations =
-      (is_chromeos_ash || is_android || is_win) && is_official_build
+      (is_chromeos_ash || is_android || is_win || is_linux) && is_official_build
 
   # Initialize all local variables with a pattern. This flag will fill
   # uninitialized floating-point types (and 32-bit pointers) with 0xFF and the
@@ -620,6 +620,7 @@ config("compiler") {
 
         # Experimentally determined to yield a reasonable trade-off between
         # build time, run-time performance, and binary size.
+        # Keep this in sync with the Linux value below.
         "-mllvm:-import-instr-limit=10",
 
         "/lldltocache:" +
@@ -649,7 +650,10 @@ config("compiler") {
         # TODO(gbiv): We ideally shouldn't need to specify this; ThinLTO
         # should be able to better manage binary size increases on its own.
         import_instr_limit = -1
-        if (is_android) {
+        if (is_linux) {
+          # Keep this in sync with the Windows value above.
+          import_instr_limit = 10
+        } else if (is_android) {
           import_instr_limit = 5
         } else if (is_chromeos_ash) {
           # Not much performance difference was noted between the default (100)
