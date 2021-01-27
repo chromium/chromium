@@ -85,7 +85,7 @@ extern const base::FeatureParam<int> kIdentifiabilityStudyMaxSurfaces;
 // In other words this is the maximum value that can be configured via
 // `kIdentifiabilityStudyMaxSurfaces`. Hence it's the
 // `kMaxIdentifiabilityStudyMaxSurfaces`.
-constexpr int kMaxIdentifiabilityStudyMaxSurfaces = 10;
+constexpr int kMaxIdentifiabilityStudyMaxSurfaces = 40;
 
 // Selection rate for clusters of related surfaces.
 //
