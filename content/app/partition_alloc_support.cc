@@ -62,8 +62,8 @@ void ConfigurePartitionRefCountSupportIfNeeded(bool enable_ref_count) {
 void ReconfigurePartitionForKnownProcess(const std::string& process_type) {
   DCHECK_NE(process_type, switches::kZygoteProcess);
 
-  ConfigurePartitionRefCountSupportIfNeeded(process_type !=
-                                            switches::kRendererProcess);
+  // No specified process type means this is the Browser process.
+  ConfigurePartitionRefCountSupportIfNeeded(process_type.empty());
 }
 
 }  // namespace

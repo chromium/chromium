@@ -72,7 +72,7 @@ declare_args() {
   build_base_unittests = true
 
   # Set to true to use BackupRefPtr as the implementation of CheckedPtr.
-  # Optionally can be disabled in Renderer.
+  # Optionally can be controlled (partially disabled) at run-time.
   use_backup_ref_ptr = false
   enable_runtime_backup_ref_ptr_control = false
 }
