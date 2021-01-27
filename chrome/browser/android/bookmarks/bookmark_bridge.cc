@@ -829,8 +829,9 @@ ScopedJavaLocalRef<jobject> BookmarkBridge::AddToReadingList(
   const BookmarkNode* node = reading_list_manager_->Add(
       GURL(base::android::ConvertJavaStringToUTF16(env, j_url)),
       base::android::ConvertJavaStringToUTF8(env, j_title));
-  DCHECK(node);
-  return JavaBookmarkIdCreateBookmarkId(env, node->id(), GetBookmarkType(node));
+  return node ? JavaBookmarkIdCreateBookmarkId(env, node->id(),
+                                               GetBookmarkType(node))
+              : ScopedJavaLocalRef<jobject>();
 }
 
 ScopedJavaLocalRef<jobject> BookmarkBridge::GetReadingListItem(

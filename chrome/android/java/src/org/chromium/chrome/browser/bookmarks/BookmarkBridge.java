@@ -839,9 +839,10 @@ public class BookmarkBridge {
      * bookmark ID will be returned.
      * @param title The title to be used for the reading list item.
      * @param url The URL of the reading list item.
-     * @return The bookmark ID created after saving the article to the reading list.
+     * @return The bookmark ID created after saving the article to the reading list, or null on
+     *         error.
      */
-    public BookmarkId addToReadingList(String title, String url) {
+    public @Nullable BookmarkId addToReadingList(String title, String url) {
         ThreadUtils.assertOnUiThread();
         assert title != null;
         assert url != null;
