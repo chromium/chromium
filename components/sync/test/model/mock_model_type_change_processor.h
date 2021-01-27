@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 #include "testing/gmock/include/gmock/gmock.h"
