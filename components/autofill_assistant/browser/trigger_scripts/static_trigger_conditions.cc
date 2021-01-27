@@ -54,6 +54,20 @@ bool StaticTriggerConditions::has_results() const {
   return has_results_;
 }
 
+bool StaticTriggerConditions::script_parameter_matches(
+    const ScriptParameterMatchProto& param) const {
+  auto opt_value = trigger_context_->GetParameter(param.name());
+  if (!param.exists()) {
+    return !opt_value;
+  }
+
+  if (!param.has_value_equals()) {
+    return opt_value.has_value();
+  }
+
+  return opt_value && param.value_equals() == opt_value.value();
+}
+
 void StaticTriggerConditions::OnGetLogins(
     std::vector<WebsiteLoginManager::Login> logins) {
   has_stored_login_credentials_ = !logins.empty();

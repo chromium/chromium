@@ -74,5 +74,58 @@ TEST_F(StaticTriggerConditionsTest, HasResults) {
   EXPECT_TRUE(static_trigger_conditions_.has_results());
 }
 
+TEST_F(StaticTriggerConditionsTest, ScriptParameterMatches) {
+  TriggerContextImpl trigger_context({{"must_exist_and_exists", "exists"},
+                                      {"must_not_exist_and_exists", "exists"},
+                                      {"must_match", "matching_value"},
+                                      {"must_match_empty", ""}},
+                                     /* exp = */ "");
+  static_trigger_conditions_.Init(
+      &mock_website_login_manager_, mock_is_first_time_user_callback_.Get(),
+      GURL(kFakeUrl), &trigger_context, mock_callback_.Get());
+
+  ScriptParameterMatchProto must_exist;
+  must_exist.set_name("must_exist_and_exists");
+  must_exist.set_exists(true);
+  EXPECT_TRUE(static_trigger_conditions_.script_parameter_matches(must_exist));
+
+  must_exist.set_name("must_exist_and_doesnt_exist");
+  EXPECT_FALSE(static_trigger_conditions_.script_parameter_matches(must_exist));
+
+  ScriptParameterMatchProto must_not_exist;
+  must_not_exist.set_name("must_not_exist_and_doesnt_exist");
+  must_not_exist.set_exists(false);
+  EXPECT_TRUE(
+      static_trigger_conditions_.script_parameter_matches(must_not_exist));
+
+  must_not_exist.set_name("must_not_exist_and_exists");
+  EXPECT_FALSE(
+      static_trigger_conditions_.script_parameter_matches(must_not_exist));
+
+  ScriptParameterMatchProto must_match;
+  must_match.set_name("must_match");
+  must_match.set_value_equals("matching_value");
+  EXPECT_TRUE(static_trigger_conditions_.script_parameter_matches(must_match));
+
+  must_match.set_value_equals("not_matching_value");
+  EXPECT_FALSE(static_trigger_conditions_.script_parameter_matches(must_match));
+
+  must_match.set_value_equals("");
+  EXPECT_FALSE(static_trigger_conditions_.script_parameter_matches(must_match));
+
+  must_match.set_name("must_match_doesnt_exist");
+  EXPECT_FALSE(static_trigger_conditions_.script_parameter_matches(must_match));
+
+  ScriptParameterMatchProto must_match_empty;
+  must_match_empty.set_name("must_match_empty");
+  must_match_empty.set_value_equals("");
+  EXPECT_TRUE(
+      static_trigger_conditions_.script_parameter_matches(must_match_empty));
+
+  must_match_empty.set_value_equals("not_empty");
+  EXPECT_FALSE(
+      static_trigger_conditions_.script_parameter_matches(must_match_empty));
+}
+
 }  // namespace
 }  // namespace autofill_assistant

@@ -587,6 +587,8 @@ message TriggerScriptConditionProto {
     int32 experiment_id = 7;
     // The condition matches if the keyboard is hidden.
     Empty keyboard_hidden = 9;
+    // The condition describes a parameter value that must be set to trigger.
+    ScriptParameterMatchProto script_parameter_match = 10;
   }
 
   reserved 4;

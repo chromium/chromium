@@ -35,6 +35,7 @@ void ExtractSelectors(const TriggerScriptConditionProto& proto,
     case TriggerScriptConditionProto::kIsFirstTimeUser:
     case TriggerScriptConditionProto::kExperimentId:
     case TriggerScriptConditionProto::kKeyboardHidden:
+    case TriggerScriptConditionProto::kScriptParameterMatch:
     case TriggerScriptConditionProto::TYPE_NOT_SET:
       return;
     case TriggerScriptConditionProto::kSelector:

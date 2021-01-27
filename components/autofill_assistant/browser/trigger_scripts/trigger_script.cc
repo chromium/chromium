@@ -54,6 +54,9 @@ bool EvaluateTriggerCondition(
       return static_trigger_conditions.is_in_experiment(proto.experiment_id());
     case TriggerScriptConditionProto::kKeyboardHidden:
       return !dynamic_trigger_conditions.GetKeyboardVisible();
+    case TriggerScriptConditionProto::kScriptParameterMatch:
+      return static_trigger_conditions.script_parameter_matches(
+          proto.script_parameter_match());
     case TriggerScriptConditionProto::TYPE_NOT_SET:
       return true;
   }

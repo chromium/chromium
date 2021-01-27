@@ -36,6 +36,8 @@ class StaticTriggerConditions {
   virtual bool is_first_time_user() const;
   virtual bool has_stored_login_credentials() const;
   virtual bool is_in_experiment(int experiment_id) const;
+  virtual bool script_parameter_matches(
+      const ScriptParameterMatchProto& param) const;
 
   // If true, all values have been evaluated. They may be out-of-date by one
   // cycle in case an update is currently scheduled.
