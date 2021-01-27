@@ -44,14 +44,14 @@ class SVGPath final : public SVGPropertyBase {
   typedef void TearOffType;
 
   SVGPath();
-  explicit SVGPath(cssvalue::CSSPathValue*);
+  explicit SVGPath(const cssvalue::CSSPathValue&);
   ~SVGPath() override;
 
   const SVGPathByteStream& ByteStream() const {
     return path_value_->ByteStream();
   }
   StylePath* GetStylePath() const { return path_value_->GetStylePath(); }
-  cssvalue::CSSPathValue* PathValue() const { return path_value_.Get(); }
+  const cssvalue::CSSPathValue& PathValue() const { return *path_value_; }
 
   // SVGPropertyBase:
   SVGPath* Clone() const;
@@ -77,7 +77,7 @@ class SVGPath final : public SVGPropertyBase {
   void Trace(Visitor*) const override;
 
  private:
-  Member<cssvalue::CSSPathValue> path_value_;
+  Member<const cssvalue::CSSPathValue> path_value_;
 };
 
 template <>
