@@ -114,7 +114,7 @@ public class CombinedPolicyProvider {
 
     @VisibleForTesting
     @CalledByNative
-    void refreshPolicies() {
+    public void refreshPolicies() {
         assert mPolicyProviders.size() == mCachedPolicies.size();
         for (int i = 0; i < mCachedPolicies.size(); ++i) {
             mCachedPolicies.set(i, null);

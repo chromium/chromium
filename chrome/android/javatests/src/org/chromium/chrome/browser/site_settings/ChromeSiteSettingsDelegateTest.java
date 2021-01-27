@@ -10,18 +10,20 @@ import android.graphics.Bitmap;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -32,15 +34,17 @@ import java.util.concurrent.TimeoutException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(SiteSettingsTest.SITE_SETTINGS_BATCH_NAME)
 public class ChromeSiteSettingsDelegateTest {
-    @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-    ChromeSiteSettingsDelegate mSiteSettingsDelegate;
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
-    @Before
-    public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-    }
+    @Rule
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+
+    ChromeSiteSettingsDelegate mSiteSettingsDelegate;
 
     // Tests that a fallback favicon is generated when a real one isn't found locally.
     // This is a regression test for crbug.com/1077716.
@@ -49,7 +53,7 @@ public class ChromeSiteSettingsDelegateTest {
     public void testFallbackFaviconLoads() throws TimeoutException {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mSiteSettingsDelegate = new ChromeSiteSettingsDelegate(
-                    mActivityTestRule.getActivity(), Profile.getLastUsedRegularProfile());
+                    sActivityTestRule.getActivity(), Profile.getLastUsedRegularProfile());
         });
 
         // Hold the Bitmap in an array because it gets assigned to in a closure, and all captured
