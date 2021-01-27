@@ -984,7 +984,7 @@ void PrefetchProxyTabHelper::DoNoStatePrefetch() {
       web_contents()->GetController().GetDefaultSessionStorageNamespace();
   gfx::Size size = web_contents()->GetContainerBounds().size();
 
-  std::unique_ptr<prerender::PrerenderHandle> handle =
+  std::unique_ptr<prerender::NoStatePrefetchHandle> handle =
       no_state_prefetch_manager->AddIsolatedPrerender(
           url, session_storage_namespace, size);
 

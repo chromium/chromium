@@ -37,9 +37,9 @@
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
 #include "components/no_state_prefetch/browser/prerender_field_trial.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
 #include "components/no_state_prefetch/browser/prerender_link_manager.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "components/no_state_prefetch/common/prerender_util.h"
@@ -98,14 +98,15 @@ class DummyNoStatePrefetchContents : public NoStatePrefetchContents {
 };
 
 class TestNetworkBytesChangedObserver
-    : public prerender::PrerenderHandle::Observer {
+    : public prerender::NoStatePrefetchHandle::Observer {
  public:
   TestNetworkBytesChangedObserver() : network_bytes_changed_(false) {}
 
-  // prerender::PrerenderHandle::Observer
-  void OnPrerenderStop(PrerenderHandle* prerender_handle) override {}
-  void OnPrerenderNetworkBytesChanged(
-      PrerenderHandle* prerender_handle) override {
+  // prerender::NoStatePrefetchHandle::Observer
+  void OnPrefetchStop(
+      NoStatePrefetchHandle* no_state_prefetch_handle) override {}
+  void OnPrefetchNetworkBytesChanged(
+      NoStatePrefetchHandle* no_state_prefetch_handle) override {
     network_bytes_changed_ = true;
   }
 
@@ -340,7 +341,7 @@ void DummyNoStatePrefetchContents::StartPrerendering(
   prerendering_has_started_ = true;
   test_no_state_prefetch_manager_->DummyNoStatePrefetchContentsStarted(
       -1, route_id_, this);
-  NotifyPrerenderStart();
+  NotifyPrefetchStart();
 }
 
 class PrerenderTest : public testing::Test {
@@ -1277,10 +1278,10 @@ TEST_F(PrerenderTest, PrerenderNotAllowedOnCellularWithExternalOrigin) {
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, base::nullopt, ORIGIN_EXTERNAL_REQUEST,
           FINAL_STATUS_PROFILE_DESTROYED);
-  std::unique_ptr<PrerenderHandle> prerender_handle(
+  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
       no_state_prefetch_manager()->AddPrerenderFromExternalRequest(
           url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
-  EXPECT_TRUE(prerender_handle);
+  EXPECT_TRUE(no_state_prefetch_handle);
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   histogram_tester().ExpectTotalCount("Prerender.FinalStatus", 0);
 }
@@ -1301,10 +1302,10 @@ TEST_F(PrerenderTest, PrerenderAllowedOnUnmeteredCellularWithExternalOrigin) {
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, base::nullopt, ORIGIN_EXTERNAL_REQUEST,
           FINAL_STATUS_PROFILE_DESTROYED);
-  std::unique_ptr<PrerenderHandle> prerender_handle(
+  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
       no_state_prefetch_manager()->AddPrerenderFromExternalRequest(
           url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
-  EXPECT_TRUE(prerender_handle);
+  EXPECT_TRUE(no_state_prefetch_handle);
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   histogram_tester().ExpectTotalCount("Prerender.FinalStatus", 0);
 }
@@ -1325,10 +1326,10 @@ TEST_F(PrerenderTest, PrerenderNotAllowedOnMeteredWifiWithExternalOrigin) {
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, base::nullopt, ORIGIN_EXTERNAL_REQUEST,
           FINAL_STATUS_PROFILE_DESTROYED);
-  std::unique_ptr<PrerenderHandle> prerender_handle(
+  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
       no_state_prefetch_manager()->AddPrerenderFromExternalRequest(
           url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
-  EXPECT_TRUE(prerender_handle);
+  EXPECT_TRUE(no_state_prefetch_handle);
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
   histogram_tester().ExpectTotalCount("Prerender.FinalStatus", 0);
 }
@@ -1351,12 +1352,12 @@ TEST_F(
   DummyNoStatePrefetchContents* no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, base::nullopt, ORIGIN_EXTERNAL_REQUEST, FINAL_STATUS_USED);
-  std::unique_ptr<PrerenderHandle> prerender_handle(
+  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle(
       no_state_prefetch_manager()->AddPrerenderFromExternalRequest(
           url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize)));
-  EXPECT_TRUE(prerender_handle);
+  EXPECT_TRUE(no_state_prefetch_handle);
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
-  EXPECT_EQ(no_state_prefetch_contents, prerender_handle->contents());
+  EXPECT_EQ(no_state_prefetch_contents, no_state_prefetch_handle->contents());
   std::unique_ptr<NoStatePrefetchContents> entry =
       no_state_prefetch_manager()->FindAndUseEntry(url);
   ASSERT_EQ(no_state_prefetch_contents, entry.get());
@@ -1370,20 +1371,20 @@ TEST_F(PrerenderTest, PrerenderAllowedForForcedCellular) {
       net::NetworkChangeNotifier::GetConnectionType()));
   GURL url("http://www.google.com/");
   DummyNoStatePrefetchContents* no_state_prefetch_contents = nullptr;
-  std::unique_ptr<PrerenderHandle> prerender_handle;
+  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle;
   no_state_prefetch_contents =
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, base::nullopt, ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER,
           FINAL_STATUS_USED);
-  prerender_handle =
+  no_state_prefetch_handle =
       no_state_prefetch_manager()->AddForcedPrerenderFromExternalRequest(
           url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize));
-  EXPECT_TRUE(prerender_handle);
-  EXPECT_TRUE(prerender_handle->IsPrerendering());
+  EXPECT_TRUE(no_state_prefetch_handle);
+  EXPECT_TRUE(no_state_prefetch_handle->IsPrefetching());
   EXPECT_TRUE(no_state_prefetch_contents->prerendering_has_started());
-  EXPECT_EQ(no_state_prefetch_contents, prerender_handle->contents());
+  EXPECT_EQ(no_state_prefetch_contents, no_state_prefetch_handle->contents());
   EXPECT_EQ(ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER,
-            prerender_handle->contents()->origin());
+            no_state_prefetch_handle->contents()->origin());
   std::unique_ptr<NoStatePrefetchContents> entry =
       no_state_prefetch_manager()->FindAndUseEntry(url);
   ASSERT_EQ(no_state_prefetch_contents, entry.get());
@@ -1759,12 +1760,12 @@ TEST_F(PrerenderTest, NoStatePrefetchContentsIncrementsByteCount) {
       no_state_prefetch_manager()->CreateNextNoStatePrefetchContents(
           url, base::nullopt, ORIGIN_EXTERNAL_REQUEST_FORCED_PRERENDER,
           FINAL_STATUS_PROFILE_DESTROYED);
-  std::unique_ptr<PrerenderHandle> prerender_handle =
+  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle =
       no_state_prefetch_manager()->AddForcedPrerenderFromExternalRequest(
           url, content::Referrer(), nullptr, gfx::Rect(kDefaultViewSize));
 
   TestNetworkBytesChangedObserver observer;
-  prerender_handle->SetObserver(&observer);
+  no_state_prefetch_handle->SetObserver(&observer);
 
   no_state_prefetch_contents->AddNetworkBytes(12);
   EXPECT_TRUE(observer.network_bytes_changed());

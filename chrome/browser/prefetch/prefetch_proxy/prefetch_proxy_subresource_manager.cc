@@ -27,7 +27,7 @@ PrefetchProxySubresourceManager::~PrefetchProxySubresourceManager() {
 }
 
 void PrefetchProxySubresourceManager::ManageNoStatePrefetch(
-    std::unique_ptr<prerender::PrerenderHandle> handle,
+    std::unique_ptr<prerender::NoStatePrefetchHandle> handle,
     base::OnceClosure on_nsp_done_callback) {
   on_nsp_done_callback_ = std::move(on_nsp_done_callback);
   nsp_handle_ = std::move(handle);
@@ -48,14 +48,14 @@ void PrefetchProxySubresourceManager::NotifyPageNavigatedToAfterSRP() {
   DCHECK(create_isolated_loader_factory_callback_);
   // We're navigating so take the extra work off the CPU.
   if (nsp_handle_) {
-    OnPrerenderStop(nsp_handle_.get());
+    OnPrefetchStop(nsp_handle_.get());
   }
 
   was_navigated_to_after_srp_ = true;
 }
 
-void PrefetchProxySubresourceManager::OnPrerenderStop(
-    prerender::PrerenderHandle* handle) {
+void PrefetchProxySubresourceManager::OnPrefetchStop(
+    prerender::NoStatePrefetchHandle* handle) {
   DCHECK_EQ(nsp_handle_.get(), handle);
 
   if (on_nsp_done_callback_) {
@@ -83,7 +83,7 @@ bool PrefetchProxySubresourceManager::ShouldProxyForPrerenderNavigation(
       nsp_handle_->contents()->no_state_prefetch_contents();
   if (!web_contents) {
     // This shouldn't happen, so abort the prerender just to be safe.
-    OnPrerenderStop(nsp_handle_.get());
+    OnPrefetchStop(nsp_handle_.get());
     NOTREACHED();
     return false;
   }
@@ -98,7 +98,7 @@ bool PrefetchProxySubresourceManager::ShouldProxyForPrerenderNavigation(
     // This also shouldn't happen, and would imply that there is a bug in the
     // code where a prerender was triggered without having an isolated URL
     // Loader Factory callback to use. Abort the prerender just to be safe.
-    OnPrerenderStop(nsp_handle_.get());
+    OnPrefetchStop(nsp_handle_.get());
     NOTREACHED();
     return false;
   }

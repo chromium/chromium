@@ -159,14 +159,14 @@ class TestPrerender : public NoStatePrefetchContents::Observer,
   // caller must do it instead.
   void WaitForLoads(int expected_number_of_loads);
 
-  void OnPrerenderCreated(TestNoStatePrefetchContents* contents);
+  void OnPrefetchContentsCreated(TestNoStatePrefetchContents* contents);
 
   // NoStatePrefetchContents::Observer implementation:
-  void OnPrerenderStart(NoStatePrefetchContents* contents) override;
+  void OnPrefetchStart(NoStatePrefetchContents* contents) override;
 
-  void OnPrerenderStopLoading(NoStatePrefetchContents* contents) override;
+  void OnPrefetchStopLoading(NoStatePrefetchContents* contents) override;
 
-  void OnPrerenderStop(NoStatePrefetchContents* contents) override;
+  void OnPrefetchStop(NoStatePrefetchContents* contents) override;
 
  private:
   TestNoStatePrefetchContents* contents_;
@@ -213,7 +213,7 @@ class DestructionWaiter {
 
     ~DestructionMarker() override;
 
-    void OnPrerenderStop(NoStatePrefetchContents* contents) override;
+    void OnPrefetchStop(NoStatePrefetchContents* contents) override;
 
    private:
     DestructionWaiter* waiter_;

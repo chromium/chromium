@@ -16,7 +16,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -32,7 +32,7 @@ class NoStatePrefetchManager;
 // renderer indicating addition, cancelation and abandonment of link elements,
 // and controls the NoStatePrefetchManager accordingly.
 class PrerenderLinkManager : public KeyedService,
-                             public PrerenderHandle::Observer {
+                             public NoStatePrefetchHandle::Observer {
  public:
   explicit PrerenderLinkManager(NoStatePrefetchManager* manager);
   ~PrerenderLinkManager() override;
@@ -96,7 +96,7 @@ class PrerenderLinkManager : public KeyedService,
 
     // Initially null, |handle| is set once we start this prerender. It is owned
     // by this struct, and must be deleted before destructing this struct.
-    std::unique_ptr<PrerenderHandle> handle;
+    std::unique_ptr<NoStatePrefetchHandle> handle;
 
     // True if this prerender has been abandoned by its launcher.
     bool has_been_abandoned;
@@ -117,11 +117,12 @@ class PrerenderLinkManager : public KeyedService,
   // the system and per launcher.
   void StartPrerenders();
 
-  LinkPrerender* FindByPrerenderHandle(PrerenderHandle* prerender_handle);
+  LinkPrerender* FindByNoStatePrefetchHandle(
+      NoStatePrefetchHandle* no_state_prefetch_handle);
   LinkPrerender* FindByPrerenderId(int prerender_id);
 
   // Removes |prerender| from the the prerender link manager. Deletes the
-  // PrerenderHandle as needed.
+  // NoStatePrefetchHandle as needed.
   void RemovePrerender(LinkPrerender* prerender);
 
   // Cancels |prerender| and removes |prerender| from the prerender link
@@ -131,10 +132,10 @@ class PrerenderLinkManager : public KeyedService,
   // From KeyedService:
   void Shutdown() override;
 
-  // From PrerenderHandle::Observer:
-  void OnPrerenderStop(PrerenderHandle* prerender_handle) override;
-  void OnPrerenderNetworkBytesChanged(
-      PrerenderHandle* prerender_handle) override;
+  // From NoStatePrefetchHandle::Observer:
+  void OnPrefetchStop(NoStatePrefetchHandle* no_state_prefetch_handle) override;
+  void OnPrefetchNetworkBytesChanged(
+      NoStatePrefetchHandle* no_state_prefetch_handle) override;
 
   bool has_shutdown_;
 

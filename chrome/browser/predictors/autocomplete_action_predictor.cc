@@ -23,8 +23,8 @@
 #include "chrome/browser/prefetch/no_state_prefetch/no_state_prefetch_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/history/core/browser/in_memory_database.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/omnibox/browser/omnibox_log.h"
@@ -106,8 +106,8 @@ AutocompleteActionPredictor::~AutocompleteActionPredictor() {
     main_profile_predictor_->incognito_predictor_ = nullptr;
   else if (incognito_predictor_)
     incognito_predictor_->main_profile_predictor_ = nullptr;
-  if (prerender_handle_.get())
-    prerender_handle_->OnCancel();
+  if (no_state_prefetch_handle_.get())
+    no_state_prefetch_handle_->OnCancel();
 }
 
 void AutocompleteActionPredictor::RegisterTransitionalMatches(
@@ -150,11 +150,11 @@ void AutocompleteActionPredictor::ClearTransitionalMatches() {
 }
 
 void AutocompleteActionPredictor::CancelPrerender() {
-  // If the prerender has already been abandoned, leave it to its own timeout;
+  // If the prefetch has already been abandoned, leave it to its own timeout;
   // this normally gets called immediately after OnOmniboxOpenedUrl.
-  if (prerender_handle_ && !prerender_handle_->IsAbandoned()) {
-    prerender_handle_->OnCancel();
-    prerender_handle_.reset();
+  if (no_state_prefetch_handle_ && !no_state_prefetch_handle_->IsAbandoned()) {
+    no_state_prefetch_handle_->OnCancel();
+    no_state_prefetch_handle_.reset();
   }
 }
 
@@ -162,18 +162,19 @@ void AutocompleteActionPredictor::StartPrerendering(
     const GURL& url,
     content::SessionStorageNamespace* session_storage_namespace,
     const gfx::Size& size) {
-  // Only cancel the old prerender after starting the new one, so if the URLs
-  // are the same, the underlying prerender will be reused.
-  std::unique_ptr<prerender::PrerenderHandle> old_prerender_handle =
-      std::move(prerender_handle_);
+  // Only cancel the old prefetch after starting the new one, so if the URLs
+  // are the same, the underlying prefetcher will be reused.
+  std::unique_ptr<prerender::NoStatePrefetchHandle>
+      old_no_state_prefetch_handle = std::move(no_state_prefetch_handle_);
   prerender::NoStatePrefetchManager* no_state_prefetch_manager =
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile_);
   if (no_state_prefetch_manager) {
-    prerender_handle_ = no_state_prefetch_manager->AddPrerenderFromOmnibox(
-        url, session_storage_namespace, size);
+    no_state_prefetch_handle_ =
+        no_state_prefetch_manager->AddPrerenderFromOmnibox(
+            url, session_storage_namespace, size);
   }
-  if (old_prerender_handle)
-    old_prerender_handle->OnCancel();
+  if (old_no_state_prefetch_handle)
+    old_no_state_prefetch_handle->OnCancel();
 }
 
 AutocompleteActionPredictor::Action
@@ -203,7 +204,7 @@ AutocompleteActionPredictor::Action
     }
   }
 
-  // Downgrade prerender to preconnect if this is a search match.
+  // Downgrade prefetch to preconnect if this is a search match.
   if (action == ACTION_PRERENDER && AutocompleteMatch::IsSearchType(match.type))
     action = ACTION_PRECONNECT;
 
@@ -217,7 +218,7 @@ bool AutocompleteActionPredictor::IsPreconnectable(
 }
 
 bool AutocompleteActionPredictor::IsPrerenderAbandonedForTesting() {
-  return prerender_handle_ && prerender_handle_->IsAbandoned();
+  return no_state_prefetch_handle_ && no_state_prefetch_handle_->IsAbandoned();
 }
 
 void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
@@ -242,12 +243,12 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
   if (!log.is_popup_open || log.is_paste_and_go)
     return;
 
-  // Abandon the current prerender. If it is to be used, it will be used very
+  // Abandon the current prefetch. If it is to be used, it will be used very
   // soon, so use the lower timeout.
-  if (prerender_handle_) {
-    prerender_handle_->OnNavigateAway();
-    // Don't release |prerender_handle_| so it is canceled if it survives to the
-    // next StartPrerendering call.
+  if (no_state_prefetch_handle_) {
+    no_state_prefetch_handle_->OnNavigateAway();
+    // Don't release |no_state_prefetch_handle_| so it is canceled if it
+    // survives to the next StartPrerendering call.
   }
 
   const AutocompleteMatch& match = log.result.match_at(log.selected_index);

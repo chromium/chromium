@@ -15,8 +15,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/session_storage_namespace.h"
@@ -69,7 +69,7 @@ PrerenderLinkManager::LinkPrerender::LinkPrerender(
 
 PrerenderLinkManager::LinkPrerender::~LinkPrerender() {
   DCHECK_EQ(nullptr, handle.get())
-      << "The PrerenderHandle should be destroyed before its Prerender.";
+      << "The NoStatePrefetchHandle should be destroyed before its Prerender.";
 }
 
 PrerenderLinkManager::PrerenderLinkManager(NoStatePrefetchManager* manager)
@@ -78,8 +78,8 @@ PrerenderLinkManager::PrerenderLinkManager(NoStatePrefetchManager* manager)
 PrerenderLinkManager::~PrerenderLinkManager() {
   for (auto& prerender : prerenders_) {
     if (prerender->handle) {
-      DCHECK(!prerender->handle->IsPrerendering())
-          << "All running prerenders should stop at the same time as the "
+      DCHECK(!prerender->handle->IsPrefetching())
+          << "All running prefetchers should stop at the same time as the "
           << "NoStatePrefetchManager.";
       prerender->handle.reset();
     }
@@ -157,10 +157,10 @@ void PrerenderLinkManager::OnAbandonPrerender(int prerender_id) {
   prerender->handle->OnNavigateAway();
   DCHECK(prerender->handle);
 
-  // If the prerender is not running, remove it from the list so it does not
+  // If the prefetcher is not running, remove it from the list so it does not
   // leak. If it is running, it will send a cancel event when it stops which
   // will remove it.
-  if (!prerender->handle->IsPrerendering())
+  if (!prerender->handle->IsPrefetching())
     RemovePrerender(prerender);
 }
 
@@ -177,7 +177,7 @@ size_t PrerenderLinkManager::CountRunningPrerenders() const {
   return std::count_if(prerenders_.begin(), prerenders_.end(),
                        [](const std::unique_ptr<LinkPrerender>& prerender) {
                          return prerender->handle &&
-                                prerender->handle->IsPrerendering();
+                                prerender->handle->IsPrefetching();
                        });
 }
 
@@ -261,7 +261,7 @@ void PrerenderLinkManager::StartPrerenders() {
       abandoned_prerenders.pop_front();
     }
 
-    std::unique_ptr<PrerenderHandle> handle =
+    std::unique_ptr<NoStatePrefetchHandle> handle =
         manager_->AddPrerenderFromLinkRelPrerender(
             pending_prerender->launcher_render_process_id,
             pending_prerender->launcher_render_view_id, pending_prerender->url,
@@ -273,8 +273,8 @@ void PrerenderLinkManager::StartPrerenders() {
       continue;
     }
 
-    if (handle->IsPrerendering()) {
-      // We have successfully started a new prerender.
+    if (handle->IsPrefetching()) {
+      // We have successfully started a new prefetcher.
       pending_prerender->handle = std::move(handle);
       ++total_started_prerender_count;
       pending_prerender->handle->SetObserver(this);
@@ -287,10 +287,11 @@ void PrerenderLinkManager::StartPrerenders() {
 }
 
 PrerenderLinkManager::LinkPrerender*
-PrerenderLinkManager::FindByPrerenderHandle(PrerenderHandle* prerender_handle) {
-  DCHECK(prerender_handle);
+PrerenderLinkManager::FindByNoStatePrefetchHandle(
+    NoStatePrefetchHandle* no_state_prefetch_handle) {
+  DCHECK(no_state_prefetch_handle);
   for (auto& prerender : prerenders_) {
-    if (prerender->handle.get() == prerender_handle)
+    if (prerender->handle.get() == no_state_prefetch_handle)
       return prerender.get();
   }
   return nullptr;
@@ -309,7 +310,7 @@ void PrerenderLinkManager::RemovePrerender(LinkPrerender* prerender) {
   for (auto it = prerenders_.begin(); it != prerenders_.end(); ++it) {
     LinkPrerender* current_prerender = it->get();
     if (current_prerender == prerender) {
-      std::unique_ptr<PrerenderHandle> own_handle =
+      std::unique_ptr<NoStatePrefetchHandle> own_handle =
           std::move(prerender->handle);
       prerenders_.erase(it);
       return;
@@ -322,7 +323,7 @@ void PrerenderLinkManager::CancelPrerender(LinkPrerender* prerender) {
   for (auto it = prerenders_.begin(); it != prerenders_.end(); ++it) {
     LinkPrerender* current_prerender = it->get();
     if (current_prerender == prerender) {
-      std::unique_ptr<PrerenderHandle> own_handle =
+      std::unique_ptr<NoStatePrefetchHandle> own_handle =
           std::move(prerender->handle);
       prerenders_.erase(it);
       if (own_handle)
@@ -337,15 +338,17 @@ void PrerenderLinkManager::Shutdown() {
   has_shutdown_ = true;
 }
 
-void PrerenderLinkManager::OnPrerenderStop(PrerenderHandle* prerender_handle) {
-  LinkPrerender* prerender = FindByPrerenderHandle(prerender_handle);
+void PrerenderLinkManager::OnPrefetchStop(
+    NoStatePrefetchHandle* no_state_prefetch_handle) {
+  LinkPrerender* prerender =
+      FindByNoStatePrefetchHandle(no_state_prefetch_handle);
   if (!prerender)
     return;
   RemovePrerender(prerender);
   StartPrerenders();
 }
 
-void PrerenderLinkManager::OnPrerenderNetworkBytesChanged(
-    PrerenderHandle* prerender_handle) {}
+void PrerenderLinkManager::OnPrefetchNetworkBytesChanged(
+    NoStatePrefetchHandle* no_state_prefetch_handle) {}
 
 }  // namespace prerender

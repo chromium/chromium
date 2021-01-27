@@ -78,20 +78,20 @@ class NoStatePrefetchContents : public content::NotificationObserver,
 
   class Observer {
    public:
-    // Signals that the prerender has started running.
-    virtual void OnPrerenderStart(NoStatePrefetchContents* contents) {}
+    // Signals that the prefetch has started running.
+    virtual void OnPrefetchStart(NoStatePrefetchContents* contents) {}
 
-    // Signals that the prerender has had its load event.
-    virtual void OnPrerenderStopLoading(NoStatePrefetchContents* contents) {}
+    // Signals that the prefetch has had its load event.
+    virtual void OnPrefetchStopLoading(NoStatePrefetchContents* contents) {}
 
-    // Signals that the prerender has stopped running. A NoStatePrefetchContents
-    // with an unset final status will always call OnPrerenderStop before being
-    // destroyed.
-    virtual void OnPrerenderStop(NoStatePrefetchContents* contents) {}
+    // Signals that the prefetch has stopped running.
+    // A NoStatePrefetchContents with an unset final status will always call
+    // OnPrefetchStop before being destroyed.
+    virtual void OnPrefetchStop(NoStatePrefetchContents* contents) {}
 
     // Signals that a resource finished loading and altered the running byte
     // count.
-    virtual void OnPrerenderNetworkBytesChanged(
+    virtual void OnPrefetchNetworkBytesChanged(
         NoStatePrefetchContents* contents) {}
 
    protected:
@@ -102,7 +102,7 @@ class NoStatePrefetchContents : public content::NotificationObserver,
   ~NoStatePrefetchContents() override;
 
   // All observers of a NoStatePrefetchContents are removed after the
-  // OnPrerenderStop event is sent, so there is no need to call RemoveObserver()
+  // OnPrefetchStop event is sent, so there is no need to call RemoveObserver()
   // in the normal use case.
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -220,11 +220,10 @@ class NoStatePrefetchContents : public content::NotificationObserver,
   void SetFinalStatus(FinalStatus final_status);
 
   // These call out to methods on our Observers, using our observer_list_. Note
-  // that NotifyPrerenderStop() also clears the observer list.
-  void NotifyPrerenderStart();
-  void NotifyPrerenderStopLoading();
-  void NotifyPrerenderDomContentLoaded();
-  void NotifyPrerenderStop();
+  // that NotifyPrefetchStop() also clears the observer list.
+  void NotifyPrefetchStart();
+  void NotifyPrefetchStopLoading();
+  void NotifyPrefetchStop();
 
   // Called whenever a RenderViewHost is created for prerendering.  Only called
   // once the RenderViewHost has a RenderView and RenderWidgetHostView.

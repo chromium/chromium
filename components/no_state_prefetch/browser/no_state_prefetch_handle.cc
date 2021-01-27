@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/no_state_prefetch/browser/prerender_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 
 #include <algorithm>
 
@@ -15,55 +15,55 @@ using content::BrowserThread;
 
 namespace prerender {
 
-PrerenderHandle::Observer::Observer() {}
+NoStatePrefetchHandle::Observer::Observer() {}
 
-PrerenderHandle::Observer::~Observer() {}
+NoStatePrefetchHandle::Observer::~Observer() {}
 
-PrerenderHandle::~PrerenderHandle() {
+NoStatePrefetchHandle::~NoStatePrefetchHandle() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (prerender_data_) {
     prerender_data_->contents()->RemoveObserver(this);
   }
 }
 
-void PrerenderHandle::SetObserver(Observer* observer) {
+void NoStatePrefetchHandle::SetObserver(Observer* observer) {
   observer_ = observer;
 }
 
-void PrerenderHandle::OnNavigateAway() {
+void NoStatePrefetchHandle::OnNavigateAway() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (prerender_data_)
     prerender_data_->OnHandleNavigatedAway(this);
 }
 
-void PrerenderHandle::OnCancel() {
+void NoStatePrefetchHandle::OnCancel() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (prerender_data_)
     prerender_data_->OnHandleCanceled(this);
 }
 
-bool PrerenderHandle::IsPrerendering() const {
+bool NoStatePrefetchHandle::IsPrefetching() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return prerender_data_.get() != nullptr &&
          !prerender_data_->contents()->prerendering_has_been_cancelled();
 }
 
-bool PrerenderHandle::IsFinishedLoading() const {
+bool NoStatePrefetchHandle::IsFinishedLoading() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return prerender_data_ && prerender_data_->contents()->has_finished_loading();
 }
 
-bool PrerenderHandle::IsAbandoned() const {
+bool NoStatePrefetchHandle::IsAbandoned() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return prerender_data_ && !prerender_data_->abandon_time().is_null();
 }
 
-NoStatePrefetchContents* PrerenderHandle::contents() const {
+NoStatePrefetchContents* NoStatePrefetchHandle::contents() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return prerender_data_ ? prerender_data_->contents() : nullptr;
 }
 
-PrerenderHandle::PrerenderHandle(
+NoStatePrefetchHandle::NoStatePrefetchHandle(
     NoStatePrefetchManager::PrerenderData* prerender_data)
     : observer_(nullptr) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -73,22 +73,22 @@ PrerenderHandle::PrerenderHandle(
   }
 }
 
-void PrerenderHandle::OnPrerenderStop(
+void NoStatePrefetchHandle::OnPrefetchStop(
     NoStatePrefetchContents* no_state_prefetch_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (observer_)
-    observer_->OnPrerenderStop(this);
+    observer_->OnPrefetchStop(this);
 }
 
-void PrerenderHandle::OnPrerenderNetworkBytesChanged(
+void NoStatePrefetchHandle::OnPrefetchNetworkBytesChanged(
     NoStatePrefetchContents* no_state_prefetch_contents) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (observer_)
-    observer_->OnPrerenderNetworkBytesChanged(this);
+    observer_->OnPrefetchNetworkBytesChanged(this);
 }
 
-bool PrerenderHandle::RepresentingSamePrerenderAs(
-    PrerenderHandle* other) const {
+bool NoStatePrefetchHandle::RepresentingSamePrefetchAs(
+    NoStatePrefetchHandle* other) const {
   return other && other->prerender_data_ && prerender_data_ &&
          prerender_data_.get() == other->prerender_data_.get();
 }

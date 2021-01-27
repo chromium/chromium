@@ -34,9 +34,9 @@
 #include "base/values.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager_delegate.h"
 #include "components/no_state_prefetch/browser/prerender_field_trial.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "components/no_state_prefetch/browser/prerender_history.h"
 #include "components/no_state_prefetch/browser/prerender_util.h"
@@ -163,7 +163,7 @@ void NoStatePrefetchManager::Shutdown() {
   DCHECK(active_prerenders_.empty());
 }
 
-std::unique_ptr<PrerenderHandle>
+std::unique_ptr<NoStatePrefetchHandle>
 NoStatePrefetchManager::AddPrerenderFromLinkRelPrerender(
     int process_id,
     int route_id,
@@ -206,7 +206,7 @@ NoStatePrefetchManager::AddPrerenderFromLinkRelPrerender(
                                             session_storage_namespace);
 }
 
-std::unique_ptr<PrerenderHandle>
+std::unique_ptr<NoStatePrefetchHandle>
 NoStatePrefetchManager::AddPrerenderFromOmnibox(
     const GURL& url,
     SessionStorageNamespace* session_storage_namespace,
@@ -216,7 +216,7 @@ NoStatePrefetchManager::AddPrerenderFromOmnibox(
       session_storage_namespace);
 }
 
-std::unique_ptr<PrerenderHandle>
+std::unique_ptr<NoStatePrefetchHandle>
 NoStatePrefetchManager::AddPrerenderFromNavigationPredictor(
     const GURL& url,
     SessionStorageNamespace* session_storage_namespace,
@@ -226,7 +226,8 @@ NoStatePrefetchManager::AddPrerenderFromNavigationPredictor(
       gfx::Rect(size), session_storage_namespace);
 }
 
-std::unique_ptr<PrerenderHandle> NoStatePrefetchManager::AddIsolatedPrerender(
+std::unique_ptr<NoStatePrefetchHandle>
+NoStatePrefetchManager::AddIsolatedPrerender(
     const GURL& url,
     SessionStorageNamespace* session_storage_namespace,
     const gfx::Size& size) {
@@ -236,7 +237,7 @@ std::unique_ptr<PrerenderHandle> NoStatePrefetchManager::AddIsolatedPrerender(
       gfx::Rect(size), session_storage_namespace);
 }
 
-std::unique_ptr<PrerenderHandle>
+std::unique_ptr<NoStatePrefetchHandle>
 NoStatePrefetchManager::AddPrerenderFromExternalRequest(
     const GURL& url,
     const content::Referrer& referrer,
@@ -247,7 +248,7 @@ NoStatePrefetchManager::AddPrerenderFromExternalRequest(
                                             session_storage_namespace);
 }
 
-std::unique_ptr<PrerenderHandle>
+std::unique_ptr<NoStatePrefetchHandle>
 NoStatePrefetchManager::AddForcedPrerenderFromExternalRequest(
     const GURL& url,
     const content::Referrer& referrer,
@@ -407,14 +408,14 @@ NoStatePrefetchManager::PrerenderData::PrerenderData(
 NoStatePrefetchManager::PrerenderData::~PrerenderData() = default;
 
 void NoStatePrefetchManager::PrerenderData::OnHandleCreated(
-    PrerenderHandle* handle) {
+    NoStatePrefetchHandle* handle) {
   DCHECK(contents_);
   ++handle_count_;
   contents_->AddObserver(handle);
 }
 
 void NoStatePrefetchManager::PrerenderData::OnHandleNavigatedAway(
-    PrerenderHandle* handle) {
+    NoStatePrefetchHandle* handle) {
   DCHECK_LT(0, handle_count_);
   DCHECK(contents_);
   if (abandon_time_.is_null())
@@ -425,7 +426,7 @@ void NoStatePrefetchManager::PrerenderData::OnHandleNavigatedAway(
 }
 
 void NoStatePrefetchManager::PrerenderData::OnHandleCanceled(
-    PrerenderHandle* handle) {
+    NoStatePrefetchHandle* handle) {
   DCHECK_LT(0, handle_count_);
   DCHECK(contents_);
 
@@ -487,7 +488,7 @@ void NoStatePrefetchManager::MaybePreconnect(Origin origin,
   delegate_->MaybePreconnect(url_arg);
 }
 
-std::unique_ptr<PrerenderHandle>
+std::unique_ptr<NoStatePrefetchHandle>
 NoStatePrefetchManager::AddPrerenderWithPreconnectFallback(
     Origin origin,
     const GURL& url_arg,
@@ -546,7 +547,8 @@ NoStatePrefetchManager::AddPrerenderWithPreconnectFallback(
           FindPrerenderData(url, session_storage_namespace)) {
     SkipNoStatePrefetchContentsAndMaybePreconnect(url, origin,
                                                   FINAL_STATUS_DUPLICATE);
-    return base::WrapUnique(new PrerenderHandle(preexisting_prerender_data));
+    return base::WrapUnique(
+        new NoStatePrefetchHandle(preexisting_prerender_data));
   }
 
   base::TimeDelta prefetch_age;
@@ -632,8 +634,9 @@ NoStatePrefetchManager::AddPrerenderWithPreconnectFallback(
 
   DCHECK(!no_state_prefetch_contents_ptr->prerendering_has_started());
 
-  std::unique_ptr<PrerenderHandle> prerender_handle =
-      base::WrapUnique(new PrerenderHandle(active_prerenders_.back().get()));
+  std::unique_ptr<NoStatePrefetchHandle> no_state_prefetch_handle =
+      base::WrapUnique(
+          new NoStatePrefetchHandle(active_prerenders_.back().get()));
   SortActivePrerenders();
 
   last_prerender_start_time_ = GetCurrentTimeTicks();
@@ -647,7 +650,7 @@ NoStatePrefetchManager::AddPrerenderWithPreconnectFallback(
   DCHECK(no_state_prefetch_contents_ptr->prerendering_has_started());
 
   StartSchedulingPeriodicCleanups();
-  return prerender_handle;
+  return no_state_prefetch_handle;
 }
 
 void NoStatePrefetchManager::StartSchedulingPeriodicCleanups() {
@@ -1002,7 +1005,7 @@ void NoStatePrefetchManager::ClearPrefetchInformationForTesting() {
   prefetches_.clear();
 }
 
-std::unique_ptr<PrerenderHandle>
+std::unique_ptr<NoStatePrefetchHandle>
 NoStatePrefetchManager::AddPrerenderWithPreconnectFallbackForTesting(
     Origin origin,
     const GURL& url,

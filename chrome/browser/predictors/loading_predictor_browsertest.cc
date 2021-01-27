@@ -39,8 +39,8 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -788,20 +788,21 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
 }
 
 namespace {
-class TestPrerenderStopObserver : public prerender::PrerenderHandle::Observer {
+class TestPrerenderStopObserver
+    : public prerender::NoStatePrefetchHandle::Observer {
  public:
   explicit TestPrerenderStopObserver(base::OnceClosure on_stop_closure)
       : on_stop_closure_(std::move(on_stop_closure)) {}
   ~TestPrerenderStopObserver() override = default;
 
-  void OnPrerenderStop(prerender::PrerenderHandle* contents) override {
+  void OnPrefetchStop(prerender::NoStatePrefetchHandle* contents) override {
     if (on_stop_closure_) {
       std::move(on_stop_closure_).Run();
     }
   }
 
-  void OnPrerenderNetworkBytesChanged(
-      prerender::PrerenderHandle* handle) override {}
+  void OnPrefetchNetworkBytesChanged(
+      prerender::NoStatePrefetchHandle* handle) override {}
 
  private:
   base::OnceClosure on_stop_closure_;
@@ -820,7 +821,7 @@ IN_PROC_BROWSER_TEST_F(LoadingPredictorBrowserTest,
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
           browser()->profile());
 
-  std::unique_ptr<prerender::PrerenderHandle> handle =
+  std::unique_ptr<prerender::NoStatePrefetchHandle> handle =
       no_state_prefetch_manager->AddPrerenderFromNavigationPredictor(
           url,
           browser()

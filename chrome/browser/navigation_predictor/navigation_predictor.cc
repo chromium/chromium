@@ -217,9 +217,9 @@ NavigationPredictor::~NavigationPredictor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Observe(nullptr);
 
-  if (prerender_handle_) {
-    prerender_handle_->SetObserver(nullptr);
-    prerender_handle_->OnNavigateAway();
+  if (no_state_prefetch_handle_) {
+    no_state_prefetch_handle_->SetObserver(nullptr);
+    no_state_prefetch_handle_->OnNavigateAway();
   }
 }
 
@@ -348,10 +348,10 @@ void NavigationPredictor::OnVisibilityChanged(content::Visibility visibility) {
       visibility != content::Visibility::VISIBLE) {
     current_visibility_ = visibility;
 
-    if (prerender_handle_) {
-      prerender_handle_->SetObserver(nullptr);
-      prerender_handle_->OnNavigateAway();
-      prerender_handle_.reset();
+    if (no_state_prefetch_handle_) {
+      no_state_prefetch_handle_->SetObserver(nullptr);
+      no_state_prefetch_handle_->OnNavigateAway();
+      no_state_prefetch_handle_.reset();
       partial_prerfetches_.emplace(prefetch_url_.value());
       prefetch_url_ = base::nullopt;
     }
@@ -386,13 +386,13 @@ void NavigationPredictor::DidStartNavigation(
   if (navigation_handle->GetURL() == prefetch_url_.value())
     return;
 
-  if (!prerender_handle_)
+  if (!no_state_prefetch_handle_)
     return;
 
   // Stop prerender to reduce network contention during main frame fetch.
-  prerender_handle_->SetObserver(nullptr);
-  prerender_handle_->OnNavigateAway();
-  prerender_handle_.reset();
+  no_state_prefetch_handle_->SetObserver(nullptr);
+  no_state_prefetch_handle_->OnNavigateAway();
+  no_state_prefetch_handle_.reset();
   partial_prerfetches_.emplace(prefetch_url_.value());
   prefetch_url_ = base::nullopt;
 }
@@ -927,7 +927,7 @@ void NavigationPredictor::MaybePrefetch() {
 void NavigationPredictor::Prefetch(
     prerender::NoStatePrefetchManager* no_state_prefetch_manager,
     const GURL& url_to_prefetch) {
-  DCHECK(!prerender_handle_);
+  DCHECK(!no_state_prefetch_handle_);
   DCHECK(!prefetch_url_);
 
   // It is possible for this class to still exist while its WebContents and
@@ -941,12 +941,12 @@ void NavigationPredictor::Prefetch(
       web_contents()->GetController().GetDefaultSessionStorageNamespace();
   gfx::Size size = web_contents()->GetContainerBounds().size();
 
-  prerender_handle_ =
+  no_state_prefetch_handle_ =
       no_state_prefetch_manager->AddPrerenderFromNavigationPredictor(
           url_to_prefetch, session_storage_namespace, size);
 
-  // Prerender was prevented for some reason, try next URL.
-  if (!prerender_handle_) {
+  // Prefetch was prevented for some reason, try next URL.
+  if (!no_state_prefetch_handle_) {
     MaybePrefetch();
     return;
   }
@@ -954,12 +954,13 @@ void NavigationPredictor::Prefetch(
   prefetch_url_ = url_to_prefetch;
   urls_prefetched_.emplace(url_to_prefetch);
 
-  prerender_handle_->SetObserver(this);
+  no_state_prefetch_handle_->SetObserver(this);
 }
 
-void NavigationPredictor::OnPrerenderStop(prerender::PrerenderHandle* handle) {
-  DCHECK_EQ(prerender_handle_.get(), handle);
-  prerender_handle_.reset();
+void NavigationPredictor::OnPrefetchStop(
+    prerender::NoStatePrefetchHandle* handle) {
+  DCHECK_EQ(no_state_prefetch_handle_.get(), handle);
+  no_state_prefetch_handle_.reset();
   prefetch_url_ = base::nullopt;
 
   MaybePrefetch();

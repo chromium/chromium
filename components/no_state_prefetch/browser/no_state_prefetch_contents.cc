@@ -210,7 +210,7 @@ void NoStatePrefetchContents::StartPrerendering(
   no_state_prefetch_manager()->AddPrerenderProcessHost(
       GetRenderViewHost()->GetProcess());
 
-  NotifyPrerenderStart();
+  NotifyPrefetchStart();
 
   // Register to inform new RenderViews that we're prerendering.
   notification_registrar_.Add(
@@ -313,21 +313,21 @@ std::unique_ptr<WebContents> NoStatePrefetchContents::CreateWebContents(
       session_storage_namespace_map);
 }
 
-void NoStatePrefetchContents::NotifyPrerenderStart() {
+void NoStatePrefetchContents::NotifyPrefetchStart() {
   DCHECK_EQ(FINAL_STATUS_UNKNOWN, final_status_);
   for (Observer& observer : observer_list_)
-    observer.OnPrerenderStart(this);
+    observer.OnPrefetchStart(this);
 }
 
-void NoStatePrefetchContents::NotifyPrerenderStopLoading() {
+void NoStatePrefetchContents::NotifyPrefetchStopLoading() {
   for (Observer& observer : observer_list_)
-    observer.OnPrerenderStopLoading(this);
+    observer.OnPrefetchStopLoading(this);
 }
 
-void NoStatePrefetchContents::NotifyPrerenderStop() {
+void NoStatePrefetchContents::NotifyPrefetchStop() {
   DCHECK_NE(FINAL_STATUS_UNKNOWN, final_status_);
   for (Observer& observer : observer_list_)
-    observer.OnPrerenderStop(this);
+    observer.OnPrefetchStop(this);
   observer_list_.Clear();
 }
 
@@ -388,7 +388,7 @@ void NoStatePrefetchContents::RenderFrameCreated(
 }
 
 void NoStatePrefetchContents::DidStopLoading() {
-  NotifyPrerenderStopLoading();
+  NotifyPrefetchStopLoading();
 }
 
 void NoStatePrefetchContents::DidStartNavigation(
@@ -470,7 +470,7 @@ void NoStatePrefetchContents::Destroy(FinalStatus final_status) {
   no_state_prefetch_manager_->MoveEntryToPendingDelete(this, final_status);
 
   if (prerendering_has_started())
-    NotifyPrerenderStop();
+    NotifyPrefetchStop();
 }
 
 void NoStatePrefetchContents::DestroyWhenUsingTooManyResources() {
@@ -557,7 +557,7 @@ std::unique_ptr<base::DictionaryValue> NoStatePrefetchContents::GetAsValue()
 
 void NoStatePrefetchContents::MarkAsUsedForTesting() {
   SetFinalStatus(FINAL_STATUS_USED);
-  NotifyPrerenderStop();
+  NotifyPrefetchStop();
 }
 
 void NoStatePrefetchContents::CancelPrerenderForUnsupportedScheme() {
@@ -576,7 +576,7 @@ void NoStatePrefetchContents::AddPrerenderCancelerReceiver(
 void NoStatePrefetchContents::AddNetworkBytes(int64_t bytes) {
   network_bytes_ += bytes;
   for (Observer& observer : observer_list_)
-    observer.OnPrerenderNetworkBytesChanged(this);
+    observer.OnPrefetchNetworkBytesChanged(this);
 }
 
 }  // namespace prerender

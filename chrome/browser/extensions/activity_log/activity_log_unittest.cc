@@ -24,8 +24,8 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
@@ -297,7 +297,7 @@ TEST_F(ActivityLogTest, LogPrerender) {
       prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(profile());
 
   const gfx::Size kSize(640, 480);
-  std::unique_ptr<prerender::PrerenderHandle> prerender_handle(
+  std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle(
       no_state_prefetch_manager->AddPrerenderFromOmnibox(
           url,
           web_contents()->GetController().GetDefaultSessionStorageNamespace(),

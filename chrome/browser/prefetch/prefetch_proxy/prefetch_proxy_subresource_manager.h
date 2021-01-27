@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_proxying_url_loader_factory.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "content/public/browser/content_browser_client.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -29,7 +29,7 @@ class RenderFrameHost;
 }
 
 namespace prerender {
-class PrerenderHandle;
+class NoStatePrefetchHandle;
 }
 
 class PrefetchedMainframeResponseContainer;
@@ -38,7 +38,7 @@ class PrefetchProxyProxyingURLLoaderFactory;
 
 // This class manages the prefetch proxy of a page and its subresources.
 class PrefetchProxySubresourceManager
-    : public prerender::PrerenderHandle::Observer,
+    : public prerender::NoStatePrefetchHandle::Observer,
       public PrefetchProxyProxyingURLLoaderFactory::ResourceMetricsObserver {
  public:
   // A callback to create new URL Loader Factories for subresources.
@@ -55,8 +55,9 @@ class PrefetchProxySubresourceManager
 
   // Passes ownership of |handle| to |this|, calling |on_nsp_done_callback| when
   // the NSP is done.
-  void ManageNoStatePrefetch(std::unique_ptr<prerender::PrerenderHandle> handle,
-                             base::OnceClosure on_nsp_done_callback);
+  void ManageNoStatePrefetch(
+      std::unique_ptr<prerender::NoStatePrefetchHandle> handle,
+      base::OnceClosure on_nsp_done_callback);
 
   bool has_nsp_handle() const { return !!nsp_handle_; }
 
@@ -94,10 +95,10 @@ class PrefetchProxySubresourceManager
   // prefetched subresources should be loaded from cache.
   void NotifyProbeFailed();
 
-  // prerender::PrerenderHandle::Observer:
-  void OnPrerenderStop(prerender::PrerenderHandle* handle) override;
-  void OnPrerenderNetworkBytesChanged(
-      prerender::PrerenderHandle* handle) override {}
+  // prerender::NoStatePrefetchHandle::Observer:
+  void OnPrefetchStop(prerender::NoStatePrefetchHandle* handle) override;
+  void OnPrefetchNetworkBytesChanged(
+      prerender::NoStatePrefetchHandle* handle) override {}
 
   // PrefetchProxyProxyingURLLoaderFactory::ResourceMetricsObserver:
   void OnResourceFetchComplete(
@@ -160,7 +161,7 @@ class PrefetchProxySubresourceManager
   // State for managing the NoStatePrerender when it is running. If
   // |nsp_handle_| is set, then |on_nsp_done_callback_| is also set and vise
   // versa.
-  std::unique_ptr<prerender::PrerenderHandle> nsp_handle_;
+  std::unique_ptr<prerender::NoStatePrefetchHandle> nsp_handle_;
   base::OnceClosure on_nsp_done_callback_;
 
   // All owned proxying URL Loader Factories.

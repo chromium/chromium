@@ -15,7 +15,7 @@
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -42,7 +42,7 @@ class TemplateURLService;
 // are the most likely anchor elements that the user will click.
 class NavigationPredictor : public blink::mojom::AnchorElementMetricsHost,
                             public content::WebContentsObserver,
-                            public prerender::PrerenderHandle::Observer {
+                            public prerender::NoStatePrefetchHandle::Observer {
  public:
   explicit NavigationPredictor(content::WebContents* web_contents);
   ~NavigationPredictor() override;
@@ -112,10 +112,10 @@ class NavigationPredictor : public blink::mojom::AnchorElementMetricsHost,
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  // prerender::PrerenderHandle::Observer:
-  void OnPrerenderStop(prerender::PrerenderHandle* handle) override;
-  void OnPrerenderNetworkBytesChanged(
-      prerender::PrerenderHandle* handle) override {}
+  // prerender::NoStatePrefetchHandle::Observer:
+  void OnPrefetchStop(prerender::NoStatePrefetchHandle* handle) override;
+  void OnPrefetchNetworkBytesChanged(
+      prerender::NoStatePrefetchHandle* handle) override {}
 
   // Returns true if the anchor element metric from the renderer process is
   // valid.
@@ -290,8 +290,8 @@ class NavigationPredictor : public blink::mojom::AnchorElementMetricsHost,
   // Current visibility state of the web contents.
   content::Visibility current_visibility_;
 
-  // Current prerender handle.
-  std::unique_ptr<prerender::PrerenderHandle> prerender_handle_;
+  // Current prefetch handle.
+  std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle_;
 
   // URL that we decided to prefetch, and are currently prefetching.
   base::Optional<GURL> prefetch_url_;

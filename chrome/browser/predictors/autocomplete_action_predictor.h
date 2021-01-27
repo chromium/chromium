@@ -45,7 +45,7 @@ class URLDatabase;
 }
 
 namespace prerender {
-class PrerenderHandle;
+class NoStatePrefetchHandle;
 }
 
 namespace predictors {
@@ -266,7 +266,7 @@ class AutocompleteActionPredictor
   // This is used to limit the maximum size of |transitional_matches_|.
   size_t transitional_matches_size_ = 0;
 
-  std::unique_ptr<prerender::PrerenderHandle> prerender_handle_;
+  std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle_;
 
   // This allows us to predict the effect of confidence threshold changes on
   // accuracy.  This is cleared after every omnibox navigation.

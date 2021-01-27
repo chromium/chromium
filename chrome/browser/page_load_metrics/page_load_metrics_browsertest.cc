@@ -55,8 +55,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
 #include "components/no_state_prefetch/browser/prerender_histograms.h"
 #include "components/no_state_prefetch/common/prerender_origin.h"
 #include "components/page_load_metrics/browser/observers/core/uma_page_load_metrics_observer.h"
@@ -220,10 +220,10 @@ class PageLoadMetricsBrowserTest : public InProcessBrowserTest {
         no_state_prefetch_contents_factory->ExpectNoStatePrefetchContents(
             prerender::FINAL_STATUS_NOSTATE_PREFETCH_FINISHED);
 
-    std::unique_ptr<prerender::PrerenderHandle> prerender_handle =
+    std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle =
         no_state_prefetch_manager->AddPrerenderFromOmnibox(
             url, storage_namespace, gfx::Size(640, 480));
-    ASSERT_EQ(prerender_handle->contents(), test_prerender->contents());
+    ASSERT_EQ(no_state_prefetch_handle->contents(), test_prerender->contents());
 
     // The final status may be either  FINAL_STATUS_NOSTATE_PREFETCH_FINISHED or
     // FINAL_STATUS_RECENTLY_VISITED.

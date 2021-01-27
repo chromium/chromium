@@ -258,7 +258,7 @@ DestructionWaiter::DestructionMarker::DestructionMarker(
 
 DestructionWaiter::DestructionMarker::~DestructionMarker() {}
 
-void DestructionWaiter::DestructionMarker::OnPrerenderStop(
+void DestructionWaiter::DestructionMarker::OnPrefetchStop(
     NoStatePrefetchContents* contents) {
   waiter_->MarkDestruction(contents->final_status());
 }
@@ -313,25 +313,26 @@ void TestPrerender::WaitForLoads(int expected_number_of_loads) {
   EXPECT_LE(expected_number_of_loads, number_of_loads_);
 }
 
-void TestPrerender::OnPrerenderCreated(TestNoStatePrefetchContents* contents) {
+void TestPrerender::OnPrefetchContentsCreated(
+    TestNoStatePrefetchContents* contents) {
   DCHECK(!contents_);
   contents_ = contents;
   contents_->AddObserver(this);
   create_loop_.Quit();
 }
 
-void TestPrerender::OnPrerenderStart(NoStatePrefetchContents* contents) {
+void TestPrerender::OnPrefetchStart(NoStatePrefetchContents* contents) {
   started_ = true;
   start_loop_.Quit();
 }
 
-void TestPrerender::OnPrerenderStopLoading(NoStatePrefetchContents* contents) {
+void TestPrerender::OnPrefetchStopLoading(NoStatePrefetchContents* contents) {
   number_of_loads_++;
   if (load_waiter_ && number_of_loads_ >= expected_number_of_loads_)
     load_waiter_->Quit();
 }
 
-void TestPrerender::OnPrerenderStop(NoStatePrefetchContents* contents) {
+void TestPrerender::OnPrefetchStop(NoStatePrefetchContents* contents) {
   DCHECK(contents_);
   contents_ = nullptr;
   final_status_ = contents->final_status();
@@ -408,7 +409,7 @@ TestNoStatePrefetchContentsFactory::CreateNoStatePrefetchContents(
       no_state_prefetch_manager, browser_context, url, referrer,
       initiator_origin, origin, expected.final_status, expected.ignore);
   if (expected.handle)
-    expected.handle->OnPrerenderCreated(contents);
+    expected.handle->OnPrefetchContentsCreated(contents);
   return contents;
 }
 

@@ -60,8 +60,8 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_features.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_switches.h"
 #include "components/language/core/browser/pref_names.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_handle.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
-#include "components/no_state_prefetch/browser/prerender_handle.h"
 #include "components/no_state_prefetch/common/prerender_final_status.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -420,7 +420,7 @@ BuildPrefetchResourceMatchers(
 
 class PrefetchProxyBrowserTest
     : public InProcessBrowserTest,
-      public prerender::PrerenderHandle::Observer,
+      public prerender::NoStatePrefetchHandle::Observer,
       public net::test_server::EmbeddedTestServerConnectionListener {
  public:
   PrefetchProxyBrowserTest() {
@@ -521,7 +521,8 @@ class PrefetchProxyBrowserTest
             predicted_urls);
   }
 
-  std::unique_ptr<prerender::PrerenderHandle> StartPrerender(const GURL& url) {
+  std::unique_ptr<prerender::NoStatePrefetchHandle> StartPrerender(
+      const GURL& url) {
     prerender::NoStatePrefetchManager* no_state_prefetch_manager =
         prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
             browser()->profile());
@@ -881,10 +882,10 @@ class PrefetchProxyBrowserTest
                       language::prefs::kAcceptLanguages)));
   }
 
-  // prerender::PrerenderHandle::Observer:
-  void OnPrerenderNetworkBytesChanged(
-      prerender::PrerenderHandle* handle) override {}
-  void OnPrerenderStop(prerender::PrerenderHandle* handle) override {}
+  // prerender::NoStatePrefetchHandle::Observer:
+  void OnPrefetchNetworkBytesChanged(
+      prerender::NoStatePrefetchHandle* handle) override {}
+  void OnPrefetchStop(prerender::NoStatePrefetchHandle* handle) override {}
 
   // net::test_server::EmbeddedTestServerConnectionListener:
   void ReadFromSocket(const net::StreamSocket& socket, int rv) override {}

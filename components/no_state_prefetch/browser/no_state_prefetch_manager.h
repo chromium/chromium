@@ -56,7 +56,7 @@ namespace test_utils {
 class PrerenderInProcessBrowserTest;
 }
 
-class PrerenderHandle;
+class NoStatePrefetchHandle;
 class PrerenderHistory;
 
 // Observer interface for NoStatePrefetchManager events.
@@ -95,10 +95,10 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
   // Adds a prerender for |url| if valid. |process_id| and |route_id| identify
   // the RenderView that the prerender request came from. If |size| is empty, a
-  // default from the PrerenderConfig is used. Returns a PrerenderHandle if the
-  // URL was added, NULL if it was not. If the launching RenderView is itself
-  // prerendering, the prerender is added as a pending prerender.
-  std::unique_ptr<PrerenderHandle> AddPrerenderFromLinkRelPrerender(
+  // default from the PrerenderConfig is used. Returns a NoStatePrefetchHandle
+  // if the URL was added, NULL if it was not. If the launching RenderView is
+  // itself prerendering, the prerender is added as a pending prerender.
+  std::unique_ptr<NoStatePrefetchHandle> AddPrerenderFromLinkRelPrerender(
       int process_id,
       int route_id,
       const GURL& url,
@@ -112,9 +112,9 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // child or route id, or a referrer. This method uses sensible values for
   // those. The |session_storage_namespace| matches the namespace of the active
   // tab at the time the prerender is generated from the omnibox. Returns a
-  // PrerenderHandle or NULL. If the prerender fails, the prerender manager may
-  // fallback and initiate a preconnect to |url|.
-  std::unique_ptr<PrerenderHandle> AddPrerenderFromOmnibox(
+  // NoStatePrefetchHandle or NULL. If the prerender fails, the prerender
+  // manager may fallback and initiate a preconnect to |url|.
+  std::unique_ptr<NoStatePrefetchHandle> AddPrerenderFromOmnibox(
       const GURL& url,
       content::SessionStorageNamespace* session_storage_namespace,
       const gfx::Size& size);
@@ -122,8 +122,8 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // Adds a prerender for the prefetch url from NavigationPredictor on
   // page load, if NoStatePrefetch and prefetch_after_preconnect are true.
   // Uses the NavigationPredictor's browser context and the default
-  // SessionStorageNamespace. Returns a PrerenderHandle or NULL.
-  std::unique_ptr<PrerenderHandle> AddPrerenderFromNavigationPredictor(
+  // SessionStorageNamespace. Returns a NoStatePrefetchHandle or NULL.
+  std::unique_ptr<NoStatePrefetchHandle> AddPrerenderFromNavigationPredictor(
       const GURL& url,
       content::SessionStorageNamespace* session_storage_namespace,
       const gfx::Size& size);
@@ -131,14 +131,14 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // Adds a prerender for the prefetch url from IsolatedPrerender on
   // page load, if NoStatePrefetch and prefetch_after_preconnect are true.
   // Uses the NavigationPredictor's browser context and the default
-  // SessionStorageNamespace. Returns a PrerenderHandle or nullptr. Does not
-  // fallback to preconnecting if the prerender isn't triggered.
-  std::unique_ptr<PrerenderHandle> AddIsolatedPrerender(
+  // SessionStorageNamespace. Returns a NoStatePrefetchHandle or nullptr. Does
+  // not fallback to preconnecting if the prerender isn't triggered.
+  std::unique_ptr<NoStatePrefetchHandle> AddIsolatedPrerender(
       const GURL& url,
       content::SessionStorageNamespace* session_storage_namespace,
       const gfx::Size& size);
 
-  std::unique_ptr<PrerenderHandle> AddPrerenderFromExternalRequest(
+  std::unique_ptr<NoStatePrefetchHandle> AddPrerenderFromExternalRequest(
       const GURL& url,
       const content::Referrer& referrer,
       content::SessionStorageNamespace* session_storage_namespace,
@@ -146,7 +146,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
   // Adds a prerender from an external request that will prerender even on
   // cellular networks as long as the user setting for prerendering is ON.
-  std::unique_ptr<PrerenderHandle> AddForcedPrerenderFromExternalRequest(
+  std::unique_ptr<NoStatePrefetchHandle> AddForcedPrerenderFromExternalRequest(
       const GURL& url,
       const content::Referrer& referrer,
       content::SessionStorageNamespace* session_storage_namespace,
@@ -269,9 +269,10 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   bool HasRecentlyPrefetchedUrlForTesting(const GURL& url);
 
   // Adds a prerender for |url| from |initiator_origin|. The |origin| specifies
-  // how the prerender was added. Returns a PrerenderHandle or nullptr. Only for
-  // testing.
-  std::unique_ptr<PrerenderHandle> AddPrerenderWithPreconnectFallbackForTesting(
+  // how the prerender was added. Returns a NoStatePrefetchHandle or nullptr.
+  // Only for testing.
+  std::unique_ptr<NoStatePrefetchHandle>
+  AddPrerenderWithPreconnectFallbackForTesting(
       Origin origin,
       const GURL& url,
       const base::Optional<url::Origin>& initiator_origin);
@@ -287,19 +288,19 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
 
     ~PrerenderData();
 
-    // A new PrerenderHandle has been created for this PrerenderData.
-    void OnHandleCreated(PrerenderHandle* prerender_handle);
+    // A new NoStatePrefetchHandle has been created for this PrerenderData.
+    void OnHandleCreated(NoStatePrefetchHandle* handle);
 
     // The launcher associated with a handle is navigating away from the context
     // that launched this prerender. If the prerender is active, it may stay
     // alive briefly though, in case we we going through a redirect chain that
     // will eventually land at it.
-    void OnHandleNavigatedAway(PrerenderHandle* prerender_handle);
+    void OnHandleNavigatedAway(NoStatePrefetchHandle* handle);
 
     // The launcher associated with a handle has taken explicit action to cancel
     // this prerender. We may well destroy the prerender in this case if no
     // other handles continue to track it.
-    void OnHandleCanceled(PrerenderHandle* prerender_handle);
+    void OnHandleCanceled(NoStatePrefetchHandle* handle);
 
     NoStatePrefetchContents* contents() { return contents_.get(); }
 
@@ -318,11 +319,12 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
     NoStatePrefetchManager* const manager_;
     std::unique_ptr<NoStatePrefetchContents> contents_;
 
-    // The number of distinct PrerenderHandles created for |this|, including
-    // ones that have called PrerenderData::OnHandleNavigatedAway(), but not
-    // counting the ones that have called PrerenderData::OnHandleCanceled(). For
-    // pending prerenders, this will always be 1, since the
-    // NoStatePrefetchManager only merges handles of running prerenders.
+    // The number of distinct NoStatePrefetchHandles created for |this|,
+    // including ones that have called PrerenderData::OnHandleNavigatedAway(),
+    // but not counting the ones that have called
+    // PrerenderData::OnHandleCanceled(). For pending prerenders, this will
+    // always be 1, since the NoStatePrefetchManager only merges handles of
+    // running prerenders.
     int handle_count_ = 0;
 
     // The time when OnHandleNavigatedAway was called.
@@ -351,7 +353,7 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
  private:
   friend class test_utils::PrerenderInProcessBrowserTest;
   friend class NoStatePrefetchContents;
-  friend class PrerenderHandle;
+  friend class NoStatePrefetchHandle;
   friend class UnitTestNoStatePrefetchManager;
 
   class OnCloseWebContentsDeleter;
@@ -367,8 +369,8 @@ class NoStatePrefetchManager : public content::RenderProcessHostObserver,
   // Adds a prerender for |url| from |referrer|. The |origin| specifies how the
   // prerender was added. If |bounds| is empty, then
   // NoStatePrefetchContents::StartPrerendering will instead use a default from
-  // PrerenderConfig. Returns a PrerenderHandle or NULL.
-  std::unique_ptr<PrerenderHandle> AddPrerenderWithPreconnectFallback(
+  // PrerenderConfig. Returns a NoStatePrefetchHandle or NULL.
+  std::unique_ptr<NoStatePrefetchHandle> AddPrerenderWithPreconnectFallback(
       Origin origin,
       const GURL& url,
       const content::Referrer& referrer,
