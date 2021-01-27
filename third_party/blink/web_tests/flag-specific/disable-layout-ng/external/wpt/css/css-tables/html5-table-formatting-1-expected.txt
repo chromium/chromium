@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Empty tables can still get a lsyout
+PASS Empty tables do not take table-columns into account
+FAIL Empty tables do not take table-rows into account assert_equals: expected 50 but got 100
+FAIL Table-columns are taken into account after missing cells are generated (empty line) assert_equals: expected 200 but got 100
+FAIL Table-columns are taken into account after missing cells are generated (partially empty line) assert_equals: expected 200 but got 100
+PASS Table-columns are taken into account after missing cells are generated (non-empty line)
+Harness: the test ran to completion.
+

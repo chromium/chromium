@@ -6,11 +6,11 @@
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
       "invalidations": [
-        [8, 96, 184, 64]
+        [10, 96, 180, 64]
       ]
     },
     {
-      "name": "LayoutNGTableCell TD",
+      "name": "LayoutNGTableCellNew TD",
       "bounds": [58, 64],
       "transform": 1
     }

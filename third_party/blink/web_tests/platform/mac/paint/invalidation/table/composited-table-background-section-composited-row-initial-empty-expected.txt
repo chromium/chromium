@@ -7,23 +7,22 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutTableSection TBODY id='target'",
-      "position": [8, 26],
-      "bounds": [186, 134],
-      "backgroundColor": "#ADD8E6",
+      "name": "LayoutNGTableSection TBODY id='target'",
+      "bounds": [181, 130],
       "invalidations": [
-        [0, 0, 186, 134]
-      ]
-    },
-    {
-      "name": "LayoutTableRow TR",
-      "position": [8, 94],
-      "bounds": [186, 64]
-    },
-    {
-      "name": "LayoutNGTableCell TD",
-      "bounds": [59, 64],
+        [0, 0, 181, 130]
+      ],
       "transform": 1
+    },
+    {
+      "name": "LayoutNGTableRow TR",
+      "bounds": [181, 64],
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGTableCellNew TD",
+      "bounds": [59, 64],
+      "transform": 3
     }
   ],
   "transforms": [
@@ -33,7 +32,27 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [72, 94, 0, 1]
+        [10, 28, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 66, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [62, 0, 0, 1]
       ]
     }
   ]

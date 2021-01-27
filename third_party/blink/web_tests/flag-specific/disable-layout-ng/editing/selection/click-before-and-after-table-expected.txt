@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Click the after table
+FAIL Click inside of right side border of the table resources/testharness.js:2044:25)
+	 expected <div contenteditable><table id="target" style="margin: 25px; border:20px solid #ccc; padding: 10px;"><tbody><tr><td>ABC</td><td>XYZ|</td></tr></tbody></table></div>,
+	 but got  <div contenteditable><table id="target" style="margin: 25px; border:20px solid #ccc; padding: 10px;"><tbody><tr><td>ABC|</td><td>XYZ</td></tr></tbody></table></div>,
+	 sameupto <div contenteditable><table id="target" style="margin: 25px; border:20px solid #ccc; padding: 10px;"><tbody><tr><td>ABC
+PASS Click before the table
+PASS Click inside of left side border of the table
+Harness: the test ran to completion.
+

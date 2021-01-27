@@ -1,0 +1,1004 @@
+This is a testharness.js-based test.
+Found 1000 tests; 978 PASS, 22 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandState("defaultparagraphseparator") before
+FAIL [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandValue("defaultparagraphseparator") before assert_equals: Wrong result returned expected "p" but got "div"
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" compare innerHTML
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo[bar</div><p>baz]quz" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" compare innerHTML
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" compare innerHTML
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<blockquote><p>baz]quz<p>qoz</blockquote" queryCommandValue("forwarddelete") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz": execCommand("stylewithcss", false, "true") return value
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz": execCommand("forwarddelete", false, "") return value
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" checks for modifications to non-editable content
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" compare innerHTML
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("stylewithcss") before
+FAIL [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("stylewithcss") before assert_equals: Wrong result returned expected false but got true
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("stylewithcss") before
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("stylewithcss") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("stylewithcss") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("stylewithcss") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("defaultparagraphseparator") before
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("defaultparagraphseparator") before
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("defaultparagraphseparator") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("defaultparagraphseparator") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("forwarddelete") before
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("forwarddelete") before
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("forwarddelete") before
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("forwarddelete") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("forwarddelete") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("forwarddelete") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz": execCommand("forwarddelete", false, "") return value
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" checks for modifications to non-editable content
+FAIL [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<font color=\"#0000ff\">quz</font></p>" but got "<p>foo<span style=\"color:rgb(0, 0, 255)\">quz</span></p>"
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("stylewithcss") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("stylewithcss") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("stylewithcss") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("stylewithcss") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("stylewithcss") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("stylewithcss") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("defaultparagraphseparator") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("defaultparagraphseparator") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("defaultparagraphseparator") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("defaultparagraphseparator") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("forwarddelete") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("forwarddelete") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("forwarddelete") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("forwarddelete") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("forwarddelete") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("forwarddelete") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz": execCommand("stylewithcss", false, "true") return value
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz": execCommand("forwarddelete", false, "") return value
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" checks for modifications to non-editable content
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" compare innerHTML
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("stylewithcss") before
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("stylewithcss") before
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("stylewithcss") before
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("stylewithcss") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("stylewithcss") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("stylewithcss") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("defaultparagraphseparator") before
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("defaultparagraphseparator") before
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("defaultparagraphseparator") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("defaultparagraphseparator") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("forwarddelete") before
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("forwarddelete") before
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("forwarddelete") before
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("forwarddelete") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("forwarddelete") after
+PASS [["stylewithcss","true"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("forwarddelete") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz": execCommand("stylewithcss", false, "false") return value
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz": execCommand("forwarddelete", false, "") return value
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" checks for modifications to non-editable content
+FAIL [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<font color=\"#0000ff\">quz</font></p>" but got "<p>foo<span style=\"color:rgb(0, 0, 255)\">quz</span></p>"
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("stylewithcss") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("stylewithcss") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("stylewithcss") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("stylewithcss") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("stylewithcss") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("stylewithcss") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("defaultparagraphseparator") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("defaultparagraphseparator") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("defaultparagraphseparator") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("defaultparagraphseparator") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("forwarddelete") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("forwarddelete") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("forwarddelete") before
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandIndeterm("forwarddelete") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandState("forwarddelete") after
+PASS [["stylewithcss","false"],["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p style=color:blue>baz]quz" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" compare innerHTML
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" compare innerHTML
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[bar<p><b>baz]quz</b>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" checks for modifications to non-editable content
+FAIL [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><p>foo</p><p><br></p></div>" but got "<p>foo</p><p><br></p>"
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" checks for modifications to non-editable content
+FAIL [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<div><p>foo</p><p><br></p></div>" but got "<p>foo</p><p><br></p>"
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<div><p>foo<p>[bar<p>baz]</div>" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "foo[<br>]bar": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "foo[<br>]bar" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "foo[<br>]bar" compare innerHTML
+PASS [["forwarddelete",""]] "foo[<br>]bar" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "foo[<br>]bar" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "foo[<br>]bar" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "foo[<br>]bar" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "foo[<br>]bar" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "foo[<br>]bar" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" compare innerHTML
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" compare innerHTML
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar</p>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" checks for modifications to non-editable content
+FAIL [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foobar<br>baz</p>" but got "<p>foobar</p><p>baz</p>"
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" checks for modifications to non-editable content
+FAIL [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foobar<br>baz</p>" but got "<p>foobar</p><p>baz</p>"
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo[</p><p>]bar<br>baz</p>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>" compare innerHTML
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>" compare innerHTML
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>}bar</p>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>}bar</p>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>}bar</p>" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>}bar</p>" compare innerHTML
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>}bar</p>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>}bar</p>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>}bar</p>" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>}bar</p>" compare innerHTML
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>}bar</p>" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "foo[<p>]bar<br>baz</p>": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "foo[<p>]bar<br>baz</p>" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "foo[<p>]bar<br>baz</p>" compare innerHTML
+PASS [["forwarddelete",""]] "foo[<p>]bar<br>baz</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "foo[<p>]bar<br>baz</p>" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "foo[<p>]bar<br>baz</p>" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "foo[<p>]bar<br>baz</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "foo[<p>]bar<br>baz</p>" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "foo[<p>]bar<br>baz</p>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>baz": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>baz": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>baz" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>baz" compare innerHTML
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>baz": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>baz": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>baz" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>baz" compare innerHTML
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<p>]bar</p>baz" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar</p>}baz": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar</p>}baz": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar</p>}baz" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar</p>}baz" compare innerHTML
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar</p>}baz": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar</p>}baz": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar</p>}baz" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar</p>}baz" compare innerHTML
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar</p>}baz" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "foo<p>{bar</p>}baz": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "foo<p>{bar</p>}baz" checks for modifications to non-editable content
+FAIL [["forwarddelete",""]] "foo<p>{bar</p>}baz" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<p>baz</p>" but got "foo<p>baz<br></p>"
+PASS [["forwarddelete",""]] "foo<p>{bar</p>}baz" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "foo<p>{bar</p>}baz" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "foo<p>{bar</p>}baz" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "foo<p>{bar</p>}baz" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "foo<p>{bar</p>}baz" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "foo<p>{bar</p>}baz" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar}</p>baz": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar}</p>baz": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar}</p>baz" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar}</p>baz" compare innerHTML
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar}</p>baz": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar}</p>baz": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar}</p>baz" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar}</p>baz" compare innerHTML
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo{<p>bar}</p>baz" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar" compare innerHTML
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo{</p>}bar": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<p>foo{</p>}bar" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<p>foo{</p>}bar" compare innerHTML
+PASS [["forwarddelete",""]] "<p>foo{</p>}bar" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo{</p>}bar" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo{</p>}bar" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo{</p>}bar" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo{</p>}bar" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo{</p>}bar" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<br>baz": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<br>baz" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<br>baz" compare innerHTML
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<br>baz" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<br>baz" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<br>baz" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<br>baz" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<br>baz" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<br>baz" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<p>baz</p>": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<p>baz</p>" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<p>baz</p>" compare innerHTML
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<p>baz</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<p>baz</p>" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<p>baz</p>" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<p>baz</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<p>baz</p>" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo[</p>]bar<p>baz</p>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</div>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</div>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</div>" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</div>" compare innerHTML
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</div>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</div>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</div>" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</div>" compare innerHTML
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</div>" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<div><p>foo[</p></div>]bar": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<div><p>foo[</p></div>]bar" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<div><p>foo[</p></div>]bar" compare innerHTML
+PASS [["forwarddelete",""]] "<div><p>foo[</p></div>]bar" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<div><p>foo[</p></div>]bar" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<div><p>foo[</p></div>]bar" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<div><p>foo[</p></div>]bar" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<div><p>foo[</p></div>]bar" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<div><p>foo[</p></div>]bar" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" compare innerHTML
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" compare innerHTML
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo[<div><p>]bar</p>baz</div>" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "foo[<div>]bar<p>baz</p></div>": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "foo[<div>]bar<p>baz</p></div>" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "foo[<div>]bar<p>baz</p></div>" compare innerHTML
+PASS [["forwarddelete",""]] "foo[<div>]bar<p>baz</p></div>" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "foo[<div>]bar<p>baz</p></div>" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "foo[<div>]bar<p>baz</p></div>" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "foo[<div>]bar<p>baz</p></div>" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "foo[<div>]bar<p>baz</p></div>" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "foo[<div>]bar<p>baz</p></div>" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<div><p>foo</p>bar[</div>]baz": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<div><p>foo</p>bar[</div>]baz" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<div><p>foo</p>bar[</div>]baz" compare innerHTML
+PASS [["forwarddelete",""]] "<div><p>foo</p>bar[</div>]baz" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<div><p>foo</p>bar[</div>]baz" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<div><p>foo</p>bar[</div>]baz" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<div><p>foo</p>bar[</div>]baz" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<div><p>foo</p>bar[</div>]baz" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<div><p>foo</p>bar[</div>]baz" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<div>foo<p>bar[</p></div>]baz": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<div>foo<p>bar[</p></div>]baz" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<div>foo<p>bar[</p></div>]baz" compare innerHTML
+PASS [["forwarddelete",""]] "<div>foo<p>bar[</p></div>]baz" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<div>foo<p>bar[</p></div>]baz" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<div>foo<p>bar[</p></div>]baz" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<div>foo<p>bar[</p></div>]baz" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<div>foo<p>bar[</p></div>]baz" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<div>foo<p>bar[</p></div>]baz" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo<br>{</p>]bar": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<p>foo<br>{</p>]bar" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<p>foo<br>{</p>]bar" compare innerHTML
+PASS [["forwarddelete",""]] "<p>foo<br>{</p>]bar" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo<br>{</p>]bar" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo<br>{</p>]bar" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo<br>{</p>]bar" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo<br>{</p>]bar" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo<br>{</p>]bar" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo<br><br>{</p>]bar": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<p>foo<br><br>{</p>]bar" checks for modifications to non-editable content
+FAIL [["forwarddelete",""]] "<p>foo<br><br>{</p>]bar" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<br>bar</p>" but got "<p>foo<br>bar<br></p>"
+PASS [["forwarddelete",""]] "<p>foo<br><br>{</p>]bar" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo<br><br>{</p>]bar" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo<br><br>{</p>]bar" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo<br><br>{</p>]bar" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo<br><br>{</p>]bar" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo<br><br>{</p>]bar" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br>{<p>]bar</p>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br>{<p>]bar</p>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" checks for modifications to non-editable content
+FAIL [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "foo<br><p>ar</p>"
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" checks for modifications to non-editable content
+FAIL [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foobar" but got "foo<br><p>ar</p>"
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br>{<p>]bar</p>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" checks for modifications to non-editable content
+FAIL [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<br><br><p>ar</p>"
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" checks for modifications to non-editable content
+FAIL [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "foo<br>bar" but got "foo<br><br><p>ar</p>"
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "foo<br><br>{<p>]bar</p>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" compare innerHTML
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" compare innerHTML
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br>{</p><p>}bar</p>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" checks for modifications to non-editable content
+FAIL [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<br>bar</p>" but got "<p>foo<br>bar<br></p>"
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" checks for modifications to non-editable content
+FAIL [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo<br>bar</p>" but got "<p>foo<br>bar<br></p>"
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<br><br>{</p><p>}bar</p>" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>" compare innerHTML
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>[bar]<th>baz<tr><td>quz<td>qoz<td>qiz</table>" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" compare innerHTML
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>ba[r<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" checks for modifications to non-editable content
+FAIL [["forwarddelete",""]] "<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><th>fo</th><th><br></th><th>az</th></tr><tr><td>quz</td><td>qoz</td><td>qiz</td></tr></tbody></table>" but got "<table><tbody><tr><th>fo</th><th></th><th>az</th></tr><tr><td>quz</td><td>qoz</td><td>qiz</td></tr></tbody></table>"
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>fo[o<th>bar<th>b]az<tr><td>quz<td>qoz<td>qiz</table>" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>" compare innerHTML
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>foo<th>bar<th>ba[z<tr><td>q]uz<td>qoz<td>qiz</table>" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>" checks for modifications to non-editable content
+FAIL [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><th><br></th><th><br></th><th><br></th></tr><tr><td>quz</td><td>qoz</td><td>qiz</td></tr></tbody></table>" but got "<table><tbody><tr><th><br></th><th></th><th></th></tr><tr><td>quz</td><td>qoz</td><td>qiz</td></tr></tbody></table>"
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz]<tr><td>quz<td>qoz<td>qiz</table>" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>" checks for modifications to non-editable content
+FAIL [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><th><br></th><th><br></th><th><br></th></tr><tr><td><br></td><td><br></td><td><br></td></tr></tbody></table>" but got "<br>"
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><th>[foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz]</table>" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}" compare innerHTML
+PASS [["forwarddelete",""]] "{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "{<table><tbody><tr><th>foo<th>bar<th>baz<tr><td>quz<td>qoz<td>qiz</table>}" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>" checks for modifications to non-editable content
+FAIL [["forwarddelete",""]] "<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<table><tbody><tr><td>foo</td><td>ba</td></tr><tr><td><br></td><td><br></td></tr><tr><td>oz</td><td>qiz</td></tr></tbody></table>" but got "<table><tbody><tr><td>foo</td><td>ba</td></tr><tr><td>oz</td><td>qiz</td></tr></tbody></table>"
+PASS [["forwarddelete",""]] "<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<table><tbody><tr><td>foo<td>ba[r<tr><td>baz<td>quz<tr><td>q]oz<td>qiz</table>" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>fo[o<table><tr><td>b]ar</table><p>baz": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<p>fo[o<table><tr><td>b]ar</table><p>baz" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<p>fo[o<table><tr><td>b]ar</table><p>baz" compare innerHTML
+PASS [["forwarddelete",""]] "<p>fo[o<table><tr><td>b]ar</table><p>baz" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>fo[o<table><tr><td>b]ar</table><p>baz" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>fo[o<table><tr><td>b]ar</table><p>baz" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>fo[o<table><tr><td>b]ar</table><p>baz" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>fo[o<table><tr><td>b]ar</table><p>baz" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>fo[o<table><tr><td>b]ar</table><p>baz" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo<table><tr><td>ba[r</table><p>b]az": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<p>foo<table><tr><td>ba[r</table><p>b]az" checks for modifications to non-editable content
+FAIL [["forwarddelete",""]] "<p>foo<table><tr><td>ba[r</table><p>b]az" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<p>foo</p><table><tbody><tr><td>ba</td></tr></tbody></table><p>az</p>" but got "<p>foo</p><table><tbody><tr><td>baaz</td></tr></tbody></table>"
+PASS [["forwarddelete",""]] "<p>foo<table><tr><td>ba[r</table><p>b]az" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo<table><tr><td>ba[r</table><p>b]az" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo<table><tr><td>ba[r</table><p>b]az" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo<table><tr><td>ba[r</table><p>b]az" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo<table><tr><td>ba[r</table><p>b]az" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo<table><tr><td>ba[r</table><p>b]az" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" compare innerHTML
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" compare innerHTML
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<table><tr><td>bar</table><p>b]az" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo<ol><li>ba[r<li>b]az</ol><p>quz": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<p>foo<ol><li>ba[r<li>b]az</ol><p>quz" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<p>foo<ol><li>ba[r<li>b]az</ol><p>quz" compare innerHTML
+PASS [["forwarddelete",""]] "<p>foo<ol><li>ba[r<li>b]az</ol><p>quz" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo<ol><li>ba[r<li>b]az</ol><p>quz" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo<ol><li>ba[r<li>b]az</ol><p>quz" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo<ol><li>ba[r<li>b]az</ol><p>quz" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo<ol><li>ba[r<li>b]az</ol><p>quz" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo<ol><li>ba[r<li>b]az</ol><p>quz" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo<ol><li>bar<li>[baz]</ol><p>quz": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<p>foo<ol><li>bar<li>[baz]</ol><p>quz" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<p>foo<ol><li>bar<li>[baz]</ol><p>quz" compare innerHTML
+PASS [["forwarddelete",""]] "<p>foo<ol><li>bar<li>[baz]</ol><p>quz" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo<ol><li>bar<li>[baz]</ol><p>quz" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo<ol><li>bar<li>[baz]</ol><p>quz" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>foo<ol><li>bar<li>[baz]</ol><p>quz" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo<ol><li>bar<li>[baz]</ol><p>quz" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>foo<ol><li>bar<li>[baz]</ol><p>quz" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz" compare innerHTML
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>b]ar<li>baz</ol><p>quz" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" compare innerHTML
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" compare innerHTML
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>foo<ol><li>bar<li>ba[z</ol><p>q]uz" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>b]az</ol><p>quz": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>b]az</ol><p>quz" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>b]az</ol><p>quz" compare innerHTML
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>b]az</ol><p>quz" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>b]az</ol><p>quz" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>b]az</ol><p>quz" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>b]az</ol><p>quz" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>b]az</ol><p>quz" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>b]az</ol><p>quz" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz": execCommand("defaultparagraphseparator", false, "div") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" compare innerHTML
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","div"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandValue("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz": execCommand("defaultparagraphseparator", false, "p") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz": execCommand("forwarddelete", false, "") return value
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" checks for modifications to non-editable content
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" compare innerHTML
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandIndeterm("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandState("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandValue("defaultparagraphseparator") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandIndeterm("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandState("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandValue("defaultparagraphseparator") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandIndeterm("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandState("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandValue("forwarddelete") before
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandIndeterm("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandState("forwarddelete") after
+PASS [["defaultparagraphseparator","p"],["forwarddelete",""]] "<p>fo[o<ol><li>bar<li>baz</ol><p>q]uz" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ol><li>b]ar</ol>": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ol><li>b]ar</ol>" checks for modifications to non-editable content
+FAIL [["forwarddelete",""]] "<ol><li>fo[o</ol><ol><li>b]ar</ol>" compare innerHTML assert_equals: Unexpected innerHTML (after normalizing inline style) expected "<ol><li>foar</li></ol>" but got "<ol><li>fo</li><li>ar</li></ol>"
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ol><li>b]ar</ol>" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ol><li>b]ar</ol>" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ol><li>b]ar</ol>" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ol><li>b]ar</ol>" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ol><li>b]ar</ol>" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ol><li>b]ar</ol>" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ul><li>b]ar</ul>": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ul><li>b]ar</ul>" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ul><li>b]ar</ul>" compare innerHTML
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ul><li>b]ar</ul>" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ul><li>b]ar</ul>" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ul><li>b]ar</ul>" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ul><li>b]ar</ul>" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ul><li>b]ar</ul>" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "<ol><li>fo[o</ol><ul><li>b]ar</ul>" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "foo[<ol><li>]bar</ol>": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "foo[<ol><li>]bar</ol>" checks for modifications to non-editable content
+PASS [["forwarddelete",""]] "foo[<ol><li>]bar</ol>" compare innerHTML
+PASS [["forwarddelete",""]] "foo[<ol><li>]bar</ol>" queryCommandIndeterm("forwarddelete") before
+PASS [["forwarddelete",""]] "foo[<ol><li>]bar</ol>" queryCommandState("forwarddelete") before
+PASS [["forwarddelete",""]] "foo[<ol><li>]bar</ol>" queryCommandValue("forwarddelete") before
+PASS [["forwarddelete",""]] "foo[<ol><li>]bar</ol>" queryCommandIndeterm("forwarddelete") after
+PASS [["forwarddelete",""]] "foo[<ol><li>]bar</ol>" queryCommandState("forwarddelete") after
+PASS [["forwarddelete",""]] "foo[<ol><li>]bar</ol>" queryCommandValue("forwarddelete") after
+PASS [["forwarddelete",""]] "<ol><li>foo[<li>]bar</ol>": execCommand("forwarddelete", false, "") return value
+PASS [["forwarddelete",""]] "<ol><li>foo[<li>]bar</ol>" checks for modifications to non-editable content
+Harness: the test ran to completion.
+

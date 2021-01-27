@@ -1,0 +1,12 @@
+	
+
+crbug.com/476370: Test cells get appropriate width when total width of cells is less than 1%.
+
+FAIL:
+Expected 667 for width, but got 666. 
+
+<td id="blue" data-expected-width="667"><div></div></td>
+FAIL:
+Expected 333 for width, but got 334. 
+
+<td id="green" data-expected-width="333"><div></div></td>

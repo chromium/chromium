@@ -1,0 +1,15 @@
+Content
+FAIL:
+Expected 2000000 for width, but got 1000010. 
+
+<div class="container">
+    <div style="display:inline-block; border: 5px solid salmon;" data-expected-width="2000000">
+        <table style="width:100%; background-color:green; table-layout:fixed"><tbody><tr><td>Content</td></tr></tbody></table>
+    </div>
+</div>
+	
+PASS
+	
+PASS
+	
+PASS

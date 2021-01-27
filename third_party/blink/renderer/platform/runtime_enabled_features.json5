@@ -1139,7 +1139,8 @@
     },
     {
       name: "LayoutNGTable",
-      depends_on: ["LayoutNG"]
+      depends_on: ["LayoutNG"],
+      status: "test"
     },
     {
       name: "LayoutNGTextControl",

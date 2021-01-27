@@ -515,9 +515,6 @@ crbug.com/591099 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/orthogo
 ### virtual/layout_ng_printing/
 virtual/layout_ng_printing/* [ Skip ]
 
-### virtual/layout_ng_table/
-virtual/layout_ng_table/* [ Skip ]
-
 ### virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/
 crbug.com/591099 virtual/plz-dedicated-worker/external/wpt/service-workers/service-worker/registration-updateviacache.https.html [ Failure ]
 
@@ -730,6 +727,159 @@ crbug.com/1034611 fast/forms/color-scheme/week/week-appearance-basic.html [ Skip
 crbug.com/1034611 virtual/use-common-select-popup/fast/forms/color-scheme/select/select-popup-appearance-basic.html [ Skip ]
 
 
+###### TablesNG start
+
+### Random tests without tables that are failing when trying to land TablesNG
+crbug.com/958381 external/wpt/css/css-contain/content-visibility/content-visibility-081.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-pseudo/selection-input-011.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-pseudo/selection-textarea-011.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-sizing/aspect-ratio/intrinsic-size-004.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-sizing/aspect-ratio/intrinsic-size-011.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-text/white-space/tab-bidi-001.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-text/word-break/break-boundary-2-chars-001.html [ Failure ]
+crbug.com/958381 wpt_internal/webcodecs/avc_encoder_config.any.html [ Failure ]
+crbug.com/958381 wpt_internal/webcodecs/avc_encoder_config.any.worker.html [ Failure ]
+
+### Should we rebase virtuals too?
+crbug.com/958381 virtual/gpu/fast/canvas/canvas-composite-video-shadow.html [ Failure ]
+crbug.com/958381 virtual/gpu/fast/canvas/canvas-composite-video.html [ Failure ]
+crbug.com/958381 virtual/synchronous_html_parser/fast/css/bidi-override-in-anonymous-block.html [ Failure ]
+crbug.com/958381 virtual/text-antialias/textIteratorNilRenderer.html [ Failure ]
+crbug.com/958381 virtual/text-antialias/basic/generic-family-reset.html [ Failure ]
+crbug.com/958381 virtual/text-antialias/international/bidi-layout-across-linebreak.html [ Failure ]
+
+### Pass in Legacy, fail in NG
+crbug.com/958381 external/wpt/css/css-tables/visibility-collapse-rowspan-005.html [ Pass ]
+crbug.com/958381 fast/table/large-col-span-crash.html [ Pass ]
+crbug.com/958381 fast/table/table-all-rowspans-height-distribution-in-rows-except-overlapped.html [ Pass ]
+crbug.com/958381 fast/table/table-all-rowspans-height-distribution-in-rows.html [ Pass ]
+crbug.com/958381 fast/table/table-rowspan-height-distribution-in-rows-1.html [ Pass ]
+crbug.com/958381 fast/table/table-rowspan-height-distribution-in-rows-2.html [ Pass ]
+crbug.com/958381 accessibility/inline-text-textarea.html [ Pass ]
+crbug.com/958381 accessibility/table-cells-with-colspan.html [ Pass ]
+crbug.com/958381 accessibility/table-with-hidden-head-section.html [ Pass ]
+crbug.com/958381 external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children.html [ Pass ]
+crbug.com/958381 fast/table/border-collapsing/composited-cell-collapsed-border.html [ Pass ]
+crbug.com/958381 fast/table/border-collapsing/composited-row-collapsed-border.html [ Pass ]
+
+### Tests that pass in ng and fail in Legacy
+
+# external/wpt/css/CSS2/normal-flow/
+crbug.com/711807 external/wpt/css/CSS2/normal-flow/max-width-applies-to-013.xht [ Failure ]
+crbug.com/711807 external/wpt/css/CSS2/normal-flow/max-width-applies-to-014.xht [ Failure ]
+crbug.com/626703 external/wpt/css/CSS2/normal-flow/min-height-applies-to-014.xht [ Failure ]
+crbug.com/711807 external/wpt/css/CSS2/normal-flow/min-width-applies-to-005.xht [ Failure ]
+crbug.com/711807 external/wpt/css/CSS2/normal-flow/min-width-applies-to-006.xht [ Failure ]
+crbug.com/711807 external/wpt/css/CSS2/normal-flow/min-width-applies-to-014.xht [ Failure ]
+
+### external/wpt/css/CSS2/tables/
+crbug.com/958381 external/wpt/css/CSS2/tables/border-collapse-dynamic-row-002.xht [ Failure ]
+crbug.com/958381 external/wpt/css/CSS2/tables/border-collapse-dynamic-rowgroup-002.xht [ Failure ]
+crbug.com/958381 external/wpt/css/CSS2/tables/caption-side-applies-to-007.xht [ Failure ]
+crbug.com/958381 external/wpt/css/CSS2/tables/fixed-table-layout-025.xht [ Failure ]
+crbug.com/958381 external/wpt/css/CSS2/tables/fixed-table-layout-026.xht [ Failure ]
+crbug.com/958381 external/wpt/css/CSS2/tables/fixed-table-layout-027.xht [ Failure ]
+crbug.com/958381 external/wpt/css/CSS2/tables/fixed-table-layout-028.xht [ Failure ]
+crbug.com/958381 external/wpt/css/CSS2/tables/fixed-table-layout-029.xht [ Failure ]
+crbug.com/958381 external/wpt/css/CSS2/tables/fixed-table-layout-030.xht [ Failure ]
+crbug.com/958381 external/wpt/css/CSS2/tables/fixed-table-layout-031.xht [ Failure ]
+crbug.com/958381 external/wpt/css/CSS2/tables/table-backgrounds-bc-colgroup-001.xht [ Failure ]
+crbug.com/958381 external/wpt/css/CSS2/tables/table-backgrounds-bc-column-001.xht [ Failure ]
+crbug.com/958381 external/wpt/css/CSS2/tables/table-backgrounds-bs-colgroup-001.xht [ Failure ]
+crbug.com/958381 external/wpt/css/CSS2/tables/table-backgrounds-bs-column-001.xht [ Failure ]
+crbug.com/958381 external/wpt/css/CSS2/tables/table-backgrounds-bs-rowgroup-001.xht [ Failure ]
+
+### external/wpt/css/css-align/baseline-rules/
+crbug.com/799016 external/wpt/css/css-align/baseline-rules/synthesized-baseline-table-cell-001.html [ Failure ]
+
+### external/wpt/css/css-flexbox/
+crbug.com/958381 external/wpt/css/css-flexbox/table-as-item-flex-cross-size.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-flexbox/table-as-item-stretch-cross-size.html [ Failure ]
+
+### external/wpt/css/css-position/
+crbug.com/417223 external/wpt/css/css-position/position-relative-table-tbody-left-absolute-child.html [ Failure ]
+crbug.com/417223 external/wpt/css/css-position/position-relative-table-tbody-left.html [ Failure ]
+crbug.com/417223 external/wpt/css/css-position/position-relative-table-tbody-top-absolute-child.html [ Failure ]
+crbug.com/417223 external/wpt/css/css-position/position-relative-table-tbody-top.html [ Failure ]
+crbug.com/417223 external/wpt/css/css-position/position-relative-table-tfoot-left-absolute-child.html [ Failure ]
+crbug.com/417223 external/wpt/css/css-position/position-relative-table-tfoot-left.html [ Failure ]
+crbug.com/417223 external/wpt/css/css-position/position-relative-table-tfoot-top-absolute-child.html [ Failure ]
+crbug.com/417223 external/wpt/css/css-position/position-relative-table-tfoot-top.html [ Failure ]
+crbug.com/417223 external/wpt/css/css-position/position-relative-table-thead-left-absolute-child.html [ Failure ]
+crbug.com/417223 external/wpt/css/css-position/position-relative-table-thead-left.html [ Failure ]
+crbug.com/417223 external/wpt/css/css-position/position-relative-table-thead-top-absolute-child.html [ Failure ]
+crbug.com/417223 external/wpt/css/css-position/position-relative-table-thead-top.html [ Failure ]
+crbug.com/417223 external/wpt/css/css-position/position-relative-table-tr-left-absolute-child.html [ Failure ]
+crbug.com/417223 external/wpt/css/css-position/position-relative-table-tr-left.html [ Failure ]
+crbug.com/417223 external/wpt/css/css-position/position-relative-table-tr-top-absolute-child.html [ Failure ]
+crbug.com/417223 external/wpt/css/css-position/position-relative-table-tr-top.html [ Failure ]
+
+### external/wpt/css/css-position/sticky/
+crbug.com/702927 external/wpt/css/css-position/sticky/position-sticky-parsing.html [ Failure ]
+crbug.com/702927 external/wpt/css/css-position/sticky/position-sticky-table-tfoot-bottom.html [ Failure ]
+crbug.com/702927 external/wpt/css/css-position/sticky/position-sticky-table-thead-top.html [ Failure ]
+crbug.com/702927 external/wpt/css/css-position/sticky/position-sticky-table-tr-bottom.html [ Failure ]
+crbug.com/702927 external/wpt/css/css-position/sticky/position-sticky-table-tr-top.html [ Failure ]
+
+### external/wpt/css/css-sizing/aspect-ratio/
+crbug.com/1164474 external/wpt/css/css-sizing/aspect-ratio/table-element-001.html [ Failure ]
+
+### external/wpt/css/css-tables/
+crbug.com/613753 external/wpt/css/css-tables/border-spacing-included-in-sizes-001.html [ Failure ]
+crbug.com/1108224 external/wpt/css/css-tables/min-max-size-table-content-box.html [ Failure ]
+crbug.com/377847 external/wpt/css/css-tables/subpixel-collapsed-borders-003.html [ Failure ]
+crbug.com/377847 external/wpt/css/css-tables/subpixel-table-cell-height-001.html [ Failure ]
+crbug.com/377847 external/wpt/css/css-tables/subpixel-table-cell-width-001.html [ Failure ]
+crbug.com/377847 external/wpt/css/css-tables/subpixel-table-cell-width-002.html [ Failure ]
+crbug.com/377847 external/wpt/css/css-tables/subpixel-table-width-001.html [ Failure ]
+crbug.com/598134 external/wpt/css/css-tables/table-has-box-sizing-border-box-002.html [ Failure ]
+crbug.com/764031 external/wpt/css/css-tables/toggle-row-display-property-001.html [ Failure ]
+crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-col-001.html [ Failure ]
+crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-col-002.html [ Failure ]
+crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-col-003.html [ Failure ]
+crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-col-004-dynamic.html [ Failure ]
+crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-col-005.html [ Failure ]
+crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-colspan-001.html [ Failure ]
+crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-colspan-002.html [ Failure ]
+crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-row-004.html [ Failure ]
+crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-rowcol-001.html [ Failure ]
+crbug.com/174167 external/wpt/css/css-tables/visibility-collapse-rowcol-002.html [ Failure ]
+
+### external/wpt/css/css-tables/height-distribution/
+crbug.com/708345 external/wpt/css/css-tables/height-distribution/extra-height-given-to-all-row-groups-001.html [ Failure ]
+crbug.com/708345 external/wpt/css/css-tables/height-distribution/extra-height-given-to-all-row-groups-003.html [ Failure ]
+crbug.com/708345 external/wpt/css/css-tables/height-distribution/extra-height-given-to-all-row-groups-005.html [ Failure ]
+crbug.com/353580 external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children-005.html [ Failure ]
+
+### external/wpt/css/css-tables/tentative/
+crbug.com/958381 external/wpt/css/css-tables/tentative/position-sticky-container.html [ Failure ]
+crbug.com/958381 external/wpt/css/css-tables/tentative/table-height-redistribution.html [ Failure ]
+
+### external/wpt/css/css-tables/tentative/paint/
+crbug.com/958381 external/wpt/css/css-tables/tentative/paint/background-image-column-collapsed.html [ Failure ]
+
+### external/wpt/css/css-writing-modes/
+crbug.com/1020373 external/wpt/css/css-writing-modes/block-flow-direction-vlr-018.xht [ Failure ]
+crbug.com/1020373 external/wpt/css/css-writing-modes/block-flow-direction-vrl-017.xht [ Failure ]
+crbug.com/492664 external/wpt/css/css-writing-modes/box-offsets-rel-pos-vlr-005.xht [ Failure ]
+crbug.com/492664 external/wpt/css/css-writing-modes/box-offsets-rel-pos-vrl-004.xht [ Failure ]
+crbug.com/664386 external/wpt/css/css-writing-modes/inline-table-alignment-003.xht [ Failure ]
+crbug.com/664386 external/wpt/css/css-writing-modes/inline-table-alignment-005.xht [ Failure ]
+crbug.com/1020373 external/wpt/css/css-writing-modes/line-box-direction-vlr-016.xht [ Failure ]
+crbug.com/1020373 external/wpt/css/css-writing-modes/line-box-direction-vrl-015.xht [ Failure ]
+crbug.com/1020373 external/wpt/css/css-writing-modes/table-cell-001.html [ Failure ]
+crbug.com/1020373 external/wpt/css/css-writing-modes/table-cell-002.html [ Failure ]
+
+# Ref image failures
+crbug.com/958381 paint/tables/collapsed-border-cell-visibility.html [ Failure ]
+crbug.com/958381 fast/css/vertical-align-baseline-rowspan-008.htm [ Failure ]
+
+# Text failures, no new baselines
+crbug.com/958381 fast/css/empty-cell-baseline.html [ Failure ]
+crbug.com/958381 fast/css/inline-table-first-row-empty-cell-non-auto.html [ Failure ]
+
+# TablesNG end
+
 ### compositing/filters/
 crbug.com/591099 compositing/filters/sw-nested-shadow-overlaps-hw-nested-shadow.html [ Failure ]
 
@@ -780,3 +930,4 @@ crbug.com/1128262 external/wpt/css/css-flexbox/table-as-item-fixed-min-width-3.h
 # math display values are only supported when MathML Core is enabled.
 crbug.com/6606 external/wpt/css/css-display/display-math-on-non-mathml-elements.html [ Failure ]
 crbug.com/6606 external/wpt/css/css-typed-om/the-stylepropertymap/properties/display.html [ Failure ]
+

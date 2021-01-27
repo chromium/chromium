@@ -34,7 +34,7 @@ differently in general.</p>
 <script>
 let captions = document.querySelectorAll("x-caption")
 let caption_num = 0;
-let expected_x = [0, 20];
+let expected_x = [20, 20];
 for (let i of captions) {
   let rect = i.getBoundingClientRect();
   test(() => assert_equals(rect.x, expected_x[caption_num++]), "Test caption location " + caption_num);

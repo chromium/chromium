@@ -1,0 +1,134 @@
+Test 1
+PASS rect.left.toFixed(3) is "8.000"
+PASS rect.top.toFixed(3) is "40.000"
+PASS rect.width.toFixed(3) is "300.000"
+PASS rect.height.toFixed(3) is "100.000"
+PASS rect.right is rect.left + rect.width
+PASS rect.bottom is rect.top + rect.height
+
+
+Test 2
+PASS rect.left.toFixed(3) is "8.000"
+PASS rect.top.toFixed(3) is "188.000"
+PASS rect.width.toFixed(3) is "320.000"
+PASS rect.height.toFixed(3) is "120.000"
+PASS rect.right is rect.left + rect.width
+PASS rect.bottom is rect.top + rect.height
+
+
+Test 3
+PASS rect.left.toFixed(3) is "18.000"
+PASS rect.top.toFixed(3) is "356.000"
+PASS rect.width.toFixed(3) is "300.000"
+PASS rect.height.toFixed(3) is "100.000"
+PASS rect.right is rect.left + rect.width
+PASS rect.bottom is rect.top + rect.height
+
+
+Test 4
+PASS rect.left.toFixed(3) is "37.289"
+PASS rect.top.toFixed(3) is "483.289"
+PASS rect.width.toFixed(3) is "141.421"
+PASS rect.height.toFixed(3) is "141.421"
+PASS rect.right is rect.left + rect.width
+PASS rect.bottom is rect.top + rect.height
+
+
+Test 5
+PASS rect.left.toFixed(3) is "8.000"
+PASS rect.top.toFixed(3) is "652.000"
+PASS rect.width.toFixed(3) is "300.000"
+PASS rect.height.toFixed(3) is "368.000"
+PASS rect.right is rect.left + rect.width
+PASS rect.bottom is rect.top + rect.height
+
+
+Test 6
+Known failure. Skipping.
+
+
+Test 7
+PASS rect.left.toFixed(3) is "8.000"
+PASS rect.top.toFixed(3) is "1484.000"
+PASS rect.width.toFixed(3) is "288.000"
+PASS rect.height.toFixed(3) is "464.000"
+PASS rect.right is rect.left + rect.width
+PASS rect.bottom is rect.top + rect.height
+
+
+Test 8
+PASS rect.left.toFixed(3) is "8.000"
+PASS rect.top.toFixed(3) is "1996.000"
+PASS rect.width.toFixed(3) is "300.000"
+PASS rect.height.toFixed(3) is "74.000"
+PASS rect.right is rect.left + rect.width
+PASS rect.bottom is rect.top + rect.height
+
+
+Test 9
+PASS rect.left.toFixed(3) is "8.000"
+PASS rect.top.toFixed(3) is "2134.000"
+PASS rect.width.toFixed(3) is "300.000"
+PASS rect.height.toFixed(3) is "90.000"
+PASS rect.right is rect.left + rect.width
+PASS rect.bottom is rect.top + rect.height
+
+
+Test 10
+FAIL rect.left.toFixed(3) should be 10.000. Was 8.000.
+PASS rect.top.toFixed(3) is "2274.000"
+FAIL rect.width.toFixed(3) should be 296.000. Was 300.000.
+PASS rect.height.toFixed(3) is "34.000"
+PASS rect.right is rect.left + rect.width
+PASS rect.bottom is rect.top + rect.height
+
+
+Test 11
+PASS rect.left.toFixed(3) is "10.000"
+PASS rect.top.toFixed(3) is "2396.000"
+PASS rect.width.toFixed(3) is "147.000"
+PASS rect.height.toFixed(3) is "34.000"
+PASS rect.right is rect.left + rect.width
+PASS rect.bottom is rect.top + rect.height
+
+
+Test 12
+PASS rect.left.toFixed(3) is "8.000"
+PASS rect.top.toFixed(3) is "2532.000"
+PASS rect.width.toFixed(3) is "100.000"
+PASS rect.height.toFixed(3) is "100.000"
+PASS rect.right is rect.left + rect.width
+PASS rect.bottom is rect.top + rect.height
+
+
+Test 13
+PASS rect.left.toFixed(3) is "8.000"
+PASS rect.top.toFixed(3) is "2783.000"
+PASS rect.width.toFixed(3) is "260.000"
+PASS rect.height.toFixed(3) is "16.000"
+PASS rect.right is rect.left + rect.width
+PASS rect.bottom is rect.top + rect.height
+
+
+Test 14
+PASS rect.left.toFixed(3) is "8.000"
+PASS rect.top.toFixed(3) is "2863.000"
+PASS rect.width.toFixed(3) is "300.000"
+PASS rect.height.toFixed(3) is "232.000"
+PASS rect.right is rect.left + rect.width
+PASS rect.bottom is rect.top + rect.height
+
+
+Test 15
+PASS rect.left.toFixed(3) is "8.000"
+PASS rect.top.toFixed(3) is "3159.000"
+PASS rect.width.toFixed(3) is "0.000"
+PASS rect.height.toFixed(3) is "0.000"
+PASS rect.right is rect.left + rect.width
+PASS rect.bottom is rect.top + rect.height
+
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
