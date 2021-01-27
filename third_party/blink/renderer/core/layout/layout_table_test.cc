@@ -14,7 +14,7 @@ namespace {
 class LayoutTableTest : public RenderingTest {
  protected:
   LayoutBlock* GetTableByElementId(const char* id) {
-    return To<LayoutTable>(GetLayoutObjectByElementId(id));
+    return To<LayoutBlock>(GetLayoutObjectByElementId(id));
   }
   LayoutNGTableInterface* GetTableInterfaceByElementId(const char* id) {
     return ToInterface<LayoutNGTableInterface>(GetLayoutObjectByElementId(id));

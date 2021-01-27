@@ -14,9 +14,12 @@ namespace {
 class LayoutTableSectionTest : public RenderingTest {
  protected:
   LayoutTableSection* GetSectionByElementId(const char* id) {
-    // TODO(958381) Needs to TableNG compatible with
-    // LayoutNGTableSectionInterface.
+    DCHECK(!RuntimeEnabledFeatures::LayoutNGTableEnabled());
     return To<LayoutTableSection>(GetLayoutObjectByElementId(id));
+  }
+
+  LayoutBox* GetSectionByElementIdAsBox(const char* id) {
+    return To<LayoutBox>(GetLayoutObjectByElementId(id));
   }
 
   LayoutTableSection* CreateSection(unsigned rows, unsigned columns) {
@@ -48,7 +51,7 @@ TEST_F(LayoutTableSectionTest,
     </table>
   )HTML");
 
-  auto* section = GetSectionByElementId("section");
+  auto* section = GetSectionByElementIdAsBox("section");
   EXPECT_TRUE(section);
   EXPECT_FALSE(
       section->BackgroundIsKnownToBeOpaqueInRect(PhysicalRect(0, 0, 1, 1)));
@@ -63,7 +66,7 @@ TEST_F(LayoutTableSectionTest, BackgroundIsKnownToBeOpaqueWithBorderSpacing) {
     </table>
   )HTML");
 
-  auto* section = GetSectionByElementId("section");
+  auto* section = GetSectionByElementIdAsBox("section");
   EXPECT_TRUE(section);
   EXPECT_FALSE(
       section->BackgroundIsKnownToBeOpaqueInRect(PhysicalRect(0, 0, 1, 1)));
@@ -79,7 +82,7 @@ TEST_F(LayoutTableSectionTest, BackgroundIsKnownToBeOpaqueWithEmptyCell) {
     </table>
   )HTML");
 
-  auto* section = GetSectionByElementId("section");
+  auto* section = GetSectionByElementIdAsBox("section");
   EXPECT_TRUE(section);
   EXPECT_FALSE(
       section->BackgroundIsKnownToBeOpaqueInRect(PhysicalRect(0, 0, 1, 1)));
@@ -316,7 +319,7 @@ TEST_F(LayoutTableSectionTest, VisualOverflowWithCollapsedBorders) {
     </table>
   )HTML");
 
-  auto* section = GetSectionByElementId("section");
+  auto* section = GetSectionByElementIdAsBox("section");
 
   // The section's self visual overflow doesn't cover the collapsed borders.
   EXPECT_EQ(section->BorderBoxRect(), section->SelfVisualOverflowRect());
