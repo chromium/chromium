@@ -5767,9 +5767,6 @@
     "SafetyCheckChromeCleanerChild": [
         {
             "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
                 "windows"
             ],
             "experiments": [
