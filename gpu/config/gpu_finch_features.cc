@@ -47,6 +47,10 @@ const base::Feature kUseGles2ForOopR{"UseGles2ForOopR",
 const base::Feature kAndroidSurfaceControl{"AndroidSurfaceControl",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Hardware Overlays for WebView.
+const base::Feature kWebViewSurfaceControl{"WebViewSurfaceControl",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Use AImageReader for MediaCodec and MediaPlyer on android.
 const base::Feature kAImageReader{"AImageReader",
                                   base::FEATURE_ENABLED_BY_DEFAULT};
@@ -210,9 +214,19 @@ bool IsAImageReaderEnabled() {
 }
 
 bool IsAndroidSurfaceControlEnabled() {
-  return IsAImageReaderEnabled() &&
-         base::FeatureList::IsEnabled(kAndroidSurfaceControl) &&
-         gfx::SurfaceControl::IsSupported();
+  if (!gfx::SurfaceControl::IsSupported())
+    return false;
+
+  // We can use surface control only with AImageReader.
+  if (!IsAImageReaderEnabled())
+    return false;
+
+  // On WebView we also require zero copy to use SurfaceControl
+  if (IsWebViewZeroCopyVideoEnabled() &&
+      base::FeatureList::IsEnabled(kWebViewSurfaceControl))
+    return true;
+
+  return base::FeatureList::IsEnabled(kAndroidSurfaceControl);
 }
 
 // Many devices do not support more than 1 image to be acquired from the

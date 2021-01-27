@@ -19,6 +19,7 @@ namespace features {
 #if defined(OS_ANDROID)
 GPU_EXPORT extern const base::Feature kUseGles2ForOopR;
 GPU_EXPORT extern const base::Feature kAndroidSurfaceControl;
+GPU_EXPORT extern const base::Feature kWebViewSurfaceControl;
 GPU_EXPORT extern const base::Feature kAImageReader;
 GPU_EXPORT extern const base::Feature kWebViewVulkan;
 GPU_EXPORT extern const base::Feature kLimitAImageReaderMaxSizeToOne;

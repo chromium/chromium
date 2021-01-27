@@ -43500,6 +43500,7 @@ from previous Chrome versions.
   <int value="-1302859198" label="enable-stylus-virtual-keyboard:disabled"/>
   <int value="-1301804101"
       label="AutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers:disabled"/>
+  <int value="-1301167148" label="WebViewZeroCopyVideo:disabled"/>
   <int value="-1297079591" label="EnableRemovingAllThirdPartyCookies:disabled"/>
   <int value="-1294050129" label="ContentFullscreen:disabled"/>
   <int value="-1293987566" label="OmniboxZeroSuggestionsOnNTPRealbox:disabled"/>
@@ -44366,6 +44367,7 @@ from previous Chrome versions.
   <int value="-492864618" label="NTPForeignSessionsSuggestions:disabled"/>
   <int value="-491546546" label="MeteredShowToggle:enabled"/>
   <int value="-491131428" label="OmniboxNewAnswerLayout:disabled"/>
+  <int value="-490652941" label="WebViewZeroCopyVideo:enabled"/>
   <int value="-488779992" label="blink-settings"/>
   <int value="-488744544" label="PromoBrowserCommands:disabled"/>
   <int value="-488449930" label="SafetyCheckAndroid:enabled"/>
@@ -45726,6 +45728,7 @@ from previous Chrome versions.
   <int value="792884862" label="EnableSharedImageForWebview:enabled"/>
   <int value="798696013" label="ImeInputLogicMozc:enabled"/>
   <int value="799680074" label="ContextualSearchTranslationModel:enabled"/>
+  <int value="802463708" label="WebViewSurfaceControl:enabled"/>
   <int value="803282885" label="PreferHtmlOverPlugins:disabled"/>
   <int value="805882800" label="SafetyCheckChromeCleanerChild:disabled"/>
   <int value="806035639" label="EnableNeuralPalmDetectionFilter:disabled"/>
@@ -47129,6 +47132,7 @@ from previous Chrome versions.
   <int value="2121550859" label="PreferHtmlOverPlugins:enabled"/>
   <int value="2121776031" label="auto-virtual-keyboard"/>
   <int value="2122023503" label="enable-win32k-lockdown-mimetypes"/>
+  <int value="2122863344" label="WebViewSurfaceControl:disabled"/>
   <int value="2122876605" label="enable-bleeding-edge-rendering-fast-paths"/>
   <int value="2123183411" label="BlinkHeapIncrementalMarking:enabled"/>
   <int value="2123567684" label="OptimizeLoadingIPCForSmallResources:enabled"/>
