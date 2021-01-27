@@ -4,29 +4,25 @@
 
 package org.chromium.chrome.browser.page_info;
 
-import static org.chromium.base.test.util.Batch.PER_CLASS;
+import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoFeatureList;
@@ -43,21 +39,16 @@ import org.chromium.ui.base.PageTransition;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
-@Batch(PER_CLASS)
 public class PageInfoControllerTest {
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public final BlankCTATabInitialStateRule mInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     private EmbeddedTestServer mTestServer;
 
     @Before
     public void setUp() throws Exception {
-        mTestServer = sActivityTestRule.getTestServer();
+        mActivityTestRule.startMainActivityOnBlankPage();
+        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
     }
 
     @After
@@ -73,9 +64,9 @@ public class PageInfoControllerTest {
     @Feature({"PageInfoController"})
     public void testShow() {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ChromeActivity activity = sActivityTestRule.getActivity();
+            ChromeActivity activity = mActivityTestRule.getActivity();
             Tab tab = activity.getActivityTab();
-            PageInfoController.show(sActivityTestRule.getActivity(), tab.getWebContents(), null,
+            PageInfoController.show(mActivityTestRule.getActivity(), tab.getWebContents(), null,
                     PageInfoController.OpenedFromSource.MENU,
                     new ChromePageInfoControllerDelegate(activity, tab.getWebContents(),
                             activity::getModalDialogManager,
@@ -92,13 +83,12 @@ public class PageInfoControllerTest {
     @MediumTest
     @Feature({"PageInfoController"})
     @DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
-    @RequiresRestart
     public void testPageInfoUrl() {
         String testUrl = mTestServer.getURLWithHostName("xn--allestrungen-9ib.ch", "/");
-        sActivityTestRule.loadUrlInTab(
-                testUrl, PageTransition.TYPED, sActivityTestRule.getActivity().getActivityTab());
+        mActivityTestRule.loadUrlInTab(
+                testUrl, PageTransition.TYPED, mActivityTestRule.getActivity().getActivityTab());
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            ChromeActivity activity = sActivityTestRule.getActivity();
+            ChromeActivity activity = mActivityTestRule.getActivity();
             Tab tab = activity.getActivityTab();
             ChromePageInfoControllerDelegate chromePageInfoControllerDelegate =
                     new ChromePageInfoControllerDelegate(activity, tab.getWebContents(),
