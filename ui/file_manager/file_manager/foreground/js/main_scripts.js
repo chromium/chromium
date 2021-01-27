@@ -117,6 +117,7 @@
 // <include src="directory_contents.js">
 // <include src="directory_model.js">
 // <include src="directory_tree_naming_controller.js">
+// <include src="drive_dialog_controller.js">
 // <include src="drop_effect_and_label.js">
 // <include src="empty_folder_controller.js">
 // <include src="file_manager.js">

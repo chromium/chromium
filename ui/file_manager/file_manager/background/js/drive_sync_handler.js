@@ -4,12 +4,14 @@
 
 // clang-format off
 // #import {ProgressCenter} from '../../../externs/background/progress_center.m.js';
+// #import {DriveDialogControllerInterface} from '../../../externs/drive_dialog_controller.m.js';
 // #import {DriveSyncHandler} from '../../../externs/background/drive_sync_handler.m.js';
 // #import {str, strf} from '../../common/js/util.m.js';
 // #import {fileOperationUtil} from './file_operation_util.m.js';
 // #import {AsyncUtil} from '../../common/js/async_util.m.js';
 // #import {ProgressCenterItem, ProgressItemState, ProgressItemType} from '../../common/js/progress_center_common.m.js';
 // #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+// #import {launcher, LaunchType} from './launcher.m.js';
 // clang-format on
 
 /**
@@ -140,6 +142,17 @@
       this.progressCenter_.updateItem(this.pinItem_);
     }, 2000);
 
+    /**
+     * Saved dialog event to be sent to the next launched Files App UI window.
+     * @private {?chrome.fileManagerPrivate.DriveConfirmDialogEvent}
+     */
+    this.savedDialogEvent_ = null;
+
+    /**
+     * A mapping of App IDs to dialogs.
+     * @private {Map<string, DriveDialogControllerInterface>}
+     */
+    this.dialogs_ = new Map();
 
     // Register events.
     chrome.fileManagerPrivate.onFileTransfersUpdated.addListener(
@@ -148,6 +161,8 @@
         this.onFileTransfersStatusReceived_.bind(this, this.pinItem_));
     chrome.fileManagerPrivate.onDriveSyncError.addListener(
         this.onDriveSyncError_.bind(this));
+    chrome.fileManagerPrivate.onDriveConfirmDialog.addListener(
+        this.onDriveConfirmDialog_.bind(this));
     chrome.notifications.onButtonClicked.addListener(
         this.onNotificationButtonClicked_.bind(this));
     chrome.fileManagerPrivate.onPreferencesChanged.addListener(
@@ -335,6 +350,59 @@
         error => {
           postError('');
         });
+  }
+
+  /**
+   * Adds a dialog to be controlled by DriveSyncHandler.
+   * @param {string} appId App ID of window containing the dialog.
+   * @param {DriveDialogControllerInterface} dialog Dialog to be controlled.
+   */
+  addDialog(appId, dialog) {
+    this.dialogs_.set(appId, dialog);
+    if (this.savedDialogEvent_) {
+      dialog.showDialog(this.savedDialogEvent_);
+      this.savedDialogEvent_ = null;
+    }
+  }
+
+  /**
+   * Removes a dialog from being controlled by DriveSyncHandler.
+   * @param {string} appId App ID of window containing the dialog.
+   */
+  removeDialog(appId) {
+    if (this.dialogs_.has(appId) && this.dialogs_.get(appId).open) {
+      chrome.fileManagerPrivate.notifyDriveDialogResult(
+          chrome.fileManagerPrivate.DriveDialogResult.DISMISS);
+      this.dialogs_.delete(appId);
+    }
+  }
+
+  /**
+   * Handles showing dialogs from Drive.
+   * @param {chrome.fileManagerPrivate.DriveConfirmDialogEvent} event
+   * @private
+   */
+  async onDriveConfirmDialog_(event) {
+    // launchFileManager() should always return a string, but this is not shown
+    // in the closure type.
+    // TODO(austinct): Change launchFileManager() to have return type
+    // Promise<?string>.
+    const appId = /** @type {?string} */ (await launcher.launchFileManager(
+        /* opt_appState */ {}, /* opt_id */ undefined,
+        LaunchType.FOCUS_ANY_OR_CREATE));
+    if (!appId) {
+      chrome.fileManagerPrivate.notifyDriveDialogResult(
+          chrome.fileManagerPrivate.DriveDialogResult.NOT_DISPLAYED);
+      return;
+    }
+
+    if (this.dialogs_.has(appId)) {
+      this.dialogs_.get(appId).showDialog(event);
+    } else {
+      // File manager is still being launched, so save the event for later when
+      // it has fully initialized.
+      this.savedDialogEvent_ = event;
+    }
   }
 
   /**

@@ -43,6 +43,7 @@ js_type_check("closure_compile_jsmodules") {
     ":directory_contents.m",
     ":directory_model.m",
     ":directory_tree_naming_controller.m",
+    ":drive_dialog_controller.m",
     ":drop_effect_and_label.m",
     ":elements_importer.m",
     ":empty_folder_controller.m",
@@ -109,6 +110,7 @@ js_type_check("closure_compile_module") {
     ":directory_contents",
     ":directory_model",
     ":directory_tree_naming_controller",
+    ":drive_dialog_controller",
     ":drop_effect_and_label",
     ":elements_importer",
     ":empty_folder_controller",
@@ -174,6 +176,7 @@ js_library("closure_compile_externs") {
     "//ui/file_manager/externs/command_handler_deps.js",
     "//ui/file_manager/externs/css_rule.js",
     "//ui/file_manager/externs/directory_change_event.js",
+    "//ui/file_manager/externs/drive_dialog_controller.js",
     "//ui/file_manager/externs/entries_changed_event.js",
     "//ui/file_manager/externs/gallery_foreground.js",
     "//ui/file_manager/externs/menu_item_update_event.js",
@@ -684,6 +687,26 @@ js_library("directory_tree_naming_controller.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("drive_dialog_controller") {
+  deps = [
+    "ui:file_manager_ui",
+    "ui:files_confirm_dialog",
+  ]
+  externs_list = [ "//ui/file_manager/externs/drive_dialog_controller.js" ]
+}
+
+js_library("drive_dialog_controller.m") {
+  sources = [ "$root_gen_dir/ui/file_manager/file_manager/foreground/js/drive_dialog_controller.m.js" ]
+  deps = [
+    "ui:file_manager_ui.m",
+    "ui:files_confirm_dialog.m",
+    "//ui/file_manager/externs:drive_dialog_controller.m",
+    "//ui/webui/resources/js:load_time_data.m",
+  ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("drop_effect_and_label") {
 }
 
@@ -782,6 +805,7 @@ js_library("file_manager") {
     ":dialog_action_controller",
     ":dialog_type",
     ":directory_model",
+    ":drive_dialog_controller",
     ":elements_importer",
     ":empty_folder_controller",
     ":file_selection",
@@ -829,6 +853,7 @@ js_library("file_manager.m") {
     ":directory_contents.m",
     ":directory_model.m",
     ":directory_tree_naming_controller.m",
+    ":drive_dialog_controller.m",
     ":empty_folder_controller.m",
     ":file_manager_commands.m",
     ":file_selection.m",
@@ -2088,6 +2113,7 @@ js_modulizer("modulize") {
     "directory_contents.js",
     "directory_model.js",
     "directory_tree_naming_controller.js",
+    "drive_dialog_controller.js",
     "drop_effect_and_label.js",
     "empty_folder_controller.js",
     "fake_android_app_list_model.js",

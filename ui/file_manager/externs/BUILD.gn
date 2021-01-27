@@ -62,6 +62,13 @@ js_library("directory_change_event.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("drive_dialog_controller.m") {
+  sources =
+      [ "$root_gen_dir/ui/file_manager/externs/drive_dialog_controller.m.js" ]
+
+  extra_deps = [ ":modulize" ]
+}
+
 js_library("entries_changed_event.m") {
   sources =
       [ "$root_gen_dir/ui/file_manager/externs/entries_changed_event.m.js" ]
@@ -169,6 +176,7 @@ js_modulizer("modulize") {
     "background_window.js",
     "command_handler_deps.js",
     "directory_change_event.js",
+    "drive_dialog_controller.js",
     "entries_changed_event.js",
     "entry_location.js",
     "exif_entry.js",

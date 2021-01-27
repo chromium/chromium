@@ -57,6 +57,15 @@ mockChrome.fileManagerPrivate = {
     },
     listener_: null
   },
+  onDriveConfirmDialog: {
+    addListener: function(callback) {
+      mockChrome.fileManagerPrivate.onDriveConfirmDialog.listener_ = callback;
+    },
+    removeListener: function() {
+      mockChrome.fileManagerPrivate.onDriveConfirmDialog.listener_ = null;
+    },
+    listener_: null
+  },
   onPreferencesChanged: {
     addListener: function(callback) {
       mockChrome.fileManagerPrivate.onPreferencesChanged.listener_ = callback;

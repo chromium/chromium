@@ -72,6 +72,7 @@
 // #import {GearMenuController} from './gear_menu_controller.m.js';
 // #import {SortMenuController} from './sort_menu_controller.m.js';
 // #import {ScanController} from './scan_controller.m.js';
+// #import {DriveDialogController} from './drive_dialog_controller.m.js';
 // #import {VolumeManagerCommon, AllowedPaths} from '../../../base/js/volume_manager_types.m.js';
 // #import {AppStateController} from './app_state_controller.m.js';
 // #import {DialogType} from './dialog_type.m.js';
@@ -196,6 +197,12 @@
      * @private {ActionsController}
      */
     this.actionsController_ = null;
+
+    /**
+     * Controller for showing dialogs from Drive.
+     * @private {?DriveDialogController}
+     */
+    this.driveDialogController_ = null;
 
     /**
      * Handler for command events.
@@ -687,6 +694,11 @@
         assert(this.folderShortcutsModel_),
         this.fileBrowserBackground_.driveSyncHandler, this.selectionHandler_,
         assert(this.ui_));
+    if (this.dialogType === DialogType.FULL_PAGE) {
+      this.driveDialogController_ = new DriveDialogController(this.ui_);
+      this.fileBrowserBackground_.driveSyncHandler.addDialog(
+          window.appID, this.driveDialogController_);
+    }
     this.lastModifiedController_ = new LastModifiedController(
         this.ui_.listContainer.table, this.directoryModel_);
 
@@ -1600,6 +1612,10 @@
 
     if (this.ui_ && this.ui_.progressCenterPanel) {
       this.progressCenter.removePanel(this.ui_.progressCenterPanel);
+    }
+
+    if (this.driveDialogController_) {
+      this.fileBrowserBackground_.driveSyncHandler.removeDialog(window.appID);
     }
   }
 

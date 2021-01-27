@@ -11,6 +11,7 @@ js_library("file_browser_background_full") {
   externs_list = [
     "background_base.js",
     "crostini.js",
+    "../drive_dialog_controller.js",
     "drive_sync_handler.js",
     "duplicate_finder.js",
     "file_browser_background_full.js",
@@ -54,6 +55,8 @@ js_library("drive_sync_handler.m") {
   sources = [
     "$root_gen_dir/ui/file_manager/externs/background/drive_sync_handler.m.js",
   ]
+
+  deps = [ "..:drive_dialog_controller.m" ]
 
   extra_deps = [ ":modulize" ]
 }

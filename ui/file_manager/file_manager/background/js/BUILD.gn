@@ -162,6 +162,7 @@ js_library("closure_compile_externs") {
     "//ui/file_manager/externs/background/progress_center.js",
     "//ui/file_manager/externs/background_window.js",
     "//ui/file_manager/externs/css_rule.js",
+    "//ui/file_manager/externs/drive_dialog_controller.js",
     "//ui/file_manager/externs/launcher_search_provider.js",
     "//ui/file_manager/externs/platform.js",
     "//ui/file_manager/externs/progress_center_panel.js",
@@ -420,8 +421,10 @@ js_unittest("device_handler_unittest.m") {
 js_library("mock_drive_sync_handler") {
   testonly = true
   deps = [ "//ui/webui/resources/js/cr:event_target" ]
-  externs_list =
-      [ "//ui/file_manager/externs/background/drive_sync_handler.js" ]
+  externs_list = [
+    "//ui/file_manager/externs/background/drive_sync_handler.js",
+    "//ui/file_manager/externs/drive_dialog_controller.js",
+  ]
   visibility = []
   visibility = [ "//ui/file_manager/file_manager/*" ]
 }
@@ -429,6 +432,7 @@ js_library("mock_drive_sync_handler") {
 js_library("mock_drive_sync_handler.m") {
   sources = [ "$root_gen_dir/ui/file_manager/file_manager/background/js/mock_drive_sync_handler.m.js" ]
   deps = [
+    "//ui/file_manager/externs:drive_dialog_controller.m",
     "//ui/file_manager/externs/background:drive_sync_handler.m",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
@@ -441,18 +445,23 @@ js_library("mock_drive_sync_handler.m") {
 
 js_library("drive_sync_handler") {
   deps = [
+    ":launcher",
     ":progress_center",
     "//ui/file_manager/file_manager/common/js:async_util",
     "//ui/webui/resources/js/cr:event_target",
   ]
-  externs_list =
-      [ "//ui/file_manager/externs/background/drive_sync_handler.js" ]
+  externs_list = [
+    "//ui/file_manager/externs/background/drive_sync_handler.js",
+    "//ui/file_manager/externs/drive_dialog_controller.js",
+  ]
 }
 
 js_library("drive_sync_handler.m") {
   sources = [ "$root_gen_dir/ui/file_manager/file_manager/background/js/drive_sync_handler.m.js" ]
   deps = [
     ":file_operation_util.m",
+    ":launcher.m",
+    "//ui/file_manager/externs:drive_dialog_controller.m",
     "//ui/file_manager/externs/background:drive_sync_handler.m",
     "//ui/file_manager/externs/background:progress_center.m",
     "//ui/file_manager/file_manager/common/js:async_util.m",
@@ -1012,6 +1021,7 @@ js_library("runtime_loaded_test_util") {
     "//ui/file_manager/externs/progress_center_panel.js",
     "//ui/file_manager/externs/background/media_scanner.js",
     "//ui/file_manager/externs/background/drive_sync_handler.js",
+    "//ui/file_manager/externs/drive_dialog_controller.js",
     "//ui/file_manager/externs/background_window.js",
     "//ui/file_manager/externs/background/file_operation_manager.js",
     "//ui/file_manager/externs/background/import_history.js",

@@ -126,6 +126,7 @@ js_library("closure_compile_externs") {
     "//ui/file_manager/externs/chrome_webstore_widget_private.js",
     "//ui/file_manager/externs/css_rule.js",
     "//ui/file_manager/externs/drag_target.js",
+    "//ui/file_manager/externs/drive_dialog_controller.js",
     "//ui/file_manager/externs/entries_changed_event.js",
     "//ui/file_manager/externs/gallery_foreground.js",
     "//ui/file_manager/externs/menu_item_update_event.js",
