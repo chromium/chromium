@@ -5813,3 +5813,6 @@ crbug.com/1134103 http/tests/devtools/unit/view-location.js [ Skip ]
 
 crbug.com/1170062 [ Linux ] external/wpt/html/canvas/element/manual/shadows/canvas_shadows_001.htm [ Timeout Pass ]
 crbug.com/1170062 [ mac ] external/wpt/html/canvas/element/manual/shadows/canvas_shadows_001.htm [ Timeout Pass ]
+
+# Sheriff 2021-01-27
+crbug.com/1171331 tables/mozilla_expected_failures/bugs/bug89315.html [ Failure Pass ]
