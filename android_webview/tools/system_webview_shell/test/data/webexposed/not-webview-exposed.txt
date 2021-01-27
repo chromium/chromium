@@ -91,7 +91,7 @@ interface ServiceWorkerRegistration : EventTarget
 interface HTMLInputElement : HTMLElement
     getter webkitEntries
 
-# Native File System API not supported on Android, crbug.com/1011535
+# File System Access API not supported on Android, crbug.com/1011535
 interface DataTransferItem
     method getAsFileSystemHandle
 interface StorageManager : EventTarget
@@ -200,9 +200,9 @@ interface HID : EventTarget
     method gc                                # test only
     method webkitRequestFileSystem           # File System API, crbug.com/589843
     method webkitResolveLocalFileSystemURL   # File System API, crbug.com/589843
-    method showOpenFilePicker                # Native File System API, crbug.com/1011535
-    method showSaveFilePicker                # Native File System API, crbug.com/1011535
-    method showDirectoryPicker               # Native File System API, crbug.com/1011535
+    method showOpenFilePicker                # File System Access API, crbug.com/1011535
+    method showSaveFilePicker                # File System Access API, crbug.com/1011535
+    method showDirectoryPicker               # File System Access API, crbug.com/1011535
 
 # TODO(timvolodine): check screen orientation lock api
 # TODO(timvolodine): check notifications in service workers
