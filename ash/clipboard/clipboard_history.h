@@ -27,11 +27,16 @@ class ASH_EXPORT ClipboardHistory : public ui::ClipboardObserver {
     // Called when a ClipboardHistoryItem has been added.
     virtual void OnClipboardHistoryItemAdded(const ClipboardHistoryItem& item,
                                              bool is_duplicate) {}
+
     // Called when a ClipboardHistoryItem has been removed.
     virtual void OnClipboardHistoryItemRemoved(
         const ClipboardHistoryItem& item) {}
+
     // Called when ClipboardHistory is Clear()-ed.
     virtual void OnClipboardHistoryCleared() {}
+
+    // Called when the operation on clipboard data is confirmed.
+    virtual void OnOperationConfirmed(bool copy) {}
   };
 
   ClipboardHistory();

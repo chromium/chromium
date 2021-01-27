@@ -407,6 +407,43 @@ void ClipboardHistoryControllerImpl::OnClipboardHistoryCleared() {
   context_menu_.reset();
 }
 
+void ClipboardHistoryControllerImpl::OnOperationConfirmed(bool copy) {
+  static int confirmed_paste_count = 0;
+
+  // Here we assume that a paste operation from the clipboard history menu never
+  // interleaves with a copy operation or a paste operation from other ways (
+  // including pressing the ctrl-v accelerator or clicking a context menu
+  // option). In other words, when `pastes_to_be_confirmed_` is positive, it
+  // means that the incoming operation should be a paste from clipboard history.
+  // It should be held in most cases given that the clipboard history menu is
+  // always closed after one paste and it usually takes relatively long time for
+  // a user to conduct the next copy or paste. For this metric, we are tolerable
+  // of a small portion of erroneous recordings.
+
+  // When `pastes_to_be_confirmed_` is positive, `copy` should be
+  // false in most cases based on the assumption above. But theoretically
+  // `copy` could be true.
+  if (pastes_to_be_confirmed_ > 0 && !copy) {
+    ++confirmed_paste_count;
+    --pastes_to_be_confirmed_;
+  } else {
+    // Reset if the assumption is not held for some reasons.
+    DCHECK_LE(0, pastes_to_be_confirmed_);
+    if (pastes_to_be_confirmed_ > 0)
+      pastes_to_be_confirmed_ = 0;
+
+    DCHECK_LE(0, confirmed_paste_count);
+    if (confirmed_paste_count) {
+      base::UmaHistogramCounts100("Ash.ClipboardHistory.ConsecutivePastes",
+                                  confirmed_paste_count);
+      confirmed_paste_count = 0;
+    }
+  }
+
+  if (confirmed_operation_callback_for_test_)
+    confirmed_operation_callback_for_test_.Run();
+}
+
 void ClipboardHistoryControllerImpl::OnCachedImageModelUpdated(
     const std::vector<base::UnguessableToken>& menu_item_ids) {
   for (auto& observer : observers_)
@@ -524,6 +561,8 @@ void ClipboardHistoryControllerImpl::PasteClipboardHistoryItem(
                                /*code=*/static_cast<ui::DomCode>(0),
                                /*flags=*/0);
   host->DeliverEventToSink(&control_release);
+
+  ++pastes_to_be_confirmed_;
 
   for (auto& observer : observers_)
     observer.OnClipboardHistoryPasted();

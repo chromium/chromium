@@ -133,6 +133,9 @@ void ClipboardHistory::OnClipboardDataRead() {
 }
 
 void ClipboardHistory::OnClipboardOperation(bool copy) {
+  for (auto& observer : observers_)
+    observer.OnOperationConfirmed(copy);
+
   if (copy) {
     consecutive_copies_++;
     if (consecutive_pastes_ > 0) {

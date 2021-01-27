@@ -80,6 +80,11 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
     initial_item_selected_callback_for_test_ = new_callback;
   }
 
+  void set_confirmed_operation_callback_for_test(
+      base::RepeatingClosure new_callback) {
+    confirmed_operation_callback_for_test_ = new_callback;
+  }
+
  private:
   class AcceleratorTarget;
   class MenuDelegate;
@@ -102,6 +107,7 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
                                    bool is_duplicate) override;
   void OnClipboardHistoryItemRemoved(const ClipboardHistoryItem& item) override;
   void OnClipboardHistoryCleared() override;
+  void OnOperationConfirmed(bool copy) override;
 
   // ClipboardHistoryResourceManager:
   void OnCachedImageModelUpdated(
@@ -165,9 +171,17 @@ class ASH_EXPORT ClipboardHistoryControllerImpl
   // The timer can guarantee that at most one task is alive.
   base::OneShotTimer menu_task_timer_;
 
+  // Indicates the count of pastes which are triggered through the clipboard
+  // history menu and are waiting for the confirmations from `ClipboardHistory`.
+  int pastes_to_be_confirmed_ = 0;
+
   // Called when the first item view is selected after the clipboard history
   // menu opens.
   base::RepeatingClosure initial_item_selected_callback_for_test_;
+
+  // Called when the controller is notified of the confirmed clipboard data
+  // operation.
+  base::RepeatingClosure confirmed_operation_callback_for_test_;
 
   base::WeakPtrFactory<ClipboardHistoryControllerImpl> weak_ptr_factory_{this};
 };
