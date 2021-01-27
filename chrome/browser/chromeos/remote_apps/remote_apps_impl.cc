@@ -75,17 +75,19 @@ void RemoteAppsImpl::Bind(
 }
 
 void RemoteAppsImpl::AddFolder(const std::string& name,
+                               bool add_to_front,
                                AddFolderCallback callback) {
-  const std::string& folder_id = manager_->AddFolder(name);
+  const std::string& folder_id = manager_->AddFolder(name, add_to_front);
   std::move(callback).Run(folder_id, base::nullopt);
 }
 
 void RemoteAppsImpl::AddApp(const std::string& name,
                             const std::string& folder_id,
                             const GURL& icon_url,
+                            bool add_to_front,
                             AddAppCallback callback) {
   manager_->AddApp(
-      name, folder_id, icon_url,
+      name, folder_id, icon_url, add_to_front,
       base::BindOnce(&RemoteAppsImpl::OnAppAdded, weak_factory_.GetWeakPtr(),
                      std::move(callback)));
 }

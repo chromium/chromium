@@ -150,6 +150,7 @@ void RemoteAppsManager::Initialize() {
 void RemoteAppsManager::AddApp(const std::string& name,
                                const std::string& folder_id,
                                const GURL& icon_url,
+                               bool add_to_front,
                                AddAppCallback callback) {
   if (!is_initialized_) {
     std::move(callback).Run(std::string(), RemoteAppsError::kNotReady);
@@ -162,8 +163,12 @@ void RemoteAppsManager::AddApp(const std::string& name,
     return;
   }
 
+  // Disable |add_to_front| if app has a parent folder.
+  if (!folder_id.empty())
+    add_to_front = false;
+
   const RemoteAppsModel::AppInfo& info =
-      model_->AddApp(name, icon_url, folder_id);
+      model_->AddApp(name, icon_url, folder_id, add_to_front);
   add_app_callback_map_.insert({info.id, std::move(callback)});
   remote_apps_->AddApp(info);
 }
@@ -179,9 +184,10 @@ RemoteAppsError RemoteAppsManager::DeleteApp(const std::string& id) {
   return RemoteAppsError::kNone;
 }
 
-std::string RemoteAppsManager::AddFolder(const std::string& folder_name) {
+std::string RemoteAppsManager::AddFolder(const std::string& folder_name,
+                                         bool add_to_front) {
   const RemoteAppsModel::FolderInfo& folder_info =
-      model_->AddFolder(folder_name);
+      model_->AddFolder(folder_name, add_to_front);
   return folder_info.id;
 }
 
@@ -195,6 +201,16 @@ RemoteAppsError RemoteAppsManager::DeleteFolder(const std::string& folder_id) {
     model_updater_->MoveItemToFolder(app, std::string());
   model_->DeleteFolder(folder_id);
   return RemoteAppsError::kNone;
+}
+
+bool RemoteAppsManager::ShouldAddToFront(const std::string& id) const {
+  if (model_->HasApp(id))
+    return model_->GetAppInfo(id).add_to_front;
+
+  if (model_->HasFolder(id))
+    return model_->GetFolderInfo(id).add_to_front;
+
+  return false;
 }
 
 void RemoteAppsManager::AddObserver(Observer* observer) {
@@ -311,7 +327,12 @@ void RemoteAppsManager::HandleOnAppAdded(const std::string& id) {
       DCHECK(item) << "Missing folder item for folder_id: " << folder_id;
       item->SetName(folder_info.name);
       item->SetIsPersistent(true);
-      item->SetPosition(model_updater_->GetFirstAvailablePosition());
+
+      if (folder_info.add_to_front) {
+        item->SetPosition(model_updater_->GetPositionBeforeFirstItem());
+      } else {
+        item->SetPosition(model_updater_->GetFirstAvailablePosition());
+      }
     }
   }
 

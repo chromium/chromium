@@ -14,6 +14,8 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "chrome/browser/chromeos/remote_apps/remote_apps_manager.h"
+#include "chrome/browser/chromeos/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/browser/ui/app_list/app_service/app_service_context_menu.h"
 #include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
@@ -33,6 +35,15 @@ AppServiceAppItem::AppServiceAppItem(
   OnAppUpdate(app_update, true);
   if (sync_item && sync_item->item_ordinal.IsValid()) {
     UpdateFromSync(sync_item);
+  } else if (app_type_ == apps::mojom::AppType::kRemote) {
+    chromeos::RemoteAppsManager* remote_apps_manager =
+        chromeos::RemoteAppsManagerFactory::GetForProfile(profile);
+
+    if (remote_apps_manager->ShouldAddToFront(app_update.AppId())) {
+      SetPosition(model_updater->GetPositionBeforeFirstItem());
+    } else {
+      SetDefaultPositionIfApplicable(model_updater);
+    }
   } else {
     SetDefaultPositionIfApplicable(model_updater);
 

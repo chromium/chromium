@@ -33,11 +33,12 @@ TEST_F(RemoteAppsModelUnittest, AddApp) {
 
   std::unique_ptr<RemoteAppsModel> model = SetUpModel();
   const RemoteAppsModel::AppInfo& info =
-      model->AddApp(name, icon_url, std::string());
+      model->AddApp(name, icon_url, std::string(), /*add_to_front=*/true);
   EXPECT_EQ(kId1, info.id);
   EXPECT_EQ(name, info.name);
   EXPECT_EQ(icon_url, info.icon_url);
   EXPECT_EQ(std::string(), info.folder_id);
+  EXPECT_TRUE(info.add_to_front);
   EXPECT_TRUE(model->HasApp(info.id));
 
   // Check |GetAppInfo()|.
@@ -46,6 +47,7 @@ TEST_F(RemoteAppsModelUnittest, AddApp) {
   EXPECT_EQ(name, info2.name);
   EXPECT_EQ(icon_url, info2.icon_url);
   EXPECT_EQ(std::string(), info2.folder_id);
+  EXPECT_TRUE(info.add_to_front);
 
   model->DeleteApp(info.id);
   EXPECT_FALSE(model->HasApp(info.id));
@@ -58,8 +60,8 @@ TEST_F(RemoteAppsModelUnittest, GetAllAppInfo) {
   const GURL icon_url2 = GURL("icon_url2");
 
   std::unique_ptr<RemoteAppsModel> model = SetUpModel();
-  model->AddApp(name, icon_url, std::string());
-  model->AddApp(name2, icon_url2, std::string());
+  model->AddApp(name, icon_url, std::string(), /*add_to_front=*/false);
+  model->AddApp(name2, icon_url2, std::string(), /*add_to_front=*/true);
 
   const std::map<std::string, RemoteAppsModel::AppInfo>& infos =
       model->GetAllAppInfo();
@@ -69,11 +71,13 @@ TEST_F(RemoteAppsModelUnittest, GetAllAppInfo) {
   EXPECT_EQ(kId1, info.id);
   EXPECT_EQ(name, info.name);
   EXPECT_EQ(icon_url, info.icon_url);
+  EXPECT_FALSE(info.add_to_front);
 
   const RemoteAppsModel::AppInfo& info2 = infos.at(kId2);
   EXPECT_EQ(kId2, info2.id);
   EXPECT_EQ(name2, info2.name);
   EXPECT_EQ(icon_url2, info2.icon_url);
+  EXPECT_TRUE(info2.add_to_front);
 }
 
 TEST_F(RemoteAppsModelUnittest, AddFolder) {
@@ -83,11 +87,12 @@ TEST_F(RemoteAppsModelUnittest, AddFolder) {
 
   std::unique_ptr<RemoteAppsModel> model = SetUpModel();
   const RemoteAppsModel::FolderInfo& folder_info =
-      model->AddFolder(folder_name);
+      model->AddFolder(folder_name, /*add_to_front=*/true);
   const std::string folder_id = folder_info.id;
   EXPECT_EQ(kId1, folder_id);
   EXPECT_EQ(folder_name, folder_info.name);
   EXPECT_EQ(0u, folder_info.items.size());
+  EXPECT_TRUE(folder_info.add_to_front);
 
   // Check |GetFolderInfo()|.
   const RemoteAppsModel::FolderInfo& folder_info2 =
@@ -95,6 +100,7 @@ TEST_F(RemoteAppsModelUnittest, AddFolder) {
   EXPECT_EQ(kId1, folder_id);
   EXPECT_EQ(folder_name, folder_info2.name);
   EXPECT_EQ(0u, folder_info2.items.size());
+  EXPECT_TRUE(folder_info2.add_to_front);
 
   model->DeleteFolder(folder_id);
   EXPECT_FALSE(model->HasFolder(folder_id));
@@ -107,7 +113,7 @@ TEST_F(RemoteAppsModelUnittest, FolderWithMultipleApps) {
 
   std::unique_ptr<RemoteAppsModel> model = SetUpModel();
   const RemoteAppsModel::FolderInfo& folder_info =
-      model->AddFolder(folder_name);
+      model->AddFolder(folder_name, /*add_to_front=*/false);
   std::string folder_id = folder_info.id;
   EXPECT_EQ(kId1, folder_info.id);
   EXPECT_EQ(folder_name, folder_info.name);
@@ -115,7 +121,7 @@ TEST_F(RemoteAppsModelUnittest, FolderWithMultipleApps) {
   EXPECT_TRUE(model->HasFolder(folder_id));
 
   const RemoteAppsModel::AppInfo& info =
-      model->AddApp(name, icon_url, folder_id);
+      model->AddApp(name, icon_url, folder_id, /*add_to_front=*/false);
   EXPECT_EQ(kId2, info.id);
   EXPECT_EQ(folder_id, info.folder_id);
   EXPECT_EQ(1u, folder_info.items.size());
@@ -123,7 +129,7 @@ TEST_F(RemoteAppsModelUnittest, FolderWithMultipleApps) {
 
   // Add second app.
   const RemoteAppsModel::AppInfo& info2 =
-      model->AddApp(name, icon_url, folder_id);
+      model->AddApp(name, icon_url, folder_id, /*add_to_front=*/false);
   EXPECT_EQ(kId3, info2.id);
   EXPECT_EQ(2u, folder_info.items.size());
   EXPECT_EQ(1u, folder_info.items.count(info2.id));

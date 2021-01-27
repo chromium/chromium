@@ -210,10 +210,11 @@ class RemoteAppsManagerBrowsertest
 
   std::string AddApp(const std::string& name,
                      const std::string& folder_id,
-                     const GURL& icon_url) {
+                     const GURL& icon_url,
+                     bool add_to_front) {
     base::RunLoop run_loop;
     std::string id;
-    manager_->AddApp(name, folder_id, icon_url,
+    manager_->AddApp(name, folder_id, icon_url, add_to_front,
                      base::BindOnce(
                          [](base::RepeatingClosure closure, std::string* id_arg,
                             const std::string& id, RemoteAppsError error) {
@@ -250,20 +251,22 @@ class RemoteAppsManagerBrowsertest
                                   const std::string& name,
                                   const std::string& folder_id,
                                   const GURL& icon_url,
-                                  const gfx::ImageSkia& icon) {
+                                  const gfx::ImageSkia& icon,
+                                  bool add_to_front) {
     ExpectImageDownloaderDownload(icon_url, icon);
     AppUpdateWaiter waiter(profile_, id, AppUpdateWaiter::IconChanged());
-    AddApp(name, folder_id, icon_url);
+    AddApp(name, folder_id, icon_url, add_to_front);
     waiter.Wait();
   }
 
   void AddAppAssertError(RemoteAppsError error,
                          const std::string& name,
                          const std::string& folder_id,
-                         const GURL& icon_url) {
+                         const GURL& icon_url,
+                         bool add_to_front) {
     base::RunLoop run_loop;
     manager_->AddApp(
-        name, folder_id, icon_url,
+        name, folder_id, icon_url, add_to_front,
         base::BindOnce(
             [](base::RepeatingClosure closure, RemoteAppsError expected_error,
                const std::string& id, RemoteAppsError error) {
@@ -287,7 +290,8 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddApp) {
   gfx::ImageSkia icon = CreateTestIcon(32, SK_ColorRED);
 
   // App has id kId1.
-  AddAppAndWaitForIconChange(kId1, name, std::string(), icon_url, icon);
+  AddAppAndWaitForIconChange(kId1, name, std::string(), icon_url, icon,
+                             /*add_to_front=*/false);
 
   ash::AppListItem* item = GetAppListItem(kId1);
   EXPECT_FALSE(item->is_folder());
@@ -307,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddAppError) {
   gfx::ImageSkia icon = CreateTestIcon(32, SK_ColorRED);
 
   AddAppAssertError(RemoteAppsError::kFolderIdDoesNotExist, name, kMissingId,
-                    icon_url);
+                    icon_url, /*add_to_front=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddAppErrorNotReady) {
@@ -316,13 +320,15 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddAppErrorNotReady) {
   gfx::ImageSkia icon = CreateTestIcon(32, SK_ColorRED);
 
   manager_->SetIsInitializedForTesting(false);
-  AddAppAssertError(RemoteAppsError::kNotReady, name, std::string(), icon_url);
+  AddAppAssertError(RemoteAppsError::kNotReady, name, std::string(), icon_url,
+                    /*add_to_front=*/false);
 }
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, DeleteApp) {
   // App has id kId1.
   AddAppAndWaitForIconChange(kId1, "name", std::string(), GURL("icon_url"),
-                             CreateTestIcon(32, SK_ColorRED));
+                             CreateTestIcon(32, SK_ColorRED),
+                             /*add_to_front=*/false);
 
   RemoteAppsError error = DeleteApp(kId1);
   base::RunLoop().RunUntilIdle();
@@ -335,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, DeleteAppError) {
 }
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddAndDeleteFolder) {
-  manager_->AddFolder("folder_name");
+  manager_->AddFolder("folder_name", /*add_to_front=*/false);
   // Empty folder has no AppListItem.
   EXPECT_FALSE(GetAppListItem(kId1));
 
@@ -349,13 +355,14 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, DeleteFolderError) {
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddFolderAndApp) {
   std::string folder_name = "folder_name";
   // Folder has id kId1.
-  manager_->AddFolder(folder_name);
+  manager_->AddFolder(folder_name, /*add_to_front=*/false);
   // Empty folder has no item.
   EXPECT_FALSE(GetAppListItem(kId1));
 
   // App has id kId2.
   AddAppAndWaitForIconChange(kId2, "name", kId1, GURL("icon_url"),
-                             CreateTestIcon(32, SK_ColorRED));
+                             CreateTestIcon(32, SK_ColorRED),
+                             /*add_to_front=*/false);
 
   // Folder item was created.
   ash::AppListItem* folder_item = GetAppListItem(kId1);
@@ -371,14 +378,16 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddFolderAndApp) {
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest,
                        AddFolderWithMultipleApps) {
   // Folder has id kId1.
-  manager_->AddFolder("folder_name");
+  manager_->AddFolder("folder_name", /*add_to_front=*/false);
 
   // App has id kId2.
   AddAppAndWaitForIconChange(kId2, "name", kId1, GURL("icon_url"),
-                             CreateTestIcon(32, SK_ColorRED));
+                             CreateTestIcon(32, SK_ColorRED),
+                             /*add_to_front=*/false);
   // App has id kId3.
   AddAppAndWaitForIconChange(kId3, "name2", kId1, GURL("icon_url2"),
-                             CreateTestIcon(32, SK_ColorBLUE));
+                             CreateTestIcon(32, SK_ColorBLUE),
+                             /*add_to_front=*/false);
 
   ash::AppListItem* folder_item = GetAppListItem(kId1);
   EXPECT_EQ(2u, folder_item->ChildItemCount());
@@ -396,7 +405,8 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest,
 
   // App has id kId4.
   AddAppAndWaitForIconChange(kId4, "name3", kId1, GURL("icon_url3"),
-                             CreateTestIcon(32, SK_ColorGREEN));
+                             CreateTestIcon(32, SK_ColorGREEN),
+                             /*add_to_front=*/false);
 
   // Folder is re-created.
   folder_item = GetAppListItem(kId1);
@@ -407,14 +417,16 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest,
 IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest,
                        DeleteFolderWithMultipleApps) {
   // Folder has id kId1.
-  manager_->AddFolder("folder_name");
+  manager_->AddFolder("folder_name", /*add_to_front=*/false);
 
   // App has id kId2.
   AddAppAndWaitForIconChange(kId2, "name", kId1, GURL("icon_url"),
-                             CreateTestIcon(32, SK_ColorRED));
+                             CreateTestIcon(32, SK_ColorRED),
+                             /*add_to_front=*/false);
   // App has id kId3.
   AddAppAndWaitForIconChange(kId3, "name2", kId1, GURL("icon_url2"),
-                             CreateTestIcon(32, SK_ColorBLUE));
+                             CreateTestIcon(32, SK_ColorBLUE),
+                             /*add_to_front=*/false);
 
   DeleteFolder(kId1);
   // Folder is removed.
@@ -425,6 +437,31 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest,
   EXPECT_EQ(std::string(), item1->folder_id());
   ash::AppListItem* item2 = GetAppListItem(kId3);
   EXPECT_EQ(std::string(), item2->folder_id());
+}
+
+IN_PROC_BROWSER_TEST_F(RemoteAppsManagerBrowsertest, AddToFront) {
+  // Folder has id kId1.
+  manager_->AddFolder("folder_name", /*add_to_front=*/false);
+
+  // App has id kId2.
+  AddAppAndWaitForIconChange(kId2, "name", std::string(), GURL("icon_url"),
+                             CreateTestIcon(32, SK_ColorRED),
+                             /*add_to_front=*/false);
+
+  EXPECT_FALSE(manager_->ShouldAddToFront(kId1));
+  EXPECT_FALSE(manager_->ShouldAddToFront(kId2));
+
+  // Folder has id kId3.
+  manager_->AddFolder("folder_name2", /*add_to_front=*/true);
+
+  // App has id kId4.
+  AddAppAndWaitForIconChange(kId4, "name2", kId3, GURL("icon_url"),
+                             CreateTestIcon(32, SK_ColorRED),
+                             /*add_to_front=*/true);
+
+  EXPECT_TRUE(manager_->ShouldAddToFront(kId3));
+  // |add_to_front| disabled since app has a parent folder.
+  EXPECT_FALSE(manager_->ShouldAddToFront(kId4));
 }
 
 }  // namespace chromeos

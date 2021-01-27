@@ -9,6 +9,7 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/model/app_list_item_list.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/shell.h"
 #include "base/files/file_path.h"
@@ -137,6 +138,19 @@ class RemoteAppsImplBrowsertest : public policy::DevicePolicyCrosBrowserTest {
     return model->FindItem(id);
   }
 
+  bool IsAppListItemInFront(const std::string& id) {
+    ash::AppListControllerImpl* controller =
+        ash::Shell::Get()->app_list_controller();
+    ash::AppListModel* model = controller->GetModel();
+    ash::AppListItemList* item_list = model->top_level_item_list();
+
+    size_t index;
+    if (!item_list->FindItemIndex(id, &index))
+      return false;
+
+    return index == 0;
+  }
+
  private:
   base::DictionaryValue config_;
   chromeos::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
@@ -150,6 +164,15 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddApp) {
   ash::AppListItem* app = GetAppListItem(kId1);
   EXPECT_FALSE(app->is_folder());
   EXPECT_EQ("App 1", app->name());
+}
+
+IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddAppToFront) {
+  extensions::ResultCatcher catcher;
+  LoadExtensionAndRunTest("AddAppToFront");
+  ASSERT_TRUE(catcher.GetNextResult());
+
+  // Check that App 2 is in front.
+  EXPECT_TRUE(IsAppListItemInFront(kId2));
 }
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddFolderAndApps) {
@@ -169,6 +192,15 @@ IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddFolderAndApps) {
 
   ash::AppListItem* app2 = GetAppListItem(kId3);
   EXPECT_EQ(kId1, app2->folder_id());
+}
+
+IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, AddFolderToFront) {
+  extensions::ResultCatcher catcher;
+  LoadExtensionAndRunTest("AddFolderToFront");
+  ASSERT_TRUE(catcher.GetNextResult());
+
+  // Check that folder is in front.
+  EXPECT_TRUE(IsAppListItemInFront(kId2));
 }
 
 IN_PROC_BROWSER_TEST_F(RemoteAppsImplBrowsertest, OnRemoteAppLaunched) {
