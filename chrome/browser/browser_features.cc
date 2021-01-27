@@ -44,7 +44,7 @@ const base::Feature kCopyLinkToText{"CopyLinkToText",
 
 // Enables notification muting during screen share sessions.
 const base::Feature kMuteNotificationsDuringScreenShare{
-    "MuteNotificationsDuringScreenShare", base::FEATURE_DISABLED_BY_DEFAULT};
+    "MuteNotificationsDuringScreenShare", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // When enabled, keepalive requests can block browser shutdown for a short
 // period of time.

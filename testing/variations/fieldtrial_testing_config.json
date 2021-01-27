@@ -4074,24 +4074,6 @@
             ]
         }
     ],
-    "MuteNotifications": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MuteNotificationsDuringScreenShare"
-                    ]
-                }
-            ]
-        }
-    ],
     "NTPPopularSites": [
         {
             "platforms": [
