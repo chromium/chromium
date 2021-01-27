@@ -5058,6 +5058,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "wallpaper-webui",
+    "owners": [ "cowmoo@google.com", "croissant-eng@google.com" ],
+    "expiry_milestone": 92
+  },
+  {
     "name": "web-bundles",
     "owners": [ "ksakamoto", "horo", "kinuko" ],
     "expiry_milestone": 90

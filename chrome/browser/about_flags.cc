@@ -2461,6 +2461,10 @@ const FeatureEntry::FeatureVariation kPasswordsAccountStorageVariations[] = {
      base::size(kPasswordsAccountStorage_ProfileStore), nullptr},
 };
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kWallpaperWebUIInternalName[] = "wallpaper-webui";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -7025,6 +7029,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillEnableOfferNotificationDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableOfferNotification)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {kWallpaperWebUIInternalName, flag_descriptions::kWallpaperWebUIName,
+     flag_descriptions::kWallpaperWebUIDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kWallpaperWebUI)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
@@ -7091,8 +7101,10 @@ bool SkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return !base::FeatureList::IsEnabled(features::kTeamfoodFlags);
   }
 
-  // enable-bloom is only available for Unknown/Canary/Dev channels.
-  if (!strcmp("enable-bloom", entry.internal_name) &&
+  // enable-bloom and wallpaper-webui are only available for Unknown/Canary/Dev
+  // channels.
+  if ((!strcmp("enable-bloom", entry.internal_name) ||
+       !strcmp(kWallpaperWebUIInternalName, entry.internal_name)) &&
       channel != version_info::Channel::DEV &&
       channel != version_info::Channel::CANARY &&
       channel != version_info::Channel::UNKNOWN) {
