@@ -16,7 +16,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -223,16 +222,14 @@ class BookmarkPromoHeader implements ProfileSyncService.SyncStateChangedListener
         }
 
         if (!mSignInManager.getIdentityManager().hasPrimaryAccount()) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)) {
-                CoreAccountInfo primaryAccount =
-                        mSignInManager.getIdentityManager().getPrimaryAccountInfo(
-                                ConsentLevel.NOT_REQUIRED);
-                if (primaryAccount != null && !wasPersonalizedSigninPromoDeclined()) {
-                    return PromoState.PROMO_SYNC_PERSONALIZED;
-                }
+            if (!shouldShowBookmarkSigninPromo()) {
+                return PromoState.PROMO_NONE;
             }
-            return shouldShowBookmarkSigninPromo() ? PromoState.PROMO_SIGNIN_PERSONALIZED
-                                                   : PromoState.PROMO_NONE;
+            CoreAccountInfo primaryAccount =
+                    mSignInManager.getIdentityManager().getPrimaryAccountInfo(
+                            ConsentLevel.NOT_REQUIRED);
+            return primaryAccount == null ? PromoState.PROMO_SIGNIN_PERSONALIZED
+                                          : PromoState.PROMO_SYNC_PERSONALIZED;
         }
 
         boolean impressionLimitNotReached =
