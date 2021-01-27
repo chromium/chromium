@@ -91,6 +91,12 @@ import org.chromium.chrome.browser.homepage.HomepageManager;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.suggestions.SiteSuggestion;
+import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
+import org.chromium.chrome.browser.suggestions.tile.Tile;
+import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
+import org.chromium.chrome.browser.suggestions.tile.TileSource;
+import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateFileManager;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
@@ -120,12 +126,15 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.url.GURL;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -1143,6 +1152,44 @@ public class InstantStartTest {
                 surface, "singlePane_landscape" + (isFeedV2 ? "_FeedV2" : "_FeedV1"));
     }
 
+    @Test
+    @SmallTest
+    @Feature({"RenderTest"})
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+            ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+            "force-fieldtrials=Study/Group",
+            IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"+
+                    "/exclude_mv_tiles/false"})
+    public void renderSingleAsHomepage_MVTiles() throws IOException, InterruptedException {
+        // clang-format on
+        // Get old file and ensure to delete it.
+        File oldFile = MostVisitedSitesMetadataUtils.getOrCreateTopSitesDirectory();
+        Assert.assertTrue(oldFile.delete() && !oldFile.exists());
+
+        // Save suggestion lists to file.
+        final CountDownLatch latch = new CountDownLatch(1);
+        MostVisitedSitesMetadataUtils.saveSuggestionListsToFile(
+                createFakeSiteSuggestionTiles(), latch::countDown);
+
+        // Wait util the file has been saved.
+        latch.await();
+
+        startMainActivityFromLauncher();
+        CriteriaHelper.pollUiThread(
+                () -> mActivityTestRule.getActivity().getLayoutManager().overviewVisible());
+
+        View surface =
+                mActivityTestRule.getActivity().findViewById(R.id.primary_tasks_surface_view);
+
+        ViewUtils.onViewWaiting(
+                allOf(withId(R.id.tile_view_title), withText("0 TOP_SITES"), isDisplayed()));
+        ChromeRenderTestRule.sanitize(surface);
+        mRenderTestRule.render(surface, "singlePane_MV");
+    }
+
     /**
      * Toggles the header and checks whether the header has the right status.
      *
@@ -1200,5 +1247,20 @@ public class InstantStartTest {
     private void waitForTabModel() {
         CriteriaHelper.pollUiThread(
                 mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
+    }
+
+    private static List<Tile> createFakeSiteSuggestionTiles() {
+        List<Tile> suggestionTiles = new ArrayList<>();
+        SiteSuggestion data = new SiteSuggestion("0 TOP_SITES", new GURL("https://www.foo.com"), "",
+                TileTitleSource.TITLE_TAG, TileSource.TOP_SITES, TileSectionType.PERSONALIZED,
+                new Date());
+        suggestionTiles.add(new Tile(data, 0));
+
+        data = new SiteSuggestion("1 ALLOWLIST", new GURL("https://www.bar.com"), "",
+                TileTitleSource.UNKNOWN, TileSource.ALLOWLIST, TileSectionType.PERSONALIZED,
+                new Date());
+        suggestionTiles.add(new Tile(data, 1));
+
+        return suggestionTiles;
     }
 }

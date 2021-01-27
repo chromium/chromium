@@ -118,7 +118,7 @@ public class MostVisitedSitesMetadataUtils {
      * show something else.
      */
     public static List<Tile> restoreFileToSuggestionListsOnUiThread() throws IOException {
-        try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
+        try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             return restoreFileToSuggestionLists();
         }
     }
@@ -128,8 +128,8 @@ public class MostVisitedSitesMetadataUtils {
      * @param suggestionTiles The site suggestion tiles.
      * @param callback Callback function after saving file.
      */
-    @VisibleForTesting
-    protected static void saveSuggestionListsToFile(List<Tile> suggestionTiles, Runnable callback) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static void saveSuggestionListsToFile(List<Tile> suggestionTiles, Runnable callback) {
         new AsyncTask<Void>() {
             @Override
             protected Void doInBackground() {
@@ -264,7 +264,8 @@ public class MostVisitedSitesMetadataUtils {
         return data;
     }
 
-    protected static File getOrCreateTopSitesDirectory() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    public static File getOrCreateTopSitesDirectory() {
         try (StrictModeContext ignored = StrictModeContext.allowDiskWrites()) {
             synchronized (DIR_CREATION_LOCK) {
                 if (sStateDirectory == null) {
@@ -276,8 +277,7 @@ public class MostVisitedSitesMetadataUtils {
         }
     }
 
-    @VisibleForTesting
-    protected void updatePendingToCurrent() {
+    private void updatePendingToCurrent() {
         mCurrentTask = mPendingTask;
         mPendingTask = null;
         if (mCurrentTask != null) {
@@ -289,11 +289,6 @@ public class MostVisitedSitesMetadataUtils {
     @VisibleForTesting
     public Runnable getCurrentTaskForTesting() {
         return mCurrentTask;
-    }
-
-    @VisibleForTesting
-    public Runnable getPendingTaskForTesting() {
-        return mPendingTask;
     }
 
     @VisibleForTesting

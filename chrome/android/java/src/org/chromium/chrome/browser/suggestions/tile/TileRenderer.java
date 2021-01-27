@@ -20,6 +20,7 @@ import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Log;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.explore_sites.ExploreSitesBridge;
@@ -113,7 +114,8 @@ public class TileRenderer {
 
         for (Tile tile : sectionTiles) {
             SuggestionsTileView tileView = oldTileViews.get(tile.getData());
-            if (tileView == null) {
+            if (tileView == null || tileView.mIconView == null
+                    || tileView.mIconView.getDrawable() == null) {
                 tileView = buildTileView(tile, parent, setupDelegate);
             }
 
@@ -153,6 +155,11 @@ public class TileRenderer {
                     VectorDrawableCompat.create(mResources, R.drawable.ic_apps_blue_24dp, mTheme));
             tile.setType(TileVisualType.ICON_DEFAULT);
 
+            if (!LibraryLoader.getInstance().isInitialized()) {
+                tileView.initialize(tile, mTitleLinesCount);
+                return tileView;
+            }
+
             // One task to load actual icon.
             LargeIconBridge.LargeIconCallback bridgeCallback =
                     setupDelegate.createIconLoadCallback(tile);
@@ -167,6 +174,10 @@ public class TileRenderer {
         }
 
         tileView.initialize(tile, mTitleLinesCount);
+
+        if (!LibraryLoader.getInstance().isInitialized()) {
+            return tileView;
+        }
 
         // Note: It is important that the callbacks below don't keep a reference to the tile or
         // modify them as there is no guarantee that the same tile would be used to update the view.

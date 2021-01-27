@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.suggestions.SuggestionsDependencyFactory;
 import org.chromium.chrome.browser.suggestions.SuggestionsMetrics;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegate;
 import org.chromium.chrome.browser.suggestions.SuggestionsUiDelegateImpl;
+import org.chromium.chrome.browser.suggestions.mostvisited.MostVisitedSitesMetadataUtils;
 import org.chromium.chrome.browser.suggestions.tile.SuggestionsTileView;
 import org.chromium.chrome.browser.suggestions.tile.Tile;
 import org.chromium.chrome.browser.suggestions.tile.TileGroup;
@@ -26,11 +27,17 @@ import org.chromium.chrome.browser.suggestions.tile.TileGroupDelegateImpl;
 import org.chromium.chrome.browser.suggestions.tile.TileRenderer;
 import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.favicon.LargeIconBridge;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
+
+import java.io.IOException;
+import java.util.List;
 
 /**
  * Coordinator for displaying a list of {@link SuggestionsTileView} in a {@link ViewGroup}.
@@ -63,6 +70,22 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
     public void initialize() {
         mRenderer =
                 new TileRenderer(mActivity, SuggestionsConfig.TileStyle.MODERN, TITLE_LINES, null);
+
+        // If it's a cold start and Instant Start is turned on, we render MV tiles placeholder here
+        // pre-native.
+        if (!mInitializationComplete && StartSurfaceConfiguration.isStartSurfaceEnabled()
+                && TabUiFeatureUtilities.supportInstantStart(
+                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity))) {
+            try {
+                List<Tile> tiles =
+                        MostVisitedSitesMetadataUtils.restoreFileToSuggestionListsOnUiThread();
+                if (tiles != null) {
+                    mRenderer.renderTileSection(tiles, mParent, this);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     public void initWithNative() {
@@ -122,6 +145,9 @@ class MostVisitedListCoordinator implements TileGroup.Observer, TileGroup.TileSe
 
         mRenderer.renderTileSection(
                 mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED), mParent, this);
+
+        MostVisitedSitesMetadataUtils.getInstance().saveSuggestionListsToFile(
+                mTileGroup.getTileSections().get(TileSectionType.PERSONALIZED));
     }
 
     @Override
