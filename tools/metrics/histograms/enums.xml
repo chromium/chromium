@@ -77207,6 +77207,12 @@ Full version information for the fingerprint enum values:
   <int value="9" label="Video capture service timeout canceled"/>
 </enum>
 
+<enum name="VideoCaptureStartOutcome">
+  <int value="0" label="kStarted"/>
+  <int value="1" label="kTimedout"/>
+  <int value="2" label="kFailed"/>
+</enum>
+
 <enum name="VideoCaptureWinBackendUsed">
   <int value="0" label="Using DirectShow as default"/>
   <int value="1" label="Using MediaFoundation as default"/>

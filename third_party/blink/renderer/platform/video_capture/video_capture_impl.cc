@@ -19,6 +19,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/sequenced_task_runner.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
@@ -502,6 +503,7 @@ void VideoCaptureImpl::OnStateChanged(media::mojom::VideoCaptureState state) {
       // a frame refresh to start the video call with.
       // Capture device will make a decision if it should refresh a frame.
       RequestRefreshFrame();
+      RecordStartOutcomeUMA(VideoCaptureStartOutcome::kStarted);
       break;
     case media::mojom::VideoCaptureState::STOPPED:
       OnLog("VideoCaptureImpl changing state to VIDEO_CAPTURE_STATE_STOPPED");
@@ -527,6 +529,10 @@ void VideoCaptureImpl::OnStateChanged(media::mojom::VideoCaptureState state) {
         client.second.state_update_cb.Run(blink::VIDEO_CAPTURE_STATE_ERROR);
       clients_.clear();
       state_ = VIDEO_CAPTURE_STATE_ERROR;
+
+      RecordStartOutcomeUMA(start_timedout_
+                                ? VideoCaptureStartOutcome::kTimedout
+                                : VideoCaptureStartOutcome::kFailed);
       break;
     case media::mojom::VideoCaptureState::ENDED:
       OnLog("VideoCaptureImpl changing state to VIDEO_CAPTURE_STATE_ENDED");
@@ -852,6 +858,9 @@ void VideoCaptureImpl::StartCaptureInternal() {
                            base::BindOnce(&VideoCaptureImpl::OnStartTimedout,
                                           base::Unretained(this)));
   }
+  start_timedout_ = false;
+  start_outcome_reported_ = false;
+  base::UmaHistogramBoolean("Media.VideoCapture.Start", true);
 
   GetVideoCaptureHost()->Start(device_id_, session_id_, params_,
                                observer_receiver_.BindNewPipeAndPassRemote());
@@ -860,6 +869,9 @@ void VideoCaptureImpl::StartCaptureInternal() {
 void VideoCaptureImpl::OnStartTimedout() {
   DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
   OnLog("VideoCaptureImpl timed out during starting");
+
+  start_timedout_ = true;
+
   OnStateChanged(media::mojom::VideoCaptureState::FAILED);
 }
 
@@ -897,6 +909,15 @@ media::mojom::blink::VideoCaptureHost* VideoCaptureImpl::GetVideoCaptureHost() {
   if (!video_capture_host_.is_bound())
     video_capture_host_.Bind(std::move(pending_video_capture_host_));
   return video_capture_host_.get();
+}
+
+void VideoCaptureImpl::RecordStartOutcomeUMA(VideoCaptureStartOutcome outcome) {
+  // Record the success or failure of starting only the first time we transition
+  // into such a state, not eg when resuming after pausing.
+  if (!start_outcome_reported_) {
+    base::UmaHistogramEnumeration("Media.VideoCapture.StartOutcome", outcome);
+    start_outcome_reported_ = true;
+  }
 }
 
 // static

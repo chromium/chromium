@@ -4033,6 +4033,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Media.VideoCapture.Start" enum="Boolean"
+    expires_after="2022-01-26">
+  <owner>toprice@chromium.org</owner>
+  <owner>guidou@chromium.org</owner>
+  <summary>
+    Counts the start attempts for video capture, to be compared with the
+    StartOutcome enum histogram.
+  </summary>
+</histogram>
+
+<histogram name="Media.VideoCapture.StartOutcome"
+    enum="VideoCaptureStartOutcome" expires_after="2022-01-26">
+  <owner>toprice@chromium.org</owner>
+  <owner>guidou@chromium.org</owner>
+  <summary>
+    Counts the times Starting video capture results in success or failure (due
+    to eg timeouts etc).
+  </summary>
+</histogram>
+
 <histogram name="Media.VideoCapture.Width" units="pixels" expires_after="M99">
   <owner>mcasas@chromium.org</owner>
   <owner>handellm@chromium.org</owner>
