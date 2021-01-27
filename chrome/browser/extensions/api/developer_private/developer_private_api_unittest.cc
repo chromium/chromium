@@ -138,7 +138,7 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   const Extension* LoadSimpleExtension();
 
   // Tests modifying the extension's configuration.
-  void TestExtensionPrefSetting(const base::Callback<bool()>& has_pref,
+  void TestExtensionPrefSetting(const base::RepeatingCallback<bool()>& has_pref,
                                 const std::string& key,
                                 const std::string& extension_id);
 
@@ -231,7 +231,7 @@ const Extension* DeveloperPrivateApiUnitTest::LoadSimpleExtension() {
 }
 
 void DeveloperPrivateApiUnitTest::TestExtensionPrefSetting(
-    const base::Callback<bool()>& has_pref,
+    const base::RepeatingCallback<bool()>& has_pref,
     const std::string& key,
     const std::string& extension_id) {
   scoped_refptr<ExtensionFunction> function(
@@ -394,10 +394,12 @@ TEST_F(DeveloperPrivateApiUnitTest,
       .SetWithholdHostPermissions(true);
 
   TestExtensionPrefSetting(
-      base::Bind(&HasPrefsPermission, &util::IsIncognitoEnabled, profile(), id),
+      base::BindRepeating(&HasPrefsPermission, &util::IsIncognitoEnabled,
+                          profile(), id),
       "incognitoAccess", id);
   TestExtensionPrefSetting(
-      base::Bind(&HasPrefsPermission, &util::AllowFileAccess, profile(), id),
+      base::BindRepeating(&HasPrefsPermission, &util::AllowFileAccess,
+                          profile(), id),
       "fileAccess", id);
 }
 

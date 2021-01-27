@@ -421,7 +421,7 @@ ExtensionInfoGenerator::~ExtensionInfoGenerator() {
 
 void ExtensionInfoGenerator::CreateExtensionInfo(
     const std::string& id,
-    const ExtensionInfosCallback& callback) {
+    ExtensionInfosCallback callback) {
   DCHECK(callback_.is_null() && list_.empty()) <<
       "Only a single generation can be running at a time!";
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
@@ -441,17 +441,17 @@ void ExtensionInfoGenerator::CreateExtensionInfo(
   if (pending_image_loads_ == 0) {
     // Don't call the callback re-entrantly.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, std::move(list_)));
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(list_)));
     list_.clear();
   } else {
-    callback_ = callback;
+    callback_ = std::move(callback);
   }
 }
 
 void ExtensionInfoGenerator::CreateExtensionsInfo(
     bool include_disabled,
     bool include_terminated,
-    const ExtensionInfosCallback& callback) {
+    ExtensionInfosCallback callback) {
   auto add_to_list = [this](const ExtensionSet& extensions,
                             developer::ExtensionState state) {
     for (const scoped_refptr<const Extension>& extension : extensions) {
@@ -478,10 +478,10 @@ void ExtensionInfoGenerator::CreateExtensionsInfo(
   if (pending_image_loads_ == 0) {
     // Don't call the callback re-entrantly.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, std::move(list_)));
+        FROM_HERE, base::BindOnce(std::move(callback), std::move(list_)));
     list_.clear();
   } else {
-    callback_ = callback;
+    callback_ = std::move(callback);
   }
 }
 

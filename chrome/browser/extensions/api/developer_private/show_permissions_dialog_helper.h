@@ -30,11 +30,10 @@ class ShowPermissionsDialogHelper {
                    content::WebContents* web_contents,
                    const Extension* extension,
                    bool from_webui,
-                   const base::Closure& on_complete);
+                   base::OnceClosure on_complete);
 
  private:
-  ShowPermissionsDialogHelper(Profile* profile,
-                              const base::Closure& on_complete);
+  ShowPermissionsDialogHelper(Profile* profile, base::OnceClosure on_complete);
   ~ShowPermissionsDialogHelper();  // Manages its own lifetime.
 
   // Shows the old-style (not AppInfo) permissions dialog.
@@ -47,7 +46,7 @@ class ShowPermissionsDialogHelper {
 
   Profile* profile_;
 
-  base::Closure on_complete_;
+  base::OnceClosure on_complete_;
 
   std::string extension_id_;
 

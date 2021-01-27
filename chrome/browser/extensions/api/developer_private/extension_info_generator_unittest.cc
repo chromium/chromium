@@ -131,8 +131,8 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
         new ExtensionInfoGenerator(browser_context()));
     generator->CreateExtensionInfo(
         extension_id,
-        base::Bind(&ExtensionInfoGeneratorUnitTest::OnInfoGenerated,
-                   base::Unretained(this), base::Unretained(&info)));
+        base::BindOnce(&ExtensionInfoGeneratorUnitTest::OnInfoGenerated,
+                       base::Unretained(this), base::Unretained(&info)));
     run_loop.Run();
     return info;
   }
@@ -151,8 +151,8 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
     generator.CreateExtensionsInfo(
         true, /* include_disabled */
         true, /* include_terminated */
-        base::Bind(&ExtensionInfoGeneratorUnitTest::OnInfosGenerated,
-                   base::Unretained(this), base::Unretained(&result)));
+        base::BindOnce(&ExtensionInfoGeneratorUnitTest::OnInfosGenerated,
+                       base::Unretained(this), base::Unretained(&result)));
     run_loop.Run();
     return result;
   }

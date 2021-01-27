@@ -43,7 +43,7 @@ class ExtensionInfoGenerator {
  public:
   using ExtensionInfoList = std::vector<api::developer_private::ExtensionInfo>;
 
-  using ExtensionInfosCallback = base::Callback<void(ExtensionInfoList)>;
+  using ExtensionInfosCallback = base::OnceCallback<void(ExtensionInfoList)>;
 
   explicit ExtensionInfoGenerator(content::BrowserContext* context);
   ~ExtensionInfoGenerator();
@@ -52,13 +52,13 @@ class ExtensionInfoGenerator {
   // |extension_id|, if the extension can be found.
   // If the extension cannot be found, an empty vector is passed to |callback|.
   void CreateExtensionInfo(const std::string& id,
-                           const ExtensionInfosCallback& callback);
+                           ExtensionInfosCallback callback);
 
   // Creates and asynchronously returns a collection of ExtensionInfos,
   // optionally including disabled and terminated.
   void CreateExtensionsInfo(bool include_disabled,
                             bool include_terminated,
-                            const ExtensionInfosCallback& callback);
+                            ExtensionInfosCallback callback);
 
  private:
   // Creates an ExtensionInfo for the given |extension| and |state|, and

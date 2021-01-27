@@ -359,8 +359,8 @@ DeveloperPrivateEventRouter::DeveloperPrivateEventRouter(Profile* profile)
   // callback on destruction.
   pref_change_registrar_.Add(
       prefs::kExtensionsUIDeveloperMode,
-      base::Bind(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
-                 base::Unretained(this)));
+      base::BindRepeating(&DeveloperPrivateEventRouter::OnProfilePrefChanged,
+                          base::Unretained(this)));
   notification_registrar_.Add(
       this, extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
       content::Source<Profile>(profile_));
@@ -555,9 +555,10 @@ void DeveloperPrivateEventRouter::BroadcastItemStateChanged(
   ExtensionInfoGenerator* info_generator_weak = info_generator.get();
   info_generator_weak->CreateExtensionInfo(
       extension_id,
-      base::Bind(&DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper,
-                 weak_factory_.GetWeakPtr(), event_type, extension_id,
-                 base::Passed(std::move(info_generator))));
+      base::BindOnce(
+          &DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper,
+          weak_factory_.GetWeakPtr(), event_type, extension_id,
+          base::Passed(std::move(info_generator))));
 }
 
 void DeveloperPrivateEventRouter::BroadcastItemStateChangedHelper(
@@ -742,8 +743,9 @@ DeveloperPrivateGetExtensionsInfoFunction::Run() {
   info_generator_.reset(new ExtensionInfoGenerator(browser_context()));
   info_generator_->CreateExtensionsInfo(
       include_disabled, include_terminated,
-      base::Bind(&DeveloperPrivateGetExtensionsInfoFunction::OnInfosGenerated,
-                 base::RetainedRef(this)));
+      base::BindOnce(
+          &DeveloperPrivateGetExtensionsInfoFunction::OnInfosGenerated,
+          base::RetainedRef(this)));
 
   return RespondLater();
 }
@@ -770,8 +772,9 @@ DeveloperPrivateGetExtensionInfoFunction::Run() {
   info_generator_.reset(new ExtensionInfoGenerator(browser_context()));
   info_generator_->CreateExtensionInfo(
       params->id,
-      base::Bind(&DeveloperPrivateGetExtensionInfoFunction::OnInfosGenerated,
-                 base::RetainedRef(this)));
+      base::BindOnce(
+          &DeveloperPrivateGetExtensionInfoFunction::OnInfosGenerated,
+          base::RetainedRef(this)));
 
   return RespondLater();
 }
@@ -825,8 +828,8 @@ ExtensionFunction::ResponseAction DeveloperPrivateGetItemsInfoFunction::Run() {
   info_generator_.reset(new ExtensionInfoGenerator(browser_context()));
   info_generator_->CreateExtensionsInfo(
       params->include_disabled, params->include_terminated,
-      base::Bind(&DeveloperPrivateGetItemsInfoFunction::OnInfosGenerated,
-                 base::RetainedRef(this)));
+      base::BindOnce(&DeveloperPrivateGetItemsInfoFunction::OnInfosGenerated,
+                     base::RetainedRef(this)));
 
   return RespondLater();
 }
@@ -1066,11 +1069,10 @@ DeveloperPrivateShowPermissionsDialogFunction::Run() {
     return RespondNow(Error(kCouldNotFindWebContentsError));
 
   ShowPermissionsDialogHelper::Show(
-      browser_context(),
-      web_contents,
-      target_extension,
+      browser_context(), web_contents, target_extension,
       source_context_type() == Feature::WEBUI_CONTEXT,
-      base::Bind(&DeveloperPrivateShowPermissionsDialogFunction::Finish, this));
+      base::BindOnce(&DeveloperPrivateShowPermissionsDialogFunction::Finish,
+                     this));
   return RespondLater();
 }
 
