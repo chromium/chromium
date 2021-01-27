@@ -22,14 +22,14 @@ suite('cr-expand-button', function() {
     icon = /** @type {!CrIconButtonElement} */ (button.$$('#icon'));
   });
 
-  test('setting |alt| label', () => {
-    assertFalse(!!button.alt);
+  test('setting |aria-label| label', () => {
+    assertFalse(!!button.ariaLabel);
     assertEquals('label', icon.getAttribute('aria-labelledby'));
     assertEquals(null, icon.getAttribute('aria-label'));
-    const altLabel = 'alt label';
-    button.alt = altLabel;
+    const ariaLabel = 'aria-label label';
+    button.ariaLabel = ariaLabel;
     assertEquals(null, icon.getAttribute('aria-labelledby'));
-    assertEquals('alt label', icon.getAttribute('aria-label'));
+    assertEquals(ariaLabel, icon.getAttribute('aria-label'));
   });
 
   test('changing |expanded|', () => {

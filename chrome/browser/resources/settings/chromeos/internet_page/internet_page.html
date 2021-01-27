@@ -51,7 +51,7 @@
         <template is="dom-if" if="[[allowAddConnection_(globalPolicy_,
             managedNetworkAvailable)]]">
           <cr-expand-button
-              alt="$i18n{internetAddConnectionExpandA11yLabel}"
+              aria-label="$i18n{internetAddConnectionExpandA11yLabel}"
               class="settings-box two-line"
               expanded="{{addConnectionExpanded_}}"
               id="expandAddConnections">

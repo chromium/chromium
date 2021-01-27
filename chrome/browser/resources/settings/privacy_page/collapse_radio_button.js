@@ -59,10 +59,10 @@ Polymer({
     },
 
     /*
-     * The alt text attribute associated with the expand button. Used by screen
-     * readers when announcing the expand button.
+     * The aria-label attribute associated with the expand button. Used by
+     * screen readers when announcing the expand button.
      */
-    expandButtonAlt: String,
+    expandAriaLabel: String,
   },
 
   observers: [
