@@ -266,8 +266,10 @@ bool WillUseGLGetStringForExtensions() {
 bool WillUseGLGetStringForExtensions(GLApi* api) {
   const char* version_str =
       reinterpret_cast<const char*>(api->glGetStringFn(GL_VERSION));
+  const char* renderer_str =
+      reinterpret_cast<const char*>(api->glGetStringFn(GL_RENDERER));
   gfx::ExtensionSet extensions;
-  GLVersionInfo version_info(version_str, nullptr, extensions);
+  GLVersionInfo version_info(version_str, renderer_str, extensions);
   return version_info.is_es || version_info.major_version < 3;
 }
 
