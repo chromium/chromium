@@ -873,6 +873,11 @@ const base::Feature kBackgroundMediaRendererHasModerateBinding{
     "BackgroundMediaRendererHasModerateBinding",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// If enabled, BindingManager will use Context.BIND_NOT_FOREGROUND to avoid
+// affecting cpu scheduling priority.
+const base::Feature kBindingManagementWaiveCpu{
+    "BindingManagementWaiveCpu", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Screen Capture API support for Android
 const base::Feature kUserMediaScreenCapturing{
     "UserMediaScreenCapturing", base::FEATURE_DISABLED_BY_DEFAULT};

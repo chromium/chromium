@@ -200,6 +200,7 @@ CONTENT_EXPORT extern const base::Feature kWebXrIncubations;
 CONTENT_EXPORT extern const base::Feature kAndroidAutofillAccessibility;
 CONTENT_EXPORT extern const base::Feature
     kBackgroundMediaRendererHasModerateBinding;
+CONTENT_EXPORT extern const base::Feature kBindingManagementWaiveCpu;
 CONTENT_EXPORT extern const base::Feature kUserMediaScreenCapturing;
 CONTENT_EXPORT extern const base::Feature kWarmUpNetworkProcess;
 CONTENT_EXPORT extern const base::Feature kWebNfc;

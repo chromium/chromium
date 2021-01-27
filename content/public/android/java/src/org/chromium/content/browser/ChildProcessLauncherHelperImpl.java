@@ -315,11 +315,14 @@ public final class ChildProcessLauncherHelperImpl {
             public void run() {
                 ChildConnectionAllocator allocator =
                         getConnectionAllocator(context, true /* sandboxed */);
+                boolean bindWaiveCpu = ContentFeatureList.isEnabled(
+                        ContentFeatureList.BINDING_MANAGEMENT_WAIVE_CPU);
                 if (ChildProcessConnection.supportVariableConnections()) {
-                    sBindingManager = new BindingManager(context, sSandboxedChildConnectionRanking);
+                    sBindingManager = new BindingManager(
+                            context, sSandboxedChildConnectionRanking, bindWaiveCpu);
                 } else {
                     sBindingManager = new BindingManager(context, allocator.getNumberOfServices(),
-                            sSandboxedChildConnectionRanking);
+                            sSandboxedChildConnectionRanking, bindWaiveCpu);
                 }
             }
         });
@@ -565,7 +568,7 @@ public final class ChildProcessLauncherHelperImpl {
                     // Nothing to add.
                     break;
                 case ChildProcessImportance.MODERATE:
-                    connection.addModerateBinding();
+                    connection.addModerateBinding(false);
                     break;
                 case ChildProcessImportance.IMPORTANT:
                     connection.addStrongBinding();
@@ -590,7 +593,7 @@ public final class ChildProcessLauncherHelperImpl {
                         // Nothing to remove.
                         break;
                     case ChildProcessImportance.MODERATE:
-                        connection.removeModerateBinding();
+                        connection.removeModerateBinding(false);
                         break;
                     case ChildProcessImportance.IMPORTANT:
                         connection.removeStrongBinding();

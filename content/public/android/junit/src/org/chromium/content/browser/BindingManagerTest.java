@@ -50,7 +50,7 @@ public class BindingManagerTest {
         connection.start(false /* useStrongBinding */, null /* serviceCallback */);
         manager.addConnection(connection);
         iterable.add(connection);
-        connection.removeModerateBinding(); // Remove initial binding.
+        connection.removeModerateBinding(false); // Remove initial binding.
         return connection;
     }
 
@@ -69,8 +69,8 @@ public class BindingManagerTest {
         LauncherThread.setCurrentThreadAsLauncherThread();
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mIterable = new ArrayList<>();
-        mManager = new BindingManager(mActivity, 4, mIterable);
-        mVariableManager = new BindingManager(mActivity, mIterable);
+        mManager = new BindingManager(mActivity, 4, mIterable, false);
+        mVariableManager = new BindingManager(mActivity, mIterable, false);
     }
 
     @After
