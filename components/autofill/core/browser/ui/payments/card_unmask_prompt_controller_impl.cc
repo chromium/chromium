@@ -182,6 +182,12 @@ base::string16 CardUnmaskPromptControllerImpl::GetInstructionsMessage() const {
   return l10n_util::GetStringFUTF16(
       ids, card_.CardIdentifierStringForAutofillDisplay());
 #else
+  // For Google Pay Plex cards, show a specific message that include
+  // instructions to find the CVC for their Plex card.
+  if (card_.IsGoogleIssuedCard()) {
+    return l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_GOOGLE_ISSUED_CARD);
+  }
   return l10n_util::GetStringUTF16(
       card_.record_type() == autofill::CreditCard::LOCAL_CARD
           ? IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_LOCAL_CARD

@@ -1662,7 +1662,8 @@ TEST_P(AutofillManagerStructuredProfileTest,
   FormsSeen(forms);
   // Set the field being edited to CC field.
   const FormFieldData& credit_card_number_field = form.fields[1];
-  const std::string google_issued_card_value = "Google";
+  const std::string google_issued_card_value = base::JoinString(
+      {"Plex Mastercard  ", test::ObfuscatedCardDigitsAsUTF8("4444")}, "");
 #if defined(OS_ANDROID) || defined(OS_IOS)
   const std::string google_issued_card_label = std::string("10/98");
 #else
@@ -1701,13 +1702,16 @@ TEST_P(AutofillManagerStructuredProfileTest,
   // Set the field being edited to the cardholder name field.
   const FormFieldData& cardholder_name_field = form.fields[0];
 #if defined(OS_ANDROID)
-  const std::string google_issued_card_label = std::string("Google");
+  const std::string google_issued_card_label = base::JoinString(
+      {"Plex Mastercard  ", test::ObfuscatedCardDigitsAsUTF8("4444")}, "");
 #elif defined(OS_IOS)
   const std::string google_issued_card_label =
       test::ObfuscatedCardDigitsAsUTF8("4444");
 #else
-  const std::string google_issued_card_label =
-      std::string("Google, expires on 10/98");
+  const std::string google_issued_card_label = base::JoinString(
+      {"Plex Mastercard  ", test::ObfuscatedCardDigitsAsUTF8("4444"),
+       ", expires on 10/98"},
+      "");
 #endif
 
   GetAutofillSuggestions(form, cardholder_name_field);

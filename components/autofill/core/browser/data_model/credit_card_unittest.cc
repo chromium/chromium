@@ -265,7 +265,9 @@ TEST(CreditCardTest, CardIdentifierStringForIssuedCard) {
   test::SetCreditCardInfo(&credit_card1, "John Dillinger",
                           "5105 1051 0510 5100" /* Mastercard */, "01", "2020",
                           "1");
-  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GOOGLE_ISSUED),
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GOOGLE_ISSUED) +
+                UTF8ToUTF16(std::string(" Mastercard  ") +
+                            test::ObfuscatedCardDigitsAsUTF8("5100")),
             credit_card1.CardIdentifierStringForAutofillDisplay());
 
   // Case 2: Card Issuer set to GOOGLE with nickname.

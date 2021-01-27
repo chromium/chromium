@@ -590,6 +590,7 @@ chrome_java_resources = [
   "java/res/drawable/distilled_page_prefs_button_bg.xml",
   "java/res/drawable/elo_card.xml",
   "java/res/drawable/explore_sites_dense_tile_background.xml",
+  "java/res/drawable/google_pay_plex.xml",
   "java/res/drawable/google_pay_with_divider.xml",
   "java/res/drawable/ic_add.xml",
   "java/res/drawable/ic_add_box_rounded_corner.xml",

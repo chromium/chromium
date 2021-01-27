@@ -26,6 +26,7 @@
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/autofill/autofill_popup_controller_utils.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -216,8 +217,8 @@ PersonalDataManagerAndroid::CreateJavaCreditCardFromNative(
                                card.GetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR)),
       ConvertUTF8ToJavaString(env,
                               payment_request_data.basic_card_issuer_network),
-      ResourceMapper::MapToJavaDrawableId(
-          payment_request_data.icon_resource_id),
+      ResourceMapper::MapToJavaDrawableId(autofill::GetIconResourceID(
+          card.CardIconStringForAutofillSuggestion())),
       ConvertUTF8ToJavaString(env, card.billing_address_id()),
       ConvertUTF8ToJavaString(env, card.server_id()),
       ConvertUTF16ToJavaString(env,

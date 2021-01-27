@@ -863,12 +863,15 @@ base::string16 CreditCard::CardIdentifierStringForAutofillDisplay(
   if (HasNonEmptyValidNickname() || !customized_nickname.empty()) {
     return NicknameAndLastFourDigits(customized_nickname);
   }
-  // Return a Google-specific string for Google-issued cards.
+  base::string16 networkAndLastFourDigits = NetworkAndLastFourDigits();
+  // Add Plex before the network and last four digits to identify it as a Google
+  // Plex card.
   if (base::FeatureList::IsEnabled(features::kAutofillEnableGoogleIssuedCard) &&
       IsGoogleIssuedCard()) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GOOGLE_ISSUED);
+    return l10n_util::GetStringUTF16(IDS_AUTOFILL_CC_GOOGLE_ISSUED) +
+           ASCIIToUTF16(" ") + networkAndLastFourDigits;
   }
-  return NetworkAndLastFourDigits();
+  return networkAndLastFourDigits;
 }
 
 base::string16 CreditCard::CardIdentifierStringAndDescriptiveExpiration(

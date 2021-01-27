@@ -313,6 +313,9 @@
     <message name="IDS_AUTOFILL_CARD_UNMASK_CVC_IMAGE_DESCRIPTION" desc="Accessible description for the CVC image. It should describe where to find the CVC on a credit card.">
       The CVC is located behind your card.
     </message>
+    <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_INSTRUCTIONS_GOOGLE_ISSUED_CARD" desc="Text explaining what the user should do in the card unmasking dialog for a GooglePay Plex card." formatter_data="android">
+      After you confirm, card details from your Google Account will be shared with this site. Find the CVC in your Plex Account details.
+    </message>
   </if>
   <if expr="is_ios">
     <message name="IDS_AUTOFILL_CARD_UNMASK_PROMPT_TITLE" desc="Title for the credit card unmasking dialog.">
