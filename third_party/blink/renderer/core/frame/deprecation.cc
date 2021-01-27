@@ -508,6 +508,16 @@ DeprecationInfo GetDeprecationInfo(WebFeature feature) {
               "details.",
               MilestoneString(kM84).Ascii().c_str())};
 
+    case WebFeature::kV8SharedArrayBufferConstructedWithoutIsolation:
+      return {
+          "SharedArrayBufferConstructedWithoutIsolation", kM91,
+          String::Format(
+              "SharedArrayBuffer will require cross-origin isolation as of "
+              "%s. See "
+              "https://developer.chrome.com/blog/enabling-shared-array-buffer/"
+              " for more details.",
+              MilestoneString(kM91).Ascii().c_str())};
+
     case WebFeature::kV8RTCRtpSender_CreateEncodedAudioStreams_Method:
       return {"V8RTCRtpSender_CreateEncodedAudioStreams_Method", kM88,
               ReplacedWillBeRemoved("RTCRtpSender.createEncodedAudioStreams",
