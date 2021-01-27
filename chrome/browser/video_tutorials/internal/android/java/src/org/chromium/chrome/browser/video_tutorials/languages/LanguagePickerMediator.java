@@ -10,6 +10,8 @@ import android.text.TextUtils;
 import org.chromium.chrome.browser.video_tutorials.Language;
 import org.chromium.chrome.browser.video_tutorials.LanguageInfoProvider;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
+import org.chromium.chrome.browser.video_tutorials.metrics.VideoTutorialMetrics;
+import org.chromium.chrome.browser.video_tutorials.metrics.VideoTutorialMetrics.LanguagePickerAction;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -44,8 +46,15 @@ public class LanguagePickerMediator {
      * See {@link LanguagePickerCoordinator#showLanguagePicker(Runnable, Runnable)}.
      */
     public void showLanguagePicker(Runnable doneCallback, Runnable closeCallback) {
-        mModel.set(LanguagePickerProperties.CLOSE_CALLBACK, closeCallback);
-        mModel.set(LanguagePickerProperties.WATCH_CALLBACK, doneCallback);
+        mModel.set(LanguagePickerProperties.CLOSE_CALLBACK, () -> {
+            VideoTutorialMetrics.recordLanguagePickerAction(LanguagePickerAction.CLOSE);
+            closeCallback.run();
+        });
+        mModel.set(LanguagePickerProperties.WATCH_CALLBACK, () -> {
+            VideoTutorialMetrics.recordLanguagePickerAction(LanguagePickerAction.WATCH);
+            recordLanguageSelected();
+            doneCallback.run();
+        });
         populateList(mVideoTutorialService.getSupportedLanguages());
     }
 
@@ -80,5 +89,16 @@ public class LanguagePickerMediator {
                         TextUtils.equals(language.locale, preferredLocale))
                 .with(LanguageItemProperties.SELECTION_CALLBACK, this::onLanguageSelected)
                 .build();
+    }
+
+    private void recordLanguageSelected() {
+        String preferredLocale = mVideoTutorialService.getPreferredLocale();
+        List<String> supportedLanguages = mVideoTutorialService.getSupportedLanguages();
+        for (int i = 0; i < supportedLanguages.size(); i++) {
+            if (TextUtils.equals(supportedLanguages.get(i), preferredLocale)) {
+                VideoTutorialMetrics.recordLanguageSelected(i);
+                break;
+            }
+        }
     }
 }

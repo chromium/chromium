@@ -24,6 +24,8 @@ import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialServiceFactory;
 import org.chromium.chrome.browser.video_tutorials.iph.VideoIPHCoordinator;
 import org.chromium.chrome.browser.video_tutorials.iph.VideoTutorialIPHUtils;
+import org.chromium.chrome.browser.video_tutorials.metrics.VideoTutorialMetrics;
+import org.chromium.chrome.browser.video_tutorials.metrics.VideoTutorialMetrics.UserAction;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
 import org.chromium.components.feature_engagement.Tracker;
 
@@ -85,6 +87,8 @@ public class NewTabPageVideoIPHManager {
             String featureName = VideoTutorialIPHUtils.getFeatureNameForNTP(tutorial.featureType);
             if (featureName == null) continue;
             if (mTracker.shouldTriggerHelpUI(featureName)) {
+                VideoTutorialMetrics.recordUserAction(
+                        tutorial.featureType, UserAction.IPH_NTP_SHOWN);
                 mVideoIPHCoordinator.showVideoIPH(tutorial);
                 mTracker.dismissed(featureName);
                 break;
@@ -95,6 +99,7 @@ public class NewTabPageVideoIPHManager {
     private void onClickIPH(Tutorial tutorial) {
         // TODO(shaktisahu): Maybe collect this event when video has been halfway watched.
         mTracker.notifyEvent(VideoTutorialIPHUtils.getClickEvent(tutorial.featureType));
+        VideoTutorialMetrics.recordUserAction(tutorial.featureType, UserAction.IPH_NTP_CLICKED);
 
         // Bring up the player and start playing the video.
         if (tutorial.featureType == FeatureType.SUMMARY) {
@@ -108,6 +113,7 @@ public class NewTabPageVideoIPHManager {
 
     private void onDismissIPH(Tutorial tutorial) {
         mTracker.notifyEvent(VideoTutorialIPHUtils.getDismissEvent(tutorial.featureType));
+        VideoTutorialMetrics.recordUserAction(tutorial.featureType, UserAction.IPH_NTP_DISMISSED);
 
         // TODO(shaktisahu): Animate this. Maybe add a delay.
         mVideoTutorialService.getTutorials(this::onFetchTutorials);
