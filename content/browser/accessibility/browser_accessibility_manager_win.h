@@ -36,6 +36,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerWin
   // BrowserAccessibilityManager methods
   void UserIsReloading() override;
   BrowserAccessibility* GetFocus() const override;
+  bool IsIgnoredChangedNode(const BrowserAccessibility* node) const;
   bool CanFireEvents() const override;
   gfx::Rect GetViewBoundsInScreenCoordinates() const override;
 

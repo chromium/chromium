@@ -572,6 +572,25 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
+                       AccessibilityEventsAriaHiddenSingleDescendant) {
+  RunEventTest(FILE_PATH_LITERAL("aria-hidden-single-descendant.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityEventsTest,
+    AccessibilityEventsAriaHiddenSingleDescendantDisplayNone) {
+  RunEventTest(
+      FILE_PATH_LITERAL("aria-hidden-single-descendant-display-none.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityEventsTest,
+    AccessibilityEventsAriaHiddenSingleDescendantVisibilityHidden) {
+  RunEventTest(FILE_PATH_LITERAL(
+      "aria-hidden-single-descendant-visibility-hidden.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsAriaHiddenDescendantsAlreadyIgnored) {
   RunEventTest(
       FILE_PATH_LITERAL("aria-hidden-descendants-already-ignored.html"));

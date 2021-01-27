@@ -211,6 +211,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void HandleActiveDescendantChangedWithCleanLayout(Node*);
   void HandleRoleChangeWithCleanLayout(Node*);
+  void HandleAriaHiddenChangedWithCleanLayout(Node*);
   void HandleAriaExpandedChangeWithCleanLayout(Node*);
   void HandleAriaSelectedChangedWithCleanLayout(Node*);
   void HandleNodeLostFocusWithCleanLayout(Node*);

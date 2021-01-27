@@ -514,7 +514,7 @@ void BrowserAccessibilityManagerWin::FireWinAccessibilityEvent(
   // state may show / hide a popup by exposing it to the tree or not.
   // Also include focus events since a node may become visible at the same time
   // it receives focus It's never good to suppress a po
-  if (base::Contains(ignored_changed_nodes_, node)) {
+  if (IsIgnoredChangedNode(node)) {
     switch (win_event_type) {
       case EVENT_OBJECT_HIDE:
       case EVENT_OBJECT_SHOW:
@@ -541,6 +541,12 @@ void BrowserAccessibilityManagerWin::FireWinAccessibilityEvent(
   ::NotifyWinEvent(win_event_type, hwnd, OBJID_CLIENT, child_id);
 }
 
+bool BrowserAccessibilityManagerWin::IsIgnoredChangedNode(
+    const BrowserAccessibility* node) const {
+  return base::Contains(ignored_changed_nodes_,
+                        const_cast<BrowserAccessibility*>(node));
+}
+
 void BrowserAccessibilityManagerWin::FireUiaAccessibilityEvent(
     LONG uia_event,
     BrowserAccessibility* node) {
@@ -551,7 +557,7 @@ void BrowserAccessibilityManagerWin::FireUiaAccessibilityEvent(
   // Suppress events when |IGNORED_CHANGED| except for MenuClosed / MenuOpen
   // since a change in the ignored state may show / hide a popup by exposing
   // it to the tree or not.
-  if (base::Contains(ignored_changed_nodes_, node)) {
+  if (IsIgnoredChangedNode(node)) {
     switch (uia_event) {
       case UIA_MenuClosedEventId:
       case UIA_MenuOpenedEventId:
@@ -577,7 +583,7 @@ void BrowserAccessibilityManagerWin::FireUiaPropertyChangedEvent(
   // Suppress events when |IGNORED_CHANGED| with the exception for firing
   // UIA_AriaPropertiesPropertyId-hidden event on non-text node marked as
   // ignored.
-  if (node->IsIgnored() || base::Contains(ignored_changed_nodes_, node)) {
+  if (node->IsIgnored() || IsIgnoredChangedNode(node)) {
     if (uia_property != UIA_AriaPropertiesPropertyId || node->IsText())
       return;
   }
@@ -603,7 +609,7 @@ void BrowserAccessibilityManagerWin::FireUiaStructureChangedEvent(
   if (!ShouldFireEventForNode(node))
     return;
   // Suppress events when |IGNORED_CHANGED| except for related structure changes
-  if (base::Contains(ignored_changed_nodes_, node)) {
+  if (IsIgnoredChangedNode(node)) {
     switch (change_type) {
       case StructureChangeType_ChildRemoved:
       case StructureChangeType_ChildAdded:

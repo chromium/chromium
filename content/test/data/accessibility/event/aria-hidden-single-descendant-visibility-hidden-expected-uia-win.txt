@@ -1,0 +1,11 @@
+AriaProperties changed on role=document
+StructureChanged/ChildRemoved on role=document
+=== Start Continuation ===
+AriaProperties changed on role=document
+StructureChanged/ChildAdded on role=document
+=== Start Continuation ===
+AriaProperties changed on role=document
+StructureChanged/ChildRemoved on role=document
+=== Start Continuation ===
+AriaProperties changed on role=group
+StructureChanged/ChildAdded on role=group
