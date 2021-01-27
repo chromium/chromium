@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, EnumerationTest) {
                       "  return count;"
                       "})()")
                    .ExtractInt();
-  ASSERT_GT(result, 0) << "Expected at least one font. Got: " << result;
+  EXPECT_GT(result, 0) << "Expected at least one font. Got: " << result;
 }
 
 #if defined(OS_WIN)
@@ -133,8 +133,7 @@ IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest, LocaleTest) {
              "})()")
           .ExtractString();
   std::string ms_yahei_utf8 = "微软雅黑";
-  ASSERT_EQ(result, ms_yahei_utf8)
-      << "Expected:" << ms_yahei_utf8 << " Got:" << result;
+  EXPECT_EQ(result, ms_yahei_utf8);
 }
 
 IN_PROC_BROWSER_TEST_F(FontAccessManagerImplBrowserTest,
