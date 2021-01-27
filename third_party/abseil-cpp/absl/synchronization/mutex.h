@@ -162,7 +162,7 @@ class ABSL_LOCKABLE Mutex {
   // Mutex::Unlock()
   //
   // Releases this `Mutex` and returns it from the exclusive/write state to the
-  // free state. Caller must hold the `Mutex` exclusively.
+  // free state. Calling thread must hold the `Mutex` exclusively.
   void Unlock() ABSL_UNLOCK_FUNCTION();
 
   // Mutex::TryLock()

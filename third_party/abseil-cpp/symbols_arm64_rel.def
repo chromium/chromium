@@ -11,7 +11,6 @@ EXPORTS
     ??$CallOnceImpl@A6AXXZ$$V@base_internal@absl@@YAXPEAU?$atomic@I@__1@std@@W4SchedulingMode@01@A6AXXZ@Z
     ??$CastAndCallFunction@$$CBU?$atomic@_N@__1@std@@@Condition@absl@@CA_NPEBV01@@Z
     ??$Compare@$0FE@$0FE@@strings_internal@absl@@YAHAEBV?$BigUnsigned@$0FE@@01@0@Z
-    ??$DestroyElements@V?$allocator@UPayload@status_internal@absl@@@__1@std@@PEAUPayload@status_internal@absl@@_K@inlined_vector_internal@absl@@YAXPEAV?$allocator@UPayload@status_internal@absl@@@__1@std@@PEAUPayload@status_internal@1@_K@Z
     ??$Dispatch@C@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PEAX@Z
     ??$Dispatch@D@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PEAX@Z
     ??$Dispatch@E@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PEAX@Z
@@ -207,7 +206,6 @@ EXPORTS
     ?AssertHeld@Mutex@absl@@QEBAXXZ
     ?AssertNotHeld@Mutex@absl@@QEBAXXZ
     ?AssertReaderHeld@Mutex@absl@@QEBAXXZ
-    ?AssignNext@?$IteratorValueAdapter@V?$allocator@UPayload@status_internal@absl@@@__1@std@@V?$move_iterator@PEAUPayload@status_internal@absl@@@23@@inlined_vector_internal@absl@@QEAAXPEAUPayload@status_internal@3@@Z
     ?AssignSlow@InlineRep@Cord@absl@@AEAAXAEBV123@@Z
     ?At@TimeZone@absl@@QEBA?AUCivilInfo@12@VTime@2@@Z
     ?At@TimeZone@absl@@QEBA?AUTimeInfo@12@V?$civil_time@Usecond_tag@time_internal@absl@@@detail@cctz@time_internal@2@@Z
@@ -726,6 +724,7 @@ EXPORTS
     ?cord_ring_buffer_enabled@cord_internal@absl@@3U?$atomic@_N@__1@std@@A
     ?day_difference@impl@detail@cctz@time_internal@absl@@YA_J_JCC0CC@Z
     ?description@time_zone@cctz@time_internal@absl@@QEBA?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@XZ
+    ?destroy@?$allocator@UPayload@status_internal@absl@@@__1@std@@QEAAXPEAUPayload@status_internal@absl@@@Z
     ?difference@detail@cctz@time_internal@absl@@YA_JUhour_tag@1234@Ufields@1234@1@Z
     ?difference@detail@cctz@time_internal@absl@@YA_JUsecond_tag@1234@Ufields@1234@1@Z
     ?effective_impl@time_zone@cctz@time_internal@absl@@AEBAAEBVImpl@1234@XZ

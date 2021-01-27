@@ -269,10 +269,13 @@ cc_library(
     name = "cord_internal",
     srcs = [
         "internal/cord_internal.cc",
+        "internal/cord_rep_ring.cc",
     ],
     hdrs = [
         "internal/cord_internal.h",
         "internal/cord_rep_flat.h",
+        "internal/cord_rep_ring.h",
+        "internal/cord_rep_ring_reader.h",
     ],
     copts = ABSL_DEFAULT_COPTS,
     visibility = [
@@ -281,9 +284,13 @@ cc_library(
     deps = [
         ":strings",
         "//absl/base:base_internal",
+        "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/base:raw_logging_internal",
+        "//absl/base:throw_delegate",
         "//absl/container:compressed_tuple",
         "//absl/container:inlined_vector",
+        "//absl/container:layout",
         "//absl/meta:type_traits",
     ],
 )
@@ -343,6 +350,38 @@ cc_test(
         "//absl/base:endian",
         "//absl/base:raw_logging_internal",
         "//absl/container:fixed_array",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "cord_ring_test",
+    size = "medium",
+    srcs = ["cord_ring_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    visibility = ["//visibility:private"],
+    deps = [
+        ":cord_internal",
+        ":strings",
+        "//absl/base:config",
+        "//absl/base:core_headers",
+        "//absl/base:raw_logging_internal",
+        "//absl/debugging:leak_check",
+        "@com_google_googletest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "cord_ring_reader_test",
+    size = "medium",
+    srcs = ["cord_ring_reader_test.cc"],
+    copts = ABSL_TEST_COPTS,
+    visibility = ["//visibility:private"],
+    deps = [
+        ":cord_internal",
+        ":strings",
+        "//absl/base:core_headers",
+        "//absl/debugging:leak_check",
         "@com_google_googletest//:gtest_main",
     ],
 )

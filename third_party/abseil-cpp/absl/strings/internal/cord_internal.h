@@ -1,4 +1,4 @@
-// Copyright 2020 The Abseil Authors.
+// Copyright 2021 The Abseil Authors.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 #include <cstdint>
 #include <type_traits>
 
+#include "absl/base/config.h"
 #include "absl/base/internal/invoke.h"
 #include "absl/base/optimization.h"
 #include "absl/container/internal/compressed_tuple.h"
@@ -145,13 +146,14 @@ struct CordRepConcat;
 struct CordRepExternal;
 struct CordRepFlat;
 struct CordRepSubstring;
+class CordRepRing;
 
 // Various representations that we allow
 enum CordRepKind {
-  CONCAT        = 0,
-  EXTERNAL      = 1,
-  SUBSTRING     = 2,
-  RING          = 3,
+  CONCAT = 0,
+  EXTERNAL = 1,
+  SUBSTRING = 2,
+  RING = 3,
 
   // We have different tags for different sized flat arrays,
   // starting with FLAT, and limited to MAX_FLAT_TAG. The 224 value is based on
@@ -160,7 +162,7 @@ enum CordRepKind {
   // as the Tag <---> Size logic so that FLAT stil represents the minimum flat
   // allocation size. (32 bytes as of now).
   FLAT = 4,
-  MAX_FLAT_TAG = 224,
+  MAX_FLAT_TAG = 224
 };
 
 struct CordRep {
@@ -177,6 +179,8 @@ struct CordRep {
   uint8_t tag;
   char storage[1];  // Starting point for flat array: MUST BE LAST FIELD
 
+  inline CordRepRing* ring();
+  inline const CordRepRing* ring() const;
   inline CordRepConcat* concat();
   inline const CordRepConcat* concat() const;
   inline CordRepSubstring* substring();
@@ -199,10 +203,15 @@ struct CordRep {
   // platforms; we intentionally allow LLVM to ignore the attribute rather than
   // attempting to hardcode the list of supported platforms.
 #if defined(__clang__) && !defined(__i386__)
+#if !(defined(ABSL_HAVE_MEMORY_SANITIZER) ||  \
+      defined(ABSL_HAVE_THREAD_SANITIZER) ||  \
+      defined(ABSL_HAVE_ADDRESS_SANITIZER) || \
+      defined(UNDEFINED_BEHAVIOR_SANITIZER))
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wattributes"
   __attribute__((preserve_most))
 #pragma clang diagnostic pop
+#endif  // *_SANITIZER
 #endif
   static void Destroy(CordRep* rep);
 
@@ -306,45 +315,171 @@ CordRepExternal ConstInitExternalStorage<Str>::value(Str::value);
 
 enum {
   kMaxInline = 15,
-  // Tag byte & kMaxInline means we are storing a pointer.
-  kTreeFlag = 1 << 4,
-  // Tag byte & kProfiledFlag means we are profiling the Cord.
-  kProfiledFlag = 1 << 5
-};
-
-// If the data has length <= kMaxInline, we store it in `as_chars`, and
-// store the size in `tagged_size`.
-// Else we store it in a tree and store a pointer to that tree in
-// `as_tree.rep` and store a tag in `tagged_size`.
-struct AsTree {
-  absl::cord_internal::CordRep* rep;
-  char padding[kMaxInline + 1 - sizeof(absl::cord_internal::CordRep*) - 1];
-  char tagged_size;
 };
 
 constexpr char GetOrNull(absl::string_view data, size_t pos) {
   return pos < data.size() ? data[pos] : '\0';
 }
 
-union InlineData {
-  constexpr InlineData() : as_chars{} {}
-  explicit constexpr InlineData(AsTree tree) : as_tree(tree) {}
-  explicit constexpr InlineData(absl::string_view chars)
-      : as_chars{GetOrNull(chars, 0),  GetOrNull(chars, 1),
-                 GetOrNull(chars, 2),  GetOrNull(chars, 3),
-                 GetOrNull(chars, 4),  GetOrNull(chars, 5),
-                 GetOrNull(chars, 6),  GetOrNull(chars, 7),
-                 GetOrNull(chars, 8),  GetOrNull(chars, 9),
-                 GetOrNull(chars, 10), GetOrNull(chars, 11),
-                 GetOrNull(chars, 12), GetOrNull(chars, 13),
-                 GetOrNull(chars, 14), static_cast<char>(chars.size())} {}
+// We store cordz_info as 64 bit pointer value in big endian format. This
+// guarantees that the least significant byte of cordz_info matches the last
+// byte of the inline data representation in as_chars_, which holds the inlined
+// size or the 'is_tree' bit.
+using cordz_info_t = int64_t;
 
-  AsTree as_tree;
-  char as_chars[kMaxInline + 1];
+// Assert that the `cordz_info` pointer value perfectly overlaps the last half
+// of `as_chars_` and can hold a pointer value.
+static_assert(sizeof(cordz_info_t) * 2 == kMaxInline + 1, "");
+static_assert(sizeof(cordz_info_t) >= sizeof(intptr_t), "");
+
+// BigEndianByte() creates a big endian representation of 'value', i.e.: a big
+// endian value where the last byte in the host's representation holds 'value`,
+// with all other bytes being 0.
+static constexpr cordz_info_t BigEndianByte(unsigned char value) {
+#if defined(ABSL_IS_BIG_ENDIAN)
+  return value;
+#else
+  return static_cast<cordz_info_t>(value) << ((sizeof(cordz_info_t) - 1) * 8);
+#endif
+}
+
+class InlineData {
+ public:
+  // kNullCordzInfo holds the big endian representation of intptr_t(1)
+  // This is the 'null' / initial value of 'cordz_info'. The null value
+  // is specifically big endian 1 as with 64-bit pointers, the last
+  // byte of cordz_info overlaps with the last byte holding the tag.
+  static constexpr cordz_info_t kNullCordzInfo = BigEndianByte(1);
+
+  // kFakeCordzInfo holds a 'fake', non-null cordz-info value we use to
+  // emulate the previous 'kProfiled' tag logic in 'set_profiled' until
+  // cord code is changed to store cordz_info values in InlineData.
+  static constexpr cordz_info_t kFakeCordzInfo = BigEndianByte(9);
+
+  constexpr InlineData() : as_chars_{0} {}
+  explicit constexpr InlineData(CordRep* rep) : as_tree_(rep) {}
+  explicit constexpr InlineData(absl::string_view chars)
+      : as_chars_{
+            GetOrNull(chars, 0),  GetOrNull(chars, 1),
+            GetOrNull(chars, 2),  GetOrNull(chars, 3),
+            GetOrNull(chars, 4),  GetOrNull(chars, 5),
+            GetOrNull(chars, 6),  GetOrNull(chars, 7),
+            GetOrNull(chars, 8),  GetOrNull(chars, 9),
+            GetOrNull(chars, 10), GetOrNull(chars, 11),
+            GetOrNull(chars, 12), GetOrNull(chars, 13),
+            GetOrNull(chars, 14), static_cast<char>((chars.size() << 1))} {}
+
+  // Returns true if the current instance is empty.
+  // The 'empty value' is an inlined data value of zero length.
+  bool is_empty() const { return tag() == 0; }
+
+  // Returns true if the current instance holds a tree value.
+  bool is_tree() const { return (tag() & 1) != 0; }
+
+  // Returns true if the current instance holds a cordz_info value.
+  // Requires the current instance to hold a tree value.
+  bool is_profiled() const {
+    assert(is_tree());
+    return as_tree_.cordz_info != kNullCordzInfo;
+  }
+
+  // Returns a read only pointer to the character data inside this instance.
+  // Requires the current instance to hold inline data.
+  const char* as_chars() const {
+    assert(!is_tree());
+    return as_chars_;
+  }
+
+  // Returns a mutable pointer to the character data inside this instance.
+  // Should be used for 'write only' operations setting an inlined value.
+  // Applications can set the value of inlined data either before or after
+  // setting the inlined size, i.e., both of the below are valid:
+  //
+  //   // Set inlined data and inline size
+  //   memcpy(data_.as_chars(), data, size);
+  //   data_.set_inline_size(size);
+  //
+  //   // Set inlined size and inline data
+  //   data_.set_inline_size(size);
+  //   memcpy(data_.as_chars(), data, size);
+  //
+  // It's an error to read from the returned pointer without a preceding write
+  // if the current instance does not hold inline data, i.e.: is_tree() == true.
+  char* as_chars() { return as_chars_; }
+
+  // Returns the tree value of this value.
+  // Requires the current instance to hold a tree value.
+  CordRep* as_tree() const {
+    assert(is_tree());
+    return as_tree_.rep;
+  }
+
+  // Initialize this instance to holding the tree value `rep`,
+  // initializing the cordz_info to null, i.e.: 'not profiled'.
+  void make_tree(CordRep* rep) {
+    as_tree_.rep = rep;
+    as_tree_.cordz_info = kNullCordzInfo;
+  }
+
+  // Set the tree value of this instance to 'rep`.
+  // Requires the current instance to already hold a tree value.
+  // Does not affect the value of cordz_info.
+  void set_tree(CordRep* rep) {
+    assert(is_tree());
+    as_tree_.rep = rep;
+  }
+
+  // Returns the size of the inlined character data inside this instance.
+  // Requires the current instance to hold inline data.
+  size_t inline_size() const {
+    assert(!is_tree());
+    return tag() >> 1;
+  }
+
+  // Sets the size of the inlined character data inside this instance.
+  // Requires `size` to be <= kMaxInline.
+  // See the documentation on 'as_chars()' for more information and examples.
+  void set_inline_size(size_t size) {
+    ABSL_ASSERT(size <= kMaxInline);
+    tag() = static_cast<char>(size << 1);
+  }
+
+  // Sets or unsets the 'is_profiled' state of this instance.
+  // Requires the current instance to hold a tree value.
+  void set_profiled(bool profiled) {
+    assert(is_tree());
+    as_tree_.cordz_info = profiled ? kFakeCordzInfo : kNullCordzInfo;
+  }
+
+ private:
+  // See cordz_info_t for forced alignment and size of `cordz_info` details.
+  struct AsTree {
+    explicit constexpr AsTree(absl::cord_internal::CordRep* tree)
+        : rep(tree), cordz_info(kNullCordzInfo) {}
+    // This union uses up extra space so that whether rep is 32 or 64 bits,
+    // cordz_info will still start at the eighth byte, and the last
+    // byte of cordz_info will still be the last byte of InlineData.
+    union {
+      absl::cord_internal::CordRep* rep;
+      cordz_info_t unused_aligner;
+    };
+    cordz_info_t cordz_info;
+  };
+
+  char& tag() { return reinterpret_cast<char*>(this)[kMaxInline]; }
+  char tag() const { return reinterpret_cast<const char*>(this)[kMaxInline]; }
+
+  // If the data has length <= kMaxInline, we store it in `as_chars_`, and
+  // store the size in the last char of `as_chars_` shifted left + 1.
+  // Else we store it in a tree and store a pointer to that tree in
+  // `as_tree_.rep` and store a tag in `tagged_size`.
+  union  {
+    char as_chars_[kMaxInline + 1];
+    AsTree as_tree_;
+  };
 };
+
 static_assert(sizeof(InlineData) == kMaxInline + 1, "");
-static_assert(sizeof(AsTree) == sizeof(InlineData), "");
-static_assert(offsetof(AsTree, tagged_size) == kMaxInline, "");
 
 inline CordRepConcat* CordRep::concat() {
   assert(tag == CONCAT);
@@ -374,16 +509,6 @@ inline CordRepExternal* CordRep::external() {
 inline const CordRepExternal* CordRep::external() const {
   assert(tag == EXTERNAL);
   return static_cast<const CordRepExternal*>(this);
-}
-
-inline CordRepFlat* CordRep::flat() {
-  assert(tag >= FLAT && tag <= MAX_FLAT_TAG);
-  return reinterpret_cast<CordRepFlat*>(this);
-}
-
-inline const CordRepFlat* CordRep::flat() const {
-  assert(tag >= FLAT && tag <= MAX_FLAT_TAG);
-  return reinterpret_cast<const CordRepFlat*>(this);
 }
 
 inline CordRep* CordRep::Ref(CordRep* rep) {

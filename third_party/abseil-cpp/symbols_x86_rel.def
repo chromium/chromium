@@ -11,7 +11,6 @@ EXPORTS
     ??$CallOnceImpl@A6AXXZ$$V@base_internal@absl@@YAXPAU?$atomic@I@__1@std@@W4SchedulingMode@01@A6AXXZ@Z
     ??$CastAndCallFunction@$$CBU?$atomic@_N@__1@std@@@Condition@absl@@CA_NPBV01@@Z
     ??$Compare@$0FE@$0FE@@strings_internal@absl@@YAHABV?$BigUnsigned@$0FE@@01@0@Z
-    ??$DestroyElements@V?$allocator@UPayload@status_internal@absl@@@__1@std@@PAUPayload@status_internal@absl@@I@inlined_vector_internal@absl@@YAXPAV?$allocator@UPayload@status_internal@absl@@@__1@std@@PAUPayload@status_internal@1@I@Z
     ??$Dispatch@C@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PAX@Z
     ??$Dispatch@D@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PAX@Z
     ??$Dispatch@E@FormatArgImpl@str_format_internal@absl@@CA_NTData@012@VFormatConversionSpecImpl@12@PAX@Z
@@ -205,7 +204,6 @@ EXPORTS
     ?AssertHeld@Mutex@absl@@QBEXXZ
     ?AssertNotHeld@Mutex@absl@@QBEXXZ
     ?AssertReaderHeld@Mutex@absl@@QBEXXZ
-    ?AssignNext@?$IteratorValueAdapter@V?$allocator@UPayload@status_internal@absl@@@__1@std@@V?$move_iterator@PAUPayload@status_internal@absl@@@23@@inlined_vector_internal@absl@@QAEXPAUPayload@status_internal@3@@Z
     ?AssignSlow@InlineRep@Cord@absl@@AAEXABV123@@Z
     ?At@TimeZone@absl@@QBE?AUCivilInfo@12@VTime@2@@Z
     ?At@TimeZone@absl@@QBE?AUTimeInfo@12@V?$civil_time@Usecond_tag@time_internal@absl@@@detail@cctz@time_internal@2@@Z
@@ -723,6 +721,7 @@ EXPORTS
     ?cord_ring_buffer_enabled@cord_internal@absl@@3U?$atomic@_N@__1@std@@A
     ?day_difference@impl@detail@cctz@time_internal@absl@@YA_J_JCC0CC@Z
     ?description@time_zone@cctz@time_internal@absl@@QBE?AV?$basic_string@DU?$char_traits@D@__1@std@@V?$allocator@D@23@@__1@std@@XZ
+    ?destroy@?$allocator@UPayload@status_internal@absl@@@__1@std@@QAEXPAUPayload@status_internal@absl@@@Z
     ?effective_impl@time_zone@cctz@time_internal@absl@@ABEABVImpl@1234@XZ
     ?erase@?$InlinedVector@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__1@std@@@absl@@QAEPAUPayload@status_internal@2@PBU342@@Z
     ?find@string_view@absl@@QBEIDI@Z

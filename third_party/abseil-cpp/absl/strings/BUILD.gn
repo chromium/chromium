@@ -117,18 +117,27 @@ absl_source_set("str_format_internal") {
 }
 
 absl_source_set("cord_internal") {
-  sources = [ "internal/cord_internal.cc" ]
+  sources = [
+    "internal/cord_internal.cc",
+    "internal/cord_rep_ring.cc",
+  ]
   public = [
     "internal/cord_internal.h",
     "internal/cord_rep_flat.h",
+    "internal/cord_rep_ring.h",
+    "internal/cord_rep_ring_reader.h",
   ]
   visibility = [ ":*" ]
   deps = [
     ":strings",
     "//third_party/abseil-cpp/absl/base:base_internal",
+    "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:raw_logging_internal",
+    "//third_party/abseil-cpp/absl/base:throw_delegate",
     "//third_party/abseil-cpp/absl/container:compressed_tuple",
     "//third_party/abseil-cpp/absl/container:inlined_vector",
+    "//third_party/abseil-cpp/absl/container:layout",
     "//third_party/abseil-cpp/absl/meta:type_traits",
   ]
 }
