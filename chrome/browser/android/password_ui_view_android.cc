@@ -25,7 +25,6 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/android/chrome_jni_headers/PasswordUIView_jni.h"
-#include "chrome/browser/android/password_editing_bridge.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -212,10 +211,7 @@ void PasswordUIViewAndroid::HandleShowPasswordEntryEditingView(
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& context,
     int index) {
-  PasswordEditingBridge::LaunchPasswordEntryEditor(
-      env, context, GetProfile(),
-      password_manager_presenter_.GetPasswords(index),
-      password_manager_presenter_.GetUsernamesForRealm(index));
+  // TODO(crbug.com/1141409): Wire the new editing module here.
 }
 
 ScopedJavaLocalRef<jstring> JNI_PasswordUIView_GetAccountDashboardURL(

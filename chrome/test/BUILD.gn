@@ -3890,7 +3890,6 @@ test("unit_tests") {
       "../browser/android/metrics/background_task_memory_metrics_emitter_unittest.cc",
       "../browser/android/oom_intervention/near_oom_monitor_unittest.cc",
       "../browser/android/oom_intervention/oom_intervention_decider_unittest.cc",
-      "../browser/android/password_edit_delegate_settings_impl_unittest.cc",
       "../browser/android/password_ui_view_android_unittest.cc",
       "../browser/android/signin/signin_manager_android_unittest.cc",
       "../browser/android/signin/web_signin_bridge_unittest.cc",
