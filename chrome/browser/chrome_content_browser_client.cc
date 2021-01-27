@@ -6071,9 +6071,9 @@ bool ChromeContentBrowserClient::
 
 bool ChromeContentBrowserClient::ShouldAllowInsecurePrivateNetworkRequests(
     content::BrowserContext* browser_context,
-    const GURL& url) {
+    const url::Origin& origin) {
   return content_settings::ShouldAllowInsecurePrivateNetworkRequests(
-      HostContentSettingsMapFactory::GetForProfile(browser_context), url);
+      HostContentSettingsMapFactory::GetForProfile(browser_context), origin);
 }
 
 ukm::UkmService* ChromeContentBrowserClient::GetUkmService() {

@@ -719,7 +719,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const GURL& url) override;
   bool ShouldAllowInsecurePrivateNetworkRequests(
       content::BrowserContext* browser_context,
-      const GURL& url) override;
+      const url::Origin& origin) override;
   ukm::UkmService* GetUkmService() override;
 
   void OnKeepaliveRequestStarted() override;

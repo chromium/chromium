@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/bind.h"
@@ -27,6 +28,7 @@
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 namespace {
@@ -170,18 +172,19 @@ class PolicyTestContentBrowserClient : public TestContentBrowserClient {
 
   ~PolicyTestContentBrowserClient() override = default;
 
-  void SetAllowInsecurePrivateNetworkRequests(bool value) {
-    allow_insecure_private_network_requests_ = value;
+  // Adds an origin to the allowlist.
+  void SetAllowInsecurePrivateNetworkRequestsFrom(const url::Origin& origin) {
+    allowlisted_origins_.insert(origin);
   }
 
   bool ShouldAllowInsecurePrivateNetworkRequests(
       content::BrowserContext* browser_context,
-      const GURL& url) override {
-    return allow_insecure_private_network_requests_;
+      const url::Origin& origin) override {
+    return allowlisted_origins_.find(origin) != allowlisted_origins_.end();
   }
 
  private:
-  bool allow_insecure_private_network_requests_ = false;
+  std::set<url::Origin> allowlisted_origins_;
 };
 
 // RAII wrapper for |SetContentBrowserClientForTesting()|.
@@ -2096,15 +2099,16 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
 IN_PROC_BROWSER_TEST_F(
     CorsRfc1918BrowserTest,
     FromInsecureTreatAsPublicToLocalWithPolicySetToAllowIsNotBlocked) {
+  GURL url = InsecureTreatAsPublicAddressURL(*embedded_test_server());
+
   PolicyTestContentBrowserClient client;
-  client.SetAllowInsecurePrivateNetworkRequests(true);
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
 
   // Register the client before we navigate, so that the navigation commits the
   // correct PrivateNetworkRequestPolicy.
   ContentBrowserClientRegistration registration(&client);
 
-  EXPECT_TRUE(NavigateToURL(
-      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
 
   const network::mojom::ClientSecurityStatePtr security_state =
       root_frame_host()->BuildClientSecurityState();
@@ -2116,6 +2120,116 @@ IN_PROC_BROWSER_TEST_F(
   // Check that the page can load a local resource.
   EXPECT_EQ(true,
             EvalJs(root_frame_host(), FetchSubresourceScript("image.jpg")));
+}
+
+// This test verifies that child frames with distinct origins from their parent
+// do not inherit their private network request policy, which is based on the
+// origin of the child document instead.
+IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
+                       PrivateNetworkRequestPolicyCalculatedPerOrigin) {
+  GURL url = InsecureTreatAsPublicAddressURL(*embedded_test_server());
+
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+
+  // Register the client before we navigate, so that the navigation commits the
+  // correct PrivateNetworkRequestPolicy.
+  ContentBrowserClientRegistration registration(&client);
+
+  EXPECT_TRUE(NavigateToURL(
+      shell(), InsecureTreatAsPublicAddressURL(*embedded_test_server())));
+
+  RenderFrameHostImpl* child_frame = AddChildFromURL(
+      root_frame_host(), SecureDefaultURL(*embedded_test_server()));
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::
+                kBlockFromInsecureToMorePrivate);
+}
+
+// This test verifies that the initial empty document, which inherits its origin
+// from the document creator, also inherits its private network request policy.
+IN_PROC_BROWSER_TEST_F(
+    CorsRfc1918BrowserTest,
+    PrivateNetworkRequestPolicyInheritedWithOriginForInitialEmptyDoc) {
+  GURL url = InsecureTreatAsPublicAddressURL(*embedded_test_server());
+
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+
+  // Register the client before we navigate, so that the navigation commits the
+  // correct PrivateNetworkRequestPolicy.
+  ContentBrowserClientRegistration registration(&client);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* child_frame = AddChildInitialEmptyDoc(root_frame_host());
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+}
+
+// This test verifies that `about:blank` iframes, which inherit their origin
+// from the navigation initiator, also inherit their private network request
+// policy.
+IN_PROC_BROWSER_TEST_F(
+    CorsRfc1918BrowserTest,
+    PrivateNetworkRequestPolicyInheritedWithOriginForAboutBlank) {
+  GURL url = InsecureTreatAsPublicAddressURL(*embedded_test_server());
+
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+
+  // Register the client before we navigate, so that the navigation commits the
+  // correct PrivateNetworkRequestPolicy.
+  ContentBrowserClientRegistration registration(&client);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* child_frame = AddChildFromAboutBlank(root_frame_host());
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::kAllow);
+}
+
+// This test verifies that `data:` iframes, which commit an opaque origin
+// derived from the navigation initiator's origin, do not inherit their private
+// network request policy.
+IN_PROC_BROWSER_TEST_F(
+    CorsRfc1918BrowserTest,
+    PrivateNetworkRequestPolicyNotInheritedWithOriginForDataURL) {
+  GURL url = InsecureTreatAsPublicAddressURL(*embedded_test_server());
+
+  PolicyTestContentBrowserClient client;
+  client.SetAllowInsecurePrivateNetworkRequestsFrom(url::Origin::Create(url));
+
+  // Register the client before we navigate, so that the navigation commits the
+  // correct PrivateNetworkRequestPolicy.
+  ContentBrowserClientRegistration registration(&client);
+
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHostImpl* child_frame = AddChildFromDataURL(root_frame_host());
+
+  network::mojom::ClientSecurityStatePtr security_state =
+      child_frame->BuildClientSecurityState();
+  ASSERT_FALSE(security_state.is_null());
+
+  EXPECT_EQ(security_state->private_network_request_policy,
+            network::mojom::PrivateNetworkRequestPolicy::
+                kBlockFromInsecureToMorePrivate);
 }
 
 // This test verifies that when the right feature is enabled, requests:
@@ -2264,7 +2378,8 @@ IN_PROC_BROWSER_TEST_F(CorsRfc1918BrowserTest,
             client_security_state->cross_origin_embedder_policy.value);
   EXPECT_EQ(network::mojom::IPAddressSpace::kUnknown,
             client_security_state->ip_address_space);
-  EXPECT_EQ(network::mojom::PrivateNetworkRequestPolicy::kAllow,
+  EXPECT_EQ(network::mojom::PrivateNetworkRequestPolicy::
+                kBlockFromInsecureToMorePrivate,
             client_security_state->private_network_request_policy);
 }
 

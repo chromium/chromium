@@ -7,11 +7,13 @@
 #include "base/logging.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content_settings {
 
 // There are two inputs that go into the INSECURE_PRIVATE_NETWORK content
-// setting for a URL:
+// setting for an origin:
 //
 //  - the blanket InsecurePrivateNetworkRequestsAllowed enterprise policy:
 //    - if this policy is set to true, then the content setting is always ALLOW
@@ -22,7 +24,15 @@ namespace content_settings {
 //
 bool ShouldAllowInsecurePrivateNetworkRequests(
     const HostContentSettingsMap* map,
-    const GURL& url) {
+    const url::Origin& origin) {
+  // Derive the base URL from the origin, since HostContentSettingsMap is keyed
+  // by URL and not by origin. However, this setting is conceptually keyed by
+  // origin, hence its public API uses url::Origin.
+  //
+  // This returns the default-constructed GURL for opaque origins, which should
+  // not match any content settings.
+  const GURL url = origin.GetURL();
+
   const ContentSetting setting = map->GetContentSetting(
       url, url, ContentSettingsType::INSECURE_PRIVATE_NETWORK);
 

@@ -1156,6 +1156,12 @@ RenderFrameHostImpl::RenderFrameHostImpl(
     }
   }
 
+  if (!base::FeatureList::IsEnabled(
+          features::kBlockInsecurePrivateNetworkRequests)) {
+    private_network_request_policy_ =
+        network::mojom::PrivateNetworkRequestPolicy::kAllow;
+  }
+
   unload_event_monitor_timeout_ =
       std::make_unique<TimeoutMonitor>(base::BindRepeating(
           &RenderFrameHostImpl::OnUnloaded, weak_ptr_factory_.GetWeakPtr()));
@@ -3004,6 +3010,13 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   isolation_info_ = ComputeIsolationInfoInternal(
       new_frame_origin, net::IsolationInfo::RequestType::kOther);
   SetLastCommittedOrigin(new_frame_origin);
+
+  // Apply private network request policy according to our new origin.
+  if (GetContentClient()->browser()->ShouldAllowInsecurePrivateNetworkRequests(
+          GetBrowserContext(), new_frame_origin)) {
+    private_network_request_policy_ =
+        network::mojom::PrivateNetworkRequestPolicy::kAllow;
+  }
 
   // Construct the frame's feature policy only once we know its initial
   // committed origin. It's necessary to wait for the origin because the feature

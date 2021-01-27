@@ -1935,17 +1935,17 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldInheritCrossOriginEmbedderPolicyImplicitly(
       const GURL& url);
 
-  // Returns whether a context whose URL is |url| should be allowed to make
+  // Returns whether a context with the given |origin| should be allowed to make
   // insecure private network requests.
   //
   // See the CORS-RFC1918 spec for more details:
   // https://wicg.github.io/cors-rfc1918.
   //
   // |browser_context| must not be nullptr. Caller retains ownership.
-  // |url| is the URL of a navigation ready to commit.
+  // |origin| is the origin of a navigation ready to commit.
   virtual bool ShouldAllowInsecurePrivateNetworkRequests(
       BrowserContext* browser_context,
-      const GURL& url);
+      const url::Origin& origin);
 
   // Returns the URL-Keyed Metrics service for chrome:ukm.
   virtual ukm::UkmService* GetUkmService();

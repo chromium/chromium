@@ -4610,8 +4610,8 @@ void NavigationRequest::UpdateClientSecurityStateInternals() {
   BrowserContext* context =
       frame_tree_node_->navigator().GetController()->GetBrowserContext();
 
-  if (client->ShouldAllowInsecurePrivateNetworkRequests(context,
-                                                        common_params_->url)) {
+  url::Origin origin = GetOriginForURLLoaderFactory();
+  if (client->ShouldAllowInsecurePrivateNetworkRequests(context, origin)) {
     // The content browser client decided to make an exception for this URL.
     return;
   }

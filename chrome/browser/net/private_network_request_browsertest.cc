@@ -233,11 +233,11 @@ IN_PROC_BROWSER_TEST_F(
 
   EXPECT_TRUE(
       content::NavigateToURL(web_contents(), PublicNonSecureURL(*server)));
-  EXPECT_TRUE(content::ExecJs(web_contents(), R"(
+  EXPECT_EQ(true, content::EvalJs(web_contents(), R"(
     new Promise(resolve => {
       const child = document.createElement("iframe");
       child.src = "about:blank";
-      child.onload = resolve;
+      child.onload = () => { resolve(true); };
       document.body.appendChild(child);
     })
   )"));
@@ -261,13 +261,14 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
     new Promise(resolve => {
       const child = document.createElement("iframe");
       child.src = $1;
-      child.onload = resolve;
+      child.onload = () => { resolve(true); };
       document.body.appendChild(child);
     })
   )";
-  EXPECT_TRUE(content::ExecJs(
-      web_contents(),
-      content::JsReplace(script_template, LocalNonSecureURL(*server))));
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents(),
+                            content::JsReplace(script_template,
+                                               LocalNonSecureURL(*server))));
   EXPECT_TRUE(NavigateAndFlushHistograms());
 
   EXPECT_THAT(
@@ -300,10 +301,12 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkRequestBrowserTest,
 
     addChildFrame(document, "about:blank")
       .then(child => addChildFrame(child.contentDocument, $1))
+      .then(grandchild =>  true);
   )";
-  EXPECT_TRUE(content::ExecJs(
-      web_contents(),
-      content::JsReplace(script_template, LocalNonSecureURL(*server))));
+  EXPECT_EQ(true,
+            content::EvalJs(web_contents(),
+                            content::JsReplace(script_template,
+                                               LocalNonSecureURL(*server))));
   EXPECT_TRUE(NavigateAndFlushHistograms());
 
   EXPECT_THAT(

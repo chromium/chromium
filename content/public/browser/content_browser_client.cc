@@ -1138,7 +1138,7 @@ bool ContentBrowserClient::ShouldInheritCrossOriginEmbedderPolicyImplicitly(
 
 bool ContentBrowserClient::ShouldAllowInsecurePrivateNetworkRequests(
     BrowserContext* browser_context,
-    const GURL& url) {
+    const url::Origin& origin) {
   return false;
 }
 

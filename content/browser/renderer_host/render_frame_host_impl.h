@@ -2725,6 +2725,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   GURL last_committed_url_;
 
   // Track this frame's last committed origin.
+  //
+  // WARNING: Until crbug.com/888079 is fixed, frame hosts for `about:blank`
+  // will inherit the origin of their parent document instead of the initiator
+  // document. This happens because Blink computes the origin incorrectly and we
+  // commit the origin given by Blink into this member.
+  //
+  // TODO(https://crbug.com/888079): Remove the above.
   url::Origin last_committed_origin_;
 
   // Whether the last committed document is a secure context.
@@ -2741,6 +2748,26 @@ class CONTENT_EXPORT RenderFrameHostImpl
   //
   // TODO(https://crbug.com/1168024): Fix this to behave as specified in HTML.
   bool is_web_secure_context_ = false;
+
+  // The policy to apply to private network requests issued by the last
+  // committed document. Set to a default value until a document commits for the
+  // first time. The default value depends on whether the
+  // BlockInsecurePrivateNetworkRequests feature is enabled, see constructor.
+  //
+  // This property normally depends on the last committed origin and the state
+  // of |ContentBrowserClient| at the time the navigation committed. Due to the
+  // fact that this is based on the origin computed by the browser process in
+  // |NavigationRequest|, whereas |last_commited_origin_| is computed by the
+  // renderer process (see crbug.com/888079), there can be discrepancies.
+  // Notably, in the case of an `about:blank` document, this policy is inherited
+  // from the initiator document, whereas the origin is inherited (incorrectly)
+  // from the parent document.
+  //
+  // TODO(https://crbug.com/888079): Simplify the above comment when the
+  // behavior it explains is fixed.
+  network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
+      network::mojom::PrivateNetworkRequestPolicy::
+          kBlockFromInsecureToMorePrivate;
 
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
 
@@ -3273,11 +3300,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Salt for generating frame-specific media device IDs.
   std::string media_device_id_salt_base_;
-
-  // This is a security property of the last committed document that are
-  // needed by the network service. Until then it has a default value.
-  network::mojom::PrivateNetworkRequestPolicy private_network_request_policy_ =
-      network::mojom::PrivateNetworkRequestPolicy::kAllow;
 
   // Keep the list of ServiceWorkerContainerHosts so that they can observe when
   // the frame goes in/out of BackForwardCache.

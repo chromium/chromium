@@ -279,7 +279,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, ShouldAllowInsecurePrivateNetworkRequests) {
 
   // By default, we should block requests.
   EXPECT_FALSE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
-      settings_map, GURL("http://bleep.com")));
+      settings_map, url::Origin::Create(GURL("http://bleep.com"))));
 
   PolicyMap policies;
   SetPolicy(&policies, key::kInsecurePrivateNetworkRequestsAllowed,
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, ShouldAllowInsecurePrivateNetworkRequests) {
 
   // Explicitly-disallowing is the same as not setting the policy.
   EXPECT_FALSE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
-      settings_map, GURL("http://bleep.com")));
+      settings_map, url::Origin::Create(GURL("http://bleep.com"))));
 
   base::Value allowlist(base::Value::Type::LIST);
   allowlist.Append(base::Value("http://bleep.com"));
@@ -297,20 +297,31 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, ShouldAllowInsecurePrivateNetworkRequests) {
             std::move(allowlist));
   UpdateProviderPolicy(policies);
 
+  // Domain is not the in allowlist.
   EXPECT_FALSE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
-      settings_map, GURL("http://default.com")));
+      settings_map, url::Origin::Create(GURL("http://default.com"))));
 
+  // Path does not matter, only the origin.
   EXPECT_TRUE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
-      settings_map, GURL("http://bleep.com/heyo")));
+      settings_map, url::Origin::Create(GURL("http://bleep.com/heyo"))));
 
+  // Scheme matters: https is not http.
   EXPECT_FALSE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
-      settings_map, GURL("https://bleep.com")));
+      settings_map, url::Origin::Create(GURL("https://bleep.com"))));
 
+  // Port is checked too.
   EXPECT_TRUE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
-      settings_map, GURL("http://woohoo.com:1234/index.html")));
+      settings_map,
+      url::Origin::Create(GURL("http://woohoo.com:1234/index.html"))));
 
+  // The wrong port does not match (default is 80).
   EXPECT_FALSE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
-      settings_map, GURL("http://woohoo.com/index.html")));
+      settings_map, url::Origin::Create(GURL("http://woohoo.com/index.html"))));
+
+  // Opaque origins never match the allowlist.
+  EXPECT_FALSE(content_settings::ShouldAllowInsecurePrivateNetworkRequests(
+      settings_map,
+      url::Origin::Create(GURL("http://bleep.com")).DeriveNewOpaqueOrigin()));
 }
 
 class ScrollToTextFragmentPolicyTest
