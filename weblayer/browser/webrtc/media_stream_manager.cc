@@ -77,7 +77,12 @@ class MediaStreamManager::StreamUi : public content::MediaStreamUI {
 
   bool streaming_video() const { return streaming_video_; }
 
-  void Stop() { std::move(stop_).Run(); }
+  void Stop() {
+    // The `stop_` callback does async processing. This means Stop() may be
+    // called multiple times.
+    if (stop_)
+      std::move(stop_).Run();
+  }
 
  private:
   base::WeakPtr<MediaStreamManager> manager_;
