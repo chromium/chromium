@@ -72,6 +72,9 @@ class ASH_EXPORT DeskMiniView
   // state of the corresponding desk.
   void UpdateBorderColor();
 
+  // Gets the preview border's insets.
+  gfx::Insets GetPreviewBorderInsets() const;
+
   // views::View:
   const char* GetClassName() const override;
   void Layout() override;

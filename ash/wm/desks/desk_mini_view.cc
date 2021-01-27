@@ -151,6 +151,10 @@ void DeskMiniView::UpdateBorderColor() {
   }
 }
 
+gfx::Insets DeskMiniView::GetPreviewBorderInsets() const {
+  return desk_preview_->border()->GetInsets();
+}
+
 const char* DeskMiniView::GetClassName() const {
   return "DeskMiniView";
 }
@@ -457,9 +461,11 @@ void DeskMiniView::LayoutDeskNameView(const gfx::Rect& preview_bounds) {
 
   const int desk_name_view_x =
       preview_bounds.x() + (preview_bounds.width() - text_width) / 2;
-  gfx::Rect desk_name_view_bounds{
-      desk_name_view_x, preview_bounds.bottom() + kLabelPreviewSpacing,
-      text_width, desk_name_view_size.height()};
+  gfx::Rect desk_name_view_bounds{desk_name_view_x,
+                                  preview_bounds.bottom() -
+                                      GetPreviewBorderInsets().bottom() +
+                                      kLabelPreviewSpacing,
+                                  text_width, desk_name_view_size.height()};
   desk_name_view_->SetBoundsRect(desk_name_view_bounds);
 
   // A change in the DeskNameView's width might mean the need

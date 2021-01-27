@@ -8,6 +8,8 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/wm/desks/desk_mini_view.h"
+#include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/zero_state_button.h"
@@ -115,15 +117,24 @@ ExpandedStateNewDeskButton::ExpandedStateNewDeskButton(DesksBarView* bar_view)
 }
 
 void ExpandedStateNewDeskButton::Layout() {
+  // Layout the button until |mini_views_| have been created. This button only
+  // needs to be laid out in the expanded desks bar where the |mini_views_| is
+  // always not empty.
+  if (bar_view_->mini_views().empty())
+    return;
+
   const gfx::Rect new_desk_button_bounds = GetExpandedStateNewDeskButtonBounds(
       bar_view_->GetWidget()->GetNativeWindow()->GetRootWindow());
   new_desk_button_->SetBoundsRect(new_desk_button_bounds);
 
-  const gfx::Size label_size = label_->GetPreferredSize();
+  const gfx::Size label_size =
+      bar_view_->mini_views()[0]->desk_name_view()->GetPreferredSize();
   label_->SetBoundsRect(gfx::Rect(
       gfx::Point(
           (new_desk_button_bounds.width() - label_size.width()) / 2,
-          new_desk_button_bounds.bottom() + kNewDeskButtonAndNameSpacing),
+          new_desk_button_bounds.bottom() -
+              bar_view_->mini_views()[0]->GetPreviewBorderInsets().bottom() +
+              kNewDeskButtonAndNameSpacing),
       label_size));
 }
 

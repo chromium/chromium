@@ -48,7 +48,8 @@ constexpr int kUseCompactLayoutWidthThreshold = 600;
 
 // In the non-compact layout, this is the height allocated for elements other
 // than the desk preview (e.g. the DeskNameView, and the vertical paddings).
-constexpr int kNonPreviewAllocatedHeight = 55;
+// Note, the vertical paddings should exclude the preview border's insets.
+constexpr int kNonPreviewAllocatedHeight = 48;
 
 // The local Y coordinate of the mini views in both non-compact and compact
 // layouts respectively.
@@ -103,6 +104,10 @@ int DetermineMoveIndex(const std::vector<DeskMiniView*>& views,
   }
 
   return views_size - 1;
+}
+
+int GetSpaceBetweenMiniViews(DeskMiniView* mini_view) {
+  return kMiniViewsSpacing - mini_view->GetPreviewBorderInsets().width();
 }
 
 }  // namespace
@@ -204,15 +209,17 @@ class DesksBarLayout : public views::LayoutManager {
       return;
 
     const gfx::Size mini_view_size = mini_views[0]->GetPreferredSize();
+    const int mini_view_spacing = GetSpaceBetweenMiniViews(mini_views[0]);
     const int total_width =
-        mini_views.size() * (mini_view_size.width() + kMiniViewsSpacing) -
-        kMiniViewsSpacing;
+        mini_views.size() * (mini_view_size.width() + mini_view_spacing) -
+        mini_view_spacing;
 
     int x = (bounds.width() - total_width) / 2;
-    const int y = compact ? kMiniViewsYCompact : kMiniViewsY;
+    int y = compact ? kMiniViewsYCompact : kMiniViewsY;
+    y -= mini_views[0]->GetPreviewBorderInsets().top();
     for (auto* mini_view : mini_views) {
       mini_view->SetBoundsRect(gfx::Rect(gfx::Point(x, y), mini_view_size));
-      x += (mini_view_size.width() + kMiniViewsSpacing);
+      x += (mini_view_size.width() + mini_view_spacing);
     }
   }
 
@@ -278,11 +285,12 @@ class BentoDesksBarLayout : public views::LayoutManager {
       return;
 
     gfx::Size mini_view_size = mini_views[0]->GetPreferredSize();
+    const int mini_view_spacing = GetSpaceBetweenMiniViews(mini_views[0]);
     // The new desk button in the expaneded bar view has the same size as mini
     // view.
     int content_width =
-        (mini_views.size() + 1) * (mini_view_size.width() + kMiniViewsSpacing) -
-        kMiniViewsSpacing;
+        (mini_views.size() + 1) * (mini_view_size.width() + mini_view_spacing) -
+        mini_view_spacing;
     width_ = std::max(desks_bar_bounds.width(), content_width);
 
     // Update the size of the |host|, which is |scroll_view_contents_| here.
@@ -292,13 +300,13 @@ class BentoDesksBarLayout : public views::LayoutManager {
     host->SetSize(gfx::Size(width_, desks_bar_bounds.height()));
 
     int x = (width_ - content_width) / 2;
+    const int y = kMiniViewsY - mini_views[0]->GetPreviewBorderInsets().top();
     for (auto* mini_view : mini_views) {
-      mini_view->SetBoundsRect(
-          gfx::Rect(gfx::Point(x, kMiniViewsY), mini_view_size));
-      x += (mini_view_size.width() + kMiniViewsSpacing);
+      mini_view->SetBoundsRect(gfx::Rect(gfx::Point(x, y), mini_view_size));
+      x += (mini_view_size.width() + mini_view_spacing);
     }
     bar_view_->expanded_state_new_desk_button()->SetBoundsRect(
-        gfx::Rect(gfx::Point(x, kMiniViewsY), mini_view_size));
+        gfx::Rect(gfx::Point(x, y), mini_view_size));
   }
 
   // views::LayoutManager:
@@ -803,9 +811,10 @@ void DesksBarView::UpdateMinimumWidthToFitContents() {
   }
 
   const int mini_view_width = mini_views_[0]->GetMinWidthForDefaultLayout();
+  const int mini_view_spacing = GetSpaceBetweenMiniViews(mini_views_[0]);
   const int total_mini_views_width =
-      mini_views_.size() * (mini_view_width + kMiniViewsSpacing) -
-      kMiniViewsSpacing;
+      mini_views_.size() * (mini_view_width + mini_view_spacing) -
+      mini_view_spacing;
 
   min_width_to_fit_contents_ = total_mini_views_width + button_width * 2;
 }
