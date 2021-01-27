@@ -438,6 +438,9 @@ bool ArcDataSnapshotdManager::IsAutoLoginAllowed() {
   }
 }
 
+bool ArcDataSnapshotdManager::IsSnapshotInProgress() {
+  return state_ == State::kMgsLaunched;
+}
 void ArcDataSnapshotdManager::OnSnapshotSessionStarted() {
   if (state_ != State::kMgsToLaunch)
     return;

@@ -239,6 +239,9 @@ class ArcDataSnapshotdManager final
   // waiting for the response from arc-data-snapshotd daemon.
   bool IsAutoLoginAllowed();
 
+  // Returns true if ARC data snapshot update is in progress.
+  bool IsSnapshotInProgress();
+
   // SnapshotSessionController::Observer overrides:
   void OnSnapshotSessionStarted() override;
   void OnSnapshotSessionStopped() override;

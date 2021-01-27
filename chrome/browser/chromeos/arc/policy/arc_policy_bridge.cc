@@ -31,6 +31,7 @@
 #include "chromeos/network/onc/onc_utils.h"
 #include "components/arc/arc_browser_context_keyed_service_factory_base.h"
 #include "components/arc/arc_prefs.h"
+#include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/onc/onc_constants.h"
 #include "components/policy/core/common/policy_map.h"
@@ -288,6 +289,25 @@ std::string GetFilteredJSONPolicies(policy::PolicyService* const policy_service,
           app_policy_value->is_string() ? app_policy_value->GetString() : "";
       LOG(ERROR) << "Value of ArcPolicy has invalid format: "
                  << app_policy_string;
+    }
+  }
+
+  // Disable all required/force-installed apps when ARC data snapshot update is
+  // in progress.
+  if (arc::data_snapshotd::ArcDataSnapshotdManager::Get() &&
+      arc::data_snapshotd::ArcDataSnapshotdManager::Get()
+          ->IsSnapshotInProgress()) {
+    base::Value* applications_value =
+        filtered_policies.FindListKey("applications");
+    if (applications_value) {
+      base::Value::ListView list_view = applications_value->GetList();
+      for (base::Value& entry : list_view) {
+        auto* installType = entry.FindStringKey("installType");
+        if (installType &&
+            (*installType == "REQUIRED" || *installType == "FORCE_INSTALLED")) {
+          entry.SetBoolKey("disabled", true);
+        }
+      }
     }
   }
 
