@@ -175,16 +175,6 @@ test("jingle_unittests") {
     "run_all_unittests.cc",
   ]
 
-  if (is_android || is_ios) {
-    sources -= [
-      # TODO(jrg):
-      # EXPECT_DEBUG_DEATH() uses features not enabled.
-      # Should we -std=c++0x or -std=gnu++0x?
-      "glue/network_service_async_socket_unittest.cc",
-      "notifier/base/xmpp_connection_unittest.cc",
-    ]
-  }
-
   if (is_android) {
     # LibjingleLogTest don't pass on Android (crbug.com/843104).
     sources -= [ "glue/logging_unittest.cc" ]

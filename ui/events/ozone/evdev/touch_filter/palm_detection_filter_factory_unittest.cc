@@ -6,6 +6,7 @@
 
 #include <linux/input.h>
 
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/chromeos_buildflags.h"
@@ -193,10 +194,10 @@ TEST_F(PalmDetectionFilterFactoryTest, ParseTest) {
 }
 
 TEST_F(PalmDetectionFilterFactoryDeathTest, BadParseRecovery) {
-  // in debug, die. In non debug, expect {}
-  EXPECT_DEBUG_DEATH(EXPECT_EQ(std::vector<float>(),
-                               internal::ParseRadiusPolynomial("cheese")),
-                     "Unable to parse.*cheese");
+  // In DCHECK builds, die. Otherwise, expect {}
+  EXPECT_DCHECK_DEATH_WITH(EXPECT_EQ(std::vector<float>(),
+                                     internal::ParseRadiusPolynomial("cheese")),
+                           "Unable to parse.*cheese");
 }
 
 TEST_F(PalmDetectionFilterFactoryDeathTest, BadNeuralParamParse) {
@@ -207,9 +208,9 @@ TEST_F(PalmDetectionFilterFactoryDeathTest, BadNeuralParamParse) {
               {"neural_palm_radius_polynomial", "1.0,chicken"},
           })},
       {ui::kEnableHeuristicPalmDetectionFilter});
-  EXPECT_DEBUG_DEATH(CreatePalmDetectionFilter(nocturne_touchscreen_info_,
-                                               &shared_palm_state_),
-                     "Unable to parse.*chicken");
+  EXPECT_DCHECK_DEATH_WITH(CreatePalmDetectionFilter(nocturne_touchscreen_info_,
+                                                     &shared_palm_state_),
+                           "Unable to parse.*chicken");
 }
 
 }  // namespace ui

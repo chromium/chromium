@@ -124,12 +124,6 @@ TEST_F(LoggingTest, BasicLogging) {
 }
 
 TEST_F(LoggingTest, LogIsOn) {
-#if defined(NDEBUG)
-  const bool kDfatalIsFatal = false;
-#else  // defined(NDEBUG)
-  const bool kDfatalIsFatal = true;
-#endif  // defined(NDEBUG)
-
   SetMinLogLevel(LOGGING_INFO);
   EXPECT_TRUE(LOG_IS_ON(INFO));
   EXPECT_TRUE(LOG_IS_ON(WARNING));
@@ -151,13 +145,14 @@ TEST_F(LoggingTest, LogIsOn) {
   EXPECT_TRUE(LOG_IS_ON(FATAL));
   EXPECT_TRUE(LOG_IS_ON(DFATAL));
 
-  // LOG_IS_ON(FATAL) should always be true.
   SetMinLogLevel(LOGGING_FATAL + 1);
   EXPECT_FALSE(LOG_IS_ON(INFO));
   EXPECT_FALSE(LOG_IS_ON(WARNING));
   EXPECT_FALSE(LOG_IS_ON(ERROR));
+  // LOG_IS_ON(FATAL) should always be true.
   EXPECT_TRUE(LOG_IS_ON(FATAL));
-  EXPECT_EQ(kDfatalIsFatal, LOG_IS_ON(DFATAL));
+  // If DCHECK_IS_ON() then DFATAL is FATAL.
+  EXPECT_EQ(DCHECK_IS_ON(), LOG_IS_ON(DFATAL));
 }
 
 TEST_F(LoggingTest, LoggingIsLazyBySeverity) {

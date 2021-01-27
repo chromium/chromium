@@ -4,10 +4,10 @@
 
 #include "base/memory/checked_ptr.h"
 
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/partition_alloc_buildflags.h"
-
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
 
 namespace base {
 

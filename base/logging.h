@@ -144,8 +144,8 @@
 // Very important: logging a message at the FATAL severity level causes
 // the program to terminate (after the message is logged).
 //
-// There is the special severity of DFATAL, which logs FATAL in debug mode,
-// ERROR in normal mode.
+// There is the special severity of DFATAL, which logs FATAL in DCHECK-enabled
+// builds, ERROR in normal mode.
 //
 // Output is formatted as per the following example, except on Chrome OS.
 // [3816:3877:0812/234555.406952:VERBOSE1:drm_device_handle.cc(90)] Succeeded
@@ -360,11 +360,12 @@ const LogSeverity LOGGING_ERROR = 2;
 const LogSeverity LOGGING_FATAL = 3;
 const LogSeverity LOGGING_NUM_SEVERITIES = 4;
 
-// LOGGING_DFATAL is LOGGING_FATAL in debug mode, ERROR in normal mode
-#if defined(NDEBUG)
-const LogSeverity LOGGING_DFATAL = LOGGING_ERROR;
-#else
+// LOGGING_DFATAL is LOGGING_FATAL in DCHECK-enabled builds, ERROR in normal
+// mode.
+#if DCHECK_IS_ON()
 const LogSeverity LOGGING_DFATAL = LOGGING_FATAL;
+#else
+const LogSeverity LOGGING_DFATAL = LOGGING_ERROR;
 #endif
 
 // This block duplicates the above entries to facilitate incremental conversion
