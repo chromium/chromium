@@ -189,12 +189,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
         // Kick off loading of the native library.
         if (!getActivityDelegate().shouldDelayNativeInitialization()) {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    startDelayedNativeInitialization();
-                }
-            });
+            mHandler.post(this::startDelayedNativeInitialization);
         }
         onInitialLayoutInflationComplete();
     }
@@ -271,24 +266,16 @@ public class SearchActivity extends AsyncInitializationActivity
         mProfileSupplier.set(Profile.fromWebContents(webContents));
 
         // Force the user to choose a search engine if they have to.
-        final Callback<Boolean> onSearchEngineFinalizedCallback = new Callback<Boolean>() {
-            @Override
-            public void onResult(Boolean result) {
-                if (isActivityFinishingOrDestroyed()) return;
+        final Callback<Boolean> onSearchEngineFinalizedCallback = (result) -> {
+            if (isActivityFinishingOrDestroyed()) return;
 
-                if (result == null || !result.booleanValue()) {
-                    Log.e(TAG, "User failed to select a default search engine.");
-                    finish();
-                    return;
-                }
-
-                mHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        finishDeferredInitialization();
-                    }
-                });
+            if (result == null || !result.booleanValue()) {
+                Log.e(TAG, "User failed to select a default search engine.");
+                finish();
+                return;
             }
+
+            mHandler.post(this::finishDeferredInitialization);
         };
         getActivityDelegate().showSearchEngineDialogIfNeeded(
                 SearchActivity.this, onSearchEngineFinalizedCallback);
@@ -364,6 +351,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 && mLocationBarCoordinator.getFakeboxDelegate() != null) {
             mLocationBarCoordinator.getFakeboxDelegate().removeUrlFocusChangeListener(this);
         }
+        mHandler.removeCallbacksAndMessages(null);
         super.onDestroy();
     }
 
