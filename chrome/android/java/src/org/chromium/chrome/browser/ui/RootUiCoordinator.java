@@ -258,8 +258,6 @@ public class RootUiCoordinator
 
         mActivity.getLayoutManagerSupplier().removeObserver(mLayoutManagerSupplierCallback);
 
-        MessageUtils.setAccessibilityUtil(null);
-
         if (mMessageDispatcher != null) {
             MessagesFactory.detachMessageDispatcher(mMessageDispatcher);
             mMessageDispatcher = null;
