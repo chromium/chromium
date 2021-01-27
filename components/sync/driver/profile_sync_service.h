@@ -20,7 +20,6 @@
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/invalidation/public/identity_provider.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/model_type.h"
@@ -86,7 +85,6 @@ class ProfileSyncService : public SyncService,
     // TODO(treib): Remove this and instead retrieve it via
     // SyncClient::GetIdentityManager (but mind LocalSync).
     signin::IdentityManager* identity_manager = nullptr;
-    invalidation::IdentityProvider* invalidations_identity_provider = nullptr;
     StartBehavior start_behavior = MANUAL_START;
     NetworkTimeUpdateCallback network_time_update_callback;
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
@@ -465,12 +463,6 @@ class ProfileSyncService : public SyncService,
   // Tracks the set of failed data types (those that encounter an error
   // or must delay loading for some reason).
   DataTypeStatusTable::TypeErrorMap data_type_error_map_;
-
-  // This provider tells the invalidations code which identity to register for.
-  // The account that it registers for should be the same as the currently
-  // syncing account, so we'll need to update this whenever the account changes.
-  // May be null (if local Sync is enabled).
-  invalidation::IdentityProvider* const invalidations_identity_provider_;
 
   // List of available data type controllers.
   DataTypeController::TypeMap data_type_controllers_;

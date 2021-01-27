@@ -145,7 +145,6 @@ class PerUserTopicSubscriptionManagerTest : public testing::Test {
     identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
     identity_provider_ = std::make_unique<ProfileIdentityProvider>(
         identity_test_env_.identity_manager());
-    identity_provider_->SetActiveAccountId(account.account_id);
   }
 
   std::unique_ptr<PerUserTopicSubscriptionManager> BuildRegistrationManager(

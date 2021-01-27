@@ -231,8 +231,6 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
       is_first_time_sync_configure_(false),
       sync_disabled_by_admin_(false),
       expect_sync_configuration_aborted_(false),
-      invalidations_identity_provider_(
-          init_params.invalidations_identity_provider),
       create_http_post_provider_factory_cb_(
           base::BindRepeating(&CreateHttpBridgeFactory)),
       start_behavior_(init_params.start_behavior),
@@ -309,10 +307,6 @@ void ProfileSyncService::Initialize() {
 
   if (!IsLocalSyncEnabled()) {
     auth_manager_->RegisterForAuthNotifications();
-    if (invalidations_identity_provider_) {
-      invalidations_identity_provider_->SetActiveAccountId(
-          GetAuthenticatedAccountInfo().account_id);
-    }
 
     SyncInvalidationsService* sync_invalidations_service =
         sync_client_->GetSyncInvalidationsService();
@@ -439,12 +433,8 @@ void ProfileSyncService::AccountStateChanged() {
     }
   }
 
-  // Propagate the (potentially) changed account ID to the invalidations system.
-  if (invalidations_identity_provider_) {
-    invalidations_identity_provider_->SetActiveAccountId(
-        GetAuthenticatedAccountInfo().account_id);
-  }
-
+  // Propagate the (potentially) changed account state to the invalidations
+  // system.
   SyncInvalidationsService* sync_invalidations_service =
       sync_client_->GetSyncInvalidationsService();
   if (sync_invalidations_service) {

@@ -295,10 +295,6 @@ class ProfileSyncServiceTest : public ::testing::Test {
         [reason_dest](ConfigureReason reason) { *reason_dest = reason; });
   }
 
-  invalidation::ProfileIdentityProvider* identity_provider() {
-    return profile_sync_service_bundle_.identity_provider();
-  }
-
   signin::IdentityManager* identity_manager() {
     return profile_sync_service_bundle_.identity_manager();
   }
@@ -708,32 +704,6 @@ TEST_F(ProfileSyncServiceTest, SyncRequestedSetToFalseIfStartsSignedOut) {
 
   // There's no signed-in user, so SyncRequested should have been set to false.
   EXPECT_FALSE(service()->GetUserSettings()->IsSyncRequested());
-}
-
-TEST_F(ProfileSyncServiceTest, IdentityProvider_GetActiveAccountId) {
-  // Sign-in and enable sync.
-  SignIn();
-  CreateService(ProfileSyncService::MANUAL_START);
-  InitializeForNthSync();
-  EXPECT_EQ(identity_manager()->GetPrimaryAccountId(),
-            identity_provider()->GetActiveAccountId());
-
-  // Sign out.
-  auto* account_mutator = identity_manager()->GetPrimaryAccountMutator();
-  DCHECK(account_mutator) << "Account mutator should only be null on ChromeOS.";
-  account_mutator->ClearPrimaryAccount(
-      signin_metrics::SIGNOUT_TEST,
-      signin_metrics::SignoutDelete::IGNORE_METRIC);
-  // Wait for ProfileSyncService to be notified.
-  base::RunLoop().RunUntilIdle();
-
-  // The identity provider should show no active account.
-  EXPECT_EQ(CoreAccountId(), identity_provider()->GetActiveAccountId());
-
-  // Change account.
-  identity_test_env()->MakePrimaryAccountAvailable("new_user@gmail.com");
-  EXPECT_EQ(identity_manager()->GetPrimaryAccountId(),
-            identity_provider()->GetActiveAccountId());
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 

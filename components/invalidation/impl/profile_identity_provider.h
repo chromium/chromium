@@ -30,9 +30,10 @@ class ProfileIdentityProvider : public IdentityProvider,
       ActiveAccountAccessTokenCallback callback) override;
   void InvalidateAccessToken(const signin::ScopeSet& scopes,
                              const std::string& access_token) override;
-  void SetActiveAccountId(const CoreAccountId& account_id) override;
 
   // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
   void OnRefreshTokenRemovedForAccount(

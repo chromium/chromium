@@ -62,6 +62,9 @@ ProfileIdentityProvider::ProfileIdentityProvider(
     signin::IdentityManager* identity_manager)
     : identity_manager_(identity_manager) {
   identity_manager_->AddObserver(this);
+
+  active_account_id_ = identity_manager_->GetPrimaryAccountId(
+      signin::ConsentLevel::kNotRequired);
 }
 
 ProfileIdentityProvider::~ProfileIdentityProvider() {
@@ -81,22 +84,6 @@ bool ProfileIdentityProvider::IsActiveAccountWithRefreshToken() {
   return true;
 }
 
-void ProfileIdentityProvider::SetActiveAccountId(
-    const CoreAccountId& account_id) {
-  if (account_id == active_account_id_) {
-    return;
-  }
-
-  if (!active_account_id_.empty()) {
-    FireOnActiveAccountLogout();
-  }
-
-  active_account_id_ = account_id;
-  if (!active_account_id_.empty()) {
-    FireOnActiveAccountLogin();
-  }
-}
-
 std::unique_ptr<ActiveAccountAccessTokenFetcher>
 ProfileIdentityProvider::FetchAccessToken(
     const std::string& oauth_consumer_name,
@@ -112,6 +99,25 @@ void ProfileIdentityProvider::InvalidateAccessToken(
     const std::string& access_token) {
   identity_manager_->RemoveAccessTokenFromCache(GetActiveAccountId(), scopes,
                                                 access_token);
+}
+
+void ProfileIdentityProvider::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
+  CoreAccountId account_id =
+      event_details.GetCurrentState().primary_account.account_id;
+
+  if (account_id == active_account_id_) {
+    return;
+  }
+
+  if (!active_account_id_.empty()) {
+    FireOnActiveAccountLogout();
+  }
+
+  active_account_id_ = account_id;
+  if (!active_account_id_.empty()) {
+    FireOnActiveAccountLogin();
+  }
 }
 
 void ProfileIdentityProvider::OnRefreshTokenUpdatedForAccount(
