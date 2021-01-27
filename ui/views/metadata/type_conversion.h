@@ -214,6 +214,8 @@ struct TypeConverter<base::Optional<T>>
   static ValidStrings GetValidStrings() { return {}; }
 };
 
+// Special Conversions for std:unique_ptr<T> and T* types ----------------------
+
 template <typename T>
 struct TypeConverter<std::unique_ptr<T>> : BaseTypeConverter<false, true> {
   static base::string16 ToString(const std::unique_ptr<T>& source_value) {
