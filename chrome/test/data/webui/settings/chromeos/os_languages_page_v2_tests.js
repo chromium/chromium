@@ -526,7 +526,19 @@ suite('languages page', () => {
       const searchInput = dialog.$$('cr-search-field');
 
       const getItems = function() {
-        return dialog.$.dialog.querySelectorAll('.list-item:not([hidden])');
+        // If an element (the <iron-list> in this case) is hidden in Polymer,
+        // Polymer will intelligently not update the DOM of the hidden element
+        // to prevent DOM updates that the user can't see. However, this means
+        // that when the <iron-list> is hidden (due to no results), the list
+        // items still exist in the DOM.
+        // This function should return the *visible* items that the user can
+        // select, so if the <iron-list> is hidden we should return an empty
+        // list instead.
+        const dialogEl = dialog.$.dialog;
+        if (dialogEl.querySelector('iron-list').hidden) {
+          return [];
+        }
+        return dialogEl.querySelectorAll('.list-item:not([hidden])');
       };
 
       // Expecting a few languages to be displayed when no query exists.

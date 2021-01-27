@@ -412,6 +412,7 @@ void LanguagesSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       {"removeLanguage", IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_REMOVE},
       {"addLanguages", IDS_SETTINGS_LANGUAGES_LANGUAGES_ADD},
       {"moveUp", IDS_SETTINGS_LANGUAGES_LANGUAGES_LIST_MOVE_UP},
+      {"noSearchResults", IDS_SEARCH_NO_RESULTS},
   };
   AddLocalizedStringsBulk(html_source, kLocalizedStrings);
   AddSmartInputsStrings(html_source, IsEmojiSuggestionAllowed());
