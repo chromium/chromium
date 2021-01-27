@@ -1140,9 +1140,21 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
   const gfx::Transform transform =
       gfx::TransformBetweenRects(screen_rect, overview_item_bounds);
 
+  // Determine the amount of clipping we should put on the window. Note that the
+  // clipping goes after setting a transform, as layer transform affects layer
+  // clip.
+  using ClippingType = ScopedOverviewTransformWindow::ClippingType;
+  ScopedOverviewTransformWindow::ClippingData clipping_data{
+      ClippingType::kCustom, gfx::SizeF()};
+  if (unclipped_size_)
+    clipping_data.second = GetWindowTargetBoundsWithInsets().size();
+  else if (is_first_update)
+    clipping_data.first = ClippingType::kEnter;
+
   if (is_first_update &&
       animation_type == OVERVIEW_ANIMATION_SPAWN_ITEM_IN_OVERVIEW) {
     PerformItemSpawnedAnimation(window, transform);
+    transform_window_.SetClipping(clipping_data);
     return;
   }
 
@@ -1157,14 +1169,6 @@ void OverviewItem::SetItemBounds(const gfx::RectF& target_bounds,
                        weak_ptr_factory_.GetWeakPtr())});
   }
   SetTransform(window, transform);
-
-  using ClippingType = ScopedOverviewTransformWindow::ClippingType;
-  ScopedOverviewTransformWindow::ClippingData clipping_data{
-      ClippingType::kCustom, gfx::SizeF()};
-  if (unclipped_size_)
-    clipping_data.second = GetWindowTargetBoundsWithInsets().size();
-  else if (is_first_update)
-    clipping_data.first = ClippingType::kEnter;
   transform_window_.SetClipping(clipping_data);
 }
 

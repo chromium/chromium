@@ -2929,6 +2929,39 @@ TEST_F(DesksTest, DeskTraversalNonTouchpadMetrics) {
   histogram_tester.ExpectBucketCount(kDeskTraversalsHistogramName, 5, 1);
 }
 
+// Tests that clipping is unchanged when removing a desk in overview. Regression
+// test for https://crbug.com/1166300.
+TEST_F(DesksTest, RemoveDeskPreservesOverviewClipping) {
+  // Three virtual desks.
+  NewDesk();
+  NewDesk();
+
+  auto* controller = DesksController::Get();
+  Desk* desk2 = controller->desks()[1].get();
+  Desk* desk3 = controller->desks()[2].get();
+  ActivateDesk(desk3);
+
+  // Create a window on |desk3| with a header.
+  const int header_height = 32;
+  auto win0 = CreateAppWindow(gfx::Rect(200, 200));
+  win0->SetProperty(aura::client::kTopViewInset, header_height);
+  EXPECT_EQ(desk3->GetDeskContainerForRoot(Shell::GetPrimaryRootWindow()),
+            win0->parent());
+
+  auto* overview_controller = Shell::Get()->overview_controller();
+  ASSERT_TRUE(overview_controller->StartOverview());
+
+  const gfx::Rect expected_clip = win0->layer()->GetTargetClipRect();
+
+  // Remove |desk3|. |win0| is now a child of |desk2|.
+  RemoveDesk(desk3);
+  ASSERT_EQ(desk2->GetDeskContainerForRoot(Shell::GetPrimaryRootWindow()),
+            win0->parent());
+
+  // Tests that the clip is the same after the desk removal.
+  EXPECT_EQ(expected_clip, win0->layer()->GetTargetClipRect());
+}
+
 namespace {
 
 constexpr char kUser1Email[] = "user1@desks";
