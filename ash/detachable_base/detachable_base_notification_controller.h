@@ -9,7 +9,7 @@
 #include "ash/detachable_base/detachable_base_handler.h"
 #include "ash/detachable_base/detachable_base_observer.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 
 namespace ash {
 
@@ -60,8 +60,8 @@ class ASH_EXPORT DetachableBaseNotificationController
 
   DetachableBaseHandler* detachable_base_handler_;
 
-  ScopedObserver<DetachableBaseHandler, DetachableBaseObserver>
-      detachable_base_observer_{this};
+  base::ScopedObservation<DetachableBaseHandler, DetachableBaseObserver>
+      detachable_base_observation_{this};
   ScopedSessionObserver session_observer_{this};
 
   DISALLOW_COPY_AND_ASSIGN(DetachableBaseNotificationController);

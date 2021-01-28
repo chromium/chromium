@@ -110,7 +110,7 @@ AmbientPhotoController::AmbientPhotoController()
           FILE_PATH_LITERAL(kAmbientModeBackupCacheDirectoryName)))),
       task_runner_(
           base::ThreadPool::CreateSequencedTaskRunner(GetTaskTraits())) {
-  ambient_backend_model_observer_.Add(&ambient_backend_model_);
+  ambient_backend_model_observation_.Observe(&ambient_backend_model_);
   ScheduleFetchBackupImages();
 }
 

@@ -67,9 +67,10 @@ AssistantUiControllerImpl::AssistantUiControllerImpl(
     AssistantControllerImpl* assistant_controller)
     : assistant_controller_(assistant_controller) {
   model_.AddObserver(this);
-  assistant_controller_observer_.Add(AssistantController::Get());
-  highlighter_controller_observer_.Add(Shell::Get()->highlighter_controller());
-  overview_controller_observer_.Add(Shell::Get()->overview_controller());
+  assistant_controller_observation_.Observe(AssistantController::Get());
+  highlighter_controller_observation_.Observe(
+      Shell::Get()->highlighter_controller());
+  overview_controller_observation_.Observe(Shell::Get()->overview_controller());
 }
 
 AssistantUiControllerImpl::~AssistantUiControllerImpl() {

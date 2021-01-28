@@ -22,7 +22,7 @@
 #include "ash/wm/overview/overview_observer.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 
 class PrefRegistrySimple;
 
@@ -107,14 +107,15 @@ class ASH_EXPORT AssistantUiControllerImpl
   // Owned by AssistantService.
   chromeos::assistant::Assistant* assistant_ = nullptr;
 
-  ScopedObserver<AssistantController, AssistantControllerObserver>
-      assistant_controller_observer_{this};
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
+      assistant_controller_observation_{this};
 
-  ScopedObserver<HighlighterController, HighlighterController::Observer>
-      highlighter_controller_observer_{this};
+  base::ScopedObservation<HighlighterController,
+                          HighlighterController::Observer>
+      highlighter_controller_observation_{this};
 
-  ScopedObserver<OverviewController, OverviewObserver>
-      overview_controller_observer_{this};
+  base::ScopedObservation<OverviewController, OverviewObserver>
+      overview_controller_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AssistantUiControllerImpl);
 };

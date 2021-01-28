@@ -20,7 +20,7 @@ LockLayoutManager::LockLayoutManager(aura::Window* window, Shelf* shelf)
       root_window_(window->GetRootWindow()) {
   root_window_->AddObserver(this);
   keyboard::KeyboardUIController::Get()->AddObserver(this);
-  shelf_observer_.Add(shelf);
+  shelf_observation_.Observe(shelf);
 }
 
 LockLayoutManager::~LockLayoutManager() {

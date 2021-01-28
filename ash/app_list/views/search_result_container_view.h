@@ -14,7 +14,7 @@
 #include "ash/app_list/views/search_result_base_view.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -116,7 +116,8 @@ class APP_LIST_EXPORT SearchResultContainerView : public views::View,
   bool shown_ = false;
   AppListViewDelegate* const view_delegate_;
 
-  ScopedObserver<views::View, views::ViewObserver> result_view_observer_{this};
+  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
+      result_view_observations_{this};
 
   // The factory that consolidates multiple Update calls into one.
   base::WeakPtrFactory<SearchResultContainerView> update_factory_{this};

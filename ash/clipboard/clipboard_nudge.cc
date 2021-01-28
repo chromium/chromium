@@ -152,7 +152,8 @@ class ClipboardNudge::ClipboardNudgeView : public views::View {
 ClipboardNudge::ClipboardNudge()
     : widget_(std::make_unique<views::Widget>()),
       root_window_(Shell::GetRootWindowForNewWindows()) {
-  shelf_observer_.Add(RootWindowController::ForWindow(root_window_)->shelf());
+  shelf_observation_.Observe(
+      RootWindowController::ForWindow(root_window_)->shelf());
 
   views::Widget::InitParams params(
       views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);

@@ -36,7 +36,7 @@ class TestPowerManagerObserver : public chromeos::PowerManagerClient::Observer {
  public:
   TestPowerManagerObserver()
       : power_manager_(chromeos::FakePowerManagerClient::Get()) {
-    scoped_observer_.Add(power_manager_);
+    scoped_observation_.Observe(power_manager_);
     power_manager_->set_user_activity_callback(base::BindRepeating(
         &TestPowerManagerObserver::OnUserActivity, base::Unretained(this)));
   }
@@ -67,9 +67,9 @@ class TestPowerManagerObserver : public chromeos::PowerManagerClient::Observer {
   chromeos::FakePowerManagerClient* power_manager_;
   std::vector<double> brightness_changes_;
 
-  ScopedObserver<chromeos::PowerManagerClient,
-                 chromeos::PowerManagerClient::Observer>
-      scoped_observer_{this};
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      scoped_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TestPowerManagerObserver);
 };

@@ -22,7 +22,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -148,14 +148,15 @@ class AssistantInteractionControllerImpl
   // Owned by AssistantService.
   chromeos::assistant::Assistant* assistant_ = nullptr;
 
-  ScopedObserver<AssistantController, AssistantControllerObserver>
-      assistant_controller_observer_{this};
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
+      assistant_controller_observation_{this};
 
-  ScopedObserver<HighlighterController, HighlighterController::Observer>
-      highlighter_controller_observer_{this};
+  base::ScopedObservation<HighlighterController,
+                          HighlighterController::Observer>
+      highlighter_controller_observation_{this};
 
-  ScopedObserver<TabletModeController, TabletModeObserver>
-      tablet_mode_controller_observer_{this};
+  base::ScopedObservation<TabletModeController, TabletModeObserver>
+      tablet_mode_controller_observation_{this};
 
   base::WeakPtrFactory<AssistantInteractionControllerImpl>
       screen_context_request_factory_{this};

@@ -1526,10 +1526,6 @@ void SplitViewController::OnTabletModeEnded() {
   is_previous_layout_right_side_up_ = true;
 }
 
-void SplitViewController::OnTabletControllerDestroyed() {
-  tablet_mode_observer_.RemoveAll();
-}
-
 void SplitViewController::OnAccessibilityStatusChanged() {
   // TODO(crubg.com/853588): Exit split screen if ChromeVox is turned on until
   // they are compatible.

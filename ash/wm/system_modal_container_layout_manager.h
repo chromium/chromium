@@ -15,7 +15,7 @@
 #include "ash/shelf/shelf_observer.h"
 #include "ash/wm/wm_default_layout_manager.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/window_observer.h"
 
 namespace gfx {
@@ -120,7 +120,7 @@ class ASH_EXPORT SystemModalContainerLayoutManager
   std::set<const aura::Window*> windows_to_center_;
 
   // A shelf observer to update position of modals when work area is updated.
-  ScopedObserver<Shelf, ShelfObserver> shelf_observer_{this};
+  base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SystemModalContainerLayoutManager);
 };

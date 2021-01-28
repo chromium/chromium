@@ -11,7 +11,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_delegate.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -178,7 +178,8 @@ class ASH_EXPORT HeaderView
   mutable bool is_drawn_override_ = false;
 
   // Observes property changes to |target_widget_|'s window.
-  ScopedObserver<aura::Window, aura::WindowObserver> window_observer_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(HeaderView);
 };

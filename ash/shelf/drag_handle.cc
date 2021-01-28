@@ -95,7 +95,7 @@ DragHandle::DragHandle(int drag_handle_corner_radius, Shelf* shelf)
   SetSize(ShelfConfig::Get()->DragHandleSize());
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
-  shell_observer_.Add(Shell::Get());
+  shell_observation_.Observe(Shell::Get());
 
   Shell::Get()->accessibility_controller()->AddObserver(this);
   shelf_->AddObserver(this);
@@ -122,7 +122,7 @@ bool DragHandle::DoesIntersectRect(const views::View* target,
 bool DragHandle::MaybeShowDragHandleNudge() {
   // Stop observing overview state if nudge show timer has fired.
   if (!show_drag_handle_nudge_timer_.IsRunning())
-    overview_observer_.RemoveAll();
+    overview_observation_.Reset();
 
   if (!features::AreContextualNudgesEnabled())
     return false;
@@ -152,7 +152,7 @@ void DragHandle::ShowDragHandleNudge() {
   AnimateDragHandleShow();
   ShowDragHandleTooltip();
   gesture_nudge_target_visibility_ = true;
-  split_view_observer_.Add(
+  split_view_observation_.Observe(
       SplitViewController::Get(shelf_->shelf_widget()->GetNativeWindow()));
 
   if (!nudge_duration.is_zero()) {
@@ -175,7 +175,7 @@ void DragHandle::ScheduleShowDragHandleNudge() {
 
   // Observe overview controller to detect overview session start - this should
   // cancel the scheduled nudge show.
-  overview_observer_.Add(Shell::Get()->overview_controller());
+  overview_observation_.Observe(Shell::Get()->overview_controller());
 
   show_drag_handle_nudge_timer_.Start(
       FROM_HERE, kShowNudgeDelay,
@@ -189,7 +189,7 @@ void DragHandle::HideDragHandleNudge(
   if (!gesture_nudge_target_visibility())
     return;
 
-  split_view_observer_.RemoveAll();
+  split_view_observation_.Reset();
   hide_drag_handle_nudge_timer_.Stop();
 
   if (reason == contextual_tooltip::DismissNudgeReason::kPerformedGesture) {
@@ -303,7 +303,7 @@ void DragHandle::OnOverviewModeStarting() {
 }
 
 void DragHandle::OnShellDestroying() {
-  shell_observer_.RemoveAll();
+  shell_observation_.Reset();
   // Removes the overview controller observer.
   StopDragHandleNudgeShowTimer();
   hide_drag_handle_nudge_timer_.Stop();
@@ -475,7 +475,7 @@ void DragHandle::HandleTapOnNudge() {
 
 void DragHandle::StopDragHandleNudgeShowTimer() {
   show_drag_handle_nudge_timer_.Stop();
-  overview_observer_.RemoveAll();
+  overview_observation_.Reset();
 }
 
 }  // namespace ash

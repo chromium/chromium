@@ -21,7 +21,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "net/base/backoff_entry.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -213,8 +213,8 @@ class ASH_EXPORT AmbientPhotoController : public AmbientBackendModelObserver {
   // Backoff to resume fetch images.
   net::BackoffEntry resume_fetch_image_backoff_;
 
-  ScopedObserver<AmbientBackendModel, AmbientBackendModelObserver>
-      ambient_backend_model_observer_{this};
+  base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
+      ambient_backend_model_observation_{this};
 
   std::unique_ptr<AmbientPhotoCache> photo_cache_;
   std::unique_ptr<AmbientPhotoCache> backup_photo_cache_;

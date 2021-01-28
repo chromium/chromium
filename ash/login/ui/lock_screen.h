@@ -14,7 +14,7 @@
 #include "ash/tray_action/tray_action_observer.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/base/clipboard/clipboard.h"
 
 namespace views {
@@ -101,7 +101,8 @@ class ASH_EXPORT LockScreen : public TrayActionObserver,
 
   std::unique_ptr<ui::Clipboard> saved_clipboard_;
 
-  ScopedObserver<TrayAction, TrayActionObserver> tray_action_observer_{this};
+  base::ScopedObservation<TrayAction, TrayActionObserver>
+      tray_action_observation_{this};
   ScopedSessionObserver session_observer_{this};
 
   std::vector<base::OnceClosure> on_shown_callbacks_;

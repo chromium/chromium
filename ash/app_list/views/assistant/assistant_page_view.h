@@ -15,7 +15,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 
 namespace ash {
 
@@ -86,8 +86,8 @@ class APP_LIST_EXPORT AssistantPageView : public AppListPage,
 
   std::unique_ptr<ViewShadow> view_shadow_;
 
-  ScopedObserver<AssistantController, AssistantControllerObserver>
-      assistant_controller_observer_{this};
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
+      assistant_controller_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AssistantPageView);
 };

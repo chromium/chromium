@@ -207,7 +207,8 @@ class ASH_EXPORT ScopedOverviewTransformWindow
 
   std::unique_ptr<ScopedOverviewHideWindows> hidden_transient_children_;
 
-  ScopedObserver<aura::Window, aura::WindowObserver> window_observer_{this};
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_{this};
 
   base::WeakPtrFactory<ScopedOverviewTransformWindow> weak_ptr_factory_{this};
 };

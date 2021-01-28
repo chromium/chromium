@@ -385,7 +385,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
 
   pin_keyboard_view_->SetVisible(PinKeyboardVisible());
 
-  tablet_mode_observer_.Add(Shell::Get()->tablet_mode_controller());
+  tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
 
   SetPreferredSize(GetPinRequestViewSize());
 }
@@ -440,7 +440,7 @@ void PinRequestView::OnTabletModeEnded() {
 }
 
 void PinRequestView::OnTabletControllerDestroyed() {
-  tablet_mode_observer_.RemoveAll();
+  tablet_mode_observation_.Reset();
 }
 
 void PinRequestView::SubmitCode() {

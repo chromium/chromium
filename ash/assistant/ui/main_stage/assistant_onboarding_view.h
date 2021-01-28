@@ -12,7 +12,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "base/component_export.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -62,8 +62,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantOnboardingView
   views::Label* greeting_ = nullptr;       // Owned by view hierarchy.
   views::View* grid_ = nullptr;            // Owned by view hierarchy.
 
-  ScopedObserver<AssistantController, AssistantControllerObserver>
-      assistant_controller_observer_{this};
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
+      assistant_controller_observation_{this};
 };
 
 }  // namespace ash

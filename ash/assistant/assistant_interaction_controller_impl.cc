@@ -90,9 +90,10 @@ AssistantInteractionControllerImpl::AssistantInteractionControllerImpl(
     : assistant_controller_(assistant_controller) {
   model_.AddObserver(this);
 
-  assistant_controller_observer_.Add(AssistantController::Get());
-  highlighter_controller_observer_.Add(Shell::Get()->highlighter_controller());
-  tablet_mode_controller_observer_.Add(GetTabletModeController());
+  assistant_controller_observation_.Observe(AssistantController::Get());
+  highlighter_controller_observation_.Observe(
+      Shell::Get()->highlighter_controller());
+  tablet_mode_controller_observation_.Observe(GetTabletModeController());
 }
 
 AssistantInteractionControllerImpl::~AssistantInteractionControllerImpl() {

@@ -17,7 +17,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 
 namespace ui {
 class ThroughputTracker;
@@ -129,8 +129,8 @@ class ASH_EXPORT HomeScreenController : public OverviewObserver,
   // animations.
   base::Optional<ui::ThroughputTracker> smoothness_tracker_;
 
-  ScopedObserver<SplitViewController, SplitViewObserver> split_view_observer_{
-      this};
+  base::ScopedObservation<SplitViewController, SplitViewObserver>
+      split_view_observation_{this};
 
   base::WeakPtrFactory<HomeScreenController> weak_ptr_factory_{this};
 

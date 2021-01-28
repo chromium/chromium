@@ -9,7 +9,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -54,9 +54,8 @@ class AmbientAssistantContainerView : public views::View,
   views::ImageView* avatar_view_ = nullptr;
   views::Label* greeting_label_ = nullptr;
 
-  ScopedObserver<AssistantController, AssistantControllerObserver>
-      assistant_controller_observer_{this};
-
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
+      assistant_controller_observation_{this};
 };
 
 }  // namespace ash

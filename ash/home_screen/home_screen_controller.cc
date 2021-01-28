@@ -286,13 +286,13 @@ void HomeScreenController::RecordAnimationSmoothness() {
 }
 
 void HomeScreenController::OnAppListViewShown() {
-  split_view_observer_.Add(
+  split_view_observation_.Observe(
       SplitViewController::Get(delegate_->GetHomeScreenWindow()));
   UpdateVisibility();
 }
 
 void HomeScreenController::OnAppListViewClosing() {
-  split_view_observer_.RemoveAll();
+  split_view_observation_.Reset();
 }
 
 void HomeScreenController::OnSplitViewStateChanged(

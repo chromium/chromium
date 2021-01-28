@@ -342,8 +342,8 @@ HoldingSpaceTrayBubble::HoldingSpaceTrayBubble(
   FindVisibleHoldingSpaceItems(bubble_view, &visible_items);
   holding_space_metrics::RecordItemCounts(visible_items);
 
-  shelf_observer_.Add(holding_space_tray_->shelf());
-  tablet_mode_observer_.Add(Shell::Get()->tablet_mode_controller());
+  shelf_observation_.Observe(holding_space_tray_->shelf());
+  tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
 }
 
 HoldingSpaceTrayBubble::~HoldingSpaceTrayBubble() {

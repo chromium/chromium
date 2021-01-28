@@ -17,7 +17,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 
 namespace ash {
 
@@ -165,8 +165,8 @@ class APP_LIST_MODEL_EXPORT AppListModel : public AppListItemListObserver {
   // The AppListView state. Controlled by the AppListView.
   AppListViewState state_fullscreen_ = AppListViewState::kClosed;
   base::ObserverList<AppListModelObserver, true>::Unchecked observers_;
-  ScopedObserver<AppListItemList, AppListItemListObserver>
-      item_list_scoped_observer_{this};
+  base::ScopedMultiSourceObservation<AppListItemList, AppListItemListObserver>
+      item_list_scoped_observations_{this};
   DISALLOW_COPY_AND_ASSIGN(AppListModel);
 };
 

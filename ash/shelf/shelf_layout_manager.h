@@ -30,7 +30,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -613,8 +613,8 @@ class ASH_EXPORT ShelfLayoutManager
       ShelfBackgroundType::kDefaultBg;
 
   ScopedSessionObserver scoped_session_observer_{this};
-  ScopedObserver<WallpaperController, WallpaperControllerObserver>
-      wallpaper_controller_observer_{this};
+  base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
+      wallpaper_controller_observation_{this};
 
   // Location of the most recent mouse drag event in screen coordinate.
   gfx::Point last_mouse_drag_position_;

@@ -214,7 +214,7 @@ BackdropController::BackdropController(aura::Window* container)
 }
 
 BackdropController::~BackdropController() {
-  window_backdrop_observer_.RemoveAll();
+  window_backdrop_observations_.RemoveAllObservations();
   auto* shell = Shell::Get();
   // Shell destroys the TabletModeController before destroying all root windows.
   if (shell->tablet_mode_controller())
@@ -231,15 +231,15 @@ BackdropController::~BackdropController() {
 
 void BackdropController::OnWindowAddedToLayout(aura::Window* window) {
   if (DoesWindowCauseBackdropUpdates(window)) {
-    window_backdrop_observer_.Add(WindowBackdrop::Get(window));
+    window_backdrop_observations_.AddObservation(WindowBackdrop::Get(window));
     UpdateBackdrop();
   }
 }
 
 void BackdropController::OnWindowRemovedFromLayout(aura::Window* window) {
   WindowBackdrop* window_backdrop = WindowBackdrop::Get(window);
-  if (window_backdrop_observer_.IsObserving(window_backdrop))
-    window_backdrop_observer_.Remove(window_backdrop);
+  if (window_backdrop_observations_.IsObservingSource(window_backdrop))
+    window_backdrop_observations_.RemoveObservation(window_backdrop);
 
   if (DoesWindowCauseBackdropUpdates(window))
     UpdateBackdrop();

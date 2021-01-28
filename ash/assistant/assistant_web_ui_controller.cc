@@ -66,7 +66,7 @@ class AssistantWebContainerEventObserver : public ui::EventObserver {
 // AssistantWebUiController:
 
 AssistantWebUiController::AssistantWebUiController() {
-  assistant_controller_observer_.Add(AssistantController::Get());
+  assistant_controller_observation_.Observe(AssistantController::Get());
 }
 
 AssistantWebUiController::~AssistantWebUiController() {

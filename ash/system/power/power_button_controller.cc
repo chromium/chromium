@@ -103,8 +103,7 @@ PowerButtonController::PowerButtonController(
     BacklightsForcedOffSetter* backlights_forced_off_setter)
     : backlights_forced_off_setter_(backlights_forced_off_setter),
       lock_state_controller_(Shell::Get()->lock_state_controller()),
-      tick_clock_(base::DefaultTickClock::GetInstance()),
-      backlights_forced_off_observer_(this) {
+      tick_clock_(base::DefaultTickClock::GetInstance()) {
   ProcessCommandLine();
   display_controller_ = std::make_unique<PowerButtonDisplayController>(
       backlights_forced_off_setter_, tick_clock_);
@@ -121,7 +120,7 @@ PowerButtonController::PowerButtonController(
 
   auto* shell = Shell::Get();
   shell->display_configurator()->AddObserver(this);
-  backlights_forced_off_observer_.Add(backlights_forced_off_setter);
+  backlights_forced_off_observation_.Observe(backlights_forced_off_setter);
   shell->tablet_mode_controller()->AddObserver(this);
   shell->lock_state_controller()->AddObserver(this);
   shell->session_controller()->AddObserver(this);

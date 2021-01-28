@@ -85,7 +85,8 @@ void LockScreenActionBackgroundControllerImpl::OnWidgetDestroyed(
     views::Widget* widget) {
   if (widget != background_widget_)
     return;
-  widget_observer_.Remove(widget);
+  DCHECK(widget_observation_.IsObservingSource(widget));
+  widget_observation_.Reset();
 
   background_widget_ = nullptr;
   contents_view_ = nullptr;
@@ -107,7 +108,7 @@ views::Widget* LockScreenActionBackgroundControllerImpl::CreateWidget() {
   views::Widget* widget = new views::Widget();
   widget->Init(std::move(params));
   widget->SetVisibilityChangedAnimationsEnabled(false);
-  widget_observer_.Add(widget);
+  widget_observation_.Observe(widget);
 
   return widget;
 }

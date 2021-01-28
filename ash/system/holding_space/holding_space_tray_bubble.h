@@ -16,6 +16,7 @@
 #include "ash/system/screen_layout_observer.h"
 #include "ash/system/tray/tray_bubble_wrapper.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/scoped_observation.h"
 
 namespace ash {
 
@@ -70,9 +71,9 @@ class ASH_EXPORT HoldingSpaceTrayBubble : public ScreenLayoutObserver,
   std::unique_ptr<TrayBubbleWrapper> bubble_wrapper_;
   std::unique_ptr<ui::EventHandler> event_handler_;
 
-  ScopedObserver<Shelf, ShelfObserver> shelf_observer_{this};
-  ScopedObserver<TabletModeController, TabletModeObserver>
-      tablet_mode_observer_{this};
+  base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
+  base::ScopedObservation<TabletModeController, TabletModeObserver>
+      tablet_mode_observation_{this};
 };
 
 }  // namespace ash

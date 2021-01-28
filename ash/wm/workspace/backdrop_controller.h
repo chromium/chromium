@@ -19,7 +19,7 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace aura {
@@ -180,8 +180,8 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
   // in overview mode.
   bool pause_update_ = false;
 
-  ScopedObserver<WindowBackdrop, WindowBackdrop::Observer>
-      window_backdrop_observer_{this};
+  base::ScopedMultiSourceObservation<WindowBackdrop, WindowBackdrop::Observer>
+      window_backdrop_observations_{this};
 
   base::WeakPtrFactory<BackdropController> weak_ptr_factory_{this};
 

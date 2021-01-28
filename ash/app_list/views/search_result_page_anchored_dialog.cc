@@ -36,12 +36,12 @@ SearchResultPageAnchoredDialog::SearchResultPageAnchoredDialog(
   // The |dialog| ownership is passed to the window hierarchy.
   widget_ = views::DialogDelegate::CreateDialogWidget(
       dialog.release(), nullptr, parent->GetNativeWindow());
-  widget_observer_.Add(widget_);
-  widget_observer_.Add(parent);
+  widget_observations_.AddObservation(widget_);
+  widget_observations_.AddObservation(parent);
 }
 
 SearchResultPageAnchoredDialog::~SearchResultPageAnchoredDialog() {
-  widget_observer_.RemoveAll();
+  widget_observations_.RemoveAllObservations();
   if (widget_)
     widget_->Close();
 }
@@ -80,7 +80,7 @@ float SearchResultPageAnchoredDialog::AdjustVerticalTransformOffset(
 
 void SearchResultPageAnchoredDialog::OnWidgetClosing(views::Widget* widget) {
   widget_ = nullptr;
-  widget_observer_.RemoveAll();
+  widget_observations_.RemoveAllObservations();
   if (callback_)
     std::move(callback_).Run();
 }

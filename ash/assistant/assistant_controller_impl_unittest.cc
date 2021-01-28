@@ -12,7 +12,7 @@
 #include "ash/assistant/util/deep_link_util.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
@@ -98,9 +98,9 @@ class AssistantControllerImplTest : public AssistantAshTestBase {
 // Tests that AssistantController observers are notified of deep link received.
 TEST_F(AssistantControllerImplTest, NotifiesDeepLinkReceived) {
   testing::NiceMock<MockAssistantControllerObserver> controller_observer_mock;
-  ScopedObserver<AssistantController, AssistantControllerObserver>
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
       scoped_controller_obs{&controller_observer_mock};
-  scoped_controller_obs.Add(controller());
+  scoped_controller_obs.Observe(controller());
 
   EXPECT_CALL(controller_observer_mock, OnDeepLinkReceived)
       .WillOnce(
@@ -122,9 +122,9 @@ TEST_F(AssistantControllerImplTest, NotifiesDeepLinkReceived) {
 // before and after the URL is actually opened respectively.
 TEST_F(AssistantControllerImplTest, NotifiesOpeningUrlAndUrlOpened) {
   testing::NiceMock<MockAssistantControllerObserver> controller_observer_mock;
-  ScopedObserver<AssistantController, AssistantControllerObserver>
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
       scoped_controller_obs{&controller_observer_mock};
-  scoped_controller_obs.Add(controller());
+  scoped_controller_obs.Observe(controller());
 
   // Enforce ordering of events.
   testing::InSequence sequence;
@@ -155,9 +155,9 @@ TEST_F(AssistantControllerImplTest, NotifiesOpeningUrlAndUrlOpened) {
 
 TEST_F(AssistantControllerImplTest, OpensFeedbackPageForFeedbackDeeplink) {
   testing::NiceMock<MockAssistantControllerObserver> controller_observer_mock;
-  ScopedObserver<AssistantController, AssistantControllerObserver>
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
       scoped_controller_obs{&controller_observer_mock};
-  scoped_controller_obs.Add(controller());
+  scoped_controller_obs.Observe(controller());
 
   EXPECT_CALL(controller_observer_mock, OnDeepLinkReceived)
       .WillOnce(

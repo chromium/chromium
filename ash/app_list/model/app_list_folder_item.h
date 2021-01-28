@@ -20,7 +20,7 @@
 #include "ash/public/cpp/app_list/app_list_config_provider.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 
 namespace gfx {
 class Rect;
@@ -115,8 +115,9 @@ class APP_LIST_MODEL_EXPORT AppListFolderItem
   // Set when a folder item is being dragged.
   AppListItem* dragged_item_ = nullptr;
 
-  ScopedObserver<AppListConfigProvider, AppListConfigProvider::Observer>
-      config_provider_observer_{this};
+  base::ScopedObservation<AppListConfigProvider,
+                          AppListConfigProvider::Observer>
+      config_provider_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppListFolderItem);
 };

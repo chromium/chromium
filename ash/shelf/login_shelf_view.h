@@ -20,7 +20,7 @@
 #include "ash/tray_action/tray_action.h"
 #include "ash/tray_action/tray_action_observer.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -186,17 +186,19 @@ class ASH_EXPORT LoginShelfView : public views::View,
 
   LockScreenActionBackgroundController* lock_screen_action_background_;
 
-  ScopedObserver<TrayAction, TrayActionObserver> tray_action_observer_{this};
+  base::ScopedObservation<TrayAction, TrayActionObserver>
+      tray_action_observation_{this};
 
-  ScopedObserver<LockScreenActionBackgroundController,
-                 LockScreenActionBackgroundObserver>
-      lock_screen_action_background_observer_{this};
+  base::ScopedObservation<LockScreenActionBackgroundController,
+                          LockScreenActionBackgroundObserver>
+      lock_screen_action_background_observation_{this};
 
-  ScopedObserver<ShutdownControllerImpl, ShutdownControllerImpl::Observer>
-      shutdown_controller_observer_{this};
+  base::ScopedObservation<ShutdownControllerImpl,
+                          ShutdownControllerImpl::Observer>
+      shutdown_controller_observation_{this};
 
-  ScopedObserver<LoginDataDispatcher, LoginDataDispatcher::Observer>
-      login_data_dispatcher_observer_{this};
+  base::ScopedObservation<LoginDataDispatcher, LoginDataDispatcher::Observer>
+      login_data_dispatcher_observation_{this};
 
   // The kiosk app button will only be created for the primary display's login
   // shelf.

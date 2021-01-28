@@ -171,7 +171,7 @@ ScopedOverviewTransformWindow::ScopedOverviewTransformWindow(
 
     // Add this as |aura::WindowObserver| for observing |kHideInOverviewKey|
     // property changes.
-    window_observer_.Add(transient);
+    window_observations_.AddObservation(transient);
 
     // Hide transient children which have been specified to be hidden in
     // overview mode.
@@ -230,7 +230,7 @@ ScopedOverviewTransformWindow::~ScopedOverviewTransformWindow() {
   UpdateRoundedCorners(/*show=*/false);
   aura::client::GetTransientWindowClient()->RemoveObserver(this);
 
-  window_observer_.RemoveAll();
+  window_observations_.RemoveAllObservations();
 }
 
 // static
@@ -535,7 +535,7 @@ void ScopedOverviewTransformWindow::OnTransientChildWindowAdded(
 
   // Add this as |aura::WindowObserver| for observing |kHideInOverviewKey|
   // property changes.
-  window_observer_.Add(transient_child);
+  window_observations_.AddObservation(transient_child);
 }
 
 void ScopedOverviewTransformWindow::OnTransientChildWindowRemoved(
@@ -548,8 +548,8 @@ void ScopedOverviewTransformWindow::OnTransientChildWindowRemoved(
   DCHECK(event_targeting_blocker_map_.contains(transient_child));
   event_targeting_blocker_map_.erase(transient_child);
 
-  if (window_observer_.IsObserving(transient_child))
-    window_observer_.Remove(transient_child);
+  if (window_observations_.IsObservingSource(transient_child))
+    window_observations_.RemoveObservation(transient_child);
 }
 
 void ScopedOverviewTransformWindow::OnWindowPropertyChanged(

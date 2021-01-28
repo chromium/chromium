@@ -272,8 +272,8 @@ class ASH_EXPORT PowerButtonController
   // display's height or width, respectively.
   double power_button_offset_percentage_ = 0.f;
 
-  ScopedObserver<BacklightsForcedOffSetter, ScreenBacklightObserver>
-      backlights_forced_off_observer_;
+  base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
+      backlights_forced_off_observation_{this};
 
   // Used to maintain active state of the active window that exists before
   // showing menu.

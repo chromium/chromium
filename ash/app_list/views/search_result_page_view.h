@@ -194,8 +194,8 @@ class APP_LIST_EXPORT SearchResultPageView
   // The dialog anchored within the search results page.
   std::unique_ptr<SearchResultPageAnchoredDialog> anchored_dialog_;
 
-  ScopedObserver<SearchBoxModel, SearchBoxModelObserver> search_box_observer_{
-      this};
+  base::ScopedObservation<SearchBoxModel, SearchBoxModelObserver>
+      search_box_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SearchResultPageView);
 };

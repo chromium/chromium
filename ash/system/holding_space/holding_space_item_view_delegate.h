@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/drag_controller.h"
@@ -141,7 +141,8 @@ class ASH_EXPORT HoldingSpaceItemViewDelegate
   HoldingSpaceItemView* ignore_mouse_released_ = nullptr;
 
   // We observe `views_` for their lifetime so we can track selected state.
-  ScopedObserver<views::View, views::ViewObserver> view_observer_{this};
+  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
+      view_observations_{this};
 };
 
 }  // namespace ash

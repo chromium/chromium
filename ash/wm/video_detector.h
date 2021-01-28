@@ -15,7 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -104,8 +104,8 @@ class ASH_EXPORT VideoDetector : public aura::EnvObserver,
 
   base::ObserverList<Observer>::Unchecked observers_;
 
-  ScopedObserver<aura::Window, aura::WindowObserver> window_observer_manager_{
-      this};
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      window_observations_manager_{this};
   ScopedSessionObserver scoped_session_observer_{this};
 
   bool is_shutting_down_;

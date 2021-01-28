@@ -29,13 +29,13 @@ const char GestureEducationNotificationController::kNotificationId[] =
 GestureEducationNotificationController::
     GestureEducationNotificationController() {
   Shell::Get()->session_controller()->AddObserver(this);
-  tablet_mode_observer_.Add(Shell::Get()->tablet_mode_controller());
+  tablet_mode_observation_.Observe(Shell::Get()->tablet_mode_controller());
 }
 
 GestureEducationNotificationController::
     ~GestureEducationNotificationController() {
   Shell::Get()->session_controller()->RemoveObserver(this);
-  tablet_mode_observer_.RemoveAll();
+  tablet_mode_observation_.Reset();
 }
 
 void GestureEducationNotificationController::MaybeShowNotification() {
@@ -68,7 +68,7 @@ void GestureEducationNotificationController::OnTabletModeStarted() {
 }
 
 void GestureEducationNotificationController::OnTabletControllerDestroyed() {
-  tablet_mode_observer_.RemoveAll();
+  tablet_mode_observation_.Reset();
 }
 
 void GestureEducationNotificationController::RegisterProfilePrefs(

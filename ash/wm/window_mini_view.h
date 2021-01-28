@@ -6,7 +6,7 @@
 #define ASH_WM_WINDOW_MINI_VIEW_H_
 
 #include "ash/ash_export.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/views/controls/button/button.h"
@@ -109,7 +109,8 @@ class ASH_EXPORT WindowMiniView : public views::View,
   // Optionally shows a preview of |window_|.
   WindowPreviewView* preview_view_ = nullptr;
 
-  ScopedObserver<aura::Window, aura::WindowObserver> window_observer_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 };
 
 }  // namespace ash

@@ -80,7 +80,7 @@ AssistantSuggestionsControllerImpl::AssistantSuggestionsControllerImpl() {
   if (!IsConversationStartersV2Enabled())
     UpdateConversationStarters();
 
-  assistant_controller_observer_.Add(AssistantController::Get());
+  assistant_controller_observation_.Observe(AssistantController::Get());
 }
 
 AssistantSuggestionsControllerImpl::~AssistantSuggestionsControllerImpl() =

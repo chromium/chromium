@@ -248,7 +248,7 @@ class Shelf::AutoDimEventHandler : public ui::EventHandler,
  public:
   explicit AutoDimEventHandler(Shelf* shelf) : shelf_(shelf) {
     Shell::Get()->AddPreTargetHandler(this);
-    shelf_observer_.Add(shelf_);
+    shelf_observation_.Observe(shelf_);
     UndimShelf();
   }
 
@@ -312,7 +312,7 @@ class Shelf::AutoDimEventHandler : public ui::EventHandler,
   base::OneShotTimer dim_shelf_timer_;
   // An observer that notifies the AutoDimHandler that shelf visibility has
   // changed.
-  ScopedObserver<Shelf, ShelfObserver> shelf_observer_{this};
+  base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
 
   // Delay before dimming the shelf.
   const base::TimeDelta kDimDelay = base::TimeDelta::FromSeconds(5);

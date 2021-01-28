@@ -207,7 +207,7 @@ SearchResultPageView::SearchResultPageView(SearchModel* search_model)
       base::BindRepeating(&SearchResultPageView::SelectedResultChanged,
                           base::Unretained(this)));
 
-  search_box_observer_.Add(search_model->search_box());
+  search_box_observation_.Observe(search_model->search_box());
 }
 
 SearchResultPageView::~SearchResultPageView() = default;

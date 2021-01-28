@@ -81,7 +81,7 @@ bool IsShelfBackgroundTypeWithRoundedCorners(
 AppListPresenterDelegateImpl::AppListPresenterDelegateImpl(
     AppListControllerImpl* controller)
     : controller_(controller) {
-  display_observer_.Add(display::Screen::GetScreen());
+  display_observation_.Observe(display::Screen::GetScreen());
 }
 
 AppListPresenterDelegateImpl::~AppListPresenterDelegateImpl() {
@@ -119,8 +119,8 @@ void AppListPresenterDelegateImpl::ShowForDisplay(
 
   Shelf* shelf =
       Shelf::ForWindow(view_->GetWidget()->GetNativeView()->GetRootWindow());
-  if (!shelf_observer_.IsObserving(shelf))
-    shelf_observer_.Add(shelf);
+  if (!shelf_observation_.IsObservingSource(shelf))
+    shelf_observation_.Observe(shelf);
 
   view_->SetShelfHasRoundedCorners(
       IsShelfBackgroundTypeWithRoundedCorners(shelf->GetBackgroundType()));
@@ -142,7 +142,7 @@ void AppListPresenterDelegateImpl::OnClosing() {
 
 void AppListPresenterDelegateImpl::OnClosed() {
   if (!is_visible_)
-    shelf_observer_.RemoveAll();
+    shelf_observation_.Reset();
   controller_->ViewClosed();
 }
 

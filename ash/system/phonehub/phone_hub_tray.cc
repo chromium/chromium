@@ -48,7 +48,7 @@ constexpr gfx::Insets kBubblePadding(0, 0, kBubbleBottomPaddingDip, 0);
 
 PhoneHubTray::PhoneHubTray(Shelf* shelf)
     : TrayBackgroundView(shelf), ui_controller_(new PhoneHubUiController()) {
-  observed_phone_hub_ui_controller_.Add(ui_controller_.get());
+  observed_phone_hub_ui_controller_.Observe(ui_controller_.get());
 
   auto icon = std::make_unique<views::ImageView>();
   icon->SetTooltipText(

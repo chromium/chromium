@@ -33,7 +33,7 @@ MicView::MicView(AssistantButtonListener* listener, AssistantButtonId button_id)
     : AssistantButton(listener, button_id) {
   InitLayout();
 
-  assistant_controller_observer_.Add(AssistantController::Get());
+  assistant_controller_observation_.Observe(AssistantController::Get());
   AssistantInteractionController::Get()->GetModel()->AddObserver(this);
 }
 
@@ -52,7 +52,9 @@ int MicView::GetHeightForWidth(int width) const {
 
 void MicView::OnAssistantControllerDestroying() {
   AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
-  assistant_controller_observer_.Remove(AssistantController::Get());
+  DCHECK(assistant_controller_observation_.IsObservingSource(
+      AssistantController::Get()));
+  assistant_controller_observation_.Reset();
 }
 
 void MicView::OnMicStateChanged(MicState mic_state) {

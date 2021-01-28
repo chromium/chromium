@@ -337,7 +337,7 @@ ScrollableUsersListView::ScrollableUsersListView(
   SetVerticalScrollBar(std::make_unique<UsersListScrollBar>(false));
   SetHorizontalScrollBar(std::make_unique<UsersListScrollBar>(true));
 
-  observer_.Add(Shell::Get()->wallpaper_controller());
+  observation_.Observe(Shell::Get()->wallpaper_controller());
 }
 
 ScrollableUsersListView::~ScrollableUsersListView() = default;

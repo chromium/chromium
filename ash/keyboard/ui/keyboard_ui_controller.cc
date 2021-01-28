@@ -257,7 +257,7 @@ void KeyboardUIController::DisableKeyboard() {
   container_behavior_.reset();
   animation_observer_.reset();
 
-  ime_observer_.RemoveAll();
+  ime_observation_.Reset();
   ui_->SetController(nullptr);
   ui_.reset();
 
@@ -789,7 +789,7 @@ void KeyboardUIController::OnWindowBoundsChanged(
 
 void KeyboardUIController::OnInputMethodDestroyed(
     const ui::InputMethod* input_method) {
-  ime_observer_.RemoveAll();
+  ime_observation_.Reset();
   OnTextInputStateChanged(nullptr);
 }
 
@@ -1124,12 +1124,12 @@ void KeyboardUIController::UpdateInputMethodObserver() {
   if (!ime)
     return;
 
-  if (ime_observer_.IsObserving(ime))
+  if (ime_observation_.IsObservingSource(ime))
     return;
 
   // Only observes the current active IME.
-  ime_observer_.RemoveAll();
-  ime_observer_.Add(ime);
+  ime_observation_.Reset();
+  ime_observation_.Observe(ime);
 
   // Note: We used to call OnTextInputStateChanged(ime->GetTextInputClient())
   // here, but that can trigger HideKeyboardImplicitlyBySystem() from a call to

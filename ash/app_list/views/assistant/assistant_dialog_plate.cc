@@ -104,7 +104,7 @@ AssistantDialogPlate::AssistantDialogPlate(AssistantViewDelegate* delegate)
   SetID(AssistantViewID::kDialogPlate);
   InitLayout();
 
-  assistant_controller_observer_.Add(AssistantController::Get());
+  assistant_controller_observation_.Observe(AssistantController::Get());
   AssistantInteractionController::Get()->GetModel()->AddObserver(this);
   AssistantUiController::Get()->GetModel()->AddObserver(this);
 }
@@ -174,7 +174,9 @@ bool AssistantDialogPlate::HandleKeyEvent(views::Textfield* textfield,
 void AssistantDialogPlate::OnAssistantControllerDestroying() {
   AssistantUiController::Get()->GetModel()->RemoveObserver(this);
   AssistantInteractionController::Get()->GetModel()->RemoveObserver(this);
-  assistant_controller_observer_.Remove(AssistantController::Get());
+  DCHECK(assistant_controller_observation_.IsObservingSource(
+      AssistantController::Get()));
+  assistant_controller_observation_.Reset();
 }
 
 void AssistantDialogPlate::OnInputModalityChanged(

@@ -11,7 +11,7 @@
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/system/phonehub/phone_status_view.h"
 #include "ash/system/tray/tray_background_view.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 
 namespace chromeos {
 namespace phonehub {
@@ -100,7 +100,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   // Unowned.
   PhoneHubContentView* content_view_ = nullptr;
 
-  ScopedObserver<PhoneHubUiController, PhoneHubUiController::Observer>
+  base::ScopedObservation<PhoneHubUiController, PhoneHubUiController::Observer>
       observed_phone_hub_ui_controller_{this};
 };
 

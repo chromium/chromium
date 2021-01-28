@@ -58,7 +58,7 @@ NotificationOptInView::NotificationOptInView(
   InitLayout();
 
   DCHECK(notification_access_manager_);
-  access_manager_observer_.Add(notification_access_manager_);
+  access_manager_observation_.Observe(notification_access_manager_);
 
   // Checks and updates its visibility upon creation.
   UpdateVisibility();

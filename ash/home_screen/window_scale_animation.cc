@@ -45,7 +45,7 @@ WindowScaleAnimation::WindowScaleAnimation(aura::Window* window,
     : window_(window),
       opt_callback_(std::move(opt_callback)),
       scale_type_(scale_type) {
-  window_observer_.Add(window);
+  window_observation_.Observe(window);
   WindowBackdrop::Get(window)->DisableBackdrop();
 
   ui::ScopedLayerAnimationSettings settings(window_->layer()->GetAnimator());

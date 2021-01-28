@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -71,7 +71,8 @@ class SearchResultPageAnchoredDialog : public views::WidgetObserver {
   // Most recent anchor bounds (in |host_view_| coordinates).
   gfx::Rect anchor_bounds_;
 
-  ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_{this};
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      widget_observations_{this};
 };
 
 }  // namespace ash

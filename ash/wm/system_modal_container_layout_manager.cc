@@ -48,7 +48,7 @@ SystemModalContainerLayoutManager::SystemModalContainerLayoutManager(
     aura::Window* container)
     : container_(container) {
   Shelf* shelf = RootWindowController::ForWindow(container_)->shelf();
-  shelf_observer_.Add(shelf);
+  shelf_observation_.Observe(shelf);
 }
 
 SystemModalContainerLayoutManager::~SystemModalContainerLayoutManager() {

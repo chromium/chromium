@@ -130,7 +130,7 @@ WindowMiniView::WindowMiniView(aura::Window* source_window)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  window_observer_.Add(source_window);
+  window_observation_.Observe(source_window);
 
   header_view_ = AddChildView(std::make_unique<views::View>());
   header_view_->SetPaintToLayer();
@@ -218,7 +218,7 @@ void WindowMiniView::OnWindowDestroying(aura::Window* window) {
   if (window != source_window_)
     return;
 
-  window_observer_.RemoveAll();
+  window_observation_.Reset();
   source_window_ = nullptr;
   SetShowPreview(false);
 }

@@ -9,7 +9,7 @@
 
 #include "ash/shell_observer.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
@@ -97,9 +97,10 @@ class ShelfWindowWatcher : public ::wm::ActivationChangeObserver,
   ContainerWindowObserver container_window_observer_{this};
   UserWindowObserver user_window_observer_{this};
 
-  ScopedObserver<aura::Window, aura::WindowObserver>
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_container_windows_;
-  ScopedObserver<aura::Window, aura::WindowObserver> observed_user_windows_;
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      observed_user_windows_;
 
   // The set of windows with shelf items managed by this ShelfWindowWatcher.
   std::set<aura::Window*> user_windows_with_items_;

@@ -19,10 +19,9 @@ NotificationMenuController::NotificationMenuController(
     AppMenuModelAdapter* app_menu_model_adapter)
     : app_id_(app_id),
       root_menu_(root_menu),
-      app_menu_model_adapter_(app_menu_model_adapter),
-      message_center_observer_(this) {
+      app_menu_model_adapter_(app_menu_model_adapter) {
   DCHECK(app_menu_model_adapter_);
-  message_center_observer_.Add(message_center::MessageCenter::Get());
+  message_center_observation_.Observe(message_center::MessageCenter::Get());
   InitializeNotificationMenuView();
 }
 

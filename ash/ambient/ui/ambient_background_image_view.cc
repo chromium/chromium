@@ -159,7 +159,7 @@ void AmbientBackgroundImageView::InitLayout() {
   // Set a place holder size for Flex layout to assign bounds.
   image_view_->SetPreferredSize(gfx::Size(1, 1));
   image_view_->SetProperty(views::kFlexBehaviorKey, kUnboundedScaleToZero);
-  observed_views_.Add(image_view_);
+  observed_views_.AddObservation(image_view_);
 
   related_image_view_ =
       image_container_->AddChildView(std::make_unique<views::ImageView>());
@@ -167,7 +167,7 @@ void AmbientBackgroundImageView::InitLayout() {
   related_image_view_->SetPreferredSize(gfx::Size(1, 1));
   related_image_view_->SetProperty(views::kFlexBehaviorKey,
                                    kUnboundedScaleToZero);
-  observed_views_.Add(related_image_view_);
+  observed_views_.AddObservation(related_image_view_);
 
   // Set spacing between two images.
   related_image_view_->SetProperty(

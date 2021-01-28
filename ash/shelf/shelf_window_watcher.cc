@@ -116,7 +116,7 @@ void ShelfWindowWatcher::UserWindowObserver::OnWindowVisibilityChanged(
     aura::Window* window,
     bool visible) {
   // This is also called for descendants; check that the window is observed.
-  if (window_watcher_->observed_user_windows_.IsObserving(window))
+  if (window_watcher_->observed_user_windows_.IsObservingSource(window))
     window_watcher_->OnUserWindowPropertyChanged(window);
 }
 
@@ -164,23 +164,23 @@ void ShelfWindowWatcher::RemoveShelfItem(aura::Window* window) {
 }
 
 void ShelfWindowWatcher::OnContainerWindowDestroying(aura::Window* container) {
-  observed_container_windows_.Remove(container);
+  observed_container_windows_.RemoveObservation(container);
 }
 
 void ShelfWindowWatcher::OnUserWindowAdded(aura::Window* window) {
   // The window may already be tracked from a prior display or parent container.
-  if (observed_user_windows_.IsObserving(window))
+  if (observed_user_windows_.IsObservingSource(window))
     return;
 
-  observed_user_windows_.Add(window);
+  observed_user_windows_.AddObservation(window);
 
   // Add, update, or remove a ShelfItem for |window|, as needed.
   OnUserWindowPropertyChanged(window);
 }
 
 void ShelfWindowWatcher::OnUserWindowDestroying(aura::Window* window) {
-  if (observed_user_windows_.IsObserving(window))
-    observed_user_windows_.Remove(window);
+  if (observed_user_windows_.IsObservingSource(window))
+    observed_user_windows_.RemoveObservation(window);
 
   if (user_windows_with_items_.count(window) > 0)
     RemoveShelfItem(window);
@@ -228,7 +228,7 @@ void ShelfWindowWatcher::OnRootWindowAdded(aura::Window* root_window) {
   for (aura::Window* container : desks_util::GetDesksContainers(root_window)) {
     for (aura::Window* window : container->children())
       OnUserWindowAdded(window);
-    observed_container_windows_.Add(container);
+    observed_container_windows_.AddObservation(container);
   }
 }
 

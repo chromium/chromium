@@ -52,12 +52,12 @@ const char* SearchResultContainerView::GetClassName() const {
 
 void SearchResultContainerView::AddObservedResultView(
     SearchResultBaseView* result_view) {
-  result_view_observer_.Add(result_view);
+  result_view_observations_.AddObservation(result_view);
 }
 
 void SearchResultContainerView::RemoveObservedResultView(
     SearchResultBaseView* result_view) {
-  result_view_observer_.Remove(result_view);
+  result_view_observations_.RemoveObservation(result_view);
 }
 
 void SearchResultContainerView::ListItemsAdded(size_t /*start*/,

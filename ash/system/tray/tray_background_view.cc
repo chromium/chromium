@@ -27,7 +27,7 @@
 #include "ash/system/tray/tray_event_filter.h"
 #include "ash/window_factory.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/compositor/layer.h"
@@ -145,11 +145,12 @@ class TrayBackgroundView::TrayWidgetObserver : public views::WidgetObserver {
     host_->AnchorUpdated();
   }
 
-  void Add(views::Widget* widget) { observer_.Add(widget); }
+  void Add(views::Widget* widget) { observations_.AddObservation(widget); }
 
  private:
   TrayBackgroundView* host_;
-  ScopedObserver<views::Widget, views::WidgetObserver> observer_{this};
+  base::ScopedMultiSourceObservation<views::Widget, views::WidgetObserver>
+      observations_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TrayWidgetObserver);
 };

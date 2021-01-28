@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/public/mojom/media_controller.mojom.h"
@@ -98,7 +98,8 @@ class MediaStringView : public views::View,
   mojo::Receiver<media_session::mojom::MediaControllerObserver>
       observer_receiver_{this};
 
-  ScopedObserver<views::View, views::ViewObserver> observed_view_{this};
+  base::ScopedObservation<views::View, views::ViewObserver> observed_view_{
+      this};
 
   base::WeakPtrFactory<MediaStringView> weak_factory_{this};
 };

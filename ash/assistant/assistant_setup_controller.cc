@@ -25,7 +25,7 @@ namespace ash {
 AssistantSetupController::AssistantSetupController(
     AssistantControllerImpl* assistant_controller)
     : assistant_controller_(assistant_controller) {
-  assistant_controller_observer_.Add(AssistantController::Get());
+  assistant_controller_observation_.Observe(AssistantController::Get());
 }
 
 AssistantSetupController::~AssistantSetupController() = default;

@@ -8,7 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_observer.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -42,7 +42,7 @@ class ASH_EXPORT ClipboardNudge : public ShelfObserver {
 
   aura::Window* const root_window_;
 
-  ScopedObserver<Shelf, ShelfObserver> shelf_observer_{this};
+  base::ScopedObservation<Shelf, ShelfObserver> shelf_observation_{this};
 };
 
 }  // namespace ash

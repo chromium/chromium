@@ -9,7 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer_animation_observer.h"
@@ -55,7 +55,8 @@ class WindowScaleAnimation : public ui::ImplicitAnimationObserver,
 
   const WindowScaleType scale_type_;
 
-  ScopedObserver<aura::Window, aura::WindowObserver> window_observer_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WindowScaleAnimation);
 };

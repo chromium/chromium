@@ -49,13 +49,13 @@ void DetachableBaseHandler::RegisterPrefs(PrefRegistrySimple* registry) {
 
 DetachableBaseHandler::DetachableBaseHandler(PrefService* local_state)
     : local_state_(local_state),
-      hammerd_observer_(this),
-      power_manager_observer_(this) {
+      hammerd_observation_(this),
+      power_manager_observation_(this) {
   if (chromeos::HammerdClient::Get())  // May be null in tests
-    hammerd_observer_.Add(chromeos::HammerdClient::Get());
+    hammerd_observation_.Observe(chromeos::HammerdClient::Get());
   chromeos::PowerManagerClient* power_manager_client =
       chromeos::PowerManagerClient::Get();
-  power_manager_observer_.Add(power_manager_client);
+  power_manager_observation_.Observe(power_manager_client);
 
   power_manager_client->GetSwitchStates(
       base::BindOnce(&DetachableBaseHandler::OnGotPowerManagerSwitchStates,

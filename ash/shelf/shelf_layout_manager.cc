@@ -392,7 +392,7 @@ void ShelfLayoutManager::InitObservers() {
   shell->locale_update_controller()->AddObserver(this);
   state_.session_state = shell->session_controller()->GetSessionState();
   shelf_background_type_ = GetShelfBackgroundType();
-  wallpaper_controller_observer_.Add(shell->wallpaper_controller());
+  wallpaper_controller_observation_.Observe(shell->wallpaper_controller());
   display::Screen::GetScreen()->AddObserver(this);
   message_center::MessageCenter::Get()->AddObserver(this);
 

@@ -30,8 +30,8 @@ constexpr base::TimeDelta kNoteLaunchTimeout =
 LockScreenNoteDisplayStateHandler::LockScreenNoteDisplayStateHandler(
     BacklightsForcedOffSetter* backlights_forced_off_setter)
     : backlights_forced_off_setter_(backlights_forced_off_setter),
-      backlights_forced_off_observer_(this) {
-  backlights_forced_off_observer_.Add(backlights_forced_off_setter_);
+      backlights_forced_off_observation_(this) {
+  backlights_forced_off_observation_.Observe(backlights_forced_off_setter_);
 }
 
 LockScreenNoteDisplayStateHandler::~LockScreenNoteDisplayStateHandler() =

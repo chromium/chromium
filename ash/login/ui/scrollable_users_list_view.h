@@ -12,7 +12,7 @@
 #include "ash/login/ui/login_user_view.h"
 #include "ash/public/cpp/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper_controller_observer.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/views/controls/scroll_view.h"
 
@@ -96,8 +96,8 @@ class ASH_EXPORT ScrollableUsersListView : public views::ScrollView,
 
   GradientParams gradient_params_;
 
-  ScopedObserver<WallpaperController, WallpaperControllerObserver> observer_{
-      this};
+  base::ScopedObservation<WallpaperController, WallpaperControllerObserver>
+      observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ScrollableUsersListView);
 };

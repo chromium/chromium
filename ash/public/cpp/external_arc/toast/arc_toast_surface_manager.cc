@@ -10,7 +10,7 @@ namespace ash {
 
 ArcToastSurfaceManager::ArcToastSurfaceManager()
     : locked_(ash::SessionController::Get()->IsScreenLocked()) {
-  scoped_observer_.Add(ash::SessionController::Get());
+  scoped_observation_.Observe(ash::SessionController::Get());
 }
 
 ArcToastSurfaceManager::~ArcToastSurfaceManager() = default;

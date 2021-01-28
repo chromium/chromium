@@ -11,7 +11,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 
 namespace ash {
@@ -58,8 +58,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) MicView
   // kUserSpeaks state.
   bool is_user_speaking_ = false;
 
-  ScopedObserver<AssistantController, AssistantControllerObserver>
-      assistant_controller_observer_{this};
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
+      assistant_controller_observation_{this};
 };
 
 }  // namespace ash

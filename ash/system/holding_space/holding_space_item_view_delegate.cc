@@ -84,7 +84,7 @@ HoldingSpaceItemViewDelegate::~HoldingSpaceItemViewDelegate() {
 
 void HoldingSpaceItemViewDelegate::OnHoldingSpaceItemViewCreated(
     HoldingSpaceItemView* view) {
-  view_observer_.Add(view);
+  view_observations_.AddObservation(view);
   views_.push_back(view);
 }
 
@@ -326,7 +326,7 @@ void HoldingSpaceItemViewDelegate::WriteDragDataForView(
 
 void HoldingSpaceItemViewDelegate::OnViewIsDeleting(views::View* view) {
   base::Erase(views_, view);
-  view_observer_.Remove(view);
+  view_observations_.RemoveObservation(view);
 }
 
 void HoldingSpaceItemViewDelegate::ExecuteCommand(int command_id,

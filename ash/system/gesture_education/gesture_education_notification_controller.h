@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 
 class PrefRegistrySimple;
@@ -53,8 +53,8 @@ class ASH_EXPORT GestureEducationNotificationController
 
   void ResetPrefForTest();
 
-  ScopedObserver<TabletModeController, TabletModeObserver>
-      tablet_mode_observer_{this};
+  base::ScopedObservation<TabletModeController, TabletModeObserver>
+      tablet_mode_observation_{this};
 
   PrefService* active_user_prefs_ = nullptr;  // Not owned.
 

@@ -13,7 +13,7 @@
 #include "ash/public/cpp/assistant/controller/assistant_controller.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 
@@ -85,8 +85,8 @@ class APP_LIST_EXPORT AppListAssistantMainStage
   AssistantZeroStateView* zero_state_view_;
   AssistantFooterView* footer_;
 
-  ScopedObserver<AssistantController, AssistantControllerObserver>
-      assistant_controller_observer_{this};
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
+      assistant_controller_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppListAssistantMainStage);
 };

@@ -48,9 +48,8 @@ class AmbientAssistantDialogPlate : public views::View,
   MicView* animated_voice_input_toggle_ = nullptr;
   AssistantQueryView* voice_query_view_ = nullptr;
 
-  ScopedObserver<AssistantController, AssistantControllerObserver>
-      assistant_controller_observer_{this};
-
+  base::ScopedObservation<AssistantController, AssistantControllerObserver>
+      assistant_controller_observation_{this};
 };
 
 }  // namespace ash

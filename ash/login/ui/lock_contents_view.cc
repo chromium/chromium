@@ -395,7 +395,7 @@ class LockContentsView::AutoLoginUserActivityHandler
     : public ui::UserActivityObserver {
  public:
   AutoLoginUserActivityHandler() {
-    observer_.Add(ui::UserActivityDetector::Get());
+    observation_.Observe(ui::UserActivityDetector::Get());
   }
 
   ~AutoLoginUserActivityHandler() override = default;
@@ -407,8 +407,8 @@ class LockContentsView::AutoLoginUserActivityHandler
   }
 
  private:
-  ScopedObserver<ui::UserActivityDetector, ui::UserActivityObserver> observer_{
-      this};
+  base::ScopedObservation<ui::UserActivityDetector, ui::UserActivityObserver>
+      observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AutoLoginUserActivityHandler);
 };
@@ -576,7 +576,7 @@ LockContentsView::LockContentsView(
         std::make_unique<AutoLoginUserActivityHandler>();
 
   data_dispatcher_->AddObserver(this);
-  display_observer_.Add(display::Screen::GetScreen());
+  display_observation_.Observe(display::Screen::GetScreen());
   Shell::Get()->system_tray_notifier()->AddSystemTrayFocusObserver(this);
   keyboard::KeyboardUIController::Get()->AddObserver(this);
 

@@ -55,7 +55,7 @@ void LockScreen::TestApi::AddOnShownCallback(base::OnceClosure on_shown) {
 }
 
 LockScreen::LockScreen(ScreenType type) : type_(type) {
-  tray_action_observer_.Add(Shell::Get()->tray_action());
+  tray_action_observation_.Observe(Shell::Get()->tray_action());
   saved_clipboard_ = ui::Clipboard::TakeForCurrentThread();
 }
 

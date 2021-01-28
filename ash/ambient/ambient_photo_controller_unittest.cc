@@ -25,7 +25,7 @@
 #include "base/hash/sha1.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/stl_util.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
@@ -360,10 +360,10 @@ TEST_F(AmbientPhotoControllerTest,
 
 TEST_F(AmbientPhotoControllerTest, ShouldNotLoadDuplicateImages) {
   testing::NiceMock<MockAmbientBackendModelObserver> mock_backend_observer;
-  ScopedObserver<AmbientBackendModel, AmbientBackendModelObserver>
+  base::ScopedObservation<AmbientBackendModel, AmbientBackendModelObserver>
       scoped_observer{&mock_backend_observer};
 
-  scoped_observer.Add(photo_controller()->ambient_backend_model());
+  scoped_observer.Observe(photo_controller()->ambient_backend_model());
 
   // All images downloaded will be identical.
   SetDownloadPhotoData("image data");

@@ -14,7 +14,7 @@
 #include "ash/shell.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "extensions/common/constants.h"
@@ -228,19 +228,22 @@ class DemoSessionMetricsRecorder::ActiveAppArcPackageNameObserver
       VLOG(1) << "Got null ARC package name";
     }
 
-    scoped_observer_.Remove(window);
+    scoped_observations_.RemoveObservation(window);
   }
 
   void OnWindowDestroyed(aura::Window* window) override {
-    if (scoped_observer_.IsObserving(window))
-      scoped_observer_.Remove(window);
+    if (scoped_observations_.IsObservingSource(window))
+      scoped_observations_.RemoveObservation(window);
   }
 
-  void ObserveWindow(aura::Window* window) { scoped_observer_.Add(window); }
+  void ObserveWindow(aura::Window* window) {
+    scoped_observations_.AddObservation(window);
+  }
 
  private:
   DemoSessionMetricsRecorder* metrics_recorder_;
-  ScopedObserver<aura::Window, aura::WindowObserver> scoped_observer_{this};
+  base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
+      scoped_observations_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ActiveAppArcPackageNameObserver);
 };
@@ -269,19 +272,24 @@ class DemoSessionMetricsRecorder::UniqueAppsLaunchedArcPackageNameObserver
       VLOG(1) << "Got null ARC package name";
     }
 
-    scoped_observer_.Remove(window);
+    DCHECK(scoped_observation_.IsObservingSource(window));
+    scoped_observation_.Reset();
   }
 
   void OnWindowDestroyed(aura::Window* window) override {
-    if (scoped_observer_.IsObserving(window))
-      scoped_observer_.Remove(window);
+    if (scoped_observation_.IsObservingSource(window))
+      DCHECK(scoped_observation_.IsObservingSource(window));
+    scoped_observation_.Reset();
   }
 
-  void ObserveWindow(aura::Window* window) { scoped_observer_.Add(window); }
+  void ObserveWindow(aura::Window* window) {
+    scoped_observation_.Observe(window);
+  }
 
  private:
   DemoSessionMetricsRecorder* metrics_recorder_;
-  ScopedObserver<aura::Window, aura::WindowObserver> scoped_observer_{this};
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      scoped_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(UniqueAppsLaunchedArcPackageNameObserver);
 };
@@ -298,7 +306,7 @@ DemoSessionMetricsRecorder::DemoSessionMetricsRecorder(
     timer_ = std::make_unique<base::RepeatingTimer>();
 
   StartRecording();
-  observer_.Add(ui::UserActivityDetector::Get());
+  observation_.Observe(ui::UserActivityDetector::Get());
 
   // Subscribe to window activation updates.  Even though this gets us
   // notifications for all window activations, we ignore the ARC

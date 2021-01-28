@@ -11,7 +11,7 @@
 #include "ash/system/power/backlights_forced_off_setter.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/events/devices/input_device_event_observer.h"
@@ -74,8 +74,8 @@ class ASH_EXPORT PowerButtonDisplayController
 
   BacklightsForcedOffSetter* backlights_forced_off_setter_;  // Not owned.
 
-  ScopedObserver<BacklightsForcedOffSetter, ScreenBacklightObserver>
-      backlights_forced_off_observer_;
+  base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
+      backlights_forced_off_observation_{this};
 
   // Whether an accessibility alert should be sent when the backlights
   // forced-off state changes.

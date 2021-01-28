@@ -18,7 +18,6 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
 #include "base/time/time.h"
 #include "ui/aura/window_observer.h"
 #include "ui/display/display.h"
@@ -260,7 +259,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   void OnTabletModeStarted() override;
   void OnTabletModeEnding() override;
   void OnTabletModeEnded() override;
-  void OnTabletControllerDestroyed() override;
 
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override;
@@ -511,9 +509,6 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
       snapping_window_transformed_bounds_map_;
 
   base::ObserverList<SplitViewObserver>::Unchecked observers_;
-
-  ScopedObserver<TabletModeController, TabletModeObserver>
-      tablet_mode_observer_{this};
 
   // Records the presentation time of resize operation in split view mode.
   std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
