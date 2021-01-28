@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
@@ -156,8 +156,8 @@ class NetworkChangeNotifier::NetworkChangeCalculator
       return;
     }
 
-    base::UmaHistogramEnumeration("Net.NetworkChangeNotifier.NewConnectionType",
-                                  pending_connection_type_, CONNECTION_LAST);
+    UMA_HISTOGRAM_ENUMERATION("Net.NetworkChangeNotifier.NewConnectionType",
+                              pending_connection_type_, CONNECTION_LAST + 1);
 
     have_announced_ = true;
     last_announced_connection_type_ = pending_connection_type_;
