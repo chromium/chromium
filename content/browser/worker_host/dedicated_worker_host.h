@@ -39,7 +39,6 @@
 
 namespace content {
 
-class CrossOriginEmbedderPolicyReporter;
 class DedicatedWorkerServiceImpl;
 class ServiceWorkerMainResourceHandle;
 class ServiceWorkerObjectHost;
@@ -120,7 +119,8 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
 
   const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
       const {
-    return cross_origin_embedder_policy_;
+    DCHECK(worker_cross_origin_embedder_policy_.has_value());
+    return worker_cross_origin_embedder_policy_.value();
   }
 
   ServiceWorkerMainResourceHandle* service_worker_handle() {
@@ -180,6 +180,11 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
 
   void OnMojoDisconnect();
 
+  // Returns true if creator and worker's COEP values are valid.
+  bool CheckCrossOriginEmbedderPolicy(
+      network::CrossOriginEmbedderPolicy creator_cross_origin_embedder_policy,
+      network::CrossOriginEmbedderPolicy worker_cross_origin_embedder_policy);
+
   DedicatedWorkerServiceImpl* const service_;
 
   // The renderer generated ID of this worker, unique across all processes.
@@ -214,10 +219,15 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
   // frame or the worker that created this worker.
   const net::IsolationInfo isolation_info_;
 
-  // The DedicatedWorker's Cross-Origin-Embedder-Policy(COEP). It is equals to
-  // the nearest ancestor frame host's COEP:
-  // https://mikewest.github.io/corpp/#initialize-embedder-policy-for-global
-  const network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
+  // The frame/worker's Cross-Origin-Embedder-Policy (COEP) that directly starts
+  // this worker.
+  const network::CrossOriginEmbedderPolicy
+      creator_cross_origin_embedder_policy_;
+
+  // The DedicatedWorker's Cross-Origin-Embedder-Policy (COEP). This is set when
+  // the script's response head is loaded.
+  base::Optional<network::CrossOriginEmbedderPolicy>
+      worker_cross_origin_embedder_policy_;
 
   // This is kept alive during the lifetime of the dedicated worker, since it's
   // associated with Mojo interfaces (ServiceWorkerContainer and

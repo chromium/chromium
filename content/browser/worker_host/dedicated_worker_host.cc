@@ -63,7 +63,7 @@ DedicatedWorkerHost::DedicatedWorkerHost(
       // the worker script URL.
       worker_origin_(creator_origin),
       isolation_info_(isolation_info),
-      cross_origin_embedder_policy_(cross_origin_embedder_policy),
+      creator_cross_origin_embedder_policy_(cross_origin_embedder_policy),
       host_receiver_(this, std::move(host)),
       coep_reporter_(std::move(coep_reporter)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -74,6 +74,14 @@ DedicatedWorkerHost::DedicatedWorkerHost(
          (!creator_render_frame_host_id_ && creator_worker_token_));
 
   scoped_process_host_observation_.Observe(worker_process_host_);
+
+  if (!base::FeatureList::IsEnabled(blink::features::kPlzDedicatedWorker)) {
+    // This is a workaround to make the worker's COEP have a value when
+    // PlzDedicatedWorker is disabled. When the feature is enabled, The value is
+    // initialized in DedicatedWorkerHost::DidStartScriptLoad().
+    worker_cross_origin_embedder_policy_ =
+        creator_cross_origin_embedder_policy_;
+  }
 
   service_->NotifyWorkerCreated(this);
 }
@@ -282,6 +290,32 @@ void DedicatedWorkerHost::DidStartScriptLoad(
     return;
   }
 
+  // https://html.spec.whatwg.org/C/#run-a-worker
+  worker_cross_origin_embedder_policy_ = network::CrossOriginEmbedderPolicy();
+  if (final_response_url.SchemeIsBlob() ||
+      final_response_url.SchemeIs(url::kAboutScheme) ||
+      final_response_url.SchemeIs(url::kDataScheme)) {
+    // > 14.5 If response's url's scheme is a local scheme, then set worker
+    // global scope's embedder policy to owner's embedder policy.
+    worker_cross_origin_embedder_policy_ =
+        creator_cross_origin_embedder_policy_;
+  } else if (main_script_load_params->response_head->parsed_headers) {
+    // > 14.6 Otherwise, set worker global scope's embedder policy to the result
+    // of obtaining an embedder policy from response.
+    worker_cross_origin_embedder_policy_ =
+        main_script_load_params->response_head->parsed_headers
+            ->cross_origin_embedder_policy;
+  }
+
+  // > 14.8 If the result of checking a global object's embedder policy with
+  // worker global scope, owner, and response is false, then set response to a
+  // network error.
+  if (!CheckCrossOriginEmbedderPolicy(creator_cross_origin_embedder_policy_,
+                                      cross_origin_embedder_policy())) {
+    client_->OnScriptLoadStartFailed();
+    return;
+  }
+
   // Start observing Network Service crash when it's running out-of-process.
   if (IsOutOfProcessNetworkService()) {
     ObserveNetworkServiceCrash(static_cast<StoragePartitionImpl*>(
@@ -375,6 +409,36 @@ DedicatedWorkerHost::CreateNetworkFactoryForSubresources(
   return pending_default_factory;
 }
 
+// The implementation of the following algorithm:
+// https://html.spec.whatwg.org/C/#check-a-global-object's-embedder-policy
+bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy(
+    network::CrossOriginEmbedderPolicy creator_cross_origin_embedder_policy,
+    network::CrossOriginEmbedderPolicy worker_cross_origin_embedder_policy) {
+  // > 4. If ownerPolicy's report-only value is "require-corp" and policy's
+  // value is "unsafe-none", then queue a cross-origin embedder policy
+  // inheritance violation with response, "worker initialization", owner's
+  // policy's report only reporting endpoint, "reporting", and owner.
+  // TODO(crbug.com/1060837): Queue a report if the report-only value is not
+  // valid.
+
+  // > 5. If ownerPolicy's value is "unsafe-none" or policy's value is
+  // "require-corp", then return true.
+  if (creator_cross_origin_embedder_policy.value ==
+          network::mojom::CrossOriginEmbedderPolicyValue::kNone ||
+      worker_cross_origin_embedder_policy.value ==
+          network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp) {
+    return true;
+  }
+
+  // > 6. Queue a cross-origin embedder policy inheritance violation with
+  // response, "worker initialization", owner's policy's reporting endpoint,
+  // "enforce", and owner.
+  // TODO(crbug.com/1060837): Queue this report.
+
+  // > 7. Return false.
+  return false;
+}
+
 void DedicatedWorkerHost::CreateWebUsbService(
     mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -433,7 +497,7 @@ void DedicatedWorkerHost::BindCacheStorage(
   mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
       coep_reporter;
   coep_reporter_->Clone(coep_reporter.InitWithNewPipeAndPassReceiver());
-  worker_process_host_->BindCacheStorage(cross_origin_embedder_policy_,
+  worker_process_host_->BindCacheStorage(cross_origin_embedder_policy(),
                                          std::move(coep_reporter),
                                          worker_origin_, std::move(receiver));
 }
@@ -452,7 +516,7 @@ void DedicatedWorkerHost::CreateNestedDedicatedWorker(
           worker_process_host_->GetID(),
           /*creator_render_frame_host_id_=*/base::nullopt,
           /*creator_worker_token=*/token_, ancestor_render_frame_host_id_,
-          worker_origin_, isolation_info_, cross_origin_embedder_policy_,
+          worker_origin_, isolation_info_, cross_origin_embedder_policy(),
           std::move(coep_reporter)),
       std::move(receiver));
 }
