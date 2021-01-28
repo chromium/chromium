@@ -144,10 +144,11 @@ class TestQuotaManagerProxy : public QuotaManagerProxy {
                             const url::Origin& origin,
                             blink::mojom::StorageType type,
                             bool enabled) override {}
-  void GetUsageAndQuota(base::SequencedTaskRunner* original_task_runner,
-                        const url::Origin& origin,
-                        blink::mojom::StorageType type,
-                        UsageAndQuotaCallback callback) override {}
+  void GetUsageAndQuota(
+      const url::Origin& origin,
+      blink::mojom::StorageType type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      UsageAndQuotaCallback callback) override {}
 
   void SimulateQuotaManagerDestroyed() {
     if (registered_client_) {

@@ -53,10 +53,11 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
                             const url::Origin& origin,
                             blink::mojom::StorageType type,
                             bool enabled) override {}
-  void GetUsageAndQuota(base::SequencedTaskRunner* original_task_runner,
-                        const url::Origin& origin,
-                        blink::mojom::StorageType type,
-                        QuotaManager::UsageAndQuotaCallback callback) override;
+  void GetUsageAndQuota(
+      const url::Origin& origin,
+      blink::mojom::StorageType type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      UsageAndQuotaCallback callback) override;
 
   // Validates the |client_id| and updates the internal access count
   // which can be accessed via notify_storage_accessed_count().

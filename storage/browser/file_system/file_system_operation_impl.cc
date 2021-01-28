@@ -416,8 +416,8 @@ void FileSystemOperationImpl::GetUsageAndQuotaThenRunTask(
 
   DCHECK(quota_manager_proxy);
   quota_manager_proxy->GetUsageAndQuota(
-      base::SequencedTaskRunnerHandle::Get().get(), url.origin(),
-      FileSystemTypeToQuotaStorageType(url.type()),
+      url.origin(), FileSystemTypeToQuotaStorageType(url.type()),
+      base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&FileSystemOperationImpl::DidGetUsageAndQuotaAndRunTask,
                      weak_ptr_, std::move(task), std::move(error_callback)));
 }

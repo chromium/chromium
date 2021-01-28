@@ -91,10 +91,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerProxy
                                     const url::Origin& origin,
                                     blink::mojom::StorageType type,
                                     bool enabled);
-  virtual void GetUsageAndQuota(base::SequencedTaskRunner* original_task_runner,
-                                const url::Origin& origin,
-                                blink::mojom::StorageType type,
-                                UsageAndQuotaCallback callback);
+  virtual void GetUsageAndQuota(
+      const url::Origin& origin,
+      blink::mojom::StorageType type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      UsageAndQuotaCallback callback);
 
   virtual void IsStorageUnlimited(
       const url::Origin& origin,

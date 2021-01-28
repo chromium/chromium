@@ -172,47 +172,45 @@ void QuotaManagerProxy::SetUsageCacheEnabled(QuotaClientType client_id,
 
 namespace {
 
-void DidGetUsageAndQuota(base::SequencedTaskRunner* original_task_runner,
-                         QuotaManagerProxy::UsageAndQuotaCallback callback,
-                         blink::mojom::QuotaStatusCode status,
-                         int64_t usage,
-                         int64_t quota) {
-  if (original_task_runner->RunsTasksInCurrentSequence()) {
+void DidGetUsageAndQuota(
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+    QuotaManagerProxy::UsageAndQuotaCallback callback,
+    blink::mojom::QuotaStatusCode status,
+    int64_t usage,
+    int64_t quota) {
+  if (callback_task_runner->RunsTasksInCurrentSequence()) {
     std::move(callback).Run(status, usage, quota);
     return;
   }
-  original_task_runner->PostTask(
-      FROM_HERE, base::BindOnce(&DidGetUsageAndQuota,
-                                base::RetainedRef(original_task_runner),
-                                std::move(callback), status, usage, quota));
+  callback_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), status, usage, quota));
 }
 
 }  // namespace
 
 void QuotaManagerProxy::GetUsageAndQuota(
-    base::SequencedTaskRunner* original_task_runner,
     const url::Origin& origin,
     blink::mojom::StorageType type,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     UsageAndQuotaCallback callback) {
   if (!quota_manager_impl_task_runner_->RunsTasksInCurrentSequence()) {
     quota_manager_impl_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&QuotaManagerProxy::GetUsageAndQuota, this,
-                                  base::RetainedRef(original_task_runner),
-                                  origin, type, std::move(callback)));
+        FROM_HERE,
+        base::BindOnce(&QuotaManagerProxy::GetUsageAndQuota, this, origin, type,
+                       std::move(callback_task_runner), std::move(callback)));
     return;
   }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(quota_manager_impl_sequence_checker_);
   if (!quota_manager_impl_) {
-    DidGetUsageAndQuota(original_task_runner, std::move(callback),
+    DidGetUsageAndQuota(std::move(callback_task_runner), std::move(callback),
                         blink::mojom::QuotaStatusCode::kErrorAbort, 0, 0);
     return;
   }
 
   quota_manager_impl_->GetUsageAndQuota(
       origin, type,
-      base::BindOnce(&DidGetUsageAndQuota,
-                     base::RetainedRef(original_task_runner),
+      base::BindOnce(&DidGetUsageAndQuota, std::move(callback_task_runner),
                      std::move(callback)));
 }
 

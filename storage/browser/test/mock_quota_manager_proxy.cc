@@ -52,9 +52,9 @@ void MockQuotaManagerProxy::SimulateQuotaManagerDestroyed() {
 }
 
 void MockQuotaManagerProxy::GetUsageAndQuota(
-    base::SequencedTaskRunner* original_task_runner,
     const url::Origin& origin,
     blink::mojom::StorageType type,
+    scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
     QuotaManager::UsageAndQuotaCallback callback) {
   if (mock_quota_manager_) {
     mock_quota_manager_->GetUsageAndQuota(origin, type, std::move(callback));

@@ -87,8 +87,8 @@ void DatabaseTask::IsQuotaAvailable(const url::Origin& origin,
   DCHECK(quota_manager_proxy());
   DCHECK_GT(size, 0);
   quota_manager_proxy()->GetUsageAndQuota(
-      base::ThreadTaskRunnerHandle::Get().get(), origin,
-      blink::mojom::StorageType::kTemporary,
+      origin, blink::mojom::StorageType::kTemporary,
+      base::ThreadTaskRunnerHandle::Get(),
       base::BindOnce(&DidGetUsageAndQuota, std::move(callback), size));
 }
 

@@ -11,10 +11,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/file_system/file_system_usage_cache.h"
@@ -65,10 +67,13 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
     ASSERT_LE(usage_, quota_);
   }
 
-  void GetUsageAndQuota(base::SequencedTaskRunner* original_task_runner,
-                        const url::Origin& origin,
-                        blink::mojom::StorageType type,
-                        UsageAndQuotaCallback callback) override {
+  void GetUsageAndQuota(
+      const url::Origin& origin,
+      blink::mojom::StorageType type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      UsageAndQuotaCallback callback) override {
+    DCHECK(callback_task_runner);
+    DCHECK(callback_task_runner->RunsTasksInCurrentSequence());
     std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk, usage_, quota_);
   }
 

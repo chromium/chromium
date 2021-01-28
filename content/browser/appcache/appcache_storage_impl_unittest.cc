@@ -212,13 +212,14 @@ class AppCacheStorageImplTest : public testing::Test {
                               const url::Origin& origin,
                               StorageType type,
                               bool enabled) override {}
-    void GetUsageAndQuota(base::SequencedTaskRunner* original_task_runner,
-                          const url::Origin& origin,
-                          StorageType type,
-                          UsageAndQuotaCallback callback) override {
+    void GetUsageAndQuota(
+        const url::Origin& origin,
+        blink::mojom::StorageType type,
+        scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+        UsageAndQuotaCallback callback) override {
       EXPECT_EQ(StorageType::kTemporary, type);
       if (async_) {
-        original_task_runner->PostTask(
+        callback_task_runner->PostTask(
             FROM_HERE,
             base::BindOnce(std::move(callback),
                            blink::mojom::QuotaStatusCode::kOk, 0, kMockQuota));

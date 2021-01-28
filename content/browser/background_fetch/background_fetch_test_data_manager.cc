@@ -42,13 +42,21 @@ class MockBGFQuotaManagerProxy : public storage::MockQuotaManagerProxy {
       storage::QuotaClientType client_type,
       const std::vector<blink::mojom::StorageType>& storage_types) override {}
 
-  void GetUsageAndQuota(base::SequencedTaskRunner* original_task_runner,
-                        const url::Origin& origin,
-                        blink::mojom::StorageType type,
-                        UsageAndQuotaCallback callback) override {
-    DCHECK(original_task_runner);
-    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk, /* usage= */ 0,
-                            kBackgroundFetchMaxQuotaBytes);
+  void GetUsageAndQuota(
+      const url::Origin& origin,
+      blink::mojom::StorageType type,
+      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
+      UsageAndQuotaCallback callback) override {
+    DCHECK(callback_task_runner);
+
+    // While this DCHECK is true, the PostTask() below isn't strictly necessary.
+    // The callback could be Run() directly.
+    DCHECK(callback_task_runner->RunsTasksInCurrentSequence());
+
+    callback_task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), blink::mojom::QuotaStatusCode::kOk,
+                       /* usage= */ 0, kBackgroundFetchMaxQuotaBytes));
   }
 
  protected:

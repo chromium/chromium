@@ -181,8 +181,8 @@ void SandboxFileStreamWriter::DidCreateSnapshotFile(
 
   DCHECK(quota_manager_proxy);
   quota_manager_proxy->GetUsageAndQuota(
-      base::SequencedTaskRunnerHandle::Get().get(), url_.origin(),
-      FileSystemTypeToQuotaStorageType(url_.type()),
+      url_.origin(), FileSystemTypeToQuotaStorageType(url_.type()),
+      base::SequencedTaskRunnerHandle::Get(),
       base::BindOnce(&SandboxFileStreamWriter::DidGetUsageAndQuota,
                      weak_factory_.GetWeakPtr(), std::move(callback)));
 }
