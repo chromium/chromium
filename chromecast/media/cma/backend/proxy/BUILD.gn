@@ -34,6 +34,8 @@ chromecast_media_grpc_library("cast_audio_decoder_service_proto") {
 
 cast_source_set("proxy") {
   sources = [
+    "audio_decoder_pipeline_node.cc",
+    "audio_decoder_pipeline_node.h",
     "cast_runtime_audio_channel_broker.cc",
     "cast_runtime_audio_channel_broker.h",
     "cma_backend_proxy.cc",

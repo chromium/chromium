@@ -8,7 +8,6 @@
 #include <limits>
 
 #include "base/memory/ref_counted.h"
-#include "base/sequence_checker.h"
 #include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/api/decoder_buffer_base.h"
 #include "chromecast/media/cma/backend/proxy/cma_proxy_handler.h"
@@ -30,6 +29,11 @@ class MultizoneAudioDecoderProxyImpl : public MultizoneAudioDecoderProxy,
   // call, this instance will be in an undefined state.
   MultizoneAudioDecoderProxyImpl(const MediaPipelineDeviceParams& params,
                                  CmaBackend::AudioDecoder* downstream_decoder);
+
+  MultizoneAudioDecoderProxyImpl(
+      const MediaPipelineDeviceParams& params,
+      std::unique_ptr<AudioDecoderPipelineNode> downstream_decoder);
+
   ~MultizoneAudioDecoderProxyImpl() override;
 
   // MultizoneAudioDecoderProxy implementation:
@@ -48,14 +52,10 @@ class MultizoneAudioDecoderProxyImpl : public MultizoneAudioDecoderProxy,
   void SetPlaybackRate(float rate) override;
   void LogicalPause() override;
   void LogicalResume() override;
-  void SetDelegate(Delegate* delegate) override;
-  BufferStatus PushBuffer(scoped_refptr<DecoderBufferBase> buffer) override;
+  CmaBackend::Decoder::BufferStatus PushBuffer(
+      scoped_refptr<DecoderBufferBase> buffer) override;
   bool SetConfig(const AudioConfig& config) override;
-  bool SetVolume(float multiplier) override;
-  RenderingDelay GetRenderingDelay() override;
-  void GetStatistics(Statistics* statistics) override;
-  bool RequiresDecryption() override;
-  void SetObserver(Observer* observer) override;
+  void GetStatistics(CmaBackend::AudioDecoder::Statistics* statistics) override;
 
  private:
   // CmaProxyHandler::Client overrides:
@@ -75,18 +75,10 @@ class MultizoneAudioDecoderProxyImpl : public MultizoneAudioDecoderProxy,
   const std::string cast_session_id_;
   const CmaProxyHandler::AudioDecoderOperationMode decoder_mode_;
 
-  // Decoder to which the CmaBackend::AudioDecoder calls should be duplicated
-  // (when appropriate). It is expected to be the AudioDecoder associated with
-  // the "real" CmaBackend, which plays out audio data using the physical
-  // device's hardware. By design, this decoder is always assumed to exist.
-  CmaBackend::AudioDecoder* const downstream_decoder_;
-
   // This is the local instance representing the "remote" backend. All above
   // public method calls should call into this instance to proxy the call to
   // the remote backend.
   std::unique_ptr<CmaProxyHandler> proxy_handler_;
-
-  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace media
