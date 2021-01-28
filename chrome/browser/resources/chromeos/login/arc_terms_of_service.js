@@ -438,7 +438,7 @@ Polymer({
 
     // Try to use currently loaded document first.
     var self = this;
-    if (termsView.src != '' && this.isLoaded_()) {
+    if (termsView.src != '' && this.uiStep == UIState.LOADED) {
       var navigateScript = 'processLangZoneTerms(true, \'' + language +
           '\', \'' + countryCode + '\');';
       termsView.executeScript({code: navigateScript}, function(results) {
