@@ -25,6 +25,7 @@ class GURL;
 namespace weblayer {
 class CookieManager;
 class DownloadDelegate;
+class GoogleAccountAccessTokenFetchDelegate;
 class PrerenderController;
 
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.weblayer_private
@@ -73,6 +74,11 @@ class Profile {
 
   // Sets the DownloadDelegate. If none is set, downloads will be dropped.
   virtual void SetDownloadDelegate(DownloadDelegate* delegate) = 0;
+
+  // Sets the delegate for access token fetches. If none is set, the browser
+  // will not be able to fetch access tokens.
+  virtual void SetGoogleAccountAccessTokenFetchDelegate(
+      GoogleAccountAccessTokenFetchDelegate* delegate) = 0;
 
   // Gets the cookie manager for this profile.
   virtual CookieManager* GetCookieManager() = 0;
