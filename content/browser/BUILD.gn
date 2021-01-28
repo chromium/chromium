@@ -1938,6 +1938,7 @@ source_set("browser") {
     sources += [
       "../app_shim_remote_cocoa/web_drag_source_mac.h",
       "../app_shim_remote_cocoa/web_drag_source_mac.mm",
+      "accessibility/accessibility_event_recorder_mac.h",
       "accessibility/accessibility_event_recorder_mac.mm",
       "accessibility/accessibility_tools_utils_mac.h",
       "accessibility/accessibility_tools_utils_mac.mm",
