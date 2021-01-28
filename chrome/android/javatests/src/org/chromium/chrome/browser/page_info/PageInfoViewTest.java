@@ -34,7 +34,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.Log;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
@@ -116,14 +115,23 @@ public class PageInfoViewTest {
     }
 
     private void openPageInfo() {
-        for (int i = 0; i < 5; i++) {
-            try {
-                onViewWaiting(allOf(withId(R.id.location_bar_status_icon), isDisplayed()));
-            } catch (AssertionError e) {
-                Log.e(TAG, "Lock icon hasn't shown up yet...");
-            }
+        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PageInfoController.show(mActivityTestRule.getActivity(), tab.getWebContents(), null,
+                    PageInfoController.OpenedFromSource.TOOLBAR,
+                    new ChromePageInfoControllerDelegate(mActivityTestRule.getActivity(),
+                            tab.getWebContents(),
+                            mActivityTestRule.getActivity().getModalDialogManagerSupplier(),
+                            /*offlinePageLoadUrlDelegate=*/
+                            new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)),
+                    new ChromePermissionParamsListBuilderDelegate());
+        });
+
+        if (PageInfoFeatureList.isEnabled(PageInfoFeatureList.PAGE_INFO_V2)) {
+            onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
+        } else {
+            onViewWaiting(allOf(withId(R.id.page_info_url), isDisplayed()));
         }
-        onView(withId(R.id.location_bar_status_icon)).perform(click());
     }
 
     private View getPageInfoView() {
