@@ -4643,6 +4643,12 @@ const FeatureEntry kFeatureEntries[] = {
              kUpdateNotificationScheduleServiceImmediateShowOption)},
 #endif
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    {"chrome-tips-in-main-menu", flag_descriptions::kChromeTipsInMainMenuName,
+     flag_descriptions::kChromeTipsInMainMenuDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kChromeTipsInMainMenu)},
+#endif
+
     {"tab-hover-cards", flag_descriptions::kTabHoverCardsName,
      flag_descriptions::kTabHoverCardsDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(features::kTabHoverCards,

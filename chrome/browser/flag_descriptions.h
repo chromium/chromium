@@ -7,6 +7,7 @@
 
 // Includes needed for macros allowing conditional compilation of some strings.
 #include "base/check_op.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
@@ -226,6 +227,11 @@ extern const char kConditionalTabStripAndroidDescription[];
 
 extern const char kClearCrossBrowsingContextGroupMainFrameNameName[];
 extern const char kClearCrossBrowsingContextGroupMainFrameNameDescription[];
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+extern const char kChromeTipsInMainMenuName[];
+extern const char kChromeTipsInMainMenuDescription[];
+#endif
 
 extern const char kDarkLightTestName[];
 extern const char kDarkLightTestDescription[];

@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/buildflags.h"
@@ -21,6 +22,10 @@ namespace features {
 // alongside the definition of their values in the .cc file.
 
 extern const base::Feature kChromeLabs;
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+extern const base::Feature kChromeTipsInMainMenu;
+#endif
 
 extern const base::Feature kEvDetailsInPageInfo;
 
@@ -100,6 +105,7 @@ extern const base::Feature kWebUITabStrip;
 extern const base::Feature kHiddenNetworkWarning;
 extern const base::Feature kSeparatePointingStickSettings;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ui_features.h"
 
+#include "base/feature_list.h"
 #include "build/chromeos_buildflags.h"
 
 namespace features {
@@ -11,6 +12,12 @@ namespace features {
 // Enables Chrome Labs menu in the toolbar. See https://crbug.com/1145666
 const base::Feature kChromeLabs{"ChromeLabs",
                                 base::FEATURE_DISABLED_BY_DEFAULT};
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+// Enables "Tips for Chrome" in Main Chrome Menu | Help.
+const base::Feature kChromeTipsInMainMenu{"ChromeTipsInMainMenu",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+#endif
 
 // Enables showing the EV certificate details in the Page Info bubble.
 const base::Feature kEvDetailsInPageInfo{"EvDetailsInPageInfo",
@@ -156,4 +163,5 @@ const base::Feature kHiddenNetworkWarning{"HiddenNetworkWarning",
 const base::Feature kSeparatePointingStickSettings{
     "SeparatePointingStickSettings", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace features

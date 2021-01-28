@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -106,6 +107,9 @@ void ShowFeedbackPage(const GURL& page_url,
 
 void ShowHelp(Browser* browser, HelpSource source);
 void ShowHelpForProfile(Profile* profile, HelpSource source);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+void ShowChromeTips(Browser* browser);
+#endif
 void LaunchReleaseNotes(Profile* profile, apps::mojom::LaunchSource source);
 void ShowBetaForum(Browser* browser);
 void ShowPolicy(Browser* browser);

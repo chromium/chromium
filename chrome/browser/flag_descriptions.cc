@@ -374,6 +374,15 @@ const char kClearCrossBrowsingContextGroupMainFrameNameDescription[] =
     "Clear the preserved window.name when it's a top-level navigation that "
     "swaps browsing context group.";
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+const char kChromeTipsInMainMenuName[] =
+    "Show 'Tips for Chrome' in Help portion of main menu.";
+const char kChromeTipsInMainMenuDescription[] =
+    "Enables 'Tips for Chrome' in main menu; the menu item will take users to "
+    "an official Google site with information about the latest and most "
+    "popular Chrome features.";
+#endif
+
 const char kDarkLightTestName[] = "Dark/light mode of system UI";
 const char kDarkLightTestDescription[] =
     "Enables the dark/light mode of system UI, which includes shelf, launcher, "

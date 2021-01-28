@@ -755,6 +755,13 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_HELP_PAGE_VIA_MENU:
       ShowHelp(browser_, HELP_SOURCE_MENU);
       break;
+    case IDC_CHROME_TIPS:
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      ShowChromeTips(browser_);
+#else
+      NOTREACHED();
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+      break;
     case IDC_SHOW_BETA_FORUM:
       ShowBetaForum(browser_);
       break;
@@ -1369,6 +1376,9 @@ void BrowserCommandController::UpdateCommandsForFullscreenMode() {
   command_updater_.UpdateCommandEnabled(IDC_EDIT_SEARCH_ENGINES, show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_VIEW_PASSWORDS, show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_ABOUT, show_main_ui);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  command_updater_.UpdateCommandEnabled(IDC_CHROME_TIPS, show_main_ui);
+#endif
   command_updater_.UpdateCommandEnabled(IDC_QRCODE_GENERATOR, show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_SHOW_APP_MENU, show_main_ui);
   command_updater_.UpdateCommandEnabled(IDC_SEND_TAB_TO_SELF, show_main_ui);

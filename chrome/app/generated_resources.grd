@@ -1302,6 +1302,9 @@ are declared in tools/grit/grit_rule.gni.
       <message name="IDS_MANAGED_BY" desc="The text label of the 'Managed by' UI in the app menu, for enterprise users. MANAGER can be a domain or an email address.">
         Managed by <ph name="MANAGER">$1<ex>example.com</ex></ph>
       </message>
+      <message name="IDS_CHROME_TIPS" desc="The text label of the Help menu item which takes the user to the Chrome Tips page.">
+        Tips for Chrome
+      </message>
       <if expr="not use_titlecase">
         <message name="IDS_IMPORT_SETTINGS_MENU_LABEL" desc="In sentence case: The app menu label to import bookmarks and settings.">
           Import bookmarks and settings...

@@ -43158,6 +43158,7 @@ from previous Chrome versions.
   <int value="-1578677451" label="EnableAppGridGhost:disabled"/>
   <int value="-1578503491" label="EnableContinueReading:disabled"/>
   <int value="-1578295753" label="UserMediaScreenCapturing:disabled"/>
+  <int value="-1576408607" label="ChromeTipsInMainMenu:enabled"/>
   <int value="-1575868447" label="RemoveNtpFakebox:enabled"/>
   <int value="-1575772949" label="DesktopPWAsLinkCapturing:disabled"/>
   <int value="-1575554415" label="AndroidPaymentAppsFilter:enabled"/>
@@ -44058,6 +44059,7 @@ from previous Chrome versions.
   <int value="-803233334" label="AutofillRefreshStyleAndroid:disabled"/>
   <int value="-803206774" label="TabbedAppOverflowMenuActionBar:disabled"/>
   <int value="-802348444" label="disable-site-engagement-service"/>
+  <int value="-802309777" label="ChromeTipsInMainMenu:disabled"/>
   <int value="-799931058" label="UseMultiloginEndpoint:disabled"/>
   <int value="-798187384" label="try-supported-channel-layouts"/>
   <int value="-797520931" label="ExtensionsToolbarMenu:disabled"/>

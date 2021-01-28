@@ -227,6 +227,7 @@
 #define IDC_CARET_BROWSING_TOGGLE      40260
 #define IDC_TOGGLE_COMMANDER     40261
 #define IDC_SHOW_KALEIDOSCOPE          40262
+#define IDC_CHROME_TIPS                40263
 
 // Spell-check
 // Insert any additional suggestions before _LAST; these have to be consecutive.

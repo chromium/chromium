@@ -16,7 +16,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
-#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
@@ -279,6 +278,13 @@ void ShowHelp(Browser* browser, HelpSource source) {
 void ShowHelpForProfile(Profile* profile, HelpSource source) {
   ShowHelpImpl(NULL, profile, source);
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+void ShowChromeTips(Browser* browser) {
+  static const char kChromeTipsURL[] = "https://www.google.com/chrome/tips/";
+  ShowSingletonTab(browser, GURL(kChromeTipsURL));
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 void LaunchReleaseNotes(Profile* profile, apps::mojom::LaunchSource source) {
 #if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)

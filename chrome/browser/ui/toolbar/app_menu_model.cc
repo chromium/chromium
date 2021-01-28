@@ -190,6 +190,10 @@ class HelpMenuModel : public ui::SimpleMenuModel {
 #else
     AddItem(IDC_ABOUT, l10n_util::GetStringUTF16(IDS_ABOUT));
 #endif
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    if (base::FeatureList::IsEnabled(features::kChromeTipsInMainMenu))
+      AddItem(IDC_CHROME_TIPS, l10n_util::GetStringUTF16(IDS_CHROME_TIPS));
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
     AddItemWithStringId(IDC_HELP_PAGE_VIA_MENU, help_string_id);
     if (browser_defaults::kShowHelpMenuItemIcon) {
       ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
