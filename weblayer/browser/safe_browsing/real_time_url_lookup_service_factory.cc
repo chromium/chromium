@@ -14,7 +14,9 @@
 #include "weblayer/browser/browser_context_impl.h"
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/feature_list_creator.h"
+#include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
+#include "weblayer/browser/safe_browsing/safe_browsing_token_fetcher_impl.h"
 #include "weblayer/browser/verdict_cache_manager_factory.h"
 
 namespace weblayer {
@@ -53,10 +55,14 @@ KeyedService* RealTimeUrlLookupServiceFactory::BuildServiceInstanceFor(
       // History sync is never enabled in WebLayer.
       base::BindRepeating([]() { return false; }),
       static_cast<BrowserContextImpl*>(context)->pref_service(),
-      // TODO(crbug.com/1080748): Bring up token fetching for URL lookups and
-      // configure the following two parameters accordingly.
-      nullptr /* token_fetcher */,
-      base::BindRepeating([](bool) { return false; }),
+      std::make_unique<SafeBrowsingTokenFetcherImpl>(base::BindRepeating(
+          &ProfileImpl::access_token_fetch_delegate,
+          base::Unretained(ProfileImpl::FromBrowserContext(context)))),
+      // TODO(crbug.com/1171215): Change this to production mechanism for
+      // enabling Gaia-keyed URL lookups once that mechanism is determined.
+      base::BindRepeating(&RealTimeUrlLookupServiceFactory::
+                              access_token_fetches_enabled_for_testing,
+                          base::Unretained(this)),
       safe_browsing::GetProfileManagementStatus(nullptr),
       false /* is_under_advanced_protection */,
       static_cast<BrowserContextImpl*>(context)->IsOffTheRecord(),
