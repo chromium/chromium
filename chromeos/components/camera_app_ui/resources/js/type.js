@@ -65,7 +65,8 @@ export class Resolution {
    * @return {!Resolution}
    */
   static fromString(s) {
-    return new Resolution(...s.split('x').map(Number));
+    const [width, height] = s.split('x').map((x) => Number(x));
+    return new Resolution(width, height);
   }
 
   /**
