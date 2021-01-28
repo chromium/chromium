@@ -15,6 +15,8 @@ import './crostini_page/crostini_disk_resize_dialog.m.js';
 import './crostini_page/crostini_export_import.m.js';
 import './crostini_page/crostini_import_confirmation_dialog.m.js';
 import './crostini_page/crostini_mic_sharing_dialog.m.js';
+import './crostini_page/crostini_port_forwarding.m.js';
+import './crostini_page/crostini_port_forwarding_add_port_dialog.m.js';
 import './internet_page/cellular_setup_dialog.m.js';
 import './internet_page/esim_remove_profile_dialog.m.js';
 import './internet_page/internet_config.m.js';

@@ -96,7 +96,7 @@ os_settings_auto_imports = settings_auto_imports +
                            cr_elements_chromeos_auto_imports + [
                              "chrome/browser/resources/settings/chromeos/ambient_mode_page/ambient_mode_browser_proxy.html|AmbientModeBrowserProxy,AmbientModeBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/ambient_mode_page/constants.html|AmbientModeTopicSource,AmbientModeTemperatureUnit,AmbientModeAlbum,AmbientModeSettings,TopicSourceItem",
-                             "chrome/browser/resources/settings/chromeos/crostini_page/crostini_browser_proxy.html|CrostiniBrowserProxy, CrostiniBrowserProxyImpl",
+                             "chrome/browser/resources/settings/chromeos/crostini_page/crostini_browser_proxy.html|DEFAULT_CROSTINI_VM, DEFAULT_CROSTINI_CONTAINER, CrostiniPortProtocol, CrostiniSharedPath, CrostiniSharedUsbDevice, CrostiniPortSetting, CrostiniDiskInfo, CrostiniPortActiveSetting, CrostiniBrowserProxy, CrostiniBrowserProxyImpl,PortState,MIN_VALID_PORT_NUMBER, MAX_VALID_PORT_NUMBER",
                              "chrome/browser/resources/settings/chromeos/internet_page/cellular_setup_settings_delegate.html|CellularSetupSettingsDelegate",
                              "chrome/browser/resources/settings/chromeos/internet_page/internet_page_browser_proxy.html|InternetPageBrowserProxy,InternetPageBrowserProxyImpl",
                              "chrome/browser/resources/settings/chromeos/deep_linking_behavior.html|DeepLinkingBehavior",

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 // #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// #import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 // Identifiers for the default Crostini VM and container.
 /** @type {string} */ /* #export */ const DEFAULT_CROSTINI_VM = 'termina';
@@ -56,6 +58,21 @@
  *            protocol_type: !CrostiniPortProtocol}}
  */
 /* #export */ let CrostiniPortActiveSetting;
+
+/**
+ * @enum {string}
+ */
+/* #export */ const PortState = {
+  VALID: '',
+  INVALID: loadTimeData.getString('crostiniPortForwardingAddError'),
+  DUPLICATE: loadTimeData.getString('crostiniPortForwardingAddExisting'),
+};
+
+/* #export */ const MIN_VALID_PORT_NUMBER =
+    1024;  // Minimum 16-bit integer value.
+/* #export */ const MAX_VALID_PORT_NUMBER =
+    65535;  // Maximum 16-bit integer value.
+
 
 /**
  * @fileoverview A helper object used by the "Linux Apps" (Crostini) section
