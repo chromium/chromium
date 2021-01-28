@@ -1958,6 +1958,7 @@ source_set("blink_platform_unittests_sources") {
     "fonts/orientation_iterator_test.cc",
     "fonts/script_run_iterator_test.cc",
     "fonts/shaping/caching_word_shaper_test.cc",
+    "fonts/shaping/font_features_test.cc",
     "fonts/shaping/harfbuzz_shaper_test.cc",
     "fonts/shaping/run_segmenter_test.cc",
     "fonts/shaping/shape_result_bloberizer_test.cc",

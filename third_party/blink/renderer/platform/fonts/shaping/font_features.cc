@@ -24,9 +24,17 @@ constexpr hb_feature_t CreateFeature(char c1,
 
 }  // namespace
 
-void FontFeatures::Initialize(const Font& font) {
+base::Optional<unsigned> FontFeatures::FindValueForTesting(hb_tag_t tag) const {
+  for (const hb_feature_t& feature : features_) {
+    if (feature.tag == tag)
+      return feature.value;
+  }
+  return base::nullopt;
+}
+
+void FontFeatures::Initialize(const FontDescription& description) {
   DCHECK(IsEmpty());
-  const FontDescription& description = font.GetFontDescription();
+  const bool is_horizontal = !description.IsVerticalAnyUpright();
 
   constexpr hb_feature_t no_kern = CreateFeature('k', 'e', 'r', 'n');
   constexpr hb_feature_t no_vkrn = CreateFeature('v', 'k', 'r', 'n');
@@ -35,7 +43,7 @@ void FontFeatures::Initialize(const Font& font) {
       // kern/vkrn are enabled by default in HarfBuzz
       break;
     case FontDescription::kNoneKerning:
-      Append(description.IsVerticalAnyUpright() ? no_vkrn : no_kern);
+      Append(is_horizontal ? no_kern : no_vkrn);
       break;
     case FontDescription::kAutoKerning:
       break;
@@ -186,16 +194,34 @@ void FontFeatures::Initialize(const Font& font) {
       FontVariantNumeric::kSlashedZeroOn)
     Append(zero);
 
-  FontFeatureSettings* settings = description.FeatureSettings();
-  if (!settings)
-    return;
+  const hb_tag_t chws_or_vchw =
+      is_horizontal ? HB_TAG('c', 'h', 'w', 's') : HB_TAG('v', 'c', 'h', 'w');
+  bool default_enable_chws = true;
 
-  // TODO(drott): crbug.com/450619 Implement feature resolution instead of
-  // just appending the font-feature-settings.
-  for (const FontFeature& setting : *settings) {
-    const hb_feature_t feature = CreateFeature(setting.Tag(), setting.Value());
-    Append(feature);
+  const FontFeatureSettings* settings = description.FeatureSettings();
+  if (UNLIKELY(settings)) {
+    // TODO(drott): crbug.com/450619 Implement feature resolution instead of
+    // just appending the font-feature-settings.
+    const hb_tag_t halt_or_vhal =
+        is_horizontal ? HB_TAG('h', 'a', 'l', 't') : HB_TAG('v', 'h', 'a', 'l');
+    const hb_tag_t palt_or_vpal =
+        is_horizontal ? HB_TAG('p', 'a', 'l', 't') : HB_TAG('v', 'p', 'a', 'l');
+    for (const FontFeature& setting : *settings) {
+      const hb_feature_t feature =
+          CreateFeature(setting.Tag(), setting.Value());
+      Append(feature);
+
+      // `chws` should not be appended if other glyph-width GPOS feature exists.
+      if (default_enable_chws &&
+          (feature.tag == chws_or_vchw ||
+           (feature.value &&
+            (feature.tag == halt_or_vhal || feature.tag == palt_or_vpal))))
+        default_enable_chws = false;
+    }
   }
+
+  if (default_enable_chws)
+    Append(CreateFeature(chws_or_vchw, 1));
 }
 
 }  // namespace blink

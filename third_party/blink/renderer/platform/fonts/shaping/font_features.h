@@ -7,25 +7,29 @@
 
 #include <hb.h>
 
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class Font;
+class FontDescription;
 
 // Represents a list of OpenType font feature settings.
-class FontFeatures {
+class PLATFORM_EXPORT FontFeatures {
   STACK_ALLOCATED();
 
  public:
   // Initialize the list from |Font|.
-  void Initialize(const Font&);
+  void Initialize(const FontDescription&);
 
   wtf_size_t size() const { return features_.size(); }
   bool IsEmpty() const { return features_.IsEmpty(); }
 
   const hb_feature_t* data() const { return features_.data(); }
+
+  base::Optional<unsigned> FindValueForTesting(hb_tag_t tag) const;
 
   void Append(const hb_feature_t& feature) { features_.push_back(feature); }
   void Insert(const hb_feature_t& feature) { features_.push_front(feature); }

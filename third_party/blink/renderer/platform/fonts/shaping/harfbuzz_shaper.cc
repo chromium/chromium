@@ -585,7 +585,7 @@ inline RangeData CreateRangeData(const Font* font,
   range_data.buffer = buffer;
   range_data.font = font;
   range_data.text_direction = direction;
-  range_data.font_features.Initialize(*font);
+  range_data.font_features.Initialize(font->GetFontDescription());
   return range_data;
 }
 
