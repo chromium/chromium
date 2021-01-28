@@ -175,6 +175,7 @@ class OzonePlatformX11 : public OzonePlatform,
       properties->message_pump_type_for_viz_compositor =
           base::MessagePumpType::UI;
       properties->supports_vulkan_swap_chain = true;
+      properties->uses_external_vulkan_image_factory = true;
       properties->platform_shows_drag_image = false;
       properties->supports_global_application_menus = true;
       properties->app_modal_dialogs_use_event_blocker = true;

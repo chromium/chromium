@@ -116,6 +116,10 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
     // Determines if the platform supports vulkan swap chain.
     bool supports_vulkan_swap_chain = false;
 
+    // Linux only: determines if the platform uses the external Vulkan image
+    // factory.
+    bool uses_external_vulkan_image_factory = false;
+
     // Wayland only: determines if the client must ignore the screen bounds when
     // calculating bounds of menu windows.
     bool ignore_screen_bounds_for_menus = false;
