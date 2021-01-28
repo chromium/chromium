@@ -2051,6 +2051,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
             settingsLauncher.launchSettingsActivity(this);
             RecordUserAction.record("MobileMenuSettings");
+            return true;
         }
 
         if (id == R.id.update_menu_id) {
@@ -2078,36 +2079,56 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
             RecordUserAction.record("MobileMenuHistory");
             HistoryManagerUtils.showHistoryManager(this, currentTab);
+            return true;
         }
 
         // All the code below assumes currentTab is not null, so return early if it is null.
         if (currentTab == null) {
             return false;
-        } else if (id == R.id.backward_menu_id) {
+        }
+
+        if (id == R.id.backward_menu_id) {
             if (currentTab.canGoBack()) {
                 currentTab.goBack();
                 RecordUserAction.record("MobileMenuBackward");
+                return true;
             }
-        } else if (id == R.id.forward_menu_id) {
+            return false;
+        }
+
+        if (id == R.id.forward_menu_id) {
             if (currentTab.canGoForward()) {
                 currentTab.goForward();
                 RecordUserAction.record("MobileMenuForward");
+                return true;
             }
-        } else if (id == R.id.bookmark_this_page_id || id == R.id.bookmark_this_page_chip_id
+            return false;
+        }
+
+        if (id == R.id.bookmark_this_page_id || id == R.id.bookmark_this_page_chip_id
                 || id == R.id.add_to_bookmarks_menu_id) {
             addOrEditBookmark(currentTab);
             RecordUserAction.record("MobileMenuAddToBookmarks");
-        } else if (id == R.id.add_to_reading_list_menu_id) {
+            return true;
+        }
+
+        if (id == R.id.add_to_reading_list_menu_id) {
             mBookmarkBridgeSupplier.get().finishLoadingBookmarkModel(() -> {
                 BookmarkUtils.addToReadingList(currentTab.getOriginalUrl(), currentTab.getTitle(),
                         this.getSnackbarManager(), mBookmarkBridgeSupplier.get(), this);
             });
             RecordUserAction.record("MobileMenuAddToReadingList");
-        } else if (id == R.id.offline_page_id || id == R.id.offline_page_chip_id
+            return true;
+        }
+
+        if (id == R.id.offline_page_id || id == R.id.offline_page_chip_id
                 || id == R.id.add_to_downloads_menu_id) {
             DownloadUtils.downloadOfflinePage(this, currentTab);
             RecordUserAction.record("MobileMenuDownloadPage");
-        } else if (id == R.id.reload_menu_id) {
+            return true;
+        }
+
+        if (id == R.id.reload_menu_id) {
             if (currentTab.isLoading()) {
                 currentTab.stopLoading();
                 RecordUserAction.record("MobileMenuStop");
@@ -2115,7 +2136,10 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 currentTab.reload();
                 RecordUserAction.record("MobileMenuReload");
             }
-        } else if (id == R.id.info_menu_id || id == R.id.info_id) {
+            return true;
+        }
+
+        if (id == R.id.info_menu_id || id == R.id.info_id) {
             WebContents webContents = currentTab.getWebContents();
             PageInfoController.show(this, webContents, null,
                     PageInfoController.OpenedFromSource.MENU,
@@ -2124,13 +2148,19 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                             /*offlinePageLoadUrlDelegate=*/
                             new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(currentTab)),
                     new ChromePermissionParamsListBuilderDelegate());
-        } else if (id == R.id.translate_id) {
+            return true;
+        }
+
+        if (id == R.id.translate_id) {
             RecordUserAction.record("MobileMenuTranslate");
             Tracker tracker = TrackerFactory.getTrackerForProfile(
-                    Profile.fromWebContents(getActivityTab().getWebContents()));
+                    Profile.fromWebContents(currentTab.getWebContents()));
             tracker.notifyEvent(EventConstants.TRANSLATE_MENU_BUTTON_CLICKED);
-            TranslateBridge.translateTabWhenReady(getActivityTab());
-        } else if (id == R.id.print_id) {
+            TranslateBridge.translateTabWhenReady(currentTab);
+            return true;
+        }
+
+        if (id == R.id.print_id) {
             PrintingController printingController = PrintingControllerImpl.getInstance();
             if (printingController != null && !printingController.isBusy()
                     && UserPrefs.get(Profile.getLastUsedRegularProfile())
@@ -2138,24 +2168,28 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 printingController.startPrint(
                         new TabPrinter(currentTab), new PrintManagerDelegateImpl(this));
                 RecordUserAction.record("MobileMenuPrint");
+                return true;
             }
-        } else if (id == R.id.add_to_homescreen_id || id == R.id.add_to_homescreen_menu_id
+            return false;
+        }
+
+        if (id == R.id.add_to_homescreen_id || id == R.id.add_to_homescreen_menu_id
                 || id == R.id.install_app_id) {
-            boolean handled = false;
+            RecordUserAction.record("MobileMenuAddToHomescreen");
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)) {
                 PwaBottomSheetController controller =
                         PwaBottomSheetControllerProvider.from(getWindowAndroid());
                 if (controller != null) {
                     controller.requestOrExpandBottomSheetInstaller(currentTab.getWebContents());
-                    handled = true;
+                    return true;
                 }
             }
-            if (!handled) {
-                AddToHomescreenCoordinator.showForAppMenu(this, getWindowAndroid(),
-                        getModalDialogManager(), currentTab.getWebContents(), mMenuItemData);
-            }
-            RecordUserAction.record("MobileMenuAddToHomescreen");
-        } else if (id == R.id.open_webapk_id || id == R.id.menu_open_webapk_id) {
+            AddToHomescreenCoordinator.showForAppMenu(this, getWindowAndroid(),
+                    getModalDialogManager(), currentTab.getWebContents(), mMenuItemData);
+            return true;
+        }
+
+        if (id == R.id.open_webapk_id || id == R.id.menu_open_webapk_id) {
             Context context = ContextUtils.getApplicationContext();
             String packageName =
                     WebApkValidator.queryFirstWebApkPackage(context, currentTab.getUrlString());
@@ -2167,19 +2201,25 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             } catch (ActivityNotFoundException e) {
                 Toast.makeText(context, R.string.open_webapk_failed, Toast.LENGTH_SHORT).show();
             }
-        } else if (id == R.id.request_desktop_site_id || id == R.id.request_desktop_site_check_id) {
+            return true;
+        }
+
+        if (id == R.id.request_desktop_site_id || id == R.id.request_desktop_site_check_id) {
             final boolean reloadOnChange = !currentTab.isNativePage();
             final boolean usingDesktopUserAgent =
                     currentTab.getWebContents().getNavigationController().getUseDesktopUserAgent();
             currentTab.getWebContents().getNavigationController().setUseDesktopUserAgent(
                     !usingDesktopUserAgent, reloadOnChange);
             RecordUserAction.record("MobileMenuRequestDesktopSite");
-        } else if (id == R.id.reader_mode_prefs_id) {
-            DomDistillerUIUtils.openSettings(currentTab.getWebContents());
-        } else {
-            return false;
+            return true;
         }
-        return true;
+
+        if (id == R.id.reader_mode_prefs_id) {
+            DomDistillerUIUtils.openSettings(currentTab.getWebContents());
+            return true;
+        }
+
+        return false;
     }
 
     /**
