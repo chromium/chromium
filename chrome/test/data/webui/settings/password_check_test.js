@@ -800,8 +800,10 @@ suite('PasswordsCheckSection', function() {
     const subtitle = section.$.subtitle;
     assertTrue(isElementVisible(subtitle));
 
-    const count = await PluralStringProxyImpl.getInstance().getPluralString(
-        'insecurePasswords', 2);
+    const count =
+        await PluralStringProxyImpl.getInstance().getPluralStringTupleWithComma(
+            'safetyCheckPasswordsCompromised', 1, 'safetyCheckPasswordsWeak',
+            1);
     expectEquals(count, subtitle.textContent.trim());
   });
 
@@ -823,7 +825,7 @@ suite('PasswordsCheckSection', function() {
     assertTrue(isElementVisible(subtitle));
 
     const count = await PluralStringProxyImpl.getInstance().getPluralString(
-        'insecurePasswords', 2);
+        'safetyCheckPasswordsWeak', 2);
     expectEquals(count, subtitle.textContent.trim());
   });
 
@@ -1064,8 +1066,10 @@ suite('PasswordsCheckSection', function() {
     assertTrue(isElementVisible(title));
     expectEquals(section.i18n('checkedPasswords'), title.innerText);
     assertTrue(isElementVisible(subtitle));
-    const count = await PluralStringProxyImpl.getInstance().getPluralString(
-        'insecurePasswords', 2);
+    const count =
+        await PluralStringProxyImpl.getInstance().getPluralStringTupleWithComma(
+            'safetyCheckPasswordsCompromised', 1, 'safetyCheckPasswordsWeak',
+            1);
     expectEquals(count, subtitle.textContent.trim());
 
     expectTrue(
