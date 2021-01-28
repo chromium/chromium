@@ -268,6 +268,8 @@ class Metrics {
     // Since Chrome M-88. The client failed to base64-decode the trigger script
     // specified in the script parameters.
     LITE_SCRIPT_BASE64_DECODING_ERROR = 24,
+    // The user rejected the bottom sheet onboarding
+    LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED = 25,
 
     // NOTE: All values in this block are DEPRECATED and will only be sent by
     // Chrome M-86 and M-87.
@@ -298,7 +300,7 @@ class Metrics {
     // Since Chrome M-88. The bottom sheet was swipe-dismissed by the user.
     LITE_SCRIPT_PROMPT_SWIPE_DISMISSED = 16,
 
-    kMaxValue = LITE_SCRIPT_BASE64_DECODING_ERROR
+    kMaxValue = LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED
   };
 
   // The different ways a user who has successfully completed a light script may
@@ -338,6 +340,9 @@ class Metrics {
   static void RecordLiteScriptShownToUser(ukm::UkmRecorder* ukm_recorder,
                                           content::WebContents* web_contents,
                                           LiteScriptShownToUser event);
+  static void RecordLiteScriptOnboarding(ukm::UkmRecorder* ukm_recorder,
+                                         content::WebContents* web_contents,
+                                         LiteScriptOnboarding event);
 
   // Intended for debugging: writes string representation of |reason| to |out|.
   friend std::ostream& operator<<(std::ostream& out,

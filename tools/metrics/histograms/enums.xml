@@ -4707,6 +4707,7 @@ others/histograms.xml -->
   <int value="22" label="Failed to show"/>
   <int value="23" label="Disabled proactive help setting"/>
   <int value="24" label="Base64 decoding error"/>
+  <int value="25" label="The user rejected the bottom sheet onboarding"/>
 </enum>
 
 <enum name="AutofillAssistantLiteScriptOnboarding">

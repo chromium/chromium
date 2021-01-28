@@ -6,7 +6,9 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/autofill_assistant/browser/features.h"
 #include "components/autofill_assistant/browser/mock_website_login_manager.h"
 #include "components/autofill_assistant/browser/service/mock_service_request_sender.h"
 #include "components/autofill_assistant/browser/test_util.h"
@@ -32,6 +34,15 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::UnorderedElementsAreArray;
 
+std::unique_ptr<base::test::ScopedFeatureList> CreateScopedFeatureList(
+    bool dialog_onboarding) {
+  auto scoped_feature_list = std::make_unique<base::test::ScopedFeatureList>();
+  scoped_feature_list->InitWithFeatureState(
+      autofill_assistant::features::kAutofillAssistantDialogOnboarding,
+      dialog_onboarding);
+  return scoped_feature_list;
+}
+
 class MockObserver : public TriggerScriptCoordinator::Observer {
  public:
   MOCK_METHOD1(OnTriggerScriptShown, void(const TriggerScriptUIProto& proto));
@@ -39,6 +50,7 @@ class MockObserver : public TriggerScriptCoordinator::Observer {
   MOCK_METHOD1(OnTriggerScriptFinished,
                void(Metrics::LiteScriptFinishedState state));
   MOCK_METHOD1(OnVisibilityChanged, void(bool visible));
+  MOCK_METHOD1(OnOnboardingRequested, void(bool use_dialog_onboarding));
 };
 
 const char kFakeDeepLink[] = "https://example.com/q?data=test";
@@ -126,6 +138,23 @@ class TriggerScriptCoordinatorTest : public content::RenderViewHostTestHarness {
     int actual_times = 0;
     for (const auto* entry : entries) {
       if (*ukm_recorder_.GetEntryMetric(entry, "LiteScriptShownToUser") ==
+          static_cast<int64_t>(state)) {
+        actual_times++;
+      }
+    }
+    EXPECT_EQ(expected_times, actual_times);
+  }
+
+  void AssertRecordedLiteScriptOnboardingState(
+      Metrics::LiteScriptOnboarding state,
+      int expected_times) {
+    auto entries = ukm_recorder_.GetEntriesByName(
+        "AutofillAssistant.LiteScriptOnboarding");
+    ukm_recorder_.ExpectEntrySourceHasUrl(
+        entries[0], web_contents()->GetLastCommittedURL());
+    int actual_times = 0;
+    for (const auto* entry : entries) {
+      if (*ukm_recorder_.GetEntryMetric(entry, "LiteScriptOnboarding") ==
           static_cast<int64_t>(state)) {
         actual_times++;
       }
@@ -459,14 +488,7 @@ TEST_F(TriggerScriptCoordinatorTest, PerformTriggerScriptActionAccept) {
   coordinator_->Start(GURL(kFakeDeepLink),
                       std::make_unique<TriggerContextImpl>());
 
-  EXPECT_CALL(
-      mock_observer_,
-      OnTriggerScriptFinished(
-          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED))
-      .Times(1);
   coordinator_->PerformTriggerScriptAction(TriggerScriptProto::ACCEPT);
-  AssertRecordedFinishedState(
-      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
 }
 
 TEST_F(TriggerScriptCoordinatorTest, CancelOnNavigateAway) {
@@ -839,6 +861,155 @@ TEST_F(TriggerScriptCoordinatorTest, PauseAndResumeOnTabSwitch) {
   EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
   EXPECT_CALL(mock_observer_, OnVisibilityChanged(true)).Times(1);
   SimulateWebContentsInteractabilityChanged(/* interactable = */ true);
+}
+
+TEST_F(TriggerScriptCoordinatorTest, OnboardingShownAndAccepted) {
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts();
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<4>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .WillRepeatedly(RunOnceCallback<1>());
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  EXPECT_CALL(
+      mock_observer_,
+      OnTriggerScriptFinished(
+          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED))
+      .Times(1);
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(0);
+  coordinator_->OnOnboardingFinished(/* onboardingShown= */ true,
+                                     /* accepted= */ true);
+
+  AssertRecordedLiteScriptOnboardingState(
+      Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_ACCEPTED,
+      1);
+  AssertRecordedFinishedState(
+      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
+}
+
+TEST_F(TriggerScriptCoordinatorTest,
+       DialogOnboardingShownAndAcceptedOnThirdTime) {
+  auto feature_list = CreateScopedFeatureList(/* dialog_onboarding= */ true);
+
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts();
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<4>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .WillRepeatedly(RunOnceCallback<1>());
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  EXPECT_CALL(mock_observer_, OnTriggerScriptFinished).Times(0);
+  coordinator_->OnOnboardingFinished(/* onboardingShown= */ true,
+                                     /* accepted= */ false);
+
+  EXPECT_CALL(mock_observer_, OnTriggerScriptFinished).Times(0);
+  coordinator_->OnOnboardingFinished(/* onboardingShown= */ true,
+                                     /* accepted= */ false);
+
+  EXPECT_CALL(
+      mock_observer_,
+      OnTriggerScriptFinished(
+          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED))
+      .Times(1);
+  EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(0);
+  coordinator_->OnOnboardingFinished(/* onboardingShown= */ true,
+                                     /* accepted= */ true);
+
+  AssertRecordedLiteScriptOnboardingState(
+      Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED,
+      2);
+  AssertRecordedLiteScriptOnboardingState(
+      Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_ACCEPTED,
+      1);
+  AssertRecordedFinishedState(
+      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
+}
+
+TEST_F(TriggerScriptCoordinatorTest, BottomSheetOnboardingShownAndRejected) {
+  auto feature_list = CreateScopedFeatureList(/* dialog_onboarding= */ false);
+
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts();
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<4>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .WillRepeatedly(RunOnceCallback<1>());
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  EXPECT_CALL(
+      mock_observer_,
+      OnTriggerScriptFinished(Metrics::LiteScriptFinishedState::
+                                  LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED))
+      .Times(1);
+  EXPECT_CALL(mock_observer_, OnTriggerScriptHidden).Times(1);
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(0);
+  coordinator_->OnOnboardingFinished(/* onboardingShown= */ true,
+                                     /* accepted= */ false);
+
+  AssertRecordedLiteScriptOnboardingState(
+      Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_SEEN_AND_REJECTED,
+      1);
+  AssertRecordedFinishedState(Metrics::LiteScriptFinishedState::
+                                  LITE_SCRIPT_BOTTOMSHEET_ONBOARDING_REJECTED);
+}
+
+TEST_F(TriggerScriptCoordinatorTest, OnboardingNotShown) {
+  GetTriggerScriptsResponseProto response;
+  response.add_trigger_scripts();
+  std::string serialized_response;
+  response.SerializeToString(&serialized_response);
+
+  EXPECT_CALL(*mock_request_sender_, OnSendRequest(GURL(kFakeServerUrl), _, _))
+      .WillOnce(RunOnceCallback<2>(net::HTTP_OK, serialized_response));
+  EXPECT_CALL(*mock_static_trigger_conditions_, Init)
+      .WillOnce(RunOnceCallback<4>());
+  EXPECT_CALL(*mock_dynamic_trigger_conditions_,
+              OnUpdate(mock_web_controller_, _))
+      .WillRepeatedly(RunOnceCallback<1>());
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(1);
+  coordinator_->Start(GURL(kFakeDeepLink),
+                      std::make_unique<TriggerContextImpl>());
+
+  EXPECT_CALL(
+      mock_observer_,
+      OnTriggerScriptFinished(
+          Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED))
+      .Times(1);
+  EXPECT_CALL(mock_observer_, OnTriggerScriptShown).Times(0);
+  coordinator_->OnOnboardingFinished(/* onboardingShown= */ false,
+                                     /* accepted= */ true);
+
+  AssertRecordedLiteScriptOnboardingState(
+      Metrics::LiteScriptOnboarding::LITE_SCRIPT_ONBOARDING_ALREADY_ACCEPTED,
+      1);
+  AssertRecordedFinishedState(
+      Metrics::LiteScriptFinishedState::LITE_SCRIPT_PROMPT_SUCCEEDED);
 }
 
 }  // namespace autofill_assistant

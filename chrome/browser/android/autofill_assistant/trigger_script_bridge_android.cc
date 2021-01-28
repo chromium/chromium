@@ -268,4 +268,25 @@ void TriggerScriptBridgeAndroid::ClearLastShownTriggerScript() {
   last_shown_trigger_script_.reset();
 }
 
+void TriggerScriptBridgeAndroid::OnOnboardingRequested(
+    bool is_dialog_onboarding_enabled) {
+  if (!java_object_) {
+    return;
+  }
+  Java_AssistantTriggerScriptBridge_onOnboardingRequested(
+      AttachCurrentThread(), java_object_, is_dialog_onboarding_enabled);
+}
+
+void TriggerScriptBridgeAndroid::OnOnboardingFinished(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    jboolean jonboarding_shown,
+    jboolean jaccepted) {
+  if (!trigger_script_coordinator_) {
+    return;
+  }
+  trigger_script_coordinator_->OnOnboardingFinished(jonboarding_shown,
+                                                    jaccepted);
+}
+
 }  // namespace autofill_assistant

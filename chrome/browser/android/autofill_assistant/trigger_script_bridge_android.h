@@ -74,12 +74,20 @@ class TriggerScriptBridgeAndroid : public TriggerScriptCoordinator::Observer {
       const base::android::JavaParamRef<jobject>& jcaller,
       jboolean jvisible);
 
+  // Called by the UI when a user interacted with the onboarding UI or when
+  // onboarding is already accepted.
+  void OnOnboardingFinished(JNIEnv* env,
+                            const base::android::JavaParamRef<jobject>& jcaller,
+                            jboolean jonboarding_shown,
+                            jboolean jaccepted);
+
  private:
   // From TriggerScriptCoordinator::Observer:
   void OnTriggerScriptShown(const TriggerScriptUIProto& proto) override;
   void OnTriggerScriptHidden() override;
   void OnTriggerScriptFinished(Metrics::LiteScriptFinishedState state) override;
   void OnVisibilityChanged(bool visible) override;
+  void OnOnboardingRequested(bool is_dialog_onboarding_enabled) override;
 
   // The login manager for fetching login credentials.
   // TODO(arbesser) move this to the owner of trigger_script_bridge_android.

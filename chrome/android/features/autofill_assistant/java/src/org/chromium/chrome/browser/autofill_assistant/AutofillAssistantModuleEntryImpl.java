@@ -80,20 +80,20 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                     || !TextUtils.isEmpty(parameters.get(PARAMETER_TRIGGER_SCRIPTS_BASE64))) {
                 AssistantTriggerScriptBridge triggerScriptBridge =
                         new AssistantTriggerScriptBridge();
-                triggerScriptBridge.start(bottomSheetController, context,
-                        keyboardVisibilityDelegate, bottomInsetProvider, activityTabProvider,
-                        webContents, initialUrl, parameters, experimentIds,
-                        new AssistantTriggerScriptBridge.Delegate() {
+                triggerScriptBridge.start(bottomSheetController, browserControls,
+                        compositorViewHolder, context, keyboardVisibilityDelegate,
+                        bottomInsetProvider, activityTabProvider, webContents, initialUrl,
+                        parameters, experimentIds, new AssistantTriggerScriptBridge.Delegate() {
                             @Override
                             public void onTriggerScriptFinished(
                                     @LiteScriptFinishedState int finishedState) {
                                 if (finishedState
                                         == LiteScriptFinishedState.LITE_SCRIPT_PROMPT_SUCCEEDED) {
                                     parameters.put(PARAMETER_STARTED_WITH_TRIGGER_SCRIPT, "true");
-                                    startAutofillAssistantRegular(bottomSheetController,
-                                            browserControls, compositorViewHolder, context,
-                                            webContents, isChromeCustomTab, initialUrl, parameters,
-                                            experimentIds, callerAccount, userName);
+                                    AutofillAssistantClient.fromWebContents(webContents)
+                                            .start(initialUrl, parameters, experimentIds,
+                                                    callerAccount, userName, isChromeCustomTab,
+                                                    triggerScriptBridge.getOnboardingCoordinator());
                                 }
                             }
                         });
@@ -162,8 +162,7 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             AutofillAssistantMetrics.recordOnBoarding(OnBoarding.OB_NOT_SHOWN);
             AutofillAssistantClient.fromWebContents(webContents)
                     .start(initialUrl, parameters, experimentIds, callerAccount, userName,
-                            isChromeCustomTab,
-                            /* onboardingCoordinator= */ null);
+                            isChromeCustomTab, /* onboardingCoordinator= */ null);
             return;
         }
 
@@ -182,7 +181,6 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
             if (!accepted) {
                 return;
             }
-
             AutofillAssistantClient.fromWebContents(webContents)
                     .start(initialUrl, parameters, experimentIds, callerAccount, userName,
                             isChromeCustomTab, onboardingCoordinator);

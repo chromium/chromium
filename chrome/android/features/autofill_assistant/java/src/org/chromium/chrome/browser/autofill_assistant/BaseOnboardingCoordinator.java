@@ -41,7 +41,7 @@ import java.util.Map;
  */
 @JNINamespace("autofill_assistant")
 // TODO(b/174445633): Add a public interface for |show()|, |hide()| and |getOboardingShown()|
-abstract class BaseOnboardingCoordinator {
+public abstract class BaseOnboardingCoordinator {
     private static final String INTENT_IDENTFIER = "INTENT";
     private static final String FETCH_TIMEOUT_IDENTIFIER = "ONBOARDING_FETCH_TIMEOUT_MS";
     private static final String BUY_MOVIE_TICKETS_INTENT = "BUY_MOVIE_TICKET";
@@ -87,7 +87,7 @@ abstract class BaseOnboardingCoordinator {
      * <p>The {@code targetUrl} is the initial URL Autofill Assistant is being started on. The
      * navigation to that URL is allowed, other navigations will hide Autofill Assistant.
      */
-    void show(Callback<Boolean> callback, WebContents webContents, String targetUrl) {
+    public void show(Callback<Boolean> callback, WebContents webContents, String targetUrl) {
         addWebContentObserver(callback, webContents, targetUrl);
         show(callback);
     }
@@ -129,8 +129,6 @@ abstract class BaseOnboardingCoordinator {
     boolean getOnboardingShown() {
         return mOnboardingShown;
     }
-
-    abstract void hide();
 
     // TODO(b/175598484): Move transferControls to bottom sheet subclass
     @Nullable
@@ -318,6 +316,7 @@ abstract class BaseOnboardingCoordinator {
         mAnimate = false;
     }
 
+    abstract void hide();
     abstract void initViewImpl(Callback<Boolean> callback);
     abstract void showViewImpl();
 
