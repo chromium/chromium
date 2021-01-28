@@ -22,7 +22,11 @@
 TARGET_DEVICES = {
     'android-pixel2-perf-fyi': {
         'speedometer2': {
-            'Speedometer2': 3
+            'Speedometer2': 3,
+        },
+        'rendering.mobile': {
+            'css_transitions_triggered_style_element': 4,
+            'canvas_animation_no_clear': 4
         }
     }
 }
