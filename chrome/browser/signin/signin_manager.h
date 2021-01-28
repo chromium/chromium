@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SIGNIN_SIGNIN_MANAGER_H_
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -36,7 +37,8 @@ class SigninManager : public KeyedService,
   base::Optional<CoreAccountInfo> ComputeUnconsentedPrimaryAccountInfo() const;
 
   // signin::IdentityManager::Observer implementation.
-  void AfterSyncPrimaryAccountCleared() override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
   void OnRefreshTokenRemovedForAccount(
@@ -52,6 +54,8 @@ class SigninManager : public KeyedService,
 
   signin::IdentityManager* identity_manager_;
   bool unconsented_primary_account_revoked_during_load_ = false;
+
+  base::WeakPtrFactory<SigninManager> weak_ptr_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SigninManager);
 };

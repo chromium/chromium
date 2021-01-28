@@ -478,8 +478,18 @@ AccountInfo IdentityManager::GetAccountInfoForAccountWithRefreshToken(
 
 void IdentityManager::OnPrimaryAccountChanged(
     const PrimaryAccountChangeEvent& event_details) {
-  for (auto& observer : observer_list_)
+  CoreAccountId event_primary_account_id =
+      event_details.GetCurrentState().primary_account.account_id;
+  DCHECK_EQ(event_primary_account_id,
+            GetPrimaryAccountId(event_details.GetCurrentState().consent_level));
+  for (auto& observer : observer_list_) {
     observer.OnPrimaryAccountChanged(event_details);
+    // Ensure that |observer| did not change the primary account as otherwise
+    // |event_details| would not longer be correct.
+    DCHECK_EQ(
+        event_primary_account_id,
+        GetPrimaryAccountId(event_details.GetCurrentState().consent_level));
+  }
 
 #if defined(OS_ANDROID)
   if (java_identity_manager_) {
@@ -489,13 +499,6 @@ void IdentityManager::OnPrimaryAccountChanged(
         ConvertToJavaPrimaryAccountChangeEvent(env, event_details));
   }
 #endif
-
-  if (event_details.GetEventTypeFor(ConsentLevel::kSync) ==
-      PrimaryAccountChangeEvent::Type::kCleared) {
-    for (auto& observer : observer_list_) {
-      observer.AfterSyncPrimaryAccountCleared();
-    }
-  }
 }
 
 void IdentityManager::OnRefreshTokenAvailable(const CoreAccountId& account_id) {

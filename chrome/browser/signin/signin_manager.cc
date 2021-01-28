@@ -104,18 +104,26 @@ SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
 }
 
 // signin::IdentityManager::Observer implementation.
-void SigninManager::AfterSyncPrimaryAccountCleared() {
+void SigninManager::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event_details) {
   // This is needed for the case where the user chooses to start syncing
   // with an account that is different from the unconsented primary account
   // (not the first in cookies) but then cancels. In that case, the tokens stay
   // the same. In all the other cases, either the token will be revoked which
   // will trigger an update for the unconsented primary account or the
   // primary account stays the same but the sync consent is revoked.
-  // |OnPrimaryAccountCleared| is not used to ensure the value of the
-  // unconsented primary account doesn't change during other observers being
-  // notified. All observers should see the same value for the unconsented
-  // primary account.
-  UpdateUnconsentedPrimaryAccount();
+  if (event_details.GetEventTypeFor(signin::ConsentLevel::kSync) !=
+      signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    return;
+  }
+
+  // It is important to update the primary account after all observers process
+  // the current OnPrimaryAccountChanged() as all observers should see the same
+  // value for the unconsented primary account. Schedule the potential update
+  // on the next run loop.
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&SigninManager::UpdateUnconsentedPrimaryAccount,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SigninManager::OnRefreshTokenUpdatedForAccount(

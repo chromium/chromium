@@ -77,16 +77,12 @@ class IdentityManager : public KeyedService,
 
     // Called when there is a change in the primary account or in the consent
     // level for the primary account.
+    //
+    // Note: Observers are not allowed to change the primary account directly
+    // from this methood as that would lead to |event_details| not being correct
+    // for the future observers.
     virtual void OnPrimaryAccountChanged(
         const PrimaryAccountChangeEvent& event_details) {}
-
-    // TODO(crbug.com/1046746): Move to |SigninClient|.
-    // Called After notifying all the observers of |OnPrimaryAccountChanged|
-    // if the sync primary account was cleared.
-    //
-    // Note: This function is only intended to be used by the signin code.
-    // General observers should use |OnPrimaryAccountChanged|.
-    virtual void AfterSyncPrimaryAccountCleared() {}
 
     // Called when a new refresh token is associated with |account_info|.
     // NOTE: On a signin event, the ordering of this callback wrt the

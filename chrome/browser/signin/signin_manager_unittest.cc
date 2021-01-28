@@ -215,6 +215,8 @@ TEST_F(SigninManagerTest, UnconsentedPrimaryAccountNotChangedOnSignout) {
 
   // Tests that sync primary account is cleared, but unconsented account is not.
   identity_test_env()->RevokeSyncConsent();
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(account, identity_manager()->GetPrimaryAccountInfo(
                          ConsentLevel::kNotRequired));
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
@@ -349,6 +351,8 @@ TEST_F(SigninManagerTest,
   // Clear primary account but do not delete the account. The unconsented
   // primary account should be updated to be the first account in cookies.
   identity_test_env()->RevokeSyncConsent();
+  base::RunLoop().RunUntilIdle();
+
   // Primary account is cleared, but unconsented account is not.
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount());
   EXPECT_FALSE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSync));
@@ -380,6 +384,7 @@ TEST_F(SigninManagerTest, ClearPrimaryAccountAndSignOut) {
   ExpectSyncPrimaryAccountSetEvent(account);
 
   identity_test_env()->ClearPrimaryAccount();
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(1U, observer().events().size());
   auto event = observer().events()[0];
