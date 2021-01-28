@@ -2707,12 +2707,12 @@ TEST_F(CaptureModeTest, SettingsMenuVisibilityDrawingRegion) {
       GetCaptureModeSettingsView()->GetBoundsInScreen().CenterPoint());
   EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
   // Move the mouse off both the capture bar and the settings menu, and confirm
-  // that both bars are visible.
+  // that both bars are no longer visible.
   event_generator->MoveMouseTo(
       GetCaptureModeSettingsView()->GetBoundsInScreen().top_center() +
       gfx::Vector2d(0, -50));
-  EXPECT_EQ(1.f, capture_bar_layer->GetTargetOpacity());
-  EXPECT_TRUE(GetCaptureModeSettingsWidget());
+  EXPECT_EQ(0.1f, capture_bar_layer->GetTargetOpacity());
+  EXPECT_FALSE(GetCaptureModeSettingsWidget());
 }
 
 // Tests that toggling the microphone setting updates the state in the

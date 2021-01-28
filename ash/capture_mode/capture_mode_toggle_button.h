@@ -31,6 +31,10 @@ class ASH_EXPORT CaptureModeToggleButton
   CaptureModeToggleButton& operator=(const CaptureModeToggleButton&) = delete;
   ~CaptureModeToggleButton() override = default;
 
+  void set_toggled_background_color(SkColor color) {
+    toggled_background_color_ = color;
+  }
+
   // views::ToggleImageButton:
   void OnPaintBackground(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;

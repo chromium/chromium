@@ -22,6 +22,7 @@
 #include "base/bind.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
@@ -79,6 +80,17 @@ CaptureModeBarView::CaptureModeBarView()
   box_layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
+  // Custom styling for the settings button, which has a dark background and a
+  // light colored icon when selected.
+  const auto normal_icon = gfx::CreateVectorIcon(
+      kCaptureModeSettingsIcon,
+      color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kButtonIconColor));
+  settings_button_->SetToggledImage(views::Button::STATE_NORMAL, &normal_icon);
+  settings_button_->set_toggled_background_color(
+      color_provider->GetControlsLayerColor(
+          AshColorProvider::ControlsLayerType::
+              kControlBackgroundColorInactive));
   settings_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_SCREEN_CAPTURE_TOOLTIP_SETTINGS));
 

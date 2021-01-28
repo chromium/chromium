@@ -242,8 +242,9 @@ class ASH_EXPORT CaptureModeSession : public ui::LayerOwner,
   void UpdateRegionHorizontally(bool left, bool is_shift_down);
   void UpdateRegionVertically(bool up, bool is_shift_down);
 
-  // Returns true if the event is on a visible settings menu.
-  bool IsEventOnSettingsWidget(const gfx::Point& location_in_screen);
+  // Returns true if the event is on a visible settings menu. This includes the
+  // space between the capture bar and the menu.
+  bool IsEventInSettingsMenuBounds(const gfx::Point& location_in_screen);
 
   CaptureModeController* const controller_;
 
