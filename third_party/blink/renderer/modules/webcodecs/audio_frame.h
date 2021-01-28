@@ -39,6 +39,8 @@ class MODULES_EXPORT AudioFrame final : public ScriptWrappable {
   void Trace(Visitor*) const override;
 
  private:
+  void CopyDataToInternalBuffer(media::AudioBus* data);
+
   uint64_t timestamp_;
   Member<AudioBuffer> buffer_;
 };

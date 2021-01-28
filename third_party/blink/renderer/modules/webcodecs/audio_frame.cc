@@ -12,33 +12,6 @@
 
 namespace blink {
 
-namespace {
-class SharedAudioData final : public AudioFrameSerializationData {
- public:
-  SharedAudioData(std::unique_ptr<SharedAudioBuffer> shared_buffer,
-                  base::TimeDelta timestamp)
-      : AudioFrameSerializationData(shared_buffer->sampleRate(), timestamp),
-        backing_buffer_(std::move(shared_buffer)) {
-    buffer_wrapper_ =
-        media::AudioBus::CreateWrapper(backing_buffer_->numberOfChannels());
-
-    for (int i = 0; i < buffer_wrapper_->channels(); ++i) {
-      float* channel_data =
-          static_cast<float*>(backing_buffer_->channels()[i].Data());
-      buffer_wrapper_->SetChannelData(i, channel_data);
-    }
-    buffer_wrapper_->set_frames(backing_buffer_->length());
-  }
-  ~SharedAudioData() override = default;
-
-  media::AudioBus* data() override { return buffer_wrapper_.get(); }
-
- private:
-  std::unique_ptr<media::AudioBus> buffer_wrapper_;
-  std::unique_ptr<SharedAudioBuffer> backing_buffer_;
-};
-}  // namespace
-
 // static
 AudioFrame* AudioFrame::Create(AudioFrameInit* init,
                                ExceptionState& exception_state) {
@@ -54,55 +27,67 @@ AudioFrame::AudioFrame(scoped_refptr<media::AudioBuffer> buffer)
   buffer_ = AudioBuffer::CreateUninitialized(
       buffer->channel_count(), buffer->frame_count(), buffer->sample_rate());
 
-  // Wrap blink buffer with a media::AudioBus so we can interface with
-  // media::AudioBuffer to copy the data out.
-  auto media_bus_wrapper =
-      media::AudioBus::CreateWrapper(buffer->channel_count());
-  for (int i = 0; i < media_bus_wrapper->channels(); ++i) {
-    DCHECK_EQ(buffer_->getChannelData(i)->byteLength(),
-              buffer->frame_count() * sizeof(float));
-    float* channel_data = buffer_->getChannelData(i)->Data();
-    media_bus_wrapper->SetChannelData(i, channel_data);
-  }
-  media_bus_wrapper->set_frames(buffer->frame_count());
+  auto converted_data =
+      media::AudioBus::Create(buffer->channel_count(), buffer->frame_count());
 
-  // Copy the frames.
+  // Copy the frames, converting from |buffer|'s internal format to float.
+  // TODO(https://crbug.com/1171840): Add a version of
+  // media::AudioBus::ReadFrame that can directly read into |buffer_|'s data.
   // TODO(chcunningham): Avoid this copy by refactoring blink::AudioBuffer to
   // ref a media::AudioBuffer and only copy for calls to copyToChannel().
-  buffer->ReadFrames(media_bus_wrapper->frames(), 0 /* source_frame_offset */,
-                     0 /* dest_frame_offset */, media_bus_wrapper.get());
+  buffer->ReadFrames(converted_data->frames(), 0 /* source_frame_offset */,
+                     0 /* dest_frame_offset */, converted_data.get());
+
+  CopyDataToInternalBuffer(converted_data.get());
+}
+
+void AudioFrame::CopyDataToInternalBuffer(media::AudioBus* data) {
+  DCHECK_EQ(static_cast<int>(buffer_->numberOfChannels()), data->channels());
+  DCHECK_EQ(static_cast<int>(buffer_->length()), data->frames());
+
+  for (int i = 0; i < data->channels(); ++i) {
+    size_t byte_length = buffer_->getChannelData(i)->byteLength();
+    DCHECK_EQ(byte_length, data->frames() * sizeof(float));
+    float* buffer_data_dest = buffer_->getChannelData(i)->Data();
+    memcpy(data->channel(i), buffer_data_dest, byte_length);
+  }
 }
 
 std::unique_ptr<AudioFrameSerializationData>
 AudioFrame::GetSerializationData() {
   DCHECK(buffer_);
-  return std::make_unique<SharedAudioData>(
-      buffer_->CreateSharedAudioBuffer(),
+
+  // Copy buffer unaligned memory into media::AudioBus' aligned memory.
+  // TODO(https://crbug.com/1168418): reevaluate if this copy is necessary after
+  // our changes. E.g. If we can ever guarantee AudioBuffer's memory alignment,
+  // we could save this copy here, by using buffer_->GetSharedAudioBuffer() and
+  // wrapping it directly.
+  auto data_copy =
+      media::AudioBus::Create(buffer_->numberOfChannels(), buffer_->length());
+
+  for (int i = 0; i < data_copy->channels(); ++i) {
+    size_t byte_length = buffer_->getChannelData(i)->byteLength();
+    DCHECK_EQ(byte_length, data_copy->frames() * sizeof(float));
+    float* buffer_data_src = buffer_->getChannelData(i)->Data();
+    memcpy(buffer_data_src, data_copy->channel(i), byte_length);
+  }
+
+  return AudioFrameSerializationData::Wrap(
+      std::move(data_copy), buffer_->sampleRate(),
       base::TimeDelta::FromMicroseconds(timestamp_));
 }
 
 AudioFrame::AudioFrame(std::unique_ptr<AudioFrameSerializationData> data)
     : timestamp_(data->timestamp().InMicroseconds()) {
-  const media::AudioBus& audio_bus = *data->data();
-  buffer_ = AudioBuffer::CreateUninitialized(
-      audio_bus.channels(), audio_bus.frames(), data->sample_rate());
+  media::AudioBus* data_bus = data->data();
 
-  // Wrap blink buffer with a media::AudioBus so we can interface with
-  // media::AudioBuffer to copy the data out.
-  auto audio_buffer_wrapper =
-      media::AudioBus::CreateWrapper(audio_bus.channels());
-  for (int i = 0; i < audio_buffer_wrapper->channels(); ++i) {
-    DCHECK_EQ(buffer_->getChannelData(i)->byteLength(),
-              audio_bus.frames() * sizeof(float));
-    float* channel_data = buffer_->getChannelData(i)->Data();
-    audio_buffer_wrapper->SetChannelData(i, channel_data);
-  }
-  audio_buffer_wrapper->set_frames(audio_bus.frames());
+  buffer_ = AudioBuffer::CreateUninitialized(
+      data_bus->channels(), data_bus->frames(), data->sample_rate());
 
   // Copy the frames.
   // TODO(https://crbug.com/1168418): Avoid this copy by refactoring
   // blink::AudioBuffer accept a serializable audio data backing object.
-  audio_bus.CopyTo(audio_buffer_wrapper.get());
+  CopyDataToInternalBuffer(data_bus);
 }
 
 void AudioFrame::close() {
@@ -112,6 +97,7 @@ void AudioFrame::close() {
 uint64_t AudioFrame::timestamp() const {
   return timestamp_;
 }
+
 AudioBuffer* AudioFrame::buffer() const {
   return buffer_;
 }

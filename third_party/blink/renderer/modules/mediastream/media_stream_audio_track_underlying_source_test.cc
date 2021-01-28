@@ -91,9 +91,8 @@ class MediaStreamAudioTrackUnderlyingSourceTest : public testing::Test {
   PushableMediaStreamAudioSource* const pushable_audio_source_;
 };
 
-// TODO(crbug.com/1157608): Tests are failing on some platforms.
 TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
-       DISABLED_AudioFrameFlowsThroughStreamAndCloses) {
+       AudioFrameFlowsThroughStreamAndCloses) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* source = CreateSource(script_state);
@@ -132,9 +131,8 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
   EXPECT_FALSE(source->Track());
 }
 
-// TODO(crbug.com/1157608): Tests are failing on some platforms.
 TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
-       DISABLED_DropOldFramesWhenQueueIsFull) {
+       DropOldFramesWhenQueueIsFull) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   const wtf_size_t buffer_size = 5;
@@ -193,9 +191,8 @@ TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
   WebMediaStreamAudioSink::RemoveFromAudioTrack(&mock_sink, track);
 }
 
-// TODO(crbug.com/1157608): Tests are failing on some platforms.
 TEST_F(MediaStreamAudioTrackUnderlyingSourceTest,
-       DISABLED_BypassQueueAfterPullWithEmptyBuffer) {
+       BypassQueueAfterPullWithEmptyBuffer) {
   V8TestingScope v8_scope;
   ScriptState* script_state = v8_scope.GetScriptState();
   auto* source = CreateSource(script_state);
