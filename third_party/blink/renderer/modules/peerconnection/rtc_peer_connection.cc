@@ -538,6 +538,10 @@ bool ContainsLegacyRtpDataChannel(String sdp) {
   return sdp.Find("google-data/90000") != kNotFound;
 }
 
+bool ContainsCandidate(String sdp) {
+  return sdp.Find("a=candidate") != kNotFound;
+}
+
 enum class SdpFormat {
   kSimple,
   kComplexPlanB,
@@ -826,11 +830,6 @@ RTCPeerConnection::RTCPeerConnection(
   closed_ = false;
   peer_handler_unregistered_ = false;
   suppress_events_ = false;
-
-  feature_handle_for_scheduler_ =
-      window->GetFrame()->GetFrameScheduler()->RegisterFeature(
-          SchedulingPolicy::Feature::kWebRTC,
-          SchedulingPolicy{SchedulingPolicy::DisableBackForwardCache()});
 }
 
 RTCPeerConnection::~RTCPeerConnection() {
@@ -1556,6 +1555,10 @@ ScriptPromise RTCPeerConnection::setRemoteDescription(
     ExecutionContext* context = ExecutionContext::From(script_state);
     UseCounter::Count(context, WebFeature::kRTCLegacyRtpDataChannelNegotiated);
   }
+
+  if (ContainsCandidate(session_description_init->sdp()))
+    DisableBackForwardCache(context);
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   auto* request = MakeGarbageCollected<RTCVoidRequestPromiseImpl>(
@@ -1602,9 +1605,13 @@ ScriptPromise RTCPeerConnection::setRemoteDescription(
           WebFeature::
               kRTCPeerConnectionSetRemoteDescriptionLegacyNoFailureCallback);
   }
+
   if (ContainsLegacyRtpDataChannel(session_description_init->sdp())) {
     UseCounter::Count(context, WebFeature::kRTCLegacyRtpDataChannelNegotiated);
   }
+
+  if (ContainsCandidate(session_description_init->sdp()))
+    DisableBackForwardCache(context);
 
   if (CallErrorCallbackIfSignalingStateClosed(signaling_state_, error_callback))
     return ScriptPromise::CastUndefined(script_state);
@@ -1926,6 +1933,8 @@ ScriptPromise RTCPeerConnection::addIceCandidate(
   if (platform_candidate->Candidate().IsEmpty())
     return ScriptPromise::CastUndefined(script_state);
 
+  DisableBackForwardCache(GetExecutionContext());
+
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
   auto* request = MakeGarbageCollected<RTCVoidRequestPromiseImpl>(
@@ -1962,6 +1971,8 @@ ScriptPromise RTCPeerConnection::addIceCandidate(
   // handles the empty candidate field correctly.
   if (platform_candidate->Candidate().IsEmpty())
     return ScriptPromise::CastUndefined(script_state);
+
+  DisableBackForwardCache(GetExecutionContext());
 
   auto* request = MakeGarbageCollected<RTCVoidRequestImpl>(
       GetExecutionContext(), base::nullopt, this, success_callback,
@@ -3690,6 +3701,14 @@ int RTCPeerConnection::PeerConnectionCount() {
 
 int RTCPeerConnection::PeerConnectionCountLimit() {
   return kMaxPeerConnections;
+}
+
+void RTCPeerConnection::DisableBackForwardCache(ExecutionContext* context) {
+  LocalDOMWindow* window = To<LocalDOMWindow>(context);
+  feature_handle_for_scheduler_ =
+      window->GetFrame()->GetFrameScheduler()->RegisterFeature(
+          SchedulingPolicy::Feature::kWebRTC,
+          SchedulingPolicy{SchedulingPolicy::DisableBackForwardCache()});
 }
 
 }  // namespace blink
