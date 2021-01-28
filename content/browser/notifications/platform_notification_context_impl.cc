@@ -39,6 +39,11 @@ namespace {
 const base::FilePath::CharType kPlatformNotificationsDirectory[] =
     FILE_PATH_LITERAL("Platform Notifications");
 
+// Max age of a displayed notification before we consider it stale and remove it
+// from the database and ask the platform to close it.
+constexpr base::TimeDelta kMaxDisplayedNotificationAge =
+    base::TimeDelta::FromDays(7);
+
 // Checks if this notification can trigger in the future.
 bool CanTrigger(const NotificationDatabaseData& data) {
   if (!base::FeatureList::IsEnabled(features::kNotificationTriggers))
@@ -165,25 +170,14 @@ void PlatformNotificationContextImpl::DidGetNotifications(
   if (has_shutdown_)
     return;
 
-  // Check if there are pending notifications to display.
-  base::Time next_trigger = base::Time::Max();
-  if (service_proxy_ &&
-      base::FeatureList::IsEnabled(features::kNotificationTriggers)) {
-    next_trigger = service_proxy_->GetNextTrigger();
-  }
-
   // Synchronize the notifications stored in the database with the set of
   // displaying notifications in |displayed_notifications|. This is necessary
   // because flakiness may cause a platform to inform Chrome of a notification
   // that has since been closed, or because the platform does not support
   // notifications that exceed the lifetime of the browser process.
-  if (supports_synchronization || next_trigger <= base::Time::Now()) {
-    LazyInitialize(base::BindOnce(
-        &PlatformNotificationContextImpl::DoSyncNotificationData, this,
-        supports_synchronization, std::move(displayed_notifications)));
-  } else if (service_proxy_ && next_trigger != base::Time::Max()) {
-    service_proxy_->ScheduleTrigger(next_trigger);
-  }
+  LazyInitialize(base::BindOnce(
+      &PlatformNotificationContextImpl::DoSyncNotificationData, this,
+      supports_synchronization, std::move(displayed_notifications)));
 
   // |service_worker_context_| may be NULL in tests.
   if (service_worker_context_)
@@ -202,25 +196,40 @@ void PlatformNotificationContextImpl::DoSyncNotificationData(
   next_trigger_ = base::nullopt;
 
   // Iterate over all notifications and delete all expired ones.
+  std::set<std::string> close_notification_ids;
   NotificationDatabase::Status status =
       database_->ForEachNotificationData(base::BindRepeating(
           &PlatformNotificationContextImpl::DoHandleSyncNotification, this,
-          supports_synchronization, displayed_notifications));
+          supports_synchronization, displayed_notifications,
+          &close_notification_ids));
 
   // Blow away the database if reading data failed due to corruption.
   if (status == NotificationDatabase::STATUS_ERROR_CORRUPTED)
     DestroyDatabase();
 
-  // Schedule the next trigger timestamp.
-  if (next_trigger_ && service_proxy_)
-    service_proxy_->ScheduleTrigger(next_trigger_.value());
+  base::UmaHistogramCounts10000(
+      "Notifications.Database.ExpiredNotificationCount",
+      close_notification_ids.size());
+
+  if (service_proxy_) {
+    // Schedule the next trigger timestamp.
+    if (next_trigger_)
+      service_proxy_->ScheduleTrigger(next_trigger_.value());
+
+    // Close old notifications.
+    if (!close_notification_ids.empty())
+      service_proxy_->CloseNotifications(close_notification_ids);
+  }
 }
 
 void PlatformNotificationContextImpl::DoHandleSyncNotification(
     bool supports_synchronization,
     const std::set<std::string>& displayed_notifications,
+    std::set<std::string>* close_notification_ids,
     const NotificationDatabaseData& data) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  DCHECK(close_notification_ids);
+
   // Handle pending notifications.
   if (CanTrigger(data)) {
     base::Time timestamp =
@@ -230,6 +239,19 @@ void PlatformNotificationContextImpl::DoHandleSyncNotification(
       DoTriggerNotification(data);
     else if (!next_trigger_ || next_trigger_.value() > timestamp)
       next_trigger_ = timestamp;
+    return;
+  }
+
+  // Delete very old notifications as they are most probably not on screen
+  // anymore and their relevance is questionable anyway. We still want to tell
+  // the platform to remove them for cleanup just in case.
+  base::Time display_time =
+      data.notification_data.show_trigger_timestamp.value_or(
+          data.creation_time_millis);
+  base::TimeDelta age = base::Time::Now() - display_time;
+  if (age >= kMaxDisplayedNotificationAge) {
+    database_->DeleteNotificationData(data.notification_id, data.origin);
+    close_notification_ids->insert(data.notification_id);
     return;
   }
 
@@ -388,10 +410,8 @@ void PlatformNotificationContextImpl::DoDeleteAllNotificationDataForOrigins(
     success = true;
   }
 
-  if (service_proxy_) {
-    for (const std::string& notification_id : deleted_notification_ids)
-      service_proxy_->CloseNotification(notification_id);
-  }
+  if (service_proxy_ && !deleted_notification_ids.empty())
+    service_proxy_->CloseNotifications(deleted_notification_ids);
 
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), success,
@@ -966,7 +986,7 @@ void PlatformNotificationContextImpl::DoWriteNotificationData(
   if (status == NotificationDatabase::STATUS_OK) {
     if (CanTrigger(write_database_data)) {
       if (replaces_existing)
-        service_proxy_->CloseNotification(notification_id);
+        service_proxy_->CloseNotifications({notification_id});
 
       // Schedule notification to be shown.
       service_proxy_->ScheduleNotification(std::move(write_database_data));
@@ -1006,7 +1026,7 @@ void PlatformNotificationContextImpl::DeleteNotificationData(
 
   // Close notification as we're about to delete its data.
   if (close_notification)
-    service_proxy_->CloseNotification(notification_id);
+    service_proxy_->CloseNotifications({notification_id});
 
   bool should_log_close = service_proxy_->ShouldLogClose(origin);
   LazyInitialize(base::BindOnce(
@@ -1088,10 +1108,8 @@ void PlatformNotificationContextImpl::
   if (status == NotificationDatabase::STATUS_ERROR_CORRUPTED)
     DestroyDatabase();
 
-  if (service_proxy_) {
-    for (const std::string& notification_id : deleted_notification_ids)
-      service_proxy_->CloseNotification(notification_id);
-  }
+  if (service_proxy_ && !deleted_notification_ids.empty())
+    service_proxy_->CloseNotifications(deleted_notification_ids);
 }
 
 void PlatformNotificationContextImpl::OnStorageWiped() {
