@@ -48,7 +48,9 @@ _TEST_ALWAYS_INSTALLED_MANIFEST_PATH = os.path.join(
 # The following files are dynamically created.
 _TEST_ELF_PATH = os.path.join(_TEST_OUTPUT_DIR, 'elf')
 _TEST_APK_PATH = os.path.join(_TEST_OUTPUT_DIR, 'test.apk')
-_TEST_OTHER_SPLIT_APK_PATH = os.path.join(_TEST_OUTPUT_DIR, 'other.apk')
+_TEST_NOT_ON_DEMAND_SPLIT_APK_PATH = os.path.join(_TEST_OUTPUT_DIR,
+                                                  'not_on_demand.apk')
+_TEST_ON_DEMAND_SPLIT_APK_PATH = os.path.join(_TEST_OUTPUT_DIR, 'on_demand.apk')
 _TEST_MINIMAL_APKS_PATH = os.path.join(_TEST_OUTPUT_DIR, 'Bundle.minimal.apks')
 _TEST_SSARGS_PATH = os.path.join(_TEST_OUTPUT_DIR, 'test.ssargs')
 
@@ -152,29 +154,29 @@ class IntegrationTest(unittest.TestCase):
       apk_file.writestr(
           _TEST_APK_DEX_PATH, IntegrationTest._CreateBlankData(23))
 
-    with zipfile.ZipFile(_TEST_OTHER_SPLIT_APK_PATH, 'w') as other_apk_zip:
-      other_apk_zip.write(_TEST_ALWAYS_INSTALLED_MANIFEST_PATH,
-                          'AndroidManifest.xml')
+    with zipfile.ZipFile(_TEST_NOT_ON_DEMAND_SPLIT_APK_PATH, 'w') as z:
+      z.write(_TEST_ALWAYS_INSTALLED_MANIFEST_PATH, 'AndroidManifest.xml')
+    with zipfile.ZipFile(_TEST_ON_DEMAND_SPLIT_APK_PATH, 'w') as z:
+      z.write(_TEST_ON_DEMAND_MANIFEST_PATH, 'AndroidManifest.xml')
 
     with zipfile.ZipFile(_TEST_MINIMAL_APKS_PATH, 'w') as apk_file:
+      apk_file.writestr('toc.pb', 'x' * 80)
       apk_file.write(_TEST_APK_PATH, 'splits/base-master.apk')
       apk_file.writestr('splits/base-en.apk', 'x' * 10)
-
-      with tempfile.NamedTemporaryFile(suffix='.apk') as vr_apk_file:
-        with zipfile.ZipFile(vr_apk_file.name, 'w') as vr_apk_zip:
-          vr_apk_zip.write(_TEST_ON_DEMAND_MANIFEST_PATH, 'AndroidManifest.xml')
-        apk_file.write(vr_apk_file.name, 'splits/vr-master.apk')
+      apk_file.write(_TEST_NOT_ON_DEMAND_SPLIT_APK_PATH,
+                     'splits/not_on_demand-master.apk')
+      apk_file.write(_TEST_ON_DEMAND_SPLIT_APK_PATH,
+                     'splits/on_demand-master.apk')
       apk_file.writestr('splits/vr-en.apk', 'x' * 40)
 
-      apk_file.write(_TEST_OTHER_SPLIT_APK_PATH, 'splits/other-master.apk')
-      apk_file.writestr('toc.pb', 'x' * 80)
 
   @classmethod
   def tearDownClass(cls):
     IntegrationTest._SafeRemoveFiles([
         _TEST_ELF_PATH,
         _TEST_APK_PATH,
-        _TEST_OTHER_SPLIT_APK_PATH,
+        _TEST_NOT_ON_DEMAND_SPLIT_APK_PATH,
+        _TEST_ON_DEMAND_SPLIT_APK_PATH,
         _TEST_MINIMAL_APKS_PATH,
     ])
 
@@ -262,20 +264,35 @@ class IntegrationTest(unittest.TestCase):
         raw_symbols_list.append(raw_symbols)
         if use_minimal_apks:
           opts.analyze_native = False
-          args.split_name = 'other'
-          args.apk_file = _TEST_OTHER_SPLIT_APK_PATH
+          args.split_name = 'not_on_demand'
+          args.apk_file = _TEST_NOT_ON_DEMAND_SPLIT_APK_PATH
           args.elf_file = None
           args.map_file = None
           metadata = archive.CreateMetadata(args, None, build_config)
           container, raw_symbols = archive.CreateContainerAndSymbols(
               knobs=knobs,
               opts=opts,
-              container_name='{}/other.apk'.format(container_name),
+              container_name='{}/not_on_demand.apk'.format(container_name),
               metadata=metadata,
               tool_prefix=args.tool_prefix,
               output_directory=args.output_directory,
               source_directory=args.source_directory,
-              apk_path=_TEST_OTHER_SPLIT_APK_PATH,
+              apk_path=_TEST_NOT_ON_DEMAND_SPLIT_APK_PATH,
+              size_info_prefix=size_info_prefix)
+          container_list.append(container)
+          raw_symbols_list.append(raw_symbols)
+          args.split_name = 'on_demand'
+          args.apk_file = _TEST_ON_DEMAND_SPLIT_APK_PATH
+          metadata = archive.CreateMetadata(args, None, build_config)
+          container, raw_symbols = archive.CreateContainerAndSymbols(
+              knobs=knobs,
+              opts=opts,
+              container_name='{}/on_demand.apk'.format(container_name),
+              metadata=metadata,
+              tool_prefix=args.tool_prefix,
+              output_directory=args.output_directory,
+              source_directory=args.source_directory,
+              apk_path=_TEST_ON_DEMAND_SPLIT_APK_PATH,
               size_info_prefix=size_info_prefix)
           container_list.append(container)
           raw_symbols_list.append(raw_symbols)

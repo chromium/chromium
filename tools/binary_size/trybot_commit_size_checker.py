@@ -102,6 +102,7 @@ def _CreateMutableConstantsDelta(symbols):
 
 
 def _CreateMethodCountDelta(symbols):
+  symbols = symbols.WhereIsOnDemand(False)
   method_symbols = symbols.WhereInSection(models.SECTION_DEX_METHOD)
   method_lines, net_method_added = _SymbolDiffHelper('Methods', method_symbols)
   class_symbols = symbols.WhereInSection(

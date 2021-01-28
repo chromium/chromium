@@ -55,6 +55,7 @@ BUILD_CONFIG_KEYS = (
 METADATA_APK_FILENAME = 'apk_file_name'  # Path relative to output_directory.
 METADATA_APK_SIZE = 'apk_size'  # File size of apk in bytes.
 METADATA_APK_SPLIT_NAME = 'apk_split_name'  # Name of the split if applicable.
+METADATA_APK_SPLIT_ON_DEMAND = 'apk_split_on_demand'  # Split is onDemand.
 METADATA_ZIPALIGN_OVERHEAD = 'zipalign_padding'  # Overhead from zipalign.
 METADATA_SIGNING_BLOCK_SIZE = 'apk_signature_block_size'  # Size in bytes.
 METADATA_MAP_FILENAME = 'map_file_name'  # Path relative to output_directory.
@@ -996,6 +997,13 @@ class SymbolGroup(BaseSymbol):
 
   def WherePssBiggerThan(self, min_pss):
     return self.Filter(lambda s: s.pss >= min_pss)
+
+  def WhereIsOnDemand(self, value=True):
+    ret = self.Filter(lambda s: not s.container or s.container.metadata.get(
+        METADATA_APK_SPLIT_ON_DEMAND))
+    if not value:
+      ret = ret.Inverted()
+    return ret
 
   def WhereInSection(self, section, container=None):
     """|section| can be section_name ('.bss'), or section chars ('bdr')."""

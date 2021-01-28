@@ -844,8 +844,9 @@ def CreateMetadata(args, linker_name, build_config):
     metadata[models.METADATA_APK_FILENAME] = shorten_path(
         args.minimal_apks_file)
     if args.split_name and args.split_name != 'base':
-      metadata[models.METADATA_APK_SPLIT_NAME] = args.split_name
       metadata[models.METADATA_APK_SIZE] = os.path.getsize(args.apk_file)
+      metadata[models.METADATA_APK_SPLIT_NAME] = args.split_name
+      metadata[models.METADATA_APK_SPLIT_ON_DEMAND] = _IsOnDemand(args.apk_file)
     else:
       sizes_by_module = _CollectModuleSizes(args.minimal_apks_file)
       for name, size in sizes_by_module.items():
@@ -2210,8 +2211,6 @@ def _IterSubArgs(top_args, on_config_error):
         with zip_util.UnzipToTemp(
             sub_args.minimal_apks_file,
             'splits/{}-master.apk'.format(module_name)) as temp:
-          if _IsOnDemand(temp):
-            continue
           module_sub_args = copy.copy(sub_args)
           module_sub_args.apk_file = temp
           module_sub_args.split_name = module_name
