@@ -740,26 +740,13 @@ size_t ScaleOp::Serialize(const PaintOp* base_op,
   return helper.size();
 }
 
-// Just a helper for moving SkMatrix -> SkM44 here, these early-outs might not
-// be necessary
-bool IsSkM44Identity(const SkM44& m) {
-  return m == SkM44();
-}
-
 size_t SetMatrixOp::Serialize(const PaintOp* base_op,
                                 void* memory,
                                 size_t size,
                                 const SerializeOptions& options) {
   auto* op = static_cast<const SetMatrixOp*>(base_op);
   PaintOpWriter helper(memory, size, options);
-
-  // TODO(crbug.com/1155544): Take out this early out and see if there's a perf
-  // regression.
-  if (IsSkM44Identity(options.original_ctm)) {
-    helper.Write(op->matrix);
-  } else {
-    helper.Write(options.original_ctm * op->matrix);
-  }
+  helper.Write(options.original_ctm * op->matrix);
   return helper.size();
 }
 
