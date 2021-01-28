@@ -207,6 +207,11 @@ crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-de
 crbug.com/1136231 [ win ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 crbug.com/1136231 [ linux ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]
 
+# TODO(kbr): Lift these once upstream tests are rolled forward.
+crbug.com/1171506 conformance/glsl/bugs/character-set.html [ Skip ]
+crbug.com/1171506 conformance/glsl/misc/shader-with-define-line-continuation.frag.html [ Skip ]
+crbug.com/1171506 conformance/misc/invalid-passed-params.html [ Skip ]
+
 # TODO(kbr): Lift this once upstream test is updated.
 crbug.com/angleproject/5499 conformance/glsl/misc/shaders-with-name-conflicts.html [ Skip ]
 

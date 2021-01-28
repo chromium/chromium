@@ -339,172 +339,32 @@ GLint Clamp(GLint value, GLint min, GLint max) {
   return value;
 }
 
-// Strips comments from shader text. This allows non-ASCII characters
-// to be used in comments without potentially breaking OpenGL
-// implementations not expecting characters outside the GLSL ES set.
-class StripComments {
+// Replaces non-ASCII characters with a placeholder. Given
+// shaderSource's new rules as of
+// https://github.com/KhronosGroup/WebGL/pull/3206 , the browser must
+// not generate INVALID_VALUE for these out-of-range characters.
+// Shader compilation must fail for invalid constructs farther in the
+// pipeline.
+class ReplaceNonASCII {
  public:
-  StripComments(const String& str)
-      : parse_state_(kBeginningOfLine),
-        source_string_(str),
-        length_(str.length()),
-        position_(0) {
-    Parse();
-  }
+  ReplaceNonASCII(const String& str) { Parse(str); }
 
   String Result() { return builder_.ToString(); }
 
  private:
-  bool HasMoreCharacters() const { return (position_ < length_); }
-
-  void Parse() {
-    while (HasMoreCharacters()) {
-      Process(Current());
-      // process() might advance the position.
-      if (HasMoreCharacters())
-        Advance();
+  void Parse(const String& source_string) {
+    unsigned len = source_string.length();
+    for (unsigned i = 0; i < len; ++i) {
+      UChar current = source_string[i];
+      if (WTF::IsASCII(current))
+        builder_.Append(current);
+      else
+        builder_.Append('?');
     }
   }
 
-  void Process(UChar);
-
-  bool Peek(UChar& character) const {
-    if (position_ + 1 >= length_)
-      return false;
-    character = source_string_[position_ + 1];
-    return true;
-  }
-
-  UChar Current() {
-    SECURITY_DCHECK(position_ < length_);
-    return source_string_[position_];
-  }
-
-  void Advance() { ++position_; }
-
-  static bool IsNewline(UChar character) {
-    // Don't attempt to canonicalize newline related characters.
-    return (character == '\n' || character == '\r');
-  }
-
-  void Emit(UChar character) { builder_.Append(character); }
-
-  enum ParseState {
-    // Have not seen an ASCII non-whitespace character yet on
-    // this line. Possible that we might see a preprocessor
-    // directive.
-    kBeginningOfLine,
-
-    // Have seen at least one ASCII non-whitespace character
-    // on this line.
-    kMiddleOfLine,
-
-    // Handling a preprocessor directive. Passes through all
-    // characters up to the end of the line. Disables comment
-    // processing.
-    kInPreprocessorDirective,
-
-    // Handling a single-line comment. The comment text is
-    // replaced with a single space.
-    kInSingleLineComment,
-
-    // Handling a multi-line comment. Newlines are passed
-    // through to preserve line numbers.
-    kInMultiLineComment
-  };
-
-  ParseState parse_state_;
-  String source_string_;
-  unsigned length_;
-  unsigned position_;
   StringBuilder builder_;
 };
-
-void StripComments::Process(UChar c) {
-  if (IsNewline(c)) {
-    // No matter what state we are in, pass through newlines
-    // so we preserve line numbers.
-    Emit(c);
-
-    if (parse_state_ != kInMultiLineComment)
-      parse_state_ = kBeginningOfLine;
-
-    return;
-  }
-
-  UChar temp = 0;
-  switch (parse_state_) {
-    case kBeginningOfLine:
-      if (WTF::IsASCIISpace(c)) {
-        Emit(c);
-        break;
-      }
-
-      if (c == '#') {
-        parse_state_ = kInPreprocessorDirective;
-        Emit(c);
-        break;
-      }
-
-      // Transition to normal state and re-handle character.
-      parse_state_ = kMiddleOfLine;
-      Process(c);
-      break;
-
-    case kMiddleOfLine:
-    case kInPreprocessorDirective:
-      if (c == '/' && Peek(temp)) {
-        if (temp == '/') {
-          parse_state_ = kInSingleLineComment;
-          Emit(' ');
-          Advance();
-          break;
-        }
-
-        if (temp == '*') {
-          parse_state_ = kInMultiLineComment;
-          // Emit the comment start in case the user has
-          // an unclosed comment and we want to later
-          // signal an error.
-          Emit('/');
-          Emit('*');
-          Advance();
-          break;
-        }
-      }
-
-      Emit(c);
-      break;
-
-    case kInSingleLineComment:
-      // Line-continuation characters are processed before comment processing.
-      // Advance string if a new line character is immediately behind
-      // line-continuation character.
-      if (c == '\\') {
-        if (Peek(temp) && IsNewline(temp))
-          Advance();
-      }
-
-      // The newline code at the top of this function takes care
-      // of resetting our state when we get out of the
-      // single-line comment. Swallow all other characters.
-      break;
-
-    case kInMultiLineComment:
-      if (c == '*' && Peek(temp) && temp == '/') {
-        Emit('*');
-        Emit('/');
-        parse_state_ = kMiddleOfLine;
-        Advance();
-        break;
-      }
-
-      // Swallow all other characters. Unclear whether we may
-      // want or need to just emit a space per character to try
-      // to preserve column numbers for debugging purposes.
-      break;
-  }
-}
 
 static bool g_should_fail_context_creation_for_testing = false;
 
@@ -4905,18 +4765,12 @@ void WebGLRenderingContextBase::shaderSource(WebGLShader* shader,
                                              const String& string) {
   if (!ValidateWebGLProgramOrShader("shaderSource", shader))
     return;
-  String string_without_comments = StripComments(string).Result();
+  String ascii_string = ReplaceNonASCII(string).Result();
   shader->SetSource(string);
-  if (!string_without_comments.Is8Bit() ||
-      !string_without_comments.ContainsOnlyASCIIOrEmpty()) {
-    SynthesizeGLError(
-        GL_INVALID_VALUE, "shaderSource",
-        "Non ASCII character detected after comments are stripped.");
-    return;
-  }
+  DCHECK(ascii_string.Is8Bit() && ascii_string.ContainsOnlyASCIIOrEmpty());
   const GLchar* shader_data =
-      reinterpret_cast<const GLchar*>(string_without_comments.Characters8());
-  const GLint shader_length = string_without_comments.length();
+      reinterpret_cast<const GLchar*>(ascii_string.Characters8());
+  const GLint shader_length = ascii_string.length();
   ContextGL()->ShaderSource(ObjectOrZero(shader), 1, &shader_data,
                             &shader_length);
 }

@@ -129,6 +129,11 @@ crbug.com/1136231 [ linux ] conformance/extensions/s3tc-and-rgtc.html [ Failure 
 # TODO(kbr): Lift this once upstream test is updated.
 crbug.com/angleproject/5499 conformance/glsl/misc/shaders-with-name-conflicts.html [ Skip ]
 
+# TODO(kbr): Lift these once upstream tests are rolled forward.
+crbug.com/1171506 conformance/glsl/bugs/character-set.html [ Skip ]
+crbug.com/1171506 conformance/glsl/misc/shader-with-define-line-continuation.frag.html [ Skip ]
+crbug.com/1171506 conformance/misc/invalid-passed-params.html [ Skip ]
+
 crbug.com/953120 conformance/programs/program-handling.html [ Failure ]
 
 crbug.com/949249 [ win passthrough angle-opengl nvidia ] conformance2/extensions/ovr_multiview2.html [ Failure ]
