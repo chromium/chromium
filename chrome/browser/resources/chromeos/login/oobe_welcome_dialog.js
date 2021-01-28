@@ -454,12 +454,14 @@
      */
     showChromeVoxHint() {
       this.$.chromeVoxHint.showDialog();
+      this.welcomeVideoController_.pause();
     },
 
     /**
      * Called to close the ChromeVox hint dialog.
      */
     closeChromeVoxHint() {
+      this.welcomeVideoController_.play();
       this.$.chromeVoxHint.hideDialog();
     },
 
