@@ -4536,7 +4536,7 @@ crbug.com/907862 [ Mac10.13 ] gamepad/multiple-event-listeners.html [ Pass Failu
 crbug.com/908347 media/autoplay/webaudio-audio-context-resume.html [ Failure Pass ]
 
 # Sheriff 2018-11-29
-crbug.com/910139 custom-elements/form-submission-file.html [ Crash Pass ]
+crbug.com/910139 http/tests/custom-elements/form-submission-file.html [ Crash Pass ]
 
 # TODO: re-enable the below flakiness suppression when removing this line
 crbug.com/1131901 transforms/shadows.html [ Pass Failure ]

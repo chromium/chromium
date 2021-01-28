@@ -1,21 +1,17 @@
-(function() {
-
-// This function stabilize the line number in console messages from this script.
-function log(str) {
-  console.log(str);
-}
+import {FileChooser, FileChooserParams_Mode, FileChooserReceiver} from '/gen/third_party/blink/public/mojom/choosers/file_chooser.mojom.m.js';
 
 class MockFileChooserFactory extends EventTarget {
   constructor() {
     super();
     this.paths_ = [];
     this.baseDir_ = undefined;
-    this.bindingSet_ = new mojo.BindingSet(blink.mojom.FileChooser);
+    this.receiver_ = undefined;
     this.interceptor_ =
-        new MojoInterfaceInterceptor(blink.mojom.FileChooser.name);
+        new MojoInterfaceInterceptor(FileChooser.$interfaceName);
     this.interceptor_.oninterfacerequest = e => {
-      this.bindingSet_.addBinding(
-          new MockFileChooser(this, this.paths_, this.baseDir_), e.handle);
+      this.receiver_ = new FileChooserReceiver(
+          new MockFileChooser(this, this.paths_, this.baseDir_));
+      this.receiver_.$.bindHandle(e.handle);
       this.paths_ = [];
     };
     this.interceptor_.start();
@@ -29,7 +25,7 @@ class MockFileChooserFactory extends EventTarget {
 }
 
 function modeToString(mode) {
-  let Mode = blink.mojom.FileChooserParams.Mode;
+  let Mode = FileChooserParams_Mode;
   switch (mode) {
   case Mode.kOpen:
     return 'kOpen';
@@ -53,7 +49,6 @@ class MockFileChooser {
 
   openFileChooser(params) {
     this.params_ = params;
-    log(`FileChooser: opened; mode=${modeToString(params.mode)}`);
 
     this.factory_.dispatchEvent(
         new CustomEvent('open', {detail: modeToString(params.mode)}));
@@ -67,19 +62,10 @@ class MockFileChooser {
   }
 
   chooseFiles_(resolve) {
-    if (this.paths_.length > 0) {
-      log('FileChooser: selected: ' + this.paths_);
-    } else {
-      log('FileChooser: canceled');
-    }
     const file_info_list = [];
     for (const path of this.paths_) {
-      file_info_list.push(new blink.mojom.FileChooserFileInfo({
-          nativeFile: {
-              filePath: toFilePath(path),
-              displayName: {data:[]}
-          }
-      }));
+      const nativeFile = {filePath: toFilePath(path), displayName: {data: []}};
+      file_info_list.push({nativeFile});
     }
     const basePath = this.baseDir_ || '';
     resolve({result: {files: file_info_list,
@@ -105,6 +91,4 @@ function toFilePath(path) {
   return {path: string16Path};
 }
 
-window.mockFileChooserFactory = new MockFileChooserFactory();
-
-})();
+export const mockFileChooserFactory = new MockFileChooserFactory();
