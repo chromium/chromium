@@ -938,8 +938,16 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     int src_bit_depth,
     const ColorSpace& dst,
     int dst_bit_depth) {
-  steps_.push_back(std::make_unique<ColorTransformMatrix>(
-      GetRangeAdjustMatrix(src, src_bit_depth)));
+  // ITU-T H.273: If MatrixCoefficients is equal to 0 (Identity) or 8 (YCgCo),
+  // range adjustment is performed on R,G,B samples rather than Y,U,V samples.
+  const bool src_matrix_is_identity_or_ycgco =
+      src.GetMatrixID() == ColorSpace::MatrixID::GBR ||
+      src.GetMatrixID() == ColorSpace::MatrixID::YCOCG;
+  auto src_range_adjust_matrix = std::make_unique<ColorTransformMatrix>(
+      GetRangeAdjustMatrix(src, src_bit_depth));
+
+  if (!src_matrix_is_identity_or_ycgco)
+    steps_.push_back(std::move(src_range_adjust_matrix));
 
   if (src.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
     // BT2020 CL is a special case.
@@ -948,6 +956,9 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     steps_.push_back(
         std::make_unique<ColorTransformMatrix>(Invert(GetTransferMatrix(src))));
   }
+
+  if (src_matrix_is_identity_or_ycgco)
+    steps_.push_back(std::move(src_range_adjust_matrix));
 
   // If the target color space is not defined, just apply the adjust and
   // tranfer matrices. This path is used by YUV to RGB color conversion
@@ -1020,6 +1031,17 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
         std::make_unique<ColorTransformFromLinear>(dst.GetTransferID()));
   }
 
+  // ITU-T H.273: If MatrixCoefficients is equal to 0 (Identity) or 8 (YCgCo),
+  // range adjustment is performed on R,G,B samples rather than Y,U,V samples.
+  const bool dst_matrix_is_identity_or_ycgco =
+      dst.GetMatrixID() == ColorSpace::MatrixID::GBR ||
+      dst.GetMatrixID() == ColorSpace::MatrixID::YCOCG;
+  auto dst_range_adjust_matrix = std::make_unique<ColorTransformMatrix>(
+      Invert(GetRangeAdjustMatrix(dst, dst_bit_depth)));
+
+  if (dst_matrix_is_identity_or_ycgco)
+    steps_.push_back(std::move(dst_range_adjust_matrix));
+
   if (dst.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
     NOTREACHED();
   } else {
@@ -1027,8 +1049,8 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
         std::make_unique<ColorTransformMatrix>(GetTransferMatrix(dst)));
   }
 
-  steps_.push_back(std::make_unique<ColorTransformMatrix>(
-      Invert(GetRangeAdjustMatrix(dst, dst_bit_depth))));
+  if (!dst_matrix_is_identity_or_ycgco)
+    steps_.push_back(std::move(dst_range_adjust_matrix));
 }
 
 ColorTransformInternal::ColorTransformInternal(const ColorSpace& src,

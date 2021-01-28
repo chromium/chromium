@@ -128,6 +128,42 @@ TEST(SimpleColorSpace, BT2020CLtoBT2020RGB) {
   EXPECT_GT(tmp.z(), tmp.y());
 }
 
+TEST(SimpleColorSpace, YCOCGLimitedToSRGB) {
+  ColorSpace ycocg(ColorSpace::PrimaryID::BT709,
+                   ColorSpace::TransferID::IEC61966_2_1,
+                   ColorSpace::MatrixID::YCOCG, ColorSpace::RangeID::LIMITED);
+  ColorSpace sRGB = ColorSpace::CreateSRGB();
+  std::unique_ptr<ColorTransform> t(ColorTransform::NewColorTransform(
+      ycocg, sRGB, ColorTransform::Intent::INTENT_ABSOLUTE));
+
+  ColorTransform::TriStim tmp(16.0f / 255.0f, 0.5f, 0.5f);
+  t->Transform(&tmp, 1);
+  EXPECT_NEAR(tmp.x(), 0.0f, kMathEpsilon);
+  EXPECT_NEAR(tmp.y(), 0.0f, kMathEpsilon);
+  EXPECT_NEAR(tmp.z(), 0.0f, kMathEpsilon);
+
+  tmp = ColorTransform::TriStim(235.0f / 255.0f, 0.5f, 0.5f);
+  t->Transform(&tmp, 1);
+  EXPECT_NEAR(tmp.x(), 1.0f, kMathEpsilon);
+  EXPECT_NEAR(tmp.y(), 1.0f, kMathEpsilon);
+  EXPECT_NEAR(tmp.z(), 1.0f, kMathEpsilon);
+
+  // Test a blue color
+  // Use the equations for MatrixCoefficients 8 and VideoFullRangeFlag 0 in
+  // ITU-T H.273:
+  // Equations 11-13: E'_R = 0.0, E'_G = 0.0, E'_B = 1.0
+  // Equations 20-22: R = 16, G = 16, B = 219 + 16 = 235
+  // Equations 44-46:
+  //   Y = Round(0.5 * 16 + 0.25 * (16 + 235)) = Round(70.75) = 71
+  //   Cb = Round(0.5 * 16 - 0.25 * (16 + 235)) + 128 = Round(-54.75) + 128 = 73
+  //   Cr = Round(0.5 * (16 - 235)) + 128 = Round(-109.5) + 128 = 18
+  tmp = ColorTransform::TriStim(71.0f / 255.0f, 73.0f / 255.0f, 18.0f / 255.0f);
+  t->Transform(&tmp, 1);
+  EXPECT_NEAR(tmp.x(), 0.0f, kMathEpsilon);
+  EXPECT_NEAR(tmp.y(), 0.0f, 1.0f / 255.0f);
+  EXPECT_NEAR(tmp.z(), 1.0f, kMathEpsilon);
+}
+
 TEST(SimpleColorSpace, TransferFnCancel) {
   ColorSpace::PrimaryID primary = ColorSpace::PrimaryID::BT709;
   ColorSpace::MatrixID matrix = ColorSpace::MatrixID::RGB;
