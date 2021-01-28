@@ -17,7 +17,6 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge.BookmarkItem;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -39,6 +38,7 @@ import java.util.List;
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@Batch.SplitByFeature
 public class BookmarkBridgeTest {
     @Rule
     public final ChromeBrowserTestRule mChromeBrowserTestRule = new ChromeBrowserTestRule();
@@ -332,7 +332,6 @@ public class BookmarkBridgeTest {
     @SmallTest
     @UiThreadTest
     @Features.EnableFeatures({ChromeFeatureList.READ_LATER})
-    @RequiresRestart
     public void testAddToReadingList() {
         Assert.assertNull("Should return null for non http/https URLs.",
                 mBookmarkBridge.addToReadingList("a", new GURL("chrome://flags")));
