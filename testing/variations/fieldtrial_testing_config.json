@@ -1217,16 +1217,15 @@
             ]
         }
     ],
-    "ButterForPayments": [
+    "ButterForPaymentsStage2": [
         {
             "platforms": [
                 "android"
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Butter_IndicationForAllUsers_Stage2",
+                    "name": "Enabled_Butter_IndicationForAllUsers",
                     "enable_features": [
-                        "AutofillEnableAccountWalletStorage",
                         "AutofillEnableInfoBarAccountIndicationFooterForSingleAccountUsers",
                         "AutofillEnableInfoBarAccountIndicationFooterForSyncUsers",
                         "AutofillEnableSaveCardInfoBarAccountIndicationFooter"
