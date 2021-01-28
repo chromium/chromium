@@ -108,6 +108,14 @@ def main(argv):
   parser.add_argument(
       "--descriptor-set-dependency-file",
       help="Path to write the dependency file for descriptor set.")
+  # The meaning of this flag is flipped compared to the corresponding protoc
+  # flag due to this script previously passing --include_imports. Removing the
+  # --include_imports is likely to have unintended consequences.
+  parser.add_argument(
+      "--exclude-imports",
+      help="Do not include imported files into generated descriptor.",
+      action="store_true",
+      default=False)
   parser.add_argument("protos", nargs="+",
                       help="Input protobuf definition file(s).")
 
@@ -164,15 +172,16 @@ def main(argv):
 
   if options.descriptor_set_out:
     protoc_cmd += ["--descriptor_set_out", options.descriptor_set_out]
-    protoc_cmd += ["--include_imports"]
+    if not options.exclude_imports:
+      protoc_cmd += ["--include_imports"]
 
   dependency_file_data = None
   if options.descriptor_set_out and options.descriptor_set_dependency_file:
-      protoc_cmd += ['--dependency_out', options.descriptor_set_dependency_file]
-      ret = subprocess.call(protoc_cmd)
+    protoc_cmd += ['--dependency_out', options.descriptor_set_dependency_file]
+    ret = subprocess.call(protoc_cmd)
 
-      with open(options.descriptor_set_dependency_file, 'r') as f:
-        dependency_file_data = f.read().decode('utf-8')
+    with open(options.descriptor_set_dependency_file, 'r') as f:
+      dependency_file_data = f.read().decode('utf-8')
 
   ret = subprocess.call(protoc_cmd)
   if ret != 0:

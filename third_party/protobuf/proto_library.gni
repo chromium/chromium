@@ -169,6 +169,17 @@ template("proto_library") {
     generate_descriptor = ""
   }
 
+  # exclude_imports is only used for generating the descriptor. Therefore, the
+  # check needs to be here to avoid complaints from GN about the unused
+  # variable.
+  if (generate_descriptor != "") {
+    if (defined(invoker.exclude_imports)) {
+      exclude_imports = invoker.exclude_imports
+    } else {
+      exclude_imports = false
+    }
+  }
+
   if (defined(invoker.generator_plugin_label)) {
     # Straightforward way to get the name of executable doesn't work because
     # |root_out_dir| and |root_build_dir| may differ in cross-compilation and
@@ -388,6 +399,10 @@ template("proto_library") {
           "$root_gen_dir/" + proto_out_dir + "/" + generate_descriptor + ".d"
       rel_depfile = rebase_path(depfile, root_build_dir)
 
+      if (exclude_imports) {
+        args += [ "--exclude-imports" ]
+      }
+
       args += [
         "--descriptor-set-out",
         rel_descriptor_out,
@@ -499,8 +514,10 @@ template("proto_library") {
       configs += [ "//build/config/sanitizers:not_fuzzed" ]
     }
 
-    public_configs = [ "//third_party/protobuf:using_proto",
-        "//third_party/protobuf:allow_deprecated_proto_fields"  ]
+    public_configs = [
+      "//third_party/protobuf:using_proto",
+      "//third_party/protobuf:allow_deprecated_proto_fields",
+    ]
     public_deps = []
 
     if (generate_cc || generate_with_plugin) {
