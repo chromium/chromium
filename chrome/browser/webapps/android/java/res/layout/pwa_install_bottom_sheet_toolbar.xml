@@ -7,48 +7,70 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
+
     <ImageView
         android:id="@+id/drag_handlebar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:paddingTop="6dp"
-        android:paddingBottom="6dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:importantForAccessibility="no"
         app:srcCompat="@drawable/drag_handlebar" />
 
-    <ImageView
-        android:id="@+id/app_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        android:layout_gravity="start|center"
-        android:layout_marginStart="20dp"
-        android:importantForAccessibility="no" />
-    <TextView
-        android:id="@+id/app_name"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="25dp"
-        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
-    <TextView
-        android:id="@+id/app_origin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="top"
-        android:layout_marginStart="80dp"
-        android:layout_marginTop="45dp"
-        android:layout_marginBottom="20dp" />
-    <org.chromium.ui.widget.ButtonCompat
-        android:id="@+id/button_install"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|center"
-        android:layout_marginEnd="20dp"
-        android:enabled="false"
-        android:singleLine="true"
-        android:gravity="center"
-        android:text="@string/app_banner_install"
-        style="FilledButton.Flat" />
+        android:orientation="horizontal"
+        android:weightSum="10"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
+
+        <ImageView
+            android:id="@+id/app_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:importantForAccessibility="no" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="10"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="4dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/app_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary" />
+            <TextView
+                android:id="@+id/app_origin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
+
+        </LinearLayout>
+
+        <org.chromium.ui.widget.ButtonCompat
+            android:id="@+id/button_install"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center"
+            android:enabled="false"
+            android:singleLine="true"
+            android:gravity="center"
+            android:text="@string/app_banner_install"
+            style="FilledButton.Flat" />
+
+    </LinearLayout>
 </FrameLayout>
