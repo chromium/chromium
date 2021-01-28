@@ -623,6 +623,7 @@
       "is_debug": false,
       "ozone_platform": "wayland",
       "ozone_platform_wayland": true,
+      "target_os": "chromeos",
       "use_goma": true,
       "use_gtk": false,
       "use_ozone": true
@@ -636,6 +637,7 @@
       "is_debug": false,
       "ozone_platform": "wayland",
       "ozone_platform_wayland": true,
+      "target_os": "chromeos",
       "use_goma": true,
       "use_gtk": false,
       "use_ozone": true

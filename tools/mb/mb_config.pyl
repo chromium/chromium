@@ -3073,7 +3073,7 @@
     },
 
     'lacros_on_linux': {
-      'gn_args': 'use_ozone=true ozone_platform_wayland=true ozone_platform="wayland" use_gtk=false chromeos_is_browser_only=true'
+      'gn_args': 'target_os="chromeos" use_ozone=true ozone_platform_wayland=true ozone_platform="wayland" use_gtk=false chromeos_is_browser_only=true'
     },
 
     'also_build_ash_chrome': {

@@ -449,6 +449,7 @@
       "ozone_platform": "wayland",
       "ozone_platform_wayland": true,
       "symbol_level": 1,
+      "target_os": "chromeos",
       "use_goma": true,
       "use_gtk": false,
       "use_ozone": true
