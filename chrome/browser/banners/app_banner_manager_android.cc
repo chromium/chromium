@@ -30,6 +30,7 @@
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/version_info/channel.h"
+#include "components/version_info/version_info.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/android/webapps_icon_utils.h"
@@ -381,9 +382,15 @@ InstallableStatusCode AppBannerManagerAndroid::QueryNativeApp(
   // AppBannerManager#fetchAppDetails() only works on Beta and Stable because
   // the called Google Play API uses an old way of checking whether the Chrome
   // app is first party. See http://b/147780265
+  // Run AppBannerManager#fetchAppDetails() for local builds regardless of Android channel to avoid
+  // having to set android_channel GN flag for manual testing. Do not run
+  // AppBannerManager#fetchAppDetails() for non-official local builds to ensure that tests use
+  // gIgnoreChromeChannelForTesting rather than relying on the local build exemption.
   version_info::Channel channel = chrome::GetChannel();
-  if (!gIgnoreChromeChannelForTesting &&
-      !(channel == version_info::Channel::BETA ||
+  bool local_build = channel == version_info::Channel::UNKNOWN &&
+                     version_info::IsOfficialBuild();
+  if (!(local_build || gIgnoreChromeChannelForTesting ||
+        channel == version_info::Channel::BETA ||
         channel == version_info::Channel::STABLE)) {
     return PREFER_RELATED_APPLICATIONS_SUPPORTED_ONLY_BETA_STABLE;
   }
