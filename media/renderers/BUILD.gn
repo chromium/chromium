@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/libaom/options.gni")
-
 source_set("renderers") {
   # Do not expand the visibility here without double-checking with OWNERS, this
   # is a roll-up target which is part of the //media component. Most other DEPs
@@ -50,7 +48,6 @@ source_set("renderers") {
     "//media/base",
     "//media/filters",
     "//media/video",
-    "//third_party/libaom:libaom_buildflags",
     "//third_party/libyuv",
     "//ui/gfx:geometry_skia",
     "//ui/gfx:memory_buffer",

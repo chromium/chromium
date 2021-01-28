@@ -16,7 +16,6 @@ include_rules = [
   "+skia/ext",
   "+third_party/dav1d",
   "+third_party/ffmpeg",
-  "+third_party/libaom",
   "+third_party/libgav1",
   "+third_party/libvpx",
   "+third_party/libyuv",

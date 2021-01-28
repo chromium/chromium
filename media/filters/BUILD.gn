@@ -4,7 +4,6 @@
 
 import("//media/gpu/args.gni")
 import("//media/media_options.gni")
-import("//third_party/libaom/options.gni")
 
 source_set("filters") {
   # Do not expand the visibility here without double-checking with OWNERS, this
