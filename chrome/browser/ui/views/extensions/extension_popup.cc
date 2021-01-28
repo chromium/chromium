@@ -44,7 +44,7 @@ void ExtensionPopup::ShowPopup(
 
   // Check that the preferred adjustment is set to mirror to match
   // the assumption in the logic to calculate max bounds.
-  DCHECK_EQ(popup->GetBubbleFrameView()->preferred_arrow_adjustment(),
+  DCHECK_EQ(popup->GetBubbleFrameView()->GetPreferredArrowAdjustment(),
             views::BubbleFrameView::PreferredArrowAdjustment::kMirror);
 
 #if defined(USE_AURA)
@@ -77,7 +77,7 @@ gfx::Size ExtensionPopup::CalculatePreferredSize() const {
 
 void ExtensionPopup::AddedToWidget() {
   BubbleDialogDelegateView::AddedToWidget();
-  const int radius = GetBubbleFrameView()->corner_radius();
+  const int radius = GetBubbleFrameView()->GetCornerRadius();
   const bool contents_has_rounded_corners =
       extension_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(radius));
   SetBorder(views::CreateEmptyBorder(

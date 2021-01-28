@@ -549,10 +549,10 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   thumbnail_observation_ = std::make_unique<ThumbnailObserver>(this);
 
   constexpr int kFootnoteVerticalMargin = 8;
-  GetBubbleFrameView()->set_footnote_margins(
+  GetBubbleFrameView()->SetFootnoteMargins(
       gfx::Insets(kFootnoteVerticalMargin, kHorizontalMargin,
                   kFootnoteVerticalMargin, kHorizontalMargin));
-  GetBubbleFrameView()->set_preferred_arrow_adjustment(
+  GetBubbleFrameView()->SetPreferredArrowAdjustment(
       views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
   GetBubbleFrameView()->set_hit_test_transparent(true);
 

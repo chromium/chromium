@@ -383,7 +383,7 @@ BubbleDialogDelegate::CreateNonClientFrameView(Widget* widget) {
   auto frame = std::make_unique<BubbleDialogFrameView>(title_margins_);
   LayoutProvider* provider = LayoutProvider::Get();
 
-  frame->set_footnote_margins(
+  frame->SetFootnoteMargins(
       provider->GetInsetsMetric(INSETS_DIALOG_SUBSECTION));
   frame->SetFootnoteView(DisownFootnoteView());
 

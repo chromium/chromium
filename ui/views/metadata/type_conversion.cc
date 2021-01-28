@@ -17,6 +17,8 @@
 #include "ui/base/ime/text_input_type.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/native_theme/native_theme.h"
+#include "ui/views/bubble/bubble_border.h"
+#include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace views {
@@ -507,6 +509,37 @@ DEFINE_ENUM_CONVERTERS(views::ScrollView::ScrollBarMode,
                         base::ASCIIToUTF16("kHiddenButEnabled")},
                        {views::ScrollView::ScrollBarMode::kEnabled,
                         base::ASCIIToUTF16("kEnabled")})
+
+DEFINE_ENUM_CONVERTERS(
+    views::BubbleFrameView::PreferredArrowAdjustment,
+    {views::BubbleFrameView::PreferredArrowAdjustment::kMirror,
+     base::ASCIIToUTF16("kMirror")},
+    {views::BubbleFrameView::PreferredArrowAdjustment::kOffset,
+     base::ASCIIToUTF16("kOffset")})
+
+DEFINE_ENUM_CONVERTERS(
+    views::BubbleBorder::Arrow,
+    {views::BubbleBorder::Arrow::TOP_LEFT, base::ASCIIToUTF16("TOP_LEFT")},
+    {views::BubbleBorder::Arrow::TOP_RIGHT, base::ASCIIToUTF16("TOP_RIGHT")},
+    {views::BubbleBorder::Arrow::BOTTOM_LEFT,
+     base::ASCIIToUTF16("BOTTOM_LEFT")},
+    {views::BubbleBorder::Arrow::BOTTOM_RIGHT,
+     base::ASCIIToUTF16("BOTTOM_RIGHT")},
+    {views::BubbleBorder::Arrow::LEFT_TOP, base::ASCIIToUTF16("LEFT_TOP")},
+    {views::BubbleBorder::Arrow::RIGHT_TOP, base::ASCIIToUTF16("RIGHT_TOP")},
+    {views::BubbleBorder::Arrow::LEFT_BOTTOM,
+     base::ASCIIToUTF16("LEFT_BOTTOM")},
+    {views::BubbleBorder::Arrow::RIGHT_BOTTOM,
+     base::ASCIIToUTF16("RIGHT_BOTTOM")},
+    {views::BubbleBorder::Arrow::TOP_CENTER, base::ASCIIToUTF16("TOP_CENTER")},
+    {views::BubbleBorder::Arrow::BOTTOM_CENTER,
+     base::ASCIIToUTF16("BOTTOM_CENTER")},
+    {views::BubbleBorder::Arrow::LEFT_CENTER,
+     base::ASCIIToUTF16("LEFT_CENTER")},
+    {views::BubbleBorder::Arrow::RIGHT_CENTER,
+     base::ASCIIToUTF16("RIGHT_CENTER")},
+    {views::BubbleBorder::Arrow::NONE, base::ASCIIToUTF16("NONE")},
+    {views::BubbleBorder::Arrow::FLOAT, base::ASCIIToUTF16("FLOAT")})
 
 #define OP(enum_name) \
   { ui::NativeTheme::enum_name, base::ASCIIToUTF16(#enum_name) }

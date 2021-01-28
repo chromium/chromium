@@ -79,7 +79,7 @@ void LocationBarBubbleDelegateView::ShowForReason(DisplayReason reason,
   // standards, however in this case there is no good reason not to ensure the
   // bubbles are displayed on-screen.
   set_adjust_if_offscreen(true);
-  GetBubbleFrameView()->set_preferred_arrow_adjustment(
+  GetBubbleFrameView()->SetPreferredArrowAdjustment(
       views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
 
   if (reason == USER_GESTURE) {

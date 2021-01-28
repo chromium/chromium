@@ -26,6 +26,7 @@
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/test_layout_provider.h"
 #include "ui/views/test/test_views.h"
+#include "ui/views/test/view_metadata_test_utils.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -149,7 +150,7 @@ TEST_F(BubbleFrameViewTest, GetBoundsForClientView) {
   EXPECT_EQ(kArrow, frame.GetBorderArrow());
   EXPECT_EQ(kColor, frame.GetBorderBackgroundColor());
 
-  const gfx::Insets content_margins = frame.content_margins();
+  const gfx::Insets content_margins = frame.GetContentMargins();
   const gfx::Insets insets = frame.GetBorderInsets();
   const gfx::Rect client_view_bounds = frame.GetBoundsForClientView();
   EXPECT_EQ(insets.left() + content_margins.left(), client_view_bounds.x());
@@ -163,7 +164,7 @@ TEST_F(BubbleFrameViewTest, GetBoundsForClientViewWithClose) {
   EXPECT_EQ(kArrow, frame.GetBorderArrow());
   EXPECT_EQ(kColor, frame.GetBorderBackgroundColor());
 
-  const gfx::Insets content_margins = frame.content_margins();
+  const gfx::Insets content_margins = frame.GetContentMargins();
   const gfx::Insets insets = frame.GetBorderInsets();
   const int close_margin =
       frame.GetCloseButtonForTesting()->height() +
@@ -673,7 +674,7 @@ TEST_F(BubbleFrameViewTest, MirroringNotStickyForGetUpdatedWindowBounds) {
 TEST_F(BubbleFrameViewTest, GetUpdatedWindowBoundsForBubbleSetToOffset) {
   TestBubbleFrameView frame(this);
   frame.SetAvailableAnchorWindowBounds(gfx::Rect(100, 100, 500, 500));
-  frame.set_preferred_arrow_adjustment(
+  frame.SetPreferredArrowAdjustment(
       BubbleFrameView::PreferredArrowAdjustment::kOffset);
   gfx::Rect window_bounds;
 
@@ -731,7 +732,7 @@ TEST_F(BubbleFrameViewTest,
        GetUpdatedWindowBoundsForBubbleSetToOffsetLargerThanAvailableBounds) {
   TestBubbleFrameView frame(this);
   frame.SetAvailableAnchorWindowBounds(gfx::Rect(200, 200, 500, 500));
-  frame.set_preferred_arrow_adjustment(
+  frame.SetPreferredArrowAdjustment(
       BubbleFrameView::PreferredArrowAdjustment::kOffset);
   gfx::Rect window_bounds;
 
@@ -814,7 +815,7 @@ TEST_F(BubbleFrameViewTest, GetPreferredSizeWithFootnote) {
   gfx::Size with_footnote_size = no_footnote_size;
   constexpr int kFootnoteTopBorderThickness = 1;
   with_footnote_size.Enlarge(0, kFootnoteHeight + kFootnoteTopBorderThickness +
-                                    frame.content_margins().height());
+                                    frame.GetContentMargins().height());
   EXPECT_EQ(with_footnote_size, frame.GetPreferredSize());
 
   footnote_dummy_view->SetVisible(false);
@@ -879,7 +880,7 @@ TEST_F(BubbleFrameViewTest, LayoutWithHeaderAndCloseButton) {
   const int close_margin =
       frame.GetCloseButtonForTesting()->height() +
       LayoutProvider::Get()->GetDistanceMetric(DISTANCE_CLOSE_BUTTON_MARGIN);
-  const gfx::Insets content_margins = frame.content_margins();
+  const gfx::Insets content_margins = frame.GetContentMargins();
   const gfx::Insets insets = frame.GetBorderInsets();
 
   // Header is smaller than close button + margin, expect bounds to be below the
@@ -899,6 +900,12 @@ TEST_F(BubbleFrameViewTest, LayoutWithHeaderAndCloseButton) {
   client_view_bounds = frame.GetBoundsForClientView();
   EXPECT_EQ(insets.top() + content_margins.top() + close_margin + 1,
             client_view_bounds.y());
+}
+
+TEST_F(BubbleFrameViewTest, MetadataTest) {
+  TestBubbleFrameView frame(this);
+  TestBubbleFrameView* frame_pointer = &frame;
+  test::TestViewMetadata(frame_pointer);
 }
 
 namespace {

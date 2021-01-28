@@ -32,6 +32,7 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/layout_provider.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/paint_info.h"
 #include "ui/views/resources/grit/views_resources.h"
 #include "ui/views/view_class_properties.h"
@@ -73,9 +74,6 @@ int GetOverflowLength(const gfx::Rect& available_bounds,
 constexpr int kProgressIndicatorHeight = 4;
 
 }  // namespace
-
-// static
-const char BubbleFrameView::kViewClassName[] = "BubbleFrameView";
 
 BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
                                  const gfx::Insets& content_margins)
@@ -322,8 +320,10 @@ void BubbleFrameView::SetProgress(base::Optional<double> progress) {
     progress_indicator_->SetValue(progress.value());
 }
 
-const char* BubbleFrameView::GetClassName() const {
-  return kViewClassName;
+base::Optional<double> BubbleFrameView::GetProgress() const {
+  if (progress_indicator_->GetVisible())
+    return progress_indicator_->GetValue();
+  return base::nullopt;
 }
 
 gfx::Size BubbleFrameView::CalculatePreferredSize() const {
@@ -519,6 +519,14 @@ void BubbleFrameView::SetBubbleBorder(std::unique_ptr<BubbleBorder> border) {
   // Update the background, which relies on the border.
   SetBackground(std::make_unique<views::BubbleBackground>(bubble_border_));
 }
+void BubbleFrameView::SetContentMargins(const gfx::Insets& content_margins) {
+  content_margins_ = content_margins;
+  OnPropertyChanged(&content_margins_, kPropertyEffectsPreferredSizeChanged);
+}
+
+gfx::Insets BubbleFrameView::GetContentMargins() const {
+  return content_margins_;
+}
 
 void BubbleFrameView::SetHeaderView(std::unique_ptr<View> view) {
   if (header_view_) {
@@ -556,13 +564,43 @@ View* BubbleFrameView::GetFootnoteView() const {
   return footnote_container_->children()[0];
 }
 
+void BubbleFrameView::SetFootnoteMargins(const gfx::Insets& footnote_margins) {
+  footnote_margins_ = footnote_margins;
+  OnPropertyChanged(&footnote_margins_, kPropertyEffectsLayout);
+}
+
+gfx::Insets BubbleFrameView::GetFootnoteMargins() const {
+  return footnote_margins_;
+}
+
+void BubbleFrameView::SetPreferredArrowAdjustment(
+    BubbleFrameView::PreferredArrowAdjustment adjustment) {
+  preferred_arrow_adjustment_ = adjustment;
+  // Changing |preferred_arrow_adjustment| will affect window bounds. Therefore
+  // this effect is handled during window resizing.
+  OnPropertyChanged(&preferred_arrow_adjustment_, kPropertyEffectsNone);
+}
+
+BubbleFrameView::PreferredArrowAdjustment
+BubbleFrameView::GetPreferredArrowAdjustment() const {
+  return preferred_arrow_adjustment_;
+}
+
 void BubbleFrameView::SetCornerRadius(int radius) {
   bubble_border_->SetCornerRadius(radius);
   UpdateClientLayerCornerRadius();
 }
 
+int BubbleFrameView::GetCornerRadius() const {
+  return bubble_border_ ? bubble_border_->corner_radius() : 0;
+}
+
 void BubbleFrameView::SetArrow(BubbleBorder::Arrow arrow) {
   bubble_border_->set_arrow(arrow);
+}
+
+BubbleBorder::Arrow BubbleFrameView::GetArrow() const {
+  return bubble_border_->arrow();
 }
 
 void BubbleFrameView::SetBackgroundColor(SkColor color) {
@@ -883,5 +921,16 @@ void BubbleFrameView::UpdateClientLayerCornerRadius() {
         GetClientCornerRadii());
   }
 }
+
+BEGIN_METADATA(BubbleFrameView, NonClientFrameView)
+ADD_PROPERTY_METADATA(base::Optional<double>, Progress)
+ADD_PROPERTY_METADATA(gfx::Insets, ContentMargins)
+ADD_PROPERTY_METADATA(gfx::Insets, FootnoteMargins)
+ADD_PROPERTY_METADATA(BubbleFrameView::PreferredArrowAdjustment,
+                      PreferredArrowAdjustment)
+ADD_PROPERTY_METADATA(int, CornerRadius)
+ADD_PROPERTY_METADATA(BubbleBorder::Arrow, Arrow)
+ADD_PROPERTY_METADATA(SkColor, BackgroundColor)
+END_METADATA
 
 }  // namespace views
