@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.video_tutorials.languages;
 import android.content.Context;
 import android.text.TextUtils;
 
+import org.chromium.chrome.browser.video_tutorials.FeatureType;
 import org.chromium.chrome.browser.video_tutorials.Language;
 import org.chromium.chrome.browser.video_tutorials.LanguageInfoProvider;
 import org.chromium.chrome.browser.video_tutorials.VideoTutorialService;
@@ -29,6 +30,7 @@ public class LanguagePickerMediator {
     private final PropertyModel mModel;
     private final ModelList mListModel;
     private String mSelectedLocale;
+    private @FeatureType int mFeature;
 
     /**
      * Constructor.
@@ -47,7 +49,9 @@ public class LanguagePickerMediator {
     /**
      * See {@link LanguagePickerCoordinator#showLanguagePicker(Runnable, Runnable)}.
      */
-    public void showLanguagePicker(Runnable doneCallback, Runnable closeCallback) {
+    public void showLanguagePicker(
+            @FeatureType int feature, Runnable doneCallback, Runnable closeCallback) {
+        mFeature = feature;
         mModel.set(LanguagePickerProperties.CLOSE_CALLBACK, () -> {
             mSelectedLocale = mVideoTutorialService.getPreferredLocale();
             VideoTutorialMetrics.recordLanguagePickerAction(LanguagePickerAction.CLOSE);
@@ -57,12 +61,12 @@ public class LanguagePickerMediator {
             onLanguageSelectionFinalized();
             doneCallback.run();
         });
-        populateList(mVideoTutorialService.getSupportedLanguages());
+        populateList(mVideoTutorialService.getAvailableLanguagesForTutorial(mFeature));
     }
 
     private void onLanguageSelected(String locale) {
         mSelectedLocale = locale;
-        populateList(mVideoTutorialService.getSupportedLanguages());
+        populateList(mVideoTutorialService.getAvailableLanguagesForTutorial(mFeature));
     }
 
     private void populateList(List<String> supportedLanguages) {
@@ -95,7 +99,8 @@ public class LanguagePickerMediator {
     private void onLanguageSelectionFinalized() {
         VideoTutorialMetrics.recordLanguagePickerAction(LanguagePickerAction.WATCH);
         mVideoTutorialService.setPreferredLocale(mSelectedLocale);
-        List<String> supportedLanguages = mVideoTutorialService.getSupportedLanguages();
+        List<String> supportedLanguages =
+                mVideoTutorialService.getAvailableLanguagesForTutorial(mFeature);
         for (int i = 0; i < supportedLanguages.size(); i++) {
             if (TextUtils.equals(supportedLanguages.get(i), mSelectedLocale)) {
                 VideoTutorialMetrics.recordLanguageSelected(i);

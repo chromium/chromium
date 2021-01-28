@@ -100,6 +100,12 @@ const std::vector<std::string>& TutorialManagerImpl::GetSupportedLanguages() {
   return supported_languages_;
 }
 
+const std::vector<std::string>&
+TutorialManagerImpl::GetAvailableLanguagesForTutorial(
+    FeatureType feature_type) {
+  return languages_for_tutorials_[feature_type];
+}
+
 base::Optional<std::string> TutorialManagerImpl::GetPreferredLocale() {
   if (prefs_->HasPrefPath(kPreferredLocaleKey))
     return prefs_->GetString(kPreferredLocaleKey);
@@ -126,6 +132,14 @@ void TutorialManagerImpl::OnInitialDataLoaded(
     supported_languages_.clear();
     for (auto& tutorial_group : *all_groups) {
       supported_languages_.emplace_back(tutorial_group.language);
+    }
+
+    languages_for_tutorials_.clear();
+    for (auto& tutorial_group : *all_groups) {
+      for (auto& tutorial : tutorial_group.tutorials) {
+        languages_for_tutorials_[tutorial.feature].emplace_back(
+            tutorial_group.language);
+      }
     }
   }
 

@@ -26,6 +26,8 @@ class TutorialServiceImpl : public VideoTutorialService {
   void GetTutorial(FeatureType feature_type,
                    SingleItemCallback callback) override;
   const std::vector<std::string>& GetSupportedLanguages() override;
+  const std::vector<std::string>& GetAvailableLanguagesForTutorial(
+      FeatureType feature_type) override;
   base::Optional<std::string> GetPreferredLocale() override;
   void SetPreferredLocale(const std::string& locale) override;
 

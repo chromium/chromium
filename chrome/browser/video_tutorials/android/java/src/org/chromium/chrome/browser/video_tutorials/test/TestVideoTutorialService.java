@@ -59,6 +59,11 @@ public class TestVideoTutorialService implements VideoTutorialService {
     }
 
     @Override
+    public List<String> getAvailableLanguagesForTutorial(int feature) {
+        return mLanguages;
+    }
+
+    @Override
     public String getPreferredLocale() {
         return mPreferredLocale;
     }

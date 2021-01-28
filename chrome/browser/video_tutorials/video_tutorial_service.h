@@ -35,6 +35,10 @@ class VideoTutorialService : public KeyedService,
   // Called to retrieve all the supported locales.
   virtual const std::vector<std::string>& GetSupportedLanguages() = 0;
 
+  // Returns a list of languages in which a given tutorial is available.
+  virtual const std::vector<std::string>& GetAvailableLanguagesForTutorial(
+      FeatureType feature_type) = 0;
+
   // Called to retrieve the preferred locale, if it is set by the user.
   virtual base::Optional<std::string> GetPreferredLocale() = 0;
 

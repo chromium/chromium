@@ -94,13 +94,13 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
      */
     void playVideoTutorial(Tutorial tutorial) {
         mTutorial = tutorial;
-
         boolean shouldShowLanguagePicker =
                 TextUtils.isEmpty(mVideoTutorialService.getPreferredLocale())
-                && mVideoTutorialService.getSupportedLanguages().size() > 1;
+                && areMultipleLanguagesAvailable();
         if (shouldShowLanguagePicker) {
             mModel.set(VideoPlayerProperties.SHOW_LANGUAGE_PICKER, true);
-            mLanguagePicker.showLanguagePicker(this::onLanguageSelected, mCloseCallback);
+            mLanguagePicker.showLanguagePicker(
+                    mTutorial.featureType, this::onLanguageSelected, mCloseCallback);
         } else {
             startVideo(tutorial);
         }
@@ -135,8 +135,7 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
     public void onEnded() {
         VideoTutorialMetrics.recordWatchStateUpdate(mTutorial.featureType, WatchState.COMPLETED);
         mModel.set(VideoPlayerProperties.SHOW_MEDIA_CONTROLS, true);
-        mModel.set(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE,
-                mVideoTutorialService.getSupportedLanguages().size() > 1);
+        mModel.set(VideoPlayerProperties.SHOW_CHANGE_LANGUAGE, areMultipleLanguagesAvailable());
         maybeShowWatchNextVideoButton();
         mModel.set(VideoPlayerProperties.SHOW_TRY_NOW,
                 VideoTutorialUtils.shouldShowTryNow(mTutorial.featureType));
@@ -150,7 +149,8 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
 
     private void changeLanguage() {
         mModel.set(VideoPlayerProperties.SHOW_LANGUAGE_PICKER, true);
-        mLanguagePicker.showLanguagePicker(this::onLanguageSelected, this::onLanguagePickerClosed);
+        mLanguagePicker.showLanguagePicker(
+                mTutorial.featureType, this::onLanguageSelected, this::onLanguagePickerClosed);
         VideoTutorialMetrics.recordUserAction(mTutorial.featureType, UserAction.CHANGE_LANGUAGE);
     }
 
@@ -203,5 +203,10 @@ class VideoPlayerMediator implements PlaybackStateObserver.Observer {
         }
         VideoTutorialMetrics.recordUserAction(mTutorial.featureType, UserAction.WATCH_NEXT_VIDEO);
         VideoTutorialUtils.getNextTutorial(mVideoTutorialService, mTutorial, this::startVideo);
+    }
+
+    private boolean areMultipleLanguagesAvailable() {
+        return mVideoTutorialService.getAvailableLanguagesForTutorial(mTutorial.featureType).size()
+                > 1;
     }
 }
