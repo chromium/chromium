@@ -73,7 +73,7 @@ MediaFoundationRenderer::MediaFoundationRenderer(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     bool force_dcomp_mode_for_testing)
     : muted_(muted),
-      task_runner_(task_runner),
+      task_runner_(std::move(task_runner)),
       force_dcomp_mode_for_testing_(force_dcomp_mode_for_testing) {
   DVLOG_FUNC(1);
 }

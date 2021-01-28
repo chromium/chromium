@@ -68,6 +68,13 @@ class InterfaceFactoryImpl final
           client_extension,
       mojo::PendingReceiver<mojom::Renderer> receiver) final;
 #endif  // defined(OS_ANDROID)
+#if defined(OS_WIN)
+  void CreateMediaFoundationRenderer(
+      mojo::PendingReceiver<media::mojom::Renderer> receiver,
+      mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+          renderer_extension_receiver) final;
+#endif  // defined(OS_WIN)
+
   void CreateCdm(const std::string& key_system,
                  const CdmConfig& cdm_config,
                  CreateCdmCallback callback) final;
@@ -90,6 +97,14 @@ class InterfaceFactoryImpl final
                            mojo::PendingRemote<mojom::Decryptor> decryptor,
                            const std::string& error_message);
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
+
+#if defined(OS_WIN)
+  void CreateMediaFoundationRendererOnTaskRunner(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      mojo::PendingReceiver<media::mojom::Renderer> receiver,
+      mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+          renderer_extension_receiver);
+#endif  // defined(OS_WIN)
 
   // Must be declared before the receivers below because the bound objects might
   // take a raw pointer of |cdm_service_context_| and assume it's always

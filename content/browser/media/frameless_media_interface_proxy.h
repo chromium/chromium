@@ -26,6 +26,9 @@ namespace content {
 // This implements the media::mojom::InterfaceFactory interface for a
 // RenderProcessHostImpl. It does not support creating services that require a
 // frame context (ie. CDMs and renderers).
+// It is used in cases without a frame context, e.g. WebRTC's
+// RTCVideoDecoderFactory to create hardware video decoders using
+// MojoVideoDecoder, and WebCodecs audio/video decoding in workers.
 class CONTENT_EXPORT FramelessMediaInterfaceProxy final
     : public media::mojom::InterfaceFactory {
  public:
@@ -60,6 +63,12 @@ class CONTENT_EXPORT FramelessMediaInterfaceProxy final
           client_extension,
       mojo::PendingReceiver<media::mojom::Renderer> receiver) final;
 #endif  // defined(OS_ANDROID)
+#if defined(OS_WIN)
+  void CreateMediaFoundationRenderer(
+      mojo::PendingReceiver<media::mojom::Renderer> receiver,
+      mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+          renderer_extension_receiver) final;
+#endif  // defined(OS_WIN)
   void CreateCdm(const std::string& key_system,
                  const media::CdmConfig& cdm_config,
                  CreateCdmCallback callback) final;

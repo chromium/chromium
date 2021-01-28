@@ -73,6 +73,15 @@ void FramelessMediaInterfaceProxy::CreateMediaPlayerRenderer(
         renderer_extension_receiver) {}
 #endif  // defined(OS_ANDROID)
 
+#if defined(OS_WIN)
+// Unimplemented method as this requires CDM and media::Renderer services with
+// frame context.
+void FramelessMediaInterfaceProxy::CreateMediaFoundationRenderer(
+    mojo::PendingReceiver<media::mojom::Renderer> receiver,
+    mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+        renderer_extension_receiver) {}
+#endif  // defined(OS_WIN)
+
 void FramelessMediaInterfaceProxy::CreateCdm(const std::string& key_system,
                                              const media::CdmConfig& cdm_config,
                                              CreateCdmCallback callback) {

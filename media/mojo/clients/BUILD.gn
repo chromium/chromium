@@ -88,6 +88,15 @@ source_set("clients") {
       "//ui/gl:gl",
     ]
   }
+  if (is_win) {
+    sources += [
+      # TODO(frankli): s/windows/win for consistency.
+      "windows/media_foundation_renderer_client.cc",
+      "windows/media_foundation_renderer_client.h",
+      "windows/media_foundation_renderer_client_factory.cc",
+      "windows/media_foundation_renderer_client_factory.h",
+    ]
+  }
 }
 
 source_set("unit_tests") {

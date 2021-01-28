@@ -450,6 +450,20 @@ void MediaInterfaceProxy::CreateMediaPlayerRenderer(
 }
 #endif
 
+#if defined(OS_WIN)
+void MediaInterfaceProxy::CreateMediaFoundationRenderer(
+    mojo::PendingReceiver<media::mojom::Renderer> receiver,
+    mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+        renderer_extension_receiver) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  DVLOG(1) << __func__ << ": this=" << this;
+
+  // TODO(frankli): Add code to create MediaFoundationRenderer in the "mf_cdm"
+  // sandbox process.
+  NOTIMPLEMENTED();
+}
+#endif  // defined(OS_WIN)
+
 void MediaInterfaceProxy::CreateCdm(const std::string& key_system,
                                     const media::CdmConfig& cdm_config,
                                     CreateCdmCallback callback) {

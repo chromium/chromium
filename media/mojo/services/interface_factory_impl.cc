@@ -147,6 +147,21 @@ void InterfaceFactoryImpl::CreateFlingingRenderer(
 }
 #endif  // defined(OS_ANDROID)
 
+#if defined(OS_WIN)
+void InterfaceFactoryImpl::CreateMediaFoundationRenderer(
+    mojo::PendingReceiver<media::mojom::Renderer> receiver,
+    mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+        renderer_extension_receiver) {
+  DVLOG(1) << __func__ << ": this=" << this;
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      base::ThreadTaskRunnerHandle::Get();
+  CreateMediaFoundationRendererOnTaskRunner(
+      std::move(task_runner), std::move(receiver),
+      std::move(renderer_extension_receiver));
+}
+#endif  // defined (OS_WIN)
+
 void InterfaceFactoryImpl::CreateCdm(const std::string& key_system,
                                      const CdmConfig& cdm_config,
                                      CreateCdmCallback callback) {
@@ -265,5 +280,30 @@ void InterfaceFactoryImpl::OnCdmServiceCreated(
 }
 
 #endif  // BUILDFLAG(ENABLE_MOJO_CDM)
+
+#if defined(OS_WIN)
+void InterfaceFactoryImpl::CreateMediaFoundationRendererOnTaskRunner(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    mojo::PendingReceiver<media::mojom::Renderer> receiver,
+    mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+        renderer_extension_receiver) {
+  DVLOG(1) << __func__ << ": this=" << this;
+
+  if (!task_runner->RunsTasksInCurrentSequence()) {
+    task_runner->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &InterfaceFactoryImpl::CreateMediaFoundationRendererOnTaskRunner,
+            base::Unretained(this), std::move(task_runner), std::move(receiver),
+            std::move(renderer_extension_receiver)));
+    return;
+  }
+
+  DVLOG(1) << __func__ << ": this=" << this;
+
+  // TODO(frankli): Invoke media::MojoRendererService::Create() with our
+  // specific parameters.
+}
+#endif  // defined(OS_WIN)
 
 }  // namespace media

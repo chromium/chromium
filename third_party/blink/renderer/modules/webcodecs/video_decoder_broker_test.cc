@@ -149,6 +149,13 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
                             mojo::NullRemote(), "CDM creation not supported");
   }
 
+#if defined(OS_WIN)
+  void CreateMediaFoundationRenderer(
+      mojo::PendingReceiver<media::mojom::Renderer> receiver,
+      mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+          renderer_extension_receiver) override {}
+#endif  // defined(OS_WIN)
+
  private:
   media::MojoCdmServiceContext cdm_service_context_;
   FakeMojoMediaClient mojo_media_client_;

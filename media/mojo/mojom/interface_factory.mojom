@@ -46,6 +46,14 @@ interface InterfaceFactory {
       pending_receiver<Renderer> renderer,
       pending_receiver<MediaPlayerRendererExtension> renderer_extension);
 
+  [EnableIf=is_win]
+  // Creates a MediaFoundationRenderer (MediaFoundationRendererClientFactory).
+  // - |renderer_extension| is bound in MediaFoundationRenderer, and receives
+  //   calls from MediaFoundationRendererClient.
+  CreateMediaFoundationRenderer(
+      pending_receiver<Renderer> renderer,
+      pending_receiver<MediaFoundationRendererExtension> renderer_extension);
+
   [EnableIf=is_android]
   // Creates a FlingingRenderer (FlingingRendererClientFactory).
   // The |presentation_id| is used to find an already set-up RemotePlayback
