@@ -668,7 +668,7 @@ class PolicyTemplateChecker(object):
         file_path = owner[len(FILE_PREFIX):]
         full_file_path = os.path.join(SOURCE_DIR, file_path)
         if not (os.path.exists(full_file_path)):
-          self._Error(
+          self._Warning(
               'Policy %s lists non-existant owners files, %s, as an owner. '
               'Please either add the owners file or remove it from this list.' %
               (policy.get('name'), full_file_path))
