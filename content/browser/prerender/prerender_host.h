@@ -10,6 +10,7 @@
 #include "base/optional.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/blink/public/mojom/prerender/prerender.mojom.h"
 #include "url/gurl.h"
@@ -41,7 +42,8 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
   };
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
-                const url::Origin& initiator_origin);
+                const url::Origin& initiator_origin,
+                BrowserContext& browser_context);
   ~PrerenderHost() override;
 
   PrerenderHost(const PrerenderHost&) = delete;
@@ -49,7 +51,7 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
   PrerenderHost(PrerenderHost&&) = delete;
   PrerenderHost& operator=(PrerenderHost&&) = delete;
 
-  void StartPrerendering(BrowserContext& browser_context);
+  void StartPrerendering();
 
   // WebContentsObserver implementation:
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
@@ -68,6 +70,8 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
 
   const GURL& GetInitialUrl() const;
 
+  int frame_tree_node_id() const { return frame_tree_node_id_; }
+
   bool is_ready_for_activation() const { return is_ready_for_activation_; }
 
  private:
@@ -84,6 +88,11 @@ class CONTENT_EXPORT PrerenderHost final : public WebContentsObserver {
 
   // Indicates if `prerendered_contents_` is ready for activation.
   bool is_ready_for_activation_ = false;
+
+  // The ID of the root node of the frame tree for the prerendered page `this`
+  // is hosting. Since PrerenderHost has 1:1 correspondence with FrameTree,
+  // this is also used for the ID of this PrerenderHost.
+  int frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
 
   base::Optional<FinalStatus> final_status_;
 };

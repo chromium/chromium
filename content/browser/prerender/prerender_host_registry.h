@@ -32,11 +32,12 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   PrerenderHostRegistry(PrerenderHostRegistry&&) = delete;
   PrerenderHostRegistry& operator=(PrerenderHostRegistry&&) = delete;
 
-  // Creates and starts a host and returns the id of the created host.
-  int64_t CreateAndStartHost(blink::mojom::PrerenderAttributesPtr attributes,
-                             const url::Origin& initiator_origin);
+  // Creates and starts a host. Returns the root frame tree node id of the
+  // prerendered page, which can be used as the id of the host.
+  int CreateAndStartHost(blink::mojom::PrerenderAttributesPtr attributes,
+                         const url::Origin& initiator_origin);
 
-  // Destroys the host registered for `prerender_host_id`.
+  // Destroys the host registered for `frame_tree_node_id`.
   // TODO(https://crbug.com/1169594): Distinguish two paths that cancel
   // prerendering. A prerender can be canceled due to the following reasons:
   // 1. Initiator was no longer interested. Since one prerender may have several
@@ -45,7 +46,7 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // 2. Prerendering page did something undesirable. The same behavior always
   // happens regardless of which caller calls it. So PrerenderHostRegistry
   // should destroy the PrerenderHost.
-  void AbandonHost(int64_t prerender_host_id);
+  void AbandonHost(int frame_tree_node_id);
 
   // Selects the host to activate for a navigation for the given FrameTreeNode.
   // Returns nullptr if it's not found or not ready for activation yet.
@@ -64,9 +65,9 @@ class CONTENT_EXPORT PrerenderHostRegistry {
 
   // TODO(https://crbug.com/1132746): Expire prerendered contents if they are
   // not used for a while.
-  int64_t next_prerender_host_id_{0};
-  std::map<int64_t, std::unique_ptr<PrerenderHost>> prerender_host_by_id_;
-  std::map<GURL, int64_t> prerender_host_id_by_url_;
+  std::map<int, std::unique_ptr<PrerenderHost>>
+      prerender_host_by_frame_tree_node_id_;
+  std::map<GURL, int> frame_tree_node_id_by_url_;
 };
 
 }  // namespace content

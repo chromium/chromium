@@ -73,10 +73,11 @@ TEST_F(PrerenderHostTest, Activate) {
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = kPrerenderingUrl;
   auto prerender_host = std::make_unique<PrerenderHost>(
-      std::move(attributes), initiator_rfh->GetLastCommittedOrigin());
+      std::move(attributes), initiator_rfh->GetLastCommittedOrigin(),
+      browser_context());
 
   // Start the prerendering navigation.
-  prerender_host->StartPrerendering(browser_context());
+  prerender_host->StartPrerendering();
 
   // Finish the prerendering navigation. Normally we could use
   // EmbeddedTestServer to provide a response, but this test uses
@@ -108,10 +109,11 @@ TEST_F(PrerenderHostTest, DontActivate) {
   auto attributes = blink::mojom::PrerenderAttributes::New();
   attributes->url = kPrerenderingUrl;
   auto prerender_host = std::make_unique<PrerenderHost>(
-      std::move(attributes), initiator_rfh->GetLastCommittedOrigin());
+      std::move(attributes), initiator_rfh->GetLastCommittedOrigin(),
+      browser_context());
 
   // Start the prerendering navigation, but don't activate it.
-  prerender_host->StartPrerendering(browser_context());
+  prerender_host->StartPrerendering();
   prerender_host.reset();
   ExpectFinalStatus(PrerenderHost::FinalStatus::kDestroyed);
 }

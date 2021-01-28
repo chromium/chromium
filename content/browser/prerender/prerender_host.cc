@@ -16,9 +16,17 @@
 namespace content {
 
 PrerenderHost::PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
-                             const url::Origin& initiator_origin)
+                             const url::Origin& initiator_origin,
+                             BrowserContext& browser_context)
     : attributes_(std::move(attributes)), initiator_origin_(initiator_origin) {
   DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
+  // Create a new WebContents for prerendering.
+  WebContents::CreateParams web_contents_params(&browser_context);
+  // TODO(https://crbug.com/1132746): Set up other fields of
+  // `web_contents_params` as well, and add tests for them.
+  prerendered_contents_ = WebContents::Create(web_contents_params);
+  frame_tree_node_id_ =
+      prerendered_contents_->GetMainFrame()->GetFrameTreeNodeId();
 }
 
 // TODO(https://crbug.com/1132746): Abort ongoing prerendering and notify the
@@ -31,15 +39,8 @@ PrerenderHost::~PrerenderHost() {
 // TODO(https://crbug.com/1132746): Inspect diffs from the current
 // no-state-prefetch implementation. See PrerenderContents::StartPrerendering()
 // for example.
-void PrerenderHost::StartPrerendering(BrowserContext& browser_context) {
-  TRACE_EVENT1("navigation", "PrerenderHost::StartPrerendering",
-               "browser_context", &browser_context);
-  // Create a new WebContents for prerendering.
-  WebContents::CreateParams web_contents_params(&browser_context);
-  // TODO(https://crbug.com/1132746): Set up other fields of
-  // `web_contents_params` as well, and add tests for them.
-  prerendered_contents_ = WebContents::Create(web_contents_params);
-
+void PrerenderHost::StartPrerendering() {
+  TRACE_EVENT0("navigation", "PrerenderHost::StartPrerendering");
   // Observe events about the prerendering contents.
   Observe(prerendered_contents_.get());
 
