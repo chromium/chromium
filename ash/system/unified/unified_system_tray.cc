@@ -126,7 +126,9 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
       privacy_screen_toast_controller_(
           std::make_unique<PrivacyScreenToastController>(this)),
       notification_icons_controller_(
-          std::make_unique<NotificationIconsController>(this)),
+          features::IsScalableStatusAreaEnabled()
+              ? std::make_unique<NotificationIconsController>(this)
+              : nullptr),
       current_locale_view_(new CurrentLocaleView(shelf)),
       ime_mode_view_(new ImeModeView(shelf)),
       managed_device_view_(new ManagedDeviceTrayItemView(shelf)),
@@ -143,7 +145,7 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
           ShelfConfig::Get()->status_area_hit_region_padding(),
       0);
 
-  if (features::IsScalableStatusAreaEnabled()) {
+  if (notification_icons_controller_) {
     notification_icons_controller_->AddNotificationTrayItems(tray_container());
     for (TrayItemView* tray_item : notification_icons_controller_->tray_items())
       tray_items_.push_back(tray_item);

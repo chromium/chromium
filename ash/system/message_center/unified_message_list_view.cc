@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/ash_features.h"
 #include "ash/system/message_center/message_center_style.h"
+#include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/message_center/notification_swipe_control_view.h"
 #include "ash/system/message_center/unified_message_center_view.h"
@@ -36,20 +37,6 @@ constexpr base::TimeDelta kClearAllStackedAnimationDuration =
     base::TimeDelta::FromMilliseconds(40);
 constexpr base::TimeDelta kClearAllVisibleAnimationDuration =
     base::TimeDelta::FromMilliseconds(160);
-
-// Comparator function for sorting the notifications in the order that they are
-// displayed in the UnifiedMessageListView.
-// Currently the ordering rule is very simple (subject to change):
-//     1. All pinned notifications are displayed first.
-//     2. Otherwise, display in order of most recent timestamp.
-bool CompareNotifications(message_center::Notification* n1,
-                          message_center::Notification* n2) {
-  if (n1->pinned() && !n2->pinned())
-    return true;
-  if (!n1->pinned() && n2->pinned())
-    return false;
-  return message_center::CompareTimestampSerial()(n1, n2);
-}
 
 }  // namespace
 
@@ -241,7 +228,8 @@ UnifiedMessageListView::~UnifiedMessageListView() {
 
 void UnifiedMessageListView::Init() {
   bool is_latest = true;
-  for (auto* notification : GetSortedVisibleNotifications()) {
+  for (auto* notification :
+       message_center_utils::GetSortedVisibleNotifications()) {
     auto* view =
         new MessageViewContainer(CreateMessageView(*notification), this);
     view->LoadExpandedState(model_, is_latest);
@@ -388,7 +376,8 @@ void UnifiedMessageListView::OnNotificationAdded(const std::string& id) {
     if (!child_notification)
       break;
 
-    if (!CompareNotifications(notification, child_notification)) {
+    if (!message_center_utils::CompareNotifications(notification,
+                                                    child_notification)) {
       index_to_insert = i;
       break;
     }
@@ -689,17 +678,6 @@ double UnifiedMessageListView::GetCurrentValue() const {
                                         ? gfx::Tween::EASE_IN
                                         : gfx::Tween::FAST_OUT_SLOW_IN,
                                     animation_->GetCurrentValue());
-}
-
-std::vector<message_center::Notification*>
-UnifiedMessageListView::GetSortedVisibleNotifications() const {
-  auto visible_notifications = MessageCenter::Get()->GetVisibleNotifications();
-  std::vector<Notification*> sorted_notifications;
-  std::copy(visible_notifications.begin(), visible_notifications.end(),
-            std::back_inserter(sorted_notifications));
-  std::sort(sorted_notifications.begin(), sorted_notifications.end(),
-            CompareNotifications);
-  return sorted_notifications;
 }
 
 }  // namespace ash

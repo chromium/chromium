@@ -184,11 +184,6 @@ class ASH_EXPORT UnifiedMessageListView
   // Updates the state between each Clear All animation phase.
   void UpdateClearAllAnimation();
 
-  // Returns a vector of visible notifications that is sorted in the appropriate
-  // order to be displayed. See implementation for exact sorting order.
-  std::vector<message_center::Notification*> GetSortedVisibleNotifications()
-      const;
-
   UnifiedMessageCenterView* const message_center_view_;
   UnifiedSystemTrayModel* const model_;
 
