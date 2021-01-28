@@ -5302,6 +5302,14 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_ServerPredictionIsOverride) {
     // Validate that the server prediction won for the first field.
     EXPECT_EQ(form.field(0)->Type().GetStorableType(), NAME_FIRST);
     EXPECT_EQ(form.field(1)->Type().GetStorableType(), NAME_FULL);
+
+    // Validate that the server override cannot be altered.
+    form.field(0)->SetTypeTo(AutofillType(NAME_FULL));
+    EXPECT_EQ(form.field(0)->Type().GetStorableType(), NAME_FIRST);
+
+    // Validate that that the non-override can be altered.
+    form.field(1)->SetTypeTo(AutofillType(NAME_FIRST));
+    EXPECT_EQ(form.field(1)->Type().GetStorableType(), NAME_FIRST);
   }
 }
 
