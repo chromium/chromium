@@ -5,10 +5,10 @@
 #include "chrome/browser/client_hints/client_hints_factory.h"
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "components/client_hints/browser/client_hints.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -46,7 +46,7 @@ KeyedService* ClientHintsFactory::BuildServiceInstanceFor(
   return new client_hints::ClientHints(
       context, g_browser_process->network_quality_tracker(),
       HostContentSettingsMapFactory::GetForProfile(context),
-      GetUserAgentMetadata(), local_state);
+      embedder_support::GetUserAgentMetadata(), local_state);
 }
 
 content::BrowserContext* ClientHintsFactory::GetBrowserContextToUse(

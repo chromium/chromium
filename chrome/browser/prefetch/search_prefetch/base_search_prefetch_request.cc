@@ -7,10 +7,10 @@
 #include <vector>
 
 #include "build/build_config.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/pref_names.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/net/variations_http_headers.h"
@@ -169,7 +169,7 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   // https://w3c.github.io/webappsec/specs/upgrade/#feature-detect
   resource_request->headers.SetHeader("Upgrade-Insecure-Requests", "1");
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
-                                      GetUserAgent());
+                                      embedder_support::GetUserAgent());
   resource_request->headers.SetHeader(content::kCorsExemptPurposeHeaderName,
                                       "prefetch");
   resource_request->headers.SetHeader(

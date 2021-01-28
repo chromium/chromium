@@ -13,11 +13,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_window_registry_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/content/browser/risk/fingerprint.h"
 #include "components/autofill/content/browser/risk/proto/fingerprint.pb.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
@@ -89,11 +89,12 @@ void LoadRiskData(uint64_t obfuscated_gaia_id,
       g_browser_process->metrics_service()->GetInstallDate());
 
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  risk::GetFingerprint(
-      obfuscated_gaia_id, window_bounds, web_contents,
-      version_info::GetVersionNumber(), charset, accept_languages, install_time,
-      g_browser_process->GetApplicationLocale(), GetUserAgent(),
-      base::BindOnce(PassRiskData, std::move(callback)));
+  risk::GetFingerprint(obfuscated_gaia_id, window_bounds, web_contents,
+                       version_info::GetVersionNumber(), charset,
+                       accept_languages, install_time,
+                       g_browser_process->GetApplicationLocale(),
+                       embedder_support::GetUserAgent(),
+                       base::BindOnce(PassRiskData, std::move(callback)));
 }
 
 }  // namespace risk_util

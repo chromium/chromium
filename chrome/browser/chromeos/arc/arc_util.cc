@@ -23,7 +23,6 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/chromeos/arc/policy/arc_policy_util.h"
 #include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
@@ -49,6 +48,7 @@
 #include "components/arc/arc_features.h"
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_util.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
@@ -659,7 +659,7 @@ std::unique_ptr<content::WebContents> CreateArcCustomTabWebContents(
   ua_override.ua_string_override = content::BuildUserAgentFromOSAndProduct(
       kOsOverrideForTabletSite, product);
 
-  ua_override.ua_metadata_override = ::GetUserAgentMetadata();
+  ua_override.ua_metadata_override = embedder_support::GetUserAgentMetadata();
   ua_override.ua_metadata_override->platform = "Android";
   ua_override.ua_metadata_override->platform_version = "9";
   ua_override.ua_metadata_override->model = "Chrome tablet";

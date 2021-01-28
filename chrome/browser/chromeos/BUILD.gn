@@ -259,6 +259,7 @@ source_set("chromeos") {
     "//components/download/content/public",
     "//components/drive",
     "//components/drive:drive_chromeos",
+    "//components/embedder_support:browser_util",
     "//components/enterprise",
     "//components/exo",
     "//components/favicon/core",

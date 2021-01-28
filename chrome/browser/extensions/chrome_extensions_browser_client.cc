@@ -15,7 +15,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
@@ -51,6 +50,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "components/update_client/update_client.h"
 #include "components/version_info/version_info.h"
@@ -533,7 +533,7 @@ UserScriptListener* ChromeExtensionsBrowserClient::GetUserScriptListener() {
 }
 
 std::string ChromeExtensionsBrowserClient::GetUserAgent() const {
-  return ::GetUserAgent();
+  return embedder_support::GetUserAgent();
 }
 
 bool ChromeExtensionsBrowserClient::ShouldSchemeBypassNavigationChecks(

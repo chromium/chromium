@@ -26,7 +26,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/net/profile_network_context_service.h"
 #include "chrome/browser/net/profile_network_context_service_factory.h"
@@ -41,6 +40,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
@@ -1391,7 +1391,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language));
   EXPECT_EQ(system ? kNoAcceptLanguage : "en-US,en;q=0.9", accept_language);
   ASSERT_TRUE(FetchHeaderEcho("user-agent", &user_agent));
-  EXPECT_EQ(::GetUserAgent(), user_agent);
+  EXPECT_EQ(embedder_support::GetUserAgent(), user_agent);
 
   // Change AcceptLanguages preferences, and check that headers are updated.
   // First, A single language.
@@ -1402,7 +1402,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language2));
   EXPECT_EQ(system ? kNoAcceptLanguage : "zu", accept_language2);
   ASSERT_TRUE(FetchHeaderEcho("user-agent", &user_agent2));
-  EXPECT_EQ(::GetUserAgent(), user_agent2);
+  EXPECT_EQ(embedder_support::GetUserAgent(), user_agent2);
 
   // Second, a single language with locale.
   browser()->profile()->GetPrefs()->SetString(language::prefs::kAcceptLanguages,
@@ -1412,7 +1412,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
   ASSERT_TRUE(FetchHeaderEcho("accept-language", &accept_language3));
   EXPECT_EQ(system ? kNoAcceptLanguage : "zu-ZA,zu;q=0.9", accept_language3);
   ASSERT_TRUE(FetchHeaderEcho("user-agent", &user_agent3));
-  EXPECT_EQ(::GetUserAgent(), user_agent3);
+  EXPECT_EQ(embedder_support::GetUserAgent(), user_agent3);
 
   // Third, a list with multiple languages. Incognito mode should return only
   // the first.
@@ -1430,7 +1430,7 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
               accept_language4);
   }
   ASSERT_TRUE(FetchHeaderEcho("user-agent", &user_agent4));
-  EXPECT_EQ(::GetUserAgent(), user_agent4);
+  EXPECT_EQ(embedder_support::GetUserAgent(), user_agent4);
 }
 
 // First part of testing enable referrers. Check that referrers are enabled by

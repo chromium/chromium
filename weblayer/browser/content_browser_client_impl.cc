@@ -21,6 +21,7 @@
 #include "components/blocked_content/popup_blocker.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/embedder_support/switches.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/error_page/content/browser/net_error_auto_reloader.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -92,7 +93,6 @@
 #include "weblayer/browser/signin_url_loader_throttle.h"
 #include "weblayer/browser/system_network_context_manager.h"
 #include "weblayer/browser/tab_impl.h"
-#include "weblayer/browser/user_agent.h"
 #include "weblayer/browser/web_contents_view_delegate_impl.h"
 #include "weblayer/browser/weblayer_browser_interface_binders.h"
 #include "weblayer/browser/weblayer_security_blocking_page_factory.h"
@@ -273,8 +273,6 @@ mojo::PendingRemote<prerender::mojom::PrerenderCanceler> GetPrerenderCanceler(
 
 ContentBrowserClientImpl::ContentBrowserClientImpl(MainParams* params)
     : params_(params) {
-  if (!SystemNetworkContextManager::HasInstance())
-    SystemNetworkContextManager::CreateInstance(GetUserAgent());
 }
 
 ContentBrowserClientImpl::~ContentBrowserClientImpl() = default;
@@ -329,15 +327,15 @@ void ContentBrowserClientImpl::LogWebFeatureForCurrentPage(
 }
 
 std::string ContentBrowserClientImpl::GetProduct() {
-  return weblayer::GetProduct();
+  return embedder_support::GetProduct();
 }
 
 std::string ContentBrowserClientImpl::GetUserAgent() {
-  return weblayer::GetUserAgent();
+  return embedder_support::GetUserAgent();
 }
 
 blink::UserAgentMetadata ContentBrowserClientImpl::GetUserAgentMetadata() {
-  return weblayer::GetUserAgentMetadata();
+  return embedder_support::GetUserAgentMetadata();
 }
 
 void ContentBrowserClientImpl::OverrideWebkitPrefs(
@@ -388,6 +386,9 @@ void ContentBrowserClientImpl::ConfigureNetworkContextParams(
 
 void ContentBrowserClientImpl::OnNetworkServiceCreated(
     network::mojom::NetworkService* network_service) {
+  if (!SystemNetworkContextManager::HasInstance())
+    SystemNetworkContextManager::CreateInstance(
+        embedder_support::GetUserAgent());
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
 #if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -839,6 +840,8 @@ void ContentBrowserClientImpl::CreateFeatureListAndFieldTrials() {
   local_state_ = CreateLocalState();
   feature_list_creator_ =
       std::make_unique<FeatureListCreator>(local_state_.get());
+  if (!SystemNetworkContextManager::HasInstance())
+    SystemNetworkContextManager::CreateInstance(GetUserAgent());
   feature_list_creator_->SetSystemNetworkContextManager(
       SystemNetworkContextManager::GetInstance());
   feature_list_creator_->CreateFeatureListAndFieldTrials();

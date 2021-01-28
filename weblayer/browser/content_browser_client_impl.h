@@ -24,8 +24,6 @@ class FeatureListCreator;
 class SafeBrowsingService;
 struct MainParams;
 
-blink::UserAgentMetadata GetUserAgentMetadata();
-
 class ContentBrowserClientImpl : public content::ContentBrowserClient {
  public:
   explicit ContentBrowserClientImpl(MainParams* params);

@@ -6,8 +6,8 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/download/android/download_controller_base.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
@@ -89,9 +89,9 @@ void InterceptOMADownloadNavigationThrottle::InterceptDownload() {
 
   DownloadControllerBase::Get()->CreateAndroidDownload(
       base::BindRepeating(&GetWebContents, process_id, routing_id),
-      DownloadInfo(navigation_handle()->GetURL(), original_url,
-                   content_disposition, mime_type, GetUserAgent(),
-                   // TODO(qinmin): Get the cookie from cookie store.
-                   std::string(),
-                   navigation_handle()->GetReferrer().url.spec()));
+      DownloadInfo(
+          navigation_handle()->GetURL(), original_url, content_disposition,
+          mime_type, embedder_support::GetUserAgent(),
+          // TODO(qinmin): Get the cookie from cookie store.
+          std::string(), navigation_handle()->GetReferrer().url.spec()));
 }

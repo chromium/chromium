@@ -2075,6 +2075,7 @@ static_library("browser") {
     "//components/download/database",
     "//components/download/public/background_service:public",
     "//components/embedder_support",
+    "//components/embedder_support:browser_util",
     "//components/encrypted_messages",
     "//components/enterprise",
     "//components/enterprise/common/proto:connectors_proto",

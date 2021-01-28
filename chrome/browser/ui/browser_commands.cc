@@ -22,7 +22,6 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_delegate.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
 #include "chrome/browser/favicon/favicon_utils.h"
@@ -80,6 +79,7 @@
 #include "components/bookmarks/common/bookmark_pref_names.h"
 #include "components/browsing_data/content/browsing_data_helper.h"
 #include "components/dom_distiller/core/url_utils.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
@@ -1489,7 +1489,7 @@ void SetAndroidOsForTabletSite(content::WebContents* current_tab) {
     blink::UserAgentOverride ua_override;
     ua_override.ua_string_override = content::BuildUserAgentFromOSAndProduct(
         kOsOverrideForTabletSite, product);
-    ua_override.ua_metadata_override = GetUserAgentMetadata();
+    ua_override.ua_metadata_override = embedder_support::GetUserAgentMetadata();
     ua_override.ua_metadata_override->mobile = true;
     ua_override.ua_metadata_override->platform =
         kChPlatformOverrideForTabletSite;

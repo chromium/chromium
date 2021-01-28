@@ -14,7 +14,6 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/download/download_service_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -27,6 +26,7 @@
 #include "chrome/browser/transition_manager/full_browser_transition_manager.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/feed/feed_feature_list.h"
 #include "components/image_fetcher/core/cached_image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
@@ -135,8 +135,8 @@ std::unique_ptr<KeyedService> PrefetchServiceFactory::BuildServiceInstanceFor(
 
   auto prefetch_network_request_factory =
       std::make_unique<PrefetchNetworkRequestFactoryImpl>(
-          url_loader_factory, chrome::GetChannel(), GetUserAgent(),
-          profile_key->GetPrefs());
+          url_loader_factory, chrome::GetChannel(),
+          embedder_support::GetUserAgent(), profile_key->GetPrefs());
 
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});

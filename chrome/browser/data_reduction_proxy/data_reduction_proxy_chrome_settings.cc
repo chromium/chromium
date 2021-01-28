@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/previews/previews_service.h"
@@ -40,6 +39,7 @@
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_headers.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
 #include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/previews/content/previews_ui_service.h"
@@ -233,7 +233,8 @@ void DataReductionProxyChromeSettings::InitDataReductionProxySettings(
           content::GetNetworkConnectionTracker(),
           data_use_measurement::ChromeDataUseMeasurement::GetInstance(),
           db_task_runner, commit_delay, GetClient(),
-          version_info::GetChannelString(chrome::GetChannel()), GetUserAgent());
+          version_info::GetChannelString(chrome::GetChannel()),
+          embedder_support::GetUserAgent());
   data_reduction_proxy::DataReductionProxySettings::
       InitDataReductionProxySettings(profile_prefs, std::move(service));
 

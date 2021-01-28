@@ -24,7 +24,7 @@
 #include "components/blocked_content/popup_tracker.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
-#include "components/embedder_support/android/util/user_agent_utils.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/find_in_page/find_types.h"
 #include "components/js_injection/browser/js_communication_host.h"
@@ -79,7 +79,6 @@
 #include "weblayer/browser/profile_impl.h"
 #include "weblayer/browser/subresource_filter_client_impl.h"
 #include "weblayer/browser/translate_client_impl.h"
-#include "weblayer/browser/user_agent.h"
 #include "weblayer/browser/weblayer_features.h"
 #include "weblayer/common/isolated_world_ids.h"
 #include "weblayer/public/fullscreen_delegate.h"
@@ -835,8 +834,8 @@ void TabImpl::SetDesktopUserAgentEnabled(JNIEnv* env, jboolean enable) {
 
   // Reset state that an earlier call to Navigation::SetUserAgentString()
   // could have modified.
-  embedder_support::SetDesktopUserAgentOverride(web_contents_.get(),
-                                                GetUserAgentMetadata());
+  embedder_support::SetDesktopUserAgentOverride(
+      web_contents_.get(), embedder_support::GetUserAgentMetadata());
   web_contents_->SetRendererInitiatedUserAgentOverrideOption(
       content::NavigationController::UA_OVERRIDE_INHERIT);
 

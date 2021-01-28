@@ -55,7 +55,6 @@
 #include "weblayer/browser/browser_process.h"
 #include "weblayer/browser/java/jni/ProfileImpl_jni.h"
 #include "weblayer/browser/safe_browsing/safe_browsing_service.h"
-#include "weblayer/browser/user_agent.h"
 #endif
 
 #if defined(OS_POSIX)

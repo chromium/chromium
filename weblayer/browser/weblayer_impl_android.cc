@@ -8,13 +8,13 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "components/crash/core/common/crash_key.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/page_info/android/page_info_client.h"
 #include "weblayer/browser/android/metrics/weblayer_metrics_service_client.h"
 #include "weblayer/browser/default_search_engine.h"
 #include "weblayer/browser/devtools_server_android.h"
 #include "weblayer/browser/java/jni/WebLayerImpl_jni.h"
 #include "weblayer/browser/url_bar/page_info_client_impl.h"
-#include "weblayer/browser/user_agent.h"
 #include "weblayer/common/crash_reporter/crash_keys.h"
 
 using base::android::JavaParamRef;
@@ -40,7 +40,7 @@ static void JNI_WebLayerImpl_SetIsWebViewCompatMode(JNIEnv* env,
 static base::android::ScopedJavaLocalRef<jstring>
 JNI_WebLayerImpl_GetUserAgentString(JNIEnv* env) {
   return base::android::ConvertUTF8ToJavaString(
-      base::android::AttachCurrentThread(), GetUserAgent());
+      base::android::AttachCurrentThread(), embedder_support::GetUserAgent());
 }
 
 static void JNI_WebLayerImpl_RegisterExternalExperimentIDs(

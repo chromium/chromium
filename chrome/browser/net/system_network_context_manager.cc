@@ -21,7 +21,6 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/component_updater/crl_set_component_installer.h"
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 #include "chrome/browser/component_updater/tls_deprecation_config_component_installer.h"
@@ -35,6 +34,7 @@
 #include "chrome/common/google_url_loader_throttle.h"
 #include "chrome/common/pref_names.h"
 #include "components/certificate_transparency/ct_known_logs.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/net_log/net_export_file_writer.h"
 #include "components/net_log/net_log_proxy_source.h"
 #include "components/network_session_configurator/common/network_features.h"
@@ -584,7 +584,7 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 
   network_context_params->enable_brotli = true;
 
-  network_context_params->user_agent = GetUserAgent();
+  network_context_params->user_agent = embedder_support::GetUserAgent();
 
   // Disable referrers by default. Any consumer that enables referrers should
   // respect prefs::kEnableReferrers from the appropriate pref store.

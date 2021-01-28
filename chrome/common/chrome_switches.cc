@@ -565,9 +565,6 @@ const char kTryChromeAgain[]                = "try-chrome-again";
 // apps/origins.  This should be used only for testing purpose.
 const char kUnlimitedStorage[]              = "unlimited-storage";
 
-// A string used to override the default user agent with a custom one.
-const char kUserAgent[]                     = "user-agent";
-
 // Specifies the user data directory, which is where the browser will look for
 // all of its state.
 const char kUserDataDir[]                   = "user-data-dir";

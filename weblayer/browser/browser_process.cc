@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/network_time/network_time_tracker.h"
 #include "components/prefs/pref_service.h"
 #include "components/subresource_filter/content/browser/ruleset_service.h"
@@ -16,7 +17,6 @@
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/network_quality_tracker.h"
 #include "weblayer/browser/system_network_context_manager.h"
-#include "weblayer/browser/user_agent.h"
 #include "weblayer/common/weblayer_paths.h"
 
 #if defined(OS_ANDROID)
@@ -126,7 +126,7 @@ SafeBrowsingService* BrowserProcess::GetSafeBrowsingService() {
     // Create and initialize safe_browsing_service on first get.
     // Note: Initialize() needs to happen on UI thread.
     safe_browsing_service_ =
-        std::make_unique<SafeBrowsingService>(GetUserAgent());
+        std::make_unique<SafeBrowsingService>(embedder_support::GetUserAgent());
     safe_browsing_service_->Initialize();
   }
   return safe_browsing_service_.get();

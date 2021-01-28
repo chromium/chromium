@@ -11,12 +11,12 @@
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/account_id/account_id.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -112,7 +112,7 @@ namespace reporting {
 
 base::Value GetContext(Profile* profile) {
   base::Value context(base::Value::Type::DICTIONARY);
-  context.SetStringPath("browser.userAgent", GetUserAgent());
+  context.SetStringPath("browser.userAgent", embedder_support::GetUserAgent());
 
   if (!profile)
     return context;

@@ -812,6 +812,7 @@ static_library("extensions") {
     "//components/download/public/common:public",
     "//components/drive",
     "//components/embedder_support",
+    "//components/embedder_support:browser_util",
     "//components/enterprise",
     "//components/favicon/content",
     "//components/feedback",
