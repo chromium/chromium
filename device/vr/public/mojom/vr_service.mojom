@@ -101,6 +101,16 @@ enum XREnvironmentBlendMode {
   kAdditive = 3,
 };
 
+enum XRDepthUsage {
+  kCPUOptimized = 1,
+  kGPUOptimized = 2,
+};
+
+enum XRDepthDataFormat {
+  kLuminanceAlpha = 1,
+  kFloat32 = 2,
+};
+
 // These enum names come from the WebXR spec:
 // https://immersive-web.github.io/webxr-ar-module/#enumdef-xrinteractionmode
 // The interactionMode attribute describes the best space
@@ -115,6 +125,25 @@ struct XRTrackedImage {
   skia.mojom.BitmapN32 bitmap;
   gfx.mojom.Size size_in_pixels;
   float width_in_meters;
+};
+
+// Structure used to configure depth sensing API at session creation.
+// If the device is unable to create the session given the preferences expressed
+// in the options, the session will not have depth sensing API enabled. In case
+// it was a required feature, this means that session creation will fail.
+struct XRDepthOptions {
+  // Ordered array of depth sensing usage preferences. At session creation,
+  // the device will pick the depth sensing usage value that it supports,
+  /// starting from the lowest-indexed one. `kNone` entry is not allowed to
+  // appear in this array, and the array should not be empty.
+  array<XRDepthUsage> usage_preferences;
+  // Ordered array of depth sensing data format preferences. At session
+  // creation, the device will pick the depth sensing data format value that it
+  // supports, starting from the lowest-indexed one. `kNone` entry is not
+  // allowed to appear in this array, and the array should not be empty.
+  // The data format selection happens after the device has selected depth
+  // sensing usage.
+  array<XRDepthDataFormat> data_format_preferences;
 };
 
 struct XRSessionOptions {
@@ -132,6 +161,15 @@ struct XRSessionOptions {
   array<XRSessionFeature> optional_features;
 
   array<XRTrackedImage> tracked_images;
+
+  // Must be present if either optional or required features contain
+  // depth sensing API.
+  XRDepthOptions? depth_options;
+};
+
+struct XRDepthConfig {
+  XRDepthUsage depth_usage;
+  XRDepthDataFormat depth_data_format;
 };
 
 // This structure contains a description of the device's active configuration
@@ -155,6 +193,10 @@ struct XRSessionDeviceConfig {
   // Indicates whether we should enable anti-aliasing for WebGL layers. Value
   // comes from the underlying XR runtime.
   bool enable_anti_aliasing = true;
+
+  // If the session supports depth-sensing API, the depth configuration must be
+  // non-null.
+  XRDepthConfig? depth_configuration;
 };
 
 // This structure contains all the mojo interfaces for different kinds of
@@ -609,6 +651,9 @@ struct XRDepthDataUpdated {
   gfx.mojom.Transform norm_texture_from_norm_view;
   // Size of the pixel array. Valid iff pixel_data is not null.
   gfx.mojom.Size size;
+  // Factor that needs to be applied when converting from raw values in the
+  // |pixel_data| buffer into meters.
+  float raw_value_to_meters;
 };
 
 // Depth data may be the same as the one returned in the previous frame - it is

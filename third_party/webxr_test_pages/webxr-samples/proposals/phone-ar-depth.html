@@ -128,6 +128,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         let options = {
           requiredFeatures: ['depth-sensing', 'dom-overlay'],
           domOverlay: { root: textOverlayElement },
+          depthSensing: {
+            usagePreference: ["cpu-optimized"],
+            dataFormatPreference: ["luminance-alpha"],
+          }
         };
 
         navigator.xr.requestSession('immersive-ar', options).then((session) => {
@@ -155,6 +159,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           xrRefSpace = refSpace;
           session.requestAnimationFrame(onXRFrame);
         });
+
+        if(session.depthUsage != "cpu-optimized") {
+          throw new Error("Unsupported depth API usage!");
+        }
+
+        if(session.depthDataFormat != "luminance-alpha") {
+          throw new Error("Unsupported depth data format!");
+        }
       }
 
       function onEndSession(session) {
@@ -312,7 +324,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         for(let x = 0; x < depth_width; x = x + RESOLUTION) {
           for(let y = 0; y < depth_height; y = y + RESOLUTION) {
-            const distance = depthData.getDepth(x, y);
+            const distance = depthData.getDepthInMeters(x, y);
 
             const depth_coords = vec3.fromValues(x, y, 0);
 

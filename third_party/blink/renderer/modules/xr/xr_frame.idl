@@ -27,7 +27,7 @@
   XRLightEstimate? getLightEstimate(XRLightProbe lightProbe);
 
   [RuntimeEnabled=WebXRDepth, RaisesException, MeasureAs=XRFrameGetDepthInformation]
-  XRDepthInformation getDepthInformation(XRView view);
+  XRCPUDepthInformation? getDepthInformation(XRView view);
 
   [RuntimeEnabled=WebXRImageTracking, RaisesException]
   FrozenArray<XRImageTrackingResult> getImageTrackingResults();

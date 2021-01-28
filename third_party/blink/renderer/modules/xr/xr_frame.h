@@ -21,7 +21,7 @@ namespace blink {
 
 class ExceptionState;
 class XRAnchorSet;
-class XRDepthInformation;
+class XRCPUDepthInformation;
 class XRHitTestResult;
 class XRHitTestSource;
 class XRImageTrackingResult;
@@ -53,7 +53,7 @@ class XRFrame final : public ScriptWrappable {
   XRPose* getPose(XRSpace*, XRSpace*, ExceptionState&);
   XRAnchorSet* trackedAnchors() const;
   XRLightEstimate* getLightEstimate(XRLightProbe*, ExceptionState&) const;
-  XRDepthInformation* getDepthInformation(
+  XRCPUDepthInformation* getDepthInformation(
       XRView* view,
       ExceptionState& exception_state) const;
   XRPlaneSet* detectedPlanes(ExceptionState& exception_state) const;

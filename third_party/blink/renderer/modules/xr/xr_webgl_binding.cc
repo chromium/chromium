@@ -157,6 +157,12 @@ WebGLTexture* XRWebGLBinding::getCameraImage(XRFrame* frame, XRView* view) {
   return texture;
 }
 
+XRWebGLDepthInformation* XRWebGLBinding::getDepthInformation(
+    XRView* view,
+    ExceptionState& exception_state) {
+  return nullptr;
+}
+
 void XRWebGLBinding::Trace(Visitor* visitor) const {
   visitor->Trace(session_);
   visitor->Trace(webgl_context_);

@@ -127,6 +127,10 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
         let options = {
           requiredFeatures: ['depth-sensing', 'dom-overlay'],
           domOverlay: { root: textOverlayElement },
+          depthSensing: {
+            usagePreference: ["cpu-optimized"],
+            dataFormatPreference: ["luminance-alpha"],
+          }
         };
 
         navigator.xr.requestSession('immersive-ar', options).then((session) => {
@@ -154,6 +158,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
           xrRefSpace = refSpace;
           session.requestAnimationFrame(onXRFrame);
         });
+
+        if(session.depthUsage != "cpu-optimized") {
+          throw new Error("Unsupported depth API usage!");
+        }
+
+        if(session.depthDataFormat != "luminance-alpha") {
+          throw new Error("Unsupported depth data format!");
+        }
       }
 
       function onEndSession(session) {
@@ -206,6 +218,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
             uniformLocations: {
               depthTexture: gl.getUniformLocation(shaderProgram, 'uDepthTexture'),
               uvTransform: gl.getUniformLocation(shaderProgram, 'uUvTransform'),
+              rawValueToMeters: gl.getUniformLocation(shaderProgram, 'uRawValueToMeters'),
             },
         };
 
@@ -354,6 +367,9 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
         gl.uniformMatrix4fv(programInfo.uniformLocations.uvTransform, false,
                             depthData.normTextureFromNormView.matrix);
+
+        gl.uniform1f(programInfo.uniformLocations.rawValueToMeters,
+                     depthData.rawValueToMeters);
 
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
       }

@@ -55,6 +55,8 @@ struct XRRuntimeSessionOptions {
   int32 render_frame_id;
 
   array<XRTrackedImage> tracked_images;
+
+  XRDepthOptions? depth_options;
 };
 
 // An XRRuntime may live in the browser process or a utility process.  The

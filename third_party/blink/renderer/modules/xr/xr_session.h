@@ -42,7 +42,7 @@ class V8XRFrameRequestCallback;
 class XRAnchor;
 class XRAnchorSet;
 class XRCanvasInputProvider;
-class XRDepthInformation;
+class XRCPUDepthInformation;
 class XRDepthManager;
 class XRDOMOverlayState;
 class XRHitTestOptionsInit;
@@ -149,6 +149,10 @@ class XRSession final
 
   void updateRenderState(XRRenderStateInit* render_state_init,
                          ExceptionState& exception_state);
+
+  const String& depthUsage(ExceptionState& exception_state);
+  const String& depthDataFormat(ExceptionState& exception_state);
+
   ScriptPromise requestReferenceSpace(ScriptState* script_state,
                                       const String& type,
                                       ExceptionState&);
@@ -337,7 +341,9 @@ class XRSession final
   base::Optional<TransformationMatrix> GetMojoFrom(
       device::mojom::blink::XRReferenceSpaceType space_type) const;
 
-  XRDepthInformation* GetDepthInformation(const XRFrame* xr_frame) const;
+  XRCPUDepthInformation* GetDepthInformation(
+      const XRFrame* xr_frame,
+      ExceptionState& exception_state) const;
 
   XRPlaneSet* GetDetectedPlanes() const;
 
@@ -449,6 +455,11 @@ class XRSession final
   void HandleShutdown();
 
   void ExecuteVideoFrameCallbacks(double timestamp);
+
+  // Helper, creates an instance of depth manager if depth sensing API is
+  // enabled in the session configuration.
+  XRDepthManager* CreateDepthManagerIfEnabled(
+      const device::mojom::blink::XRSessionDeviceConfig& device_config);
 
   const Member<XRSystem> xr_;
   const device::mojom::blink::XRSessionMode mode_;

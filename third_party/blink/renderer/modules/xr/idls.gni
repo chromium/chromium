@@ -8,6 +8,7 @@ modules_idl_files = [
   "xr_anchor.idl",
   "xr_anchor_set.idl",
   "xr_bounded_reference_space.idl",
+  "xr_cpu_depth_information.idl",
   "xr_depth_information.idl",
   "xr_dom_overlay_state.idl",
   "xr_frame.idl",
@@ -42,12 +43,14 @@ modules_idl_files = [
   "xr_viewer_pose.idl",
   "xr_viewport.idl",
   "xr_webgl_binding.idl",
+  "xr_webgl_depth_information.idl",
   "xr_webgl_layer.idl",
 ]
 
 modules_callback_function_idl_files = [ "xr_frame_request_callback.idl" ]
 
 modules_dictionary_idl_files = [
+  "xr_depth_state_init.idl",
   "xr_dom_overlay_init.idl",
   "xr_hit_test_options_init.idl",
   "xr_input_source_event_init.idl",

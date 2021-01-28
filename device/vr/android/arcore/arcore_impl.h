@@ -112,7 +112,8 @@ class ArCoreImpl : public ArCore {
           required_features,
       const std::unordered_set<device::mojom::XRSessionFeature>&
           optional_features,
-      const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images)
+      const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
+      base::Optional<ArCore::DepthSensingConfiguration> depth_sensing_config)
       override;
   MinMaxRange GetTargetFramerateRange() override;
   void SetDisplayGeometry(const gfx::Size& frame_size,
@@ -222,6 +223,8 @@ class ArCoreImpl : public ArCore {
   // list of images. The index values are needed for blink communication.
   std::unordered_map<int32_t, uint64_t> tracked_image_arcore_id_to_index_;
 
+  base::Optional<device::mojom::XRDepthConfig> depth_configuration_;
+
   uint64_t next_id_ = 1;
 
   std::map<HitTestSubscriptionId, HitTestSubscriptionData>
@@ -328,7 +331,17 @@ class ArCoreImpl : public ArCore {
           required_features,
       const std::unordered_set<device::mojom::XRSessionFeature>&
           optional_features,
-      const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images);
+      const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
+      const base::Optional<ArCore::DepthSensingConfiguration>&
+          depth_sensing_config);
+
+  // Configures depth sensing API - selects depth sensing usage and mode that is
+  // compatible with the device. Returns false if it was unable to pick a
+  // supported combination of mode and data format. Affects
+  // |depth_sensing_usage_| and |depth_sensing_data_format_| members.
+  bool ConfigureDepthSensing(
+      const base::Optional<ArCore::DepthSensingConfiguration>&
+          depth_sensing_config);
 
   // Must be last.
   base::WeakPtrFactory<ArCoreImpl> weak_ptr_factory_{this};

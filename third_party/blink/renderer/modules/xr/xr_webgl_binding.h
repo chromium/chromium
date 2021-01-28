@@ -19,6 +19,7 @@ class XRFrame;
 class XRLightProbe;
 class XRSession;
 class XRView;
+class XRWebGLDepthInformation;
 
 class XRWebGLBinding final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -35,6 +36,9 @@ class XRWebGLBinding final : public ScriptWrappable {
 
   WebGLTexture* getReflectionCubeMap(XRLightProbe*, ExceptionState&);
   WebGLTexture* getCameraImage(XRFrame*, XRView*);
+
+  XRWebGLDepthInformation* getDepthInformation(XRView* view,
+                                               ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
 

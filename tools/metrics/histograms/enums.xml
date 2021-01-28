@@ -31008,8 +31008,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3682" label="UndeferrableThirdPartySubresourceRequestWithCookie"/>
   <int value="3683" label="XRDepthSensing"/>
   <int value="3684" label="XRFrameGetDepthInformation"/>
-  <int value="3685" label="XRDepthInformationGetDepth"/>
-  <int value="3686" label="XRDepthInformationDataAttribute"/>
+  <int value="3685" label="XRCPUDepthInformationGetDepth"/>
+  <int value="3686" label="XRCPUDepthInformationDataAttribute"/>
   <int value="3687" label="InterestCohortAPI_interestCohort_Method"/>
   <int value="3688"
       label="OBSOLETE_AddressSpaceLocalEmbeddedInPrivateSecureContext"/>
@@ -31128,6 +31128,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3788" label="RTCPeerConnectionUsingComplexUnifiedPlan"/>
   <int value="3789" label="WindowScreenIsExtended"/>
   <int value="3790" label="WindowScreenChange"/>
+  <int value="3791" label="XRWebGLDepthInformationTextureAttribute"/>
+  <int value="3792" label="XRWebGLBindingGetDepthInformation"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

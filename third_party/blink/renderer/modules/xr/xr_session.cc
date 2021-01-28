@@ -105,6 +105,9 @@ const char kImageTrackingFeatureNotSupported[] =
 const char kEntityTypesNotSpecified[] =
     "No entityTypes specified: the array cannot be empty!";
 
+const char kDepthSensingFeatureNotSupported[] =
+    "Depth sensing feature is not supported by the session.";
+
 const double kDegToRad = M_PI / 180.0;
 
 const float kMinDefaultFramebufferScale = 0.1f;
@@ -311,6 +314,16 @@ void XRSession::MetricsReporter::ReportFeatureUsed(
   }
 }
 
+XRDepthManager* XRSession::CreateDepthManagerIfEnabled(
+    const device::mojom::blink::XRSessionDeviceConfig& device_config) {
+  if (!device_config.depth_configuration) {
+    return nullptr;
+  }
+
+  return MakeGarbageCollected<XRDepthManager>(
+      base::PassKey<XRSession>{}, this, *device_config.depth_configuration);
+}
+
 XRSession::XRSession(
     XRSystem* xr,
     mojo::PendingReceiver<device::mojom::blink::XRSessionClient>
@@ -329,10 +342,7 @@ XRSession::XRSession(
       plane_manager_(
           MakeGarbageCollected<XRPlaneManager>(base::PassKey<XRSession>{},
                                                this)),
-      depth_manager_(
-          MakeGarbageCollected<XRDepthManager>(base::PassKey<XRSession>{},
-                                               this)),
-
+      depth_manager_(CreateDepthManagerIfEnabled(*device_config)),
       input_sources_(MakeGarbageCollected<XRInputSourceArray>()),
       client_receiver_(this, xr->GetExecutionContext()),
       input_receiver_(this, xr->GetExecutionContext()),
@@ -476,6 +486,26 @@ void XRSession::updateRenderState(XRRenderStateInit* init,
   // should be requesting frames again. Kick off a new frame request in case
   // there are any pending callbacks to flush them out.
   MaybeRequestFrame();
+}
+
+const String& XRSession::depthUsage(ExceptionState& exception_state) {
+  if (!depth_manager_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kDepthSensingFeatureNotSupported);
+    return g_empty_string;
+  }
+
+  return depth_manager_->depthUsage();
+}
+
+const String& XRSession::depthDataFormat(ExceptionState& exception_state) {
+  if (!depth_manager_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kDepthSensingFeatureNotSupported);
+    return g_empty_string;
+  }
+
+  return depth_manager_->depthDataFormat();
 }
 
 void XRSession::UpdateEyeParameters(
@@ -1218,8 +1248,15 @@ void XRSession::ProcessHitTestData(
   }
 }
 
-XRDepthInformation* XRSession::GetDepthInformation(
-    const XRFrame* xr_frame) const {
+XRCPUDepthInformation* XRSession::GetDepthInformation(
+    const XRFrame* xr_frame,
+    ExceptionState& exception_state) const {
+  if (!depth_manager_) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      kDepthSensingFeatureNotSupported);
+    return nullptr;
+  }
+
   return depth_manager_->GetDepthInformation(xr_frame);
 }
 
@@ -1731,7 +1768,12 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
         frame_data->detected_planes_data.get(), timestamp);
     ProcessAnchorsData(frame_data->anchors_data.get(), timestamp);
     ProcessHitTestData(frame_data->hit_test_subscription_results.get());
-    depth_manager_->ProcessDepthInformation(std::move(frame_data->depth_data));
+
+    if (depth_manager_) {
+      depth_manager_->ProcessDepthInformation(
+          std::move(frame_data->depth_data));
+    }
+
     ProcessTrackedImagesData(frame_data->tracked_images.get());
 
     const device::mojom::blink::XRLightEstimationData* light_data =
@@ -1743,7 +1785,11 @@ void XRSession::UpdateWorldUnderstandingStateForFrame(
     plane_manager_->ProcessPlaneInformation(nullptr, timestamp);
     ProcessAnchorsData(nullptr, timestamp);
     ProcessHitTestData(nullptr);
-    depth_manager_->ProcessDepthInformation(nullptr);
+
+    if (depth_manager_) {
+      depth_manager_->ProcessDepthInformation(nullptr);
+    }
+
     ProcessTrackedImagesData(nullptr);
 
     if (world_light_probe_) {

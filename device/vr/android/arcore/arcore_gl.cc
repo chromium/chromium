@@ -82,6 +82,28 @@ gfx::Transform GetContentTransform(const gfx::RectF& bounds) {
 
 namespace device {
 
+ArCoreGlCreateSessionResult::ArCoreGlCreateSessionResult(
+    mojo::PendingRemote<mojom::XRFrameDataProvider> frame_data_provider,
+    mojom::VRDisplayInfoPtr display_info,
+    mojo::PendingRemote<mojom::XRSessionController> session_controller,
+    mojom::XRPresentationConnectionPtr presentation_connection)
+    : frame_data_provider(std::move(frame_data_provider)),
+      display_info(std::move(display_info)),
+      session_controller(std::move(session_controller)),
+      presentation_connection(std::move(presentation_connection)) {}
+ArCoreGlCreateSessionResult::~ArCoreGlCreateSessionResult() = default;
+ArCoreGlCreateSessionResult::ArCoreGlCreateSessionResult(
+    ArCoreGlCreateSessionResult&& other) = default;
+
+ArCoreGlInitializeResult::ArCoreGlInitializeResult(
+    std::unordered_set<device::mojom::XRSessionFeature> enabled_features,
+    base::Optional<device::mojom::XRDepthConfig> depth_configuration)
+    : enabled_features(enabled_features),
+      depth_configuration(depth_configuration) {}
+ArCoreGlInitializeResult::ArCoreGlInitializeResult(
+    ArCoreGlInitializeResult&& other) = default;
+ArCoreGlInitializeResult::~ArCoreGlInitializeResult() = default;
+
 ArCoreGl::ArCoreGl(std::unique_ptr<ArImageTransport> ar_image_transport)
     : gl_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       ar_image_transport_(std::move(ar_image_transport)),
@@ -117,6 +139,7 @@ void ArCoreGl::Initialize(
     const std::unordered_set<device::mojom::XRSessionFeature>&
         optional_features,
     const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
+    device::mojom::XRDepthOptionsPtr depth_options,
     ArCoreGlInitializeCallback callback) {
   DVLOG(3) << __func__;
 
@@ -142,10 +165,18 @@ void ArCoreGl::Initialize(
     return;
   }
 
+  base::Optional<ArCore::DepthSensingConfiguration> depth_sensing_config;
+  if (depth_options) {
+    depth_sensing_config = ArCore::DepthSensingConfiguration(
+        depth_options->usage_preferences,
+        depth_options->data_format_preferences);
+  }
+
   arcore_ = arcore_factory->Create();
   base::Optional<ArCore::InitializeResult> maybe_initialize_result =
       arcore_->Initialize(application_context, required_features,
-                          optional_features, tracked_images);
+                          optional_features, tracked_images,
+                          std::move(depth_sensing_config));
   if (!maybe_initialize_result) {
     DLOG(ERROR) << "ARCore failed to initialize";
     std::move(callback).Run(base::nullopt);
@@ -156,6 +187,7 @@ void ArCoreGl::Initialize(
   // behavior of local and unbounded spaces & send appropriate data back in
   // GetFrameData().
   enabled_features_ = maybe_initialize_result->enabled_features;
+  depth_configuration_ = maybe_initialize_result->depth_configuration;
 
   DVLOG(3) << "ar_image_transport_->Initialize()...";
   ar_image_transport_->Initialize(
@@ -174,7 +206,8 @@ void ArCoreGl::OnArImageTransportReady(ArCoreGlInitializeCallback callback) {
   DVLOG(3) << __func__;
   is_initialized_ = true;
   webxr_->NotifyMailboxBridgeReady();
-  std::move(callback).Run(enabled_features_);
+  std::move(callback).Run(
+      ArCoreGlInitializeResult(enabled_features_, depth_configuration_));
 }
 
 void ArCoreGl::CreateSession(mojom::VRDisplayInfoPtr display_info,
@@ -217,11 +250,12 @@ void ArCoreGl::CreateSession(mojom::VRDisplayInfoPtr display_info,
 
   display_info_ = std::move(display_info);
 
-  std::move(create_callback)
-      .Run(frame_data_receiver_.BindNewPipeAndPassRemote(),
-           display_info_->Clone(),
-           session_controller_receiver_.BindNewPipeAndPassRemote(),
-           std::move(submit_frame_sink));
+  ArCoreGlCreateSessionResult result(
+      frame_data_receiver_.BindNewPipeAndPassRemote(), display_info_->Clone(),
+      session_controller_receiver_.BindNewPipeAndPassRemote(),
+      std::move(submit_frame_sink));
+
+  std::move(create_callback).Run(std::move(result));
 
   frame_data_receiver_.set_disconnect_handler(base::BindOnce(
       &ArCoreGl::OnBindingDisconnect, weak_ptr_factory_.GetWeakPtr()));

@@ -155,7 +155,7 @@ XRLightEstimate* XRFrame::getLightEstimate(
   return light_probe->getLightEstimate();
 }
 
-XRDepthInformation* XRFrame::getDepthInformation(
+XRCPUDepthInformation* XRFrame::getDepthInformation(
     XRView* view,
     ExceptionState& exception_state) const {
   DVLOG(2) << __func__;
@@ -178,7 +178,7 @@ XRDepthInformation* XRFrame::getDepthInformation(
     return nullptr;
   }
 
-  return session_->GetDepthInformation(this);
+  return session_->GetDepthInformation(this, exception_state);
 }
 
 // Return an XRPose that has a transform of basespace_from_space, while

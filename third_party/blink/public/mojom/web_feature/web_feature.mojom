@@ -3002,8 +3002,8 @@ enum WebFeature {
   kUndeferrableThirdPartySubresourceRequestWithCookie = 3682,
   kXRDepthSensing = 3683,
   kXRFrameGetDepthInformation = 3684,
-  kXRDepthInformationGetDepth = 3685,
-  kXRDepthInformationDataAttribute = 3686,
+  kXRCPUDepthInformationGetDepth = 3685,
+  kXRCPUDepthInformationDataAttribute = 3686,
   kInterestCohortAPI_interestCohort_Method = 3687,
   kOBSOLETE_AddressSpaceLocalEmbeddedInPrivateSecureContext = 3688,
   kOBSOLETE_AddressSpaceLocalEmbeddedInPrivateNonSecureContext = 3689,
@@ -3111,6 +3111,8 @@ enum WebFeature {
   kRTCPeerConnectionUsingComplexUnifiedPlan = 3788,
   kWindowScreenIsExtended = 3789,
   kWindowScreenChange = 3790,
+  kXRWebGLDepthInformationTextureAttribute = 3791,
+  kXRWebGLBindingGetDepthInformation = 3792,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -26,11 +26,29 @@ gfx::Transform ArCore::GetCameraUvFromScreenUvTransform() const {
 }
 
 ArCore::InitializeResult::InitializeResult(
-    const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features)
-    : enabled_features(enabled_features) {}
+    const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features,
+    base::Optional<device::mojom::XRDepthConfig> depth_configuration)
+    : enabled_features(enabled_features),
+      depth_configuration(std::move(depth_configuration)) {}
 
 ArCore::InitializeResult::InitializeResult(const InitializeResult& other) =
     default;
 ArCore::InitializeResult::~InitializeResult() = default;
+
+ArCore::DepthSensingConfiguration::DepthSensingConfiguration(
+    std::vector<device::mojom::XRDepthUsage> depth_usage_preference,
+    std::vector<device::mojom::XRDepthDataFormat> depth_data_format_preference)
+    : depth_usage_preference(depth_usage_preference),
+      depth_data_format_preference(depth_data_format_preference) {}
+
+ArCore::DepthSensingConfiguration::DepthSensingConfiguration(
+    DepthSensingConfiguration&& other) = default;
+ArCore::DepthSensingConfiguration::DepthSensingConfiguration(
+    const DepthSensingConfiguration& other) = default;
+ArCore::DepthSensingConfiguration::~DepthSensingConfiguration() = default;
+ArCore::DepthSensingConfiguration& ArCore::DepthSensingConfiguration::operator=(
+    const DepthSensingConfiguration& other) = default;
+ArCore::DepthSensingConfiguration& ArCore::DepthSensingConfiguration::operator=(
+    DepthSensingConfiguration&& other) = default;
 
 }  // namespace device

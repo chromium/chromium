@@ -124,11 +124,13 @@ void ArCoreDevice::RequestSession(
   session_state_->optional_features_.insert(options->optional_features.begin(),
                                             options->optional_features.end());
 
-  bool use_dom_overlay =
+  const bool use_dom_overlay =
       base::Contains(options->required_features,
                      device::mojom::XRSessionFeature::DOM_OVERLAY) ||
       base::Contains(options->optional_features,
                      device::mojom::XRSessionFeature::DOM_OVERLAY);
+
+  session_state_->depth_options_ = std::move(options->depth_options);
 
   // mailbox_bridge_ is either supplied from the constructor, or recreated in
   // OnSessionEnded().
@@ -247,9 +249,8 @@ void ArCoreDevice::OnSessionEnded() {
 }
 
 void ArCoreDevice::CallDeferredRequestSessionCallback(
-    base::Optional<std::unordered_set<device::mojom::XRSessionFeature>>
-        enabled_features) {
-  DVLOG(1) << __func__ << " success=" << enabled_features.has_value();
+    base::Optional<ArCoreGlInitializeResult> initialize_result) {
+  DVLOG(1) << __func__ << " success=" << initialize_result.has_value();
   DCHECK(IsOnMainThread());
 
   // We might not have any pending session requests, i.e. if destroyed
@@ -260,15 +261,15 @@ void ArCoreDevice::CallDeferredRequestSessionCallback(
   mojom::XRRuntime::RequestSessionCallback deferred_callback =
       std::move(session_state_->pending_request_session_callback_);
 
-  if (!enabled_features) {
+  if (!initialize_result) {
     std::move(deferred_callback).Run(nullptr, mojo::NullRemote());
     return;
   }
 
   // Success case should only happen after GL thread is ready.
-  auto create_callback =
-      base::BindOnce(&ArCoreDevice::OnCreateSessionCallback, GetWeakPtr(),
-                     std::move(deferred_callback), *enabled_features);
+  auto create_callback = base::BindOnce(
+      &ArCoreDevice::OnCreateSessionCallback, GetWeakPtr(),
+      std::move(deferred_callback), std::move(*initialize_result));
 
   auto shutdown_callback =
       base::BindOnce(&ArCoreDevice::OnSessionEnded, GetWeakPtr());
@@ -283,24 +284,26 @@ void ArCoreDevice::CallDeferredRequestSessionCallback(
 
 void ArCoreDevice::OnCreateSessionCallback(
     mojom::XRRuntime::RequestSessionCallback deferred_callback,
-    const std::unordered_set<device::mojom::XRSessionFeature>& enabled_features,
-    mojo::PendingRemote<mojom::XRFrameDataProvider> frame_data_provider,
-    mojom::VRDisplayInfoPtr display_info,
-    mojo::PendingRemote<mojom::XRSessionController> session_controller,
-    mojom::XRPresentationConnectionPtr presentation_connection) {
+    ArCoreGlInitializeResult initialize_result,
+    ArCoreGlCreateSessionResult create_session_result) {
   DVLOG(2) << __func__;
   DCHECK(IsOnMainThread());
 
   mojom::XRSessionPtr session = mojom::XRSession::New();
-  session->data_provider = std::move(frame_data_provider);
-  session->display_info = std::move(display_info);
-  session->submit_frame_sink = std::move(presentation_connection);
-  session->enabled_features.assign(enabled_features.begin(),
-                                   enabled_features.end());
+  session->data_provider = std::move(create_session_result.frame_data_provider);
+  session->display_info = std::move(create_session_result.display_info);
+  session->submit_frame_sink =
+      std::move(create_session_result.presentation_connection);
+  session->enabled_features.assign(initialize_result.enabled_features.begin(),
+                                   initialize_result.enabled_features.end());
   session->device_config = device::mojom::XRSessionDeviceConfig::New();
   auto* config = session->device_config.get();
 
   config->supports_viewport_scaling = true;
+  config->depth_configuration =
+      initialize_result.depth_configuration
+          ? initialize_result.depth_configuration->Clone()
+          : nullptr;
 
   // ARCORE only supports immersive-ar sessions
   session->enviroment_blend_mode =
@@ -308,7 +311,8 @@ void ArCoreDevice::OnCreateSessionCallback(
   session->interaction_mode = device::mojom::XRInteractionMode::kScreenSpace;
 
   std::move(deferred_callback)
-      .Run(std::move(session), std::move(session_controller));
+      .Run(std::move(session),
+           std::move(create_session_result.session_controller));
 }
 
 void ArCoreDevice::PostTaskToGlThread(base::OnceClosure task) {
@@ -348,27 +352,39 @@ void ArCoreDevice::RequestArCoreGlInitialization(
         frame_size, rotation, session_state_->required_features_,
         session_state_->optional_features_,
         std::move(session_state_->tracked_images_),
+        std::move(session_state_->depth_options_),
         CreateMainThreadCallback(base::BindOnce(
             &ArCoreDevice::OnArCoreGlInitializationComplete, GetWeakPtr()))));
     return;
   }
 
-  OnArCoreGlInitializationComplete(session_state_->enabled_features_);
+  // Since the GL is already initialized, we already have session_state_ that we
+  // can pass along.
+  OnArCoreGlInitializationComplete(ArCoreGlInitializeResult(
+      session_state_->enabled_features_, session_state_->depth_configuration_));
 }
 
 void ArCoreDevice::OnArCoreGlInitializationComplete(
-    base::Optional<std::unordered_set<device::mojom::XRSessionFeature>>
-        enabled_features) {
+    base::Optional<ArCoreGlInitializeResult> arcore_initialization_result) {
   DVLOG(1) << __func__;
   DCHECK(IsOnMainThread());
 
-  session_state_->is_arcore_gl_initialized_ = enabled_features.has_value();
-  session_state_->enabled_features_ = enabled_features.value_or(
-      std::unordered_set<device::mojom::XRSessionFeature>{});
+  session_state_->is_arcore_gl_initialized_ =
+      arcore_initialization_result.has_value();
+
+  if (arcore_initialization_result) {
+    session_state_->enabled_features_ =
+        arcore_initialization_result->enabled_features;
+    session_state_->depth_configuration_ =
+        arcore_initialization_result->depth_configuration;
+  } else {
+    session_state_->enabled_features_ = {};
+    session_state_->depth_configuration_ = base::nullopt;
+  }
 
   // We only start GL initialization after the user has granted consent, so we
   // can now start the session.
-  CallDeferredRequestSessionCallback(enabled_features);
+  CallDeferredRequestSessionCallback(std::move(arcore_initialization_result));
 }
 
 }  // namespace device

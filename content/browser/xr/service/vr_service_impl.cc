@@ -571,6 +571,8 @@ void VRServiceImpl::DoRequestSession(SessionRequestData request) {
       }
     }
 
+    runtime_options->depth_options = std::move(request.options->depth_options);
+
     base::OnceCallback<void(device::mojom::XRSessionPtr)> immersive_callback =
         base::BindOnce(&VRServiceImpl::OnImmersiveSessionCreated,
                        weak_ptr_factory_.GetWeakPtr(), std::move(request));

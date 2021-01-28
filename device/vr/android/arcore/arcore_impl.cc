@@ -352,7 +352,8 @@ base::Optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
         required_features,
     const std::unordered_set<device::mojom::XRSessionFeature>&
         optional_features,
-    const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images) {
+    const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
+    base::Optional<ArCore::DepthSensingConfiguration> depth_sensing_config) {
   DCHECK(IsOnGlThread());
   DCHECK(!arcore_session_.is_valid());
 
@@ -383,8 +384,9 @@ base::Optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
   DVLOG(1) << __func__ << ": ARCore incognito mode enabled";
 
   base::Optional<std::unordered_set<device::mojom::XRSessionFeature>>
-      maybe_enabled_features = ConfigureFeatures(
-          session.get(), required_features, optional_features, tracked_images);
+      maybe_enabled_features =
+          ConfigureFeatures(session.get(), required_features, optional_features,
+                            tracked_images, depth_sensing_config);
 
   if (!maybe_enabled_features) {
     DLOG(ERROR) << "Failed to configure session features";
@@ -422,7 +424,9 @@ base::Optional<ArCore::InitializeResult> ArCoreImpl::Initialize(
       base::PassKey<ArCoreImpl>(), arcore_session_.get());
   plane_manager_ = std::make_unique<ArCorePlaneManager>(
       base::PassKey<ArCoreImpl>(), arcore_session_.get());
-  return ArCore::InitializeResult(*maybe_enabled_features);
+
+  return ArCore::InitializeResult(*maybe_enabled_features,
+                                  depth_configuration_);
 }
 
 base::Optional<std::unordered_set<device::mojom::XRSessionFeature>>
@@ -432,7 +436,9 @@ ArCoreImpl::ConfigureFeatures(
         required_features,
     const std::unordered_set<device::mojom::XRSessionFeature>&
         optional_features,
-    const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images) {
+    const std::vector<device::mojom::XRTrackedImagePtr>& tracked_images,
+    const base::Optional<ArCore::DepthSensingConfiguration>&
+        depth_sensing_config) {
   // Let's assume we will be able to configure a session with all features -
   // this will be adjusted if it turns out we can only create a session w/o some
   // optional features. Currently, only depth sensing is not supported across
@@ -505,15 +511,25 @@ ArCoreImpl::ConfigureFeatures(
                      device::mojom::XRSessionFeature::DEPTH) ||
       depth_api_optional;
 
-  if (depth_api_requested) {
+  const bool depth_api_configuration_successful =
+      depth_api_requested && ConfigureDepthSensing(depth_sensing_config);
+
+  if (depth_api_configuration_successful) {
+    // Don't try to set the depth mode if we know we won't be able to support
+    // the desired usage and data format.
     ArConfig_setDepthMode(ar_session, arcore_config.get(),
                           AR_DEPTH_MODE_AUTOMATIC);
   }
 
   ArStatus status = ArSession_configure(ar_session, arcore_config.get());
-  if (status != AR_SUCCESS && depth_api_optional) {
-    // Depth API is not available on some ARCore-capable devices - if it was
+  if (status != AR_SUCCESS && depth_api_configuration_successful &&
+      depth_api_optional) {
+    // Configuring an ARCore session failed for some reason.
+    // Depth API may not be available on some ARCore-capable devices - if it was
     // requested optionally, let's try to request the session w/o it.
+    // Currently, Depth API is the only feature that is not supported across the
+    // board, so we assume that it is the reason why the session creation
+    // failed.
 
     DLOG(WARNING) << __func__
                   << ": Depth API was optionally requested and the session "
@@ -533,6 +549,30 @@ ArCoreImpl::ConfigureFeatures(
   }
 
   return enabled_features;
+}
+
+bool ArCoreImpl::ConfigureDepthSensing(
+    const base::Optional<ArCore::DepthSensingConfiguration>&
+        depth_sensing_config) {
+  if (!depth_sensing_config) {
+    return false;
+  }
+
+  if (!base::Contains(depth_sensing_config->depth_usage_preference,
+                      device::mojom::XRDepthUsage::kCPUOptimized)) {
+    return false;
+  }
+
+  if (!base::Contains(depth_sensing_config->depth_data_format_preference,
+                      device::mojom::XRDepthDataFormat::kLuminanceAlpha)) {
+    return false;
+  }
+
+  depth_configuration_ = device::mojom::XRDepthConfig(
+      device::mojom::XRDepthUsage::kCPUOptimized,
+      device::mojom::XRDepthDataFormat::kLuminanceAlpha);
+
+  return true;
 }
 
 bool ArCoreImpl::ConfigureCamera(ArSession* ar_session) {
@@ -1819,6 +1859,8 @@ mojom::XRDepthDataPtr ArCoreImpl::GetDepthData() {
     // Transform needed to consume the data:
     result->norm_texture_from_norm_view = GetCameraUvFromScreenUvTransform();
     result->size = gfx::Size(width, height);
+    result->raw_value_to_meters =
+        1.0 / 1000.0;  // DepthInMillimeters * 1/1000 = DepthInMeters
 
     DVLOG(3) << __func__ << ": norm_texture_from_norm_view=\n"
              << result->norm_texture_from_norm_view.ToString();

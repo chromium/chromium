@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
@@ -29,6 +30,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
+#include "third_party/blink/renderer/modules/xr/xr_depth_state_init.h"
 #include "third_party/blink/renderer/modules/xr/xr_frame_provider.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_session_viewport_scaler.h"
@@ -68,6 +70,10 @@ const char kImmersiveArModeNotValid[] =
 
 const char kTrackedImageWidthInvalid[] =
     "trackedImages[%d].widthInMeters invalid, must be a positive number.";
+
+const char kDepthSensingConfigurationNotSupported[] =
+    "The provided preferences depth sensing usage and format are not "
+    "supported, unable to create the session.";
 
 constexpr device::mojom::XRSessionFeature kDefaultImmersiveVrFeatures[] = {
     device::mojom::XRSessionFeature::REF_SPACE_VIEWER,
@@ -111,6 +117,48 @@ const char* SessionModeToString(device::mojom::blink::XRSessionMode mode) {
 
   NOTREACHED();
   return "";
+}
+
+device::mojom::XRDepthUsage ParseDepthUsage(const String& usage) {
+  if (usage == "cpu-optimized") {
+    return device::mojom::XRDepthUsage::kCPUOptimized;
+  } else if (usage == "gpu-optimized") {
+    return device::mojom::XRDepthUsage::kGPUOptimized;
+  }
+
+  NOTREACHED() << "Only strings in the enum are allowed by IDL";
+  return device::mojom::XRDepthUsage::kCPUOptimized;
+}
+
+Vector<device::mojom::XRDepthUsage> ParseDepthUsages(
+    const Vector<String>& usages) {
+  Vector<device::mojom::XRDepthUsage> result;
+
+  std::transform(usages.begin(), usages.end(), std::back_inserter(result),
+                 ParseDepthUsage);
+
+  return result;
+}
+
+device::mojom::XRDepthDataFormat ParseDepthFormat(const String& format) {
+  if (format == "luminance-alpha") {
+    return device::mojom::XRDepthDataFormat::kLuminanceAlpha;
+  } else if (format == "float32") {
+    return device::mojom::XRDepthDataFormat::kFloat32;
+  }
+
+  NOTREACHED() << "Only strings in the enum are allowed by IDL";
+  return device::mojom::XRDepthDataFormat::kLuminanceAlpha;
+}
+
+Vector<device::mojom::XRDepthDataFormat> ParseDepthFormats(
+    const Vector<String>& formats) {
+  Vector<device::mojom::XRDepthDataFormat> result;
+
+  std::transform(formats.begin(), formats.end(), std::back_inserter(result),
+                 ParseDepthFormat);
+
+  return result;
 }
 
 // Converts the given string to an XRSessionFeature. If the string is
@@ -202,9 +250,17 @@ bool IsFeatureValidForMode(device::mojom::XRSessionFeature feature,
     case device::mojom::XRSessionFeature::LIGHT_ESTIMATION:
     case device::mojom::XRSessionFeature::CAMERA_ACCESS:
     case device::mojom::XRSessionFeature::PLANE_DETECTION:
+      // Fallthrough - light estimation, camera access, and plane detection are
+      // all valid only for immersive AR mode for now.
+      return mode == device::mojom::blink::XRSessionMode::kImmersiveAr;
     case device::mojom::XRSessionFeature::DEPTH:
-      // Fallthrough - light estimation, camera access, plane detection and
-      // depth APIs are all valid only for immersive AR mode for now.
+      if (!session_init->hasDepthSensing()) {
+        execution_context->AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::blink::ConsoleMessageSource::kJavaScript, error_level,
+                "Must provide a depthSensing dictionary in XRSessionInit"));
+        return false;
+      }
       return mode == device::mojom::blink::XRSessionMode::kImmersiveAr;
   }
 }
@@ -800,6 +856,15 @@ device::mojom::blink::XRSessionOptionsPtr XRSystem::XRSessionOptionsFromQuery(
         device::mojom::blink::XRTrackedImage::New();
     *session_options->tracked_images[i] = query.TrackedImages()[i];
   }
+
+  if (query.HasFeature(device::mojom::XRSessionFeature::DEPTH)) {
+    session_options->depth_options =
+        device::mojom::blink::XRDepthOptions::New();
+    session_options->depth_options->usage_preferences = query.PreferredUsage();
+    session_options->depth_options->data_format_preferences =
+        query.PreferredFormat();
+  }
+
   return session_options;
 }
 
@@ -1367,6 +1432,36 @@ ScriptPromise XRSystem::requestSession(ScriptState* script_state,
       ++index;
     }
     query->SetTrackedImages(images);
+  }
+
+  if (query->HasFeature(device::mojom::XRSessionFeature::DEPTH)) {
+    // Prerequisites were checked by IsFeatureValidForMode and IDL.
+    DCHECK(session_init);
+    DCHECK(session_init->hasDepthSensing());
+    DCHECK(session_init->depthSensing()->hasUsagePreference())
+        << "required in IDL";
+    DCHECK(session_init->depthSensing()->hasDataFormatPreference())
+        << "required in IDL";
+
+    Vector<device::mojom::XRDepthUsage> preferred_usage =
+        ParseDepthUsages(session_init->depthSensing()->usagePreference());
+    Vector<device::mojom::XRDepthDataFormat> preferred_format =
+        ParseDepthFormats(session_init->depthSensing()->dataFormatPreference());
+
+    // If the depth API is required and either preferred usages or preferred
+    // formats are empty, we already know that the session creation will fail
+    // (as we won't be able to pick a supported usage & format combination), so
+    // let's fail it already:
+    if (query->RequiredFeatures().Contains(
+            device::mojom::XRSessionFeature::DEPTH) &&
+        (preferred_usage.IsEmpty() || preferred_format.IsEmpty())) {
+      query->RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
+                                    kDepthSensingConfigurationNotSupported,
+                                    &exception_state);
+      return promise;
+    }
+
+    query->SetDepthSensingConfiguration(preferred_usage, preferred_format);
   }
 
   // The various session request methods may have other checks that would reject

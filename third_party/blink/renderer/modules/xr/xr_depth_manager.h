@@ -12,7 +12,7 @@
 
 namespace blink {
 
-class XRDepthInformation;
+class XRCPUDepthInformation;
 class XRFrame;
 class XRSession;
 
@@ -20,18 +20,29 @@ class XRSession;
 // out of XRSession.
 class XRDepthManager : public GarbageCollected<XRDepthManager> {
  public:
-  explicit XRDepthManager(base::PassKey<XRSession> pass_key,
-                          XRSession* session);
+  explicit XRDepthManager(
+      base::PassKey<XRSession> pass_key,
+      XRSession* session,
+      const device::mojom::blink::XRDepthConfig& device_configuration);
   virtual ~XRDepthManager();
 
   void ProcessDepthInformation(device::mojom::blink::XRDepthDataPtr depth_data);
 
-  XRDepthInformation* GetDepthInformation(const XRFrame* xr_frame);
+  const String& depthUsage() const { return usage_str_; }
+  const String& depthDataFormat() const { return data_format_str_; }
+
+  XRCPUDepthInformation* GetDepthInformation(const XRFrame* xr_frame);
 
   void Trace(Visitor* visitor) const;
 
  private:
   Member<XRSession> session_;
+
+  const device::mojom::XRDepthUsage usage_;
+  const device::mojom::XRDepthDataFormat data_format_;
+
+  const String usage_str_;
+  const String data_format_str_;
 
   // Current depth data buffer.
   device::mojom::blink::XRDepthDataUpdatedPtr depth_data_;

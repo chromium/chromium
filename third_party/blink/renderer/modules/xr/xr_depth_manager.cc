@@ -5,14 +5,45 @@
 #include "third_party/blink/renderer/modules/xr/xr_depth_manager.h"
 
 #include "base/trace_event/trace_event.h"
-#include "third_party/blink/renderer/modules/xr/xr_depth_information.h"
+#include "third_party/blink/renderer/modules/xr/xr_cpu_depth_information.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
+
+namespace {
+
+String UsageToString(device::mojom::XRDepthUsage usage) {
+  switch (usage) {
+    case device::mojom::XRDepthUsage::kCPUOptimized:
+      return "cpu-optimized";
+    case device::mojom::XRDepthUsage::kGPUOptimized:
+      return "gpu-optimized";
+  }
+}
+
+String DataFormatToString(device::mojom::XRDepthDataFormat data_format) {
+  switch (data_format) {
+    case device::mojom::XRDepthDataFormat::kLuminanceAlpha:
+      return "luminance-alpha";
+    case device::mojom::XRDepthDataFormat::kFloat32:
+      return "float32";
+  }
+}
+
+}  // namespace
 
 namespace blink {
 
-XRDepthManager::XRDepthManager(base::PassKey<XRSession> pass_key,
-                               XRSession* session)
-    : session_(session) {}
+XRDepthManager::XRDepthManager(
+    base::PassKey<XRSession> pass_key,
+    XRSession* session,
+    const device::mojom::blink::XRDepthConfig& depth_configuration)
+    : session_(session),
+      usage_(depth_configuration.depth_usage),
+      data_format_(depth_configuration.depth_data_format),
+      usage_str_(UsageToString(usage_)),
+      data_format_str_(DataFormatToString(data_format_)) {
+  DVLOG(3) << __func__ << ": usage_=" << usage_
+           << ", data_format_=" << data_format_;
+}
 
 XRDepthManager::~XRDepthManager() = default;
 
@@ -45,7 +76,7 @@ void XRDepthManager::ProcessDepthInformation(
   }
 }
 
-XRDepthInformation* XRDepthManager::GetDepthInformation(
+XRCPUDepthInformation* XRDepthManager::GetDepthInformation(
     const XRFrame* xr_frame) {
   if (!depth_data_) {
     return nullptr;
@@ -53,9 +84,9 @@ XRDepthInformation* XRDepthManager::GetDepthInformation(
 
   EnsureData();
 
-  return MakeGarbageCollected<XRDepthInformation>(
+  return MakeGarbageCollected<XRCPUDepthInformation>(
       xr_frame, depth_data_->size, depth_data_->norm_texture_from_norm_view,
-      data_);
+      depth_data_->raw_value_to_meters, data_);
 }
 
 void XRDepthManager::EnsureData() {

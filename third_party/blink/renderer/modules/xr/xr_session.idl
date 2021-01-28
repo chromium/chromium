@@ -81,4 +81,9 @@ enum XRReflectionFormat {
 
   [RuntimeEnabled=WebXRImageTracking, CallWith=ScriptState, RaisesException]
   Promise<FrozenArray<XRImageTrackingScore>> getTrackedImageScores();
+
+  [RuntimeEnabled=WebXRDepth, RaisesException]
+  readonly attribute XRDepthUsage? depthUsage;
+  [RuntimeEnabled=WebXRDepth, RaisesException]
+  readonly attribute XRDepthDataFormat? depthDataFormat;
 };
