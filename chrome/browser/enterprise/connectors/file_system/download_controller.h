@@ -50,6 +50,7 @@ class FileSystemDownloadController {
                                       int response_code,
                                       const std::string& folder_id);
   std::unique_ptr<OAuth2ApiCallFlow> CreateUploadApiCall();
+  void OnWholeFileUploadResponse(bool success, int response_code);
 
   // Callback when API call gives Authenetication Error.
   base::RepeatingCallback<void(void)> authentication_retry_callback_;
@@ -68,6 +69,9 @@ class FileSystemDownloadController {
   // Folder id used to specify the destination folder to the Service Provider in
   // the cloud.
   std::string folder_id_;
+  const base::FilePath local_file_path_;
+  const base::FilePath target_file_name_;
+  const size_t file_size_;
 
   base::WeakPtrFactory<FileSystemDownloadController> weak_factory_{this};
 };

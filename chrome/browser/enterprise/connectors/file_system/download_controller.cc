@@ -11,7 +11,10 @@
 namespace enterprise_connectors {
 
 FileSystemDownloadController::FileSystemDownloadController(
-    download::DownloadItem* download_item) {}
+    download::DownloadItem* download_item)
+    : local_file_path_(download_item->GetFullPath()),
+      target_file_name_(download_item->GetTargetFilePath().BaseName()),
+      file_size_(download_item->GetTotalBytes()) {}
 
 FileSystemDownloadController::~FileSystemDownloadController() = default;
 
@@ -41,7 +44,6 @@ void FileSystemDownloadController::TryCurrentApiCall() {
     // Terminate for now until the whole workflow is implemented.
     // Callback with false so that temporary file gets handled?
     // Remember to report via callback(true) when upload is done in:
-    // TODO(https://crbug.com/1157635) OnWholeFileUploadResponse(), and
     // TODO(https://crbug.com/1157636) OnCommitUploadSessionResponse().
     std::move(download_callback_).Run(false);
   } else {
@@ -116,10 +118,28 @@ void FileSystemDownloadController::OnCreateUpstreamFolderResponse(
 
 std::unique_ptr<OAuth2ApiCallFlow>
 FileSystemDownloadController::CreateUploadApiCall() {
-  // TODO(https://crbug.com/1157635, https://crbug.com/1157636) check file size:
-  // if big, start an upload session to the chunked file upload endpoint; else,
-  // do a whole file upload.
-  return nullptr;
+  if (file_size_ > BoxApiCallFlow::kChunkFileUploadMinSize) {
+    return nullptr;
+    // TODO(https://crbug.com/1157636) Start an upload session to the chunked
+    // file upload endpoint instead.
+  } else {
+    return std::make_unique<BoxWholeFileUploadApiCallFlow>(
+        base::BindOnce(&FileSystemDownloadController::OnWholeFileUploadResponse,
+                       weak_factory_.GetWeakPtr()),
+        folder_id_, target_file_name_, local_file_path_);
+  }
+}
+
+void FileSystemDownloadController::OnWholeFileUploadResponse(
+    bool success,
+    int response_code) {
+  if (!EnsureSuccessResponse(success, response_code)) {
+    current_api_call_ = CreateUploadApiCall();
+    return;
+  }
+
+  // Report upload success back to the download thread.
+  std::move(download_callback_).Run(success);
 }
 
 }  // namespace enterprise_connectors
