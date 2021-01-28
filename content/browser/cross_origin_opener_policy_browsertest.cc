@@ -89,7 +89,6 @@ class CrossOriginOpenerPolicyBrowserTest
     feature_list_.InitWithFeatures(
         {network::features::kCrossOriginOpenerPolicy,
          network::features::kCrossOriginOpenerPolicyReporting,
-         network::features::kCrossOriginEmbedderPolicy,
          network::features::kCrossOriginIsolated},
         {});
 
@@ -2444,7 +2443,6 @@ class CoopReportingOriginTrialBrowserTest : public ContentBrowserTest {
         {
             // Enabled
             network::features::kCrossOriginOpenerPolicy,
-            network::features::kCrossOriginEmbedderPolicy,
             network::features::kCrossOriginOpenerPolicyAccessReporting,
             network::features::kCrossOriginOpenerPolicyReportingOriginTrial,
         },

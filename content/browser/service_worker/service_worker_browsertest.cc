@@ -340,10 +340,8 @@ class ServiceWorkerBrowserTest : public ContentBrowserTest {
   using self = ServiceWorkerBrowserTest;
 
   ServiceWorkerBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {network::features::kCrossOriginEmbedderPolicy,
-         network::features::kCrossOriginIsolated},
-        {});
+    feature_list_.InitWithFeatures({network::features::kCrossOriginIsolated},
+                                   {});
   }
 
   void SetUpOnMainThread() override {

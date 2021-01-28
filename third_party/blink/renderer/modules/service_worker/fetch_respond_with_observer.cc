@@ -7,12 +7,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
@@ -295,28 +293,24 @@ void FetchRespondWithObserver::OnResponseFulfilled(
 
   // If Cross-Origin-Embedder-Policy is set to require-corp,
   // Cross-Origin-Resource-Policy verification should happen before passing the
-  // response to the client.
-  if (base::FeatureList::IsEnabled(
-          network::features::kCrossOriginEmbedderPolicy)) {
-    // The service worker script must be in the same origin with the requestor,
-    // which is a client of the service worker.
-    //
-    // Here is in the renderer and we don't have a "trustworthy" initiator.
-    // Hence we provide |initiator_origin| as |request_initiator_origin_lock|.
-    auto initiator_origin =
-        url::Origin::Create(GURL(service_worker_global_scope->Url()));
-    // |corp_checker_| could be nullptr when the request is for a main resource
-    // or the connection to the client which initiated the request is broken.
-    // CORP check isn't needed in both cases because a service worker should be
-    // in the same origin with the main resource, and the response to the broken
-    // connection won't reach to the client.
-    if (corp_checker_ &&
-        corp_checker_->IsBlocked(
-            url::Origin::Create(GURL(service_worker_global_scope->Url())),
-            request_mode_, request_destination_, *response)) {
-      OnResponseRejected(ServiceWorkerResponseError::kDisallowedByCorp);
-      return;
-    }
+  // response to the client. The service worker script must be in the same
+  // origin with the requestor, which is a client of the service worker.
+  //
+  // Here is in the renderer and we don't have a "trustworthy" initiator.
+  // Hence we provide |initiator_origin| as |request_initiator_origin_lock|.
+  auto initiator_origin =
+      url::Origin::Create(GURL(service_worker_global_scope->Url()));
+  // |corp_checker_| could be nullptr when the request is for a main resource
+  // or the connection to the client which initiated the request is broken.
+  // CORP check isn't needed in both cases because a service worker should be
+  // in the same origin with the main resource, and the response to the broken
+  // connection won't reach to the client.
+  if (corp_checker_ &&
+      corp_checker_->IsBlocked(
+          url::Origin::Create(GURL(service_worker_global_scope->Url())),
+          request_mode_, request_destination_, *response)) {
+    OnResponseRejected(ServiceWorkerResponseError::kDisallowedByCorp);
+    return;
   }
 
   BodyStreamBuffer* buffer = response->InternalBodyBuffer();

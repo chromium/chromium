@@ -10,7 +10,6 @@
 #include "base/strings/string_piece.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
-#include "services/network/public/cpp/features.h"
 
 namespace network {
 
@@ -45,9 +44,6 @@ Parse(base::StringPiece header_value) {
 CrossOriginEmbedderPolicy ParseCrossOriginEmbedderPolicy(
     const net::HttpResponseHeaders& headers) {
   CrossOriginEmbedderPolicy coep;
-  if (!base::FeatureList::IsEnabled(features::kCrossOriginEmbedderPolicy))
-    return coep;
-
   std::string header_value;
   if (headers.GetNormalizedHeader(kHeaderName, &header_value)) {
     std::tie(coep.value, coep.reporting_endpoint) = Parse(header_value);

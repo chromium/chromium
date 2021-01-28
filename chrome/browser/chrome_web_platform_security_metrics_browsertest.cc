@@ -30,7 +30,6 @@ class ChromeWebPlatformSecurityMetricsBrowserTest
         {
             // Enabled:
             network::features::kCrossOriginOpenerPolicy,
-            network::features::kCrossOriginEmbedderPolicy,
             network::features::kCrossOriginOpenerPolicyReporting,
         },
         {});

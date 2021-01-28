@@ -97,14 +97,6 @@ const base::Feature kCrossOriginOpenerPolicyAccessReporting{
 const base::Feature kCrossOriginOpenerPolicyByDefault{
     "CrossOriginOpenerPolicyByDefault", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables Cross-Origin Embedder Policy (COEP).
-// https://html.spec.whatwg.org/#coep
-// Currently this feature is enabled for all platforms (including webview).
-// TODO(https://crbug.com/1140432): Remove this flag after M88 Stable + 1 week =
-// 2021-02-01.
-const base::Feature kCrossOriginEmbedderPolicy{
-    "CrossOriginEmbedderPolicy", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables the most recent developments on the crossOriginIsolated property.
 // https://developer.mozilla.org/en-US/docs/Web/API/WindowOrWorkerGlobalScope/crossOriginIsolated
 const base::Feature kCrossOriginIsolated{"CrossOriginIsolated",

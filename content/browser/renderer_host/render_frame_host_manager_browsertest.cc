@@ -6711,10 +6711,11 @@ class ProactivelySwapBrowsingInstancesSameSiteCoopTest
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     std::vector<base::Feature> features;
     feature_list_.InitWithFeatures(
-        {network::features::kCrossOriginOpenerPolicy,
-         network::features::kCrossOriginOpenerPolicyReporting,
-         network::features::kCrossOriginEmbedderPolicy,
-         network::features::kCrossOriginIsolated},
+        {
+            network::features::kCrossOriginOpenerPolicy,
+            network::features::kCrossOriginOpenerPolicyReporting,
+            network::features::kCrossOriginIsolated,
+        },
         {});
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kIgnoreCertificateErrors);

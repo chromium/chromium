@@ -6,12 +6,10 @@
 
 #include <string>
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/initiator_lock_compatibility.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom.h"
@@ -74,10 +72,8 @@ CrossOriginResourcePolicy::ParsedHeader ParseHeaderByString(
   if (header_value == "same-site")
     return CrossOriginResourcePolicy::kSameSite;
 
-  if (base::FeatureList::IsEnabled(features::kCrossOriginEmbedderPolicy) &&
-      header_value == "cross-origin") {
+  if (header_value == "cross-origin")
     return CrossOriginResourcePolicy::kCrossOrigin;
-  }
 
   // TODO(lukasza): Once https://github.com/whatwg/fetch/issues/760 gets
   // resolved, add support for parsing specific origins.
@@ -162,7 +158,6 @@ base::Optional<mojom::BlockedByResponseReason> IsBlockedInternal(
   if ((policy == CrossOriginResourcePolicy::kNoHeader ||
        policy == CrossOriginResourcePolicy::kParsingError) &&
       embedder_policy == mojom::CrossOriginEmbedderPolicyValue::kRequireCorp) {
-    DCHECK(base::FeatureList::IsEnabled(features::kCrossOriginEmbedderPolicy));
     policy = CrossOriginResourcePolicy::kSameOrigin;
     upgrade_to_same_origin = true;
   }

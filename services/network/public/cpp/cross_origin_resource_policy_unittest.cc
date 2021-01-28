@@ -6,11 +6,9 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/test/scoped_feature_list.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/cross_origin_resource_policy.h"
-#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -111,16 +109,7 @@ TEST(CrossOriginResourcePolicyTest, ParseHeader) {
 }
 
 TEST(CrossOriginResourcePolicyTest, CrossSiteHeaderWithCOEP) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kCrossOriginEmbedderPolicy);
   EXPECT_EQ(CrossOriginResourcePolicy::kCrossOrigin,
-            ParseHeader("Cross-Origin-Resource-Policy: cross-origin"));
-}
-
-TEST(CrossOriginResourcePolicyTest, CrossSiteHeaderWithoutCOEP) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(features::kCrossOriginEmbedderPolicy);
-  EXPECT_EQ(CrossOriginResourcePolicy::kParsingError,
             ParseHeader("Cross-Origin-Resource-Policy: cross-origin"));
 }
 
@@ -166,9 +155,6 @@ TEST(CrossOriginResourcePolicyTest, ShouldAllowSameSite) {
 }
 
 TEST(CrossOriginResourcePolicyTest, WithCOEP) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kCrossOriginEmbedderPolicy);
-
   mojom::URLResponseHead corp_none;
   mojom::URLResponseHead corp_same_origin;
   mojom::URLResponseHead corp_cross_origin;
@@ -309,9 +295,6 @@ TEST(CrossOriginResourcePolicyTest, WithCOEP) {
 }
 
 TEST(CrossOriginResourcePolicyTest, NavigationWithCOEP) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kCrossOriginEmbedderPolicy);
-
   mojom::URLResponseHead corp_none;
   mojom::URLResponseHead corp_same_origin;
   mojom::URLResponseHead corp_cross_origin;

@@ -2011,21 +2011,8 @@ TEST_F(ServiceWorkerUpdateJobTest, ActivateCancelsOnShutdown) {
   runner->RunUntilIdle();
 }
 
-class ServiceWorkerUpdateJobTestWithCrossOriginIsolation
-    : public ServiceWorkerUpdateJobTest {
- public:
-  ServiceWorkerUpdateJobTestWithCrossOriginIsolation() {
-    feature_list_.InitAndEnableFeature(
-        ::network::features::kCrossOriginEmbedderPolicy);
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Update job should handle the COEP header appropriately.
-TEST_F(ServiceWorkerUpdateJobTestWithCrossOriginIsolation,
-       Update_CrossOriginEmbedderPolicyValue) {
+TEST_F(ServiceWorkerUpdateJobTest, Update_CrossOriginEmbedderPolicyValue) {
   const GURL kNewVersionOrigin("https://newversion/");
   const char kHeadersWithRequireCorp[] = R"(HTTP/1.1 200 OK
 Content-Type: application/javascript

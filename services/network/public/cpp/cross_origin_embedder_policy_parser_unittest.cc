@@ -10,16 +10,11 @@
 #include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/http/http_response_headers.h"
-#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
 
 TEST(CrossOriginEmbedderPolicyTest, Parse) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      features::kCrossOriginEmbedderPolicy);
-
   constexpr auto kNone = mojom::CrossOriginEmbedderPolicyValue::kNone;
   constexpr auto kRequireCorp =
       mojom::CrossOriginEmbedderPolicyValue::kRequireCorp;
