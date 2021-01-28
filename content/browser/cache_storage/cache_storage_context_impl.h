@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/observer_list_threadsafe.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/sequence_bound.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
@@ -69,18 +68,6 @@ class CONTENT_EXPORT CacheStorageContextImpl
  public:
   CacheStorageContextImpl();
 
-  class Observer {
-   public:
-    virtual void OnCacheListChanged(const url::Origin& origin) = 0;
-    virtual void OnCacheContentChanged(const url::Origin& origin,
-                                       const std::string& cache_name) = 0;
-
-   protected:
-    virtual ~Observer() {}
-  };
-
-  using ObserverList = base::ObserverListThreadSafe<Observer>;
-
   // Init and Shutdown are for use on the UI thread when the profile,
   // storagepartition is being setup and torn down.
   void Init(const base::FilePath& user_data_directory,
@@ -102,6 +89,8 @@ class CONTENT_EXPORT CacheStorageContextImpl
   void GetAllOriginsInfo(
       storage::mojom::CacheStorageControl::GetAllOriginsInfoCallback callback)
       override;
+  void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
+                       observer) override;
 
   // If called on the cache_storage target sequence the real manager will be
   // returned directly.  If called on any other sequence then a cross-sequence
@@ -120,10 +109,6 @@ class CONTENT_EXPORT CacheStorageContextImpl
   // forwarding to the CacheStorageManager.
   void SetBlobParametersForCache(
       ChromeBlobStorageContext* blob_storage_context);
-
-  // Callable on any sequence.
-  void AddObserver(CacheStorageContextImpl::Observer* observer);
-  void RemoveObserver(CacheStorageContextImpl::Observer* observer);
 
  protected:
   ~CacheStorageContextImpl() override;
@@ -148,7 +133,6 @@ class CONTENT_EXPORT CacheStorageContextImpl
 
   // Initialized at construction.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  const scoped_refptr<ObserverList> observers_;
 
   // Used to synchronize shutdown state aross multiple threads.
   base::Lock shutdown_lock_;

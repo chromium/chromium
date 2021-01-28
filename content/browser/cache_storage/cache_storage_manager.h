@@ -57,6 +57,9 @@ class CONTENT_EXPORT CacheStorageManager
   virtual void DeleteOriginData(const url::Origin& origin,
                                 storage::mojom::CacheStorageOwner owner) = 0;
 
+  virtual void AddObserver(
+      mojo::PendingRemote<storage::mojom::CacheStorageObserver> observer) = 0;
+
   // This must be called before any of the public Cache functions above.
   virtual void SetBlobParametersForCache(
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context) = 0;

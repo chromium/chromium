@@ -2404,6 +2404,10 @@ class CacheStorageControlForBadOrigin
       override {
     NOTREACHED();
   }
+  void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
+                       observer) override {
+    NOTREACHED();
+  }
 };
 
 }  // namespace

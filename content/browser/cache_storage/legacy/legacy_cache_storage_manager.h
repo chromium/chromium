@@ -24,6 +24,8 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
+#include "storage/browser/quota/quota_client.h"
 #include "url/origin.h"
 
 namespace base {
@@ -44,8 +46,7 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
       const base::FilePath& path,
       scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
       scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
-      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-      scoped_refptr<CacheStorageContextImpl::ObserverList> observers);
+      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
 
   // Create a new manager using the underlying configuration of the given
   // manager, but with its own list of storage objects.  This is only used
@@ -86,6 +87,8 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
       storage::mojom::QuotaClient::DeleteOriginDataCallback callback) override;
   void DeleteOriginData(const url::Origin& origin,
                         storage::mojom::CacheStorageOwner owner) override;
+  void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
+                       observer) override;
 
   void SetBlobParametersForCache(
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context) override;
@@ -114,8 +117,7 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
       const base::FilePath& path,
       scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
       scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
-      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-      scoped_refptr<CacheStorageContextImpl::ObserverList> observers);
+      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
 
   ~LegacyCacheStorageManager() override;
 
@@ -154,7 +156,7 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   // |cache_task_runner_|.
   CacheStorageMap cache_storage_map_;
 
-  scoped_refptr<CacheStorageContextImpl::ObserverList> observers_;
+  mojo::RemoteSet<storage::mojom::CacheStorageObserver> observers_;
 
   scoped_refptr<BlobStorageContextWrapper> blob_storage_context_;
 

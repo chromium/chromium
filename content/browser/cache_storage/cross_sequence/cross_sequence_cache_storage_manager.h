@@ -53,6 +53,8 @@ class CONTENT_EXPORT CrossSequenceCacheStorageManager
       storage::mojom::QuotaClient::DeleteOriginDataCallback callback) override;
   void DeleteOriginData(const url::Origin& origin,
                         storage::mojom::CacheStorageOwner owner) override;
+  void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
+                       observer) override;
   void SetBlobParametersForCache(
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context) override;
 

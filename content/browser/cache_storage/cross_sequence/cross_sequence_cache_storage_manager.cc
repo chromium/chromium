@@ -63,6 +63,12 @@ class CrossSequenceCacheStorageManager::Inner {
     target_manager_->DeleteOriginData(origin, owner, std::move(callback));
   }
 
+  void AddObserver(
+      mojo::PendingRemote<storage::mojom::CacheStorageObserver> observer) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    target_manager_->AddObserver(std::move(observer));
+  }
+
  private:
   const scoped_refptr<CacheStorageManager> target_manager_;
   SEQUENCE_CHECKER(sequence_checker_);
@@ -136,6 +142,12 @@ void CrossSequenceCacheStorageManager::DeleteOriginData(
     storage::mojom::CacheStorageOwner owner) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DeleteOriginData(origin, owner, base::DoNothing());
+}
+
+void CrossSequenceCacheStorageManager::AddObserver(
+    mojo::PendingRemote<storage::mojom::CacheStorageObserver> observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  inner_.Post(FROM_HERE, &Inner::AddObserver, std::move(observer));
 }
 
 void CrossSequenceCacheStorageManager::SetBlobParametersForCache(

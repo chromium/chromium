@@ -18,6 +18,15 @@ enum CacheStorageOwner {
   kBackgroundFetch,
 };
 
+// Observer interface for receiving callbacks after cache storage changes.
+interface CacheStorageObserver {
+  // Called when caches are created or deleted.
+  OnCacheListChanged(url.mojom.Origin origin);
+
+  // Called when the content of a cache has been modified.
+  OnCacheContentChanged(url.mojom.Origin origin, string cache_name);
+};
+
 // Controls the state of CacheStorage within a partition. This is a privileged
 // interface and must not be brokered to untrusted clients.
 //
@@ -41,4 +50,7 @@ interface CacheStorageControl {
   // Used in response to browsing data and quota manager requests to get
   // the per-origin size and last time used data.
   GetAllOriginsInfo() => (array<StorageUsageInfo> usage_info);
+
+  // Adds an observer that will receive cache change callbacks.
+  AddObserver(pending_remote<CacheStorageObserver> observer);
 };

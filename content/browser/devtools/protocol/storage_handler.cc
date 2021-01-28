@@ -13,7 +13,7 @@
 #include "base/optional.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
-#include "content/browser/cache_storage/cache_storage_context_impl.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "content/browser/devtools/protocol/browser_handler.h"
 #include "content/browser/devtools/protocol/network.h"
 #include "content/browser/devtools/protocol/network_handler.h"
@@ -115,23 +115,21 @@ void GetUsageAndQuotaOnIOThread(
 
 }  // namespace
 
-// Observer that listens on the IO thread for cache storage notifications and
+// Observer that listens on the UI thread for cache storage notifications and
 // informs the StorageHandler on the UI thread for origins of interest.
-// Created on the UI thread but predominantly used and deleted on the IO thread.
-// Registered on creation as an observer in CacheStorageContextImpl,
-// unregistered on destruction.
-class StorageHandler::CacheStorageObserver : CacheStorageContextImpl::Observer {
+// Created and used exclusively on the UI thread.
+class StorageHandler::CacheStorageObserver
+    : storage::mojom::CacheStorageObserver {
  public:
-  CacheStorageObserver(base::WeakPtr<StorageHandler> owner_storage_handler,
-                       CacheStorageContextImpl* cache_storage_context)
-      : owner_(owner_storage_handler), context_(cache_storage_context) {
+  CacheStorageObserver(
+      base::WeakPtr<StorageHandler> owner_storage_handler,
+      mojo::PendingReceiver<storage::mojom::CacheStorageObserver> observer)
+      : owner_(owner_storage_handler), receiver_(this, std::move(observer)) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    context_->AddObserver(this);
   }
 
   ~CacheStorageObserver() override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    context_->RemoveObserver(this);
   }
 
   void TrackOrigin(const url::Origin& origin) {
@@ -167,7 +165,7 @@ class StorageHandler::CacheStorageObserver : CacheStorageContextImpl::Observer {
   base::flat_set<url::Origin> origins_;
 
   base::WeakPtr<StorageHandler> owner_;
-  scoped_refptr<CacheStorageContextImpl> context_;
+  mojo::Receiver<storage::mojom::CacheStorageObserver> receiver_;
 
   DISALLOW_COPY_AND_ASSIGN(CacheStorageObserver);
 };
@@ -488,10 +486,12 @@ StorageHandler::CacheStorageObserver*
 StorageHandler::GetCacheStorageObserver() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (!cache_storage_observer_) {
+    mojo::PendingRemote<storage::mojom::CacheStorageObserver> observer;
     cache_storage_observer_ = std::make_unique<CacheStorageObserver>(
         weak_ptr_factory_.GetWeakPtr(),
-        static_cast<CacheStorageContextImpl*>(
-            storage_partition_->GetCacheStorageContext()));
+        observer.InitWithNewPipeAndPassReceiver());
+    storage_partition_->GetCacheStorageControl()->AddObserver(
+        std::move(observer));
   }
   return cache_storage_observer_.get();
 }

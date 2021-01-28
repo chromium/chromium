@@ -244,8 +244,7 @@ scoped_refptr<LegacyCacheStorageManager> LegacyCacheStorageManager::Create(
     const base::FilePath& path,
     scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
-    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-    scoped_refptr<CacheStorageContextImpl::ObserverList> observers) {
+    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy) {
   base::FilePath root_path = path;
   if (!path.empty()) {
     root_path = path.Append(storage::kServiceWorkerDirectory)
@@ -254,7 +253,7 @@ scoped_refptr<LegacyCacheStorageManager> LegacyCacheStorageManager::Create(
 
   return base::WrapRefCounted(new LegacyCacheStorageManager(
       root_path, std::move(cache_task_runner), std::move(scheduler_task_runner),
-      std::move(quota_manager_proxy), std::move(observers)));
+      std::move(quota_manager_proxy)));
 }
 
 // static
@@ -262,10 +261,10 @@ scoped_refptr<LegacyCacheStorageManager>
 LegacyCacheStorageManager::CreateForTesting(
     LegacyCacheStorageManager* old_manager) {
   scoped_refptr<LegacyCacheStorageManager> manager(
-      new LegacyCacheStorageManager(
-          old_manager->root_path(), old_manager->cache_task_runner(),
-          old_manager->scheduler_task_runner(),
-          old_manager->quota_manager_proxy_.get(), old_manager->observers_));
+      new LegacyCacheStorageManager(old_manager->root_path(),
+                                    old_manager->cache_task_runner(),
+                                    old_manager->scheduler_task_runner(),
+                                    old_manager->quota_manager_proxy_.get()));
   manager->SetBlobParametersForCache(old_manager->blob_storage_context_);
   return manager;
 }
@@ -313,18 +312,16 @@ void LegacyCacheStorageManager::SetBlobParametersForCache(
 void LegacyCacheStorageManager::NotifyCacheListChanged(
     const url::Origin& origin) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observers_->Notify(FROM_HERE,
-                     &CacheStorageContextImpl::Observer::OnCacheListChanged,
-                     origin);
+  for (const auto& observer : observers_)
+    observer->OnCacheListChanged(origin);
 }
 
 void LegacyCacheStorageManager::NotifyCacheContentChanged(
     const url::Origin& origin,
     const std::string& name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  observers_->Notify(FROM_HERE,
-                     &CacheStorageContextImpl::Observer::OnCacheContentChanged,
-                     origin, name);
+  for (const auto& observer : observers_)
+    observer->OnCacheContentChanged(origin, name);
 }
 
 void LegacyCacheStorageManager::CacheStorageUnreferenced(
@@ -491,6 +488,11 @@ void LegacyCacheStorageManager::DeleteOriginData(
   DeleteOriginData(origin, owner, base::DoNothing());
 }
 
+void LegacyCacheStorageManager::AddObserver(
+    mojo::PendingRemote<storage::mojom::CacheStorageObserver> observer) {
+  observers_.Add(std::move(observer));
+}
+
 void LegacyCacheStorageManager::DeleteOriginDidClose(
     const url::Origin& origin,
     storage::mojom::CacheStorageOwner owner,
@@ -528,13 +530,11 @@ LegacyCacheStorageManager::LegacyCacheStorageManager(
     const base::FilePath& path,
     scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
     scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
-    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-    scoped_refptr<CacheStorageContextImpl::ObserverList> observers)
+    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
     : root_path_(path),
       cache_task_runner_(std::move(cache_task_runner)),
       scheduler_task_runner_(std::move(scheduler_task_runner)),
-      quota_manager_proxy_(std::move(quota_manager_proxy)),
-      observers_(std::move(observers)) {}
+      quota_manager_proxy_(std::move(quota_manager_proxy)) {}
 
 // static
 base::FilePath LegacyCacheStorageManager::ConstructOriginPath(

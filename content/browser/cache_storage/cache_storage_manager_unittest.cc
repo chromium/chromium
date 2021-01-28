@@ -223,9 +223,12 @@ bool IsIndexFileCurrent(const base::FilePath& cache_dir) {
   return true;
 }
 
-class TestCacheStorageObserver : public CacheStorageContextImpl::Observer {
+class TestCacheStorageObserver : public storage::mojom::CacheStorageObserver {
  public:
-  TestCacheStorageObserver() : loop_(std::make_unique<base::RunLoop>()) {}
+  explicit TestCacheStorageObserver(
+      mojo::PendingReceiver<storage::mojom::CacheStorageObserver> observer)
+      : receiver_(this, std::move(observer)),
+        loop_(std::make_unique<base::RunLoop>()) {}
 
   void OnCacheListChanged(const url::Origin& origin) override {
     ++notify_list_changed_count;
@@ -247,6 +250,7 @@ class TestCacheStorageObserver : public CacheStorageContextImpl::Observer {
   int notify_list_changed_count = 0;
   int notify_content_changed_count = 0;
 
+  mojo::Receiver<storage::mojom::CacheStorageObserver> receiver_;
   std::unique_ptr<base::RunLoop> loop_;
 };
 
@@ -274,6 +278,10 @@ class TestCacheStorageContext : public CacheStorageContextWithManager {
       override {
     NOTREACHED();
   }
+  void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
+                       observer) override {
+    NOTREACHED();
+  }
 
  private:
   ~TestCacheStorageContext() override = default;
@@ -285,8 +293,6 @@ class CacheStorageManagerTest : public testing::Test {
   CacheStorageManagerTest()
       : task_environment_(BrowserTaskEnvironment::IO_MAINLOOP),
         blob_storage_context_(nullptr),
-        observers_(
-            base::MakeRefCounted<CacheStorageContextImpl::ObserverList>()),
         origin1_(url::Origin::Create(GURL("http://example1.com"))),
         origin2_(url::Origin::Create(GURL("http://example2.com"))) {}
 
@@ -371,6 +377,15 @@ class CacheStorageManagerTest : public testing::Test {
     run_loop->Quit();
   }
 
+  std::unique_ptr<TestCacheStorageObserver> CreateObserver() {
+    DCHECK(cache_manager_);
+    mojo::PendingRemote<storage::mojom::CacheStorageObserver> remote;
+    auto observer = std::make_unique<TestCacheStorageObserver>(
+        remote.InitWithNewPipeAndPassReceiver());
+    cache_manager_->AddObserver(std::move(remote));
+    return observer;
+  }
+
   void CreateStorageManager() {
     ChromeBlobStorageContext* blob_storage_context(
         ChromeBlobStorageContext::GetFor(&browser_context_));
@@ -403,7 +418,7 @@ class CacheStorageManagerTest : public testing::Test {
 
     auto legacy_manager = LegacyCacheStorageManager::Create(
         temp_dir_path, base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get(), quota_manager_proxy_, observers_);
+        base::ThreadTaskRunnerHandle::Get(), quota_manager_proxy_);
     legacy_manager->SetBlobParametersForCache(blob_storage_context_);
 
     switch (ManagerType()) {
@@ -840,7 +855,6 @@ class CacheStorageManagerTest : public testing::Test {
   scoped_refptr<storage::MockSpecialStoragePolicy> quota_policy_;
   scoped_refptr<storage::MockQuotaManager> mock_quota_manager_;
   scoped_refptr<MockCacheStorageQuotaManagerProxy> quota_manager_proxy_;
-  scoped_refptr<CacheStorageContextImpl::ObserverList> observers_;
   scoped_refptr<CacheStorageManager> cache_manager_;
 
   CacheStorageCacheHandle callback_cache_handle_;
@@ -2094,123 +2108,117 @@ TEST_P(CacheStorageManagerLegacyOnlyTestP, SizeThenCloseStorageAccessed) {
 }
 
 TEST_P(CacheStorageManagerTestP, NotifyCacheListChanged_Created) {
-  TestCacheStorageObserver observer;
-  observers_->AddObserver(&observer);
+  auto observer = CreateObserver();
 
-  EXPECT_EQ(0, observer.notify_list_changed_count);
+  EXPECT_EQ(0, observer->notify_list_changed_count);
   EXPECT_TRUE(Open(origin1_, "foo"));
-  observer.Wait();
-  EXPECT_EQ(1, observer.notify_list_changed_count);
+  observer->Wait();
+  EXPECT_EQ(1, observer->notify_list_changed_count);
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
-  observer.Wait();
-  EXPECT_EQ(1, observer.notify_list_changed_count);
+  observer->Wait();
+  EXPECT_EQ(1, observer->notify_list_changed_count);
 }
 
 TEST_P(CacheStorageManagerTestP, NotifyCacheListChanged_Deleted) {
-  TestCacheStorageObserver observer;
-  observers_->AddObserver(&observer);
+  auto observer = CreateObserver();
 
-  EXPECT_EQ(0, observer.notify_list_changed_count);
+  EXPECT_EQ(0, observer->notify_list_changed_count);
   EXPECT_FALSE(Delete(origin1_, "foo"));
   // Give any unexpected observer tasks a chance to run.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0, observer.notify_list_changed_count);
+  EXPECT_EQ(0, observer->notify_list_changed_count);
   EXPECT_TRUE(Open(origin1_, "foo"));
-  observer.Wait();
-  EXPECT_EQ(1, observer.notify_list_changed_count);
+  observer->Wait();
+  EXPECT_EQ(1, observer->notify_list_changed_count);
   EXPECT_TRUE(Delete(origin1_, "foo"));
-  observer.Wait();
-  EXPECT_EQ(2, observer.notify_list_changed_count);
+  observer->Wait();
+  EXPECT_EQ(2, observer->notify_list_changed_count);
 }
 
 TEST_P(CacheStorageManagerTestP, NotifyCacheListChanged_DeletedThenCreated) {
-  TestCacheStorageObserver observer;
-  observers_->AddObserver(&observer);
+  auto observer = CreateObserver();
 
-  EXPECT_EQ(0, observer.notify_list_changed_count);
+  EXPECT_EQ(0, observer->notify_list_changed_count);
   EXPECT_TRUE(Open(origin1_, "foo"));
-  observer.Wait();
-  EXPECT_EQ(1, observer.notify_list_changed_count);
+  observer->Wait();
+  EXPECT_EQ(1, observer->notify_list_changed_count);
   EXPECT_TRUE(Delete(origin1_, "foo"));
-  observer.Wait();
-  EXPECT_EQ(2, observer.notify_list_changed_count);
+  observer->Wait();
+  EXPECT_EQ(2, observer->notify_list_changed_count);
   EXPECT_TRUE(Open(origin2_, "foo2"));
-  observer.Wait();
-  EXPECT_EQ(3, observer.notify_list_changed_count);
+  observer->Wait();
+  EXPECT_EQ(3, observer->notify_list_changed_count);
 }
 
 TEST_P(CacheStorageManagerTestP, NotifyCacheContentChanged_PutEntry) {
-  TestCacheStorageObserver observer;
-  observers_->AddObserver(&observer);
+  auto observer = CreateObserver();
 
-  EXPECT_EQ(0, observer.notify_content_changed_count);
+  EXPECT_EQ(0, observer->notify_content_changed_count);
   EXPECT_TRUE(Open(origin1_, "foo"));
-  observer.Wait();
-  EXPECT_EQ(0, observer.notify_content_changed_count);
+  observer->Wait();
+  EXPECT_EQ(0, observer->notify_content_changed_count);
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
-  observer.Wait();
-  EXPECT_EQ(1, observer.notify_content_changed_count);
+  observer->Wait();
+  EXPECT_EQ(1, observer->notify_content_changed_count);
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(),
                        GURL("http://example.com/foo1")));
-  observer.Wait();
+  observer->Wait();
   EXPECT_TRUE(CachePut(callback_cache_handle_.value(),
                        GURL("http://example.com/foo2")));
-  observer.Wait();
-  EXPECT_EQ(3, observer.notify_content_changed_count);
+  observer->Wait();
+  EXPECT_EQ(3, observer->notify_content_changed_count);
 }
 
 TEST_P(CacheStorageManagerTestP, NotifyCacheContentChanged_DeleteEntry) {
-  TestCacheStorageObserver observer;
-  observers_->AddObserver(&observer);
+  auto observer = CreateObserver();
 
-  EXPECT_EQ(0, observer.notify_content_changed_count);
+  EXPECT_EQ(0, observer->notify_content_changed_count);
   EXPECT_FALSE(Delete(origin1_, "foo"));
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(0, observer.notify_content_changed_count);
+  EXPECT_EQ(0, observer->notify_content_changed_count);
   EXPECT_TRUE(Open(origin1_, "foo"));
-  observer.Wait();
-  EXPECT_EQ(0, observer.notify_content_changed_count);
+  observer->Wait();
+  EXPECT_EQ(0, observer->notify_content_changed_count);
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
-  observer.Wait();
-  EXPECT_EQ(1, observer.notify_content_changed_count);
+  observer->Wait();
+  EXPECT_EQ(1, observer->notify_content_changed_count);
   EXPECT_TRUE(CacheDelete(callback_cache_handle_.value(),
                           GURL("http://example.com/foo")));
-  observer.Wait();
-  EXPECT_EQ(2, observer.notify_content_changed_count);
+  observer->Wait();
+  EXPECT_EQ(2, observer->notify_content_changed_count);
   EXPECT_FALSE(CacheDelete(callback_cache_handle_.value(),
                            GURL("http://example.com/foo")));
   // Give any unexpected observer tasks a chance to run.
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(2, observer.notify_content_changed_count);
+  EXPECT_EQ(2, observer->notify_content_changed_count);
 }
 
 TEST_P(CacheStorageManagerTestP, NotifyCacheContentChanged_DeleteThenPutEntry) {
-  TestCacheStorageObserver observer;
-  observers_->AddObserver(&observer);
+  auto observer = CreateObserver();
 
-  EXPECT_EQ(0, observer.notify_content_changed_count);
+  EXPECT_EQ(0, observer->notify_content_changed_count);
   EXPECT_TRUE(Open(origin1_, "foo"));
-  observer.Wait();
-  EXPECT_EQ(0, observer.notify_content_changed_count);
+  observer->Wait();
+  EXPECT_EQ(0, observer->notify_content_changed_count);
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
-  observer.Wait();
-  EXPECT_EQ(1, observer.notify_content_changed_count);
+  observer->Wait();
+  EXPECT_EQ(1, observer->notify_content_changed_count);
   EXPECT_TRUE(CacheDelete(callback_cache_handle_.value(),
                           GURL("http://example.com/foo")));
-  observer.Wait();
-  EXPECT_EQ(2, observer.notify_content_changed_count);
+  observer->Wait();
+  EXPECT_EQ(2, observer->notify_content_changed_count);
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
-  observer.Wait();
-  EXPECT_EQ(3, observer.notify_content_changed_count);
+  observer->Wait();
+  EXPECT_EQ(3, observer->notify_content_changed_count);
   EXPECT_TRUE(CacheDelete(callback_cache_handle_.value(),
                           GURL("http://example.com/foo")));
-  observer.Wait();
-  EXPECT_EQ(4, observer.notify_content_changed_count);
+  observer->Wait();
+  EXPECT_EQ(4, observer->notify_content_changed_count);
 }
 
 TEST_P(CacheStorageManagerTestP, StorageMatch_IgnoreSearch) {

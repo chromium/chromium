@@ -41,8 +41,7 @@ CacheStorageContextWithManager::CacheStorageContextWithManager()
     : CacheStorageContext(GetUIThreadTaskRunner({})) {}
 
 CacheStorageContextImpl::CacheStorageContextImpl()
-    : task_runner_(CreateSchedulerTaskRunner()),
-      observers_(base::MakeRefCounted<ObserverList>()) {
+    : task_runner_(CreateSchedulerTaskRunner()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
 
@@ -228,15 +227,21 @@ void CacheStorageContextImpl::DeleteForOrigin(const url::Origin& origin) {
 }
 
 void CacheStorageContextImpl::AddObserver(
-    CacheStorageContextImpl::Observer* observer) {
-  // Any sequence
-  observers_->AddObserver(observer);
-}
+    mojo::PendingRemote<storage::mojom::CacheStorageObserver> observer) {
+  DCHECK(cache_manager_);
 
-void CacheStorageContextImpl::RemoveObserver(
-    CacheStorageContextImpl::Observer* observer) {
-  // Any sequence
-  observers_->RemoveObserver(observer);
+  task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](scoped_refptr<CacheStorageContextImpl> context,
+             mojo::PendingRemote<storage::mojom::CacheStorageObserver>
+                 observer) {
+            auto manager = context->CacheManager();
+            if (!manager)
+              return;
+            manager->AddObserver(std::move(observer));
+          },
+          base::RetainedRef(this), std::move(observer)));
 }
 
 void CacheStorageContextImpl::CreateCacheStorageManagerOnTaskRunner(
@@ -248,7 +253,7 @@ void CacheStorageContextImpl::CreateCacheStorageManagerOnTaskRunner(
   DCHECK(!cache_manager_);
   cache_manager_ = LegacyCacheStorageManager::Create(
       user_data_directory, std::move(cache_task_runner), task_runner_,
-      quota_manager_proxy, observers_);
+      quota_manager_proxy);
 }
 
 void CacheStorageContextImpl::ShutdownOnTaskRunner() {
