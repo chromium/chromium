@@ -453,7 +453,6 @@
 <translation id="1500297251995790841">অজ্ঞাত ডিভাইচ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">গৰাকীৰ এই একাউণ্টটো একাধিকবাৰ ছাইন ইন কৰা কোনো ছেশ্বনত প্ৰথমতে ছাইন ইন কৰা একাউণ্ট হ’ব লাগিব।</translation>
 <translation id="150411034776756821"><ph name="SITE" /> আঁতৰাওক</translation>
-<translation id="1504311855864906891">আপোনাৰ মিডিয়াৰ বাবে কেপশ্বন লাভ কৰক</translation>
 <translation id="1504551620756424144">শ্বেয়াৰ কৰা ফ’ল্ডাৰসমূহ Windowsৰ <ph name="BASE_DIR" />ত উপলব্ধ।</translation>
 <translation id="1506061864768559482">সন্ধান ইঞ্জিন</translation>
 <translation id="1507170440449692343">এই পৃষ্ঠাটোৰ আপোনাৰ কেমেৰাৰ এক্সেছ অৱৰোধ কৰি ৰখা হৈছিল।</translation>
@@ -1444,6 +1443,7 @@
 <translation id="2604255671529671813">নেটৱৰ্ক সংযোগ সম্পর্কীয় আসোঁৱাহ</translation>
 <translation id="2606246518223360146">ডেটা লিংক কৰক</translation>
 <translation id="2606454609872547359">নহয়, ChromeVoxৰ অবিহনে অব্যাহত ৰাখক</translation>
+<translation id="2606568927909309675">ইংৰাজী অডিঅ’ আৰু ভিডিঅ’ৰ বাবে স্বয়ংক্ৰিয়ভাৱে কেপশ্বন সৃষ্টি কৰে। অডিঅ’ আৰু কেপশ্বন আপোনাৰ ডিভাইচটোৰ পৰা কেতিয়াও আঁতৰি নাযায়।</translation>
 <translation id="2607101320794533334">প্ৰমাণপত্ৰ প্ৰাপকৰ ৰাজহুৱা চাবিৰ তথ্য</translation>
 <translation id="2609896558069604090">শ্বৰ্টকাট সৃষ্টি কৰক...</translation>
 <translation id="2609980095400624569">সংযোগ স্থাপন কৰিব পৰা নগ’ল</translation>
@@ -3737,7 +3737,6 @@
 <translation id="5265797726250773323">ইনষ্টল কৰোঁতে আসোঁৱাহ হৈছে</translation>
 <translation id="5266113311903163739">প্ৰমাণপত্ৰ প্ৰদানকাৰী আমদানি কৰোঁতে আসোঁৱাহ হ’ল</translation>
 <translation id="5269977353971873915">প্ৰিণ্ট কৰিব পৰা নগ'ল</translation>
-<translation id="5274738462757057090">Chrome ব্ৰাউজাৰত থকা মিডিয়াৰ বাবে স্বয়ংক্ৰিয়ভাৱে কেপশ্বন সৃষ্টি কৰে (বৰ্তমানে কেৱল ইংৰাজীত উপলব্ধ)</translation>
 <translation id="5275352920323889391">কুকুৰ</translation>
 <translation id="527605982717517565"><ph name="HOST" />ত সদায় JavaScriptক অনুমতি দিয়ক</translation>
 <translation id="5278823018825269962">স্থিতিৰ আইডি</translation>
@@ -4380,6 +4379,7 @@
 <translation id="6011074160056912900">ইথাৰনেট নেটৱৰ্ক</translation>
 <translation id="6011193465932186973">ফিংগাৰপ্ৰিণ্ট</translation>
 <translation id="6011449291337289699">ছাইটৰ ডেটা মচক</translation>
+<translation id="6013027779243312217">আপোনাৰ অডিঅ’ আৰু ভিডিঅ’ৰ বাবে কেপশ্বন পাওক</translation>
 <translation id="6015796118275082299">বছৰ</translation>
 <translation id="6016178549409952427">অতিৰিক্ত <ph name="TOTAL_ELEMENTS" /> টা সমলৰ <ph name="CURRENT_ELEMENT" /> নম্বৰটোলৈ নেভিগে’ট কৰক</translation>
 <translation id="6016551720757758985">পূৰ্বৰ সংস্কৰণলৈ উভতি যোৱাকৈ পাৱাৰৱাশ্ব নিশ্চিত কৰক</translation>
@@ -6198,7 +6198,6 @@
 <translation id="8081989000209387414">ADB ডিবাগিং অক্ষম কৰিবনে?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" ৰ সৈতে পেয়াৰ কৰিবনে?</translation>
 <translation id="8082390128630131497">ADB ডিবাগিং অক্ষম কৰা কার্যই এই <ph name="DEVICE_TYPE" />টো ফেক্টৰী ছেটিংসমূহলৈ ৰিছেট কৰিব। সকলো ব্যৱহাৰকাৰীৰ একাউণ্ট আৰু স্থানীয় ডেটা মচি পেলোৱা হ’ব।</translation>
-<translation id="8083058154738359867">ছেটিংসমূহত লাইভ কেপশ্বন সক্ষম কৰি আপোনাৰ মিডিয়াৰ বাবে কেপশ্বনসমূহ পাওক</translation>
 <translation id="8084114998886531721">ছেভ কৰা পাছৱর্ড</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> কনফিগাৰ কৰি থকা হৈছে...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> ছেট আপ কৰক</translation>
@@ -6269,6 +6268,7 @@
 <translation id="8157704005178149728">নিৰীক্ষণ ছেট আপ কৰি থকা হৈছে</translation>
 <translation id="8158117992543756526">এই ডিভাইচটোৱে <ph name="MONTH_AND_YEAR" />ত স্বয়ংক্ৰিয়ভাৱে ছফ্টৱেৰ আৰু সুৰক্ষা আপডে’টসমূহ পোৱাটো বন্ধ হৈছে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">প্ৰমাণপত্ৰৰ বিশ্বাস ছেট কৰোঁতে আসোঁৱাহ হ’ল</translation>
+<translation id="8160775796528709999">ছেটিংসমূহত লাইভ কেপশ্বন সক্ষম কৰি আপোনাৰ অডিঅ’ আৰু ভিডিঅ’ৰ বাবে কেপশ্বনসমূহ পাওক</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">ৱে’ব পৃষ্ঠাসমূহৰ বাবে ৰীডাৰ ম’ড</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{টেবটো নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}one{টেবসমূহ নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}other{টেবসমূহ নতুন ৱিণ্ড’লৈ স্থানান্তৰ কৰক}}</translation>
@@ -7128,6 +7128,7 @@
 <translation id="9128870381267983090">নেটৱৰ্কত সংযোগ কৰক</translation>
 <translation id="9130015405878219958">অমান্য ম’ড দিয়া হৈছে।</translation>
 <translation id="9131487537093447019">ব্লুটুথ ডিভাইচলৈ আৰু ডিভাইচৰ পৰা বার্তা আদান-প্ৰদান কৰক।</translation>
+<translation id="9134119143784876218">ইংৰাজী অডিঅ’ আৰু ভিডিঅ’ৰ বাবে স্বয়ংক্ৰিয়ভাৱে কেপশ্বন সৃষ্টি কৰে (বৰ্তমান কেৱল Chrome ব্ৰাউজাৰত উপলব্ধ)। অডিঅ’ আৰু কেপশ্বন আপোনাৰ ডিভাইচটোৰ পৰা কেতিয়াও আঁতৰি নাযায়।</translation>
 <translation id="9137013805542155359">মূল সংস্কৰণ দেখুৱাওক</translation>
 <translation id="9137157311132182254">অগ্ৰাধিকাৰপ্ৰাপ্ত সন্ধান ইঞ্জিন</translation>
 <translation id="9137248913990643158">অনুগ্ৰহ কৰি এই এপ্‌টো ব্যৱহাৰ কৰাৰ পূর্বে Chromeত আকৌ ছাইন ইন কৰক।</translation>

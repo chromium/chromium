@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Dispositiu desconegut [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Aquest compte de propietari ha de ser el primer compte amb la sessió iniciada en un inici de sessió múltiple.</translation>
 <translation id="150411034776756821">Suprimeix <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Obtén subtítols per al teu contingut multimèdia</translation>
 <translation id="1504551620756424144">Les carpetes compartides estan disponibles a Windows a <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Motor de cerca</translation>
 <translation id="1507170440449692343">Aquesta pàgina no té permís per accedir a la càmera.</translation>
@@ -1445,6 +1444,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2604255671529671813">Error de connexió a la xarxa</translation>
 <translation id="2606246518223360146">Enllaça les dades</translation>
 <translation id="2606454609872547359">No, continua sense ChromeVox</translation>
+<translation id="2606568927909309675">Crea subtítols automàticament per a àudios i vídeos en anglès. L'àudio i els subtítols no surten mai del dispositiu.</translation>
 <translation id="2607101320794533334">Informació de clau pública del subjecte</translation>
 <translation id="2609896558069604090">Crea dreceres...</translation>
 <translation id="2609980095400624569">No s'ha pogut establir la connexió</translation>
@@ -3742,7 +3742,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="5265797726250773323">S'ha produït un error durant la instal·lació</translation>
 <translation id="5266113311903163739">Error d'importació de l'entitat emissora de certificats</translation>
 <translation id="5269977353971873915">Error d'impressió</translation>
-<translation id="5274738462757057090">Crea subtítols automàticament per a contingut multimèdia al navegador Chrome (actualment només està disponible en anglès)</translation>
 <translation id="5275352920323889391">Gos</translation>
 <translation id="527605982717517565">Permet sempre JavaScript a <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Identificador d'estat</translation>
@@ -4388,6 +4387,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6011074160056912900">Xarxa Ethernet</translation>
 <translation id="6011193465932186973">Empremta digital</translation>
 <translation id="6011449291337289699">Esborra les dades dels llocs</translation>
+<translation id="6013027779243312217">Obtén subtítols per als teus àudios i vídeos</translation>
 <translation id="6015796118275082299">Any</translation>
 <translation id="6016178549409952427">Navega pel contingut addicional, <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirmació de Powerwash amb retorn a la versió anterior</translation>
@@ -6213,7 +6213,6 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8081989000209387414">Vols desactivar la depuració d'ADB?</translation>
 <translation id="8082106343289440791">El vols vincular amb "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">En desactivar la depuració d'ADB, es restablirà la configuració de fàbrica del dispositiu <ph name="DEVICE_TYPE" />. S'esborraran tots els comptes d'usuari i totes les dades locals.</translation>
-<translation id="8083058154738359867">Obtén subtítols per al teu contingut multimèdia en activar Subtítols instantanis a la configuració</translation>
 <translation id="8084114998886531721">Contrasenya desada</translation>
 <translation id="8086015605808120405">S'està configurant <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">Configura <ph name="PRINTER_NAME" /></translation>
@@ -6283,6 +6282,7 @@ Deseu el fitxer de clau en una ubicació segura. El necessitareu per crear versi
 <translation id="8157704005178149728">S'està configurant la supervisió</translation>
 <translation id="8158117992543756526">Aquest dispositiu va deixar de rebre actualitzacions automàtiques de programari i seguretat a partir de: <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Error en configurar la confiança del certificat</translation>
+<translation id="8160775796528709999">Activa Subtítols instantanis a la configuració per obtenir subtítols per als teus àudios i vídeos</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Mode de lector a les pàgines web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mou la pestanya a una finestra nova}other{Mou les pestanyes a una finestra nova}}</translation>
@@ -7143,6 +7143,7 @@ Prem un interruptor assignat per suprimir l'assignació.</translation>
 <translation id="9128870381267983090">Connecta't a la xarxa</translation>
 <translation id="9130015405878219958">S'ha introduït un mode no vàlid.</translation>
 <translation id="9131487537093447019">Enviar missatges a dispositius Bluetooth i rebre'n</translation>
+<translation id="9134119143784876218">Crea subtítols automàticament per a àudios i vídeos en anglès (actualment aquesta funció només està disponible al navegador Chrome). L'àudio i els subtítols no surten mai del dispositiu.</translation>
 <translation id="9137013805542155359">Mostra l'original</translation>
 <translation id="9137157311132182254">Motor de cerca preferit</translation>
 <translation id="9137248913990643158">Obre Chrome i inicia-hi la sessió abans d'utilitzar aquesta aplicació.</translation>

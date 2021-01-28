@@ -455,7 +455,6 @@
 <translation id="1500297251995790841">Невядомая прылада [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">У сеансе з уваходам у некалькі ўліковых запісаў гэты ўліковы запіс уладальніка павінен быць першым.</translation>
 <translation id="150411034776756821">Выдаліць <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Ствараць субцітры для медыязмесціва</translation>
 <translation id="1504551620756424144">Абагуленыя папкі даступныя ў сістэме Windows у каталозе "<ph name="BASE_DIR" />".</translation>
 <translation id="1506061864768559482">Пошукавая сістэма</translation>
 <translation id="1507170440449692343">Гэтай старонцы быў заблакіраваны доступ да вашай камеры.</translation>
@@ -1449,6 +1448,7 @@
 <translation id="2604255671529671813">Памылка падключэння да сеткі</translation>
 <translation id="2606246518223360146">Звязаць даныя</translation>
 <translation id="2606454609872547359">Не, працягнуць без ChromeVox</translation>
+<translation id="2606568927909309675">Аўтаматычнае стварэнне субцітраў для аўдыя і відэа на англійскай мове. Аўдыяфайлы і субцітры захоўваюцца на прыладзе і нікуды не адпраўляюцца.</translation>
 <translation id="2607101320794533334">Інфармацыя пра адкрыты ключ суб'екта</translation>
 <translation id="2609896558069604090">Стварыць ярлыкі...</translation>
 <translation id="2609980095400624569">Не ўдалося ўстанавіць падключэнне</translation>
@@ -3746,7 +3746,6 @@
 <translation id="5265797726250773323">Памылка падчас усталявання</translation>
 <translation id="5266113311903163739">Памылка імпарту файла цэнтра сертыфікацыі</translation>
 <translation id="5269977353971873915">Збой друку</translation>
-<translation id="5274738462757057090">Аўтаматычнае стварэнне субцітраў для мультымедыйных файлаў у браўзеры Chrome (пакуль што падтрымліваецца толькі англійская мова)</translation>
 <translation id="5275352920323889391">Сабака</translation>
 <translation id="527605982717517565">Заўсёды дазваляць сайту <ph name="HOST" /> выкарыстоўваць JavaScript</translation>
 <translation id="5278823018825269962">Ідэнтыфікатар стану</translation>
@@ -4391,6 +4390,7 @@
 <translation id="6011074160056912900">Сетка Ethernet</translation>
 <translation id="6011193465932186973">Лічбавы адбітак</translation>
 <translation id="6011449291337289699">Выдаленне даных сайта</translation>
+<translation id="6013027779243312217">Уключыце стварэнне субцітраў для аўдыя і відэа</translation>
 <translation id="6015796118275082299">Год</translation>
 <translation id="6016178549409952427">Перайсці да дадатковага змесціва: <ph name="CURRENT_ELEMENT" /> з <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Пацвердзіце Powerwash з вяртаннем да папярэдняй версіі</translation>
@@ -6215,7 +6215,6 @@
 <translation id="8081989000209387414">Выключыць адладку ADB?</translation>
 <translation id="8082106343289440791">Спалучыць з прыладай "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Выключэнне адладкі ADB скіне налады прылады "<ph name="DEVICE_TYPE" />" да заводскіх. Усе ўліковыя запісы карыстальнікаў і лакальныя даныя будуць сцёрты.</translation>
-<translation id="8083058154738359867">Дазвольце ствараць субцітры для медыязмесціва, уключыўшы функцыю "Імгненныя субцітры" ў наладах</translation>
 <translation id="8084114998886531721">Захаваны пароль</translation>
 <translation id="8086015605808120405">Ідзе наладжванне прынтара <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086442853986205778">Наладзіць прыладу (<ph name="PRINTER_NAME" />)</translation>
@@ -6286,6 +6285,7 @@
 <translation id="8157704005178149728">Наладжваецца кантроль</translation>
 <translation id="8158117992543756526">Месяц, у якім прылада перастала атрымліваць аўтаматычныя абнаўленні праграмнага забеспячэння і сістэмы бяспекі: <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Не ўдалося наладзіць давер сертыфіката</translation>
+<translation id="8160775796528709999">Дазвольце ствараць субцітры для аўдыя і відэа, уключыўшы функцыю "Імгненныя субцітры" ў наладах</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Рэжым чытання для вэб-старонак</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Перамясціць укладку ў новае акно}one{Перамясціць укладкі ў новае акно}few{Перамясціць укладкі ў новае акно}many{Перамясціць укладкі ў новае акно}other{Перамясціць укладкі ў новае акно}}</translation>
@@ -7148,6 +7148,7 @@
 <translation id="9128870381267983090">Падключыцеся да сеткі</translation>
 <translation id="9130015405878219958">Уведзены няправільны рэжым.</translation>
 <translation id="9131487537093447019">Адпраўка і атрыманне паведамленняў з прылад Bluetooth.</translation>
+<translation id="9134119143784876218">Аўтаматычнае стварэнне субцітраў для аўдыя і відэа на англійскай мове (пакуль што падтрымліваецца толькі ў браўзеры Chrome). Аўдыяфайлы і субцітры захоўваюцца на прыладзе і нікуды не адпраўляюцца.</translation>
 <translation id="9137013805542155359">Паказаць арыгінал</translation>
 <translation id="9137157311132182254">Прыярытэтная пошукавая сістэма</translation>
 <translation id="9137248913990643158">Каб карыстацца гэтай праграмай, запусціце Chrome і ўвайдзіце ў свой уліковы запіс.</translation>

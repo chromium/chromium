@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Dispositivo descoñecido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Esta conta de propietario debe ser a primeira en que se inicie sesión cando se realice un inicio de sesión múltiple.</translation>
 <translation id="150411034776756821">Eliminar <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Subtitular o teu contido multimedia</translation>
 <translation id="1504551620756424144">En Windows, os cartafoles compartidos están en <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Motor de busca</translation>
 <translation id="1507170440449692343">Bloqueouse o acceso desta páxina á túa cámara.</translation>
@@ -1445,6 +1444,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2604255671529671813">Produciuse un erro de conexión de rede</translation>
 <translation id="2606246518223360146">Ligar datos</translation>
 <translation id="2606454609872547359">Non, continuar sen ChromeVox</translation>
+<translation id="2606568927909309675">Crea subtítulos automaticamente para o contido de audio e de vídeo que estea en inglés. O audio e os subtítulos nunca saen do dispositivo.</translation>
 <translation id="2607101320794533334">Información de clave pública de entidade</translation>
 <translation id="2609896558069604090">Crear atallos...</translation>
 <translation id="2609980095400624569">Non se puido establecer a conexión</translation>
@@ -3742,7 +3742,6 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="5265797726250773323">Produciuse un erro durante a instalación</translation>
 <translation id="5266113311903163739">Erro de importación da autoridade de certificación</translation>
 <translation id="5269977353971873915">Non se puido efectuar a impresión</translation>
-<translation id="5274738462757057090">Crea subtítulos automaticamente para o contido multimedia que se reproduza no navegador Chrome (actualmente, esta función só está dispoñible en inglés)</translation>
 <translation id="5275352920323889391">Can</translation>
 <translation id="527605982717517565">Permitir sempre JavaScript en <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Identificador de estado</translation>
@@ -4386,6 +4385,7 @@ Se o teu fillo ou filla non utiliza un Chromebook na clase ou se prefires xestio
 <translation id="6011074160056912900">Rede Ethernet</translation>
 <translation id="6011193465932186973">Impresión dixital</translation>
 <translation id="6011449291337289699">Borrar datos do sitio</translation>
+<translation id="6013027779243312217">Obtén subtítulos para o contido de audio e de vídeo</translation>
 <translation id="6015796118275082299">Ano</translation>
 <translation id="6016178549409952427">Ir ao contido extra: <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirmar o powerwash para volver á versión anterior</translation>
@@ -6210,7 +6210,6 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8081989000209387414">Queres desactivar a depuración de ADB?</translation>
 <translation id="8082106343289440791">Queres sincronizar o dispositivo co teclado (<ph name="DEVICE_NAME" />)?</translation>
 <translation id="8082390128630131497">A desactivación da depuración de ADB restablecerá a configuración de fábrica deste <ph name="DEVICE_TYPE" />. Eliminaranse todas as contas de usuario e os datos locais.</translation>
-<translation id="8083058154738359867">Obtén subtítulos para o contido multimedia activando a función Subtítulos instantáneos en Configuración</translation>
 <translation id="8084114998886531721">Gardouse o contrasinal</translation>
 <translation id="8086015605808120405">Configurando <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086442853986205778">Configurar <ph name="PRINTER_NAME" /></translation>
@@ -6281,6 +6280,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8157704005178149728">Configurando supervisión</translation>
 <translation id="8158117992543756526">Este dispositivo deixou de recibir actualizacións automáticas de software e de seguranza en <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Erro ao establecer o certificado de confianza</translation>
+<translation id="8160775796528709999">Obtén subtítulos para o contido de audio e de vídeo activando a función Subtítulos instantáneos en Configuración</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> (<ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" />)</translation>
 <translation id="8161293209665121583">Modo de lector para páxinas web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover pestana a unha ventá nova}other{Mover pestanas a unha ventá nova}}</translation>
@@ -7140,6 +7140,7 @@ Preme un que xa estea asignado se queres quitarlle a asignación.</translation>
 <translation id="9128870381267983090">Conectarse á rede</translation>
 <translation id="9130015405878219958">Modo non válido introducido.</translation>
 <translation id="9131487537093447019">Enviar mensaxes a dispositivos Bluetooth e recibilos.</translation>
+<translation id="9134119143784876218">Crea subtítulos automaticamente para o contido de audio e de vídeo que estea en inglés (nestes momentos, esta función só está dispoñible no navegador Chrome). O audio e os subtítulos nunca saen do dispositivo.</translation>
 <translation id="9137013805542155359">Mostrar orixinal</translation>
 <translation id="9137157311132182254">Motor de busca preferido</translation>
 <translation id="9137248913990643158">Empeza e inicia sesión en Chrome antes de utilizar esta aplicación.</translation>

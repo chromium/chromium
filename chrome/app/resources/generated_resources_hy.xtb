@@ -454,7 +454,6 @@
 <translation id="1500297251995790841">Անհայտ սարք [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Բազմակի մուտքի աշխատաշրջանում տիրոջ հաշիվը պետք է առաջին մուտք գործած հաշիվը լինի:</translation>
 <translation id="150411034776756821">Հեռացնել <ph name="SITE" /> կայքը</translation>
-<translation id="1504311855864906891">Ավելացրեք ենթագրեր մեդիա բովանդակությանը</translation>
 <translation id="1504551620756424144">Ընդհանուր պանակները Windows-ում հասանելի են այստեղ՝ <ph name="BASE_DIR" />։</translation>
 <translation id="1506061864768559482">Որոնողական համակարգ</translation>
 <translation id="1507170440449692343">Այս էջին արգելված է օգտագործել ձեր տեսախցիկը:</translation>
@@ -1448,6 +1447,7 @@
 <translation id="2604255671529671813">Ցանցի միացման սխալ</translation>
 <translation id="2606246518223360146">Կցել տվյալները</translation>
 <translation id="2606454609872547359">Ոչ, շարունակել առանց ChromeVox-ի</translation>
+<translation id="2606568927909309675">Ավտոմատ ստեղծում է ենթագրեր անգլերեն լեզվով մեդիա բովանդակության համար։ Աուդիո բովանդակությունն ու ենթագրերը պահվում են միայն ձեր սարքում։</translation>
 <translation id="2607101320794533334">Տեղեկություններ սուբյեկտի հանրային բանալու մասին</translation>
 <translation id="2609896558069604090">Ստեղծել դյուրանցումներ…</translation>
 <translation id="2609980095400624569">Չհաջողվեց կապ հաստատել հեռախոսի հետ</translation>
@@ -3746,7 +3746,6 @@
 <translation id="5265797726250773323">Չհաջողվեց տեղադրել</translation>
 <translation id="5266113311903163739">Հավաստագրման կենտրոնի ներմուծման սխալ</translation>
 <translation id="5269977353971873915">Չհաջողվեց տպել</translation>
-<translation id="5274738462757057090">Chrome դիտարկիչում ավտոմատ ստեղծում է ենթագրեր մեդիա ֆայլերի համար (այս պահին հասանելի է միայն անգլերեն լեզվով)</translation>
 <translation id="5275352920323889391">Շուն</translation>
 <translation id="527605982717517565">Միշտ թույլ տալ JavaScript-ը <ph name="HOST" />-ում</translation>
 <translation id="5278823018825269962">Կարգավիճակի նույնացուցիչ</translation>
@@ -4392,6 +4391,7 @@
 <translation id="6011074160056912900">Ethernet ցանց</translation>
 <translation id="6011193465932186973">Մատնահետք</translation>
 <translation id="6011449291337289699">Մաքրել կայքի տվյալները</translation>
+<translation id="6013027779243312217">Ստացեք ենթագրեր մեդիա բովանդակության համար</translation>
 <translation id="6015796118275082299">Տարի</translation>
 <translation id="6016178549409952427">Անցնել լրացուցիչ բովանդակություն <ph name="CURRENT_ELEMENT" />՝ <ph name="TOTAL_ELEMENTS" />-ից</translation>
 <translation id="6016551720757758985">Հաստատեք Powerwash-ը՝ նախկին տարբերակին վերադարձով</translation>
@@ -6215,7 +6215,6 @@
 <translation id="8081989000209387414">Անջատե՞լ ADB վրիպազերծումը</translation>
 <translation id="8082106343289440791">Զուգակցե՞լ «<ph name="DEVICE_NAME" />» սարքի հետ</translation>
 <translation id="8082390128630131497">Եթե անջատեք ADB վրիպազերծումը, <ph name="DEVICE_TYPE" /> սարքի գործարանային կարգավորումները կվերականգնվեն։ Օգտատիրոջ բոլոր հաշիվները և տեղային տվյալները կհեռացվեն:</translation>
-<translation id="8083058154738359867">Միացրեք «Կենդանի ենթագրերը» կարգավորումներում և ստացեք ենթագրեր մեդիա բովանդակության համար</translation>
 <translation id="8084114998886531721">Պահված գաղտնաբառ</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> տպիչի կարգավորում…</translation>
 <translation id="8086442853986205778">Կարգավորել «<ph name="PRINTER_NAME" />» տպիչը</translation>
@@ -6286,6 +6285,7 @@
 <translation id="8157704005178149728">Ծնողական վերահսկողության կարգավորում</translation>
 <translation id="8158117992543756526">Այս սարքն այլևս չի ստանում ծրագրակազմի և անվտանգության համակարգի ավտոմատ թարմացումներ (վերջին անգամ՝ <ph name="MONTH_AND_YEAR" />)։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Վկայագրի վստահության որոշման սխալ</translation>
+<translation id="8160775796528709999">Միացրեք «Կենդանի ենթագրերը» կարգավորումներում և ստացեք ենթագրեր մեդիա բովանդակության համար</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Ընթերցման ռեժիմ վեբ էջերի համար</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Բացել ներդիրը նոր պատուհանում}one{Բացել ներդիրները նոր պատուհանում}other{Բացել ներդիրները նոր պատուհանում}}</translation>
@@ -7146,6 +7146,7 @@
 <translation id="9128870381267983090">Կապակցեք ցանցին</translation>
 <translation id="9130015405878219958">Սխալ ռեժիմ է նշված:</translation>
 <translation id="9131487537093447019">Ուղարկել և ստանալ հաղորդագրություններ Bluetooth սարքերից:</translation>
+<translation id="9134119143784876218">Ավտոմատ ստեղծում է ենթագրեր անգլերեն լեզվով աուդիո բովանդակության համար (այս պահին հասանելի է միայն Chrome դիտարկիչում)։ Աուդիո բովանդակությունն ու ենթագրերը պահվում են միայն ձեր սարքում։</translation>
 <translation id="9137013805542155359">Ցույց տալ բնօրինակը</translation>
 <translation id="9137157311132182254">Նախընտրած որոնիչ</translation>
 <translation id="9137248913990643158">Մուտք գործեք Chrome՝ նախքան հավելվածն օգտագործելը։</translation>

@@ -454,7 +454,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="1500297251995790841">Nepoznat uređaj [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Ovaj vlasnik računa mora biti prvi prijavljeni račun u sesiji višestruke prijave.</translation>
 <translation id="150411034776756821">Ukloni <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Preuzmite titlove za svoje medije</translation>
 <translation id="1504551620756424144">Dijeljeni folderi su dostupni u Windowsu na <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Pretraživač</translation>
 <translation id="1507170440449692343">Ovoj stranici je blokiran pristup vašoj kameri.</translation>
@@ -1448,6 +1447,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2604255671529671813">Greška mrežne veze</translation>
 <translation id="2606246518223360146">Poveži podatke</translation>
 <translation id="2606454609872547359">Ne, nastavi bez ChromeVoxa</translation>
+<translation id="2606568927909309675">Automatski kreira titlove za audio i videozapise na engleskom jeziku. Zvuk i titlovi nikada ne napuštaju uređaj.</translation>
 <translation id="2607101320794533334">Informacije o javnom ključu subjekta</translation>
 <translation id="2609896558069604090">Kreiraj prečice...</translation>
 <translation id="2609980095400624569">Uspostavljanje veze nije uspjelo</translation>
@@ -3745,7 +3745,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5265797726250773323">Greška prilikom instalacije</translation>
 <translation id="5266113311903163739">Greška prilikom uvoza organa za izdavanje potvrde</translation>
 <translation id="5269977353971873915">Štampanje nije uspjelo</translation>
-<translation id="5274738462757057090">Automatski kreira tilove za medije u pregledniku Chrome (trenutno je dostupno samo na engleskom)</translation>
 <translation id="5275352920323889391">Pas</translation>
 <translation id="527605982717517565">Uvijek omogući JavaScript na web lokaciji <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID statusa</translation>
@@ -4390,6 +4389,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6011074160056912900">Ethernet mreža</translation>
 <translation id="6011193465932186973">Otisak prsta</translation>
 <translation id="6011449291337289699">Brisanje podataka web lokacije</translation>
+<translation id="6013027779243312217">Preuzmite titlove za audio i videozapise</translation>
 <translation id="6015796118275082299">Godina</translation>
 <translation id="6016178549409952427">Posjetite dodatni sadržaj. <ph name="CURRENT_ELEMENT" />. element od ukupno <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Potvrdite Powerwash uz povratak na prethodnu verziju</translation>
@@ -6215,7 +6215,6 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8081989000209387414">Onemogućiti otklanjanje grešaka putem ADB-a?</translation>
 <translation id="8082106343289440791">Upariti s uređajem "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Ako omogućite otklanjanje grešaka putem ADB-a, uređaj <ph name="DEVICE_TYPE" /> će se vratiti na fabričke postavke. Svi korisnički računi i lokalni podaci će se potpuno izbrisati.</translation>
-<translation id="8083058154738359867">Omogućite Automatske titlove u postavkama i preuzmite titlove za medije</translation>
 <translation id="8084114998886531721">Sačuvana lozinka</translation>
 <translation id="8086015605808120405">Konfiguriranje pisača <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086442853986205778">Postavite štampač <ph name="PRINTER_NAME" /></translation>
@@ -6286,6 +6285,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8157704005178149728">Postavljanje nadzora</translation>
 <translation id="8158117992543756526">Ovaj uređaj je prestao primati automatska ažuriranja softvera i sigurnosna ažuriranja (<ph name="MONTH_AND_YEAR" />). <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Greška prilikom postavljanja pouzdanosti potvrde</translation>
+<translation id="8160775796528709999">Omogućite Automatske titlove u postavkama da preuzmete titlove za audio i videozapise</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Način rada za čitanje za web stranice</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Premjesti karticu u novi prozor}one{Premjesti kartice u novi prozor}few{Premjesti kartice u novi prozor}other{Premjesti kartice u novi prozor}}</translation>
@@ -7147,6 +7147,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.}}</tra
 <translation id="9128870381267983090">Spoji se na mrežu</translation>
 <translation id="9130015405878219958">Ušli ste u nevažeći način rada.</translation>
 <translation id="9131487537093447019">Šalji poruke na Bluetooth uređaje i primaj poruke s njih.</translation>
+<translation id="9134119143784876218">Automatski kreira titlove za audio i videozapise na engleskom jeziku (trenutno je dostupno samo u pregledniku Chrome). Zvuk i titlovi nikada ne napuštaju uređaj.</translation>
 <translation id="9137013805542155359">Prikaži original</translation>
 <translation id="9137157311132182254">Preferirani pretraživač</translation>
 <translation id="9137248913990643158">Pokrenite Chrome i prijavite se na nega prije korištenja ove aplikacije.</translation>

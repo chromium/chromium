@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Үл мэдэгдэх төхөөрөмж [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Эзэмшигчийн дансанд эхлээд олон нэвтрэх хэсэгт нэвтэрсэн байх шаардлагтай.</translation>
 <translation id="150411034776756821"><ph name="SITE" />-г устгах</translation>
-<translation id="1504311855864906891">Медиагаа хадмалтай болгох</translation>
 <translation id="1504551620756424144">Хуваалцсан фолдерууд нь Windows-д <ph name="BASE_DIR" /> дээр байна.</translation>
 <translation id="1506061864768559482">Хайлтын хэрэгсэл</translation>
 <translation id="1507170440449692343">Энэ хуудас нь таны камерт хандалт хийх эрхгүй.</translation>
@@ -1441,6 +1440,7 @@
 <translation id="2604255671529671813">Сүлжээний холболтын алдаа</translation>
 <translation id="2606246518223360146">Өгөгдлийг холбох</translation>
 <translation id="2606454609872547359">Үгүй, ChromeVox-гүйгээр үргэлжлүүлнэ</translation>
+<translation id="2606568927909309675">Англи хэл дээрх аудио болон видеонд автоматаар хадмал үүсгэдэг. Аудио болон хадмал таны төхөөрөмжөөс хэзээ ч гардаггүй.</translation>
 <translation id="2607101320794533334">Байгууллагын Public Key мэдээлэл</translation>
 <translation id="2609896558069604090">Богино холболтуудыг үүсгэх ...</translation>
 <translation id="2609980095400624569">Холболт тогтоож чадсангүй</translation>
@@ -3737,7 +3737,6 @@
 <translation id="5265797726250773323">Суулгах явцад алдаа гарлаа</translation>
 <translation id="5266113311903163739">Certification Authority Import Error</translation>
 <translation id="5269977353971873915">Хэвлэх үйлдэл амжилтгүй болсон байна</translation>
-<translation id="5274738462757057090">Chrome хөтөч дээр медиад зориулж хадмал автоматаар үүсгэдэг (одоохондоо зөвхөн англи хэлээр боломжтой)</translation>
 <translation id="5275352920323889391">Нохой</translation>
 <translation id="527605982717517565"><ph name="HOST" />-д байгаа JavaScript-ийг үргэлж зөвшөөрөх</translation>
 <translation id="5278823018825269962">Төлөвийн Id</translation>
@@ -4381,6 +4380,7 @@
 <translation id="6011074160056912900">Ethernet сүлжээ</translation>
 <translation id="6011193465932186973">Хурууны хээ</translation>
 <translation id="6011449291337289699">Сайтын өгөгдлийг устгах</translation>
+<translation id="6013027779243312217">Аудио болон видеондоо хадмал аваарай</translation>
 <translation id="6015796118275082299">Жил</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />-с <ph name="CURRENT_ELEMENT" /> нэмэлт контентод шилжих</translation>
 <translation id="6016551720757758985">Өмнөх хувилбар руу буцаах Powerwash-ийг баталгаажуулна уу.</translation>
@@ -6203,7 +6203,6 @@
 <translation id="8081989000209387414">ADB алдаа засахыг идэвхгүй болгох уу?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />"-тай хослуулах уу?</translation>
 <translation id="8082390128630131497">ADB алдаа засахыг идэвхгүй болгосноор энэ <ph name="DEVICE_TYPE" />-г үйлдвэрийн тохиргоонд шинэчилнэ. Бүх хэрэглэгчийн бүртгэл болон дотоод өгөгдлийг устах болно.</translation>
-<translation id="8083058154738359867">Шууд тайлбарыг тохиргоонд идэвхжүүлж, медиадаа тайлбар аваарай</translation>
 <translation id="8084114998886531721">Хадгалсан нууц үг</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" />-г тохируулж байна ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" />-г тохируулах</translation>
@@ -6273,6 +6272,7 @@
 <translation id="8157704005178149728">Хяналтыг тохируулж байна</translation>
 <translation id="8158117992543756526">Энэ төхөөрөмж <ph name="MONTH_AND_YEAR" />-д программ хангамж болон аюулгүй байдлын автомат шинэчлэлт авахаа зогсоосон байна. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Гэрчилгээ баталгаажуулалтын тохиргоо алдаатай байна</translation>
+<translation id="8160775796528709999">Шууд тайлбарыг тохиргоонд идэвхжүүлж аудио болон видеондоо хадмал аваарай</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" /> , <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Веб хуудсанд зориулсан уншигчийн горим</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Табыг шинэ цонх руу зөөх}other{Табуудыг шинэ цонх руу зөөх}}</translation>
@@ -7130,6 +7130,7 @@
 <translation id="9128870381267983090">Сүлжээнд холбогдох</translation>
 <translation id="9130015405878219958">Хүчин төгөлдөр бус горим оруулсан байна.</translation>
 <translation id="9131487537093447019">Bluethooth төмхөөрөмжид мэдээ илгээх болон мэдээ хүлээн авах.</translation>
+<translation id="9134119143784876218">Англи хэл дээрх аудио болон видеонд автоматаар хадмал үүсгэдэг (одоогоор зөвхөн Chrome хөтчид боломжтой). Аудио болон хадмал таны төхөөрөмжөөс хэзээ ч гардаггүй.</translation>
 <translation id="9137013805542155359">Эх хувийг харуулах</translation>
 <translation id="9137157311132182254">Сонгосон хайлтын систем</translation>
 <translation id="9137248913990643158">Энэ аппыг ашиглахын өмнө Chrome-г эхлүүлж, нэвтэрнэ үү.</translation>

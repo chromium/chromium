@@ -453,7 +453,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1500297251995790841">Hindi kilalang device [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Ang account ng may-ari na ito ay dapat ang unang naka-sign in na account sa isang session ng multiple na pag-sign in.</translation>
 <translation id="150411034776756821">Alisin ang <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Kumuha ng mga caption para sa iyong media</translation>
 <translation id="1504551620756424144">Available ang mga nakabahaging folder sa Windows sa <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Search engine</translation>
 <translation id="1507170440449692343">Na-block ang pahinang ito sa pag-a-access sa iyong camera.</translation>
@@ -1447,6 +1446,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2604255671529671813">Error sa koneksyon ng network</translation>
 <translation id="2606246518223360146">I-link ang Data</translation>
 <translation id="2606454609872547359">Hindi, magpatuloy nang walang ChromeVox</translation>
+<translation id="2606568927909309675">Awtomatikong gumagawa ng mga caption para sa English na audio at video. Hindi kailanman lumalabas sa iyong device ang audio at mga caption.</translation>
 <translation id="2607101320794533334">Impormasyon ng Pampublikong Key ng Paksa</translation>
 <translation id="2609896558069604090">Lumikha ng Mga Shortcut...</translation>
 <translation id="2609980095400624569">Hindi makakonekta</translation>
@@ -3744,7 +3744,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5265797726250773323">Nagkaroon ng error habang nag-i-install</translation>
 <translation id="5266113311903163739">Error sa Pag-import ng Certification Authority</translation>
 <translation id="5269977353971873915">Nabigo ang Pag-print</translation>
-<translation id="5274738462757057090">Awtomatikong gumagawa ng mga caption para sa media sa Chrome browser (kasalukuyang available lang sa English)</translation>
 <translation id="5275352920323889391">Aso</translation>
 <translation id="527605982717517565">Palaging hayaan ang JavaScript sa <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Status Id</translation>
@@ -4389,6 +4388,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6011074160056912900">Ethernet network</translation>
 <translation id="6011193465932186973">Fingerprint</translation>
 <translation id="6011449291337289699">I-clear ang data ng site</translation>
+<translation id="6013027779243312217">Kumuha ng mga caption para sa iyong audio at video</translation>
 <translation id="6015796118275082299">Taon</translation>
 <translation id="6016178549409952427">Mag-navigate sa karagdagang content na <ph name="CURRENT_ELEMENT" /> sa <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Kumpirmahin ang Powerwash na maaaring bumalik sa dating bersyon</translation>
@@ -6214,7 +6214,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8081989000209387414">I-disable ang pag-debug ng ADB?</translation>
 <translation id="8082106343289440791">Ipares sa "<ph name="DEVICE_NAME" />?"</translation>
 <translation id="8082390128630131497">Kapag na-disable ang pag-bug ng ADB, mare-reset ang <ph name="DEVICE_TYPE" /> na ito sa mga factory setting. Mabubura ang lahat ng user account at lokal na data.</translation>
-<translation id="8083058154738359867">Kumuha ng mga caption para sa iyong media sa pamamagitan ng pag-enable sa Instant Caption sa mga setting</translation>
 <translation id="8084114998886531721">Naka-save na password</translation>
 <translation id="8086015605808120405">Kino-configure ang <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086442853986205778">I-set up ang <ph name="PRINTER_NAME" /></translation>
@@ -6285,6 +6284,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8157704005178149728">Sine-set up ang patnubay</translation>
 <translation id="8158117992543756526">Hindi na nakakatanggap ang device na ito ng mga awtomatikong update sa software at seguridad mula noong<ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Error sa Pagtakda ng Certificate Trust</translation>
+<translation id="8160775796528709999">Kumuha ng mga caption para sa iyong audio at video sa pamamagitan ng pag-enable sa Instant Caption sa mga setting</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Reader mode para sa mga web page</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Ilipat ang Tab sa Bagong Window}one{Maglipat ng Mga Tab sa Bagong Window}other{Maglipat ng Mga Tab sa Bagong Window}}</translation>
@@ -7147,6 +7147,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9128870381267983090">Kumonekta sa network</translation>
 <translation id="9130015405878219958">Di-wastong mode ang ipinasok.</translation>
 <translation id="9131487537093447019">Magpadala ng mga mensahe sa at makatanggap ng mga mensahe mula sa mga Bluetooth device.</translation>
+<translation id="9134119143784876218">Awtomatikong gumagawa ng mga caption para sa English na audio at video (kasalukuyang available lang sa Chrome browser). Hindi kailanman lumalabas sa iyong device ang audio at mga caption.</translation>
 <translation id="9137013805542155359">Ipakita ang orihinal</translation>
 <translation id="9137157311132182254">Gustong search engine</translation>
 <translation id="9137248913990643158">Magsimula at mag-sign in sa Chrome bago gamitin ang app na ito.</translation>

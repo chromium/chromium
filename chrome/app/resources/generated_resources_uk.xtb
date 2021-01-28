@@ -455,7 +455,6 @@
 <translation id="1500297251995790841">Невідомий пристрій [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Цей обліковий запис власника має бути першим обліковим записом, з якого здійснено вхід під час сеансу паралельного входу.</translation>
 <translation id="150411034776756821">Видалити дані сайту <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Додавати субтитри до свого медіаконтенту</translation>
 <translation id="1504551620756424144">Спільні папки у Windows доступні за шляхом <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Пошукова система</translation>
 <translation id="1507170440449692343">Доступ цієї сторінки до вашої камери заблоковано.</translation>
@@ -1449,6 +1448,7 @@
 <translation id="2604255671529671813">Помилка з’єднання з мережею</translation>
 <translation id="2606246518223360146">Зв’язати профіль</translation>
 <translation id="2606454609872547359">Ні, продовжити без ChromeVox</translation>
+<translation id="2606568927909309675">Автоматично створює субтитри для аудіо та відео англійською мовою. Аудіозаписи й субтитри залишаються на вашому пристрої.</translation>
 <translation id="2607101320794533334">Інформація про відкритий ключ суб'єкта</translation>
 <translation id="2609896558069604090">Створення ярликів...</translation>
 <translation id="2609980095400624569">Не вдалося підключитися</translation>
@@ -3746,7 +3746,6 @@
 <translation id="5265797726250773323">Помилка під час встановлення</translation>
 <translation id="5266113311903163739">Помилка імпортування центру сертифікації</translation>
 <translation id="5269977353971873915">Помилка друку</translation>
-<translation id="5274738462757057090">Автоматично створює субтитри для медіаконтенту у веб-переглядачі Chrome (наразі лише англійською мовою)</translation>
 <translation id="5275352920323889391">Собака</translation>
 <translation id="527605982717517565">Завжди дозволяти JavaScript на хості <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Ідентифікатор статусу</translation>
@@ -4391,6 +4390,7 @@
 <translation id="6011074160056912900">Мережа Ethernet</translation>
 <translation id="6011193465932186973">Відбиток пальця</translation>
 <translation id="6011449291337289699">Очистити дані веб-сайту</translation>
+<translation id="6013027779243312217">Отримуйте субтитри до аудіо та відео</translation>
 <translation id="6015796118275082299">Рік</translation>
 <translation id="6016178549409952427">Перейти до додаткового контенту <ph name="CURRENT_ELEMENT" /> з <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Підтвердити Powerwash і повернення до попередньої версії</translation>
@@ -4845,7 +4845,7 @@
 <translation id="652948702951888897">Історія Chrome</translation>
 <translation id="6530186581263215931">Ці налаштування застосовує адміністратор</translation>
 <translation id="6531282281159901044">Завантажити небезпечний файл</translation>
-<translation id="6532101170117367231">Зберегти на Диску Google</translation>
+<translation id="6532101170117367231">Зберегти на Google Диску</translation>
 <translation id="6532106788206463496">Зберегти зміни</translation>
 <translation id="6532206849875187177">Безпека та вхід</translation>
 <translation id="6532527800157340614">Не вдалось отримати маркер доступу та ввійти. Перевірте з'єднання з мережею та повторіть спробу.</translation>
@@ -6216,7 +6216,6 @@
 <translation id="8081989000209387414">Вимкнути налагодження ADB?</translation>
 <translation id="8082106343289440791">Підключитися до пристрою "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Якщо вимкнути налагодження ADB, усі заводські налаштування пристрою <ph name="DEVICE_TYPE" /> буде скинуто. Усі облікові записи користувачів і локальні дані буде видалено.</translation>
-<translation id="8083058154738359867">Отримуйте субтитри до медіаконтенту, увімкнувши живі субтитри в налаштуваннях</translation>
 <translation id="8084114998886531721">Збережений пароль</translation>
 <translation id="8086015605808120405">Налаштування принтера <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">Налаштувати принтер <ph name="PRINTER_NAME" /></translation>
@@ -6287,6 +6286,7 @@
 <translation id="8157704005178149728">Налаштування батьківського контролю</translation>
 <translation id="8158117992543756526"><ph name="MONTH_AND_YEAR" />: цей пристрій перестав отримувати автоматичні оновлення програмного забезпечення й системи безпеки. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Помилка під час налаштування довіри сертифікату</translation>
+<translation id="8160775796528709999">Щоб переглядати живі субтитри до аудіо чи відео, увімкніть їх у налаштуваннях</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Режим читання для веб-сторінок</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Перемістити вкладку в нове вікно}one{Перемістити вкладки в нове вікно}few{Перемістити вкладки в нове вікно}many{Перемістити вкладки в нове вікно}other{Перемістити вкладки в нове вікно}}</translation>
@@ -7149,6 +7149,7 @@
 <translation id="9128870381267983090">З'єднатися з мережею</translation>
 <translation id="9130015405878219958">Введено недійсний режим.</translation>
 <translation id="9131487537093447019">Обмінюватися повідомленнями на пристроях Bluetooth.</translation>
+<translation id="9134119143784876218">Автоматично створює субтитри для аудіо та відео англійською мовою (наразі лише у веб-переглядачі Chrome). Аудіозаписи й субтитри залишаються на вашому пристрої.</translation>
 <translation id="9137013805542155359">Показати оригінал</translation>
 <translation id="9137157311132182254">Основна пошукова система</translation>
 <translation id="9137248913990643158">Перш ніж користуватися додатком, увійдіть в обліковий запис Chrome.</translation>

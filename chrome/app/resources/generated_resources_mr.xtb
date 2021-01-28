@@ -451,7 +451,6 @@
 <translation id="1500297251995790841">अज्ञात डिव्हाइस [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">हे मालक खाते मल्टिपल साइन-इन सेशनमधील प्रथम साइन-इन केलेले खाते असणे आवश्यक आहे.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> काढून टाका</translation>
-<translation id="1504311855864906891">तुमच्या मीडियासाठी कॅप्शन मिळवा</translation>
 <translation id="1504551620756424144">शेअर केलेली फोल्डर Windows मध्ये <ph name="BASE_DIR" /> येथे उपलब्ध आहेत.</translation>
 <translation id="1506061864768559482">शोध इंजीन</translation>
 <translation id="1507170440449692343">हे पृष्ठ आपल्या कॅमेर्‍यावर प्रवेश करण्यापासून अवरोधित केले गेले आहे.</translation>
@@ -1439,6 +1438,7 @@
 <translation id="2604255671529671813">नेटवर्क कनेक्शन एरर</translation>
 <translation id="2606246518223360146">डेटा लिंक करा</translation>
 <translation id="2606454609872547359">नाही, ChromeVox शिवाय पुढे सुरू ठेवा</translation>
+<translation id="2606568927909309675">इंग्रजी ऑडिओ आणि व्हिडिओसाठी आपोआप कॅप्शन तयार करते. ऑडिओ आणि कॅप्शन तुमच्या डिव्हाइसमध्येच राहतात.</translation>
 <translation id="2607101320794533334">विषय सार्वजनिक की माहिती</translation>
 <translation id="2609896558069604090">शॉर्टकट तयार करा...</translation>
 <translation id="2609980095400624569">कनेक्शन जोडता आले नाही</translation>
@@ -3720,7 +3720,6 @@
 <translation id="5265797726250773323">इंस्टॉल करताना एरर आली</translation>
 <translation id="5266113311903163739">सर्टिफिकेशन ऑथोरेटी इंपोर्ट एरर</translation>
 <translation id="5269977353971873915">प्रिंट अयशस्वी</translation>
-<translation id="5274738462757057090">Chrome ब्राउझरमध्ये मीडियासाठी आपोआप कॅप्शन तयार करते (सध्या फक्‍त इंग्रजीमध्ये उपलब्ध आहे)</translation>
 <translation id="5275352920323889391">कुत्रा</translation>
 <translation id="527605982717517565"><ph name="HOST" /> वर JavaScript ला नेहमी परवानगी द्या</translation>
 <translation id="5278823018825269962">स्थिती आयडी</translation>
@@ -4364,6 +4363,7 @@
 <translation id="6011074160056912900">इथरनेट नेटवर्क</translation>
 <translation id="6011193465932186973">फिंगरप्रिंट</translation>
 <translation id="6011449291337289699">साइट डेटा साफ करा</translation>
+<translation id="6013027779243312217">तुमच्या ऑडिओ आणि व्हिडिओसाठी कॅप्शन मिळवा</translation>
 <translation id="6015796118275082299">वर्ष</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" /> पैकी <ph name="CURRENT_ELEMENT" /> अतिरिक्त आशयावर नेव्हिगेट करा</translation>
 <translation id="6016551720757758985">मागील आवृत्तीवर परत येऊन Powerwash ची कन्फर्म करा</translation>
@@ -6177,7 +6177,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8081989000209387414">ADB डीबगिंग बंद करायचे?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" सोबत पेअर करायचे?</translation>
 <translation id="8082390128630131497">ADB डिबगिंग बंद केल्यामुळे हे <ph name="DEVICE_TYPE" /> फॅक्टरी सेटिंग्जवर रीसेट होईल. सर्व वापरकर्ता खाती आणि स्थानिक डेटा मिटवला जाईल.</translation>
-<translation id="8083058154738359867">सेटिंग्जमध्ये लाइव्ह कॅप्शन सुरू करून तुमच्या मीडियासाठी कॅप्शन मिळवा</translation>
 <translation id="8084114998886531721">सेव्ह केलेले पासवर्ड</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> कॉंफिगर करत आहे...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> सेट करा</translation>
@@ -6247,6 +6246,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8157704005178149728">पर्यवेक्षण सेट करत आहे</translation>
 <translation id="8158117992543756526"><ph name="MONTH_AND_YEAR" /> मध्ये या डिव्हाइसला ऑटोमेटिक सॉफ्टवेअर आणि सुरक्षा अपडेट मिळणे थांबेल. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">सर्टिफिकेट विश्वास सेट करताना एरर</translation>
+<translation id="8160775796528709999">सेटिंग्जमध्ये लाइव्ह कॅप्शन सुरू करून तुमच्या ऑडिओ आणि व्हिडिओसाठी कॅप्शन मिळवा</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">वेब पेजसाठी वाचक मोड</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{टॅब नवीन विंडो वर हलवा}other{टॅब नवीन विंडो वर हलवा}}</translation>
@@ -7102,6 +7102,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9128870381267983090">नेटवर्कशी कनेक्ट करा</translation>
 <translation id="9130015405878219958">चुकीचे मोड एंटर केले.</translation>
 <translation id="9131487537093447019">ब्लूटूथ डिव्हाइस वर मेसेज पाठवा आणि त्यावरून मिळवा.</translation>
+<translation id="9134119143784876218">इंग्रजी ऑडिओ आणि व्हिडिओसाठी आपोआप कॅप्शन तयार करते (सध्या फक्त Chrome ब्राउझरमध्ये उपलब्ध आहे). ऑडिओ आणि कॅप्शन तुमच्या डिव्हाइसमध्येच राहतात.</translation>
 <translation id="9137013805542155359">मूळ दर्शवा</translation>
 <translation id="9137157311132182254">प्राधान्य असलेले शोध इंजीन</translation>
 <translation id="9137248913990643158">कृपया हा ॲप वापरण्‍यापूर्वी सुरू करा आणि Chrome मध्‍ये साइन इन करा.</translation>

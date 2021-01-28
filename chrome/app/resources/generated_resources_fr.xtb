@@ -453,7 +453,6 @@
 <translation id="1500297251995790841">Appareil inconnu [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Ce compte de propriétaire doit être le premier compte à être connecté lors de sessions de connexion multicompte.</translation>
 <translation id="150411034776756821">Supprimer <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Générer des sous-titres pour vos contenus multimédias</translation>
 <translation id="1504551620756424144">Les dossiers partagés sont disponibles sous Windows dans <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Moteur de recherche</translation>
 <translation id="1507170440449692343">L'accès à votre caméra est bloqué pour cette page</translation>
@@ -1447,6 +1446,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2604255671529671813">Erreur de connexion réseau</translation>
 <translation id="2606246518223360146">Associer les données</translation>
 <translation id="2606454609872547359">Non, continuer sans ChromeVox</translation>
+<translation id="2606568927909309675">Génère automatiquement des sous-titres pour les contenus audio et vidéo en anglais. Le flux audio et les sous-titres ne sont jamais exportés hors de votre appareil.</translation>
 <translation id="2607101320794533334">Infos sur la clé publique de l'objet</translation>
 <translation id="2609896558069604090">Créer des raccourcis…</translation>
 <translation id="2609980095400624569">Impossible d'établir la connexion</translation>
@@ -3744,7 +3744,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="5265797726250773323">Erreur lors de l'installation</translation>
 <translation id="5266113311903163739">Erreur d'importation de l'autorité de certification</translation>
 <translation id="5269977353971873915">Échec de l'impression</translation>
-<translation id="5274738462757057090">Crée automatiquement des sous-titres pour les contenus multimédias dans le navigateur Chrome (uniquement disponible en anglais pour le moment)</translation>
 <translation id="5275352920323889391">Chien</translation>
 <translation id="527605982717517565">Toujours exécuter JavaScript sur <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID d'état</translation>
@@ -4390,6 +4389,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6011074160056912900">Réseau Ethernet</translation>
 <translation id="6011193465932186973">Empreinte digitale</translation>
 <translation id="6011449291337289699">Effacer les données de sites</translation>
+<translation id="6013027779243312217">Afficher des sous-titres pour vos contenus audio et vidéo</translation>
 <translation id="6015796118275082299">Année</translation>
 <translation id="6016178549409952427">Accéder au contenu supplémentaire <ph name="CURRENT_ELEMENT" /> sur <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirmer la réinitialisation Powerwash et rétablir la version précédente</translation>
@@ -6215,7 +6215,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8081989000209387414">Désactiver le débogage ADB ?</translation>
 <translation id="8082106343289440791">Associer à "<ph name="DEVICE_NAME" />" ?</translation>
 <translation id="8082390128630131497">La désactivation du débogage ADB rétablira la configuration d'usine de <ph name="DEVICE_TYPE" />. Tous les comptes utilisateur et toutes les données locales seront supprimés.</translation>
-<translation id="8083058154738359867">Activez l'option "Sous-titres instantanés" dans les paramètres pour afficher les sous-titres de votre contenu multimédia</translation>
 <translation id="8084114998886531721">Mot de passe enregistré</translation>
 <translation id="8086015605808120405">Configuration de <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">Configurer l'imprimante <ph name="PRINTER_NAME" /></translation>
@@ -6286,6 +6285,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8157704005178149728">Configuration de la supervision…</translation>
 <translation id="8158117992543756526">Cet appareil cessera de recevoir automatiquement des mises à jour logicielles et de sécurité en <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Erreur de définition du paramètre de confiance du certificat</translation>
+<translation id="8160775796528709999">Activez l'option "Sous-titres instantanés" dans les paramètres afin de bénéficier de sous-titres pour vos contenus vidéo et audio</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Mode Lecteur pour les pages Web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Déplacer l'onglet vers une nouvelle fenêtre}one{Déplacer l'onglet vers une nouvelle fenêtre}other{Déplacer les onglets vers une nouvelle fenêtre}}</translation>
@@ -7146,6 +7146,7 @@ Appuyez sur un contacteur associé à l'action pour supprimer l'association.</tr
 <translation id="9128870381267983090">Connectez-vous au réseau</translation>
 <translation id="9130015405878219958">Le mode indiqué est incorrect.</translation>
 <translation id="9131487537093447019">Envoyer des messages à des appareils Bluetooth, et en recevoir de ces derniers</translation>
+<translation id="9134119143784876218">Génère automatiquement des sous-titres pour les contenus audio et vidéo en anglais (option actuellement disponible dans le navigateur Chrome uniquement). Le flux audio et les sous-titres ne sont jamais exportés hors de votre appareil.</translation>
 <translation id="9137013805542155359">Afficher l'original</translation>
 <translation id="9137157311132182254">Moteur de recherche préféré</translation>
 <translation id="9137248913990643158">Veuillez démarrer Chrome et vous connecter à votre compte avant d'utiliser cette application</translation>

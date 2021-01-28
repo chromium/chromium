@@ -451,7 +451,6 @@
 <translation id="1500297251995790841">ଅଜଣା ଡିଭାଇସ୍‌ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">ଏହି ମାଲିକଙ୍କ ଆକାଉଣ୍ଟଟିକୁ ସର୍ବପ୍ରଥମେ ସାଇନ୍ ଇନ୍ କରିଥିବା ଆକାଉଣ୍ଟ ଭାବରେ ରଖିବା ଆବଶ୍ୟକ ଅଟେ৷</translation>
 <translation id="150411034776756821"><ph name="SITE" />କୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
-<translation id="1504311855864906891">ଆପଣଙ୍କ ମିଡିଆ ପାଇଁ କ୍ୟାପସନଗୁଡ଼ିକ ପ୍ରାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="1504551620756424144">ସେୟାର୍ କରାଯାଇଥିବା ଫୋଲ୍ଡରଗୁଡ଼ିକ Windowsରେ <ph name="BASE_DIR" />ରେ ଉପଲବ୍ଧ ଅଛି।</translation>
 <translation id="1506061864768559482">ସନ୍ଧାନ ଇଞ୍ଜିନ୍</translation>
 <translation id="1507170440449692343">ଏହି ପୃଷ୍ଠାରୁ ଆପଣଙ୍କର କ୍ୟାମେରା ଆକ୍ସେସ୍ କରିବାକୁ ଅବରୋଧ କରାଯାଇଛି।</translation>
@@ -1439,6 +1438,7 @@
 <translation id="2604255671529671813">ନେଟ୍‍ୱାର୍କ ସଂଯୋଗରେ ତ୍ରୁଟି</translation>
 <translation id="2606246518223360146">ଡାଟା ଲିଙ୍କ୍‍ କରନ୍ତୁ</translation>
 <translation id="2606454609872547359">ନା, ChromeVox ବିନା ଜାରି ରଖନ୍ତୁ</translation>
+<translation id="2606568927909309675">ଇଂରାଜୀ ଅଡିଓ ଏବଂ ଭିଡିଓ ପାଇଁ ସ୍ୱଚାଳିତ ଭାବେ କ୍ୟାପ୍ସନଗୁଡ଼ିକ ତିଆରି କରେ। ଅଡିଓ ଏବଂ କ୍ୟାପ୍ସନଗୁଡ଼ିକୁ କେବେ ବି ଆପଣଙ୍କ ଡିଭାଇସରୁ କାଢ଼ି ଦିଆଯାଏ ନାହିଁ।</translation>
 <translation id="2607101320794533334">ବିଷୟ ସାର୍ବଜନିକ କୀ ସୂଚନା</translation>
 <translation id="2609896558069604090">ସର୍ଟକଟ୍‌ ତିଆରି କରନ୍ତୁ...</translation>
 <translation id="2609980095400624569">ସଂଯୋଗ ସ୍ଥାପନ କରାଯାଇପାରିଲା ନାହିଁ</translation>
@@ -3735,7 +3735,6 @@
 <translation id="5265797726250773323">ଇନ୍‌ଷ୍ଟଲ୍ ହେବା ସମୟରେ ତ୍ରୁଟି</translation>
 <translation id="5266113311903163739">ସର୍ଟିଫିକେଟ୍‌ ଅଥୋରିଟି ତ୍ରୁଟି ଇମ୍ପୋର୍ଟ କରିଛନ୍ତି</translation>
 <translation id="5269977353971873915">ପ୍ରିଣ୍ଟ ହେଲାନାହିଁ</translation>
-<translation id="5274738462757057090">Chrome ବ୍ରାଉଜରରେ ମିଡିଆ ପାଇଁ ସ୍ୱଚାଳିତ ଭାବେ କ୍ୟାପ୍ସନଗୁଡ଼ିକ ତିଆରି କରେ (ବର୍ତ୍ତମାନ କେବଳ ଇଂରାଜୀରେ ଉପଲବ୍ଧ ଅଛି)</translation>
 <translation id="5275352920323889391">ଶ୍ୱାନ</translation>
 <translation id="527605982717517565">ସର୍ବଦା <ph name="HOST" />ରେ JavaScriptକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="5278823018825269962">ସ୍ଥିତି Id</translation>
@@ -4380,6 +4379,7 @@
 <translation id="6011074160056912900">ଇଥର୍‌ନେଟ୍ ନେଟ୍‍ୱାର୍କ</translation>
 <translation id="6011193465932186973">ଟିପ ଚିହ୍ନ</translation>
 <translation id="6011449291337289699">ସାଇଟ୍‍ ଡାଟା ଖାଲି କରନ୍ତୁ</translation>
+<translation id="6013027779243312217">ଆପଣଙ୍କ ଅଡିଓ ଏବଂ ଭିଡିଓ ପାଇଁ କ୍ୟାପ୍ସନଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
 <translation id="6015796118275082299">ବର୍ଷ</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />ଟିରୁ <ph name="CURRENT_ELEMENT" />ଟି ଅତିରିକ୍ତ ବିଷୟବସ୍ତୁକୁ ନାଭିଗେଟ୍ କରନ୍ତୁ</translation>
 <translation id="6016551720757758985">ପୂର୍ବବର୍ତ୍ତୀ ସଂସ୍କରଣକୁ ଫେରିଆସିବା ସହିତ Powerwashକୁ ସୁନିଶ୍ଚିତ କରନ୍ତୁ</translation>
@@ -6205,7 +6205,6 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8081989000209387414">ADB ଡିବଗିଂ ଅକ୍ଷମ କରିବେ?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" ସହ ପେୟାର୍ କରିବେ?</translation>
 <translation id="8082390128630131497">ADB ଡିବଗିଂ ଅକ୍ଷମ କରିବା ଦ୍ୱାରା ଏହି <ph name="DEVICE_TYPE" /> ଫ୍ୟାକ୍ଟୋରୀ ସେଟିଂସ୍‌ରେ ରିସେଟ୍ ହୋଇଯିବ। ସମସ୍ତ ଉପଯୋଗକର୍ତ୍ତା ଆକାଉଣ୍ଟ ଏବଂ ସ୍ଥାନୀୟ ଡାଟା ଲିଭିଯିବ।</translation>
-<translation id="8083058154738359867">ସେଟିଂସରେ ଲାଇଭ୍ କ୍ୟାପ୍ସନକୁ ସକ୍ଷମ କରି ଆପଣଙ୍କ ମିଡିଆ ପାଇଁ କ୍ୟାପ୍ସନଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
 <translation id="8084114998886531721">ସେଭ୍‌ ହୋ‍ଇଥିବା ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> କନ୍‍ଫିଗର୍ କରାଯାଉଛି ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
@@ -6275,6 +6274,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="8157704005178149728">ନିରୀକ୍ଷଣ ସେଟ୍ ଅପ୍ ହେଉଛି</translation>
 <translation id="8158117992543756526">ଏହି ଡିଭାଇସକୁ <ph name="MONTH_AND_YEAR" />ରୁ ସ୍ୱଚାଳିତ ଭାବରେ ସଫ୍ଟୱେୟାର ଏବଂ ସୁରକ୍ଷା ଅପଡେଟଗୁଡ଼ିକ ମିଳିବା ବନ୍ଦ ହୋଇଯାଇଛି। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">ସାର୍ଟିଫିକେଟ୍ ବିଶ୍ୱାସ ସେଟ୍‌ କରିବାରେ ତ୍ରୁଟି</translation>
+<translation id="8160775796528709999">ସେଟିଂସରେ ଲାଇଭ୍ କ୍ୟାପ୍ସନକୁ ସକ୍ଷମ କରି ଆପଣଙ୍କ ଅଡିଓ ଏବଂ ଭିଡିଓ ପାଇଁ କ୍ୟାପ୍ସନଗୁଡ଼ିକ ପାଆନ୍ତୁ</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">ୱେବ୍ ପୃଷ୍ଠା ପାଇଁ ରିଡର୍ ମୋଡ୍</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ନୂଆ ୱିଣ୍ଡୋକୁ ଟାବ୍ ମୁଭ୍ କରନ୍ତୁ}other{ନୂଆ ୱିଣ୍ଡୋକୁ ଟାବଗୁଡ଼ିକ ମୁଭ୍ କରନ୍ତୁ}}</translation>
@@ -7134,6 +7134,7 @@ Google Chrome ଆପଣଙ୍କ ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବ
 <translation id="9128870381267983090">ନେଟ୍‌ୱର୍କ ସହ ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="9130015405878219958">ଅବୈଧ ମୋଡ୍ ଏଣ୍ଟର୍ ହୋଇଛି।</translation>
 <translation id="9131487537093447019">ବ୍ଲୁଟୁଥ୍ ଡିଭାଇସ୍‍ଗୁଡ଼ିକୁ ମେସେଜ୍ ପଠାନ୍ତୁ ଏବଂ ସେଥିରୁ ମେସେଜ୍ ପ୍ରାପ୍ତ କରନ୍ତୁ।</translation>
+<translation id="9134119143784876218">ଇଂରାଜୀରେ ଅଡିଓ ଏବଂ ଭିଡିଓ ପାଇଁ ସ୍ୱଚାଳିତ ଭାବେ କ୍ୟାପ୍ସନଗୁଡ଼ିକ ତିଆରି କରେ (ବର୍ତ୍ତମାନ କେବଳ Chrome ବ୍ରାଉଜରରେ ଉପଲବ୍ଧ ଅଛି)। ଅଡିଓ ଏବଂ କ୍ୟାପ୍ସନଗୁଡ଼ିକୁ କେବେ ବି ଆପଣଙ୍କ ଡିଭାଇସରୁ କାଢ଼ି ଦିଆଯାଏ ନାହିଁ।</translation>
 <translation id="9137013805542155359">ମୂଳ ଲେଖା ଦେଖାନ୍ତୁ</translation>
 <translation id="9137157311132182254">ପସନ୍ଦ କରାଯାଇଥିବା ସନ୍ଧାନ ଇଞ୍ଜିନ୍</translation>
 <translation id="9137248913990643158">ଦୟାକରି ଏହି ଆପ୍ ବ୍ୟବହାର କରିବା ପୂର୍ବରୁ Chrome ଖୋଲନ୍ତୁ ଏବଂ ଏଥିରେ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ।</translation>

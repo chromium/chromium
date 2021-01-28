@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">未知设备 [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">在多帐号登录会话中，此所有者帐号必须是最先登录的帐号。</translation>
 <translation id="150411034776756821">移除 <ph name="SITE" /></translation>
-<translation id="1504311855864906891">为您的媒体生成字幕</translation>
 <translation id="1504551620756424144">在 Windows 中，共享文件夹是位于 <ph name="BASE_DIR" /> 下。</translation>
 <translation id="1506061864768559482">搜索引擎</translation>
 <translation id="1507170440449692343">已阻止此网页使用您的摄像头。</translation>
@@ -1442,6 +1441,7 @@
 <translation id="2604255671529671813">网络连接错误</translation>
 <translation id="2606246518223360146">关联数据</translation>
 <translation id="2606454609872547359">否，不启用 ChromeVox 并继续操作</translation>
+<translation id="2606568927909309675">自动为英文版音频和视频创建字幕。音频和字幕绝不会从设备中泄露出去。</translation>
 <translation id="2607101320794533334">证书持有者的公共密钥信息</translation>
 <translation id="2609896558069604090">创建快捷方式...</translation>
 <translation id="2609980095400624569">无法建立连接</translation>
@@ -3738,7 +3738,6 @@
 <translation id="5265797726250773323">安装时出错</translation>
 <translation id="5266113311903163739">证书授权中心导入错误</translation>
 <translation id="5269977353971873915">打印失败</translation>
-<translation id="5274738462757057090">在 Chrome 浏览器中自动为媒体创建字幕（目前仅提供英文版）</translation>
 <translation id="5275352920323889391">狗</translation>
 <translation id="527605982717517565">始终允许使用 <ph name="HOST" /> 上的 JavaScript</translation>
 <translation id="5278823018825269962">状态 ID</translation>
@@ -4383,6 +4382,7 @@
 <translation id="6011074160056912900">以太网</translation>
 <translation id="6011193465932186973">指纹</translation>
 <translation id="6011449291337289699">清除网站数据</translation>
+<translation id="6013027779243312217">为您的音频和视频生成字幕</translation>
 <translation id="6015796118275082299">年</translation>
 <translation id="6016178549409952427">转到第 <ph name="CURRENT_ELEMENT" /> 项附加内容，共 <ph name="TOTAL_ELEMENTS" /> 项</translation>
 <translation id="6016551720757758985">确认 Powerwash 是否将设备还原到之前的版本</translation>
@@ -6208,7 +6208,6 @@
 <translation id="8081989000209387414">停用 ADB 调试？</translation>
 <translation id="8082106343289440791">与“<ph name="DEVICE_NAME" />”配对？</translation>
 <translation id="8082390128630131497">停用 ADB 调试会将此<ph name="DEVICE_TYPE" />恢复出厂设置。所有用户帐号和本地数据都会被清空。</translation>
-<translation id="8083058154738359867">只需在设置中启用“实时字幕”功能，即可为您的媒体生成字幕</translation>
 <translation id="8084114998886531721">保存的密码</translation>
 <translation id="8086015605808120405">正在配置<ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">设置<ph name="PRINTER_NAME" /></translation>
@@ -6278,6 +6277,7 @@
 <translation id="8157704005178149728">正在设置监管功能</translation>
 <translation id="8158117992543756526">自 <ph name="MONTH_AND_YEAR" />起，此设备已无法再自动获取软件更新和安全更新。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">设置证书信任时出错</translation>
+<translation id="8160775796528709999">只需在设置中启用“实时字幕”功能，即可为您的音频和视频生成字幕</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />，<ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">使用阅读器模式显示网页</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{将标签页移至新窗口}other{将标签页移至新窗口}}</translation>
@@ -7137,6 +7137,7 @@
 <translation id="9128870381267983090">连接到网络</translation>
 <translation id="9130015405878219958">输入的模式无效。</translation>
 <translation id="9131487537093447019">向蓝牙设备发送消息，以及接收来自蓝牙设备的消息。</translation>
+<translation id="9134119143784876218">自动为英文版音频和视频创建字幕（目前只能在 Chrome 浏览器中这样做）。音频和字幕绝不会从设备中泄露出去。</translation>
 <translation id="9137013805542155359">显示原始网页</translation>
 <translation id="9137157311132182254">首选搜索引擎</translation>
 <translation id="9137248913990643158">在使用此应用前，请先启动并登录 Chrome。</translation>

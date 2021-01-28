@@ -251,7 +251,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1274997165432133392">Cookieak eta webguneko beste datuak</translation>
 <translation id="1275718070701477396">Hautatua</translation>
 <translation id="1276994519141842946">Ezin izan da desinstalatu <ph name="APP_NAME" /></translation>
-<translation id="1277020343994096713">Sortu beste PIN kode bat (ezin da izan unean darabilzuna)</translation>
+<translation id="1277020343994096713">Sortu beste PIN kode bat (ezin da izan une honetan darabilzuna)</translation>
 <translation id="1278703349931574538">Kudeatu kontaktuak</translation>
 <translation id="127946606521051357">Inguruko gailu bat edukia partekatzen ari da</translation>
 <translation id="1280820357415527819">Sare mugikorren bila</translation>
@@ -452,7 +452,6 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1500297251995790841">Identifikatu ezin den gailua [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Saio anitzeko saioetan, jabeak hasi behar du kontua lehendabizi.</translation>
 <translation id="150411034776756821">Kendu <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Lortu azpitituluak multimedia-edukirako</translation>
 <translation id="1504551620756424144">Karpeta partekatuak Windows-eko direktorio honetan daude: <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Bilatzailea</translation>
 <translation id="1507170440449692343">Orriari kamera atzitzeko aukera blokeatu zaio.</translation>
@@ -1213,7 +1212,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2335122562899522968">Orriak cookieak ezarri ditu.</translation>
 <translation id="2336228925368920074">Egin fitxa guztien laster-markak…</translation>
 <translation id="2336376423977300504">Garbitu beti cookieak leihoak ixten direnean</translation>
-<translation id="2336381494582898602">Berrezarri fabrikako ezarpenak</translation>
+<translation id="2336381494582898602">Berrezarri fabrikako ezarpenak Powerwash bidez</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> ezin da segurtasunez deskargatu</translation>
 <translation id="2340263603246777781"><ph name="ORIGIN" /> webguneak parekatu egin nahi du</translation>
 <translation id="2342740338116612727">Laster-markak gehitu dira</translation>
@@ -1446,6 +1445,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2604255671529671813">Sareko konexioaren errorea</translation>
 <translation id="2606246518223360146">Lotu datuak</translation>
 <translation id="2606454609872547359">Ez, egin aurrera ChromeVox gabe</translation>
+<translation id="2606568927909309675">Automatikoki sortzen ditu ingelesezko audio eta bideoen azpitituluak. Audioa eta azpitituluak ez dira ateratzen gailutik.</translation>
 <translation id="2607101320794533334">Hartzailearen gako publikoaren informazioa</translation>
 <translation id="2609896558069604090">Sortu lasterbideak…</translation>
 <translation id="2609980095400624569">Ezin izan da ezarri konexioa</translation>
@@ -3743,7 +3743,6 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="5265797726250773323">Errore bat gertatu da instalatzean</translation>
 <translation id="5266113311903163739">Errore bat gertatu da autoritate ziurtagiri-emailea inportatzean</translation>
 <translation id="5269977353971873915">Inprimatzeak huts egin du</translation>
-<translation id="5274738462757057090">Automatikoki sortzen ditu Chrome arakatzaileko multimedia-edukirako azpitituluak (ingelesez bakarrik erabilgarri oraingoz)</translation>
 <translation id="5275352920323889391">Txakurra</translation>
 <translation id="527605982717517565">Eman beti JavaScript <ph name="HOST" /> ostalarian erabiltzeko baimena</translation>
 <translation id="5278823018825269962">Egoeraren IDa</translation>
@@ -4387,6 +4386,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="6011074160056912900">Ethernet sarea</translation>
 <translation id="6011193465932186973">Hatz-marka</translation>
 <translation id="6011449291337289699">Garbitu webgunearen datuak</translation>
+<translation id="6013027779243312217">Lortu audioaren eta bideoen azpitituluak</translation>
 <translation id="6015796118275082299">Urtea</translation>
 <translation id="6016178549409952427">Joan <ph name="CURRENT_ELEMENT" /> elementu gehigarritatik <ph name="TOTAL_ELEMENTS" />garrenera</translation>
 <translation id="6016551720757758985">Berretsi fabrikako ezarpenak berrezarri nahi dituzula eta aurreko bertsiora itzuli nahi duzula</translation>
@@ -6211,7 +6211,6 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8081989000209387414">ADB arazketa desgaitu nahi duzu?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" gailuarekin parekatu?</translation>
 <translation id="8082390128630131497">ADB arazketa desgaitzen baduzu, <ph name="DEVICE_TYPE" /> gailuaren jatorrizko ezarpenak berrezarriko dira. Erabiltzaile-kontu guztiak eta gailuko datuak ezabatu egingo dira.</translation>
-<translation id="8083058154738359867">Multimedia-edukian azpitituluak lortzeko, gaitu Istanteko azpitituluak ezarpenetan</translation>
 <translation id="8084114998886531721">Gordetako pasahitza</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> konfiguratzen…</translation>
 <translation id="8086442853986205778">Konfiguratu <ph name="PRINTER_NAME" /></translation>
@@ -6282,6 +6281,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8157704005178149728">Gainbegiratzea konfiguratzen</translation>
 <translation id="8158117992543756526">Data honetan utzi zitzaion softwarea eta segurtasun-eguneratzeak automatikoki jasotzeari: <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Errore bat gertatu da ziurtagiriaren konfiantza-maila editatzean</translation>
+<translation id="8160775796528709999">Audioaren eta bideoen azpitituluak lortzeko, gaitu Istanteko azpitituluak ezarpenetan</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Web-orrietarako irakurgailu modua</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Eraman fitxa leiho berri batera}other{Eraman fitxak leiho berri batera}}</translation>
@@ -7141,6 +7141,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="9128870381267983090">Konektatu sarera</translation>
 <translation id="9130015405878219958">Sartutako moduak ez du balio.</translation>
 <translation id="9131487537093447019">Bidali mezuak Bluetooth bidezko gailuetara eta jaso haien mezuak.</translation>
+<translation id="9134119143784876218">Automatikoki sortzen ditu ingelesezko audioaren eta bideoen azpitituluak (Chrome arakatzailean bakarrik dago erabilgarri oraingoz). Audioa eta azpitituluak ez dira ateratzen gailutik.</translation>
 <translation id="9137013805542155359">Ikusi jatorrizkoa</translation>
 <translation id="9137157311132182254">Bilatzaile hobetsia</translation>
 <translation id="9137248913990643158">Aplikazio hau erabili aurretik, ireki Chrome eta hasi saioa.</translation>

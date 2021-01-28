@@ -450,7 +450,6 @@
 <translation id="1500297251995790841">अज्ञात यन्त्र [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">यो मालिक खाता मल्टिपल साइन-इन सत्रमा पहिलो पटक साइन-इन गरिएको खाता हुनुपर्दछ।</translation>
 <translation id="150411034776756821"><ph name="SITE" /> हटाउनुहोस्</translation>
-<translation id="1504311855864906891">आफ्नो मिडियाका लागि क्याप्सन सिर्जना गर्नुहोस्</translation>
 <translation id="1504551620756424144">साझा फोल्डरहरू Windows को <ph name="BASE_DIR" /> मा उपलब्ध हुन्छन्।</translation>
 <translation id="1506061864768559482">सर्च इन्जिन</translation>
 <translation id="1507170440449692343">यो पृष्ठलाई तपाईंको क्यामेरा पहुँच गर्नबाट ब्लक गरिएको छ।</translation>
@@ -1442,6 +1441,7 @@
 <translation id="2604255671529671813">नेटवर्कको जडानसम्बन्धी त्रुटि</translation>
 <translation id="2606246518223360146">डेटा लिंक गर्नुहोस्</translation>
 <translation id="2606454609872547359">अहँ, ChromeVox सक्रिय नगरी अगाडि बढ्नुहोस्</translation>
+<translation id="2606568927909309675">अङ्ग्रेजी भाषाका अडियो तथा भिडियोमा क्याप्सनहरू स्वतः सिर्जना गर्छ। तपाईंको यन्त्रमा सधैँ अडियो सुन्न र क्याप्सनहरू हेर्न मिल्छ।</translation>
 <translation id="2607101320794533334">विषय सार्वजनिक कुञ्जी जानकारी</translation>
 <translation id="2609896558069604090">सर्टकटहरू सिर्जना गर्नुहोस्...</translation>
 <translation id="2609980095400624569">कनेक्ट गर्न सकिएन</translation>
@@ -3739,7 +3739,6 @@
 <translation id="5265797726250773323">स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="5266113311903163739">प्रमाणपत्र प्राधिकरण आयात त्रुटि</translation>
 <translation id="5269977353971873915">प्रिन्टिङ असफल भयो</translation>
-<translation id="5274738462757057090">Chrome मा मिडियाका क्याप्सन स्वतः सिर्जना गर्छ (यो सेवा हाल अङ्ग्रेजी भाषामा मात्र उपलब्ध छ)</translation>
 <translation id="5275352920323889391">कुकुर</translation>
 <translation id="527605982717517565"><ph name="HOST" /> मा सँधै जाभास्क्रिप्टको लागि अनुम</translation>
 <translation id="5278823018825269962">स्ट्याटस Id</translation>
@@ -4382,6 +4381,7 @@
 <translation id="6011074160056912900">इथरनेट नेटवर्क</translation>
 <translation id="6011193465932186973">फिंगरप्रिन्ट</translation>
 <translation id="6011449291337289699">साइट सम्बन्धी डेटा खाली गर्नुहोस्</translation>
+<translation id="6013027779243312217">आफ्ना अडियो तथा भिडियोमा क्याप्सन देखाइने सुविधा प्राप्त गर्नुहोस्</translation>
 <translation id="6015796118275082299">वर्ष</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" /> वटा थप सामग्रीमध्ये <ph name="CURRENT_ELEMENT" /> औँ सामग्रीमा जानुहोस्</translation>
 <translation id="6016551720757758985">अघिल्लो संस्करणमा फिर्तीसँग Powerwash पुष्टि गर्नुहोस्</translation>
@@ -6206,7 +6206,6 @@
 <translation id="8081989000209387414">ADB डिबग प्रक्रिया असक्षम पार्ने हो?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" सँग जोडा बनाउने हो?</translation>
 <translation id="8082390128630131497">ADB डिबग प्रक्रिया असक्षम पार्नुले <ph name="DEVICE_TYPE" /> का सेटिङ रिसेट गरी फ्याक्ट्री संस्करणमा लैजाने छ। प्रयोगकर्ताका सबै खाता र स्थानीय डेटा मेटाइने छन्।</translation>
-<translation id="8083058154738359867">सेटिङमा गई लाइभ क्याप्सन सक्षम पारेर आफ्नो मिडियाका लागि क्याप्सनहरू प्राप्त गर्नुहोस्</translation>
 <translation id="8084114998886531721">सुरक्षित गरिएको पासवर्ड</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> लाई कन्फिगर गर्दै ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> सेटअप गर्नुहोस्</translation>
@@ -6277,6 +6276,7 @@
 <translation id="8157704005178149728">सुपरिवेक्षण सेटअप गरिँदै</translation>
 <translation id="8158117992543756526">यो यन्त्रले <ph name="MONTH_AND_YEAR" /> देखि सफ्टवेयर र सुरक्षासम्बन्धी अद्यावधिकहरू स्वत: प्राप्त गर्न छाड्यो। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">प्रमाणपत्र विश्वास सेट गर्नमा त्रुटि</translation>
+<translation id="8160775796528709999">सेटिङमा गई लाइभ क्याप्सन अन गरेर आफ्ना अडियो तथा भिडियोमा क्याप्सन देखाइने सुविधा प्राप्त गर्नुहोस्</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">पाठक मोडमा वेब पृष्ठहरू पढ्ने सुविधा</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ट्याब सारेर नयाँ विन्डोमा लैजानुहोस्}other{ट्याबहरू सारेर नयाँ विन्डोमा लैजानुहोस्}}</translation>
@@ -7136,6 +7136,7 @@
 <translation id="9128870381267983090">नेटवर्कमा जडान गर्नुहोस्</translation>
 <translation id="9130015405878219958">अवैध मोड प्रविष्ट गरियो।</translation>
 <translation id="9131487537093447019">ब्लूटुथ यन्त्रहरूबाट सन्देश पठाउनुहोस् र प्राप्त गर्नुहोस्।</translation>
+<translation id="9134119143784876218">अङ्ग्रेजी भाषाका अडियो तथा भिडियोमा क्याप्सनहरू स्वतः सिर्जना गर्नुहोस् (यो सुविधा हाल Chrome ब्राउजरमा मात्र उपलब्ध छ)। तपाईंको यन्त्रमा सधैँ अडियो सुन्न र क्याप्सनहरू हेर्न मिल्छ।</translation>
 <translation id="9137013805542155359">मूल देखाउनुहोस्</translation>
 <translation id="9137157311132182254">मन पराइएको सर्च इन्जिन</translation>
 <translation id="9137248913990643158">यस एपको प्रयोग गर्नुअघि कृपया Chrome सुरु गरी साइन इन गर्नुहोस्।</translation>

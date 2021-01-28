@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Okänd enhet [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Det här ägarkontot måste vara det första inloggade kontot i en session med flera inloggningar.</translation>
 <translation id="150411034776756821">Ta bort <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Få textning i videor</translation>
 <translation id="1504551620756424144">Delade mappar finns i <ph name="BASE_DIR" /> i Windows.</translation>
 <translation id="1506061864768559482">Sökmotor</translation>
 <translation id="1507170440449692343">Den här sidan får inte använda din kamera.</translation>
@@ -1446,6 +1445,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2604255671529671813">Fel vid nätverksanslutning</translation>
 <translation id="2606246518223360146">Länka Data</translation>
 <translation id="2606454609872547359">Nej, fortsätt utan ChromeVox</translation>
+<translation id="2606568927909309675">Ljud- och videouppspelning på engelska textas automatiskt. Ljudet och textningen lämnar aldrig enheten.</translation>
 <translation id="2607101320794533334">Information om mottagarens publika nyckel</translation>
 <translation id="2609896558069604090">Skapa genvägar ...</translation>
 <translation id="2609980095400624569">Det gick inte att upprätta anslutningen</translation>
@@ -3743,7 +3743,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5265797726250773323">Ett fel uppstod under installationen</translation>
 <translation id="5266113311903163739">Fel vid import av certifikatutfärdare</translation>
 <translation id="5269977353971873915">Det gick inte att skriva ut dokumentet</translation>
-<translation id="5274738462757057090">Media textas automatiskt i webbläsaren Chrome (endast tillgängligt på engelska för närvarande)</translation>
 <translation id="5275352920323889391">Hund</translation>
 <translation id="527605982717517565">Tillåt alltid JavaScript på <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Status-id</translation>
@@ -4388,6 +4387,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6011074160056912900">Ethernet-nätverk</translation>
 <translation id="6011193465932186973">Fingeravtryck</translation>
 <translation id="6011449291337289699">Rensa webbplatsdata</translation>
+<translation id="6013027779243312217">Få textad ljud- och videouppspelning</translation>
 <translation id="6015796118275082299">År</translation>
 <translation id="6016178549409952427">Navigera till extrainnehåll <ph name="CURRENT_ELEMENT" /> av <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Bekräfta återställningen till den tidigare versionen med Powerwash</translation>
@@ -6171,7 +6171,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8037357227543935929">Fråga (standard)</translation>
 <translation id="803771048473350947">Arkiv</translation>
 <translation id="8041089156583427627">Skicka feedback</translation>
-<translation id="8042142357103597104">Textgenomskinlighet</translation>
+<translation id="8042142357103597104">Textopacitet</translation>
 <translation id="8044262338717486897"><ph name="LINUX_APP_NAME" /> svarar inte.</translation>
 <translation id="8044899503464538266">Långsam</translation>
 <translation id="8045253504249021590">Synkronisering har stoppats via Google Översikt.</translation>
@@ -6213,7 +6213,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8081989000209387414">Vill du inaktivera felsökning med ADB?</translation>
 <translation id="8082106343289440791">Vill du parkoppla med <ph name="DEVICE_NAME" />?</translation>
 <translation id="8082390128630131497">Denna <ph name="DEVICE_TYPE" /> återställs till standardinställningarna om du inaktiverar felsökning med ADB. Alla användarkonton och all lokal data rensas.</translation>
-<translation id="8083058154738359867">Få textad uppspelning genom att aktivera Live Caption i inställningarna</translation>
 <translation id="8084114998886531721">Sparat lösenord</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> konfigureras …</translation>
 <translation id="8086442853986205778">Konfigurera <ph name="PRINTER_NAME" /></translation>
@@ -6284,6 +6283,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8157704005178149728">Konfigurerar kontroll</translation>
 <translation id="8158117992543756526">Enheten får inga automatiska program- eller säkerhetsuppdateringar sedan <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Fel när certifikatets tillförlitlighet angavs</translation>
+<translation id="8160775796528709999">Få ljud- och videouppspelning textad genom att aktivera Live Caption i inställningarna</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Läsläge för webbsidor</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Flytta fliken till ett nytt fönster}other{Flytta flikarna till ett nytt fönster}}</translation>
@@ -7143,6 +7143,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="9128870381267983090">Anslut till ett nätverk</translation>
 <translation id="9130015405878219958">Du har angett ett ogiltigt läge.</translation>
 <translation id="9131487537093447019">Skicka och ta emot meddelanden från Bluetooth-enheter.</translation>
+<translation id="9134119143784876218">Ljud- och videouppspelning på engelska textas automatiskt (endast tillgängligt i webbläsaren Chrome för närvarande) Ljudet och textningen lämnar aldrig enheten.</translation>
 <translation id="9137013805542155359">Visa original</translation>
 <translation id="9137157311132182254">Prioriterad sökmotor</translation>
 <translation id="9137248913990643158">Logga in på Chrome innan du använder den här appen.</translation>

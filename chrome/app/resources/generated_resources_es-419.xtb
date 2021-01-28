@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Dispositivo desconocido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">El propietario de esta cuenta requiere que sea la primera a la que se acceda al crear una sesión de acceso múltiple.</translation>
 <translation id="150411034776756821">Quitar <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Obtén subtítulos para tu contenido multimedia</translation>
 <translation id="1504551620756424144">Las carpetas compartidas están disponibles en Windows, en <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Motor de búsqueda</translation>
 <translation id="1507170440449692343">Esta página no tiene permiso para acceder a la cámara.</translation>
@@ -1443,6 +1442,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2604255671529671813">Error de conexión de red</translation>
 <translation id="2606246518223360146">Vincular datos</translation>
 <translation id="2606454609872547359">No, continuar sin ChromeVox</translation>
+<translation id="2606568927909309675">Crea subtítulos de forma automática para audio y video en inglés. El audio y los subtítulos permanecen en el dispositivo.</translation>
 <translation id="2607101320794533334">Información sobre la clave pública del sujeto</translation>
 <translation id="2609896558069604090">Crear accesos directos...</translation>
 <translation id="2609980095400624569">No se pudo establecer la conexión</translation>
@@ -3740,7 +3740,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="5265797726250773323">Se produjo un error durante la instalación</translation>
 <translation id="5266113311903163739">Error en la importación de Entidad de certificación</translation>
 <translation id="5269977353971873915">Error de impresión</translation>
-<translation id="5274738462757057090">Crea subtítulos de forma automática para contenido multimedia en el navegador Chrome (por el momento, disponible solo en inglés).</translation>
 <translation id="5275352920323889391">Perro</translation>
 <translation id="527605982717517565">Siempre permitir JavaScript en <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID de estado</translation>
@@ -4385,6 +4384,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="6011074160056912900">Red de Ethernet</translation>
 <translation id="6011193465932186973">Huella digital</translation>
 <translation id="6011449291337289699">Borrar los datos del sitio</translation>
+<translation id="6013027779243312217">Obtener subtítulos para el audio y el video</translation>
 <translation id="6015796118275082299">Año</translation>
 <translation id="6016178549409952427">Navega a contenido adicional: <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirmar Powerwash con retorno a la versión anterior</translation>
@@ -6210,7 +6210,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8081989000209387414">¿Quieres inhabilitar la depuración de adb?</translation>
 <translation id="8082106343289440791">¿Deseas vincular "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Si inhabilitas la depuración de adb, se restablecerá el dispositivo <ph name="DEVICE_TYPE" /> a la configuración de fábrica. Se borrarán todas las cuentas de usuario y los datos locales.</translation>
-<translation id="8083058154738359867">Si quieres obtener subtítulos para el contenido multimedia, habilita el Subtitulado instantáneo en la configuración.</translation>
 <translation id="8084114998886531721">Se guardó la contraseña</translation>
 <translation id="8086015605808120405">Configurando <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">Configurar <ph name="PRINTER_NAME" /></translation>
@@ -6281,6 +6280,7 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8157704005178149728">Configurando la supervisión</translation>
 <translation id="8158117992543756526">En <ph name="MONTH_AND_YEAR" />, este dispositivo dejó de recibir actualizaciones automáticas de software y seguridad. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Error en la configuración de confiabilidad del certificado</translation>
+<translation id="8160775796528709999">Si quieres obtener subtítulos para el audio y el video, habilita el Subtitulado instantáneo en la configuración</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Modo de lectura para páginas web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover la pestaña a una ventana nueva}other{Mover las pestañas a una ventana nueva}}</translation>
@@ -7140,6 +7140,7 @@ Presiona un interruptor asignado para quitar la asignación.</translation>
 <translation id="9128870381267983090">Conectarse a una red</translation>
 <translation id="9130015405878219958">Se ingresó un modo no válido.</translation>
 <translation id="9131487537093447019">Enviar y recibir mensajes desde dispositivos Bluetooth</translation>
+<translation id="9134119143784876218">Crea subtítulos de forma automática para audio y video en inglés (por el momento, disponible solo en el navegador Chrome). El audio y los subtítulos permanecen en el dispositivo.</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9137157311132182254">Motor de búsqueda preferido</translation>
 <translation id="9137248913990643158">Abre Chrome y accede a tu cuenta antes de usar esta app.</translation>

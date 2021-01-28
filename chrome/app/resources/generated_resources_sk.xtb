@@ -454,7 +454,6 @@
 <translation id="1500297251995790841">Neznáme zariadenie [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Tento účet vlastníka musí byť prvým prihláseným účtom v relácii viacerých prihlásení.</translation>
 <translation id="150411034776756821">Odstrániť <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Získať titulky pre médium</translation>
 <translation id="1504551620756424144">Zdieľané priečinky sú k dispozícii v systéme Windows v adresári <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Vyhľadávač</translation>
 <translation id="1507170440449692343">Táto stránka má zablokovaný prístup ku kamere.</translation>
@@ -1447,6 +1446,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2604255671529671813">Chyba sieťového pripojenia</translation>
 <translation id="2606246518223360146">Prepojiť dáta</translation>
 <translation id="2606454609872547359">Nie, pokračovať bez čítačky ChromeVox</translation>
+<translation id="2606568927909309675">Automatické vytváranie titulkov pre zvuk a video v angličtine. Zvuk a titulky nikdy neopustia zariadenie.</translation>
 <translation id="2607101320794533334">Informácie verejného kľúča subjektu</translation>
 <translation id="2609896558069604090">Vytvoriť odkazy...</translation>
 <translation id="2609980095400624569">Nepodarilo sa pripojiť</translation>
@@ -3744,7 +3744,6 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="5265797726250773323">Pri inštalácii sa vyskytla chyba</translation>
 <translation id="5266113311903163739">Chyba importovania certifikačnej autority</translation>
 <translation id="5269977353971873915">Zlyhanie tlače</translation>
-<translation id="5274738462757057090">Automatické vytváranie titulkov k médiám v prehliadači Chrome (momentálne k dispozícii iba v angličtine)</translation>
 <translation id="5275352920323889391">Pes</translation>
 <translation id="527605982717517565">Vždy povoliť jazyk JavaScript na stránkach <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Identifikátor stavu</translation>
@@ -4389,6 +4388,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6011074160056912900">Sieť Ethernet</translation>
 <translation id="6011193465932186973">Odtlačok prsta</translation>
 <translation id="6011449291337289699">Vymazanie dát webu</translation>
+<translation id="6013027779243312217">Získajte titulky pre svoj zvuk a video</translation>
 <translation id="6015796118275082299">Rok</translation>
 <translation id="6016178549409952427">Prechod na ďalší obsah, <ph name="CURRENT_ELEMENT" />. prvok z <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Potvrdenie obnovenia Powerwash s návratom k predchádzajúcej verzii</translation>
@@ -4553,7 +4553,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="6198252989419008588">Zmeniť PIN</translation>
 <translation id="6202304368170870640">Pomocou kódu PIN sa môžete prihlásiť do zariadenia alebo ho odomknúť.</translation>
 <translation id="6206311232642889873">&amp;Kopírovať obrázok</translation>
-<translation id="6207200176136643843">Obnoviť predvolenú úroveň priblíženia</translation>
+<translation id="6207200176136643843">Resetovať na predvolenú úroveň lupy</translation>
 <translation id="6207937957461833379">Krajina alebo oblasť</translation>
 <translation id="6208521041562685716">Mobilné dáta sa aktivujú</translation>
 <translation id="6209838773933913227">Aktualizuje sa komponent</translation>
@@ -6063,7 +6063,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="7920482456679570420">Pridajte slová, ktoré má kontrola pravopisu preskočiť</translation>
 <translation id="7924358170328001543">Chyba presmerovania portu</translation>
 <translation id="7925108652071887026">Údaje automatického dopĺňania</translation>
-<translation id="792514962475806987">Úroveň priblíženia ukotvenej lupy:</translation>
+<translation id="792514962475806987">Úroveň ukotvenej lupy:</translation>
 <translation id="7925247922861151263">Kontrola AAA zlyhala</translation>
 <translation id="7925285046818567682">Čakanie na <ph name="HOST_NAME" />...</translation>
 <translation id="7926423016278357561">To som nebol(a) ja.</translation>
@@ -6214,7 +6214,6 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8081989000209387414">Chcete deaktivovať ladenie ADB?</translation>
 <translation id="8082106343289440791">Chcete spárovať so zariadením <ph name="DEVICE_NAME" />?</translation>
 <translation id="8082390128630131497">Deaktivácia ladenia ADB obnoví výrobné nastavenia tohto zariadenia <ph name="DEVICE_TYPE" />. Všetky používateľské účty a miestne údaje budú odstránené.</translation>
-<translation id="8083058154738359867">Zobrazujte si titulky k médiám povolením živého prepisu v nastaveniach</translation>
 <translation id="8084114998886531721">Uložené heslo</translation>
 <translation id="8086015605808120405">Konfiguruje sa tlačiareň <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086442853986205778">Nastaviť <ph name="PRINTER_NAME" /></translation>
@@ -6284,6 +6283,7 @@ Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvoreni
 <translation id="8157704005178149728">Nastavuje sa dohľad</translation>
 <translation id="8158117992543756526">Toto zariadenie prestalo v období <ph name="MONTH_AND_YEAR" /> dostávať automatické aktualizácie softvéru a zabezpečenia. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Chyba nastavenia dôveryhodnosti certifikátu</translation>
+<translation id="8160775796528709999">Zapnite v nastaveniach živý prepis a získajte pre svoj zvuk a video titulky</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Režim čítačky pre webové stránky</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Presunúť kartu do nového okna}few{Presunúť karty do nového okna}many{Presunúť karty do nového okna}other{Presunúť karty do nového okna}}</translation>
@@ -6775,7 +6775,7 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="8740247629089392745">Tento Chromebook môžete odovzdať používateľovi <ph name="SUPERVISED_USER_NAME" />. Nastavenie je takmer hotové. Nastal čas na preskúmavanie.</translation>
 <translation id="8742998548129056176">Toto sú všeobecné informácie o zariadení a jeho používaní (napríklad stav batérie, aktivita v systéme a aplikáciách a chyby). Údaje sa použijú na zlepšenie Androidu a niektoré súhrnné informácie pomôžu tiež aplikáciám Google a partnerom (napríklad vývojárom pre Android) zlepšiť svoje aplikácie a produkty.</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_INDEX" />. sieť z <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, intenzita signálu <ph name="SIGNAL_STRENGTH" /> %, ovládaná správcom, pripojenie</translation>
-<translation id="8743390665131937741">Úroveň priblíženia lupy celej obrazovky:</translation>
+<translation id="8743390665131937741">Úroveň celoobrazovkovej lupy:</translation>
 <translation id="8743864605301774756">Aktualizované pred 1 hodinou</translation>
 <translation id="8746654918629346731">O rozšírenie <ph name="EXTENSION_NAME" /> ste už požiadali</translation>
 <translation id="874689135111202667">{0,plural, =1{Nahrať na tento web jeden súbor?}few{Nahrať na tento web # súbory?}many{Nahrať na tento web # súboru?}other{Nahrať na tento web # súborov?}}</translation>
@@ -6995,7 +6995,7 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="8968766641738584599">Uložiť kartu</translation>
 <translation id="89720367119469899">Escape</translation>
 <translation id="8972513834460200407">Kontaktujte správcu siete a uistite sa, že brána firewall neblokuje sťahovanie súborov zo serverov Google.</translation>
-<translation id="8973557916016709913">Odstrániť úroveň priblíženia</translation>
+<translation id="8973557916016709913">Odstrániť úroveň lupy</translation>
 <translation id="8973596347849323817">Zariadenie môžete prispôsobiť, aby zodpovedalo vašim potrebám. Tieto funkcie dostupnosti môžete neskôr zmeniť v Nastaveniach.</translation>
 <translation id="897414447285476047">Cieľový súbor bol neúplný, pretože sa vyskytol problém s pripojením.</translation>
 <translation id="897525204902889653">Služba karantény</translation>
@@ -7145,6 +7145,7 @@ Existujúce pridelenie odstránite stlačením prideleného prepínača.</transl
 <translation id="9128870381267983090">Pripojiť k sieti</translation>
 <translation id="9130015405878219958">Zadali ste neplatný režim.</translation>
 <translation id="9131487537093447019">Posielať správy zariadeniam Bluetooth a prijímať správy zo zariadení Bluetooth.</translation>
+<translation id="9134119143784876218">Automatické vytváranie titulkov pre zvuk a video v angličtine (momentálne k dispozícii iba v prehliadači Chrome). Zvuk a titulky nikdy neopustia zariadenie.</translation>
 <translation id="9137013805542155359">Zobraziť originál</translation>
 <translation id="9137157311132182254">Preferovaný vyhľadávač</translation>
 <translation id="9137248913990643158">Začnite a prihláste sa do Chromu ešte predtým, ako použijete túto aplikáciu.</translation>

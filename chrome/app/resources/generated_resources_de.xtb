@@ -452,7 +452,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="1500297251995790841">Unbekanntes Gerät [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Dieses Inhaberkonto muss in einer Sitzung mit Mehrfachanmeldung das erste angemeldete Konto sein.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> entfernen</translation>
-<translation id="1504311855864906891">Untertitel für Ihre Medien</translation>
 <translation id="1504551620756424144">Freigegebene Ordner sind auf Windows-Geräten unter <ph name="BASE_DIR" /> verfügbar.</translation>
 <translation id="1506061864768559482">Suchmaschine</translation>
 <translation id="1507170440449692343">Diese Seite darf nicht auf Ihre Kamera zugreifen.</translation>
@@ -1442,6 +1441,7 @@ Wenn Sie die Family Link App auf Ihrem Gerät installieren, können Sie die Eins
 <translation id="2604255671529671813">Fehler bei der Netzwerkverbindung</translation>
 <translation id="2606246518223360146">Daten verknüpfen</translation>
 <translation id="2606454609872547359">Nein, ohne ChromeVox fortfahren</translation>
+<translation id="2606568927909309675">Erstellt automatisch Untertitel für englischsprachige Audioinhalte und Videos. Audioinhalte und Untertitel werden ausschließlich auf dem Gerät gespeichert.</translation>
 <translation id="2607101320794533334">Informationen zum öffentlichen Schlüssel des Antragstellers</translation>
 <translation id="2609896558069604090">Verknüpfungen erstellen...</translation>
 <translation id="2609980095400624569">Es konnte keine Verbindung hergestellt werden</translation>
@@ -3739,7 +3739,6 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="5265797726250773323">Fehler bei der Installation</translation>
 <translation id="5266113311903163739">Zertifizierungsstelle - Fehler beim Import</translation>
 <translation id="5269977353971873915">Fehler beim Drucken</translation>
-<translation id="5274738462757057090">Erstellt automatisch Untertitel für Medien in Chrome (zurzeit nur auf Englisch verfügbar)</translation>
 <translation id="5275352920323889391">Hund</translation>
 <translation id="527605982717517565">JavaScript auf <ph name="HOST" /> immer zulassen</translation>
 <translation id="5278823018825269962">Status-ID</translation>
@@ -4384,6 +4383,7 @@ Möchten Sie <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="6011074160056912900">Ethernet-Netzwerk</translation>
 <translation id="6011193465932186973">Fingerabdruck</translation>
 <translation id="6011449291337289699">Websitedaten löschen</translation>
+<translation id="6013027779243312217">Untertitel für Audioinhalte und Videos</translation>
 <translation id="6015796118275082299">Jahr</translation>
 <translation id="6016178549409952427">Zu zusätzlichem Inhalt <ph name="CURRENT_ELEMENT" /> von <ph name="TOTAL_ELEMENTS" /> gehen</translation>
 <translation id="6016551720757758985">Powerwash und Zurücksetzen auf vorherige Version bestätigen</translation>
@@ -6209,7 +6209,6 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8081989000209387414">ADB-Fehlerbehebung deaktivieren?</translation>
 <translation id="8082106343289440791">Mit "<ph name="DEVICE_NAME" />" koppeln?</translation>
 <translation id="8082390128630131497">Wenn Sie die ADB-Fehlerbehebung deaktivieren, wird dieses <ph name="DEVICE_TYPE" /> auf die Werkseinstellungen zurückgesetzt. Alle Benutzerkonten und lokalen Daten werden entfernt.</translation>
-<translation id="8083058154738359867">Aktivieren Sie die automatischen Untertitel in den Einstellungen, um Ihre Medien zu untertiteln</translation>
 <translation id="8084114998886531721">Gespeichertes Passwort</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> wird konfiguriert...</translation>
 <translation id="8086442853986205778">"<ph name="PRINTER_NAME" />" einrichten</translation>
@@ -6279,6 +6278,7 @@ Speichern Sie Ihre Schlüsseldatei an einem sicheren Ort. Sie benötigen die Dat
 <translation id="8157704005178149728">Elternaufsicht wird eingerichtet</translation>
 <translation id="8158117992543756526">Dieses Gerät erhält seit <ph name="MONTH_AND_YEAR" /> keine automatischen Software- und Sicherheitsupdates mehr. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Fehler beim Festlegen der Vertrauenswürdigkeit des Zertifikats</translation>
+<translation id="8160775796528709999">Aktivieren Sie „Automatische Untertitel“ in den Einstellungen, um Ihre Audioinhalte und Videos zu untertiteln</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Lesemodus für Webseiten</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Tab in ein neues Fenster verschieben}other{Tabs in ein neues Fenster verschieben}}</translation>
@@ -7138,6 +7138,7 @@ Drücken Sie zum Entfernen der Zuweisung eine bereits zugewiesene Schaltertaste.
 <translation id="9128870381267983090">Mit Netzwerk verbinden</translation>
 <translation id="9130015405878219958">Eingegebener Modus ist ungültig.</translation>
 <translation id="9131487537093447019">Nachrichten an Bluetooth-Geräte senden und von diesen erhalten</translation>
+<translation id="9134119143784876218">Erstellt automatisch Untertitel für englischsprachige Audioinhalte und Videos (zurzeit nur im Chrome-Browser verfügbar). Audioinhalte und Untertitel werden ausschließlich auf dem Gerät gespeichert.</translation>
 <translation id="9137013805542155359">Original anzeigen</translation>
 <translation id="9137157311132182254">Bevorzugte Suchmaschine</translation>
 <translation id="9137248913990643158">Melden Sie sich in Chrome an, bevor Sie diese App nutzen.</translation>

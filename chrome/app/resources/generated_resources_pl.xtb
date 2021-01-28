@@ -454,7 +454,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1500297251995790841">Nieznane urządzenie [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">W sesji wielokrotnego logowania trzeba w pierwszej kolejności zalogować się na konto tego właściciela.</translation>
 <translation id="150411034776756821">Usuń <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Dodaj napisy do multimediów</translation>
 <translation id="1504551620756424144">Foldery udostępnione są dostępne w systemie Windows w folderze <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Wyszukiwarka</translation>
 <translation id="1507170440449692343">Ta strona ma zablokowany dostęp do kamery.</translation>
@@ -1444,6 +1443,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2604255671529671813">Błąd połączenia z siecią</translation>
 <translation id="2606246518223360146">Połącz dane</translation>
 <translation id="2606454609872547359">Nie, kontynuuj bez ChromeVoksa</translation>
+<translation id="2606568927909309675">Automatycznie tworzy napisy dla dźwięku i wideo w języku angielskim. Dźwięk ani napisy nie są wysyłane poza urządzenie.</translation>
 <translation id="2607101320794533334">Informacje o kluczu publicznym podmiotu</translation>
 <translation id="2609896558069604090">Utwórz skróty...</translation>
 <translation id="2609980095400624569">Nie udało się nawiązać połączenia</translation>
@@ -3741,7 +3741,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5265797726250773323">Błąd podczas instalowania</translation>
 <translation id="5266113311903163739">Błąd importowania urzędu certyfikacji</translation>
 <translation id="5269977353971873915">Niepowodzenie drukowania</translation>
-<translation id="5274738462757057090">Automatycznie tworzy napisy do multimediów w przeglądarce Chrome (obecnie tylko w języku angielskim).</translation>
 <translation id="5275352920323889391">Pies</translation>
 <translation id="527605982717517565">Zawsze zezwalaj na wykonywanie kodu JavaScript w witrynie <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Identyfikator stanu</translation>
@@ -4386,6 +4385,7 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6011074160056912900">Sieć Ethernet</translation>
 <translation id="6011193465932186973">Odcisk palca</translation>
 <translation id="6011449291337289699">Wyczyść dane witryny</translation>
+<translation id="6013027779243312217">Odtwarzaj dźwięk i wideo z napisami</translation>
 <translation id="6015796118275082299">Rok</translation>
 <translation id="6016178549409952427">Przejdź do dodatkowego elementu zawartości (<ph name="CURRENT_ELEMENT" /> z <ph name="TOTAL_ELEMENTS" />)</translation>
 <translation id="6016551720757758985">Potwierdzanie wykonania funkcji Powerwash z przywróceniem poprzedniej wersji</translation>
@@ -6211,7 +6211,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8081989000209387414">Wyłączyć debugowanie ADB?</translation>
 <translation id="8082106343289440791">Sparować z urządzeniem „<ph name="DEVICE_NAME" />”?</translation>
 <translation id="8082390128630131497">Jeśli wyłączysz debugowanie ADB, <ph name="DEVICE_TYPE" /> zostanie zresetowany do ustawień fabrycznych. Wszystkie konta użytkowników i dane lokalne zostaną usunięte.</translation>
-<translation id="8083058154738359867">Włącz napisy na żywo w ustawieniach, by odtwarzać multimedia z napisami</translation>
 <translation id="8084114998886531721">Zapisane hasło</translation>
 <translation id="8086015605808120405">Konfiguruję: <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">Skonfiguruj drukarkę <ph name="PRINTER_NAME" /></translation>
@@ -6282,6 +6281,7 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8157704005178149728">Konfiguruję nadzorowanie…</translation>
 <translation id="8158117992543756526">To urządzenie nie otrzymuje już automatycznych aktualizacji zabezpieczeń i oprogramowania od: <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Błąd podczas ustawiania zaufania do certyfikatu</translation>
+<translation id="8160775796528709999">Włącz napisy na żywo w ustawieniach, by odtwarzać dźwięk i wideo z napisami</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Tryb czytnika stron internetowych</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Przenieś kartę do nowego okna}few{Przenieś karty do nowego okna}many{Przenieś karty do nowego okna}other{Przenieś karty do nowego okna}}</translation>
@@ -7143,6 +7143,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="9128870381267983090">Połącz z siecią</translation>
 <translation id="9130015405878219958">Wprowadzono nieprawidłowy tryb.</translation>
 <translation id="9131487537093447019">Wysyłanie wiadomości do urządzeń Bluetooth i odbieranie ich z tych urządzeń</translation>
+<translation id="9134119143784876218">Automatycznie tworzy napisy dla dźwięku i wideo w języku angielskim (obecnie dostępne tylko w przeglądarce Chrome). Dźwięk ani napisy nie są wysyłane poza urządzenie.</translation>
 <translation id="9137013805542155359">Pokaż tekst oryginalny</translation>
 <translation id="9137157311132182254">Preferowana wyszukiwarka</translation>
 <translation id="9137248913990643158">Aby użyć tej aplikacji, najpierw uruchom Chrome i zaloguj się w nim.</translation>

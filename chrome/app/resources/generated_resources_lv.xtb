@@ -454,7 +454,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1500297251995790841">Nezināma ierīce [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Vairākkārtējas pierakstīšanās sesijā šim īpašnieka kontam ir jābūt pirmajam kontam, kurā jāpierakstās.</translation>
 <translation id="150411034776756821">Noņemt vietni <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Subtitru rādīšana multivides saturā</translation>
 <translation id="1504551620756424144">Kopīgotās mapes operētājsistēmā Windows ir pieejamas šeit: <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Meklētājprogramma</translation>
 <translation id="1507170440449692343">Šīs lapas piekļuve jūsu kamerai ir bloķēta.</translation>
@@ -1448,6 +1447,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2604255671529671813">Tīkla savienojuma kļūda</translation>
 <translation id="2606246518223360146">Saistīt datus</translation>
 <translation id="2606454609872547359">Nē, turpināt bez ChromeVox</translation>
+<translation id="2606568927909309675">Audio un video saturam angļu valodā tiek automātiski izveidoti subtitri. Audio ieraksti un subtitri vienmēr atrodas tikai jūsu ierīcē.</translation>
 <translation id="2607101320794533334">Subjekta publiskās atslēgas dati</translation>
 <translation id="2609896558069604090">Izveidot saīsnes...</translation>
 <translation id="2609980095400624569">Nevarēja izveidot savienojumu</translation>
@@ -3745,7 +3745,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5265797726250773323">Instalēšanas laikā radās kļūda</translation>
 <translation id="5266113311903163739">Sertifikāta izdevējiestādes importēšanas kļūda</translation>
 <translation id="5269977353971873915">Drukāšana neizdevās</translation>
-<translation id="5274738462757057090">Pārlūkprogrammā Chrome multivides saturam tiek automātiski izveidoti subtitri (pašlaik pieejami tikai angļu valodā).</translation>
 <translation id="5275352920323889391">Suns</translation>
 <translation id="527605982717517565">Vienmēr atļaut izmantot JavaScript vietnē <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Statusa ID</translation>
@@ -4390,6 +4389,7 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6011074160056912900">Ethernet tīkls</translation>
 <translation id="6011193465932186973">Pirksta nospiedums</translation>
 <translation id="6011449291337289699">Vietnes datu notīrīšana</translation>
+<translation id="6013027779243312217">Iegūstiet subtitrus audio un video saturam</translation>
 <translation id="6015796118275082299">Gads</translation>
 <translation id="6016178549409952427">Pāriet uz papildu satura <ph name="CURRENT_ELEMENT" />. elementu no <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Apstiprinājums funkcijas Powerwash lietošanai, lai atjaunotu ierīcē iepriekšējo programmatūras versiju</translation>
@@ -6214,7 +6214,6 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8081989000209387414">Vai atspējot ADB atkļūdošanu?</translation>
 <translation id="8082106343289440791">Vai izveidot savienojumu pārī ar ierīci <ph name="DEVICE_NAME" />?</translation>
 <translation id="8082390128630131497">ADB atkļūdošanas atspējošana atiestatīs šo <ph name="DEVICE_TYPE" /> ierīci uz rūpnīcas iestatījumiem. Visi lietotāju konti un vietējie dati tiks dzēsti.</translation>
-<translation id="8083058154738359867">Iegūstiet subtitrus savam multivides saturam, iestatījumos iespējojot funkciju Subtitri reāllaikā</translation>
 <translation id="8084114998886531721">Saglabātā parole</translation>
 <translation id="8086015605808120405">Notiek printera <ph name="PRINTER_NAME" /> konfigurēšana...</translation>
 <translation id="8086442853986205778">Iestatīt ierīci <ph name="PRINTER_NAME" /></translation>
@@ -6285,6 +6284,7 @@ Glabājiet atslēgas failu drošā vietā. Tas būs vajadzīgs, lai izveidotu ja
 <translation id="8157704005178149728">Notiek uzraudzības iestatīšana</translation>
 <translation id="8158117992543756526">Šajā ierīcē vairs netiek saņemti automātiskie programmatūras un drošības atjauninājumi (pēdējais atjauninājums saņemts: <ph name="MONTH_AND_YEAR" />). <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="816055135686411707">Kļūda, iestatot sertifikāta uzticamību</translation>
+<translation id="8160775796528709999">Iegūstiet subtitrus audio un video saturam, iestatījumos iespējojot funkciju Subtitri reāllaikā</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Lasītāja režīms tīmekļa lapām</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Cilnes pārvietošana uz jaunu logu}zero{Ciļņu pārvietošana uz jaunu logu}one{Ciļņu pārvietošana uz jaunu logu}other{Ciļņu pārvietošana uz jaunu logu}}</translation>
@@ -7146,6 +7146,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="9128870381267983090">Izveidot savienojumu ar tīklu</translation>
 <translation id="9130015405878219958">Ievadīts nederīgs režīms.</translation>
 <translation id="9131487537093447019">Sūtīt ziņojumus uz Bluetooth ierīcēm un saņemt ziņojumus no tām.</translation>
+<translation id="9134119143784876218">Audio un video saturam angļu valodā tiek automātiski izveidoti subtitri (pašlaik pieejami tikai pārlūkā Chrome). Audio ieraksti un subtitri vienmēr atrodas tikai jūsu ierīcē.</translation>
 <translation id="9137013805542155359">Rādīt oriģinālo</translation>
 <translation id="9137157311132182254">Vēlamā meklētājprogramma</translation>
 <translation id="9137248913990643158">Pirms šīs lietotnes izmantošanas, lūdzu, palaidiet pārlūku Chrome un pierakstieties tajā.</translation>

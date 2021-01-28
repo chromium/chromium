@@ -453,7 +453,6 @@
 <translation id="1500297251995790841">دستگاه نامشخص [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">این حساب مالک باید اولین حسابی باشد که در یک جلسه ورود به سیستم چندگانه به سیستم وارد می‌شود.</translation>
 <translation id="150411034776756821">حذف <ph name="SITE" /></translation>
-<translation id="1504311855864906891">دریافت زیرنویس ناشنوایان برای رسانه‌ها</translation>
 <translation id="1504551620756424144">‏پوشه‌های هم‌رسانی‌شده در Windows در <ph name="BASE_DIR" /> دردسترس هستند.</translation>
 <translation id="1506061864768559482">موتور جستجو</translation>
 <translation id="1507170440449692343">این صفحه از دسترسی به دوربین شما بازداشته شده است.</translation>
@@ -1444,6 +1443,7 @@
 <translation id="2604255671529671813">خطای اتصال شبکه</translation>
 <translation id="2606246518223360146">داده‌های پیوند</translation>
 <translation id="2606454609872547359">‏نه، بدون ChromeVox ادامه داده شود</translation>
+<translation id="2606568927909309675">به‌طور خودکار برای صدا و ویدیوی انگلیسی زیرنویس ناشنوایان ایجاد می‌کند. صداها و زیرنویس ناشنوایان هرگز از دستگاهتان خارج نمی‌شوند.</translation>
 <translation id="2607101320794533334">اطلاعات کلید عمومی موضوع</translation>
 <translation id="2609896558069604090">ایجاد میان‌برها...</translation>
 <translation id="2609980095400624569">اتصال برقرار نشد</translation>
@@ -3741,7 +3741,6 @@
 <translation id="5265797726250773323">هنگام نصب خطایی روی داد</translation>
 <translation id="5266113311903163739">خطای ورود ارائه دهنده مجوز</translation>
 <translation id="5269977353971873915">چاپ نشد</translation>
-<translation id="5274738462757057090">‏زیرنویس ناشنوایان را به‌طور خودکار برای رسانه در مرورگر Chrome ایجاد می‌کند (درحال‌حاضر فقط به زبان انگلیسی دردسترس است)</translation>
 <translation id="5275352920323889391">سگ</translation>
 <translation id="527605982717517565">همیشه جاوا اسکریپت در <ph name="HOST" /> مجاز باشد</translation>
 <translation id="5278823018825269962">شناسه وضعیت</translation>
@@ -4386,6 +4385,7 @@
 <translation id="6011074160056912900">شبکه اترنت</translation>
 <translation id="6011193465932186973">اثر انگشت</translation>
 <translation id="6011449291337289699">پاک کردن داده‌های سایت</translation>
+<translation id="6013027779243312217">دریافت زیرنویس ناشنوایان برای صدا و ویدیو</translation>
 <translation id="6015796118275082299">سال</translation>
 <translation id="6016178549409952427">پیمایش به محتوای اضافی <ph name="CURRENT_ELEMENT" /> از <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">‏تأیید Powerwash به همراه بازگشت به نسخه قبلی</translation>
@@ -6211,7 +6211,6 @@
 <translation id="8081989000209387414">‏اشکال‌زدایی ADB (پل اشکال‌زدایی Android) غیرفعال شود؟</translation>
 <translation id="8082106343289440791">با «<ph name="DEVICE_NAME" />» مرتبط شود؟</translation>
 <translation id="8082390128630131497">‏غیرفعال کردن اشکال‌زدایی ADB (پل اشکال‌زدایی Android)، <ph name="DEVICE_TYPE" /> را به تنظیمات کارخانه بازنشانی می‌کند. همه حساب‌های کاربر و داده‌های محلی حذف می‌شوند.</translation>
-<translation id="8083058154738359867">با فعال کردن «زیرنویس ناشنوایان زنده» در تنظیمات، برای رسانه‌ها زیرنویس ناشنوایان دریافت کنید</translation>
 <translation id="8084114998886531721">گذرواژه ذخیره‌شده</translation>
 <translation id="8086015605808120405">درحال پیکربندی <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">راه‌اندازی <ph name="PRINTER_NAME" /></translation>
@@ -6282,6 +6281,7 @@
 <translation id="8157704005178149728">درحال راه‌اندازی نظارت</translation>
 <translation id="8158117992543756526">این دستگاه در <ph name="MONTH_AND_YEAR" /> دیگر به‌روزرسانی خودکار نرم‌افزار و امنیتی را دریافت نکرد. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">خطا در تنظیم اعتماد مجوز</translation>
+<translation id="8160775796528709999">با فعال کردن «زیرنویس ناشنوایان زنده» در تنظیمات، برای صدا و ویدیو زیرنویس ناشنوایان دریافت کنید</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />، <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">«حالت خواننده» برای صفحه‌های وب</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{انتقال دادن برگه به پنجره جدید}one{انتقال دادن برگه‌ها به پنجره جدید}other{انتقال دادن برگه‌ها به پنجره جدید}}</translation>
@@ -7142,6 +7142,7 @@
 <translation id="9128870381267983090">اتصال به شبکه</translation>
 <translation id="9130015405878219958">حالت نامعتبر وارد شده است.</translation>
 <translation id="9131487537093447019">ارسال پیام‌ها به دستگاه‌های بلوتوث و دریافت پیام‌ها از آنها</translation>
+<translation id="9134119143784876218">‏به‌طور خودکار برای صدا و ویدیوی انگلیسی زیرنویس ناشنوایان ایجاد می‌کند (درحال‌حاضر فقط در مرورگر Chrome دردسترس است). صداها و زیرنویس ناشنوایان هرگز از دستگاهتان خارج نمی‌شوند.</translation>
 <translation id="9137013805542155359">نمایش مورد اصلی</translation>
 <translation id="9137157311132182254">موتور جستجوی ترجیحی</translation>
 <translation id="9137248913990643158">‏لطفاً پیش از استفاده از این برنامه، Chrome را باز کنید و به سیستم آن وارد شوید.</translation>

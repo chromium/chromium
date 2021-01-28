@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Неизвестно устройство [<ph name="VENDOR_ID" />: <ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Този профил на собственик трябва да е първият, в който да се влезе, при сесия с централизиран вход.</translation>
 <translation id="150411034776756821">Премахване на <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Показване на надписи за мултимедийното съдържание</translation>
 <translation id="1504551620756424144">Споделените папки са налични в Windows в <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Търсеща машина</translation>
 <translation id="1507170440449692343">Достъпът на тази страница до камерата ви е блокиран.</translation>
@@ -1443,6 +1442,7 @@
 <translation id="2604255671529671813">Грешка при свързване с мрежата</translation>
 <translation id="2606246518223360146">Свързване на данните</translation>
 <translation id="2606454609872547359">Не, продължаване без ChromeVox</translation>
+<translation id="2606568927909309675">Автоматично създава надписи за аудио- и видеосъдържание на английски. Аудиозаписите и надписите остават на устройството ви.</translation>
 <translation id="2607101320794533334">Информация за публичен ключ на субект</translation>
 <translation id="2609896558069604090">Създаване на преки пътища...</translation>
 <translation id="2609980095400624569">Не бе установена връзка</translation>
@@ -3741,7 +3741,6 @@
 <translation id="5265797726250773323">Грешка при инсталирането</translation>
 <translation id="5266113311903163739">Грешка при импортирането на сертифициращ орган</translation>
 <translation id="5269977353971873915">Отпечатването не бе успешно</translation>
-<translation id="5274738462757057090">Автоматично създава надписи за мултимедията в браузъра Chrome (понастоящем се предлага само на английски)</translation>
 <translation id="5275352920323889391">Куче</translation>
 <translation id="527605982717517565">Да се разреши на <ph name="HOST" /> винаги да изпълнява JavaScript</translation>
 <translation id="5278823018825269962">ID на състоянието</translation>
@@ -4387,6 +4386,7 @@
 <translation id="6011074160056912900">Ethernet мрежа</translation>
 <translation id="6011193465932186973">Отпечатък</translation>
 <translation id="6011449291337289699">Изчистване на данните за сайтовете</translation>
+<translation id="6013027779243312217">Показване на надписи за аудио- и видеосъдържание</translation>
 <translation id="6015796118275082299">Година</translation>
 <translation id="6016178549409952427">Преминаване към допълнително съдържание <ph name="CURRENT_ELEMENT" /> от <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Потвърждаване на извършването на Powerwash и връщането към предишната версия</translation>
@@ -6212,7 +6212,6 @@
 <translation id="8081989000209387414">Да се деактивира ли отстраняването на грешки през ADB?</translation>
 <translation id="8082106343289440791">Искате ли да сдвоите с(ъс) „<ph name="DEVICE_NAME" />“?</translation>
 <translation id="8082390128630131497">Деактивирането на отстраняването на грешки през ADB ще възстанови фабричните настройки на това устройство <ph name="DEVICE_TYPE" />. Всички профили на потребители и локални данни ще бъдат изтрити.</translation>
-<translation id="8083058154738359867">Показване на надписи за мултимедийното съдържание чрез активиране на „Надписи на живо“ в настройките</translation>
 <translation id="8084114998886531721">Запазена парола</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> се конфигурира...</translation>
 <translation id="8086442853986205778">Настройване на <ph name="PRINTER_NAME" /></translation>
@@ -6283,6 +6282,7 @@
 <translation id="8157704005178149728">Контролирането се настройва</translation>
 <translation id="8158117992543756526">Това устройство не получава автоматични актуализации на софтуера и сигурността от <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">При задаването на доверие за сертификата възникна грешка</translation>
+<translation id="8160775796528709999">Показване на надписи за аудио- и видеосъдържание чрез активиране на „Надписи на живо“ в настройките</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Режим за четене за уеб страниците</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Преместване на раздела в нов прозорец}other{Преместване на разделите в нов прозорец}}</translation>
@@ -7142,6 +7142,7 @@
 <translation id="9128870381267983090">Свързване към мрежа</translation>
 <translation id="9130015405878219958">Въведен е невалиден режим.</translation>
 <translation id="9131487537093447019">Да обменя съобщения с устройства с Bluetooth.</translation>
+<translation id="9134119143784876218">Автоматично създава надписи за аудио- и видеосъдържание на английски (понастоящем работи само в браузъра Chrome). Аудиозаписите и надписите остават на устройството ви.</translation>
 <translation id="9137013805542155359">Показване на оригинала</translation>
 <translation id="9137157311132182254">Предпочитана търсеща машина</translation>
 <translation id="9137248913990643158">Моля, стартирайте браузъра Chrome и влезте в него, преди да използвате това приложение.</translation>

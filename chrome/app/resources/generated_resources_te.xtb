@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">తెలియని పరికరం [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">ఈ యజమాని ఖాతానే బహుళ సైన్-ఇన్ సెషన్‌లో మొదటిగా సైన్-ఇన్ చేయాల్సిన ఖాతా.</translation>
 <translation id="150411034776756821"><ph name="SITE" />ని తీసివేయి</translation>
-<translation id="1504311855864906891">మీ మీడియా కోసం క్యాప్షన్‌లను పొందండి</translation>
 <translation id="1504551620756424144">Windowsలో <ph name="BASE_DIR" />లో షేర్ చేసిన ఫోల్డర్‌లు అందుబాటులో ఉన్నాయి.</translation>
 <translation id="1506061864768559482">సెర్చ్ ఇంజిన్</translation>
 <translation id="1507170440449692343">ఈ పేజీ మీ కెమెరాను ప్రాప్యత చేయకుండా బ్లాక్ చేయబడింది.</translation>
@@ -1446,6 +1445,7 @@
 <translation id="2604255671529671813">నెట్‌వర్క్ కనెక్షన్ ఎర్రర్</translation>
 <translation id="2606246518223360146">డేటాను లింక్ చేయి</translation>
 <translation id="2606454609872547359">వద్దు, ChromeVox లేకుండా కొనసాగించు</translation>
+<translation id="2606568927909309675">ఇంగ్లీష్ ఆడియో, వీడియో కోసం క్యాప్షన్‌లను ఆటోమేటిక్‌గా క్రియేట్ చేస్తుంది. ఆడియో, క్యాప్షన్‌లు ఎప్పటికీ మీ పరికరంలోనే ఉంటాయి.</translation>
 <translation id="2607101320794533334">విషయం పబ్లిక్ కీ సమాచారం</translation>
 <translation id="2609896558069604090">సత్వరమార్గాలను సృష్టించండి...</translation>
 <translation id="2609980095400624569">కనెక్షన్‌ను ఏర్పాటు చేయడం సాధ్యపడలేదు</translation>
@@ -3743,7 +3743,6 @@
 <translation id="5265797726250773323">ఇన్‌స్టాల్ చేయడంలో ఎర్రర్</translation>
 <translation id="5266113311903163739">సర్టిఫికెట్ అధికారి దిగుమతి ఎర్రర్</translation>
 <translation id="5269977353971873915">ముద్రణ విఫలమైంది</translation>
-<translation id="5274738462757057090">Chrome బ్రౌజర్‌లోని మీడియా కోసం క్యాప్షన్‌లను ఆటోమేటిక్‌గా క్రియేట్ చేస్తుంది (ప్రస్తుతం ఇంగ్లీష్‌లో మాత్రమే అందుబాటులో ఉంది)</translation>
 <translation id="5275352920323889391">కుక్క</translation>
 <translation id="527605982717517565"><ph name="HOST" />పై ఎల్లప్పుడూ JavaScriptను అనుమతించు</translation>
 <translation id="5278823018825269962">స్టేటస్ Id</translation>
@@ -4388,6 +4387,7 @@
 <translation id="6011074160056912900">ఈథర్‌నెట్ నెట్‌వర్క్</translation>
 <translation id="6011193465932186973">వేలిముద్ర</translation>
 <translation id="6011449291337289699">సైట్ డేటాను తీసివేయండి</translation>
+<translation id="6013027779243312217">మీ ఆడియో, వీడియోకు క్యాప్షన్‌లను పొందండి</translation>
 <translation id="6015796118275082299">సంవత్సరం</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />లో <ph name="CURRENT_ELEMENT" />వ అదనపు కంటెంట్‌కు నావిగేట్ చేయండి</translation>
 <translation id="6016551720757758985">మునుపటి వెర్షన్‌కు తిరిగి మార్చేలా చేసే పవర్‌వాష్‌ను నిర్ధారించండి</translation>
@@ -6209,7 +6209,6 @@
 <translation id="8081989000209387414">ADB డీబగ్గింగ్‌ను డిజేబుల్ చేయాలా?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />"తో పెయిర్ చేయాలా?</translation>
 <translation id="8082390128630131497">ADB డీబగ్గింగ్‌ను డిజేబుల్ చేస్తే, ఈ <ph name="DEVICE_TYPE" />ను ఫ్యాక్టరీ సెట్టింగ్‌లకు రీసెట్ చేస్తుంది. అన్ని యూజర్ ఖాతాలు, స్థానిక డేటా తొలగించబడతాయి.</translation>
-<translation id="8083058154738359867">సెట్టింగ్‌లలో లైవ్ క్యాప్షన్‌ను ఎనేబుల్ చేయడం ద్వారా మీ మీడియాకు క్యాప్షన్‌లను పొందండి</translation>
 <translation id="8084114998886531721">సేవ్ చేసిన పాస్‌వర్డ్</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" />ని కాన్ఫిగర్ చేస్తోంది ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" />ను సెటప్ చేయండి</translation>
@@ -6280,6 +6279,7 @@
 <translation id="8157704005178149728">పర్యవేక్షణను సెటప్ చేస్తోంది</translation>
 <translation id="8158117992543756526">ఈ పరికరానికి <ph name="MONTH_AND_YEAR" />లో ఆటోమేటిక్ సాఫ్ట్‌వేర్ మరియు భద్రతాపరమైన అప్‌డేట్ రావడం ఆగిపోయింది. <ph name="LINK_BEGIN" />మరింత తెలుసుకోండి<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">లోపం సెట్టింగ్ ప్రమాణపత్ర నమ్మకం</translation>
+<translation id="8160775796528709999">సెట్టింగ్‌లలో లైవ్ క్యాప్షన్‌ను ఎనేబుల్ చేయడం ద్వారా మీ ఆడియోకు, వీడియోకు క్యాప్షన్‌లను పొందండి</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">వెబ్ పేజీల కోసం రీడర్ మోడ్</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ట్యాబ్‌ను కొత్త విండోకు తరలించు}other{ట్యాబ్‌లను కొత్త విండోకు తరలించు}}</translation>
@@ -7139,6 +7139,7 @@
 <translation id="9128870381267983090">నెట్‌వర్క్‌కి కనెక్ట్ చేయి</translation>
 <translation id="9130015405878219958">చెల్లని మోడ్ ఎంటర్ చేయ‌బడింది.</translation>
 <translation id="9131487537093447019">బ్లూటూత్ పరికరాలకు సందేశాలను పంపడానికి మరియు వాటి నుండి స్వీకరించడానికి అనుమతి.</translation>
+<translation id="9134119143784876218">ఇంగ్లీష్‌లో ఆడియో, వీడియో కోసం క్యాప్షన్‌లను ఆటోమేటిక్‌గా క్రియేట్ చేస్తుంది (ప్రస్తుతం Chrome బ్రౌజర్‌లో మాత్రమే అందుబాటులో ఉంది). ఆడియో, క్యాప్షన్‌లు ఎప్పటికీ మీ పరికరంలోనే ఉంటాయి.</translation>
 <translation id="9137013805542155359">అసలును చూపించు</translation>
 <translation id="9137157311132182254">ప్రాధాన్య శోధన ఇంజిన్</translation>
 <translation id="9137248913990643158">ఈ యాప్‌ను ఉపయోగించే ముందు, దయచేసి Chromeను ప్రారంభించి, దానికి సైన్ ఇన్ చేయండి.</translation>

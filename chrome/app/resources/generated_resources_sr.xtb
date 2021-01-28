@@ -454,7 +454,6 @@
 <translation id="1500297251995790841">Непознат уређај [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Овај власнички налог мора да буде први пријављени налог у сесији са вишеструким пријављивањем.</translation>
 <translation id="150411034776756821">Уклони <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Приказуј титл за медијске датотеке</translation>
 <translation id="1504551620756424144">Дељени директоријуми су доступни у Windows-у на <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Претраживач</translation>
 <translation id="1507170440449692343">Овој страници је забрањен приступ камери.</translation>
@@ -1445,6 +1444,7 @@
 <translation id="2604255671529671813">Грешка мрежне везе</translation>
 <translation id="2606246518223360146">Повежи податке</translation>
 <translation id="2606454609872547359">Не, настави без ChromeVox-а</translation>
+<translation id="2606568927909309675">Аутоматски прави титл за аудио и видео на енглеском. Аудио фајл и титл увек остају на уређају.</translation>
 <translation id="2607101320794533334">Информације о јавном кључу субјекта</translation>
 <translation id="2609896558069604090">Направи пречице...</translation>
 <translation id="2609980095400624569">Успостављање везе није успело</translation>
@@ -3742,7 +3742,6 @@
 <translation id="5265797726250773323">Грешка при инсталирању</translation>
 <translation id="5266113311903163739">Грешка при увозу ауторитета за издавање сертификата</translation>
 <translation id="5269977353971873915">Штампање није успело</translation>
-<translation id="5274738462757057090">Аутоматски прави титл за медије у Chrome прегледачу (тренутно је доступно само на енглеском)</translation>
 <translation id="5275352920323889391">Пас</translation>
 <translation id="527605982717517565">Увек дозволи JavaScript на сајту <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ИД статуса</translation>
@@ -4388,6 +4387,7 @@
 <translation id="6011074160056912900">Етернет мрежа</translation>
 <translation id="6011193465932186973">Дигитални отисак</translation>
 <translation id="6011449291337289699">Обришите податке сајта</translation>
+<translation id="6013027779243312217">Преузмите титл за аудио и видео</translation>
 <translation id="6015796118275082299">Година</translation>
 <translation id="6016178549409952427">Иди у <ph name="CURRENT_ELEMENT" />. елемент додатног садржаја од <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Потврђивање Powerwash-а уз враћање на претходну верзију</translation>
@@ -6213,7 +6213,6 @@
 <translation id="8081989000209387414">Желите да онемогућите ADB отклањање грешака?</translation>
 <translation id="8082106343289440791">Желите ли да упарите са „<ph name="DEVICE_NAME" />“?</translation>
 <translation id="8082390128630131497">Ако онемогућите ADB отклањање грешака, <ph name="DEVICE_TYPE" /> ће се ресетовати на фабричка подешавања. Сви кориснички налози и локални подаци ће бити обрисани.</translation>
-<translation id="8083058154738359867">Омогућите титл уживо у подешавањима да бисте преузимали титл за медије</translation>
 <translation id="8084114998886531721">Сачувана лозинка</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> се конфигурише…</translation>
 <translation id="8086442853986205778">Подесите <ph name="PRINTER_NAME" /></translation>
@@ -6284,6 +6283,7 @@
 <translation id="8157704005178149728">Надзор се подешава</translation>
 <translation id="8158117992543756526">Овај уређај је престао да добија аутоматска ажурирања софтвера и безбедносна ажурирања у: <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Грешка при подешавању поузданости сертификата</translation>
+<translation id="8160775796528709999">Омогућите титл уживо у подешавањима да бисте преузимали титл за аудио и видео</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Режим читача за веб-странице</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Премести картицу у нов прозор}one{Премести картице у нов прозор}few{Премести картице у нов прозор}other{Премести картице у нов прозор}}</translation>
@@ -7145,6 +7145,7 @@
 <translation id="9128870381267983090">Повезивање са мрежом</translation>
 <translation id="9130015405878219958">Унет је неважећи режим.</translation>
 <translation id="9131487537093447019">Слање порука на Bluetooth уређаје и примање порука са њих.</translation>
+<translation id="9134119143784876218">Аутоматски прави титл за аудио и видео на енглеском (тренутно је доступно само у Chrome прегледачу) Аудио фајл и титл увек остају на уређају.</translation>
 <translation id="9137013805542155359">Прикажи оригинал</translation>
 <translation id="9137157311132182254">Жељени претраживач</translation>
 <translation id="9137248913990643158">Пријавите се у Chrome пре коришћења ове апликације.</translation>

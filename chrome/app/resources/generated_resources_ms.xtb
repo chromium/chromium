@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Peranti tidak diketahui [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Akaun pemilik ini perlu menjadi akaun dilog masuk yang pertama dalam sesi berbilang log masuk.</translation>
 <translation id="150411034776756821">Alih keluar <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Dapatkan sari kata untuk media anda</translation>
 <translation id="1504551620756424144">Folder kongsi tersedia dalam Windows di <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Enjin carian</translation>
 <translation id="1507170440449692343">Halaman ini telah disekat daripada mengakses kamera anda.</translation>
@@ -1446,6 +1445,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2604255671529671813">Ralat sambungan rangkaian</translation>
 <translation id="2606246518223360146">Pautkan Data</translation>
 <translation id="2606454609872547359">Tidak, teruskan tanpa ChromeVox</translation>
+<translation id="2606568927909309675">Membuat sari kata untuk audio dan video bahasa Inggeris secara automatik. Audio dan sari kata tidak sekali-kali dihantar keluar daripada peranti anda.</translation>
 <translation id="2607101320794533334">Maklumat Penting Subjek Awam</translation>
 <translation id="2609896558069604090">Buat Pintasan...</translation>
 <translation id="2609980095400624569">Tidak dapat mewujudkan sambungan</translation>
@@ -3743,7 +3743,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="5265797726250773323">Ralat semasa pemasangan</translation>
 <translation id="5266113311903163739">Ralat Import Pihak Berkuasa Pensijilan</translation>
 <translation id="5269977353971873915">Cetakan Gagal</translation>
-<translation id="5274738462757057090">Membuat sari kata untuk media dalam penyemak imbas Chrome secara automatik (tersedia dalam bahasa Inggeris sahaja buat masa ini)</translation>
 <translation id="5275352920323889391">Anjing</translation>
 <translation id="527605982717517565">Sentiasa benarkan JavaScript di <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID Status</translation>
@@ -4388,6 +4387,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="6011074160056912900">Rangkaian ethernet</translation>
 <translation id="6011193465932186973">Cap jari</translation>
 <translation id="6011449291337289699">Kosongkan data tapak</translation>
+<translation id="6013027779243312217">Dapatkan sari kata untuk audio dan video anda</translation>
 <translation id="6015796118275082299">Tahun</translation>
 <translation id="6016178549409952427">Navigasi kepada kandungan tambahan <ph name="CURRENT_ELEMENT" /> daripada <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Sahkan Powerwash dengan kembali ke versi terdahulu</translation>
@@ -6213,7 +6213,6 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8081989000209387414">Lumpuhkan penyahpepijatan ADB?</translation>
 <translation id="8082106343289440791">Jadikan berpasangan dengan "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Tindakan melumpuhkan penyahpepijatan ADB akan menetapkan semula <ph name="DEVICE_TYPE" /> ini kepada tetapan kilang. Semua akaun pengguna dan data setempat akan dipadam.</translation>
-<translation id="8083058154738359867">Dapatkan sari kata untuk media anda dengan mendayakan Sari Kata Langsung dalam tetapan</translation>
 <translation id="8084114998886531721">Kata laluan disimpan</translation>
 <translation id="8086015605808120405">Mengkonfigurasi <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086442853986205778">Sediakan <ph name="PRINTER_NAME" /></translation>
@@ -6284,6 +6283,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8157704005178149728">Menyediakan pengawasan</translation>
 <translation id="8158117992543756526">Peranti ini berhenti menerima kemas kini perisian dan keselamatan automatik pada <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Ralat Tetapan Kepercayaan Sijil</translation>
+<translation id="8160775796528709999">Dapatkan sari kata untuk audio dan video anda dengan mendayakan Sari Kata Langsung dalam tetapan</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Mod pembaca untuk halaman web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Alihkan Tab ke Tetingkap Baharu}other{Alihkan Tab ke Tetingkap Baharu}}</translation>
@@ -7144,6 +7144,7 @@ Tekan suis yang telah ditetapkan untuk membatalkan penetapan.</translation>
 <translation id="9128870381267983090">Sambung ke rangkaian</translation>
 <translation id="9130015405878219958">Mod tidak sah dimasukkan.</translation>
 <translation id="9131487537093447019">Hantar mesej kepada dan terima mesej daripada peranti Bluetooth.</translation>
+<translation id="9134119143784876218">Membuat sari kata untuk audio dan video bahasa Inggeris secara automatik (tersedia dalam penyemak imbas Chrome sahaja buat masa ini). Audio dan sari kata tidak sekali-kali dihantar keluar daripada peranti anda.</translation>
 <translation id="9137013805542155359">Paparkan asal</translation>
 <translation id="9137157311132182254">Enjin carian pilihan</translation>
 <translation id="9137248913990643158">Sila mulakan dan log masuk ke Chrome sebelum menggunakan apl ini.</translation>

@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Pajisje e panjohur [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Kjo llogari zotëruesi duhet të jetë llogaria e parë e identifikimit në një sesion me identifikime të shumëfishta.</translation>
 <translation id="150411034776756821">Hiq <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Merr titrat për median tënde</translation>
 <translation id="1504551620756424144">Dosjet e ndara janë të disponueshme në Windows në <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Motori i kërkimit</translation>
 <translation id="1507170440449692343">Për këtë faqe është bllokuar qasja te kamera.</translation>
@@ -1443,6 +1442,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2604255671529671813">Gabim në lidhjen e rrjetit</translation>
 <translation id="2606246518223360146">Lidh të dhënat</translation>
 <translation id="2606454609872547359">Jo, vazhdo me ChromeVox</translation>
+<translation id="2606568927909309675">Krijon automatikisht titra për audion dhe videon në anglisht. Audioja dhe titrat nuk largohen asnjëherë nga pajisja.</translation>
 <translation id="2607101320794533334">Informacion i çelësit publik të subjektit</translation>
 <translation id="2609896558069604090">Krijo shkurtore...</translation>
 <translation id="2609980095400624569">Nuk mund të krijohej lidhje</translation>
@@ -3740,7 +3740,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="5265797726250773323">Gabim gjatë instalimit</translation>
 <translation id="5266113311903163739">Gabim në importimin e Autoritetit të Certifikimit</translation>
 <translation id="5269977353971873915">Printimi dështoi</translation>
-<translation id="5274738462757057090">Krijon automatikisht titra për media në shfletuesin Chrome (aktualisht ofrohet vetëm në anglisht)</translation>
 <translation id="5275352920323889391">Qen</translation>
 <translation id="527605982717517565">Lejo gjithmonë JavaScript në <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID-ja e statusit</translation>
@@ -4384,6 +4383,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="6011074160056912900">Rrjeti i eternetit</translation>
 <translation id="6011193465932186973">Gjurma e gishtit</translation>
 <translation id="6011449291337289699">Pastro të dhënat e sajtit</translation>
+<translation id="6013027779243312217">Merr titrat për audion dhe videon tënde</translation>
 <translation id="6015796118275082299">Viti</translation>
 <translation id="6016178549409952427">Navigo te përmbajtja shtesë <ph name="CURRENT_ELEMENT" /> nga <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Konfirmo Powerwash me kthim në versionin e mëparshëm.</translation>
@@ -6207,7 +6207,6 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8081989000209387414">Të çaktivizohet korrigjimi i ADB-së?</translation>
 <translation id="8082106343289440791">Të çiftohet me "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Çaktivizimi i korrigjimit të ADB-së do ta rivendosë këtë pajisje <ph name="DEVICE_TYPE" /> në cilësimet e fabrikës. Të gjitha llogaritë e përdoruesit dhe të dhënat lokale do të spastrohen.</translation>
-<translation id="8083058154738359867">Merr titrat për median duke aktivizuar "Titrat në çast" te cilësimet</translation>
 <translation id="8084114998886531721">Fjalëkalimi i ruajtur</translation>
 <translation id="8086015605808120405">Po konfiguron <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086442853986205778">Konfiguro <ph name="PRINTER_NAME" /></translation>
@@ -6278,6 +6277,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8157704005178149728">Po konfiguron mbikëqyrjen</translation>
 <translation id="8158117992543756526">Marrja e përditësimeve automatike të sigurisë dhe softuerëve për këtë pajisje ka ndaluar në <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Gabim në vendosjen e besimit të certifikatës</translation>
+<translation id="8160775796528709999">Merr titrat për audion dhe videon tënde duke aktivizuar "Titrat në çast" te cilësimet</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Modaliteti i lexuesit për faqet e uebit</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Zhvendose skedën në një dritare të re}other{Zhvendosi skedat në një dritare të re}}</translation>
@@ -7137,6 +7137,7 @@ Shtyp një çelës të caktuar për të hequr detyrën.</translation>
 <translation id="9128870381267983090">Lidhu me rrjetin</translation>
 <translation id="9130015405878219958">U fut modalitet i pavlefshëm.</translation>
 <translation id="9131487537093447019">Dërgo dhe merr mesazhe nga pajisjet me Bluetooth.</translation>
+<translation id="9134119143784876218">Krijo automatikisht titrat për audion dhe videon në anglisht (aktualisht ofrohet vetëm në shfletuesin Chrome). Audioja dhe titrat nuk largohen asnjëherë nga pajisja.</translation>
 <translation id="9137013805542155359">Shfaq origjinalin</translation>
 <translation id="9137157311132182254">Motori i preferuar i kërkimit</translation>
 <translation id="9137248913990643158">Fillo dhe identifikohu në Chrome para se të përdorësh këtë aplikacion.</translation>

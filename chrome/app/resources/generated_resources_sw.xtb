@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Kifaa ambacho hakijulikani [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Akaunti hii ya mmiliki lazima iwe ya kwanza kuingiwa katika kipindi cha kuingia katika akaunti mara nyingi.</translation>
 <translation id="150411034776756821">Ondoa <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Pata manukuu ya maudhui yako</translation>
 <translation id="1504551620756424144">Folda zinazoshirikiwa zinapatikana kwenye Windows katika <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Mtambo wa utafutaji</translation>
 <translation id="1507170440449692343">Ukurasa huu umezuiwa usifikie kamera yako.</translation>
@@ -1443,6 +1442,7 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2604255671529671813">Hitilafu ya muunganisho wa mtandao</translation>
 <translation id="2606246518223360146">Unganisha Data</translation>
 <translation id="2606454609872547359">Hapana, endelea bila ChromeVox</translation>
+<translation id="2606568927909309675">Huweka kiotomatiki manukuu ya sauti na video za Kiingereza. Sauti na manukuu husalia kwenye kifaa chako.</translation>
 <translation id="2607101320794533334">Maelezo ya Ufunguo wa Umma wa Mhusika</translation>
 <translation id="2609896558069604090">Unda Njia mikato...</translation>
 <translation id="2609980095400624569">Imeshindwa kuunganisha</translation>
@@ -3738,7 +3738,6 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5265797726250773323">Hitilafu imetokea wakati wa kusakinisha</translation>
 <translation id="5266113311903163739">Hitilafu ya Kuleta ya Mamlaka ya Utojai Vyeti</translation>
 <translation id="5269977353971873915">Uchapishaji Haukufanikiwa</translation>
-<translation id="5274738462757057090">Huunda kiotomatiki manukuu ya maudhui katika kivinjari cha Chrome (kwa sasa yanapatikana kwa Kiingereza pekee)</translation>
 <translation id="5275352920323889391">Mbwa</translation>
 <translation id="527605982717517565">Ruhusu <ph name="HOST" /> iendeshe JavaScript kila wakati</translation>
 <translation id="5278823018825269962">Kitambulisho cha Hali</translation>
@@ -4383,6 +4382,7 @@ Ungependa kuanza <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6011074160056912900">Mtandao wa Ethaneti</translation>
 <translation id="6011193465932186973">Alama ya kidole</translation>
 <translation id="6011449291337289699">Futa data ya tovuti</translation>
+<translation id="6013027779243312217">Pata manukuu ya sauti na video zako</translation>
 <translation id="6015796118275082299">Mwaka</translation>
 <translation id="6016178549409952427">Nenda kwenye maudhui mengine <ph name="CURRENT_ELEMENT" /> kati ya <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Thibitisha Powerwash kwa kurejea kwenye toleo la awali</translation>
@@ -6210,7 +6210,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8081989000209387414">Ungependa kuzima utatuzi wa ADB?</translation>
 <translation id="8082106343289440791">Je, ungependa kuoanisha na "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Hatua ya kuzima utatuzi wa ADB itarejesha <ph name="DEVICE_TYPE" /> kwenye mipangilio iliyotoka nayo kiwandani. Itafuta data yote ya kifaa na akaunti za mtumiaji.</translation>
-<translation id="8083058154738359867">Pata manukuu ya maudhui yako kwa kuwasha kipengele cha Manukuu Papo Hapo katika mipangilio</translation>
 <translation id="8084114998886531721">Nenosiri lililohifadhiwa</translation>
 <translation id="8086015605808120405">Inaweka mipangilio ya <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086442853986205778">Weka mipangilio ya <ph name="PRINTER_NAME" /></translation>
@@ -6281,6 +6280,7 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8157704005178149728">Inaweka mipangilio ya usimamizi</translation>
 <translation id="8158117992543756526">Kifaa hiki kiliacha kupokea masasisho ya programu na usalama mnamo <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Hitilafu katika Kuweka Uaminifu wa Cheti</translation>
+<translation id="8160775796528709999">Pata manukuu ya sauti na video zako kwa kuwasha kipengele cha Manukuu Papo Hapo katika mipangilio</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Hali ya kisomaji kwenye kurasa za wavuti</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Hamishia Kichupo kwenye Dirisha Jipya}other{Hamishia Vichupo kwenye Dirisha Jipya}}</translation>
@@ -7140,6 +7140,7 @@ Bonyeza swichi uliyokabidhi ili uache kuikabidhi.</translation>
 <translation id="9128870381267983090">Unganisha kwenye mtandao</translation>
 <translation id="9130015405878219958">Modi batili imeingizwa.</translation>
 <translation id="9131487537093447019">Tuma na upokee barua kutoka kwenye vifaa vya Bluetooth.</translation>
+<translation id="9134119143784876218">Huweka kiotomatiki manukuu ya sauti na video za lugha ya Kiingereza (kipengele hiki kinapatikana tu katika kivinjari cha Chrome kwa sasa). Sauti na manukuu husalia kwenye kifaa chako.</translation>
 <translation id="9137013805542155359">Onyesha asili</translation>
 <translation id="9137157311132182254">Mtambo wa kutafuta unaopendelea</translation>
 <translation id="9137248913990643158">Tafadhali anza na uingie katika Chrome kabla ya kutumia programu hii.</translation>

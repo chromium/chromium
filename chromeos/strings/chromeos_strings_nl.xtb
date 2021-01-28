@@ -9,10 +9,10 @@
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1175697296044146566">Deze <ph name="DEVICE_TYPE" /> wordt beheerd door <ph name="MANAGER" />.</translation>
 <translation id="1195447618553298278">Onbekende fout</translation>
-<translation id="1204296502688602597">DNS-wachttijd</translation>
+<translation id="1204296502688602597">DNS-latentie</translation>
 <translation id="123124571410524056">Vermoedelijke portal</translation>
 <translation id="1238191093934674082">Open VPN</translation>
-<translation id="1238612778414822719">HTTPS-wachttijd</translation>
+<translation id="1238612778414822719">HTTPS-latentie</translation>
 <translation id="1270369111467284986">Vermoedelijke captive portal</translation>
 <translation id="1290331692326790741">Zwak signaal</translation>
 <translation id="1314565355471455267">Android VPN</translation>
@@ -20,7 +20,7 @@
 <translation id="1330426557709298164">Jpg</translation>
 <translation id="1337912285145772892">Aanpassen aan scangebied</translation>
 <translation id="1397738625398125236">Gateway kan worden gepingd</translation>
-<translation id="1398634363027580500">Zeer lange HTTPS-wachttijd</translation>
+<translation id="1398634363027580500">Zeer lange HTTPS-latentie</translation>
 <translation id="1413240736185167732">Mislukt - Filter mislukt</translation>
 <translation id="1468664791493211953">Aanbiedingen</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> beheert dit apparaat en kan je activiteit mogelijk bekijken.</translation>
@@ -82,7 +82,7 @@
 <translation id="3199982728237701504">Documentfeeder (dubbelzijdig)</translation>
 <translation id="3246869037381808805">Afdruktaken ouder dan 1 dag worden verwijderd</translation>
 <translation id="3268178239013324452">Mislukt - Klep geopend</translation>
-<translation id="3310640316857623290">DNS-wachttijd aanzienlijk langer dan toelaatbare drempel</translation>
+<translation id="3310640316857623290">DNS-latentie aanzienlijk langer dan toelaatbare drempel</translation>
 <translation id="3328783797891415197">Test actief</translation>
 <translation id="3368922792935385530">Verbonden</translation>
 <translation id="3369013195428705271">Weet je zeker dat je je hele afdrukgeschiedenis wilt verwijderen? Je actieve afdruktaken worden niet verwijderd.</translation>
@@ -243,7 +243,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7561454561030345039">Deze actie wordt beheerd door je beheerder</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7620771111601174153">Meer informatie in het Helpcentrum</translation>
-<translation id="7648838807254605802">Lage HTTPS-wachttijd</translation>
+<translation id="7648838807254605802">Lage HTTPS-latentie</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7690294790491645610">Nieuw wachtwoord bevestigen</translation>
 <translation id="7701040980221191251">Geen</translation>
@@ -271,13 +271,13 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8395584934117017006">Deze <ph name="DEVICE_TYPE" /> wordt zakelijk beheerd</translation>
 <translation id="8398927464629426868">De snelheid waarmee het apparaat op dit moment wordt opgeladen of ontladen</translation>
 <translation id="8475690821716466388">Wifi-netwerk is beveiligd met het zwakke protocol WEP PSK</translation>
-<translation id="8477551185774834963">DNS-wachttijd is iets langer dan de toelaatbare drempel</translation>
+<translation id="8477551185774834963">DNS-latentie is iets langer dan de toelaatbare drempel</translation>
 <translation id="8483248364096924578">IP-adres</translation>
 <translation id="8503813439785031346">Gebruikersnaam</translation>
 <translation id="8576249514688522074">Niet geïnitialiseerd</translation>
 <translation id="8675354002693747642">Eerder gedeelde sleutel</translation>
 <translation id="871560550817059752">Mislukt - Geen inkt meer</translation>
-<translation id="8723108084122415655">Niet-standaard netwerk overschrijdt drempel voor wachttijd</translation>
+<translation id="8723108084122415655">Niet-standaard netwerk overschrijdt drempel voor latentie</translation>
 <translation id="8726019395068607495">Gestopt: klep geopend</translation>
 <translation id="8730621377337864115">Klaar</translation>
 <translation id="8747900814994928677">Wijziging bevestigen</translation>
@@ -288,7 +288,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="8845001906332463065">Hulp nodig?</translation>
 <translation id="8881098542468797602">Test geslaagd</translation>
 <translation id="8898840733695078011">Signaalsterkte</translation>
-<translation id="8910721771319628100">Standaardnetwerk overschrijdt drempel voor wachttijd</translation>
+<translation id="8910721771319628100">Standaardnetwerk overschrijdt drempel voor latentie</translation>
 <translation id="8919837981463578619">Mislukt - Lade ontbreekt</translation>
 <translation id="8928727111548978589">Mislukt - Geen papier meer</translation>
 <translation id="8930622219860340959">Draadloos</translation>

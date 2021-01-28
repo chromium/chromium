@@ -453,7 +453,6 @@
 <translation id="1500297251995790841">Ukendt enhed [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Denne ejerkonto skal være den første konto, der logges ind på i en loginsession med flere brugere.</translation>
 <translation id="150411034776756821">Fjern <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Få undertekster til dine medier</translation>
 <translation id="1504551620756424144">Delte mapper er tilgængelige i Windows via <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Søgemaskine</translation>
 <translation id="1507170440449692343">Denne side er blokeret fra at få adgang til dit kamera.</translation>
@@ -1447,6 +1446,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2604255671529671813">Fejl i netværksforbindelsen</translation>
 <translation id="2606246518223360146">Tilknyt data</translation>
 <translation id="2606454609872547359">Nej, fortsæt uden ChromeVox</translation>
+<translation id="2606568927909309675">Genererer automatisk undertekster til lyd- og videoindhold på engelsk. Lyden og underteksterne forlader aldrig enheden.</translation>
 <translation id="2607101320794533334">Oplysninger om emnets offentlige nøgle</translation>
 <translation id="2609896558069604090">Opret genveje...</translation>
 <translation id="2609980095400624569">Der kunne ikke oprettes forbindelse</translation>
@@ -3744,7 +3744,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5265797726250773323">Der opstod en fejl ved installationen</translation>
 <translation id="5266113311903163739">Fejl under import af certificeringsautoritet</translation>
 <translation id="5269977353971873915">Udskrift mislykkedes</translation>
-<translation id="5274738462757057090">Opretter automatisk undertekster til medier i Chrome-browsere (i øjeblikket kun tilgængelig på engelsk)</translation>
 <translation id="5275352920323889391">Hund</translation>
 <translation id="527605982717517565">Tillad altid JavaScript på <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Status-id</translation>
@@ -4389,6 +4388,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6011074160056912900">Ethernet-netværk</translation>
 <translation id="6011193465932186973">Fingeraftryk</translation>
 <translation id="6011449291337289699">Ryd websitedata</translation>
+<translation id="6013027779243312217">Få undertekster til dit lyd- og videoindhold</translation>
 <translation id="6015796118275082299">År</translation>
 <translation id="6016178549409952427">Gå til yderligere indhold <ph name="CURRENT_ELEMENT" /> ud af <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Bekræft Powerwash med nulstilling til forrige version</translation>
@@ -6214,7 +6214,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8081989000209387414">Vil du deaktivere ADB-fejlretning?</translation>
 <translation id="8082106343289440791">Vil du parre med "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Hvis du deaktiverer ADB-fejlretning, gendannes fabriksindstillingerne på denne <ph name="DEVICE_TYPE" />. Alle brugerkonti og lokale data ryddes.</translation>
-<translation id="8083058154738359867">Få undertekster til dine medier ved at aktivere Livetekstning i indstillingerne</translation>
 <translation id="8084114998886531721">Gemt adgangskode</translation>
 <translation id="8086015605808120405">Konfigurerer <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086442853986205778">Konfigurer <ph name="PRINTER_NAME" /></translation>
@@ -6285,6 +6284,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8157704005178149728">Konfigurerer forældrestyring</translation>
 <translation id="8158117992543756526">Denne enhed stoppede med at modtage automatiske software- og sikkerhedsopdateringer i <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Fejl under konfiguration af certifikattillid</translation>
+<translation id="8160775796528709999">Få undertekster til dit lyd- og videoindhold ved at aktivere Livetekstning i indstillingerne</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Læser-tilstand for websider</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Flyt fanen til et nyt vindue}one{Flyt fanen til et nyt vindue}other{Flyt fanerne til et nyt vindue}}</translation>
@@ -7146,6 +7146,7 @@ Tryk på en kontakt, der er tildelt en handling, for at fjerne tildelingen.</tra
 <translation id="9128870381267983090">Opret forbindelse til netværk</translation>
 <translation id="9130015405878219958">Den angivne tilstand er ugyldig.</translation>
 <translation id="9131487537093447019">Sende beskeder til og modtage beskeder fra Bluetooth-enheder.</translation>
+<translation id="9134119143784876218">Der genereres automatisk undertekster til lyd- og videoindhold på engelsk (denne funktion er i øjeblikket kun tilgængelig i Chrome-browseren). Lyden og underteksterne forlader aldrig enheden.</translation>
 <translation id="9137013805542155359">Vis oprindelig</translation>
 <translation id="9137157311132182254">Foretrukken søgemaskine</translation>
 <translation id="9137248913990643158">Start og log ind på Chrome, inden du bruger denne app.</translation>

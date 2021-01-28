@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">不明なデバイス [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">この所有者アカウントは、マルチログイン セッションで最初にログインするアカウントである必要があります。</translation>
 <translation id="150411034776756821"><ph name="SITE" /> を削除</translation>
-<translation id="1504311855864906891">メディアの字幕を生成する</translation>
 <translation id="1504551620756424144">共有フォルダは Windows では <ph name="BASE_DIR" /> にあります。</translation>
 <translation id="1506061864768559482">検索エンジン</translation>
 <translation id="1507170440449692343">このページはカメラへのアクセスを禁止されています。</translation>
@@ -1446,6 +1445,7 @@
 <translation id="2604255671529671813">ネットワーク接続エラー</translation>
 <translation id="2606246518223360146">データをリンク</translation>
 <translation id="2606454609872547359">いいえ（ChromeVox なしで続行する）</translation>
+<translation id="2606568927909309675">英語の音声と動画の字幕を自動生成します。音声と字幕はデバイス上でローカルに処理されます。</translation>
 <translation id="2607101320794533334">サブジェクトの公開鍵情報</translation>
 <translation id="2609896558069604090">ショートカットの作成...</translation>
 <translation id="2609980095400624569">接続を確立できませんでした</translation>
@@ -3743,7 +3743,6 @@
 <translation id="5265797726250773323">インストール中にエラーが発生しました</translation>
 <translation id="5266113311903163739">認証局インポート エラー</translation>
 <translation id="5269977353971873915">印刷の失敗</translation>
-<translation id="5274738462757057090">Chrome ブラウザで再生するメディアの字幕を自動的に作成します（現在のところ英語のみ）</translation>
 <translation id="5275352920323889391">犬</translation>
 <translation id="527605982717517565"><ph name="HOST" /> の JavaScript を常に許可する</translation>
 <translation id="5278823018825269962">ステータス ID</translation>
@@ -4388,6 +4387,7 @@
 <translation id="6011074160056912900">イーサネット ネットワーク</translation>
 <translation id="6011193465932186973">指紋</translation>
 <translation id="6011449291337289699">サイトデータの削除</translation>
+<translation id="6013027779243312217">音声と動画の字幕を生成します</translation>
 <translation id="6015796118275082299">年</translation>
 <translation id="6016178549409952427">追加コンテンツ <ph name="TOTAL_ELEMENTS" /> 件中 <ph name="CURRENT_ELEMENT" /> 件目に移動します</translation>
 <translation id="6016551720757758985">Powerwash を実行して以前のバージョンに戻すことを確認</translation>
@@ -6213,7 +6213,6 @@
 <translation id="8081989000209387414">ADB デバッグを無効にしますか？</translation>
 <translation id="8082106343289440791">「<ph name="DEVICE_NAME" />」とペア設定しますか？</translation>
 <translation id="8082390128630131497">ADB デバッグを無効にすると、この <ph name="DEVICE_TYPE" /> が出荷時の設定にリセットされます。ユーザー アカウントとローカルデータはすべて消去されます。</translation>
-<translation id="8083058154738359867">メディアの字幕を生成するには、設定で自動字幕起こしを有効にします</translation>
 <translation id="8084114998886531721">保存したパスワード</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> を設定しています...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> をセットアップ</translation>
@@ -6284,6 +6283,7 @@
 <translation id="8157704005178149728">管理機能の設定</translation>
 <translation id="8158117992543756526">このデバイスのソフトウェアとセキュリティの自動更新は <ph name="MONTH_AND_YEAR" /> に停止しました。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">証明書の信頼設定エラー</translation>
+<translation id="8160775796528709999">音声と動画の字幕を生成するには、設定で自動字幕起こしを有効にします</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />（<ph name="TIME_REMAINING" />）</translation>
 <translation id="8161293209665121583">ウェブページのリーダーモード</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{タブを新しいウィンドウに移動}other{タブを新しいウィンドウに移動}}</translation>
@@ -7143,6 +7143,7 @@
 <translation id="9128870381267983090">ネットワークに接続する</translation>
 <translation id="9130015405878219958">入力されたモードが無効です。</translation>
 <translation id="9131487537093447019">Bluetooth デバイスとのメッセージの送受信。</translation>
+<translation id="9134119143784876218">英語の音声と動画の字幕を自動生成します（現在のところ Chrome ブラウザでのみ利用可能）。音声と字幕はデバイス上でローカルに処理されます。</translation>
 <translation id="9137013805542155359">原文のページを表示</translation>
 <translation id="9137157311132182254">優先する検索エンジン</translation>
 <translation id="9137248913990643158">このアプリを使用するには、Chrome を起動してログインしてください。</translation>

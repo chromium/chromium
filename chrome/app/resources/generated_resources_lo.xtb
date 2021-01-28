@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">ອຸປະກອນທີ່ບໍ່ຮູ້ຈັກ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">ບັນຊີຜູ້ເປັນເຈົ້າຂອງຕ້ອງເປັນບັນຊີລົງຊື່ເຂົ້າໃຊ້ທໍາອິດຢູ່ໃນຊ່ວງເວລາເຂົ້າໃຊ້ການລົງຊື່ເຂົ້າໃຊ້ຫຼາຍອັນ.</translation>
 <translation id="150411034776756821">ລຶບ <ph name="SITE" /> ອອກ</translation>
-<translation id="1504311855864906891">ຮັບຄຳບັນຍາຍສຳລັບສື່ຂອງທ່ານ</translation>
 <translation id="1504551620756424144">ໂຟນເດີທີ່ໃຊ້ຮ່ວມກັນສາມາດໃຊ້ໄດ້ໃນ Windows ທີ່ <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">ເຄື່ອງ​ຈັກ​ຄົ້ນ​ຫາ</translation>
 <translation id="1507170440449692343">ໜ້ານີ້ຖືກບລັອກຈາກການເຂົ້າໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ.</translation>
@@ -1444,6 +1443,7 @@
 <translation id="2604255671529671813">ການເຊື່ອມຕໍ່ເຄືອຂ່າຍຜິດພາດ</translation>
 <translation id="2606246518223360146">ລິ້ງຂໍ້ມູນ</translation>
 <translation id="2606454609872547359">ບໍ່, ສືບຕໍ່ໂດຍບໍ່ໃຊ້ ChromeVox</translation>
+<translation id="2606568927909309675">ສ້າງຄຳບັນຍາຍໂດຍອັດຕະໂນມັດສຳລັບສຽງ ແລະ ວິດີໂອພາສາອັງກິດ. ສຽງ ແລະ ຄຳບັນຍາຍຈະບໍ່ອອກຈາກອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="2607101320794533334">ຂໍ້ມູນປຸ່ມທົ່ວໄປຂອງຜູ້ໄດ້ຮັບ</translation>
 <translation id="2609896558069604090">ສ້າງ​ທາງ​ລັດ...</translation>
 <translation id="2609980095400624569">ບໍ່ສາມາດສ້າງການເຊື່ອມຕໍ່ໄດ້</translation>
@@ -3741,7 +3741,6 @@
 <translation id="5265797726250773323">ເກີດຜິດພາດໃນການຕິດຕັ້ງ</translation>
 <translation id="5266113311903163739">ນໍາເອົາການໃຫ້ສິດຢັ້ງຢືນເຂົ້າມາຜິດພາດ</translation>
 <translation id="5269977353971873915">ພິມບໍ່ສໍາເລັດ</translation>
-<translation id="5274738462757057090">ສ້າງຄຳບັນຍາຍສຳລັບສື່ໃນໂປຣແກຣມທ່ອງເວັບ Chrome (ປັດຈຸບັນໃຊ້ໄດ້ແຕ່ເປັນພາສາອັງກິດເທົ່ານັ້ນ)</translation>
 <translation id="5275352920323889391">ໝາ</translation>
 <translation id="527605982717517565">ອະ​ນຸ​ຍາດ​ JavaScript ຢູ່ເທິງ <ph name="HOST" /> ຢູ່ສະເໝີ</translation>
 <translation id="5278823018825269962">ID ສະຖານະ</translation>
@@ -4385,6 +4384,7 @@
 <translation id="6011074160056912900">ເຄືອຂ່າຍອີເທີເນັດ</translation>
 <translation id="6011193465932186973">ລາຍນີ້ວມື</translation>
 <translation id="6011449291337289699">ລຶບລ້າງຂໍ້ມູນເວັບໄຊ</translation>
+<translation id="6013027779243312217">ຮັບຄຳບັນຍາຍສຳລັບສຽງ ແລະ ວິດີໂອຂອງທ່ານ</translation>
 <translation id="6015796118275082299">ປີ</translation>
 <translation id="6016178549409952427">ນຳທາງໄປຫາເນື້ອຫາເພີ່ມເຕີມທີ <ph name="CURRENT_ELEMENT" /> ຈາກທັງໝົດ <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">ຢືນ​ຢັນ Powerwash ດ້ວຍ​ການ​ກັບ​ຄືນ​ໄປ​ຫາ​ໜ້າ​ຈໍ​ຜ່ານ​ມາ</translation>
@@ -6208,7 +6208,6 @@
 <translation id="8081989000209387414">ປິດນຳໃຊ້ການດີບັກ ADB ບໍ?</translation>
 <translation id="8082106343289440791">ຈັບຄູ່ກັບ "<ph name="DEVICE_NAME" />" ບໍ?</translation>
 <translation id="8082390128630131497">ການປິດນຳໃຊ້ການດີບັກ ADB ຈະຣີເຊັດ <ph name="DEVICE_TYPE" /> ນີ້ເປັນການຕັ້ງຄ່າຈາກໂຮງງານ. ລະບົບຈະລຶບບັນຊີຜູ້ໃຊ້ ແລະ ຂໍ້ມູນໃນເຄື່ອງທັງໝົດ.</translation>
-<translation id="8083058154738359867">ຮັບຄຳບັນຍາຍສຳລັບສື່ຂອງທ່ານໂດຍການເປີດການນຳໃຊ້ຄຳບັນຍາຍສົດໃນການຕັ້ງຄ່າ</translation>
 <translation id="8084114998886531721">ບັນທຶກລະຫັດຜ່ານແລ້ວ</translation>
 <translation id="8086015605808120405">ກຳລັງກຳນົດຄ່າ <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086442853986205778">ຕັ້ງຄ່າ <ph name="PRINTER_NAME" /></translation>
@@ -6279,6 +6278,7 @@
 <translation id="8157704005178149728">ກຳລັງຕັ້ງຄ່າການເບິ່ງແຍງກວດກາ</translation>
 <translation id="8158117992543756526">ອຸປະກອນນີ້ຢຸດຮັບການອັບເດດຊອບແວ ແລະ ຄວາມປອດໄພໂດຍອັດຕະໂນມັດນັບແຕ່ <ph name="MONTH_AND_YEAR" /> ແລ້ວ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">ການຕັ້ງຄ່າຄວາມເຊື່ອໝັ້ນໃບຢັ້ງຢືນຜິດພາດ</translation>
+<translation id="8160775796528709999">ຮັບຄຳບັນຍາຍສຳລັບສຽງ ແລະ ວິດີໂອຂອງທ່ານໂດຍການເປີດການນຳໃຊ້ຄຳບັນຍາຍສົດໃນການຕັ້ງຄ່າ</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">ໂໝດຜູ້ອ່ານສຳລັບໜ້າເວັບ</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ຍ້າຍແຖບໄປໜ້າຈໍໃໝ່}other{ຍ້າຍແຖບໄປໜ້າຈໍໃໝ່}}</translation>
@@ -7138,6 +7138,7 @@
 <translation id="9128870381267983090">ເຊື່ອມ​ຕໍ່ກັບ​ເຄືອ​ຂ່າຍ</translation>
 <translation id="9130015405878219958">ປ້ອນໂໝດໃຊ້ບໍ່ໄດ້ເຂົ້າໄປແລ້ວ.</translation>
 <translation id="9131487537093447019">ສົ່ງ​ຂໍ້​ຄວາມ​ຫາ ​ແລະ​ຮັບ​ຂໍ້​ຄວາມ​ຈາກອຸ​ປະ​ກອນ Bluetooth​.</translation>
+<translation id="9134119143784876218">ສ້າງຄຳບັນຍາຍໂດຍອັດຕະໂນມັດສຳລັບສຽງ ແລະ ວິດີໂອພາສາອັງກິດ (ປັດຈຸບັນໃຊ້ໄດ້ແຕ່ເປັນພາສາອັງກິດເທົ່ານັ້ນ). ສຽງ ແລະ ຄຳບັນຍາຍຈະບໍ່ອອກຈາກອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="9137013805542155359">ສະແດງຕົ້ນສະບັບ</translation>
 <translation id="9137157311132182254">ໂປຣແກຣມຊອກຫາທີ່ເລືອກ</translation>
 <translation id="9137248913990643158">ກະລຸນາເລີ່ມຕົ້ນ ແລະ ເຂົ້າສູ່ລະບົບ Chrome ກ່ອນໃຊ້ແອັບນີ້.</translation>

@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Dispositivo sconosciuto [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Questo account proprietario deve essere il primo account registrato in una sessione con accesso simultaneo.</translation>
 <translation id="150411034776756821">Rimuovi <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Crea sottotitoli per i tuoi contenuti multimediali</translation>
 <translation id="1504551620756424144">Le cartelle condivise sono disponibili su Windows al percorso <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Motore di ricerca</translation>
 <translation id="1507170440449692343">A questa pagina è stato impedito l'accesso alla webcam.</translation>
@@ -1445,6 +1444,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2604255671529671813">Errore di connessione alla rete</translation>
 <translation id="2606246518223360146">Collega dati</translation>
 <translation id="2606454609872547359">No, continua senza ChromeVox</translation>
+<translation id="2606568927909309675">Vengono creati automaticamente i sottotitoli per i contenuti audio e video in inglese. Audio e sottotitoli non possono essere trasferiti dal dispositivo.</translation>
 <translation id="2607101320794533334">Info sulla chiave pubblica del soggetto</translation>
 <translation id="2609896558069604090">Crea scorciatoie...</translation>
 <translation id="2609980095400624569">Impossibile stabilire la connessione</translation>
@@ -3742,7 +3742,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="5265797726250773323">Errore durante l'installazione</translation>
 <translation id="5266113311903163739">Errore di importazione dell'autorità di certificazione</translation>
 <translation id="5269977353971873915">Stampa non riuscita</translation>
-<translation id="5274738462757057090">Vengono creati automaticamente i sottotitoli per i contenuti multimediali nel browser Chrome (funzionalità attualmente disponibile soltanto in inglese)</translation>
 <translation id="5275352920323889391">Cane</translation>
 <translation id="527605982717517565">Consenti sempre JavaScript su <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID stato</translation>
@@ -4387,6 +4386,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="6011074160056912900">Rete Ethernet</translation>
 <translation id="6011193465932186973">Impronta digitale</translation>
 <translation id="6011449291337289699">Cancella i dati del sito</translation>
+<translation id="6013027779243312217">Aggiungi sottotitoli ai tuoi contenuti audio e video</translation>
 <translation id="6015796118275082299">Anno</translation>
 <translation id="6016178549409952427">Vai ai contenuti aggiuntivi <ph name="CURRENT_ELEMENT" /> di <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Se confermi il Powerwash viene ripristinata la versione precedente</translation>
@@ -6212,7 +6212,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8081989000209387414">Disattivare il debug ADB?</translation>
 <translation id="8082106343289440791">Vuoi eseguire l'accoppiamento con "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">La disattivazione del debug ADB ripristinerà le impostazioni di fabbrica di questo <ph name="DEVICE_TYPE" />. Tutti gli account utente e i dati locali verranno resettati.</translation>
-<translation id="8083058154738359867">Aggiungi sottotitoli ai tuoi contenuti multimediali attivando Sottotitoli in tempo reale nelle impostazioni</translation>
 <translation id="8084114998886531721">Password salvata</translation>
 <translation id="8086015605808120405">Configurazione di <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">Configura <ph name="PRINTER_NAME" /></translation>
@@ -6282,6 +6281,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8157704005178149728">Impostazione della supervisione</translation>
 <translation id="8158117992543756526">Questo dispositivo non riceve più aggiornamenti automatici di software e sicurezza da <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Ulteriori informazioni<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Errore durante l'impostazione dell'attendibilità del certificato</translation>
+<translation id="8160775796528709999">Aggiungi sottotitoli ai tuoi contenuti audio e video attivando la funzionalità Sottotitoli in tempo reale nelle impostazioni</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Modalità Reader per le pagine web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Sposta scheda in una nuova finestra}other{Sposta schede in una nuova finestra}}</translation>
@@ -7141,6 +7141,7 @@ Premi un sensore assegnato per rimuovere l'assegnazione.</translation>
 <translation id="9128870381267983090">Collegati alla rete</translation>
 <translation id="9130015405878219958">La modalità inserita non è valida.</translation>
 <translation id="9131487537093447019">Inviare e ricevere messaggi a/da dispositivi Bluetooth.</translation>
+<translation id="9134119143784876218">Vengono creati automaticamente i sottotitoli per i contenuti audio e video in inglese (funzionalità attualmente disponibile soltanto nel browser Chrome). Audio e sottotitoli non possono essere trasferiti dal dispositivo.</translation>
 <translation id="9137013805542155359">Mostra originale</translation>
 <translation id="9137157311132182254">Motore di ricerca preferito</translation>
 <translation id="9137248913990643158">Accedi a Chrome prima di usare questa app.</translation>

@@ -453,7 +453,6 @@
 <translation id="1500297251995790841">Непознат уред [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Оваа сметка на сопственик треба да биде првата пријавена сметка во сесија со повеќекратно пријавување.</translation>
 <translation id="150411034776756821">Отстрани <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Ставете титлови на вашите аудиовизуелни содржини</translation>
 <translation id="1504551620756424144">Споделените папки се достапни во Windows на <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Пребарувач</translation>
 <translation id="1507170440449692343">Страницата е блокирана да не пристапува до фотоапаратот.</translation>
@@ -1447,6 +1446,7 @@
 <translation id="2604255671529671813">Грешка во мрежното поврзување</translation>
 <translation id="2606246518223360146">Поврзи ги податоците</translation>
 <translation id="2606454609872547359">Не, продолжи без ChromeVox</translation>
+<translation id="2606568927909309675">Автоматски создава титлови за англиски аудио и видеосодржини. Аудиото и титловите никогаш не го напуштаат уредот.</translation>
 <translation id="2607101320794533334">Информации за јавен клуч на субјект</translation>
 <translation id="2609896558069604090">Направи кратенки...</translation>
 <translation id="2609980095400624569">Не можеше да се воспостави врска</translation>
@@ -3744,7 +3744,6 @@
 <translation id="5265797726250773323">Грешка при инсталирањето</translation>
 <translation id="5266113311903163739">Грешка при увоз на орган за сертификати</translation>
 <translation id="5269977353971873915">Печатењето не успеа</translation>
-<translation id="5274738462757057090">Автоматски создава титлови за аудиовизуелни содржини во прелистувачот Chrome (моментално достапна само на англиски)</translation>
 <translation id="5275352920323889391">Куче</translation>
 <translation id="527605982717517565">Секогаш дозволи JavaScript на <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID на статусот</translation>
@@ -4388,6 +4387,7 @@
 <translation id="6011074160056912900">Етернет-мрежа</translation>
 <translation id="6011193465932186973">Отпечаток</translation>
 <translation id="6011449291337289699">Избришете ги сите податоци</translation>
+<translation id="6013027779243312217">Добијте титлови за вашите аудио и видеосодржини</translation>
 <translation id="6015796118275082299">Година</translation>
 <translation id="6016178549409952427">Одете на дополнителните содржини под број <ph name="CURRENT_ELEMENT" /> од вкупно <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Потврди фабричко ресетирање со враќање на претходната верзија</translation>
@@ -6212,7 +6212,6 @@
 <translation id="8081989000209387414">Да се оневозможи отстранување грешки на ADB?</translation>
 <translation id="8082106343289440791">Да се спари со „<ph name="DEVICE_NAME" />“?</translation>
 <translation id="8082390128630131497">Оневозможувањето на ADB ќе го ресетира <ph name="DEVICE_TYPE" /> на фабричките поставки. Сите кориснички сметки и локални податоци ќе бидат избришани.</translation>
-<translation id="8083058154738359867">Преземете титлови за вашите аудиовизуелни содржини со овозможување „Автоматски титлови“ во поставките</translation>
 <translation id="8084114998886531721">Зачувана лозинка</translation>
 <translation id="8086015605808120405">Се конфигурира <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">Постави <ph name="PRINTER_NAME" /></translation>
@@ -6283,6 +6282,7 @@
 <translation id="8157704005178149728">Се поставува надзор</translation>
 <translation id="8158117992543756526">Уредов престана да добива автоматски софтверски и безбедносни ажурирања во <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Грешка при поставување сертификат на доверба</translation>
+<translation id="8160775796528709999">Добијте титлови за вашите аудио и видеосодржини со овозможување „Автоматски титлови“ во поставките</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Режим на читач за веб-страници</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Преместете ја картичката во нов прозорец}one{Преместете ги картичките во нов прозорец}other{Преместете ги картичките во нов прозорец}}</translation>
@@ -7146,6 +7146,7 @@
 <translation id="9128870381267983090">Поврзете се на мрежа</translation>
 <translation id="9130015405878219958">Внесен е неважечки режим.</translation>
 <translation id="9131487537093447019">Испраќајте и примајте пораки од уреди со Bluetooth.</translation>
+<translation id="9134119143784876218">Автоматски создава титлови за англиски аудио и видеосодржини (во моментов е достапна само во прелистувачот Chrome). Аудиото и титловите никогаш не го напуштаат уредот.</translation>
 <translation id="9137013805542155359">Покажи оригинална страница</translation>
 <translation id="9137157311132182254">Претпочитан пребарувач</translation>
 <translation id="9137248913990643158">Започнете и најавете се на Chrome пред да ја користите апликацијава.</translation>

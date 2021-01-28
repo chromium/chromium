@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Onbekende toestel [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Hierdie eienaarrekening moet die eerste rekening wees waarby in 'n veelvuldige aanmeldsessie aangemeld word.</translation>
 <translation id="150411034776756821">Verwyder <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Kry onderskrifte vir jou media</translation>
 <translation id="1504551620756424144">Gedeelde vouers is in Windows beskikbaar by <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Soekenjin</translation>
 <translation id="1507170440449692343">Hierdie bladsy word gekeer om by jou kamera in te gaan.</translation>
@@ -1446,6 +1445,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2604255671529671813">Netwerkverbinding-fout</translation>
 <translation id="2606246518223360146">Koppel data</translation>
 <translation id="2606454609872547359">Nee, gaan voort sonder ChromeVox</translation>
+<translation id="2606568927909309675">Skep outomaties onderskrifte vir Engelse oudio en video. Oudio en onderskrifte verlaat nooit jou toestel nie.</translation>
 <translation id="2607101320794533334">Inligting oor entiteit se openbare sleutel</translation>
 <translation id="2609896558069604090">Skep kortpaaie …</translation>
 <translation id="2609980095400624569">Kon nie verbinding bewerkstellig nie</translation>
@@ -3743,7 +3743,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="5265797726250773323">Kon nie installeer nie</translation>
 <translation id="5266113311903163739">Sertifiseringoutoriteit-invoerfout</translation>
 <translation id="5269977353971873915">Kon nie uitdruk nie</translation>
-<translation id="5274738462757057090">Skep outomaties onderskrifte vir media in Chrome-blaaier (tans net in Engels beskikbaar)</translation>
 <translation id="5275352920323889391">Hond</translation>
 <translation id="527605982717517565">Laat JavaScript altyd op <ph name="HOST" /> toe.</translation>
 <translation id="5278823018825269962">Status-ID</translation>
@@ -4388,6 +4387,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6011074160056912900">Ethernet-netwerk</translation>
 <translation id="6011193465932186973">Vingerafdruk</translation>
 <translation id="6011449291337289699">Vee werfdata uit</translation>
+<translation id="6013027779243312217">Kry onderskrifte vir jou oudio en video</translation>
 <translation id="6015796118275082299">Jaar</translation>
 <translation id="6016178549409952427">Navigeer na ekstra inhoud <ph name="CURRENT_ELEMENT" /> van <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Bevestig Powerwash met terugkeer na vorige weergawe</translation>
@@ -6212,7 +6212,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8081989000209387414">Deaktiveer ADB-ontfouting?</translation>
 <translation id="8082106343289440791">Bind saam met "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">As jy ADB-ontfouting deaktiveer, sal <ph name="DEVICE_TYPE" /> teruggestel word na fabriekinstellings. Alle gebruikerrekeninge en plaaslike data sal uitgevee word.</translation>
-<translation id="8083058154738359867">Kry onderskrifte vir jou media deur Intydse Onderskrifte in instellings te aktiveer</translation>
 <translation id="8084114998886531721">Gestoorde wagwoord</translation>
 <translation id="8086015605808120405">Stel <ph name="PRINTER_NAME" /> tans op …</translation>
 <translation id="8086442853986205778">Stel <ph name="PRINTER_NAME" /> op</translation>
@@ -6283,6 +6282,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8157704005178149728">Stel tans toesig op</translation>
 <translation id="8158117992543756526">Hierdie toestel ontvang vanaf <ph name="MONTH_AND_YEAR" /> nie meer outomatiese sagteware- en sekuriteitopdaterings nie. <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Kon nie sertifikaatvertroue stel nie</translation>
+<translation id="8160775796528709999">Kry onderskrifte vir jou oudio en video deur Intydse Onderskrifte in instellings te aktiveer</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Lesermodus vir webbladsye</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Skuif oortjie na nuwe venster toe}other{Skuif oortjies na nuwe venster toe}}</translation>
@@ -7142,6 +7142,7 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="9128870381267983090">Koppel aan netwerk</translation>
 <translation id="9130015405878219958">Ongeldige modus ingevoer.</translation>
 <translation id="9131487537093447019">Stuur boodskappe na en ontvang boodskappe van Bluetooth-toestelle af.</translation>
+<translation id="9134119143784876218">Skep outomaties onderskrifte vir Engelse oudio en video (tans net in die Chrome-blaaier beskikbaar). Oudio en onderskrifte verlaat nooit jou toestel nie.</translation>
 <translation id="9137013805542155359">Wys oorspronklike</translation>
 <translation id="9137157311132182254">Voorkeursoekenjin</translation>
 <translation id="9137248913990643158">Begin asseblief deur by Chrome aan te meld voordat jy hierdie program gebruik.</translation>

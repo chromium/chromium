@@ -453,7 +453,6 @@
 <translation id="1500297251995790841">ਅਗਿਆਤ ਡੀਵਾਈਸ [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">ਇਹ ਮਾਲਕ ਖਾਤਾ ਇੱਕ ਬਹੁ-ਗਿਣਤੀ ਸਾਈਨ-ਇਨ ਸੈਸ਼ਨ ਵਿੱਚ ਸਭ ਤੋਂ ਪਹਿਲਾਂ ਸਾਈਨ-ਇਨ ਕੀਤਾ ਖਾਤਾ ਹੋਣਾ ਚਾਹੀਦਾ ਹੈ।</translation>
 <translation id="150411034776756821"><ph name="SITE" /> ਨੂੰ ਹਟਾਓ</translation>
-<translation id="1504311855864906891">ਆਪਣੇ ਮੀਡੀਆ ਲਈ ਸੁਰਖੀਆਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="1504551620756424144">ਸਾਂਝੇ ਕੀਤੇ ਫੋਲਡਰ Windows ਵਿੱਚ <ph name="BASE_DIR" /> 'ਤੇ ਉਪਲਬਧ ਹਨ।</translation>
 <translation id="1506061864768559482">ਖੋਜ ਇੰਜਣ</translation>
 <translation id="1507170440449692343">ਇਹ ਸਫ਼ਾ ਤੁਹਾਡੇ ਕੈਮਰੇ ਤੱਕ ਪਹੁੰਚਣ ਤੋਂ ਬਲੌਕ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
@@ -1446,6 +1445,7 @@
 <translation id="2604255671529671813">ਨੈੱਟਵਰਕ ਕਨੈਕਸ਼ਨ ਗੜਬੜ</translation>
 <translation id="2606246518223360146">ਡਾਟਾ ਲਿੰਕ ਕਰੋ</translation>
 <translation id="2606454609872547359">ਨਹੀਂ, ChromeVox ਦੇ ਬਿਨਾਂ ਜਾਰੀ ਰੱਖੋ</translation>
+<translation id="2606568927909309675">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅੰਗਰੇਜ਼ੀ ਆਡੀਓ ਅਤੇ ਵੀਡੀਓ ਲਈ ਸੁਰਖੀਆਂ ਬਣਾਉਂਦੀ ਹੈ। ਆਡੀਓ ਅਤੇ ਸੁਰਖੀਆਂ ਨੂੰ ਕਦੇ ਵੀ ਡੀਵਾਈਸ ਤੋਂ ਬਾਹਰ ਨਹੀਂ ਲਿਜਾਇਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="2607101320794533334">ਵਿਸ਼ਾ ਜਨਤਕ ਕੁੰਜੀ ਜਾਣਕਾਰੀ</translation>
 <translation id="2609896558069604090">ਸ਼ਾਰਟਕੱਟ ਬਣਾਓ...</translation>
 <translation id="2609980095400624569">ਕਨੈਕਸ਼ਨ ਸਥਾਪਤ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ</translation>
@@ -3742,7 +3742,6 @@
 <translation id="5265797726250773323">ਸਥਾਪਤ ਕਰਨ ਵੇਲੇ ਗੜਬੜ ਹੋਈ</translation>
 <translation id="5266113311903163739">ਪ੍ਰਮਾਣਿਕਤਾ ਅਧਿਕਾਰ ਆਯਾਤ ਗੜਬੜ</translation>
 <translation id="5269977353971873915">ਪ੍ਰਿੰਟ ਲੈਣਾ ਅਸਫਲ ਰਿਹਾ</translation>
-<translation id="5274738462757057090">Chrome ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਮੀਡੀਆ ਲਈ ਸੁਰਖੀਆਂ ਬਣਾਉਂਦੀ ਹੈ (ਫ਼ਿਲਹਾਲ ਸਿਰਫ਼ ਅੰਗਰੇਜ਼ੀ ਵਿੱਚ ਉਪਲਬਧ ਹੈ)</translation>
 <translation id="5275352920323889391">ਕੁੱਤਾ</translation>
 <translation id="527605982717517565">ਹਮੇਸ਼ਾਂ <ph name="HOST" /> ਤੇ JavaScript ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="5278823018825269962">ਸਥਿਤੀ ਦੀ ਆਈਡੀ</translation>
@@ -4386,6 +4385,7 @@
 <translation id="6011074160056912900">ਈਥਰਨੈੱਟ ਨੈੱਟਵਰਕ</translation>
 <translation id="6011193465932186973">ਫਿੰਗਰਪ੍ਰਿੰਟ</translation>
 <translation id="6011449291337289699">ਕੀ ਸਾਈਟ ਡਾਟਾ ਕਲੀਅਰ ਕਰਨਾ ਹੈ?</translation>
+<translation id="6013027779243312217">ਆਪਣੇ ਆਡੀਓ ਅਤੇ ਵੀਡੀਓ ਲਈ ਸੁਰਖੀਆਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="6015796118275082299">ਸਾਲ</translation>
 <translation id="6016178549409952427">ਵਾਧੂ ਸਮੱਗਰੀ ਦੇ <ph name="TOTAL_ELEMENTS" /> ਵਿੱਚੋਂ <ph name="CURRENT_ELEMENT" /> 'ਤੇ ਜਾਓ</translation>
 <translation id="6016551720757758985">ਪਿੱਛਲੇ ਰੂਪ ਤੇ ਵਾਪਸ ਆਉਣ ਨਾਲ ਪਾਵਰਵਾਸ਼ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
@@ -6209,7 +6209,6 @@
 <translation id="8081989000209387414">ਕੀ ADB ਡੀਬੱਗਿੰਗ ਨੂੰ ਬੰਦ ਕਰਨਾ ਹੈ?</translation>
 <translation id="8082106343289440791">ਕੀ "<ph name="DEVICE_NAME" />" ਨਾਲ ਜੋੜਾਬੱਧ ਕਰਨਾ ਹੈ?</translation>
 <translation id="8082390128630131497">ADB ਡੀਬੱਗਿੰਗ ਨੂੰ ਬੰਦ ਕਰਨ ਨਾਲ ਇਹ <ph name="DEVICE_TYPE" /> ਨੂੰ ਫੈਕਟਰੀ ਸੈਟਿੰਗਾਂ 'ਤੇ ਰੀਸੈੱਟ ਕਰੇਗਾ। ਸਾਰੇ ਵਰਤੋਂਕਾਰ ਖਾਤਿਆਂ ਅਤੇ ਸਥਾਨਕ ਡਾਟੇ ਨੂੰ ਮਿਟਾਇਆ ਜਾਵੇਗਾ।</translation>
-<translation id="8083058154738359867">ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਲਾਈਵ ਸੁਰਖੀਆਂ ਨੂੰ ਚਾਲੂ ਕਰਕੇ ਆਪਣੇ ਮੀਡੀਆ ਲਈ ਸੁਰਖੀਆਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="8084114998886531721">ਰੱਖਿਅਤ ਕੀਤਾ ਪਾਸਵਰਡ</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> ਦਾ ਸੰਰੂਪਣ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> ਨੂੰ ਸੈੱਟਅੱਪ ਕਰੋ</translation>
@@ -6279,6 +6278,7 @@
 <translation id="8157704005178149728">ਨਿਗਰਾਨੀ ਦਾ ਸੈੱਟਅੱਪ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="8158117992543756526">ਇਸ ਡੀਵਾਈਸ ਨੇ <ph name="MONTH_AND_YEAR" /> ਵਿੱਚ ਸਵੈਚਲਿਤ ਸਾਫ਼ਟਵੇਅਰ ਅਤੇ ਸੁਰੱਖਿਆ ਅੱਪਡੇਟ ਪ੍ਰਾਪਤ ਕਰਨਾ ਬੰਦ ਕਰ ਦਿੱਤਾ ਹੈ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">ਪ੍ਰਮਾਣ-ਪੱਤਰ ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ</translation>
+<translation id="8160775796528709999">ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਲਾਈਵ ਸੁਰਖੀਆਂ ਨੂੰ ਚਾਲੂ ਕਰਕੇ ਆਪਣੇ ਆਡੀਓ ਅਤੇ ਵੀਡੀਓ ਲਈ ਸੁਰਖੀਆਂ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">ਵੈੱਬ ਪੰਨਿਆਂ ਲਈ ਰੀਡਰ ਮੋਡ</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ਟੈਬ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}one{ਟੈਬ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}other{ਟੈਬਾਂ ਨੂੰ ਨਵੀਂ ਵਿੰਡੋ ਵਿੱਚ ਲਿਜਾਓ}}</translation>
@@ -7139,6 +7139,7 @@
 <translation id="9128870381267983090">ਨੈੱਟਵਰਕ ਨਾਲ ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="9130015405878219958">ਅਵੈਧ ਮੋਡ ਦਾਖ਼ਲ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="9131487537093447019">ਬਲੂਟੁੱਥ ਡਿਵਾਈਸਾਂ ਨੂੰ ਸੁਨੇਹੇ ਭੇਜੋ ਅਤੇ ਇਹਨਾਂ ਤੋਂ ਸੁਨੇਹੇ ਪ੍ਰਾਪਤ ਕਰੋ।</translation>
+<translation id="9134119143784876218">ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਅੰਗਰੇਜ਼ੀ ਆਡੀਓ ਅਤੇ ਵੀਡੀਓ ਲਈ ਸੁਰਖੀਆਂ ਬਣਾਉਂਦੀ ਹੈ (ਫ਼ਿਲਹਾਲ ਸਿਰਫ਼ Chrome ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਉਪਲਬਧ ਹੈ)। ਆਡੀਓ ਅਤੇ ਸੁਰਖੀਆਂ ਨੂੰ ਕਦੇ ਵੀ ਡੀਵਾਈਸ ਤੋਂ ਬਾਹਰ ਨਹੀਂ ਲਿਜਾਇਆ ਜਾਂਦਾ ਹੈ।</translation>
 <translation id="9137013805542155359">ਅਸਲ ਦਿਖਾਓ</translation>
 <translation id="9137157311132182254">ਤਰਜੀਹੀ ਖੋਜ ਇੰਜਣ</translation>
 <translation id="9137248913990643158">ਕਿਰਪਾ ਕਰਕੇ ਇਸ ਐਪ ਨੂੰ ਵਰਤਣ ਤੋਂ ਪਹਿਲਾਂ Chrome ਨੂੰ ਸ਼ੁਰੂ ਕਰਕੇ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>

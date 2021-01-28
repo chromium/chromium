@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">தெரியாத சாதனம் [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">பல உள்நுழைவு அமர்வில் இந்த உரிமையாளர் கணக்கு தான் முதலில் உள்நுழைந்த கணக்காக இருக்க வேண்டும்.</translation>
 <translation id="150411034776756821"><ph name="SITE" />ஐ அகற்று</translation>
-<translation id="1504311855864906891">எனது மீடியாவிற்கு வசனங்களைக் காட்டு</translation>
 <translation id="1504551620756424144">பகிர்ந்த கோப்புறைகளை Windowsஸில் <ph name="BASE_DIR" /> என்பதில் பார்க்கலாம்.</translation>
 <translation id="1506061864768559482">தேடல் இன்ஜின்</translation>
 <translation id="1507170440449692343">இந்தப் பக்கம் உங்கள் கேமராவை அணுகுவதிலிருந்து தடுக்கப்பட்டுள்ளது.</translation>
@@ -1446,6 +1445,7 @@
 <translation id="2604255671529671813">நெட்வொர்க் இணைப்புப் பிழை</translation>
 <translation id="2606246518223360146">தரவை இணை</translation>
 <translation id="2606454609872547359">வேண்டாம். ChromeVox இல்லாமல் தொடர்க</translation>
+<translation id="2606568927909309675">ஆங்கில ஆடியோ மற்றும் வீடியோவிற்கான வசனங்கள் தானாகவே உருவாக்கப்படும். ஆடியோவும் வசனங்களும் யாருக்கும் பகிரப்படாது.</translation>
 <translation id="2607101320794533334">தலைப்பு பொதுவானவை தகவல்</translation>
 <translation id="2609896558069604090">குறுக்குவழிகளை உருவாக்கு...</translation>
 <translation id="2609980095400624569">இணைப்பை ஏற்படுத்த இயலவில்லை</translation>
@@ -3743,7 +3743,6 @@
 <translation id="5265797726250773323">நிறுவும்போது பிழை நேர்ந்தது</translation>
 <translation id="5266113311903163739">சான்றளிக்கும் மைய இறக்குமதி பிழை</translation>
 <translation id="5269977353971873915">அச்சிடுதல் தோல்வி</translation>
-<translation id="5274738462757057090">Chrome உலாவியில் மீடியாவிற்கான வசனங்கள் தானாகவே உருவாக்கப்படும் (தற்போது இந்த அம்சம் ஆங்கிலத்தில் மட்டுமே கிடைக்கிறது)</translation>
 <translation id="5275352920323889391">நாய்</translation>
 <translation id="527605982717517565"><ph name="HOST" /> இல் JavaScript ஐ எப்போதும் அனுமதி</translation>
 <translation id="5278823018825269962">நிலை ஐடி</translation>
@@ -4389,6 +4388,7 @@
 <translation id="6011074160056912900">ஈத்தர்நெட் நெட்வொர்க்</translation>
 <translation id="6011193465932186973">கைரேகை</translation>
 <translation id="6011449291337289699">தளத் தரவை அழி</translation>
+<translation id="6013027779243312217">உங்கள் ஆடியோவிற்கும் வீடியோவிற்கும் வசனங்களைக் பெறலாம்</translation>
 <translation id="6015796118275082299">ஆண்டு</translation>
 <translation id="6016178549409952427">கூடுதல் உள்ளடக்கத்திற்குச் செல்லும் (<ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" />)</translation>
 <translation id="6016551720757758985">முந்தைய பதிப்பிற்கு மாற, பவர்வாஷை உறுதிப்படுத்தவும்</translation>
@@ -6214,7 +6214,6 @@
 <translation id="8081989000209387414">ADB பிழைதிருத்தத்தை முடக்கவா?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" உடன் இணைக்கவா?</translation>
 <translation id="8082390128630131497">ADB பிழைதிருத்தத்தை முடக்குவது இந்த <ph name="DEVICE_TYPE" /> ஐ ஆரம்பநிலை அமைப்புகளுக்கு மீட்டமைக்கும். அனைத்து பயனர் கணக்குகளும் அகத் தரவும் அழிக்கப்படும்.</translation>
-<translation id="8083058154738359867">அமைப்புகளில் ’உடனடி வசனம்’ அம்சத்தை இயக்குவதன் மூலம் உங்கள் மீடியாவிற்கான வசனங்களைப் பெறலாம்</translation>
 <translation id="8084114998886531721">சேமித்த கடவுச்சொல்</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" />ஐ உள்ளமைக்கிறது ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> ஐ அமை</translation>
@@ -6285,6 +6284,7 @@
 <translation id="8157704005178149728">கண்காணிப்பை அமைக்கிறது</translation>
 <translation id="8158117992543756526"><ph name="MONTH_AND_YEAR" /> முதல் இந்த சாதனத்திற்கான தானியங்கு மென்பொருள் மற்றும் பாதுகாப்பு புதுப்பிப்புகள் நிறுத்தப்பட்டுவிட்டன. <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">சான்றிதழ் நம்பிக்கையை அமைப்பதில் பிழை</translation>
+<translation id="8160775796528709999">அமைப்புகளில் ’உடனடி வசனம்’ அம்சத்தை இயக்குவதன் மூலம் உங்கள் ஆடியோவிற்கும் வீடியோவிற்கும் வசனங்களைப் பெறலாம்</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">இணையப் பக்கங்களுக்கான படித்தல் பயன்முறை</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{தாவலைப் புதிய சாளரத்திற்கு நகர்த்து}other{தாவல்களைப் புதிய சாளரத்திற்கு நகர்த்து}}</translation>
@@ -7144,6 +7144,7 @@
 <translation id="9128870381267983090">நெட்வொர்க்குடன் இணையவும்</translation>
 <translation id="9130015405878219958">செல்லாத பயன்முறை உள்ளிடப்பட்டது. </translation>
 <translation id="9131487537093447019">புளூடூத் சாதனங்களுக்குச் செய்திகளை அனுப்புதல் மற்றும் அதிலிருந்து செய்திகளைப் பெறுதல்.</translation>
+<translation id="9134119143784876218">ஆங்கில ஆடியோ மற்றும் வீடியோவிற்கான வசனங்கள் தானாகவே உருவாக்கப்படும் (தற்போது இந்த அம்சம் Chrome உலாவியில் மட்டுமே கிடைக்கிறது). ஆடியோவும் வசனங்களும் யாருக்கும் பகிரப்படாது.</translation>
 <translation id="9137013805542155359">அசலைக் காண்பி</translation>
 <translation id="9137157311132182254">பரிந்துரைக்கப்படும் தேடல் இன்ஜின்</translation>
 <translation id="9137248913990643158">இந்தப் பயன்பாட்டைப் பயன்படுத்தும் முன், Chromeஐத் தொடங்கி உள்நுழையவும்.</translation>

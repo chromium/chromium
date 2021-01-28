@@ -51,7 +51,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1302880136325416935">Bluetooth-Einstellungen anzeigen. <ph name="STATE_TEXT" /></translation>
 <translation id="1312604459020188865">Signalstärke bei <ph name="SIGNAL_STRENGTH" /></translation>
 <translation id="1316069254387866896">Ablage immer einblenden</translation>
-<translation id="1316811122439383437">Tote: Neuste Bildschirmaufnahmen, Downloads und angepinnte Dateien</translation>
+<translation id="1316811122439383437">Schnellzugriff: Neuste Bildschirmaufnahmen, Downloads und angepinnte Dateien</translation>
 <translation id="1333308631814936910"><ph name="DISPLAY_NAME" /> verbunden</translation>
 <translation id="1341651618736211726">Überlauf</translation>
 <translation id="1346748346194534595">Rechts</translation>
@@ -318,6 +318,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="3631369015426612114">Benachrichtigungen zulassen von:</translation>
 <translation id="3638400994746983214">Der Datenschutzbildschirm kann aktiviert oder deaktiviert werden. <ph name="STATE_TEXT" />.</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Verwalteter Nutzer</translation>
+<translation id="3665889125180354336">Ton über Mikrofon aufnehmen</translation>
 <translation id="36813544980941320">WLANs werden zwischen Ihrem Smartphone und <ph name="DEVICE_NAME" /> geteilt</translation>
 <translation id="3702846122927433391">Einwohnerzahl von Nigeria</translation>
 <translation id="3705722231355495246">-</translation>
@@ -786,7 +787,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="7886169021410746335">Datenschutzeinstellungen anpassen</translation>
 <translation id="7886277072580235377">Ihre Internetsitzung wird gelöscht, sobald Sie sich abmelden. <ph name="LEARN_MORE" /></translation>
 <translation id="788781083998633524">E-Mails senden</translation>
-<translation id="7895348134893321514">Tote</translation>
+<translation id="7895348134893321514">Schnellzugriff</translation>
 <translation id="7897375687985782769">Sie haben die Tastenkombination zum Drehen des Bildschirms gedrückt. Möchten Sie den Bildschirm drehen?</translation>
 <translation id="7901405293566323524">Phone Hub</translation>
 <translation id="7902625623987030061">Fingerabdrucksensor berühren</translation>

@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Perangkat tidak dikenal [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Akun pemilik ini harus akun yang masuk pertama dalam sesi fitur masuk banyak akun.</translation>
 <translation id="150411034776756821">Hapus <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Dapatkan teks untuk media Anda</translation>
 <translation id="1504551620756424144">Folder bersama tersedia di Windows di <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Mesin telusur</translation>
 <translation id="1507170440449692343">Halaman ini telah diblokir agar tidak dapat mengakses kamera Anda.</translation>
@@ -1446,6 +1445,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2604255671529671813">Error koneksi jaringan</translation>
 <translation id="2606246518223360146">Tautkan Data</translation>
 <translation id="2606454609872547359">Tidak, lanjutkan dengan ChromeVox</translation>
+<translation id="2606568927909309675">Otomatis membuat teks untuk audio dan video berbahasa Inggris. Audio dan teks hanya ada di perangkat Anda.</translation>
 <translation id="2607101320794533334">Info Kunci Publik Subjek</translation>
 <translation id="2609896558069604090">Buat Pintasan...</translation>
 <translation id="2609980095400624569">Tidak dapat terhubung</translation>
@@ -3743,7 +3743,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="5265797726250773323">Error saat menginstal</translation>
 <translation id="5266113311903163739">Kesalahan Impor Otoritas Sertifikasi</translation>
 <translation id="5269977353971873915">Gagal Mencetak</translation>
-<translation id="5274738462757057090">Otomatis membuat teks untuk media di browser Chrome (saat ini hanya tersedia dalam bahasa Inggris)</translation>
 <translation id="5275352920323889391">Anjing</translation>
 <translation id="527605982717517565">Selalu izinkan JavaScript di <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID Status</translation>
@@ -4388,6 +4387,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="6011074160056912900">Jaringan ethernet</translation>
 <translation id="6011193465932186973">Sidik jari</translation>
 <translation id="6011449291337289699">Hapus data situs</translation>
+<translation id="6013027779243312217">Dapatkan teks untuk audio dan video Anda</translation>
 <translation id="6015796118275082299">Tahun</translation>
 <translation id="6016178549409952427">Membuka konten tambahan <ph name="CURRENT_ELEMENT" /> dari <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Konfirmasi Powerwash dengan kembali ke versi sebelumnya</translation>
@@ -6213,7 +6213,6 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8081989000209387414">Nonaktifkan proses debug ADB?</translation>
 <translation id="8082106343289440791">Sambungkan dengan "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Menonaktifkan proses debug ADB akan menyetel ulang <ph name="DEVICE_TYPE" /> ini ke setelan pabrik. Semua akun dan data lokal pengguna akan dihapus.</translation>
-<translation id="8083058154738359867">Dapatkan teks untuk media Anda dengan mengaktifkan Teks Otomatis di setelan</translation>
 <translation id="8084114998886531721">Sandi tersimpan</translation>
 <translation id="8086015605808120405">Mengonfigurasi <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086442853986205778">Siapkan <ph name="PRINTER_NAME" /></translation>
@@ -6284,6 +6283,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8157704005178149728">Menyiapkan pengawasan</translation>
 <translation id="8158117992543756526">Perangkat ini berhenti mendapatkan update software dan keamanan otomatis pada <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Kesalahan Saat Menyetel Kepercayaan Sertifikat</translation>
+<translation id="8160775796528709999">Dapatkan teks untuk audio dan video Anda dengan mengaktifkan Teks Otomatis di setelan</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Mode pembaca untuk halaman web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Pindahkan Tab ke Jendela Baru}other{Pindahkan beberapa Tab ke Jendela Baru}}</translation>
@@ -7143,6 +7143,7 @@ Tekan kunci tombol akses yang telah ditetapkan untuk menghapus penetapan.</trans
 <translation id="9128870381267983090">Sambungkan ke jaringan</translation>
 <translation id="9130015405878219958">Mode yang dimasukkan tidak valid.</translation>
 <translation id="9131487537093447019">Kirim pesan ke dan terima pesan dari perangkat Bluetooth.</translation>
+<translation id="9134119143784876218">Otomatis membuat teks untuk audio dan video berbahasa Inggris (saat ini hanya tersedia di browser Chrome). Audio dan teks hanya ada di perangkat Anda.</translation>
 <translation id="9137013805542155359">Perlihatkan halaman asli</translation>
 <translation id="9137157311132182254">Mesin telusur pilihan</translation>
 <translation id="9137248913990643158">Mulai dan login ke Chrome sebelum menggunakan aplikasi ini.</translation>

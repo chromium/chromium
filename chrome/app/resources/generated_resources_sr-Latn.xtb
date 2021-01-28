@@ -454,7 +454,6 @@
 <translation id="1500297251995790841">Nepoznat uređaj [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Ovaj vlasnički nalog mora da bude prvi prijavljeni nalog u sesiji sa višestrukim prijavljivanjem.</translation>
 <translation id="150411034776756821">Ukloni <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Prikazuj titl za medijske datoteke</translation>
 <translation id="1504551620756424144">Deljeni direktorijumi su dostupni u Windows-u na <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Pretraživač</translation>
 <translation id="1507170440449692343">Ovoj stranici je zabranjen pristup kameri.</translation>
@@ -1445,6 +1444,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2604255671529671813">Greška mrežne veze</translation>
 <translation id="2606246518223360146">Poveži podatke</translation>
 <translation id="2606454609872547359">Ne, nastavi bez ChromeVox-a</translation>
+<translation id="2606568927909309675">Automatski pravi titl za audio i video na engleskom. Audio fajl i titl uvek ostaju na uređaju.</translation>
 <translation id="2607101320794533334">Informacije o javnom ključu subjekta</translation>
 <translation id="2609896558069604090">Napravi prečice...</translation>
 <translation id="2609980095400624569">Uspostavljanje veze nije uspelo</translation>
@@ -3742,7 +3742,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="5265797726250773323">Greška pri instaliranju</translation>
 <translation id="5266113311903163739">Greška pri uvozu autoriteta za izdavanje sertifikata</translation>
 <translation id="5269977353971873915">Štampanje nije uspelo</translation>
-<translation id="5274738462757057090">Automatski pravi titl za medije u Chrome pregledaču (trenutno je dostupno samo na engleskom)</translation>
 <translation id="5275352920323889391">Pas</translation>
 <translation id="527605982717517565">Uvek dozvoli JavaScript na sajtu <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID statusa</translation>
@@ -4388,6 +4387,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6011074160056912900">Eternet mreža</translation>
 <translation id="6011193465932186973">Digitalni otisak</translation>
 <translation id="6011449291337289699">Obrišite podatke sajta</translation>
+<translation id="6013027779243312217">Preuzmite titl za audio i video</translation>
 <translation id="6015796118275082299">Godina</translation>
 <translation id="6016178549409952427">Idi u <ph name="CURRENT_ELEMENT" />. element dodatnog sadržaja od <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Potvrđivanje Powerwash-a uz vraćanje na prethodnu verziju</translation>
@@ -6213,7 +6213,6 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8081989000209387414">Želite da onemogućite ADB otklanjanje grešaka?</translation>
 <translation id="8082106343289440791">Želite li da uparite sa „<ph name="DEVICE_NAME" />“?</translation>
 <translation id="8082390128630131497">Ako onemogućite ADB otklanjanje grešaka, <ph name="DEVICE_TYPE" /> će se resetovati na fabrička podešavanja. Svi korisnički nalozi i lokalni podaci će biti obrisani.</translation>
-<translation id="8083058154738359867">Omogućite titl uživo u podešavanjima da biste preuzimali titl za medije</translation>
 <translation id="8084114998886531721">Sačuvana lozinka</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> se konfiguriše…</translation>
 <translation id="8086442853986205778">Podesite <ph name="PRINTER_NAME" /></translation>
@@ -6284,6 +6283,7 @@ Datoteka ključa: <ph name="KEY_FILE" />
 <translation id="8157704005178149728">Nadzor se podešava</translation>
 <translation id="8158117992543756526">Ovaj uređaj je prestao da dobija automatska ažuriranja softvera i bezbednosna ažuriranja u: <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Greška pri podešavanju pouzdanosti sertifikata</translation>
+<translation id="8160775796528709999">Omogućite titl uživo u podešavanjima da biste preuzimali titl za audio i video</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Režim čitača za veb-stranice</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Premesti karticu u nov prozor}one{Premesti kartice u nov prozor}few{Premesti kartice u nov prozor}other{Premesti kartice u nov prozor}}</translation>
@@ -7145,6 +7145,7 @@ Pritisnite dodeljeni prekidač da biste uklonili dodelu.</translation>
 <translation id="9128870381267983090">Povezivanje sa mrežom</translation>
 <translation id="9130015405878219958">Unet je nevažeći režim.</translation>
 <translation id="9131487537093447019">Slanje poruka na Bluetooth uređaje i primanje poruka sa njih.</translation>
+<translation id="9134119143784876218">Automatski pravi titl za audio i video na engleskom (trenutno je dostupno samo u Chrome pregledaču) Audio fajl i titl uvek ostaju na uređaju.</translation>
 <translation id="9137013805542155359">Prikaži original</translation>
 <translation id="9137157311132182254">Željeni pretraživač</translation>
 <translation id="9137248913990643158">Prijavite se u Chrome pre korišćenja ove aplikacije.</translation>

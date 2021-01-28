@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">알 수 없는 기기[<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">이 소유자 계정이 멀티 로그인 세션에서 처음으로 로그인하는 계정이 되어야 합니다.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> 삭제</translation>
-<translation id="1504311855864906891">미디어 자막 가져오기</translation>
 <translation id="1504551620756424144"><ph name="BASE_DIR" />에서 Windows의 공유 폴더를 사용할 수 있습니다.</translation>
 <translation id="1506061864768559482">검색엔진</translation>
 <translation id="1507170440449692343">카메라 액세스가 차단된 페이지입니다.</translation>
@@ -1446,6 +1445,7 @@
 <translation id="2604255671529671813">네트워크 연결 오류</translation>
 <translation id="2606246518223360146">데이터 연결</translation>
 <translation id="2606454609872547359">아니요, ChromeVox 활성화 없이 계속</translation>
+<translation id="2606568927909309675">영어 음성 및 영상 자막을 자동으로 생성합니다. 오디오와 자막은 기기 외부로 유출되지 않습니다.</translation>
 <translation id="2607101320794533334">대상 공개 키 정보</translation>
 <translation id="2609896558069604090">바로가기 만들기...</translation>
 <translation id="2609980095400624569">연결을 설정할 수 없음</translation>
@@ -3741,7 +3741,6 @@
 <translation id="5265797726250773323">설치 중 오류 발생</translation>
 <translation id="5266113311903163739">인증 기관 가져오기 오류</translation>
 <translation id="5269977353971873915">인쇄 실패</translation>
-<translation id="5274738462757057090">Chrome 브라우저에서 자동으로 미디어 자막을 생성합니다. 현재는 영어로만 제공됩니다.</translation>
 <translation id="5275352920323889391">개</translation>
 <translation id="527605982717517565"><ph name="HOST" />에서 자바스크립트 항상 허용</translation>
 <translation id="5278823018825269962">상태 ID</translation>
@@ -4386,6 +4385,7 @@
 <translation id="6011074160056912900">이더넷 네트워크</translation>
 <translation id="6011193465932186973">지문</translation>
 <translation id="6011449291337289699">사이트 데이터 삭제</translation>
+<translation id="6013027779243312217">음성 및 영상 자막 생성하기</translation>
 <translation id="6015796118275082299">연도</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" />개 중 <ph name="CURRENT_ELEMENT" />번째 추가 콘텐츠로 이동</translation>
 <translation id="6016551720757758985">이전 버전으로 돌아가서 Powerwash 확인</translation>
@@ -6211,7 +6211,6 @@
 <translation id="8081989000209387414">ADB 디버깅을 사용 중지하시겠습니까?</translation>
 <translation id="8082106343289440791">‘<ph name="DEVICE_NAME" />’과(와) 페어링하시겠습니까?</translation>
 <translation id="8082390128630131497">ADB 디버깅을 사용 중지하면 이 <ph name="DEVICE_TYPE" /> 기기가 초기화됩니다. 모든 사용자 계정과 로컬 데이터가 삭제됩니다.</translation>
-<translation id="8083058154738359867">설정에서 실시간 자막을 사용 설정하여 미디어 자막 가져오기</translation>
 <translation id="8084114998886531721">저장된 비밀번호</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> 구성 중...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> 설정</translation>
@@ -6282,6 +6281,7 @@
 <translation id="8157704005178149728">감독 기능 설정 중</translation>
 <translation id="8158117992543756526"><ph name="MONTH_AND_YEAR" />부터 이 기기의 자동 소프트웨어 및 보안 업데이트가 중단되었습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">인증서 신뢰를 설정하던 중 오류 발생</translation>
+<translation id="8160775796528709999">설정에서 실시간 자막을 사용 설정하여 음성 및 영상 자막 생성하기</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">웹페이지 리더 모드</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{탭을 새 창으로 이동}other{탭을 새 창으로 이동}}</translation>
@@ -7141,6 +7141,7 @@
 <translation id="9128870381267983090">네트워크에 연결</translation>
 <translation id="9130015405878219958">잘못된 모드를 입력했습니다.</translation>
 <translation id="9131487537093447019">블루투스 기기와 메시지를 주고받습니다.</translation>
+<translation id="9134119143784876218">영어 음성 및 영상 자막을 자동으로 생성합니다.(현재 Chrome 브라우저에서만 지원). 오디오와 자막은 기기 외부로 유출되지 않습니다.</translation>
 <translation id="9137013805542155359">원본 보기</translation>
 <translation id="9137157311132182254">기본 검색엔진</translation>
 <translation id="9137248913990643158">이 앱을 사용하기 전에 Chrome을 시작하고 로그인하세요.</translation>

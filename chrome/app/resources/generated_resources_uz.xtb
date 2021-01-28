@@ -453,7 +453,6 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1500297251995790841">Noma’lum qurilma [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Birdaniga bir nechta hisobdan ishlash vaqtida birinchi o‘rinda hisob egasi kirishi kerak.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> saytini olib tashlash</translation>
-<translation id="1504311855864906891">Multimedia fayllaringizni izohlang</translation>
 <translation id="1504551620756424144">Ulashilgan jildlar Windowsda <ph name="BASE_DIR" /> manziliga ulangan.</translation>
 <translation id="1506061864768559482">Qidiruv tizimi</translation>
 <translation id="1507170440449692343">Bu sahifaga kameradan foydalanish taqiqlandi.</translation>
@@ -1444,6 +1443,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2604255671529671813">Tarmoqqa ulanishda xato</translation>
 <translation id="2606246518223360146">Hisoblarni ulash</translation>
 <translation id="2606454609872547359">Yoʻq, nofaol ChromeVox bilan davom ettirish</translation>
+<translation id="2606568927909309675">Ingliz tilidagi audio va video ijrosida taglavhalarni avtomatik yaratadi. Audio va taglavhalar qurilmaning oʻzida qayta ishlanadi.</translation>
 <translation id="2607101320794533334">Subyekt ochiq kaliti haqida ma’lumot</translation>
 <translation id="2609896558069604090">Yorliq yaratish...</translation>
 <translation id="2609980095400624569">Aloqa oʻrnatilmadi</translation>
@@ -3741,7 +3741,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="5265797726250773323">O‘rnatilmadi</translation>
 <translation id="5266113311903163739">Sertifikatlash markazidan import qilishda xatolik</translation>
 <translation id="5269977353971873915">Chop etib bo‘lmadi</translation>
-<translation id="5274738462757057090">Chrome brauzerida media fayllar uchun avtomatik tarzda taglavhalar yaratadi (hozircha faqat ingliz tilida chiqadi)</translation>
 <translation id="5275352920323889391">Kuchuk</translation>
 <translation id="527605982717517565"><ph name="HOST" /> saytiga JavaScript ishga tushirishga har doim ruxsat berilsin</translation>
 <translation id="5278823018825269962">Holat identifikatori</translation>
@@ -4385,6 +4384,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6011074160056912900">Ethernet tarmoq</translation>
 <translation id="6011193465932186973">Barmoq izi</translation>
 <translation id="6011449291337289699">Sayt ma’lumotlarini tozalash</translation>
+<translation id="6013027779243312217">Audio va video ijrosida taglavhalar chiqsin</translation>
 <translation id="6015796118275082299">Yil</translation>
 <translation id="6016178549409952427"><ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /> sonli qoʻshimcha kontentga oʻtish</translation>
 <translation id="6016551720757758985">Powerwash va avvalgi versiyaga qaytarishni tasdiqlash</translation>
@@ -6208,7 +6208,6 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8081989000209387414">ADB tuzatish vositasi oʻchirilsinmi?</translation>
 <translation id="8082106343289440791">“<ph name="DEVICE_NAME" />” bilan ulansinmi?</translation>
 <translation id="8082390128630131497">Agar ADB tuzatish vositasi oʻchirilsa, ushbu <ph name="DEVICE_TYPE" /> qurilmasi sozlamalari asliga qaytariladi. Barcha hisoblar va qurilmadagi maʼlumotlar tozalanadi.</translation>
-<translation id="8083058154738359867">Media kontentda taglavhalar chiqarish uchun sozlamalar orqali Jonli izoh funksiyasini yoqing</translation>
 <translation id="8084114998886531721">Saqlangan parol</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> sozlanmoqda...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> printerini sozlash</translation>
@@ -6279,6 +6278,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8157704005178149728">Nazorat sozlanmoqda</translation>
 <translation id="8158117992543756526">Bu qurilmadagi dasturlar va xavfsizlik sozlamalari <ph name="MONTH_AND_YEAR" /> sanasigacha avtomatik yangilanadi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Sertifikat ishonchini aniqlashda xatolik yuz berdi</translation>
+<translation id="8160775796528709999">Audio va video ijrosida taglavhalar chiqarish uchun sozlamalar orqali Jonli izoh funksiyasini yoqing</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Veb sahifalar uchun mutolaa rejimi</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Varaqni yangi oynaga olish}other{Varaqlarni yangi oynaga olish}}</translation>
@@ -7138,6 +7138,7 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="9128870381267983090">Tarmoqqa ulanish</translation>
 <translation id="9130015405878219958">Noto‘g‘ri rejim ko‘rsatildi.</translation>
 <translation id="9131487537093447019">Bluetooth qurilmalari bilan xabarlar almashish</translation>
+<translation id="9134119143784876218">Ingliz tilidagi audio va video ijrosida taglavhalarni avtomatik yaratadi (hozircha faqat Chrome brauzerida). Audio va taglavhalar qurilmaning oʻzida qayta ishlanadi.</translation>
 <translation id="9137013805542155359">Asl tilda ko‘rsatish</translation>
 <translation id="9137157311132182254">Birlamchi qidiruv tizimi</translation>
 <translation id="9137248913990643158">Bu ilovadan foydalanishdan oldin Chrome brauzerini ishga tushiring va hisobingizga kiring.</translation>

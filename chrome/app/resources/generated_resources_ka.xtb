@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">უცნობი მოწყობილობა [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">მფლობელის ეს ანგარიში გახდეს პირველი შესული ანგარიში მრავალპროფილიან სესიაში.</translation>
 <translation id="150411034776756821"><ph name="SITE" />-ის ამოშლა</translation>
-<translation id="1504311855864906891">იხილეთ თქვენი მედიაფაილების სუბტიტრები</translation>
 <translation id="1504551620756424144">გაზიარებული საქაღალდეები Windows-ში ხელმისაწვდომია აქ: <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">საძიებო სისტემა</translation>
 <translation id="1507170440449692343">ამ გვერდზე უკვე დაბლოკილია თქვენს კამერაზე წვდომა.</translation>
@@ -1445,6 +1444,7 @@
 <translation id="2604255671529671813">ქსელთან კავშირის შეცდომა</translation>
 <translation id="2606246518223360146">მონაცემების მიბმა</translation>
 <translation id="2606454609872547359">არა, მსურს ChromeVox-ის გარეშე გაგრძელება</translation>
+<translation id="2606568927909309675">ავტომატურად ქმნის სუბტიტრებს ინგლისურენოვანი აუდიოსა და ვიდეოსთვის. აუდიო და სუბტიტრები ყოველთვის თქვენს მოწყობილობაზე დარჩება.</translation>
 <translation id="2607101320794533334">სუბიექტის საჯარო გასაღების ინფორმაცია</translation>
 <translation id="2609896558069604090">მალსახმობების შექმნა…</translation>
 <translation id="2609980095400624569">კავშირი ვერ დამყარდა</translation>
@@ -3742,7 +3742,6 @@
 <translation id="5265797726250773323">შეცდომა ინსტალაციისას</translation>
 <translation id="5266113311903163739">სერთიფიკატის ავტორიზაციის იმპორტის შეეცდომა</translation>
 <translation id="5269977353971873915">ბეჭვდის შეცდომა</translation>
-<translation id="5274738462757057090">ავტომატურად ქმნის სუბტიტრებს მედიაფაილებისთვის Chrome ბრაუზერში (ამჟამად ხელმისაწვდომია მხოლოდ ინგლისურ ენაზე)</translation>
 <translation id="5275352920323889391">ძაღლი</translation>
 <translation id="527605982717517565">ყოველთვის დაუშვით JavaScript <ph name="HOST" />-ზე</translation>
 <translation id="5278823018825269962">სტატუსის ID</translation>
@@ -4386,6 +4385,7 @@
 <translation id="6011074160056912900">Ethernet ქსელი</translation>
 <translation id="6011193465932186973">თითის ანაბეჭდი</translation>
 <translation id="6011449291337289699">საიტის მონაცემების გასუფთავება</translation>
+<translation id="6013027779243312217">დაურთეთ სუბტიტრები თქვენს აუდიოსა და ვიდეოს</translation>
 <translation id="6015796118275082299">წელი</translation>
 <translation id="6016178549409952427">დამატებით კონტენტზე <ph name="CURRENT_ELEMENT" /> / <ph name="TOTAL_ELEMENTS" />-დან გადასვლა</translation>
 <translation id="6016551720757758985">Powerwash-ის განხორციელება დაადასტურეთ თავდაპირველ ვერსიაზე დაბრუნებით</translation>
@@ -6210,7 +6210,6 @@
 <translation id="8081989000209387414">გსურთ ADB გამართვის გამორთვა?</translation>
 <translation id="8082106343289440791">გსურთ „<ph name="DEVICE_NAME" />“-თან დაწყვილება?</translation>
 <translation id="8082390128630131497">ADB გამართვის გათიშვის შემთხვევაში ეს <ph name="DEVICE_TYPE" /> დაბრუნდება ქარხნულ პარამეტრებზე. მომხმარებლის ყველა ანგარიში და ლოკალური მონაცემები ამოიშლება.</translation>
-<translation id="8083058154738359867">ჩართეთ ავტოსუბტიტრები პარამეტრებიდან, რომ თქვენს მედიაფაილებს სუბტიტრები დაემატოს</translation>
 <translation id="8084114998886531721">შენახული პაროლი</translation>
 <translation id="8086015605808120405">მიმდინარეობს <ph name="PRINTER_NAME" />-ის კონფიგურაცია...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" />-ის დაყენება</translation>
@@ -6280,6 +6279,7 @@
 <translation id="8157704005178149728">მიმდინარეობს ზედამხედველობის დაყენება</translation>
 <translation id="8158117992543756526">პროგრამული უზრუნველყოფისა და უსაფრთხოების განახლებებს ეს მოწყობილობა აღარ იღებს <ph name="MONTH_AND_YEAR" />-დან. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">შეცდომა სანდო სერტიფიკატის დაყენებისას</translation>
+<translation id="8160775796528709999">ჩართეთ ავტოსუბტიტრები პარამეტრებიდან, რომ თქვენს აუდიოსა და ვიდეოს სუბტიტრები დაერთოს</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">წამკითხველის რეჟიმი ვებგვერდებისთვის</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ჩანართის ახალ ფანჯარაში გადატანა}other{ჩანართების ახალ ფანჯარაში გადატანა}}</translation>
@@ -7139,6 +7139,7 @@
 <translation id="9128870381267983090">ქსელთან დაკავშირება</translation>
 <translation id="9130015405878219958">შეყვანილია არასწორი რეჟიმი.</translation>
 <translation id="9131487537093447019">Bluetooth მოწყობილობებიდან შეტყობინებების გაგზავნა და მიღება.</translation>
+<translation id="9134119143784876218">ავტომატურად ქმნის სუბტიტრებს ინგლისურენოვანი აუდიოსა და ვიდეოსთვის (ამჟამად ხელმისაწვდომია მხოლოდ Chrome ბრაუზერში). აუდიო და სუბტიტრები ყოველთვის თქვენს მოწყობილობაზე დარჩება.</translation>
 <translation id="9137013805542155359">ორიგინალის ჩვენება</translation>
 <translation id="9137157311132182254">სასურველი საძიებო სისტემა</translation>
 <translation id="9137248913990643158">ამ აპის გამოყენებამდე, გთხოვთ, გაუშვათ Chrome და შეხვიდეთ მასში.</translation>

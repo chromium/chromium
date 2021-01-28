@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Белгісіз құрылғы [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Бұл иеленуші есептік жазбасы көп кіру сеансында алғашқы жүйеге кірген есептік жазба болуы керек.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> сайтын өшіру</translation>
-<translation id="1504311855864906891">Мультимедиалық файлға субтитр жасау</translation>
 <translation id="1504551620756424144">Ортақ қалталарды Windows жүйесінде <ph name="BASE_DIR" /> каталогінен таба аласыз.</translation>
 <translation id="1506061864768559482">Іздеу жүйесі</translation>
 <translation id="1507170440449692343">Бұл бетке камераны пайдалануға тыйым салынған.</translation>
@@ -1443,6 +1442,7 @@
 <translation id="2604255671529671813">Желімен байланыс қатесі</translation>
 <translation id="2606246518223360146">Деректерді байланыстыру</translation>
 <translation id="2606454609872547359">Жоқ, ChromeVox-сыз жалғастырамын</translation>
+<translation id="2606568927909309675">Ағылшын тіліндегі аудио мен бейне үшін субтитрлерді автоматты түрде жасайды. Аудиолар мен cубтитрлер құрылғыда қалады.</translation>
 <translation id="2607101320794533334">Субъектінің ашық кілті туралы ақпарат</translation>
 <translation id="2609896558069604090">Таңбашаларды жасау…</translation>
 <translation id="2609980095400624569">Байланыс орнатылмады</translation>
@@ -3740,7 +3740,6 @@
 <translation id="5265797726250773323">Орнату кезінде қате кетті</translation>
 <translation id="5266113311903163739">Сертификат беру орталығының импорттау қатесі</translation>
 <translation id="5269977353971873915">Басып шығару сәтсіз аяқталды</translation>
-<translation id="5274738462757057090">Chrome браузерінде медиамазмұн үшін субтитрлерді автоматты жасайды (әзірге тек ағылшын тілінде қолжетімді).</translation>
 <translation id="5275352920323889391">Ит</translation>
 <translation id="527605982717517565"><ph name="HOST" /> үшін JavaScript қосуға әрдайым рұқсат беру</translation>
 <translation id="5278823018825269962">Күй идентификаторы</translation>
@@ -4384,6 +4383,7 @@
 <translation id="6011074160056912900">Ethernet желісі</translation>
 <translation id="6011193465932186973">Саусақ ізі</translation>
 <translation id="6011449291337289699">Сайт деректерін тазалау</translation>
+<translation id="6013027779243312217">Аудио мен бейненің субтитрін көріңіз.</translation>
 <translation id="6015796118275082299">Жыл</translation>
 <translation id="6016178549409952427"><ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" />-картадағы қосымша мазмұнға өту</translation>
 <translation id="6016551720757758985">Алдыңғы нұсқаға қайту арқылы Powerwash растаңыз</translation>
@@ -6208,7 +6208,6 @@
 <translation id="8081989000209387414">ADB түзетуін өшіру қажет пе?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" құрылғысымен жұпталсын ба?</translation>
 <translation id="8082390128630131497">ADB түзетуін өшірсеңіз, осы <ph name="DEVICE_TYPE" /> құрылғысы зауыттық параметрлерге қайтарылады. Барлық пайдаланушы есептік жазбалары мен жергілікті деректер өшіріледі.</translation>
-<translation id="8083058154738359867">Параметрлерден Live Caption функциясын қосу арқылы мультимедиалық файлдардың субтитрін көріңіз.</translation>
 <translation id="8084114998886531721">Сақталған құпия сөз</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> конфигурациялануда...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> реттеу</translation>
@@ -6279,6 +6278,7 @@
 <translation id="8157704005178149728">Қадағалау параметрлері орнатылуда</translation>
 <translation id="8158117992543756526">Бұл құрылғы <ph name="MONTH_AND_YEAR" /> бері бағдарламалық құралдың және қауіпсіздік жүйесінің автоматты жаңартуларын алмаған. <ph name="LINK_BEGIN" />Толығырақ<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Сенімді сертификатты орнату қатесі</translation>
+<translation id="8160775796528709999">Параметрлерден Live Caption функциясын қосу арқылы аудио мен бейненің субтитрін көріңіз.</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Веб-беттерге арналған оқу құралы режимі</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Қойындыны жаңа терезеден ашу}other{Қойындыларды жаңа терезеден ашу}}</translation>
@@ -7138,6 +7138,7 @@
 <translation id="9128870381267983090">Желіге қосылу</translation>
 <translation id="9130015405878219958">Жарамсыз режим енгізілген.</translation>
 <translation id="9131487537093447019">Bluetooth құрылғыларына хабар жіберу және алу.</translation>
+<translation id="9134119143784876218">Ағылшын тіліндегі аудио мен бейне үшін субтитрлерді автоматты түрде жасайды (әзірге тек Chrome браузерінде қолжетімді). Аудиолар мен cубтитрлер құрылғыда қалады.</translation>
 <translation id="9137013805542155359">Түпнұсқаны көрсету</translation>
 <translation id="9137157311132182254">Таңдалған іздеу жүйесі</translation>
 <translation id="9137248913990643158">Қолданбаны пайдаланбас бұрын Chrome жүйесін іске қосып, оған кіріңіз.</translation>

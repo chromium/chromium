@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">อุปกรณ์ที่ไม่รู้จัก [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">บัญชีเจ้าของนี้ต้องเป็นบัญชีที่ลงชื่อเข้าใช้บัญชีแรกในเซสชันการลงชื่อเข้าใช้พร้อมกัน</translation>
 <translation id="150411034776756821">นำ <ph name="SITE" /> ออก</translation>
-<translation id="1504311855864906891">รับคำบรรยายสำหรับสื่อ</translation>
 <translation id="1504551620756424144">โฟลเดอร์ที่แชร์จะอยู่ใน Windows ที่ <ph name="BASE_DIR" /></translation>
 <translation id="1506061864768559482">เครื่องมือค้นหา</translation>
 <translation id="1507170440449692343">หน้านี้ถูกบล็อกไม่ให้เข้าถึงกล้องของคุณ</translation>
@@ -1446,6 +1445,7 @@
 <translation id="2604255671529671813">ข้อผิดพลาดในการเชื่อมต่อเครือข่าย</translation>
 <translation id="2606246518223360146">ลิงก์ข้อมูล</translation>
 <translation id="2606454609872547359">ไม่ ดำเนินการต่อโดยไม่ใช้ ChromeVox</translation>
+<translation id="2606568927909309675">สร้างคำบรรยายสำหรับเสียงและวิดีโอภาษาอังกฤษโดยอัตโนมัติ ระบบจะไม่ส่งเสียงและคำบรรยายออกไปจากอุปกรณ์</translation>
 <translation id="2607101320794533334">ข้อมูลหัวเรื่องคีย์สาธารณะ</translation>
 <translation id="2609896558069604090">สร้างทางลัด...</translation>
 <translation id="2609980095400624569">เริ่มการเชื่อมต่อไม่ได้</translation>
@@ -3743,7 +3743,6 @@
 <translation id="5265797726250773323">เกิดข้อผิดพลาดระหว่างติดตั้ง</translation>
 <translation id="5266113311903163739">ข้อผิดพลาดเกี่ยวกับการนำเข้าผู้ออกใบรับรอง</translation>
 <translation id="5269977353971873915">การพิมพ์ล้มเหลว</translation>
-<translation id="5274738462757057090">สร้างคำบรรยายสำหรับสื่อในเบราว์เซอร์ Chrome โดยอัตโนมัติ (ปัจจุบันพร้อมให้บริการเป็นภาษาอังกฤษเท่านั้น)</translation>
 <translation id="5275352920323889391">สุนัข</translation>
 <translation id="527605982717517565">อนุญาตให้เรียกใช้ JavaScript บน <ph name="HOST" /> เสมอ</translation>
 <translation id="5278823018825269962">รหัสสถานะ</translation>
@@ -4388,6 +4387,7 @@
 <translation id="6011074160056912900">เครือข่ายอีเธอร์เน็ต</translation>
 <translation id="6011193465932186973">ลายนิ้วมือ</translation>
 <translation id="6011449291337289699">ล้างข้อมูลเว็บไซต์</translation>
+<translation id="6013027779243312217">รับคำบรรยายสำหรับเสียงและวิดีโอของคุณ</translation>
 <translation id="6015796118275082299">ปี</translation>
 <translation id="6016178549409952427">ไปที่เนื้อหาเพิ่มเติม <ph name="CURRENT_ELEMENT" /> จาก <ph name="TOTAL_ELEMENTS" /> รายการ</translation>
 <translation id="6016551720757758985">ยืนยัน Powerwash และเปลี่ยนกลับเป็นเวอร์ชันก่อนหน้า</translation>
@@ -6213,7 +6213,6 @@
 <translation id="8081989000209387414">ปิดใช้การแก้ไขข้อบกพร่อง ADB ไหม</translation>
 <translation id="8082106343289440791">จับคู่กับ "<ph name="DEVICE_NAME" />" ไหม</translation>
 <translation id="8082390128630131497">การปิดใช้การแก้ไขข้อบกพร่อง ADB จะรีเซ็ต <ph name="DEVICE_TYPE" /> เป็นค่าเริ่มต้น บัญชีผู้ใช้และข้อมูลในเครื่องทั้งหมดจะถูกลบ</translation>
-<translation id="8083058154738359867">รับคำบรรยายสำหรับสื่อของคุณโดยเปิดใช้คำบรรยายสดในการตั้งค่า</translation>
 <translation id="8084114998886531721">รหัสผ่านที่บันทึกไว้</translation>
 <translation id="8086015605808120405">กำลังกำหนดค่า <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086442853986205778">ตั้งค่า <ph name="PRINTER_NAME" /></translation>
@@ -6284,6 +6283,7 @@
 <translation id="8157704005178149728">กำลังตั้งค่าการควบคุมดูแล</translation>
 <translation id="8158117992543756526">อุปกรณ์นี้จะไม่ได้รับการอัปเดตซอฟต์แวร์และความปลอดภัยอัตโนมัตินับตั้งแต่เดือน<ph name="MONTH_AND_YEAR" /> เป็นต้นไป <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">ข้อผิดพลาดในการตั้งค่าความเชื่อถือใบรับรอง</translation>
+<translation id="8160775796528709999">รับคำบรรยายสำหรับเสียงและวิดีโอของคุณโดยเปิดใช้คำบรรยายสดในการตั้งค่า</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">โหมดผู้อ่านสำหรับหน้าเว็บ</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ย้ายแท็บไปที่หน้าต่างใหม่}other{ย้ายแท็บไปที่หน้าต่างใหม่}}</translation>
@@ -7143,6 +7143,7 @@
 <translation id="9128870381267983090">เชื่อมต่อกับเครือข่าย</translation>
 <translation id="9130015405878219958">โหมดที่ป้อนไม่ถูกต้อง</translation>
 <translation id="9131487537093447019">ส่งข้อความถึงและรับข้อความจากอุปกรณ์บลูทูธ</translation>
+<translation id="9134119143784876218">สร้างคำบรรยายสำหรับเสียงและวิดีโอภาษาอังกฤษโดยอัตโนมัติ (ปัจจุบันพร้อมให้บริการในเบราว์เซอร์ Chrome เท่านั้น) ระบบจะไม่ส่งเสียงและคำบรรยายออกไปจากอุปกรณ์</translation>
 <translation id="9137013805542155359">แสดงหน้าเว็บเดิม</translation>
 <translation id="9137157311132182254">เครื่องมือค้นหาที่ต้องการ</translation>
 <translation id="9137248913990643158">โปรดเปิดและลงชื่อเข้าใช้ Chrome ก่อนใช้แอปนี้</translation>

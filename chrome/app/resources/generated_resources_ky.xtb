@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Белгисиз түзмөк [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Бир нече профилге кирүү сеансында ушул негизги каттоо эсеби биринчи кириши керек.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> сайтын алып салуу</translation>
-<translation id="1504311855864906891">Медиа файлыңыздын коштомо жазууларын түзүңүз</translation>
 <translation id="1504551620756424144">Бөлүшүлгөн папкалар Windows'то <ph name="BASE_DIR" /> бөлүмүндө жеткиликтүү.</translation>
 <translation id="1506061864768559482">Издөө каражаты</translation>
 <translation id="1507170440449692343">Бул беттин камераңызды пайдалануу мүмкүнчүлүгү бөгөттөлгөн.</translation>
@@ -1446,6 +1445,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="2604255671529671813">Тармакка туташуу катасы</translation>
 <translation id="2606246518223360146">Дайындарды байланыштыруу</translation>
 <translation id="2606454609872547359">Жок, ChromeVox жок эле улантам</translation>
+<translation id="2606568927909309675">Англис тилиндеги аудио жана видеолор үчүн коштомо жазууларды автоматтык түрдө түзөт. Аудио менен коштомо жазуулар түзмөгүңүздө гана сакталат.</translation>
 <translation id="2607101320794533334">Субъекттин Коомдук ачкыч маалыматы</translation>
 <translation id="2609896558069604090">Кыска жолдорду түзүү…</translation>
 <translation id="2609980095400624569">Туташпай койду</translation>
@@ -3743,7 +3743,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="5265797726250773323">Орнотуу учурунда ката кетти</translation>
 <translation id="5266113311903163739">Тастыктама борборунун импорттоо катасы</translation>
 <translation id="5269977353971873915">Басылып чыкпай калды</translation>
-<translation id="5274738462757057090">Медианын коштомо жазууларын Chrome серепчисинде автоматтык түрдө түзөт (учурда англис тилинде гана жеткиликтүү)</translation>
 <translation id="5275352920323889391">Ит</translation>
 <translation id="527605982717517565"><ph name="HOST" /> ичинде JavaScript'ке ар дайым уруксат берилсин</translation>
 <translation id="5278823018825269962">Абалынын идентификатору</translation>
@@ -4387,6 +4386,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="6011074160056912900">Ethernet тармагы</translation>
 <translation id="6011193465932186973">Манжа изи</translation>
 <translation id="6011449291337289699">Сайттын дайындарын тазалаңыз</translation>
+<translation id="6013027779243312217">Аудио жана видеоңуз үчүн коштомо жазууларды алып туруңуз</translation>
 <translation id="6015796118275082299">Жыл</translation>
 <translation id="6016178549409952427"><ph name="TOTAL_ELEMENTS" /> ичинен <ph name="CURRENT_ELEMENT" />-кошумча мазмунга чабыттоо</translation>
 <translation id="6016551720757758985">Мурунку версиясына кайтаруу менен "Жууп салууну" ырастаңыз</translation>
@@ -6211,7 +6211,6 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8081989000209387414">ADB аркылуу мүчүлүштүктөрдү аныктоо өчүрүлсүнбү?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" менен байланыштырасызбы?</translation>
 <translation id="8082390128630131497">ADB аркылуу мүчүлүштүктөрдү оңдоону өчүрүү менен, <ph name="DEVICE_TYPE" /> түзмөгү баштапкы абалга келтирилет. Колдонуучунун бардык аккаунттары жана жергиликтүү дайындар тазаланат.</translation>
-<translation id="8083058154738359867">Жөндөөлөрдөн Ыкчам коштомо жазууларды иштетүү менен, медиаңыз үчүн коштомо жазууларды алып туруңуз</translation>
 <translation id="8084114998886531721">Сакталган сырсөз</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> конфигурацияланууда ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> түзмөгүн жөндөө</translation>
@@ -6282,6 +6281,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="8157704005178149728">Көзөмөлдөө жөндөлүүдө</translation>
 <translation id="8158117992543756526">Бул түзмөк <ph name="MONTH_AND_YEAR" /> программа менен коопсуздук жаңыртууларын автоматтык түрдө албай калды. <ph name="LINK_BEGIN" />Кеңири маалымат<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Тастыктама ишенимин жөндөө катасы</translation>
+<translation id="8160775796528709999">Жөндөөлөрдөн Ыкчам коштомо жазууларды иштетүү менен, аудио жана видеоңуз үчүн коштомо жазууларды алып туруңуз</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Веб барактарды Окугуч режими</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Өтмөктү жаңы терезеге жылдыруу}other{Өтмөктөрдү жаңы терезеге жылдыруу}}</translation>
@@ -7141,6 +7141,7 @@ Family Link колдонмосун түзмөгүңүзгө орнотуп, бу
 <translation id="9128870381267983090">Тармакка туташуу</translation>
 <translation id="9130015405878219958">Жараксыз режим киргизилди.</translation>
 <translation id="9131487537093447019">Bluetooth түзмөктөрүнө билдирүүлөрдү жөнөтүңүз жана алыңыз.</translation>
+<translation id="9134119143784876218">Англис тилиндеги аудио жана видеолор үчүн коштомо жазууларды автоматтык түрдө түзөт (учурда Chrome серепчисинде гана жеткиликтүү). Аудио менен коштомо жазуулар түзмөгүңүздө гана сакталат.</translation>
 <translation id="9137013805542155359">Түпверсиясын көрсөтүү</translation>
 <translation id="9137157311132182254">Артыкчылыктуу издөө каражаты</translation>
 <translation id="9137248913990643158">Бул колдонмону пайдалануудан мурун Chrome'ду иштетип, аккаунтка кириңиз.</translation>

@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Thiết bị không xác định [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Tài khoản của chủ sở hữu này phải là tài khoản đăng nhập đầu tiên trong phiên đăng nhập nhiều tài khoản.</translation>
 <translation id="150411034776756821">Xóa <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Tạo phụ đề cho nội dung nghe nhìn</translation>
 <translation id="1504551620756424144">Bạn có thể truy cập thư mục dùng chung trong Windows tại <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Công cụ tìm kiếm</translation>
 <translation id="1507170440449692343">Trang này đã bị chặn truy cập máy ảnh của bạn.</translation>
@@ -1446,6 +1445,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2604255671529671813">Lỗi kết nối mạng</translation>
 <translation id="2606246518223360146">Liên kết dữ liệu</translation>
 <translation id="2606454609872547359">Không, tiếp tục mà không dùng ChromeVox</translation>
+<translation id="2606568927909309675">Tự động tạo phụ đề cho âm thanh và video bằng tiếng Anh. Âm thanh và phụ đề chỉ lưu trên thiết bị của bạn.</translation>
 <translation id="2607101320794533334">Thông tin Khoá Công cộng Đối tượng</translation>
 <translation id="2609896558069604090">Tạo phím tắt...</translation>
 <translation id="2609980095400624569">Không thể thiết lập đường kết nối</translation>
@@ -3743,7 +3743,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="5265797726250773323">Lỗi khi cài đặt</translation>
 <translation id="5266113311903163739">Lỗi nhập Tổ chức phát hành chứng chỉ</translation>
 <translation id="5269977353971873915">In không thành công</translation>
-<translation id="5274738462757057090">Tự động tạo phụ đề cho nội dung nghe nhìn trong trình duyệt Chrome (hiện chỉ có bằng tiếng Anh)</translation>
 <translation id="5275352920323889391">Cún</translation>
 <translation id="527605982717517565">Luôn cho phép JavaScript trên <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Mã trạng thái</translation>
@@ -4388,6 +4387,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="6011074160056912900">Mạng Ethernet</translation>
 <translation id="6011193465932186973">Vân tay</translation>
 <translation id="6011449291337289699">Xóa dữ liệu trang web</translation>
+<translation id="6013027779243312217">Hiển thị phụ đề cho âm thanh và video của bạn</translation>
 <translation id="6015796118275082299">Năm</translation>
 <translation id="6016178549409952427">Chuyển đến nội dung bổ sung <ph name="CURRENT_ELEMENT" />/<ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Xác nhận Powerwash quay lại phiên bản trước</translation>
@@ -6213,7 +6213,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8081989000209387414">Tắt tùy chọn gỡ lỗi ADB?</translation>
 <translation id="8082106343289440791">Ghép nối với "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Thao tác tắt tùy chọn gỡ lỗi ADB sẽ đặt lại <ph name="DEVICE_TYPE" /> này về trạng thái ban đầu. Tất cả tài khoản người dùng và dữ liệu trên máy đều sẽ bị xóa.</translation>
-<translation id="8083058154738359867">Xem phụ đề cho nội dung nghe nhìn bằng cách bật tính năng Phụ đề trực tiếp trong phần cài đặt</translation>
 <translation id="8084114998886531721">Mật khẩu đã lưu</translation>
 <translation id="8086015605808120405">Đang định cấu hình <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086442853986205778">Thiết lập <ph name="PRINTER_NAME" /></translation>
@@ -6284,6 +6283,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8157704005178149728">Đang thiết lập tính năng giám sát</translation>
 <translation id="8158117992543756526">Thiết bị này đã ngừng nhận các bản cập nhật bảo mật và phần mềm tự động kể từ <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Lỗi khi cài đặt độ tin cậy của chứng chỉ</translation>
+<translation id="8160775796528709999">Hiển thị phụ đề cho âm thanh và video bằng cách bật tính năng Phụ đề trực tiếp trong phần cài đặt</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Chế độ đọc dành cho trang web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Di chuyển thẻ sang cửa sổ mới}other{Di chuyển các thẻ sang cửa sổ mới}}</translation>
@@ -7143,6 +7143,7 @@ Nhấn một công tắc đã gán để xóa.</translation>
 <translation id="9128870381267983090">Kết nối đến mạng</translation>
 <translation id="9130015405878219958">Chế độ không hợp lệ được nhập.</translation>
 <translation id="9131487537093447019">Gửi tin nhắn tới và nhận tin nhắn từ thiết bị Bluetooth.</translation>
+<translation id="9134119143784876218">Tự động tạo phụ đề cho âm thanh và video bằng tiếng Anh (hiện chỉ có trên trình duyệt Chrome). Âm thanh và phụ đề chỉ lưu trên thiết bị của bạn.</translation>
 <translation id="9137013805542155359">Hiển thị văn bản gốc</translation>
 <translation id="9137157311132182254">Công cụ tìm kiếm ưu tiên</translation>
 <translation id="9137248913990643158">Vui lòng khởi động và đăng nhập vào Chrome trước khi sử dụng ứng dụng này.</translation>

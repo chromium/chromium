@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Ukjent enhet [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Denne eierkontoen må være den første påloggingskontoen i en multipåloggingsøkt.</translation>
 <translation id="150411034776756821">Fjern <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Få teksting for medieinnholdet ditt</translation>
 <translation id="1504551620756424144">Delte mapper er tilgjengelige i Windows i <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Søkemotor</translation>
 <translation id="1507170440449692343">Kameraet er blokkert for denne siden.</translation>
@@ -1443,6 +1442,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2604255671529671813">Feil i nettverkstilkobling</translation>
 <translation id="2606246518223360146">Knytt sammen dataene</translation>
 <translation id="2606454609872547359">Nei, fortsett uten ChromeVox</translation>
+<translation id="2606568927909309675">Lager automatisk teksting for engelsk lyd og video. Lyden og tekstingen forlater aldri enheten.</translation>
 <translation id="2607101320794533334">Informasjon om enhetens offentlige nøkkel</translation>
 <translation id="2609896558069604090">Opprett snarveier</translation>
 <translation id="2609980095400624569">Kunne ikke koble til</translation>
@@ -3738,7 +3738,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5265797726250773323">Feil under installering</translation>
 <translation id="5266113311903163739">Feil ved importering av sertifiseringsinstans</translation>
 <translation id="5269977353971873915">Utskrift mislyktes</translation>
-<translation id="5274738462757057090">Lager teksting for medier i Chrome automatisk (for tiden kun tilgjengelig på engelsk)</translation>
 <translation id="5275352920323889391">Hund</translation>
 <translation id="527605982717517565">Tillat alltid JavaScript på <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Status-ID</translation>
@@ -4383,6 +4382,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6011074160056912900">Ethernet-nettverk</translation>
 <translation id="6011193465932186973">Fingeravtrykk</translation>
 <translation id="6011449291337289699">Fjern nettstedsdata</translation>
+<translation id="6013027779243312217">Få teksting av lyd og video</translation>
 <translation id="6015796118275082299">År</translation>
 <translation id="6016178549409952427">Gå til ekstra innhold <ph name="CURRENT_ELEMENT" /> av <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Bekreft kjøring av Powerwash, som tilbakestiller enheten til forrige versjon</translation>
@@ -6208,7 +6208,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8081989000209387414">Vil du slå av ADB-feilsøking?</translation>
 <translation id="8082106343289440791">Vil du sammenkoble med «<ph name="DEVICE_NAME" />»?</translation>
 <translation id="8082390128630131497">Hvis du slår av ADB-feilsøking, blir denne <ph name="DEVICE_TYPE" />-enheten tilbakestilt til fabrikkstandard. Alle brukerkontoer og lokale data fjernes.</translation>
-<translation id="8083058154738359867">Få teksting av medieinnhold ved å slå på Direkteteksting i innstillingene</translation>
 <translation id="8084114998886531721">Lagret passord</translation>
 <translation id="8086015605808120405">Konfigurerer <ph name="PRINTER_NAME" /> …</translation>
 <translation id="8086442853986205778">Konfigurer <ph name="PRINTER_NAME" /></translation>
@@ -6279,6 +6278,7 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8157704005178149728">Konfigurerer tilsyn</translation>
 <translation id="8158117992543756526">Denne enheten sluttet å motta automatiske programvare- og sikkerhetsoppdateringer i <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Feil ved konfigurasjon av sertifikattillit</translation>
+<translation id="8160775796528709999">Få teksting av lyd og video ved å slå på Direkteteksting i innstillingene</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Lesermodus for nettsider</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Flytt fanen til et nytt vindu}other{Flytt fanene til et nytt vindu}}</translation>
@@ -7138,6 +7138,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="9128870381267983090">Koble til nettverk</translation>
 <translation id="9130015405878219958">Ugyldig modus angitt.</translation>
 <translation id="9131487537093447019">sende meldinger til og motta meldinger fra Bluetooth-enheter.</translation>
+<translation id="9134119143784876218">Lager automatisk teksting for engelsk lyd og video (for tiden kun tilgjengelig i Chrome-nettleseren). Lyden og tekstingen forlater aldri enheten.</translation>
 <translation id="9137013805542155359">Vis original</translation>
 <translation id="9137157311132182254">Foretrukket søkemotor</translation>
 <translation id="9137248913990643158">Du må starte og logge på Chrome før du bruker denne appen.</translation>

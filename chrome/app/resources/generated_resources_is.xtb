@@ -453,7 +453,6 @@
 <translation id="1500297251995790841">Óþekkt tæki [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Þessi eigandareikningur verður að vera fyrsti innskráði reikningurinn í lotu fyrir margar innskráningar.</translation>
 <translation id="150411034776756821">Fjarlægja <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Fá skjátexta fyrir efnið þitt</translation>
 <translation id="1504551620756424144">Samnýttar möppur eru aðgengilegar í Windows á <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Leitarvél</translation>
 <translation id="1507170440449692343">Þessari síðu var bannað að fá aðgang að myndavélinni þinni.</translation>
@@ -1447,6 +1446,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2604255671529671813">Villa í nettengingu</translation>
 <translation id="2606246518223360146">Tengja gögn</translation>
 <translation id="2606454609872547359">Nei, halda áfram án ChromeVox</translation>
+<translation id="2606568927909309675">Býr sjálfkrafa til skjátexta fyrir hljóð- og myndefni á ensku. Hljóð og skjátextar fara aldrei úr tækinu.</translation>
 <translation id="2607101320794533334">Upplýsingar opinbers lykils viðfangs</translation>
 <translation id="2609896558069604090">Búa til flýtileiðir...</translation>
 <translation id="2609980095400624569">Tenging mistókst</translation>
@@ -3744,7 +3744,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="5265797726250773323">Villa við uppsetningu</translation>
 <translation id="5266113311903163739">Villa við innflutning vottunarstöðvar</translation>
 <translation id="5269977353971873915">Prentun mistókst</translation>
-<translation id="5274738462757057090">Býr sjálfkrafa til skjátexta fyrir efni í Chrome vafra (aðeins í boði á ensku eins og er)</translation>
 <translation id="5275352920323889391">Hundur</translation>
 <translation id="527605982717517565">Leyfa alltaf JavaScript á <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Stöðukenni</translation>
@@ -4388,6 +4387,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6011074160056912900">Ethernet</translation>
 <translation id="6011193465932186973">Fingrafar</translation>
 <translation id="6011449291337289699">Hreinsa vefsvæðagögn</translation>
+<translation id="6013027779243312217">Fáðu skjátexta fyrir hljóð- og myndefni</translation>
 <translation id="6015796118275082299">Ár</translation>
 <translation id="6016178549409952427">Fletta á aukaefni <ph name="CURRENT_ELEMENT" /> af <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Staðfestu að þú viljir djúphreinsa og fara aftur í fyrri útgáfu</translation>
@@ -6212,7 +6212,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8081989000209387414">Slökkva á ADB-villuleit?</translation>
 <translation id="8082106343289440791">Para við „<ph name="DEVICE_NAME" />“?</translation>
 <translation id="8082390128630131497">Ef slökkt er á ADB-villuleit verður þetta <ph name="DEVICE_TYPE" /> tæki núllstillt. Öllum notendareikningum og staðbundnum gögnum verður eytt.</translation>
-<translation id="8083058154738359867">Fáðu skjátexta fyrir efnið þitt með því að virkja skjátexta í rauntíma í stillingunum</translation>
 <translation id="8084114998886531721">Vistað aðgangsorð</translation>
 <translation id="8086015605808120405">Stillir <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086442853986205778">Setja upp <ph name="PRINTER_NAME" /></translation>
@@ -6283,6 +6282,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8157704005178149728">Setja upp eftirlit</translation>
 <translation id="8158117992543756526">Þetta tæki hætti að fá sjálfvirkar hugbúnaðar- og öryggisuppfærslur <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Villa við að stilla traust vottorðs</translation>
+<translation id="8160775796528709999">Fáðu skjátexta við hljóð og myndskeið með því að virkja skjátexta í rauntíma í stillingunum</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Lestrarstilling vefsíðna</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Færa flipa í nýjan glugga}one{Færa flipa í nýjan glugga}other{Færa flipa í nýjan glugga}}</translation>
@@ -7143,6 +7143,7 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="9128870381267983090">Tengjast neti</translation>
 <translation id="9130015405878219958">Ógild stilling slegin inn.</translation>
 <translation id="9131487537093447019">Senda skilaboð til Bluetooth-tækja og taka á móti skilaboðum frá þeim.</translation>
+<translation id="9134119143784876218">Býr sjálfkrafa til skjátexta við hljóð og myndskeið á ensku (aðeins í boði í Chrome vafra eins og er). Hljóð og skjátextar fara aldrei úr tækinu.</translation>
 <translation id="9137013805542155359">Sýna frumtexta</translation>
 <translation id="9137157311132182254">Valin leitarvél</translation>
 <translation id="9137248913990643158">Byrjaðu á að skrá þig inn á Chrome áður en þetta forrit er notað.</translation>

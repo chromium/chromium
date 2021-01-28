@@ -453,7 +453,6 @@
 <translation id="1500297251995790841">Dispozitiv necunoscut [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Acest cont de proprietar trebuie să fie primul conectat într-o sesiune de conectare multiplă.</translation>
 <translation id="150411034776756821">Elimină <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Afișează subtitrări pentru conținutul media</translation>
 <translation id="1504551620756424144">Dosarele comune sunt disponibile în Windows la <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Motor de căutare</translation>
 <translation id="1507170440449692343">Accesul acestei pagini la camera dvs. a fost blocat.</translation>
@@ -1447,6 +1446,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2604255671529671813">Eroare de conectare la rețea</translation>
 <translation id="2606246518223360146">Conectează datele</translation>
 <translation id="2606454609872547359">Nu, continui fără ChromeVox</translation>
+<translation id="2606568927909309675">Creează automat subtitrări pentru conținut audio și video în limba engleză. Conținutul audio și subtitrările nu părăsesc niciodată dispozitivul.</translation>
 <translation id="2607101320794533334">Informații privind cheia publică a subiectului</translation>
 <translation id="2609896558069604090">Creați comenzi rapide...</translation>
 <translation id="2609980095400624569">Nu s-a stabilit conexiunea</translation>
@@ -3744,7 +3744,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="5265797726250773323">Eroare la instalare</translation>
 <translation id="5266113311903163739">Eroare la importarea Autorității de certificare</translation>
 <translation id="5269977353971873915">Printarea a eșuat</translation>
-<translation id="5274738462757057090">Creează automat subtitrări pentru conținut media în browserul Chrome (disponibile momentan numai în limba engleză)</translation>
 <translation id="5275352920323889391">Câine</translation>
 <translation id="527605982717517565">Permite întotdeauna JavaScript pe <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Cod de stare</translation>
@@ -4389,6 +4388,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6011074160056912900">Rețeaua ethernet</translation>
 <translation id="6011193465932186973">Amprentă</translation>
 <translation id="6011449291337289699">Șterge datele site-ului</translation>
+<translation id="6013027779243312217">Afișează subtitrări pentru conținutul audio și video</translation>
 <translation id="6015796118275082299">An</translation>
 <translation id="6016178549409952427">Navighează la conținutul suplimentar <ph name="CURRENT_ELEMENT" /> din <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirmă Powerwash cu revenire la versiunea anterioară</translation>
@@ -6214,7 +6214,6 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8081989000209387414">Dezactivezi remedierea erorilor prin ADB?</translation>
 <translation id="8082106343289440791">Asociezi cu „<ph name="DEVICE_NAME" />”?</translation>
 <translation id="8082390128630131497">Dezactivarea remedierii erorilor prin ADB va reseta acest <ph name="DEVICE_TYPE" /> la setările din fabrică. Toate conturile de utilizator și datele locale vor fi șterse.</translation>
-<translation id="8083058154738359867">Afișează subtitrări pentru conținutul media activând Subtitrări live în setări</translation>
 <translation id="8084114998886531721">Parola a fost salvată</translation>
 <translation id="8086015605808120405">Se configurează <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">Configurează <ph name="PRINTER_NAME" /></translation>
@@ -6285,6 +6284,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8157704005178149728">Se configurează supravegherea</translation>
 <translation id="8158117992543756526">Acest dispozitiv nu mai primește actualizări automate de software și de securitate din <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Eroare la setarea certificatului de încredere</translation>
+<translation id="8160775796528709999">Afișează subtitrări pentru conținutul audio și video activând Subtitrări live în setări</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Modul Cititor pentru pagini web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mută fila în fereastră nouă}few{Mută filele în fereastră nouă}other{Mută filele în fereastră nouă}}</translation>
@@ -7145,6 +7145,7 @@ Apasă o tastă de comutare atribuită pentru a elimina atribuirea.</translation
 <translation id="9128870381267983090">Conectați-vă la rețea</translation>
 <translation id="9130015405878219958">A fost introdus un mod nevalid.</translation>
 <translation id="9131487537093447019">Trimite mesaje către dispozitivele Bluetooth și primește mesaje de la acestea.</translation>
+<translation id="9134119143784876218">Creează automat subtitrări pentru conținut audio și video în limba engleză (disponibile momentan numai în browserul Chrome). Conținutul audio și subtitrările nu părăsesc niciodată dispozitivul.</translation>
 <translation id="9137013805542155359">Afișează originalul</translation>
 <translation id="9137157311132182254">Motor de căutare preferat</translation>
 <translation id="9137248913990643158">Pornește și conectează-te la Chrome înainte de a folosi această aplicație.</translation>

@@ -453,7 +453,6 @@
 <translation id="1500297251995790841">अज्ञात डिवाइस [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">किसी एक से ज़्यादा साइन-इन वाले सत्र में इस मालिक खाते को पहला साइन-इन खाता होना चाहिए.</translation>
 <translation id="150411034776756821"><ph name="SITE" /> को निकालें</translation>
-<translation id="1504311855864906891">अपनी मीडिया के लिए कैप्शन पाएं</translation>
 <translation id="1504551620756424144">शेयर किए गए फ़ोल्डर, Windows में <ph name="BASE_DIR" /> पर उपलब्ध हैं.</translation>
 <translation id="1506061864768559482">सर्च इंजन</translation>
 <translation id="1507170440449692343">इस पेज को आपका कैमरा ऐक्सेस करने से अवरोधित कर दिया गया है.</translation>
@@ -1447,6 +1446,7 @@
 <translation id="2604255671529671813">नेटवर्क कनेक्शन गड़बड़ी</translation>
 <translation id="2606246518223360146">डेटा लिंक करें</translation>
 <translation id="2606454609872547359">नहीं, ChromeVox के बिना जारी रखें</translation>
+<translation id="2606568927909309675">लाइव कैप्शन की सुविधा से, अंग्रेज़ी ऑडियो और वीडियो के कैप्शन अपने-आप बनते हैं. आपके डिवाइस पर ऑडियो और कैप्शन हमेशा सुने और देखे जा सकते हैं.</translation>
 <translation id="2607101320794533334">विषय सार्वजनिक कुंजी जानकारी</translation>
 <translation id="2609896558069604090">शॉर्टकट बनाए...</translation>
 <translation id="2609980095400624569">डिवाइस को फ़ोन से कनेक्ट नहीं किया जा सका</translation>
@@ -3743,7 +3743,6 @@
 <translation id="5265797726250773323">इंस्टॉल करते समय गड़बड़ी हुई</translation>
 <translation id="5266113311903163739">प्रमाणन प्राधिकरण आयात गड़बड़ी</translation>
 <translation id="5269977353971873915">प्रिंट विफल</translation>
-<translation id="5274738462757057090">मीडिया के लिए, Chrome ब्राउज़र में अपने-आप कैप्शन बनाने की सुविधा (फ़िलहाल, यह सिर्फ़ अंग्रेज़ी में उपलब्ध है)</translation>
 <translation id="5275352920323889391">श्‍वान</translation>
 <translation id="527605982717517565"><ph name="HOST" /> पर JavaScript को हमेशा अनुमति दें</translation>
 <translation id="5278823018825269962">स्थिति का आईडी</translation>
@@ -4388,6 +4387,7 @@
 <translation id="6011074160056912900">ईथरनेट नेटवर्क</translation>
 <translation id="6011193465932186973">फ़िंगरप्रिंट</translation>
 <translation id="6011449291337289699">साइट डेटा साफ़ करें</translation>
+<translation id="6013027779243312217">अपने ऑडियो और वीडियो के लिए कैप्शन पाएं</translation>
 <translation id="6015796118275082299">वर्ष</translation>
 <translation id="6016178549409952427">ज़्यादा कॉन्टेंट वाले कुल <ph name="TOTAL_ELEMENTS" /> पेजों में से <ph name="CURRENT_ELEMENT" /> पेज पर जाएं</translation>
 <translation id="6016551720757758985">पिछले वर्शन पर वापस लौटने के साथ ही पावरवॉश की पुष्‍टि करें</translation>
@@ -6212,7 +6212,6 @@
 <translation id="8081989000209387414">ADB डीबग करने की सुविधा बंद करें?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />" से जोड़ना चाहते हैं?</translation>
 <translation id="8082390128630131497">ADB डीबग करने की सुविधा बंद करने से यह <ph name="DEVICE_TYPE" /> फ़ैक्ट्री सेटिंग पर रीसेट हो जाएगा. सभी उपयोगकर्ता खातों और स्थानीय डेटा को हमेशा के लिए मिटा दिया जाएगा.</translation>
-<translation id="8083058154738359867">सेटिंग में लाइव कैप्शन की सुविधा को चालू करके, अपने मीडिया के लिए कैप्शन पाएं</translation>
 <translation id="8084114998886531721">सेव किया गया पासवर्ड</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> कॉन्फ़िगर किया जा रहा है ...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> सेट अप करें</translation>
@@ -6283,6 +6282,7 @@
 <translation id="8157704005178149728">निगरानी की सुविधा सेट अप की जा रही है</translation>
 <translation id="8158117992543756526">इस डिवाइस ने <ph name="MONTH_AND_YEAR" /> में सॉफ़्टवेयर और सुरक्षा के अपडेट लेना बंद कर दिया था. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">प्रमाणपत्र विश्‍वास सेट करने में गड़बड़ी</translation>
+<translation id="8160775796528709999">सेटिंग में लाइव कैप्शन की सुविधा चालू करके, अपने ऑडियो और वीडियो के लिए कैप्शन पाएं</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">वेब पेजों के लिए रीडर मोड</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{टैब को नई विंडो पर ले जाएं}one{टैब को नई विंडो पर ले जाएं}other{टैब को नई विंडो पर ले जाएं}}</translation>
@@ -7143,6 +7143,7 @@
 <translation id="9128870381267983090">नेटवर्क से कनेक्ट करें</translation>
 <translation id="9130015405878219958">गलत मोड डाला गया.</translation>
 <translation id="9131487537093447019">ब्लूटूथ डिवाइस से मैसेज भेजें और मैसेज पाएं.</translation>
+<translation id="9134119143784876218">लाइव कैप्शन की सुविधा से, अंग्रेज़ी ऑडियो और वीडियो के कैप्शन अपने-आप बनते हैं (फ़िलहाल, यह सुविधा सिर्फ़ Chrome ब्राउज़र में उपलब्ध है). आपके डिवाइस पर ऑडियो और कैप्शन हमेशा सुने और देखे जा सकते हैं.</translation>
 <translation id="9137013805542155359">मूल दिखाएं</translation>
 <translation id="9137157311132182254">पसंदीदा सर्च इंजन</translation>
 <translation id="9137248913990643158">इस ऐप्लिकेशन का उपयोग करने से पहले कृपया Chrome शुरू करके उसमें साइन इन करें.</translation>

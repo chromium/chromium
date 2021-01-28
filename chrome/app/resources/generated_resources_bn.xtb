@@ -453,7 +453,6 @@
 <translation id="1500297251995790841">অজানা ডিভাইস [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">একাধিক সাইন-ইন সেশনে এই মালিক অ্যাকাউন্টটি প্রথম সাইন-ইন অ্যাকাউন্ট হতে হবে৷</translation>
 <translation id="150411034776756821"><ph name="SITE" /> সরান</translation>
-<translation id="1504311855864906891">আপনার মিডিয়ার জন্য ক্যাপশন পেয়ে যান</translation>
 <translation id="1504551620756424144">শেয়ার করা ফোল্ডার, Windows-এর মধ্যে <ph name="BASE_DIR" />-এ পাওয়া যাবে।</translation>
 <translation id="1506061864768559482">সার্চ ইঞ্জিন</translation>
 <translation id="1507170440449692343">এই পৃষ্ঠাটিকে আপনার ক্যামেরা অ্যাক্সেস করা থেকে অবরুদ্ধ করা হয়েছে৷</translation>
@@ -1446,6 +1445,7 @@
 <translation id="2604255671529671813">নেটওয়ার্ক সংযোগে সমস্যা</translation>
 <translation id="2606246518223360146">ডেটা লিঙ্ক করুন</translation>
 <translation id="2606454609872547359">না, ChromeVox ছাড়াই চালিয়ে যান</translation>
+<translation id="2606568927909309675">'লাইভ ক্যাপশন' ফিচারের মাধ্যমে ইংরেজিতে অডিও এবং ভিডিওর ক্যাপশন অটোমেটিক তৈরি হয়। অডিও এবং ক্যাপশন আপনার ডিভাইসেই থাকে।</translation>
 <translation id="2607101320794533334">বিষয় সর্বজনীন কী তথ্য</translation>
 <translation id="2609896558069604090">শর্টকাটগুলি তৈরি করুন...</translation>
 <translation id="2609980095400624569">কানেক্ট করা যায়নি</translation>
@@ -3742,7 +3742,6 @@
 <translation id="5265797726250773323">ইনস্টল করার সময় সমস্যা</translation>
 <translation id="5266113311903163739">শংসাকরণ কর্তৃপক্ষ আমদানি ত্রুটি</translation>
 <translation id="5269977353971873915">প্রিন্ট করা যায়নি</translation>
-<translation id="5274738462757057090">এই ফিচারের সাহায্যে Chrome ব্রাউজারে চলা মিডিয়ার ক্ষেত্রে অটোমেটিক ক্যাপশন তৈরি হয় (বর্তমানে কেবলমাত্র ইংরেজিতে উপলভ্য)</translation>
 <translation id="5275352920323889391">কুকুর</translation>
 <translation id="527605982717517565">সর্বদা <ph name="HOST" />-এ জাভাস্ক্রিপ্ট মঞ্জুর করুন</translation>
 <translation id="5278823018825269962">স্ট্যাটাস আইডি</translation>
@@ -4388,6 +4387,7 @@
 <translation id="6011074160056912900">ইথারনেট নেটওয়ার্ক</translation>
 <translation id="6011193465932186973">আঙ্গুলের ছাপ</translation>
 <translation id="6011449291337289699">সাইট ডেটা সাফ করুন</translation>
+<translation id="6013027779243312217">আপনার অডিও এবং ভিডিওর জন্য ক্যাপশন পান</translation>
 <translation id="6015796118275082299">বছর</translation>
 <translation id="6016178549409952427">অতিরিক্ত কন্টেন্ট থাকা মোট <ph name="TOTAL_ELEMENTS" />টি এলিমেন্টের মধ্যে <ph name="CURRENT_ELEMENT" /> নম্বর এলিমেন্টে যান</translation>
 <translation id="6016551720757758985">পূর্ববর্তী সংস্করণে ফিরে যাওয়া সহ পাওয়ারওয়াশ নিশ্চিত করুন</translation>
@@ -6213,7 +6213,6 @@
 <translation id="8081989000209387414">ADB ডিবাগিং বন্ধ করতে চান?</translation>
 <translation id="8082106343289440791">"<ph name="DEVICE_NAME" />"-এর সাথে পেয়ার করবেন?</translation>
 <translation id="8082390128630131497">ADB ডিবাগিং বন্ধ করলে এই <ph name="DEVICE_TYPE" /> ফ্যাক্টরি সেটিংসে রিসেট করা হবে। সব ব্যবহারকারীর অ্যাকাউন্ট ও স্থানীয় ডেটা মুছে যাবে।</translation>
-<translation id="8083058154738359867">সেটিংসে 'লাইভ ক্যাপশন' ফিচার চালু করে আপনার মিডিয়া কন্টেন্টের জন্য ক্যাপশনের সুবিধা পান</translation>
 <translation id="8084114998886531721">সংরক্ষিত পাসওয়ার্ড</translation>
 <translation id="8086015605808120405"><ph name="PRINTER_NAME" /> কনফিগার করা হচ্ছে...</translation>
 <translation id="8086442853986205778"><ph name="PRINTER_NAME" /> সেট-আপ করুন</translation>
@@ -6283,6 +6282,7 @@
 <translation id="8157704005178149728">তত্ত্বাবধান সেট-আপ করা হচ্ছে</translation>
 <translation id="8158117992543756526"><ph name="MONTH_AND_YEAR" /> থেকে, এই ডিভাইসটিতে সফ্টওয়্যার ও নিরাপত্তা সংক্রান্ত অটোমেটিক আপডেট আসা বন্ধ হয়ে গেছে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">সেটিং সার্টিফিকেট আস্থায় ত্রুটি</translation>
+<translation id="8160775796528709999">সেটিংসে গিয়ে 'লাইভ ক্যাপশন' ফিচার চালু করে আপনার অডিও এবং ভিডিওতে ক্যাপশন দেখুন</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">ওয়েব পৃষ্ঠার রিডার মোড</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{ট্যাবটি নতুন উইন্ডোতে খুলুন}one{ট্যাবগুলি নতুন উইন্ডোতে খুলুন}other{ট্যাবগুলি নতুন উইন্ডোতে খুলুন}}</translation>
@@ -7143,6 +7143,7 @@
 <translation id="9128870381267983090">নেটওয়ার্কে সংযোগ করুন</translation>
 <translation id="9130015405878219958">ভুল মোড দেওয়া হয়েছে৷</translation>
 <translation id="9131487537093447019">ব্লুটুথ ডিভাইসগুলি থেকে বার্তা পাঠান ও গ্রহণ করুন।</translation>
+<translation id="9134119143784876218">'লাইভ ক্যাপশন' ফিচারের মাধ্যমে ইংরেজিতে অডিও এবং ভিডিওর ক্যাপশন অটোমেটিক তৈরি হয় (বর্তমানে এই সুবিধা শুধু Chrome ব্রাউজারে ব্যবহার করা যায়)। অডিও এবং ক্যাপশন আপনার ডিভাইসেই থাকে।</translation>
 <translation id="9137013805542155359">প্রকৃত রূপ দেখান</translation>
 <translation id="9137157311132182254">বেছে নেওয়া সার্চ ইঞ্জিন</translation>
 <translation id="9137248913990643158">এই অ্যাপ্লিকেশানটি ব্যবহার করার আগে অনুগ্রহ করে শুরু করুন এবং Chrome এ প্রবেশ করুন।</translation>

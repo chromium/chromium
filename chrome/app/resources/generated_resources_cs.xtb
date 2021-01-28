@@ -454,7 +454,6 @@
 <translation id="1500297251995790841">Neznámé zařízení [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Účet tohoto vlastníka musí být v relaci multiprofilu přihlášen jako první.</translation>
 <translation id="150411034776756821">Odebrat web <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Generovat k médiím titulky</translation>
 <translation id="1504551620756424144">Sdílené složky jsou ve Windows k dispozici v adresáři <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Vyhledávač</translation>
 <translation id="1507170440449692343">Přístup této stránky k vaší kameře je zablokován.</translation>
@@ -1447,6 +1446,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2604255671529671813">Chyba připojení k síti</translation>
 <translation id="2606246518223360146">Propojit data</translation>
 <translation id="2606454609872547359">Ne, pokračovat bez čtečky ChromeVox</translation>
+<translation id="2606568927909309675">Automatické vytváření titulků pro zvuk a videa v angličtině. Zvuk ani titulky nikdy neopouštějí zařízení.</translation>
 <translation id="2607101320794533334">Informace o veřejném klíči subjektu</translation>
 <translation id="2609896558069604090">Vytvořit zástupce…</translation>
 <translation id="2609980095400624569">Nepodařilo se navázat spojení</translation>
@@ -3743,7 +3743,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5265797726250773323">Při instalaci došlo k chybě</translation>
 <translation id="5266113311903163739">Chyba při importu certifikační autority</translation>
 <translation id="5269977353971873915">Tisk se nezdařil</translation>
-<translation id="5274738462757057090">Automatické vytváření titulků pro média v prohlížeči Chrome (momentálně pouze v angličtině)</translation>
 <translation id="5275352920323889391">Pes</translation>
 <translation id="527605982717517565">Vždy povolovat JavaScript z webu <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID stavu</translation>
@@ -4388,6 +4387,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6011074160056912900">Síť Ethernet</translation>
 <translation id="6011193465932186973">Otisk prstu</translation>
 <translation id="6011449291337289699">Vymazání dat webu</translation>
+<translation id="6013027779243312217">Nechte si zobrazovat titulky u zvuku a videí</translation>
 <translation id="6015796118275082299">Rok</translation>
 <translation id="6016178549409952427">Přejít k extra obsahu <ph name="CURRENT_ELEMENT" /> z <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Potvrďte obnovení pomocí funkce Powerwash a návrat k předchozí verzi aplikace</translation>
@@ -6213,7 +6213,6 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8081989000209387414">Deaktivovat ladění ADB?</translation>
 <translation id="8082106343289440791">Spárovat se zařízením <ph name="DEVICE_NAME" />?</translation>
 <translation id="8082390128630131497">Deaktivací ladění ADB toto zařízení <ph name="DEVICE_TYPE" /> resetujete do továrního nastavení. Budou vymazány všechny uživatelské účty a místní data.</translation>
-<translation id="8083058154738359867">Když v nastavení povolíte živý přepis, budou se u médií zobrazovat titulky</translation>
 <translation id="8084114998886531721">Uložené heslo</translation>
 <translation id="8086015605808120405">Probíhá konfigurace tiskárny <ph name="PRINTER_NAME" />...</translation>
 <translation id="8086442853986205778">Nastavení zařízení <ph name="PRINTER_NAME" /></translation>
@@ -6283,6 +6282,7 @@ Svůj soubor klíče uchovávejte na bezpečném místě. Budete jej potřebovat
 <translation id="8157704005178149728">Nastavování dohledu</translation>
 <translation id="8158117992543756526">Toto zařízení přestalo v <ph name="MONTH_AND_YEAR" /> dostávat automatické aktualizace softwaru a zabezpečení. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Chyba při nastavování důvěryhodnosti certifikátu</translation>
+<translation id="8160775796528709999">Když v nastavení povolíte živý přepis, budou se u zvuku a videí zobrazovat titulky</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Režim čtečky pro webové stránky</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Přesunout kartu do nového okna}few{Přesunout karty do nového okna}many{Přesunout karty do nového okna}other{Přesunout karty do nového okna}}</translation>
@@ -7144,6 +7144,7 @@ Přiřazení odstraníte stisknutím přiřazeného přepínače.</translation>
 <translation id="9128870381267983090">Připojit k síti</translation>
 <translation id="9130015405878219958">Byl zadán neplatný režim.</translation>
 <translation id="9131487537093447019">Odesílání zpráv do zařízení Bluetooth a přijímání zpráv ze zařízení Bluetooth</translation>
+<translation id="9134119143784876218">Automatické vytváření titulků pro zvuk a videa v angličtině (momentálně dostupné pouze v prohlížeči Chrome). Zvuk ani titulky nikdy neopouštějí zařízení.</translation>
 <translation id="9137013805542155359">Zobrazit originál</translation>
 <translation id="9137157311132182254">Preferovaný vyhledávač</translation>
 <translation id="9137248913990643158">Chcete-li tuto aplikaci použít, přihlaste se do Chromu.</translation>

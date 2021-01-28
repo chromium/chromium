@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Dispositivo desconhecido [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Esta conta de proprietário tem de ser a primeira conta com início de sessão integrado.</translation>
 <translation id="150411034776756821">Remover <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Obter legendas para o seu conteúdo multimédia</translation>
 <translation id="1504551620756424144">As pastas partilhadas estão disponíveis no Windows em <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Motor de pesquisa</translation>
 <translation id="1507170440449692343">Esta página foi impedida de aceder à sua câmara.</translation>
@@ -1445,6 +1444,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2604255671529671813">Erro de ligação à rede</translation>
 <translation id="2606246518223360146">Associar dados</translation>
 <translation id="2606454609872547359">Não, continuar com o ChromeVox</translation>
+<translation id="2606568927909309675">Cria automaticamente legendas para áudio e vídeo em inglês. O áudio e as legendas nunca saem do seu dispositivo.</translation>
 <translation id="2607101320794533334">Informações de chave pública do requerente</translation>
 <translation id="2609896558069604090">Criar Atalhos...</translation>
 <translation id="2609980095400624569">Não foi possível ligar</translation>
@@ -3743,7 +3743,6 @@ Pretende pará-lo?</translation>
 <translation id="5265797726250773323">Ocorreu um erro ao instalar</translation>
 <translation id="5266113311903163739">Erro ao importar autoridade de certificação</translation>
 <translation id="5269977353971873915">Falha de Impressão</translation>
-<translation id="5274738462757057090">Cria automaticamente legendas para conteúdos multimédia no navegador Chrome (atualmente, apenas disponível em inglês).</translation>
 <translation id="5275352920323889391">Cão</translation>
 <translation id="527605982717517565">Permitir sempre JavaScript em <ph name="HOST" /></translation>
 <translation id="5278823018825269962">ID de estado</translation>
@@ -4389,6 +4388,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6011074160056912900">Rede Ethernet</translation>
 <translation id="6011193465932186973">Impressão digital</translation>
 <translation id="6011449291337289699">Limpar dados do site</translation>
+<translation id="6013027779243312217">Obtenha legendas para o áudio e o vídeo.</translation>
 <translation id="6015796118275082299">Ano</translation>
 <translation id="6016178549409952427">Navegar para conteúdo adicional <ph name="CURRENT_ELEMENT" /> de <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirmar o Powerwash com o regresso à versão anterior</translation>
@@ -6214,7 +6214,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8081989000209387414">Pretende desativar a depuração do adb?</translation>
 <translation id="8082106343289440791">Sincronizar com o dispositivo "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">A desativação da depuração do adb vai repor as definições de fábrica deste <ph name="DEVICE_TYPE" />. Todos os dados locais e contas de utilizador serão apagados.</translation>
-<translation id="8083058154738359867">Obtenha legendas para o seu conteúdo multimédia ao ativar as Legendas instantâneas nas definições.</translation>
 <translation id="8084114998886531721">Palavra-passe guardada</translation>
 <translation id="8086015605808120405">A configurar <ph name="PRINTER_NAME" />…</translation>
 <translation id="8086442853986205778">Configurar <ph name="PRINTER_NAME" /></translation>
@@ -6284,6 +6283,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8157704005178149728">A configurar a supervisão</translation>
 <translation id="8158117992543756526">Este dispositivo deixou de receber atualizações automáticas de software e segurança em <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Saber mais<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Erro ao definir a confiança do certificado</translation>
+<translation id="8160775796528709999">Obtenha legendas para o áudio e o vídeo ao ativar as Legendas instantâneas nas definições.</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Modo de leitor para páginas Web</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Mover separador para nova janela}other{Mover separadores para nova janela}}</translation>
@@ -7143,6 +7143,7 @@ Prima um comutador atribuído para remover a atribuição.</translation>
 <translation id="9128870381267983090">Ligar à rede</translation>
 <translation id="9130015405878219958">Introduzido modo inválido.</translation>
 <translation id="9131487537093447019">Envie mensagens para e receba mensagens de dispositivos Bluetooth.</translation>
+<translation id="9134119143784876218">Cria automaticamente legendas para o áudio e o vídeo em inglês (atualmente, apenas disponível no navegador Chrome). O áudio e as legendas nunca saem do seu dispositivo.</translation>
 <translation id="9137013805542155359">Mostrar original</translation>
 <translation id="9137157311132182254">Motor de pesquisa preferido</translation>
 <translation id="9137248913990643158">Comece e inicie sessão no Chrome antes de utilizar esta aplicação.</translation>

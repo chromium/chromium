@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Unknown device [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">This owner account has to be the first signed-in account in a multiple sign-in session.</translation>
 <translation id="150411034776756821">Remove <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Get captions for your media</translation>
 <translation id="1504551620756424144">Shared folders are available in Windows at <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Search engine</translation>
 <translation id="1507170440449692343">This page has been blocked from accessing your camera.</translation>
@@ -1446,6 +1445,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2604255671529671813">Network connection error</translation>
 <translation id="2606246518223360146">Link Data</translation>
 <translation id="2606454609872547359">No, continue without ChromeVox</translation>
+<translation id="2606568927909309675">Automatically creates captions for English audio and video. Audio and captions never leave your device.</translation>
 <translation id="2607101320794533334">Subject Public Key Info</translation>
 <translation id="2609896558069604090">Create Shortcuts...</translation>
 <translation id="2609980095400624569">Could not establish connection</translation>
@@ -3743,7 +3743,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5265797726250773323">Error while installing</translation>
 <translation id="5266113311903163739">Certification Authority Import Error</translation>
 <translation id="5269977353971873915">Print Failed</translation>
-<translation id="5274738462757057090">Automatically creates captions for media in Chrome browser (currently available in English only)</translation>
 <translation id="5275352920323889391">Dog</translation>
 <translation id="527605982717517565">Always allow JavaScript on <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Status ID</translation>
@@ -4388,6 +4387,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6011074160056912900">Ethernet network</translation>
 <translation id="6011193465932186973">Fingerprint</translation>
 <translation id="6011449291337289699">Clear site data</translation>
+<translation id="6013027779243312217">Get captions for your audio and video</translation>
 <translation id="6015796118275082299">Year</translation>
 <translation id="6016178549409952427">Navigate to extra content <ph name="CURRENT_ELEMENT" /> out of <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Confirm Powerwash with return to previous version</translation>
@@ -6213,7 +6213,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8081989000209387414">Disable ADB debugging?</translation>
 <translation id="8082106343289440791">Pair with "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Disabling ADB debugging will reset this <ph name="DEVICE_TYPE" /> to factory settings. All user accounts and local data will be deleted.</translation>
-<translation id="8083058154738359867">Get captions for your media by enabling Live Caption in settings</translation>
 <translation id="8084114998886531721">Saved password</translation>
 <translation id="8086015605808120405">Configuring <ph name="PRINTER_NAME" /> ...</translation>
 <translation id="8086442853986205778">Set up <ph name="PRINTER_NAME" /></translation>
@@ -6284,6 +6283,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8157704005178149728">Setting up supervision</translation>
 <translation id="8158117992543756526">This device stopped getting automatic software and security updates in <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Error While Setting Certificate Trust</translation>
+<translation id="8160775796528709999">Get captions for your audio and video by enabling Live Caption in settings</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Reader mode for web pages</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Move tab to new window}other{Move tabs to new window}}</translation>
@@ -7143,6 +7143,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="9128870381267983090">Connect to network</translation>
 <translation id="9130015405878219958">Invalid mode entered.</translation>
 <translation id="9131487537093447019">Send messages to and receive messages from Bluetooth devices.</translation>
+<translation id="9134119143784876218">Automatically creates captions for English audio and video (currently available in Chrome Browser only). Audio and captions never leave your device.</translation>
 <translation id="9137013805542155359">Show original</translation>
 <translation id="9137157311132182254">Preferred search engine</translation>
 <translation id="9137248913990643158">Please start and sign in to Chrome before using this app.</translation>

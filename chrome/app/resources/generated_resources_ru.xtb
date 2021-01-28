@@ -455,7 +455,6 @@
 <translation id="1500297251995790841">Неизвестное устройство [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">При одновременной работе в нескольких аккаунтах необходимо сначала зайти в аккаунт владельца.</translation>
 <translation id="150411034776756821">Удалить <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Автоматические субтитры</translation>
 <translation id="1504551620756424144">В Windows общие папки находятся здесь: <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Поисковая система</translation>
 <translation id="1507170440449692343">Доступ к вашей камере для этой страницы заблокирован.</translation>
@@ -1447,6 +1446,7 @@
 <translation id="2604255671529671813">Ошибка подключения к сети</translation>
 <translation id="2606246518223360146">Связать данные</translation>
 <translation id="2606454609872547359">Нет, продолжить без ChromeVox</translation>
+<translation id="2606568927909309675">Функция автоматически создает субтитры к медиаконтенту на английском языке. Аудиофайлы и субтитры хранятся только на вашем устройстве.</translation>
 <translation id="2607101320794533334">Информация об открытом ключе субъекта</translation>
 <translation id="2609896558069604090">Создать ярлык…</translation>
 <translation id="2609980095400624569">Ошибка подключения</translation>
@@ -3744,7 +3744,6 @@
 <translation id="5265797726250773323">Ошибка при установке</translation>
 <translation id="5266113311903163739">Ошибка при импорте Центра сертификации</translation>
 <translation id="5269977353971873915">Печать не выполнена</translation>
-<translation id="5274738462757057090">Функция автоматически создает субтитры к медиаконтенту в Chrome (доступно только на английском языке)</translation>
 <translation id="5275352920323889391">Собака</translation>
 <translation id="527605982717517565">Всегда разрешать JavaScript для сайта <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Идентификатор состояния</translation>
@@ -4389,6 +4388,7 @@
 <translation id="6011074160056912900">Сеть Ethernet</translation>
 <translation id="6011193465932186973">Отпечатки пальцев</translation>
 <translation id="6011449291337289699">Удаление данных сайтов</translation>
+<translation id="6013027779243312217">Включите субтитры для аудио и видео</translation>
 <translation id="6015796118275082299">Год</translation>
 <translation id="6016178549409952427">Перейти к дополнительному контенту на карточке <ph name="CURRENT_ELEMENT" /> из <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Подтверждение Powerwash и возврата к предыдущей версии</translation>
@@ -6214,7 +6214,6 @@
 <translation id="8081989000209387414">Отключить отладку с ADB?</translation>
 <translation id="8082106343289440791">Подключиться к устройству "<ph name="DEVICE_NAME" />"?</translation>
 <translation id="8082390128630131497">Если вы отключите отладку с ADB, настройки этого устройства <ph name="DEVICE_TYPE" /> будут сброшены до заводских. Все аккаунты пользователей и локальные данные будут удалены.</translation>
-<translation id="8083058154738359867">Включить автоматические субтитры для медиаконтента можно в настройках</translation>
 <translation id="8084114998886531721">Сохраненный пароль</translation>
 <translation id="8086015605808120405">Настройка принтера "<ph name="PRINTER_NAME" />"...</translation>
 <translation id="8086442853986205778">Настроить принтер "<ph name="PRINTER_NAME" />"</translation>
@@ -6284,6 +6283,7 @@
 <translation id="8157704005178149728">Настройка родительского контроля</translation>
 <translation id="8158117992543756526">Это устройство больше не получает автоматические обновления ПО и системы безопасности (последний раз – <ph name="MONTH_AND_YEAR" />). <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Ошибка при определении доверия сертификата</translation>
+<translation id="8160775796528709999">Включить автоматические субтитры для аудио и видео можно в настройках</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Режим чтения веб-страниц</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Открыть вкладку в новом окне}one{Открыть вкладки в новом окне}few{Открыть вкладки в новом окне}many{Открыть вкладки в новом окне}other{Открыть вкладки в новом окне}}</translation>
@@ -7146,6 +7146,7 @@
 <translation id="9128870381267983090">Подключитесь к сети</translation>
 <translation id="9130015405878219958">Указан неверный режим.</translation>
 <translation id="9131487537093447019">Обмен сообщениями с устройствами Bluetooth.</translation>
+<translation id="9134119143784876218">Функция автоматически создает субтитры к медиаконтенту на английском языке (доступно только в браузере Chrome). Аудиофайлы и субтитры хранятся только на вашем устройстве.</translation>
 <translation id="9137013805542155359">Показать оригинал</translation>
 <translation id="9137157311132182254">Предпочитаемая поисковая система</translation>
 <translation id="9137248913990643158">Войдите в Chrome, прежде чем использовать это приложение.</translation>

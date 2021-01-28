@@ -452,7 +452,6 @@
 <translation id="1500297251995790841">Άγνωστη συσκευή [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Αυτός ο λογαριασμός κατόχου θα πρέπει να είναι ο πρώτος συνδεδεμένος λογαριασμός σε μια περίοδο σύνδεσης πολλαπλών συνδέσεων.</translation>
 <translation id="150411034776756821">Κατάργηση ιστοτόπου <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Λάβετε υπότιτλους για τα μέσα σας</translation>
 <translation id="1504551620756424144">Οι κοινόχρηστοι φάκελοι είναι διαθέσιμοι στα Windows στη θέση <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Μηχανή αναζήτησης</translation>
 <translation id="1507170440449692343">Αυτή η σελίδα δεν έχει πρόσβαση στην κάμερά σας.</translation>
@@ -1446,6 +1445,7 @@
 <translation id="2604255671529671813">Σφάλμα σύνδεσης δικτύου</translation>
 <translation id="2606246518223360146">Σύνδεση δεδομένων</translation>
 <translation id="2606454609872547359">Όχι, συνέχεια χωρίς το ChromeVox</translation>
+<translation id="2606568927909309675">Δημιουργεί αυτόματα υπότιτλους για ήχο και βίντεο που είναι στα Αγγλικά. Ο ήχος και οι υπότιτλοι παραμένουν πάντα στη συσκευή.</translation>
 <translation id="2607101320794533334">Πληροφορίες δημόσιου κλειδιού υποκειμένου</translation>
 <translation id="2609896558069604090">Δημιουργία συντομεύσεων…</translation>
 <translation id="2609980095400624569">Αδυναμία δημιουργίας σύνδεσης</translation>
@@ -3743,7 +3743,6 @@
 <translation id="5265797726250773323">Σφάλμα κατά την εγκατάσταση</translation>
 <translation id="5266113311903163739">Σφάλμα εισαγωγής της Αρχής Πιστοποίησης</translation>
 <translation id="5269977353971873915">Η εκτύπωση απέτυχε</translation>
-<translation id="5274738462757057090">Δημιουργεί αυτόματα υπότιτλους για μέσα στο πρόγραμμα περιήγησης Chrome (διαθέσιμο επί του παρόντος μόνο στα αγγλικά).</translation>
 <translation id="5275352920323889391">Σκύλος</translation>
 <translation id="527605982717517565">Να επιτρέπεται πάντα το JavaScript στο <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Αναγνωριστικό κατάστασης</translation>
@@ -4389,6 +4388,7 @@
 <translation id="6011074160056912900">Δίκτυο ethernet</translation>
 <translation id="6011193465932186973">Δακτυλικά αποτυπώματα</translation>
 <translation id="6011449291337289699">Εκκαθάριση δεδομένων ιστότοπου</translation>
+<translation id="6013027779243312217">Λάβετε υπότιτλους για ήχο και βίντεο</translation>
 <translation id="6015796118275082299">Έτος</translation>
 <translation id="6016178549409952427">Πλοήγηση σε επιπλέον περιεχόμενο <ph name="CURRENT_ELEMENT" /> από <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">Επιβεβαιώστε τη λειτουργία Powerwash με επιστροφή σε προηγούμενη έκδοση</translation>
@@ -6214,7 +6214,6 @@
 <translation id="8081989000209387414">Θέλετε να απενεργοποιήσετε τον εντοπισμό και τη διόρθωση σφαλμάτων ADB;</translation>
 <translation id="8082106343289440791">Σύζευξη με τη συσκευή "<ph name="DEVICE_NAME" />";</translation>
 <translation id="8082390128630131497">Η απενεργοποίηση του εντοπισμού και της διόρθωσης σφαλμάτων ADB θα επαναφέρει τη συσκευή <ph name="DEVICE_TYPE" /> στις εργοστασιακές ρυθμίσεις. Όλοι οι λογαριασμοί χρηστών και τα τοπικά δεδομένα θα διαγραφούν.</translation>
-<translation id="8083058154738359867">Λάβετε υπότιτλους για το περιεχόμενο μέσων ενεργοποιώντας τη λειτουργία Ζωντανοί υπότιτλοι στις ρυθμίσεις.</translation>
 <translation id="8084114998886531721">Αποθηκευμένος κωδικός πρόσβασης</translation>
 <translation id="8086015605808120405">Διαμόρφωση <ph name="PRINTER_NAME" /> …</translation>
 <translation id="8086442853986205778">Ρύθμιση <ph name="PRINTER_NAME" /></translation>
@@ -6285,6 +6284,7 @@
 <translation id="8157704005178149728">Ρύθμιση επίβλεψης</translation>
 <translation id="8158117992543756526">Από τον <ph name="MONTH_AND_YEAR" />, αυτή η συσκευή δεν λαμβάνει πλέον αυτόματες ενημερώσεις λογισμικού και ασφαλείας. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Σφάλμα ρύθμισης της αποδοχής πιστοποιητικού</translation>
+<translation id="8160775796528709999">Λάβετε υπότιτλους για ήχο και βίντεο, ενεργοποιώντας τους Ζωντανούς υπότιτλους στις ρυθμίσεις.</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> - <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Λειτουργία ανάγνωσης για ιστοσελίδες</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Μετακίνηση καρτέλας σε νέο παράθυρο}other{Μετακίνηση καρτελών σε νέο παράθυρο}}</translation>
@@ -7142,6 +7142,7 @@
 <translation id="9128870381267983090">Σύνδεση σε δίκτυο</translation>
 <translation id="9130015405878219958">Έγινε ενεργοποίηση μη έγκυρης λειτουργίας.</translation>
 <translation id="9131487537093447019">Αποστολή και λήψη μηνυμάτων από συσκευές Bluetooth.</translation>
+<translation id="9134119143784876218">Δημιουργεί αυτόματα υπότιτλους για ήχο και βίντεο που είναι στα Αγγλικά (η λειτουργία είναι προς το παρόν διαθέσιμη μόνο στο πρόγραμμα περιήγησης Chrome). Ο ήχος και οι υπότιτλοι παραμένουν πάντα στη συσκευή.</translation>
 <translation id="9137013805542155359">Εμφάνιση πρωτοτύπου</translation>
 <translation id="9137157311132182254">Προτιμώμενη μηχανή αναζήτησης</translation>
 <translation id="9137248913990643158">Εκκινήστε και συνδεθείτε στο Chrome πριν χρησιμοποιήσετε αυτήν την εφαρμογή.</translation>

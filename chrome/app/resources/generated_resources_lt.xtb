@@ -455,7 +455,6 @@
 <translation id="1500297251995790841">Nežinomas įrenginys [<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />]</translation>
 <translation id="1503394326855300303">Kelių paskyrų sesijoje pirmiausia turi būti prisijungta naudojant šią savininko paskyrą.</translation>
 <translation id="150411034776756821">Pašalinti <ph name="SITE" /></translation>
-<translation id="1504311855864906891">Medijos subtitrų gavimas</translation>
 <translation id="1504551620756424144">Bendrinami aplankai pasiekiami sistemoje „Windows“ adresu <ph name="BASE_DIR" />.</translation>
 <translation id="1506061864768559482">Paieškos variklis</translation>
 <translation id="1507170440449692343">Šis puslapis užblokuotas, kad nepasiektų jūsų fotoaparato.</translation>
@@ -1449,6 +1448,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2604255671529671813">Tinklo ryšio klaida</translation>
 <translation id="2606246518223360146">Susieti duomenis</translation>
 <translation id="2606454609872547359">Ne, tęsti be „ChromeVox“</translation>
+<translation id="2606568927909309675">Automatiškai kuriami garso ir vaizdo įrašų subtitrai anglų k. Garso įrašai ir subtitrai visada lieka įrenginyje.</translation>
 <translation id="2607101320794533334">Subjekto privačiojo rakto informacija</translation>
 <translation id="2609896558069604090">Kurti sparčiuosius klavišus...</translation>
 <translation id="2609980095400624569">Nepavyko užmegzti ryšio</translation>
@@ -3746,7 +3746,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5265797726250773323">Diegiant įvyko klaida</translation>
 <translation id="5266113311903163739">Sertifikavimo institucijos importavimo klaida</translation>
 <translation id="5269977353971873915">Spausdinant įvyko klaida</translation>
-<translation id="5274738462757057090">Automatiškai kuriami medijos subtitrai „Chrome“ naršyklėje (šiuo metu pasiekiama tik anglų k.)</translation>
 <translation id="5275352920323889391">Šuo</translation>
 <translation id="527605982717517565">Visada leisti „JavaScript“ <ph name="HOST" /></translation>
 <translation id="5278823018825269962">Būsenos ID</translation>
@@ -4392,6 +4391,7 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6011074160056912900">Eterneto tinklas</translation>
 <translation id="6011193465932186973">Piršto antspaudas</translation>
 <translation id="6011449291337289699">Išvalyti svetainės duomenis</translation>
+<translation id="6013027779243312217">Gaukite garso ir vaizdo įrašų subtitrus</translation>
 <translation id="6015796118275082299">Metai</translation>
 <translation id="6016178549409952427">Naršyti papildomą turinį: <ph name="CURRENT_ELEMENT" /> iš <ph name="TOTAL_ELEMENTS" /></translation>
 <translation id="6016551720757758985">„Powerwash“ grąžinant ankstesnę versiją patvirtinimas</translation>
@@ -6217,7 +6217,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8081989000209387414">Išjungti ADB derinimą?</translation>
 <translation id="8082106343289440791">Susieti su „<ph name="DEVICE_NAME" />“?</translation>
 <translation id="8082390128630131497">Išjungus ADB derinimą bus iš naujo nustatyti šio „<ph name="DEVICE_TYPE" />“ gamykliniai nustatymai. Bus ištrintos visos naudotojo paskyros ir vietiniai duomenys.</translation>
-<translation id="8083058154738359867">Gaukite medijos subtitrus įgalinę „Subtitrų realiuoju laiku“ funkciją nustatymuose</translation>
 <translation id="8084114998886531721">Išsaugotas slaptažodis</translation>
 <translation id="8086015605808120405">Konfigūruojamas spausdintuvas „<ph name="PRINTER_NAME" />“...</translation>
 <translation id="8086442853986205778">Nustatyti „<ph name="PRINTER_NAME" />“</translation>
@@ -6288,6 +6287,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8157704005178149728">Priežiūros nustatymas</translation>
 <translation id="8158117992543756526">Šiam įrenginiui nebeteikiami automatiniai programinės įrangos ir saugos naujiniai nuo <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="816055135686411707">Sertifikato patikimumo nustatymo klaida</translation>
+<translation id="8160775796528709999">Gaukite garso ir vaizdo įrašų subtitrus įgalinę „Subtitrų realiuoju laiku“ funkciją nustatymuose</translation>
 <translation id="816095449251911490"><ph name="SPEED" /> – <ph name="RECEIVED_AMOUNT" />, <ph name="TIME_REMAINING" /></translation>
 <translation id="8161293209665121583">Tinklalapių skaitytojo režimą</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Skirtuko perkėlimas į naują langą}one{Skirtukų perkėlimas į naują langą}few{Skirtukų perkėlimas į naują langą}many{Skirtukų perkėlimas į naują langą}other{Skirtukų perkėlimas į naują langą}}</translation>
@@ -7150,6 +7150,7 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą.</translation>
 <translation id="9128870381267983090">Prisijungti prie tinklo</translation>
 <translation id="9130015405878219958">Įvestas neteisingas režimas.</translation>
 <translation id="9131487537093447019">Siųsti pranešimus į „Bluetooth“ įrenginius ir gauti pranešimus iš jų.</translation>
+<translation id="9134119143784876218">Automatiškai kuriami garso ir vaizdo įrašų anglų k. subtitrai (šiuo metu pasiekiama tik naršyklėje „Chrome“). Garso įrašai ir subtitrai visada lieka įrenginyje.</translation>
 <translation id="9137013805542155359">Rodyti originalą</translation>
 <translation id="9137157311132182254">Pageidaujamas paieškos variklis</translation>
 <translation id="9137248913990643158">Prieš naudodami šią programą prisijunkite prie „Chrome“.</translation>
