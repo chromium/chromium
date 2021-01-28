@@ -68,6 +68,9 @@ class CORE_EXPORT DOMWindow : public EventTargetWithInlineData {
   // ScriptWrappable overrides:
   v8::Local<v8::Value> Wrap(v8::Isolate*,
                             v8::Local<v8::Object> creation_context) final;
+  v8::MaybeLocal<v8::Value> WrapV2(
+      v8::Isolate*,
+      v8::Local<v8::Object> creation_context) final;
   v8::Local<v8::Object> AssociateWithWrapper(
       v8::Isolate*,
       const WrapperTypeInfo*,

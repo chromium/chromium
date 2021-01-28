@@ -30,6 +30,22 @@ v8::Local<v8::Value> ScriptWrappable::Wrap(
   return AssociateWithWrapper(isolate, wrapper_type_info, wrapper);
 }
 
+v8::MaybeLocal<v8::Value> ScriptWrappable::WrapV2(
+    v8::Isolate* isolate,
+    v8::Local<v8::Object> creation_context) {
+  const WrapperTypeInfo* wrapper_type_info = this->GetWrapperTypeInfo();
+
+  DCHECK(!DOMDataStore::ContainsWrapper(this, isolate));
+
+  v8::Local<v8::Object> wrapper;
+  if (!V8DOMWrapper::CreateWrapperV2(isolate, creation_context,
+                                     wrapper_type_info)
+           .ToLocal(&wrapper)) {
+    return v8::MaybeLocal<v8::Value>();
+  }
+  return AssociateWithWrapper(isolate, wrapper_type_info, wrapper);
+}
+
 v8::Local<v8::Object> ScriptWrappable::AssociateWithWrapper(
     v8::Isolate* isolate,
     const WrapperTypeInfo* wrapper_type_info,

@@ -97,6 +97,12 @@ class PLATFORM_EXPORT ScriptWrappable
   // Creates and returns a new wrapper object.
   virtual v8::Local<v8::Value> Wrap(v8::Isolate*,
                                     v8::Local<v8::Object> creation_context);
+  // This is another version of Wrap which returns v8::MaybeLocal value
+  // in order to throw an exception.
+  // TODO(canonmukai): We should replace current Wrap with this WrapV2.
+  virtual v8::MaybeLocal<v8::Value> WrapV2(
+      v8::Isolate*,
+      v8::Local<v8::Object> creation_context);
 
   // Associates the instance with the given |wrapper| if this instance is not
   // yet associated with any wrapper.  Returns the wrapper already associated
