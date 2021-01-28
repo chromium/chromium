@@ -623,6 +623,9 @@ void CaptureModeSession::StartCountDown(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
   capture_bar_layer->SetOpacity(0.f);
 
+  // Do a repaint to hide the affordance circles.
+  RepaintRegion();
+
   // Fade out the shield if it's recording fullscreen.
   if (controller_->source() == CaptureModeSource::kFullscreen) {
     ui::ScopedLayerAnimationSettings shield_settings(layer()->GetAnimator());
@@ -876,11 +879,13 @@ void CaptureModeSession::PaintCaptureRegion(gfx::Canvas* canvas) {
         radius, focus_ring_flags);
   };
 
-  if (is_selecting_region_ ||
-      capture_mode_util::ShouldHideDragAffordance(fine_tune_position_)) {
+  if (is_selecting_region_ || fine_tune_position_ != FineTunePosition::kNone) {
     maybe_draw_focus_ring(focused_fine_tune_position_);
     return;
   }
+
+  if (IsInCountDownAnimation())
+    return;
 
   // Draw the drag affordance circles.
   cc::PaintFlags circle_flags;
@@ -1133,13 +1138,12 @@ void CaptureModeSession::OnLocatedEventPressed(
     return;
   }
 
-  if (fine_tune_position_ != FineTunePosition::kNone)
-    ++num_capture_region_adjusted_;
-
   // In order to hide the drag affordance circles on click, we need to repaint
   // the capture region.
-  if (capture_mode_util::ShouldHideDragAffordance(fine_tune_position_))
+  if (fine_tune_position_ != FineTunePosition::kNone) {
+    ++num_capture_region_adjusted_;
     RepaintRegion();
+  }
 
   if (fine_tune_position_ != FineTunePosition::kCenter &&
       fine_tune_position_ != FineTunePosition::kNone) {
