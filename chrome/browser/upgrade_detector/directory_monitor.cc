@@ -55,40 +55,28 @@ void DirectoryMonitor::Start(Callback on_change_callback) {
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()});
   watcher_ = std::make_unique<base::FilePathWatcher>();
 
-#if defined(OS_MAC)
-  // The normal Watch risks triggering a macOS Catalina+ consent dialog, so use
-  // a trivial watch here.
-  const base::FilePathWatcher::Type watch_type =
-      base::FilePathWatcher::Type::kTrivial;
-#else
-  const base::FilePathWatcher::Type watch_type =
-      base::FilePathWatcher::Type::kNonRecursive;
-#endif
-
-  // Start the watcher on a background sequence, reporting a failure to start to
-  // |on_change_callback| on the caller's sequence. The watcher is given a
-  // trampoline that will run |on_change_callback| on the caller's sequence.
-  // base::Unretained is safe because the watcher instance lives on the target
-  // sequence and will be destroyed there in a subsequent task.
+  // Start the watcher on a background sequence, reporting all events back to
+  // this sequence. base::Unretained is safe because the watcher instance lives
+  // on the target sequence and will be destroyed there in a subsequent task.
   task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           static_cast<bool (base::FilePathWatcher::*)(
-              const base::FilePath&, base::FilePathWatcher::Type,
+              const base::FilePath&, bool,
               const base::FilePathWatcher::Callback&)>(
               &base::FilePathWatcher::Watch),
-          base::Unretained(watcher_.get()), std::move(install_dir_), watch_type,
+          base::Unretained(watcher_.get()), std::move(install_dir_),
+          /*recursive=*/false,
           base::BindRepeating(
-              [](base::SequencedTaskRunner* main_sequence,
+              [](scoped_refptr<base::SequencedTaskRunner> main_sequence,
                  const Callback& on_change_callback, const base::FilePath&,
                  bool error) {
                 main_sequence->PostTask(
                     FROM_HERE, base::BindOnce(on_change_callback, error));
               },
-              base::RetainedRef(base::SequencedTaskRunnerHandle::Get()),
-              on_change_callback)),
+              base::SequencedTaskRunnerHandle::Get(), on_change_callback)),
       base::BindOnce(
-          [](const Callback& on_change_callback, bool start_result) {
+          [](Callback on_change_callback, bool start_result) {
             if (!start_result)
               on_change_callback.Run(/*error=*/true);
           },
