@@ -646,8 +646,7 @@ bool AXTreeSerializer<AXSourceNode, AXNodeData, AXTreeData>::
       base::debug::SetCrashKeyString(reparent_err, error.str().substr(0, 230));
       CHECK(false) << error.str();
 #endif  // defined(AX_FAIL_FAST_BUILD)
-      // TODO: re-add this, including crash keys above.
-      // base::debug::DumpWithoutCrashing();
+      base::debug::DumpWithoutCrashing();
       Reset();
       return false;
     }
