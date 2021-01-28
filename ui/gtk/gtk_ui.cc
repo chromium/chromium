@@ -1041,9 +1041,9 @@ float GtkUi::GetRawDeviceScaleFactor() {
   if (resolution > 0)
     scale *= resolution / kDefaultDPI;
 
-  // Round to 2 decimal places to address problems with some Linux desktop
-  // environments that result in scales of 1.002... and the like.
-  scale = roundf(scale * 100.0) / 100;
+  // Round to the nearest 64th so that UI can losslessly multiply and divide
+  // the scale factor.
+  scale = roundf(scale * 64) / 64;
 
   return scale;
 }
