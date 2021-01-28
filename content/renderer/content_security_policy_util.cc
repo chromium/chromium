@@ -8,66 +8,188 @@
 
 namespace content {
 
-network::mojom::CSPSourcePtr BuildCSPSource(
-    const blink::WebContentSecurityPolicySourceExpression& source) {
+namespace {
+
+std::vector<std::string> BuildVectorOfStrings(
+    const blink::WebVector<blink::WebString>& list_in) {
+  std::vector<std::string> list_out;
+  for (const auto& element : list_in)
+    list_out.emplace_back(element.Ascii());
+  return list_out;
+}
+
+network::mojom::CSPSourcePtr BuildCSPSource(const blink::WebCSPSource& source) {
   return network::mojom::CSPSource::New(
-      source.scheme.Utf8(),                                    // scheme
-      source.host.Utf8(),                                      // host
-      source.port == 0 ? url::PORT_UNSPECIFIED : source.port,  // port
-      source.path.Utf8(),                                      // path
-      source.is_host_wildcard == blink::kWebWildcardDispositionHasWildcard,
-      source.is_port_wildcard == blink::kWebWildcardDispositionHasWildcard);
+      source.scheme.Ascii(), source.host.Ascii(), source.port,
+      source.path.Ascii(), source.is_host_wildcard, source.is_port_wildcard);
+}
+
+network::mojom::CSPHashSourcePtr BuildCSPHashSource(
+    const blink::WebCSPHashSource& hash_source) {
+  std::vector<uint8_t> hash_value;
+  hash_value.reserve(hash_source.value.size());
+  for (uint8_t el : hash_source.value)
+    hash_value.emplace_back(el);
+  return network::mojom::CSPHashSource::New(hash_source.algorithm,
+                                            std::move(hash_value));
 }
 
 network::mojom::CSPSourceListPtr BuildCSPSourceList(
-    const blink::WebContentSecurityPolicySourceList& source_list) {
+    const blink::WebCSPSourceList& source_list) {
   std::vector<network::mojom::CSPSourcePtr> sources;
   for (const auto& source : source_list.sources)
     sources.push_back(BuildCSPSource(source));
 
+  std::vector<network::mojom::CSPHashSourcePtr> hashes;
+  for (const auto& hash : source_list.hashes)
+    hashes.push_back(BuildCSPHashSource(hash));
+
   return network::mojom::CSPSourceList::New(
-      std::move(sources), std::vector<std::string>(),
-      std::vector<network::mojom::CSPHashSourcePtr>(), source_list.allow_self,
-      source_list.allow_star, source_list.allow_redirects, false, false, false,
-      false, false, false);
+      std::move(sources), BuildVectorOfStrings(source_list.nonces),
+      std::move(hashes), source_list.allow_self, source_list.allow_star,
+      source_list.allow_response_redirects, source_list.allow_inline,
+      source_list.allow_eval, source_list.allow_wasm_eval,
+      source_list.allow_dynamic, source_list.allow_unsafe_hashes,
+      source_list.report_sample);
 }
+
+blink::WebVector<blink::WebString> ToWebVectorOfWebStrings(
+    std::vector<std::string> list_in) {
+  blink::WebVector<blink::WebString> list_out(list_in.size());
+  size_t i = 0;
+  for (auto& element : list_in)
+    list_out[i++] = blink::WebString::FromASCII(std::move(element));
+  return list_out;
+}
+
+blink::WebCSPSource ToWebCSPSource(network::mojom::CSPSourcePtr source) {
+  return {blink::WebString::FromASCII(std::move(source->scheme)),
+          blink::WebString::FromASCII(std::move(source->host)),
+          source->port,
+          blink::WebString::FromASCII(std::move(source->path)),
+          source->is_host_wildcard,
+          source->is_port_wildcard};
+}
+
+blink::WebCSPHashSource ToWebCSPHashSource(
+    network::mojom::CSPHashSourcePtr hash_source) {
+  return {hash_source->algorithm, std::move(hash_source->value)};
+}
+
+blink::WebCSPSourceList ToWebCSPSourceList(
+    network::mojom::CSPSourceListPtr source_list) {
+  blink::WebVector<blink::WebCSPSource> sources(source_list->sources.size());
+  for (size_t i = 0; i < sources.size(); ++i)
+    sources[i] = ToWebCSPSource(std::move(source_list->sources[i]));
+  blink::WebVector<blink::WebCSPHashSource> hashes(source_list->hashes.size());
+  for (size_t i = 0; i < hashes.size(); ++i)
+    hashes[i] = ToWebCSPHashSource(std::move(source_list->hashes[i]));
+  return {std::move(sources),
+          ToWebVectorOfWebStrings(std::move(source_list->nonces)),
+          std::move(hashes),
+          source_list->allow_self,
+          source_list->allow_star,
+          source_list->allow_response_redirects,
+          source_list->allow_inline,
+          source_list->allow_eval,
+          source_list->allow_wasm_eval,
+          source_list->allow_dynamic,
+          source_list->allow_unsafe_hashes,
+          source_list->report_sample};
+}
+
+base::Optional<blink::WebCSPTrustedTypes> ToOptionalWebCSPTrustedTypes(
+    network::mojom::CSPTrustedTypesPtr trusted_types) {
+  if (!trusted_types)
+    return base::nullopt;
+  return blink::WebCSPTrustedTypes{
+      ToWebVectorOfWebStrings(std::move(trusted_types->list)),
+      trusted_types->allow_any, trusted_types->allow_duplicates};
+}
+
+blink::WebContentSecurityPolicyHeader ToWebContentSecurityPolicyHeader(
+    network::mojom::ContentSecurityPolicyHeaderPtr header) {
+  return {blink::WebString::FromASCII(std::move(header->header_value)),
+          header->type, header->source};
+}
+
+}  // namespace
 
 network::mojom::ContentSecurityPolicyPtr BuildContentSecurityPolicy(
     const blink::WebContentSecurityPolicy& policy_in) {
-  auto policy = network::mojom::ContentSecurityPolicy::New();
-
-  policy->self_origin = BuildCSPSource(policy_in.self_origin);
-
-  policy->header = network::mojom::ContentSecurityPolicyHeader::New(
-      policy_in.header.Utf8(), policy_in.disposition, policy_in.source);
-  policy->use_reporting_api = policy_in.use_reporting_api;
-
+  base::flat_map<network::mojom::CSPDirectiveName, std::string> raw_directives;
   for (const auto& directive : policy_in.raw_directives) {
-    policy->raw_directives[directive.name] = directive.value.Utf8();
+    raw_directives[directive.name] = directive.value.Ascii();
   }
+
+  base::flat_map<network::mojom::CSPDirectiveName,
+                 network::mojom::CSPSourceListPtr>
+      directives;
   for (const auto& directive : policy_in.directives) {
-    policy->directives[directive.name] =
-        BuildCSPSourceList(directive.source_list);
-  }
-  policy->upgrade_insecure_requests = policy_in.upgrade_insecure_requests;
-  policy->block_all_mixed_content = policy_in.block_all_mixed_content;
-
-  for (const blink::WebString& endpoint : policy_in.report_endpoints)
-    policy->report_endpoints.push_back(endpoint.Utf8());
-
-  policy->require_trusted_types_for = policy_in.require_trusted_types_for;
-
-  if (policy_in.trusted_types) {
-    std::vector<std::string> list;
-    for (const auto& type : policy_in.trusted_types->list) {
-      list.emplace_back(type.Utf8());
-    }
-    policy->trusted_types = network::mojom::CSPTrustedTypes::New(
-        std::move(list), policy_in.trusted_types->allow_any,
-        policy_in.trusted_types->allow_duplicates);
+    directives[directive.name] = BuildCSPSourceList(directive.source_list);
   }
 
-  return policy;
+  return network::mojom::ContentSecurityPolicy::New(
+      BuildCSPSource(policy_in.self_origin), std::move(raw_directives),
+      std::move(directives), policy_in.upgrade_insecure_requests,
+      policy_in.treat_as_public_address, policy_in.block_all_mixed_content,
+      policy_in.sandbox,
+      network::mojom::ContentSecurityPolicyHeader::New(
+          policy_in.header.header_value.Ascii(), policy_in.header.type,
+          policy_in.header.source),
+      policy_in.use_reporting_api,
+      BuildVectorOfStrings(policy_in.report_endpoints),
+      policy_in.plugin_types.has_value()
+          ? base::make_optional(
+                BuildVectorOfStrings(policy_in.plugin_types.value()))
+          : base::nullopt,
+      policy_in.require_trusted_types_for,
+      policy_in.trusted_types
+          ? network::mojom::CSPTrustedTypes::New(
+                BuildVectorOfStrings(policy_in.trusted_types->list),
+                policy_in.trusted_types->allow_any,
+                policy_in.trusted_types->allow_duplicates)
+          : nullptr,
+      BuildVectorOfStrings(policy_in.parsing_errors));
+}
+
+blink::WebContentSecurityPolicy ToWebContentSecurityPolicy(
+    network::mojom::ContentSecurityPolicyPtr policy_in) {
+  blink::WebVector<blink::WebContentSecurityPolicyDirective> directives(
+      policy_in->directives.size());
+  size_t i = 0;
+  for (auto& directive : policy_in->directives) {
+    directives[i++] = {directive.first,
+                       ToWebCSPSourceList(std::move(directive.second))};
+  }
+
+  blink::WebVector<blink::WebContentSecurityPolicyRawDirective> raw_directives(
+      policy_in->raw_directives.size());
+  i = 0;
+  for (auto& directive : policy_in->raw_directives) {
+    raw_directives[i++] = {directive.first, blink::WebString::FromASCII(
+                                                std::move(directive.second))};
+  }
+
+  base::Optional<blink::WebVector<blink::WebString>> plugin_types =
+      base::nullopt;
+  if (policy_in->plugin_types.has_value())
+    plugin_types = ToWebVectorOfWebStrings(policy_in->plugin_types.value());
+
+  return {ToWebCSPSource(std::move(policy_in->self_origin)),
+          std::move(raw_directives),
+          std::move(directives),
+          policy_in->upgrade_insecure_requests,
+          policy_in->treat_as_public_address,
+          policy_in->block_all_mixed_content,
+          policy_in->sandbox,
+          ToWebContentSecurityPolicyHeader(std::move(policy_in->header)),
+          policy_in->use_reporting_api,
+          ToWebVectorOfWebStrings(std::move(policy_in->report_endpoints)),
+          std::move(plugin_types),
+          policy_in->require_trusted_types_for,
+          ToOptionalWebCSPTrustedTypes(std::move(policy_in->trusted_types)),
+          ToWebVectorOfWebStrings(std::move(policy_in->parsing_errors))};
 }
 
 }  // namespace content

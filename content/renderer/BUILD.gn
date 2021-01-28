@@ -9,6 +9,7 @@ import("//build/config/ui.gni")
 import("//content/common/features.gni")
 import("//media/media_options.gni")
 import("//ppapi/buildflags/buildflags.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/webrtc/webrtc.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
@@ -27,6 +28,7 @@ target(link_target_type, "renderer") {
     "//content/app:*",
     "//content/public/renderer:renderer_sources",
     "//content/renderer:audio_decoder_fuzzer",
+    "//content/renderer:content_security_policy_util_fuzzer",
   ]
 
   sources = [
@@ -585,4 +587,19 @@ fuzzer_test("audio_decoder_fuzzer") {
     "//content/test:test_support",
   ]
   seed_corpus = "//media/test/data"
+}
+
+fuzzer_test("content_security_policy_util_fuzzer") {
+  sources = [ "content_security_policy_util_fuzzer.cc" ]
+  deps = [
+    "//base",
+    "//content/public/renderer:renderer_sources",
+    "//content/renderer:renderer",
+    "//content/test:test_support",
+    "//services/network:network_service",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+  dict = "//testing/libfuzzer/fuzzers/dicts/content_security_policy.dict"
+  seed_corpus = "//testing/libfuzzer/fuzzers/content_security_policy_corpus"
 }

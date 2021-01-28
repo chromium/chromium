@@ -1250,6 +1250,7 @@ source_set("unit_tests") {
     "frame/ad_tracker_test.cc",
     "frame/browser_controls_test.cc",
     "frame/csp/content_security_policy_test.cc",
+    "frame/csp/conversion_util_test.cc",
     "frame/csp/csp_directive_list_test.cc",
     "frame/csp/csp_source_test.cc",
     "frame/csp/require_trusted_types_for_directive_test.cc",
@@ -1784,6 +1785,17 @@ fuzzer_test("html_preload_scanner_fuzzer") {
 # Fuzzer for blink::ContentSecurityPolicy.
 fuzzer_test("content_security_policy_fuzzer") {
   sources = [ "frame/csp/content_security_policy_fuzzer.cc" ]
+  deps = [
+    ":core",
+    "//third_party/blink/renderer/core:testing",
+    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
+  ]
+  dict = "//testing/libfuzzer/fuzzers/dicts/content_security_policy.dict"
+  seed_corpus = "//testing/libfuzzer/fuzzers/content_security_policy_corpus"
+}
+
+fuzzer_test("content_security_policy_conversion_util_fuzzer") {
+  sources = [ "frame/csp/conversion_util_fuzzer.cc" ]
   deps = [
     ":core",
     "//third_party/blink/renderer/core:testing",

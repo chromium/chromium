@@ -2107,6 +2107,7 @@ test("content_unittests") {
     "../renderer/accessibility/ax_image_stopwords_unittest.cc",
     "../renderer/categorized_worker_pool_unittest.cc",
     "../renderer/child_frame_compositing_helper_unittest.cc",
+    "../renderer/content_security_policy_util_unittest.cc",
     "../renderer/loader/navigation_body_loader_unittest.cc",
     "../renderer/loader/resource_dispatcher_unittest.cc",
     "../renderer/loader/sync_load_context_unittest.cc",

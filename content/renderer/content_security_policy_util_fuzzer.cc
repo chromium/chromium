@@ -1,0 +1,96 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Configure:
+// # tools/mb/mb.py gen -m chromium.fuzz -b 'Libfuzzer Upload Linux ASan'  out/libfuzzer
+// Build:
+// # autoninja -C out/libfuzzer content_security_policy_util_fuzzer
+// Run:
+// # ./out/libfuzzer/content_security_policy_util_fuzzer
+//
+// For more details, see
+// https://chromium.googlesource.com/chromium/src/+/master/testing/libfuzzer/README.md
+
+#include "base/at_exit.h"
+#include "base/command_line.h"
+#include "base/test/test_timeouts.h"
+#include "content/public/test/blink_test_environment.h"
+#include "content/renderer/content_security_policy_util.h"
+#include "services/network/public/cpp/content_security_policy/content_security_policy.h"
+#include "services/network/public/mojom/content_security_policy.mojom-forward.h"
+
+
+namespace {
+
+// This is similar to blink::BlinkFuzzerTestSupport, which we can't import from
+// content.
+class Environment {
+ public:
+  Environment() {
+    // Note: we don't tear anything down here after an iteration of the fuzzer
+    // is complete, this is for efficiency. We rerun the fuzzer with the same
+    // environment as the previous iteration.
+    base::AtExitManager at_exit;
+
+    base::CommandLine::Init(0, nullptr);
+
+    TestTimeouts::Initialize();
+
+    content::SetUpBlinkTestEnvironment();
+  }
+  ~Environment() {}
+};
+
+}  // namespace
+
+namespace content {
+
+// Entry point for LibFuzzer. This function uses |data| to create a
+// network::mojom::ContentSecurityPolicy |csp|, and then checks that the
+// composition of BuildContentSecurityPolicy and ToWebContentSecurityPolicy is
+// the identity on |csp|.
+int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static Environment environment = Environment();
+
+  // We need two pieces of input: a URL and a CSP string. Split |data| in two at
+  // the first whitespace.
+  const uint8_t* it = data;
+  for (; it < data + size; it++) {
+    if (base::IsAsciiWhitespace(*reinterpret_cast<const char*>(it))) {
+      it++;
+      break;
+    }
+  }
+  if (it == data + size) {
+    // Not much point in going on with an empty CSP string.
+    return EXIT_SUCCESS;
+  }
+
+  std::string raw_url(reinterpret_cast<const char*>(data), it - 1 - data);
+  std::string raw_csp(reinterpret_cast<const char*>(it), size - (it - data));
+
+  // Generate a pseudo-random |header_type|.
+  network::mojom::ContentSecurityPolicyType header_type =
+      data[0] & 0x01 ? network::mojom::ContentSecurityPolicyType::kEnforce
+                     : network::mojom::ContentSecurityPolicyType::kReport;
+
+  // Parse the Content Security Policy string.
+  std::vector<network::mojom::ContentSecurityPolicyPtr> csp;
+  network::AddContentSecurityPolicyFromHeaders(raw_csp, header_type,
+                                               GURL(raw_url), &csp);
+
+  if (csp.size() > 0) {
+    network::mojom::ContentSecurityPolicyPtr converted_csp =
+        BuildContentSecurityPolicy(ToWebContentSecurityPolicy(csp[0]->Clone()));
+    CHECK(converted_csp->Equals(*csp[0]));
+  }
+
+  return EXIT_SUCCESS;
+}
+
+}  // namespace content
+
+extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  return content::LLVMFuzzerTestOneInput(data, size);
+}

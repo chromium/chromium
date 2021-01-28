@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
+#include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -159,76 +160,6 @@ void ResetWheelAndTouchEventHandlerProperties(LocalFrame& frame) {
   chrome_client.SetEventListenerProperties(
       &frame, cc::EventListenerClass::kTouchEndOrCancel,
       cc::EventListenerProperties::kNone);
-}
-
-// TODO(arthursonzogni): Remove this when BeginNavigation will be sent directly
-// from blink.
-WebContentSecurityPolicySourceExpression ConvertToPublic(
-    network::mojom::blink::CSPSourcePtr source) {
-  return {source->scheme,
-          source->host,
-          source->is_host_wildcard ? kWebWildcardDispositionHasWildcard
-                                   : kWebWildcardDispositionNoWildcard,
-          source->port,
-          source->is_port_wildcard ? kWebWildcardDispositionHasWildcard
-                                   : kWebWildcardDispositionNoWildcard,
-          source->path};
-}
-
-// TODO(arthursonzogni): Remove this when BeginNavigation will be sent directly
-// from blink.
-WebContentSecurityPolicySourceList ConvertToPublic(
-    network::mojom::blink::CSPSourceListPtr source_list) {
-  WebVector<WebContentSecurityPolicySourceExpression> sources(
-      source_list->sources.size());
-  for (size_t i = 0; i < sources.size(); ++i)
-    sources[i] = ConvertToPublic(std::move(source_list->sources[i]));
-  return {source_list->allow_self, source_list->allow_star,
-          source_list->allow_response_redirects, std::move(sources)};
-}
-
-// TODO(arthursonzogni): Remove this when BeginNavigation will be sent directly
-// from blink.
-base::Optional<WebCSPTrustedTypes> ConvertToPublic(
-    network::mojom::blink::CSPTrustedTypesPtr trusted_types) {
-  if (!trusted_types)
-    return base::nullopt;
-  return WebCSPTrustedTypes{std::move(trusted_types->list),
-                            trusted_types->allow_any,
-                            trusted_types->allow_duplicates};
-}
-
-// TODO(arthursonzogni): Remove this when BeginNavigation will be sent directly
-// from blink.
-WebContentSecurityPolicy ConvertToPublic(
-    network::mojom::blink::ContentSecurityPolicyPtr policy) {
-  WebVector<WebContentSecurityPolicyDirective> directives(
-      policy->directives.size());
-  size_t i = 0;
-  for (auto& directive : policy->directives) {
-    directives[i++] = {directive.key,
-                       ConvertToPublic(std::move(directive.value))};
-  }
-
-  WebVector<WebContentSecurityPolicyRawDirective> raw_directives(
-      policy->raw_directives.size());
-  i = 0;
-  for (auto& directive : policy->raw_directives) {
-    raw_directives[i++] = {directive.key, std::move(directive.value)};
-  }
-
-  return {policy->header->type,
-          policy->header->source,
-          ConvertToPublic(std::move(policy->self_origin)),
-          std::move(raw_directives),
-          std::move(directives),
-          policy->upgrade_insecure_requests,
-          policy->block_all_mixed_content,
-          std::move(policy->report_endpoints),
-          policy->header->header_value,
-          policy->use_reporting_api,
-          policy->require_trusted_types_for,
-          ConvertToPublic(std::move(policy->trusted_types))};
 }
 
 }  // namespace
