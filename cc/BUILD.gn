@@ -192,6 +192,7 @@ cc_component("cc") {
     "metrics/latency_ukm_reporter.h",
     "metrics/lcd_text_metrics_reporter.cc",
     "metrics/lcd_text_metrics_reporter.h",
+    "metrics/shared_metrics_buffer.h",
     "metrics/throughput_ukm_reporter.cc",
     "metrics/throughput_ukm_reporter.h",
     "metrics/total_frame_counter.cc",

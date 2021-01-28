@@ -12,10 +12,10 @@
 #include "base/containers/ring_buffer.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_sorter.h"
+#include "cc/metrics/ukm_smoothness_data.h"
 
 namespace cc {
 class TotalFrameCounter;
-struct UkmSmoothnessDataShared;
 
 // This class maintains a counter for produced/dropped frames, and can be used
 // to estimate the recent throughput.

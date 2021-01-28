@@ -1026,27 +1026,19 @@ void UkmPageLoadMetricsObserver::RecordSmoothnessMetrics() {
   }
 
   base::ElapsedTimer timer;
-  const uint32_t kMaxRetries = 5;
-  uint32_t retries = 0;
   cc::UkmSmoothnessData smoothness_data;
-  base::subtle::Atomic32 version;
-  do {
-    const uint32_t kMaxReadAttempts = 32;
-    version = smoothness->seq_lock.ReadBegin(kMaxReadAttempts);
-    device::OneWriterSeqLock::AtomicReaderMemcpy(
-        &smoothness_data, &smoothness->data, sizeof(cc::UkmSmoothnessData));
-  } while (smoothness->seq_lock.ReadRetry(version) && ++retries < kMaxRetries);
+  bool success = smoothness->Read(smoothness_data);
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Graphics.Smoothness.Diagnostic.ReadSharedMemoryDuration",
       timer.Elapsed(), base::TimeDelta::FromMicroseconds(1),
       base::TimeDelta::FromMilliseconds(5), 100);
   UMA_HISTOGRAM_BOOLEAN(
-      "Graphics.Smoothness.Diagnostic.ReadSharedMemoryUKMSuccess",
-      retries < kMaxRetries);
+      "Graphics.Smoothness.Diagnostic.ReadSharedMemoryUKMSuccess", success);
 
-  if (retries >= kMaxRetries)
+  if (!success)
     return;
+
   ukm::builders::Graphics_Smoothness_NormalizedPercentDroppedFrames(
       GetDelegate().GetPageUkmSourceId())
       .SetAverage(smoothness_data.avg_smoothness)

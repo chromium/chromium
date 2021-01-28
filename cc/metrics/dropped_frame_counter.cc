@@ -163,12 +163,7 @@ void DroppedFrameCounter::ReportFrames() {
         static_cast<double>(total_smoothness_dropped_) * 100 / total_frames;
     smoothness_data.worst_smoothness = sliding_window_max_percent_dropped_;
     smoothness_data.percentile_95 = sliding_window_95pct_percent_dropped;
-
-    ukm_smoothness_data_->seq_lock.WriteBegin();
-    device::OneWriterSeqLock::AtomicWriterMemcpy(&ukm_smoothness_data_->data,
-                                                 &smoothness_data,
-                                                 sizeof(UkmSmoothnessData));
-    ukm_smoothness_data_->seq_lock.WriteEnd();
+    ukm_smoothness_data_->Write(smoothness_data);
   }
 }
 
