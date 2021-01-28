@@ -185,6 +185,8 @@ class TtsPlatformImplWin : public TtsPlatformImpl {
                      base::OnceCallback<void(bool)> on_speak_finished,
                      const std::string& parsed_utterance);
 
+  void FinishCurrentUtterance();
+
   // These variables hold the platform state.
   bool paused_ = false;
   bool is_speaking_ = false;
@@ -292,6 +294,16 @@ void TtsPlatformImplBackgroundWorker::ProcessSpeech(
   bool success = (result == S_OK);
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(on_speak_finished), success));
+}
+
+void TtsPlatformImplWin::FinishCurrentUtterance() {
+  if (paused_)
+    Resume();
+
+  DCHECK(is_speaking_);
+  DCHECK_NE(utterance_id_, kInvalidUtteranceId);
+  is_speaking_ = false;
+  utterance_id_ = kInvalidUtteranceId;
 }
 
 void TtsPlatformImplBackgroundWorker::StopSpeaking(bool paused) {
@@ -542,7 +554,7 @@ void TtsPlatformImplWin::Resume() {
   DCHECK(BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   DCHECK(platform_initialized_);
 
-  if (!paused_ || !is_speaking_)
+  if (!paused_)
     return;
 
   worker_.Post(FROM_HERE, &TtsPlatformImplBackgroundWorker::Resume);
@@ -586,10 +598,8 @@ void TtsPlatformImplWin::OnSpeakScheduled(
 
   // If the utterance was not able to be emitted, stop the speaking. There
   // won't be any asynchronous TTS event to confirm the end of the speech.
-  if (!success) {
-    is_speaking_ = false;
-    utterance_id_ = kInvalidUtteranceId;
-  }
+  if (!success)
+    FinishCurrentUtterance();
 
   // Pass the results to our caller.
   std::move(on_speak_finished).Run(success);
@@ -600,10 +610,7 @@ void TtsPlatformImplWin::OnSpeakFinished(int utterance_id) {
   if (utterance_id != utterance_id_)
     return;
 
-  DCHECK(is_speaking_);
-  DCHECK_NE(utterance_id_, kInvalidUtteranceId);
-  is_speaking_ = false;
-  utterance_id_ = kInvalidUtteranceId;
+  FinishCurrentUtterance();
 }
 
 void TtsPlatformImplWin::ProcessSpeech(
