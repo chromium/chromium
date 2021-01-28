@@ -62,7 +62,7 @@ CaptureModeBarView::CaptureModeBarView()
       close_button_(AddChildView(std::make_unique<CaptureModeButton>(
           base::BindRepeating(&CaptureModeBarView::OnCloseButtonPressed,
                               base::Unretained(this)),
-          kCloseButtonIcon))) {
+          kCaptureModeCloseIcon))) {
   SetPaintToLayer();
   auto* color_provider = AshColorProvider::Get();
   SkColor background_color = color_provider->GetBaseLayerColor(
