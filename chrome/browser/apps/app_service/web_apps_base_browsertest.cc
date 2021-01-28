@@ -46,12 +46,12 @@ void CheckUrlScopeFilter(const apps::mojom::IntentFilterPtr& intent_filter,
   EXPECT_FALSE(intent_filter->activity_name.has_value());
   EXPECT_FALSE(intent_filter->activity_label.has_value());
 
-  EXPECT_EQ(intent_filter->conditions.size(), 4U);
+  ASSERT_EQ(intent_filter->conditions.size(), 4U);
 
   {
     const Condition& condition = *intent_filter->conditions[0];
     EXPECT_EQ(condition.condition_type, ConditionType::kAction);
-    EXPECT_EQ(condition.condition_values.size(), 1U);
+    ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
               PatternMatchType::kNone);
     EXPECT_EQ(condition.condition_values[0]->value, "view");
@@ -60,7 +60,7 @@ void CheckUrlScopeFilter(const apps::mojom::IntentFilterPtr& intent_filter,
   {
     const Condition& condition = *intent_filter->conditions[1];
     EXPECT_EQ(condition.condition_type, ConditionType::kScheme);
-    EXPECT_EQ(condition.condition_values.size(), 1U);
+    ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
               PatternMatchType::kNone);
     EXPECT_EQ(condition.condition_values[0]->value, url.scheme());
@@ -69,7 +69,7 @@ void CheckUrlScopeFilter(const apps::mojom::IntentFilterPtr& intent_filter,
   {
     const Condition& condition = *intent_filter->conditions[2];
     EXPECT_EQ(condition.condition_type, ConditionType::kHost);
-    EXPECT_EQ(condition.condition_values.size(), 1U);
+    ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
               PatternMatchType::kNone);
     EXPECT_EQ(condition.condition_values[0]->value, url.host());
@@ -78,7 +78,7 @@ void CheckUrlScopeFilter(const apps::mojom::IntentFilterPtr& intent_filter,
   {
     const Condition& condition = *intent_filter->conditions[3];
     EXPECT_EQ(condition.condition_type, ConditionType::kPattern);
-    EXPECT_EQ(condition.condition_values.size(), 1U);
+    ASSERT_EQ(condition.condition_values.size(), 1U);
     EXPECT_EQ(condition.condition_values[0]->match_type,
               PatternMatchType::kPrefix);
     EXPECT_EQ(condition.condition_values[0]->value, url.path());
@@ -91,6 +91,40 @@ void CheckUrlScopeFilter(const apps::mojom::IntentFilterPtr& intent_filter,
       apps_util::CreateIntentFromUrl(different_url), intent_filter));
 }
 
+void CheckShareTextFilter(const apps::mojom::IntentFilterPtr& intent_filter) {
+  EXPECT_FALSE(intent_filter->activity_name.has_value());
+  EXPECT_FALSE(intent_filter->activity_label.has_value());
+
+  ASSERT_EQ(intent_filter->conditions.size(), 2U);
+
+  {
+    const Condition& condition = *intent_filter->conditions[0];
+    EXPECT_EQ(condition.condition_type, ConditionType::kAction);
+    ASSERT_EQ(condition.condition_values.size(), 1U);
+
+    EXPECT_EQ(condition.condition_values[0]->match_type,
+              PatternMatchType::kNone);
+    EXPECT_EQ(condition.condition_values[0]->value, "send");
+  }
+
+  const Condition& condition = *intent_filter->conditions[1];
+  EXPECT_EQ(condition.condition_type, ConditionType::kMimeType);
+  ASSERT_EQ(condition.condition_values.size(), 1U);
+
+  EXPECT_EQ(condition.condition_values[0]->match_type,
+            PatternMatchType::kMimeType);
+  EXPECT_EQ(condition.condition_values[0]->value, "text/plain");
+
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(
+      apps_util::CreateShareIntentFromText("text", "title"), intent_filter));
+
+  std::vector<GURL> filesystem_urls(1U);
+  std::vector<std::string> mime_types(1U, "audio/mp3");
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(
+      apps_util::CreateShareIntentFromFiles(filesystem_urls, mime_types),
+      intent_filter));
+}
+
 void CheckShareFileFilter(const apps::mojom::IntentFilterPtr& intent_filter,
                           const std::vector<std::string>& filter_types,
                           const std::vector<std::string>& accepted_types,
@@ -98,12 +132,12 @@ void CheckShareFileFilter(const apps::mojom::IntentFilterPtr& intent_filter,
   EXPECT_FALSE(intent_filter->activity_name.has_value());
   EXPECT_FALSE(intent_filter->activity_label.has_value());
 
-  EXPECT_EQ(intent_filter->conditions.size(), filter_types.empty() ? 1U : 2U);
+  ASSERT_EQ(intent_filter->conditions.size(), filter_types.empty() ? 1U : 2U);
 
   {
     const Condition& condition = *intent_filter->conditions[0];
     EXPECT_EQ(condition.condition_type, ConditionType::kAction);
-    EXPECT_EQ(condition.condition_values.size(), 2U);
+    ASSERT_EQ(condition.condition_values.size(), 2U);
 
     EXPECT_EQ(condition.condition_values[0]->match_type,
               PatternMatchType::kNone);
@@ -117,7 +151,7 @@ void CheckShareFileFilter(const apps::mojom::IntentFilterPtr& intent_filter,
   if (!filter_types.empty()) {
     const Condition& condition = *intent_filter->conditions[1];
     EXPECT_EQ(condition.condition_type, ConditionType::kMimeType);
-    EXPECT_EQ(condition.condition_values.size(), filter_types.size());
+    ASSERT_EQ(condition.condition_values.size(), filter_types.size());
 
     for (unsigned i = 0; i < filter_types.size(); ++i) {
       EXPECT_EQ(condition.condition_values[i]->match_type,
@@ -184,17 +218,19 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, PopulateIntentFilters) {
     PopulateIntentFilters(*web_app, target);
   }
 
-  EXPECT_EQ(target.size(), 2U);
+  ASSERT_EQ(target.size(), 3U);
 
   CheckUrlScopeFilter(target[0], app_url.GetWithoutFilename(),
                       /*different_url=*/GURL("file:///"));
+
+  CheckShareTextFilter(target[1]);
 
   const std::vector<std::string> filter_types(
       {"text/*", "image/svg+xml", "*/*"});
   const std::vector<std::string> accepted_types(
       {"text/plain", "image/svg+xml", "video/webm"});
   const std::vector<std::string> rejected_types;  // No types are rejected.
-  CheckShareFileFilter(target[1], filter_types, accepted_types, rejected_types);
+  CheckShareFileFilter(target[2], filter_types, accepted_types, rejected_types);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, PartialWild) {
@@ -215,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, PartialWild) {
     PopulateIntentFilters(*web_app, target);
   }
 
-  EXPECT_EQ(target.size(), 2U);
+  ASSERT_EQ(target.size(), 2U);
 
   CheckUrlScopeFilter(target[0], app_url.GetWithoutFilename(),
                       /*different_url=*/GURL("file:///"));
@@ -245,15 +281,12 @@ IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, ShareTargetWithoutFiles) {
     PopulateIntentFilters(*web_app, target);
   }
 
-  EXPECT_EQ(target.size(), 2U);
+  ASSERT_EQ(target.size(), 2U);
 
   CheckUrlScopeFilter(target[0], app_url.GetWithoutFilename(),
                       /*different_url=*/GURL("file:///"));
 
-  const std::vector<std::string> filter_types;  // No types are filtered.
-  const std::vector<std::string> accepted_types({"audio/mp3"});
-  const std::vector<std::string> rejected_types;  // No types are rejected.
-  CheckShareFileFilter(target[1], filter_types, accepted_types, rejected_types);
+  CheckShareTextFilter(target[1]);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppsBaseBrowserTest, LaunchWithIntent) {

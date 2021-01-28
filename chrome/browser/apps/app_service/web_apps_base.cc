@@ -37,6 +37,8 @@
 
 namespace {
 
+constexpr char kTextPlain[] = "text/plain";
+
 // Only supporting important permissions for now.
 const ContentSettingsType kSupportedPermissionTypes[] = {
     ContentSettingsType::MEDIASTREAM_MIC,
@@ -64,6 +66,7 @@ apps::mojom::InstallSource GetHighestPriorityInstallSource(
 apps::mojom::IntentFilterPtr CreateShareFileFilter(
     const std::vector<std::string>& intent_actions,
     const std::vector<std::string>& content_types) {
+  DCHECK(!content_types.empty());
   auto intent_filter = apps::mojom::IntentFilter::New();
 
   std::vector<apps::mojom::ConditionValuePtr> action_condition_values;
@@ -578,6 +581,12 @@ void PopulateIntentFilters(const web_app::WebApp& web_app,
 
   const apps::ShareTarget& share_target = web_app.share_target().value();
 
+  if (!share_target.params.text.empty()) {
+    // The share target accepts navigator.share() calls with text.
+    target.push_back(
+        CreateShareFileFilter({apps_util::kIntentActionSend}, {kTextPlain}));
+  }
+
   std::vector<std::string> content_types;
   for (const auto& files_entry : share_target.params.files) {
     for (const auto& file_type : files_entry.accept) {
@@ -591,9 +600,11 @@ void PopulateIntentFilters(const web_app::WebApp& web_app,
     }
   }
 
-  const std::vector<std::string> intent_actions(
-      {apps_util::kIntentActionSend, apps_util::kIntentActionSendMultiple});
-  target.push_back(CreateShareFileFilter(intent_actions, content_types));
+  if (!content_types.empty()) {
+    const std::vector<std::string> intent_actions(
+        {apps_util::kIntentActionSend, apps_util::kIntentActionSendMultiple});
+    target.push_back(CreateShareFileFilter(intent_actions, content_types));
+  }
 }
 
 }  // namespace apps

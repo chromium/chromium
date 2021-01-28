@@ -234,11 +234,12 @@ void SharesheetClient::ShowSharesheet(
   sharesheet::SharesheetService* const sharesheet_service =
       sharesheet::SharesheetServiceFactory::GetForProfile(profile);
 
-  sharesheet_service->ShowBubble(
-      web_contents,
-      apps_util::CreateShareIntentFromFiles(profile, file_paths, content_types,
-                                            text, title),
-      std::move(close_callback));
+  apps::mojom::IntentPtr intent =
+      file_paths.empty() ? apps_util::CreateShareIntentFromText(text, title)
+                         : apps_util::CreateShareIntentFromFiles(
+                               profile, file_paths, content_types, text, title);
+  sharesheet_service->ShowBubble(web_contents, std::move(intent),
+                                 std::move(close_callback));
 }
 
 SharesheetClient::SharesheetCallback&

@@ -413,6 +413,25 @@ TEST_F(IntentUtilTest, FileWithTitleText) {
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter));
 }
 
+TEST_F(IntentUtilTest, TextMatch) {
+  std::string mime_type1 = "text/plain";
+  std::string mime_type2 = "image/jpeg";
+  auto filter1 = apps_util::CreateIntentFilterForSend(mime_type1);
+  auto filter2 = apps_util::CreateIntentFilterForSend(mime_type2);
+
+  auto intent = apps_util::CreateShareIntentFromText("text", "");
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
+
+  intent = apps_util::CreateShareIntentFromText("", "title");
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
+
+  intent = apps_util::CreateShareIntentFromText("text", "title");
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, filter1));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, filter2));
+}
+
 TEST_F(IntentUtilTest, Convert) {
   const std::string action = apps_util::kIntentActionSend;
   GURL test_url1 = GURL("https://www.google.com/");
