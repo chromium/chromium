@@ -141,6 +141,41 @@ bool IsManifestSupported(int manifest_version,
   return true;
 }
 
+// Computes the |extension_id| from the given parameters. On success, returns
+// true. On failure, populates |error| and returns false.
+bool ComputeExtensionID(const base::DictionaryValue& manifest,
+                        const base::FilePath& path,
+                        int creation_flags,
+                        base::string16* error,
+                        ExtensionId* extension_id) {
+  if (manifest.HasKey(keys::kPublicKey)) {
+    std::string public_key;
+    std::string public_key_bytes;
+    if (!manifest.GetString(keys::kPublicKey, &public_key) ||
+        !Extension::ParsePEMKeyBytes(public_key, &public_key_bytes)) {
+      *error = base::ASCIIToUTF16(errors::kInvalidKey);
+      return false;
+    }
+    *extension_id = crx_file::id_util::GenerateId(public_key_bytes);
+    return true;
+  }
+
+  if (creation_flags & Extension::REQUIRE_KEY) {
+    *error = base::ASCIIToUTF16(errors::kInvalidKey);
+    return false;
+  }
+
+  // If there is a path, we generate the ID from it. This is useful for
+  // development mode, because it keeps the ID stable across restarts and
+  // reloading the extension.
+  *extension_id = crx_file::id_util::GenerateIdForPath(path);
+  if (extension_id->empty()) {
+    NOTREACHED() << "Could not create ID from path.";
+    return false;
+  }
+  return true;
+}
+
 }  // namespace
 
 const int Extension::kInitFromValueFlagBits = 15;
@@ -189,17 +224,21 @@ scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
   DCHECK(utf8_error);
   base::string16 error;
 
-  std::unique_ptr<extensions::Manifest> manifest;
-  if (flags & FOR_LOGIN_SCREEN) {
-    manifest = Manifest::CreateManifestForLoginScreen(location,
-                                                      value.CreateDeepCopy());
-  } else {
-    manifest = std::make_unique<Manifest>(location, value.CreateDeepCopy());
-  }
-
-  if (!InitExtensionID(manifest.get(), path, explicit_id, flags, &error)) {
+  ExtensionId extension_id;
+  if (!explicit_id.empty()) {
+    extension_id = explicit_id;
+  } else if (!ComputeExtensionID(value, path, flags, &error, &extension_id)) {
     *utf8_error = base::UTF16ToUTF8(error);
     return nullptr;
+  }
+
+  std::unique_ptr<extensions::Manifest> manifest;
+  if (flags & FOR_LOGIN_SCREEN) {
+    manifest = Manifest::CreateManifestForLoginScreen(
+        location, value.CreateDeepCopy(), std::move(extension_id));
+  } else {
+    manifest = std::make_unique<Manifest>(location, value.CreateDeepCopy(),
+                                          std::move(extension_id));
   }
 
   std::vector<InstallWarning> install_warnings;
@@ -494,47 +533,6 @@ void Extension::AddWebExtentPattern(const URLPattern& pattern) {
     return;
 
   extent_.AddPattern(pattern);
-}
-
-// static
-bool Extension::InitExtensionID(extensions::Manifest* manifest,
-                                const base::FilePath& path,
-                                const std::string& explicit_id,
-                                int creation_flags,
-                                base::string16* error) {
-  if (!explicit_id.empty()) {
-    manifest->SetExtensionId(explicit_id);
-    return true;
-  }
-
-  if (manifest->HasKey(keys::kPublicKey)) {
-    std::string public_key;
-    std::string public_key_bytes;
-    if (!manifest->GetString(keys::kPublicKey, &public_key) ||
-        !ParsePEMKeyBytes(public_key, &public_key_bytes)) {
-      *error = base::ASCIIToUTF16(errors::kInvalidKey);
-      return false;
-    }
-    std::string extension_id = crx_file::id_util::GenerateId(public_key_bytes);
-    manifest->SetExtensionId(extension_id);
-    return true;
-  }
-
-  if (creation_flags & REQUIRE_KEY) {
-    *error = base::ASCIIToUTF16(errors::kInvalidKey);
-    return false;
-  } else {
-    // If there is a path, we generate the ID from it. This is useful for
-    // development mode, because it keeps the ID stable across restarts and
-    // reloading the extension.
-    std::string extension_id = crx_file::id_util::GenerateIdForPath(path);
-    if (extension_id.empty()) {
-      NOTREACHED() << "Could not create ID from path.";
-      return false;
-    }
-    manifest->SetExtensionId(extension_id);
-    return true;
-  }
 }
 
 Extension::Extension(const base::FilePath& path,

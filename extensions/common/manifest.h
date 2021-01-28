@@ -146,12 +146,13 @@ class Manifest {
   // (like platform apps) may be installed in the same login screen profile.
   static std::unique_ptr<Manifest> CreateManifestForLoginScreen(
       Location location,
-      std::unique_ptr<base::DictionaryValue> value);
+      std::unique_ptr<base::DictionaryValue> value,
+      ExtensionId extension_id);
 
-  Manifest(Location location, std::unique_ptr<base::DictionaryValue> value);
+  Manifest(Location location,
+           std::unique_ptr<base::DictionaryValue> value,
+           ExtensionId extension_id);
   virtual ~Manifest();
-
-  void SetExtensionId(const ExtensionId& id);
 
   const ExtensionId& extension_id() const { return extension_id_; }
   const HashedExtensionId& hashed_id() const { return hashed_id_; }
@@ -226,6 +227,7 @@ class Manifest {
  private:
   Manifest(Location location,
            std::unique_ptr<base::DictionaryValue> value,
+           ExtensionId extension_id,
            bool for_login_screen);
   // Returns true if the extension can specify the given |path|.
   bool CanAccessPath(const std::string& path) const;
@@ -236,19 +238,19 @@ class Manifest {
   // like directory structures and URLs, and is expected to not change across
   // versions. It is generated as a SHA-256 hash of the extension's public
   // key, or as a hash of the path in the case of unpacked extensions.
-  std::string extension_id_;
+  const std::string extension_id_;
 
   // The hex-encoding of the SHA1 of the extension id; used to determine feature
   // availability.
-  HashedExtensionId hashed_id_;
+  const HashedExtensionId hashed_id_;
 
   // The location the extension was loaded from.
-  Location location_;
+  const Location location_;
 
   // The underlying dictionary representation of the manifest.
-  std::unique_ptr<base::DictionaryValue> value_;
+  const std::unique_ptr<const base::DictionaryValue> value_;
 
-  Type type_;
+  const Type type_;
 
   DISALLOW_COPY_AND_ASSIGN(Manifest);
 };

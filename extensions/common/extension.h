@@ -346,14 +346,6 @@ class Extension : public base::RefCountedThreadSafe<Extension> {
  private:
   friend class base::RefCountedThreadSafe<Extension>;
 
-  // Chooses the extension ID for an extension based on a variety of criteria.
-  // The chosen ID will be set in |manifest|.
-  static bool InitExtensionID(extensions::Manifest* manifest,
-                              const base::FilePath& path,
-                              const ExtensionId& explicit_id,
-                              int creation_flags,
-                              base::string16* error);
-
   Extension(const base::FilePath& path,
             std::unique_ptr<extensions::Manifest> manifest);
   virtual ~Extension();

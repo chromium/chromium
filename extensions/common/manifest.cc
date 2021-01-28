@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -13,7 +14,6 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/crx_file/id_util.h"
 #include "extensions/common/api/shared_module.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/features/feature.h"
@@ -161,30 +161,32 @@ bool Manifest::ShouldAlwaysLoadExtension(Manifest::Location location,
 // static
 std::unique_ptr<Manifest> Manifest::CreateManifestForLoginScreen(
     Location location,
-    std::unique_ptr<base::DictionaryValue> value) {
+    std::unique_ptr<base::DictionaryValue> value,
+    ExtensionId extension_id) {
   CHECK(IsPolicyLocation(location));
   // Use base::WrapUnique + new because the constructor is private.
-  return base::WrapUnique(new Manifest(location, std::move(value), true));
+  return base::WrapUnique(
+      new Manifest(location, std::move(value), std::move(extension_id), true));
 }
-
-Manifest::Manifest(Location location,
-                   std::unique_ptr<base::DictionaryValue> value)
-    : Manifest(location, std::move(value), false) {}
 
 Manifest::Manifest(Location location,
                    std::unique_ptr<base::DictionaryValue> value,
+                   ExtensionId extension_id)
+    : Manifest(location, std::move(value), std::move(extension_id), false) {}
+
+Manifest::Manifest(Location location,
+                   std::unique_ptr<base::DictionaryValue> value,
+                   ExtensionId extension_id,
                    bool for_login_screen)
-    : location_(location),
+    : extension_id_(std::move(extension_id)),
+      hashed_id_(HashedExtensionId(extension_id_)),
+      location_(location),
       value_(std::move(value)),
-      type_(GetTypeFromManifestValue(*value_, for_login_screen)) {}
-
-Manifest::~Manifest() {
+      type_(GetTypeFromManifestValue(*value_, for_login_screen)) {
+  DCHECK(!extension_id_.empty());
 }
 
-void Manifest::SetExtensionId(const ExtensionId& id) {
-  extension_id_ = id;
-  hashed_id_ = HashedExtensionId(id);
-}
+Manifest::~Manifest() = default;
 
 bool Manifest::ValidateManifest(
     std::string* error,
@@ -235,7 +237,7 @@ bool Manifest::HasKey(const std::string& key) const {
 }
 
 bool Manifest::HasPath(const std::string& path) const {
-  base::Value* ignored = NULL;
+  const base::Value* ignored = nullptr;
   return CanAccessPath(path) && value_->Get(path, &ignored);
 }
 

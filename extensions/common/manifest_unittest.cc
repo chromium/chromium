@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "components/crx_file/id_util.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/value_builder.h"
@@ -22,7 +23,8 @@ TEST(ManifestTest, ValidateWarnsOnDiffFingerprintKeyUnpacked) {
   Manifest(Manifest::UNPACKED,
            DictionaryBuilder()
                .Set(manifest_keys::kDifferentialFingerprint, "")
-               .Build())
+               .Build(),
+           crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
   EXPECT_EQ(1uL, warnings.size());
@@ -35,7 +37,8 @@ TEST(ManifestTest, ValidateWarnsOnDiffFingerprintKeyCommandLine) {
   Manifest(Manifest::COMMAND_LINE,
            DictionaryBuilder()
                .Set(manifest_keys::kDifferentialFingerprint, "")
-               .Build())
+               .Build(),
+           crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
   EXPECT_EQ(1uL, warnings.size());
@@ -48,7 +51,8 @@ TEST(ManifestTest, ValidateSilentOnDiffFingerprintKeyInternal) {
   Manifest(Manifest::INTERNAL,
            DictionaryBuilder()
                .Set(manifest_keys::kDifferentialFingerprint, "")
-               .Build())
+               .Build(),
+           crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
   EXPECT_EQ(0uL, warnings.size());
@@ -57,7 +61,8 @@ TEST(ManifestTest, ValidateSilentOnDiffFingerprintKeyInternal) {
 TEST(ManifestTest, ValidateSilentOnNoDiffFingerprintKeyUnpacked) {
   std::string error;
   std::vector<InstallWarning> warnings;
-  Manifest(Manifest::UNPACKED, DictionaryBuilder().Build())
+  Manifest(Manifest::UNPACKED, DictionaryBuilder().Build(),
+           crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
   EXPECT_EQ(0uL, warnings.size());
@@ -66,7 +71,8 @@ TEST(ManifestTest, ValidateSilentOnNoDiffFingerprintKeyUnpacked) {
 TEST(ManifestTest, ValidateSilentOnNoDiffFingerprintKeyInternal) {
   std::string error;
   std::vector<InstallWarning> warnings;
-  Manifest(Manifest::INTERNAL, DictionaryBuilder().Build())
+  Manifest(Manifest::INTERNAL, DictionaryBuilder().Build(),
+           crx_file::id_util::GenerateId("extid"))
       .ValidateManifest(&error, &warnings);
   EXPECT_EQ("", error);
   EXPECT_EQ(0uL, warnings.size());
