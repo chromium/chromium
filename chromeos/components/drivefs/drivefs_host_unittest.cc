@@ -701,15 +701,15 @@ TEST_F(DriveFsHostTest, RemoveDriveNotificationObserver) {
 
   delegate_->OnTeamDrivesListReady({"a", "b"});
   delegate_.FlushForTesting();
-  EXPECT_TRUE(host_delegate_->GetDriveNotificationManager()
-                  .observers_for_test()
-                  .might_have_observers());
+  EXPECT_TRUE(!host_delegate_->GetDriveNotificationManager()
+                   .observers_for_test()
+                   .empty());
 
   host_.reset();
 
-  EXPECT_FALSE(host_delegate_->GetDriveNotificationManager()
-                   .observers_for_test()
-                   .might_have_observers());
+  EXPECT_FALSE(!host_delegate_->GetDriveNotificationManager()
+                    .observers_for_test()
+                    .empty());
 }
 
 TEST_F(DriveFsHostTest, Remount_CachedOnceOnly) {
