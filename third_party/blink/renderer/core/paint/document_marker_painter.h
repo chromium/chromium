@@ -15,6 +15,7 @@ class Document;
 class FloatRect;
 class GraphicsContext;
 class LayoutUnit;
+class Node;
 class StyleableMarker;
 class TextMarkerBase;
 struct PaintInfo;

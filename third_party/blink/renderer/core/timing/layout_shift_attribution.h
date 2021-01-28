@@ -11,6 +11,7 @@
 namespace blink {
 
 class DOMRectReadOnly;
+class Node;
 class ScriptState;
 class ScriptValue;
 

@@ -61,6 +61,7 @@ class Document;
 class LayoutBox;
 class LayoutObject;
 class LocalFrame;
+class Node;
 class PaintLayer;
 class ProgrammaticScrollAnimator;
 class ScrollAnchor;

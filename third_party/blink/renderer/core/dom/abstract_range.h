@@ -10,6 +10,8 @@
 
 namespace blink {
 
+class Node;
+
 class CORE_EXPORT AbstractRange : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 

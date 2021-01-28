@@ -36,6 +36,7 @@ namespace blink {
 
 class ContainerNode;
 class HTMLElement;
+class Node;
 class Text;
 
 class CORE_EXPORT TextIteratorTextState {

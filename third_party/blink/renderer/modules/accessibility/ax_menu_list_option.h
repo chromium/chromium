@@ -40,9 +40,9 @@ class AXMenuListOption final : public AXNodeObject {
   ~AXMenuListOption() override;
   bool IsDetached() const override { return !element_; }
 
- private:
   void Trace(Visitor*) const override;
 
+ private:
   bool IsMenuListOption() const override { return true; }
 
   Node* GetNode() const override { return element_; }

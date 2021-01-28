@@ -51,6 +51,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
 
  public:
   ShadowRoot(Document&, ShadowRootType);
+  ~ShadowRoot() override;
   ShadowRoot(const ShadowRoot&) = delete;
   ShadowRoot& operator=(const ShadowRoot&) = delete;
 
@@ -164,8 +165,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment, public TreeScope {
   void Trace(Visitor*) const override;
 
  private:
-  ~ShadowRoot() override;
-
   void ChildrenChanged(const ChildrenChange&) override;
 
   SlotAssignment& EnsureSlotAssignment();

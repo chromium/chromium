@@ -44,6 +44,7 @@ namespace blink {
 class Document;
 class LayoutSVGRoot;
 class LocalFrame;
+class Node;
 class Page;
 class PaintController;
 class SVGImageChromeClient;

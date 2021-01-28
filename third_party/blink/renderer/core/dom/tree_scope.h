@@ -45,6 +45,7 @@ class Element;
 class HTMLMapElement;
 class HitTestResult;
 class IdTargetObserverRegistry;
+class Node;
 class SVGTreeScopeResources;
 class ScopedStyleResolver;
 

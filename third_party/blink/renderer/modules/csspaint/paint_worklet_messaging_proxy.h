@@ -20,12 +20,11 @@ class WorkerThread;
 class PaintWorkletMessagingProxy final : public ThreadedWorkletMessagingProxy {
  public:
   explicit PaintWorkletMessagingProxy(ExecutionContext*);
+  ~PaintWorkletMessagingProxy() override;
 
   void Trace(Visitor*) const override;
 
  private:
-  ~PaintWorkletMessagingProxy() override;
-
   std::unique_ptr<WorkerThread> CreateWorkerThread() override;
 };
 

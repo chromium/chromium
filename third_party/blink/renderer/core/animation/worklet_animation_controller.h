@@ -20,6 +20,7 @@ namespace blink {
 class AnimationWorkletMutatorDispatcherImpl;
 class Document;
 class MainThreadMutatorClient;
+class Node;
 class WorkletAnimationBase;
 
 // Handles AnimationWorklet animations on the main-thread.
@@ -36,7 +37,7 @@ class CORE_EXPORT WorkletAnimationController
     : public GarbageCollected<WorkletAnimationController>,
       public MutatorClient {
  public:
-  WorkletAnimationController(Document*);
+  explicit WorkletAnimationController(Document*);
   ~WorkletAnimationController() override;
 
   void AttachAnimation(WorkletAnimationBase&);

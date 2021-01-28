@@ -25,12 +25,11 @@ class MODULES_EXPORT TextDetector final : public ShapeDetector {
   static TextDetector* Create(ExecutionContext*);
 
   explicit TextDetector(ExecutionContext*);
+  ~TextDetector() override = default;
 
   void Trace(Visitor*) const override;
 
  private:
-  ~TextDetector() override = default;
-
   ScriptPromise DoDetect(ScriptPromiseResolver*, SkBitmap) override;
   void OnDetectText(
       ScriptPromiseResolver*,

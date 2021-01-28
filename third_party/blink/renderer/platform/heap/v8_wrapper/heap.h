@@ -37,7 +37,7 @@ T* MakeGarbageCollected(AdditionalBytes additional_bytes, Args&&... args) {
       ThreadStateFor<ThreadingTrait<T>::kAffinity>::GetState()
           ->allocation_handle(),
       std::forward<AdditionalBytes>(additional_bytes),
-      std::forward<args>(args)...);
+      std::forward<Args>(args)...);
 }
 
 }  // namespace blink

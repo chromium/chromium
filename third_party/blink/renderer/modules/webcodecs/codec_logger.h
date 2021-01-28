@@ -12,6 +12,10 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}  // namespace base
+
 namespace blink {
 
 class ExecutionContext;

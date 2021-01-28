@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/impl/heap.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
 

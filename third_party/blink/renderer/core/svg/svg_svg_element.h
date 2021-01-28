@@ -47,6 +47,7 @@ class SVGSVGElement final : public SVGGraphicsElement,
 
  public:
   explicit SVGSVGElement(Document&);
+  ~SVGSVGElement() override;
 
   base::Optional<float> IntrinsicWidth() const;
   base::Optional<float> IntrinsicHeight() const;
@@ -108,8 +109,6 @@ class SVGSVGElement final : public SVGGraphicsElement,
   void Trace(Visitor*) const override;
 
  private:
-  ~SVGSVGElement() override;
-
   void SetViewSpec(const SVGViewSpec*);
 
   void ParseAttribute(const AttributeModificationParams&) override;

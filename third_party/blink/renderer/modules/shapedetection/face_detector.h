@@ -26,12 +26,11 @@ class MODULES_EXPORT FaceDetector final : public ShapeDetector {
   static FaceDetector* Create(ExecutionContext*, const FaceDetectorOptions*);
 
   FaceDetector(ExecutionContext*, const FaceDetectorOptions*);
+  ~FaceDetector() override = default;
 
   void Trace(Visitor*) const override;
 
  private:
-  ~FaceDetector() override = default;
-
   ScriptPromise DoDetect(ScriptPromiseResolver*, SkBitmap) override;
   void OnDetectFaces(
       ScriptPromiseResolver*,

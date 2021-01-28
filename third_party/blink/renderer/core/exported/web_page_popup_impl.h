@@ -54,6 +54,7 @@ class Layer;
 
 namespace blink {
 class Element;
+class Node;
 class Page;
 class PagePopupChromeClient;
 class PagePopupClient;
