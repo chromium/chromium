@@ -23294,6 +23294,7 @@ Called by update_document_policy_enum.py.-->
   <int value="818" label="DeviceAllowMGSToStoreDisplayProperties"/>
   <int value="819" label="SSLErrorOverrideAllowedForUrls"/>
   <int value="820" label="WebXRImmersiveArEnabled"/>
+  <int value="821" label="GaiaOfflineSigninTimeLimitDays"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

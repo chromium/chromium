@@ -1205,6 +1205,15 @@
       ],
     },
     {
+      'name': 'Gaia',
+      'type': 'group',
+      'caption': '''Gaia user identity management settings''',
+      'desc': '''Controls settings for users authenticated againts Gaia without SAML.''',
+      'policies': [
+        'GaiaOfflineSigninTimeLimitDays',
+      ],
+    },
+    {
       'name': 'SAML',
       'type': 'group',
       'caption': '''Saml user identity management settings''',
@@ -8976,6 +8985,31 @@
       If the user has enabled sync all this data is preserved in their sync profile just like with regular profiles. Incognito mode is also available if not explicitly disabled by policy.
 
       If the policy is set to disabled or left not set signing in leads to regular profiles.'''
+    },
+    {
+      'name': 'GaiaOfflineSigninTimeLimitDays',
+      'owners': ['rodmartin@google.com', 'chromeos-commercial-identity@google.com', 'file://components/policy/resources/OWNERS'],
+      'type': 'int',
+      'schema': { 'type': 'integer', 'minimum': -1, 'maximum': 365 },
+      'future_on': ['chrome_os'],
+      'features': {
+        'dynamic_refresh': True,
+        'per_profile': True,
+      },
+      'default': None,
+      'example_value': 32,
+      'id': 821,
+      'caption': '''Limit the time for which a user authenticated via GAIA without SAML can log in offline''',
+      'tags': [],
+      'desc': '''During login, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> can authenticate against a server (online) or using a cached password (offline).
+
+      When this policy is set to a value of -1, this policy will not enforce online authentication and will allow the user to use offline authentication until a different reason than this policy enforces an online login. If the policy is set to a value of 0, online login will always be required. When this policy is set to any other value, it specifies the length of time since the last online authentication after which the user must use online authentication again in the next sign-in.
+
+      Leaving this policy not set will make <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph> use offline login.
+
+      This policy affects only users who authenticated using GAIA without SAML.
+
+      The policy value should be specified in days.''',
     },
     {
       'name': 'SAMLOfflineSigninTimeLimit',
@@ -25346,6 +25380,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 820,
+  'highest_id_currently_used': 821,
   'highest_atomic_group_id_currently_used': 40
 }

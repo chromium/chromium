@@ -3898,6 +3898,18 @@
 
   "OpenNetworkConfiguration": {},
 
+  "GaiaOfflineSigninTimeLimitDays": {
+    "os": ["chromeos"],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "GaiaOfflineSigninTimeLimitDays": 8
+        },
+        "prefs": { "gaia.offline_signin_time_limit": {"value": 8} }
+      }
+    ]
+  },
+
   "SAMLOfflineSigninTimeLimit": {
     "os": ["chromeos"],
     "policy_pref_mapping_tests": [
