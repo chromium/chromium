@@ -622,7 +622,7 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   if (!text_input_client_)
     return E_UNEXPECTED;
 
-  // If string_pending_insertion_ is empty, then there are three cases:
+  // If string_pending_insertion_ is empty, then there are four cases:
   // 1. there is no composition We only need to do comparison between our
   //    cache and latest textinputstate and send notifications accordingly.
   // 2. A new composition is about to start on existing text. We need to start
@@ -630,16 +630,20 @@ HRESULT TSFTextStore::RequestLock(DWORD lock_flags, HRESULT* result) {
   // 3. There is composition. User cancels the composition by deleting all of
   //    the composing text, we need to reset the composition_start_ and call
   //    into blink to complete the existing composition(later in this method).
+  // 4. There is no composition. IME removes previous inserted text. We need to
+  //    ask tic to delete the text range.
   if (string_pending_insertion_.empty()) {
     if (!text_input_client_->HasCompositionText()) {
+      // Remove replacing text.
+      if (new_text_inserted_ && !replace_text_range_.is_empty() &&
+          !replace_text_size_) {
+        is_tic_write_in_progress_ = true;
+        text_input_client_->SetEditableSelectionRange(replace_text_range_);
+        text_input_client_->ExtendSelectionAndDelete(0, 0);
+        is_tic_write_in_progress_ = false;
+      }
       if (has_composition_range_ && on_start_composition_called_) {
         is_tic_write_in_progress_ = true;
-        // Remove replacing text first before starting composition.
-        if (new_text_inserted_ && !replace_text_range_.is_empty() &&
-            !replace_text_size_) {
-          text_input_client_->SetEditableSelectionRange(replace_text_range_);
-          text_input_client_->ExtendSelectionAndDelete(0, 0);
-        }
         string_pending_insertion_ = string_buffer_document_.substr(
             composition_range_.GetMin(), composition_range_.length());
         StartCompositionOnExistingText();
@@ -1300,7 +1304,7 @@ bool TSFTextStore::CancelComposition() {
     return false;
 
   TRACE_EVENT0("ime", "TSFTextStore::CancelComposition");
-  
+
   ResetCompositionState();
 
   return TerminateComposition();

@@ -3966,6 +3966,60 @@ TEST_F(TSFTextStoreTest, RegressionTest11) {
   EXPECT_EQ(S_OK, result);
 }
 
+// regression tests for crbug.com/1156612.
+// We should remove selected text even if there is no new composition and IME
+// ask us to delete a previously inserted text.
+class RegressionTest12Callback : public TSFTextStoreTestCallback {
+ public:
+  explicit RegressionTest12Callback(TSFTextStore* text_store)
+      : TSFTextStoreTestCallback(text_store) {}
+
+  HRESULT LockGranted1(DWORD flags) {
+    SetTextTest(0, 0, L"a", S_OK);
+    SetSelectionTest(1, 1, S_OK);
+    return S_OK;
+  }
+
+  HRESULT LockGranted2(DWORD flags) {
+    GetTextTest(0, -1, L"a", 1);
+    SetTextTest(0, 1, L"", S_OK);
+
+    text_spans()->clear();
+    *edit_flag() = true;
+
+    return S_OK;
+  }
+
+  HRESULT LockGranted3(DWORD flags) {
+    GetTextTest(0, -1, L"", 0);
+
+    return S_OK;
+  }
+
+ private:
+  DISALLOW_COPY_AND_ASSIGN(RegressionTest12Callback);
+};
+
+TEST_F(TSFTextStoreTest, RegressionTest12) {
+  RegressionTest12Callback callback(text_store_.get());
+
+  EXPECT_CALL(text_input_client_, ExtendSelectionAndDelete(_, _)).Times(1);
+  EXPECT_CALL(*sink_, OnLockGranted(_))
+      .WillOnce(Invoke(&callback, &RegressionTest12Callback::LockGranted1))
+      .WillOnce(Invoke(&callback, &RegressionTest12Callback::LockGranted2))
+      .WillOnce(Invoke(&callback, &RegressionTest12Callback::LockGranted3));
+
+  HRESULT result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+  result = kInvalidResult;
+  EXPECT_EQ(S_OK, text_store_->RequestLock(TS_LF_READWRITE, &result));
+  EXPECT_EQ(S_OK, result);
+}
+
 // Test multiple |SetText| call in one edit session.
 class MultipleSetTextCallback : public TSFTextStoreTestCallback {
  public:
