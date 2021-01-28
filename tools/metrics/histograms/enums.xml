@@ -13296,6 +13296,14 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="External non-200 HTTP error"/>
 </enum>
 
+<enum name="ConversionStorageSqlInitStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to open DB in memory"/>
+  <int value="2" label="Failed to open DB file"/>
+  <int value="3" label="Failed to create directory"/>
+  <int value="4" label="Failed to initialize schema"/>
+</enum>
+
 <enum name="CookieCommitProblem">
   <int value="0" label="Entry encryption failed"/>
   <int value="1" label="Adding cookie to DB failed."/>

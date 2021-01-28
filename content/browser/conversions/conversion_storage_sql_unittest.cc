@@ -321,4 +321,15 @@ TEST_F(ConversionStorageSqlTest, DatabaseDirDoesExist_CreateDirAndOpenDB) {
             storage->MaybeCreateAndStoreConversionReports(DefaultConversion()));
 }
 
+TEST_F(ConversionStorageSqlTest, DBinitializationSucceeds_HistogramRecorded) {
+  base::HistogramTester histograms;
+
+  OpenDatabase();
+  storage()->StoreImpression(ImpressionBuilder(clock()->Now()).Build());
+  CloseDatabase();
+
+  histograms.ExpectUniqueSample("Conversions.Storage.Sql.InitStatus",
+                                ConversionStorageSql::InitStatus::kSuccess, 1);
+}
+
 }  // namespace content

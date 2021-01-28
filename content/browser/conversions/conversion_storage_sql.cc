@@ -76,6 +76,11 @@ const int kCompatibleVersionNumber = 2;
 // currently deprecated.
 const int kDeprecatedVersionNumber = 0;
 
+void RecordInitializationStatus(const ConversionStorageSql::InitStatus status) {
+  base::UmaHistogramEnumeration("Conversions.Storage.Sql.InitStatus", status,
+                                ConversionStorageSql::InitStatus::kMaxValue);
+}
+
 }  // namespace
 
 // static
@@ -671,6 +676,13 @@ std::vector<StorableImpression> ConversionStorageSql::GetImpressions(
   return impressions;
 }
 
+void ConversionStorageSql::HandleInitializationFailure(
+    const InitStatus status) {
+  RecordInitializationStatus(status);
+  db_.reset();
+  db_init_status_ = DbStatus::kClosed;
+}
+
 bool ConversionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!db_init_status_) {
@@ -709,25 +721,34 @@ bool ConversionStorageSql::LazyInit(DbCreationPolicy creation_policy) {
       base::BindRepeating(&ConversionStorageSql::DatabaseErrorCallback,
                           weak_factory_.GetWeakPtr()));
 
-  const base::FilePath& dir = path_to_database_.DirName();
-  bool opened = false;
   if (path_to_database_.value() == kInMemoryPath) {
-    opened = db_->OpenInMemory();
-  } else if (base::DirectoryExists(dir) || base::CreateDirectory(dir)) {
-    opened = db_->Open(path_to_database_);
+    if (!db_->OpenInMemory()) {
+      HandleInitializationFailure(InitStatus::kFailedToOpenDbInMemory);
+      return false;
+    }
   } else {
-    DLOG(ERROR) << "Failed to create directory for Conversion database";
-    opened = false;
+    const base::FilePath& dir = path_to_database_.DirName();
+    const bool dir_exists_or_was_created =
+        base::DirectoryExists(dir) || base::CreateDirectory(dir);
+    if (dir_exists_or_was_created == false) {
+      DLOG(ERROR) << "Failed to create directory for Conversion database";
+      HandleInitializationFailure(InitStatus::kFailedToCreateDir);
+      return false;
+    }
+    if (db_->Open(path_to_database_) == false) {
+      HandleInitializationFailure(InitStatus::kFailedToOpenDbFile);
+      return false;
+    }
   }
 
-  if (!opened ||
-      !InitializeSchema(db_init_status_ == DbStatus::kDeferringCreation)) {
-    db_.reset();
-    db_init_status_ = DbStatus::kClosed;
+  if (InitializeSchema(db_init_status_ == DbStatus::kDeferringCreation) ==
+      false) {
+    HandleInitializationFailure(InitStatus::kFailedToInitializeSchema);
     return false;
   }
 
   db_init_status_ = DbStatus::kOpen;
+  RecordInitializationStatus(InitStatus::kSuccess);
   return true;
 }
 bool ConversionStorageSql::InitializeSchema(bool db_empty) {

@@ -3277,6 +3277,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Conversions.Storage.Sql.InitStatus"
+    enum="ConversionStorageSqlInitStatus" expires_after="2021-12-12">
+  <owner>johnidel@chromium.org</owner>
+  <owner>csharrison@chromium.org</owner>
+  <summary>
+    Records initialisation statuses of ConversionStorageSql. Note: currently
+    ConversionStorageSql is initialised lazily.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.TimeFromConversionToReportSend" units="hours"
     expires_after="M95">
   <owner>johnidel@chromium.org</owner>

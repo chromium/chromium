@@ -42,6 +42,17 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
     ignore_errors_for_testing_ = ignore_for_testing;
   }
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class InitStatus {
+    kSuccess = 0,
+    kFailedToOpenDbInMemory = 1,
+    kFailedToOpenDbFile = 2,
+    kFailedToCreateDir = 3,
+    kFailedToInitializeSchema = 4,
+    kMaxValue = kFailedToInitializeSchema,
+  };
+
  private:
   friend class ConversionStorageSqlMigrations;
 
@@ -103,6 +114,7 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
   bool LazyInit(DbCreationPolicy creation_policy);
   bool InitializeSchema(bool db_empty);
   bool CreateSchema();
+  void HandleInitializationFailure(const InitStatus status);
 
   void DatabaseErrorCallback(int extended_error, sql::Statement* stmt);
 
