@@ -27,6 +27,7 @@ const base::Time kTimeB = base::Time::FromDoubleT(2);
 const base::Time kTimeC = base::Time::FromDoubleT(3);
 const base::Time kTimeD = base::Time::FromDoubleT(4);
 const base::Time kTimeE = base::Time::FromDoubleT(5);
+const base::Time kTimeF = base::Time::FromDoubleT(6);
 
 class MockHistoryUiFaviconRequestHandler
     : public favicon::HistoryUiFaviconRequestHandler {
@@ -281,12 +282,16 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, ExceedMaximumNumberOfTabs) {
   const base::string16 kTitleE = base::UTF8ToUTF16("E");
   const GURL kUrlE = GURL(chrome::kChromeUINewTabURL);
 
+  const base::string16 kTitleF = base::UTF8ToUTF16("F");
+  const GURL kUrlF = GURL("content://image.png");
+
   auto synced_session_window =
       std::make_unique<sync_sessions::SyncedSessionWindow>();
   AddTab(synced_session_window.get(), kTitleA, kUrlA, kTimeA);
   AddTab(synced_session_window.get(), kTitleE, kUrlE, kTimeE);
   AddTab(synced_session_window.get(), kTitleB, kUrlB, kTimeB);
   AddTab(synced_session_window.get(), kTitleD, kUrlD, kTimeD);
+  AddTab(synced_session_window.get(), kTitleF, kUrlF, kTimeF);
   AddTab(synced_session_window.get(), kTitleC, kUrlC, kTimeC);
   AddWindow(std::move(synced_session_window));
 
@@ -297,8 +302,8 @@ TEST_F(BrowserTabsMetadataFetcherImplTest, ExceedMaximumNumberOfTabs) {
   InvokeNextFaviconCallbacks(/*num_successful_fetches=*/2);
 
   // Tab A and Tab B are not present because they have the oldest timestamps,
-  // and the maximum number of BrowserTabMetadata has been met. Tab E is not
-  // present because it has a banned scheme.
+  // and the maximum number of BrowserTabMetadata has been met. Tabs E and F
+  // are not present because they have banned schemes.
   CheckIsExpectedMetadata(std::vector<BrowserTabMetadata>({
       BrowserTabMetadata(kUrlD, kTitleD, kTimeD, GetDummyImage()),
       BrowserTabMetadata(kUrlC, kTitleC, kTimeC, GetDummyImage()),
