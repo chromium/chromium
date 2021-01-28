@@ -725,6 +725,10 @@ try_.chromium_chromiumos_builder(
     name = "linux-chromeos-dbg",
 )
 
+try_.chromium_chromiumos_builder(
+    name = "linux-cfm-rel",
+)
+
 try_.chromium_dawn_builder(
     name = "dawn-linux-x64-deps-rel",
     branch_selector = branches.STANDARD_MILESTONE,

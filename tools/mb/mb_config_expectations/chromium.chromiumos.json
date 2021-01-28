@@ -101,6 +101,15 @@
       "use_goma": true
     }
   },
+  "linux-cfm-rel": {
+    "gn_args": {
+      "is_cfm": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "target_os": "chromeos",
+      "use_goma": true
+    }
+  },
   "linux-chromeos-dbg": {
     "gn_args": {
       "ffmpeg_branding": "ChromeOS",

@@ -3834,6 +3834,11 @@
       },
     },
 
+    'linux_cfm_gtests': {
+      'chromeos_unittests': {},
+      'unit_tests': {},
+    },
+
     'linux_chromeos_oobe_specific_tests': {
       # TODO(crbug.com/1071693): Merge this suite back in to the main
       # browser_tests when the tests no longer fail on MSAN.

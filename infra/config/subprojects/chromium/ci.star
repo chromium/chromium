@@ -1697,6 +1697,18 @@ ci.chromiumos_builder(
     tree_closing = False,
 )
 
+# For Chromebox for meetings(CfM)
+ci.chromiumos_builder(
+    name = "linux-cfm-rel",
+    branch_selector = branches.ALL_BRANCHES,
+    console_view_entry = consoles.console_view_entry(
+        category = "simple|release",
+        short_name = "cfm",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    main_console_view = "main",
+)
+
 ci.cipd_3pp_builder(
     name = "3pp-linux-amd64-packager",
     os = os.LINUX_DEFAULT,

@@ -173,6 +173,7 @@
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-lacros-builder-rel': 'lacros_on_linux_release_bot',
       'linux-lacros-tester-rel': 'lacros_on_linux_release_bot',
+      'linux-cfm-rel': 'linux_cfm_release_bot',
     },
 
     'chromium.clang': {
@@ -893,6 +894,7 @@
       'linux-chromeos-compile-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-chromeos-dbg': 'chromeos_with_codecs_debug_bot',
       'linux-lacros-rel': 'lacros_on_linux_release_trybot',
+      'linux-cfm-rel': 'linux_cfm_release_trybot',
     },
 
     'tryserver.chromium.codesearch': {
@@ -2291,6 +2293,14 @@
       'libfuzzer', 'asan', 'release_trybot', 'chrome_with_codecs', 'pdf_xfa', 'disable_nacl', 'mojo_fuzzer',
     ],
 
+    'linux_cfm_release_bot': [
+      'cfm', 'release_bot', 'chromeos',
+    ],
+
+    'linux_cfm_release_trybot': [
+      'cfm', 'release_trybot', 'chromeos',
+    ],
+
     'mac_arm64_release_bot': [
       'release_bot', 'arm64',
     ],
@@ -2767,6 +2777,10 @@
 
     'cfi_recover': {
       'gn_args': 'use_cfi_recover=true',
+    },
+
+    'cfm': {
+      'gn_args': 'is_cfm=true',
     },
 
     'chrome_with_codecs': {

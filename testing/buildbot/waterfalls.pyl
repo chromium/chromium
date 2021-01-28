@@ -1626,6 +1626,11 @@
         },
         'os_type': 'chromeos',
       },
+      'linux-cfm-rel': {
+        'test_suites': {
+          'gtest_tests': 'linux_cfm_gtests',
+        },
+      },
       'linux-chromeos-dbg': {
         'mixins': [
           'linux-xenial',
