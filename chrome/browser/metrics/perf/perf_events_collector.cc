@@ -117,18 +117,18 @@ const char kPerfCommandDelimiter[] = " ";
 const char kPerfFPCallgraphPPPCmd[] =
     "perf record -a -e cycles:ppp -g -c 4000037";
 
-const char kPerfFPCallgraphPPPDHGCmd[] =
-    "perf record -a -e cycles:pppDHG -g -c 4000037";
+const char kPerfFPCallgraphPPPHGCmd[] =
+    "perf record -a -e cycles:pppHG -g -c 4000037";
 
 // Collect default (imprecise) cycle events everywhere else.
 const char kPerfCyclesCmd[] = "perf record -a -e cycles -c 1000003";
 
-const char kPerfCyclesDHGCmd[] = "perf record -a -e cycles:DHG -c 1000003";
+const char kPerfCyclesHGCmd[] = "perf record -a -e cycles:HG -c 1000003";
 
 const char kPerfFPCallgraphCmd[] = "perf record -a -e cycles -g -c 4000037";
 
-const char kPerfFPCallgraphDHGCmd[] =
-    "perf record -a -e cycles:DHG -g -c 4000037";
+const char kPerfFPCallgraphHGCmd[] =
+    "perf record -a -e cycles:HG -g -c 4000037";
 
 const char kPerfLBRCallgraphCmd[] =
     "perf record -a -e cycles -c 4000037 --call-graph lbr";
@@ -198,13 +198,13 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
     lbr_cmd = kPerfLBRCmdAtom;
   }
   if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest)) {
-    cycles_cmd = kPerfCyclesDHGCmd;
-    fp_callgraph_cmd = kPerfFPCallgraphDHGCmd;
+    cycles_cmd = kPerfCyclesHGCmd;
+    fp_callgraph_cmd = kPerfFPCallgraphHGCmd;
   }
   if (MicroarchitectureHasCyclesPPPEvent(cpu_uarch)) {
     fp_callgraph_cmd = kPerfFPCallgraphPPPCmd;
     if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest))
-      fp_callgraph_cmd = kPerfFPCallgraphPPPDHGCmd;
+      fp_callgraph_cmd = kPerfFPCallgraphPPPHGCmd;
   }
 
   cmds.emplace_back(WeightAndValue(50.0, cycles_cmd));
@@ -283,8 +283,8 @@ std::vector<RandomSelector::WeightAndValue> GetDefaultCommandsForCpu(
       cpuid.arch == "armv7l" ||   // ARM32
       cpuid.arch == "aarch64") {  // ARM64
     if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest)) {
-      cmds.emplace_back(WeightAndValue(80.0, kPerfCyclesDHGCmd));
-      cmds.emplace_back(WeightAndValue(20.0, kPerfFPCallgraphDHGCmd));
+      cmds.emplace_back(WeightAndValue(80.0, kPerfCyclesHGCmd));
+      cmds.emplace_back(WeightAndValue(20.0, kPerfFPCallgraphHGCmd));
     } else {
       cmds.emplace_back(WeightAndValue(80.0, kPerfCyclesCmd));
       cmds.emplace_back(WeightAndValue(20.0, kPerfFPCallgraphCmd));
@@ -294,7 +294,7 @@ std::vector<RandomSelector::WeightAndValue> GetDefaultCommandsForCpu(
 
   // Unknown CPUs
   if (base::FeatureList::IsEnabled(kCWPCollectionOnHostAndGuest)) {
-    cmds.emplace_back(WeightAndValue(1.0, kPerfCyclesDHGCmd));
+    cmds.emplace_back(WeightAndValue(1.0, kPerfCyclesHGCmd));
   } else {
     cmds.emplace_back(WeightAndValue(1.0, kPerfCyclesCmd));
   }
