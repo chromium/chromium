@@ -10,4 +10,9 @@ namespace switches {
 // for the browser process.
 const char kComponentUpdater[] = "component-updater";
 
+// Optional testing override of the Trust Tokens key commitment component's
+// path.
+const char kComponentUpdaterTrustTokensComponentPath[] =
+    "component-updater-trust-tokens-component-path";
+
 }  // namespace switches

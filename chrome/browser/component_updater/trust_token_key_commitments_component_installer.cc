@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -20,6 +21,7 @@
 #include "base/task/post_task.h"
 #include "base/version.h"
 #include "components/component_updater/component_updater_paths.h"
+#include "components/component_updater/component_updater_switches.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/features.h"
@@ -101,6 +103,12 @@ void TrustTokenKeyCommitmentsComponentInstallerPolicy::OnCustomUninstall() {}
 base::FilePath
 TrustTokenKeyCommitmentsComponentInstallerPolicy::GetInstalledPath(
     const base::FilePath& base) {
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kComponentUpdaterTrustTokensComponentPath)) {
+    return base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+        switches::kComponentUpdaterTrustTokensComponentPath);
+  }
+
   return base.Append(kTrustTokenKeyCommitmentsFileName);
 }
 

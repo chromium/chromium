@@ -46,6 +46,8 @@ class TrustTokenKeyCommitmentsComponentInstallerPolicy
  private:
   FRIEND_TEST_ALL_PREFIXES(TrustTokenKeyCommitmentsComponentInstallerTest,
                            LoadsCommitments);
+  FRIEND_TEST_ALL_PREFIXES(TrustTokenKeyCommitmentsComponentInstallerTest,
+                           LoadsCommitmentsFromOverriddenPath);
 
   // The following methods override ComponentInstallerPolicy.
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;

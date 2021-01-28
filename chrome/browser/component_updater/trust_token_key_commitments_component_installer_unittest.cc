@@ -12,12 +12,14 @@
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/component_updater/component_updater_switches.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -50,6 +52,44 @@ TEST_F(TrustTokenKeyCommitmentsComponentInstallerTest, FeatureDisabled) {
   RegisterTrustTokenKeyCommitmentsComponentIfTrustTokensEnabled(service.get());
 
   env_.RunUntilIdle();
+}
+
+TEST_F(TrustTokenKeyCommitmentsComponentInstallerTest,
+       LoadsCommitmentsFromOverriddenPath) {
+  base::test::ScopedFeatureList scoped_list;
+  scoped_list.InitAndEnableFeature(network::features::kTrustTokens);
+
+  base::SequenceCheckerImpl checker;
+
+  std::string expectation = "some trust token keys";
+  base::RunLoop run_loop;
+  auto confirmation_callback = [&](const std::string& got) {
+    EXPECT_TRUE(checker.CalledOnValidSequence());
+    EXPECT_EQ(got, expectation);
+    run_loop.Quit();
+  };
+
+  base::FilePath temp_path;
+  ASSERT_TRUE(base::CreateTemporaryFile(&temp_path));
+
+  base::test::ScopedCommandLine command_line;
+  command_line.GetProcessCommandLine()->AppendSwitchPath(
+      switches::kComponentUpdaterTrustTokensComponentPath, temp_path);
+
+  ASSERT_TRUE(base::WriteFile(temp_path, expectation));
+
+  auto policy =
+      std::make_unique<TrustTokenKeyCommitmentsComponentInstallerPolicy>(
+          base::BindLambdaForTesting(confirmation_callback));
+
+  // The |component_install_dir_.GetPath()| should be ignored in favor of the
+  // separate path we provide through the switch.
+  policy->ComponentReady(base::Version(), component_install_dir_.GetPath(),
+                         std::make_unique<base::DictionaryValue>());
+
+  run_loop.Run();
+
+  base::DeleteFile(temp_path);
 }
 
 TEST_F(TrustTokenKeyCommitmentsComponentInstallerTest, LoadsCommitments) {
