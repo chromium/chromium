@@ -8,6 +8,7 @@
 #include "base/optional.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_addition_result.h"
 
 class GoogleServiceAuthError;
 
@@ -51,6 +52,14 @@ COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 crosapi::mojom::GoogleServiceAuthErrorPtr ToMojoGoogleServiceAuthError(
     GoogleServiceAuthError error);
 
+COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
+base::Optional<account_manager::AccountAdditionResult>
+FromMojoAccountAdditionResult(
+    const crosapi::mojom::AccountAdditionResultPtr& mojo_result);
+
+COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
+crosapi::mojom::AccountAdditionResultPtr ToMojoAccountAdditionResult(
+    account_manager::AccountAdditionResult result);
 }  // namespace account_manager
 
 #endif  // COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_MANAGER_UTIL_H_

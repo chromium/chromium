@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
+#include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -43,8 +44,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
           callback) override;
   void ShowAddAccountDialog(
       const AccountAdditionSource& source,
-      base::OnceCallback<void(const AccountAdditionResult& result)> callback)
-      override;
+      base::OnceCallback<void(const account_manager::AccountAdditionResult&
+                                  result)> callback) override;
   void ShowReauthAccountDialog(const AccountAdditionSource& source,
                                const std::string& email) override;
 
@@ -53,9 +54,21 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   void OnAccountRemoved(crosapi::mojom::AccountPtr account) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
+                           ShowAddAccountDialogCallsMojo);
+  FRIEND_TEST_ALL_PREFIXES(AccountManagerFacadeImplTest,
+                           ShowReauthAccountDialogCallsMojo);
+
   void OnReceiverReceived(
       mojo::PendingReceiver<AccountManagerObserver> receiver);
   void OnInitialized(bool is_initialized);
+  // Callback for `crosapi::mojom::AccountManager::ShowAddAccountDialog`.
+  void OnShowAddAccountDialogFinished(
+      base::OnceCallback<
+          void(const account_manager::AccountAdditionResult& result)> callback,
+      crosapi::mojom::AccountAdditionResultPtr mojo_result);
+
+  void FlushMojoForTesting();
 
   void GetAccountsInternal(
       base::OnceCallback<void(const std::vector<account_manager::Account>&)>

@@ -12,6 +12,8 @@
 #include "base/test/task_environment.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_addition_result.h"
+#include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/account_manager_test_util.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -22,6 +24,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+const char kFakeEmail[] = "fake_email@example.com";
 
 class FakeAccountManager : public crosapi::mojom::AccountManager {
  public:
@@ -52,6 +56,19 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     std::move(callback).Run(std::move(mojo_accounts));
   }
 
+  void ShowAddAccountDialog(ShowAddAccountDialogCallback callback) override {
+    show_add_account_dialog_calls_++;
+    std::move(callback).Run(account_manager::ToMojoAccountAdditionResult(
+        account_manager::AccountAdditionResult(
+            account_manager::AccountAdditionResult::Status::kCancelledByUser)));
+  }
+
+  void ShowReauthAccountDialog(const std::string& email,
+                               base::OnceClosure closure) override {
+    show_reauth_account_dialog_calls_++;
+    std::move(closure).Run();
+  }
+
   mojo::Remote<crosapi::mojom::AccountManager> CreateRemote() {
     mojo::Remote<crosapi::mojom::AccountManager> remote;
     receivers_.Add(this, remote.BindNewPipeAndPassReceiver());
@@ -75,7 +92,15 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     accounts_ = accounts;
   }
 
+  int show_add_account_dialog_calls() { return show_add_account_dialog_calls_; }
+
+  int show_reauth_account_dialog_calls() {
+    return show_reauth_account_dialog_calls_;
+  }
+
  private:
+  int show_add_account_dialog_calls_ = 0;
+  int show_reauth_account_dialog_calls_ = 0;
   bool is_initialized_{false};
   std::vector<account_manager::Account> accounts_;
   mojo::ReceiverSet<crosapi::mojom::AccountManager> receivers_;
@@ -271,4 +296,29 @@ TEST_F(AccountManagerFacadeImplTest,
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   account_manager_facade->GetAccounts(callback.Get());
   run_loop.Run();
+}
+
+TEST_F(AccountManagerFacadeImplTest, ShowAddAccountDialogCallsMojo) {
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  EXPECT_EQ(0, account_manager().show_add_account_dialog_calls());
+  account_manager_facade->ShowAddAccountDialog(
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kSettingsAddAccountButton,
+      base::BindOnce(
+          [](const account_manager::AccountAdditionResult& result) {}));
+  account_manager_facade->FlushMojoForTesting();
+  EXPECT_EQ(1, account_manager().show_add_account_dialog_calls());
+}
+
+TEST_F(AccountManagerFacadeImplTest, ShowReauthAccountDialogCallsMojo) {
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  EXPECT_EQ(0, account_manager().show_reauth_account_dialog_calls());
+  account_manager_facade->ShowReauthAccountDialog(
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kSettingsAddAccountButton,
+      kFakeEmail);
+  account_manager_facade->FlushMojoForTesting();
+  EXPECT_EQ(1, account_manager().show_reauth_account_dialog_calls());
 }

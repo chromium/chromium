@@ -76,6 +76,26 @@ struct GoogleServiceAuthError {
   InvalidGaiaCredentialsReason invalid_gaia_credentials_reason@3;
 };
 
+[Stable]
+struct AccountAdditionResult {
+  // The result of account addition request.
+  // Next value: 5.
+  [Stable, Extensible]
+  enum Status {
+    kSuccess = 0,
+    kAlreadyInProgress = 1,
+    kCancelledByUser = 2,
+    kNetworkError = 3,
+    kUnexpectedResponse = 4,
+  };
+
+  Status status@0;
+  // The account that was added.
+  Account? account@1;
+  // The error is set only if `status` is set to `kNetworkError`.
+  GoogleServiceAuthError? error@2;
+};
+
 // Interface for observers of Chrome OS Account Manager.
 // This interface is implemented by lacros-chrome, and is used by ash-chrome to
 // send account update notifications.
@@ -105,8 +125,8 @@ interface AccountManagerObserver {
 // ARC++ uses components/arc/mojom/auth.mojom to talk to the Chrome OS Account
 // Manager.
 //
-// Next version: 3
-// Next method id: 3
+// Next version: 4
+// Next method id: 5
 [Stable, Uuid="85b9a674-9d8e-497f-98d5-22c8dca6f2b8"]
 interface AccountManager {
   // Returns |true| if Chrome OS Account Manager has been fully initialized, and
@@ -127,4 +147,13 @@ interface AccountManager {
   // after the initialization is done).
   [MinVersion = 2]
   GetAccounts@2() => (array<Account> accounts);
+
+  // Launches account addition dialog and returns `result` with the added
+  // account.
+  [MinVersion = 3]
+  ShowAddAccountDialog@3() => (AccountAdditionResult result);
+
+  // Launches account reauthentication dialog for provided `email`.
+  [MinVersion = 3]
+  ShowReauthAccountDialog@4(string email) => ();
 };

@@ -6,6 +6,7 @@
 #define CHROMEOS_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_UI_H_
 
 #include "base/callback.h"
+#include "base/callback_forward.h"
 #include "base/component_export.h"
 
 namespace chromeos {
@@ -25,7 +26,10 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerUI {
 
   // Show system dialog for account reauthentication.
   // `email` is the email of account that will be reauthenticated.
-  virtual void ShowReauthAccountDialog(const std::string& email) = 0;
+  // `close_dialog_closure` callback will be called when dialog is closed.
+  virtual void ShowReauthAccountDialog(
+      const std::string& email,
+      base::OnceClosure close_dialog_closure) = 0;
 
   virtual bool IsDialogShown() = 0;
 };

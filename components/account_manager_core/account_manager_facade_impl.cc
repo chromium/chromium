@@ -8,7 +8,10 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
+#include "base/optional.h"
+#include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_util.h"
 
 namespace {
@@ -16,6 +19,9 @@ namespace {
 // Interface versions in //chromeos/crosapi/mojom/account_manager.mojom:
 // MinVersion of crosapi::mojom::AccountManager::GetAccounts
 constexpr uint32_t kMinVersionWithGetAccounts = 2;
+// MinVersion of crosapi::mojom::AccountManager::ShowAddAccountDialog and
+// crosapi::mojom::AccountManager::ShowReauthAccountDialog.
+constexpr uint32_t kMinVersionWithShowAddAccountDialog = 3;
 
 void UnmarshalAccounts(
     base::OnceCallback<void(const std::vector<account_manager::Account>&)>
@@ -89,14 +95,36 @@ void AccountManagerFacadeImpl::GetAccounts(
 
 void AccountManagerFacadeImpl::ShowAddAccountDialog(
     const AccountAdditionSource& source,
-    base::OnceCallback<void(const AccountAdditionResult& result)> callback) {
-  // TODO(crbug.com/1140469): implement this.
+    base::OnceCallback<
+        void(const account_manager::AccountAdditionResult& result)> callback) {
+  if (remote_version_ < kMinVersionWithShowAddAccountDialog) {
+    LOG(WARNING) << "Found remote at: " << remote_version_
+                 << ", expected: " << kMinVersionWithShowAddAccountDialog
+                 << " for ShowAddAccountDialog.";
+    std::move(callback).Run(account_manager::AccountAdditionResult(
+        account_manager::AccountAdditionResult::Status::kUnexpectedResponse));
+    return;
+  }
+
+  // TODO(crbug.com/1140469): send UMA stats.
+
+  account_manager_remote_->ShowAddAccountDialog(
+      base::BindOnce(&AccountManagerFacadeImpl::OnShowAddAccountDialogFinished,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AccountManagerFacadeImpl::ShowReauthAccountDialog(
     const AccountAdditionSource& source,
     const std::string& email) {
-  // TODO(crbug.com/1140469): implement this.
+  if (remote_version_ < kMinVersionWithShowAddAccountDialog) {
+    LOG(WARNING) << "Found remote at: " << remote_version_
+                 << ", expected: " << kMinVersionWithShowAddAccountDialog
+                 << " for ShowReauthAccountDialog.";
+  }
+
+  // TODO(crbug.com/1140469): send UMA stats.
+
+  account_manager_remote_->ShowReauthAccountDialog(email, base::DoNothing());
 }
 
 void AccountManagerFacadeImpl::OnReceiverReceived(
@@ -115,6 +143,20 @@ void AccountManagerFacadeImpl::OnInitialized(bool is_initialized) {
     is_remote_initialized_ = true;
   // else: We will receive a notification in |OnTokenUpserted|.
   FinishInitSequenceIfNotAlreadyFinished();
+}
+
+void AccountManagerFacadeImpl::OnShowAddAccountDialogFinished(
+    base::OnceCallback<
+        void(const account_manager::AccountAdditionResult& result)> callback,
+    crosapi::mojom::AccountAdditionResultPtr mojo_result) {
+  base::Optional<account_manager::AccountAdditionResult> result =
+      account_manager::FromMojoAccountAdditionResult(mojo_result);
+  if (!result.has_value()) {
+    std::move(callback).Run(account_manager::AccountAdditionResult(
+        account_manager::AccountAdditionResult::Status::kUnexpectedResponse));
+    return;
+  }
+  std::move(callback).Run(result.value());
 }
 
 void AccountManagerFacadeImpl::OnTokenUpserted(
@@ -175,4 +217,8 @@ void AccountManagerFacadeImpl::RunAfterInitializationSequence(
   } else {
     std::move(closure).Run();
   }
+}
+
+void AccountManagerFacadeImpl::FlushMojoForTesting() {
+  account_manager_remote_.FlushForTesting();
 }

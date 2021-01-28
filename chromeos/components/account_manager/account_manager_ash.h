@@ -33,6 +33,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerAsh
   void IsInitialized(IsInitializedCallback callback) override;
   void AddObserver(AddObserverCallback callback) override;
   void GetAccounts(GetAccountsCallback callback) override;
+  void ShowAddAccountDialog(ShowAddAccountDialogCallback callback) override;
+  void ShowReauthAccountDialog(const std::string& email,
+                               base::OnceClosure closure) override;
 
   // chromeos::AccountManager::Observer:
   void OnTokenUpserted(const account_manager::Account& account) override;

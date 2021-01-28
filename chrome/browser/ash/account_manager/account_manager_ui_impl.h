@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MANAGER_UI_IMPL_H_
 #define CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MANAGER_UI_IMPL_H_
 
+#include "base/callback_forward.h"
 #include "chromeos/components/account_manager/account_manager_ui.h"
 
 namespace chromeos {
@@ -19,7 +20,8 @@ class AccountManagerUIImpl : public AccountManagerUI {
  private:
   // AccountManagerUI overrides:
   void ShowAddAccountDialog(base::OnceClosure close_dialog_closure) override;
-  void ShowReauthAccountDialog(const std::string& email) override;
+  void ShowReauthAccountDialog(const std::string& email,
+                               base::OnceClosure close_dialog_closure) override;
   bool IsDialogShown() override;
 };
 

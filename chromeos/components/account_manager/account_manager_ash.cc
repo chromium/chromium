@@ -59,6 +59,16 @@ void AccountManagerAsh::GetAccounts(
       base::BindOnce(&MarshalAccounts, std::move(callback)));
 }
 
+void AccountManagerAsh::ShowAddAccountDialog(
+    ShowAddAccountDialogCallback callback) {
+  // TODO(crbug.com/1140469): implement this.
+}
+
+void AccountManagerAsh::ShowReauthAccountDialog(const std::string& email,
+                                                base::OnceClosure closure) {
+  // TODO(crbug.com/1140469): implement this.
+}
+
 void AccountManagerAsh::OnTokenUpserted(
     const account_manager::Account& account) {
   for (auto& observer : observers_)

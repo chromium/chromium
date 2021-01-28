@@ -15,9 +15,10 @@ void AccountManagerUIImpl::ShowAddAccountDialog(
   InlineLoginDialogChromeOS::Show(std::move(close_dialog_closure));
 }
 
-void AccountManagerUIImpl::ShowReauthAccountDialog(const std::string& email) {
-  InlineLoginDialogChromeOS::Show(email,
-                                  /*close_dialog_closure=*/base::DoNothing());
+void AccountManagerUIImpl::ShowReauthAccountDialog(
+    const std::string& email,
+    base::OnceClosure close_dialog_closure) {
+  InlineLoginDialogChromeOS::Show(email, std::move(close_dialog_closure));
 }
 
 bool AccountManagerUIImpl::IsDialogShown() {

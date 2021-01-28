@@ -5,6 +5,7 @@
 #include "components/account_manager_core/account_manager_util.h"
 
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_addition_result.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
 namespace account_manager {
@@ -87,6 +88,41 @@ crosapi::mojom::GoogleServiceAuthError::State ToMojoGoogleServiceAuthErrorState(
     case GoogleServiceAuthError::State::NUM_STATES:
       NOTREACHED();
       return cm::GoogleServiceAuthError::State::kNone;
+  }
+}
+
+base::Optional<account_manager::AccountAdditionResult::Status>
+FromMojoAccountAdditionStatus(
+    crosapi::mojom::AccountAdditionResult::Status mojo_status) {
+  switch (mojo_status) {
+    case cm::AccountAdditionResult::Status::kSuccess:
+      return account_manager::AccountAdditionResult::Status::kSuccess;
+    case cm::AccountAdditionResult::Status::kAlreadyInProgress:
+      return account_manager::AccountAdditionResult::Status::kAlreadyInProgress;
+    case cm::AccountAdditionResult::Status::kCancelledByUser:
+      return account_manager::AccountAdditionResult::Status::kCancelledByUser;
+    case cm::AccountAdditionResult::Status::kNetworkError:
+      return account_manager::AccountAdditionResult::Status::kNetworkError;
+    default:
+      LOG(WARNING) << "Unknown crosapi::mojom::AccountAdditionResult::Status: "
+                   << mojo_status;
+      return base::nullopt;
+  }
+}
+
+crosapi::mojom::AccountAdditionResult::Status ToMojoAccountAdditionStatus(
+    account_manager::AccountAdditionResult::Status status) {
+  switch (status) {
+    case account_manager::AccountAdditionResult::Status::kSuccess:
+      return cm::AccountAdditionResult::Status::kSuccess;
+    case account_manager::AccountAdditionResult::Status::kAlreadyInProgress:
+      return cm::AccountAdditionResult::Status::kAlreadyInProgress;
+    case account_manager::AccountAdditionResult::Status::kCancelledByUser:
+      return cm::AccountAdditionResult::Status::kCancelledByUser;
+    case account_manager::AccountAdditionResult::Status::kNetworkError:
+      return cm::AccountAdditionResult::Status::kNetworkError;
+    case account_manager::AccountAdditionResult::Status::kUnexpectedResponse:
+      return cm::AccountAdditionResult::Status::kUnexpectedResponse;
   }
 }
 
@@ -216,6 +252,40 @@ crosapi::mojom::GoogleServiceAuthErrorPtr ToMojoGoogleServiceAuthError(
             error.GetInvalidGaiaCredentialsReason());
   }
   mojo_result->state = ToMojoGoogleServiceAuthErrorState(error.state());
+  return mojo_result;
+}
+
+base::Optional<account_manager::AccountAdditionResult>
+FromMojoAccountAdditionResult(
+    const crosapi::mojom::AccountAdditionResultPtr& mojo_result) {
+  base::Optional<account_manager::AccountAdditionResult::Status> status =
+      FromMojoAccountAdditionStatus(mojo_result->status);
+  if (!status.has_value()) {
+    return base::nullopt;
+  }
+  account_manager::AccountAdditionResult result(status.value());
+  result.status = status.value();
+  if (mojo_result->account) {
+    result.account = FromMojoAccount(mojo_result->account);
+  }
+  if (mojo_result->error) {
+    result.error = FromMojoGoogleServiceAuthError(mojo_result->error);
+  }
+  return result;
+}
+
+crosapi::mojom::AccountAdditionResultPtr ToMojoAccountAdditionResult(
+    account_manager::AccountAdditionResult result) {
+  crosapi::mojom::AccountAdditionResultPtr mojo_result =
+      crosapi::mojom::AccountAdditionResult::New();
+  mojo_result->status = ToMojoAccountAdditionStatus(result.status);
+  if (result.account.has_value()) {
+    mojo_result->account =
+        account_manager::ToMojoAccount(result.account.value());
+  }
+  if (result.error.has_value()) {
+    mojo_result->error = ToMojoGoogleServiceAuthError(result.error.value());
+  }
   return mojo_result;
 }
 

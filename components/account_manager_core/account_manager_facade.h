@@ -11,7 +11,7 @@
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 #include "components/account_manager_core/account.h"
-#include "google_apis/gaia/google_service_auth_error.h"
+#include "components/account_manager_core/account_addition_result.h"
 
 namespace account_manager {
 
@@ -60,31 +60,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
     kOnboarding = 6,
 
     kMaxValue = kOnboarding
-  };
-
-  // The result of account addition request.
-  struct AccountAdditionResult {
-    enum class Status : int {
-      // The account was added successfully.
-      kSuccess = 0,
-      // The dialog is already open.
-      kAlreadyInProgress = 1,
-      // User closed the dialog.
-      kCancelledByUser = 2,
-      // Network error.
-      kNetworkError = 3,
-    };
-
-    Status status;
-    // The account that was added.
-    base::Optional<AccountKey> account;
-    // The error is set only if `status` is set to `kNetworkError`.
-    base::Optional<GoogleServiceAuthError> error;
-
-    AccountAdditionResult();
-    AccountAdditionResult(Status status, AccountKey account);
-    AccountAdditionResult(Status status, GoogleServiceAuthError error);
-    ~AccountAdditionResult();
   };
 
   AccountManagerFacade();
