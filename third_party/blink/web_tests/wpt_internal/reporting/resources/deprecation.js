@@ -11,13 +11,12 @@ async_test(function(test) {
       // Ensure that the contents of the reports are valid.
       for(let report of reports) {
         assert_equals(report.type, "deprecation");
-        assert_true(report.url.endsWith(
-            "reporting-observer/deprecation.html"));
+        assert_true(report.url.endsWith("reporting/deprecation.html"));
         assert_equals(typeof report.body.id, "string");
         assert_equals(typeof report.body.anticipatedRemoval, "object");
         assert_equals(typeof report.body.message, "string");
         assert_true(report.body.sourceFile.endsWith(
-            "reporting-observer/resources/deprecation.js"));
+            "reporting/resources/deprecation.js"));
         assert_equals(typeof report.body.lineNumber, "number");
         assert_equals(typeof report.body.columnNumber, "number");
         // Ensure the toJSON call is successful.
