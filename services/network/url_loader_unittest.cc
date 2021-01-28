@@ -82,6 +82,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom-forward.h"
 #include "services/network/public/mojom/cookie_access_observer.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom-shared.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/origin_policy_manager.mojom.h"
@@ -3312,12 +3313,14 @@ class MockNetworkServiceClient : public TestNetworkServiceClient {
       const std::string& devtools_request_id,
       const net::CookieAndLineAccessResultList& cookies_with_access_result,
       std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
-      const base::Optional<std::string>& raw_response_headers) override {
+      const base::Optional<std::string>& raw_response_headers,
+      network::mojom::IPAddressSpace resource_address_space) override {
     raw_response_cookies_.insert(raw_response_cookies_.end(),
                                  cookies_with_access_result.begin(),
                                  cookies_with_access_result.end());
-
+    got_raw_response_ = true;
     devtools_request_id_ = devtools_request_id;
+    resource_address_space_ = resource_address_space;
 
     raw_response_headers_ = raw_response_headers;
 
@@ -3328,7 +3331,7 @@ class MockNetworkServiceClient : public TestNetworkServiceClient {
   }
 
   void WaitUntilRawResponse(size_t goal) {
-    if (raw_response_cookies_.size() < goal) {
+    if (raw_response_cookies_.size() < goal || !got_raw_response_) {
       wait_for_raw_response_goal_ = goal;
       base::RunLoop run_loop;
       wait_for_raw_response_ = run_loop.QuitClosure();
@@ -3365,10 +3368,16 @@ class MockNetworkServiceClient : public TestNetworkServiceClient {
     return client_security_state_;
   }
 
+  network::mojom::IPAddressSpace resource_address_space() const {
+    return resource_address_space_;
+  }
+
  private:
   net::CookieAndLineAccessResultList raw_response_cookies_;
   base::OnceClosure wait_for_raw_response_;
   size_t wait_for_raw_response_goal_ = 0u;
+  bool got_raw_response_ = false;
+  network::mojom::IPAddressSpace resource_address_space_;
   std::string devtools_request_id_;
   base::Optional<std::string> raw_response_headers_;
 
@@ -6280,6 +6289,41 @@ TEST_F(URLLoaderTest, OnRawRequestClientSecurityStateNotPresent) {
 
   network_service_client.WaitUntilRawRequest(0);
   ASSERT_FALSE(network_service_client.client_security_state());
+}
+
+TEST_F(URLLoaderTest, OnRawResponseIPAddressSpace) {
+  MockNetworkServiceClient network_service_client;
+
+  ResourceRequest request =
+      CreateResourceRequest("GET", test_server()->GetURL("/simple_page.html"));
+  request.devtools_request_id = "fake-id";
+
+  mojom::URLLoaderFactoryParams params;
+  params.process_id = kProcessId;
+  params.is_corb_enabled = false;
+
+  base::RunLoop delete_run_loop;
+  mojo::PendingRemote<mojom::URLLoader> loader;
+  std::unique_ptr<URLLoader> url_loader = std::make_unique<URLLoader>(
+      context(), &network_service_client, /* network_context_client */ nullptr,
+      DeleteLoaderCallback(&delete_run_loop, &url_loader),
+      loader.InitWithNewPipeAndPassReceiver(), 0, request,
+      client()->CreateRemote(), /*reponse_body_use_tracker=*/base::nullopt,
+      TRAFFIC_ANNOTATION_FOR_TESTS, &params,
+      /*coep_reporter=*/nullptr, 0 /* request_id */,
+      0 /* keepalive_request_size */, false /* require_network_isolation_key */,
+      resource_scheduler_client(), nullptr,
+      nullptr /* network_usage_accumulator */, nullptr /* header_client */,
+      nullptr /* origin_policy_manager */, nullptr /* trust_token_helper */,
+      kEmptyOriginAccessList /* origin_access_list */,
+      mojo::NullRemote() /* cookie_observer */);
+  delete_run_loop.Run();
+  client()->RunUntilComplete();
+  EXPECT_EQ(net::OK, client()->completion_status().error_code);
+
+  network_service_client.WaitUntilRawResponse(0);
+  ASSERT_EQ(network_service_client.resource_address_space(),
+            mojom::IPAddressSpace::kLocal);
 }
 
 TEST_F(URLLoaderMockSocketTest,

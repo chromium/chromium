@@ -19,6 +19,7 @@ import "services/network/public/mojom/mutable_network_traffic_annotation_tag.moj
 import "services/network/public/mojom/net_log.mojom";
 import "services/network/public/mojom/network_change_manager.mojom";
 import "services/network/public/mojom/network_context.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
 import "services/network/public/mojom/network_interface.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_quality_estimator_manager.mojom";
@@ -79,7 +80,8 @@ interface NetworkServiceClient {
     string devtool_request_id,
     array<CookieAndLineWithAccessResult> cookies_with_access_result,
     array<HttpRawHeaderPair> headers,
-    string? raw_response_headers);
+    string? raw_response_headers,
+    IPAddressSpace resource_address_space);
 
   // Called to send the CORS preflight request information. Only called when
   // |devtool_request_id| is available on the original request.

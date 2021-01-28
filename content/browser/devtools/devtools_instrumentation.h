@@ -155,7 +155,8 @@ void OnResponseReceivedExtraInfo(
     const std::string& devtools_request_id,
     const net::CookieAndLineAccessResultList& response_cookie_list,
     const std::vector<network::mojom::HttpRawHeaderPairPtr>& response_headers,
-    const base::Optional<std::string>& response_headers_text);
+    const base::Optional<std::string>& response_headers_text,
+    network::mojom::IPAddressSpace resource_address_space);
 void OnCorsPreflightRequest(int32_t process_id,
                             int32_t render_frame_id,
                             const base::UnguessableToken& devtools_request_id,

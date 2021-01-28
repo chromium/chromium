@@ -731,13 +731,14 @@ void OnResponseReceivedExtraInfo(
     const std::string& devtools_request_id,
     const net::CookieAndLineAccessResultList& response_cookie_list,
     const std::vector<network::mojom::HttpRawHeaderPairPtr>& response_headers,
-    const base::Optional<std::string>& response_headers_text) {
+    const base::Optional<std::string>& response_headers_text,
+    network::mojom::IPAddressSpace resource_address_space) {
   FrameTreeNode* ftn = GetFtnForNetworkRequest(process_id, routing_id);
   if (ftn) {
-    DispatchToAgents(ftn,
-                     &protocol::NetworkHandler::OnResponseReceivedExtraInfo,
-                     devtools_request_id, response_cookie_list,
-                     response_headers, response_headers_text);
+    DispatchToAgents(
+        ftn, &protocol::NetworkHandler::OnResponseReceivedExtraInfo,
+        devtools_request_id, response_cookie_list, response_headers,
+        response_headers_text, resource_address_space);
     return;
   }
 
@@ -745,7 +746,8 @@ void OnResponseReceivedExtraInfo(
   DispatchToWorkerAgents(process_id, routing_id,
                          &protocol::NetworkHandler::OnResponseReceivedExtraInfo,
                          devtools_request_id, response_cookie_list,
-                         response_headers, response_headers_text);
+                         response_headers, response_headers_text,
+                         resource_address_space);
 }
 
 void OnCorsPreflightRequest(int32_t process_id,

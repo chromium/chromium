@@ -2138,7 +2138,8 @@ void URLLoader::ReportFlaggedResponseCookies() {
     network_service_client_->OnRawResponse(
         GetProcessId(), GetRenderFrameId(), devtools_request_id().value(),
         url_request_->maybe_stored_cookies(), std::move(header_array),
-        raw_response_headers);
+        raw_response_headers,
+        IPAddressToIPAddressSpace(response_info.remote_endpoint.address()));
   }
 
   if (cookie_observer_) {
