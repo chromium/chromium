@@ -3112,9 +3112,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
       <message name="IDS_READING_LIST_UNREAD" desc="The header for the unread section in the reading list UI.">
         Unread
       </message>
-      <message name="IDS_READING_LIST_READY_FOR_OFFLINE" desc="The string to inform the user that the reading list has offline page ready.">
-        Ready for offline
-      </message>
       <message name="IDS_READING_LIST_SAVED" desc="App-based message shown after user adds a new link to the reading list. [CHAR-LIMIT=32]">
         Added to reading list
       </message>

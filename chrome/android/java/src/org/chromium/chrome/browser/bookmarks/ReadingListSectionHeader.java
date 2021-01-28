@@ -84,12 +84,11 @@ class ReadingListSectionHeader {
     private static BookmarkListEntry createReadingListSectionHeader(boolean read, Context context) {
         String title =
                 context.getString(read ? R.string.reading_list_read : R.string.reading_list_unread);
-        String description =
-                read ? null : context.getString(R.string.reading_list_ready_for_offline);
         int paddingTop = read ? context.getResources().getDimensionPixelSize(
                                  R.dimen.bookmark_reading_list_section_header_padding_top)
                               : 0;
-        return BookmarkListEntry.createSectionHeader(title, description, paddingTop, context);
+        return BookmarkListEntry.createSectionHeader(
+                title, /*description=*/null, paddingTop, context);
     }
 
     private static void recordMetrics(List<BookmarkListEntry> listItems) {
