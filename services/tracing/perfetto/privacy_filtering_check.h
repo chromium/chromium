@@ -26,6 +26,9 @@ class PrivacyFilteringCheck {
   PrivacyFilteringCheck();
   ~PrivacyFilteringCheck();
 
+  // Removes disallowed fields from the trace.
+  static void RemoveBlockedFields(std::string& serialized_trace_proto);
+
   void CheckProtoForUnexpectedFields(const std::string& serialized_trace_proto);
 
   const TraceStats& stats() const { return stats_; }

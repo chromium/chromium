@@ -41,8 +41,6 @@ source_set("lib") {
 }
 
 source_set("privacy_check") {
-  testonly = true
-
   sources = [
     "perfetto/privacy_filtered_fields-inl.h",
     "perfetto/privacy_filtering_check.cc",
@@ -84,6 +82,7 @@ source_set("tests") {
   sources = [
     "perfetto/consumer_host_unittest.cc",
     "perfetto/perfetto_integration_unittest.cc",
+    "perfetto/privacy_filtering_check_unittest.cc",
     "public/cpp/perfetto/producer_test_utils.cc",
     "public/cpp/perfetto/producer_test_utils.h",
     "public/cpp/perfetto/task_runner_unittest.cc",
@@ -112,6 +111,7 @@ source_set("tests") {
 
   deps = [
     ":lib",
+    ":privacy_check",
     ":test_utils",
     "//base",
     "//base/test:test_support",
@@ -126,6 +126,7 @@ source_set("tests") {
     "//third_party/perfetto/protos/perfetto/trace:lite",
     "//third_party/perfetto/protos/perfetto/trace/chrome:lite",
     "//third_party/perfetto/protos/perfetto/trace/interned_data:lite",
+    "//third_party/perfetto/protos/perfetto/trace/profiling:lite",
     "//third_party/perfetto/protos/perfetto/trace/track_event:lite",
   ]
 
