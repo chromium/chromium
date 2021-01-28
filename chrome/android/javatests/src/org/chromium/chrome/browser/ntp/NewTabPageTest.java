@@ -83,6 +83,7 @@ import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.ui.base.PageTransition;
+import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.url.GURL;
 
 import java.io.IOException;
@@ -117,6 +118,8 @@ public class NewTabPageTest {
     @Rule
     public AccountManagerTestRule mAccountManagerTestRule =
             new AccountManagerTestRule(new FakeProfileDataSource());
+    @Rule
+    public final DisableAnimationsTestRule mNoAnimationRule = new DisableAnimationsTestRule();
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule = ChromeRenderTestRule.Builder.withPublicCorpus()
@@ -210,7 +213,6 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
     @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
-    @FlakyTest(message = "https://crbug.com/1155107")
     public void testRender_SignInPromoWithAccount() throws Exception {
         mAccountManagerTestRule.addAccount(mAccountManagerTestRule.createProfileDataFromName(
                 AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
