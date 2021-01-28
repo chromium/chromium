@@ -36,17 +36,16 @@ GetSortedMetadataWithoutFavicons(const sync_sessions::SyncedSession* session) {
 
       GURL tab_url = current_navigation.virtual_url();
 
-      // URLs with certain schemes should be ignored because they are
-      // platform specific and may behave differently on CrOS; it could
-      // provide a bad experience to display any of them as synced tabs.
-      bool should_be_omitted = tab_url.SchemeIs(ukm::kChromeUIScheme) ||
-                               tab_url.SchemeIs(ukm::kAppScheme) ||
-                               tab_url.SchemeIs(ukm::kExtensionScheme);
+      // URLs whose schemes are not http:// or https:// should be ignored
+      // because they may be platform specific (e.g., chrome:// URLs) or may
+      // refer to local media on the phone (e.g., content:// URLs).
+      if (!tab_url.SchemeIsHTTPOrHTTPS())
+        continue;
 
       // If the url is incorrectly formatted, is empty, or has a
       // scheme that should be omitted, do not proceed with storing its
       // metadata.
-      if (!tab_url.is_valid() || should_be_omitted)
+      if (!tab_url.is_valid())
         continue;
 
       const base::string16& title = current_navigation.title();
