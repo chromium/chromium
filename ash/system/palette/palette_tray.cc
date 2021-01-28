@@ -254,7 +254,7 @@ void PaletteTray::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
 // static
 void PaletteTray::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
-      prefs::kEnableStylusTools, true,
+      prefs::kEnableStylusTools, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   registry->RegisterBooleanPref(
       prefs::kLaunchPaletteOnEjectEvent, true,
@@ -275,8 +275,17 @@ bool PaletteTray::ShouldShowPalette() const {
 }
 
 void PaletteTray::OnStylusEvent(const ui::TouchEvent& event) {
-  if (!HasSeenStylus() && local_state_)
+  if (!HasSeenStylus() && local_state_) {
     local_state_->SetBoolean(prefs::kHasSeenStylus, true);
+
+    // Flip the enable stylus tools setting if the user has never interacted
+    // with it. crbug/1122609
+    if (!pref_change_registrar_user_->prefs()->HasPrefPath(
+            prefs::kEnableStylusTools)) {
+      pref_change_registrar_user_->prefs()->SetBoolean(
+          prefs::kEnableStylusTools, true);
+    }
+  }
 
   // Attempt to show the welcome bubble.
   if (!welcome_bubble_->HasBeenShown() && active_user_pref_service_) {
@@ -655,10 +664,9 @@ bool PaletteTray::HasSeenStylus() {
 }
 
 void PaletteTray::UpdateIconVisibility() {
-  bool visible_preferred = HasSeenStylus() && is_palette_enabled_ &&
-                           stylus_utils::HasStylusInput() &&
-                           ShouldShowOnDisplay(this) &&
-                           palette_utils::IsInUserSession();
+  bool visible_preferred =
+      is_palette_enabled_ && stylus_utils::HasStylusInput() &&
+      ShouldShowOnDisplay(this) && palette_utils::IsInUserSession();
   SetVisiblePreferred(visible_preferred);
   if (visible_preferred)
     UpdateLayout();
