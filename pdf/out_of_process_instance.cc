@@ -838,19 +838,19 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
     paint_manager().SetSize(view_device_size, device_scale());
 
     const gfx::Size old_image_data_size =
-        gfx::SkISizeToSize(image_data_.dimensions());
+        gfx::SkISizeToSize(image_data().dimensions());
     gfx::Size new_image_data_size =
         PaintManager::GetNewContextSize(old_image_data_size, plugin_size());
     if (new_image_data_size != old_image_data_size) {
       pepper_image_data_ =
           pp::ImageData(this, PP_IMAGEDATAFORMAT_BGRA_PREMUL,
                         PPSizeFromSize(new_image_data_size), false);
-      image_data_ = SkBitmapFromPPImageData(
+      mutable_image_data() = SkBitmapFromPPImageData(
           std::make_unique<pp::ImageData>(pepper_image_data_));
       set_first_paint(true);
     }
 
-    if (image_data_.drawsNothing()) {
+    if (image_data().drawsNothing()) {
       DCHECK(plugin_size().IsEmpty());
       return;
     }
@@ -1176,14 +1176,14 @@ void OutOfProcessInstance::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
 void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
                                    std::vector<PaintReadyRect>* ready,
                                    std::vector<gfx::Rect>* pending) {
-  if (image_data_.drawsNothing()) {
+  if (image_data().drawsNothing()) {
     DCHECK(plugin_size().IsEmpty());
     return;
   }
   if (first_paint()) {
     set_first_paint(false);
-    image_data_.eraseColor(GetBackgroundColor());
-    gfx::Rect rect(gfx::SkISizeToSize(image_data_.dimensions()));
+    mutable_image_data().eraseColor(GetBackgroundColor());
+    gfx::Rect rect(gfx::SkISizeToSize(image_data().dimensions()));
     ready->push_back(
         PaintReadyRect(rect, pepper_image_data_, /*flush_now=*/true));
   }
@@ -1206,7 +1206,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
 
       std::vector<gfx::Rect> pdf_ready;
       std::vector<gfx::Rect> pdf_pending;
-      engine()->Paint(pdf_rect, image_data_, pdf_ready, pdf_pending);
+      engine()->Paint(pdf_rect, mutable_image_data(), pdf_ready, pdf_pending);
       for (auto& ready_rect : pdf_ready) {
         ready_rect.Offset(available_area().OffsetFromOrigin());
         ready->push_back(PaintReadyRect(ready_rect, pepper_image_data_));
@@ -1225,15 +1225,16 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
       gfx::Rect region = gfx::IntersectRects(
           rect, gfx::Rect(gfx::Size(plugin_size().width(), first_page_ypos)));
       ready->push_back(PaintReadyRect(region, pepper_image_data_));
-      image_data_.erase(GetBackgroundColor(), gfx::RectToSkIRect(region));
+      mutable_image_data().erase(GetBackgroundColor(),
+                                 gfx::RectToSkIRect(region));
     }
 
     for (const auto& background_part : background_parts()) {
       gfx::Rect intersection =
           gfx::IntersectRects(background_part.location, rect);
       if (!intersection.IsEmpty()) {
-        image_data_.erase(background_part.color,
-                          gfx::RectToSkIRect(intersection));
+        mutable_image_data().erase(background_part.color,
+                                   gfx::RectToSkIRect(intersection));
         ready->push_back(PaintReadyRect(intersection, pepper_image_data_));
       }
     }
@@ -1298,7 +1299,7 @@ void OutOfProcessInstance::ProposeDocumentLayout(const DocumentLayout& layout) {
 }
 
 void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {
-  if (!image_data_.drawsNothing())
+  if (!image_data().drawsNothing())
     paint_manager().ScrollRect(available_area(), offset);
 }
 

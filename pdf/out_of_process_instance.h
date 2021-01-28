@@ -331,8 +331,8 @@ class OutOfProcessInstance : public PdfViewPluginBase,
   // or not.
   bool SendInputEventToEngine(const pp::InputEvent& event);
 
+  // The Pepper image data that is in sync with image_data().
   pp::ImageData pepper_image_data_;
-  SkBitmap image_data_;  // Must be kept in sync with |pepper_image_data_|.
 
   // The current cursor.
   PP_CursorType_Dev cursor_ = PP_CURSORTYPE_POINTER;

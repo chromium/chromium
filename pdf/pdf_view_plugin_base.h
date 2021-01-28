@@ -15,6 +15,7 @@
 #include "pdf/paint_manager.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdfium/pdfium_form_filler.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace chrome_pdf {
@@ -114,6 +115,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
     return deferred_invalidates_;
   }
 
+  const SkBitmap& image_data() const { return image_data_; }
+  SkBitmap& mutable_image_data() { return image_data_; }
+
   const gfx::Rect& available_area() const { return available_area_; }
 
   const gfx::Size& document_size() const { return document_size_; }
@@ -154,6 +158,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
  private:
   std::unique_ptr<PDFiumEngine> engine_;
   PaintManager paint_manager_{this};
+
+  // Image data buffer for painting.
+  SkBitmap image_data_;
 
   std::vector<BackgroundPart> background_parts_;
 
