@@ -6,6 +6,7 @@
 
 #include <limits.h>
 
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -359,7 +360,12 @@ TEST_F(CorsTest, SafelistedAccept) {
   EXPECT_FALSE(IsCorsSafelistedHeader("AccepT", std::string(129, 'a')));
 }
 
-TEST_F(CorsTest, SafelistedAcceptLanguage) {
+#if defined(OS_ANDROID)
+#define MAYBE_SafelistedAcceptLanguage DISABLED_SafelistedAcceptLanguage
+#else
+#define MAYBE_SafelistedAcceptLanguage SafelistedAcceptLanguage
+#endif
+TEST_F(CorsTest, MAYBE_SafelistedAcceptLanguage) {
   EXPECT_TRUE(IsCorsSafelistedHeader("accept-language", "en,ja"));
   EXPECT_TRUE(IsCorsSafelistedHeader("aCcEPT-lAngUAge", "en,ja"));
 
@@ -400,7 +406,12 @@ TEST_F(CorsTest, SafelistedSecCHUA) {
   // https://crbug.com/924969
 }
 
-TEST_F(CorsTest, SafelistedContentLanguage) {
+#if defined(OS_ANDROID)
+#define MAYBE_SafelistedContentLanguage DISABLED_SafelistedContentLanguage
+#else
+#define MAYBE_SafelistedContentLanguage SafelistedContentLanguage
+#endif
+TEST_F(CorsTest, MAYBE_SafelistedContentLanguage) {
   EXPECT_TRUE(IsCorsSafelistedHeader("content-language", "en,ja"));
   EXPECT_TRUE(IsCorsSafelistedHeader("cONTent-LANguaGe", "en,ja"));
 
