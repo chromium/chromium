@@ -1213,21 +1213,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="NewTabPage.ScrollTop" units="pixels"
-    expires_after="2022-01-01">
-  <owner>danielms@google.com</owner>
-  <owner>tiborg@chromium.org</owner>
-  <owner>chrome-desktop-ntp@google.com</owner>
-  <summary>
-    Records the maxium number of pixels the user scrolled the NTP down. Logged
-    when the NTP unloads, such as via navigating somewhere else or closing the
-    tab (switching tabs does not cause an unload). Only logged on the 1P NTP.
-    Note that even if the user has Google as their default search engine,
-    Incognito and Guest mode NTPs are not considered 1P and dont't log this
-    histogram.
-  </summary>
-</histogram>
-
 <histogram name="NewTabPage.SearchAvailableLoadTime2.ColdStart" units="ms"
     expires_after="2021-06-08">
   <owner>fgorski@chromium.org</owner>
