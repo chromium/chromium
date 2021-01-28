@@ -168,27 +168,37 @@ void SysInfo::OperatingSystemVersionNumbers(int32_t* major_version,
 }
 
 // static
-SysInfo::HardwareInfo SysInfo::GetHardwareInfoSync() {
-  constexpr wchar_t kSystemBiosInformationRegKey[] =
-      L"HARDWARE\\DESCRIPTION\\System\\BIOS";
+std::string ReadHardwareInfoFromRegistry(const wchar_t* reg_value_name) {
+  // On some systems or VMs, the system information and some of the below
+  // locations may be missing info. Attempt to find the info from the below
+  // registry keys in the order provided.
+  static const wchar_t* const kSystemInfoRegKeyPaths[] = {
+      L"HARDWARE\\DESCRIPTION\\System\\BIOS",
+      L"SYSTEM\\CurrentControlSet\\Control\\SystemInformation",
+      L"SYSTEM\\HardwareConfig\\Current",
+  };
 
-  HardwareInfo info;
-  base::win::RegKey system_information_key;
-  if (system_information_key.Open(HKEY_LOCAL_MACHINE,
-                                  kSystemBiosInformationRegKey,
-                                  KEY_READ) == ERROR_SUCCESS) {
-    std::wstring value;
-    if (system_information_key.ReadValue(L"SystemManufacturer", &value) ==
-        ERROR_SUCCESS) {
-      info.manufacturer = base::SysWideToUTF8(value);
-    }
-
-    if (system_information_key.ReadValue(L"SystemProductName", &value) ==
-        ERROR_SUCCESS) {
-      info.model = base::SysWideToUTF8(value);
+  std::wstring value;
+  for (const wchar_t* system_info_reg_key_path : kSystemInfoRegKeyPaths) {
+    base::win::RegKey system_information_key;
+    if (system_information_key.Open(HKEY_LOCAL_MACHINE,
+                                    system_info_reg_key_path,
+                                    KEY_READ) == ERROR_SUCCESS) {
+      if ((system_information_key.ReadValue(reg_value_name, &value) ==
+           ERROR_SUCCESS) &&
+          !value.empty()) {
+        break;
+      }
     }
   }
 
+  return base::SysWideToUTF8(value);
+}
+
+// static
+SysInfo::HardwareInfo SysInfo::GetHardwareInfoSync() {
+  HardwareInfo info = {ReadHardwareInfoFromRegistry(L"SystemManufacturer"),
+                       ReadHardwareInfoFromRegistry(L"SystemProductName")};
   return info;
 }
 
