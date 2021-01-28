@@ -54,7 +54,7 @@ test("caspian_unittests") {
   ]
 }
 
-executable("cli") {
+executable("caspian_cli") {
   sources = [ "cli.cc" ]
   deps = [ ":caspian-lib" ]
   cflags = [ "-Wall" ]

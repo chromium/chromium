@@ -21,9 +21,13 @@ python_library("sizes_py") {
   data_deps = [ "//third_party/catapult/tracing:convert_chart_json" ]
 }
 
-if (is_linux || is_chromeos) {
-  group("caspian") {
-    deps = [ "//tools/binary_size/libsupersize/caspian:cli($host_toolchain)" ]
+if (is_linux) {
+  group("caspian_all") {
+    testonly = true
+    deps = [
+      "//tools/binary_size/libsupersize/caspian:caspian_cli",
+      "//tools/binary_size/libsupersize/caspian:caspian_unittests",
+    ]
   }
 }
 
