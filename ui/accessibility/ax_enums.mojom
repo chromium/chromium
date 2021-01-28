@@ -763,6 +763,11 @@ enum BoolAttribute {
 
   // True if the node has any ARIA attributes set.
   kHasAriaAttribute,
+
+  // This element allows touches to be passed through when a screen reader
+  // is in touch exploration mode, e.g. a virtual keyboard normally
+  // behaves this way.
+  kTouchPassthrough,
 };
 
 enum IntListAttribute {

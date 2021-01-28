@@ -1003,6 +1003,8 @@ const char* ToString(ax::mojom::BoolAttribute bool_attribute) {
       return "isPageBreakingObject";
     case ax::mojom::BoolAttribute::kHasAriaAttribute:
       return "hasAriaAttribute";
+    case ax::mojom::BoolAttribute::kTouchPassthrough:
+      return "touchPassthrough";
   }
 
   return "";

@@ -146,6 +146,10 @@ AXSparseAttributeSetterMap& GetAXSparseAttributeSetterMap() {
             &SetStringAttribute,
             ax::mojom::blink::StringAttribute::kRoleDescription));
     ax_sparse_setter_map.Set(
+        html_names::kAriaTouchpassthroughAttr,
+        WTF::BindRepeating(&SetBoolAttribute,
+                           ax::mojom::blink::BoolAttribute::kTouchPassthrough));
+    ax_sparse_setter_map.Set(
         html_names::kAriaKeyshortcutsAttr,
         WTF::BindRepeating(&SetStringAttribute,
                            ax::mojom::blink::StringAttribute::kKeyShortcuts));

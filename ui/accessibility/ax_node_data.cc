@@ -1609,6 +1609,9 @@ std::string AXNodeData::ToString() const {
       case ax::mojom::BoolAttribute::kHasAriaAttribute:
         result += " has_aria_attribute=" + value;
         break;
+      case ax::mojom::BoolAttribute::kTouchPassthrough:
+        result += " touch_passthrough=" + value;
+        break;
       case ax::mojom::BoolAttribute::kNone:
         break;
     }

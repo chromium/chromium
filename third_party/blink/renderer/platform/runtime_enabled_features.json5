@@ -187,6 +187,10 @@
       origin_trial_feature_name: "AppCache",
     },
     {
+      name: "AriaTouchPassthrough",
+      status: "experimental",
+    },
+    {
       name: "AudioOutputDevices",
       // Android does not yet support switching of audio output devices
       status: {"Android": "", "default": "stable"},
