@@ -36,6 +36,15 @@ namespace blink {
 
 extern const PLATFORM_EXPORT base::Feature kTimeoutHangingVideoCaptureStarts;
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class VideoCaptureStartOutcome {
+  kStarted = 0,
+  kTimedout = 1,
+  kFailed = 2,
+  kMaxValue = kFailed,
+};
+
 // VideoCaptureImpl represents a capture device in renderer process. It provides
 // an interface for clients to command the capture (Start, Stop, etc), and
 // communicates back to these clients e.g. the capture state or incoming
@@ -154,6 +163,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
 
   void OnStartTimedout();
 
+  void RecordStartOutcomeUMA(VideoCaptureStartOutcome outcome);
+
   // Callback for when GPU context lost is detected. The method fetches the new
   // GPU factories handle on |main_task_runner_| and sets |gpu_factories_| to
   // the new handle.
@@ -193,6 +204,8 @@ class PLATFORM_EXPORT VideoCaptureImpl
   base::TimeTicks first_frame_ref_time_;
 
   VideoCaptureState state_;
+  bool start_timedout_ = false;
+  bool start_outcome_reported_ = false;
 
   int num_first_frame_logs_ = 0;
 
