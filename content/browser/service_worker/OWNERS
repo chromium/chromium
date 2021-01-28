@@ -23,6 +23,7 @@ kinuko@chromium.org
 mek@chromium.org
 nhiroki@chromium.org
 shimazu@chromium.org
+wanderview@chromium.org
 
 # per-file rules:
 per-file *_type_converter*.*=set noparent
