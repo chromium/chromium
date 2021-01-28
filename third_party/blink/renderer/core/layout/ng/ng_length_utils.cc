@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include "base/optional.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
@@ -1168,8 +1169,6 @@ LayoutUnit LineOffsetForTextAlign(ETextAlign text_align,
   }
 }
 
-namespace {
-
 // Calculates default content size for html and body elements in quirks mode.
 // Returns |kIndefiniteSize| in all other cases.
 LayoutUnit CalculateDefaultBlockSize(
@@ -1185,6 +1184,22 @@ LayoutUnit CalculateDefaultBlockSize(
                     border_scrollbar_padding.BlockSum());
   }
   return kIndefiniteSize;
+}
+
+namespace {
+
+// Calculates default content size for html and body elements in quirks mode.
+// Returns |kIndefiniteSize| in all other cases.
+LayoutUnit ComputeInitialBlockSizeForFragment(
+    const NGConstraintSpace& space,
+    const ComputedStyle& style,
+    const NGBoxStrut& border_padding,
+    LayoutUnit intrinsic_size,
+    base::Optional<LayoutUnit> inline_size) {
+  if (space.IsFixedBlockSizeIndefinite())
+    return intrinsic_size;
+  return ComputeBlockSizeForFragment(space, style, border_padding,
+                                     intrinsic_size, inline_size);
 }
 
 // Clamp the inline size of the scrollbar, unless it's larger than the inline
@@ -1237,9 +1252,9 @@ NGFragmentGeometry CalculateInitialFragmentGeometry(
       constraint_space, node, border_scrollbar_padding);
   LayoutUnit inline_size =
       ComputeInlineSizeForFragment(constraint_space, node, border_padding);
-  LogicalSize border_box_size(
-      inline_size,
-      ComputeBlockSizeForFragment(constraint_space, style, border_padding,
+  LogicalSize border_box_size(inline_size,
+                              ComputeInitialBlockSizeForFragment(
+                                  constraint_space, style, border_padding,
                                   default_block_size, inline_size));
 
   if (UNLIKELY(border_box_size.inline_size <
@@ -1301,7 +1316,6 @@ LogicalSize AdjustChildPercentageSize(const NGConstraintSpace& space,
   // Flex items may have a fixed block-size, but children shouldn't resolve
   // their percentages against this.
   if (space.IsFixedBlockSizeIndefinite()) {
-    DCHECK(space.IsFixedBlockSize());
     DCHECK(node.IsFlexItem() || space.IsTableCell());
     child_percentage_size.block_size = kIndefiniteSize;
     return child_percentage_size;

@@ -435,7 +435,18 @@ class CORE_EXPORT NGConstraintSpace final {
 
   bool IsFixedBlockSize() const { return bitfields_.is_fixed_block_size; }
 
-  // Whether a fixed block-size should be considered indefinite.
+  // Whether the block size should be considered indefinite.
+  // The constraint space can have any of the combinations:
+  // (1) !IsFixedBlockSize && !IsFixedBlockSizeIndefinite -- default. no special
+  //     handling needed.
+  // (2) !IsFixedBlockSize && IsFixedBlockSizeIndefinite -- Treat your height as
+  //     indefinite.
+  // (3) IsFixedBlockSize && !IsFixedBlockSizeIndefinite -- You must be this
+  //     size and your children can resolve % block size against it.
+  // (4) IsFixedBlockSize && IsFixedBlockSizeIndefinite -- You must be this
+  //     size but your children canNOT resolve % block size against it.
+  // TODO(dgrogan): This method needs a new name now that #2 above exists.
+  // Either IsBlockSizeIndefinite or ForceBlockSizeToIndefinite.
   bool IsFixedBlockSizeIndefinite() const {
     return bitfields_.is_fixed_block_size_indefinite;
   }

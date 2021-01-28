@@ -86,7 +86,6 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   const bool is_horizontal_flow_;
   const bool is_cross_size_definite_;
   bool ignore_child_scrollbar_changes_ = false;
-  LogicalSize border_box_size_;
   LogicalSize child_percentage_size_;
   base::Optional<FlexLayoutAlgorithm> algorithm_;
 };

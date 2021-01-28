@@ -773,13 +773,8 @@ LayoutUnit FlexLayoutAlgorithm::IntrinsicContentBlockSize() const {
 
   if (IsColumnFlow()) {
     LayoutUnit max_size;
-    for (const FlexLine& line : flex_lines_) {
-      // Subtract main_axis_offset to remove border/padding
-      max_size =
-          std::max(line.main_axis_extent_ - line.sum_justify_adjustments_ -
-                       line.main_axis_offset_,
-                   max_size);
-    }
+    for (const FlexLine& line : flex_lines_)
+      max_size = std::max(line.sum_hypothetical_main_size_, max_size);
     return max_size;
   }
 

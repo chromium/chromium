@@ -395,6 +395,13 @@ CORE_EXPORT LayoutUnit ComputeBlockSizeForFragment(
     base::Optional<LayoutUnit> inline_size,
     LayoutUnit available_block_size_adjustment = LayoutUnit());
 
+// Calculates default content size for html and body elements in quirks mode.
+// Returns |kIndefiniteSize| in all other cases.
+CORE_EXPORT LayoutUnit
+CalculateDefaultBlockSize(const NGConstraintSpace& space,
+                          const NGBlockNode& node,
+                          const NGBoxStrut& border_scrollbar_padding);
+
 // Intrinsic size for replaced elements is computed as:
 // - |out_replaced_size| intrinsic size of the element. It might have no value.
 // - |out_aspect_ratio| only set if out_replaced_size is empty.

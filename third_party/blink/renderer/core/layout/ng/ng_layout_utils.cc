@@ -303,17 +303,12 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     // percentages against a fixed block-size.
     // We miss the cache if the %-resolution block-size changes from indefinite
     // to definite (or visa-versa).
-    bool is_new_initial_block_size_indefinite =
-        new_space.IsFixedBlockSize() ? new_space.IsFixedBlockSizeIndefinite()
-                                     : is_initial_block_size_indefinite;
 
     bool is_old_initial_block_size_indefinite =
-        old_space.IsFixedBlockSize()
-            ? old_space.IsFixedBlockSizeIndefinite()
-            : layout_result.IsInitialBlockSizeIndefinite();
+        layout_result.IsInitialBlockSizeIndefinite();
 
     if (is_old_initial_block_size_indefinite !=
-        is_new_initial_block_size_indefinite)
+        is_initial_block_size_indefinite)
       return NGLayoutCacheStatus::kNeedsLayout;
 
     // %-block-size children of table-cells have different behaviour if they
@@ -326,10 +321,10 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     // If our initial block-size is definite, we know that if we change our
     // block-size we'll affect any descendant that depends on the resulting
     // percentage block-size.
-    if (!is_block_size_equal && !is_new_initial_block_size_indefinite)
+    if (!is_block_size_equal && !is_initial_block_size_indefinite)
       return NGLayoutCacheStatus::kNeedsLayout;
 
-    DCHECK(is_block_size_equal || is_new_initial_block_size_indefinite);
+    DCHECK(is_block_size_equal || is_initial_block_size_indefinite);
 
     // At this point we know that either we have the same block-size for our
     // fragment, or our initial block-size was indefinite.
@@ -342,7 +337,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
     // As we only care about the quirks-mode %-block-size behaviour we remove
     // this false-positive by checking if we have an initial indefinite
     // block-size.
-    if (is_new_initial_block_size_indefinite &&
+    if (is_initial_block_size_indefinite &&
         physical_fragment.DependsOnPercentageBlockSize()) {
       DCHECK(is_old_initial_block_size_indefinite);
       if (new_space.PercentageResolutionBlockSize() !=

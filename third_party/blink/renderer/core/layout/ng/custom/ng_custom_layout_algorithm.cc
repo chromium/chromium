@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_intrinsic_sizes_result_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/custom_layout_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/custom_layout_scope.h"
 #include "third_party/blink/renderer/core/layout/ng/custom/layout_worklet.h"
@@ -48,11 +49,18 @@ MinMaxSizesResult NGCustomLayoutAlgorithm::ComputeMinMaxSizes(
 
   bool depends_on_percentage_block_size = false;
   IntrinsicSizesResultOptions* intrinsic_sizes_result_options = nullptr;
-  if (!instance->IntrinsicSizes(
-          ConstraintSpace(), document, Node(),
-          container_builder_.InitialBorderBoxSize(), BorderScrollbarPadding(),
-          input.percentage_resolution_block_size, &scope,
-          &intrinsic_sizes_result_options, &depends_on_percentage_block_size)) {
+  LogicalSize border_box_size{
+      container_builder_.InlineSize(),
+      ComputeBlockSizeForFragment(
+          ConstraintSpace(), Style(), BorderPadding(),
+          CalculateDefaultBlockSize(ConstraintSpace(), Node(),
+                                    BorderScrollbarPadding()),
+          container_builder_.InlineSize())};
+  if (!instance->IntrinsicSizes(ConstraintSpace(), document, Node(),
+                                border_box_size, BorderScrollbarPadding(),
+                                input.percentage_resolution_block_size, &scope,
+                                &intrinsic_sizes_result_options,
+                                &depends_on_percentage_block_size)) {
     // TODO(ikilpatrick): Report this error to the developer.
     return FallbackMinMaxSizes(input);
   }
@@ -94,8 +102,14 @@ scoped_refptr<const NGLayoutResult> NGCustomLayoutAlgorithm::Layout() {
 
   FragmentResultOptions* fragment_result_options = nullptr;
   scoped_refptr<SerializedScriptValue> fragment_result_data;
-  if (!instance->Layout(ConstraintSpace(), document, Node(),
-                        container_builder_.InitialBorderBoxSize(),
+  LogicalSize border_box_size{
+      container_builder_.InlineSize(),
+      ComputeBlockSizeForFragment(
+          ConstraintSpace(), Style(), BorderPadding(),
+          CalculateDefaultBlockSize(ConstraintSpace(), Node(),
+                                    BorderScrollbarPadding()),
+          container_builder_.InlineSize())};
+  if (!instance->Layout(ConstraintSpace(), document, Node(), border_box_size,
                         BorderScrollbarPadding(), &scope,
                         fragment_result_options, &fragment_result_data)) {
     // TODO(ikilpatrick): Report this error to the developer.

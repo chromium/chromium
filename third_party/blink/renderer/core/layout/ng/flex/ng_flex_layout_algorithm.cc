@@ -7,6 +7,7 @@
 #include <memory>
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/layout/flexible_box_algorithm.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_button.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
@@ -36,7 +37,6 @@ NGFlexLayoutAlgorithm::NGFlexLayoutAlgorithm(
       is_column_(Style().ResolvedIsColumnFlexDirection()),
       is_horizontal_flow_(FlexLayoutAlgorithm::IsHorizontalFlow(Style())),
       is_cross_size_definite_(IsContainerCrossSizeDefinite()) {
-  border_box_size_ = container_builder_.InitialBorderBoxSize();
   child_percentage_size_ = CalculateChildPercentageSize(
       ConstraintSpace(), Node(), ChildAvailableSize());
 
@@ -52,7 +52,7 @@ bool NGFlexLayoutAlgorithm::MainAxisIsInlineAxis(
 
 LayoutUnit NGFlexLayoutAlgorithm::MainAxisContentExtent(
     LayoutUnit sum_hypothetical_main_size) const {
-  if (Style().ResolvedIsColumnFlexDirection()) {
+  if (is_column_) {
     // Even though we only pass border_padding in the third parameter, the
     // return value includes scrollbar, so subtract scrollbar to get content
     // size.
@@ -65,7 +65,7 @@ LayoutUnit NGFlexLayoutAlgorithm::MainAxisContentExtent(
                ConstraintSpace(), Style(), BorderPadding(),
                sum_hypothetical_main_size.ClampNegativeToZero() +
                    border_scrollbar_padding,
-               border_box_size_.inline_size) -
+               container_builder_.InlineSize()) -
            border_scrollbar_padding;
   }
   return ChildAvailableSize().inline_size;
@@ -163,33 +163,15 @@ void NGFlexLayoutAlgorithm::HandleOutOfFlowPositioned(NGBlockNode child) {
 
 bool NGFlexLayoutAlgorithm::IsColumnContainerMainSizeDefinite() const {
   DCHECK(is_column_);
-  // If this flex container is also a flex item, it might have a definite size
-  // imposed on it by its parent flex container.
-  // We can't rely on BlockLengthUnresolvable for this case because that
-  // considers Auto as unresolvable even when the block size is fixed and
-  // definite.
-  if (ConstraintSpace().IsFixedBlockSize() &&
-      !ConstraintSpace().IsFixedBlockSizeIndefinite())
-    return true;
-  Length main_size = Style().LogicalHeight();
-  return !BlockLengthUnresolvable(ConstraintSpace(), main_size,
-                                  LengthResolvePhase::kLayout);
+  return ChildAvailableSize().block_size != kIndefiniteSize;
 }
 
 bool NGFlexLayoutAlgorithm::IsContainerCrossSizeDefinite() const {
   // A column flexbox's cross axis is an inline size, so is definite.
   if (is_column_)
     return true;
-  // If this flex container is also a flex item, it might have a definite size
-  // imposed on it by its parent flex container.
-  // TODO(dgrogan): Removing this check doesn't cause any tests to fail. Remove
-  // it if unneeded or add a test that needs it.
-  if (ConstraintSpace().IsFixedBlockSize() &&
-      !ConstraintSpace().IsFixedBlockSizeIndefinite())
-    return true;
 
-  return !BlockLengthUnresolvable(ConstraintSpace(), Style().LogicalHeight(),
-                                  LengthResolvePhase::kLayout);
+  return ChildAvailableSize().block_size != kIndefiniteSize;
 }
 
 bool NGFlexLayoutAlgorithm::DoesItemStretch(const NGBlockNode& child) const {
@@ -377,8 +359,10 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
   // For determining the intrinsic block-size we make %-block-sizes resolve
   // against an indefinite size.
   LogicalSize child_percentage_size = child_percentage_size_;
-  if (is_column_)
+  if (is_column_) {
     child_percentage_size.block_size = kIndefiniteSize;
+    space_builder.SetIsFixedBlockSizeIndefinite(true);
+  }
 
   space_builder.SetAvailableSize(child_available_size);
   space_builder.SetPercentageResolutionSize(child_percentage_size);
@@ -1061,8 +1045,8 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
     main_axis_end_offset = BorderScrollbarPadding().inline_end;
   }
   FlexLine* line;
-  while (
-      (line = algorithm_->ComputeNextFlexLine(border_box_size_.inline_size))) {
+  while ((line = algorithm_->ComputeNextFlexLine(
+              container_builder_.InlineSize()))) {
     line->SetContainerMainInnerSize(
         MainAxisContentExtent(line->sum_hypothetical_main_size_));
     line->FreezeInflexibleItems();
@@ -1207,7 +1191,7 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
                               BorderScrollbarPadding(), intrinsic_block_size);
   LayoutUnit block_size = ComputeBlockSizeForFragment(
       ConstraintSpace(), Style(), BorderPadding(), intrinsic_block_size,
-      border_box_size_.inline_size);
+      container_builder_.InlineSize());
 
   container_builder_.SetIntrinsicBlockSize(intrinsic_block_size);
   container_builder_.SetFragmentsTotalBlockSize(block_size);

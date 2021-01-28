@@ -771,7 +771,8 @@ TEST_F('OSSettingsDevicePageTest', 'DevicePageTest', () => {
   mocha.grep(assert(device_page_tests.TestNames.DevicePage)).run();
 });
 
-TEST_F('OSSettingsDevicePageTest', 'DisplayTest', () => {
+// Fails after https://chromium-review.googlesource.com/c/chromium/src/+/2640774
+TEST_F('OSSettingsDevicePageTest', 'DISABLED_DisplayTest', () => {
   mocha.grep(assert(device_page_tests.TestNames.Display)).run();
 });
 
