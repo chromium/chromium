@@ -72,6 +72,9 @@ TEST_F('MagnifierE2ETest', 'MovesScreenMagnifierToFocusedElement', function() {
         <button id="banana" style="margin-top: 400px">Banana</button>
       `;
   this.runWithLoadedTree(site, async function(root) {
+    const magnifier = accessibilityCommon.getMagnifierForTest();
+    magnifier.setIsInitializingForTest(false);
+
     const apple = root.find({attributes: {name: 'Apple'}});
     const banana = root.find({attributes: {name: 'Banana'}});
 
@@ -151,6 +154,9 @@ TEST_F(
     </script>
   `;
       this.runWithLoadedTree(site, async function(root) {
+        const magnifier = accessibilityCommon.getMagnifierForTest();
+        magnifier.setIsInitializingForTest(false);
+
         const top = root.find({attributes: {name: 'Top'}});
         const banana = root.find({attributes: {name: 'Banana'}});
         const group = root.find({role: RoleType.GROUP});
@@ -184,6 +190,7 @@ TEST_F('MagnifierE2ETest', 'ScreenMagnifierFocusFollowingPref', function() {
     assertEquals(Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING, pref.key);
     assertFalse(pref.value);
     magnifier = accessibilityCommon.getMagnifierForTest();
+    magnifier.setIsInitializingForTest(false);
     assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
     assertFalse(magnifier.shouldFollowFocus());
 
@@ -194,6 +201,7 @@ TEST_F('MagnifierE2ETest', 'ScreenMagnifierFocusFollowingPref', function() {
     assertEquals(Magnifier.Prefs.SCREEN_MAGNIFIER_FOCUS_FOLLOWING, pref.key);
     assertTrue(pref.value);
     magnifier = accessibilityCommon.getMagnifierForTest();
+    magnifier.setIsInitializingForTest(false);
     assertEquals(magnifier.type, Magnifier.Type.FULL_SCREEN);
     assertTrue(magnifier.shouldFollowFocus());
   })();
