@@ -4,6 +4,11 @@
 
 #include "chrome/browser/apps/platform_apps/extension_app_shim_manager_delegate_mac.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "apps/launcher.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -55,6 +60,8 @@ class EnableViaPrompt : public ExtensionEnableFlowDelegate {
       : profile_(profile),
         extension_id_(extension_id),
         callback_(std::move(callback)) {}
+  EnableViaPrompt(const EnableViaPrompt&) = delete;
+  EnableViaPrompt& operator=(const EnableViaPrompt&) = delete;
 
   void Run() {
     flow_.reset(new ExtensionEnableFlow(profile_, extension_id_, this));
@@ -72,8 +79,6 @@ class EnableViaPrompt : public ExtensionEnableFlowDelegate {
   std::string extension_id_;
   base::OnceCallback<void()> callback_;
   std::unique_ptr<ExtensionEnableFlow> flow_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnableViaPrompt);
 };
 
 const Extension* MaybeGetAppExtension(content::BrowserContext* context,

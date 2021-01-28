@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -44,6 +43,9 @@ class AppShimTerminationManagerImpl : public AppShimTerminationManager,
         content::NotificationService::AllBrowserContextsAndSources());
   }
 
+  AppShimTerminationManagerImpl(const AppShimTerminationManagerImpl&) = delete;
+  AppShimTerminationManagerImpl& operator=(
+      const AppShimTerminationManagerImpl&) = delete;
   ~AppShimTerminationManagerImpl() override { NOTREACHED(); }
 
  private:
@@ -78,8 +80,6 @@ class AppShimTerminationManagerImpl : public AppShimTerminationManager,
 
   content::NotificationRegistrar registrar_;
   bool browser_session_running_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AppShimTerminationManagerImpl);
 };
 
 }  // namespace

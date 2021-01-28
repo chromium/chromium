@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_APPS_APP_SERVICE_ARC_APPS_FACTORY_H_
 #define CHROME_BROWSER_APPS_APP_SERVICE_ARC_APPS_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -27,13 +26,13 @@ class ArcAppsFactory : public BrowserContextKeyedServiceFactory {
   friend struct base::DefaultSingletonTraits<ArcAppsFactory>;
 
   ArcAppsFactory();
-  ~ArcAppsFactory() override;
+  ArcAppsFactory(const ArcAppsFactory&) = delete;
+  ArcAppsFactory& operator=(const ArcAppsFactory&) = delete;
+  ~ArcAppsFactory() override = default;
 
   // BrowserContextKeyedServiceFactory overrides.
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppsFactory);
 };
 
 }  // namespace apps

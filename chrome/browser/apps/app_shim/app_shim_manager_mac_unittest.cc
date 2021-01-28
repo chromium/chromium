@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -97,8 +96,10 @@ class MockDelegate : public AppShimManager::Delegate {
 
 class TestingAppShimManager : public AppShimManager {
  public:
-  TestingAppShimManager(std::unique_ptr<Delegate> delegate)
+  explicit TestingAppShimManager(std::unique_ptr<Delegate> delegate)
       : AppShimManager(std::move(delegate)) {}
+  TestingAppShimManager(const TestingAppShimManager&) = delete;
+  TestingAppShimManager& operator=(const TestingAppShimManager&) = delete;
   virtual ~TestingAppShimManager() { DCHECK(load_profile_callbacks_.empty()); }
 
   MOCK_METHOD1(OnShimFocus, void(AppShimHost* host));
@@ -165,7 +166,6 @@ class TestingAppShimManager : public AppShimManager {
   std::unique_ptr<AppShimHost> host_for_create_ = nullptr;
   std::vector<chrome::mojom::ProfileMenuItemPtr> new_profile_menu_items_;
   bool is_acceptably_code_signed_ = true;
-  DISALLOW_COPY_AND_ASSIGN(TestingAppShimManager);
 };
 
 class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
@@ -181,6 +181,10 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
         is_from_bookmark_(is_from_bookmark),
         launch_result_(launch_result),
         weak_factory_(this) {}
+  TestingAppShimHostBootstrap(const TestingAppShimHostBootstrap&) = delete;
+  TestingAppShimHostBootstrap& operator=(const TestingAppShimHostBootstrap&) =
+      delete;
+
   void DoTestLaunch(chrome::mojom::AppShimLaunchType launch_type,
                     const std::vector<base::FilePath>& files) {
     mojo::Remote<chrome::mojom::AppShimHost> host;
@@ -217,7 +221,6 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
   // the callback to set it has arrived.
   base::Optional<chrome::mojom::AppShimLaunchResult>* launch_result_;
   base::WeakPtrFactory<TestingAppShimHostBootstrap> weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(TestingAppShimHostBootstrap);
 };
 
 const char kTestAppIdA[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
@@ -253,6 +256,8 @@ class TestHost : public AppShimHost {
                     false /* uses_remote_views */),
         test_app_shim_(new TestAppShim),
         test_weak_factory_(this) {}
+  TestHost(const TestHost&) = delete;
+  TestHost& operator=(const TestHost&) = delete;
   ~TestHost() override {}
 
   chrome::mojom::AppShim* GetAppShim() const override {
@@ -282,12 +287,13 @@ class TestHost : public AppShimHost {
   bool did_connect_to_host_ = false;
 
   base::WeakPtrFactory<TestHost> test_weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(TestHost);
 };
 
 class AppShimManagerTest : public testing::Test {
  protected:
   AppShimManagerTest() {}
+  AppShimManagerTest(const AppShimManagerTest&) = delete;
+  AppShimManagerTest& operator=(const AppShimManagerTest&) = delete;
   ~AppShimManagerTest() override {}
 
   void SetUp() override {
@@ -525,7 +531,6 @@ class AppShimManagerTest : public testing::Test {
 
  private:
   std::unique_ptr<TestingPrefServiceSimple> local_state_;
-  DISALLOW_COPY_AND_ASSIGN(AppShimManagerTest);
 };
 
 TEST_F(AppShimManagerTest, LaunchProfileNotFound) {

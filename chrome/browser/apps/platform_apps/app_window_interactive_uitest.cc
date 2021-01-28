@@ -429,11 +429,13 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, MAYBE_TestFullscreen) {
 // when windows are created hidden, we allow the app some time to show the
 // the window.
 class AppWindowHiddenKeepAliveTest : public extensions::PlatformAppBrowserTest {
- protected:
-  AppWindowHiddenKeepAliveTest() {}
+ public:
+  AppWindowHiddenKeepAliveTest(const AppWindowHiddenKeepAliveTest&) = delete;
+  AppWindowHiddenKeepAliveTest& operator=(const AppWindowHiddenKeepAliveTest&) =
+      delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppWindowHiddenKeepAliveTest);
+ protected:
+  AppWindowHiddenKeepAliveTest() = default;
 };
 
 // A window that becomes hidden should not keep Chrome alive.

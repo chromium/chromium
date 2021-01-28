@@ -72,6 +72,8 @@ class AppShimHost : public chrome::mojom::AppShimHost {
               const base::FilePath& profile_path,
               bool uses_remote_views);
 
+  AppShimHost(const AppShimHost&) = delete;
+  AppShimHost& operator=(const AppShimHost&) = delete;
   ~AppShimHost() override;
 
   bool UsesRemoteViews() const { return uses_remote_views_; }
@@ -129,7 +131,7 @@ class AppShimHost : public chrome::mojom::AppShimHost {
   // Only allow LaunchShim to have any effect on the first time it is called. If
   // that launch fails, it will re-launch (requesting that the shim be
   // re-created).
-  bool launch_shim_has_been_called_;
+  bool launch_shim_has_been_called_ = false;
 
   std::unique_ptr<AppShimHostBootstrap> bootstrap_;
 
@@ -144,7 +146,6 @@ class AppShimHost : public chrome::mojom::AppShimHost {
 
   // This weak factory is used for launch callbacks only.
   base::WeakPtrFactory<AppShimHost> launch_weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(AppShimHost);
 };
 
 #endif  // CHROME_BROWSER_APPS_APP_SHIM_APP_SHIM_HOST_MAC_H_

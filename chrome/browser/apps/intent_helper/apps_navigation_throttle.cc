@@ -57,9 +57,7 @@ AppsNavigationThrottle::MaybeCreate(content::NavigationHandle* handle) {
 
 AppsNavigationThrottle::AppsNavigationThrottle(
     content::NavigationHandle* navigation_handle)
-    : content::NavigationThrottle(navigation_handle),
-      ui_displayed_(false),
-      navigate_from_link_(false) {}
+    : content::NavigationThrottle(navigation_handle) {}
 
 AppsNavigationThrottle::~AppsNavigationThrottle() = default;
 

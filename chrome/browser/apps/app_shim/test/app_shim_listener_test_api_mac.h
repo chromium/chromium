@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 class AppShimListener;
 
 namespace base {
@@ -24,6 +22,8 @@ namespace test {
 class AppShimListenerTestApi {
  public:
   explicit AppShimListenerTestApi(AppShimListener* listener);
+  AppShimListenerTestApi(const AppShimListenerTestApi&) = delete;
+  AppShimListenerTestApi& operator=(const AppShimListenerTestApi&) = delete;
 
   apps::MachBootstrapAcceptor* mach_acceptor();
 
@@ -31,8 +31,6 @@ class AppShimListenerTestApi {
 
  private:
   AppShimListener* listener_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(AppShimListenerTestApi);
 };
 
 }  // namespace test

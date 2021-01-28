@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -12,8 +11,10 @@
 
 class SpeechRecognitionTest : public extensions::PlatformAppBrowserTest {
  public:
-  SpeechRecognitionTest() {}
-  ~SpeechRecognitionTest() override {}
+  SpeechRecognitionTest() = default;
+  SpeechRecognitionTest(const SpeechRecognitionTest&) = delete;
+  SpeechRecognitionTest& operator=(const SpeechRecognitionTest&) = delete;
+  ~SpeechRecognitionTest() override = default;
 
  protected:
   void SetUp() override {
@@ -37,8 +38,6 @@ class SpeechRecognitionTest : public extensions::PlatformAppBrowserTest {
  private:
   std::unique_ptr<content::FakeSpeechRecognitionManager>
       fake_speech_recognition_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognitionTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SpeechRecognitionTest, SpeechFromBackgroundPage) {

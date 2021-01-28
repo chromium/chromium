@@ -8,11 +8,11 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
@@ -84,6 +84,8 @@ class AppServiceProxy : public KeyedService,
 #endif
 
   explicit AppServiceProxy(Profile* profile);
+  AppServiceProxy(const AppServiceProxy&) = delete;
+  AppServiceProxy& operator=(const AppServiceProxy&) = delete;
   ~AppServiceProxy() override;
 
   void ReInitializeForTesting(Profile* profile);
@@ -459,8 +461,6 @@ class AppServiceProxy : public KeyedService,
   base::OnceClosure dialog_created_callback_;
 
   base::WeakPtrFactory<AppServiceProxy> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppServiceProxy);
 };
 
 class ScopedOmitBuiltInAppsForTesting {

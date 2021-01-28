@@ -5,7 +5,6 @@
 #include <stdint.h>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
@@ -43,7 +42,9 @@ class FakeDriveServiceFactory
   explicit FakeDriveServiceFactory(
       drive::FakeDriveService::ChangeObserver* change_observer)
       : change_observer_(change_observer) {}
-  ~FakeDriveServiceFactory() override {}
+  FakeDriveServiceFactory(const FakeDriveServiceFactory&) = delete;
+  FakeDriveServiceFactory& operator=(const FakeDriveServiceFactory&) = delete;
+  ~FakeDriveServiceFactory() override = default;
 
   std::unique_ptr<drive::DriveServiceInterface> CreateDriveService(
       signin::IdentityManager* identity_manager,
@@ -57,8 +58,6 @@ class FakeDriveServiceFactory
 
  private:
   drive::FakeDriveService::ChangeObserver* change_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeDriveServiceFactory);
 };
 
 }  // namespace
@@ -66,7 +65,9 @@ class FakeDriveServiceFactory
 class SyncFileSystemTest : public extensions::PlatformAppBrowserTest,
                            public drive::FakeDriveService::ChangeObserver {
  public:
-  SyncFileSystemTest() : remote_service_(nullptr) {}
+  SyncFileSystemTest() = default;
+  SyncFileSystemTest(const SyncFileSystemTest&) = delete;
+  SyncFileSystemTest& operator=(const SyncFileSystemTest&) = delete;
 
   scoped_refptr<base::SequencedTaskRunner> MakeSequencedTaskRunner() {
     return base::ThreadPool::CreateSequencedTaskRunner(
@@ -149,9 +150,7 @@ class SyncFileSystemTest : public extensions::PlatformAppBrowserTest,
 
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
 
-  drive_backend::SyncEngine* remote_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncFileSystemTest);
+  drive_backend::SyncEngine* remote_service_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(SyncFileSystemTest, AuthorizationTest) {

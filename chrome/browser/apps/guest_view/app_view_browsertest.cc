@@ -4,7 +4,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -44,6 +43,8 @@ class AppViewTest : public extensions::PlatformAppBrowserTest {
   AppViewTest() {
     GuestViewManager::set_factory_for_testing(&factory_);
   }
+  AppViewTest(const AppViewTest&) = delete;
+  AppViewTest& operator=(const AppViewTest&) = delete;
 
   enum TestServer {
     NEEDS_TEST_SERVER,
@@ -103,8 +104,6 @@ class AppViewTest : public extensions::PlatformAppBrowserTest {
 
   TestGuestViewManagerFactory factory_;
   guest_view::TestGuestViewManager* test_guest_view_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppViewTest);
 };
 
 // Tests that <appview> is able to navigate to another installed app.

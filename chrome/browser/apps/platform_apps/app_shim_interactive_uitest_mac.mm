@@ -15,7 +15,6 @@
 #import "base/mac/launch_services_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/run_loop.h"
@@ -64,6 +63,8 @@ class AppShimInteractiveTest : public extensions::PlatformAppBrowserTest {
 
   AppShimInteractiveTest()
       : auto_reset_(&g_app_shims_allow_update_and_launch_in_tests, true) {}
+  AppShimInteractiveTest(const AppShimInteractiveTest&) = delete;
+  AppShimInteractiveTest& operator=(const AppShimInteractiveTest&) = delete;
 
   // Install a test app of |type| and reliably wait for its app shim to be
   // created on disk. Sets |shim_path_|.
@@ -76,8 +77,6 @@ class AppShimInteractiveTest : public extensions::PlatformAppBrowserTest {
  private:
   // Temporarily enable app shims.
   base::AutoReset<bool> auto_reset_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppShimInteractiveTest);
 };
 
 // Watches for an app shim to connect.
@@ -86,10 +85,12 @@ class WindowedAppShimLaunchObserver : public apps::AppShimManager {
   WindowedAppShimLaunchObserver(const std::string& app_id)
       : AppShimManager(
             std::make_unique<apps::ExtensionAppShimManagerDelegate>()),
-        app_mode_id_(app_id),
-        observed_(false) {
+        app_mode_id_(app_id) {
     StartObserving();
   }
+  WindowedAppShimLaunchObserver(const WindowedAppShimLaunchObserver&) = delete;
+  WindowedAppShimLaunchObserver& operator=(
+      const WindowedAppShimLaunchObserver&) = delete;
 
   void StartObserving() {
     observed_ = false;
@@ -138,20 +139,21 @@ class WindowedAppShimLaunchObserver : public apps::AppShimManager {
 
  private:
   std::string app_mode_id_;
-  bool observed_;
+  bool observed_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowedAppShimLaunchObserver);
 };
 
 // Watches for a hosted app browser window to open.
 class HostedAppBrowserListObserver : public BrowserListObserver {
  public:
   explicit HostedAppBrowserListObserver(const std::string& app_id)
-      : app_id_(app_id), observed_add_(false), observed_removed_(false) {
+      : app_id_(app_id) {
     BrowserList::AddObserver(this);
   }
 
+  HostedAppBrowserListObserver(const HostedAppBrowserListObserver&) = delete;
+  HostedAppBrowserListObserver& operator=(const HostedAppBrowserListObserver&) =
+      delete;
   ~HostedAppBrowserListObserver() override {
     BrowserList::RemoveObserver(this);
   }
@@ -191,20 +193,20 @@ class HostedAppBrowserListObserver : public BrowserListObserver {
 
  private:
   std::string app_id_;
-  bool observed_add_;
-  bool observed_removed_;
+  bool observed_add_ = false;
+  bool observed_removed_ = false;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostedAppBrowserListObserver);
 };
 
 class AppLifetimeMonitorObserver : public apps::AppLifetimeMonitor::Observer {
  public:
-  AppLifetimeMonitorObserver(Profile* profile)
-      : profile_(profile), activated_count_(0), deactivated_count_(0) {
+  AppLifetimeMonitorObserver(Profile* profile) : profile_(profile) {
     apps::AppLifetimeMonitorFactory::GetForBrowserContext(profile_)
         ->AddObserver(this);
   }
+  AppLifetimeMonitorObserver(const AppLifetimeMonitorObserver&) = delete;
+  AppLifetimeMonitorObserver& operator=(const AppLifetimeMonitorObserver&) =
+      delete;
   ~AppLifetimeMonitorObserver() override {
     apps::AppLifetimeMonitorFactory::GetForBrowserContext(profile_)
         ->RemoveObserver(this);
@@ -226,10 +228,8 @@ class AppLifetimeMonitorObserver : public apps::AppLifetimeMonitor::Observer {
 
  private:
   Profile* profile_;
-  int activated_count_;
-  int deactivated_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppLifetimeMonitorObserver);
+  int activated_count_ = 0;
+  int deactivated_count_ = 0;
 };
 
 NSString* GetBundleID(const base::FilePath& shim_path) {

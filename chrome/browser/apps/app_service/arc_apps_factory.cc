@@ -42,8 +42,6 @@ ArcAppsFactory::ArcAppsFactory()
   DependsOn(apps::AppServiceProxyFactory::GetInstance());
 }
 
-ArcAppsFactory::~ArcAppsFactory() = default;
-
 KeyedService* ArcAppsFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new ArcApps(Profile::FromBrowserContext(context));

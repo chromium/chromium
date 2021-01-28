@@ -408,9 +408,7 @@ ArcApps* ArcApps::CreateForTesting(Profile* profile,
 ArcApps::ArcApps(Profile* profile) : ArcApps(profile, nullptr) {}
 
 ArcApps::ArcApps(Profile* profile, apps::AppServiceProxy* proxy)
-    : profile_(profile),
-      arc_icon_once_loader_(profile),
-      settings_app_is_active_(false) {
+    : profile_(profile), arc_icon_once_loader_(profile) {
   if (!arc::IsArcAllowedForProfile(profile_) ||
       (arc::ArcServiceManager::Get() == nullptr)) {
     return;

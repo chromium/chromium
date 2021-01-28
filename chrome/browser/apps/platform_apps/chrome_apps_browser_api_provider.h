@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_APPS_PLATFORM_APPS_CHROME_APPS_BROWSER_API_PROVIDER_H_
 #define CHROME_BROWSER_APPS_PLATFORM_APPS_CHROME_APPS_BROWSER_API_PROVIDER_H_
 
-#include "base/macros.h"
 #include "extensions/browser/extensions_browser_api_provider.h"
 
 namespace chrome_apps {
@@ -14,13 +13,13 @@ class ChromeAppsBrowserAPIProvider
     : public extensions::ExtensionsBrowserAPIProvider {
  public:
   ChromeAppsBrowserAPIProvider();
+  ChromeAppsBrowserAPIProvider(const ChromeAppsBrowserAPIProvider&) = delete;
+  ChromeAppsBrowserAPIProvider& operator=(const ChromeAppsBrowserAPIProvider&) =
+      delete;
   ~ChromeAppsBrowserAPIProvider() override;
 
   // extensions::ExtensionsBrowserAPIProvider:
   void RegisterExtensionFunctions(ExtensionFunctionRegistry* registry) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppsBrowserAPIProvider);
 };
 
 }  // namespace chrome_apps

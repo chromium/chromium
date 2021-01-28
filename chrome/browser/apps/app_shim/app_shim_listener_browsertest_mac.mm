@@ -11,7 +11,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
-#include "base/macros.h"
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -53,6 +52,8 @@ GURL TestAppUrl() {
 class TestShimClient : public chrome::mojom::AppShim {
  public:
   TestShimClient();
+  TestShimClient(const TestShimClient&) = delete;
+  TestShimClient& operator=(const TestShimClient&) = delete;
 
   // Friend accessor.
   mojo::PlatformChannelEndpoint ConnectToBrowser(
@@ -96,8 +97,6 @@ class TestShimClient : public chrome::mojom::AppShim {
   mojo::Remote<chrome::mojom::AppShimHost> host_;
   mojo::PendingReceiver<chrome::mojom::AppShimHost> host_receiver_;
   mojo::Remote<chrome::mojom::AppShimHostBootstrap> host_bootstrap_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestShimClient);
 };
 
 TestShimClient::TestShimClient()
@@ -124,6 +123,9 @@ class AppShimListenerBrowserTest : public InProcessBrowserTest,
                                    public chrome::mojom::AppShimHost {
  public:
   AppShimListenerBrowserTest() = default;
+  AppShimListenerBrowserTest(const AppShimListenerBrowserTest&) = delete;
+  AppShimListenerBrowserTest& operator=(const AppShimListenerBrowserTest&) =
+      delete;
 
  protected:
   // Wait for OnShimProcessConnected, then send a quit, and wait for the
@@ -154,8 +156,6 @@ class AppShimListenerBrowserTest : public InProcessBrowserTest,
   mojo::Remote<chrome::mojom::AppShim> app_shim_;
 
   int launch_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(AppShimListenerBrowserTest);
 };
 
 void AppShimListenerBrowserTest::RunAndExitGracefully() {
@@ -238,7 +238,11 @@ IN_PROC_BROWSER_TEST_F(AppShimListenerBrowserTest, ReCreate) {
 // Tests for the files created by AppShimListener.
 class AppShimListenerBrowserTestSymlink : public AppShimListenerBrowserTest {
  public:
-  AppShimListenerBrowserTestSymlink() {}
+  AppShimListenerBrowserTestSymlink() = default;
+  AppShimListenerBrowserTestSymlink(const AppShimListenerBrowserTestSymlink&) =
+      delete;
+  AppShimListenerBrowserTestSymlink& operator=(
+      const AppShimListenerBrowserTestSymlink&) = delete;
 
  protected:
   base::FilePath version_path_;
@@ -246,8 +250,6 @@ class AppShimListenerBrowserTestSymlink : public AppShimListenerBrowserTest {
  private:
   bool SetUpUserDataDirectory() override;
   void TearDownInProcessBrowserTestFixture() override;
-
-  DISALLOW_COPY_AND_ASSIGN(AppShimListenerBrowserTestSymlink);
 };
 
 bool AppShimListenerBrowserTestSymlink::SetUpUserDataDirectory() {

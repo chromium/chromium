@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "chrome/browser/apps/app_shim/app_shim_host_bootstrap_mac.h"
-#include "chrome/browser/apps/app_shim/app_shim_host_mac.h"
 #include "chrome/common/chrome_features.h"
 #include "components/remote_cocoa/browser/application_host.h"
 #include "components/remote_cocoa/common/application.mojom.h"
@@ -23,7 +22,6 @@ AppShimHost::AppShimHost(AppShimHost::Client* client,
                          bool uses_remote_views)
     : client_(client),
       app_shim_receiver_(app_shim_.BindNewPipeAndPassReceiver()),
-      launch_shim_has_been_called_(false),
       app_id_(app_id),
       profile_path_(profile_path),
       uses_remote_views_(uses_remote_views),

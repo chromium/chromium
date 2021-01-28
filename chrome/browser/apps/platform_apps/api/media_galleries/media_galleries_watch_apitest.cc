@@ -8,7 +8,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -74,9 +73,12 @@ const char kGalleryChangedEventReceived[] = "gallery_changed_event_received";
 
 class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
  public:
-  MediaGalleriesGalleryWatchApiTest()
-      : extension_(nullptr), background_host_(nullptr) {}
-  ~MediaGalleriesGalleryWatchApiTest() override {}
+  MediaGalleriesGalleryWatchApiTest() = default;
+  MediaGalleriesGalleryWatchApiTest(const MediaGalleriesGalleryWatchApiTest&) =
+      delete;
+  MediaGalleriesGalleryWatchApiTest& operator=(
+      const MediaGalleriesGalleryWatchApiTest&) = delete;
+  ~MediaGalleriesGalleryWatchApiTest() override = default;
 
  protected:
   // ExtensionApiTest overrides.
@@ -173,11 +175,9 @@ class MediaGalleriesGalleryWatchApiTest : public extensions::ExtensionApiTest {
 
   base::ScopedTempDir test_gallery_;
 
-  const extensions::Extension* extension_;
+  const extensions::Extension* extension_ = nullptr;
 
-  content::RenderViewHost* background_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleriesGalleryWatchApiTest);
+  content::RenderViewHost* background_host_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(MediaGalleriesGalleryWatchApiTest, BasicGalleryWatch) {

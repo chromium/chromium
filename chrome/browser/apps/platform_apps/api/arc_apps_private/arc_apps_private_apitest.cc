@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/chromeos/arc/arc_util.h"
@@ -27,6 +26,8 @@
 class ArcAppsPrivateApiTest : public extensions::ExtensionApiTest {
  public:
   ArcAppsPrivateApiTest() = default;
+  ArcAppsPrivateApiTest(const ArcAppsPrivateApiTest&) = delete;
+  ArcAppsPrivateApiTest& operator=(const ArcAppsPrivateApiTest&) = delete;
   ~ArcAppsPrivateApiTest() override = default;
 
  protected:
@@ -75,8 +76,6 @@ class ArcAppsPrivateApiTest : public extensions::ExtensionApiTest {
 
  private:
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppsPrivateApiTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, GetPackageNameAndLaunchApp) {

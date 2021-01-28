@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/apps/app_service/arc_icon_once_loader.h"
+
+#include <vector>
+
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_icon.h"
 #include "chrome/common/chrome_features.h"
@@ -21,6 +24,8 @@ class ArcIconOnceLoader::SizeSpecificLoader : public ArcAppIcon::Observer {
                      int32_t size_in_dip,
                      apps::mojom::IconType icon_type,
                      ArcIconOnceLoader& host);
+  SizeSpecificLoader(const SizeSpecificLoader&) = delete;
+  SizeSpecificLoader& operator=(const SizeSpecificLoader&) = delete;
   ~SizeSpecificLoader() override;
 
   void LoadIcon(const std::string& app_id,
@@ -44,8 +49,6 @@ class ArcIconOnceLoader::SizeSpecificLoader : public ArcAppIcon::Observer {
 
   // Maps App IDs to callbacks to run when an icon is completely loaded.
   std::multimap<std::string, base::OnceCallback<void(ArcAppIcon*)>> callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(SizeSpecificLoader);
 };
 
 ArcIconOnceLoader::SizeSpecificLoader::SizeSpecificLoader(

@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/image/image.h"
 
@@ -85,6 +84,8 @@ struct IntentPickerAppInfo {
 
   IntentPickerAppInfo(IntentPickerAppInfo&& other);
 
+  IntentPickerAppInfo(const IntentPickerAppInfo&) = delete;
+  IntentPickerAppInfo& operator=(const IntentPickerAppInfo&) = delete;
   IntentPickerAppInfo& operator=(IntentPickerAppInfo&& other);
 
   // The type of app that this object represents.
@@ -100,8 +101,6 @@ struct IntentPickerAppInfo {
 
   // The string shown to the user to identify this app in the intent picker.
   std::string display_name;
-
-  DISALLOW_COPY_AND_ASSIGN(IntentPickerAppInfo);
 };
 
 // Callback to allow app-platform-specific code to asynchronously signal what

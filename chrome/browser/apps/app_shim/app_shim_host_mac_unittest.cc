@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
@@ -28,7 +27,9 @@ namespace {
 
 class TestingAppShim : public chrome::mojom::AppShim {
  public:
-  TestingAppShim() {}
+  TestingAppShim() = default;
+  TestingAppShim(const TestingAppShim&) = delete;
+  TestingAppShim& operator=(const TestingAppShim&) = delete;
 
   chrome::mojom::AppShimHostBootstrap::OnShimConnectedCallback
   GetOnShimConnectedCallback() {
@@ -70,7 +71,6 @@ class TestingAppShim : public chrome::mojom::AppShim {
       chrome::mojom::AppShimLaunchResult::kSuccess;
 
   mojo::Remote<chrome::mojom::AppShimHostBootstrap> host_bootstrap_remote_;
-  DISALLOW_COPY_AND_ASSIGN(TestingAppShim);
 };
 
 class TestingAppShimHost : public AppShimHost {
@@ -82,10 +82,9 @@ class TestingAppShimHost : public AppShimHost {
                     app_id,
                     profile_path,
                     false /* uses_remote_views */) {}
-  ~TestingAppShimHost() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestingAppShimHost);
+  TestingAppShimHost(const TestingAppShimHost&) = delete;
+  TestingAppShimHost& operator=(const TestingAppShimHost&) = delete;
+  ~TestingAppShimHost() override = default;
 };
 
 class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
@@ -97,6 +96,9 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
     // purposes, have this receiver passed in at creation.
     host_bootstrap_receiver_.Bind(std::move(host_receiver));
   }
+  TestingAppShimHostBootstrap(const TestingAppShimHostBootstrap&) = delete;
+  TestingAppShimHostBootstrap& operator=(const TestingAppShimHostBootstrap&) =
+      delete;
 
   base::WeakPtr<TestingAppShimHostBootstrap> GetWeakPtr() {
     return test_weak_factory_.GetWeakPtr();
@@ -106,7 +108,6 @@ class TestingAppShimHostBootstrap : public AppShimHostBootstrap {
 
  private:
   base::WeakPtrFactory<TestingAppShimHostBootstrap> test_weak_factory_;
-  DISALLOW_COPY_AND_ASSIGN(TestingAppShimHostBootstrap);
 };
 
 const char kTestAppId[] = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
@@ -123,6 +124,8 @@ class AppShimHostTest : public testing::Test,
                         public AppShimHost::Client {
  public:
   AppShimHostTest() { task_runner_ = base::ThreadTaskRunnerHandle::Get(); }
+  AppShimHostTest(const AppShimHostTest&) = delete;
+  AppShimHostTest& operator=(const AppShimHostTest&) = delete;
   ~AppShimHostTest() override {}
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -209,8 +212,6 @@ class AppShimHostTest : public testing::Test,
   // pointer here to avoid lifetime issues.
   std::unique_ptr<TestingAppShimHost> host_;
   mojo::Remote<chrome::mojom::AppShimHost> host_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppShimHostTest);
 };
 
 }  // namespace

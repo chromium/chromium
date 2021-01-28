@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -77,6 +76,8 @@ class NewSubViewAddedObserver : content::RenderWidgetHostViewCocoaObserver {
   explicit NewSubViewAddedObserver(content::WebContents* web_contents)
       : content::RenderWidgetHostViewCocoaObserver(web_contents) {}
 
+  NewSubViewAddedObserver(const NewSubViewAddedObserver&) = delete;
+  NewSubViewAddedObserver& operator=(const NewSubViewAddedObserver&) = delete;
   ~NewSubViewAddedObserver() override {}
 
   void WaitForNextSubView() {
@@ -101,8 +102,6 @@ class NewSubViewAddedObserver : content::RenderWidgetHostViewCocoaObserver {
   bool did_receive_rect_ = false;
   gfx::Rect bounds_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(NewSubViewAddedObserver);
 };
 #endif  // OS_MAC
 
@@ -355,10 +354,11 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
 
   class PopupCreatedObserver {
    public:
-    PopupCreatedObserver()
-        : initial_widget_count_(0), last_render_widget_host_(nullptr) {}
+    PopupCreatedObserver() = default;
+    PopupCreatedObserver(const PopupCreatedObserver&) = delete;
+    PopupCreatedObserver& operator=(const PopupCreatedObserver&) = delete;
 
-    ~PopupCreatedObserver() {}
+    ~PopupCreatedObserver() = default;
 
     void Wait() {
       if (CountWidgets() == initial_widget_count_ + 1 &&
@@ -410,11 +410,9 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
       return num_widgets;
     }
 
-    size_t initial_widget_count_;
-    content::RenderWidgetHost* last_render_widget_host_;
+    size_t initial_widget_count_ = 0;
+    content::RenderWidgetHost* last_render_widget_host_ = nullptr;
     scoped_refptr<content::MessageLoopRunner> message_loop_;
-
-    DISALLOW_COPY_AND_ASSIGN(PopupCreatedObserver);
   };
 
   void PopupTestHelper(const gfx::Point& padding) {
@@ -494,7 +492,11 @@ class WebViewImeInteractiveTest : public WebViewInteractiveTest {
           &CompositionRangeUpdateObserver::OnCompositionRangeUpdated,
           base::Unretained(this)));
     }
-    ~CompositionRangeUpdateObserver() {}
+    CompositionRangeUpdateObserver(const CompositionRangeUpdateObserver&) =
+        delete;
+    CompositionRangeUpdateObserver& operator=(
+        const CompositionRangeUpdateObserver&) = delete;
+    ~CompositionRangeUpdateObserver() = default;
 
     // Wait until a composition range update with a range length equal to
     // |length| is received.
@@ -521,8 +523,6 @@ class WebViewImeInteractiveTest : public WebViewInteractiveTest {
     std::unique_ptr<base::RunLoop> run_loop_;
     base::Optional<uint32_t> last_composition_range_length_;
     uint32_t expected_length_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(CompositionRangeUpdateObserver);
   };
 };
 
