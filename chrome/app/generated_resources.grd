@@ -2777,6 +2777,12 @@ are declared in tools/grit/grit_rule.gni.
               =1 {1 third-party cookie is blocked}
               other {# third-party cookies are blocked}}
       </message>
+      <message name="IDS_COOKIE_CONTROLS_DIALOG_TITLE_ALL_BLOCKED" desc="Title of the dialog that allows users to control cookie blocking. Shown when all cookies (as opposed to only third-party ones) are blocked.">
+        {COUNT, plural,
+              =0 {No cookies}
+              =1 {1 cookie is blocked}
+              other {# cookies are blocked}}
+      </message>
       <message name="IDS_COOKIE_CONTROLS_DIALOG_TITLE_OFF" desc="Text shown in the dialog that allows users to control cookie blocking. Shown when cookie blocking was disabled for this specific site.">
         Third-party cookies are allowed on this site
       </message>

@@ -44,6 +44,9 @@ class CookieControlsController : content_settings::CookieSettings::Observer {
   // blocking.
   void OnCookieBlockingEnabledForSite(bool block_third_party_cookies);
 
+  // Returns whether first-party cookies are blocked.
+  bool FirstPartyCookiesBlocked();
+
   void AddObserver(CookieControlsView* obs);
   void RemoveObserver(CookieControlsView* obs);
 

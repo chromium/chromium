@@ -245,8 +245,11 @@ base::string16 CookieControlsBubbleView::GetWindowTitle() const {
   }
   switch (status_) {
     case CookieControlsStatus::kEnabled:
-      return l10n_util::GetPluralStringFUTF16(IDS_COOKIE_CONTROLS_DIALOG_TITLE,
-                                              blocked_cookies_.value_or(0));
+      return l10n_util::GetPluralStringFUTF16(
+          (controller_->FirstPartyCookiesBlocked()
+               ? IDS_COOKIE_CONTROLS_DIALOG_TITLE_ALL_BLOCKED
+               : IDS_COOKIE_CONTROLS_DIALOG_TITLE),
+          blocked_cookies_.value_or(0));
     case CookieControlsStatus::kDisabledForSite:
       return l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_DIALOG_TITLE_OFF);
     case CookieControlsStatus::kUninitialized:
