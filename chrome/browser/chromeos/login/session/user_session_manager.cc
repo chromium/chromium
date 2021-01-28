@@ -1321,7 +1321,19 @@ void UserSessionManager::InitProfilePreferences(
         identity_manager->GetPrimaryAccountMutator()
             ->SetUnconsentedPrimaryAccount(account_info->account_id);
       }
-      CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kNotRequired));
+
+      // TODO(https://crbug.com/1166265): Replace logs once issue is resolved.
+      if (!identity_manager->HasPrimaryAccount(ConsentLevel::kNotRequired)) {
+        if (account_info.has_value()) {
+          LOG(FATAL) << "IdentityManager missing primary account. "
+                     << "GAIA ID: " << gaia_id << ", "
+                     << "Account GAIA: " << account_info->gaia << ", "
+                     << "Account email: " << account_info->email;
+        } else {
+          LOG(FATAL) << "IdentityManager missing primary account. "
+                     << "GAIA ID: " << gaia_id << ", Account info missing";
+        }
+      }
       CHECK_EQ(
           identity_manager->GetPrimaryAccountInfo(ConsentLevel::kNotRequired)
               .gaia,
@@ -1332,8 +1344,25 @@ void UserSessionManager::InitProfilePreferences(
       // profile might only have an unconsented primary account.
       identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
           account_info->account_id);
-      CHECK(identity_manager->HasPrimaryAccount(ConsentLevel::kSync));
-      CHECK_EQ(identity_manager->GetPrimaryAccountInfo().gaia, gaia_id);
+
+      // TODO(https://crbug.com/1166265): Replace logs once issue is resolved.
+      if (!identity_manager->HasPrimaryAccount(ConsentLevel::kSync)) {
+        if (account_info.has_value()) {
+          LOG(FATAL) << "IdentityManager missing primary account. "
+                     << "GAIA ID: " << gaia_id << ", "
+                     << "Account GAIA: " << account_info->gaia << ", "
+                     << "Account email: " << account_info->email;
+        } else {
+          LOG(FATAL) << "IdentityManager missing primary account. "
+                     << "GAIA ID: " << gaia_id << ", Account info missing";
+        }
+      }
+      if (identity_manager->GetPrimaryAccountInfo().gaia != gaia_id) {
+        LOG(FATAL) << "IdentityManager GAIA ID is mismatched. "
+                   << "Primary account GAIA ID: "
+                   << identity_manager->GetPrimaryAccountInfo().gaia
+                   << ", Expected: " << gaia_id;
+      }
     }
 
     CoreAccountId account_id =
