@@ -668,7 +668,7 @@ gfx::Transform DesktopWindowTreeHostPlatform::GetRootTransform() const {
   // This might be called before the |platform_window| is created. Thus,
   // explicitly check if that exists before trying to access its visibility and
   // the display where it is shown.
-  if (platform_window() && IsVisible()) {
+  if (platform_window()) {
     display = display::Screen::GetScreen()->GetDisplayNearestWindow(
         GetWidget()->GetNativeWindow());
   }
