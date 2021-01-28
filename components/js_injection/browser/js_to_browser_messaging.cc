@@ -72,7 +72,6 @@ void JsToBrowserMessaging::PostMessage(
     std::vector<blink::MessagePortDescriptor> ports) {
   DCHECK(render_frame_host_);
 
-  // This generally shouldn't happen, and may indicate a compromised renderer.
   if (render_frame_host_->IsInactiveAndDisallowReactivation())
     return;
 
@@ -123,7 +122,6 @@ void JsToBrowserMessaging::PostMessage(
 void JsToBrowserMessaging::SetBrowserToJsMessaging(
     mojo::PendingAssociatedRemote<mojom::BrowserToJsMessaging>
         java_to_js_messaging) {
-  // This generally shouldn't happen, and may indicate a compromised renderer.
   if (render_frame_host_->IsInactiveAndDisallowReactivation())
     return;
 
