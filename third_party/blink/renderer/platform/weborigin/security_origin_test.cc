@@ -112,8 +112,8 @@ TEST_F(SecurityOriginTest, IsSecure) {
       // in //services/network/public/cpp/is_potentially_trustworthy_unittest.
       // See also IsPotentiallyTrustworthy.Url test.
       {false, "file:///etc/passwd"},
-      {true, "blob:data:text/html,Hello"},
-      {true, "blob:about:blank"},
+      {false, "blob:data:text/html,Hello"},
+      {false, "blob:about:blank"},
       {false, "filesystem:data:text/html,Hello"},
       {false, "filesystem:about:blank"},
       {false, ""},

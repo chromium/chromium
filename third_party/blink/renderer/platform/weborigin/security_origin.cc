@@ -313,19 +313,63 @@ String SecurityOrigin::RegistrableDomain() const {
 }
 
 bool SecurityOrigin::IsSecure(const KURL& url) {
-  if (base::Contains(url::GetSecureSchemes(), url.Protocol().Ascii()))
+  // This method is a stricter alternative to "potentially trustworthy url":
+  // https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-url
+  // TODO(https://crbug.com/1153336): Align the behavior of this function with
+  // network::IsUrlPotentiallyTrustworthy()?
+
+  GURL gurl = GURL(url);
+
+  // 1. If url is "about:blank" or "about:srcdoc", return "Potentially
+  //    Trustworthy".
+  if (gurl.IsAboutBlank() || gurl.IsAboutSrcdoc())
     return true;
 
-  // URLs that wrap inner URLs are secure if those inner URLs are secure.
-  if (ShouldUseInnerURL(url) &&
-      base::Contains(url::GetSecureSchemes(),
-                     ExtractInnerURL(url).Protocol().Ascii()))
+  // 2. If url’s scheme is "data", return "Potentially Trustworthy".
+  if (gurl.SchemeIs(url::kDataScheme))
     return true;
 
-  scoped_refptr<SecurityOrigin> origin = SecurityOrigin::Create(url);
-  return !origin->IsOpaque() &&
-         network::SecureOriginAllowlist::GetInstance().IsOriginAllowlisted(
-             origin->ToUrlOrigin());
+  // 3. Return the result of executing §3.2 Is origin potentially trustworthy?
+  //    on url’s origin.
+  //    Note: The origin of blob: and filesystem: URLs is the origin of the
+  //    context in which they were created. Therefore, blobs created in a
+  //    trustworthy origin will themselves be potentially trustworthy.
+  url::Origin origin = url::Origin::Create(gurl);
+  if (origin.opaque() &&
+      base::Contains(url::GetSecureSchemes(), gurl.scheme_piece())) {
+    // Authenticated schemes should be treated as trustworthy, even if they
+    // translate into an opaque origin (e.g. because some of them might also be
+    // registered as a no-access, like the //content-layer chrome-error:// or
+    // the //chrome-layer chrome-native://).
+    return true;
+  }
+
+  // https://w3c.github.io/webappsec-secure-contexts/#potentially-trustworthy-origin
+  // 1. If origin is an opaque origin, return "Not Trustworthy".
+  if (origin.opaque())
+    return false;
+
+  // 2. Assert: origin is a tuple origin.
+  DCHECK(!origin.opaque());
+
+  // 3. If origin’s scheme is either "https" or "wss", return "Potentially
+  //    Trustworthy".
+  // This is handled by the url::GetSecureSchemes() call below.
+
+  // 7. If origin’s scheme component is one which the user agent considers to be
+  //    authenticated, return "Potentially Trustworthy".
+  //    Note: See §7.1 Packaged Applications for detail here.
+  if (base::Contains(url::GetSecureSchemes(), origin.scheme()))
+    return true;
+
+  // 8. If origin has been configured as a trustworthy origin, return
+  //    "Potentially Trustworthy".
+  //    Note: See §7.2 Development Environments for detail here.
+  if (network::SecureOriginAllowlist::GetInstance().IsOriginAllowlisted(origin))
+    return true;
+
+  // 9. Return "Not Trustworthy".
+  return false;
 }
 
 base::Optional<base::UnguessableToken>
