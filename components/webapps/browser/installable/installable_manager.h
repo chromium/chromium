@@ -261,7 +261,11 @@ class InstallableManager
   std::unique_ptr<ValidManifestProperty> valid_manifest_;
   std::unique_ptr<ServiceWorkerProperty> worker_;
   std::map<IconUsage, IconProperty> icons_;
-  std::map<GURL, SkBitmap> screenshots_;
+  std::vector<SkBitmap> screenshots_;
+
+  // A map of screenshots downloaded. Used temporarily until images are moved to
+  // the screenshots_ member.
+  std::map<GURL, SkBitmap> downloaded_screenshots_;
 
   // The number of screenshots currently being downloaded.
   int screenshots_downloading_ = 0;

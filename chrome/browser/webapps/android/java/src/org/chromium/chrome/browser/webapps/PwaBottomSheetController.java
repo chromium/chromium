@@ -95,6 +95,9 @@ public class PwaBottomSheetController
         @Override
         public void onBindViewHolder(ScreenshotViewHolder holder, int position) {
             ImageView view = (ImageView) holder.itemView;
+            view.setLayoutParams(new ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            view.setAdjustViewBounds(true);
             view.setImageBitmap(mScreenshots.get(position));
         }
 

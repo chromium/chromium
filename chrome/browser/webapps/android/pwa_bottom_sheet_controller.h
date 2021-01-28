@@ -38,7 +38,7 @@ class PwaBottomSheetController {
       const SkBitmap& primary_icon,
       const bool is_primary_icon_maskable,
       const GURL& start_url,
-      const std::map<GURL, SkBitmap>& screenshots,
+      const std::vector<SkBitmap>& screenshots,
       const base::string16& description,
       bool show_expanded);
 
@@ -57,7 +57,7 @@ class PwaBottomSheetController {
                            const SkBitmap& primary_icon,
                            const bool is_primary_icon_maskable,
                            const GURL& start_url,
-                           const std::map<GURL, SkBitmap>& screenshots,
+                           const std::vector<SkBitmap>& screenshots,
                            const base::string16& description,
                            bool show_expanded);
   PwaBottomSheetController(const PwaBottomSheetController&) = delete;
@@ -75,7 +75,7 @@ class PwaBottomSheetController {
   const SkBitmap primary_icon_;
   const bool is_primary_icon_maskable_;
   const GURL& start_url_;
-  const std::map<GURL, SkBitmap>& screenshots_;
+  const std::vector<SkBitmap>& screenshots_;
   const base::string16 description_;
   bool show_expanded_;
 };

@@ -90,7 +90,7 @@ class AppBannerManagerAndroid
   base::string16 GetAppName() const override;
 
   // Simple accessors:
-  const std::map<GURL, SkBitmap>& screenshots() { return screenshots_; }
+  const std::vector<SkBitmap>& screenshots() { return screenshots_; }
 
  protected:
   // AppBannerManager overrides.
@@ -169,7 +169,7 @@ class AppBannerManagerAndroid
   base::string16 native_app_title_;
 
   // The screenshots to show in the install UI.
-  std::map<GURL, SkBitmap> screenshots_;
+  std::vector<SkBitmap> screenshots_;
 
   base::WeakPtrFactory<AppBannerManagerAndroid> weak_factory_{this};
 

@@ -163,8 +163,7 @@ class TestInstallableManager : public InstallableManager {
          params.valid_primary_icon ? primary_icon_url_ : GURL(),
          params.valid_primary_icon ? primary_icon_.get() : nullptr,
          params.prefer_maskable_icon, GURL() /* splash_icon_url */,
-         nullptr /* splash_icon */,
-         std::map<GURL, SkBitmap>() /* screenshots */,
+         nullptr /* splash_icon */, std::vector<SkBitmap>() /* screenshots */,
          params.valid_manifest ? is_installable : false,
          params.has_worker ? is_installable : false});
   }

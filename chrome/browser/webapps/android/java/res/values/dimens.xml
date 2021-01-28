@@ -3,5 +3,5 @@
      found in the LICENSE file. -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <dimen name="webapk_screenshot_margin">20dp</dimen>
+    <dimen name="webapk_screenshot_margin">16dp</dimen>
 </resources>

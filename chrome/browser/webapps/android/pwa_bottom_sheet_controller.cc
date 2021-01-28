@@ -29,7 +29,7 @@ const int kDescriptionMaxLength = 324;
 
 bool CanShowBottomSheet(content::WebContents* web_contents,
                         const base::string16& description,
-                        const std::map<GURL, SkBitmap>& screenshots) {
+                        const std::vector<SkBitmap>& screenshots) {
   if (!base::FeatureList::IsEnabled(
           webapps::features::kPwaInstallUseBottomSheet)) {
     return false;
@@ -39,16 +39,6 @@ bool CanShowBottomSheet(content::WebContents* web_contents,
       description.length() > kDescriptionMaxLength || screenshots.size() == 0) {
     return false;
   }
-
-  bool all_screenshots_draw_nothing = true;
-  for (const auto& item : screenshots) {
-    if (!item.second.drawsNothing()) {
-      all_screenshots_draw_nothing = false;
-      break;
-    }
-  }
-  if (all_screenshots_draw_nothing)
-    return false;
 
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_PwaBottomSheetControllerProvider_canShowPwaBottomSheetInstaller(
@@ -88,7 +78,7 @@ void PwaBottomSheetController::MaybeCreateAndShow(
     const SkBitmap& primary_icon,
     const bool is_primary_icon_maskable,
     const GURL& start_url,
-    const std::map<GURL, SkBitmap>& screenshots,
+    const std::vector<SkBitmap>& screenshots,
     const base::string16& description,
     bool show_expanded) {
   if (CanShowBottomSheet(web_contents, description, screenshots)) {
@@ -112,7 +102,7 @@ PwaBottomSheetController::PwaBottomSheetController(
     const SkBitmap& primary_icon,
     const bool is_primary_icon_maskable,
     const GURL& start_url,
-    const std::map<GURL, SkBitmap>& screenshots,
+    const std::vector<SkBitmap>& screenshots,
     const base::string16& description,
     bool show_expanded)
     : app_name_(app_name),
@@ -163,9 +153,9 @@ void PwaBottomSheetController::ShowBottomSheetInstaller(
       show_expanded_, j_bitmap, is_primary_icon_maskable_, j_user_title, j_url,
       j_description);
 
-  for (const auto& item : screenshots_) {
-    if (!item.second.isNull())
-      UpdateScreenshot(item.second, web_contents);
+  for (const auto& screenshot : screenshots_) {
+    if (!screenshot.isNull())
+      UpdateScreenshot(screenshot, web_contents);
   }
 }
 

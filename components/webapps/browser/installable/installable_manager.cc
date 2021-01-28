@@ -455,6 +455,7 @@ void InstallableManager::Reset(base::Optional<InstallableStatusCode> error) {
   // Prevent any outstanding callbacks to or from this object from being called.
   weak_factory_.InvalidateWeakPtrs();
   icons_.clear();
+  downloaded_screenshots_.clear();
   screenshots_.clear();
   screenshots_downloading_ = 0;
 
@@ -848,12 +849,15 @@ void InstallableManager::CheckAndFetchScreenshots() {
 
   for (const auto& url : manifest().screenshots) {
     // A screenshot URL that's in the map is already taken care of.
-    if (screenshots_.count(url.src) > 0)
+    if (downloaded_screenshots_.count(url.src) > 0)
       continue;
 
+    int ideal_size_in_px = url.sizes.empty() ? 320
+                                             : std::max(url.sizes[0].width(),
+                                                        url.sizes[0].height());
     bool can_download = content::ManifestIconDownloader::Download(
-        GetWebContents(), url.src, /*ideal_splash_image_size_in_px*/ 320,
-        /* minimum_splash_image_size_in_px */ 320,
+        GetWebContents(), url.src, ideal_size_in_px,
+        /*minimum_icon_size_in_px=*/320,
         base::BindOnce(&InstallableManager::OnScreenshotFetched,
                        weak_factory_.GetWeakPtr(), url.src),
         /*square_only=*/false);
@@ -872,9 +876,21 @@ void InstallableManager::OnScreenshotFetched(const GURL screenshot_url,
   if (!GetWebContents())
     return;
 
-  screenshots_[screenshot_url] = bitmap;
-  if (--screenshots_downloading_ == 0)
+  downloaded_screenshots_[screenshot_url] = bitmap;
+
+  if (--screenshots_downloading_ == 0) {
+    // Populate screenshots in the order they are declared in the manifest.
+    for (const auto& url : manifest().screenshots) {
+      auto iter = downloaded_screenshots_.find(url.src);
+      if (iter != downloaded_screenshots_.end() &&
+          !iter->second.drawsNothing()) {
+        screenshots_.push_back(iter->second);
+      }
+    }
+    downloaded_screenshots_.clear();
+
     WorkOnTask();
+  }
 }
 
 void InstallableManager::OnRegistrationCompleted(const GURL& pattern) {

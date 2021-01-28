@@ -30,7 +30,7 @@ struct InstallableData {
                   bool has_maskable_primary_icon,
                   const GURL& splash_icon_url,
                   const SkBitmap* splash_icon,
-                  const std::map<GURL, SkBitmap>& screenshots,
+                  const std::vector<SkBitmap>& screenshots,
                   bool valid_manifest,
                   bool has_worker);
   ~InstallableData();
@@ -79,7 +79,7 @@ struct InstallableData {
   const SkBitmap* splash_icon;
 
   // The screenshots to show in the install UI.
-  const std::map<GURL, SkBitmap>& screenshots;
+  const std::vector<SkBitmap>& screenshots;
 
   // true if the site has a valid, installable web app manifest. If
   // |valid_manifest| or |has_worker| was true and the site isn't installable,
