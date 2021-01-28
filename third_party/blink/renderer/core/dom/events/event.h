@@ -39,6 +39,7 @@ class EventDispatcher;
 class EventInit;
 class EventPath;
 class EventTarget;
+class Node;
 class ScriptState;
 class ScriptValue;
 
