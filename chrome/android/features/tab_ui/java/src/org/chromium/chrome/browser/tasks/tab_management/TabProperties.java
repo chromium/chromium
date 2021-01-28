@@ -123,6 +123,9 @@ public class TabProperties {
     public static final WritableObjectPropertyKey<ShoppingPersistedTabData.PriceDrop> PRICE_DROP =
             new WritableObjectPropertyKey<>();
 
+    public static final WritableBooleanPropertyKey SHOULD_SHOW_PRICE_DROP_TOOLTIP =
+            new WritableBooleanPropertyKey();
+
     public static final PropertyKey[] ALL_KEYS_TAB_GRID = new PropertyKey[] {TAB_ID,
             TAB_SELECTED_LISTENER, TAB_CLOSED_LISTENER, FAVICON, THUMBNAIL_FETCHER, IPH_PROVIDER,
             TITLE, IS_SELECTED, CHECKED_DRAWABLE_STATE_LIST, CREATE_GROUP_LISTENER, CARD_ALPHA,
@@ -132,7 +135,7 @@ public class TabProperties {
             SELECTABLE_TAB_ACTION_BUTTON_SELECTED_BACKGROUND, URL_DOMAIN, ACCESSIBILITY_DELEGATE,
             SEARCH_QUERY, PAGE_INFO_LISTENER, PAGE_INFO_ICON_DRAWABLE_ID, CARD_TYPE,
             CONTENT_DESCRIPTION_STRING, CLOSE_BUTTON_DESCRIPTION_STRING,
-            SHOPPING_PERSISTED_TAB_DATA_FETCHER, PRICE_DROP};
+            SHOPPING_PERSISTED_TAB_DATA_FETCHER, PRICE_DROP, SHOULD_SHOW_PRICE_DROP_TOOLTIP};
 
     public static final PropertyKey[] ALL_KEYS_TAB_STRIP =
             new PropertyKey[] {TAB_ID, TAB_SELECTED_LISTENER, TAB_CLOSED_LISTENER, FAVICON,

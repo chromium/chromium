@@ -457,4 +457,9 @@ public class TabListCoordinator
     public int getTabIndexFromTabId(int tabId) {
         return mModel.indexFromId(tabId);
     }
+
+    @Override
+    public void showPriceDropTooltip(int index) {
+        mModel.get(index).model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, true);
+    }
 }

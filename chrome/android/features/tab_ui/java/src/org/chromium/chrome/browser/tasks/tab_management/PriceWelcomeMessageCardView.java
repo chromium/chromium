@@ -8,13 +8,17 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.AttributeSet;
+import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
+import org.chromium.ui.widget.ViewRectProvider;
 
 import java.lang.ref.WeakReference;
 
@@ -104,5 +108,20 @@ class PriceWelcomeMessageCardView extends FrameLayout {
      */
     void setPriceInfoBoxStrings(ShoppingPersistedTabData.PriceDrop priceDrop) {
         mPriceInfoBox.setPriceStrings(priceDrop.price, priceDrop.previousPrice);
+    }
+
+    // TODO(crbug.com/1166704): This method has little to do with this view. Move this function to a
+    // price tracking UI utility class.
+    /**
+     * When user taps on "Show me" on PriceWelcomeMessage, we scroll them to the binding tab, then a
+     * blue tooltip appears and points to the price drop indicator.
+     */
+    public static void showPriceDropTooltip(View view) {
+        ViewRectProvider rectProvider = new ViewRectProvider(view);
+        TextBubble textBubble = new TextBubble(view.getContext(), view,
+                R.string.price_drop_spotted_lower_price, R.string.price_drop_spotted_lower_price,
+                true, rectProvider, ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+        textBubble.setDismissOnTouchInteraction(true);
+        textBubble.show();
     }
 }
