@@ -44,6 +44,7 @@
 #include "chrome/browser/chromeos/login/session/user_session_manager.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos.h"
 #include "chrome/browser/chromeos/ownership/owner_settings_service_chromeos_factory.h"
+#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/chromeos/settings/owner_flags_storage.h"
 #include "chrome/browser/infobars/infobar_service.h"
@@ -133,6 +134,16 @@ void FinishInitialization(base::WeakPtr<T> flags_ui,
         infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
         &vector_icons::kWarningIcon,
         l10n_util::GetStringUTF16(IDS_FLAGS_IGNORED_DUE_TO_CRASHY_CHROME),
+        /*auto_expire=*/false, /*should_animate=*/true);
+  }
+
+  // Show a warning info bar for secondary users.
+  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
+    SimpleAlertInfoBarDelegate::Create(
+        InfoBarService::FromWebContents(flags_ui->web_ui()->GetWebContents()),
+        infobars::InfoBarDelegate::BAD_FLAGS_INFOBAR_DELEGATE,
+        &vector_icons::kWarningIcon,
+        l10n_util::GetStringUTF16(IDS_FLAGS_IGNORED_SECONDARY_USERS),
         /*auto_expire=*/false, /*should_animate=*/true);
   }
 }

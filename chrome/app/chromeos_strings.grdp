@@ -2909,6 +2909,9 @@
   <message name="IDS_FLAGS_IGNORED_DUE_TO_CRASHY_CHROME" desc="Text on an info bar added when user flags are dropped when chrome crashed too many times in short time." translateable="false">
     Flags are ignored because of too many consecutive startup crashes.
   </message>
+  <message name="IDS_FLAGS_IGNORED_SECONDARY_USERS" desc="Text on an info bar added on flags UI of secondary users." translateable="false">
+    Flags will not be applied for secondary users.
+  </message>
 
   <!-- EOL Notification Strings -->
   <message name="IDS_EOL_NOTIFICATION_TITLE" desc="Notification title shown to inform the user that this device is no longer supported.">
