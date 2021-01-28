@@ -788,7 +788,7 @@ TEST(BackupRefPtrImpl, EndPointer) {
   // This test requires a fresh partition with an empty free list.
   PartitionAllocGlobalInit(HandleOOM);
   PartitionAllocator<ThreadSafe> allocator;
-  allocator.init({});
+  allocator.init(kOpts);
 
   // Check multiple size buckets and levels of slot filling.
   for (int size = 0; size < 1024; size += sizeof(void*)) {
