@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/accessibility/platform/inspect/ax_tree_formatter_base.h"
+#include "content/browser/accessibility/accessibility_tree_formatter_win.h"
 
 #include <math.h>
-#include <oleacc.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <wrl/client.h>
 
 #include <iostream>
 #include <string>
@@ -21,7 +19,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "base/win/com_init_util.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
@@ -35,82 +32,6 @@
 #include "ui/gfx/win/hwnd_util.h"
 
 namespace content {
-
-class AccessibilityTreeFormatterWin : public ui::AXTreeFormatterBase {
- public:
-  AccessibilityTreeFormatterWin();
-  ~AccessibilityTreeFormatterWin() override;
-
-  base::Value BuildTree(ui::AXPlatformNodeDelegate* start) const override;
-  base::Value BuildTreeForWindow(gfx::AcceleratedWidget hwnd) const override;
-  base::Value BuildTreeForSelector(
-      const AXTreeSelector& selector) const override;
-
- protected:
-  void AddDefaultFilters(
-      std::vector<AXPropertyFilter>* property_filters) override;
-
- private:
-  void RecursiveBuildTree(const Microsoft::WRL::ComPtr<IAccessible> node,
-                          base::DictionaryValue* dict,
-                          LONG root_x,
-                          LONG root_y) const;
-
-  void AddProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                     base::DictionaryValue* dict,
-                     LONG root_x,
-                     LONG root_y) const;
-  void AddMSAAProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                         base::DictionaryValue* dict,
-                         LONG root_x,
-                         LONG root_y) const;
-  void AddSimpleDOMNodeProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                                  base::DictionaryValue* dict) const;
-  bool AddIA2Properties(const Microsoft::WRL::ComPtr<IAccessible>,
-                        base::DictionaryValue* dict) const;
-  void AddIA2ActionProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                              base::DictionaryValue* dict) const;
-  void AddIA2HypertextProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                                 base::DictionaryValue* dict) const;
-  void AddIA2TextProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                            base::DictionaryValue* dict) const;
-  void AddIA2TableProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                             base::DictionaryValue* dict) const;
-  void AddIA2TableCellProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                                 base::DictionaryValue* dict) const;
-  void AddIA2ValueProperties(const Microsoft::WRL::ComPtr<IAccessible>,
-                             base::DictionaryValue* dict) const;
-  std::string ProcessTreeForOutput(
-      const base::DictionaryValue& node) const override;
-};
-
-// TODO(crbug.com/1133330): move implementation into
-// content/public/ax_inspect_factory.cc when AccessibilityTreeFormatterWin is
-// relocated under ui/accessibility/platform
-
-// static
-std::unique_ptr<ui::AXTreeFormatter>
-AXInspectFactory::CreatePlatformFormatter() {
-  return CreateFormatter(kWinIA2);
-}
-
-// static
-std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
-    AXInspectFactory::Type type) {
-  switch (type) {
-    case kBlink:
-      return std::make_unique<AccessibilityTreeFormatterBlink>();
-    case kWinIA2:
-      base::win::AssertComInitialized();
-      return std::make_unique<AccessibilityTreeFormatterWin>();
-    case kWinUIA:
-      base::win::AssertComInitialized();
-      return std::make_unique<AccessibilityTreeFormatterUia>();
-    default:
-      NOTREACHED() << "Unsupported formatter type " << type;
-  }
-  return nullptr;
-}
 
 void AccessibilityTreeFormatterWin::AddDefaultFilters(
     std::vector<AXPropertyFilter>* property_filters) {
