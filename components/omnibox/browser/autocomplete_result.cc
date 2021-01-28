@@ -556,20 +556,6 @@ const AutocompleteMatch* AutocompleteResult::default_match() const {
   return nullptr;
 }
 
-bool AutocompleteResult::TopMatchIsStandaloneVerbatimMatch() const {
-  if (empty() || !match_at(0).IsVerbatimType())
-    return false;
-
-  // Skip any copied matches, under the assumption that they'll be expired and
-  // disappear.  We don't want this disappearance to cause the visibility of the
-  // top match to change.
-  for (auto i(begin() + 1); i != end(); ++i) {
-    if (!i->from_previous)
-      return !i->IsVerbatimType();
-  }
-  return true;
-}
-
 void AutocompleteResult::GroupSuggestionsBySearchVsURL(int first_index,
                                                        int last_index) const {
   const int num_elements = matches_.size();

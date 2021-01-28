@@ -131,11 +131,6 @@ class AutocompleteResult {
   // Returns the default match if it exists, or nullptr otherwise.
   const AutocompleteMatch* default_match() const;
 
-  // Returns true if the top match is a verbatim search or URL match (see
-  // IsVerbatimType() in autocomplete_match.h), and the next match is not also
-  // some kind of verbatim match.
-  bool TopMatchIsStandaloneVerbatimMatch() const;
-
   // Returns the first match in |matches| which might be chosen as default.
   // If the page is not the fake box, the scores are not demoted by type.
   static ACMatches::const_iterator FindTopMatch(const AutocompleteInput& input,

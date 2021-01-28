@@ -1859,37 +1859,6 @@ TEST_F(AutocompleteResultTest, SortAndCullMaxURLMatches) {
   }
 }
 
-TEST_F(AutocompleteResultTest, TopMatchIsStandaloneVerbatimMatch) {
-  ACMatches matches;
-  AutocompleteResult result;
-  result.AppendMatches(AutocompleteInput(), matches);
-
-  // Case 1: Result set is empty.
-  EXPECT_FALSE(result.TopMatchIsStandaloneVerbatimMatch());
-
-  // Case 2: Top match is not a verbatim match.
-  PopulateAutocompleteMatchesFromTestData(kNonVerbatimMatches, 1, &matches);
-  result.AppendMatches(AutocompleteInput(), matches);
-  EXPECT_FALSE(result.TopMatchIsStandaloneVerbatimMatch());
-  result.Reset();
-  matches.clear();
-
-  // Case 3: Top match is a verbatim match.
-  PopulateAutocompleteMatchesFromTestData(kVerbatimMatches, 1, &matches);
-  result.AppendMatches(AutocompleteInput(), matches);
-  EXPECT_TRUE(result.TopMatchIsStandaloneVerbatimMatch());
-  result.Reset();
-  matches.clear();
-
-  // Case 4: Standalone verbatim match found in AutocompleteResult.
-  PopulateAutocompleteMatchesFromTestData(kVerbatimMatches, 1, &matches);
-  PopulateAutocompleteMatchesFromTestData(kNonVerbatimMatches, 1, &matches);
-  result.AppendMatches(AutocompleteInput(), matches);
-  EXPECT_TRUE(result.TopMatchIsStandaloneVerbatimMatch());
-  result.Reset();
-  matches.clear();
-}
-
 namespace {
 
 bool EqualClassifications(const std::vector<ACMatchClassification>& lhs,
