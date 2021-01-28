@@ -15,6 +15,30 @@
 
 namespace ash {
 
+namespace {
+
+// The different operations ClipboardHistory sees. These values are written to
+// logs. New enum values can be added, but existing enums must never be
+// renumbered, deleted, or reused. Keep this up to date with the
+// ClipboardHistoryOperation enum in enums.xml.
+enum class ClipboardHistoryOperation {
+  // Copy, initiated through any method which triggers the clipboard to be
+  // written to.
+  kCopy = 0,
+
+  // Paste, detected when the clipboard is read.
+  kPaste = 1,
+
+  // Insert new types above this line.
+  kMaxValue = kPaste
+};
+
+void RecordClipboardHistoryOperation(ClipboardHistoryOperation operation) {
+  base::UmaHistogramEnumeration("Ash.ClipboardHistory.Operation", operation);
+}
+
+}  // namespace
+
 ClipboardHistory::ClipboardHistory() {
   ui::ClipboardMonitor::GetInstance()->AddObserver(this);
 }
@@ -137,6 +161,7 @@ void ClipboardHistory::OnClipboardOperation(bool copy) {
     observer.OnOperationConfirmed(copy);
 
   if (copy) {
+    RecordClipboardHistoryOperation(ClipboardHistoryOperation::kCopy);
     consecutive_copies_++;
     if (consecutive_pastes_ > 0) {
       base::UmaHistogramCounts100("Ash.Clipboard.ConsecutivePastes",
@@ -147,6 +172,9 @@ void ClipboardHistory::OnClipboardOperation(bool copy) {
   }
 
   consecutive_pastes_++;
+  // NOTE: this includes pastes by the ClipboardHistory menu.
+
+  RecordClipboardHistoryOperation(ClipboardHistoryOperation::kPaste);
   if (consecutive_copies_ > 0) {
     base::UmaHistogramCounts100("Ash.Clipboard.ConsecutiveCopies",
                                 consecutive_copies_);
