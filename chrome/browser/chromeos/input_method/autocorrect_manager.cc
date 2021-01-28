@@ -28,7 +28,8 @@ enum class AutocorrectActions {
   kWindowShown = 0,
   kUnderlined = 1,
   kReverted = 2,
-  kMaxValue = kReverted,
+  kUserAcceptedAutocorrect = 3,
+  kMaxValue = kUserAcceptedAutocorrect,
 };
 
 bool IsCurrentInputMethodExperimentalMultilingual() {
@@ -115,7 +116,7 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
     UndoAutocorrect();
     return true;
   }
-  if (key_presses_until_underline_hide_ > 0) {
+  if (key_presses_until_underline_hide_ >= 0) {
     --key_presses_until_underline_hide_;
   }
   if (key_presses_until_underline_hide_ == 0) {
@@ -127,8 +128,9 @@ bool AutocorrectManager::OnKeyEvent(const ui::KeyEvent& event) {
 void AutocorrectManager::ClearUnderline() {
   ui::IMEInputContextHandlerInterface* input_context =
       ui::IMEBridge::Get()->GetInputContextHandler();
-  if (input_context) {
+  if (input_context && !input_context->GetAutocorrectRange().is_empty()) {
     input_context->SetAutocorrectRange(gfx::Range());
+    LogAssistiveAutocorrectAction(AutocorrectActions::kUserAcceptedAutocorrect);
   }
 }
 

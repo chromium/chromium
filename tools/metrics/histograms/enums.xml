@@ -38184,6 +38184,7 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="0" label="WINDOW_SHOWN"/>
   <int value="1" label="UNDERLINED"/>
   <int value="2" label="REVERTED"/>
+  <int value="3" label="USER_ACCEPTED_AUTOCORRECT"/>
 </enum>
 
 <enum name="IMECommitType">

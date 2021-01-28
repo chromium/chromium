@@ -68,6 +68,22 @@ const ui::mojom::TextInputState* TextInputManager::GetTextInputState() const {
   return text_input_state_map_.at(active_view_).get();
 }
 
+gfx::Range TextInputManager::GetAutocorrectRange() const {
+  if (!active_view_)
+    return gfx::Range();
+
+  for (auto const& pair : text_input_state_map_) {
+    for (const auto& ime_text_span_info : pair.second->ime_text_spans_info) {
+      if (ime_text_span_info->span.type ==
+          ui::ImeTextSpan::Type::kAutocorrect) {
+        return gfx::Range(ime_text_span_info->span.start_offset,
+                          ime_text_span_info->span.end_offset);
+      }
+    }
+  }
+  return gfx::Range();
+}
+
 const TextInputManager::SelectionRegion* TextInputManager::GetSelectionRegion(
     RenderWidgetHostViewBase* view) const {
   DCHECK(!view || IsRegistered(view));

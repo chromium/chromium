@@ -149,6 +149,10 @@ class CONTENT_EXPORT TextInputManager {
   // ui::TEXT_INPUT_TYPE_NONE.
   const ui::mojom::TextInputState* GetTextInputState() const;
 
+  // Returns the current autocorrect range, or an empty range if no autocorrect
+  // range is currently present.
+  gfx::Range GetAutocorrectRange() const;
+
   // Returns the selection bounds information for |view|. If |view| == nullptr,
   // it will return the corresponding information for |active_view_| or nullptr
   // if there are no active views.
