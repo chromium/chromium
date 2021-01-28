@@ -96,8 +96,10 @@ void CopyImageToClipboard(bool maintain_clipboard,
   // Before modifying the clipboard, remove the old entry in ClipboardHistory.
   // CopyAndMaintainClipboard will write to the clipboard a second time,
   // creating a new entry in clipboard history.
-  ash::ClipboardHistoryController::Get()->DeleteClipboardItemByClipboardData(
-      current_data.get());
+  auto* clipboard_history = ash::ClipboardHistoryController::Get();
+  if (clipboard_history) {
+    clipboard_history->DeleteClipboardItemByClipboardData(current_data.get());
+  }
   CopyAndMaintainClipboard(std::move(current_data), html, png_data,
                            decoded_image);
   std::move(callback).Run(true);

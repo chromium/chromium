@@ -375,6 +375,9 @@ bool ClipboardHistoryControllerImpl::DeleteClipboardItemById(
 
 bool ClipboardHistoryControllerImpl::DeleteClipboardItemByClipboardData(
     ui::ClipboardData* data) {
+  if (!history() || !data)
+    return false;
+
   for (const auto& item : history()->GetItems()) {
     if (item.data() == *data) {
       DeleteClipboardHistoryItem(item);
