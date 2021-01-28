@@ -1114,9 +1114,6 @@ crbug.com/958381 fast/table/large-col-span-crash.html [ Failure ]
 # TODO fails because cell size with only input element is 18px, not 15. line-height: 0px fixes it.
 crbug.com/958381 external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children.html [ Failure ]
 
-# TODO Surprisingly, if table has 2 footers, first footer should be at the bottom of the table
-crbug.com/958381 fast/table/border-collapsing/adjacent-row-groups-multi.html [ Failure ]
-
 # TODO in NG, if section has only empty rows, it is empty. Not so in Legacy. Needs C++ fix.
 crbug.com/958381 accessibility/table-with-hidden-head-section.html [ Failure ]
 

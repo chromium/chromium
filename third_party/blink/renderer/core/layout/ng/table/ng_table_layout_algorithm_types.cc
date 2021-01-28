@@ -335,7 +335,8 @@ NGTableGroupedChildren::NGTableGroupedChildren(const NGBlockNode& table) {
           bodies.push_back(block_child);
           break;
         case EDisplay::kTableFooterGroup:
-          footers.push_back(block_child);
+          // Footers are displayed in reverse order: first footer at the bottom.
+          footers.push_front(block_child);
           break;
         default:
           NOTREACHED() << "unexpected table child";
