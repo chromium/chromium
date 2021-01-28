@@ -195,10 +195,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // The pending page load was canceled, so the address bar should be updated.
   virtual void DidCancelLoading() {}
 
-  // Another page accessed the top-level initial empty document, which means it
-  // is no longer safe to display a pending URL without risking a URL spoof.
-  virtual void DidAccessInitialDocument() {}
-
   // The frame changed its window.name property.
   virtual void DidChangeName(RenderFrameHost* render_frame_host,
                              const std::string& name) {}
@@ -223,10 +219,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   // The onload handler in the frame has completed. Only called for the top-
   // level frame.
   virtual void DocumentOnLoadCompleted(RenderFrameHost* render_frame_host) {}
-
-  // The state for the page changed and should be updated in session history.
-  virtual void UpdateStateForFrame(RenderFrameHost* render_frame_host,
-                                   const blink::PageState& page_state) {}
 
   // The page's title was changed and should be updated. Only called for the
   // top-level frame.
@@ -419,14 +411,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                                  const gfx::Rect& initial_rect,
                                  bool user_gesture) {}
 
-  // Notified that mixed content was displayed or ran.
-  virtual void DidDisplayInsecureContent() {}
-  virtual void DidContainInsecureFormAction() {}
   // The main frame document element is ready. This happens when the document
   // has finished parsing.
   virtual void DocumentAvailableInMainFrame() {}
-  virtual void DidRunInsecureContent(const GURL& security_origin,
-                                     const GURL& target_url) {}
 
   // Reports that passive mixed content was found at the specified url.
   virtual void PassiveInsecureContentFound(const GURL& resource_url) {}
@@ -435,11 +422,6 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual bool ShouldAllowRunningInsecureContent(bool allowed_per_prefs,
                                                  const url::Origin& origin,
                                                  const GURL& resource_url);
-
-  // Notifies that content with certificate errors will be committed in a
-  // subframe.
-  virtual void RecordActiveContentWithCertificateErrors(
-      RenderFrameHostImpl* render_frame_host) {}
 
   // Opens a new view-source tab for the last committed document in |frame|.
   virtual void ViewSource(RenderFrameHostImpl* frame) {}
@@ -454,8 +436,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
   virtual bool IsBeingDestroyed();
 
   // Notified that the render frame started loading a subresource.
-  virtual void SubresourceResponseStarted(const GURL& url,
-                                          net::CertStatus cert_status) {}
+  virtual void SubresourceResponseStarted() {}
 
   // Notified that the render finished loading a subresource for the frame
   // associated with |render_frame_host|.
@@ -533,11 +514,9 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
                                          const GURL& url,
                                          bool user_gesture) {}
 
-  // Go to the session history entry at the given offset (ie, -1 will return the
-  // "back" item).
-  virtual void OnGoToEntryAtOffset(RenderFrameHostImpl* source,
-                                   int32_t offset,
-                                   bool has_user_gesture) {}
+  // Returns true if the delegate allows to go to the session history entry at
+  // the given offset (ie, -1 will return the "back" item).
+  virtual bool IsAllowedToGoToEntryAtOffset(int32_t offset);
 
   virtual media::MediaMetricsProvider::RecordAggregateWatchTimeCallback
   GetRecordAggregateWatchTimeCallback();

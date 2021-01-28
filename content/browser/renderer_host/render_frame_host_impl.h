@@ -1920,6 +1920,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrameHostImpl state. This is never null.
   network::mojom::ClientSecurityStatePtr BuildClientSecurityState() const;
 
+  void OnDidRunInsecureContent(const GURL& security_origin,
+                               const GURL& target_url);
+  void OnDidDisplayContentWithCertificateErrors();
+  void OnDidRunContentWithCertificateErrors();
+
 #if BUILDFLAG(ENABLE_PLUGINS)
   void PepperInstanceClosed(int32_t instance_id);
   void PepperSetVolume(int32_t instance_id, double volume);

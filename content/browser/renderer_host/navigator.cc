@@ -229,6 +229,7 @@ void Navigator::DidNavigate(
   DCHECK(navigation_request);
   FrameTreeNode* frame_tree_node = render_frame_host->frame_tree_node();
   FrameTree* frame_tree = frame_tree_node->frame_tree();
+  DCHECK_EQ(frame_tree, &controller_.frame_tree());
   base::WeakPtr<RenderFrameHostImpl> old_frame_host =
       frame_tree_node->render_manager()->current_frame_host()->GetWeakPtr();
 
@@ -432,6 +433,10 @@ void Navigator::DidNavigate(
   // TODO(carlosk): Move this out.
   RecordNavigationMetrics(details, params, site_instance);
 
+  // Now that something has committed, we don't need to track whether the
+  // initial page has been accessed.
+  frame_tree->ResetHasAccessedInitialMainDocument();
+
   // Run post-commit tasks.
   if (delegate_) {
     if (details.is_main_frame) {
@@ -452,6 +457,7 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
       TRACE_EVENT_SCOPE_GLOBAL, request->common_params().navigation_start);
 
   FrameTreeNode* frame_tree_node = request->frame_tree_node();
+  DCHECK_EQ(frame_tree_node->frame_tree(), &controller_.frame_tree());
 
   navigation_data_ = std::make_unique<NavigationMetricsData>(
       request->common_params().navigation_start, request->common_params().url,

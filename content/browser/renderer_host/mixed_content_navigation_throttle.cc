@@ -188,7 +188,10 @@ bool MixedContentNavigationThrottle::ShouldBlockNavigation(bool for_redirect) {
       allowed = !strict_mode;
       if (allowed) {
         frame_host_delegate->PassiveInsecureContentFound(request->GetURL());
-        frame_host_delegate->DidDisplayInsecureContent();
+        node->frame_tree()
+            ->controller()
+            .ssl_manager()
+            ->DidDisplayMixedContent();
       }
       break;
 
@@ -209,8 +212,8 @@ bool MixedContentNavigationThrottle::ShouldBlockNavigation(bool for_redirect) {
       if (allowed) {
         const GURL& origin_url =
             mixed_content_frame->GetLastCommittedOrigin().GetURL();
-        frame_host_delegate->DidRunInsecureContent(origin_url,
-                                                   request->GetURL());
+        mixed_content_frame->OnDidRunInsecureContent(origin_url,
+                                                     request->GetURL());
         mixed_content_features_.insert(
             blink::mojom::WebFeature::kMixedContentBlockableAllowed);
       }
@@ -220,7 +223,10 @@ bool MixedContentNavigationThrottle::ShouldBlockNavigation(bool for_redirect) {
     case blink::WebMixedContentContextType::kShouldBeBlockable:
       allowed = !strict_mode;
       if (allowed)
-        frame_host_delegate->DidDisplayInsecureContent();
+        node->frame_tree()
+            ->controller()
+            .ssl_manager()
+            ->DidDisplayMixedContent();
       break;
 
     case blink::WebMixedContentContextType::kNotMixedContent:
@@ -366,7 +372,7 @@ void MixedContentNavigationThrottle::MaybeHandleCertificateError() {
 
   NavigationRequest* request = NavigationRequest::From(navigation_handle());
   RenderFrameHostImpl* rfh = request->frame_tree_node()->current_frame_host();
-  rfh->delegate()->RecordActiveContentWithCertificateErrors(rfh);
+  rfh->OnDidRunContentWithCertificateErrors();
 }
 
 // static

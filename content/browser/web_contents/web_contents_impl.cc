@@ -215,7 +215,6 @@ using AccessibilityEventCallback =
 namespace {
 
 const int kMinimumDelayBetweenLoadingUpdatesMS = 100;
-const char kDotGoogleDotCom[] = ".google.com";
 
 using LifecycleState = RenderFrameHostImpl::LifecycleState;
 
@@ -810,7 +809,6 @@ WebContentsImpl::WebContentsImpl(BrowserContext* browser_context)
       upload_size_(0),
       upload_position_(0),
       is_resume_pending_(false),
-      has_accessed_initial_document_(false),
       visible_capturer_count_(0),
       hidden_capturer_count_(0),
       is_being_destroyed_(false),
@@ -4232,19 +4230,6 @@ WebContents* WebContentsImpl::OpenURL(const OpenURLParams& params) {
   return new_contents;
 }
 
-void WebContentsImpl::SetHistoryOffsetAndLength(int history_offset,
-                                                int history_length) {
-  OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::SetHistoryOffsetAndLength",
-                        "history_offset", history_offset, "history_length",
-                        history_length);
-  ExecutePageBroadcastMethod(base::BindRepeating(
-      [](int history_offset, int history_length, RenderViewHostImpl* rvh) {
-        if (auto& broadcast = rvh->GetAssociatedPageBroadcast())
-          broadcast->SetHistoryOffsetAndLength(history_offset, history_length);
-      },
-      history_offset, history_length));
-}
-
 void WebContentsImpl::SetHistoryOffsetAndLengthForView(
     RenderViewHost* render_view_host,
     int history_offset,
@@ -5125,12 +5110,17 @@ void WebContentsImpl::ReadyToCommitNavigation(
   // does not get called on network errors.
   if (navigation_handle->IsInMainFrame() &&
       navigation_handle->GetNetErrorCode() == net::OK) {
-    GetController().ssl_manager()->DidStartResourceResponse(
-        navigation_handle->GetURL(),
-        navigation_handle->GetSSLInfo().has_value()
-            ? net::IsCertStatusError(
-                  navigation_handle->GetSSLInfo()->cert_status)
-            : false);
+    static_cast<NavigationRequest*>(navigation_handle)
+        ->frame_tree_node()
+        ->frame_tree()
+        ->controller()
+        .ssl_manager()
+        ->DidStartResourceResponse(
+            navigation_handle->GetURL(),
+            navigation_handle->GetSSLInfo().has_value()
+                ? net::IsCertStatusError(
+                      navigation_handle->GetSSLInfo()->cert_status)
+                : false);
   }
 
   // SetNotWaitingForResponse must be called last in case it triggers deletion
@@ -5320,9 +5310,6 @@ void WebContentsImpl::DidNavigateAnyFramePostCommit(
   OPTIONAL_TRACE_EVENT1(
       "content,navigation", "WebContentsImpl::DidNavigateAnyFramePostCommit",
       "render_frame_host", base::trace_event::ToTracedValue(render_frame_host));
-  // Now that something has committed, we don't need to track whether the
-  // initial page has been accessed.
-  has_accessed_initial_document_ = false;
 
   // If we navigate off the page, close all JavaScript dialogs.
   if (!details.is_same_document)
@@ -5389,50 +5376,11 @@ void WebContentsImpl::DidLoadResourceFromMemoryCache(
   }
 }
 
-void WebContentsImpl::DidDisplayInsecureContent() {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::DidDisplayInsecureContent");
-  GetController().ssl_manager()->DidDisplayMixedContent();
-}
-
-void WebContentsImpl::DidContainInsecureFormAction() {
-  OPTIONAL_TRACE_EVENT0("content",
-                        "WebContentsImpl::DidContainInsecureFormAction");
-  GetController().ssl_manager()->DidContainInsecureFormAction();
-}
-
 void WebContentsImpl::DocumentAvailableInMainFrame() {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::DocumentAvailableInMainFrame");
   observers_.NotifyObservers(
       &WebContentsObserver::DocumentAvailableInMainFrame);
-}
-
-void WebContentsImpl::OnDidRunInsecureContent(RenderFrameHostImpl* source,
-                                              const GURL& security_origin,
-                                              const GURL& target_url) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::OnDidRunInsecureContent",
-                        "render_frame_host",
-                        base::trace_event::ToTracedValue(source));
-  // TODO(nick, estark): Should we call FilterURL using |source|'s process on
-  // these parameters? |target_url| seems unused, except for a log message. And
-  // |security_origin| might be replaceable with the origin of the main frame.
-  DidRunInsecureContent(security_origin, target_url);
-}
-
-void WebContentsImpl::DidRunInsecureContent(const GURL& security_origin,
-                                            const GURL& target_url) {
-  OPTIONAL_TRACE_EVENT2(
-      "content", "WebContentsImpl::DidRunInsecureContent", "security_origin",
-      base::trace_event::ValueToString(security_origin), "target_url",
-      base::trace_event::ValueToString(target_url));
-  LOG(WARNING) << security_origin << " ran insecure content from "
-               << target_url.possibly_invalid_spec();
-  RecordAction(base::UserMetricsAction("SSL.RanInsecureContent"));
-  if (base::EndsWith(security_origin.spec(), kDotGoogleDotCom,
-                     base::CompareCase::INSENSITIVE_ASCII))
-    RecordAction(base::UserMetricsAction("SSL.RanInsecureContentGoogle"));
-  GetController().ssl_manager()->DidRunMixedContent(security_origin);
 }
 
 void WebContentsImpl::PassiveInsecureContentFound(const GURL& resource_url) {
@@ -5456,35 +5404,6 @@ bool WebContentsImpl::ShouldAllowRunningInsecureContent(
   }
 
   return allowed_per_prefs;
-}
-
-void WebContentsImpl::RecordActiveContentWithCertificateErrors(
-    RenderFrameHostImpl* render_frame_host) {
-  OPTIONAL_TRACE_EVENT1(
-      "content", "WebContentsImpl::RecordActiveContentWithCertificateErrors",
-      "render_frame_host", base::trace_event::ToTracedValue(render_frame_host));
-  // For RenderFrameHosts that are inactive and going to be discarded, we can
-  // disregard this message; there's no need to update the UI if the UI will
-  // never be shown again.
-  //
-  // We still process this message for speculative RenderFrameHosts. This can
-  // happen when a subframe's main resource has a certificate error. The
-  // origin for the last committed navigation entry will get marked as having
-  // run insecure content and that will carry over to the navigation entry for
-  // the speculative RFH when it commits.
-  //
-  // Generally our approach for active content with certificate errors follows
-  // our approach for mixed content (DidRunInsecureContent): when a page loads
-  // active insecure content, such as a script or iframe, the top-level origin
-  // gets marked as insecure and that applies to any navigation entry using the
-  // same renderer process with that same top-level origin.
-  if (render_frame_host->lifecycle_state() !=
-          RenderFrameHostImpl::LifecycleState::kSpeculative &&
-      render_frame_host->IsInactiveAndDisallowReactivation()) {
-    return;
-  }
-  GetController().ssl_manager()->DidRunContentWithCertErrors(
-      render_frame_host->GetMainFrame()->GetLastCommittedOrigin().GetURL());
 }
 
 void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
@@ -5571,12 +5490,7 @@ void WebContentsImpl::ViewSource(RenderFrameHostImpl* frame) {
   // AddNewContents method call.
 }
 
-void WebContentsImpl::SubresourceResponseStarted(const GURL& url,
-                                                 net::CertStatus cert_status) {
-  OPTIONAL_TRACE_EVENT1("content",
-                        "WebContentsImpl::SubresourceResponseStarted", "url",
-                        base::trace_event::ValueToString(url));
-  GetController().ssl_manager()->DidStartResourceResponse(url, cert_status);
+void WebContentsImpl::SubresourceResponseStarted() {
   SetNotWaitingForResponse();
 }
 
@@ -5681,17 +5595,6 @@ WebContentsImpl::GetJavaRenderFrameHostDelegate() {
 }
 #endif
 
-void WebContentsImpl::OnDidDisplayContentWithCertificateErrors() {
-  OPTIONAL_TRACE_EVENT0(
-      "content", "WebContentsImpl::OnDidDisplayContentWithCertificateErrors");
-  GetController().ssl_manager()->DidDisplayContentWithCertErrors();
-}
-
-void WebContentsImpl::OnDidRunContentWithCertificateErrors(
-    RenderFrameHostImpl* source) {
-  RecordActiveContentWithCertificateErrors(source);
-}
-
 void WebContentsImpl::DOMContentLoaded(RenderFrameHost* render_frame_host) {
   OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::DOMContentLoaded",
                         "render_frame_host",
@@ -5719,33 +5622,11 @@ void WebContentsImpl::OnDidFinishLoad(RenderFrameHost* render_frame_host,
     UMA_HISTOGRAM_COUNTS_1000("Navigation.MainFrame.FrameCount", tree_size);
 }
 
-void WebContentsImpl::OnGoToEntryAtOffset(RenderFrameHostImpl* source,
-                                          int32_t offset,
-                                          bool has_user_gesture) {
-  OPTIONAL_TRACE_EVENT2(
-      "content", "WebContentsImpl::OnGoToEntryAtOffset", "render_frame_host",
-      base::trace_event::ToTracedValue(source), "offset", offset);
-  // Non-user initiated navigations coming from the renderer should be ignored
-  // if there is an ongoing browser-initiated navigation.
-  // See https://crbug.com/879965.
-  // TODO(arthursonzogni): See if this should check for ongoing navigations in
-  // the frame(s) affected by the session history navigation, rather than just
-  // the main frame.
-  if (Navigator::ShouldIgnoreIncomingRendererRequest(
-          frame_tree_.root()->navigation_request(), has_user_gesture))
-    return;
-
-  // All frames are allowed to navigate the global history.
-  if (!delegate_ || delegate_->OnGoToEntryOffset(offset)) {
-    if (source->IsSandboxed(network::mojom::WebSandboxFlags::kTopNavigation)) {
-      // Keep track of whether this is a session history from a sandboxed iframe
-      // with top level navigation disallowed.
-      GetController().GoToOffsetInSandboxedFrame(offset,
-                                                 source->GetFrameTreeNodeId());
-    } else {
-      GetController().GoToOffset(offset);
-    }
-  }
+bool WebContentsImpl::IsAllowedToGoToEntryAtOffset(int32_t offset) {
+  // TODO(https://crbug.com/1170277): This should probably be renamed to
+  // WebContentsDelegate::IsAllowedToGoToEntryAtOffset or
+  // ShouldGoToEntryAtOffset
+  return !delegate_ || delegate_->OnGoToEntryOffset(offset);
 }
 
 void WebContentsImpl::OnPageScaleFactorChanged(RenderFrameHostImpl* source,
@@ -6107,7 +5988,7 @@ void WebContentsImpl::ActivateAndShowRepostFormWarningDialog() {
 }
 
 bool WebContentsImpl::HasAccessedInitialDocument() {
-  return has_accessed_initial_document_;
+  return GetFrameTree()->has_accessed_initial_main_document();
 }
 
 void WebContentsImpl::UpdateTitleForEntry(NavigationEntry* entry,
@@ -6352,17 +6233,6 @@ void WebContentsImpl::RenderFrameCreated(RenderFrameHost* render_frame_host) {
 
   if (display_cutout_host_impl_)
     display_cutout_host_impl_->RenderFrameCreated(render_frame_host);
-
-  if (!render_frame_host->IsRenderFrameLive() || render_frame_host->GetParent())
-    return;
-
-  NavigationEntry* entry = GetController().GetPendingEntry();
-  if (entry && entry->IsViewSourceMode()) {
-    // Put the renderer in view source mode.
-    static_cast<RenderFrameHostImpl*>(render_frame_host)
-        ->GetAssociatedLocalFrame()
-        ->EnableViewSourceMode();
-  }
 }
 
 void WebContentsImpl::RenderFrameDeleted(RenderFrameHost* render_frame_host) {
@@ -7127,20 +6997,6 @@ void WebContentsImpl::DidCancelLoading() {
   NotifyNavigationStateChanged(INVALIDATE_TYPE_URL);
 }
 
-void WebContentsImpl::DidAccessInitialDocument() {
-  OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::DidAccessInitialDocument");
-  has_accessed_initial_document_ = true;
-
-  // We may have left a failed browser-initiated navigation in the address bar
-  // to let the user edit it and try again.  Clear it now that content might
-  // show up underneath it.
-  if (!IsLoading() && GetController().GetPendingEntry())
-    GetController().DiscardPendingEntry(false);
-
-  // Update the URL display.
-  NotifyNavigationStateChanged(INVALIDATE_TYPE_URL);
-}
-
 void WebContentsImpl::DidChangeName(RenderFrameHost* render_frame_host,
                                     const std::string& name) {
   OPTIONAL_TRACE_EVENT2(
@@ -7198,59 +7054,6 @@ void WebContentsImpl::DocumentOnLoadCompleted(
       NotificationService::NoDetails());
 }
 
-void WebContentsImpl::UpdateStateForFrame(RenderFrameHost* render_frame_host,
-                                          const blink::PageState& page_state) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::UpdateStateForFrame",
-                        "render_frame_host",
-                        base::trace_event::ToTracedValue(render_frame_host));
-  // The state update affects the last NavigationEntry associated with the given
-  // |render_frame_host|. This may not be the last committed NavigationEntry (as
-  // in the case of an UpdateState from a frame being swapped out). We track
-  // which entry this is in the RenderFrameHost's nav_entry_id.
-  RenderFrameHostImpl* rfhi =
-      static_cast<RenderFrameHostImpl*>(render_frame_host);
-  // TODO(https://crbug.com/1170273): Handle multiple controllers (MPArch)
-  NavigationEntryImpl* entry =
-      GetController().GetEntryWithUniqueID(rfhi->nav_entry_id());
-  if (!entry)
-    return;
-
-  FrameNavigationEntry* frame_entry =
-      entry->GetFrameEntry(rfhi->frame_tree_node());
-  if (!frame_entry)
-    return;
-
-  // The SiteInstance might not match if we do a cross-process navigation with
-  // replacement (e.g., auto-subframe), in which case the swap out of the old
-  // RenderFrameHost runs in the background after the old FrameNavigationEntry
-  // has already been replaced and destroyed.
-  if (frame_entry->site_instance() != rfhi->GetSiteInstance())
-    return;
-
-  if (page_state == frame_entry->page_state())
-    return;  // Nothing to update.
-
-  DCHECK(page_state.IsValid()) << "Shouldn't set an empty PageState.";
-
-  // The document_sequence_number and item_sequence_number recorded in the
-  // FrameNavigationEntry should not differ from the one coming with the update,
-  // since it must come from the same document. Do not update it if a difference
-  // is detected, as this indicates that |frame_entry| is not the correct one.
-  blink::ExplodedPageState exploded_state;
-  if (!blink::DecodePageState(page_state.ToEncodedData(), &exploded_state))
-    return;
-
-  if (exploded_state.top.document_sequence_number !=
-          frame_entry->document_sequence_number() ||
-      exploded_state.top.item_sequence_number !=
-          frame_entry->item_sequence_number()) {
-    return;
-  }
-
-  frame_entry->SetPageState(page_state);
-  GetController().NotifyEntryChanged(entry);
-}
-
 void WebContentsImpl::UpdateTitle(RenderFrameHost* render_frame_host,
                                   const base::string16& title,
                                   base::i18n::TextDirection title_direction) {
@@ -7258,14 +7061,20 @@ void WebContentsImpl::UpdateTitle(RenderFrameHost* render_frame_host,
                         "render_frame_host",
                         base::trace_event::ToTracedValue(render_frame_host),
                         "title", base::trace_event::ValueToString(title));
+  RenderFrameHostImpl* rfhi =
+      static_cast<RenderFrameHostImpl*>(render_frame_host);
   // Try to find the navigation entry, which might not be the current one.
   // For example, it might be from a recently swapped out RFH.
-  NavigationEntryImpl* entry = GetController().GetEntryWithUniqueID(
-      static_cast<RenderFrameHostImpl*>(render_frame_host)->nav_entry_id());
+  NavigationEntryImpl* entry =
+      rfhi->frame_tree()->controller().GetEntryWithUniqueID(
+          rfhi->nav_entry_id());
 
   // We can handle title updates when we don't have an entry in
-  // UpdateTitleForEntry, but only if the update is from the current RVH.
-  // TODO(avi): Change to make decisions based on the RenderFrameHost.
+  // UpdateTitleForEntry, but only if the update is from the current RFH.
+  // This check also makes sure that we only update the title for the primary
+  // main frame in case of multiple FrameTrees (MPArch) as GetMainFrame returns
+  // the main frame for the FrameTree owned by this WebContents (i.e. primary
+  // FrameTree)
   if (!entry && render_frame_host != GetMainFrame())
     return;
 
@@ -7739,6 +7548,8 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
 
   const auto proxy_routing_id =
       proxy_host ? proxy_host->GetRoutingID() : MSG_ROUTING_NONE;
+  // TODO(https://crbug.com/1171646): Given MPArch, should we pass
+  // created_with_opener_ for non primary FrameTrees?
   if (!rvh_impl->CreateRenderView(opener_frame_token, proxy_routing_id,
                                   created_with_opener_)) {
     return false;
@@ -7747,6 +7558,8 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
   // but only if it's not for the main frame. Main frame renderers should create
   // this state themselves from up-to-date values, so we shouldn't override it
   // with the cached values.
+  // We share the autosize info with all pages in the WebContents so there is no
+  // need to check whether the RVH belongs to the primary FrameTree.
   if (!render_view_host->GetMainFrame() && proxy_host) {
     proxy_host->GetAssociatedRemoteMainFrame()->UpdateTextAutosizerPageInfo(
         text_autosizer_page_info_.Clone());
@@ -7755,10 +7568,10 @@ bool WebContentsImpl::CreateRenderViewForRenderManager(
   if (!proxy_host)
     ReattachOuterDelegateIfNeeded();
 
-  // TODO(https://crbug.com/1170273): Handle multiple controllers (MPArch)
-  SetHistoryOffsetAndLengthForView(render_view_host,
-                                   GetController().GetLastCommittedEntryIndex(),
-                                   GetController().GetEntryCount());
+  SetHistoryOffsetAndLengthForView(
+      render_view_host,
+      rvh_impl->frame_tree()->controller().GetLastCommittedEntryIndex(),
+      rvh_impl->frame_tree()->controller().GetEntryCount());
 
 #if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
   // Force a ViewMsg_Resize to be sent, needed to make plugins show up on
@@ -7837,6 +7650,7 @@ void WebContentsImpl::OnDidDownloadImage(
                           original_image_sizes);
 }
 
+// TODO(https://crbug.com/1171203): Needs to be made MPArch proof.
 void WebContentsImpl::OnDialogClosed(int render_process_id,
                                      int render_frame_id,
                                      JavaScriptDialogCallback response_callback,
@@ -7859,8 +7673,7 @@ void WebContentsImpl::OnDialogClosed(int render_process_id,
     // meantime.  Do not reset the navigation state in that case.
     if (rfh && rfh == rfh->frame_tree_node()->current_frame_host()) {
       rfh->frame_tree_node()->BeforeUnloadCanceled();
-      // TODO(https://crbug.com/1170273): Handle multiple controllers (MPArch)
-      GetController().DiscardNonCommittedEntries();
+      rfh->frame_tree()->controller().DiscardNonCommittedEntries();
     }
 
     // Update the URL display either way, to avoid showing a stale URL.

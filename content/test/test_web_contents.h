@@ -115,17 +115,6 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
   void AddPendingContents(std::unique_ptr<WebContentsImpl> contents,
                           const GURL& target_url);
 
-  // Establish expected arguments for |SetHistoryOffsetAndLength()|. When
-  // |SetHistoryOffsetAndLength()| is called, the arguments are compared
-  // with the expected arguments specified here.
-  void ExpectSetHistoryOffsetAndLength(int history_offset,
-                                       int history_length);
-
-  // Compares the arguments passed in with the expected arguments passed in
-  // to |ExpectSetHistoryOffsetAndLength()|.
-  void SetHistoryOffsetAndLength(int history_offset,
-                                 int history_length) override;
-
   bool GetPauseSubresourceLoadingCalled() override;
 
   void ResetPauseSubresourceLoadingCalled() override;
@@ -191,10 +180,6 @@ class TestWebContents : public WebContentsImpl, public WebContentsTester {
 
   // See set_web_preferences_changed_counter() above. May be nullptr.
   int* web_preferences_changed_counter_;
-  // Expectations for arguments of |SetHistoryOffsetAndLength()|.
-  bool expect_set_history_offset_and_length_;
-  int expect_set_history_offset_and_length_history_offset_;
-  int expect_set_history_offset_and_length_history_length_;
   std::string save_frame_headers_;
   base::string16 suggested_filename_;
   // Map keyed by image URL. Values are <id, callback> pairs.

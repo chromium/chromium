@@ -200,4 +200,8 @@ RenderFrameHostDelegate::GetActiveTopLevelDocumentsInBrowsingContextGroup(
   return std::vector<RenderFrameHostImpl*>();
 }
 
+bool RenderFrameHostDelegate::IsAllowedToGoToEntryAtOffset(int32_t offset) {
+  return true;
+}
+
 }  // namespace content

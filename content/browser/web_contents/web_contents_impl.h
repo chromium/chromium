@@ -325,6 +325,12 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // ones held by MPArch features like Prerender or Portal).
   FrameTree* GetFrameTree();
 
+  // Whether the initial empty page of this view has been accessed by another
+  // page, making it unsafe to show the pending URL. Always false after the
+  // first commit.
+  // TODO(https://crbug.com/1170277): Rename to HasAccessedInitialMainDocument
+  bool HasAccessedInitialDocument();
+
 #if defined(OS_ANDROID)
   void SetMainFrameImportance(ChildProcessImportance importance);
 #endif
@@ -592,7 +598,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       bool is_reload,
       JavaScriptDialogCallback response_callback) override;
   void DidCancelLoading() override;
-  void DidAccessInitialDocument() override;
   void DidChangeName(RenderFrameHost* render_frame_host,
                      const std::string& name) override;
   void DidReceiveFirstUserActivation(
@@ -603,8 +608,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                         const gfx::Size& frame_size) override;
   void DOMContentLoaded(RenderFrameHost* render_frame_host) override;
   void DocumentOnLoadCompleted(RenderFrameHost* render_frame_host) override;
-  void UpdateStateForFrame(RenderFrameHost* render_frame_host,
-                           const blink::PageState& page_state) override;
   void UpdateTitle(RenderFrameHost* render_frame_host,
                    const base::string16& title,
                    base::i18n::TextDirection title_direction) override;
@@ -670,17 +673,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                          WindowOpenDisposition disposition,
                          const gfx::Rect& initial_rect,
                          bool user_gesture) override;
-  void DidDisplayInsecureContent() override;
-  void DidContainInsecureFormAction() override;
   void DocumentAvailableInMainFrame() override;
-  void DidRunInsecureContent(const GURL& security_origin,
-                             const GURL& target_url) override;
   void PassiveInsecureContentFound(const GURL& resource_url) override;
   bool ShouldAllowRunningInsecureContent(bool allowed_per_prefs,
                                          const url::Origin& origin,
                                          const GURL& resource_url) override;
-  void RecordActiveContentWithCertificateErrors(
-      RenderFrameHostImpl* render_frame_host) override;
   void ViewSource(RenderFrameHostImpl* frame) override;
   void PrintCrossProcessSubframe(const gfx::Rect& rect,
                                  int document_cookie,
@@ -693,8 +690,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   base::android::ScopedJavaLocalRef<jobject> GetJavaRenderFrameHostDelegate()
       override;
 #endif
-  void SubresourceResponseStarted(const GURL& url,
-                                  net::CertStatus cert_status) override;
+  void SubresourceResponseStarted() override;
   void ResourceLoadComplete(
       RenderFrameHost* render_frame_host,
       const GlobalRequestID& request_id,
@@ -722,9 +718,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
                                  const std::string& protocol,
                                  const GURL& url,
                                  bool user_gesture) override;
-  void OnGoToEntryAtOffset(RenderFrameHostImpl* source,
-                           int32_t offset,
-                           bool has_user_gesture) override;
+  bool IsAllowedToGoToEntryAtOffset(int32_t offset) override;
   void IsClipboardPasteAllowed(
       const GURL& url,
       const ui::ClipboardFormatType& data_type,
@@ -1035,17 +1029,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // Activate this WebContents and show a form repost warning.
   void ActivateAndShowRepostFormWarningDialog() override;
 
-  // Whether the initial empty page of this view has been accessed by another
-  // page, making it unsafe to show the pending URL. Always false after the
-  // first commit.
-  bool HasAccessedInitialDocument() override;
-
-  // Sets the history for this WebContentsImpl to |history_length| entries, with
-  // an offset of |history_offset|.  This notifies all renderers involved in
-  // rendering the current page about the new offset and length.
-  void SetHistoryOffsetAndLength(int history_offset,
-                                 int history_length) override;
-
   void MediaMutedStatusChanged(const MediaPlayerId& id, bool muted);
 
   void UpdateOverridingUserAgent() override;
@@ -1244,12 +1227,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnServiceWorkerAccessed(RenderFrameHost* render_frame_host,
                                const GURL& scope,
                                AllowServiceWorkerResult allowed);
-
-  void OnDidRunInsecureContent(RenderFrameHostImpl* source,
-                               const GURL& security_origin,
-                               const GURL& target_url);
-  void OnDidDisplayContentWithCertificateErrors();
-  void OnDidRunContentWithCertificateErrors(RenderFrameHostImpl* source);
 
   JavaScriptDialogNavigationDeferrer* GetJavaScriptDialogNavigationDeferrer() {
     return javascript_dialog_navigation_deferrer_.get();
@@ -1805,11 +1782,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
 
   // When a title cannot be taken from any entry, this title will be used.
   base::string16 page_title_when_no_navigation_entry_;
-
-  // Whether the initial empty page has been accessed by another page, making it
-  // unsafe to show the pending URL. Usually false unless another window tries
-  // to modify the blank page.  Always false after the first commit.
-  bool has_accessed_initial_document_;
 
   // The last published theme color.
   base::Optional<SkColor> last_sent_theme_color_;

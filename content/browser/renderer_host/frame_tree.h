@@ -299,6 +299,18 @@ class CONTENT_EXPORT FrameTree {
   NavigationControllerImpl& controller() { return navigator_.controller(); }
   Navigator& navigator() { return navigator_; }
 
+  // Another page accessed the initial empty main document, which means it
+  // is no longer safe to display a pending URL without risking a URL spoof.
+  void DidAccessInitialMainDocument();
+
+  bool has_accessed_initial_main_document() const {
+    return has_accessed_initial_main_document_;
+  }
+
+  void ResetHasAccessedInitialMainDocument() {
+    has_accessed_initial_main_document_ = false;
+  }
+
  private:
   friend class FrameTreeTest;
   FRIEND_TEST_ALL_PREFIXES(RenderFrameHostImplBrowserTest, RemoveFocusedFrame);
@@ -339,6 +351,11 @@ class CONTENT_EXPORT FrameTree {
 
   // Overall load progress.
   double load_progress_;
+
+  // Whether the initial empty page has been accessed by another page, making it
+  // unsafe to show the pending URL. Usually false unless another window tries
+  // to modify the blank page.  Always false after the first commit.
+  bool has_accessed_initial_main_document_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(FrameTree);
 };

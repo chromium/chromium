@@ -25,7 +25,6 @@ class NavigationControllerDelegate {
   virtual ~NavigationControllerDelegate() {}
 
   // Duplicates of WebContents methods.
-  virtual const std::string& GetContentsMimeType() = 0;
   virtual void NotifyNavigationStateChanged(InvalidateTypes changed_flags) = 0;
   virtual void Stop() = 0;
   virtual bool IsBeingDestroyed() = 0;
@@ -40,10 +39,7 @@ class NavigationControllerDelegate {
   virtual void NotifyNavigationListPruned(
       const PrunedDetails& pruned_details) = 0;
   virtual void NotifyNavigationEntriesDeleted() = 0;
-  virtual void SetHistoryOffsetAndLength(int history_offset,
-                                         int history_length) = 0;
   virtual void ActivateAndShowRepostFormWarningDialog() = 0;
-  virtual bool HasAccessedInitialDocument() = 0;
 
   // Returns whether URLs for aborted browser-initiated navigations should be
   // preserved in the omnibox.  Defaults to false.

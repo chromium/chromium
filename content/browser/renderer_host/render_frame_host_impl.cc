@@ -35,6 +35,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/trace_event/optional_trace_event.h"
 #include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/traced_value.h"
 #include "build/build_config.h"
@@ -318,6 +319,8 @@ int g_next_accessibility_reset_token = 1;
 // Whether to allow injecting javascript into any kind of frame, for Android
 // WebView, WebLayer, Fuchsia web.ContextProvider and CastOS content shell.
 bool g_allow_injecting_javascript = false;
+
+const char kDotGoogleDotCom[] = ".google.com";
 
 typedef std::unordered_map<GlobalFrameRoutingId,
                            RenderFrameHostImpl*,
@@ -2567,6 +2570,14 @@ void RenderFrameHostImpl::RenderFrameCreated() {
 
   delegate_->RenderFrameCreated(this);
 
+  if (IsRenderFrameLive() && is_main_frame()) {
+    NavigationEntry* entry = frame_tree_->controller().GetPendingEntry();
+    if (entry && entry->IsViewSourceMode()) {
+      // Put the renderer in view source mode.
+      GetAssociatedLocalFrame()->EnableViewSourceMode();
+    }
+  }
+
   if (enabled_bindings_)
     GetFrameBindingsControl()->AllowBindings(enabled_bindings_);
 
@@ -3941,8 +3952,8 @@ void RenderFrameHostImpl::DownloadURL(
         })");
   std::unique_ptr<download::DownloadUrlParameters> parameters(
       new download::DownloadUrlParameters(blink_parameters->url,
-                                          GetProcess()->GetID(),
-                                          GetRoutingID(), traffic_annotation));
+                                          GetProcess()->GetID(), GetRoutingID(),
+                                          traffic_annotation));
   parameters->set_content_initiated(!blink_parameters->is_context_menu_save);
   parameters->set_suggested_name(
       blink_parameters->suggested_name.value_or(base::string16()));
@@ -4236,8 +4247,11 @@ void RenderFrameHostImpl::NotifyUserActivation(
   GetAssociatedLocalFrame()->NotifyUserActivation(notification_type);
 }
 
+// TODO(https://crbug.com/1170277):  Move this IPC to LocalMainFrameHost
+// interface
 void RenderFrameHostImpl::DidAccessInitialDocument() {
-  delegate_->DidAccessInitialDocument();
+  if (is_main_frame())
+    frame_tree_->DidAccessInitialMainDocument();
 }
 
 void RenderFrameHostImpl::DidChangeName(const std::string& name,
@@ -4361,11 +4375,11 @@ void RenderFrameHostImpl::UnregisterProtocolHandler(const std::string& scheme,
 }
 
 void RenderFrameHostImpl::DidDisplayInsecureContent() {
-  delegate_->DidDisplayInsecureContent();
+  frame_tree_->controller().ssl_manager()->DidDisplayMixedContent();
 }
 
 void RenderFrameHostImpl::DidContainInsecureFormAction() {
-  delegate_->DidContainInsecureFormAction();
+  frame_tree_->controller().ssl_manager()->DidContainInsecureFormAction();
 }
 
 void RenderFrameHostImpl::DocumentAvailableInMainFrame(
@@ -4553,7 +4567,32 @@ void RenderFrameHostImpl::DispatchLoad() {
 
 void RenderFrameHostImpl::GoToEntryAtOffset(int32_t offset,
                                             bool has_user_gesture) {
-  delegate_->OnGoToEntryAtOffset(this, offset, has_user_gesture);
+  OPTIONAL_TRACE_EVENT2(
+      "content", "RenderFrameHostImpl::GoToEntryAtOffset", "render_frame_host",
+      base::trace_event::ToTracedValue(this), "offset", offset);
+
+  // Non-user initiated navigations coming from the renderer should be ignored
+  // if there is an ongoing browser-initiated navigation.
+  // See https://crbug.com/879965.
+  // TODO(arthursonzogni): See if this should check for ongoing navigations in
+  // the frame(s) affected by the session history navigation, rather than just
+  // the main frame.
+  if (Navigator::ShouldIgnoreIncomingRendererRequest(
+          frame_tree_->root()->navigation_request(), has_user_gesture)) {
+    return;
+  }
+
+  // All frames are allowed to navigate the global history.
+  if (delegate_->IsAllowedToGoToEntryAtOffset(offset)) {
+    if (IsSandboxed(network::mojom::WebSandboxFlags::kTopNavigation)) {
+      // Keep track of whether this is a session history from a sandboxed iframe
+      // with top level navigation disallowed.
+      frame_tree_->controller().GoToOffsetInSandboxedFrame(
+          offset, GetFrameTreeNodeId());
+    } else {
+      frame_tree_->controller().GoToOffset(offset);
+    }
+  }
 }
 
 void RenderFrameHostImpl::HandleAccessibilityFindInPageResult(
@@ -5185,6 +5224,9 @@ void RenderFrameHostImpl::SetKeepAliveTimeoutForTesting(
 }
 
 void RenderFrameHostImpl::UpdateState(const blink::PageState& state) {
+  OPTIONAL_TRACE_EVENT1("content", "RenderFrameHostImpl::UpdateState",
+                        "render_frame_host",
+                        base::trace_event::ToTracedValue(this));
   // TODO(creis): Verify the state's ISN matches the last committed FNE.
 
   // Without this check, the renderer can trick the browser into using
@@ -5195,7 +5237,7 @@ void RenderFrameHostImpl::UpdateState(const blink::PageState& state) {
     return;
   }
 
-  delegate_->UpdateStateForFrame(this, state);
+  frame_tree_->controller().UpdateStateForFrame(this, state);
 }
 
 void RenderFrameHostImpl::OpenURL(mojom::OpenURLParamsPtr params) {
@@ -5769,7 +5811,12 @@ void RenderFrameHostImpl::BeginNavigation(
 void RenderFrameHostImpl::SubresourceResponseStarted(
     const GURL& url,
     net::CertStatus cert_status) {
-  delegate_->SubresourceResponseStarted(url, cert_status);
+  OPTIONAL_TRACE_EVENT1("content",
+                        "RenderFrameHostImpl::SubresourceResponseStarted",
+                        "url", base::trace_event::ValueToString(url));
+  frame_tree_->controller().ssl_manager()->DidStartResourceResponse(
+      url, cert_status);
+  delegate_->SubresourceResponseStarted();
 }
 
 void RenderFrameHostImpl::ResourceLoadComplete(
@@ -10541,6 +10588,60 @@ void RenderFrameHostImpl::SetPolicyContainerForEarlyCommitAfterCrash(
   DCHECK_EQ(lifecycle_state_, LifecycleState::kSpeculative);
   DCHECK(!policy_container_host_);
   SetPolicyContainerHost(std::move(policy_container_host));
+}
+
+void RenderFrameHostImpl::OnDidRunInsecureContent(const GURL& security_origin,
+                                                  const GURL& target_url) {
+  OPTIONAL_TRACE_EVENT2(
+      "content", "RenderFrameHostImpl::DidRunInsecureContent",
+      "security_origin", base::trace_event::ValueToString(security_origin),
+      "target_url", base::trace_event::ValueToString(target_url));
+
+  // TODO(nick, estark): Should we call FilterURL using this frame's process on
+  // these parameters? |target_url| seems unused, except for a log message. And
+  // |security_origin| might be replaceable with the origin of the main frame.
+
+  LOG(WARNING) << security_origin << " ran insecure content from "
+               << target_url.possibly_invalid_spec();
+  RecordAction(base::UserMetricsAction("SSL.RanInsecureContent"));
+  if (base::EndsWith(security_origin.spec(), kDotGoogleDotCom,
+                     base::CompareCase::INSENSITIVE_ASCII)) {
+    RecordAction(base::UserMetricsAction("SSL.RanInsecureContentGoogle"));
+  }
+  frame_tree_->controller().ssl_manager()->DidRunMixedContent(security_origin);
+}
+
+void RenderFrameHostImpl::OnDidRunContentWithCertificateErrors() {
+  OPTIONAL_TRACE_EVENT0(
+      "content", "RenderFrameHostImpl::OnDidRunContentWithCertificateErrors");
+  // For RenderFrameHosts that are inactive and going to be discarded, we can
+  // disregard this message; there's no need to update the UI if the UI will
+  // never be shown again.
+  //
+  // We still process this message for speculative RenderFrameHosts. This can
+  // happen when a subframe's main resource has a certificate error. The
+  // origin for the last committed navigation entry will get marked as having
+  // run insecure content and that will carry over to the navigation entry for
+  // the speculative RFH when it commits.
+  //
+  // Generally our approach for active content with certificate errors follows
+  // our approach for mixed content (DidRunInsecureContent): when a page loads
+  // active insecure content, such as a script or iframe, the top-level origin
+  // gets marked as insecure and that applies to any navigation entry using the
+  // same renderer process with that same top-level origin.
+  if (lifecycle_state() != LifecycleState::kSpeculative &&
+      IsInactiveAndDisallowReactivation()) {
+    return;
+  }
+  frame_tree_->controller().ssl_manager()->DidRunContentWithCertErrors(
+      GetMainFrame()->GetLastCommittedOrigin().GetURL());
+}
+
+void RenderFrameHostImpl::OnDidDisplayContentWithCertificateErrors() {
+  OPTIONAL_TRACE_EVENT0(
+      "content",
+      "RenderFrameHostImpl::OnDidDisplayContentWithCertificateErrors");
+  frame_tree_->controller().ssl_manager()->DidDisplayContentWithCertErrors();
 }
 
 std::ostream& operator<<(std::ostream& o,

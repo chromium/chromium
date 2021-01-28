@@ -49,8 +49,6 @@ TestWebContents::TestWebContents(BrowserContext* browser_context)
     : WebContentsImpl(browser_context),
       delegate_view_override_(nullptr),
       web_preferences_changed_counter_(nullptr),
-      expect_set_history_offset_and_length_(false),
-      expect_set_history_offset_and_length_history_length_(0),
       pause_subresource_loading_called_(false),
       audio_group_id_(base::UnguessableToken::Create()),
       is_page_frozen_(false) {
@@ -81,7 +79,6 @@ TestWebContents* TestWebContents::Create(const CreateParams& params) {
 }
 
 TestWebContents::~TestWebContents() {
-  EXPECT_FALSE(expect_set_history_offset_and_length_);
 }
 
 TestRenderFrameHost* TestWebContents::GetMainFrame() {
@@ -314,23 +311,6 @@ void TestWebContents::AddPendingContents(
       contents->GetRenderViewHost()->GetWidget()->GetRoutingID());
   AddDestructionObserver(contents.get());
   pending_contents_[key] = CreatedWindow(std::move(contents), target_url);
-}
-
-void TestWebContents::ExpectSetHistoryOffsetAndLength(int history_offset,
-                                                      int history_length) {
-  expect_set_history_offset_and_length_ = true;
-  expect_set_history_offset_and_length_history_offset_ = history_offset;
-  expect_set_history_offset_and_length_history_length_ = history_length;
-}
-
-void TestWebContents::SetHistoryOffsetAndLength(int history_offset,
-                                                int history_length) {
-  EXPECT_TRUE(expect_set_history_offset_and_length_);
-  expect_set_history_offset_and_length_ = false;
-  EXPECT_EQ(expect_set_history_offset_and_length_history_offset_,
-            history_offset);
-  EXPECT_EQ(expect_set_history_offset_and_length_history_length_,
-            history_length);
 }
 
 RenderFrameHostDelegate* TestWebContents::CreateNewWindow(

@@ -285,6 +285,8 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
 
   // Random data ---------------------------------------------------------------
 
+  FrameTree& frame_tree() { return frame_tree_; }
+
   SSLManager* ssl_manager() { return &ssl_manager_; }
 
   // Maximum number of entries before we start removing entries from the front.
@@ -319,6 +321,14 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   // NavigationRequest. Callers are responsible for only calling this for
   // requests corresponding to the current pending entry.
   std::unique_ptr<PendingEntryRef> ReferencePendingEntry();
+
+  // Another page accessed the initial empty main document, which means it
+  // is no longer safe to display a pending URL without risking a URL spoof.
+  void DidAccessInitialMainDocument();
+
+  // The state for the page changed and should be updated in session history.
+  void UpdateStateForFrame(RenderFrameHostImpl* render_frame_host,
+                           const blink::PageState& page_state);
 
   // Like NavigationController::CreateNavigationEntry, but takes extra arguments
   // like |source_site_instance| and |should_replace_entry|. |web_contents| is
@@ -612,6 +622,11 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   ComputeDocumentPoliciesForFrameEntry(RenderFrameHostImpl* rfh,
                                        bool is_same_document,
                                        NavigationRequest* request);
+
+  // Sets the history to |history_length| entries, with an offset of
+  // |history_offset|. This notifies all renderers involved in rendering the
+  // current page about the new offset and length.
+  void SetHistoryOffsetAndLength(int history_offset, int history_length);
 
   // ---------------------------------------------------------------------------
 

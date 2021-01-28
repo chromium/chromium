@@ -15,6 +15,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/stl_util.h"
+#include "base/trace_event/optional_trace_event.h"
 #include "base/unguessable_token.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -570,6 +571,12 @@ void FrameTree::Init(SiteInstance* main_frame_site_instance,
   // main frame - let's do the same thing here.
   std::string unique_name;
   root_->SetFrameName(main_frame_name, unique_name);
+}
+
+void FrameTree::DidAccessInitialMainDocument() {
+  OPTIONAL_TRACE_EVENT0("content", "FrameTree::DidAccessInitialDocument");
+  has_accessed_initial_main_document_ = true;
+  controller().DidAccessInitialMainDocument();
 }
 
 }  // namespace content

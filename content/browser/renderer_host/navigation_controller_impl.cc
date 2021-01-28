@@ -46,6 +46,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/optional_trace_event.h"
+#include "base/trace_event/trace_conversion_helper.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "cc/base/switches.h"
@@ -92,6 +93,7 @@
 #include "skia/ext/platform_canvas.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
+#include "third_party/blink/public/common/page_state/page_state_serialization.h"
 #include "url/url_constants.h"
 
 namespace content {
@@ -810,7 +812,10 @@ NavigationEntryImpl* NavigationControllerImpl::GetLastCommittedEntry() {
 }
 
 bool NavigationControllerImpl::CanViewSource() {
-  const std::string& mime_type = delegate_->GetContentsMimeType();
+  const std::string& mime_type = frame_tree_.root()
+                                     ->render_manager()
+                                     ->current_host()
+                                     ->contents_mime_type();
   bool is_viewable_mime_type = blink::IsSupportedNonImageMimeType(mime_type) &&
                                !media::IsSupportedMediaMimeType(mime_type);
   NavigationEntry* visible_entry = GetVisibleEntry();
@@ -2101,8 +2106,7 @@ void NavigationControllerImpl::CopyStateFromAndPrune(NavigationController* temp,
   // Adjust indices such that the last entry and pending are at the end now.
   last_committed_entry_index_ = GetEntryCount() - 1;
 
-  delegate_->SetHistoryOffsetAndLength(last_committed_entry_index_,
-                                       GetEntryCount());
+  SetHistoryOffsetAndLength(last_committed_entry_index_, GetEntryCount());
 }
 
 bool NavigationControllerImpl::CanPruneAllButLastCommitted() {
@@ -2128,8 +2132,7 @@ void NavigationControllerImpl::PruneAllButLastCommitted() {
   DCHECK_EQ(0, last_committed_entry_index_);
   DCHECK_EQ(1, GetEntryCount());
 
-  delegate_->SetHistoryOffsetAndLength(last_committed_entry_index_,
-                                       GetEntryCount());
+  SetHistoryOffsetAndLength(last_committed_entry_index_, GetEntryCount());
 }
 
 void NavigationControllerImpl::PruneAllButLastCommittedInternal() {
@@ -2165,8 +2168,7 @@ void NavigationControllerImpl::DeleteNavigationEntries(
     for (auto it = delete_indices.rbegin(); it != delete_indices.rend(); ++it) {
       RemoveEntryAtIndex(*it);
     }
-    delegate_->SetHistoryOffsetAndLength(last_committed_entry_index_,
-                                         GetEntryCount());
+    SetHistoryOffsetAndLength(last_committed_entry_index_, GetEntryCount());
   }
   delegate()->NotifyNavigationEntriesDeleted();
 }
@@ -2486,7 +2488,7 @@ void NavigationControllerImpl::SetSessionStorageNamespace(
 
 bool NavigationControllerImpl::IsUnmodifiedBlankTab() {
   return IsInitialNavigation() && !GetLastCommittedEntry() &&
-         !delegate_->HasAccessedInitialDocument();
+         !frame_tree_.has_accessed_initial_main_document();
 }
 
 SessionStorageNamespace* NavigationControllerImpl::GetSessionStorageNamespace(
@@ -3899,6 +3901,83 @@ NavigationControllerImpl::ComputeDocumentPoliciesForFrameEntry(
   // into the RFH yet.
   return std::make_unique<PolicyContainerHost::DocumentPolicies>(
       request->policy_container_host()->document_policies());
+}
+
+void NavigationControllerImpl::SetHistoryOffsetAndLength(int history_offset,
+                                                         int history_length) {
+  OPTIONAL_TRACE_EVENT2(
+      "content", "NavigationControllerImpl::SetHistoryOffsetAndLength",
+      "history_offset", history_offset, "history_length", history_length);
+
+  auto callback = base::BindRepeating(
+      [](int history_offset, int history_length, RenderViewHostImpl* rvh) {
+        if (auto& broadcast = rvh->GetAssociatedPageBroadcast()) {
+          broadcast->SetHistoryOffsetAndLength(history_offset, history_length);
+        }
+      },
+      history_offset, history_length);
+  frame_tree_.root()->render_manager()->ExecutePageBroadcastMethod(callback);
+}
+
+void NavigationControllerImpl::DidAccessInitialMainDocument() {
+  // We may have left a failed browser-initiated navigation in the address bar
+  // to let the user edit it and try again.  Clear it now that content might
+  // show up underneath it.
+  if (!frame_tree_.IsLoading() && GetPendingEntry())
+    DiscardPendingEntry(false);
+
+  // Update the URL display.
+  delegate_->NotifyNavigationStateChanged(INVALIDATE_TYPE_URL);
+}
+
+void NavigationControllerImpl::UpdateStateForFrame(
+    RenderFrameHostImpl* rfhi,
+    const blink::PageState& page_state) {
+  OPTIONAL_TRACE_EVENT1(
+      "content", "NavigationControllerImpl::UpdateStateForFrame",
+      "render_frame_host", base::trace_event::ToTracedValue(rfhi));
+  // The state update affects the last NavigationEntry associated with the given
+  // |render_frame_host|. This may not be the last committed NavigationEntry (as
+  // in the case of an UpdateState from a frame being swapped out). We track
+  // which entry this is in the RenderFrameHost's nav_entry_id.
+  NavigationEntryImpl* entry = GetEntryWithUniqueID(rfhi->nav_entry_id());
+  if (!entry)
+    return;
+
+  FrameNavigationEntry* frame_entry =
+      entry->GetFrameEntry(rfhi->frame_tree_node());
+  if (!frame_entry)
+    return;
+
+  // The SiteInstance might not match if we do a cross-process navigation with
+  // replacement (e.g., auto-subframe), in which case the swap out of the old
+  // RenderFrameHost runs in the background after the old FrameNavigationEntry
+  // has already been replaced and destroyed.
+  if (frame_entry->site_instance() != rfhi->GetSiteInstance())
+    return;
+
+  if (page_state == frame_entry->page_state())
+    return;  // Nothing to update.
+
+  DCHECK(page_state.IsValid()) << "Shouldn't set an empty PageState.";
+
+  // The document_sequence_number and item_sequence_number recorded in the
+  // FrameNavigationEntry should not differ from the one coming with the update,
+  // since it must come from the same document. Do not update it if a difference
+  // is detected, as this indicates that |frame_entry| is not the correct one.
+  blink::ExplodedPageState exploded_state;
+  if (!blink::DecodePageState(page_state.ToEncodedData(), &exploded_state))
+    return;
+
+  if (exploded_state.top.document_sequence_number !=
+          frame_entry->document_sequence_number() ||
+      exploded_state.top.item_sequence_number !=
+          frame_entry->item_sequence_number()) {
+    return;
+  }
+
+  frame_entry->SetPageState(page_state);
+  NotifyEntryChanged(entry);
 }
 
 }  // namespace content

@@ -15,38 +15,22 @@ ContentSecurityNotifier::ContentSecurityNotifier(
 
 void ContentSecurityNotifier::NotifyContentWithCertificateErrorsRan() {
   auto* render_frame_host = RenderFrameHostImpl::FromID(render_frame_host_id_);
-  if (!render_frame_host)
-    return;
-  auto* web_contents = static_cast<WebContentsImpl*>(
-      WebContents::FromRenderFrameHost(render_frame_host));
-  if (!web_contents)
-    return;
-  web_contents->OnDidRunContentWithCertificateErrors(render_frame_host);
+  if (render_frame_host)
+    render_frame_host->OnDidRunContentWithCertificateErrors();
 }
 
 void ContentSecurityNotifier::NotifyContentWithCertificateErrorsDisplayed() {
   auto* render_frame_host = RenderFrameHostImpl::FromID(render_frame_host_id_);
-  if (!render_frame_host)
-    return;
-  auto* web_contents = static_cast<WebContentsImpl*>(
-      WebContents::FromRenderFrameHost(render_frame_host));
-  if (!web_contents)
-    return;
-  web_contents->OnDidDisplayContentWithCertificateErrors();
+  if (render_frame_host)
+    render_frame_host->OnDidDisplayContentWithCertificateErrors();
 }
 
 void ContentSecurityNotifier::NotifyInsecureContentRan(
     const GURL& origin,
     const GURL& insecure_url) {
   auto* render_frame_host = RenderFrameHostImpl::FromID(render_frame_host_id_);
-  if (!render_frame_host)
-    return;
-  auto* web_contents = static_cast<WebContentsImpl*>(
-      WebContents::FromRenderFrameHost(render_frame_host));
-  if (!web_contents)
-    return;
-  web_contents->OnDidRunInsecureContent(render_frame_host, origin,
-                                        insecure_url);
+  if (render_frame_host)
+    render_frame_host->OnDidRunInsecureContent(origin, insecure_url);
 }
 
 }  // namespace content
