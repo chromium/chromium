@@ -59,8 +59,8 @@ TEST_F(OomInterventionDeciderTest, ParmanentlyOptOut) {
   std::string not_declined_host = "not_declined_host";
   EXPECT_TRUE(decider.CanTriggerIntervention(not_declined_host));
 
-  // Put sufficient number of hosts into the blacklist.
-  for (size_t i = 0; i < OomInterventionDecider::kMaxBlacklistSize; ++i) {
+  // Put sufficient number of hosts into the blocklist.
+  for (size_t i = 0; i < OomInterventionDecider::kMaxBlocklistSize; ++i) {
     std::string declined_host = "declined_host" + base::NumberToString(i);
     decider.OnInterventionDeclined(declined_host);
     decider.OnOomDetected(declined_host);
