@@ -31,7 +31,6 @@ COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kAppAutoLaunched[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kAppOemManifestFile[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kArcAvailability[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kArcAvailable[];
-COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kArcBuildProperties[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kArcDataCleanupOnStart[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS) extern const char kArcDisableAppSync[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)

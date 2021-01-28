@@ -66,10 +66,6 @@ const char kArcAvailability[] = "arc-availability";
 // Signals the availability of the ARC instance on this device.
 const char kArcAvailable[] = "arc-available";
 
-// A JSON dictionary whose content is the same as cros config's
-// /arc/build-properties.
-const char kArcBuildProperties[] = "arc-build-properties";
-
 // Flag that forces ARC data be cleaned on each start.
 const char kArcDataCleanupOnStart[] = "arc-data-cleanup-on-start";
 
