@@ -16,12 +16,7 @@ LayoutNGTableSection::LayoutNGTableSection(Element* element)
 
 bool LayoutNGTableSection::IsEmpty() const {
   NOT_DESTROYED();
-  for (LayoutObject* child = FirstChild(); child;
-       child = child->NextSibling()) {
-    if (!To<LayoutNGTableRow>(child)->IsEmpty())
-      return false;
-  }
-  return true;
+  return !FirstChild();
 }
 
 LayoutNGTable* LayoutNGTableSection::Table() const {
