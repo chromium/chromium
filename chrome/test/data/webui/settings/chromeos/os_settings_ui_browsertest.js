@@ -10,11 +10,6 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
-// Only run in release builds because we frequently see test timeouts in debug.
-// We suspect this is because the settings page loads slowly in debug.
-// https://crbug.com/1003483
-GEN('#if defined(NDEBUG)');
-
 /**
  * Checks whether a given element is visible to the user.
  * @param {!Element} element
@@ -41,7 +36,15 @@ var OSSettingsUIBrowserTest = class extends Polymer2DeprecatedTest {
   }
 };
 
-TEST_F('OSSettingsUIBrowserTest', 'AllJsTests', () => {
+// Only run in release builds because we frequently see test timeouts in debug.
+// We suspect this is because the settings page loads slowly in debug.
+// https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_AllJsTests DISABLED_AllJsTests');
+GEN('#else');
+GEN('#define MAYBE_AllJsTests AllJsTests');
+GEN('#endif');
+TEST_F('OSSettingsUIBrowserTest', 'MAYBE_AllJsTests', () => {
   suite('os-settings-ui', () => {
     let ui;
     let userActionRecorder;
@@ -250,5 +253,3 @@ TEST_F('OSSettingsUIBrowserTest', 'AllJsTests', () => {
 
   mocha.run();
 });
-
-GEN('#endif  // defined(NDEBUG)');

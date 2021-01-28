@@ -10,11 +10,6 @@ const BROWSER_SETTINGS_PATH = '../';
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
-// Only run in release builds because we frequently see test timeouts in debug.
-// We suspect this is because the settings page loads slowly in debug.
-// https://crbug.com/1003483
-GEN('#if defined(NDEBUG)');
-
 GEN('#include "ash/public/cpp/ash_features.h"');
 GEN('#include "build/branding_buildflags.h"');
 GEN('#include "chrome/browser/nearby_sharing/common/nearby_share_features.h"');
@@ -22,6 +17,15 @@ GEN('#include "chrome/common/chrome_features.h"');
 GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "ui/display/display_features.h"');
+
+// Most tests only run in release builds because we frequently see test timeouts
+// in debug. We suspect this is because the settings page loads slowly in debug.
+// https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_AllJsTests DISABLED_AllJsTests');
+GEN('#else');
+GEN('#define MAYBE_AllJsTests AllJsTests');
+GEN('#endif');
 
 // Generic test fixture for CrOS Polymer Settings elements to be overridden by
 // individual element tests.
@@ -60,7 +64,7 @@ var SettingsLocalizedLinkTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('SettingsLocalizedLinkTest', 'AllJsTests', () => {
+TEST_F('SettingsLocalizedLinkTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -90,12 +94,24 @@ var OSSettingsAboutPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsAboutPageTest', 'AllBuilds', () => {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_AllBuilds DISABLED_AllBuilds');
+GEN('#else');
+GEN('#define MAYBE_AllBuilds AllBuilds');
+GEN('#endif');
+TEST_F('OSSettingsAboutPageTest', 'MAYBE_AllBuilds', () => {
   mocha.grep('/^(?!AboutPageTest_OfficialBuild).*$/').run();
 });
 
 GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
-TEST_F('OSSettingsAboutPageTest', 'AboutPage_OfficialBuild', () => {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_OfficialBuild DISABLED_OfficialBuild');
+GEN('#else');
+GEN('#define MAYBE_OfficialBuild OfficialBuild');
+GEN('#endif');
+TEST_F('OSSettingsAboutPageTest', 'MAYBE_OfficialBuild', () => {
   mocha.grep('AboutPageTest_OfficialBuild').run();
 });
 GEN('#endif');
@@ -117,7 +133,7 @@ var OSSettingsSliderTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsSliderTest', 'AllJsTests', () => {
+TEST_F('OSSettingsSliderTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -137,7 +153,7 @@ var OSSettingsTextAreaTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsTextAreaTest', 'AllJsTests', () => {
+TEST_F('OSSettingsTextAreaTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -157,7 +173,7 @@ var OSSettingsToggleButtonTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsToggleButtonTest', 'AllJsTests', () => {
+TEST_F('OSSettingsToggleButtonTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -177,7 +193,7 @@ var OSSettingsPrefUtilTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsPrefUtilTest', 'AllJsTests', () => {
+TEST_F('OSSettingsPrefUtilTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -200,7 +216,7 @@ var OSSettingsPrefsTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsPrefsTest', 'AllJsTests', () => {
+TEST_F('OSSettingsPrefsTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -222,7 +238,7 @@ var OSSettingsAddUsersTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsAddUsersTest', 'AllJsTests', () => {
+TEST_F('OSSettingsAddUsersTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -249,7 +265,7 @@ var OSSettingsLockScreenPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsLockScreenPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsLockScreenPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -264,7 +280,7 @@ var OSSettingsLockScreenPageTestWithAccountManagementFlowsV2Enabled =
 
 TEST_F(
     'OSSettingsLockScreenPageTestWithAccountManagementFlowsV2Enabled',
-    'AllJsTests', () => {
+    'MAYBE_AllJsTests', () => {
       mocha.run();
     });
 
@@ -293,7 +309,7 @@ var OSSettingsUserPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsUserPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsUserPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -307,8 +323,8 @@ var OSSettingsUserPageTestWithAccountManagementFlowsV2Enabled =
 };
 
 TEST_F(
-    'OSSettingsUserPageTestWithAccountManagementFlowsV2Enabled', 'AllJsTests',
-    () => {
+    'OSSettingsUserPageTestWithAccountManagementFlowsV2Enabled',
+    'MAYBE_AllJsTests', () => {
       mocha.run();
     });
 
@@ -330,7 +346,7 @@ var OSSettingsAmbientModePageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsAmbientModePageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsAmbientModePageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -353,7 +369,7 @@ var OSSettingsAmbientModePhotosPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsAmbientModePhotosPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsAmbientModePhotosPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -369,7 +385,7 @@ var OSSettingsPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsPageTest', 'MAYBE_AllJsTests', () => {
   // Run all registered tests.
   mocha.run();
 });
@@ -394,7 +410,7 @@ var OSSettingsAppsPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsAppsPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsAppsPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -435,7 +451,7 @@ var OSSettingsAppManagementDomSwitchTest =
   }
 };
 
-TEST_F('OSSettingsAppManagementDomSwitchTest', 'All', function() {
+TEST_F('OSSettingsAppManagementDomSwitchTest', 'MAYBE_AllJsTests', function() {
   mocha.run();
 });
 
@@ -456,7 +472,7 @@ var OSSettingsAppManagementPageTest =
   }
 };
 
-TEST_F('OSSettingsAppManagementPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsAppManagementPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -477,7 +493,7 @@ var OSSettingsAppManagementPwaDetailViewTest =
   }
 };
 
-TEST_F('OSSettingsAppManagementPwaDetailViewTest', 'AllJsTests', () => {
+TEST_F('OSSettingsAppManagementPwaDetailViewTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -498,7 +514,7 @@ var OSSettingsAppManagementArcDetailViewTest =
   }
 };
 
-TEST_F('OSSettingsAppManagementArcDetailViewTest', 'AllJsTests', () => {
+TEST_F('OSSettingsAppManagementArcDetailViewTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -521,9 +537,10 @@ var OSSettingsAppManagementPluginVmDetailViewTest =
   }
 };
 
-TEST_F('OSSettingsAppManagementPluginVmDetailViewTest', 'AllJsTests', () => {
-  mocha.run();
-});
+TEST_F(
+    'OSSettingsAppManagementPluginVmDetailViewTest', 'MAYBE_AllJsTests', () => {
+      mocha.run();
+    });
 
 // Test fixture for the Plugin VM shared paths page.
 // eslint-disable-next-line no-var
@@ -544,9 +561,11 @@ var OSSettingsAppManagementPluginVmSharedPathsTest =
   }
 };
 
-TEST_F('OSSettingsAppManagementPluginVmSharedPathsTest', 'AllJsTests', () => {
-  mocha.run();
-});
+TEST_F(
+    'OSSettingsAppManagementPluginVmSharedPathsTest', 'MAYBE_AllJsTests',
+    () => {
+      mocha.run();
+    });
 
 // Test fixture for the app management managed app view.
 // eslint-disable-next-line no-var
@@ -565,7 +584,7 @@ var OSSettingsAppManagementManagedAppTest =
   }
 };
 
-TEST_F('OSSettingsAppManagementManagedAppTest', 'AllJsTests', () => {
+TEST_F('OSSettingsAppManagementManagedAppTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -582,7 +601,7 @@ var OSSettingsAppManagementReducersTest =
   }
 };
 
-TEST_F('OSSettingsAppManagementReducersTest', 'AllJsTests', () => {
+TEST_F('OSSettingsAppManagementReducersTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -608,7 +627,7 @@ var OSSettingsBluetoothPageTest = class extends OSSettingsBrowserTest {
 };
 
 // Flaky. https://crbug.com/1035378
-TEST_F('OSSettingsBluetoothPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsBluetoothPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -637,29 +656,66 @@ var OSSettingsCrostiniPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsCrostiniPageTest', 'MainPage', function() {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_MainPage DISABLED_MainPage');
+GEN('#else');
+GEN('#define MAYBE_MainPage MainPage');
+GEN('#endif');
+TEST_F('OSSettingsCrostiniPageTest', 'MAYBE_MainPage', function() {
   mocha.grep('\\bMainPage\\b').run();
 });
 
-TEST_F('OSSettingsCrostiniPageTest', 'SubPageDefault', function() {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_SubPageDefault DISABLED_SubPageDefault');
+GEN('#else');
+GEN('#define MAYBE_SubPageDefault SubPageDefault');
+GEN('#endif');
+TEST_F('OSSettingsCrostiniPageTest', 'MAYBE_SubPageDefault', function() {
   mocha.grep('\\bSubPageDefault\\b').run();
 });
 
-TEST_F('OSSettingsCrostiniPageTest', 'SubPagePortForwarding', function() {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_SubPagePortForwarding DISABLED_SubPagePortForwarding');
+GEN('#else');
+GEN('#define MAYBE_SubPagePortForwarding SubPagePortForwarding');
+GEN('#endif');
+TEST_F('OSSettingsCrostiniPageTest', 'MAYBE_SubPagePortForwarding', function() {
   mocha.grep('\\bSubPagePortForwarding\\b').run();
 });
 
-TEST_F('OSSettingsCrostiniPageTest', 'DiskResize', function() {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_DiskResize DISABLED_DiskResize');
+GEN('#else');
+GEN('#define MAYBE_DiskResize DiskResize');
+GEN('#endif');
+TEST_F('OSSettingsCrostiniPageTest', 'MAYBE_DiskResize', function() {
   mocha.grep('\\bDiskResize\\b').run();
 });
 
-TEST_F('OSSettingsCrostiniPageTest', 'SubPageSharedPaths', function() {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_SubPageSharedPaths DISABLED_SubPageSharedPaths');
+GEN('#else');
+GEN('#define MAYBE_SubPageSharedPaths SubPageSharedPaths');
+GEN('#endif');
+TEST_F('OSSettingsCrostiniPageTest', 'MAYBE_SubPageSharedPaths', function() {
   mocha.grep('\\bSubPageSharedPaths\\b').run();
 });
 
-TEST_F('OSSettingsCrostiniPageTest', 'SubPageSharedUsbDevices', function() {
-  mocha.grep('\\bSubPageSharedUsbDevices\\b').run();
-});
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_SubPageSharedUsbDevices DISABLED_SubPageSharedUsbDevices');
+GEN('#else');
+GEN('#define MAYBE_SubPageSharedUsbDevices SubPageSharedUsbDevices');
+GEN('#endif');
+TEST_F(
+    'OSSettingsCrostiniPageTest', 'MAYBE_SubPageSharedUsbDevices', function() {
+      mocha.grep('\\bSubPageSharedUsbDevices\\b').run();
+    });
 
 // Test fixture for the Guest OS shared USB devices page.
 // eslint-disable-next-line no-var
@@ -679,7 +735,7 @@ var OSSettingsGuestOsSharedUsbDevicesTest =
   }
 };
 
-TEST_F('OSSettingsGuestOsSharedUsbDevicesTest', 'AllJsTests', () => {
+TEST_F('OSSettingsGuestOsSharedUsbDevicesTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -709,7 +765,7 @@ var OSSettingsOnStartupPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsOnStartupPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsOnStartupPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -731,7 +787,7 @@ var OSSettingsDateTimePageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsDateTimePageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsDateTimePageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -767,7 +823,13 @@ var OSSettingsDevicePageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsDevicePageTest', 'DevicePageTest', () => {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_DevicePageTest DISABLED_DevicePageTest');
+GEN('#else');
+GEN('#define MAYBE_DevicePageTest DevicePageTest');
+GEN('#endif');
+TEST_F('OSSettingsDevicePageTest', 'MAYBE_DevicePageTest', () => {
   mocha.grep(assert(device_page_tests.TestNames.DevicePage)).run();
 });
 
@@ -776,31 +838,76 @@ TEST_F('OSSettingsDevicePageTest', 'DISABLED_DisplayTest', () => {
   mocha.grep(assert(device_page_tests.TestNames.Display)).run();
 });
 
-TEST_F('OSSettingsDevicePageTest', 'KeyboardTest', () => {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_KeyboardTest DISABLED_KeyboardTest');
+GEN('#else');
+GEN('#define MAYBE_KeyboardTest KeyboardTest');
+GEN('#endif');
+TEST_F('OSSettingsDevicePageTest', 'MAYBE_KeyboardTest', () => {
   mocha.grep(assert(device_page_tests.TestNames.Keyboard)).run();
 });
 
-TEST_F('OSSettingsDevicePageTest', 'NightLightTest', () => {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_NightLightTest DISABLED_NightLightTest');
+GEN('#else');
+GEN('#define MAYBE_NightLightTest NightLightTest');
+GEN('#endif');
+TEST_F('OSSettingsDevicePageTest', 'MAYBE_NightLightTest', () => {
   mocha.grep(assert(device_page_tests.TestNames.NightLight)).run();
 });
 
-TEST_F('OSSettingsDevicePageTest', 'PointersTest', () => {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_PointersTest DISABLED_PointersTest');
+GEN('#else');
+GEN('#define MAYBE_PointersTest PointersTest');
+GEN('#endif');
+TEST_F('OSSettingsDevicePageTest', 'MAYBE_PointersTest', () => {
   mocha.grep(assert(device_page_tests.TestNames.Pointers)).run();
 });
 
-TEST_F('OSSettingsDevicePageTest', 'PointersWithPointingStickTest', () => {
-  mocha.grep(assert(device_page_tests.TestNames.PointingStick)).run();
-});
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_PointersWithPointingStickTest \\');
+GEN('    DISABLED_PointersWithPointingStickTest');
+GEN('#else');
+GEN('#define MAYBE_PointersWithPointingStickTest \\');
+GEN('    PointersWithPointingStickTest');
+GEN('#endif');
+TEST_F(
+    'OSSettingsDevicePageTest', 'MAYBE_PointersWithPointingStickTest', () => {
+      mocha.grep(assert(device_page_tests.TestNames.PointingStick)).run();
+    });
 
-TEST_F('OSSettingsDevicePageTest', 'PowerTest', () => {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_PowerTest DISABLED_PowerTest');
+GEN('#else');
+GEN('#define MAYBE_PowerTest PowerTest');
+GEN('#endif');
+TEST_F('OSSettingsDevicePageTest', 'MAYBE_PowerTest', () => {
   mocha.grep(assert(device_page_tests.TestNames.Power)).run();
 });
 
-TEST_F('OSSettingsDevicePageTest', 'StorageTest', () => {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_StorageTest DISABLED_StorageTest');
+GEN('#else');
+GEN('#define MAYBE_StorageTest StorageTest');
+GEN('#endif');
+TEST_F('OSSettingsDevicePageTest', 'MAYBE_StorageTest', () => {
   mocha.grep(assert(device_page_tests.TestNames.Storage)).run();
 });
 
-TEST_F('OSSettingsDevicePageTest', 'StylusTest', () => {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_StylusTest DISABLED_StylusTest');
+GEN('#else');
+GEN('#define MAYBE_StylusTest StylusTest');
+GEN('#endif');
+TEST_F('OSSettingsDevicePageTest', 'MAYBE_StylusTest', () => {
   mocha.grep(assert(device_page_tests.TestNames.Stylus)).run();
 });
 
@@ -819,8 +926,8 @@ var OSSettingsDevicePageKeyboardArrangementDisabledTest =
 };
 
 TEST_F(
-    'OSSettingsDevicePageKeyboardArrangementDisabledTest',
-    'KeyboardArrangement', () => {
+    'OSSettingsDevicePageKeyboardArrangementDisabledTest', 'MAYBE_AllJsTests',
+    () => {
       mocha
           .grep(assert(device_page_tests.TestNames.KeyboardArrangementDisabled))
           .run();
@@ -845,7 +952,7 @@ var OSSettingsFingerprintListTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsFingerprintListTest', 'AllJsTests', () => {
+TEST_F('OSSettingsFingerprintListTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -877,7 +984,7 @@ var OSSettingsGoogleAssistantPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsGoogleAssistantPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsGoogleAssistantPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -893,7 +1000,7 @@ var OSSettingsInternetConfigTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsInternetConfigTest', 'All', () => {
+TEST_F('OSSettingsInternetConfigTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -925,7 +1032,7 @@ var OSSettingsInternetDetailPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsInternetDetailPageTest', 'All', () => {
+TEST_F('OSSettingsInternetDetailPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -957,7 +1064,7 @@ var OSSettingsInternetDetailMenuTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsInternetDetailMenuTest', 'All', () => {
+TEST_F('OSSettingsInternetDetailMenuTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -995,7 +1102,7 @@ var OSSettingsInternetPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsInternetPageTest', 'InternetPage', () => {
+TEST_F('OSSettingsInternetPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1033,7 +1140,7 @@ var OSSettingsInternetSubpageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsInternetSubpageTest', 'InternetSubpage', () => {
+TEST_F('OSSettingsInternetSubpageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1066,11 +1173,9 @@ var OSSettingsInternetKnownNetworksPageTest =
   }
 };
 
-TEST_F(
-    'OSSettingsInternetKnownNetworksPageTest', 'InternetKnownNetworksPage',
-    () => {
-      mocha.run();
-    });
+TEST_F('OSSettingsInternetKnownNetworksPageTest', 'MAYBE_AllJsTests', () => {
+  mocha.run();
+});
 
 // Test fixture for settings-internet-known-cellular-networks-page.
 // eslint-disable-next-line no-var
@@ -1099,7 +1204,7 @@ var OSSettingsCellularNetworksListTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsCellularNetworksListTest', 'CellularNetworkList', () => {
+TEST_F('OSSettingsCellularNetworksListTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1125,7 +1230,7 @@ var OSSettingsEsimRenameDialogTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsEsimRenameDialogTest', 'EsimRenameDialog', () => {
+TEST_F('OSSettingsEsimRenameDialogTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1152,10 +1257,9 @@ var OSSettingsEsimRemoveProfileDialogTest =
   }
 };
 
-TEST_F(
-    'OSSettingsEsimRemoveProfileDialogTest', 'EsimRemoveProfileDialog', () => {
-      mocha.run();
-    });
+TEST_F('OSSettingsEsimRemoveProfileDialogTest', 'MAYBE_AllJsTests', () => {
+  mocha.run();
+});
 
 // Test fixture for settings-internet-known-networks-page.
 // eslint-disable-next-line no-var
@@ -1182,7 +1286,7 @@ var OSSettingsCellularSetupDialogTest =
   }
 };
 
-TEST_F('OSSettingsCellularSetupDialogTest', 'CellularSetupDialog', () => {
+TEST_F('OSSettingsCellularSetupDialogTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1202,7 +1306,7 @@ var OSSettingsKerberosPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsKerberosPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsKerberosPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1225,7 +1329,7 @@ var OSSettingsMainTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsMainTest', 'AllJsTests', () => {
+TEST_F('OSSettingsMainTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1243,7 +1347,7 @@ var OSSettingsSearchBoxBrowserTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsSearchBoxBrowserTest', 'AllJsTests', () => {
+TEST_F('OSSettingsSearchBoxBrowserTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1265,7 +1369,7 @@ var OSSettingsMenuTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsMenuTest', 'AllJsTests', () => {
+TEST_F('OSSettingsMenuTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1287,7 +1391,7 @@ var OSSettingsMultideviceFeatureItemTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsMultideviceFeatureItemTest', 'AllJsTests', () => {
+TEST_F('OSSettingsMultideviceFeatureItemTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1312,7 +1416,8 @@ var OSSettingsMultideviceNotificationAccessDialogTest =
 };
 
 TEST_F(
-    'OSSettingsMultideviceNotificationAccessDialogTest', 'AllJsTests', () => {
+    'OSSettingsMultideviceNotificationAccessDialogTest', 'MAYBE_AllJsTests',
+    () => {
       mocha.run();
     });
 
@@ -1334,7 +1439,7 @@ var OSSettingsMultideviceFeatureToggleTest =
   }
 };
 
-TEST_F('OSSettingsMultideviceFeatureToggleTest', 'AllJsTests', () => {
+TEST_F('OSSettingsMultideviceFeatureToggleTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1358,7 +1463,7 @@ var OSSettingsMultidevicePageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsMultidevicePageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsMultidevicePageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1383,7 +1488,7 @@ var OSSettingsMultideviceSmartLockSubPageTest =
   }
 };
 
-TEST_F('OSSettingsMultideviceSmartLockSubPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsMultideviceSmartLockSubPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1408,7 +1513,7 @@ var OSSettingsMultideviceSubPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsMultideviceSubPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsMultideviceSubPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1433,9 +1538,10 @@ var OSSettingsMultideviceTaskContinuationItemTest =
   }
 };
 
-TEST_F('OSSettingsMultideviceTaskContinuationItemTest', 'AllJsTests', () => {
-  mocha.run();
-});
+TEST_F(
+    'OSSettingsMultideviceTaskContinuationItemTest', 'MAYBE_AllJsTests', () => {
+      mocha.run();
+    });
 
 // Test fixture for the multidevice task continuation sync disabled link.
 // eslint-disable-next-line no-var
@@ -1457,7 +1563,7 @@ var OSSettingsMultideviceTaskContinuationDisabledLinkTest =
 };
 
 TEST_F(
-    'OSSettingsMultideviceTaskContinuationDisabledLinkTest', 'AllJsTests',
+    'OSSettingsMultideviceTaskContinuationDisabledLinkTest', 'MAYBE_AllJsTests',
     () => {
       mocha.run();
     });
@@ -1481,9 +1587,10 @@ var OSSettingsMultideviceWifiSyncDisabledLinkTest =
   }
 };
 
-TEST_F('OSSettingsMultideviceWifiSyncDisabledLinkTest', 'AllJsTests', () => {
-  mocha.run();
-});
+TEST_F(
+    'OSSettingsMultideviceWifiSyncDisabledLinkTest', 'MAYBE_AllJsTests', () => {
+      mocha.run();
+    });
 
 // Test fixture for the multidevice wifi sync item.
 // eslint-disable-next-line no-var
@@ -1506,7 +1613,7 @@ var OSSettingsMultideviceWifiSyncItemTest =
   }
 };
 
-TEST_F('OSSettingsMultideviceWifiSyncItemTest', 'AllJsTests', () => {
+TEST_F('OSSettingsMultideviceWifiSyncItemTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1534,7 +1641,7 @@ var OSSettingsNearbyShareReceiveDialogTest =
   }
 };
 
-TEST_F('OSSettingsNearbyShareReceiveDialogTest', 'AllJsTests', () => {
+TEST_F('OSSettingsNearbyShareReceiveDialogTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1567,7 +1674,7 @@ var OSSettingsNearbyShareSubPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsNearbyShareSubPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsNearbyShareSubPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1582,7 +1689,7 @@ var OSSettingsNetworkProxySectionTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsNetworkProxySectionTest', 'All', () => {
+TEST_F('OSSettingsNetworkProxySectionTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1597,7 +1704,7 @@ var OSSettingsNetworkSummaryItemTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsNetworkSummaryItemTest', 'All', () => {
+TEST_F('OSSettingsNetworkSummaryItemTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1611,7 +1718,7 @@ var OSSettingsNetworkSummaryTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsNetworkSummaryTest', 'All', () => {
+TEST_F('OSSettingsNetworkSummaryTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1625,7 +1732,7 @@ var OSSettingsTetherConnectionDialogTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsTetherConnectionDialogTest', 'All', () => {
+TEST_F('OSSettingsTetherConnectionDialogTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1652,7 +1759,7 @@ var OSSettingsPeoplePageAccountManagerTest =
   }
 };
 
-TEST_F('OSSettingsPeoplePageAccountManagerTest', 'AllJsTests', () => {
+TEST_F('OSSettingsPeoplePageAccountManagerTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1667,7 +1774,7 @@ var OSSettingsPeoplePageAccountManagerTestWithAccountManagementFlowsV2Enabled =
 
 TEST_F(
     'OSSettingsPeoplePageAccountManagerTestWithAccountManagementFlowsV2Enabled',
-    'AllJsTests', () => {
+    'MAYBE_AllJsTests', () => {
       mocha.run();
     });
 
@@ -1688,7 +1795,7 @@ var OSSettingsPeoplePageChangePictureTest =
   }
 };
 
-TEST_F('OSSettingsPeoplePageChangePictureTest', 'AllJsTests', () => {
+TEST_F('OSSettingsPeoplePageChangePictureTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1711,7 +1818,7 @@ var OSSettingsPeoplePageKerberosAccountsTest =
   }
 };
 
-TEST_F('OSSettingsPeoplePageKerberosAccountsTest', 'AllJsTests', () => {
+TEST_F('OSSettingsPeoplePageKerberosAccountsTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1740,7 +1847,7 @@ var OSSettingsPeoplePageLockScreenTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsPeoplePageLockScreenTest', 'AllJsTests', () => {
+TEST_F('OSSettingsPeoplePageLockScreenTest', 'MAYBE_AllJsTests', () => {
   settings_people_page_quick_unlock.registerLockScreenTests();
   mocha.run();
 });
@@ -1764,10 +1871,12 @@ var OSSettingsPeoplePageQuickUnlockAuthenticateTest =
   }
 };
 
-TEST_F('OSSettingsPeoplePageQuickUnlockAuthenticateTest', 'AllJsTests', () => {
-  settings_people_page_quick_unlock.registerAuthenticateTests();
-  mocha.run();
-});
+TEST_F(
+    'OSSettingsPeoplePageQuickUnlockAuthenticateTest', 'MAYBE_AllJsTests',
+    () => {
+      settings_people_page_quick_unlock.registerAuthenticateTests();
+      mocha.run();
+    });
 
 // eslint-disable-next-line no-var
 var OSSettingsPeoplePageSetupPinDialogTest =
@@ -1789,7 +1898,7 @@ var OSSettingsPeoplePageSetupPinDialogTest =
   }
 };
 
-TEST_F('OSSettingsPeoplePageSetupPinDialogTest', 'AllJsTests', () => {
+TEST_F('OSSettingsPeoplePageSetupPinDialogTest', 'MAYBE_AllJsTests', () => {
   settings_people_page_quick_unlock.registerSetupPinDialogTests();
   mocha.run();
 });
@@ -1820,10 +1929,11 @@ var OSSettingsPeoplePagePinAutosubmitDialogTest =
   }
 };
 
-TEST_F('OSSettingsPeoplePagePinAutosubmitDialogTest', 'AllJsTests', () => {
-  settings_people_page_quick_unlock.registerAutosubmitDialogTests();
-  mocha.run();
-});
+TEST_F(
+    'OSSettingsPeoplePagePinAutosubmitDialogTest', 'MAYBE_AllJsTests', () => {
+      settings_people_page_quick_unlock.registerAutosubmitDialogTests();
+      mocha.run();
+    });
 
 // eslint-disable-next-line no-var
 var OSSettingsPeoplePageSyncControlsTest = class extends OSSettingsBrowserTest {
@@ -1847,7 +1957,7 @@ var OSSettingsPeoplePageSyncControlsTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsPeoplePageSyncControlsTest', 'AllJsTests', () => {
+TEST_F('OSSettingsPeoplePageSyncControlsTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1880,7 +1990,7 @@ var OSSettingsPeoplePageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsPeoplePageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsPeoplePageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1895,8 +2005,8 @@ var OSSettingsPeoplePageTestWithAccountManagementFlowsV2Enabled =
 };
 
 TEST_F(
-    'OSSettingsPeoplePageTestWithAccountManagementFlowsV2Enabled', 'AllJsTests',
-    () => {
+    'OSSettingsPeoplePageTestWithAccountManagementFlowsV2Enabled',
+    'MAYBE_AllJsTests', () => {
       mocha.run();
     });
 
@@ -1921,12 +2031,14 @@ var OSSettingsPrivacyPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsPrivacyPageTest', 'AllBuilds', () => {
+// Flaky in debug. See MAYBE_AllBuilds definition above.
+TEST_F('OSSettingsPrivacyPageTest', 'MAYBE_AllBuilds', () => {
   mocha.grep('/^(?!PrivacePageTest_OfficialBuild).*$/').run();
 });
 
 GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
-TEST_F('OSSettingsPrivacyPageTest', 'PrivacePage_OfficialBuild', () => {
+// Flaky in debug. See MAYBE_OfficialBuild definition above.
+TEST_F('OSSettingsPrivacyPageTest', 'MAYBE_OfficialBuild', () => {
   mocha.grep('PrivacePageTest_OfficialBuild').run();
 });
 GEN('#endif');
@@ -1941,16 +2053,18 @@ var OSSettingsPrivacyPageTestWithAccountManagementFlowsV2Enabled =
   }
 };
 
+// Flaky in debug. See MAYBE_AllBuilds definition above.
 TEST_F(
-    'OSSettingsPrivacyPageTestWithAccountManagementFlowsV2Enabled', 'AllBuilds',
-    () => {
+    'OSSettingsPrivacyPageTestWithAccountManagementFlowsV2Enabled',
+    'MAYBE_AllBuilds', () => {
       mocha.grep('/^(?!PrivacePageTest_OfficialBuild).*$/').run();
     });
 
 GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING)');
+// Flaky in debug. See MAYBE_OfficialBuild definition above.
 TEST_F(
     'OSSettingsPrivacyPageTestWithAccountManagementFlowsV2Enabled',
-    'PrivacePage_OfficialBuild', () => {
+    'MAYBE_OfficialBuild', () => {
       mocha.grep('PrivacePageTest_OfficialBuild').run();
     });
 GEN('#endif');
@@ -1972,7 +2086,7 @@ var OSSettingsFilesPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsFilesPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsFilesPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -1993,7 +2107,7 @@ var OSSettingsParentalControlsPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsParentalControlsPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsParentalControlsPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2023,7 +2137,8 @@ var OSSettingsPersonalizationPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsPersonalizationPageTest', 'AllBuilds', () => {
+// Flaky in debug. See MAYBE_AllBuilds definition above.
+TEST_F('OSSettingsPersonalizationPageTest', 'MAYBE_AllBuilds', () => {
   mocha.grep('/^(?!PersonalizationTest_ReleaseOnly).*$/').run();
 });
 
@@ -2056,7 +2171,7 @@ var OSSettingsPrintingPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsPrintingPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsPrintingPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2080,7 +2195,7 @@ var OSSettingsCupsPrinterEntryTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsCupsPrinterEntryTest', 'AllJsTests', () => {
+TEST_F('OSSettingsCupsPrinterEntryTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2108,7 +2223,7 @@ var OSSettingsCupsPrinterLandingPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsCupsPrinterLandingPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsCupsPrinterLandingPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2135,7 +2250,7 @@ var OSSettingsCupsPrinterPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsCupsPrinterPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsCupsPrinterPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2169,19 +2284,43 @@ var OSSettingsLanguagesPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsLanguagesPageTest', 'LanguageMenu', function() {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_LanguageMenu DISABLED_LanguageMenu');
+GEN('#else');
+GEN('#define MAYBE_LanguageMenu LanguageMenu');
+GEN('#endif');
+TEST_F('OSSettingsLanguagesPageTest', 'MAYBE_LanguageMenu', function() {
   mocha.grep(assert(os_languages_page_tests.TestNames.LanguageMenu)).run();
 });
 
-TEST_F('OSSettingsLanguagesPageTest', 'InputMethods', function() {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_InputMethods DISABLED_InputMethods');
+GEN('#else');
+GEN('#define MAYBE_InputMethods InputMethods');
+GEN('#endif');
+TEST_F('OSSettingsLanguagesPageTest', 'MAYBE_InputMethods', function() {
   mocha.grep(assert(os_languages_page_tests.TestNames.InputMethods)).run();
 });
 
-TEST_F('OSSettingsLanguagesPageTest', 'RecordMetrics', function() {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_RecordMetrics DISABLED_RecordMetrics');
+GEN('#else');
+GEN('#define MAYBE_RecordMetrics RecordMetrics');
+GEN('#endif');
+TEST_F('OSSettingsLanguagesPageTest', 'MAYBE_RecordMetrics', function() {
   mocha.grep(assert(os_languages_page_tests.TestNames.RecordMetrics)).run();
 });
 
-TEST_F('OSSettingsLanguagesPageTest', 'DetailsPage', function() {
+// Flaky in debug. https://crbug.com/1003483
+GEN('#if !defined(NDEBUG)');
+GEN('#define MAYBE_DetailsPage DISABLED_DetailsPage');
+GEN('#else');
+GEN('#define MAYBE_DetailsPage DetailsPage');
+GEN('#endif');
+TEST_F('OSSettingsLanguagesPageTest', 'MAYBE_DetailsPage', function() {
   mocha.grep(assert(os_languages_page_tests.TestNames.DetailsPage)).run();
 });
 
@@ -2210,7 +2349,7 @@ var OSSettingsLanguagesPageV2Test = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsLanguagesPageV2Test', 'AllJsTests', () => {
+TEST_F('OSSettingsLanguagesPageV2Test', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2230,7 +2369,7 @@ var OSSettingsSmartInputsPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsSmartInputsPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsSmartInputsPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2253,7 +2392,7 @@ var OSSettingsInputMethodOptionsPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsInputMethodOptionsPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsInputMethodOptionsPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2280,7 +2419,7 @@ var OSSettingsInputPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsInputPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsInputPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2327,11 +2466,11 @@ var OSSettingsEditDictionaryPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsEditDictionaryPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsEditDictionaryPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
-TEST_F('OSSettingsResetPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsResetPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2354,7 +2493,7 @@ var OSSettingsOsSearchPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsOsSearchPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsOsSearchPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2376,7 +2515,7 @@ var OSSettingsSmbPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsSmbPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsSmbPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2397,7 +2536,7 @@ var OSSettingsAccessibilityPageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsAccessibilityPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsAccessibilityPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2420,7 +2559,7 @@ var OSSettingsManageAccessibilityPageTest =
   }
 };
 
-TEST_F('OSSettingsManageAccessibilityPageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsManageAccessibilityPageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2442,7 +2581,7 @@ var OSSettingsTextToSpeechSubpageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsTextToSpeechSubpageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsTextToSpeechSubpageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2466,7 +2605,7 @@ var OSSettingsSwitchAccessSubpageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsSwitchAccessSubpageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsSwitchAccessSubpageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2483,9 +2622,11 @@ var OSSettingsSwitchAccessActionAssignmentDialogTest = class extends OSSettingsB
   }
 };
 
-TEST_F('OSSettingsSwitchAccessActionAssignmentDialogTest', 'AllJsTests', () => {
-  mocha.run();
-});
+TEST_F(
+    'OSSettingsSwitchAccessActionAssignmentDialogTest', 'MAYBE_AllJsTests',
+    () => {
+      mocha.run();
+    });
 
 // Tests for the Date Time timezone selector
 // eslint-disable-next-line no-var
@@ -2502,7 +2643,7 @@ var OSSettingsTimezoneSelectorTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsTimezoneSelectorTest', 'AllJsTests', () => {
+TEST_F('OSSettingsTimezoneSelectorTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2524,7 +2665,7 @@ var OSSettingsTimezoneSubpageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsTimezoneSubpageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsTimezoneSubpageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
 
@@ -2547,8 +2688,6 @@ var OSSettingsTtsSubpageTest = class extends OSSettingsBrowserTest {
   }
 };
 
-TEST_F('OSSettingsTtsSubpageTest', 'AllJsTests', () => {
+TEST_F('OSSettingsTtsSubpageTest', 'MAYBE_AllJsTests', () => {
   mocha.run();
 });
-
-GEN('#endif  // defined(NDEBUG)');
