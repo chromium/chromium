@@ -2254,3 +2254,9 @@ crbug.com/626703 external/wpt/uievents/order-of-events/mouse-events/click-on-bod
 crbug.com/626703 external/wpt/uievents/order-of-events/mouse-events/mouseevents-mousemove-manual.htm [ Skip ]
 crbug.com/626703 external/wpt/uievents/order-of-events/focus-events/legacy-manual.html [ Skip ]
 crbug.com/626703 external/wpt/pointerevents/pointerevent_pointerId_scope-manual.html [ Skip ]
+
+# Requires EyeDropper feature to pass. Remove from virtual tests and this file
+# once that feature is on by default.
+http/tests/eye-dropper/color-picker-show-eye-dropper.html [ Skip ]
+virtual/eye-dropper/http/tests/eye-dropper/color-picker-show-eye-dropper.html [ Pass ]
+virtual/dark-color-scheme/http/tests/eye-dropper/color-picker-show-eye-dropper.html [ Pass ]

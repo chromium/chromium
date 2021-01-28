@@ -525,7 +525,7 @@ crbug.com/1093853 external/wpt/dom/ranges/Range-surroundContents.html [ Slow ]
 crbug.com/1104091 [ Linux ] webcodecs/videoframe-imagebitmap.html [ Slow ]
 crbug.com/1093478 external/wpt/quirks/unitless-length/limited-quirks.html [ Slow ]
 crbug.com/1133836 external/wpt/scroll-to-text-fragment/redirects.html [ Slow ]
-crbug.com/1134580 virtual/eye-dropper/color-picker-show-eye-dropper.html [ Slow ]
+crbug.com/1134580 virtual/eye-dropper/http/tests/eye-dropper/color-picker-show-eye-dropper.html [ Slow ]
 crbug.com/1145716 fast/forms/calendar-picker/datetimelocal-picker-open-to-focused-field.html [ Slow ]
 
 # These began to hit timeouts when moving from Windows-10-15063 to Windows-10-18363

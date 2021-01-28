@@ -2,13 +2,9 @@
 <html>
 <head>
 <meta name="color-scheme" content="light dark">
-<script>
-testRunner.waitUntilDone();
-</script>
-<script src='../../fast/forms/resources/picker-common.js'></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/third_party/blink/public/mojom/choosers/color_chooser.mojom.js"></script>
-<script src='mock-eyedropperchooser.js'></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/forms-test-resources/picker-common.js"></script>
 </head>
 <body>
 <input type='color' id='color' value='#7EFFC9'>
@@ -16,19 +12,23 @@ testRunner.waitUntilDone();
 <p id='description' style='opacity: 0'></p>
 <div id='console' style='opacity: 0'></div>
 
-<script>
-openPicker(document.getElementById('color'), openPickerSuccessfulCallback, () => testRunner.notifyDone());
+<script type="module">
+import {waitUntilEyeDropperShown} from './resources/mock-eyedropperchooser.js';
 
-function openPickerSuccessfulCallback() {
+promise_test(async () => {
+  await new Promise((resolve, reject) => {
+    openPicker(document.getElementById('color'), resolve, reject);
+  });
+
   popupWindow.focus();
   const popupDocument = popupWindow.document;
-  waitUntilEyeDropperShown(() => testRunner.notifyDone());
   const eyeDropper = popupDocument.querySelector('eye-dropper');
   const eyeDropperRect = eyeDropper.getBoundingClientRect();
   eventSender.mouseMoveTo(eyeDropperRect.left + (eyeDropperRect.width / 2), eyeDropperRect.top + (eyeDropperRect.height / 2));
   eventSender.mouseDown();
   eventSender.mouseUp();
-}
+  await waitUntilEyeDropperShown();
+}, 'eye dropper is shown when clicked in color chooser');
 </script>
 </body>
 </html>
