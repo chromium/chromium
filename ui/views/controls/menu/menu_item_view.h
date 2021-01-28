@@ -279,6 +279,11 @@ class VIEWS_EXPORT MenuItemView : public View {
   void set_is_new(bool is_new) { is_new_ = is_new; }
   bool is_new() const { return is_new_; }
 
+  void set_may_have_mnemonics(bool may_have_mnemonics) {
+    may_have_mnemonics_ = may_have_mnemonics;
+  }
+  bool may_have_mnemonics() const { return may_have_mnemonics_; }
+
   // Paints the menu item.
   void OnPaint(gfx::Canvas* canvas) override;
 
@@ -531,6 +536,9 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Whether the menu item should be badged as "New" (if badging is enabled) as
   // a way to highlight a new feature for users.
   bool is_new_ = false;
+
+  // Whether the menu item contains user-created text.
+  bool may_have_mnemonics_ = true;
 
   // Submenu, created via CreateSubmenu.
   SubmenuView* submenu_ = nullptr;

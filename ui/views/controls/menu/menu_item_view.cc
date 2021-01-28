@@ -585,7 +585,7 @@ const MenuItemView* MenuItemView::GetRootMenuItem() const {
 
 base::char16 MenuItemView::GetMnemonic() {
   if (!GetRootMenuItem()->has_mnemonics_ ||
-      !MenuConfig::instance().use_mnemonics) {
+      !MenuConfig::instance().use_mnemonics || !may_have_mnemonics()) {
     return 0;
   }
 
@@ -889,7 +889,7 @@ int MenuItemView::GetDrawStringFlags() {
   else
     flags |= gfx::Canvas::TEXT_ALIGN_LEFT;
 
-  if (GetRootMenuItem()->has_mnemonics_) {
+  if (GetRootMenuItem()->has_mnemonics_ && may_have_mnemonics()) {
     if (MenuConfig::instance().show_mnemonics ||
         GetRootMenuItem()->show_mnemonics_) {
       flags |= gfx::Canvas::SHOW_PREFIX;

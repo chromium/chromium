@@ -48,6 +48,7 @@ ExistingTabGroupSubMenuModel::ExistingTabGroupSubMenuModel(
     ui::ImageModel image_model = ui::ImageModel::FromVectorIcon(
         kTabGroupIcon, tp.GetColor(color_id), kIconSize);
     menu_item_infos.emplace_back(MenuItemInfo{displayed_title, image_model});
+    menu_item_infos.back().may_have_mnemonics = false;
   }
   Build(IDS_TAB_CXMENU_SUBMENU_NEW_GROUP, menu_item_infos);
 }

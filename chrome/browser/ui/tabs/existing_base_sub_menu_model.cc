@@ -77,6 +77,8 @@ void ExistingBaseSubMenuModel::Build(
     } else {
       AddItem(group_index, item.text);
     }
+
+    SetMayHaveMnemonicsAt(GetItemCount() - 1, item.may_have_mnemonics);
     group_index++;
   }
 }

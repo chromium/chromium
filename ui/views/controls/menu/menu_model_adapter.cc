@@ -122,6 +122,8 @@ MenuItemView* MenuModelAdapter::AddMenuItemFromModelAt(ui::MenuModel* model,
   if (model->IsAlertedAt(model_index))
     menu_item_view->SetAlerted();
   menu_item_view->set_is_new(model->IsNewFeatureAt(model_index));
+  menu_item_view->set_may_have_mnemonics(
+      model->MayHaveMnemonicsAt(model_index));
 
   return menu_item_view;
 }

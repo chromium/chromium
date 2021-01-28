@@ -29,6 +29,7 @@ ExistingWindowSubMenuModel::ExistingWindowSubMenuModel(
 
   for (auto& window_title : window_titles) {
     menu_item_infos.emplace_back(MenuItemInfo{window_title});
+    menu_item_infos.back().may_have_mnemonics = false;
   }
   Build(IDS_TAB_CXMENU_MOVETOANOTHERNEWWINDOW, menu_item_infos);
 }

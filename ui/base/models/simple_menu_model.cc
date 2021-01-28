@@ -325,6 +325,11 @@ void SimpleMenuModel::SetIsNewFeatureAt(int index, bool is_new_feature) {
   items_[ValidateItemIndex(index)].is_new_feature = is_new_feature;
 }
 
+void SimpleMenuModel::SetMayHaveMnemonicsAt(int index,
+                                            bool may_have_mnemonics) {
+  items_[ValidateItemIndex(index)].may_have_mnemonics = may_have_mnemonics;
+}
+
 void SimpleMenuModel::Clear() {
   items_.clear();
   MenuItemsChanged();
@@ -450,6 +455,10 @@ bool SimpleMenuModel::IsAlertedAt(int index) const {
 
 bool SimpleMenuModel::IsNewFeatureAt(int index) const {
   return items_[ValidateItemIndex(index)].is_new_feature;
+}
+
+bool SimpleMenuModel::MayHaveMnemonicsAt(int index) const {
+  return items_[ValidateItemIndex(index)].may_have_mnemonics;
 }
 
 void SimpleMenuModel::ActivatedAt(int index) {

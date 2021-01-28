@@ -68,6 +68,10 @@ ImageModel MenuModel::GetMinorIconAt(int index) const {
   return ImageModel();
 }
 
+bool MenuModel::MayHaveMnemonicsAt(int index) const {
+  return true;
+}
+
 const gfx::FontList* MenuModel::GetLabelFontListAt(int index) const {
   return nullptr;
 }

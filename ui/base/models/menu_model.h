@@ -84,6 +84,10 @@ class COMPONENT_EXPORT(UI_BASE) MenuModel
   // updated each time the menu is shown.
   virtual bool IsItemDynamicAt(int index) const = 0;
 
+  // Returns whether the menu item at the specified index has a user-set title,
+  // in which case it should always be treated as plain text.
+  virtual bool MayHaveMnemonicsAt(int index) const;
+
   // Returns the font list used for the label at the specified index.
   // If NULL, then the default font list should be used.
   virtual const gfx::FontList* GetLabelFontListAt(int index) const;

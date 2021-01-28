@@ -56,6 +56,8 @@ class ExistingBaseSubMenuModel : public ui::SimpleMenuModel,
 
     // The optional image for an entry in the sub menu.
     base::Optional<ui::ImageModel> image;
+
+    bool may_have_mnemonics = true;
   };
 
   // Helper method to create consistent submenus.|new_text| is the label to add
