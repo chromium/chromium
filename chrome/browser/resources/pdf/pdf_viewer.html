@@ -1,6 +1,10 @@
 <style include="pdf-viewer-shared-style cr-hidden-style">
   :host {
     --viewer-pdf-sidenav-width: 300px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
   }
 
   viewer-pdf-sidenav,
@@ -58,26 +62,17 @@
     width: 100%;
   }
 
-  /* Styles only applying when the pdfViewerUpdateEnabled flag is on. */
-
-  :host-context([pdf-viewer-update-enabled]):host {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-  }
-
   #container {
     display: flex;
     flex: 1;
     overflow: hidden;
   }
 
-  :host-context([pdf-viewer-update-enabled]) #plugin {
+  #plugin {
     position: initial;
   }
 
-  :host-context([pdf-viewer-update-enabled]) #content {
+  #content {
     height: 100%;
     left: 0;
     position: sticky;
@@ -85,7 +80,7 @@
     z-index: initial;
   }
 
-  :host-context([pdf-viewer-update-enabled]) #sizer {
+  #sizer {
     top: 0;
     width: 100%;
     z-index: initial;

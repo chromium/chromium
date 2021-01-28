@@ -110,11 +110,6 @@ export class PDFViewerBaseElement extends PolymerElement {
     this.zoomManager_ = null;
   }
 
-  /** @return {number} The height of the top toolbar */
-  getToolbarHeight() {
-    return 0;
-  }
-
   /**
    * @return {!HTMLDivElement}
    * @protected
@@ -160,11 +155,11 @@ export class PDFViewerBaseElement extends PolymerElement {
   }
 
   /**
-   * @param {boolean} pdfViewerUpdateEnabled is the feature is enabled.
+   * @param {boolean} isPrintPreview Is the plugin for Print Preview.
    * @return {!HTMLEmbedElement} The plugin
    * @private
    */
-  createPlugin_(pdfViewerUpdateEnabled) {
+  createPlugin_(isPrintPreview) {
     // Create the plugin object dynamically so we can set its src. The plugin
     // element is sized to fill the entire window and is set to be fixed
     // positioning, acting as a viewport. The plugin renders into this viewport
@@ -190,7 +185,7 @@ export class PDFViewerBaseElement extends PolymerElement {
     plugin.setAttribute('headers', headers);
 
     plugin.setAttribute('background-color', this.getBackgroundColor());
-    plugin.setAttribute('top-toolbar-height', this.getToolbarHeight());
+    plugin.setAttribute('top-toolbar-height', 0);
 
     const javascript = this.browserApi.getStreamInfo().javascript || 'block';
     plugin.setAttribute('javascript', javascript);
@@ -202,7 +197,7 @@ export class PDFViewerBaseElement extends PolymerElement {
       plugin.toggleAttribute('full-frame', true);
     }
 
-    if (pdfViewerUpdateEnabled) {
+    if (!isPrintPreview) {
       plugin.toggleAttribute('pdf-viewer-update-enabled', true);
     }
 
@@ -229,11 +224,11 @@ export class PDFViewerBaseElement extends PolymerElement {
     }
 
     // Determine the scrolling container.
-    const pdfViewerUpdateEnabled =
-        document.documentElement.hasAttribute('pdf-viewer-update-enabled');
-    const scrollContainer = pdfViewerUpdateEnabled ?
-        /** @type {!HTMLElement} */ (this.getSizer().offsetParent) :
-        document.documentElement;
+    const isPrintPreview =
+        document.documentElement.hasAttribute('is-print-preview');
+    const scrollContainer = isPrintPreview ?
+        document.documentElement :
+        /** @type {!HTMLElement} */ (this.getSizer().offsetParent);
 
     // Create the viewport.
     const defaultZoom =
@@ -243,7 +238,7 @@ export class PDFViewerBaseElement extends PolymerElement {
 
     this.viewport_ = new Viewport(
         scrollContainer, this.getSizer(), this.getContent(),
-        getScrollbarWidth(), defaultZoom, this.getToolbarHeight());
+        getScrollbarWidth(), defaultZoom, 0);
     this.viewport_.setViewportChangedCallback(() => this.viewportChanged_());
     this.viewport_.setBeforeZoomCallback(
         () => this.currentController.beforeZoom());
@@ -263,7 +258,7 @@ export class PDFViewerBaseElement extends PolymerElement {
     }, false);
 
     // Create the plugin.
-    this.plugin_ = this.createPlugin_(pdfViewerUpdateEnabled);
+    this.plugin_ = this.createPlugin_(isPrintPreview);
     this.getContent().appendChild(this.plugin_);
 
     const pluginController = PluginController.getInstance();

@@ -235,9 +235,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       },
 
       /** @private */
-      pdfViewerUpdateEnabled_: Boolean,
-
-      /** @private */
       printingEnabled_: {
         type: Boolean,
         value: false,
@@ -287,18 +284,11 @@ export class PDFViewerElement extends PDFViewerBaseElement {
   constructor() {
     super();
 
-    // Polymer properties
-
-    this.pdfViewerUpdateEnabled_ =
-        document.documentElement.hasAttribute('pdf-viewer-update-enabled');
-
-    if (this.pdfViewerUpdateEnabled_) {
-      // TODO(dpapad): Add tests after crbug.com/1111459 is fixed.
-      this.sidenavCollapsed_ = Boolean(Number.parseInt(
-          LocalStorageProxyImpl.getInstance().getItem(
-              LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY),
-          10));
-    }
+    // TODO(dpapad): Add tests after crbug.com/1111459 is fixed.
+    this.sidenavCollapsed_ = Boolean(Number.parseInt(
+        LocalStorageProxyImpl.getInstance().getItem(
+            LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY),
+        10));
 
     // Non-Polymer properties
 
@@ -326,21 +316,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     // </if>
 
     FocusOutlineManager.forDocument(document);
-  }
-
-  /** @override */
-  getToolbarHeight() {
-    assert(this.paramsParser);
-    this.toolbarEnabled_ =
-        this.paramsParser.shouldShowToolbar(this.originalUrl);
-
-    // The toolbar does not need to be manually accounted in the
-    // PDFViewerUpdate UI.
-    if (this.pdfViewerUpdateEnabled_) {
-      return 0;
-    }
-
-    return this.toolbarEnabled_ ? MATERIAL_TOOLBAR_HEIGHT : 0;
   }
 
   /** @override */
@@ -390,6 +365,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     this.fileName_ = getFilenameFromURL(this.originalUrl);
     this.title_ = this.fileName_;
 
+    assert(this.paramsParser);
+    this.toolbarEnabled_ =
+        this.paramsParser.shouldShowToolbar(this.originalUrl);
     if (this.toolbarEnabled_) {
       this.getToolbar_().hidden = false;
     }
@@ -416,14 +394,11 @@ export class PDFViewerElement extends PDFViewerBaseElement {
    * @private
    */
   handleToolbarKeyEvent_(e) {
-    if (this.pdfViewerUpdateEnabled_) {
-      if (e.key === '\\' && e.ctrlKey) {
-        this.getToolbar_().fitToggle();
-      }
-      // TODO: Add handling for additional relevant hotkeys for the new unified
-      // toolbar.
-      return;
+    if (e.key === '\\' && e.ctrlKey) {
+      this.getToolbar_().fitToggle();
     }
+    // TODO: Add handling for additional relevant hotkeys for the new unified
+    // toolbar.
   }
 
   /**
@@ -544,13 +519,11 @@ export class PDFViewerElement extends PDFViewerBaseElement {
       // TODO(dstockwell): set plugin read-only, begin transition
       this.updateProgress(0);
 
-      if (this.pdfViewerUpdateEnabled_) {
-        this.sidenavRestoreState_ = this.sidenavCollapsed_;
-        this.sidenavCollapsed_ = true;
-        if (!this.sidenavRestoreState_) {
-          // Wait for the animation before proceeding.
-          await this.waitForSidenavTransition_();
-        }
+      this.sidenavRestoreState_ = this.sidenavCollapsed_;
+      this.sidenavCollapsed_ = true;
+      if (!this.sidenavRestoreState_) {
+        // Wait for the animation before proceeding.
+        await this.waitForSidenavTransition_();
       }
 
       // TODO(dstockwell): handle save failure
@@ -588,9 +561,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
           await this.inkController_.save(SaveRequestType.ANNOTATION);
       // Data always exists when save is called with requestType = ANNOTATION.
       const result = /** @type {!RequiredSaveResult} */ (saveResult);
-      if (this.pdfViewerUpdateEnabled_) {
-        await this.restoreSidenav_();
-      }
+      await this.restoreSidenav_();
       await this.pluginController_.load(result.fileName, result.dataToSave);
       // Ensure the plugin gets the initial viewport.
       this.pluginController_.afterZoom();
@@ -607,9 +578,7 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     }
     this.getToolbar_().toggleAnnotation();
     this.annotationMode_ = false;
-    if (this.pdfViewerUpdateEnabled_) {
-      await this.restoreSidenav_();
-    }
+    await this.restoreSidenav_();
     await this.loaded;
   }
   // </if>
@@ -1115,7 +1084,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 
   /** @private */
   onSidenavToggleClick_() {
-    assert(this.pdfViewerUpdateEnabled_);
     this.sidenavCollapsed_ = !this.sidenavCollapsed_;
     LocalStorageProxyImpl.getInstance().setItem(
         LOCAL_STORAGE_SIDENAV_COLLAPSED_KEY, this.sidenavCollapsed_ ? 1 : 0);
@@ -1239,13 +1207,6 @@ export class PDFViewerElement extends PDFViewerBaseElement {
     return this.clockwiseRotations_ !== 0;
   }
 }
-
-/**
- * The height of the toolbar along the top of the page. The document will be
- * shifted down by this much in the viewport.
- * @type {number}
- */
-const MATERIAL_TOOLBAR_HEIGHT = 56;
 
 /**
  * Minimum height for the material toolbar to show (px). Should match the media

@@ -20,7 +20,7 @@ const tests = [
     viewer.viewport.setZoom(1);
     const sizer = viewer.shadowRoot.querySelector('#sizer');
     chrome.test.assertEq(826, sizer.offsetWidth);
-    chrome.test.assertEq(1066 + viewer.getToolbarHeight(), sizer.offsetHeight);
+    chrome.test.assertEq(1066, sizer.offsetHeight);
     chrome.test.succeed();
   },
 
