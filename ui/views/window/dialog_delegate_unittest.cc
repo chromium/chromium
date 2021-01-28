@@ -162,10 +162,10 @@ TEST_F(DialogTest, OkButtonAccepts) {
   EXPECT_TRUE(accepted_);
 }
 
-TEST_F(DialogTest, EscButtonCloses) {
-  EXPECT_FALSE(closed_);
+TEST_F(DialogTest, EscButtonCancels) {
+  EXPECT_FALSE(cancelled_);
   SimulateKeyPress(ui::VKEY_ESCAPE);
-  EXPECT_TRUE(closed_);
+  EXPECT_TRUE(cancelled_);
 }
 
 TEST_F(DialogTest, ReturnDirectedToOkButtonPlatformStyle) {

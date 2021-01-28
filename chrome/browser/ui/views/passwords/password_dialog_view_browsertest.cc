@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, PopupAccountChooserInIncognito) {
   EXPECT_FALSE(controller()->current_autosignin_prompt());
 }
 
-IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, PopupAutoSigninPrompt) {
+IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, EscCancelsAutoSigninPrompt) {
   EXPECT_TRUE(
       password_bubble_experiment::ShouldShowAutoSignInPromptFirstRunExperience(
           browser()->profile()->GetPrefs()));
@@ -456,7 +456,7 @@ IN_PROC_BROWSER_TEST_F(PasswordDialogViewTest, PopupAutoSigninPrompt) {
   content::RunAllPendingInMessageLoop();
   base::RunLoop().RunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(controller());
-  EXPECT_TRUE(
+  EXPECT_FALSE(
       password_bubble_experiment::ShouldShowAutoSignInPromptFirstRunExperience(
           browser()->profile()->GetPrefs()));
 }

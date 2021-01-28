@@ -160,7 +160,9 @@ void DialogClientView::Layout() {
 bool DialogClientView::AcceleratorPressed(const ui::Accelerator& accelerator) {
   DCHECK_EQ(accelerator.key_code(), ui::VKEY_ESCAPE);
 
-  GetWidget()->CloseWithReason(Widget::ClosedReason::kEscKeyPressed);
+  if (DialogDelegate* delegate = GetDialogDelegate())
+    delegate->CancelDialog();
+
   return true;
 }
 
