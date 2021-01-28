@@ -111,7 +111,7 @@ promise_test (async t => {
   t.add_cleanup(cleanup);
 
   await mouseClickOn(10, 10);
-  await touchScroll(250 /* delta */, 400, 400, 'down');
+  await touchScroll(250 /* delta */, 50, 50, 'down');
   await waitForAnimationEndTimeBased(() => { return scroller.scrollTop; });
   assert_equals(scroller.scrollTop, 400);
 
