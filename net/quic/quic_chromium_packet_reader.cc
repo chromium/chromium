@@ -15,6 +15,13 @@
 
 namespace net {
 
+namespace {
+// Add 1 because some of our UDP socket implementations do not read successfully
+// when the packet length is equal to the read buffer size.
+const size_t kReadBufferSize =
+    static_cast<size_t>(quic::kMaxIncomingPacketSize + 1);
+}  // namespace
+
 QuicChromiumPacketReader::QuicChromiumPacketReader(
     DatagramClientSocket* socket,
     const quic::QuicClock* clock,
@@ -30,8 +37,7 @@ QuicChromiumPacketReader::QuicChromiumPacketReader(
       yield_after_packets_(yield_after_packets),
       yield_after_duration_(yield_after_duration),
       yield_after_(quic::QuicTime::Infinite()),
-      read_buffer_(base::MakeRefCounted<IOBufferWithSize>(
-          static_cast<size_t>(quic::kMaxIncomingPacketSize))),
+      read_buffer_(base::MakeRefCounted<IOBufferWithSize>(kReadBufferSize)),
       net_log_(net_log) {}
 
 QuicChromiumPacketReader::~QuicChromiumPacketReader() {}
