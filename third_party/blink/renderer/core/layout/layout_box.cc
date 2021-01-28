@@ -4118,7 +4118,9 @@ void LayoutBox::ComputeLogicalWidth(
     computed_values.extent_ =
         ComputeReplacedLogicalWidth() + BorderAndPaddingLogicalWidth();
   } else if (StyleRef().LogicalWidth().IsAuto() &&
-      ComputeLogicalWidthFromAspectRatio(&computed_values.extent_)) {
+             (!IsGridItem() || !HasStretchedLogicalWidth() ||
+              !HasStretchedLogicalHeight()) &&
+             ComputeLogicalWidthFromAspectRatio(&computed_values.extent_)) {
     /* we're good */
   } else {
     LayoutUnit preferred_width = ComputeLogicalWidthUsing(
@@ -4353,6 +4355,33 @@ bool LayoutBox::HasStretchedLogicalWidth() const {
   return style
              .ResolvedJustifySelf(cb->SelfAlignmentNormalBehavior(this),
                                   cb->Style())
+             .GetPosition() == ItemPosition::kStretch;
+}
+
+// TODO (lajava) Can/Should we move this inside specific layout classes (flex.
+// grid)? Can we refactor columnFlexItemHasStretchAlignment logic?
+bool LayoutBox::HasStretchedLogicalHeight() const {
+  NOT_DESTROYED();
+  const ComputedStyle& style = StyleRef();
+  if (!style.LogicalHeight().IsAuto() || style.MarginBefore().IsAuto() ||
+      style.MarginAfter().IsAuto())
+    return false;
+  LayoutBlock* cb = ContainingBlock();
+  if (!cb) {
+    // We are evaluating align-self/justify-self, which default to 'normal' for
+    // the root element. The 'normal' value behaves like 'start' except for
+    // Flexbox Items, which obviously should have a container.
+    return false;
+  }
+  if (cb->IsHorizontalWritingMode() != IsHorizontalWritingMode()) {
+    return style
+               .ResolvedJustifySelf(cb->SelfAlignmentNormalBehavior(this),
+                                    cb->Style())
+               .GetPosition() == ItemPosition::kStretch;
+  }
+  return style
+             .ResolvedAlignSelf(cb->SelfAlignmentNormalBehavior(this),
+                                cb->Style())
              .GetPosition() == ItemPosition::kStretch;
 }
 

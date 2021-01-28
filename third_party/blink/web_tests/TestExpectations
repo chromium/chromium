@@ -3329,6 +3329,10 @@ crbug.com/1045599 external/wpt/css/css-grid/alignment/grid-alignment-implies-siz
 crbug.com/941987 external/wpt/css/css-grid/alignment/grid-baseline-align-cycles-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-002.html [ Failure ]
+crbug.com/1171262 external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-006.html [ Failure ]
+crbug.com/1171262 external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-007.html [ Failure ]
+crbug.com/1171262 external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-008.html [ Failure ]
+crbug.com/1171262 external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-009.html [ Failure ]
 crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-columns-001.html [ Failure ]
 crbug.com/759665 external/wpt/css/css-grid/animation/grid-template-rows-001.html [ Failure ]
 crbug.com/935102 external/wpt/css/css-grid/layout-algorithm/grid-flex-track-intrinsic-sizes-002.html [ Failure ]
@@ -3382,6 +3386,10 @@ crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/gri
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/grid-alignment-implies-size-change-036.html [ Pass ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-001.html [ Pass ]
 crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-002.html [ Pass ]
+crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-006.html [ Pass ]
+crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-007.html [ Pass ]
+crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-008.html [ Pass ]
+crbug.com/1045599 virtual/layout-ng-grid/external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-009.html [ Pass ]
 
 # Tests that pass with layout-ng-grid enabled but fail in legacy grid:
 virtual/layout-ng-grid/external/wpt/css/css-grid/abspos/descendant-static-position-003.html [ Pass ]

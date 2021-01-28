@@ -2117,6 +2117,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool ColumnFlexItemHasStretchAlignment() const;
   bool IsStretchingColumnFlexItem() const;
   bool HasStretchedLogicalWidth() const;
+  bool HasStretchedLogicalHeight() const;
 
   void ExcludeScrollbars(
       PhysicalRect&,
