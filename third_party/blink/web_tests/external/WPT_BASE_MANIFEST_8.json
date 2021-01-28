@@ -45983,7 +45983,7 @@
       ]
      ],
      "nested-scale-animations.html": [
-      "c96e555848f0886ceeaa563edd0b878b1fddd59a",
+      "ba2f96939fdfdcbca16a4fdc3a8f6872b883d165",
       [
        null,
        [
@@ -45992,23 +45992,7 @@
          "=="
         ]
        ],
-       {
-        "fuzzy": [
-         [
-          null,
-          [
-           [
-            0,
-            255
-           ],
-           [
-            0,
-            400
-           ]
-          ]
-         ]
-        ]
-       }
+       {}
       ]
      ],
      "transform-animation-under-large-scale.html": [
@@ -183012,7 +182996,7 @@
       []
      ],
      "nested-scale-animations-ref.html": [
-      "14b41366268c3a33f2d49e477bab2d40c6acb432",
+      "feef006417e5ff6687448ee11e3ad3f2757fe871",
       []
      ],
      "parsing": {
