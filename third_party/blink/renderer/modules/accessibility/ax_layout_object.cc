@@ -1239,7 +1239,8 @@ static AXObject* PreviousOnLineInlineNG(const AXObject& ax_object) {
     return nullptr;
   // Returns previous object of parent, since next of |ax_object| isn't appeared
   // on line.
-  return ax_object.ParentObjectIncludedInTree()->PreviousOnLine();
+  AXObject* included_parent = ax_object.ParentObjectIncludedInTree();
+  return included_parent ? included_parent->PreviousOnLine() : nullptr;
 }
 
 AXObject* AXLayoutObject::PreviousOnLine() const {
