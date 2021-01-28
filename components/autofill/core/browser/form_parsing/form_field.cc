@@ -342,16 +342,25 @@ bool FormField::Match(const AutofillField* field,
   base::StringPiece16 value;
   base::string16 match;
 
+  // TODO(crbug/1165780): Remove once shared labels are launched.
+  const base::string16& label =
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForParsingWithSharedLabels)
+          ? field->parseable_label()
+          : field->label;
+
+  const base::string16& name = field->parseable_name();
+
   if ((match_field_attributes & MATCH_LABEL) &&
-      MatchesPattern(field->label, pattern, &match)) {
+      MatchesPattern(label, pattern, &match)) {
     found_match = true;
     match_type_string = "Match in label";
-    value = field->label;
+    value = label;
   } else if ((match_field_attributes & MATCH_NAME) &&
-             MatchesPattern(field->parseable_name(), pattern, &match)) {
+             MatchesPattern(name, pattern, &match)) {
     found_match = true;
     match_type_string = "Match in name";
-    value = field->parseable_name();
+    value = name;
   }
 
   if (found_match && logging.log_manager) {

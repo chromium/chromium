@@ -54,6 +54,12 @@ const base::Feature kAutofillCacheQueryResponses{
 const base::Feature kAutofillCreateDataForTest{
     "AutofillCreateDataForTest", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls if the heuristic field parsing utilizes shared labels.
+// TODO(crbug/1165780): Remove once shared labels are launched.
+const base::Feature kAutofillEnableSupportForParsingWithSharedLabels{
+    "AutofillEnableSupportForParsingWithSharedLabels",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Kill switch for Autofill filling.
 const base::Feature kAutofillDisableFilling{"AutofillDisableFilling",
                                             base::FEATURE_DISABLED_BY_DEFAULT};

@@ -365,6 +365,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/autofill/heuristics/input/174_i18n_id.html",
     "//components/test/data/autofill/heuristics/input/175_id_address_alfacart.com.html",
     "//components/test/data/autofill/heuristics/input/176_id_payment_shopee.co.id.html",
+    "//components/test/data/autofill/heuristics/input/177_reichelt.html",
     "//components/test/data/autofill/heuristics/output/000_i18n_de.out",
     "//components/test/data/autofill/heuristics/output/001_i18n_de2.out",
     "//components/test/data/autofill/heuristics/output/002_i18n_en.out",
@@ -541,6 +542,7 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/autofill/heuristics/output/174_i18n_id.out",
     "//components/test/data/autofill/heuristics/output/175_id_address_alfacart.com.out",
     "//components/test/data/autofill/heuristics/output/176_id_payment_shopee.co.id.out",
+    "//components/test/data/autofill/heuristics/output/177_reichelt.out",
   ]
   outputs = [ "{{bundle_resources_dir}}/" +
               "{{source_root_relative_dir}}/{{source_file_part}}" ]

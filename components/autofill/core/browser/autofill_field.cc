@@ -21,7 +21,9 @@ AutofillField::AutofillField(FieldSignature field_signature)
     : field_signature_(field_signature) {}
 
 AutofillField::AutofillField(const FormFieldData& field)
-    : FormFieldData(field), parseable_name_(field.name) {
+    : FormFieldData(field),
+      parseable_name_(field.name),
+      parseable_label_(field.label) {
   field_signature_ =
       CalculateFieldSignatureByNameAndType(name, form_control_type);
 }

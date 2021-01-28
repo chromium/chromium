@@ -42,6 +42,7 @@ extern const base::Feature
     kAutofillEnablePasswordInfoBarAccountIndicationFooter;
 extern const base::Feature kAutofillEnableSupportForApartmentNumbers;
 extern const base::Feature kAutofillEnableLabelPrecedenceForTurkishAddresses;
+extern const base::Feature kAutofillEnableSupportForParsingWithSharedLabels;
 extern const base::Feature kAutofillEnableSupportForMoreStructureInNames;
 extern const base::Feature kAutofillEnableSupportForMoreStructureInAddresses;
 extern const base::Feature kAutofillEnableSupportForMergingSubsetNames;

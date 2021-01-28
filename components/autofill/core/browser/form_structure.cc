@@ -2414,8 +2414,12 @@ void FormStructure::ProcessExtractedFields() {
   // field names.
   ExtractParseableFieldNames();
 
-  // Extracts the |parsable_label_| for each field.
-  ExtractParseableFieldLabels();
+  // TODO(crbug/1165780): Remove once shared labels are launched.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableSupportForParsingWithSharedLabels)) {
+    // Extracts the |parsable_label_| for each field.
+    ExtractParseableFieldLabels();
+  }
 }
 
 void FormStructure::ExtractParseableFieldLabels() {

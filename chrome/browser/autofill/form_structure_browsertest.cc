@@ -169,21 +169,23 @@ FormStructureBrowserTest::FormStructureBrowserTest()
   feature_list_.InitWithFeatures(
       // Enabled
       {// TODO(crbug.com/1098943): Remove once experiment is over.
-       autofill::features::kAutofillEnableSupportForMoreStructureInNames,
+       features::kAutofillEnableSupportForMoreStructureInNames,
        // TODO(crbug.com/1125978): Remove once launched.
-       autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
+       features::kAutofillEnableSupportForMoreStructureInAddresses,
        // TODO(crbug.com/896689): Remove once launched.
-       autofill::features::kAutofillNameSectionsWithRendererIds,
+       features::kAutofillNameSectionsWithRendererIds,
        // TODO(crbug.com/1076175) Remove once launched.
-       autofill::features::kAutofillUseNewSectioningMethod,
+       features::kAutofillUseNewSectioningMethod,
        // Remove once launched
-       autofill::features::kAutofillEnableAugmentedPhoneCountryCode,
+       features::kAutofillEnableAugmentedPhoneCountryCode,
        // TODO(crbug.com/1157405) Remove once launched.
-       autofill::features::kAutofillEnableDependentLocalityParsing,
+       features::kAutofillEnableDependentLocalityParsing,
        // TODO(crbug.com/1150895) Remove once launched.
-       autofill::features::kAutofillParsingPatternsLanguageDetection},
+       features::kAutofillParsingPatternsLanguageDetection,
+       // TODO(crbug/1165780): Remove once shared labels are launched.
+       features::kAutofillEnableSupportForParsingWithSharedLabels},
       // Disabled
-      {autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout});
+      {features::kAutofillRestrictUnownedFieldsToFormlessCheckout});
 }
 
 FormStructureBrowserTest::~FormStructureBrowserTest() {}

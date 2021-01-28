@@ -151,6 +151,7 @@ class FormField {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(FormFieldTest, Match);
+  FRIEND_TEST_ALL_PREFIXES(FormFieldTest, TestParseableLabels);
 
   // Function pointer type for the parsing function that should be passed to the
   // ParseFormFieldsPass() helper function.

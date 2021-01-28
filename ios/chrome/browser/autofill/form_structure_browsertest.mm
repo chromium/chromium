@@ -143,6 +143,8 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        autofill::features::kAutofillEnableAugmentedPhoneCountryCode,
        // TODO(crbug.com/1157405) Remove once launched.
        autofill::features::kAutofillEnableDependentLocalityParsing,
+       // TODO(crbug/1165780): Remove once shared labels are launched.
+       autofill::features::kAutofillEnableSupportForParsingWithSharedLabels,
        // TODO(crbug.com/1150895) Remove once launched.
        autofill::features::kAutofillParsingPatternsLanguageDetection},
       // Disabled
