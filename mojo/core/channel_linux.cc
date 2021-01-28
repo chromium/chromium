@@ -603,11 +603,6 @@ bool ChannelLinux::OnControlMessage(Message::MessageType message_type,
     case Message::MessageType::UPGRADE_OFFER: {
       const UpgradeOfferMessage* msg =
           reinterpret_cast<const UpgradeOfferMessage*>(payload);
-      if (payload_size < sizeof(UpgradeOfferMessage)) {
-        LOG(ERROR) << "Received a malformed UPGRADE_OFFER message";
-        return true;
-      }
-
       if (msg->version != UpgradeOfferMessage::kSupportedVersion) {
         LOG(ERROR) << "Reject shared mem upgrade unexpected version: "
                    << msg->version;
