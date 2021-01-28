@@ -77,11 +77,11 @@
   }
 
   if ((self = [super init])) {
-    // TODO(https://crbug.com/1144992): If crash fixed, investigate why browser
-    // cannot be created here.
+    // Since AppleScript requests can arrive at any time, including during
+    // browser shutdown or profile deletion, we have to check whether it's okay
+    // to spawn a new browser for the specified profile or not.
     if (Browser::GetCreationStatusForProfile(aProfile) !=
         Browser::CreationStatus::kOk) {
-      NOTREACHED();
       [self release];
       return nil;
     }
