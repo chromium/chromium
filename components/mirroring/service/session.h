@@ -169,7 +169,7 @@ class COMPONENT_EXPORT(MIRRORING_SERVICE) Session final
   mojo::Remote<mojom::ResourceProvider> resource_provider_;
   MirrorSettings mirror_settings_;
 
-  MessageDispatcher message_dispatcher_;
+  std::unique_ptr<MessageDispatcher> message_dispatcher_;
 
   mojo::Remote<network::mojom::NetworkContext> network_context_;
 

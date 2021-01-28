@@ -401,10 +401,11 @@ Session::Session(
       state_(MIRRORING),
       observer_(std::move(observer)),
       resource_provider_(std::move(resource_provider)),
-      message_dispatcher_(std::move(outbound_channel),
-                          std::move(inbound_channel),
-                          base::BindRepeating(&Session::OnResponseParsingError,
-                                              base::Unretained(this))),
+      message_dispatcher_(std::make_unique<MessageDispatcher>(
+          std::move(outbound_channel),
+          std::move(inbound_channel),
+          base::BindRepeating(&Session::OnResponseParsingError,
+                              base::Unretained(this)))),
       gpu_channel_host_(nullptr) {
   DCHECK(resource_provider_);
   mirror_settings_.SetResolutionConstraints(max_resolution.width(),
@@ -492,12 +493,16 @@ void Session::StopSession() {
   state_ = STOPPED;
   StopStreaming();
 
+  // Notes on order: the media remoter needs to deregister itself from the
+  // message dispatcher, which then needs to deregister from the resource
+  // provider.
+  media_remoter_.reset();
+  message_dispatcher_.reset();
   setup_querier_.reset();
   weak_factory_.InvalidateWeakPtrs();
   audio_encode_thread_ = nullptr;
   video_encode_thread_ = nullptr;
   video_capture_client_.reset();
-  media_remoter_.reset();
   resource_provider_.reset();
   gpu_channel_host_ = nullptr;
   gpu_.reset();
@@ -812,7 +817,7 @@ void Session::OnAnswer(const std::vector<FrameSenderConfig>& audio_configs,
   std::unique_ptr<WifiStatusMonitor> wifi_status_monitor;
   if (answer.supports_wifi_status_reporting) {
     wifi_status_monitor =
-        std::make_unique<WifiStatusMonitor>(&message_dispatcher_);
+        std::make_unique<WifiStatusMonitor>(message_dispatcher_.get());
     // Nest Hub devices do not support remoting despite having a relatively new
     // build version, so we cannot filter with
     // NeedsWorkaroundForOlder1DotXVersions() here.
@@ -935,7 +940,7 @@ void Session::CreateAndSendOffer() {
   offer.SetKey("receiverGetStatus", base::Value(true));
   offer.SetKey("supportedStreams", base::Value(stream_list));
 
-  const int32_t sequence_number = message_dispatcher_.GetNextSeqNumber();
+  const int32_t sequence_number = message_dispatcher_->GetNextSeqNumber();
   base::Value offer_message(base::Value::Type::DICTIONARY);
   offer_message.SetKey("type", base::Value("OFFER"));
   offer_message.SetKey("seqNum", base::Value(sequence_number));
@@ -947,7 +952,7 @@ void Session::CreateAndSendOffer() {
       offer_message, &message_to_receiver->json_format_data);
   DCHECK(did_serialize_offer);
 
-  message_dispatcher_.RequestReply(
+  message_dispatcher_->RequestReply(
       std::move(message_to_receiver), ResponseType::ANSWER, sequence_number,
       kOfferAnswerExchangeTimeout,
       base::BindOnce(&Session::OnAnswer, base::Unretained(this), audio_configs,
@@ -981,7 +986,7 @@ void Session::RestartMirroringStreaming() {
 
 void Session::QueryCapabilitiesForRemoting() {
   DCHECK(!media_remoter_);
-  const int32_t sequence_number = message_dispatcher_.GetNextSeqNumber();
+  const int32_t sequence_number = message_dispatcher_->GetNextSeqNumber();
   base::Value query(base::Value::Type::DICTIONARY);
   query.SetKey("type", base::Value("GET_CAPABILITIES"));
   query.SetKey("seqNum", base::Value(sequence_number));
@@ -991,13 +996,16 @@ void Session::QueryCapabilitiesForRemoting() {
   const bool did_serialize_query =
       base::JSONWriter::Write(query, &query_message->json_format_data);
   DCHECK(did_serialize_query);
-  message_dispatcher_.RequestReply(
+  message_dispatcher_->RequestReply(
       std::move(query_message), ResponseType::CAPABILITIES_RESPONSE,
       sequence_number, kGetCapabilitiesTimeout,
       base::BindOnce(&Session::OnCapabilitiesResponse, base::Unretained(this)));
 }
 
 void Session::OnCapabilitiesResponse(const ReceiverResponse& response) {
+  if (state_ == STOPPED)
+    return;
+
   if (!response.valid()) {
     VLOG(1) << "Bad CAPABILITIES_RESPONSE. Remoting disabled.";
     if (response.error()) {
@@ -1035,7 +1043,7 @@ void Session::OnCapabilitiesResponse(const ReceiverResponse& response) {
       this,
       ToRemotingSinkMetadata(caps, friendly_name, session_params_,
                              build_version),
-      &message_dispatcher_);
+      message_dispatcher_.get());
 }
 
 }  // namespace mirroring
