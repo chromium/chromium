@@ -40,6 +40,7 @@ import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.lifecycle.InflationObserver;
 import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -81,6 +82,8 @@ public class LocationBarTest {
     private TemplateUrl mNonGoogleSearchEngine;
     @Mock
     private LocaleManager mLocaleManager;
+    @Mock
+    VoiceRecognitionHandler mVoiceRecognitionHandler;
 
     ChromeTabbedActivity mActivity;
     UrlBar mUrlBar;
@@ -144,6 +147,7 @@ public class LocationBarTest {
                                            .getLocationBar());
         mLocationBarMediator = mLocationBarCoordinator.getMediatorForTesting();
         mSearchUrl = mActivityTestRule.getEmbeddedTestServerRule().getServer().getURL("/search");
+        mLocationBarCoordinator.setVoiceRecognitionHandlerForTesting(mVoiceRecognitionHandler);
     }
 
     @Test
@@ -257,15 +261,13 @@ public class LocationBarTest {
     @MediumTest
     public void testPostDestroyFocusLogic() {
         startActivityNormally();
-        LocationBarLayout locationBarLayout =
-                mActivity.findViewById(org.chromium.chrome.R.id.location_bar);
         TestThreadUtils.runOnUiThreadBlocking(() -> { mActivity.finish(); });
 
         CriteriaHelper.pollUiThread(
                 () -> mActivity.getLifecycle().getCurrentState().equals(Lifecycle.State.DESTROYED));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            locationBarLayout.setUrlFocusChangeInProgress(false);
+            mLocationBarMediator.setUrlFocusChangeInProgress(false);
             mLocationBarMediator.finishUrlFocusChange(true, true);
         });
     }
@@ -294,6 +296,7 @@ public class LocationBarTest {
     @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testFocusLogic_buttonVisibilityPhone() {
         startActivityNormally();
+        doReturn(true).when(mVoiceRecognitionHandler).isVoiceSearchEnabled();
         String url = mActivityTestRule.getEmbeddedTestServerRule().getServer().getURLWithHostName(
                 HOSTNAME, "/");
         mActivityTestRule.loadUrl(url);
@@ -363,9 +366,11 @@ public class LocationBarTest {
         onView(withId(R.id.delete_button))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.VISIBLE)));
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mUrlBar.clearFocus(); });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mUrlBar.clearFocus();
+            mLocationBarCoordinator.setShouldShowButtonsWhenUnfocusedForTablet(false);
+        });
 
-        mLocationBarCoordinator.getTabletCoordinator().setShouldShowButtonsWhenUnfocused(false);
         onView(withId(R.id.bookmark_button))
                 .check(matches(withEffectiveVisibility(ViewMatchers.Visibility.GONE)));
         onView(withId(R.id.save_offline_button))

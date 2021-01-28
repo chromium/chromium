@@ -87,28 +87,6 @@ class LocationBarPhone extends LocationBarLayout {
         setShowIconsWhenUrlFocused(shouldShowSearchEngineLogo);
     }
 
-    /**
-     * Updates progress of current the URL focus change animation.
-     *
-     * @param fraction 1.0 is 100% focused, 0 is completely unfocused.
-     */
-    @Override
-    public void setUrlFocusChangeFraction(float fraction) {
-        super.setUrlFocusChangeFraction(fraction);
-
-        if (fraction > 0f) {
-            mUrlActionContainer.setVisibility(VISIBLE);
-        } else if (fraction == 0f && !isUrlFocusChangeInProgress()) {
-            // If a URL focus change is in progress, then it will handle setting the visibility
-            // correctly after it completes.  If done here, it would cause the URL to jump due
-            // to a badly timed layout call.
-            mUrlActionContainer.setVisibility(GONE);
-        }
-
-        updateButtonVisibility();
-        mStatusCoordinator.setUrlFocusChangePercent(fraction);
-    }
-
     @Override
     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
         boolean needsCanvasRestore = false;
@@ -131,12 +109,6 @@ class LocationBarPhone extends LocationBarLayout {
             canvas.restore();
         }
         return retVal;
-    }
-
-    @Override
-    protected void updateButtonVisibility() {
-        super.updateButtonVisibility();
-        updateMicButtonVisibility();
     }
 
     @Override

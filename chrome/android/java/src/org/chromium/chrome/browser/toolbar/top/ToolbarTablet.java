@@ -406,7 +406,7 @@ public class ToolbarTablet extends ToolbarLayout
 
     @Override
     void updateButtonVisibility() {
-        mLocationBar.getTabletCoordinator().updateButtonVisibility();
+        mLocationBar.updateButtonVisibility();
     }
 
     @Override
@@ -605,7 +605,7 @@ public class ToolbarTablet extends ToolbarLayout
             for (ImageButton button : mToolbarButtons) {
                 button.setVisibility(visible ? View.VISIBLE : View.GONE);
             }
-            mLocationBar.getTabletCoordinator().setShouldShowButtonsWhenUnfocused(visible);
+            mLocationBar.setShouldShowButtonsWhenUnfocusedForTablet(visible);
             setStartPaddingBasedOnButtonVisibility(visible);
         }
     }
@@ -646,11 +646,11 @@ public class ToolbarTablet extends ToolbarLayout
 
         // Create animators for all of the toolbar buttons.
         for (ImageButton button : mToolbarButtons) {
-            animators.add(mLocationBar.getTabletCoordinator().createShowButtonAnimator(button));
+            animators.add(mLocationBar.createShowButtonAnimatorForTablet(button));
         }
 
         // Add animators for location bar.
-        animators.addAll(mLocationBar.getTabletCoordinator().getShowButtonsWhenUnfocusedAnimators(
+        animators.addAll(mLocationBar.getShowButtonsWhenUnfocusedAnimatorsForTablet(
                 getStartPaddingDifferenceForButtonVisibilityAnimation()));
 
         AnimatorSet set = new AnimatorSet();
@@ -681,11 +681,11 @@ public class ToolbarTablet extends ToolbarLayout
 
         // Create animators for all of the toolbar buttons.
         for (ImageButton button : mToolbarButtons) {
-            animators.add(mLocationBar.getTabletCoordinator().createHideButtonAnimator(button));
+            animators.add(mLocationBar.createHideButtonAnimatorForTablet(button));
         }
 
         // Add animators for location bar.
-        animators.addAll(mLocationBar.getTabletCoordinator().getHideButtonsWhenUnfocusedAnimators(
+        animators.addAll(mLocationBar.getHideButtonsWhenUnfocusedAnimatorsForTablet(
                 getStartPaddingDifferenceForButtonVisibilityAnimation()));
 
         AnimatorSet set = new AnimatorSet();

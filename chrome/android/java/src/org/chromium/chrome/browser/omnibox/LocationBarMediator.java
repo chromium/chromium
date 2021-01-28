@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.content.ComponentCallbacks;
 import android.content.Context;
@@ -29,6 +30,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAState;
 import org.chromium.chrome.browser.locale.LocaleManager;
@@ -59,6 +61,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.interpolators.BakedBezierInterpolator;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.ArrayList;
@@ -74,18 +77,35 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
                                      VoiceRecognitionHandler.Observer,
                                      AssistantVoiceSearchService.Observer, UrlBarDelegate,
                                      OnKeyListener, ComponentCallbacks, TemplateUrlServiceObserver {
-    private static final long MAX_NTP_KEYBOARD_FOCUS_DURATION_MS = 200;
+    private static final int ICON_FADE_ANIMATION_DURATION_MS = 150;
+    private static final int ICON_FADE_ANIMATION_DELAY_MS = 75;
+    private static final long NTP_KEYBOARD_FOCUS_DURATION_MS = 200;
+    private static final int WIDTH_CHANGE_ANIMATION_DURATION_MS = 225;
+    private static final int WIDTH_CHANGE_ANIMATION_DELAY_MS = 75;
 
     private final Property<LocationBarMediator, Float> mUrlFocusChangeFractionProperty =
             new Property<LocationBarMediator, Float>(Float.class, "") {
                 @Override
                 public Float get(LocationBarMediator object) {
-                    return mLocationBarLayout.getUrlFocusChangeFraction();
+                    return mUrlFocusChangeFraction;
                 }
 
                 @Override
                 public void set(LocationBarMediator object, Float value) {
                     setUrlFocusChangeFraction(value);
+                }
+            };
+
+    private final Property<LocationBarMediator, Float> mWidthChangeFractionPropertyTablet =
+            new Property<LocationBarMediator, Float>(Float.class, "") {
+                @Override
+                public Float get(LocationBarMediator object) {
+                    return ((LocationBarTablet) mLocationBarLayout).getWidthChangeFraction();
+                }
+
+                @Override
+                public void set(LocationBarMediator object, Float value) {
+                    ((LocationBarTablet) mLocationBarLayout).setWidthChangeAnimationFraction(value);
                 }
             };
 
@@ -120,7 +140,14 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     private boolean mUrlFocusedFromFakebox;
     private boolean mUrlFocusedFromQueryTiles;
     private boolean mUrlFocusedWithoutAnimations;
+    private boolean mIsUrlFocusChangeInProgress;
     private final boolean mIsTablet;
+    private boolean mShouldShowMicButtonWhenUnfocused;
+    // Whether the microphone and bookmark buttons should be shown in the tablet location bar. These
+    // buttons are hidden if the window size is < 600dp.
+    private boolean mShouldShowButtonsWhenUnfocused;
+    private float mUrlFocusChangeFraction;
+    private boolean mUrlHasFocus;
 
     /*package */ LocationBarMediator(@NonNull Context context,
             @NonNull LocationBarLayout locationBarLayout,
@@ -149,6 +176,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mWindowAndroid = windowAndroid;
         mIsTablet = isTablet;
         mSearchEngineLogoUtils = searchEngineLogoUtils;
+        mShouldShowButtonsWhenUnfocused = isTablet;
     }
 
     /**
@@ -165,6 +193,15 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         mAutocompleteCoordinator = autocompleteCoordinator;
         mStatusCoordinator = statusCoordinator;
         updateShouldAnimateIconChanges();
+        updateButtonVisibility();
+
+        if (mIsTablet) {
+            mStatusCoordinator.setShowIconsWhenUrlFocused(true);
+            if (mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                        mLocationBarDataProvider.isIncognito())) {
+                mStatusCoordinator.setStatusIconShown(true);
+            }
+        }
     }
 
     /*package */ void destroy() {
@@ -189,7 +226,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     /*package */ void onUrlFocusChange(boolean hasFocus) {
         setUrlFocusChangeInProgress(true);
-        mLocationBarLayout.setUrlHasFocus(hasFocus);
+        mUrlHasFocus = hasFocus;
         updateButtonVisibility();
         updateShouldAnimateIconChanges();
         onPrimaryColorChanged();
@@ -250,7 +287,23 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     }
 
     /*package */ void setUrlFocusChangeFraction(float fraction) {
-        mLocationBarLayout.setUrlFocusChangeFraction(fraction);
+        mUrlFocusChangeFraction = fraction;
+        if (mIsTablet) {
+            mLocationBarDataProvider.getNewTabPageDelegate().setUrlFocusChangeAnimationPercent(
+                    fraction);
+        } else {
+            if (fraction > 0f) {
+                mLocationBarLayout.setUrlActionContainerVisibility(View.VISIBLE);
+            } else if (fraction == 0f && !mIsUrlFocusChangeInProgress) {
+                // If a URL focus change is in progress, then it will handle setting the visibility
+                // correctly after it completes.  If done here, it would cause the URL to jump due
+                // to a badly timed layout call.
+                mLocationBarLayout.setUrlActionContainerVisibility(View.GONE);
+            }
+
+            mStatusCoordinator.setUrlFocusChangePercent(fraction);
+            updateButtonVisibility();
+        }
     }
 
     /*package */ void setUnfocusedWidth(int unfocusedWidth) {
@@ -287,7 +340,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     }
 
     /*package */ void showUrlBarCursorWithoutFocusAnimations() {
-        if (mLocationBarLayout.isUrlBarFocused() || mUrlFocusedFromFakebox) {
+        if (mUrlHasFocus || mUrlFocusedFromFakebox) {
             return;
         }
 
@@ -299,7 +352,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     }
 
     /*package */ void revertChanges() {
-        if (mLocationBarLayout.isUrlBarFocused()) {
+        if (mUrlHasFocus) {
             String currentUrl = mLocationBarDataProvider.getCurrentUrl();
             if (NativePageFactory.isNativePageUrl(
                         currentUrl, mLocationBarDataProvider.isIncognito())) {
@@ -330,7 +383,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
         // Handle the case where suggestions (in particular zero suggest) are received without the
         // URL focusing happening.
-        if (mUrlFocusedWithoutAnimations && mLocationBarLayout.isUrlBarFocused()) {
+        if (mUrlFocusedWithoutAnimations && mUrlHasFocus) {
             handleUrlFocusAnimation(/*hasFocus=*/true);
         }
 
@@ -417,9 +470,13 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         return mUrlFocusedFromQueryTiles;
     }
 
-    /** Updates the visibility of the buttons inside the location bar. */
+    /** Recalculates the visibility of the buttons inside the location bar. */
     /* package */ void updateButtonVisibility() {
-        mLocationBarLayout.updateButtonVisibility();
+        updateDeleteButtonVisibility();
+        updateMicButtonVisibility();
+        if (mIsTablet) {
+            updateTabletButtonsVisibility();
+        }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -472,14 +529,14 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     /* package */ void setUrlFocusChangeInProgress(boolean inProgress) {
         if (mUrlCoordinator == null) return;
-        mLocationBarLayout.setUrlFocusChangeInProgress(inProgress);
+        mIsUrlFocusChangeInProgress = inProgress;
         if (!inProgress) {
             updateButtonVisibility();
 
             // The accessibility bounding box is not properly updated when focusing the Omnibox
             // from the NTP fakebox.  Clearing/re-requesting focus triggers the bounding box to
             // be recalculated.
-            if (didFocusUrlFromFakebox() && mLocationBarLayout.isUrlBarFocused()
+            if (didFocusUrlFromFakebox() && mUrlHasFocus
                     && ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
                 String existingText = mUrlCoordinator.getTextWithoutAutocomplete();
                 mUrlCoordinator.clearFocus();
@@ -495,7 +552,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             }
 
             for (UrlFocusChangeListener listener : mUrlFocusChangeListeners) {
-                listener.onUrlAnimationFinished(mLocationBarLayout.isUrlBarFocused());
+                listener.onUrlAnimationFinished(mUrlHasFocus);
             }
         }
     }
@@ -552,7 +609,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             mUrlFocusChangeAnimator = ObjectAnimator.ofFloat(
                     this, mUrlFocusChangeFractionProperty, hasFocus ? 1f : 0f);
             mUrlFocusChangeAnimator.setDuration(
-                    (long) (MAX_NTP_KEYBOARD_FOCUS_DURATION_MS * screenSizeRatio));
+                    (long) (NTP_KEYBOARD_FOCUS_DURATION_MS * screenSizeRatio));
             mUrlFocusChangeAnimator.addListener(new CancelAwareAnimatorListener() {
                 @Override
                 public void onEnd(Animator animator) {
@@ -566,6 +623,174 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
             });
             mUrlFocusChangeAnimator.start();
         }
+    }
+
+    /* package */ void setShouldShowMicButtonWhenUnfocusedForPhone(boolean shouldShow) {
+        assert !mIsTablet;
+        mShouldShowMicButtonWhenUnfocused = shouldShow;
+    }
+
+    /**
+     * @param shouldShow Whether buttons should be displayed in the URL bar when it's not
+     *                          focused.
+     */
+    /* package */ void setShouldShowButtonsWhenUnfocusedForTablet(boolean shouldShow) {
+        assert mIsTablet;
+        mShouldShowButtonsWhenUnfocused = shouldShow;
+        updateButtonVisibility();
+    }
+
+    /**
+     * @param button The {@link View} of the button to show.
+     * Returns An animator to run for the given view when showing buttons in the unfocused location
+     *         bar. This should also be used to create animators for showing toolbar buttons.
+     */
+    /* package */ ObjectAnimator createShowButtonAnimatorForTablet(View button) {
+        assert mIsTablet;
+        if (button.getVisibility() != View.VISIBLE) {
+            button.setAlpha(0.f);
+        }
+        ObjectAnimator buttonAnimator = ObjectAnimator.ofFloat(button, View.ALPHA, 1.f);
+        buttonAnimator.setInterpolator(BakedBezierInterpolator.FADE_IN_CURVE);
+        buttonAnimator.setStartDelay(ICON_FADE_ANIMATION_DELAY_MS);
+        buttonAnimator.setDuration(ICON_FADE_ANIMATION_DURATION_MS);
+        return buttonAnimator;
+    }
+
+    /**
+     * @param button The {@link View} of the button to hide.
+     * Returns An animator to run for the given view when hiding buttons in the unfocused location
+     *         bar. This should also be used to create animators for hiding toolbar buttons.
+     */
+    /* package */ ObjectAnimator createHideButtonAnimatorForTablet(View button) {
+        assert mIsTablet;
+        ObjectAnimator buttonAnimator = ObjectAnimator.ofFloat(button, View.ALPHA, 0.f);
+        buttonAnimator.setInterpolator(BakedBezierInterpolator.FADE_OUT_CURVE);
+        buttonAnimator.setDuration(ICON_FADE_ANIMATION_DURATION_MS);
+        return buttonAnimator;
+    }
+
+    /**
+     * Creates animators for showing buttons in the unfocused tablet location bar. The buttons fade
+     * in while the width of the location bar decreases. There are toolbar buttons that show at
+     * the same time, causing the width of the location bar to change.
+     *
+     * @param toolbarStartPaddingDifference The difference in the toolbar's start padding between
+     *                                      the beginning and end of the animation.
+     * @return A List of animators to run.
+     */
+    /* package */ List<Animator> getShowButtonsWhenUnfocusedAnimatorsForTablet(
+            int toolbarStartPaddingDifference) {
+        assert mIsTablet;
+        LocationBarTablet locationBarTablet = ((LocationBarTablet) mLocationBarLayout);
+
+        ArrayList<Animator> animators = new ArrayList<>();
+
+        Animator widthChangeAnimator =
+                ObjectAnimator.ofFloat(this, mWidthChangeFractionPropertyTablet, 0f);
+        widthChangeAnimator.setDuration(WIDTH_CHANGE_ANIMATION_DURATION_MS);
+        widthChangeAnimator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
+        widthChangeAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                locationBarTablet.startAnimatingWidthChange(toolbarStartPaddingDifference);
+                setShouldShowButtonsWhenUnfocusedForTablet(true);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                // Only reset values if the animation is ending because it's completely finished
+                // and not because it was canceled.
+                if (locationBarTablet.getWidthChangeFraction() == 0.f) {
+                    locationBarTablet.finishAnimatingWidthChange();
+                    locationBarTablet.resetValuesAfterAnimation();
+                }
+            }
+        });
+        animators.add(widthChangeAnimator);
+
+        // When buttons show in the unfocused location bar, either the delete button or bookmark
+        // button will be showing. If the delete button is currently showing, the bookmark button
+        // should not fade in.
+        if (!locationBarTablet.isDeleteButtonVisible()) {
+            animators.add(createShowButtonAnimatorForTablet(
+                    locationBarTablet.getBookmarkButtonForAnimation()));
+        }
+
+        if (shouldShowSaveOfflineButton()) {
+            animators.add(createShowButtonAnimatorForTablet(
+                    locationBarTablet.getSaveOfflineButtonForAnimation()));
+        } else if (!locationBarTablet.isMicButtonVisible()
+                || locationBarTablet.getMicButtonAlpha() != 1.f) {
+            // If the microphone button is already fully visible, don't animate its appearance.
+            animators.add(createShowButtonAnimatorForTablet(
+                    locationBarTablet.getMicButtonForAnimation()));
+        }
+
+        return animators;
+    }
+
+    /**
+     * Creates animators for hiding buttons in the unfocused tablet location bar. The buttons fade
+     * out while the width of the location bar increases. There are toolbar buttons that hide at
+     * the same time, causing the width of the location bar to change.
+     *
+     * @param toolbarStartPaddingDifference The difference in the toolbar's start padding between
+     *                                      the beginning and end of the animation.
+     * @return A List of animators to run.
+     */
+    /* package */ List<Animator> getHideButtonsWhenUnfocusedAnimatorsForTablet(
+            int toolbarStartPaddingDifference) {
+        LocationBarTablet locationBarTablet = ((LocationBarTablet) mLocationBarLayout);
+
+        ArrayList<Animator> animators = new ArrayList<>();
+
+        Animator widthChangeAnimator =
+                ObjectAnimator.ofFloat(this, mWidthChangeFractionPropertyTablet, 1f);
+        widthChangeAnimator.setStartDelay(WIDTH_CHANGE_ANIMATION_DELAY_MS);
+        widthChangeAnimator.setDuration(WIDTH_CHANGE_ANIMATION_DURATION_MS);
+        widthChangeAnimator.setInterpolator(BakedBezierInterpolator.TRANSFORM_CURVE);
+        widthChangeAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                locationBarTablet.startAnimatingWidthChange(toolbarStartPaddingDifference);
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                // Only reset values if the animation is ending because it's completely finished
+                // and not because it was canceled.
+                if (locationBarTablet.getWidthChangeFraction() == 1.f) {
+                    locationBarTablet.finishAnimatingWidthChange();
+                    locationBarTablet.resetValuesAfterAnimation();
+                    setShouldShowButtonsWhenUnfocusedForTablet(false);
+                }
+            }
+        });
+        animators.add(widthChangeAnimator);
+
+        // When buttons show in the unfocused location bar, either the delete button or bookmark
+        // button will be showing. If the delete button is currently showing, the bookmark button
+        // should not fade out.
+        if (!locationBarTablet.isDeleteButtonVisible()) {
+            animators.add(createHideButtonAnimatorForTablet(
+                    locationBarTablet.getBookmarkButtonForAnimation()));
+        }
+
+        if (shouldShowSaveOfflineButton() && locationBarTablet.isSaveOfflineButtonVisible()) {
+            animators.add(createHideButtonAnimatorForTablet(
+                    locationBarTablet.getSaveOfflineButtonForAnimation()));
+        } else if (!(mUrlHasFocus && !locationBarTablet.isDeleteButtonVisible())) {
+            // If the save offline button isn't enabled, the microphone button always shows when
+            // buttons are shown in the unfocused location bar. When buttons are hidden in the
+            // unfocused location bar, the microphone shows if the location bar is focused and the
+            // delete button isn't showing. The microphone button should not be hidden if the
+            // url bar is currently focused and the delete button isn't showing.
+            animators.add(createHideButtonAnimatorForTablet(
+                    locationBarTablet.getMicButtonForAnimation()));
+        }
+
+        return animators;
     }
 
     /**
@@ -668,15 +893,134 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     }
 
     private void updateShouldAnimateIconChanges() {
-        boolean shouldAnimate = mIsTablet
-                ? isUrlBarFocused()
-                : isUrlBarFocused() || mLocationBarLayout.isUrlFocusChangeInProgress();
+        boolean shouldAnimate =
+                mIsTablet ? isUrlBarFocused() : isUrlBarFocused() || mIsUrlFocusChangeInProgress;
         mStatusCoordinator.setShouldAnimateIconChanges(shouldAnimate);
     }
 
     private void recordOmniboxFocusReason(@OmniboxFocusReason int reason) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.OmniboxFocusReason", reason, OmniboxFocusReason.NUM_ENTRIES);
+    }
+
+    private void updateMicButtonState() {
+        updateButtonVisibility();
+    }
+
+    /**
+     * Updates the display of the mic button.
+     */
+    private void updateMicButtonVisibility() {
+        mLocationBarLayout.setMicButtonVisibility(shouldShowMicButton());
+    }
+
+    private void updateDeleteButtonVisibility() {
+        mLocationBarLayout.setDeleteButtonVisibility(shouldShowDeleteButton());
+    }
+
+    private void updateTabletButtonsVisibility() {
+        assert mIsTablet;
+        LocationBarTablet locationBarTablet = (LocationBarTablet) mLocationBarLayout;
+        boolean showBookmarkButton =
+                mShouldShowButtonsWhenUnfocused && shouldShowPageActionButtons();
+        locationBarTablet.setBookmarkButtonVisibility(showBookmarkButton);
+
+        boolean showSaveOfflineButton =
+                mShouldShowButtonsWhenUnfocused && shouldShowSaveOfflineButton();
+        locationBarTablet.setSaveOfflineButtonVisibility(
+                showSaveOfflineButton, isSaveOfflineButtonEnabled());
+    }
+
+    /**
+     * @return Whether the delete button should be shown.
+     */
+    private boolean shouldShowDeleteButton() {
+        // Show the delete button at the end when the bar has focus and has some text.
+        boolean hasText = mUrlCoordinator != null
+                && !TextUtils.isEmpty(mUrlCoordinator.getTextWithAutocomplete());
+        return hasText && (mUrlHasFocus || mIsUrlFocusChangeInProgress);
+    }
+
+    private boolean shouldShowMicButton() {
+        if (mIsTablet && mShouldShowButtonsWhenUnfocused) {
+            return mVoiceRecognitionHandler != null
+                    && mVoiceRecognitionHandler.isVoiceSearchEnabled() && mNativeInitialized
+                    && (mUrlHasFocus || mIsUrlFocusChangeInProgress);
+        } else {
+            boolean deleteButtonVisible = shouldShowDeleteButton();
+            return mVoiceRecognitionHandler != null
+                    && mVoiceRecognitionHandler.isVoiceSearchEnabled() && !deleteButtonVisible
+                    && (mUrlHasFocus || mIsUrlFocusChangeInProgress || mUrlFocusChangeFraction > 0f
+                            || mShouldShowMicButtonWhenUnfocused);
+        }
+    }
+
+    private boolean shouldShowSaveOfflineButton() {
+        assert mIsTablet;
+        if (!mNativeInitialized || mLocationBarDataProvider == null) return false;
+        Tab tab = mLocationBarDataProvider.getTab();
+        if (tab == null) return false;
+        // The save offline button should not be shown on native pages. Currently, trying to
+        // save an offline page in incognito crashes, so don't show it on incognito either.
+        return shouldShowPageActionButtons() && !tab.isIncognito();
+    }
+
+    private boolean isSaveOfflineButtonEnabled() {
+        if (mLocationBarDataProvider == null) return false;
+        return DownloadUtils.isAllowedToDownloadPage(mLocationBarDataProvider.getTab());
+    }
+
+    private boolean shouldShowPageActionButtons() {
+        assert mIsTablet;
+        if (!mNativeInitialized) return true;
+
+        // There are two actions, bookmark and save offline, and they should be shown if the
+        // omnibox isn't focused.
+        return !(mUrlHasFocus || mIsUrlFocusChangeInProgress);
+    }
+
+    private void updateUrl() {
+        setUrl(mLocationBarDataProvider.getCurrentUrl(), mLocationBarDataProvider.getUrlBarData());
+    }
+
+    private void updateOmniboxPrerender() {
+        if (mOmniboxPrerender == null) return;
+        // Profile may be null if switching to a tab that has not yet been initialized.
+        Profile profile = mProfileSupplier.get();
+        if (profile == null) return;
+        mOmniboxPrerender.clear(profile);
+    }
+
+    private boolean handleKeyEvent(View view, int keyCode, KeyEvent event) {
+        boolean isRtl = view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
+        if (mAutocompleteCoordinator.handleKeyEvent(keyCode, event)) {
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
+            if (KeyNavigationUtil.isActionDown(event) && event.getRepeatCount() == 0) {
+                // Tell the framework to start tracking this event.
+                mLocationBarLayout.getKeyDispatcherState().startTracking(event, this);
+                return true;
+            } else if (KeyNavigationUtil.isActionUp(event)) {
+                mLocationBarLayout.getKeyDispatcherState().handleUpEvent(event);
+                if (event.isTracking() && !event.isCanceled()) {
+                    backKeyPressed();
+                    return true;
+                }
+            }
+        } else if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
+            if (KeyNavigationUtil.isActionDown(event) && event.getRepeatCount() == 0) {
+                revertChanges();
+                return true;
+            }
+        } else if ((!isRtl && KeyNavigationUtil.isGoRight(event))
+                || (isRtl && KeyNavigationUtil.isGoLeft(event))) {
+            // Ensures URL bar doesn't lose focus, when RIGHT or LEFT (RTL) key is pressed while
+            // the cursor is positioned at the end of the text.
+            TextView tv = (TextView) view;
+            return tv.getSelectionStart() == tv.getSelectionEnd()
+                    && tv.getSelectionEnd() == tv.getText().length();
+        }
+        return false;
     }
 
     // LocationBarData.Observer implementation
@@ -707,23 +1051,11 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         updateButtonVisibility();
     }
 
-    private void updateUrl() {
-        setUrl(mLocationBarDataProvider.getCurrentUrl(), mLocationBarDataProvider.getUrlBarData());
-    }
-
-    private void updateOmniboxPrerender() {
-        if (mOmniboxPrerender == null) return;
-        // Profile may be null if switching to a tab that has not yet been initialized.
-        Profile profile = mProfileSupplier.get();
-        if (profile == null) return;
-        mOmniboxPrerender.clear(profile);
-    }
-
     // FakeboxDelegate implementation.
 
     @Override
     public void setUrlBarFocus(boolean shouldBeFocused, @Nullable String pastedText, int reason) {
-        boolean urlHasFocus = mLocationBarLayout.isUrlBarFocused();
+        boolean urlHasFocus = mUrlHasFocus;
         if (shouldBeFocused) {
             if (!urlHasFocus) recordOmniboxFocusReason(reason);
             if (reason == OmniboxFocusReason.FAKE_BOX_TAP
@@ -792,7 +1124,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
 
     @Override
     public boolean isUrlBarFocused() {
-        return mLocationBarLayout.isUrlBarFocused();
+        return mUrlHasFocus;
     }
 
     @Override
@@ -817,12 +1149,6 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     @Override
     public void onVoiceAvailabilityImpacted() {
         updateMicButtonState();
-    }
-
-    private void updateMicButtonState() {
-        mLocationBarLayout.setVoiceSearchEnabled(mVoiceRecognitionHandler != null
-                && mVoiceRecognitionHandler.isVoiceSearchEnabled());
-        updateButtonVisibility();
     }
 
     @Override
@@ -897,7 +1223,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
     public boolean onKey(View view, int keyCode, KeyEvent event) {
         boolean result = handleKeyEvent(view, keyCode, event);
 
-        if (result && mLocationBarLayout.isUrlBarFocused() && mUrlFocusedWithoutAnimations
+        if (result && mUrlHasFocus && mUrlFocusedWithoutAnimations
                 && event.getAction() == KeyEvent.ACTION_DOWN && event.isPrintingKey()
                 && event.hasNoModifiers()) {
             handleUrlFocusAnimation(/*hasFocus=*/true);
@@ -906,43 +1232,11 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         return result;
     }
 
-    private boolean handleKeyEvent(View view, int keyCode, KeyEvent event) {
-        boolean isRtl = view.getLayoutDirection() == View.LAYOUT_DIRECTION_RTL;
-        if (mAutocompleteCoordinator.handleKeyEvent(keyCode, event)) {
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            if (KeyNavigationUtil.isActionDown(event) && event.getRepeatCount() == 0) {
-                // Tell the framework to start tracking this event.
-                mLocationBarLayout.getKeyDispatcherState().startTracking(event, this);
-                return true;
-            } else if (KeyNavigationUtil.isActionUp(event)) {
-                mLocationBarLayout.getKeyDispatcherState().handleUpEvent(event);
-                if (event.isTracking() && !event.isCanceled()) {
-                    backKeyPressed();
-                    return true;
-                }
-            }
-        } else if (keyCode == KeyEvent.KEYCODE_ESCAPE) {
-            if (KeyNavigationUtil.isActionDown(event) && event.getRepeatCount() == 0) {
-                revertChanges();
-                return true;
-            }
-        } else if ((!isRtl && KeyNavigationUtil.isGoRight(event))
-                || (isRtl && KeyNavigationUtil.isGoLeft(event))) {
-            // Ensures URL bar doesn't lose focus, when RIGHT or LEFT (RTL) key is pressed while
-            // the cursor is positioned at the end of the text.
-            TextView tv = (TextView) view;
-            return tv.getSelectionStart() == tv.getSelectionEnd()
-                    && tv.getSelectionEnd() == tv.getText().length();
-        }
-        return false;
-    }
-
     // ComponentCallbacks implementation.
 
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
-        if (mLocationBarLayout.isUrlBarFocused() && mUrlFocusedWithoutAnimations
+        if (mUrlHasFocus && mUrlFocusedWithoutAnimations
                 && newConfig.keyboard != Configuration.KEYBOARD_QWERTY) {
             // If we lose the hardware keyboard and the focus animations were not run, then the
             // user has not typed any text, so we will just clear the focus instead.

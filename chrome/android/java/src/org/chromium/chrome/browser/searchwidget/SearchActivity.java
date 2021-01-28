@@ -182,6 +182,7 @@ public class SearchActivity extends AsyncInitializationActivity
                 },
                 /*backKeyBehavior=*/this, SearchEngineLogoUtils.getInstance());
         mLocationBarCoordinator.setUrlBarFocusable(true);
+        mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
         mLocationBarCoordinator.getFakeboxDelegate().addUrlFocusChangeListener(this);
 
         // Kick off everything needed for the user to type into the box.

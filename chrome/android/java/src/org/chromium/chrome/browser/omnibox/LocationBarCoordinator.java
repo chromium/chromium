@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.content.res.Configuration;
 import android.view.ActionMode;
 import android.view.View;
@@ -41,6 +43,8 @@ import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
+import java.util.List;
+
 /**
  * The public API of the location bar component. Location bar responsibilities are:
  * <ul>
@@ -66,6 +70,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     private AutocompleteCoordinator mAutocompleteCoordinator;
     private StatusCoordinator mStatusCoordinator;
     private WindowDelegate mWindowDelegate;
+    private WindowAndroid mWindowAndroid;
     private View mAutocompleteAnchorView;
     private LocationBarMediator mLocationBarMediator;
     private View mUrlBar;
@@ -117,6 +122,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             BackKeyBehaviorDelegate backKeyBehavior, SearchEngineLogoUtils searchEngineLogoUtils) {
         mLocationBarLayout = (LocationBarLayout) locationBarLayout;
         mWindowDelegate = windowDelegate;
+        mWindowAndroid = windowAndroid;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
         mAutocompleteAnchorView = autocompleteAnchorView;
@@ -289,7 +295,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     // OmniboxSuggestionsDropdownEmbedder implementation
     @Override
     public boolean isTablet() {
-        return DeviceFormFactor.isNonMultiDisplayContextOnTablet(mLocationBarLayout.getContext());
+        return DeviceFormFactor.isWindowOnTablet(mWindowAndroid);
     }
 
     @Override
@@ -368,7 +374,7 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
     public void setOmniboxEditingText(String text) {
         mUrlCoordinator.setUrlBarData(UrlBarData.forNonUrlText(text), UrlBar.ScrollType.NO_SCROLL,
                 UrlBarCoordinator.SelectionState.SELECT_END);
-        mLocationBarMediator.updateButtonVisibility();
+        updateButtonVisibility();
     }
 
     /**
@@ -464,6 +470,84 @@ public final class LocationBarCoordinator implements LocationBar, NativeInitObse
             mStatusCoordinator.onSecurityStateChanged();
         }
     }
+
+    /**
+     * Toggles the mic button being shown when the location bar is not focused. By default the mic
+     * button is not shown.
+     */
+    public void setShouldShowMicButtonWhenUnfocused(boolean shouldShowMicButtonWhenUnfocused) {
+        mLocationBarMediator.setShouldShowMicButtonWhenUnfocusedForPhone(
+                shouldShowMicButtonWhenUnfocused);
+    }
+
+    /** Updates the visibility of the buttons inside the location bar. */
+    public void updateButtonVisibility() {
+        mLocationBarMediator.updateButtonVisibility();
+    }
+
+    // Tablet-specific methods.
+                                                       
+    /**
+     * Returns an animator to run for the given view when hiding buttons in the unfocused location 
+     * bar. This should also be used to create animators for hiding toolbar buttons.
+     *
+     * @param button The {@link View} of the button to hide.
+     */
+    public ObjectAnimator createHideButtonAnimatorForTablet(View button) {
+        assert isTablet();
+        return mLocationBarMediator.createHideButtonAnimatorForTablet(button);
+    }
+
+    /**
+     * Returns an animator to run for the given view when showing buttons in the unfocused location 
+     * bar. This should also be used to create animators for showing toolbar buttons.
+     *
+     * @param button The {@link View} of the button to show.
+     */
+    public ObjectAnimator createShowButtonAnimatorForTablet(View button) {
+        assert isTablet();
+        return mLocationBarMediator.createShowButtonAnimatorForTablet(button);
+    }
+
+    /**
+     * Creates animators for hiding buttons in the unfocused location bar. The buttons fade out
+     * while width of the location bar gets larger. There are toolbar buttons that also hide at
+     * the same time, causing the width of the location bar to change.
+     *
+     * @param toolbarStartPaddingDifference The difference in the toolbar's start padding
+     *         between the beginning and end of the animation.
+     * @return A list of animators to run.
+     */
+    public List<Animator> getHideButtonsWhenUnfocusedAnimatorsForTablet(
+            int toolbarStartPaddingDifference) {
+        assert isTablet();
+        return mLocationBarMediator.getHideButtonsWhenUnfocusedAnimatorsForTablet(
+                toolbarStartPaddingDifference);
+    }
+
+    /**
+     * Creates animators for showing buttons in the unfocused location bar. The buttons fade in
+     * while width of the location bar gets smaller. There are toolbar buttons that also show at
+     * the same time, causing the width of the location bar to change.
+     *
+     * @param toolbarStartPaddingDifference The difference in the toolbar's start padding
+     *         between the beginning and end of the animation.
+     * @return A list of animators to run.
+     */
+    public List<Animator> getShowButtonsWhenUnfocusedAnimatorsForTablet(
+            int toolbarStartPaddingDifference) {
+        assert isTablet();
+        return mLocationBarMediator.getShowButtonsWhenUnfocusedAnimatorsForTablet(
+                toolbarStartPaddingDifference);
+    }
+
+    /** Toggles whether buttons should be displayed in the URL bar when it's not focused. */
+    public void setShouldShowButtonsWhenUnfocusedForTablet(boolean shouldShowButtons) {
+        assert isTablet();
+        mLocationBarMediator.setShouldShowButtonsWhenUnfocusedForTablet(shouldShowButtons);
+    }
+
+    // End tablet-specific methods.
 
     public void setVoiceRecognitionHandlerForTesting(
             VoiceRecognitionHandler voiceRecognitionHandler) {

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.Drawable;
 import android.os.Parcelable;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
@@ -40,7 +39,6 @@ import java.util.List;
 public class LocationBarLayout extends FrameLayout {
     protected ImageButton mDeleteButton;
     protected ImageButton mMicButton;
-    private boolean mShouldShowMicButtonWhenUnfocused;
     protected UrlBar mUrlBar;
 
     protected UrlBarCoordinator mUrlCoordinator;
@@ -50,12 +48,8 @@ public class LocationBarLayout extends FrameLayout {
 
     protected StatusCoordinator mStatusCoordinator;
 
-    private boolean mUrlFocusChangeInProgress;
     protected boolean mNativeInitialized;
-    private boolean mUrlHasFocus;
-    protected boolean mVoiceSearchEnabled;
 
-    protected float mUrlFocusChangeFraction;
     protected LinearLayout mUrlActionContainer;
 
     protected CompositeTouchDelegate mCompositeTouchDelegate;
@@ -128,8 +122,6 @@ public class LocationBarLayout extends FrameLayout {
         mStatusCoordinator = statusCoordinator;
         mLocationBarDataProvider = locationBarDataProvider;
         mSearchEngineLogoUtils = searchEngineLogoUtils;
-
-        updateButtonVisibility();
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
@@ -142,8 +134,6 @@ public class LocationBarLayout extends FrameLayout {
      */
     public void onFinishNativeInitialization() {
         mNativeInitialized = true;
-
-        updateMicButtonVisibility();
     }
 
     /* package */ void setMicButtonDrawable(Drawable drawable) {
@@ -178,31 +168,10 @@ public class LocationBarLayout extends FrameLayout {
         // When we restore tabs, we focus the selected tab so the URL of the page shows.
     }
 
-    /* package */ boolean isUrlBarFocused() {
-        return mUrlHasFocus;
-    }
-
     protected void onNtpStartedLoading() {}
 
     public View getSecurityIconView() {
         return mStatusCoordinator.getSecurityIconView();
-    }
-
-    @CallSuper
-    protected void setUrlFocusChangeFraction(float fraction) {
-        mUrlFocusChangeFraction = fraction;
-    }
-
-    /* package */ float getUrlFocusChangeFraction() {
-        return mUrlFocusChangeFraction;
-    }
-
-    /**
-     * @return Whether the URL focus change is taking place, e.g. a focus animation is running on
-     *         a phone device.
-     */
-    public boolean isUrlFocusChangeInProgress() {
-        return mUrlFocusChangeInProgress;
     }
 
     /**
@@ -210,21 +179,6 @@ public class LocationBarLayout extends FrameLayout {
      * @param showIcon True if we should show the icons when the url is focused.
      */
     protected void setShowIconsWhenUrlFocused(boolean showIcon) {}
-
-    /**
-     * @param inProgress Whether a URL focus change is taking place.
-     */
-    protected void setUrlFocusChangeInProgress(boolean inProgress) {
-        mUrlFocusChangeInProgress = inProgress;
-    }
-
-    /**
-     * Triggered when the URL input field has gained or lost focus.
-     * @param hasFocus Whether the URL field has gained focus.
-     */
-    protected void setUrlHasFocus(boolean hasFocus) {
-        mUrlHasFocus = hasFocus;
-    }
 
     /**
      * @return The margin to be applied to the URL bar based on the buttons currently visible next
@@ -323,21 +277,14 @@ public class LocationBarLayout extends FrameLayout {
         return outList;
     }
 
-    /**
-     * @return Whether the delete button should be shown.
-     */
-    protected boolean shouldShowDeleteButton() {
-        // Show the delete button at the end when the bar has focus and has some text.
-        boolean hasText = mUrlCoordinator != null
-                && !TextUtils.isEmpty(mUrlCoordinator.getTextWithAutocomplete());
-        return hasText && (mUrlBar.hasFocus() || mUrlFocusChangeInProgress);
+    /** Sets the visibility of the delete URL content button. */
+    /* package */ void setDeleteButtonVisibility(boolean shouldShow) {
+        mDeleteButton.setVisibility(shouldShow ? VISIBLE : GONE);
     }
 
-    /**
-     * Updates the display of the delete URL content button.
-     */
-    protected void updateDeleteButtonVisibility() {
-        mDeleteButton.setVisibility(shouldShowDeleteButton() ? VISIBLE : GONE);
+    /** Sets the visibility of the mic button. */
+    /* package */ void setMicButtonVisibility(boolean shouldShow) {
+        mMicButton.setVisibility(shouldShow ? VISIBLE : GONE);
     }
 
     protected void setUnfocusedWidth(int unfocusedWidth) {
@@ -350,39 +297,9 @@ public class LocationBarLayout extends FrameLayout {
                 shouldShowSearchEngineLogo, isSearchEngineGoogle, searchEngineUrl);
     }
 
-    /**
-     * Call to update the visibility of the buttons inside the location bar.
-     */
-    protected void updateButtonVisibility() {
-        updateDeleteButtonVisibility();
-    }
-
-    /**
-     * Updates the display of the mic button.
-     */
-    protected void updateMicButtonVisibility() {
-        boolean visible = !shouldShowDeleteButton();
-        boolean showMicButton = mVoiceSearchEnabled && visible
-                && (mUrlBar.hasFocus() || mUrlFocusChangeInProgress || mUrlFocusChangeFraction > 0f
-                        || mShouldShowMicButtonWhenUnfocused);
-        mMicButton.setVisibility(showMicButton ? VISIBLE : GONE);
-    }
-
-    /**
-     * Value determines if mic button should be shown when location bar is not focused. By default
-     * mic button is not shown. It is only shown for SearchActivityLocationBarLayout.
-     */
-    protected void setShouldShowMicButtonWhenUnfocused(boolean shouldShowMicButtonWhenUnfocused) {
-        mShouldShowMicButtonWhenUnfocused = shouldShowMicButtonWhenUnfocused;
-    }
-
     @VisibleForTesting
     public StatusCoordinator getStatusCoordinatorForTesting() {
         return mStatusCoordinator;
-    }
-
-    /* package */ void setVoiceSearchEnabled(boolean isEnabled) {
-        mVoiceSearchEnabled = isEnabled;
     }
 
     /** Update the status visibility according to the current state held in LocationBar. */

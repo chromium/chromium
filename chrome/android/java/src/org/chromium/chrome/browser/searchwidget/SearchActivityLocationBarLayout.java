@@ -37,8 +37,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     public SearchActivityLocationBarLayout(Context context, AttributeSet attrs) {
         super(context, attrs, R.layout.location_bar_base);
         setBackground(ToolbarPhone.createModernLocationBarBackground(getResources()));
-        setShouldShowMicButtonWhenUnfocused(true);
-
     }
 
     @Override
@@ -51,6 +49,7 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         mPendingSearchPromoDecision = LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         getAutocompleteCoordinator().setShouldPreventOmniboxAutocomplete(
                 mPendingSearchPromoDecision);
+        findViewById(R.id.url_action_container).setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -120,13 +119,6 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
         } else {
             focusTextBox();
         }
-    }
-
-    @Override
-    protected void updateButtonVisibility() {
-        super.updateButtonVisibility();
-        updateMicButtonVisibility();
-        findViewById(R.id.url_action_container).setVisibility(View.VISIBLE);
     }
 
     // TODO(tedchoc): Investigate focusing regardless of the search promo state and just ensure
