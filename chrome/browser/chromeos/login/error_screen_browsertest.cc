@@ -327,7 +327,7 @@ class KioskErrorScreenTest : public MixinBasedInProcessBrowserTest {
 };
 
 // Verify that certificate manager dialog opens.
-IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest, OpenCertificateConfig) {
+IN_PROC_BROWSER_TEST_F(KioskErrorScreenTest, DISABLE_OpenCertificateConfig) {
   while (!ash::LoginScreenTestApi::IsAppsButtonShown()) {
     int ui_update_count = ash::LoginScreenTestApi::GetUiUpdateCount();
     ash::LoginScreenTestApi::WaitForUiUpdate(ui_update_count);
