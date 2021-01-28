@@ -121,10 +121,13 @@ void ProfilePickerViewSyncDelegate::ShowEnterpriseAccountConfirmation(
   DiceTurnSyncOnHelper::SigninChoiceCallback wrapped_callback = base::BindOnce(
       &MaybeRecordEnterpriseRejectionAndRunCallback, std::move(callback));
   // Open the browser and when it's done, show the confirmation dialog.
+  // We have a guarantee that the profile is brand new, no need to prompt for
+  // another profile.
   std::move(open_browser_callback_)
       .Run(base::BindOnce(&DiceTurnSyncOnHelper::Delegate::
                               ShowEnterpriseAccountConfirmationForBrowser,
-                          email, std::move(wrapped_callback)),
+                          email, /*prompt_for_new_profile=*/false,
+                          std::move(wrapped_callback)),
            /*enterprise_sync_consent_needed=*/true);
 }
 

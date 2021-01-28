@@ -60,12 +60,12 @@ bool TabDialogsViews::IsShowingHungRendererDialog() {
 
 void TabDialogsViews::ShowProfileSigninConfirmation(
     Browser* browser,
-    Profile* profile,
     const std::string& username,
+    bool prompt_for_new_profile,
     std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  ProfileSigninConfirmationDialogViews::ShowDialog(browser, profile, username,
-                                                   std::move(delegate));
+  ProfileSigninConfirmationDialogViews::Show(
+      browser, username, std::move(delegate), prompt_for_new_profile);
 #else
   NOTREACHED();
 #endif

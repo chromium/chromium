@@ -119,26 +119,12 @@ void ProfileSigninConfirmationDialogViews::Show(
     Browser* browser,
     const std::string& username,
     std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate,
-    bool prompt) {
+    bool prompt_for_new_profile) {
   auto dialog = std::make_unique<ProfileSigninConfirmationDialogViews>(
-      browser, username, std::move(delegate), prompt);
+      browser, username, std::move(delegate), prompt_for_new_profile);
   constrained_window::CreateBrowserModalDialogViews(
       dialog.release(), browser->window()->GetNativeWindow())
       ->Show();
-}
-
-// static
-void ProfileSigninConfirmationDialogViews::ShowDialog(
-    Browser* browser,
-    Profile* profile,
-    const std::string& username,
-    std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate) {
-  // Checking whether to show the prompt is sometimes asynchronous. Defer
-  // constructing the dialog (in ::Show) until that check completes.
-  ui::CheckShouldPromptForNewProfile(
-      profile,
-      base::BindOnce(&ProfileSigninConfirmationDialogViews::Show,
-                     base::Unretained(browser), username, std::move(delegate)));
 }
 
 ui::ModalType ProfileSigninConfirmationDialogViews::GetModalType() const {

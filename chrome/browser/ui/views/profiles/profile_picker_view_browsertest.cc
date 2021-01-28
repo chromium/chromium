@@ -193,8 +193,8 @@ class TestTabDialogs : public TabDialogs {
 
   void ShowProfileSigninConfirmation(
       Browser* browser,
-      Profile* profile,
       const std::string& username,
+      bool prompt_for_new_profile,
       std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate)
       override {
     delegate->OnContinueSignin();

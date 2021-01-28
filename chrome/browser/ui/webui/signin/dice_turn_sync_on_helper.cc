@@ -173,6 +173,7 @@ void DiceTurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser(
 void DiceTurnSyncOnHelper::Delegate::
     ShowEnterpriseAccountConfirmationForBrowser(
         const std::string& email,
+        bool prompt_for_new_profile,
         DiceTurnSyncOnHelper::SigninChoiceCallback callback,
         Browser* browser) {
   DCHECK(callback);
@@ -187,7 +188,7 @@ void DiceTurnSyncOnHelper::Delegate::
       base::UserMetricsAction("Signin_Show_EnterpriseAccountPrompt"));
   TabDialogs::FromWebContents(web_contents)
       ->ShowProfileSigninConfirmation(
-          browser, browser->profile(), email,
+          browser, email, prompt_for_new_profile,
           std::make_unique<SigninDialogDelegate>(std::move(callback)));
 }
 
