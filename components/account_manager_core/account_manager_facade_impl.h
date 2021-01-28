@@ -38,6 +38,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
   bool IsInitialized() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  void GetAccounts(
+      base::OnceCallback<void(const std::vector<account_manager::Account>&)>
+          callback) override;
   void ShowAddAccountDialog(
       const AccountAdditionSource& source,
       base::OnceCallback<void(const AccountAdditionResult& result)> callback)
@@ -54,13 +57,36 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
       mojo::PendingReceiver<AccountManagerObserver> receiver);
   void OnInitialized(bool is_initialized);
 
+  void GetAccountsInternal(
+      base::OnceCallback<void(const std::vector<account_manager::Account>&)>
+          callback);
+
   // Mojo API version on the remote (Ash) side.
   const uint32_t remote_version_;
+
+  // The initialization sequence for |AccountManagerFacadeImpl| consists of:
+  // 1. Adding an observer to the remote.
+  // 2. Querying the remote initialization status.
+  //
+  // Remote-querying methods like |GetAccounts| won't actually produce a remote
+  // call until the initialization sequence is finished (instead, they will be
+  // queued in |initialization_callbacks_|).
+  //
+  // |FinishInitSequenceIfNotAlreadyFinished| invokes callbacks from
+  // |initialization_callbacks_| and marks the initialization as finished.
+  void FinishInitSequenceIfNotAlreadyFinished();
+  // |closure| will be invoked after the initialization sequence is finished.
+  // See |FinishInitSequenceIfNotAlreadyFinished| for details.
+  void RunAfterInitializationSequence(base::OnceClosure closure);
+
+  bool is_remote_initialized_ = false;
+  bool is_initialization_sequence_finished_ = false;
+  std::vector<base::OnceClosure> initialization_callbacks_;
+
   mojo::Remote<crosapi::mojom::AccountManager> account_manager_remote_;
-  base::OnceClosure init_finished_;
-  bool is_initialized_ = false;
   std::unique_ptr<mojo::Receiver<crosapi::mojom::AccountManagerObserver>>
       receiver_;
+
   base::ObserverList<Observer> observer_list_;
 
   base::WeakPtrFactory<AccountManagerFacadeImpl> weak_factory_{this};

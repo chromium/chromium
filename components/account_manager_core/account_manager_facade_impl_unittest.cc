@@ -6,7 +6,9 @@
 
 #include <limits>
 
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
@@ -42,6 +44,14 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     observers_.Add(std::move(observer));
   }
 
+  void GetAccounts(GetAccountsCallback callback) override {
+    std::vector<crosapi::mojom::AccountPtr> mojo_accounts;
+    std::transform(std::begin(accounts_), std::end(accounts_),
+                   std::back_inserter(mojo_accounts),
+                   &account_manager::ToMojoAccount);
+    std::move(callback).Run(std::move(mojo_accounts));
+  }
+
   mojo::Remote<crosapi::mojom::AccountManager> CreateRemote() {
     mojo::Remote<crosapi::mojom::AccountManager> remote;
     receivers_.Add(this, remote.BindNewPipeAndPassReceiver());
@@ -61,8 +71,13 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     }
   }
 
+  void SetAccounts(const std::vector<account_manager::Account>& accounts) {
+    accounts_ = accounts;
+  }
+
  private:
   bool is_initialized_{false};
+  std::vector<account_manager::Account> accounts_;
   mojo::ReceiverSet<crosapi::mojom::AccountManager> receivers_;
   mojo::RemoteSet<crosapi::mojom::AccountManagerObserver> observers_;
 };
@@ -84,7 +99,21 @@ class MockObserver : public account_manager::AccountManagerFacade::Observer {
               (override));
 };
 
+MATCHER_P(AccountEq, expected_account, "") {
+  return testing::ExplainMatchResult(
+             testing::Field(&account_manager::Account::key,
+                            testing::Eq(expected_account.key)),
+             arg, result_listener) &&
+         testing::ExplainMatchResult(
+             testing::Field(&account_manager::Account::raw_email,
+                            testing::StrEq(expected_account.raw_email)),
+             arg, result_listener);
+}
+
+using base::MockOnceCallback;
+
 constexpr char kTestAccountEmail[] = "test@gmail.com";
+constexpr char kAnotherTestAccountEmail[] = "another_test@gmail.com";
 
 }  // namespace
 
@@ -175,5 +204,71 @@ TEST_F(AccountManagerFacadeImplTest, OnAccountRemovedIsPropagatedToObservers) {
   EXPECT_CALL(observer, OnAccountRemoved(account.key))
       .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
   account_manager().NotifyOnAccountRemovedObservers(account);
+  run_loop.Run();
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       GetAccountsReturnsEmptyListOfAccountsWhenAccountManagerAshIsEmpty) {
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  account_manager().SetAccounts({});
+
+  MockOnceCallback<void(const std::vector<account_manager::Account>&)> callback;
+  base::RunLoop run_loop;
+  EXPECT_CALL(callback, Run(testing::IsEmpty()))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  account_manager_facade->GetAccounts(callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(AccountManagerFacadeImplTest, GetAccountsCorrectlyMarshalsTwoAccounts) {
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  account_manager::Account account1 =
+      account_manager::CreateTestGaiaAccount(kTestAccountEmail);
+  account_manager::Account account2 =
+      account_manager::CreateTestGaiaAccount(kAnotherTestAccountEmail);
+  account_manager().SetAccounts({account1, account2});
+
+  MockOnceCallback<void(const std::vector<account_manager::Account>&)> callback;
+  base::RunLoop run_loop;
+  EXPECT_CALL(callback, Run(testing::ElementsAre(AccountEq(account1),
+                                                 AccountEq(account2))))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  account_manager_facade->GetAccounts(callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       GetAccountsIsSafeToCallBeforeAccountManagerFacadeIsNotInitialized) {
+  account_manager::Account account =
+      account_manager::CreateTestGaiaAccount(kTestAccountEmail);
+  account_manager().SetAccounts({account});
+
+  // |CreateFacade| waits for the AccountManagerFacadeImpl's initialization
+  // sequence to be finished. To avoid this, create it directly here.
+  auto account_manager_facade = std::make_unique<AccountManagerFacadeImpl>(
+      account_manager().CreateRemote(),
+      /* remote_version= */ std::numeric_limits<uint32_t>::max());
+
+  MockOnceCallback<void(const std::vector<account_manager::Account>&)> callback;
+  base::RunLoop run_loop;
+  EXPECT_CALL(callback, Run(testing::ElementsAre(AccountEq(account))))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  account_manager_facade->GetAccounts(callback.Get());
+  run_loop.Run();
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       GetAccountsReturnsEmptyListOfAccountsWhenRemoteIsNull) {
+  auto account_manager_facade = std::make_unique<AccountManagerFacadeImpl>(
+      mojo::Remote<crosapi::mojom::AccountManager>(),
+      /* remote_version= */ std::numeric_limits<uint32_t>::max());
+
+  MockOnceCallback<void(const std::vector<account_manager::Account>&)> callback;
+  base::RunLoop run_loop;
+  EXPECT_CALL(callback, Run(testing::IsEmpty()))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+  account_manager_facade->GetAccounts(callback.Get());
   run_loop.Run();
 }

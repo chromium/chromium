@@ -12,6 +12,19 @@
 #include "components/account_manager_core/account_manager_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
+namespace {
+
+void MarshalAccounts(
+    crosapi::mojom::AccountManager::GetAccountsCallback callback,
+    const std::vector<account_manager::Account>& accounts_to_marshal) {
+  std::vector<crosapi::mojom::AccountPtr> mojo_accounts;
+  for (const account_manager::Account& account : accounts_to_marshal) {
+    mojo_accounts.emplace_back(account_manager::ToMojoAccount(account));
+  }
+}
+
+}  // namespace
+
 namespace crosapi {
 
 AccountManagerAsh::AccountManagerAsh(chromeos::AccountManager* account_manager)
@@ -38,6 +51,12 @@ void AccountManagerAsh::AddObserver(AddObserverCallback callback) {
   auto receiver = remote.BindNewPipeAndPassReceiver();
   observers_.Add(std::move(remote));
   std::move(callback).Run(std::move(receiver));
+}
+
+void AccountManagerAsh::GetAccounts(
+    mojom::AccountManager::GetAccountsCallback callback) {
+  account_manager_->GetAccounts(
+      base::BindOnce(&MarshalAccounts, std::move(callback)));
 }
 
 void AccountManagerAsh::OnTokenUpserted(

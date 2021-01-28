@@ -103,6 +103,11 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacade {
   // Unregisters an observer that was registered using AddObserver.
   virtual void RemoveObserver(Observer* observer) = 0;
 
+  // Gets the list of accounts in Account Manager. If the remote side doesn't
+  // support this call, an empty list of accounts will be returned.
+  virtual void GetAccounts(
+      base::OnceCallback<void(const std::vector<Account>&)> callback) = 0;
+
   // Launches account addition dialog and calls the `callback` with the result.
   // If `result` is `kSuccess`, the added account will be passed to the
   // callback. Otherwise `account` will be set to `base::nullopt`.

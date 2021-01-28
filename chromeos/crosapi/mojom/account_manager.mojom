@@ -105,8 +105,8 @@ interface AccountManagerObserver {
 // ARC++ uses components/arc/mojom/auth.mojom to talk to the Chrome OS Account
 // Manager.
 //
-// Next version: 2
-// Next method id: 2
+// Next version: 3
+// Next method id: 3
 [Stable, Uuid="85b9a674-9d8e-497f-98d5-22c8dca6f2b8"]
 interface AccountManager {
   // Returns |true| if Chrome OS Account Manager has been fully initialized, and
@@ -121,4 +121,10 @@ interface AccountManager {
   // is destroyed. This will happen automatically when lacros is shut down.
   [MinVersion = 1]
   AddObserver@1() => (pending_receiver<AccountManagerObserver> receiver);
+
+  // Returns the list of accounts in AccountManager. Can be invoked before the
+  // initialization is completed (in this case the callback will be invoked
+  // after the initialization is done).
+  [MinVersion = 2]
+  GetAccounts@2() => (array<Account> accounts);
 };

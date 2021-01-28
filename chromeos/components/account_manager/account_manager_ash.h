@@ -32,6 +32,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerAsh
   // crosapi::mojom::AccountManager:
   void IsInitialized(IsInitializedCallback callback) override;
   void AddObserver(AddObserverCallback callback) override;
+  void GetAccounts(GetAccountsCallback callback) override;
 
   // chromeos::AccountManager::Observer:
   void OnTokenUpserted(const account_manager::Account& account) override;

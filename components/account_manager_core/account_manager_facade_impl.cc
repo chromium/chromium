@@ -14,8 +14,26 @@
 namespace {
 
 // Interface versions in //chromeos/crosapi/mojom/account_manager.mojom:
-// MinVersion of crosapi::mojom::AccountManager::AddObserver
-constexpr uint32_t kMinVersionWithObserver = 1;
+// MinVersion of crosapi::mojom::AccountManager::GetAccounts
+constexpr uint32_t kMinVersionWithGetAccounts = 2;
+
+void UnmarshalAccounts(
+    base::OnceCallback<void(const std::vector<account_manager::Account>&)>
+        callback,
+    std::vector<crosapi::mojom::AccountPtr> mojo_accounts) {
+  std::vector<account_manager::Account> accounts;
+  for (const auto& mojo_account : mojo_accounts) {
+    base::Optional<account_manager::Account> maybe_account =
+        account_manager::FromMojoAccount(mojo_account);
+    if (!maybe_account) {
+      // Skip accounts we couldn't unmarshal. No logging, as it would produce
+      // a lot of noise.
+      continue;
+    }
+    accounts.emplace_back(std::move(maybe_account.value()));
+  }
+  std::move(callback).Run(std::move(accounts));
+}
 
 }  // namespace
 
@@ -24,15 +42,16 @@ AccountManagerFacadeImpl::AccountManagerFacadeImpl(
     uint32_t remote_version,
     base::OnceClosure init_finished)
     : remote_version_(remote_version),
-      account_manager_remote_(std::move(account_manager_remote)),
-      init_finished_(std::move(init_finished)) {
-  DCHECK(init_finished_);
+      account_manager_remote_(std::move(account_manager_remote)) {
+  DCHECK(init_finished);
+  initialization_callbacks_.emplace_back(std::move(init_finished));
 
-  if (!account_manager_remote_ || remote_version_ < kMinVersionWithObserver) {
+  if (!account_manager_remote_ ||
+      remote_version_ < kMinVersionWithGetAccounts) {
     LOG(WARNING) << "Found remote at: " << remote_version_
-                 << ", expected: " << kMinVersionWithObserver
+                 << ", expected: " << kMinVersionWithGetAccounts
                  << ". Account consistency will be disabled";
-    std::move(init_finished_).Run();
+    FinishInitSequenceIfNotAlreadyFinished();
     return;
   }
   account_manager_remote_->AddObserver(
@@ -43,7 +62,7 @@ AccountManagerFacadeImpl::AccountManagerFacadeImpl(
 AccountManagerFacadeImpl::~AccountManagerFacadeImpl() = default;
 
 bool AccountManagerFacadeImpl::IsInitialized() {
-  return is_initialized_;
+  return is_remote_initialized_;
 }
 
 void AccountManagerFacadeImpl::AddObserver(Observer* observer) {
@@ -52,6 +71,20 @@ void AccountManagerFacadeImpl::AddObserver(Observer* observer) {
 
 void AccountManagerFacadeImpl::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
+}
+
+void AccountManagerFacadeImpl::GetAccounts(
+    base::OnceCallback<void(const std::vector<account_manager::Account>&)>
+        callback) {
+  if (!account_manager_remote_ ||
+      remote_version_ < kMinVersionWithGetAccounts) {
+    // Remote side doesn't support GetAccounts, return an empty list.
+    std::move(callback).Run({});
+    return;
+  }
+  RunAfterInitializationSequence(
+      base::BindOnce(&AccountManagerFacadeImpl::GetAccountsInternal,
+                     weak_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void AccountManagerFacadeImpl::ShowAddAccountDialog(
@@ -66,7 +99,6 @@ void AccountManagerFacadeImpl::ShowReauthAccountDialog(
   // TODO(crbug.com/1140469): implement this.
 }
 
-
 void AccountManagerFacadeImpl::OnReceiverReceived(
     mojo::PendingReceiver<AccountManagerObserver> receiver) {
   receiver_ =
@@ -77,16 +109,21 @@ void AccountManagerFacadeImpl::OnReceiverReceived(
   account_manager_remote_->IsInitialized(base::BindOnce(
       &AccountManagerFacadeImpl::OnInitialized, weak_factory_.GetWeakPtr()));
 }
+
 void AccountManagerFacadeImpl::OnInitialized(bool is_initialized) {
   if (is_initialized)
-    is_initialized_ = true;
+    is_remote_initialized_ = true;
   // else: We will receive a notification in |OnTokenUpserted|.
-  std::move(init_finished_).Run();
+  FinishInitSequenceIfNotAlreadyFinished();
 }
 
 void AccountManagerFacadeImpl::OnTokenUpserted(
     crosapi::mojom::AccountPtr account) {
-  is_initialized_ = true;
+  is_remote_initialized_ = true;
+  // |OnTokenUpserted| may be invoked before |OnInitialized|. Invoking
+  // initialization sequence callbacks before observers makes sure observers
+  // aren't confused by the call order.
+  FinishInitSequenceIfNotAlreadyFinished();
 
   base::Optional<account_manager::Account> maybe_account =
       account_manager::FromMojoAccount(account);
@@ -111,5 +148,31 @@ void AccountManagerFacadeImpl::OnAccountRemoved(
   }
   for (auto& observer : observer_list_) {
     observer.OnAccountRemoved(maybe_account->key);
+  }
+}
+
+void AccountManagerFacadeImpl::GetAccountsInternal(
+    base::OnceCallback<void(const std::vector<account_manager::Account>&)>
+        callback) {
+  account_manager_remote_->GetAccounts(
+      base::BindOnce(&UnmarshalAccounts, std::move(callback)));
+}
+
+void AccountManagerFacadeImpl::FinishInitSequenceIfNotAlreadyFinished() {
+  if (is_initialization_sequence_finished_)
+    return;
+  is_initialization_sequence_finished_ = true;
+  for (auto& cb : initialization_callbacks_) {
+    std::move(cb).Run();
+  }
+  initialization_callbacks_.clear();
+}
+
+void AccountManagerFacadeImpl::RunAfterInitializationSequence(
+    base::OnceClosure closure) {
+  if (!is_initialization_sequence_finished_) {
+    initialization_callbacks_.emplace_back(std::move(closure));
+  } else {
+    std::move(closure).Run();
   }
 }
