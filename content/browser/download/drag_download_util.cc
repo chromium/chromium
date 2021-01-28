@@ -46,11 +46,7 @@ bool ParseDownloadMetadata(const base::string16& metadata,
   if (file_name) {
     base::string16 file_name_str = metadata.substr(
         mime_type_end_pos + 1, file_name_end_pos - mime_type_end_pos  - 1);
-#if defined(OS_WIN)
-    *file_name = base::FilePath(file_name_str);
-#else
-    *file_name = base::FilePath(base::UTF16ToUTF8(file_name_str));
-#endif
+    *file_name = base::FilePath::FromUTF16Unsafe(file_name_str);
   }
   if (url)
     *url = parsed_url;
@@ -68,10 +64,9 @@ base::File CreateFileForDrop(base::FilePath* file_path) {
       new_file_path = *file_path;
     } else {
 #if defined(OS_WIN)
-      base::string16 suffix =
-          base::ASCIIToUTF16("-") + base::NumberToString16(seq);
+      std::wstring suffix = L"-" + base::NumberToWString(seq);
 #else
-      std::string suffix = std::string("-") + base::NumberToString(seq);
+      std::string suffix = "-" + base::NumberToString(seq);
 #endif
       new_file_path = file_path->InsertBeforeExtension(suffix);
     }

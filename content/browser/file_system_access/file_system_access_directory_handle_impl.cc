@@ -260,7 +260,7 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
   std::vector<std::string> result;
   result.reserve(components.size());
   for (const auto& component : components) {
-    result.push_back(base::UTF16ToUTF8(component));
+    result.push_back(base::WideToUTF8(component));
   }
   std::move(callback).Run(file_system_access_error::Ok(), std::move(result));
 #else

@@ -511,7 +511,7 @@ Response BrowserHandler::GetBrowserCommandLine(
   if (command_line->HasSwitch(switches::kEnableAutomation)) {
     for (const auto& arg : command_line->argv()) {
 #if defined(OS_WIN)
-      (*arguments)->emplace_back(base::UTF16ToUTF8(arg));
+      (*arguments)->emplace_back(base::WideToUTF8(arg));
 #else
       (*arguments)->emplace_back(arg);
 #endif

@@ -434,7 +434,7 @@ class GpuSandboxedProcessLauncherDelegate
     policy->AddDllToUnload(L"cmsetac.dll");
 
     if (cmd_line_.HasSwitch(switches::kEnableLogging)) {
-      base::string16 log_file_path = logging::GetLogFileFullPath();
+      std::wstring log_file_path = logging::GetLogFileFullPath();
       if (!log_file_path.empty()) {
         sandbox::ResultCode result = policy->AddRule(
             sandbox::TargetPolicy::SUBSYS_FILES,
@@ -481,7 +481,7 @@ class GpuSandboxedProcessLauncherDelegate
     if (UseOpenGLRenderer())
       return true;
 
-    return base::win::IsRunningUnderDesktopName(STRING16_LITERAL("winlogon"));
+    return base::win::IsRunningUnderDesktopName(L"winlogon");
   }
 
   bool enable_appcontainer_;

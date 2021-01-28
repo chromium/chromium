@@ -10,12 +10,13 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/strings/string_util.h"
 
 namespace content {
 
 void AddFamily(const base::FilePath& font_path,
-               const base::string16& family_name,
-               const base::string16& base_family_name,
+               const std::wstring& family_name,
+               const std::wstring& base_family_name,
                FakeFontCollection* collection) {
   collection->AddFont(family_name)
       .AddFamilyName(L"en-us", family_name)
@@ -80,7 +81,8 @@ void FakeFontCollection::FindFamily(const base::string16& family_name,
                                     FindFamilyCallback callback) {
   message_types_.push_back(MessageType::kFindFamily);
   for (size_t n = 0; n < fonts_.size(); n++) {
-    if (_wcsicmp(family_name.data(), fonts_[n].font_name_.data()) == 0) {
+    if (base::EqualsCaseInsensitiveASCII(family_name.data(),
+                                         fonts_[n].font_name_.data())) {
       std::move(callback).Run(n);
       return;
     }

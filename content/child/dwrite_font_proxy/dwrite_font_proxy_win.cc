@@ -46,7 +46,7 @@ const wchar_t* kLastResortFontNames[] = {
     L"Sans",     L"Arial",   L"MS UI Gothic",    L"Microsoft Sans Serif",
     L"Segoe UI", L"Calibri", L"Times New Roman", L"Courier New"};
 
-bool IsLastResortFontName(const base::string16& font_name) {
+bool IsLastResortFontName(const std::wstring& font_name) {
   for (const wchar_t* last_resort_font_name : kLastResortFontNames) {
     if (font_name == last_resort_font_name)
       return true;
@@ -127,7 +127,7 @@ HRESULT DWriteFontCollectionProxy::FindFamilyName(const WCHAR* family_name,
   DCHECK(exists);
   TRACE_EVENT0("dwrite,fonts", "FontProxy::FindFamilyName");
 
-  base::string16 name(family_name);
+  std::wstring name(family_name);
 
   auto iter = family_names_.find(name);
   if (iter != family_names_.end()) {
@@ -347,7 +347,7 @@ bool DWriteFontCollectionProxy::GetFontFamily(UINT32 family_index,
 
   mswr::ComPtr<DWriteFontFamilyProxy>& family = families_[family_index];
   if (!family->IsLoaded() || family->GetName().empty())
-    family->SetName(family_name);
+    family->SetName(base::UTF16ToWide(family_name));
 
   family.CopyTo(font_family);
   return true;
@@ -522,11 +522,11 @@ bool DWriteFontFamilyProxy::GetFontFromFontFace(IDWriteFontFace* font_face,
   return SUCCEEDED(hr);
 }
 
-void DWriteFontFamilyProxy::SetName(const base::string16& family_name) {
+void DWriteFontFamilyProxy::SetName(const std::wstring& family_name) {
   family_name_.assign(family_name);
 }
 
-const base::string16& DWriteFontFamilyProxy::GetName() {
+const std::wstring& DWriteFontFamilyProxy::GetName() {
   return family_name_;
 }
 

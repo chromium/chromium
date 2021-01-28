@@ -923,10 +923,10 @@ void ApplyFilePathAlias(blink::WebURLRequest* request) {
   }
 
 #if defined(OS_WIN)
-  base::string16 path = request->Url().GetString().Utf16();
-  const base::string16 file_prefix =
-      base::ASCIIToUTF16(url::kFileScheme) +
-      base::ASCIIToUTF16(url::kStandardSchemeSeparator);
+  std::wstring path = base::UTF16ToWide(request->Url().GetString().Utf16());
+  const std::wstring file_prefix =
+      base::ASCIIToWide(url::kFileScheme) +
+      base::ASCIIToWide(url::kStandardSchemeSeparator);
 #else
   std::string path = request->Url().GetString().Utf8();
   const std::string file_prefix =

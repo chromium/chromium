@@ -258,12 +258,7 @@ class FileURLDirectoryLoader
     if (!wrote_header_) {
       wrote_header_ = true;
 
-#if defined(OS_WIN)
-      const base::string16& title = path_.value();
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-      const base::string16& title =
-          base::WideToUTF16(base::SysNativeMBToWide(path_.value()));
-#endif
+      const base::string16& title = path_.AsUTF16Unsafe();
       pending_data_.append(net::GetDirectoryListingHeader(title));
 
       // If not a top-level directory, add a link to the parent directory. To

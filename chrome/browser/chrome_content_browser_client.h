@@ -406,7 +406,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool PreSpawnChild(sandbox::TargetPolicy* policy,
                      sandbox::policy::SandboxType sandbox_type,
                      ChildSpawnFlags flags) override;
-  base::string16 GetAppContainerSidForSandboxType(
+  std::wstring GetAppContainerSidForSandboxType(
       sandbox::policy::SandboxType sandbox_type) override;
   bool IsRendererCodeIntegrityEnabled() override;
 #endif

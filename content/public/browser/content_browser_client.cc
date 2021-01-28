@@ -714,12 +714,12 @@ bool ContentBrowserClient::PreSpawnChild(
   return true;
 }
 
-base::string16 ContentBrowserClient::GetAppContainerSidForSandboxType(
+std::wstring ContentBrowserClient::GetAppContainerSidForSandboxType(
     sandbox::policy::SandboxType sandbox_type) {
   // Embedders should override this method and return different SIDs for each
   // sandbox type. Note: All content level tests will run child processes in the
   // same AppContainer.
-  return base::string16(
+  return std::wstring(
       L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"
       L"924012148-129201922");
 }

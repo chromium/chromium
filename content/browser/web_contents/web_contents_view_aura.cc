@@ -190,12 +190,9 @@ void PrepareDragForDownload(const DropData& drop_data,
   std::string default_name =
       GetContentClient()->browser()->GetDefaultDownloadName();
   base::FilePath generated_download_file_name =
-      net::GenerateFileName(download_url,
-                            std::string(),
-                            std::string(),
-                            base::UTF16ToUTF8(file_name.value()),
-                            base::UTF16ToUTF8(mime_type),
-                            default_name);
+      net::GenerateFileName(download_url, std::string(), std::string(),
+                            base::WideToUTF8(file_name.value()),
+                            base::UTF16ToUTF8(mime_type), default_name);
 
   // http://crbug.com/332579
   base::ThreadRestrictions::ScopedAllowIO allow_file_operations;

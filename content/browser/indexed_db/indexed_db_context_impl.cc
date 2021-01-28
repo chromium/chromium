@@ -328,7 +328,7 @@ void IndexedDBContextImpl::GetAllOriginsDetails(
     auto paths = std::make_unique<base::ListValue>();
     if (!is_incognito()) {
       for (const base::FilePath& path : GetStoragePaths(origin))
-        paths->AppendString(path.value());
+        paths->AppendString(path.AsUTF8Unsafe());
     } else {
       paths->AppendString("N/A");
     }

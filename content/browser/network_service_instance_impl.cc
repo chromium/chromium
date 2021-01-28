@@ -370,7 +370,7 @@ network::mojom::NetworkService* GetNetworkService() {
 #if defined(OS_WIN)
           // base::Environment returns environment variables in UTF-8 on
           // Windows.
-          ssl_key_log_path = base::FilePath(base::UTF8ToUTF16(env_str));
+          ssl_key_log_path = base::FilePath(base::UTF8ToWide(env_str));
 #else
           ssl_key_log_path = base::FilePath(env_str);
 #endif

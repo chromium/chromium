@@ -3773,7 +3773,7 @@ void ChromeContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
 #endif  // defined(OS_POSIX) && !defined(OS_MAC)
 
 #if defined(OS_WIN)
-base::string16 ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
+std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
     sandbox::policy::SandboxType sandbox_type) {
   // TODO(wfh): Add support for more process types here. crbug.com/499523
   switch (sandbox_type) {
@@ -3803,7 +3803,7 @@ base::string16 ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
     case sandbox::policy::SandboxType::kMediaFoundationCdm:
       // Should never reach here.
       CHECK(0);
-      return base::string16();
+      return std::wstring();
   }
 }
 

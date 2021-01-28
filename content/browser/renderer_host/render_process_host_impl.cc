@@ -411,7 +411,7 @@ class RendererSandboxedProcessLauncherDelegate
   bool PreSpawnTarget(sandbox::TargetPolicy* policy) override {
     sandbox::policy::SandboxWin::AddBaseHandleClosePolicy(policy);
 
-    const base::string16& sid =
+    const std::wstring& sid =
         GetContentClient()->browser()->GetAppContainerSidForSandboxType(
             GetSandboxType());
     if (!sid.empty())

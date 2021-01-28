@@ -19,7 +19,7 @@
 
 namespace content {
 namespace {
-typedef std::vector<base::string16> FontNameVector;
+typedef std::vector<std::wstring> FontNameVector;
 typedef std::map<FontCacheDispatcher*, FontNameVector> DispatcherToFontNames;
 
 class FontCache {
@@ -43,7 +43,7 @@ class FontCache {
     BOOL ret = GetTextMetrics(hdc, &tm);
     DCHECK(ret);
 
-    base::string16 font_name = font.lfFaceName;
+    std::wstring font_name = font.lfFaceName;
     bool inc_ref_count = true;
     if (!base::Contains(dispatcher_font_map_[dispatcher], font_name)) {
       // Requested font is new to cache.
@@ -69,7 +69,7 @@ class FontCache {
   }
 
   void ReleaseCachedFonts(FontCacheDispatcher* dispatcher) {
-    typedef std::map<base::string16, FontCache::CacheElement> FontNameToElement;
+    typedef std::map<std::wstring, FontCache::CacheElement> FontNameToElement;
 
     base::AutoLock lock(mutex_);
 
@@ -126,7 +126,7 @@ class FontCache {
   FontCache() {
   }
 
-  std::map<base::string16, CacheElement> cache_ GUARDED_BY(mutex_);
+  std::map<std::wstring, CacheElement> cache_ GUARDED_BY(mutex_);
   DispatcherToFontNames dispatcher_font_map_ GUARDED_BY(mutex_);
   base::Lock mutex_;
 

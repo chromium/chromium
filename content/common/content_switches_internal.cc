@@ -40,12 +40,12 @@ namespace {
 
 #if defined(OS_WIN)
 
-base::string16 ToNativeString(base::StringPiece string) {
-  return base::ASCIIToUTF16(string);
+std::wstring ToNativeString(base::StringPiece string) {
+  return base::ASCIIToWide(string);
 }
 
-std::string FromNativeString(base::StringPiece16 string) {
-  return base::UTF16ToASCII(string);
+std::string FromNativeString(base::WStringPiece string) {
+  return base::WideToASCII(string);
 }
 
 #else  // defined(OS_WIN)

@@ -7,11 +7,11 @@
 
 #include <dwrite.h>
 #include <wrl.h>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace content {
 
@@ -41,14 +41,14 @@ class DWriteLocalizedStrings
                                             UINT32* length) override;
 
   HRESULT STDMETHODCALLTYPE RuntimeClassInitialize(
-      std::vector<std::pair<base::string16, base::string16>>* strings);
+      std::vector<std::pair<std::wstring, std::wstring>>* strings);
 
  private:
   // List of strings. First element of each pair is the locale, and the second
   // element is the associated value. Use a vector because the expected number
   // of pairs is small (typically 1-2, rarely up to a few dozen?) and we need
   // index-based access.
-  std::vector<std::pair<base::string16, base::string16>> strings_;
+  std::vector<std::pair<std::wstring, std::wstring>> strings_;
 
   DISALLOW_ASSIGN(DWriteLocalizedStrings);
 };

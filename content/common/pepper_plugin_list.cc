@@ -81,14 +81,7 @@ void ComputePluginsFromCommandLine(std::vector<PepperPluginInfo>* plugins) {
 
     PepperPluginInfo plugin;
     plugin.is_out_of_process = out_of_process;
-#if defined(OS_WIN)
-    // This means we can't provide plugins from non-ASCII paths, but
-    // since this switch is only for development I don't think that's
-    // too awful.
-    plugin.path = base::FilePath(base::ASCIIToUTF16(name_parts[0]));
-#else
-    plugin.path = base::FilePath(name_parts[0]);
-#endif
+    plugin.path = base::FilePath::FromUTF8Unsafe(name_parts[0]);
 
     uint64_t index_mask = 1ULL << i;
     if (!(skip_file_check_flags & index_mask)) {

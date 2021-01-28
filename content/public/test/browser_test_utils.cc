@@ -2190,8 +2190,8 @@ void UiaGetPropertyValueVtArrayVtUnknownValidate(
     ASSERT_HRESULT_SUCCEEDED(raw_element_provider_simple->GetPropertyValue(
         UIA_NamePropertyId, name.Receive()));
     ASSERT_EQ(VT_BSTR, name.type());
-    names.push_back(base::UTF16ToUTF8(
-        base::string16(V_BSTR(name.ptr()), SysStringLen(V_BSTR(name.ptr())))));
+    names.push_back(base::WideToUTF8(
+        std::wstring(V_BSTR(name.ptr()), SysStringLen(V_BSTR(name.ptr())))));
   }
 
   ASSERT_THAT(names, testing::UnorderedElementsAreArray(expected_names));

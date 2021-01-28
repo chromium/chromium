@@ -92,7 +92,7 @@ class PpapiPluginSandboxedProcessLauncherDelegate
         return false;
     }
 #endif  // !defined(NACL_WIN64)
-    const base::string16& sid =
+    const std::wstring& sid =
         browser_client->GetAppContainerSidForSandboxType(GetSandboxType());
     if (!sid.empty())
       sandbox::policy::SandboxWin::AddAppContainerPolicy(policy, sid.c_str());

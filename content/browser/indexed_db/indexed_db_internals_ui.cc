@@ -104,7 +104,7 @@ void IndexedDBInternalsUI::OnOriginsReady(const base::Value& origins,
                                           const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   web_ui()->CallJavascriptFunctionUnsafe("indexeddb.onOriginsReady", origins,
-                                         base::Value(path.value()));
+                                         base::Value(path.AsUTF8Unsafe()));
 }
 
 static void FindControl(const base::FilePath& partition_path,
@@ -122,10 +122,10 @@ bool IndexedDBInternalsUI::GetOriginData(
     base::FilePath* partition_path,
     Origin* origin,
     storage::mojom::IndexedDBControl** control) {
-  base::FilePath::StringType path_string;
+  std::string path_string;
   if (!args->GetString(0, &path_string))
     return false;
-  *partition_path = base::FilePath(path_string);
+  *partition_path = base::FilePath::FromUTF8Unsafe(path_string);
 
   std::string url_string;
   if (!args->GetString(1, &url_string))
@@ -239,7 +239,7 @@ void IndexedDBInternalsUI::OnDownloadDataReady(
   if (!success)
     return;
 
-  const GURL url = GURL(FILE_PATH_LITERAL("file://") + zip_path.value());
+  const GURL url = GURL("file://" + zip_path.AsUTF8Unsafe());
   WebContents* web_contents = web_ui()->GetWebContents();
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("indexed_db_internals_handler", R"(
@@ -341,7 +341,8 @@ void IndexedDBInternalsUI::OnDownloadStarted(
 
   item->AddObserver(new FileDeleter(temp_path));
   web_ui()->CallJavascriptFunctionUnsafe(
-      "indexeddb.onOriginDownloadReady", base::Value(partition_path.value()),
+      "indexeddb.onOriginDownloadReady",
+      base::Value(partition_path.AsUTF8Unsafe()),
       base::Value(origin.Serialize()),
       base::Value(static_cast<double>(connection_count)));
 }

@@ -38,7 +38,7 @@ HRESULT DWriteLocalizedStrings::GetLocaleName(UINT32 index,
                                               UINT32 size) {
   if (index >= strings_.size())
     return E_INVALIDARG;
-  // string16::size does not count the null terminator as part of the string,
+  // wstring::size does not count the null terminator as part of the string,
   // but GetLocaleName requires the caller to reserve space for the null
   // terminator, so we need to ensure |size| is greater than the count of
   // characters.
@@ -64,7 +64,7 @@ HRESULT DWriteLocalizedStrings::GetString(UINT32 index,
                                           UINT32 size) {
   if (index >= strings_.size())
     return E_INVALIDARG;
-  // string16::size does not count the null terminator as part of the string,
+  // wstring::size does not count the null terminator as part of the string,
   // but GetString requires the caller to reserve space for the null terminator,
   // so we need to ensure |size| is greater than the count of characters.
   if (size <= strings_[index].second.size())
@@ -84,7 +84,7 @@ HRESULT DWriteLocalizedStrings::GetStringLength(UINT32 index, UINT32* length) {
 }
 
 HRESULT DWriteLocalizedStrings::RuntimeClassInitialize(
-    std::vector<std::pair<base::string16, base::string16>>* strings) {
+    std::vector<std::pair<std::wstring, std::wstring>>* strings) {
   strings_.swap(*strings);
   return S_OK;
 }

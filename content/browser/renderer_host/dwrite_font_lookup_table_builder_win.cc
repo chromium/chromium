@@ -96,7 +96,7 @@ bool ExtractCaseFoldedLocalizedStrings(
     // https://dxr.mozilla.org/mozilla-central/source/gfx/thebes/gfxDWriteFontList.cpp#90
     // so we'll assume that.
     localized_strings->push_back(base::UTF16ToUTF8(
-        base::i18n::FoldCase(base::string16(localized_name))));
+        base::i18n::FoldCase(base::WideToUTF16(localized_name))));
   }
   return true;
 }
@@ -206,7 +206,7 @@ std::string DWriteFontLookupTableBuilder::ComputePersistenceHash() {
   DCHECK(dwrite_version_info);
 
   std::string dwrite_version =
-      base::WideToUTF8(dwrite_version_info->product_version());
+      base::UTF16ToUTF8(dwrite_version_info->product_version());
 
   std::string to_hash = dwrite_version;
 
@@ -490,8 +490,8 @@ DWriteFontLookupTableBuilder::ExtractPathAndNamesFromFamily(
     if (font->GetSimulations() != DWRITE_FONT_SIMULATIONS_NONE)
       continue;
 
-    std::set<base::string16> path_set;
-    std::set<base::string16> custom_font_path_set;
+    std::set<std::wstring> path_set;
+    std::set<std::wstring> custom_font_path_set;
     uint32_t ttc_index = 0;
     {
       base::ScopedBlockingCall scoped_blocking_call(
