@@ -348,7 +348,7 @@ public class CustomTabActivityTabController implements InflationObserver {
                     (TabReparentingParams) mAsyncTabParamsManager.get().remove(tab.getId());
             mReparentingTaskProvider.get(tab).finish(
                     ReparentingDelegateFactory.createReparentingTaskDelegate(
-                            mActivity.getCompositorViewHolder(), mActivity.getWindowAndroid(),
+                            mCompositorViewHolder.get(), mActivity.getWindowAndroid(),
                             mCustomTabDelegateFactory.get()),
                     (params == null ? null : params.getFinalizeCallback()));
         }
