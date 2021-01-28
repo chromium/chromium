@@ -130,12 +130,10 @@ Polymer({
   currentRouteChanged(currentRoute, previousRoute) {
     GlobalScrollTargetBehaviorImpl.currentRouteChanged.call(this, currentRoute);
     // Reload cookies on navigation to the site data page from a different
-    // route, except when a search query is present, as that will be handled by
-    // onFilterChanged_.
-    // TODO (crbug.com/1141796): Remove this layering violation.
-    const searchQueryParam =
-        Router.getInstance().getQueryParameters().get('searchSubpage');
-    if (currentRoute === routes.SITE_SETTINGS_SITE_DATA && !searchQueryParam) {
+    // page. Avoid reloading on repeated navigations to the same page, as these
+    // are likely search queries.
+    if (currentRoute === routes.SITE_SETTINGS_SITE_DATA &&
+        currentRoute !== previousRoute) {
       this.isLoading_ = true;
       // Needed to fix iron-list rendering issue. The list will not render
       // correctly until a scroll occurs.
@@ -205,12 +203,12 @@ Polymer({
    * @private
    */
   onFilterChanged_(current, previous) {
-    // Ignore the first undefined -> defined transition, unless |current| has a
-    // value. This can occur if the first navigation to the page contains a
-    // search query parameter.
-    // TODO (crbug.com/1141796): Remove requirement to perform this check as
-    // it is subtle and a flow on from a layering violation.
-    if (previous === undefined && !current) {
+    // Ignore filter changes which do not occur on the site data page. The
+    // site settings data details subpage expects the tree model to remain in
+    // the same state.
+    if (previous === undefined ||
+        Router.getInstance().getCurrentRoute() !==
+            routes.SITE_SETTINGS_SITE_DATA) {
       return;
     }
     this.updateSiteList_();
@@ -222,8 +220,8 @@ Polymer({
    */
   updateSiteList_() {
     this.isLoading_ = true;
-    this.browserProxy_.getDisplayList(this.filter).then(listInfo => {
-      this.updateList('sites', item => item.site, listInfo.items);
+    this.browserProxy_.getDisplayList(this.filter).then(localDataItems => {
+      this.updateList('sites', item => item.site, localDataItems);
       this.isLoading_ = false;
       this.fire('site-data-list-complete');
     });

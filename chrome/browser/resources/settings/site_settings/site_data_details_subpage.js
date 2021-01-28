@@ -18,7 +18,7 @@ import {routes} from '../route.js';
 import {Route, RouteObserverBehavior, Router} from '../router.m.js';
 
 import {CookieDataForDisplay, CookieDetails, getCookieData} from './cookie_info.js';
-import {CookieList, LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';
+import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';
 
 
 const categoryLabels = {
@@ -60,9 +60,6 @@ Polymer({
 
     /** @private */
     site_: String,
-
-    /** @private */
-    siteId_: String,
   },
 
   /**
@@ -118,12 +115,11 @@ Polymer({
   },
 
   /**
-   * @param {!CookieList} cookies
+   * @param {!Array<!CookieDetails>} cookies
    * @private
    */
   onCookiesLoaded_(cookies) {
-    this.siteId_ = cookies.id;
-    this.entries_ = cookies.children;
+    this.entries_ = cookies;
     // Set up flag for expanding cookie details.
     this.entries_.forEach(function(e) {
       e.expanded_ = false;
@@ -136,12 +132,11 @@ Polymer({
    * @private
    */
   onCookiesLoadFailed_() {
-    this.siteId_ = '';
     this.entries_ = [];
   },
 
   /**
-   * A handler for when the user opts to remove a single cookie.
+   * Retrieves a string description for the provided |item|.
    * @param {!CookieDetails} item
    * @return {string}
    * @private
@@ -167,7 +162,7 @@ Polymer({
   onRemove_(event) {
     MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
         PrivacyElementInteractions.COOKIE_DETAILS_REMOVE_ITEM);
-    this.browserProxy_.removeCookie(
+    this.browserProxy_.removeItem(
         /** @type {!CookieDetails} */ (event.currentTarget.dataset).idPath);
   },
 
@@ -177,6 +172,6 @@ Polymer({
   removeAll() {
     MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
         PrivacyElementInteractions.COOKIE_DETAILS_REMOVE_ALL);
-    this.browserProxy_.removeCookie(this.siteId_);
+    this.browserProxy_.removeSite(this.site_);
   },
 });

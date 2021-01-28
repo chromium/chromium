@@ -7,7 +7,7 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {LocalDataBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Router,routes} from 'chrome://settings/settings.js';
 import {TestLocalDataBrowserProxy} from 'chrome://test/settings/test_local_data_browser_proxy.js';
-import {eventToPromise} from 'chrome://test/test_util.m.js';
+import {eventToPromise, flushTasks} from 'chrome://test/test_util.m.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -47,7 +47,7 @@ suite('SiteDataTest', function() {
               assertTrue(!!button);
               assertEquals('CR-ICON-BUTTON', button.tagName);
               button.click();
-              return testBrowserProxy.whenCalled('removeItem');
+              return testBrowserProxy.whenCalled('removeSite');
             })
             .then(function(path) {
               assertEquals('Hello', path);
@@ -104,19 +104,17 @@ suite('SiteDataTest', function() {
     return testBrowserProxy.whenCalled('reloadCookies');
   });
 
-  test('calls getDisplayList() when search param present', async function() {
+  test('no call to reloadCookies() on same route navigation', async function() {
     // Check that providing a search query parameter while navigating and a
     // search filter to the cookies page does not reload cookies, but instead
     // updates the list.
     document.body.appendChild(siteData);
-    Router.getInstance().navigateTo(routes.BASIC);
-    const params = new URLSearchParams();
-    params.append('searchSubpage', 'test');
-    Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA, params);
-    siteData.filter = 'test';
-    const filter = await testBrowserProxy.whenCalled('getDisplayList');
-    assertEquals('test', filter);
-    assertEquals(0, testBrowserProxy.getCallCount('reloadCookies'));
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA);
+    await testBrowserProxy.whenCalled('reloadCookies');
+
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA);
+    await flushTasks();
+    assertEquals(1, testBrowserProxy.getCallCount('reloadCookies'));
   });
 
   test('remove button records interaction metric', async function() {
@@ -142,4 +140,27 @@ suite('SiteDataTest', function() {
         await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
     assertEquals(PrivacyElementInteractions.SITE_DATA_REMOVE_FILTERED, metric);
   });
+
+  test('changes to filter update list', async function() {
+    // Check that updating the page filter correctly calls update display list.
+    document.body.appendChild(siteData);
+    Router.getInstance().navigateTo(routes.COOKIES);
+    flush();
+
+    // Changes to the filter while not on the site data page should not be
+    // responded to.
+    siteData.set('filter', 'Test');
+    await flushTasks();
+    assertEquals(0, testBrowserProxy.getCallCount('getDisplayList'));
+
+    Router.getInstance().navigateTo(routes.SITE_SETTINGS_SITE_DATA);
+    let filter = await testBrowserProxy.whenCalled('getDisplayList');
+    assertEquals('Test', filter);
+    testBrowserProxy.reset();
+
+    siteData.set('filter', 'Test2');
+    filter = await testBrowserProxy.whenCalled('getDisplayList');
+    assertEquals('Test2', filter);
+  });
+
 });

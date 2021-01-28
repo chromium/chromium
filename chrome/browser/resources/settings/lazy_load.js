@@ -88,8 +88,8 @@ export {SafeBrowsingSetting} from './privacy_page/security_page.js';
 export {AndroidInfoBrowserProxyImpl} from './site_settings/android_info_browser_proxy.js';
 // </if>
 export {ChooserType, ContentSetting, ContentSettingsTypes, CookieControlsMode, SITE_EXCEPTION_WILDCARD, SiteSettingSource, SortMethod} from './site_settings/constants.js';
-export {cookieInfo} from './site_settings/cookie_info.js';
-export {CookieList, LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './site_settings/local_data_browser_proxy.js';
+export {CookieDetails, cookieInfo} from './site_settings/cookie_info.js';
+export {LocalDataBrowserProxy, LocalDataBrowserProxyImpl, LocalDataItem} from './site_settings/local_data_browser_proxy.js';
 export {HandlerEntry, ProtocolEntry} from './site_settings/protocol_handlers.js';
 export {kControlledByLookup} from './site_settings/site_settings_behavior.js';
 export {ContentSettingProvider, DefaultContentSetting, RawChooserException, RawSiteException, RecentSitePermissions, SiteException, SiteGroup, SiteSettingsPrefsBrowserProxy, SiteSettingsPrefsBrowserProxyImpl, ZoomLevelEntry} from './site_settings/site_settings_prefs_browser_proxy.js';

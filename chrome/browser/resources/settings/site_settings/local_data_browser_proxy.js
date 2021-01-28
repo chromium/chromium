@@ -14,29 +14,11 @@ import {CookieDetails} from './cookie_info.js';
 
 /**
  * @typedef {{
- *   id: string,
- *   start: number,
- *   children: !Array<CookieDetails>,
- * }}
- */
-export let CookieList;
-
-/**
- * @typedef {{
  *   localData: string,
  *   site: string,
  * }}
  */
 export let LocalDataItem;
-
-/**
- * TODO(dschuyler): add |filter| and |order|.
- * @typedef {{
- *   items: !Array<!LocalDataItem>,
- *   total: number,
- * }}
- */
-let LocalDataList;
 
 /**
  * Number of cookies attached to a given domain / eTLD+1.
@@ -51,7 +33,7 @@ let EtldPlus1CookieNumber;
 export class LocalDataBrowserProxy {
   /**
    * @param {string} filter Search filter (use "" for none).
-   * @return {!Promise<!LocalDataList>}
+   * @return {!Promise<!Array<!LocalDataItem>>}
    */
   getDisplayList(filter) {}
 
@@ -69,15 +51,16 @@ export class LocalDataBrowserProxy {
   removeShownItems() {}
 
   /**
-   * Remove a specific list item. Completion signaled by on-tree-item-removed.
-   * @param {string} id Which element to delete.
+   * Remove data for a specific site. Completion signaled by
+   * on-tree-item-removed.
+   * @param {string} site Site to delete data for.
    */
-  removeItem(id) {}
+  removeSite(site) {}
 
   /**
    * Gets the cookie details for a particular site.
    * @param {string} site The name of the site.
-   * @return {!Promise<!CookieList>}
+   * @return {!Promise<!Array<!CookieDetails>>}
    */
   getCookieDetails(site) {}
 
@@ -96,11 +79,10 @@ export class LocalDataBrowserProxy {
   reloadCookies() {}
 
   /**
-   * TODO(dschuyler): merge with removeItem().
-   * Removes a given cookie.
-   * @param {string} path The path to the parent cookie.
+   * Removes a given piece of site data.
+   * @param {string} path The path to the item in the tree model.
    */
-  removeCookie(path) {}
+  removeItem(path) {}
 
   /**
    * Removes all SameSite=None cookies, as well as storage available in
@@ -131,8 +113,8 @@ export class LocalDataBrowserProxyImpl {
   }
 
   /** @override */
-  removeItem(id) {
-    chrome.send('localData.removeItem', [id]);
+  removeSite(site) {
+    chrome.send('localData.removeSite', [site]);
   }
 
   /** @override */
@@ -151,8 +133,8 @@ export class LocalDataBrowserProxyImpl {
   }
 
   /** @override */
-  removeCookie(path) {
-    chrome.send('localData.removeCookie', [path]);
+  removeItem(path) {
+    chrome.send('localData.removeItem', [path]);
   }
 
   /** @override */

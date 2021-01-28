@@ -55,6 +55,6 @@ Polymer({
     e.stopPropagation();
     MetricsBrowserProxyImpl.getInstance().recordSettingsPageHistogram(
         PrivacyElementInteractions.SITE_DATA_REMOVE_SITE);
-    this.browserProxy_.removeItem(this.model.site);
+    this.browserProxy_.removeSite(this.model.site);
   },
 });
