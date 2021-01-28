@@ -658,21 +658,6 @@
                   'chrome/browser/ui/views/bubble/|'\
                   'components/bubble/',
     },
-    'cast': {
-      'filepath': 'media/cast/' \
-                  '|chrome/browser/extensions/api/cast_streaming/' \
-                  '|chrome/browser/media/cast/' \
-                  '|chrome/browser/media/router/providers/cast/' \
-                  '|chrome/browser/resources/cast/' \
-                  '|chrome/browser/ui/webui/cast/' \
-                  '|chrome/common/media_router/providers/cast/' \
-                  '|chrome/renderer/media/cast/' \
-                  '|chrome/test/data/extensions/api_test/cast/' \
-                  '|chrome/test/data/extensions/api_test/cast_streaming/' \
-                  '|components/mirroring/' \
-                  '|content/public/renderer/media_stream_' \
-                  '|content/renderer/media/(media_stream|(.+audio_source))',
-    },
     'cast_certificate': {
       'filepath': 'components/cast_certificate/'\
                   '|components/test/data/cast_certificate/',
@@ -681,6 +666,11 @@
       'filepath':  'chrome/test/data/extensions/api_test/cast_channel/' \
                    '|components/cast_channel/' \
                    '|extensions/browser/api/cast_channel'
+    },
+    'cast_streaming': {
+      'filepath': 'media/cast/' \
+                  '|chrome/browser/media/cast_mirroring' \
+                  '|components/mirroring/' \
     },
     'cc': {
       'filepath': 'cc/'\
@@ -1289,16 +1279,13 @@
                   '|media/remoting/',
     },
     'media_router': {
-      'filepath': 'chrome/android/features/media_router/' \
-                  '|chrome/app/media_router_strings.grdp' \
+      'filepath': 'chrome/app/media_router_strings.grdp' \
                   '|chrome/browser/media/router/' \
                   '|chrome/browser/resources/media_router/' \
                   '|chrome/browser/ui/media_router/' \
                   '|chrome/browser/ui/views/media_router/' \
-                  '|chrome/browser/ui/webui/media_router/' \
-                  '|chrome/common/media_router/' \
-                  '|chrome/test/data/webui/media_router/' \
-                  '|chrome/test/media_router/'
+                  '|chrome/test/media_router/' \
+                  '|components/media_router/'
     },
     'message_loop': {
       'filepath': 'base/message_'
@@ -1809,22 +1796,20 @@
         '|media/audio/audio_(output_controller|power_monitor)',
     },
     'tab_capture': {
+      # TODO: Watch code in media/audio & audio service for tab audio capture
       'filepath': 'chrome/browser/extensions/api/tab_capture/'\
         '|chrome/renderer/resources/extensions/tab_capture_custom_bindings.js'\
         '|chrome/test/data/extensions/api_test/tab_capture/'\
-        '|components/viz/common/(frame_sinks/copy_output_|gl_helper|yuv_)'\
-        '|components/viz/service/display/'\
+        '|components/viz/common/(frame_sinks/|gl_helper|gl_i420|yuv_)'\
+        '|components/viz/host/client_frame_sink'\
         '|components/viz/service/frame_sinks/(frame_sink_manager'\
             '|video_capture/)'\
         '|content/browser/media/capture/'\
-        '|content/browser/renderer_host/media/(audio_'\
-            '|media_stream_manager|video_)'\
-        '|content/public/renderer/media_stream_'\
-        '|content/renderer/media/(media_stream|(.+audio_source))'\
-        '|media/audio/(audio_output_controller|fake_audio_|virtual_audio_)'\
+        '|content/browser/renderer_host/media/'\
         '|media/base/video_frame\.h'\
         '|media/capture/'\
-        '|services/viz/privileged/mojom/compositing/frame_sink',
+        '|services/viz/privileged/mojom/compositing/frame_sink'\
+        '|third_party/blink/public/mojom/mediastream/'
     },
     'tab_contents': {
       'filepath': 'chrome/browser/tab_contents/|'\
@@ -2359,15 +2344,14 @@
     'browsing_data': ['dullweber+watch@chromium.org',
                       'msramek+watch@chromium.org'],
     'bubble': ['hcarmona+bubble@chromium.org'],
-    'cast': ['jasonroberts+watch@google.com',
-             'miu+watch@chromium.org',
-             'mfoltz+watch@chromium.org',
-             'pthatcher+watch@chromium.org'],
     'cast_certificate': ['dougsteed+watch@chromium.org',
                          'mfoltz+watch@chromium.org',
                          'ryanchung+watch@chromium.org'],
     'cast_channel': ['mfoltz+watch@chromium.org',
                      'ryanchung+watch@chromium.org'],
+    'cast_streaming': ['jasonroberts+watch@google.com',
+                       'jophba+watch@chromium.org',
+                       'mfoltz+watch@chromium.org'],
     'cc': ['cc-bugs@chromium.org'],
     'cc-animation': ['gerchiko@microsoft.com',
                      'majidvp@chromium.org'],
@@ -2620,10 +2604,9 @@
     'media_recorder': ['emircan+watch+mediarecorder@chromium.org',
                        'mcasas+mediarecorder@chromium.org'],
     'media_remoting': ['erickung+watch@chromium.org',
-                       'miu+watch@chromium.org',
-                       'pthatcher+watch@chromium.org'],
+                       'jophba+watch@chromium.org',
+                       'mfoltz+watch@chromium.org'],
     'media_router': ['mfoltz+watch@chromium.org',
-                     'pthatcher+watch@chromium.org',
                      'takumif+watch@chromium.org'],
     'message_loop': ['sadrul@chromium.org'],
     'metrics': ['asvitkine+watch@chromium.org',
@@ -2814,9 +2797,9 @@
     'syncfs': ['kinuko+fileapi@chromium.org'],
     'system_web_apps': [ 'ortuno@chromium.org',
                          'dominicschulz@google.com'],
-    'tab_alert_indicators': ['miu+watch@chromium.org'],
-    'tab_capture': ['miu+watch@chromium.org',
-                    'pthatcher+watch@chromium.org'],
+    'tab_alert_indicators': ['jophba+watch@chromium.org'],
+    'tab_capture': ['jophba+watch@chromium.org',
+                    'mfoltz+watch@chromium.org'],
     'tab_contents': ['ajwong+watch@chromium.org',
                      'avi@chromium.org',
                      'creis+watch@chromium.org'],
