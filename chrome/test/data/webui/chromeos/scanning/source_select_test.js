@@ -73,6 +73,7 @@ export function sourceSelectTest() {
     assertEquals(
         getSourceTypeString(secondSource.type),
         select.options[1].textContent.trim());
+    assertTrue(select.options[2].hidden);
     assertEquals(secondSource.name, select.value);
   });
 

@@ -71,6 +71,7 @@ export function scannerSelectTest() {
     assertEquals(3, select.length);
     assertEquals(firstScannerName, select.options[0].textContent.trim());
     assertEquals(secondScannerName, select.options[1].textContent.trim());
+    assertTrue(select.options[2].hidden);
     assertEquals(tokenToString(firstScannerId), select.value);
   });
 
