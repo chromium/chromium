@@ -24,9 +24,6 @@ class TestSyncUserSettings : public SyncUserSettings {
   bool IsSyncRequested() const override;
   void SetSyncRequested(bool requested) override;
 
-  bool IsSyncAllowedByPlatform() const override;
-  void SetSyncAllowedByPlatform(bool allowed) override;
-
   bool IsFirstSetupComplete() const override;
   void SetFirstSetupComplete(SyncFirstSetupCompleteSource source) override;
 

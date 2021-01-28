@@ -27,16 +27,11 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   SyncUserSettingsImpl(SyncServiceCrypto* crypto,
                        SyncPrefs* prefs,
                        const SyncTypePreferenceProvider* preference_provider,
-                       ModelTypeSet registered_types,
-                       const base::RepeatingCallback<void(bool)>&
-                           sync_allowed_by_platform_changed);
+                       ModelTypeSet registered_types);
   ~SyncUserSettingsImpl() override;
 
   bool IsSyncRequested() const override;
   void SetSyncRequested(bool requested) override;
-
-  bool IsSyncAllowedByPlatform() const override;
-  void SetSyncAllowedByPlatform(bool allowed) override;
 
   bool IsFirstSetupComplete() const override;
   void SetFirstSetupComplete(SyncFirstSetupCompleteSource source) override;
@@ -91,9 +86,6 @@ class SyncUserSettingsImpl : public SyncUserSettings {
   const SyncTypePreferenceProvider* const preference_provider_;
   const ModelTypeSet registered_model_types_;
   base::RepeatingCallback<void(bool)> sync_allowed_by_platform_changed_cb_;
-
-  // Whether sync is currently allowed on this platform.
-  bool sync_allowed_by_platform_ = true;
 };
 
 }  // namespace syncer

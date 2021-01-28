@@ -558,6 +558,24 @@ TEST_F(ProfileSyncServiceTest, DisabledByPolicyAfterInit) {
             service()->GetTransportState());
 }
 
+TEST_F(ProfileSyncServiceTest,
+       ShouldDisableSyncFeatureWhenSyncDisallowedByPlatform) {
+  SignIn();
+  CreateService(ProfileSyncService::MANUAL_START);
+  InitializeForNthSync();
+
+  ASSERT_EQ(SyncService::DisableReasonSet(), service()->GetDisableReasons());
+  ASSERT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
+
+  service()->SetSyncAllowedByPlatform(false);
+  EXPECT_FALSE(service()->IsSyncFeatureEnabled());
+  EXPECT_FALSE(service()->IsSyncFeatureActive());
+  // Sync-the-transport should be still active.
+  EXPECT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
+}
+
 // Exercises the ProfileSyncService's code paths related to getting shut down
 // before the backend initialize call returns.
 TEST_F(ProfileSyncServiceTest, AbortedByShutdown) {

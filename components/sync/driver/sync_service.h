@@ -319,6 +319,10 @@ class SyncService : public KeyedService {
   // remain active after calling this.
   virtual void StopAndClear() = 0;
 
+  // Controls whether sync is allowed at the platform level. If set to false
+  // sync will be disabled with DISABLE_REASON_PLATFORM_OVERRIDE.
+  virtual void SetSyncAllowedByPlatform(bool allowed) = 0;
+
   // Called when a datatype (SyncableService) has a need for sync to start
   // ASAP, presumably because a local change event has occurred but we're
   // still in deferred start mode, meaning the SyncableService hasn't been

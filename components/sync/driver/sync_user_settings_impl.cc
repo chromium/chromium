@@ -43,13 +43,11 @@ SyncUserSettingsImpl::SyncUserSettingsImpl(
     SyncServiceCrypto* crypto,
     SyncPrefs* prefs,
     const SyncTypePreferenceProvider* preference_provider,
-    ModelTypeSet registered_model_types,
-    const base::RepeatingCallback<void(bool)>& sync_allowed_by_platform_changed)
+    ModelTypeSet registered_model_types)
     : crypto_(crypto),
       prefs_(prefs),
       preference_provider_(preference_provider),
-      registered_model_types_(registered_model_types),
-      sync_allowed_by_platform_changed_cb_(sync_allowed_by_platform_changed) {
+      registered_model_types_(registered_model_types) {
   DCHECK(crypto_);
   DCHECK(prefs_);
 }
@@ -62,20 +60,6 @@ bool SyncUserSettingsImpl::IsSyncRequested() const {
 
 void SyncUserSettingsImpl::SetSyncRequested(bool requested) {
   prefs_->SetSyncRequested(requested);
-}
-
-bool SyncUserSettingsImpl::IsSyncAllowedByPlatform() const {
-  return sync_allowed_by_platform_;
-}
-
-void SyncUserSettingsImpl::SetSyncAllowedByPlatform(bool allowed) {
-  if (sync_allowed_by_platform_ == allowed) {
-    return;
-  }
-
-  sync_allowed_by_platform_ = allowed;
-
-  sync_allowed_by_platform_changed_cb_.Run(sync_allowed_by_platform_);
 }
 
 bool SyncUserSettingsImpl::IsFirstSetupComplete() const {

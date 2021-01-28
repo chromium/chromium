@@ -20,8 +20,6 @@ class SyncUserSettingsMock : public SyncUserSettings {
   ~SyncUserSettingsMock() override;
   MOCK_METHOD(bool, IsSyncRequested, (), (const override));
   MOCK_METHOD(void, SetSyncRequested, (bool), (override));
-  MOCK_METHOD(bool, IsSyncAllowedByPlatform, (), (const override));
-  MOCK_METHOD(void, SetSyncAllowedByPlatform, (bool), (override));
   MOCK_METHOD(bool, IsFirstSetupComplete, (), (const override));
   MOCK_METHOD(void,
               SetFirstSetupComplete,

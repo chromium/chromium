@@ -141,14 +141,15 @@ void ProfileSyncServiceAndroid::SetSyncRequested(JNIEnv* env,
 jboolean ProfileSyncServiceAndroid::IsSyncAllowedByPlatform(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
-  return sync_service_->GetUserSettings()->IsSyncAllowedByPlatform();
+  return !sync_service_->HasDisableReason(
+      syncer::SyncService::DISABLE_REASON_PLATFORM_OVERRIDE);
 }
 
 void ProfileSyncServiceAndroid::SetSyncAllowedByPlatform(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     jboolean allowed) {
-  sync_service_->GetUserSettings()->SetSyncAllowedByPlatform(allowed);
+  sync_service_->SetSyncAllowedByPlatform(allowed);
 }
 
 jboolean ProfileSyncServiceAndroid::IsSyncFeatureActive(

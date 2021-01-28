@@ -33,21 +33,6 @@ void TestSyncUserSettings::SetSyncRequested(bool requested) {
   service_->SetDisableReasons(disable_reasons);
 }
 
-bool TestSyncUserSettings::IsSyncAllowedByPlatform() const {
-  return !service_->HasDisableReason(
-      SyncService::DISABLE_REASON_PLATFORM_OVERRIDE);
-}
-
-void TestSyncUserSettings::SetSyncAllowedByPlatform(bool allowed) {
-  SyncService::DisableReasonSet disable_reasons = service_->GetDisableReasons();
-  if (allowed) {
-    disable_reasons.Remove(SyncService::DISABLE_REASON_PLATFORM_OVERRIDE);
-  } else {
-    disable_reasons.Put(SyncService::DISABLE_REASON_PLATFORM_OVERRIDE);
-  }
-  service_->SetDisableReasons(disable_reasons);
-}
-
 bool TestSyncUserSettings::IsFirstSetupComplete() const {
   return first_setup_complete_;
 }

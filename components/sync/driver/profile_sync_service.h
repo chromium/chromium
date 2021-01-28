@@ -123,6 +123,7 @@ class ProfileSyncService : public SyncService,
   ModelTypeSet GetPreferredDataTypes() const override;
   ModelTypeSet GetActiveDataTypes() const override;
   void StopAndClear() override;
+  void SetSyncAllowedByPlatform(bool allowed) override;
   void OnDataTypeRequestsSyncStartup(ModelType type) override;
   void TriggerRefresh(const ModelTypeSet& types) override;
   void DataTypePreconditionChanged(ModelType type) override;
@@ -434,6 +435,10 @@ class ProfileSyncService : public SyncService,
   // Prevents ProfileSyncService from starting engine till browser restarted
   // or user signed out.
   bool sync_disabled_by_admin_;
+
+  // Whether Sync is allowed at the platform level (e.g. Android's "MasterSync"
+  // toggle). Maps to DISABLE_REASON_PLATFORM_OVERRIDE.
+  bool sync_allowed_by_platform_ = true;
 
   // Information describing an unrecoverable error.
   base::Optional<UnrecoverableErrorReason> unrecoverable_error_reason_ =

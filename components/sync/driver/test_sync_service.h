@@ -74,6 +74,7 @@ class TestSyncService : public SyncService {
   ModelTypeSet GetActiveDataTypes() const override;
 
   void StopAndClear() override;
+  void SetSyncAllowedByPlatform(bool allowed) override;
   void OnDataTypeRequestsSyncStartup(ModelType type) override;
   void TriggerRefresh(const ModelTypeSet& types) override;
   void DataTypePreconditionChanged(syncer::ModelType type) override;

@@ -922,9 +922,10 @@ std::unique_ptr<base::DictionaryValue> PeopleHandler::GetSyncStatusDictionary()
                          GetSyncErrorAction(status_labels.action_type));
 
   sync_status->SetBoolean("managed", disallowed_by_policy);
-  sync_status->SetBoolean(
-      "disabled", !service || disallowed_by_policy ||
-                      !service->GetUserSettings()->IsSyncAllowedByPlatform());
+  // TODO(crbug.com/1171279): audit js usages of |disabled| and |signedIn|
+  // fields, update it to use the right field, comments around and conditions
+  // here. Perhaps removal of one of these to fields is possible.
+  sync_status->SetBoolean("disabled", !service || disallowed_by_policy);
   // NOTE: This means signed-in for *sync*. It can be false when the user is
   // signed-in to the content area or to the browser.
   sync_status->SetBoolean("signedIn", identity_manager->HasPrimaryAccount());

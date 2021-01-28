@@ -42,11 +42,6 @@ class SyncUserSettings {
   virtual bool IsSyncRequested() const = 0;
   virtual void SetSyncRequested(bool requested) = 0;
 
-  // Whether Sync is allowed at the platform level (e.g. Android's "MasterSync"
-  // toggle). Maps to DISABLE_REASON_PLATFORM_OVERRIDE.
-  virtual bool IsSyncAllowedByPlatform() const = 0;
-  virtual void SetSyncAllowedByPlatform(bool allowed) = 0;
-
   // Whether the initial Sync setup has been completed, meaning the user has
   // consented to Sync.
   // NOTE: On ChromeOS, this gets set automatically, so it doesn't really mean

@@ -300,9 +300,7 @@ void ProfileSyncService::Initialize() {
 
   user_settings_ = std::make_unique<SyncUserSettingsImpl>(
       &crypto_, &sync_prefs_, sync_client_->GetPreferenceProvider(),
-      GetRegisteredDataTypes(),
-      base::BindRepeating(&ProfileSyncService::SyncAllowedByPlatformChanged,
-                          base::Unretained(this)));
+      GetRegisteredDataTypes());
 
   sync_prefs_.AddSyncPrefObserver(this);
 
@@ -751,7 +749,7 @@ SyncService::DisableReasonSet ProfileSyncService::GetDisableReasons() const {
   // shouldn't even be instantiated.
   DCHECK(switches::IsSyncAllowedByFlag());
   DisableReasonSet result;
-  if (!user_settings_->IsSyncAllowedByPlatform()) {
+  if (!sync_allowed_by_platform_) {
     result.Put(DISABLE_REASON_PLATFORM_OVERRIDE);
   }
 
@@ -1807,6 +1805,23 @@ void ProfileSyncService::StopAndClear() {
   StopImpl(CLEAR_DATA);
   // Try to start up again (in transport-only mode).
   startup_controller_->TryStart(/*force_immediate=*/true);
+}
+
+void ProfileSyncService::SetSyncAllowedByPlatform(bool allowed) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (allowed == sync_allowed_by_platform_) {
+    return;
+  }
+
+  sync_allowed_by_platform_ = allowed;
+  if (!sync_allowed_by_platform_) {
+    StopImpl(KEEP_DATA);
+    // Try to start up again (in transport-only mode).
+    // TODO(crbug.com/856179): Evaluate whether we can get away without a full
+    // restart (i.e. just reconfigure). See also similar comment in
+    // OnSyncRequestedPrefChange().
+    startup_controller_->TryStart(/*force_immediate=*/true);
+  }
 }
 
 void ProfileSyncService::ReconfigureDatatypeManager(

@@ -69,9 +69,7 @@ class SyncUserSettingsTest : public testing::Test {
       ModelTypeSet registered_types) {
     return std::make_unique<SyncUserSettingsImpl>(
         sync_service_crypto_.get(), sync_prefs_.get(),
-        /*preference_provider=*/nullptr, registered_types,
-        /*sync_allowed_by_platform_changed=*/
-        base::DoNothing());
+        /*preference_provider=*/nullptr, registered_types);
   }
 
   // The order of fields matters because it determines destruction order and
