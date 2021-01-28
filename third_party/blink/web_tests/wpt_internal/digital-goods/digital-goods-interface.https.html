@@ -2,17 +2,12 @@
 <html>
 <head>
   <title>Digital Goods API: Test calls from WebIDL to mojo and back.</title>
-  <script src="../resources/js-test.js"></script>
-  <script src="../resources/testharness.js"></script>
-  <script src="../resources/testharnessreport.js"></script>
-  <script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-  <script src="file:///gen/components/payments/mojom/payment_request_data.mojom.js"></script>
-  <script src="file:///gen/third_party/blink/public/mojom/digital_goods/digital_goods.mojom.js"></script>
-  <script src="resources/mock-digital-goods-service.js"></script>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
 </head>
 <body>
-<script>
-'use strict';
+<script type="module">
+import {digital_goods_test} from './resources/mock-digital-goods-service.js';
 
 digital_goods_test(async service => {
   assert_not_equals(service, undefined);

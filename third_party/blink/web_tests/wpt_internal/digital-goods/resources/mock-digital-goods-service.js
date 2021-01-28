@@ -1,4 +1,4 @@
-'use strict';
+import {BillingResponseCode, CreateDigitalGoodsResponseCode, DigitalGoodsFactory, DigitalGoodsFactoryReceiver, DigitalGoodsReceiver, DigitalGoodsRemote, PurchaseState} from '/gen/third_party/blink/public/mojom/digital_goods/digital_goods.mojom.m.js';
 
 class MockDigitalGoods {
   constructor() {
@@ -6,7 +6,8 @@ class MockDigitalGoods {
   }
 
   bind(request) {
-    this.binding = new mojo.Binding(payments.mojom.DigitalGoods, this, request);
+    this.receiver = new DigitalGoodsReceiver(this);
+    this.receiver.$.bindHandle(request.handle);
   }
 
   getRecordedAction_() {
@@ -49,7 +50,7 @@ class MockDigitalGoods {
 
     // Simulate some backend failure response.
     if (itemIds.includes('fail')) {
-      return {code: /*BillingResponseCode.kError=*/1, itemDetailsList: []};
+      return {code: BillingResponseCode.kError, itemDetailsList: []};
     }
 
     let itemDetailsList = [];
@@ -60,8 +61,8 @@ class MockDigitalGoods {
     }
 
     return {
-      code: /*BillingResponseCode.kOk=*/0,
-      itemDetailsList: itemDetailsList
+      code: BillingResponseCode.kOk,
+      itemDetailsList,
     };
   }
 
@@ -70,9 +71,9 @@ class MockDigitalGoods {
         'acknowledge:' + purchaseToken + ' ' + makeAvailableAgain);
 
     if (purchaseToken === 'fail') {
-      return {code: /*BillingResponseCode.kError=*/1};
+      return {code: BillingResponseCode.kError};
     }
-    return {code: /*BillingResponseCode.kOk=*/0};
+    return {code: BillingResponseCode.kOk};
   }
 
   makePurchaseDetails_(id) {
@@ -82,14 +83,13 @@ class MockDigitalGoods {
     purchaseDetails.purchaseToken = 'purchaseToken:' + id;
     purchaseDetails.acknowledged = Boolean(id % 2);
     const purchaseStates = [
-        payments.mojom.PurchaseState.kUnknown,
-        payments.mojom.PurchaseState.kPurchased,
-        payments.mojom.PurchaseState.kPending,
+      PurchaseState.kUnknown,
+      PurchaseState.kPurchased,
+      PurchaseState.kPending,
     ];
     purchaseDetails.purchaseState = purchaseStates[id % 3];
-    purchaseDetails.purchaseTime = new mojoBase.mojom.Time();
     // Use idNum as seconds. |microseconds| is since Unix epoch.
-    purchaseDetails.purchaseTime.microseconds = id * 1000 * 1000;
+    purchaseDetails.purchaseTime = {microseconds: BigInt(id * 1000 * 1000)};
     purchaseDetails.willAutoRenew = Boolean(id % 2);
     return purchaseDetails;
   }
@@ -103,7 +103,7 @@ class MockDigitalGoods {
     }
 
     return {
-      code: /*BillingResponseCode.kOk=*/0,
+      code: BillingResponseCode.kOk,
       purchaseDetailsList: result
     };
   }
@@ -114,39 +114,38 @@ let mockDigitalGoods = new MockDigitalGoods();
 class MockDigitalGoodsFactory {
   constructor() {
     this.interceptor_ =
-        new MojoInterfaceInterceptor(
-            payments.mojom.DigitalGoodsFactory.name);
+        new MojoInterfaceInterceptor(DigitalGoodsFactory.$interfaceName);
     this.interceptor_.oninterfacerequest = e => this.bind(e.handle);
-    this.bindingSet_ = new mojo.BindingSet(payments.mojom.DigitalGoodsFactory);
+    this.receiver_ = new DigitalGoodsFactoryReceiver(this);
 
     this.interceptor_.start();
   }
 
   bind(handle) {
-    this.bindingSet_.addBinding(this, handle);
+    this.receiver_.$.bindHandle(handle);
   }
 
   async createDigitalGoods(paymentMethod) {
     if (paymentMethod !== 'https://play.google.com/billing') {
       return {
-        code: /*CreateDigitalGoodsResponseCode.kUnsupportedPaymentMethod=*/2,
+        code: CreateDigitalGoodsResponseCode.kUnsupportedPaymentMethod,
         digitalGoods: null
       };
     }
 
-    let digitalGoodsPtr = new payments.mojom.DigitalGoodsPtr();
-    mockDigitalGoods.bind(mojo.makeRequest(digitalGoodsPtr));
+    const digitalGoods = new DigitalGoodsRemote();
+    mockDigitalGoods.bind(digitalGoods.$.bindNewPipeAndPassReceiver());
 
     return {
-      code: /*CreateDigitalGoodsResponseCode.kOk=*/0,
-      digitalGoods: digitalGoodsPtr
+      code: CreateDigitalGoodsResponseCode.kOk,
+      digitalGoods,
     };
   }
 }
 
 let mockDigitalGoodsFactory = new MockDigitalGoodsFactory();
 
-function digital_goods_test(func, {
+export function digital_goods_test(func, {
   title,
   expectedAction,
   paymentMethod = 'https://play.google.com/billing',
