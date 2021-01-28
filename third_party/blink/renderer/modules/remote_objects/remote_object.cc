@@ -178,7 +178,7 @@ mojom::blink::RemoteInvocationArgumentPtr JSValueToMojom(
 
     if (!length_value->IsNumber()) {
       return mojom::blink::RemoteInvocationArgument::NewSingletonValue(
-          mojom::blink::SingletonJavaScriptValue::kNull);
+          mojom::blink::SingletonJavaScriptValue::kUndefined);
     }
 
     double length = length_value.As<v8::Number>()->Value();
