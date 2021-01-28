@@ -69,9 +69,11 @@ void Decompress(const char* gzipped,
 
 std::vector<const char*> ReadValuesFromLine(char** rest,
                                             const char* delimiter) {
-  char* rest_of_line = strsep(rest, "\n");
-
   std::vector<const char*> ret;
+  char* rest_of_line = strsep(rest, "\n");
+  // Check for empty line (otherwise "" is added).
+  if (!*rest_of_line)
+    return ret;
   while (true) {
     char* token = strsep(&rest_of_line, delimiter);
     if (!token)
