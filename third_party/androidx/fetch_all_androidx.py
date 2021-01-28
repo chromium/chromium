@@ -139,28 +139,6 @@ def _process_build_gradle(dependency_version_map, androidx_repository_url):
             out.write(replacement)
 
 
-def _extract_files_from_yaml(yaml_path):
-    """Extracts '- file' file listings from yaml file."""
-
-    out = None
-    with open(yaml_path, 'r') as f:
-        for line in f.readlines():
-            line = line.rstrip('\n')
-            if line == 'data:':
-                out = []
-                continue
-            if out is not None:
-                if not line.startswith('- file:'):
-                    raise Exception(
-                        '{} has unsupported attributes. Only \'- file\' is supported'
-                        .format(yaml_path))
-                out.append(line.rsplit(' ', 1)[1])
-
-    if not out:
-        raise Exception('{} does not have \'data\' section.'.format(yaml_path))
-    return out
-
-
 def _write_cipd_yaml(libs_dir, cipd_yaml_path):
     """Writes cipd.yaml file at the passed-in path."""
 
@@ -178,19 +156,10 @@ def _write_cipd_yaml(libs_dir, cipd_yaml_path):
         if not 'cipd.yaml' in lib_files:
             continue
 
-        if not 'README.chromium' in lib_files:
-            raise Exception('README.chromium not in {}'.format(abs_lib_dir))
-        if not 'LICENSE' in lib_files:
-            raise Exception('LICENSE not in {}'.format(abs_lib_dir))
-        data_files.append(os.path.join(androidx_rel_lib_dir,
-                                       'README.chromium'))
-        data_files.append(os.path.join(androidx_rel_lib_dir, 'LICENSE'))
-
-        _rel_extracted_files = _extract_files_from_yaml(
-            os.path.join(abs_lib_dir, 'cipd.yaml'))
-        data_files.extend(
-            os.path.join(androidx_rel_lib_dir, f)
-            for f in _rel_extracted_files)
+        for lib_file in lib_files:
+            if lib_file == 'cipd.yaml' or lib_file == 'OWNERS':
+                continue
+            data_files.append(os.path.join(androidx_rel_lib_dir, lib_file))
 
     contents = [
         '# Copyright 2020 The Chromium Authors. All rights reserved.',
