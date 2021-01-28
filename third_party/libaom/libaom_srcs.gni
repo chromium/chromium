@@ -73,6 +73,8 @@ aom_av1_common_intrin_vsx =
     [ "//third_party/libaom/source/libaom/av1/common/ppc/cfl_ppc.c" ]
 
 aom_av1_common_sources = [
+  "//third_party/libaom/source/libaom/av1/arg_defs.c",
+  "//third_party/libaom/source/libaom/av1/arg_defs.h",
   "//third_party/libaom/source/libaom/av1/av1_iface_common.h",
   "//third_party/libaom/source/libaom/av1/common/alloccommon.c",
   "//third_party/libaom/source/libaom/av1/common/alloccommon.h",
@@ -142,6 +144,8 @@ aom_av1_common_sources = [
   "//third_party/libaom/source/libaom/av1/common/token_cdfs.h",
   "//third_party/libaom/source/libaom/av1/common/txb_common.c",
   "//third_party/libaom/source/libaom/av1/common/txb_common.h",
+  "//third_party/libaom/source/libaom/common/args_helper.c",
+  "//third_party/libaom/source/libaom/common/args_helper.h",
 ]
 
 aom_av1_decoder_sources = [
@@ -341,6 +345,8 @@ aom_av1_encoder_sources = [
   "//third_party/libaom/source/libaom/av1/encoder/tokenize.h",
   "//third_party/libaom/source/libaom/av1/encoder/tx_search.c",
   "//third_party/libaom/source/libaom/av1/encoder/tx_search.h",
+  "//third_party/libaom/source/libaom/av1/encoder/txb_rdopt.c",
+  "//third_party/libaom/source/libaom/av1/encoder/txb_rdopt.h",
   "//third_party/libaom/source/libaom/av1/encoder/var_based_part.c",
   "//third_party/libaom/source/libaom/av1/encoder/var_based_part.h",
   "//third_party/libaom/source/libaom/av1/encoder/wedge_utils.c",
@@ -443,6 +449,7 @@ aom_dsp_common_intrin_sse4_1 = [
 
 aom_dsp_common_intrin_ssse3 = [
   "//third_party/libaom/source/libaom/aom_dsp/x86/aom_subpixel_8t_intrin_ssse3.c",
+  "//third_party/libaom/source/libaom/aom_dsp/x86/convolve_ssse3.h",
   "//third_party/libaom/source/libaom/aom_dsp/x86/intrapred_ssse3.c",
 ]
 

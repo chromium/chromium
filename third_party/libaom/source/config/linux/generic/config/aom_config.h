@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Alliance for Open Media. All rights reserved
+ * Copyright (c) 2021, Alliance for Open Media. All rights reserved
  *
  * This source code is subject to the terms of the BSD 2 Clause License and
  * the Alliance for Open Media Patent License 1.0. If the BSD 2 Clause License
@@ -50,6 +50,7 @@
 #define CONFIG_PIC 0
 #define CONFIG_RD_DEBUG 0
 #define CONFIG_REALTIME_ONLY 1
+#define CONFIG_RT_ML_PARTITIONING 0
 #define CONFIG_RUNTIME_CPU_DETECT 1
 #define CONFIG_SHARED 0
 #define CONFIG_SHARP_SETTINGS 0

@@ -271,62 +271,6 @@ RTCD_EXTERN void (*av1_calc_indices_dim2)(const int* data,
                                           int n,
                                           int k);
 
-void av1_cnn_activate_c(float** input,
-                        int channels,
-                        int width,
-                        int height,
-                        int stride,
-                        ACTIVATION layer_activation);
-#define av1_cnn_activate av1_cnn_activate_c
-
-void av1_cnn_add_c(float** input,
-                   int channels,
-                   int width,
-                   int height,
-                   int stride,
-                   const float** add);
-#define av1_cnn_add av1_cnn_add_c
-
-void av1_cnn_batchnorm_c(float** image,
-                         int channels,
-                         int width,
-                         int height,
-                         int stride,
-                         const float* gamma,
-                         const float* beta,
-                         const float* mean,
-                         const float* std);
-#define av1_cnn_batchnorm av1_cnn_batchnorm_c
-
-void av1_cnn_convolve_c(const float** input,
-                        int in_width,
-                        int in_height,
-                        int in_stride,
-                        const CNN_LAYER_CONFIG* layer_config,
-                        float** output,
-                        int out_stride,
-                        int start_idx,
-                        int step);
-#define av1_cnn_convolve av1_cnn_convolve_c
-
-void av1_cnn_deconvolve_c(const float** input,
-                          int in_width,
-                          int in_height,
-                          int in_stride,
-                          const CNN_LAYER_CONFIG* layer_config,
-                          float** output,
-                          int out_stride);
-#define av1_cnn_deconvolve av1_cnn_deconvolve_c
-
-void av1_cnn_predict_c(const float** input,
-                       int in_width,
-                       int in_height,
-                       int in_stride,
-                       const CNN_CONFIG* cnn_config,
-                       const CNN_THREAD_DATA* thread_data,
-                       CNN_MULTI_OUT* output_struct);
-#define av1_cnn_predict av1_cnn_predict_c
-
 double av1_compute_cross_correlation_c(unsigned char* im1,
                                        int stride1,
                                        int x1,
@@ -876,22 +820,6 @@ RTCD_EXTERN void (*av1_fwd_txfm2d_16x4)(const int16_t* input,
                                         TX_TYPE tx_type,
                                         int bd);
 
-void av1_fwd_txfm2d_16x64_c(const int16_t* input,
-                            int32_t* output,
-                            int stride,
-                            TX_TYPE tx_type,
-                            int bd);
-void av1_fwd_txfm2d_16x64_sse4_1(const int16_t* input,
-                                 int32_t* output,
-                                 int stride,
-                                 TX_TYPE tx_type,
-                                 int bd);
-RTCD_EXTERN void (*av1_fwd_txfm2d_16x64)(const int16_t* input,
-                                         int32_t* output,
-                                         int stride,
-                                         TX_TYPE tx_type,
-                                         int bd);
-
 void av1_fwd_txfm2d_16x8_c(const int16_t* input,
                            int32_t* output,
                            int stride,
@@ -966,38 +894,6 @@ RTCD_EXTERN void (*av1_fwd_txfm2d_32x64)(const int16_t* input,
                                          TX_TYPE tx_type,
                                          int bd);
 
-void av1_fwd_txfm2d_32x8_c(const int16_t* input,
-                           int32_t* output,
-                           int stride,
-                           TX_TYPE tx_type,
-                           int bd);
-void av1_fwd_txfm2d_32x8_sse4_1(const int16_t* input,
-                                int32_t* output,
-                                int stride,
-                                TX_TYPE tx_type,
-                                int bd);
-RTCD_EXTERN void (*av1_fwd_txfm2d_32x8)(const int16_t* input,
-                                        int32_t* output,
-                                        int stride,
-                                        TX_TYPE tx_type,
-                                        int bd);
-
-void av1_fwd_txfm2d_4x16_c(const int16_t* input,
-                           int32_t* output,
-                           int stride,
-                           TX_TYPE tx_type,
-                           int bd);
-void av1_fwd_txfm2d_4x16_sse4_1(const int16_t* input,
-                                int32_t* output,
-                                int stride,
-                                TX_TYPE tx_type,
-                                int bd);
-RTCD_EXTERN void (*av1_fwd_txfm2d_4x16)(const int16_t* input,
-                                        int32_t* output,
-                                        int stride,
-                                        TX_TYPE tx_type,
-                                        int bd);
-
 void av1_fwd_txfm2d_4x4_c(const int16_t* input,
                           int32_t* output,
                           int stride,
@@ -1029,22 +925,6 @@ RTCD_EXTERN void (*av1_fwd_txfm2d_4x8)(const int16_t* input,
                                        int stride,
                                        TX_TYPE tx_type,
                                        int bd);
-
-void av1_fwd_txfm2d_64x16_c(const int16_t* input,
-                            int32_t* output,
-                            int stride,
-                            TX_TYPE tx_type,
-                            int bd);
-void av1_fwd_txfm2d_64x16_sse4_1(const int16_t* input,
-                                 int32_t* output,
-                                 int stride,
-                                 TX_TYPE tx_type,
-                                 int bd);
-RTCD_EXTERN void (*av1_fwd_txfm2d_64x16)(const int16_t* input,
-                                         int32_t* output,
-                                         int stride,
-                                         TX_TYPE tx_type,
-                                         int bd);
 
 void av1_fwd_txfm2d_64x32_c(const int16_t* input,
                             int32_t* output,
@@ -1099,22 +979,6 @@ void av1_fwd_txfm2d_8x16_avx2(const int16_t* input,
                               TX_TYPE tx_type,
                               int bd);
 RTCD_EXTERN void (*av1_fwd_txfm2d_8x16)(const int16_t* input,
-                                        int32_t* output,
-                                        int stride,
-                                        TX_TYPE tx_type,
-                                        int bd);
-
-void av1_fwd_txfm2d_8x32_c(const int16_t* input,
-                           int32_t* output,
-                           int stride,
-                           TX_TYPE tx_type,
-                           int bd);
-void av1_fwd_txfm2d_8x32_sse4_1(const int16_t* input,
-                                int32_t* output,
-                                int stride,
-                                TX_TYPE tx_type,
-                                int bd);
-RTCD_EXTERN void (*av1_fwd_txfm2d_8x32)(const int16_t* input,
                                         int32_t* output,
                                         int stride,
                                         TX_TYPE tx_type,
@@ -2300,9 +2164,6 @@ static void setup_rtcd_internal(void) {
   av1_fwd_txfm2d_16x4 = av1_fwd_txfm2d_16x4_c;
   if (flags & HAS_SSE4_1)
     av1_fwd_txfm2d_16x4 = av1_fwd_txfm2d_16x4_sse4_1;
-  av1_fwd_txfm2d_16x64 = av1_fwd_txfm2d_16x64_c;
-  if (flags & HAS_SSE4_1)
-    av1_fwd_txfm2d_16x64 = av1_fwd_txfm2d_16x64_sse4_1;
   av1_fwd_txfm2d_16x8 = av1_fwd_txfm2d_16x8_c;
   if (flags & HAS_SSE4_1)
     av1_fwd_txfm2d_16x8 = av1_fwd_txfm2d_16x8_sse4_1;
@@ -2319,21 +2180,12 @@ static void setup_rtcd_internal(void) {
   av1_fwd_txfm2d_32x64 = av1_fwd_txfm2d_32x64_c;
   if (flags & HAS_SSE4_1)
     av1_fwd_txfm2d_32x64 = av1_fwd_txfm2d_32x64_sse4_1;
-  av1_fwd_txfm2d_32x8 = av1_fwd_txfm2d_32x8_c;
-  if (flags & HAS_SSE4_1)
-    av1_fwd_txfm2d_32x8 = av1_fwd_txfm2d_32x8_sse4_1;
-  av1_fwd_txfm2d_4x16 = av1_fwd_txfm2d_4x16_c;
-  if (flags & HAS_SSE4_1)
-    av1_fwd_txfm2d_4x16 = av1_fwd_txfm2d_4x16_sse4_1;
   av1_fwd_txfm2d_4x4 = av1_fwd_txfm2d_4x4_c;
   if (flags & HAS_SSE4_1)
     av1_fwd_txfm2d_4x4 = av1_fwd_txfm2d_4x4_sse4_1;
   av1_fwd_txfm2d_4x8 = av1_fwd_txfm2d_4x8_c;
   if (flags & HAS_SSE4_1)
     av1_fwd_txfm2d_4x8 = av1_fwd_txfm2d_4x8_sse4_1;
-  av1_fwd_txfm2d_64x16 = av1_fwd_txfm2d_64x16_c;
-  if (flags & HAS_SSE4_1)
-    av1_fwd_txfm2d_64x16 = av1_fwd_txfm2d_64x16_sse4_1;
   av1_fwd_txfm2d_64x32 = av1_fwd_txfm2d_64x32_c;
   if (flags & HAS_SSE4_1)
     av1_fwd_txfm2d_64x32 = av1_fwd_txfm2d_64x32_sse4_1;
@@ -2347,9 +2199,6 @@ static void setup_rtcd_internal(void) {
     av1_fwd_txfm2d_8x16 = av1_fwd_txfm2d_8x16_sse4_1;
   if (flags & HAS_AVX2)
     av1_fwd_txfm2d_8x16 = av1_fwd_txfm2d_8x16_avx2;
-  av1_fwd_txfm2d_8x32 = av1_fwd_txfm2d_8x32_c;
-  if (flags & HAS_SSE4_1)
-    av1_fwd_txfm2d_8x32 = av1_fwd_txfm2d_8x32_sse4_1;
   av1_fwd_txfm2d_8x4 = av1_fwd_txfm2d_8x4_c;
   if (flags & HAS_SSE4_1)
     av1_fwd_txfm2d_8x4 = av1_fwd_txfm2d_8x4_sse4_1;
