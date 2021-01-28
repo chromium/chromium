@@ -596,6 +596,12 @@ void VideoCaptureImpl::OnBufferReady(
   if (info->timestamp.is_zero())
     info->timestamp = reference_time - first_frame_ref_time_;
 
+  // If the capture_begin_time was not set use the reference time. This ensures
+  // there is a captureTime available for local sources for
+  // requestVideoFrameCallback.
+  if (!info->metadata.capture_begin_time)
+    info->metadata.capture_begin_time = reference_time;
+
   // TODO(qiangchen): Change the metric name to "reference_time" and
   // "timestamp", so that we have consistent naming everywhere.
   // Used by chrome/browser/media/cast_mirroring_performance_browsertest.cc
