@@ -660,9 +660,9 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
 }
 
 - (void)windowDidResignMain:(NSNotification*)notify {
-  if (chrome::GetTotalBrowserCount() == 0 && [self isProfileReady]) {
-    [self windowChangedToProfile:
-        g_browser_process->profile_manager()->GetLastUsedProfile()];
+  if (_lastProfile && chrome::GetTotalBrowserCount() == 0 &&
+      [self isProfileReady]) {
+    [self windowChangedToProfile:_lastProfile];
   }
 }
 

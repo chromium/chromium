@@ -448,6 +448,13 @@ Profile* ProfileManager::GetLastUsedProfile() {
 }
 
 // static
+Profile* ProfileManager::GetLastUsedProfileIfLoaded() {
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  return profile_manager->GetProfileByPath(
+      profile_manager->GetLastUsedProfileDir(profile_manager->user_data_dir()));
+}
+
+// static
 Profile* ProfileManager::GetLastUsedProfileAllowedByPolicy() {
   Profile* profile = GetLastUsedProfile();
   if (!profile)

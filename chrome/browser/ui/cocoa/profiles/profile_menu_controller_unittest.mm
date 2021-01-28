@@ -115,12 +115,15 @@ TEST_F(ProfileMenuControllerTest, RebuildMenu) {
 
   NSMenuItem* item = [menu itemAtIndex:0];
   EXPECT_EQ(@selector(switchToProfileFromMenu:), [item action]);
+  EXPECT_TRUE([controller() validateMenuItem:item]);
 
   item = [menu itemAtIndex:1];
   EXPECT_EQ(@selector(switchToProfileFromMenu:), [item action]);
+  EXPECT_TRUE([controller() validateMenuItem:item]);
 
   item = [menu itemAtIndex:2];
   EXPECT_EQ(@selector(switchToProfileFromMenu:), [item action]);
+  EXPECT_TRUE([controller() validateMenuItem:item]);
 
   TestBottomItems();
 
@@ -239,12 +242,20 @@ TEST_F(ProfileMenuControllerTest, DeleteActiveProfile) {
   PrefService* local_state = g_browser_process->local_state();
   local_state->SetString(prefs::kProfileLastUsed,
                          profile3_path.BaseName().MaybeAsASCII());
+  EXPECT_FALSE(ProfileManager::GetLastUsedProfileIfLoaded());
 
   // Simulate the active browser changing to NULL and ensure a profile doesn't
   // get created by disallowing IO operations temporarily.
-  const bool io_was_allowed = base::ThreadRestrictions::SetIOAllowed(false);
+  base::ScopedDisallowBlocking scoped_disallow_blocking;
   [controller() activeBrowserChangedTo:NULL];
-  base::ThreadRestrictions::SetIOAllowed(io_was_allowed);
+  // Check that validateMenuItem does not load a profile, and edit/new are
+  // disabled.
+  NSMenu* menu = [controller() menu];
+  for (NSMenuItem* item in [menu itemArray]) {
+    bool is_edit_new = [item action] == @selector(editProfile:) ||
+                       [item action] == @selector(newProfile:);
+    EXPECT_EQ([controller() validateMenuItem:item], !is_edit_new);
+  }
 }
 
 TEST_F(ProfileMenuControllerTest, AddProfileDisabled) {

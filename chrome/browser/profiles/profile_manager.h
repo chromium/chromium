@@ -67,7 +67,14 @@ class ProfileManager : public content::NotificationObserver,
   // GetLastUsedProfileAllowedByPolicy() instead.
   // Except in ChromeOS guest sessions, the returned profile is always a regular
   // profile (non-OffTheRecord).
+  // WARNING: if the profile does not exist, this function creates it
+  // synchronously, causing blocking file I/O. Use GetLastUsedProfileIfExists()
+  // to avoid creating the profile synchronously.
   static Profile* GetLastUsedProfile();
+
+  // Same as GetLastUsedProfile() but returns nullptr if the profile is not
+  // loaded. Does not block.
+  static Profile* GetLastUsedProfileIfLoaded();
 
   // Same as GetLastUsedProfile() but returns the incognito Profile if
   // incognito mode is forced. This should be used if the last used Profile
