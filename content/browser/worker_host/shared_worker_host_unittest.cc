@@ -75,12 +75,12 @@ class SharedWorkerHostTest : public testing::Test {
     SharedWorkerInstance instance(
         kWorkerUrl, blink::mojom::ScriptType::kClassic,
         network::mojom::CredentialsMode::kSameOrigin, "name",
-        url::Origin::Create(kWorkerUrl), /*content_security_policy=*/"",
-        network::mojom::ContentSecurityPolicyType::kReport,
+        url::Origin::Create(kWorkerUrl),
         network::mojom::IPAddressSpace::kPublic,
         blink::mojom::SharedWorkerCreationContextType::kSecure);
-    auto host =
-        std::make_unique<SharedWorkerHost>(&service_, instance, site_instance_);
+    auto host = std::make_unique<SharedWorkerHost>(
+        &service_, instance, site_instance_,
+        std::vector<network::mojom::ContentSecurityPolicyPtr>());
     auto weak_host = host->AsWeakPtr();
     service_.worker_hosts_.insert(std::move(host));
     return weak_host;
@@ -192,8 +192,7 @@ TEST_F(SharedWorkerHostTest, Normal) {
   mojo::PendingReceiver<blink::mojom::SharedWorker> worker_receiver;
   EXPECT_TRUE(factory_impl.CheckReceivedCreateSharedWorker(
       host->instance().url(), host->instance().name(),
-      host->instance().content_security_policy_type(), &worker_host,
-      &worker_receiver));
+      host->content_security_policies(), &worker_host, &worker_receiver));
   {
     MockSharedWorker worker(std::move(worker_receiver));
     base::RunLoop().RunUntilIdle();
@@ -282,8 +281,7 @@ TEST_F(SharedWorkerHostTest, TerminateAfterStarting) {
     mojo::PendingReceiver<blink::mojom::SharedWorker> worker_receiver;
     EXPECT_TRUE(factory_impl.CheckReceivedCreateSharedWorker(
         host->instance().url(), host->instance().name(),
-        host->instance().content_security_policy_type(), &worker_host,
-        &worker_receiver));
+        host->content_security_policies(), &worker_host, &worker_receiver));
     MockSharedWorker worker(std::move(worker_receiver));
 
     // Terminate after starting.
@@ -326,8 +324,7 @@ TEST_F(SharedWorkerHostTest, OnContextClosed) {
     mojo::PendingReceiver<blink::mojom::SharedWorker> worker_receiver;
     EXPECT_TRUE(factory_impl.CheckReceivedCreateSharedWorker(
         host->instance().url(), host->instance().name(),
-        host->instance().content_security_policy_type(), &worker_host,
-        &worker_receiver));
+        host->content_security_policies(), &worker_host, &worker_receiver));
     MockSharedWorker worker(std::move(worker_receiver));
 
     // Simulate the worker calling OnContextClosed().

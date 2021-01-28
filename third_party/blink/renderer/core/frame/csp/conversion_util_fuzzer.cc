@@ -53,7 +53,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   csp->SetupSelf(*SecurityOrigin::Create(KURL(url)));
 
   Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed_policies =
-      csp->ExposeForNavigationalChecks();
+      csp->GetParsedPolicies();
   if (parsed_policies.size() > 0) {
     network::mojom::blink::ContentSecurityPolicyPtr converted_csp =
         ConvertToMojoBlink(ConvertToPublic(parsed_policies[0]->Clone()));

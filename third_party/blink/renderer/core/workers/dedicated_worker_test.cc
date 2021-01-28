@@ -129,15 +129,13 @@ class DedicatedWorkerMessagingProxyForTest
   void StartWithSourceCode(const String& source) {
     KURL script_url("http://fake.url/");
     security_origin_ = SecurityOrigin::Create(script_url);
-    Vector<CSPHeaderAndType> headers{
-        {"contentSecurityPolicy",
-         network::mojom::ContentSecurityPolicyType::kReport}};
     auto worker_settings = std::make_unique<WorkerSettings>(
         To<LocalDOMWindow>(GetExecutionContext())->GetFrame()->GetSettings());
     auto params = std::make_unique<GlobalScopeCreationParams>(
         script_url, mojom::blink::ScriptType::kClassic,
         "fake global scope name", "fake user agent", UserAgentMetadata(),
-        nullptr /* web_worker_fetch_context */, headers,
+        nullptr /* web_worker_fetch_context */,
+        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
         network::mojom::ReferrerPolicy::kDefault, security_origin_.get(),
         false /* starter_secure_context */,
         CalculateHttpsState(security_origin_.get()),

@@ -93,7 +93,8 @@ DedicatedWorkerGlobalScope* DedicatedWorkerGlobalScope::Create(
     // have its own appcache and instead depends on the parent frame's one.
     global_scope->Initialize(
         response_script_url, response_referrer_policy, *response_address_space,
-        Vector<CSPHeaderAndType>(), nullptr /* response_origin_trial_tokens */,
+        Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+        nullptr /* response_origin_trial_tokens */,
         mojom::blink::kAppCacheNoCacheId);
     return global_scope;
   } else {
@@ -175,7 +176,8 @@ void DedicatedWorkerGlobalScope::Initialize(
     const KURL& response_url,
     network::mojom::ReferrerPolicy response_referrer_policy,
     network::mojom::IPAddressSpace response_address_space,
-    const Vector<CSPHeaderAndType>& /* response_csp_headers */,
+    Vector<network::mojom::blink::
+               ContentSecurityPolicyPtr> /* response_csp_headers */,
     const Vector<String>* /* response_origin_trial_tokens */,
     int64_t appcache_id) {
   // Step 14.3. "Set worker global scope's url to response's url."
@@ -198,7 +200,8 @@ void DedicatedWorkerGlobalScope::Initialize(
   // response CSP headers. These should be called after SetAddressSpace() to
   // correctly override the address space by the "treat-as-public-address" CSP
   // directive.
-  InitContentSecurityPolicyFromVector(OutsideContentSecurityPolicyHeaders());
+  InitContentSecurityPolicyFromVector(
+      mojo::Clone(OutsideContentSecurityPolicies()));
   BindContentSecurityPolicyToExecutionContext();
 
   // This should be called after OriginTrialContext::AddTokens() to install
@@ -393,7 +396,7 @@ void DedicatedWorkerGlobalScope::DidFetchClassicScript(
   // origin trial tokens in DedicatedWorkerGlobalScope's constructor.
   Initialize(classic_script_loader->ResponseURL(), response_referrer_policy,
              classic_script_loader->ResponseAddressSpace(),
-             Vector<CSPHeaderAndType>(),
+             Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
              nullptr /* response_origin_trial_tokens */,
              classic_script_loader->AppCacheID());
 

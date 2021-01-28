@@ -76,8 +76,8 @@ MockSharedWorkerFactory::~MockSharedWorkerFactory() = default;
 bool MockSharedWorkerFactory::CheckReceivedCreateSharedWorker(
     const GURL& expected_url,
     const std::string& expected_name,
-    network::mojom::ContentSecurityPolicyType
-        expected_content_security_policy_type,
+    const std::vector<network::mojom::ContentSecurityPolicyPtr>&
+        expected_content_security_policies,
     mojo::Remote<blink::mojom::SharedWorkerHost>* host,
     mojo::PendingReceiver<blink::mojom::SharedWorker>* receiver) {
   std::unique_ptr<CreateParams> create_params = std::move(create_params_);
@@ -87,9 +87,10 @@ bool MockSharedWorkerFactory::CheckReceivedCreateSharedWorker(
     return false;
   if (!CheckEquality(expected_name, create_params->info->options->name))
     return false;
-  if (!CheckEquality(expected_content_security_policy_type,
-                     create_params->info->content_security_policy_type))
+  if (!CheckEquality(expected_content_security_policies,
+                     create_params->info->content_security_policies)) {
     return false;
+  }
   if (!CheckEquality(ukm::SourceIdType::WORKER_ID,
                      ukm::GetSourceIdType(create_params->ukm_source_id))) {
     return false;

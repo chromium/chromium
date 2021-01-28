@@ -161,11 +161,6 @@ void WorkerModuleScriptFetcher::NotifyClient(
           kDoNotSupportReferrerPolicyLegacyKeywords, &response_referrer_policy);
     }
 
-    auto* response_content_security_policy =
-        MakeGarbageCollected<ContentSecurityPolicy>();
-    response_content_security_policy->DidReceiveHeaders(
-        ContentSecurityPolicyResponseHeaders(response));
-
     std::unique_ptr<Vector<String>> response_origin_trial_tokens =
         OriginTrialContext::ParseHeaderValue(
             response.HttpHeaderField(http_names::kOriginTrial));
@@ -173,7 +168,8 @@ void WorkerModuleScriptFetcher::NotifyClient(
     // Step 12.3-12.6 are implemented in Initialize().
     global_scope_->Initialize(
         response_url, response_referrer_policy, response.AddressSpace(),
-        response_content_security_policy->Headers(),
+        ContentSecurityPolicy::ParseHeaders(
+            ContentSecurityPolicyResponseHeaders(response)),
         response_origin_trial_tokens.get(), response.AppCacheID());
   }
 

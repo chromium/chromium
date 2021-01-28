@@ -64,19 +64,13 @@ void InstalledServiceWorkerModuleScriptFetcher::Fetch(
           kDoNotSupportReferrerPolicyLegacyKeywords, &response_referrer_policy);
     }
 
-    // Construct a ContentSecurityPolicy object to convert
-    // ContentSecurityPolicyResponseHeaders to CSPHeaderAndType.
-    // TODO(nhiroki): Find an efficient way to do this.
-    auto* response_content_security_policy =
-        MakeGarbageCollected<ContentSecurityPolicy>();
-    response_content_security_policy->DidReceiveHeaders(
-        script_data->GetContentSecurityPolicyResponseHeaders());
-
-    global_scope_->Initialize(response_url, response_referrer_policy,
-                              script_data->GetResponseAddressSpace(),
-                              response_content_security_policy->Headers(),
-                              script_data->CreateOriginTrialTokens().get(),
-                              mojom::blink::kAppCacheNoCacheId);
+    global_scope_->Initialize(
+        response_url, response_referrer_policy,
+        script_data->GetResponseAddressSpace(),
+        ContentSecurityPolicy::ParseHeaders(
+            script_data->GetContentSecurityPolicyResponseHeaders()),
+        script_data->CreateOriginTrialTokens().get(),
+        mojom::blink::kAppCacheNoCacheId);
   }
 
   ModuleType module_type;

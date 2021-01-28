@@ -192,4 +192,13 @@ blink::WebContentSecurityPolicy ToWebContentSecurityPolicy(
           ToWebVectorOfWebStrings(std::move(policy_in->parsing_errors))};
 }
 
+blink::WebVector<blink::WebContentSecurityPolicy> ToWebContentSecurityPolicies(
+    std::vector<network::mojom::ContentSecurityPolicyPtr> list_in) {
+  blink::WebVector<blink::WebContentSecurityPolicy> list_out(list_in.size());
+  size_t i = 0;
+  for (auto& element : list_in)
+    list_out[i++] = ToWebContentSecurityPolicy(std::move(element));
+  return list_out;
+}
+
 }  // namespace content

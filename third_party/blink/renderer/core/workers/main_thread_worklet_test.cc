@@ -63,7 +63,7 @@ class MainThreadWorkletTest : public PageTestBase {
         window->Url(), mojom::blink::ScriptType::kModule, "MainThreadWorklet",
         window->UserAgent(), window->GetFrame()->Loader().UserAgentMetadata(),
         nullptr /* web_worker_fetch_context */,
-        window->GetContentSecurityPolicy()->Headers(),
+        window->GetContentSecurityPolicy()->GetParsedPolicies(),
         window->GetReferrerPolicy(), window->GetSecurityOrigin(),
         window->IsSecureContext(), window->GetHttpsState(),
         nullptr /* worker_clients */, nullptr /* content_settings_client */,
@@ -166,13 +166,14 @@ TEST_F(MainThreadWorkletTest, TaskRunner) {
 // Test that having an invalid CSP does not result in an exception.
 // See bugs: 844383,844317
 TEST_F(MainThreadWorkletInvalidCSPTest, InvalidContentSecurityPolicy) {
-  ContentSecurityPolicy* csp = global_scope_->GetContentSecurityPolicy();
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> csp =
+      global_scope_->GetContentSecurityPolicy()->GetParsedPolicies();
 
   // At this point check that the CSP that was set is indeed invalid.
-  EXPECT_EQ(1ul, csp->Headers().size());
-  EXPECT_EQ("invalid-csp", csp->Headers().at(0).first);
+  EXPECT_EQ(1ul, csp.size());
+  EXPECT_EQ("invalid-csp", csp[0]->header->header_value);
   EXPECT_EQ(network::mojom::ContentSecurityPolicyType::kEnforce,
-            csp->Headers().at(0).second);
+            csp[0]->header->type);
 }
 
 }  // namespace blink

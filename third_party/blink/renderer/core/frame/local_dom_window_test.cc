@@ -219,6 +219,11 @@ TEST_F(PageTestBase, CSPForWorld) {
   GetFrame().DomWindow()->GetContentSecurityPolicy()->DidReceiveHeader(
       kMainWorldCSP, ContentSecurityPolicyType::kEnforce,
       ContentSecurityPolicySource::kHTTP);
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+      parsed_main_world_csp = GetFrame()
+                                  .DomWindow()
+                                  ->GetContentSecurityPolicy()
+                                  ->GetParsedPolicies();
 
   LocalFrame* frame = &GetFrame();
   ScriptState* main_world_script_state = ToScriptStateForMainWorld(frame);
@@ -243,18 +248,16 @@ TEST_F(PageTestBase, CSPForWorld) {
       SecurityOrigin::Create(KURL("chrome-extension://123")));
 
   // Returns the csp headers being used for the current world.
-  auto get_csp_headers = [this]() {
+  auto get_csp = [this]() {
     auto* csp =
         GetFrame().DomWindow()->GetContentSecurityPolicyForCurrentWorld();
-    return csp->Headers();
+    return csp->GetParsedPolicies();
   };
 
   {
     SCOPED_TRACE("In main world.");
     ScriptState::Scope scope(main_world_script_state);
-    EXPECT_THAT(get_csp_headers(),
-                ElementsAre(CSPHeaderAndType(
-                    {kMainWorldCSP, ContentSecurityPolicyType::kEnforce})));
+    EXPECT_EQ(get_csp(), parsed_main_world_csp);
   }
 
   {
@@ -263,18 +266,14 @@ TEST_F(PageTestBase, CSPForWorld) {
 
     // If we are in an isolated world with no CSP defined, we use the main world
     // CSP.
-    EXPECT_THAT(get_csp_headers(),
-                ElementsAre(CSPHeaderAndType(
-                    {kMainWorldCSP, ContentSecurityPolicyType::kEnforce})));
+    EXPECT_EQ(get_csp(), parsed_main_world_csp);
   }
 
   {
     SCOPED_TRACE("In isolated world with csp.");
     ScriptState::Scope scope(isolated_world_with_csp_script_state);
     // We use the isolated world's CSP if it specified one.
-    EXPECT_THAT(get_csp_headers(),
-                ElementsAre(CSPHeaderAndType(
-                    {kIsolatedWorldCSP, ContentSecurityPolicyType::kEnforce})));
+    EXPECT_EQ(get_csp()[0]->header->header_value, kIsolatedWorldCSP);
   }
 }
 

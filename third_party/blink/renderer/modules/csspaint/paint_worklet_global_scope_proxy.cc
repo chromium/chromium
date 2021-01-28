@@ -41,7 +41,7 @@ PaintWorkletGlobalScopeProxy::PaintWorkletGlobalScopeProxy(
       window->Url(), mojom::blink::ScriptType::kModule, global_scope_name,
       window->UserAgent(), frame->Client()->UserAgentMetadata(),
       frame->Client()->CreateWorkerFetchContext(),
-      window->GetContentSecurityPolicy()->Headers(),
+      window->GetContentSecurityPolicy()->GetParsedPolicies(),
       window->GetReferrerPolicy(), window->GetSecurityOrigin(),
       window->IsSecureContext(), window->GetHttpsState(),
       nullptr /* worker_clients */,

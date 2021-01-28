@@ -1174,7 +1174,6 @@ TEST_F(ContentSecurityPolicyTest, EmptyCSPIsNoOp) {
   auto* element =
       MakeGarbageCollected<HTMLScriptElement>(*document, CreateElementFlags());
 
-  EXPECT_TRUE(csp->Headers().IsEmpty());
   EXPECT_TRUE(csp->AllowInline(ContentSecurityPolicy::InlineType::kNavigation,
                                element, source, String() /* nonce */,
                                context_url, ordinal_number));

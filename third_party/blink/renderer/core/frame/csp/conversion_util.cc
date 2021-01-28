@@ -188,4 +188,12 @@ network::mojom::blink::ContentSecurityPolicyPtr ConvertToMojoBlink(
       ConvertToWTF(policy_in.parsing_errors));
 }
 
+Vector<network::mojom::blink::ContentSecurityPolicyPtr> ConvertToMojoBlink(
+    const WebVector<WebContentSecurityPolicy>& list_in) {
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> list_out;
+  for (const auto& element : list_in)
+    list_out.emplace_back(ConvertToMojoBlink(element));
+  return list_out;
+}
+
 }  // namespace blink

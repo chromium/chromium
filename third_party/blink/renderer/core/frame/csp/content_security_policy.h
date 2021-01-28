@@ -75,8 +75,6 @@ class SourceLocation;
 enum class ResourceType : uint8_t;
 
 typedef HeapVector<Member<ConsoleMessage>> ConsoleMessageVector;
-typedef std::pair<String, network::mojom::ContentSecurityPolicyType>
-    CSPHeaderAndType;
 using RedirectStatus = ResourceRequest::RedirectStatus;
 using network::mojom::blink::CSPDirectiveName;
 
@@ -186,6 +184,10 @@ class CORE_EXPORT ContentSecurityPolicy final
 
   static const size_t kMaxSampleLength = 40;
 
+  // Parse raw Content Security Policy strings into mojo types.
+  static WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+  ParseHeaders(const ContentSecurityPolicyResponseHeaders& headers);
+
   ContentSecurityPolicy();
   ~ContentSecurityPolicy();
   void Trace(Visitor*) const;
@@ -206,7 +208,9 @@ class CORE_EXPORT ContentSecurityPolicy final
                                 network::mojom::ContentSecurityPolicySource);
   void ReportAccumulatedHeaders() const;
 
-  Vector<CSPHeaderAndType> Headers() const;
+  void AddPolicies(
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies);
+  void AddPolicy(network::mojom::blink::ContentSecurityPolicyPtr policy);
 
   // Returns whether or not the Javascript code generation should call back the
   // CSP checker before any script evaluation from a string attempts.
@@ -438,12 +442,11 @@ class CORE_EXPORT ContentSecurityPolicy final
   bool SupportsWasmEval() const { return supports_wasm_eval_; }
   void SetSupportsWasmEval(bool value) { supports_wasm_eval_ = value; }
 
-  // Sometimes we don't know the initiator or it might be destroyed already
-  // for certain navigational checks. We create a string version of the relevant
-  // CSP directives to be passed around with the request. This allows us to
-  // perform these checks in NavigationRequest::CheckContentSecurityPolicy.
+  // Retrieve a copy of the parsed policies.
+  // TODO(antoniosartori): Make this return a const reference once we remove
+  // SetupSelf and this does not need to modify anything in the parsed policies.
   WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>
-  ExposeForNavigationalChecks() const;
+  GetParsedPolicies() const;
 
   // Retrieves the parsed sandbox flags. A lot of the time the execution
   // context will be used for all sandbox checks but there are situations
@@ -481,6 +484,10 @@ class CORE_EXPORT ContentSecurityPolicy final
   FRIEND_TEST_ALL_PREFIXES(FrameFetchContextTest,
                            PopulateResourceRequestChecksReportOnlyCSP);
 
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> Parse(
+      const String&,
+      network::mojom::ContentSecurityPolicyType,
+      network::mojom::ContentSecurityPolicySource);
   void ApplyPolicySideEffectsToDelegate();
   void ComputeInternalStateForParsedPolicy(
       const network::mojom::blink::ContentSecurityPolicy& csp);
@@ -542,7 +549,7 @@ class CORE_EXPORT ContentSecurityPolicy final
   // Clone |csp| and set the self_origin to SelfOrigin().
   // TODO(antoniosartori): Get rid of this when we will correctly track
   // self_origin inside network::mojom::blink::ContentSecurityPolicy.
-  network::mojom::blink::ContentSecurityPolicyPtr ExposeForNavigationalChecks(
+  network::mojom::blink::ContentSecurityPolicyPtr FillInSelf(
       const network::mojom::blink::ContentSecurityPolicyPtr& csp) const;
 
   Member<ContentSecurityPolicyDelegate> delegate_;

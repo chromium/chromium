@@ -87,12 +87,13 @@ class CORE_EXPORT DedicatedWorkerGlobalScope final : public WorkerGlobalScope {
   }
 
   // Implements WorkerGlobalScope.
-  void Initialize(const KURL& response_url,
-                  network::mojom::ReferrerPolicy response_referrer_policy,
-                  network::mojom::IPAddressSpace response_address_space,
-                  const Vector<CSPHeaderAndType>& response_csp_headers,
-                  const Vector<String>* response_origin_trial_tokens,
-                  int64_t appcache_host) override;
+  void Initialize(
+      const KURL& response_url,
+      network::mojom::ReferrerPolicy response_referrer_policy,
+      network::mojom::IPAddressSpace response_address_space,
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
+      const Vector<String>* response_origin_trial_tokens,
+      int64_t appcache_host) override;
   void FetchAndRunClassicScript(
       const KURL& script_url,
       std::unique_ptr<WorkerMainScriptLoadParameters>

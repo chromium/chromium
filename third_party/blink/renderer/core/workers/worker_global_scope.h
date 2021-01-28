@@ -148,7 +148,7 @@ class CORE_EXPORT WorkerGlobalScope
       const KURL& response_url,
       network::mojom::ReferrerPolicy response_referrer_policy,
       network::mojom::IPAddressSpace response_address_space,
-      const Vector<CSPHeaderAndType>& response_csp_headers,
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr> response_csp,
       const Vector<String>* response_origin_trial_tokens,
       int64_t appcache_id) = 0;
 

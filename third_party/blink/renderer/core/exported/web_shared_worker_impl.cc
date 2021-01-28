@@ -53,6 +53,7 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
+#include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
 #include "third_party/blink/renderer/core/script/script.h"
@@ -196,8 +197,7 @@ void WebSharedWorkerImpl::StartWorkerContext(
     WebSecurityOrigin constructor_origin,
     const WebString& user_agent,
     const UserAgentMetadata& ua_metadata,
-    const WebString& content_security_policy,
-    network::mojom::ContentSecurityPolicyType policy_type,
+    const WebVector<WebContentSecurityPolicy>& content_security_policies,
     network::mojom::IPAddressSpace creation_address_space,
     const WebFetchClientSettingsObject& outside_fetch_client_settings_object,
     const base::UnguessableToken& devtools_worker_token,
@@ -245,18 +245,13 @@ void WebSharedWorkerImpl::StartWorkerContext(
       false /* strictly_block_blockable_mixed_content */,
       GenericFontFamilySettings());
 
-  // CSP headers for parent Window's CSP.
-  Vector<CSPHeaderAndType> outside_csp_headers;
-  outside_csp_headers.ReserveInitialCapacity(1);
-  outside_csp_headers.UncheckedAppend(
-      CSPHeaderAndType(content_security_policy, policy_type));
-
   // Some params (e.g. address space) passed to GlobalScopeCreationParams are
   // dummy values. They will be updated after worker script fetch on the worker
   // thread.
   auto creation_params = std::make_unique<GlobalScopeCreationParams>(
       script_request_url, script_type, name, user_agent, ua_metadata,
-      std::move(web_worker_fetch_context), outside_csp_headers,
+      std::move(web_worker_fetch_context),
+      ConvertToMojoBlink(content_security_policies),
       outside_settings_object->GetReferrerPolicy(),
       outside_settings_object->GetSecurityOrigin(), constructor_secure_context,
       outside_settings_object->GetHttpsState(),
@@ -334,8 +329,7 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
     WebSecurityOrigin constructor_origin,
     const WebString& user_agent,
     const UserAgentMetadata& ua_metadata,
-    const WebString& content_security_policy,
-    network::mojom::ContentSecurityPolicyType policy_type,
+    const WebVector<WebContentSecurityPolicy>& content_security_policies,
     network::mojom::IPAddressSpace creation_address_space,
     const WebFetchClientSettingsObject& outside_fetch_client_settings_object,
     const base::UnguessableToken& appcache_host_id,
@@ -355,8 +349,8 @@ std::unique_ptr<WebSharedWorker> WebSharedWorker::CreateAndStart(
       token, appcache_host_id, std::move(host), client));
   worker->StartWorkerContext(
       script_request_url, script_type, credentials_mode, name,
-      constructor_origin, user_agent, ua_metadata, content_security_policy,
-      policy_type, creation_address_space, outside_fetch_client_settings_object,
+      constructor_origin, user_agent, ua_metadata, content_security_policies,
+      creation_address_space, outside_fetch_client_settings_object,
       devtools_worker_token, std::move(content_settings),
       std::move(browser_interface_broker), pause_worker_context_on_start,
       std::move(worker_main_script_load_params),

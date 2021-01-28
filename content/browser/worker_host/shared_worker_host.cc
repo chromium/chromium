@@ -107,10 +107,13 @@ class SharedWorkerHost::ScopedProcessHostRef {
 SharedWorkerHost::SharedWorkerHost(
     SharedWorkerServiceImpl* service,
     const SharedWorkerInstance& instance,
-    scoped_refptr<SiteInstanceImpl> site_instance)
+    scoped_refptr<SiteInstanceImpl> site_instance,
+    std::vector<network::mojom::ContentSecurityPolicyPtr>
+        content_security_policies)
     : service_(service),
       token_(blink::SharedWorkerToken()),
       instance_(instance),
+      content_security_policies_(std::move(content_security_policies)),
       site_instance_(std::move(site_instance)),
       scoped_process_host_ref_(
           std::make_unique<ScopedProcessHostRef>(site_instance_->GetProcess())),
@@ -182,8 +185,8 @@ void SharedWorkerHost::Start(
   auto options = blink::mojom::WorkerOptions::New(
       instance_.script_type(), instance_.credentials_mode(), instance_.name());
   blink::mojom::SharedWorkerInfoPtr info(blink::mojom::SharedWorkerInfo::New(
-      instance_.url(), std::move(options), instance_.content_security_policy(),
-      instance_.content_security_policy_type(),
+      instance_.url(), std::move(options),
+      mojo::Clone(content_security_policies_),
       instance_.creation_address_space(),
       std::move(outside_fetch_client_settings_object)));
 

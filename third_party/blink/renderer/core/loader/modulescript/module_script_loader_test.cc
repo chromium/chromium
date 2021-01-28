@@ -216,8 +216,9 @@ void ModuleScriptLoaderTest::InitializeForWorklet() {
   auto creation_params = std::make_unique<GlobalScopeCreationParams>(
       url_, mojom::blink::ScriptType::kModule, "GlobalScopeName", "UserAgent",
       UserAgentMetadata(), nullptr /* web_worker_fetch_context */,
-      Vector<CSPHeaderAndType>(), network::mojom::ReferrerPolicy::kDefault,
-      security_origin_.get(), true /* is_secure_context */, HttpsState::kModern,
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      network::mojom::ReferrerPolicy::kDefault, security_origin_.get(),
+      true /* is_secure_context */, HttpsState::kModern,
       nullptr /* worker_clients */, nullptr /* content_settings_client */,
       network::mojom::IPAddressSpace::kLocal, nullptr /* origin_trial_token */,
       base::UnguessableToken::Create(), nullptr /* worker_settings */,

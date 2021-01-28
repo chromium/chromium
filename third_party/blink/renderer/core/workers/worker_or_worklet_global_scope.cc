@@ -385,11 +385,8 @@ ResourceFetcher* WorkerOrWorkletGlobalScope::CreateOutsideSettingsFetcher(
   content_security_policy->SetSupportsWasmEval(
       SchemeRegistry::SchemeSupportsWasmEvalCSP(
           outside_settings_object.GetSecurityOrigin()->Protocol()));
-  for (const auto& policy_and_type : outside_content_security_policy_headers_) {
-    content_security_policy->DidReceiveHeader(
-        policy_and_type.first, policy_and_type.second,
-        network::mojom::ContentSecurityPolicySource::kHTTP);
-  }
+  content_security_policy->AddPolicies(
+      mojo::Clone(outside_content_security_policies_));
 
   OutsideSettingsCSPDelegate* csp_delegate =
       MakeGarbageCollected<OutsideSettingsCSPDelegate>(outside_settings_object,
@@ -448,24 +445,20 @@ void WorkerOrWorkletGlobalScope::SetSandboxFlags(
   }
 }
 
-void WorkerOrWorkletGlobalScope::SetOutsideContentSecurityPolicyHeaders(
-    const Vector<CSPHeaderAndType>& headers) {
-  outside_content_security_policy_headers_ = headers;
+void WorkerOrWorkletGlobalScope::SetOutsideContentSecurityPolicies(
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies) {
+  outside_content_security_policies_ = std::move(policies);
 }
 
 void WorkerOrWorkletGlobalScope::InitContentSecurityPolicyFromVector(
-    const Vector<CSPHeaderAndType>& headers) {
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies) {
   if (!GetContentSecurityPolicy()) {
     auto* csp = MakeGarbageCollected<ContentSecurityPolicy>();
     csp->SetSupportsWasmEval(SchemeRegistry::SchemeSupportsWasmEvalCSP(
         GetSecurityOrigin()->Protocol()));
     GetSecurityContext().SetContentSecurityPolicy(csp);
   }
-  for (const auto& policy_and_type : headers) {
-    GetContentSecurityPolicy()->DidReceiveHeader(
-        policy_and_type.first, policy_and_type.second,
-        network::mojom::ContentSecurityPolicySource::kHTTP);
-  }
+  GetContentSecurityPolicy()->AddPolicies(std::move(policies));
 }
 
 void WorkerOrWorkletGlobalScope::BindContentSecurityPolicyToExecutionContext() {

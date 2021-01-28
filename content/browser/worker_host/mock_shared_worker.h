@@ -70,8 +70,8 @@ class MockSharedWorkerFactory : public blink::mojom::SharedWorkerFactory {
   bool CheckReceivedCreateSharedWorker(
       const GURL& expected_url,
       const std::string& expected_name,
-      network::mojom::ContentSecurityPolicyType
-          expected_content_security_policy_type,
+      const std::vector<network::mojom::ContentSecurityPolicyPtr>&
+          expected_content_security_policies,
       mojo::Remote<blink::mojom::SharedWorkerHost>* host,
       mojo::PendingReceiver<blink::mojom::SharedWorker>* receiver);
 

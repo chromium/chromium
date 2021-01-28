@@ -556,8 +556,8 @@ WorkerGlobalScope::WorkerGlobalScope(
   https_state_ = CalculateHttpsState(GetSecurityOrigin(),
                                      creation_params->starter_https_state);
 
-  SetOutsideContentSecurityPolicyHeaders(
-      creation_params->outside_content_security_policy_headers);
+  SetOutsideContentSecurityPolicies(
+      std::move(creation_params->outside_content_security_policies));
   SetWorkerSettings(std::move(creation_params->worker_settings));
 
   // TODO(sammc): Require a valid |creation_params->browser_interface_broker|

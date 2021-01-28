@@ -342,6 +342,15 @@ void ContentSecurityPolicy::DidReceiveHeaders(
   }
 }
 
+// static
+WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+ContentSecurityPolicy::ParseHeaders(
+    const ContentSecurityPolicyResponseHeaders& headers) {
+  auto* content_security_policy = MakeGarbageCollected<ContentSecurityPolicy>();
+  content_security_policy->DidReceiveHeaders(headers);
+  return std::move(content_security_policy->policies_);
+}
+
 void ContentSecurityPolicy::DidReceiveHeader(
     const String& header,
     ContentSecurityPolicyType type,
@@ -358,11 +367,35 @@ void ContentSecurityPolicy::AddPolicyFromHeaderValue(
     const String& header,
     ContentSecurityPolicyType type,
     ContentSecurityPolicySource source) {
+  for (network::mojom::blink::ContentSecurityPolicyPtr& policy :
+       Parse(header, type, source)) {
+    AddPolicy(std::move(policy));
+  }
+}
+
+void ContentSecurityPolicy::AddPolicies(
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies) {
+  for (network::mojom::blink::ContentSecurityPolicyPtr& policy : policies)
+    AddPolicy(std::move(policy));
+}
+
+void ContentSecurityPolicy::AddPolicy(
+    network::mojom::blink::ContentSecurityPolicyPtr policy) {
+  ComputeInternalStateForParsedPolicy(*policy);
+  policies_.push_back(std::move(policy));
+}
+
+Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+ContentSecurityPolicy::Parse(const String& header,
+                             ContentSecurityPolicyType type,
+                             ContentSecurityPolicySource source) {
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies;
+
   // If this is a report-only header inside a <meta> element, bail out.
   if (source == ContentSecurityPolicySource::kMeta &&
       type == ContentSecurityPolicyType::kReport) {
     ReportReportOnlyInMeta(header);
-    return;
+    return policies;
   }
 
   Vector<UChar> characters;
@@ -382,15 +415,15 @@ void ContentSecurityPolicy::AddPolicyFromHeaderValue(
     //        ^                  ^
     network::mojom::blink::ContentSecurityPolicyPtr policy =
         CSPDirectiveListParse(this, begin, position, type, source);
-    ComputeInternalStateForParsedPolicy(*policy);
 
-    policies_.push_back(std::move(policy));
+    policies.push_back(std::move(policy));
 
     // Skip the comma, and begin the next header from the current position.
     DCHECK(position == end || *position == ',');
     SkipExactly<UChar>(position, end, ',');
     begin = position;
   }
+  return policies;
 }
 
 void ContentSecurityPolicy::ComputeInternalStateForParsedPolicy(
@@ -443,7 +476,7 @@ void ContentSecurityPolicy::ComputeInternalStateForParsedPolicy(
 void ContentSecurityPolicy::ReportAccumulatedHeaders() const {
   WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies;
   for (const auto& policy : policies_)
-    policies.push_back(ExposeForNavigationalChecks(policy));
+    policies.push_back(FillInSelf(policy));
 
   DCHECK(delegate_);
   delegate_->DidAddContentSecurityPolicies(std::move(policies));
@@ -467,8 +500,7 @@ void ContentSecurityPolicy::AddAndReportPolicyFromHeaderValue(
   WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> policies(
       policies_.size() - previous_policy_count);
   for (wtf_size_t i = previous_policy_count; i < policies_.size(); ++i) {
-    policies[i - previous_policy_count] =
-        ExposeForNavigationalChecks(policies_[i]);
+    policies[i - previous_policy_count] = FillInSelf(policies_[i]);
   }
 
   if (delegate_)
@@ -489,16 +521,6 @@ void ContentSecurityPolicy::SetOverrideURLForSelf(const KURL& url) {
   self_source_ = network::mojom::blink::CSPSource::New(
       self_protocol_, origin->Host(), origin->Port(), "",
       /*is_host_wildcard=*/false, /*is_port_wildcard=*/false);
-}
-
-Vector<CSPHeaderAndType> ContentSecurityPolicy::Headers() const {
-  Vector<CSPHeaderAndType> headers;
-  headers.ReserveInitialCapacity(policies_.size());
-  for (const auto& policy : policies_) {
-    headers.UncheckedAppend(
-        CSPHeaderAndType(policy->header->header_value, policy->header->type));
-  }
-  return headers;
 }
 
 // static
@@ -1763,15 +1785,15 @@ bool ContentSecurityPolicy::ShouldBypassContentSecurityPolicy(
 }
 
 WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr>
-ContentSecurityPolicy::ExposeForNavigationalChecks() const {
+ContentSecurityPolicy::GetParsedPolicies() const {
   WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> list;
   for (const auto& policy : policies_)
-    list.push_back(ExposeForNavigationalChecks(policy));
+    list.push_back(FillInSelf(policy));
   return list;
 }
 
 network::mojom::blink::ContentSecurityPolicyPtr
-ContentSecurityPolicy::ExposeForNavigationalChecks(
+ContentSecurityPolicy::FillInSelf(
     const network::mojom::blink::ContentSecurityPolicyPtr& csp) const {
   network::mojom::blink::ContentSecurityPolicyPtr clone = csp->Clone();
   clone->self_origin = GetSelfSource() ? GetSelfSource()->Clone() : nullptr;

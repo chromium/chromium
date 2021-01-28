@@ -730,7 +730,7 @@ void FrameLoader::StartNavigation(FrameLoadRequest& request,
                            ->ExperimentalFeaturesEnabled()) {
     ContentSecurityPolicy* origin_window_csp =
         origin_window->GetContentSecurityPolicy();
-    initiator_csp = origin_window_csp->ExposeForNavigationalChecks();
+    initiator_csp = origin_window_csp->GetParsedPolicies();
     NavigationInitiatorImpl::From(*origin_window)
         .BindReceiver(navigation_initiator.InitWithNewPipeAndPassReceiver());
   }

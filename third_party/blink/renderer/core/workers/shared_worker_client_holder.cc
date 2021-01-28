@@ -91,20 +91,6 @@ void SharedWorkerClientHolder::Connect(
   DCHECK(IsMainThread());
   DCHECK(options);
 
-  // TODO(estark): this is broken, as it only uses the first header
-  // when multiple might have been sent. Fix by making the
-  // mojom::blink::SharedWorkerInfo take a map that can contain multiple
-  // headers.
-  Vector<CSPHeaderAndType> headers =
-      worker->GetExecutionContext()->GetContentSecurityPolicy()->Headers();
-  WebString header = "";
-  auto header_type = network::mojom::ContentSecurityPolicyType::kReport;
-  if (headers.size() > 0) {
-    header = headers[0].first;
-    header_type = static_cast<network::mojom::ContentSecurityPolicyType>(
-        headers[0].second);
-  }
-
   mojo::PendingRemote<mojom::blink::SharedWorkerClient> client;
   client_receivers_.Add(std::make_unique<SharedWorkerClient>(worker),
                         client.InitWithNewPipeAndPassReceiver(), task_runner_);
@@ -124,7 +110,10 @@ void SharedWorkerClientHolder::Connect(
           : mojom::InsecureRequestsPolicy::kDoNotUpgrade;
 
   auto info = mojom::blink::SharedWorkerInfo::New(
-      url, std::move(options), header, header_type,
+      url, std::move(options),
+      worker->GetExecutionContext()
+          ->GetContentSecurityPolicy()
+          ->GetParsedPolicies(),
       worker->GetExecutionContext()->AddressSpace(),
       mojom::blink::FetchClientSettingsObject::New(
           outside_fetch_client_settings_object->GetReferrerPolicy(),

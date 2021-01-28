@@ -48,7 +48,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
       const String& user_agent,
       const base::Optional<UserAgentMetadata>& ua_metadata,
       scoped_refptr<WebWorkerFetchContext>,
-      const Vector<CSPHeaderAndType>& outside_content_security_policy_headers,
+      Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+          outside_content_security_policies,
       network::mojom::ReferrerPolicy referrer_policy,
       const SecurityOrigin*,
       bool starter_secure_context,
@@ -98,7 +99,8 @@ struct CORE_EXPORT GlobalScopeCreationParams final {
   // TODO(bashi): This contains "inside" CSP headers for on-the-main-thread
   // service/shared worker script fetch. Add a separate parameter for "inside"
   // CSP headers.
-  Vector<CSPHeaderAndType> outside_content_security_policy_headers;
+  Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+      outside_content_security_policies;
 
   network::mojom::ReferrerPolicy referrer_policy;
   std::unique_ptr<Vector<String>> origin_trial_tokens;

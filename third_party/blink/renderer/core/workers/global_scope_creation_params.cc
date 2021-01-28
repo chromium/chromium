@@ -20,7 +20,8 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     const String& user_agent,
     const base::Optional<UserAgentMetadata>& ua_metadata,
     scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
-    const Vector<CSPHeaderAndType>& outside_content_security_policy_headers,
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+        outside_content_security_policies,
     network::mojom::ReferrerPolicy referrer_policy,
     const SecurityOrigin* starter_origin,
     bool starter_secure_context,
@@ -47,6 +48,8 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       user_agent(user_agent.IsolatedCopy()),
       ua_metadata(ua_metadata.value_or(blink::UserAgentMetadata())),
       web_worker_fetch_context(std::move(web_worker_fetch_context)),
+      outside_content_security_policies(
+          std::move(outside_content_security_policies)),
       referrer_policy(referrer_policy),
       starter_origin(starter_origin ? starter_origin->IsolatedCopy() : nullptr),
       starter_secure_context(starter_secure_context),
@@ -71,13 +74,6 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       parent_context_token(parent_context_token),
       parent_cross_origin_isolated_capability(
           parent_cross_origin_isolated_capability) {
-  this->outside_content_security_policy_headers.ReserveInitialCapacity(
-      outside_content_security_policy_headers.size());
-  for (const auto& header : outside_content_security_policy_headers) {
-    this->outside_content_security_policy_headers.emplace_back(
-        header.first.IsolatedCopy(), header.second);
-  }
-
   this->origin_trial_tokens = std::make_unique<Vector<String>>();
   if (origin_trial_tokens) {
     for (const String& token : *origin_trial_tokens)

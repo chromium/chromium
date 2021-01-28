@@ -98,6 +98,8 @@ class CONTENT_EXPORT SharedWorkerServiceImpl : public SharedWorkerService {
   SharedWorkerHost* CreateWorker(
       RenderFrameHostImpl& creator,
       const SharedWorkerInstance& instance,
+      std::vector<network::mojom::ContentSecurityPolicyPtr>
+          content_security_policies,
       blink::mojom::FetchClientSettingsObjectPtr
           outside_fetch_client_settings_object,
       const std::string& storage_domain,

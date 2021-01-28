@@ -62,7 +62,7 @@ void ThreadedWorkletMessagingProxy::Initialize(
           window->UserAgent(),
           window->GetFrame()->Client()->UserAgentMetadata(),
           window->GetFrame()->Client()->CreateWorkerFetchContext(),
-          csp->Headers(), window->GetReferrerPolicy(),
+          csp->GetParsedPolicies(), window->GetReferrerPolicy(),
           window->GetSecurityOrigin(), window->IsSecureContext(),
           window->GetHttpsState(), worker_clients,
           window->GetFrame()->Client()->CreateWorkerContentSettingsClient(),

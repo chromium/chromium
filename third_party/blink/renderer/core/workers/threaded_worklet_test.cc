@@ -125,11 +125,12 @@ class ThreadedWorkletThreadForTest : public WorkerThread {
     EXPECT_TRUE(IsCurrentThread());
 
     // At this point check that the CSP that was set is indeed invalid.
-    ContentSecurityPolicy* csp = GlobalScope()->GetContentSecurityPolicy();
-    EXPECT_EQ(1ul, csp->Headers().size());
-    EXPECT_EQ("invalid-csp", csp->Headers().at(0).first);
+    Vector<network::mojom::blink::ContentSecurityPolicyPtr> csp =
+        GlobalScope()->GetContentSecurityPolicy()->GetParsedPolicies();
+    EXPECT_EQ(1ul, csp.size());
+    EXPECT_EQ("invalid-csp", csp[0]->header->header_value);
     EXPECT_EQ(network::mojom::ContentSecurityPolicyType::kEnforce,
-              csp->Headers().at(0).second);
+              csp[0]->header->type);
 
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
                         CrossThreadBindOnce(&test::ExitRunLoop));
@@ -208,7 +209,9 @@ class ThreadedWorkletMessagingProxyForTest
                 ->Loader()
                 .UserAgentMetadata(),
             nullptr /* web_worker_fetch_context */,
-            GetExecutionContext()->GetContentSecurityPolicy()->Headers(),
+            GetExecutionContext()
+                ->GetContentSecurityPolicy()
+                ->GetParsedPolicies(),
             GetExecutionContext()->GetReferrerPolicy(),
             GetExecutionContext()->GetSecurityOrigin(),
             GetExecutionContext()->IsSecureContext(),
