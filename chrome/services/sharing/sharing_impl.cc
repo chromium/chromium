@@ -19,7 +19,11 @@ SharingImpl::SharingImpl(
     : receiver_(this, std::move(receiver)),
       io_task_runner_(std::move(io_task_runner)) {}
 
-SharingImpl::~SharingImpl() = default;
+SharingImpl::~SharingImpl() {
+  // No need to call DoShutDown() from the destructor because SharingImpl should
+  // only be destroyed after SharingImpl::ShutDown() has been called.
+  DCHECK(!nearby_connections_ && !nearby_decoder_);
+}
 
 void SharingImpl::Connect(
     NearbyConnectionsDependenciesPtr deps,
@@ -38,13 +42,24 @@ void SharingImpl::Connect(
 }
 
 void SharingImpl::ShutDown(ShutDownCallback callback) {
-  nearby_connections_.reset();
-  nearby_decoder_.reset();
+  DoShutDown(/*is_expected=*/true);
   std::move(callback).Run();
 }
 
-void SharingImpl::NearbyConnectionsDisconnected() {
+void SharingImpl::DoShutDown(bool is_expected) {
+  if (!nearby_connections_ && !nearby_decoder_)
+    return;
+
   nearby_connections_.reset();
+  nearby_decoder_.reset();
+
+  // Leave |receiver_| valid. Its disconnection is reserved as a signal that the
+  // Sharing utility process has crashed.
+}
+
+void SharingImpl::NearbyConnectionsDisconnected() {
+  LOG(ERROR) << "A Sharing process dependency has unexpectedly disconnected.";
+  DoShutDown(/*is_expected=*/false);
 }
 
 }  // namespace sharing

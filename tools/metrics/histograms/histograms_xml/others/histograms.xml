@@ -9641,6 +9641,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Nearby.Connections.UtilityProcessShutdownReason"
+    enum="NearbyConnectionsUtilityProcessShutdownReason"
+    expires_after="2022-01-26">
+  <owner>hansberry@chromium.org</owner>
+  <owner>nearby-share-chromeos-eng@google.com</owner>
+  <summary>
+    Records why the Sharing utility process, which hosts Nearby Connections, was
+    shut down: for an expected reason (i.e., shut down request from a client),
+    or another unexpected reason (e.g., a crash).
+  </summary>
+</histogram>
+
 <histogram
     name="Nearby.Share.Certificates.Manager.BluetoothMacAddressPresentForPrivateCertificateCreation"
     enum="BooleanPresent" expires_after="2021-08-19">

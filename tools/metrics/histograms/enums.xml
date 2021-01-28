@@ -51495,6 +51495,12 @@ Called by update_use_counter_css.py.-->
   <int value="14" label="Payload unknown"/>
 </enum>
 
+<enum name="NearbyConnectionsUtilityProcessShutdownReason">
+  <int value="0" label="Normal"/>
+  <int value="1" label="Crash"/>
+  <int value="2" label="Mojo pipe disconnection"/>
+</enum>
+
 <enum name="NearbyShareCertificateManagerGetDecryptedPublicCertificateResult">
   <int value="0" label="Success"/>
   <int value="1" label="No Match"/>

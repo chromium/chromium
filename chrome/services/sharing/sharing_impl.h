@@ -58,6 +58,7 @@ class SharingImpl : public mojom::Sharing {
  private:
   friend class SharingImplTest;
 
+  void DoShutDown(bool is_expected);
   void NearbyConnectionsDisconnected();
 
   mojo::Receiver<mojom::Sharing> receiver_;

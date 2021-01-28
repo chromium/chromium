@@ -24,7 +24,7 @@ class NearbyConnectionsDependenciesProvider;
 // because its dependencies are associated with the current user.
 //
 // This class starts up the utility process when at least one client holds a
-// NearbyReferenceImpl object. When the first client requets a reference, this
+// NearbyReferenceImpl object. When the first client requests a reference, this
 // class creates a Mojo connection to the Sharing interface, which causes the
 // process to start up. Once the last remaining client deletes its reference,
 // this class invokes the asynchronous shutdown flow, then disconnects the
@@ -52,6 +52,16 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
 
  private:
   friend class NearbyProcessManagerImplTest;
+
+  // These values are used for metrics. Entries should not be renumbered and
+  // numeric values should never be reused. If entries are added, kMaxValue
+  // should be updated.
+  enum class UtilityProcessShutdownReason {
+    kNormal = 0,
+    kCrash = 1,
+    kMojoPipeDisconnection = 2,
+    kMaxValue = kMojoPipeDisconnection
+  };
 
   class NearbyReferenceImpl
       : public NearbyProcessManager::NearbyProcessReference {
@@ -95,9 +105,11 @@ class NearbyProcessManagerImpl : public NearbyProcessManager {
   // Returns whether the process was successfully bound.
   bool AttemptToBindToUtilityProcess();
 
-  void OnActiveSharingDisconnected();
+  void OnSharingProcessCrash();
+  void OnMojoPipeDisconnect();
   void OnReferenceDeleted(const base::UnguessableToken& reference_id);
-  void ShutDownProcess();
+  void ShutDownProcess(UtilityProcessShutdownReason shutdown_reason);
+  void NotifyProcessStopped();
 
   NearbyConnectionsDependenciesProvider*
       nearby_connections_dependencies_provider_;
