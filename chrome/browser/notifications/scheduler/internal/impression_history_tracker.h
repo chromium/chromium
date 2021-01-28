@@ -70,7 +70,8 @@ class ImpressionHistoryTracker : public UserActionHandler {
 
   // Queries impression based on guid, returns nullptr if no impression is
   // found.
-  virtual const Impression* GetImpression(const std::string& guid) const = 0;
+  virtual const Impression* GetImpression(SchedulerClientType type,
+                                          const std::string& guid) = 0;
 
   // Queries the impression detail of a given |SchedulerClientType|.
   virtual void GetImpressionDetail(
@@ -108,7 +109,8 @@ class ImpressionHistoryTrackerImpl : public ImpressionHistoryTracker {
   void AnalyzeImpressionHistory() override;
   void GetClientStates(std::map<SchedulerClientType, const ClientState*>*
                            client_states) const override;
-  const Impression* GetImpression(const std::string& guid) const override;
+  const Impression* GetImpression(SchedulerClientType type,
+                                  const std::string& guid) override;
   void GetImpressionDetail(
       SchedulerClientType type,
       ImpressionDetail::ImpressionDetailCallback callback) override;
@@ -165,13 +167,21 @@ class ImpressionHistoryTrackerImpl : public ImpressionHistoryTracker {
   bool NeedsUpdate(SchedulerClientType type) const;
 
   // Finds an impression that needs to update based on notification id.
-  Impression* FindImpressionNeedsUpdate(const std::string& notification_guid);
+  Impression* FindImpressionNeedsUpdate(SchedulerClientType type,
+                                        const std::string& notification_guid);
+  Impression* GetImpressionInternal(SchedulerClientType type,
+                                    const std::string& guid);
 
-  void OnClickInternal(const std::string& notification_guid, bool update_db);
-  void OnButtonClickInternal(const std::string& notification_guid,
+  void OnClickInternal(SchedulerClientType type,
+                       const std::string& notification_guid,
+                       bool update_db);
+  void OnButtonClickInternal(SchedulerClientType type,
+                             const std::string& notification_guid,
                              ActionButtonType button_type,
                              bool update_db);
-  void OnDismissInternal(const std::string& notification_guid, bool update_db);
+  void OnDismissInternal(SchedulerClientType type,
+                         const std::string& notification_guid,
+                         bool update_db);
   void OnCustomNegativeActionCountQueried(
       SchedulerClientType type,
       base::circular_deque<Impression*>* impressions,
@@ -183,10 +193,6 @@ class ImpressionHistoryTrackerImpl : public ImpressionHistoryTracker {
   // Impression history and global states for all notification scheduler
   // clients.
   ClientStates client_states_;
-
-  // Notification guid to Impression map.
-  // TODO(xingliu): Consider to remove this.
-  std::map<std::string, Impression*> impression_map_;
 
   // The storage that persists data.
   std::unique_ptr<CollectionStore<ClientState>> store_;

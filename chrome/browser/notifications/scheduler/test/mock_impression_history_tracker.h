@@ -29,7 +29,8 @@ class MockImpressionHistoryTracker : public ImpressionHistoryTracker {
   MOCK_METHOD0(AnalyzeImpressionHistory, void());
   MOCK_CONST_METHOD1(GetClientStates,
                      void(std::map<SchedulerClientType, const ClientState*>*));
-  MOCK_CONST_METHOD1(GetImpression, Impression*(const std::string&));
+  MOCK_METHOD2(GetImpression,
+               const Impression*(SchedulerClientType, const std::string&));
   MOCK_METHOD2(GetImpressionDetail,
                void(SchedulerClientType,
                     ImpressionDetail::ImpressionDetailCallback));
