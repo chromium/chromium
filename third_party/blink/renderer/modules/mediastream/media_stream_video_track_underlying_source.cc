@@ -80,6 +80,12 @@ double MediaStreamVideoTrackUnderlyingSource::DesiredSizeForTesting() const {
   return Controller()->DesiredSize();
 }
 
+void MediaStreamVideoTrackUnderlyingSource::ContextDestroyed() {
+  DCHECK(main_task_runner_->BelongsToCurrentThread());
+  UnderlyingSourceBase::ContextDestroyed();
+  queue_.clear();
+}
+
 void MediaStreamVideoTrackUnderlyingSource::Close() {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
   DisconnectFromTrack();
@@ -132,7 +138,9 @@ void MediaStreamVideoTrackUnderlyingSource::ProcessPullRequest() {
 void MediaStreamVideoTrackUnderlyingSource::SendFrameToStream(
     scoped_refptr<media::VideoFrame> media_frame) {
   DCHECK(media_frame);
-  DCHECK(Controller());
+  if (!Controller())
+    return;
+
   VideoFrame* video_frame = MakeGarbageCollected<VideoFrame>(
       std::move(media_frame), GetExecutionContext());
   Controller()->Enqueue(video_frame);

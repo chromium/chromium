@@ -32,6 +32,9 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
   ScriptPromise Start(ScriptState*) override;
   ScriptPromise Cancel(ScriptState*, ScriptValue reason) override;
 
+  // ExecutionLifecycleObserver
+  void ContextDestroyed() override;
+
   MediaStreamComponent* Track() const { return track_.Get(); }
   wtf_size_t MaxQueueSize() const { return max_queue_size_; }
 

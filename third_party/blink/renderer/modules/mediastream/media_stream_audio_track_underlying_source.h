@@ -40,6 +40,9 @@ class MODULES_EXPORT MediaStreamAudioTrackUnderlyingSource
               base::TimeTicks estimated_capture_time) override;
   void OnSetFormat(const media::AudioParameters& params) override;
 
+  // ExecutionLifecycleObserver
+  void ContextDestroyed() override;
+
   MediaStreamComponent* Track() const { return track_.Get(); }
   wtf_size_t MaxQueueSize() const { return max_queue_size_; }
 

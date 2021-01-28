@@ -87,6 +87,12 @@ double MediaStreamAudioTrackUnderlyingSource::DesiredSizeForTesting() const {
   return Controller()->DesiredSize();
 }
 
+void MediaStreamAudioTrackUnderlyingSource::ContextDestroyed() {
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  UnderlyingSourceBase::ContextDestroyed();
+  queue_.clear();
+}
+
 void MediaStreamAudioTrackUnderlyingSource::Close() {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   DisconnectFromTrack();
@@ -152,7 +158,9 @@ void MediaStreamAudioTrackUnderlyingSource::ProcessPullRequest() {
 
 void MediaStreamAudioTrackUnderlyingSource::SendFrameToStream(
     std::unique_ptr<AudioFrameSerializationData> queue_data) {
-  DCHECK(Controller());
+  if (!Controller())
+    return;
+
   AudioFrame* audio_frame =
       MakeGarbageCollected<AudioFrame>(std::move(queue_data));
   Controller()->Enqueue(audio_frame);
