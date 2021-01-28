@@ -88,6 +88,15 @@ class ModuleWrapperElement extends PolymerElement {
       headerObserver.observe(this.$.impressionProbe);
       moduleObserver.observe(this);
     });
+
+    // Track whether the user hovered on the module.
+    this.addEventListener('mouseover', () => {
+      chrome.metricsPrivate.recordSparseHashable(
+          'NewTabPage.Modules.Hover', this.descriptor.id);
+    }, {
+      useCapture: true,  // So that modules cannot swallow event.
+      once: true,        // Only one log per NTP load.
+    });
   }
 }
 
