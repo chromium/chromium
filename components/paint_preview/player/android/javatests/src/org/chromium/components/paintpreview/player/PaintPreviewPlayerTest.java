@@ -148,26 +148,11 @@ public class PaintPreviewPlayerTest extends DummyUiActivityTestCase {
 
     @Test
     @MediumTest
-    @DisableIf.Build(message = "Flaky, see crbug.com/1110939 and crbug.com/1169668.",
-            sdk_is_less_than = VERSION_CODES.Q)
-    public void
-    nestedLinkClickTest() throws Exception {
+    public void nestedLinkClickTest() throws Exception {
         initPlayerManager(true);
         final View playerHostView = mPlayerManager.getView();
         assertLinkUrl(playerHostView, 220, 220, TEST_IN_VIEWPORT_LINK_URL);
         assertLinkUrl(playerHostView, 300, 270, TEST_IN_VIEWPORT_LINK_URL);
-
-        UiDevice device = UiDevice.getInstance(InstrumentationRegistry.getInstrumentation());
-        int deviceHeight = device.getDisplayHeight();
-        int statusBarHeight = statusBarHeight();
-        int navigationBarHeight = navigationBarHeight();
-        int padding = 20;
-        int fromY = deviceHeight - navigationBarHeight - padding;
-        int toY = statusBarHeight + padding;
-        mLinkClickHandler.mUrl = null;
-        device.swipe(300, fromY, 300, toY, 10);
-
-        assertLinkUrl(playerHostView, 200, 1500, TEST_OUT_OF_VIEWPORT_LINK_URL);
     }
 
     @Test
