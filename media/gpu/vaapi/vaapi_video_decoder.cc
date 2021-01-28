@@ -611,9 +611,18 @@ void VaapiVideoDecoder::ApplyResolutionChangeWithScreenSizes(
     const std::vector<gfx::Size>& screen_resolutions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_ == State::kChangingResolution ||
-         state_ == State::kWaitingForInput);
+         state_ == State::kWaitingForInput || state_ == State::kResetting ||
+         state_ == State::kError);
   DCHECK(output_frames_.empty());
   VLOGF(2);
+  // If we are not in the state for changing resolution, then skip doing it. For
+  // all the other states, those can occur because something happened after the
+  // async call to get the screen sizes in ApplyResolutionChange(), and in that
+  // case we will get another resolution change event when the decoder parses
+  // the resolution and notifies us.
+  if (state_ != State::kChangingResolution)
+    return;
+
   const uint8_t bit_depth = decoder_->GetBitDepth();
   const base::Optional<VideoPixelFormat> format =
       GetPixelFormatForBitDepth(bit_depth);
@@ -1004,7 +1013,8 @@ void VaapiVideoDecoder::SetState(State state) {
     case State::kResetting:
       DCHECK(state_ == State::kWaitingForInput ||
              state_ == State::kWaitingForOutput || state_ == State::kDecoding ||
-             state_ == State::kWaitingForProtected);
+             state_ == State::kWaitingForProtected ||
+             state_ == State::kChangingResolution);
       ClearDecodeTaskQueue(DecodeStatus::ABORTED);
       break;
     case State::kChangingResolution:
