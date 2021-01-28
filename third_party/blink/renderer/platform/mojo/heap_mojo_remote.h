@@ -31,8 +31,8 @@ class HeapMojoRemote {
   DISALLOW_NEW();
 
  public:
-  explicit HeapMojoRemote(MojoBindingContext* context)
-      : wrapper_(MakeGarbageCollected<Wrapper>(context)) {}
+  explicit HeapMojoRemote(ContextLifecycleNotifier* notifier)
+      : wrapper_(MakeGarbageCollected<Wrapper>(notifier)) {}
   HeapMojoRemote(const HeapMojoRemote&) = delete;
   HeapMojoRemote& operator=(const HeapMojoRemote&) = delete;
   HeapMojoRemote(HeapMojoRemote&&) = default;
@@ -79,7 +79,9 @@ class HeapMojoRemote {
   class Wrapper final : public GarbageCollected<Wrapper>,
                         public ContextLifecycleObserver {
    public:
-    explicit Wrapper(MojoBindingContext* context) { SetContext(context); }
+    explicit Wrapper(ContextLifecycleNotifier* notifier) {
+      SetContextLifecycleNotifier(notifier);
+    }
     Wrapper(const Wrapper&) = delete;
     Wrapper& operator=(const Wrapper&) = delete;
     Wrapper(Wrapper&&) = default;

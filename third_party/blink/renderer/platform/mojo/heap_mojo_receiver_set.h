@@ -34,7 +34,7 @@ class HeapMojoReceiverSet {
  public:
   using ContextTraits = mojo::ReceiverSetContextTraits<ContextType>;
   using Context = typename ContextTraits::Type;
-  explicit HeapMojoReceiverSet(Owner* owner, MojoBindingContext* context)
+  explicit HeapMojoReceiverSet(Owner* owner, ContextLifecycleNotifier* context)
       : wrapper_(MakeGarbageCollected<Wrapper>(owner, context)) {
     static_assert(std::is_base_of<Interface, Owner>::value,
                   "Owner should implement Interface");
@@ -98,9 +98,9 @@ class HeapMojoReceiverSet {
     USING_PRE_FINALIZER(Wrapper, Dispose);
 
    public:
-    explicit Wrapper(Owner* owner, MojoBindingContext* context)
+    explicit Wrapper(Owner* owner, ContextLifecycleNotifier* notifier)
         : owner_(owner) {
-      SetContext(context);
+      SetContextLifecycleNotifier(notifier);
     }
 
     void Trace(Visitor* visitor) const override {

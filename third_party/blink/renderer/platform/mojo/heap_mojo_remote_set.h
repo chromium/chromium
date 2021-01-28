@@ -38,8 +38,8 @@ class HeapMojoRemoteSet {
       typename mojo::RemoteSet<Interface>::DisconnectHandler;
   using Iterator = typename mojo::RemoteSet<Interface>::Iterator;
 
-  explicit HeapMojoRemoteSet(MojoBindingContext* context)
-      : wrapper_(MakeGarbageCollected<Wrapper>(context)) {}
+  explicit HeapMojoRemoteSet(ContextLifecycleNotifier* notifier)
+      : wrapper_(MakeGarbageCollected<Wrapper>(notifier)) {}
   HeapMojoRemoteSet(const HeapMojoRemoteSet&) = delete;
   HeapMojoRemoteSet& operator=(const HeapMojoRemoteSet&) = delete;
   HeapMojoRemoteSet(HeapMojoRemoteSet&&) = default;
@@ -89,7 +89,9 @@ class HeapMojoRemoteSet {
   class Wrapper final : public GarbageCollected<Wrapper>,
                         public ContextLifecycleObserver {
    public:
-    explicit Wrapper(MojoBindingContext* context) { SetContext(context); }
+    explicit Wrapper(ContextLifecycleNotifier* notifier) {
+      SetContextLifecycleNotifier(notifier);
+    }
     Wrapper(const Wrapper&) = delete;
     Wrapper& operator=(const Wrapper&) = delete;
     Wrapper(Wrapper&&) = default;

@@ -20,7 +20,7 @@ namespace blink {
 BeginFrameProvider::BeginFrameProvider(
     const BeginFrameProviderParams& begin_frame_provider_params,
     BeginFrameProviderClient* client,
-    MojoBindingContext* context)
+    ContextLifecycleNotifier* context)
     : needs_begin_frame_(false),
       requested_needs_begin_frame_(false),
       cfs_receiver_(this, context),

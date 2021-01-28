@@ -12,7 +12,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/interfaces/bindings/tests/sample_service.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/heap/heap_test_utilities.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
@@ -24,7 +24,7 @@ namespace blink {
 namespace {
 
 class FakeContextNotifier final : public GarbageCollected<FakeContextNotifier>,
-                                  public MojoBindingContext {
+                                  public ContextLifecycleNotifier {
  public:
   FakeContextNotifier() = default;
 
@@ -43,16 +43,10 @@ class FakeContextNotifier final : public GarbageCollected<FakeContextNotifier>,
     });
   }
 
-  const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker()
-      const override {
-    return GetEmptyBrowserInterfaceBroker();
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(observers_);
+    ContextLifecycleNotifier::Trace(visitor);
   }
-
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override {
-    return nullptr;
-  }
-
-  void Trace(Visitor* visitor) const { visitor->Trace(observers_); }
 
  private:
   HeapObserverSet<ContextLifecycleObserver> observers_;

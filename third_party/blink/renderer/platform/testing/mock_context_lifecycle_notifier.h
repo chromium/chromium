@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_MOCK_CONTEXT_LIFECYCLE_NOTIFIER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TESTING_MOCK_CONTEXT_LIFECYCLE_NOTIFIER_H_
 
-#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
+#include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
 #include "third_party/blink/renderer/platform/mojo_binding_context.h"
@@ -14,7 +14,7 @@ namespace blink {
 
 class MockContextLifecycleNotifier final
     : public GarbageCollected<MockContextLifecycleNotifier>,
-      public MojoBindingContext {
+      public ContextLifecycleNotifier {
  public:
   MockContextLifecycleNotifier() = default;
 
@@ -33,16 +33,10 @@ class MockContextLifecycleNotifier final
     });
   }
 
-  const BrowserInterfaceBrokerProxy& GetBrowserInterfaceBroker()
-      const override {
-    return GetEmptyBrowserInterfaceBroker();
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(observers_);
+    ContextLifecycleNotifier::Trace(visitor);
   }
-
-  scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner(TaskType) override {
-    return nullptr;
-  }
-
-  void Trace(Visitor* visitor) const { visitor->Trace(observers_); }
 
  private:
   HeapObserverSet<ContextLifecycleObserver> observers_;

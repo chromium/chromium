@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/dom_timer_coordinator.h"
+#include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap_observer_set.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -121,6 +122,7 @@ enum ReferrerPolicySource { kPolicySourceHttpHeader, kPolicySourceMetaTag };
 // by an extension developer, but these share an ExecutionContext (the window)
 // in common.
 class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
+                                     public ContextLifecycleNotifier,
                                      public MojoBindingContext,
                                      public ConsoleLogger,
                                      public UseCounter,

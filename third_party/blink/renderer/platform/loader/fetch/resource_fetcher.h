@@ -59,7 +59,6 @@ class DetachableResourceFetcherProperties;
 class FetchContext;
 class FrameOrWorkerScheduler;
 class MHTMLArchive;
-class MojoBindingContext;
 class KURL;
 class Resource;
 class ResourceError;
@@ -543,14 +542,14 @@ struct PLATFORM_EXPORT ResourceFetcherInit final {
       scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner,
       ResourceFetcher::LoaderFactory* loader_factory,
-      MojoBindingContext* mojo_binding_context);
+      ContextLifecycleNotifier* context_lifecycle_notifier);
 
   DetachableResourceFetcherProperties* const properties;
   FetchContext* const context;
   const scoped_refptr<base::SingleThreadTaskRunner> freezable_task_runner;
   const scoped_refptr<base::SingleThreadTaskRunner> unfreezable_task_runner;
   ResourceFetcher::LoaderFactory* const loader_factory;
-  MojoBindingContext* const mojo_binding_context;
+  ContextLifecycleNotifier* const context_lifecycle_notifier;
   DetachableUseCounter* use_counter = nullptr;
   DetachableConsoleLogger* console_logger = nullptr;
   ResourceLoadScheduler::ThrottlingPolicy initial_throttling_policy =

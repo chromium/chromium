@@ -7,6 +7,7 @@
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/public/platform/web_graphics_context_3d_provider.h"
+#include "third_party/blink/renderer/platform/context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
@@ -27,14 +28,13 @@ namespace blink {
 
 class GpuMemoryBufferImageCopy;
 class Image;
-class MojoBindingContext;
 
 class PLATFORM_EXPORT XRFrameTransport final
     : public GarbageCollected<XRFrameTransport>,
       public device::mojom::blink::XRPresentationClient {
  public:
   explicit XRFrameTransport(
-      MojoBindingContext* context,
+      ContextLifecycleNotifier* context,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~XRFrameTransport() override;
 

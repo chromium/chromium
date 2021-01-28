@@ -19,7 +19,7 @@
 namespace blink {
 
 XRFrameTransport::XRFrameTransport(
-    MojoBindingContext* context,
+    ContextLifecycleNotifier* context,
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : submit_frame_client_receiver_(this, context), task_runner_(task_runner) {}
 

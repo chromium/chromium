@@ -19,8 +19,6 @@
 
 namespace blink {
 
-class MojoBindingContext;
-
 struct PLATFORM_EXPORT BeginFrameProviderParams final {
   viz::FrameSinkId parent_frame_sink_id;
   viz::FrameSinkId frame_sink_id;
@@ -40,7 +38,7 @@ class PLATFORM_EXPORT BeginFrameProvider
   explicit BeginFrameProvider(
       const BeginFrameProviderParams& begin_frame_provider_params,
       BeginFrameProviderClient*,
-      MojoBindingContext*);
+      ContextLifecycleNotifier*);
 
   void CreateCompositorFrameSinkIfNeeded();
 

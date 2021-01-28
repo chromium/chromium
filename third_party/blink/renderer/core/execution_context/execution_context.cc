@@ -477,6 +477,7 @@ void ExecutionContext::Trace(Visitor* visitor) const {
   visitor->Trace(timers_);
   visitor->Trace(context_lifecycle_observer_set_);
   visitor->Trace(origin_trial_context_);
+  ContextLifecycleNotifier::Trace(visitor);
   ConsoleLogger::Trace(visitor);
   Supplementable<ExecutionContext>::Trace(visitor);
 }

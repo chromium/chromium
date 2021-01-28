@@ -38,6 +38,7 @@ include_rules = [
     "+services/viz/public/mojom",
     "+services/viz/public/cpp/gpu/context_provider_command_buffer.h",
     "+skia",
+    "+third_party/blink/renderer/platform/context_lifecycle_notifier.h",
     "+third_party/blink/renderer/platform/cpu/mips/common_macros_msa.h",
     "+third_party/blink/renderer/platform/fonts",
     "+third_party/blink/renderer/platform/geometry",

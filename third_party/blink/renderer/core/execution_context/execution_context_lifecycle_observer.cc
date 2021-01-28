@@ -37,12 +37,12 @@ ExecutionContextLifecycleObserver::ExecutionContextLifecycleObserver(
 
 ExecutionContext* ExecutionContextLifecycleObserver::GetExecutionContext()
     const {
-  return static_cast<ExecutionContext*>(GetContext());
+  return static_cast<ExecutionContext*>(GetContextLifecycleNotifier());
 }
 
 void ExecutionContextLifecycleObserver::SetExecutionContext(
     ExecutionContext* execution_context) {
-  SetContext(execution_context);
+  SetContextLifecycleNotifier(execution_context);
 }
 
 LocalDOMWindow* ExecutionContextLifecycleObserver::DomWindow() const {
