@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_components/customize_themes/customize_themes.js';
 import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.m.js';
 import './shared_css.js';
@@ -146,6 +147,9 @@ Polymer({
   /** @private {?ManageProfilesBrowserProxy} */
   manageProfilesBrowserProxy_: null,
 
+  /** @type {ResizeObserver} used to observer size changes to this element */
+  resizeObserver_: null,
+
   /** @override */
   created() {
     this.manageProfilesBrowserProxy_ =
@@ -159,6 +163,31 @@ Polymer({
         'create-profile-finished', () => this.handleCreateProfileFinished_());
     this.manageProfilesBrowserProxy_.getAvailableIcons().then(
         icons => this.setAvailableIcons_(icons));
+  },
+
+  /** @override */
+  attached() {
+    this.addResizeObserver_();
+  },
+
+  /** @override */
+  detached() {
+    this.resizeObserver_.disconnect();
+  },
+
+  /** @private */
+  addResizeObserver_() {
+    this.resizeObserver_ = new ResizeObserver(() => {
+      const wrapperContainer =
+          /** @type {!HTMLDivElement} */ (this.$$('#wrapperContainer'));
+      if (wrapperContainer.scrollHeight > wrapperContainer.clientHeight) {
+        this.$$('.footer').classList.add('division-line');
+      } else {
+        this.$$('.footer').classList.remove('division-line');
+      }
+    });
+    this.resizeObserver_.observe(
+        /** @type {!HTMLDivElement} */ (this.$$('#wrapperContainer')));
   },
 
   /** @private */

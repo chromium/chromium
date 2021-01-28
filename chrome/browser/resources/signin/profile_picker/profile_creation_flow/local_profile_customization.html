@@ -1,4 +1,4 @@
-<style include="profile-creation-shared profile-picker-shared">
+<style include="profile-creation-shared profile-picker-shared cr-shared-style">
   :host {
     --vertical-gap: 24px;
   }
@@ -55,10 +55,9 @@
   #wrapperContainer {
     display: flex;
     height: calc(max(100vh, var(--view-min-size)) -
-      (var(--banner-height) + var(--avatar-size)/2 + var(--vertical-gap) +
-       var(--cr-button-height) + var(--footer-margin)));
+      (var(--banner-height) + var(--avatar-size)/2 + var(--cr-button-height) +
+       2 * var(--footer-spacing) + 4px));
     justify-content: center;
-    margin-bottom: var(--vertical-gap);
     margin-inline-end: 16px;
     margin-inline-start: 16px;
     margin-top: calc(var(--avatar-size)/2);
@@ -83,7 +82,7 @@
     --cr-input-placeholder-color: rgba(var(--google-grey-900-rgb), .5);
     --cr-input-border-bottom: 1px solid var(--cr-secondary-text-color);
     height: 32px;
-    width: 300px;
+    width: 320px;
   }
 
   #colorPickerContainer {
@@ -123,7 +122,7 @@
 
   #save {
     display: flex;
-    margin-inline-end: var(--footer-margin);
+    margin-inline-end: var(--footer-spacing);
     margin-inline-start: auto;
     width: 111px;
   }

@@ -5,6 +5,7 @@
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
+import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 import './icons.js';
@@ -71,6 +72,9 @@ Polymer({
   /** @private {?ManageProfilesBrowserProxy} */
   manageProfilesBrowserProxy_: null,
 
+  /** @type {ResizeObserver} used to observer size changes to this element */
+  resizeObserver_: null,
+
   /** @override */
   ready() {
     if (!isGuestModeEnabled()) {
@@ -87,11 +91,32 @@ Polymer({
 
   /** @override */
   attached() {
+    this.addResizeObserver_();
     this.addWebUIListener(
         'profiles-list-changed', this.handleProfilesListChanged_.bind(this));
     this.addWebUIListener(
         'profile-removed', this.handleProfileRemoved_.bind(this));
     this.manageProfilesBrowserProxy_.initializeMainView();
+  },
+
+  /** @override */
+  detached() {
+    this.resizeObserver_.disconnect();
+  },
+
+  /** @private */
+  addResizeObserver_() {
+    this.resizeObserver_ = new ResizeObserver(() => {
+      const profileContainer =
+          /** @type {!HTMLDivElement} */ (this.$$('.profiles-container'));
+      if (profileContainer.scrollHeight > profileContainer.clientHeight) {
+        this.$$('.footer').classList.add('division-line');
+      } else {
+        this.$$('.footer').classList.remove('division-line');
+      }
+    });
+    this.resizeObserver_.observe(
+        /** @type {!HTMLDivElement} */ (this.$$('.profiles-container')));
   },
 
   /** @private */
