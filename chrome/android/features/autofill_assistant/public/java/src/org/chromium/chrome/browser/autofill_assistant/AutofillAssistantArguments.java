@@ -233,8 +233,7 @@ public class AutofillAssistantArguments {
             return false;
         }
         if (!getBooleanParameter(PARAMETER_START_IMMEDIATELY)) {
-            return requestsTriggerScript() || containsBase64TriggerScripts()
-                    || containsTriggerScript();
+            return containsTriggerScript();
         }
         return true;
     }
@@ -300,8 +299,14 @@ public class AutofillAssistantArguments {
     }
 
     /** Deprecated. Whether the caller provides script paths for lite scripts to execute. */
-    public boolean containsTriggerScript() {
+    public boolean containsLegacyTriggerScripts() {
         return !TextUtils.isEmpty(getStringParameter(PARAMETER_TRIGGER_FIRST_TIME_USER))
                 && !TextUtils.isEmpty(getStringParameter(PARAMETER_TRIGGER_RETURNING_TIME_USER));
+    }
+
+    /** Whether the caller requested a trigger script to start in any of the supported ways. */
+    public boolean containsTriggerScript() {
+        return requestsTriggerScript() || containsBase64TriggerScripts()
+                || containsLegacyTriggerScripts();
     }
 }

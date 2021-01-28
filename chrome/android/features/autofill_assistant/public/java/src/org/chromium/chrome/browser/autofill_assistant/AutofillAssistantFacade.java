@@ -111,8 +111,7 @@ public class AutofillAssistantFacade {
         // Have an "attempted starts" baseline for the drop out histogram.
         AutofillAssistantMetrics.recordDropOut(DropOutReason.AA_START);
         waitForTabWithWebContents(activity, tab -> {
-            if (arguments.containsTriggerScript() || arguments.requestsTriggerScript()
-                    || arguments.containsBase64TriggerScripts()) {
+            if (arguments.containsTriggerScript()) {
                 // Create a field trial and assign experiment arm based on script parameter. This
                 // is needed to tag UKM data to allow for A/B experiment comparisons.
                 FieldTrialList.createFieldTrial(LITE_SCRIPT_EXPERIMENT_TRIAL,
@@ -126,7 +125,7 @@ public class AutofillAssistantFacade {
                 // Legacy, remove as soon as possible. Trigger scripts before M-88 were tied to the
                 // regular autofill assistant Chrome setting. Since M-88, they also respect the new
                 // proactive help setting.
-                if (arguments.containsTriggerScript()
+                if (arguments.containsLegacyTriggerScripts()
                         && (!AutofillAssistantPreferencesUtil.isProactiveHelpOn())) {
                     if (AutofillAssistantPreferencesUtil
                                     .isAutofillAssistantLiteScriptCancelThresholdReached()) {
