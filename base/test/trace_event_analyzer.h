@@ -832,8 +832,7 @@ size_t CountMatches(const TraceEventVector& events,
                     size_t end_position);
 
 // Count all matches.
-static inline size_t CountMatches(const TraceEventVector& events,
-                                  const Query& query) {
+inline size_t CountMatches(const TraceEventVector& events, const Query& query) {
   return CountMatches(events, query, 0u, events.size());
 }
 

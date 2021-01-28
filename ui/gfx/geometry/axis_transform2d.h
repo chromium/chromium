@@ -84,21 +84,21 @@ class GEOMETRY_EXPORT AxisTransform2d {
   Vector2dF translation_;
 };
 
-static inline AxisTransform2d PreScaleAxisTransform2d(const AxisTransform2d& t,
-                                                      float scale) {
+inline AxisTransform2d PreScaleAxisTransform2d(const AxisTransform2d& t,
+                                               float scale) {
   AxisTransform2d result(t);
   result.PreScale(scale);
   return result;
 }
 
-static inline AxisTransform2d PostScaleAxisTransform2d(const AxisTransform2d& t,
-                                                       float scale) {
+inline AxisTransform2d PostScaleAxisTransform2d(const AxisTransform2d& t,
+                                                float scale) {
   AxisTransform2d result(t);
   result.PostScale(scale);
   return result;
 }
 
-static inline AxisTransform2d PreTranslateAxisTransform2d(
+inline AxisTransform2d PreTranslateAxisTransform2d(
     const AxisTransform2d& t,
     const Vector2dF& translation) {
   AxisTransform2d result(t);
@@ -106,7 +106,7 @@ static inline AxisTransform2d PreTranslateAxisTransform2d(
   return result;
 }
 
-static inline AxisTransform2d PostTranslateAxisTransform2d(
+inline AxisTransform2d PostTranslateAxisTransform2d(
     const AxisTransform2d& t,
     const Vector2dF& translation) {
   AxisTransform2d result(t);
@@ -114,15 +114,14 @@ static inline AxisTransform2d PostTranslateAxisTransform2d(
   return result;
 }
 
-static inline AxisTransform2d ConcatAxisTransform2d(
-    const AxisTransform2d& post,
-    const AxisTransform2d& pre) {
+inline AxisTransform2d ConcatAxisTransform2d(const AxisTransform2d& post,
+                                             const AxisTransform2d& pre) {
   AxisTransform2d result(post);
   result.PreConcat(pre);
   return result;
 }
 
-static inline AxisTransform2d InvertAxisTransform2d(const AxisTransform2d& t) {
+inline AxisTransform2d InvertAxisTransform2d(const AxisTransform2d& t) {
   AxisTransform2d result = t;
   result.Invert();
   return result;

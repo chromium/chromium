@@ -157,7 +157,7 @@ constexpr size_t kPlatformBufferAlignment = 128;
 constexpr size_t kPlatformBufferAlignment = 8;
 #endif
 
-inline static size_t AlignToPlatformRequirements(size_t value) {
+inline size_t AlignToPlatformRequirements(size_t value) {
   return base::bits::Align(value, kPlatformBufferAlignment);
 }
 

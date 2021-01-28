@@ -69,9 +69,9 @@ SK_API std::unique_ptr<SkCanvas> CreatePlatformCanvasWithPixels(
     OnFailureType failure_type);
 #endif
 
-static inline std::unique_ptr<SkCanvas> CreatePlatformCanvas(int width,
-                                                             int height,
-                                                             bool is_opaque) {
+inline std::unique_ptr<SkCanvas> CreatePlatformCanvas(int width,
+                                                      int height,
+                                                      bool is_opaque) {
 #if defined(WIN32)
   return CreatePlatformCanvasWithSharedSection(width, height, is_opaque, 0,
                                                CRASH_ON_FAILURE);
@@ -81,9 +81,9 @@ static inline std::unique_ptr<SkCanvas> CreatePlatformCanvas(int width,
 #endif
 }
 
-static inline std::unique_ptr<SkCanvas> TryCreateBitmapCanvas(int width,
-                                                              int height,
-                                                              bool is_opaque) {
+inline std::unique_ptr<SkCanvas> TryCreateBitmapCanvas(int width,
+                                                       int height,
+                                                       bool is_opaque) {
 #if defined(WIN32)
   return CreatePlatformCanvasWithSharedSection(width, height, is_opaque, 0,
                                                RETURN_NULL_ON_FAILURE);

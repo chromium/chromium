@@ -583,7 +583,7 @@ void BASE_EXPORT UpdateTraceEventDurationExplicit(
 // the arg_values must live throughout these procedures.
 
 template <class ARG1_TYPE>
-static inline base::trace_event::TraceEventHandle
+inline base::trace_event::TraceEventHandle
 AddTraceEventWithThreadIdAndTimestamp(
     char phase,
     const unsigned char* category_group_enabled,
@@ -604,7 +604,7 @@ AddTraceEventWithThreadIdAndTimestamp(
 }
 
 template <class ARG1_TYPE, class ARG2_TYPE>
-static inline base::trace_event::TraceEventHandle
+inline base::trace_event::TraceEventHandle
 AddTraceEventWithThreadIdAndTimestamp(
     char phase,
     const unsigned char* category_group_enabled,
@@ -627,7 +627,7 @@ AddTraceEventWithThreadIdAndTimestamp(
       timestamp, &args, flags);
 }
 
-static inline base::trace_event::TraceEventHandle
+inline base::trace_event::TraceEventHandle
 AddTraceEventWithThreadIdAndTimestamp(
     char phase,
     const unsigned char* category_group_enabled,
@@ -643,7 +643,7 @@ AddTraceEventWithThreadIdAndTimestamp(
       timestamp, nullptr, flags);
 }
 
-static inline base::trace_event::TraceEventHandle AddTraceEvent(
+inline base::trace_event::TraceEventHandle AddTraceEvent(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,
@@ -659,7 +659,7 @@ static inline base::trace_event::TraceEventHandle AddTraceEvent(
 }
 
 template <class ARG1_TYPE>
-static inline base::trace_event::TraceEventHandle AddTraceEvent(
+inline base::trace_event::TraceEventHandle AddTraceEvent(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,
@@ -677,7 +677,7 @@ static inline base::trace_event::TraceEventHandle AddTraceEvent(
 }
 
 template <class ARG1_TYPE, class ARG2_TYPE>
-static inline base::trace_event::TraceEventHandle AddTraceEvent(
+inline base::trace_event::TraceEventHandle AddTraceEvent(
     char phase,
     const unsigned char* category_group_enabled,
     const char* name,

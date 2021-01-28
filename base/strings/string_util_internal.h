@@ -228,7 +228,7 @@ bool DoIsStringASCII(const Char* characters, size_t length) {
 }
 
 template <bool (*Validator)(uint32_t)>
-inline static bool DoIsStringUTF8(StringPiece str) {
+inline bool DoIsStringUTF8(StringPiece str) {
   const char* src = str.data();
   int32_t src_len = static_cast<int32_t>(str.length());
   int32_t char_index = 0;
@@ -258,8 +258,8 @@ inline static bool DoIsStringUTF8(StringPiece str) {
 // string piece gives additional flexibility for the caller (doesn't have to be
 // null terminated) so we choose the StringPiece route.
 template <typename Str>
-static inline bool DoLowerCaseEqualsASCII(BasicStringPiece<Str> str,
-                                          StringPiece lowercase_ascii) {
+inline bool DoLowerCaseEqualsASCII(BasicStringPiece<Str> str,
+                                   StringPiece lowercase_ascii) {
   return std::equal(
       str.begin(), str.end(), lowercase_ascii.begin(), lowercase_ascii.end(),
       [](auto lhs, auto rhs) { return ToLowerASCII(lhs) == rhs; });

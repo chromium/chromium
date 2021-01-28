@@ -111,21 +111,21 @@ struct CheckedTuple {
 //    time_t, suseconds_t (including typedefs to)
 // 3. Any template referencing types above (e.g. std::vector<size_t>)
 template <class P>
-static inline void WriteParam(base::Pickle* m, const P& p) {
+inline void WriteParam(base::Pickle* m, const P& p) {
   typedef typename SimilarTypeTraits<P>::Type Type;
   ParamTraits<Type>::Write(m, static_cast<const Type& >(p));
 }
 
 template <class P>
-static inline bool WARN_UNUSED_RESULT ReadParam(const base::Pickle* m,
-                                                base::PickleIterator* iter,
-                                                P* p) {
+inline bool WARN_UNUSED_RESULT ReadParam(const base::Pickle* m,
+                                         base::PickleIterator* iter,
+                                         P* p) {
   typedef typename SimilarTypeTraits<P>::Type Type;
   return ParamTraits<Type>::Read(m, iter, reinterpret_cast<Type* >(p));
 }
 
 template <class P>
-static inline void LogParam(const P& p, std::string* l) {
+inline void LogParam(const P& p, std::string* l) {
   typedef typename SimilarTypeTraits<P>::Type Type;
   ParamTraits<Type>::Log(static_cast<const Type& >(p), l);
 }

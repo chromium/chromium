@@ -380,7 +380,7 @@ Callback<Signature> Bind(Callback<Signature> callback) {
 // Without the Unretained() wrapper on |&foo|, the above call would fail
 // to compile because Foo does not support the AddRef() and Release() methods.
 template <typename T>
-static inline internal::UnretainedWrapper<T> Unretained(T* o) {
+inline internal::UnretainedWrapper<T> Unretained(T* o) {
   return internal::UnretainedWrapper<T>(o);
 }
 
@@ -400,11 +400,11 @@ static inline internal::UnretainedWrapper<T> Unretained(T* o) {
 //
 //    OnceClosure callback = BindOnce(&foo, bytes); // ERROR!
 template <typename T>
-static inline internal::RetainedRefWrapper<T> RetainedRef(T* o) {
+inline internal::RetainedRefWrapper<T> RetainedRef(T* o) {
   return internal::RetainedRefWrapper<T>(o);
 }
 template <typename T>
-static inline internal::RetainedRefWrapper<T> RetainedRef(scoped_refptr<T> o) {
+inline internal::RetainedRefWrapper<T> RetainedRef(scoped_refptr<T> o) {
   return internal::RetainedRefWrapper<T>(std::move(o));
 }
 
@@ -429,12 +429,12 @@ static inline internal::RetainedRefWrapper<T> RetainedRef(scoped_refptr<T> o) {
 // Without Owned(), someone would have to know to delete |pn| when the last
 // reference to the callback is deleted.
 template <typename T>
-static inline internal::OwnedWrapper<T> Owned(T* o) {
+inline internal::OwnedWrapper<T> Owned(T* o) {
   return internal::OwnedWrapper<T>(o);
 }
 
 template <typename T, typename Deleter>
-static inline internal::OwnedWrapper<T, Deleter> Owned(
+inline internal::OwnedWrapper<T, Deleter> Owned(
     std::unique_ptr<T, Deleter>&& ptr) {
   return internal::OwnedWrapper<T, Deleter>(std::move(ptr));
 }
@@ -482,11 +482,11 @@ static inline internal::OwnedWrapper<T, Deleter> Owned(
 // via use of enable_if, and the second takes a T* which will not bind to T&.
 template <typename T,
           std::enable_if_t<!std::is_lvalue_reference<T>::value>* = nullptr>
-static inline internal::PassedWrapper<T> Passed(T&& scoper) {
+inline internal::PassedWrapper<T> Passed(T&& scoper) {
   return internal::PassedWrapper<T>(std::move(scoper));
 }
 template <typename T>
-static inline internal::PassedWrapper<T> Passed(T* scoper) {
+inline internal::PassedWrapper<T> Passed(T* scoper) {
   return internal::PassedWrapper<T>(std::move(*scoper));
 }
 
@@ -506,7 +506,7 @@ static inline internal::PassedWrapper<T> Passed(T* scoper) {
 //   // Prints "2" on |ml|.
 //   ml->PostTask(FROM_HERE, BindOnce(IgnoreResult(&DoSomething), 2);
 template <typename T>
-static inline internal::IgnoreResultHelper<T> IgnoreResult(T data) {
+inline internal::IgnoreResultHelper<T> IgnoreResult(T data) {
   return internal::IgnoreResultHelper<T>(std::move(data));
 }
 
