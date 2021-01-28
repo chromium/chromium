@@ -1930,6 +1930,24 @@
             ]
         }
     ],
+    "CrOSLowMemoryNotificationPSI": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "CrOSLowMemoryPSIThreshold": "20"
+                    },
+                    "enable_features": [
+                        "CrOSLowMemoryNotificationPSI"
+                    ]
+                }
+            ]
+        }
+    ],
     "CrOSMinFilelistKB": [
         {
             "platforms": [
