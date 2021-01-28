@@ -5928,10 +5928,17 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
+#if defined(OS_ANDROID)
+#define MAYBE_FrameNavigationEntry_MainFrameRedirectChain_NormalThenCrossSiteNavigations \
+  DISABLED_FrameNavigationEntry_MainFrameRedirectChain_NormalThenCrossSiteNavigations
+#else
+#define MAYBE_FrameNavigationEntry_MainFrameRedirectChain_NormalThenCrossSiteNavigations \
+  FrameNavigationEntry_MainFrameRedirectChain_NormalThenCrossSiteNavigations
+#endif
 // Checks the contents of the redirect chain after cross-site navigations.
 IN_PROC_BROWSER_TEST_P(
     NavigationControllerBrowserTest,
-    FrameNavigationEntry_MainFrameRedirectChain_NormalThenCrossSiteNavigations) {
+    MAYBE_FrameNavigationEntry_MainFrameRedirectChain_NormalThenCrossSiteNavigations) {
   NavigationControllerImpl& controller = static_cast<NavigationControllerImpl&>(
       shell()->web_contents()->GetController());
 
