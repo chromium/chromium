@@ -309,6 +309,8 @@ class GL_EXPORT GLSurface : public base::RefCounted<GLSurface>,
 
   static bool ExtensionsContain(const char* extensions, const char* name);
 
+  virtual bool SupportsDelegatedInk();
+
  protected:
   virtual ~GLSurface();
 
@@ -401,6 +403,8 @@ class GL_EXPORT GLSurfaceAdapter : public GLSurface {
   void SetFrameRate(float frame_rate) override;
   void SetCurrent() override;
   bool IsCurrent() override;
+
+  bool SupportsDelegatedInk() override;
 
   GLSurface* surface() const { return surface_.get(); }
 

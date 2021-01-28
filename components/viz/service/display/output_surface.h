@@ -118,6 +118,10 @@ class VIZ_SERVICE_EXPORT OutputSurface {
     // Some new Intel GPUs support two YUV MPO planes. Promoting two videos
     // to hardware overlays in these platforms will benefit power consumption.
     bool supports_two_yuv_hardware_overlays = false;
+    // True if the OS supports delegated ink trails.
+    // This is currently only implemented on Win10 with DirectComposition on the
+    // SkiaRenderer.
+    bool supports_delegated_ink = false;
 
     // SkColorType for all supported buffer formats.
     SkColorType sk_color_types[static_cast<int>(gfx::BufferFormat::LAST) + 1] =

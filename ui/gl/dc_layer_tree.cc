@@ -12,11 +12,38 @@
 #include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/swap_chain_presenter.h"
 
+// Required for SFINAE to check if these Win10 types exist.
+struct IDCompositionInkTrailDevice;
+
 namespace gl {
 namespace {
 bool SizeContains(const gfx::Size& a, const gfx::Size& b) {
   return gfx::Rect(a).Contains(gfx::Rect(b));
 }
+
+// SFINAE used to enable building before Delegated Ink types are available in
+// the Win10 SDK.
+// TODO(1171374) : Remove this when the types are available in the Win10 SDK.
+template <typename InkTrailDevice, typename = void>
+struct DelegatedInk {
+ public:
+  static bool IsSupported(
+      const Microsoft::WRL::ComPtr<IDCompositionDevice2>& dcomp_device) {
+    return false;
+  }
+};
+
+template <typename InkTrailDevice>
+struct DelegatedInk<InkTrailDevice, decltype(typeid(InkTrailDevice), void())> {
+ public:
+  static bool IsSupported(
+      const Microsoft::WRL::ComPtr<IDCompositionDevice2>& dcomp_device) {
+    Microsoft::WRL::ComPtr<InkTrailDevice> ink_trail_device;
+    HRESULT hr = dcomp_device.As(&ink_trail_device);
+    return hr == S_OK;
+  }
+};
+
 }  // namespace
 
 VideoProcessorWrapper::VideoProcessorWrapper() = default;
@@ -298,6 +325,10 @@ void DCLayerTree::SetFrameRate(float frame_rate) {
   frame_rate_ = frame_rate;
   for (size_t ii = 0; ii < video_swap_chains_.size(); ++ii)
     video_swap_chains_[ii]->SetFrameRate(frame_rate);
+}
+
+bool DCLayerTree::SupportsDelegatedInk() {
+  return DelegatedInk<IDCompositionInkTrailDevice>::IsSupported(dcomp_device_);
 }
 
 }  // namespace gl

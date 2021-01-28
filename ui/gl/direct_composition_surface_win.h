@@ -152,6 +152,8 @@ class GL_EXPORT DirectCompositionSurfaceWin : public GLSurfaceEGL,
   void OnDisplayRemoved() override;
   void OnDisplayMetricsChanged() override;
 
+  bool SupportsDelegatedInk() override;
+
   HWND window() const { return window_; }
 
   scoped_refptr<base::TaskRunner> GetWindowTaskRunnerForTesting();

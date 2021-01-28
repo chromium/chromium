@@ -107,6 +107,8 @@ class DCLayerTree {
 
   HWND window() const { return window_; }
 
+  bool SupportsDelegatedInk();
+
  private:
   const bool disable_nv12_dynamic_textures_;
   const bool disable_vp_scaling_;

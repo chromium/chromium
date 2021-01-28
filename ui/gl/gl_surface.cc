@@ -241,6 +241,10 @@ bool GLSurface::SupportsGpuVSync() const {
   return false;
 }
 
+bool GLSurface::SupportsDelegatedInk() {
+  return false;
+}
+
 void GLSurface::SetGpuVSyncEnabled(bool enabled) {}
 
 GLSurface* GLSurface::GetCurrent() {
@@ -519,6 +523,10 @@ void GLSurfaceAdapter::SetCurrent() {
 
 bool GLSurfaceAdapter::IsCurrent() {
   return surface_->IsCurrent();
+}
+
+bool GLSurfaceAdapter::SupportsDelegatedInk() {
+  return surface_->SupportsDelegatedInk();
 }
 
 GLSurfaceAdapter::~GLSurfaceAdapter() {}

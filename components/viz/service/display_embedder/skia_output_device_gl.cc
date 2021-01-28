@@ -123,6 +123,7 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
         gl::ShouldForceDirectCompositionRootSurfaceFullDamage();
     capabilities_.number_of_buffers =
         gl::DirectCompositionRootSurfaceBufferCount();
+    capabilities_.supports_delegated_ink = gl_surface_->SupportsDelegatedInk();
   }
 #endif  // OS_WIN
   if (feature_info->workarounds()

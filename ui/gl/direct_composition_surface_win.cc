@@ -870,6 +870,10 @@ void DirectCompositionSurfaceWin::OnDisplayMetricsChanged() {
   UpdateMonitorInfo();
 }
 
+bool DirectCompositionSurfaceWin::SupportsDelegatedInk() {
+  return layer_tree_->SupportsDelegatedInk();
+}
+
 scoped_refptr<base::TaskRunner>
 DirectCompositionSurfaceWin::GetWindowTaskRunnerForTesting() {
   return child_window_.GetTaskRunnerForTesting();
