@@ -11,7 +11,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if ALLOW_PCSCAN
+#if PA_ALLOW_PCSCAN
 
 namespace base {
 namespace internal {
@@ -334,5 +334,5 @@ TEST_F(PCScanTest, DanglingInterPartitionReference) {
 }  // namespace internal
 }  // namespace base
 
-#endif  // ALLOW_PCSCAN
+#endif  // PA_ALLOW_PCSCAN
 #endif  // defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

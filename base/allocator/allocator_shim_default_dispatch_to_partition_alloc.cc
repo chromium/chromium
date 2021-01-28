@@ -341,7 +341,7 @@ void ConfigurePartitionRefCountSupport(bool enable_ref_count) {
 }
 #endif  // BUILDFLAG(ENABLE_RUNTIME_BACKUP_REF_PTR_CONTROL)
 
-#if ALLOW_PCSCAN
+#if PA_ALLOW_PCSCAN
 void EnablePCScan() {
   Allocator()->EnablePCScan();
   AlignedAllocator()->EnablePCScan();

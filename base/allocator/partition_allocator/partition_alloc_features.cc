@@ -20,12 +20,12 @@ const Feature kPartitionAllocGigaCage{"PartitionAllocGigaCage32bit",
                                       FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
-#if ALLOW_PCSCAN
+#if PA_ALLOW_PCSCAN
 // If enabled, PCScan is turned on by default for all partitions that don't
 // disable it explicitly.
 const Feature kPartitionAllocPCScan{"PartitionAllocPCScan",
                                     FEATURE_DISABLED_BY_DEFAULT};
-#endif  // ALLOW_PCSCAN
+#endif  // PA_ALLOW_PCSCAN
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 // If enabled, PCScan is turned on only for the browser's malloc partition.

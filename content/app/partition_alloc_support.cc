@@ -25,7 +25,7 @@ namespace internal {
 namespace {
 
 void EnablePCScanForMallocPartitionsIfNeeded() {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && ALLOW_PCSCAN
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_ALLOW_PCSCAN
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan)) {
     base::allocator::EnablePCScan();
@@ -34,7 +34,7 @@ void EnablePCScanForMallocPartitionsIfNeeded() {
 }
 
 void EnablePCScanForMallocPartitionsInBrowserProcessIfNeeded() {
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && ALLOW_PCSCAN
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && PA_ALLOW_PCSCAN
   DCHECK(base::FeatureList::GetInstance());
   if (base::FeatureList::IsEnabled(
           base::features::kPartitionAllocPCScanBrowserOnly)) {

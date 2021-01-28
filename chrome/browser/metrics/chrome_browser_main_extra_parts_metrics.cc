@@ -566,10 +566,10 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   // - binary B: deployed to 66% users, with PA-E on, half of which having
   //             PCScan on
   //
-  // NOTE, deliberately don't use ALLOW_PCSCAN which depends on bitness. In the
-  // 32-bit case, PCScan is always disabled, but we'll deliberately misrepresent
-  // it as enabled here (and later ignored when analyzing results), in order to
-  // keep each population at 33%.
+  // NOTE, deliberately don't use PA_ALLOW_PCSCAN which depends on bitness.
+  // In the 32-bit case, PCScan is always disabled, but we'll deliberately
+  // misrepresent it as enabled here (and later ignored when analyzing results),
+  // in order to keep each population at 33%.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "PartitionAllocEverywhereAndPCScan",
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -590,10 +590,10 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   //             half off (BackupRefPtr fully off)
   // - binary B: deployed to 33% users, with BackupRefPtr on (PCSCan fully off)
   //
-  // NOTE, deliberately don't use ALLOW_PCSCAN which depends on bitness. In the
-  // 32-bit case, PCScan is always disabled, but we'll deliberately misrepresent
-  // it as enabled here (and later ignored when analyzing results), in order to
-  // keep each population at 33%.
+  // NOTE, deliberately don't use PA_ALLOW_PCSCAN which depends on bitness.
+  // In the 32-bit case, PCScan is always disabled, but we'll deliberately
+  // misrepresent it as enabled here (and later ignored when analyzing results),
+  // in order to keep each population at 33%.
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "BackupRefPtrAndPCScan",
 #if BUILDFLAG(USE_BACKUP_REF_PTR)

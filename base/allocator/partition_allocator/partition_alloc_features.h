@@ -21,9 +21,9 @@
 #endif
 
 #if defined(PA_HAS_64_BITS_POINTERS) && !BUILDFLAG(USE_BACKUP_REF_PTR)
-#define ALLOW_PCSCAN 1
+#define PA_ALLOW_PCSCAN 1
 #else
-#define ALLOW_PCSCAN 0
+#define PA_ALLOW_PCSCAN 0
 #endif
 
 namespace base {
@@ -34,9 +34,9 @@ namespace features {
 
 extern const BASE_EXPORT Feature kPartitionAllocGigaCage;
 
-#if ALLOW_PCSCAN
+#if PA_ALLOW_PCSCAN
 extern const BASE_EXPORT Feature kPartitionAllocPCScan;
-#endif  // ALLOW_PCSCAN
+#endif  // PA_ALLOW_PCSCAN
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 extern const BASE_EXPORT Feature kPartitionAllocPCScanBrowserOnly;
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)

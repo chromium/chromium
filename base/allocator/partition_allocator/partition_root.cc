@@ -27,7 +27,7 @@ typename PartitionRoot<thread_safe>::PCScanMode PartitionOptionsToPCScanMode(
   using Root = PartitionRoot<thread_safe>;
   // Mark partitions non-scannable unconditionally when PCScan isn't allowed, so
   // that address space for quarantine bitmaps doesn't get reserved.
-#if ALLOW_PCSCAN
+#if PA_ALLOW_PCSCAN
   switch (opt) {
     case PartitionOptions::PCScan::kAlwaysDisabled:
       return Root::PCScanMode::kNonScannable;

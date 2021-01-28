@@ -47,7 +47,7 @@ namespace WTF {
 const char* const Partitions::kAllocatedObjectPoolName =
     "partition_alloc/allocated_objects";
 
-#if ALLOW_PCSCAN
+#if PA_ALLOW_PCSCAN
 // Runs PCScan on WTF partitions.
 const base::Feature kPCScanBlinkPartitions{"PCScanBlinkPartitions",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
@@ -107,7 +107,7 @@ bool Partitions::InitializeOnce() {
   buffer_root_ = buffer_allocator->root();
   layout_root_ = layout_allocator->root();
 
-#if ALLOW_PCSCAN
+#if PA_ALLOW_PCSCAN
   if (base::FeatureList::IsEnabled(base::features::kPartitionAllocPCScan) ||
       base::FeatureList::IsEnabled(kPCScanBlinkPartitions)) {
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
