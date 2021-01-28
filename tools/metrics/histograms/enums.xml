@@ -31116,6 +31116,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3786" label="RTCPeerConnectionConstructedWithUnifiedPlan"/>
   <int value="3787" label="RTCPeerConnectionUsingComplexPlanB"/>
   <int value="3788" label="RTCPeerConnectionUsingComplexUnifiedPlan"/>
+  <int value="3789" label="WindowScreenIsExtended"/>
+  <int value="3790" label="WindowScreenChange"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

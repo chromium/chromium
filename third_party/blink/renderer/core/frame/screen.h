@@ -31,6 +31,7 @@
 
 #include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/web_feature_forward.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -43,7 +44,7 @@ namespace blink {
 
 class LocalDOMWindow;
 
-class CORE_EXPORT Screen final : public ScriptWrappable,
+class CORE_EXPORT Screen final : public EventTargetWithInlineData,
                                  public ExecutionContextClient,
                                  public Supplementable<Screen> {
   DEFINE_WRAPPERTYPEINFO();
@@ -62,8 +63,18 @@ class CORE_EXPORT Screen final : public ScriptWrappable,
 
   void Trace(Visitor*) const override;
 
-  // TODO(crbug.com/1116528): Use a dictionary, not the Screen interface, for
-  // proposed multi-screen info: https://github.com/webscreens/window-placement
+  // EventTargetWithInlineData:
+  const WTF::AtomicString& InterfaceName() const override;
+  ExecutionContext* GetExecutionContext() const override;
+
+  // Proposed: https://github.com/webscreens/window-placement
+  // Whether this Screen is part of a multi-screen extended visual workspace.
+  bool isExtended() const;
+  // An event fired when Screen attributes change.
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
+
+  // TODO(crbug.com/1116528): Move permission-gated attributes to an interface
+  // that inherits from Screen: https://github.com/webscreens/window-placement
   Screen(display::mojom::blink::DisplayPtr display,
          bool internal,
          bool primary,

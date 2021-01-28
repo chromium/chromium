@@ -131,8 +131,8 @@ void RenderWidgetHostViewChildFrame::SetFrameConnector(
     SetParentFrameSinkId(parent_view->GetFrameSinkId());
   }
 
-  current_device_scale_factor_ =
-      frame_connector_->screen_info().device_scale_factor;
+  set_current_device_scale_factor(
+      frame_connector_->screen_info().device_scale_factor);
 
   auto* root_view = frame_connector_->GetRootRenderWidgetHostView();
   if (root_view) {
@@ -828,7 +828,7 @@ void RenderWidgetHostViewChildFrame::
     const cc::RenderFrameMetadata& metadata =
         host()->render_frame_metadata_provider()->LastRenderFrameMetadata();
     selection_controller_client_->UpdateSelectionBoundsIfNeeded(
-        metadata.selection, current_device_scale_factor_);
+        metadata.selection, current_device_scale_factor());
   }
 }
 

@@ -7941,7 +7941,9 @@ interface Screen
     getter height
     getter id
     getter internal
+    getter isExtended
     getter left
+    getter onchange
     getter orientation
     getter pixelDepth
     getter primary
@@ -7949,7 +7951,11 @@ interface Screen
     getter top
     getter touchSupport
     getter width
+    method addEventListener
     method constructor
+    method dispatchEvent
+    method removeEventListener
+    setter onchange
 interface ScreenOrientation : EventTarget
     attribute @@toStringTag
     getter angle

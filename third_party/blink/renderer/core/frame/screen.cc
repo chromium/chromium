@@ -31,6 +31,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
 #include "third_party/blink/public/common/widget/screen_info.h"
+#include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -147,9 +148,24 @@ int Screen::availWidth() const {
 }
 
 void Screen::Trace(Visitor* visitor) const {
-  ScriptWrappable::Trace(visitor);
+  EventTargetWithInlineData::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   Supplementable<Screen>::Trace(visitor);
+}
+
+const WTF::AtomicString& Screen::InterfaceName() const {
+  return event_target_names::kScreen;
+}
+
+ExecutionContext* Screen::GetExecutionContext() const {
+  return ExecutionContextClient::GetExecutionContext();
+}
+
+bool Screen::isExtended() const {
+  if (!DomWindow())
+    return false;
+  LocalFrame* frame = DomWindow()->GetFrame();
+  return GetScreenInfo(*frame).is_extended;
 }
 
 Screen::Screen(display::mojom::blink::DisplayPtr display,
@@ -193,8 +209,8 @@ int Screen::top() const {
 bool Screen::internal() const {
   if (display_)
     return internal_.has_value() && internal_.value();
-  // TODO(crbug.com/1116528): Use a dictionary, not the Screen interface, for
-  // proposed multi-screen info: https://github.com/webscreens/window-placement
+  // TODO(crbug.com/1116528): Move permission-gated attributes to an interface
+  // that inherits from Screen: https://github.com/webscreens/window-placement
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
@@ -202,8 +218,8 @@ bool Screen::internal() const {
 bool Screen::primary() const {
   if (display_)
     return primary_.has_value() && primary_.value();
-  // TODO(crbug.com/1116528): Use a dictionary, not the Screen interface, for
-  // proposed multi-screen info: https://github.com/webscreens/window-placement
+  // TODO(crbug.com/1116528): Move permission-gated attributes to an interface
+  // that inherits from Screen: https://github.com/webscreens/window-placement
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }
@@ -219,8 +235,8 @@ float Screen::scaleFactor() const {
 const String Screen::id() const {
   if (display_)
     return id_;
-  // TODO(crbug.com/1116528): Use a dictionary, not the Screen interface, for
-  // proposed multi-screen info: https://github.com/webscreens/window-placement
+  // TODO(crbug.com/1116528): Move permission-gated attributes to an interface
+  // that inherits from Screen: https://github.com/webscreens/window-placement
   NOTIMPLEMENTED_LOG_ONCE();
   return String();
 }
@@ -230,8 +246,8 @@ bool Screen::touchSupport() const {
     return display_->touch_support ==
            display::mojom::blink::TouchSupport::AVAILABLE;
   }
-  // TODO(crbug.com/1116528): Use a dictionary, not the Screen interface, for
-  // proposed multi-screen info: https://github.com/webscreens/window-placement
+  // TODO(crbug.com/1116528): Move permission-gated attributes to an interface
+  // that inherits from Screen: https://github.com/webscreens/window-placement
   NOTIMPLEMENTED_LOG_ONCE();
   return false;
 }

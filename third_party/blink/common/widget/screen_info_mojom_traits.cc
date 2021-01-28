@@ -24,6 +24,7 @@ bool StructTraits<blink::mojom::ScreenInfoDataView, blink::ScreenInfo>::Read(
   out->display_frequency = data.display_frequency();
   out->orientation_type = data.orientation_type();
   out->orientation_angle = data.orientation_angle();
+  out->is_extended = data.is_extended();
   return true;
 }
 

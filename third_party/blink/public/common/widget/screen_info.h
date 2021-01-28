@@ -87,6 +87,10 @@ struct ScreenInfo {
   // TODO(crbug.com/840189): we should use an enum rather than a number here.
   uint16_t orientation_angle = 0;
 
+  // Proposed: https://github.com/webscreens/window-placement
+  // Whether this Screen is part of a multi-screen extended visual workspace.
+  bool is_extended = false;
+
   ScreenInfo() = default;
 
   bool operator==(const ScreenInfo& other) const {
@@ -99,7 +103,8 @@ struct ScreenInfo {
            this->rect == other.rect &&
            this->available_rect == other.available_rect &&
            this->orientation_type == other.orientation_type &&
-           this->orientation_angle == other.orientation_angle;
+           this->orientation_angle == other.orientation_angle &&
+           this->is_extended == other.is_extended;
   }
 
   bool operator!=(const ScreenInfo& other) const {

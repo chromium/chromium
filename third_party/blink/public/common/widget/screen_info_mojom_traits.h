@@ -52,6 +52,8 @@ struct BLINK_COMMON_EXPORT
     return r.orientation_angle;
   }
 
+  static bool is_extended(const blink::ScreenInfo& r) { return r.is_extended; }
+
   static bool Read(blink::mojom::ScreenInfoDataView r, blink::ScreenInfo* out);
 };
 

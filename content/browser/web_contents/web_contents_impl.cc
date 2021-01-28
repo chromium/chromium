@@ -1318,6 +1318,15 @@ void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
       rfh->GetAssociatedLocalFrame()->OnScreensChange();
     }
   }
+
+  // This updates Screen attributes and fires Screen.change events as needed,
+  // propagating to all widgets through the VisualProperties update waterfall.
+  // This is triggered by system changes, not renderer IPC, so explicitly check
+  // that the RenderWidgetHostView is valid before sending an update.
+  if (RenderWidgetHostViewBase* view =
+          GetRenderViewHost()->GetWidget()->GetView()) {
+    view->UpdateScreenInfo(view->GetNativeView());
+  }
 }
 
 void WebContentsImpl::OnScreenOrientationChange() {

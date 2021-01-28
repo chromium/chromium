@@ -2634,6 +2634,7 @@ void RenderWidgetHostViewAura::InvalidateLocalSurfaceIdOnEviction() {
 }
 
 void RenderWidgetHostViewAura::ProcessDisplayMetricsChanged() {
+  // TODO(crbug.com/1169291): Unify per-platform DisplayObserver instances.
   needs_to_update_display_metrics_ = false;
   UpdateScreenInfo(window_);
   current_cursor_.SetDisplayInfo(

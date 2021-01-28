@@ -66,9 +66,11 @@
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/exported/web_settings_impl.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_ukm_aggregator.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_client.h"
+#include "third_party/blink/renderer/core/frame/screen.h"
 #include "third_party/blink/renderer/core/frame/screen_metrics_emulator.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -3758,9 +3760,12 @@ void WebFrameWidgetImpl::DidUpdateSurfaceAndScreen(
     View()->CancelPagePopup();
   }
 
-  // Propagate changes down to child local root RenderWidgets and BrowserPlugins
-  // in other frame trees/processes.
   if (previous_original_screen_info != original_screen_info) {
+    local_root_->GetFrame()->DomWindow()->screen()->DispatchEvent(
+        *Event::Create(event_type_names::kChange));
+
+    // Propagate changes down to child local root RenderWidgets and
+    // BrowserPlugins in other frame trees/processes.
     ForEachRemoteFrameControlledByWidget(WTF::BindRepeating(
         [](const ScreenInfo& original_screen_info, RemoteFrame* remote_frame) {
           remote_frame->DidChangeScreenInfo(original_screen_info);

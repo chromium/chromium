@@ -1499,6 +1499,7 @@ void RenderWidgetHostViewMac::OnWindowFrameInScreenChanged(
 void RenderWidgetHostViewMac::OnDisplayChanged(
     const display::Display& display) {
   display_ = display;
+  // TODO(crbug.com/1169291): Unify per-platform DisplayObserver instances.
   UpdateNSViewAndDisplayProperties();
 }
 

@@ -46,4 +46,8 @@ struct ScreenInfo {
   // This is the orientation angle of the displayed content in degrees.
   // It is the opposite of the physical rotation.
   uint16 orientation_angle;
+
+  // Proposed: https://github.com/webscreens/window-placement
+  // Whether this Screen is part of a multi-screen extended visual workspace.
+  bool is_extended;
 };

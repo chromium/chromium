@@ -79,7 +79,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   RenderWidgetHostViewBase& operator=(const RenderWidgetHostViewBase&) = delete;
 
   float current_device_scale_factor() const {
-    return current_device_scale_factor_;
+    return current_display_.device_scale_factor();
   }
 
   // Returns the focused RenderWidgetHost inside this |view|'s RWH.
@@ -545,6 +545,10 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   virtual bool HasFallbackSurface() const;
 
+  void set_current_device_scale_factor(float scale) {
+    current_display_.set_device_scale_factor(scale);
+  }
+
   // The model object. Access is protected to allow access to
   // RenderWidgetHostViewChildFrame.
   RenderWidgetHostImpl* host_;
@@ -558,16 +562,6 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
   // Indicates whether the scroll offset of the root layer is at top, i.e.,
   // whether scroll_offset.y() == 0.
   bool is_scroll_offset_at_top_ = true;
-
-  // The scale factor of the display the renderer is currently on.
-  float current_device_scale_factor_ = 0;
-
-  // The color space of the display the renderer is currently on.
-  gfx::DisplayColorSpaces current_display_color_spaces_;
-
-  // The orientation of the display the renderer is currently on.
-  display::Display::Rotation current_display_rotation_ =
-      display::Display::ROTATE_0;
 
   // A reference to current TextInputManager instance this RWHV is registered
   // with. This is initially nullptr until the first time the view calls
@@ -621,7 +615,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
     return view_stopped_flinging_for_test_;
   }
 
-  gfx::Rect current_display_area_;
+  // Cached information about the renderer's display environment.
+  display::Display current_display_;
+  bool current_display_is_extended_ = false;
 
   base::ObserverList<RenderWidgetHostViewBaseObserver>::Unchecked observers_;
 

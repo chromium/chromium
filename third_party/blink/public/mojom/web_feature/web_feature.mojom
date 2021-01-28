@@ -3109,6 +3109,8 @@ enum WebFeature {
   kRTCPeerConnectionConstructedWithUnifiedPlan = 3786,
   kRTCPeerConnectionUsingComplexPlanB = 3787,
   kRTCPeerConnectionUsingComplexUnifiedPlan = 3788,
+  kWindowScreenIsExtended = 3789,
+  kWindowScreenChange = 3790,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

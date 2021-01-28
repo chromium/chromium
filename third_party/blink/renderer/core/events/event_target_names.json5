@@ -42,6 +42,7 @@
       ImplementedAs: "DOMWindow",
     },
     "DedicatedWorkerGlobalScope",
+    "Screen",
     "SharedWorker",
     "SharedWorkerGlobalScope",
     "Worker",
