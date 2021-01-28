@@ -64,6 +64,10 @@ class AppBannerManagerDesktop
       const blink::Manifest::RelatedApplication& related_app) const override;
   bool IsWebAppConsideredInstalled() const override;
 
+  // content::WebContentsObserver override.
+  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
+                     const GURL& validated_url) override;
+
   // Called when the web app install initiated by a banner has completed.
   virtual void DidFinishCreatingWebApp(const web_app::AppId& app_id,
                                        web_app::InstallResultCode code);
@@ -77,10 +81,6 @@ class AppBannerManagerDesktop
   // AppBannerManager overrides.
   bool ShouldAllowWebAppReplacementInstall() override;
   void ShowBannerUi(WebappInstallSource install_source) override;
-
-  // content::WebContentsObserver override.
-  void DidFinishLoad(content::RenderFrameHost* render_frame_host,
-                     const GURL& validated_url) override;
 
   // SiteEngagementObserver override.
   void OnEngagementEvent(content::WebContents* web_contents,

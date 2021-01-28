@@ -28,6 +28,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/url_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
@@ -232,6 +233,20 @@ AppBannerManager::AppBannerManager(content::WebContents* web_contents)
 }
 
 AppBannerManager::~AppBannerManager() = default;
+
+bool AppBannerManager::ShouldIgnore(content::RenderFrameHost* render_frame_host,
+                                    const GURL& url) {
+  // Don't start the banner flow unless the main frame has finished loading.
+  // |render_frame_host| can be null during retry attempts.
+  if (render_frame_host && render_frame_host->GetParent())
+    return true;
+
+  // There is never a need to trigger a banner for a WebUI page.
+  if (content::HasWebUIScheme(url))
+    return true;
+
+  return false;
+}
 
 bool AppBannerManager::CheckIfShouldShowBanner() {
   if (ShouldBypassEngagementChecks())
@@ -591,9 +606,7 @@ void AppBannerManager::DidFinishNavigation(content::NavigationHandle* handle) {
 void AppBannerManager::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  // Don't start the banner flow unless the main frame has finished loading.
-  // |render_frame_host| can be null during retry attempts.
-  if (render_frame_host && render_frame_host->GetParent())
+  if (ShouldIgnore(render_frame_host, validated_url))
     return;
 
   load_finished_ = true;

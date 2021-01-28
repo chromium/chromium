@@ -200,6 +200,11 @@ class AppBannerManager : public content::WebContentsObserver,
   explicit AppBannerManager(content::WebContents* web_contents);
   ~AppBannerManager() override;
 
+  // Returns true if |render_frame_host| and |url| should be ignored and not
+  // trigger the banner flow.
+  bool ShouldIgnore(content::RenderFrameHost* render_frame_host,
+                    const GURL& url);
+
   // Returns true if the banner should be shown. Returns false if the banner has
   // been shown too recently, or if the app has already been installed.
   // GetAppIdentifier() must return a valid value for this method to work.

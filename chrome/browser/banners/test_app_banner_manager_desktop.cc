@@ -117,6 +117,17 @@ void TestAppBannerManagerDesktop::DidFinishCreatingWebApp(
   OnFinished();
 }
 
+void TestAppBannerManagerDesktop::DidFinishLoad(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& validated_url) {
+  if (ShouldIgnore(render_frame_host, validated_url)) {
+    SetInstallable(false);
+    return;
+  }
+
+  AppBannerManagerDesktop::DidFinishLoad(render_frame_host, validated_url);
+}
+
 void TestAppBannerManagerDesktop::UpdateState(AppBannerManager::State state) {
   AppBannerManager::UpdateState(state);
 
@@ -128,7 +139,7 @@ void TestAppBannerManagerDesktop::UpdateState(AppBannerManager::State state) {
 }
 
 void TestAppBannerManagerDesktop::SetInstallable(bool installable) {
-  DCHECK(!installable_.has_value());
+  DCHECK(!installable_.has_value() || installable_ == installable);
   installable_ = installable;
   if (installable_quit_closure_)
     std::move(installable_quit_closure_).Run();
