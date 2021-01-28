@@ -146,11 +146,12 @@ void LoggedInSpokenFeedbackTest::DisableEarcons() {
 
 void LoggedInSpokenFeedbackTest::EnableChromeVox() {
   // Test setup.
-  // Enable ChromeVox, wait for something to be spoken, and disable earcons.
+  // Enable ChromeVox, disable earcons and wait for key mappings to be fetched.
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   // TODO(accessibility): fix console error/warnings and insantiate
   // |console_observer_| here.
 
+  // Load ChromeVox and block until it's fully loaded.
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
   base::RunLoop loop;
   ExtensionLoadWaiterOneShot waiter;
@@ -158,8 +159,10 @@ void LoggedInSpokenFeedbackTest::EnableChromeVox() {
                           loop.QuitClosure());
   loop.Run();
 
+  DisableEarcons();
+
   // Keyboard mappings are async loaded, so we need to wait until they are fully
-  // loaded to start testing.
+  // fetched to start testing.
   std::string script =
       R"JS(
           function waitForKeyMapLoad() {
@@ -177,9 +180,6 @@ void LoggedInSpokenFeedbackTest::EnableChromeVox() {
           browser()->profile(), extension_misc::kChromeVoxExtensionId, script,
           extensions::browsertest_util::ScriptUserActivation::kDontActivate);
   ASSERT_EQ(result, "ok");
-
-  sm_.ExpectSpeechPattern("*");
-  sm_.Call([this]() { DisableEarcons(); });
 }
 
 // Flaky test, crbug.com/1081563
@@ -1058,7 +1058,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ResetTtsSettings) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_SmartStickyMode) {
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, SmartStickyMode) {
   EnableChromeVox();
   sm_.Call([this]() {
     ui_test_utils::NavigateToURL(browser(),
