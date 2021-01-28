@@ -388,6 +388,8 @@ String CounterStyle::GenerateFallbackRepresentation(int value) const {
 }
 
 String CounterStyle::GenerateRepresentation(int value) const {
+  DCHECK(!IsDirty());
+
   if (pad_length_ > kCounterLengthLimit)
     return GenerateFallbackRepresentation(value);
 
