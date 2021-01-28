@@ -42,6 +42,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "chromeos/components/sensors/buildflags.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/concierge_client.h"
@@ -227,6 +228,8 @@ std::vector<std::string> GenerateKernelCmdline(
                          start_params.arc_disable_system_default_app),
       "androidboot.chromeos_channel=" + channel,
       "androidboot.boottime_offset=" + MonotonicTimestamp(),
+      base::StringPrintf("androidboot.iioservice_present=%d",
+                         BUILDFLAG(USE_IIOSERVICE)),
   };
 
   // We run vshd under a restricted domain on non-test images.
