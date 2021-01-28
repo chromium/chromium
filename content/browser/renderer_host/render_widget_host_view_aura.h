@@ -126,6 +126,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   CursorManager* GetCursorManager() override;
   void SetIsLoading(bool is_loading) override;
   void RenderProcessGone() override;
+  void ShowWithVisibility(Visibility web_contents_visibility) override;
   void Destroy() override;
   void SetTooltipText(const base::string16& tooltip_text) override;
   void DisplayTooltipText(const base::string16& tooltip_text) override;

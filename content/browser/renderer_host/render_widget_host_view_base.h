@@ -28,6 +28,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_metadata_provider.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/visibility.h"
 #include "content/public/common/widget_type.h"
 #include "services/viz/public/mojom/hit_test/hit_test_region_list.mojom.h"
 #include "third_party/blink/public/common/page/content_to_visible_time_reporter.h"
@@ -420,6 +421,11 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView {
 
   // Notifies the View that the renderer has ceased to exist.
   virtual void RenderProcessGone() = 0;
+
+  // `web_contents_visibility` is HIDDEN when the view is shown even though
+  // the web contents should be hidden, e.g., because a background tab is
+  // screen captured.
+  virtual void ShowWithVisibility(content::Visibility web_contents_visibility);
 
   // Tells the View to destroy itself.
   virtual void Destroy();

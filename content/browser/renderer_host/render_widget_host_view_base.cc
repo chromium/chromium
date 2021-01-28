@@ -631,6 +631,12 @@ bool RenderWidgetHostViewBase::HasSize() const {
   return true;
 }
 
+// RenderWidgetHostViewAura overrides this.
+void RenderWidgetHostViewBase::ShowWithVisibility(
+    content::Visibility web_contents_visibility) {
+  Show();
+}
+
 void RenderWidgetHostViewBase::Destroy() {
   host_ = nullptr;
 }

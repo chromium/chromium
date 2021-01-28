@@ -3257,7 +3257,8 @@ void WebContentsImpl::UpdateVisibilityAndNotifyPageAndView(
   // calls us).
   if (auto* view = GetRenderWidgetHostView()) {
     if (view_is_visible) {
-      view->Show();
+      static_cast<RenderWidgetHostViewBase*>(view)->ShowWithVisibility(
+          new_visibility);
     } else if (new_visibility == Visibility::HIDDEN) {
       view->Hide();
     } else {

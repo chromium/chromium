@@ -408,17 +408,7 @@ void RenderWidgetHostViewAura::InitAsPopup(
 }
 
 void RenderWidgetHostViewAura::Show() {
-  // If the viz::LocalSurfaceId is invalid, we may have been evicted,
-  // and no other visual properties have since been changed. Allocate a new id
-  // and start synchronizing.
-  if (!window_->GetLocalSurfaceId().is_valid()) {
-    window_->AllocateLocalSurfaceId();
-    SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
-                                window_->GetLocalSurfaceId());
-  }
-
-  window_->Show();
-  WasUnOccluded();
+  ShowWithVisibility(Visibility::VISIBLE);
 }
 
 void RenderWidgetHostViewAura::Hide() {
@@ -729,6 +719,27 @@ void RenderWidgetHostViewAura::SetIsLoading(bool is_loading) {
 void RenderWidgetHostViewAura::RenderProcessGone() {
   UpdateCursorIfOverSelf();
   Destroy();
+}
+
+void RenderWidgetHostViewAura::ShowWithVisibility(
+    Visibility web_contents_visibility) {
+  // If the viz::LocalSurfaceId is invalid, we may have been evicted,
+  // and no other visual properties have since been changed. Allocate a new id
+  // and start synchronizing.
+  if (!window_->GetLocalSurfaceId().is_valid()) {
+    window_->AllocateLocalSurfaceId();
+    SynchronizeVisualProperties(cc::DeadlinePolicy::UseDefaultDeadline(),
+                                window_->GetLocalSurfaceId());
+  }
+
+  window_->Show();
+  WasUnOccluded();
+#if defined(OS_WIN)
+  if (web_contents_visibility == Visibility::HIDDEN &&
+      legacy_render_widget_host_HWND_) {
+    legacy_render_widget_host_HWND_->Hide();
+  }
+#endif  // defined(OS_WIN)
 }
 
 void RenderWidgetHostViewAura::Destroy() {
