@@ -150,6 +150,16 @@ function waitForAnimationEndTimeBased(getValue) {
   })
 }
 
+function waitForScrollEvent(eventTarget) {
+  return new Promise((resolve, reject) => {
+    const scrollListener = () => {
+      eventTarget.removeEventListener('scroll', scrollListener);
+      resolve();
+    };
+    eventTarget.addEventListener('scroll', scrollListener);
+  });
+}
+
 // Enums for gesture_source_type parameters in gpuBenchmarking synthetic
 // gesture methods. Must match C++ side enums in synthetic_gesture_params.h
 const GestureSourceType = (function() {
