@@ -10,6 +10,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.components.embedder_support.util.Origin;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -33,6 +34,13 @@ public class VerificationResultStore {
     // this with an AtomicReference, but it seems simpler to just eagerly create the instance.
     private static final VerificationResultStore sInstance = new VerificationResultStore();
 
+    /**
+     * A collection of Relationships (stored as Strings, with the signature set to an empty String)
+     * that we override verifications to succeed for. It is threadsafe.
+     */
+    private static final Set<String> sVerificationOverrides =
+            Collections.synchronizedSet(new HashSet<>());
+
     static VerificationResultStore getInstance() {
         return sInstance;
     }
@@ -53,9 +61,22 @@ public class VerificationResultStore {
         return getRelationships().contains(relationship.toString());
     }
 
+    void addOverride(String packageName, Origin origin, int relationship) {
+        sVerificationOverrides.add(overrideToString(packageName, origin, relationship));
+    }
+
+    boolean shouldOverride(String packageName, Origin origin, int relationship) {
+        return sVerificationOverrides.contains(overrideToString(packageName, origin, relationship));
+    }
+
+    private static String overrideToString(String packageName, Origin origin, int relationship) {
+        return new Relationship(packageName, "", origin, relationship).toString();
+    }
+
     void clearStoredRelationships() {
         ThreadUtils.assertOnUiThread();
         setRelationships(Collections.emptySet());
+        sVerificationOverrides.clear();
     }
 
     @VisibleForTesting

@@ -37,13 +37,11 @@ import org.chromium.content_public.browser.WebContents;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Use to check that an app has a Digital Asset Link relationship with the given origin.
@@ -77,13 +75,6 @@ public class OriginVerifier {
     private WebContents mWebContents;
     @Nullable
     private ExternalAuthUtils mExternalAuthUtils;
-
-    /**
-     * A collection of Relationships (stored as Strings, with the signature set to an empty String)
-     * that we override verifications to succeed for. It is threadsafe.
-     */
-    private static final AtomicReference<Set<String>> sVerificationOverrides =
-            new AtomicReference<>();
 
     @IntDef({VerificationResult.ONLINE_SUCCESS, VerificationResult.ONLINE_FAILURE,
             VerificationResult.OFFLINE_SUCCESS, VerificationResult.OFFLINE_FAILURE,
@@ -145,9 +136,6 @@ public class OriginVerifier {
     @VisibleForTesting
     public static void clearCachedVerificationsForTesting() {
         VerificationResultStore.getInstance().clearStoredRelationships();
-        if (sVerificationOverrides.get() != null) {
-            sVerificationOverrides.get().clear();
-        }
     }
 
     /**
@@ -156,12 +144,7 @@ public class OriginVerifier {
      */
     public static void addVerificationOverride(
             String packageName, Origin origin, int relationship) {
-        if (sVerificationOverrides.get() == null) {
-            sVerificationOverrides.compareAndSet(
-                    null, Collections.synchronizedSet(new HashSet<>()));
-        }
-        sVerificationOverrides.get().add(
-                new Relationship(packageName, "", origin, relationship).toString());
+        VerificationResultStore.getInstance().addOverride(packageName, origin, relationship);
     }
 
     /**
@@ -205,8 +188,9 @@ public class OriginVerifier {
      */
     private static boolean wasPreviouslyVerified(String packageName, String signatureFingerprint,
             Origin origin, @Relation int relation) {
-        return shouldOverrideVerification(packageName, origin, relation)
-                || VerificationResultStore.getInstance().isRelationshipSaved(
+        VerificationResultStore resultStore = VerificationResultStore.getInstance();
+        return resultStore.shouldOverride(packageName, origin, relation)
+                || resultStore.isRelationshipSaved(
                         new Relationship(packageName, signatureFingerprint, origin, relation));
     }
 
@@ -291,7 +275,7 @@ public class OriginVerifier {
             return;
         }
 
-        if (shouldOverrideVerification(mPackageName, origin, mRelation)) {
+        if (mVerificationResultStore.shouldOverride(mPackageName, origin, mRelation)) {
             Log.i(TAG, "Verification succeeded for %s, it was overridden.", origin);
             PostTask.runOrPostTask(
                     UiThreadTaskTraits.DEFAULT, new VerifiedCallback(origin, true, null));
@@ -340,14 +324,6 @@ public class OriginVerifier {
             PostTask.runOrPostTask(
                     UiThreadTaskTraits.DEFAULT, new VerifiedCallback(origin, false, false));
         }
-    }
-
-    private static boolean shouldOverrideVerification(
-            String packageName, Origin origin, int relation) {
-        if (sVerificationOverrides.get() == null) return false;
-
-        return sVerificationOverrides.get().contains(
-                new Relationship(packageName, "", origin, relation).toString());
     }
 
     private boolean isAllowlisted(String packageName, Origin origin, int relation) {
