@@ -4442,7 +4442,9 @@
       'tags': [],
       'desc': '''Setting the policy to Enabled or leaving it unset will allow <ph name="BASIC_AUTH">Basic</ph> authentication challenges received over non-secure HTTP.
 
-      Setting the policy to Disabled forbids non-secure HTTP requests from using the <ph name="BASIC_AUTH">Basic</ph> authentication scheme; only secure HTTPS is allowed.''',
+      Setting the policy to Disabled forbids non-secure HTTP requests from using the <ph name="BASIC_AUTH">Basic</ph> authentication scheme; only secure HTTPS is allowed.
+
+      This policy setting is ignored (and <ph name="BASIC_AUTH">Basic</ph> is always forbidden) if the <ph name="AUTH_SCHEMES_POLICY_NAME">AuthSchemes</ph> policy is set and does not include <ph name="BASIC_AUTH">Basic</ph>.''',
     },
     {
       'name': 'AuthServerWhitelist',
