@@ -95,8 +95,8 @@ enum PartitionPurgeFlags {
 // Options struct used to configure PartitionRoot and PartitionAllocator.
 struct PartitionOptions {
   enum class Alignment {
-    // By default all allocations will be aligned to 8B (16B if
-    // BUILDFLAG_INTERNAL_USE_PARTITION_ALLOC_AS_MALLOC is true).
+    // By default all allocations will be aligned to `base::kAlignment`,
+    // likely to be 8B or 16B depending on platforms and toolchains.
     kRegular,
 
     // In addition to the above alignment enforcement, this option allows using

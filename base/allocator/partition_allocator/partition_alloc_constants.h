@@ -192,7 +192,7 @@ NumPartitionPagesPerSuperPage() {
 // The two are separate on Windows 64 bits, where the first one is 8 bytes, and
 // the second one 16. We could technically return something different for
 // malloc() and operator new(), but this would complicate things, and most of
-// our allocations are presumaly coming from operator new() anyway.
+// our allocations are presumably coming from operator new() anyway.
 //
 // __STDCPP_DEFAULT_NEW_ALIGNMENT__ is C++17. As such, it is not defined on all
 // platforms, as Chrome's requirement is C++14 as of 2020.
