@@ -1112,7 +1112,7 @@ crbug.com/958381 accessibility/table-cells-with-colspan.html [ Failure ]
 crbug.com/958381 fast/table/large-col-span-crash.html [ Failure ]
 
 # TODO fails because cell size with only input element is 18px, not 15. line-height: 0px fixes it.
-crbug.com/958381 external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children.html [ Failure ]
+crbug.com/1171616 external/wpt/css/css-tables/height-distribution/percentage-sizing-of-table-cell-children.html [ Failure ]
 
 # TODO in NG, if section has only empty rows, it is empty. Not so in Legacy. Needs C++ fix.
 crbug.com/958381 accessibility/table-with-hidden-head-section.html [ Failure ]
@@ -5743,6 +5743,6 @@ crbug.com/1170062 [ Linux ] external/wpt/html/canvas/element/manual/shadows/canv
 crbug.com/1170062 [ mac ] external/wpt/html/canvas/element/manual/shadows/canvas_shadows_001.htm [ Timeout Pass ]
 
 # Sheriff 2021-01-27
-crbug.com/1171331 tables/mozilla_expected_failures/bugs/bug89315.html [ Failure Pass ]
+crbug.com/1171331 [ Mac ] tables/mozilla_expected_failures/bugs/bug89315.html [ Failure Pass ]
 
 crbug.com/1168785 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/autoscroll-latch-clicked-node-if-parent-unscrollable.html [ Timeout ]
