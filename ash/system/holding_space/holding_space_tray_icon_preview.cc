@@ -141,6 +141,9 @@ HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
   contents_image_ = gfx::ImageSkia(
       std::make_unique<ContentsImageSource>(item->image().GetImageSkia(size)),
       size);
+  item_deletion_subscription_ = item->AddDeletionCallback(base::BindRepeating(
+      &HoldingSpaceTrayIconPreview::OnHoldingSpaceItemDeleted,
+      base::Unretained(this)));
   image_subscription_ =
       item->image().AddImageSkiaChangedCallback(base::BindRepeating(
           &HoldingSpaceTrayIconPreview::OnHoldingSpaceItemImageChanged,
@@ -439,10 +442,19 @@ void HoldingSpaceTrayIconPreview::OnViewIsDeleting(views::View* view) {
 
 void HoldingSpaceTrayIconPreview::OnHoldingSpaceItemImageChanged() {
   const gfx::Size size(GetPreviewSize());
-  contents_image_ = gfx::ImageSkia(
-      std::make_unique<ContentsImageSource>(item_->image().GetImageSkia(size)),
-      size);
+  if (item_) {
+    contents_image_ = gfx::ImageSkia(std::make_unique<ContentsImageSource>(
+                                         item_->image().GetImageSkia(size)),
+                                     size);
+  } else {
+    contents_image_ = gfx::ImageSkia();
+  }
+
   InvalidateLayer();
+}
+
+void HoldingSpaceTrayIconPreview::OnHoldingSpaceItemDeleted() {
+  item_ = nullptr;
 }
 
 void HoldingSpaceTrayIconPreview::CreateLayer(

@@ -30,7 +30,9 @@ constexpr char kVersionPath[] = "version";
 
 }  // namespace
 
-HoldingSpaceItem::~HoldingSpaceItem() = default;
+HoldingSpaceItem::~HoldingSpaceItem() {
+  deletion_callback_list_.Notify();
+}
 
 bool HoldingSpaceItem::operator==(const HoldingSpaceItem& rhs) const {
   return type_ == rhs.type_ && id_ == rhs.id_ && file_path_ == rhs.file_path_ &&
@@ -111,6 +113,11 @@ base::DictionaryValue HoldingSpaceItem::Serialize() const {
   dict.SetStringPath(kIdPath, id_);
   dict.SetPath(kFilePathPath, util::FilePathToValue(file_path_));
   return dict;
+}
+
+base::CallbackListSubscription HoldingSpaceItem::AddDeletionCallback(
+    base::RepeatingClosureList::CallbackType callback) const {
+  return deletion_callback_list_.Add(std::move(callback));
 }
 
 bool HoldingSpaceItem::IsFinalized() const {
