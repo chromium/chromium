@@ -23,22 +23,15 @@ using base::android::ScopedJavaLocalRef;
 
 namespace {
 
-// Keep in sync with DevTools frontend: front_end/resources/AppManifestView.js
-const int kDescriptionMinLength = 80;
-const int kDescriptionMaxLength = 324;
-
 bool CanShowBottomSheet(content::WebContents* web_contents,
-                        const base::string16& description,
                         const std::vector<SkBitmap>& screenshots) {
   if (!base::FeatureList::IsEnabled(
           webapps::features::kPwaInstallUseBottomSheet)) {
     return false;
   }
 
-  if (description.length() < kDescriptionMinLength ||
-      description.length() > kDescriptionMaxLength || screenshots.size() == 0) {
+  if (screenshots.size() == 0)
     return false;
-  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_PwaBottomSheetControllerProvider_canShowPwaBottomSheetInstaller(
@@ -81,7 +74,7 @@ void PwaBottomSheetController::MaybeCreateAndShow(
     const std::vector<SkBitmap>& screenshots,
     const base::string16& description,
     bool show_expanded) {
-  if (CanShowBottomSheet(web_contents, description, screenshots)) {
+  if (CanShowBottomSheet(web_contents, screenshots)) {
     // Lifetime of this object is managed by the Java counterpart, iff bottom
     // sheets can be shown (otherwise an infobar is used and this class is no
     // longer needed).

@@ -22,6 +22,8 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="22dp"
+        android:ellipsize="end"
+        android:maxLines="7"
         android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/screenshots_container"
