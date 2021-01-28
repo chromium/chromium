@@ -6396,6 +6396,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="WebStore" label="Extension from the Chrome Web Store"/>
   <affected-histogram name="Extensions.ForceInstalledFailureReason2"/>
   <affected-histogram name="Extensions.ForceInstalledFailureReason3"/>
+  <affected-histogram name="Extensions.ForceInstalledHttpErrorCode2"/>
+  <affected-histogram
+      name="Extensions.ForceInstalledManifestFetchFailedHttpErrorCode2"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="ExtensionWebUiPageType" separator=".">

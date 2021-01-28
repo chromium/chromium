@@ -35,16 +35,20 @@ constexpr base::TimeDelta kInstallationTimeout =
 
 constexpr char kManifestFetchFailedNetworkErrorCode[] =
     "Extensions.ForceInstalledManifestFetchFailedNetworkErrorCode";
-constexpr char kManifestFetchFailedHttpErrorCode[] =
-    "Extensions.ForceInstalledManifestFetchFailedHttpErrorCode2";
 constexpr char kManifestFetchFailedFetchTries[] =
     "Extensions.ForceInstalledManifestFetchFailedFetchTries";
 constexpr char kCrxFetchFailedNetworkErrorCode[] =
     "Extensions.ForceInstalledNetworkErrorCode";
-constexpr char kCrxFetchFailedHttpErrorCode[] =
-    "Extensions.ForceInstalledHttpErrorCode2";
 constexpr char kCrxFetchFailedFetchTries[] =
     "Extensions.ForceInstalledFetchTries";
+
+// This is used to construct histograms for the form
+// `Extensions.*ForceInstalledManifestFetchFailedHttpErrorCode2`.
+constexpr char kManifestFetchFailedHttpErrorCode[] =
+    "ForceInstalledManifestFetchFailedHttpErrorCode2";
+// This is used to construct histograms for the form
+// `Extensions.*ForceInstalledHttpErrorCode2`.
+constexpr char kCrxFetchFailedHttpErrorCode[] = "ForceInstalledHttpErrorCode2";
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Helper method to convert user_manager::UserType to
@@ -149,13 +153,23 @@ void ReportInstallationStageTimes(
 // CRX_FETCH_FAILED.
 void ReportErrorCodes(const InstallStageTracker::InstallationData& installation,
                       const std::string& network_error_code_histogram,
-                      const std::string& http_error_code_histogram,
-                      const std::string& fetch_tries_histogram) {
+                      const std::string& http_error_code_histogram_suffix,
+                      const std::string& fetch_tries_histogram,
+                      bool is_from_store) {
   base::UmaHistogramSparse(network_error_code_histogram,
                            installation.network_error_code.value());
 
   if (installation.response_code) {
-    base::UmaHistogramSparse(http_error_code_histogram,
+    if (is_from_store) {
+      base::UmaHistogramSparse(
+          "Extensions.WebStore_" + http_error_code_histogram_suffix,
+          installation.response_code.value());
+    } else {
+      base::UmaHistogramSparse(
+          "Extensions.OffStore_" + http_error_code_histogram_suffix,
+          installation.response_code.value());
+    }
+    base::UmaHistogramSparse("Extensions." + http_error_code_histogram_suffix,
                              installation.response_code.value());
   }
   base::UmaHistogramExactLinear(fetch_tries_histogram,
@@ -198,14 +212,15 @@ void ReportDetailedFailureReasons(
   // error code and number of fetch tries made.
   if (failure_reason == FailureReason::CRX_FETCH_FAILED)
     ReportErrorCodes(installation, kCrxFetchFailedNetworkErrorCode,
-                     kCrxFetchFailedHttpErrorCode, kCrxFetchFailedFetchTries);
+                     kCrxFetchFailedHttpErrorCode, kCrxFetchFailedFetchTries,
+                     is_from_store);
 
   // In case of MANIFEST_FETCH_FAILURE, report the network error code,
   // HTTP error code and number of fetch tries made.
   if (failure_reason == FailureReason::MANIFEST_FETCH_FAILED)
     ReportErrorCodes(installation, kManifestFetchFailedNetworkErrorCode,
                      kManifestFetchFailedHttpErrorCode,
-                     kManifestFetchFailedFetchTries);
+                     kManifestFetchFailedFetchTries, is_from_store);
 
   if (installation.install_error_detail) {
     CrxInstallErrorDetail detail = installation.install_error_detail.value();
