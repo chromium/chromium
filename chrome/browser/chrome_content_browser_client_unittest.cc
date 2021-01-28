@@ -184,7 +184,7 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   ASSERT_EQ("X11", pieces[0]);
   pieces = base::SplitStringUsingSubstr(pieces[1], " ", base::KEEP_WHITESPACE,
                                         base::SPLIT_WANT_ALL);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // X11; CrOS armv7l 4537.56.0
   //      ^^
   ASSERT_EQ(3u, pieces.size());
