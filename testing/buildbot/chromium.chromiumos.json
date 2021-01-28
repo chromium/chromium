@@ -4624,7 +4624,7 @@
       },
       {
         "args": [
-          "--gtest_filter=-NetExportFileWriterTest*"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros.components_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -4964,7 +4964,7 @@
       },
       {
         "args": [
-          "--gtest_filter=-NetExportFileWriterTest*"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/lacros.components_unittests.filter"
         ],
         "merge": {
           "args": [],

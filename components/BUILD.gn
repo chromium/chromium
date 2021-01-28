@@ -185,6 +185,8 @@ test("components_unittests") {
     "//components/webdata_services:unit_tests",
   ]
 
+  data_deps = [ "//testing/buildbot/filters:components_unittests_filters" ]
+
   if (toolkit_views) {
     deps += [
       "//components/media_message_center:unit_tests",
@@ -335,7 +337,7 @@ test("components_unittests") {
       ]
     }
 
-    data_deps = [
+    data_deps += [
       ":components_tests_pak",
       "//third_party/mesa_headers",
       "//ui/resources:ui_test_pak_data",

@@ -945,13 +945,13 @@
       # https://crbug.com/1111979,
       'linux-lacros-rel': {
         'args': [
-          '--gtest_filter=-NetExportFileWriterTest*',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.components_unittests.filter',
         ],
       },
       # https://crbug.com/1111979,
       'linux-lacros-tester-rel': {
         'args': [
-          '--gtest_filter=-NetExportFileWriterTest*',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/lacros.components_unittests.filter',
         ],
       },
     },
