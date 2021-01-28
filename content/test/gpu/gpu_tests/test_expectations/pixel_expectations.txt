@@ -95,6 +95,11 @@
 [ fuchsia ] Pixel_Canvas2DTabSwitch_SoftwareCompositing [ Skip ]
 [ fuchsia ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ Skip ]
 
+# Flakes on Linux, and less often flakes on Win and Mac per flake portal.
+crbug.com/1166141 [ linux ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ RetryOnFailure ]
+crbug.com/1166141 [ win ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ RetryOnFailure ]
+crbug.com/1166141 [ mac ] Pixel_WebGLReadPixelsTabSwitch_SoftwareCompositing [ RetryOnFailure ]
+
 # Skip tab switching tests on Android webview and Fuchsia since they don't have tabs
 [ android android-webview-instrumentation ] Pixel_Canvas2DTabSwitch [ Skip ]
 [ android android-webview-instrumentation ] Pixel_WebGLReadPixelsTabSwitch [ Skip ]
