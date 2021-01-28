@@ -325,7 +325,7 @@ const base::Feature kFilesNG{"FilesNG", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables JS modules for Files app.
 const base::Feature kFilesJsModules{"FilesJsModules",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables JS modules for Audio Player.
 const base::Feature kAudioPlayerJsModules{"AudioPlayerJsModules",
