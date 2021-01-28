@@ -39,6 +39,20 @@ SchemefulSite::ObtainASiteResult SchemefulSite::ObtainASite(
   if (IsStandardSchemeWithNetworkHost(origin.scheme())) {
     registerable_domain = GetDomainAndRegistry(
         origin, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+
+    // Create a crash dump if the registerable domain is not safe.
+    // TODO(https://crbug.com/1157010): Remove once we have enough information
+    // to verify whether or not this is what's causing issue 1157010.
+    url::CanonHostInfo host_info;
+    if (!registerable_domain.empty() &&
+        registerable_domain !=
+            CanonicalizeHost(registerable_domain, &host_info)) {
+      static base::debug::CrashKeyString* crash_key_string =
+          base::debug::AllocateCrashKeyString(
+              "schemeful_site_bad_origin", base::debug::CrashKeySize::Size256);
+      url::debug::ScopedOriginCrashKey crash_key(crash_key_string, &origin);
+      base::debug::DumpWithoutCrashing();
+    }
   }
 
   // If origin's host's registrable domain is null, then return (origin's
