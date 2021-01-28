@@ -917,6 +917,14 @@ TEST_F(AXPositionTest, IsIgnored) {
 
   // We now need to update the tree structure to test ignored tree and text
   // positions.
+  //
+  // ++root_data
+  // ++++static_text_data_1 "One" ignored
+  // ++++++inline_box_data_1 "One" ignored
+  // ++++container_data ignored
+  // ++++++static_text_data_2 "Two"
+  // ++++++++inline_box_data_2 "Two"
+
   AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
@@ -925,6 +933,7 @@ TEST_F(AXPositionTest, IsIgnored) {
   static_text_data_1.id = 2;
   static_text_data_1.role = ax::mojom::Role::kStaticText;
   static_text_data_1.SetName("One");
+  static_text_data_1.AddState(ax::mojom::State::kIgnored);
 
   AXNodeData inline_box_data_1;
   inline_box_data_1.id = 3;
@@ -960,25 +969,15 @@ TEST_F(AXPositionTest, IsIgnored) {
   // Text positions.
   //
 
-  TestPositionType text_position_1 = AXNodePosition::CreateTextPosition(
-      GetTreeID(), root_data.id, 0 /* text_offset */,
-      ax::mojom::TextAffinity::kDownstream);
-  ASSERT_TRUE(text_position_1->IsTextPosition());
-  // Since the leaf node containing the text that is pointed to is ignored, this
-  // position should be ignored.
-  EXPECT_TRUE(text_position_1->IsIgnored());
-
-  // Create a text position before the letter "e" in "One".
-  TestPositionType text_position_2 = AXNodePosition::CreateTextPosition(
-      GetTreeID(), root_data.id, 2 /* text_offset */,
-      ax::mojom::TextAffinity::kDownstream);
-  ASSERT_TRUE(text_position_2->IsTextPosition());
-  // Same as above.
-  EXPECT_TRUE(text_position_2->IsIgnored());
+  // A "before text" position on the root should not be ignored, despite the
+  // fact that the leaf equivalent position is, because AXPosition always
+  // adjusts to an unignored position if asked to find the leaf equivalent
+  // position. In other words, the text of ignored leaves is not propagated to
+  // the inner text of their ancestors.
 
   // Create a text position before the letter "T" in "Two".
   TestPositionType text_position_3 = AXNodePosition::CreateTextPosition(
-      GetTreeID(), root_data.id, 3 /* text_offset */,
+      GetTreeID(), root_data.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(text_position_3->IsTextPosition());
   // Since the leaf node containing the text that is pointed to is not ignored,
@@ -988,7 +987,7 @@ TEST_F(AXPositionTest, IsIgnored) {
 
   // Create a text position before the letter "w" in "Two".
   TestPositionType text_position_4 = AXNodePosition::CreateTextPosition(
-      GetTreeID(), root_data.id, 4 /* text_offset */,
+      GetTreeID(), root_data.id, 1 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(text_position_4->IsTextPosition());
   // Same as above.
@@ -1003,7 +1002,7 @@ TEST_F(AXPositionTest, IsIgnored) {
   EXPECT_TRUE(text_position_5->IsIgnored());
 
   // Whilst a text position on its static text child should not be ignored since
-  // there is nothing ignore below the generic container.
+  // there is nothing ignored below the generic container.
   TestPositionType text_position_6 = AXNodePosition::CreateTextPosition(
       GetTreeID(), static_text_data_2.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
@@ -1021,14 +1020,12 @@ TEST_F(AXPositionTest, IsIgnored) {
   // Tree positions.
   //
 
-  // A "before children" position on the root should not be ignored, despite the
-  // fact that the leaf equivalent position is, because we can always adjust to
-  // an unignored position if asked to find the leaf equivalent unignored
-  // position.
+  // A "before children" position on the root should be ignored because the
+  // first child of the root is ignored.
   TestPositionType tree_position_1 = AXNodePosition::CreateTreePosition(
       GetTreeID(), root_data.id, 0 /* child_index */);
   ASSERT_TRUE(tree_position_1->IsTreePosition());
-  EXPECT_FALSE(tree_position_1->IsIgnored());
+  EXPECT_TRUE(tree_position_1->IsIgnored());
 
   // A tree position pointing to an ignored child node should be ignored.
   TestPositionType tree_position_2 = AXNodePosition::CreateTreePosition(
@@ -1055,11 +1052,11 @@ TEST_F(AXPositionTest, IsIgnored) {
   ASSERT_TRUE(tree_position_5->IsTreePosition());
   EXPECT_TRUE(tree_position_5->IsIgnored());
 
-  // A "before text" position on an unignored node should not be ignored.
+  // A "before text" position on an ignored node should be ignored.
   TestPositionType tree_position_6 = AXNodePosition::CreateTreePosition(
       GetTreeID(), static_text_data_1.id, AXNodePosition::BEFORE_TEXT);
   ASSERT_TRUE(tree_position_6->IsTreePosition());
-  EXPECT_FALSE(tree_position_6->IsIgnored());
+  EXPECT_TRUE(tree_position_6->IsIgnored());
 }
 
 TEST_F(AXPositionTest, GetTextFromNullPosition) {
@@ -3297,6 +3294,16 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTextPosition) {
   EXPECT_EQ(inline_box2_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
+  // Nodes with no text should not be skipped when finding the leaf text
+  // position, otherwise a "before text" position could accidentally turn into
+  // an "after text" one.
+  // ++kTextField "" (empty)
+  // ++++kStaticText "" (empty)
+  // ++++++kInlineTextBox "" (empty)
+  // A TextPosition anchor=kTextField text_offset=0, should turn into a leaf
+  // text position at the start of kInlineTextBox and not after it. In this
+  // case, the deepest first child of the root is the button, regardless as to
+  // whether it has no text inside it.
   text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), root_.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
@@ -3306,7 +3313,7 @@ TEST_F(AXPositionTest, AsLeafTreePositionWithTextPosition) {
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsLeafTreePosition());
   EXPECT_EQ(GetTreeID(), test_position->tree_id());
-  EXPECT_EQ(inline_box1_.id, test_position->anchor_id());
+  EXPECT_EQ(button_.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
 
   text_position = AXNodePosition::CreateTextPosition(
@@ -3622,8 +3629,9 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPosition) {
 
 TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmptyTextSandwich) {
   // This test updates the tree structure to test a specific edge case -
-  // AsLeafTextPosition when there is an empty leaf text node between
-  // two non-empty text nodes.
+  // `AsLeafTextPosition` when there is an empty leaf text node between
+  // two non-empty text nodes. Empty leaf nodes should be skipped when finding
+  // the leaf equivalent position.
   AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
@@ -3649,7 +3657,8 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmptyTextSandwich) {
   SetTree(CreateAXTree({root_data, text_data, button_data, more_text_data}));
 
   // Create a text position on the root pointing to just after the
-  // first static text leaf node.
+  // first static text leaf node. Even though the button has empty inner text,
+  // still it should not be skipped when finding the leaf text position.
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), root_data.id, 9 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
@@ -3678,6 +3687,14 @@ TEST_F(AXPositionTest, AsLeafTextPositionWithTextPositionAndEmptyTextSandwich) {
 }
 
 TEST_F(AXPositionTest, AsUnignoredPosition) {
+  // ++root_data
+  // ++++static_text_data_1 "1"
+  // ++++++inline_box_data_1 "1"
+  // ++++++inline_box_data_1 "2" ignored
+  // ++++container_data ignored
+  // ++++++static_data_2 "3"
+  // ++++++++inline_box_data_2 "3"
+
   AXNodeData root_data;
   root_data.id = 1;
   root_data.role = ax::mojom::Role::kRootWebArea;
@@ -3685,7 +3702,7 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   AXNodeData static_text_data_1;
   static_text_data_1.id = 2;
   static_text_data_1.role = ax::mojom::Role::kStaticText;
-  static_text_data_1.SetName("12");
+  static_text_data_1.SetName("1");
 
   AXNodeData inline_box_data_1;
   inline_box_data_1.id = 3;
@@ -3734,33 +3751,33 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), container_data.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
-  ASSERT_TRUE(text_position->IsIgnored());
+  EXPECT_TRUE(text_position->IsIgnored());
   TestPositionType test_position = text_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveForward);
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_EQ(root_data.id, test_position->anchor_id());
-  EXPECT_EQ(2, test_position->text_offset());
+  EXPECT_EQ(1, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
 
   // "After text" position.
   text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), container_data.id, 1 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
-  ASSERT_TRUE(text_position->IsIgnored());
+  EXPECT_TRUE(text_position->IsIgnored());
   // Changing the adjustment behavior should not affect the outcome.
   test_position = text_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveBackward);
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_EQ(root_data.id, test_position->anchor_id());
-  EXPECT_EQ(3, test_position->text_offset());
+  EXPECT_EQ(2, test_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
 
   // "Before children" position.
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
       GetTreeID(), container_data.id, 0 /* child_index */);
-  ASSERT_TRUE(tree_position->IsIgnored());
+  EXPECT_TRUE(tree_position->IsIgnored());
   test_position = tree_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveForward);
   ASSERT_NE(nullptr, test_position);
@@ -3771,7 +3788,7 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   // "After children" position.
   tree_position = AXNodePosition::CreateTreePosition(
       GetTreeID(), container_data.id, 1 /* child_index */);
-  ASSERT_TRUE(tree_position->IsIgnored());
+  EXPECT_TRUE(tree_position->IsIgnored());
   // Changing the adjustment behavior should not affect the outcome.
   test_position = tree_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveBackward);
@@ -3784,7 +3801,7 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   // whose last child is ignored.
   tree_position = AXNodePosition::CreateTreePosition(
       GetTreeID(), static_text_data_1.id, 2 /* child_index */);
-  ASSERT_TRUE(tree_position->IsIgnored());
+  EXPECT_TRUE(tree_position->IsIgnored());
   test_position = tree_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveBackward);
   ASSERT_NE(nullptr, test_position);
@@ -3805,7 +3822,7 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), root_data.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
-  ASSERT_TRUE(text_position->IsIgnored());
+  EXPECT_TRUE(text_position->IsIgnored());
   test_position = text_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveForward);
   ASSERT_NE(nullptr, test_position);
@@ -3817,7 +3834,7 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), root_data.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
-  ASSERT_TRUE(text_position->IsIgnored());
+  EXPECT_TRUE(text_position->IsIgnored());
   // Changing the adjustment behavior should not change the outcome.
   test_position = text_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveBackward);
@@ -3829,7 +3846,7 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
 
   tree_position = AXNodePosition::CreateTreePosition(GetTreeID(), root_data.id,
                                                      1 /* child_index */);
-  ASSERT_TRUE(tree_position->IsIgnored());
+  EXPECT_TRUE(tree_position->IsIgnored());
   test_position = tree_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveForward);
   ASSERT_NE(nullptr, test_position);
@@ -3848,7 +3865,7 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   // "After children" position.
   tree_position = AXNodePosition::CreateTreePosition(GetTreeID(), root_data.id,
                                                      2 /* child_index */);
-  ASSERT_TRUE(tree_position->IsIgnored());
+  EXPECT_TRUE(tree_position->IsIgnored());
   test_position = tree_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveForward);
   ASSERT_NE(nullptr, test_position);
@@ -3867,7 +3884,7 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   // "Before children" position.
   tree_position = AXNodePosition::CreateTreePosition(
       GetTreeID(), container_data.id, 0 /* child_index */);
-  ASSERT_TRUE(tree_position->IsIgnored());
+  EXPECT_TRUE(tree_position->IsIgnored());
   test_position = tree_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveForward);
   ASSERT_NE(nullptr, test_position);
@@ -3878,7 +3895,7 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   // "After children" position.
   tree_position = AXNodePosition::CreateTreePosition(
       GetTreeID(), container_data.id, 1 /* child_index */);
-  ASSERT_TRUE(tree_position->IsIgnored());
+  EXPECT_TRUE(tree_position->IsIgnored());
   // Changing the adjustment behavior should not affect the outcome.
   test_position = tree_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveBackward);
@@ -3887,13 +3904,10 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   EXPECT_EQ(inline_box_data_3.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->child_index());
 
-  // 3. As a last resort, we move either to the next or previous unignored
-  // position in the accessibility tree, based on the "adjustment_behavior".
-
   text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), root_data.id, 1 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
-  ASSERT_TRUE(text_position->IsIgnored());
+  EXPECT_TRUE(text_position->IsIgnored());
   test_position = text_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveForward);
   ASSERT_NE(nullptr, test_position);
@@ -3905,7 +3919,7 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), inline_box_data_2.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
-  ASSERT_TRUE(text_position->IsIgnored());
+  EXPECT_TRUE(text_position->IsIgnored());
   test_position = text_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveForward);
   ASSERT_NE(nullptr, test_position);
@@ -3917,7 +3931,7 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
   text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), inline_box_data_2.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
-  ASSERT_TRUE(text_position->IsIgnored());
+  EXPECT_TRUE(text_position->IsIgnored());
   test_position = text_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveBackward);
   ASSERT_NE(nullptr, test_position);
@@ -3929,14 +3943,14 @@ TEST_F(AXPositionTest, AsUnignoredPosition) {
 
   tree_position = AXNodePosition::CreateTreePosition(
       GetTreeID(), inline_box_data_2.id, AXNodePosition::BEFORE_TEXT);
-  ASSERT_TRUE(tree_position->IsIgnored());
+  EXPECT_TRUE(tree_position->IsIgnored());
+
   test_position = tree_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveForward);
   ASSERT_NE(nullptr, test_position);
   EXPECT_TRUE(test_position->IsTreePosition());
   EXPECT_EQ(inline_box_data_3.id, test_position->anchor_id());
   EXPECT_EQ(AXNodePosition::BEFORE_TEXT, test_position->child_index());
-  ASSERT_TRUE(tree_position->IsIgnored());
 
   test_position = tree_position->AsUnignoredPosition(
       AXPositionAdjustmentBehavior::kMoveBackward);
@@ -6775,10 +6789,7 @@ TEST_F(AXPositionTest, CreateParentPositionWithTextPosition) {
   EXPECT_TRUE(test_position->IsTextPosition());
   EXPECT_EQ(root_.id, test_position->anchor_id());
   EXPECT_EQ(0, test_position->text_offset());
-  // Since the same text offset in the root could be used to point to the
-  // beginning of the second line, affinity should have been adjusted to
-  // upstream.
-  EXPECT_EQ(ax::mojom::TextAffinity::kUpstream, test_position->affinity());
+  EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, test_position->affinity());
 
   text_position = AXNodePosition::CreateTextPosition(
       GetTreeID(), root_.id, 2 /* text_offset */,
@@ -8625,8 +8636,8 @@ TEST_F(AXPositionTest, OperatorEqualsSameTextOffsetDifferentAnchorIdRoot) {
   ASSERT_NE(nullptr, text_position_two);
   ASSERT_TRUE(text_position_two->IsTextPosition());
 
-  ASSERT_TRUE(*text_position_one == *text_position_two);
-  ASSERT_TRUE(*text_position_two == *text_position_one);
+  EXPECT_TRUE(*text_position_one == *text_position_two);
+  EXPECT_TRUE(*text_position_two == *text_position_one);
 }
 
 TEST_F(AXPositionTest, OperatorEqualsSameTextOffsetDifferentAnchorIdLeaf) {
@@ -9514,6 +9525,9 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   result_position =
       position->CreateNextWordEndPosition(AXBoundaryBehavior::CrossBoundary);
   EXPECT_TRUE(result_position->IsTextPosition());
+  // The position would be on `text_field_4` instead of on `generic_container_5`
+  // because the latter is ignored, and by design we prefer not to create
+  // positions on ignored nodes if it could be avoided.
   EXPECT_EQ(text_field_4.id, result_position->anchor_id());
   EXPECT_EQ(1, result_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
@@ -9533,6 +9547,9 @@ TEST_F(AXPositionTest, EmptyObjectReplacedByCharacterTextNavigation) {
   result_position = position->CreatePreviousWordEndPosition(
       AXBoundaryBehavior::CrossBoundary);
   EXPECT_TRUE(result_position->IsTextPosition());
+  // The position would be on `text_field_4` instead of on `generic_container_5`
+  // because the latter is ignored, and by design we prefer not to create
+  // positions on ignored nodes if it could be avoided.
   EXPECT_EQ(text_field_4.id, result_position->anchor_id());
   EXPECT_EQ(1, result_position->text_offset());
   EXPECT_EQ(ax::mojom::TextAffinity::kDownstream, result_position->affinity());
