@@ -4536,13 +4536,14 @@ class SkiaDelegatedInkRendererTest : public DisplayTest {
     return display_->renderer_for_testing()->GetDelegatedInkPointRenderer();
   }
 
-  const std::map<base::TimeTicks, gfx::PointF>& stored_points() {
+  const std::map<base::TimeTicks, DelegatedInkPoint>& stored_points() {
     return ink_renderer()->GetPointsMapForTest();
   }
 
   void CreateAndStoreDelegatedInkPoint(const gfx::PointF& point,
-                                       base::TimeTicks timestamp) {
-    ink_points_.emplace_back(point, timestamp);
+                                       base::TimeTicks timestamp,
+                                       int32_t pointer_id) {
+    ink_points_.emplace_back(point, timestamp, pointer_id);
     ink_renderer()->StoreDelegatedInkPoint(ink_points_.back());
   }
 
@@ -4644,8 +4645,9 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
   const int kInitialDelegatedPoints = 3;
   base::TimeTicks timestamp = base::TimeTicks::Now();
   gfx::PointF point(10, 10);
+  const int32_t kPointerId = std::numeric_limits<int32_t>::max();
   for (int i = 0; i < kInitialDelegatedPoints; ++i) {
-    CreateAndStoreDelegatedInkPoint(point, timestamp);
+    CreateAndStoreDelegatedInkPoint(point, timestamp, kPointerId);
     point.Offset(10, 10);
     timestamp += base::TimeDelta::FromMilliseconds(5);
   }
@@ -4677,9 +4679,10 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
 
   EXPECT_EQ(kInitialDelegatedPoints - kInkPointForMetadata,
             static_cast<int>(stored_points().size()));
-  EXPECT_EQ(metadata.point(), stored_points().begin()->second);
+  EXPECT_EQ(metadata.point(), stored_points().begin()->second.point());
   EXPECT_EQ(ink_point(ink_points_size() - 1).point(),
-            stored_points().rbegin()->second);
+            stored_points().rbegin()->second.point());
+  EXPECT_EQ(ink_point(0).pointer_id(), kPointerId);
 
   // Confirm that the metadata is cleared when DrawDelegatedInkTrail() is
   // called.
@@ -4692,7 +4695,7 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
   StoreAlreadyCreatedDelegatedInkPoints();
   while (ink_points_size() <
          kMaximumDelegatedInkPointsStored + kPointsBeyondMaxAllowed) {
-    CreateAndStoreDelegatedInkPoint(point, timestamp);
+    CreateAndStoreDelegatedInkPoint(point, timestamp, kPointerId);
     point.Offset(10, 10);
     timestamp += base::TimeDelta::FromMilliseconds(10);
   }
@@ -4700,9 +4703,10 @@ TEST_F(SkiaDelegatedInkRendererTest, SkiaDelegatedInkRendererFilteringPoints) {
   EXPECT_EQ(kMaximumDelegatedInkPointsStored,
             static_cast<int>(stored_points().size()));
   EXPECT_EQ(ink_point(kPointsBeyondMaxAllowed).point(),
-            stored_points().begin()->second);
+            stored_points().begin()->second.point());
   EXPECT_EQ(ink_point(ink_points_size() - 1).point(),
-            stored_points().rbegin()->second);
+            stored_points().rbegin()->second.point());
+  EXPECT_EQ(ink_point(ink_points_size() - 1).pointer_id(), kPointerId);
 
   // Now send metadata with a timestamp before all of the points that are
   // currently stored to confirm that no points are filtered out and the number
@@ -4725,13 +4729,17 @@ TEST_F(SkiaDelegatedInkRendererTest, LatencyHistograms) {
 
   // Insert 4 arbitrary points into the ink renderer to later draw.
   base::TimeTicks timestamp = base::TimeTicks::Now();
-  CreateAndStoreDelegatedInkPoint(gfx::PointF(20, 19), timestamp);
+  const int32_t kPointerId = 17;
+  CreateAndStoreDelegatedInkPoint(gfx::PointF(20, 19), timestamp, kPointerId);
   CreateAndStoreDelegatedInkPoint(
-      gfx::PointF(15, 19), timestamp + base::TimeDelta::FromMilliseconds(8));
+      gfx::PointF(15, 19), timestamp + base::TimeDelta::FromMilliseconds(8),
+      kPointerId);
   CreateAndStoreDelegatedInkPoint(
-      gfx::PointF(16, 28), timestamp + base::TimeDelta::FromMilliseconds(16));
+      gfx::PointF(16, 28), timestamp + base::TimeDelta::FromMilliseconds(16),
+      kPointerId);
   CreateAndStoreDelegatedInkPoint(
-      gfx::PointF(29, 35), timestamp + base::TimeDelta::FromMilliseconds(24));
+      gfx::PointF(29, 35), timestamp + base::TimeDelta::FromMilliseconds(24),
+      kPointerId);
 
   // Provide a metadata so that points can be drawn, based on the first ink
   // point that was sent.
@@ -4774,11 +4782,13 @@ TEST_F(SkiaDelegatedInkRendererTest, LatencyHistograms) {
 
   // Send a few more points but no metadata to confirm that nothing is counted.
   timestamp = base::TimeTicks::Now();
-  CreateAndStoreDelegatedInkPoint(gfx::PointF(85, 56), timestamp);
+  CreateAndStoreDelegatedInkPoint(gfx::PointF(85, 56), timestamp, kPointerId);
   CreateAndStoreDelegatedInkPoint(
-      gfx::PointF(96, 70), timestamp + base::TimeDelta::FromMilliseconds(2));
+      gfx::PointF(96, 70), timestamp + base::TimeDelta::FromMilliseconds(2),
+      kPointerId);
   CreateAndStoreDelegatedInkPoint(
-      gfx::PointF(112, 94), timestamp + base::TimeDelta::FromMilliseconds(10));
+      gfx::PointF(112, 94), timestamp + base::TimeDelta::FromMilliseconds(10),
+      kPointerId);
   FinalizePathAndCheckHistograms(base::TimeDelta::Min(),
                                  base::TimeDelta::Min());
 }

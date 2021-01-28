@@ -31,11 +31,14 @@ class DelegatedInkPointDataView;
 class VIZ_COMMON_EXPORT DelegatedInkPoint {
  public:
   DelegatedInkPoint() = default;
-  DelegatedInkPoint(const gfx::PointF& pt, base::TimeTicks timestamp)
-      : point_(pt), timestamp_(timestamp) {}
+  DelegatedInkPoint(const gfx::PointF& pt,
+                    base::TimeTicks timestamp,
+                    int32_t pointer_id)
+      : point_(pt), timestamp_(timestamp), pointer_id_(pointer_id) {}
 
   const gfx::PointF& point() const { return point_; }
   base::TimeTicks timestamp() const { return timestamp_; }
+  int32_t pointer_id() const { return pointer_id_; }
   std::string ToString() const;
 
  private:
@@ -48,6 +51,12 @@ class VIZ_COMMON_EXPORT DelegatedInkPoint {
 
   // Timestamp from the input event.
   base::TimeTicks timestamp_;
+
+  // Pointer ID from the input event. Used to store all DelegatedInkPoints from
+  // the same source together in viz so that they are all candidates for a
+  // single delegated ink trail and DelegatedInkPoints from other sources are
+  // not.
+  int32_t pointer_id_;
 };
 
 }  // namespace viz

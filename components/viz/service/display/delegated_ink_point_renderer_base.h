@@ -73,7 +73,8 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
  private:
   friend class SkiaDelegatedInkRendererTest;
 
-  const std::map<base::TimeTicks, gfx::PointF>& GetPointsMapForTest() const {
+  const std::map<base::TimeTicks, DelegatedInkPoint>& GetPointsMapForTest()
+      const {
     return points_;
   }
 
@@ -85,7 +86,7 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
 
   // The points that arrived from the browser process and may be drawn as part
   // of the ink trail.
-  std::map<base::TimeTicks, gfx::PointF> points_;
+  std::map<base::TimeTicks, DelegatedInkPoint> points_;
 
   // Kalman predictor that is used for generating predicted points.
   std::unique_ptr<ui::InputPredictor> predictor_;

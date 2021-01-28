@@ -93,8 +93,9 @@ std::vector<DelegatedInkPoint> DelegatedInkPointRendererBase::FilterPoints() {
       it = points_.erase(it);
     } else {
       if (it->first == metadata_->timestamp() || points_to_draw.size() > 0) {
-        points_to_draw.emplace_back(it->second, it->first);
-        metrics_handler_.AddRealEvent(it->second, it->first,
+        points_to_draw.push_back(it->second);
+        metrics_handler_.AddRealEvent(it->second.point(),
+                                      it->second.timestamp(),
                                       metadata_->frame_time());
         it++;
       } else {
@@ -127,8 +128,9 @@ void DelegatedInkPointRendererBase::PredictPoints(
       std::unique_ptr<ui::InputPredictor::InputData> predicted_point =
           predictor_->GeneratePrediction(timestamp);
       if (predicted_point) {
-        ink_points_to_draw->emplace_back(predicted_point->pos,
-                                         predicted_point->time_stamp);
+        ink_points_to_draw->emplace_back(
+            predicted_point->pos, predicted_point->time_stamp,
+            ink_points_to_draw->front().pointer_id());
         metrics_handler_.AddPredictedEvent(predicted_point->pos,
                                            predicted_point->time_stamp,
                                            metadata_->frame_time());
@@ -172,7 +174,7 @@ void DelegatedInkPointRendererBase::StoreDelegatedInkPoint(
   if (points_.size() == kMaximumDelegatedInkPointsStored)
     points_.erase(points_.begin());
 
-  points_.insert({point.timestamp(), point.point()});
+  points_.insert({point.timestamp(), point});
 }
 
 }  // namespace viz

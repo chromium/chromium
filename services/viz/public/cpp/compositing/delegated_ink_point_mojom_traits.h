@@ -23,6 +23,10 @@ struct StructTraits<viz::mojom::DelegatedInkPointDataView,
     return input.timestamp();
   }
 
+  static int32_t pointer_id(const viz::DelegatedInkPoint& input) {
+    return input.pointer_id();
+  }
+
   static bool Read(viz::mojom::DelegatedInkPointDataView data,
                    viz::DelegatedInkPoint* out);
 };

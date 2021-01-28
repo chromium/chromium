@@ -11,6 +11,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 struct DelegatedInkPoint {
   gfx.mojom.PointF point;
   mojo_base.mojom.TimeTicks timestamp;
+  int32 pointer_id;
 };
 
 // This interface is used to connect the browser process to viz to support

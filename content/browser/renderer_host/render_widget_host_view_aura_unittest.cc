@@ -6820,7 +6820,7 @@ class DelegatedInkPointTest
       SendTouchPress(pointer_type);
 
       ui::TouchEvent touch_event(ui::ET_TOUCH_MOVED, point, point, timestamp,
-                                 ui::PointerDetails(pointer_type, 0));
+                                 ui::PointerDetails(pointer_type, kPointerId));
       if ((GetHoverParam() == HoveringState::kHovering &&
            match_test_hovering_state) ||
           (GetHoverParam() == HoveringState::kNotHovering &&
@@ -6832,13 +6832,16 @@ class DelegatedInkPointTest
       int flags = match_test_hovering_state ? 0 : ui::EF_LEFT_MOUSE_BUTTON;
       if (GetHoverParam() == HoveringState::kNotHovering)
         flags = match_test_hovering_state ? ui::EF_LEFT_MOUSE_BUTTON : 0;
-      ui::MouseEvent mouse_event(ui::ET_MOUSE_MOVED, point, point, timestamp,
-                                 flags, 0);
+      ui::MouseEvent mouse_event(
+          ui::ET_MOUSE_MOVED, point, point, timestamp, flags, 0,
+          ui::PointerDetails(ui::EventPointerType::kMouse, kPointerId));
       view_->OnMouseEvent(&mouse_event);
     }
   }
 
   MockCompositor* compositor() { return compositor_.get(); }
+
+  int32_t GetExpectedPointerId() const { return kPointerId; }
 
  private:
   void SendTouchPress(ui::EventPointerType pointer_type) {
@@ -6849,13 +6852,17 @@ class DelegatedInkPointTest
     // Location of the point doesn't matter, chosen arbitrarily.
     ui::TouchEvent press(ui::ET_TOUCH_PRESSED, gfx::PointF(15, 15),
                          gfx::PointF(15, 15), ui::EventTimeForNow(),
-                         ui::PointerDetails(pointer_type, 0));
+                         ui::PointerDetails(pointer_type, kPointerId));
     if (GetHoverParam() == HoveringState::kHovering)
       press.set_hovering(true);
 
     view_->OnTouchEvent(&press);
     sent_touch_press_ = true;
   }
+
+  // Pointer id to use in these tests. It must be consistent throughout a single
+  // test for some of the touch variations.
+  const int32_t kPointerId = 5;
 
   // Touch events are ignored if a press isn't sent first, so use this to track
   // if we have already sent a touch press event yet or not.
@@ -6890,8 +6897,8 @@ TEST_P(DelegatedInkPointTest, EventForwardedToCompositor) {
   // Then set it to true and confirm that the DelegatedInkPointRenderer is
   // initialized, the connection is made and the point makes it to the renderer.
   SetInkMetadataFlagOnRenderFrameMetadata(true);
-  viz::DelegatedInkPoint expected_point(gfx::PointF(10, 10),
-                                        base::TimeTicks::Now());
+  viz::DelegatedInkPoint expected_point(
+      gfx::PointF(10, 10), base::TimeTicks::Now(), GetExpectedPointerId());
   SendEvent(true, expected_point.point(), expected_point.timestamp());
 
   delegated_ink_point_renderer = compositor()->delegated_ink_point_renderer();
@@ -6903,6 +6910,7 @@ TEST_P(DelegatedInkPointTest, EventForwardedToCompositor) {
       delegated_ink_point_renderer->GetDelegatedInkPoint();
   EXPECT_EQ(expected_point.point(), actual_point.point());
   EXPECT_EQ(expected_point.timestamp(), actual_point.timestamp());
+  EXPECT_EQ(GetExpectedPointerId(), actual_point.pointer_id());
 
   // Then try changing the scale factor to confirm it affects the point
   // correctly.
@@ -6915,12 +6923,14 @@ TEST_P(DelegatedInkPointTest, EventForwardedToCompositor) {
   delegated_ink_point_renderer->FlushForTesting();
 
   unscaled_point.Scale(scale);
-  expected_point = viz::DelegatedInkPoint(unscaled_point, unscaled_time);
+  expected_point = viz::DelegatedInkPoint(unscaled_point, unscaled_time,
+                                          GetExpectedPointerId());
 
   EXPECT_TRUE(delegated_ink_point_renderer->HasDelegatedInkPoint());
   actual_point = delegated_ink_point_renderer->GetDelegatedInkPoint();
   EXPECT_EQ(expected_point.point(), actual_point.point());
   EXPECT_EQ(expected_point.timestamp(), actual_point.timestamp());
+  EXPECT_EQ(GetExpectedPointerId(), actual_point.pointer_id());
 
   // Confirm that prediction is reset when the API is no longer being used and
   // |delegated_ink_metadata| is not set.

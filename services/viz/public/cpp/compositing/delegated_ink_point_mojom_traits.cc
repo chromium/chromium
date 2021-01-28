@@ -11,6 +11,7 @@ bool StructTraits<
     viz::mojom::DelegatedInkPointDataView,
     viz::DelegatedInkPoint>::Read(viz::mojom::DelegatedInkPointDataView data,
                                   viz::DelegatedInkPoint* out) {
+  out->pointer_id_ = data.pointer_id();
   return data.ReadPoint(&out->point_) && data.ReadTimestamp(&out->timestamp_);
 }
 

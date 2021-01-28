@@ -365,7 +365,8 @@ void RenderWidgetHostViewEventHandler::HandleMouseWheelEvent(
 
 void RenderWidgetHostViewEventHandler::ForwardDelegatedInkPoint(
     ui::LocatedEvent* event,
-    bool hovering) {
+    bool hovering,
+    int32_t pointer_id) {
   const cc::RenderFrameMetadata& last_metadata =
       host_->render_frame_metadata_provider()->LastRenderFrameMetadata();
   if (last_metadata.delegated_ink_metadata.has_value() &&
@@ -391,7 +392,8 @@ void RenderWidgetHostViewEventHandler::ForwardDelegatedInkPoint(
 
     gfx::PointF point = event->root_location_f();
     point.Scale(host_view_->GetDeviceScaleFactor());
-    viz::DelegatedInkPoint delegated_ink_point(point, event->time_stamp());
+    viz::DelegatedInkPoint delegated_ink_point(point, event->time_stamp(),
+                                               pointer_id);
     TRACE_EVENT_INSTANT1("input",
                          "Forwarding delegated ink point from browser.",
                          TRACE_EVENT_SCOPE_THREAD, "delegated point",
@@ -463,7 +465,7 @@ void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
         !(event->flags() & ui::EF_FROM_TOUCH)) {
       bool hovering = (event->type() ^ ui::ET_MOUSE_DRAGGED) &&
                       (event->type() ^ ui::ET_MOUSE_PRESSED);
-      ForwardDelegatedInkPoint(event, hovering);
+      ForwardDelegatedInkPoint(event, hovering, event->pointer_details().id);
 
       // Confirm existing composition text on mouse press, to make sure
       // the input caret won't be moved with an ongoing composition text.
@@ -588,7 +590,8 @@ void RenderWidgetHostViewEventHandler::OnTouchEvent(ui::TouchEvent* event) {
   if (handled)
     return;
 
-  ForwardDelegatedInkPoint(event, event->hovering());
+  ForwardDelegatedInkPoint(event, event->hovering(),
+                           event->pointer_details().id);
 
   if (had_no_pointer)
     delegate_->selection_controller_client()->OnTouchDown();

@@ -256,7 +256,9 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
 
   // Forward the location and timestamp of the event to viz if a delegated ink
   // trail is requested.
-  void ForwardDelegatedInkPoint(ui::LocatedEvent* event, bool hovering);
+  void ForwardDelegatedInkPoint(ui::LocatedEvent* event,
+                                bool hovering,
+                                int32_t pointer_id);
 
   // Flush the remote for testing purposes.
   void FlushForTest() { delegated_ink_point_renderer_.FlushForTesting(); }

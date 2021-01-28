@@ -11,9 +11,10 @@
 namespace viz {
 
 std::string DelegatedInkPoint::ToString() const {
-  return base::StringPrintf("point: %s, timestamp: %" PRId64,
+  return base::StringPrintf("point: %s, timestamp: %" PRId64 ", pointer_id: %d",
                             point_.ToString().c_str(),
-                            timestamp_.since_origin().InMicroseconds());
+                            timestamp_.since_origin().InMicroseconds(),
+                            pointer_id_);
 }
 
 }  // namespace viz

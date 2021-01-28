@@ -59,7 +59,8 @@ void DelegatedInkPointPixelTestHelper::CreateAndSendPoint(
     const gfx::PointF& point,
     base::TimeTicks timestamp) {
   DCHECK(renderer_);
-  ink_points_.emplace_back(point, timestamp);
+  constexpr int32_t kPointerId = 1;
+  ink_points_.emplace_back(point, timestamp, kPointerId);
   GetInkRenderer()->StoreDelegatedInkPoint(ink_points_.back());
 }
 
