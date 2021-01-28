@@ -16,6 +16,7 @@
 #include "base/strings/string16.h"
 #include "base/system/sys_info.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/chromeos/plugin_vm/plugin_vm_util.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
@@ -41,8 +42,6 @@ namespace chromeos {
 namespace {
 
 const char kNotificationIdPrefix[] = "vm_camera_mic_manager";
-const base::TimeDelta kObserverTimerDelay =
-    base::TimeDelta::FromMilliseconds(100);
 
 }  // namespace
 
@@ -54,22 +53,103 @@ constexpr VmCameraMicManager::NotificationType
     VmCameraMicManager::kCameraNotification;
 constexpr VmCameraMicManager::NotificationType
     VmCameraMicManager::kCameraAndMicNotification;
+constexpr base::TimeDelta VmCameraMicManager::kDebounceTime;
 
+// VmInfo stores the camera/mic information for a VM. It also controls the
+// notifications for the VM. We either do not display a notification at all, or
+// display a single notification, which can be a "camera", "mic", or a "camera
+// and mic" notification.
+//
+// Some apps will quickly turn on and off devices multiple times (e.g. skype in
+// Parallels does this about 5 times when starting a meeting). To avoid flashing
+// multiple notifications, we implement a debounce algorithm here. The debounce
+// algorithm needs to handle the following situations:
+//
+// * when a VM opens the camera and mic subsequently with a small delay
+//   in-between, we should only show the "camera and mic" notification, instead
+//   of showing the "camera" notification first and then switching to the
+//   "camera and mic" one.
+// * when a VM turns on a device and then immediately turns it off (e.g. taking
+//   a photo), we should make sure the notification is shown (for a short period
+//   of time). So, the debounce algorithm should not naively accumulate device
+//   changes and then only act on the final accumulated state.
+//
+//
+// How the debounce algorithm works
+// ================================
+//
+// Basically, when a new device update comes, the algorithm starts a debounce
+// period for `kDebounceTime`, during which we record the changes, and we update
+// the notification one or more times afterwards.
+//
+// The type of notification is represented by `NotificationType`, which is a
+// bitset of two bits. For a "camera" notification, only the camera bit is set
+// (i.e. `10`). A "camera and mic" notification sets both bits (i.e. `11`). If
+// no notification should be shown, we set both bits to 0 (i.e. `00`).
+//
+// Our algorithm maintains 3 `NotificationType` variables (see
+// `notifications_`):
+//
+// * active: this is what is currently displaying. When we say setting `active`
+//           to some value, we also mean updating the displaying notification.
+// * target: this is updated immediately whenever device updates come in, so it
+//           represents the latest state. If a device is turned on and off
+//           immediately, obviously the effect is erased from target. This is
+//           why we need another variable `stage`.
+// * stage: this is updated immediately whenever a device is turned *on*.
+//          Turning off a device does not affect this directly.
+//
+// This algorithm for updating `target` and `stage` is implemented in
+// `OnDeviceUpdated()`, which also starts/stops the debounce timer if necessary.
+//
+// When `active == stage == target`, we are "stable" --- we don't need to do
+// anything (until the next device update). And `SyncNotification()` is normally
+// what brings us to stable. It is called when the timer expired. This is what
+// it does:
+//
+// * If `active != stage`, we set `active = stage`. Timer is reset if we are
+//   still not stable.
+// * Otherwise, `active == stage != target`. we set `active = stage = target`.
+//   We reach the stable state now.
+//
+// Here is an example where the mic is turned on, the camera is turned on and
+// then off immediately, and mic is turned off at the end after some time. We
+// denote the state of the system with 6 bits: <active>-<stage>-<target>.
+//
+// 1: 00-00-00  # Stable, nothing is on.
+// 2: 00-01-01  # Mic turning on, debounce timer is started.
+// 3: 00-11-11  # Camera turning on, still in debounce period.
+// 4: 00-11-01  # Camera turning off, still in debounce period.
+// 5: 11-11-01  # Timer expired. `SyncNotification()` sets `active=stage` (shows
+//              # "camera and mic" notification). Reset the timer.
+// 6: 01-01-01  # Timer expired. `SyncNotification()` sets `active=stage=target`
+//              # (shows mic notification).  We are stable now.
+// 7: 01-01-00  # Mic turning off, debounce timer is started.
+// 8: 00-00-00  # Timer expired. Same as 6, but no notification is shown now.
+//              # Reach stable again.
 class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
  public:
-  VmInfo(Profile* profile, VmType vm_type, int name_id)
-      : profile_(profile), vm_type_(vm_type), name_id_(name_id) {}
+  VmInfo(Profile* profile,
+         VmType vm_type,
+         int name_id,
+         base::RepeatingClosure on_notification_changed)
+      : profile_(profile),
+        vm_type_(vm_type),
+        name_id_(name_id),
+        notification_changed_callback_(on_notification_changed),
+        debounce_timer_(FROM_HERE,
+                        kDebounceTime,
+                        base::BindRepeating(&VmInfo::SyncNotification,
+                                            // Unretained because the timer
+                                            // cannot outlive the parent.
+                                            base::Unretained(this))) {}
   ~VmInfo() = default;
 
   VmType vm_type() const { return vm_type_; }
   int name_id() const { return name_id_; }
-  NotificationType notification_type() const { return notification_type_; }
+  NotificationType notification_type() const { return notifications_.active; }
 
-  void SetMicActive(bool active) {
-    target_notification_type_.set(static_cast<size_t>(DeviceType::kMic),
-                                  active);
-    UpdateNotification();
-  }
+  void SetMicActive(bool active) { OnDeviceUpdated(DeviceType::kMic, active); }
 
   void SetCameraAccessing(bool accessing) {
     camera_accessing_ = accessing;
@@ -82,26 +162,73 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
 
  private:
   void OnCameraUpdated() {
-    target_notification_type_.set(static_cast<size_t>(DeviceType::kCamera),
-                                  camera_accessing_ && !camera_privacy_is_on_);
-    UpdateNotification();
+    OnDeviceUpdated(DeviceType::kCamera,
+                    camera_accessing_ && !camera_privacy_is_on_);
   }
 
-  void UpdateNotification() {
-    if (notification_type_ == target_notification_type_) {
+  // See document at the beginning of class.
+  void OnDeviceUpdated(DeviceType device, bool value) {
+    size_t device_index = static_cast<size_t>(device);
+
+    notifications_.target.set(device_index, value);
+    if (value) {
+      notifications_.stage.set(device_index, value);
+    }
+
+    VLOG(1) << "update stage/target vm_type=" << static_cast<int>(vm_type_)
+            << " state: " << notifications_.active << "-"
+            << notifications_.stage << "-" << notifications_.target;
+
+    SyncTimer();
+  }
+
+  void SyncTimer() {
+    const bool stable = notifications_.active == notifications_.stage &&
+                        notifications_.active == notifications_.target;
+    const bool should_run_timer = !stable;
+    const bool is_running = debounce_timer_.IsRunning();
+
+    if (should_run_timer && !is_running) {
+      debounce_timer_.Reset();
+    } else if (!should_run_timer && is_running) {
+      debounce_timer_.Stop();
+    }
+  }
+
+  void UpdateActiveNotification(NotificationType new_notification) {
+    DCHECK_NE(notifications_.active, new_notification);
+
+    if (notifications_.active != kNoNotification) {
+      CloseNotification(notifications_.active);
+    }
+    if (new_notification != kNoNotification) {
+      OpenNotification(new_notification);
+    }
+    notifications_.active = new_notification;
+    notification_changed_callback_.Run();
+  }
+
+  // See document at the beginning of class.
+  void SyncNotification() {
+    if (notifications_.active != notifications_.stage) {
+      UpdateActiveNotification(notifications_.stage);
+      SyncTimer();
+
+      VLOG(1) << "sync from stage. vm_type=" << static_cast<int>(vm_type_)
+              << " state: " << notifications_.active << "-"
+              << notifications_.stage << "-" << notifications_.target;
       return;
     }
 
-    // We always show 0 or 1 notifications for a VM, so here we just need to
-    // close the previous one if it exists and open the new one if necessary.
-    if (notification_type_ != kNoNotification) {
-      CloseNotification(notification_type_);
-    }
-    if (target_notification_type_ != kNoNotification) {
-      OpenNotification(target_notification_type_);
-    }
-
-    notification_type_ = target_notification_type_;
+    // Only target notification is different.
+    DCHECK_NE(notifications_.active, notifications_.target);
+    notifications_.stage = notifications_.target;
+    UpdateActiveNotification(notifications_.target);
+    VLOG(1) << "sync from target. vm_type=" << static_cast<int>(vm_type_)
+            << " state: " << notifications_.active << "-"
+            << notifications_.stage << "-" << notifications_.target;
+    // No need to call `SyncTimer()` because we have reached the stable state
+    // here.
   }
 
   void OpenNotification(NotificationType type) const {
@@ -189,14 +316,21 @@ class VmCameraMicManager::VmInfo : public message_center::NotificationObserver {
   Profile* const profile_;
   const VmType vm_type_;
   const int name_id_;
+  base::RepeatingClosure notification_changed_callback_;
 
   bool camera_accessing_ = false;
   // We don't actually need to store this separately for each VM, but this
   // makes code simpler.
   bool camera_privacy_is_on_ = false;
 
-  NotificationType notification_type_;
-  NotificationType target_notification_type_;
+  // See document at the beginning of class.
+  struct {
+    NotificationType active;
+    NotificationType stage;
+    NotificationType target;
+  } notifications_;
+
+  base::RetainingOneShotTimer debounce_timer_;
 
   base::WeakPtrFactory<VmInfo> weak_ptr_factory_{this};
 };
@@ -206,14 +340,7 @@ VmCameraMicManager* VmCameraMicManager::Get() {
   return manager.get();
 }
 
-VmCameraMicManager::VmCameraMicManager()
-    : observer_timer_(
-          FROM_HERE,
-          kObserverTimerDelay,
-          base::BindRepeating(&VmCameraMicManager::NotifyActiveChanged,
-                              // Unretained because the timer cannot
-                              // live longer than the manager.
-                              base::Unretained(this))) {}
+VmCameraMicManager::VmCameraMicManager() = default;
 
 void VmCameraMicManager::OnPrimaryUserSessionStarted(Profile* primary_profile) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -221,8 +348,12 @@ void VmCameraMicManager::OnPrimaryUserSessionStarted(Profile* primary_profile) {
   primary_profile_ = primary_profile;
 
   auto emplace_vm_info = [this](VmType vm, int name_id) {
-    vm_info_map_.emplace(std::piecewise_construct, std::forward_as_tuple(vm),
-                         std::forward_as_tuple(primary_profile_, vm, name_id));
+    vm_info_map_.emplace(
+        std::piecewise_construct, std::forward_as_tuple(vm),
+        std::forward_as_tuple(
+            primary_profile_, vm, name_id,
+            base::BindRepeating(&VmCameraMicManager::NotifyActiveChanged,
+                                base::Unretained(this))));
   };
 
   emplace_vm_info(VmType::kCrostiniVm, IDS_CROSTINI_LINUX);
@@ -274,10 +405,6 @@ void VmCameraMicManager::UpdateVmInfo(VmType vm,
   auto& vm_info = it->second;
 
   (vm_info.*updator)(value);
-
-  if (!observer_timer_.IsRunning()) {
-    observer_timer_.Reset();
-  }
 }
 
 bool VmCameraMicManager::IsDeviceActive(DeviceType device) const {

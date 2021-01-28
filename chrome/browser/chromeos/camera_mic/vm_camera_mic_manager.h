@@ -14,7 +14,6 @@
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
-#include "base/timer/timer.h"
 #include "chromeos/audio/cras_audio_handler.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
@@ -52,6 +51,9 @@ class VmCameraMicManager : public media::CameraActiveClientObserver,
   static constexpr NotificationType kCameraAndMicNotification{
       (1 << static_cast<size_t>(DeviceType::kMic)) |
       (1 << static_cast<size_t>(DeviceType::kCamera))};
+
+  static constexpr base::TimeDelta kDebounceTime =
+      base::TimeDelta::FromMilliseconds(300);
 
   class Observer : public base::CheckedObserver {
    public:
@@ -109,7 +111,6 @@ class VmCameraMicManager : public media::CameraActiveClientObserver,
   Profile* primary_profile_ = nullptr;
   std::map<VmType, VmInfo> vm_info_map_;
 
-  base::RetainingOneShotTimer observer_timer_;
   base::ObserverList<Observer> observers_;
 };
 
