@@ -65,9 +65,6 @@ class CONTENT_EXPORT BrowsingDataFilterBuilder {
   // Deprecated: Prefer `BuildOriginFilter()` instead.
   // Builds a filter that matches URLs that are in the list to delete, or aren't
   // in the list to preserve.
-  //
-  // TODO(https://crbug.com/1145270): Migrate usage to BuildOriginFilter() and
-  // remove this function.
   virtual base::RepeatingCallback<bool(const GURL&)> BuildUrlFilter() = 0;
 
   // Builds a filter that matches origins that are in the list to delete, or
