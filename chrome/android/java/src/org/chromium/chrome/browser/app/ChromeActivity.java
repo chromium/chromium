@@ -170,6 +170,8 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManagerProvider;
 import org.chromium.chrome.browser.ui.system.StatusBarColorController;
 import org.chromium.chrome.browser.vr.ArDelegateProvider;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
+import org.chromium.chrome.browser.webapps.PwaBottomSheetController;
+import org.chromium.chrome.browser.webapps.PwaBottomSheetControllerProvider;
 import org.chromium.chrome.browser.webapps.addtohomescreen.AddToHomescreenCoordinator;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -2139,8 +2141,19 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             }
         } else if (id == R.id.add_to_homescreen_id || id == R.id.add_to_homescreen_menu_id
                 || id == R.id.install_app_id) {
-            AddToHomescreenCoordinator.showForAppMenu(currentTab, this, getWindowAndroid(),
-                    getModalDialogManager(), currentTab.getWebContents(), mMenuItemData);
+            boolean handled = false;
+            if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)) {
+                PwaBottomSheetController controller =
+                        PwaBottomSheetControllerProvider.from(getWindowAndroid());
+                if (controller != null) {
+                    controller.requestOrExpandBottomSheetInstaller(currentTab.getWebContents());
+                    handled = true;
+                }
+            }
+            if (!handled) {
+                AddToHomescreenCoordinator.showForAppMenu(this, getWindowAndroid(),
+                        getModalDialogManager(), currentTab.getWebContents(), mMenuItemData);
+            }
             RecordUserAction.record("MobileMenuAddToHomescreen");
         } else if (id == R.id.open_webapk_id || id == R.id.menu_open_webapk_id) {
             Context context = ContextUtils.getApplicationContext();

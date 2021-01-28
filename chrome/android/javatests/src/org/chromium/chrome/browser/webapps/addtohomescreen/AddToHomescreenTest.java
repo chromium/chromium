@@ -42,6 +42,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.TabLoadObserver;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
 import org.chromium.chrome.test.util.browser.webapps.WebappTestPage;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.net.test.EmbeddedTestServerRule;
@@ -148,9 +149,9 @@ public class AddToHomescreenTest {
     private static class TestAddToHomescreenCoordinator extends AddToHomescreenCoordinator {
         private String mTitle;
 
-        TestAddToHomescreenCoordinator(Context context, WindowAndroid windowAndroid,
-                ModalDialogManager modalDialogManager, String title) {
-            super(null, context, windowAndroid, modalDialogManager);
+        TestAddToHomescreenCoordinator(WebContents webContents, Context context,
+                WindowAndroid windowAndroid, ModalDialogManager modalDialogManager, String title) {
+            super(webContents, context, windowAndroid, modalDialogManager);
             mTitle = title;
         }
 
@@ -347,10 +348,10 @@ public class AddToHomescreenTest {
     private void addShortcutToTab(Tab tab, String title, boolean expectAdded) {
         // Add the shortcut.
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            boolean started = new TestAddToHomescreenCoordinator(mActivity,
-                    mActivity.getWindowAndroid(), mActivity.getModalDialogManager(), title)
-                                      .showForAppMenu(tab.getWebContents(),
-                                              AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN);
+            boolean started =
+                    new TestAddToHomescreenCoordinator(tab.getWebContents(), mActivity,
+                            mActivity.getWindowAndroid(), mActivity.getModalDialogManager(), title)
+                            .showForAppMenu(AppMenuVerbiage.APP_MENU_OPTION_ADD_TO_HOMESCREEN);
             Assert.assertEquals(expectAdded, started);
         });
 

@@ -9,11 +9,11 @@
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/android/chrome_jni_headers/AddToHomescreenCoordinator_jni.h"
-#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_mediator.h"
 #include "components/webapps/browser/android/add_to_homescreen_installer.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
+#include "content/public/browser/web_contents.h"
 
 namespace webapps {
 
@@ -24,13 +24,10 @@ bool AddToHomescreenCoordinator::ShowForAppBanner(
     base::RepeatingCallback<void(AddToHomescreenInstaller::Event,
                                  const AddToHomescreenParams&)>
         event_callback) {
-  TabAndroid* tab_android =
-      TabAndroid::FromWebContents(weak_manager->web_contents());
-
   JNIEnv* env = base::android::AttachCurrentThread();
   AddToHomescreenMediator* mediator = (AddToHomescreenMediator*)
       Java_AddToHomescreenCoordinator_initMvcAndReturnMediator(
-          env, tab_android->GetJavaObject());
+          env, weak_manager->web_contents()->GetJavaWebContents());
   if (!mediator)
     return false;
 

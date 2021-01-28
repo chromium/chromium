@@ -14,12 +14,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.chrome.browser.banners.AppBannerManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.webapps.AddToHomescreenProperties;
 import org.chromium.chrome.browser.webapps.AddToHomescreenViewDelegate;
-import org.chromium.chrome.browser.webapps.PwaBottomSheetController;
-import org.chromium.chrome.browser.webapps.PwaBottomSheetControllerProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -42,61 +38,51 @@ public class AddToHomescreenCoordinator {
     ModalDialogManager mModalDialogManager;
     private WindowAndroid mWindowAndroid;
     // May be null during tests.
-    private Tab mTab;
+    WebContents mWebContents;
 
     @VisibleForTesting
-    AddToHomescreenCoordinator(Tab tab, Context activityContext, WindowAndroid windowAndroid,
-            ModalDialogManager modalDialogManager) {
+    AddToHomescreenCoordinator(WebContents webContents, Context activityContext,
+            WindowAndroid windowAndroid, ModalDialogManager modalDialogManager) {
         mActivityContext = activityContext;
         mWindowAndroid = windowAndroid;
         mModalDialogManager = modalDialogManager;
-        mTab = tab;
+        mWebContents = webContents;
     }
 
     /**
      * Starts and shows the add-to-homescreen UI component for the given {@link WebContents}.
      * @return whether add-to-homescreen UI was started successfully.
      */
-    public static boolean showForAppMenu(Tab tab, Context activityContext,
-            WindowAndroid windowAndroid, ModalDialogManager modalDialogManager,
-            WebContents webContents, Bundle menuItemData) {
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.PWA_INSTALL_USE_BOTTOMSHEET)) {
-            PwaBottomSheetController controller =
-                    PwaBottomSheetControllerProvider.from(windowAndroid);
-            if (controller != null) {
-                controller.requestOrExpandBottomSheetInstaller(webContents);
-                return true;
-            }
-        }
-
+    public static void showForAppMenu(Context activityContext, WindowAndroid windowAndroid,
+            ModalDialogManager modalDialogManager, WebContents webContents, Bundle menuItemData) {
         @StringRes
         int titleId = menuItemData.getInt(AppBannerManager.MENU_TITLE_KEY);
-        return new AddToHomescreenCoordinator(
-                tab, activityContext, windowAndroid, modalDialogManager)
-                .showForAppMenu(webContents, titleId);
+        new AddToHomescreenCoordinator(
+                webContents, activityContext, windowAndroid, modalDialogManager)
+                .showForAppMenu(titleId);
     }
 
     @VisibleForTesting
-    boolean showForAppMenu(WebContents webContents, @StringRes int titleId) {
+    boolean showForAppMenu(@StringRes int titleId) {
         // Don't start if there is no visible URL to add.
-        if (webContents == null || webContents.getVisibleUrl().isEmpty()) {
+        if (mWebContents == null || mWebContents.getVisibleUrl().isEmpty()) {
             return false;
         }
 
-        buildMediatorAndShowDialog().startForAppMenu(webContents, titleId);
+        buildMediatorAndShowDialog().startForAppMenu(mWebContents, titleId);
         return true;
     }
 
     /**
      * Constructs all MVC components on request from the C++ side.
-     * @param tab The current {@link Tab}. Used for accessing activity {@link Context} and
-     * {@link ModalDialogManager}.
+     * @param webContents The {@link WebContents} that initiated the add to homescreen request. Used
+     *         for accessing activity {@link Context} and {@link ModalDialogManager}.
      * @return A C++ pointer to the associated add_to_homescreen_mediator.cc object. This will be
      * used by add_to_homescreen_coordinator.cc to complete the initialization of the mediator.
      */
     @CalledByNative
-    private static long initMvcAndReturnMediator(Tab tab) {
-        WindowAndroid windowAndroid = tab.getWindowAndroid();
+    private static long initMvcAndReturnMediator(WebContents webContents) {
+        WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
         if (windowAndroid == null) return 0;
 
         Activity activity = windowAndroid.getActivity().get();
@@ -107,8 +93,8 @@ public class AddToHomescreenCoordinator {
 
         if (modalDialogManager == null) return 0;
 
-        AddToHomescreenCoordinator coordinator =
-                new AddToHomescreenCoordinator(tab, activity, windowAndroid, modalDialogManager);
+        AddToHomescreenCoordinator coordinator = new AddToHomescreenCoordinator(
+                webContents, activity, windowAndroid, modalDialogManager);
         return coordinator.buildMediatorAndShowDialog().getNativeMediator();
     }
 
@@ -122,8 +108,7 @@ public class AddToHomescreenCoordinator {
         AddToHomescreenMediator addToHomescreenMediator =
                 new AddToHomescreenMediator(model, mWindowAndroid);
         PropertyModelChangeProcessor.create(model,
-                initView(AppBannerManager.getHomescreenLanguageOption(
-                                 mTab == null ? null : mTab.getWebContents()),
+                initView(AppBannerManager.getHomescreenLanguageOption(mWebContents),
                         addToHomescreenMediator),
                 AddToHomescreenViewBinder::bind);
         return addToHomescreenMediator;
