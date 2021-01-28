@@ -137,8 +137,6 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void DidChangeVisibleViewportSize(const gfx::Size& visible_viewport_size);
   // Called when the local root's capture sequence number has changed.
   void UpdateCaptureSequenceNumber(uint32_t sequence_number);
-  void EnableAutoResize(const gfx::Size& min_size, const gfx::Size& max_size);
-  void DisableAutoResize();
 
   const String& UniqueName() const { return unique_name_; }
   const FrameVisualProperties& GetPendingVisualPropertiesForTesting() const {
@@ -196,6 +194,9 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void UpdateOpener(const base::Optional<base::UnguessableToken>&
                         opener_frame_token) override;
   void DetachAndDispose() override;
+  void EnableAutoResize(const gfx::Size& min_size,
+                        const gfx::Size& max_size) override;
+  void DisableAutoResize() override;
 
   // Called only when this frame has a local frame owner.
   IntSize GetMainFrameViewportSize() const override;

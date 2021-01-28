@@ -179,9 +179,6 @@ class CONTENT_EXPORT RenderFrameProxy : public IPC::Listener,
   mojom::RenderFrameProxyHost* GetFrameProxyHost();
 
   // mojom::RenderFrameProxy implementation:
-  void EnableAutoResize(const gfx::Size& min_size,
-                        const gfx::Size& max_size) override;
-  void DisableAutoResize() override;
   void DidUpdateVisualProperties(
       const cc::RenderFrameMetadata& metadata) override;
   void ChildProcessGone() override;

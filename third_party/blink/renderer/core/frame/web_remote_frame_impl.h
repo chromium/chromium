@@ -108,9 +108,6 @@ class CORE_EXPORT WebRemoteFrameImpl final
       mojom::blink::UserActivationUpdateType update_type,
       mojom::blink::UserActivationNotificationType notification_type) override;
   void SetHadStickyUserActivationBeforeNavigation(bool value) override;
-  void EnableAutoResize(const gfx::Size& min_size,
-                        const gfx::Size& max_size) override;
-  void DisableAutoResize() override;
   v8::Local<v8::Object> GlobalProxy() const override;
   void SynchronizeVisualProperties() override;
   void ResendVisualProperties() override;

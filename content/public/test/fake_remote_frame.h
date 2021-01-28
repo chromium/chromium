@@ -88,6 +88,9 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
   void UpdateOpener(const base::Optional<base::UnguessableToken>&
                         opener_frame_token) override;
   void DetachAndDispose() override;
+  void EnableAutoResize(const gfx::Size& min_size,
+                        const gfx::Size& max_size) override;
+  void DisableAutoResize() override;
 
  private:
   void BindFrameHostReceiver(mojo::ScopedInterfaceEndpointHandle handle);

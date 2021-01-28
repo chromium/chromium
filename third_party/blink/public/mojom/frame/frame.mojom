@@ -951,6 +951,14 @@ interface RemoteFrame {
   // the frame tree. This should not be called on the main frame as that frame
   // is owned by the associated WebView.
   DetachAndDispose();
+
+  // Enables autoresize mode as requested by the parent frame's renderer
+  // process.
+  EnableAutoResize(gfx.mojom.Size min_size, gfx.mojom.Size max_size);
+
+  // Disables autoresize mode as requested by the parent frame's renderer
+  // process.
+  DisableAutoResize();
 };
 
 // Implemented in Blink, this interface defines main-frame-specific methods that

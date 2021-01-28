@@ -151,9 +151,6 @@ class WebRemoteFrame : public WebFrame {
       mojom::UserActivationNotificationType notification_type) = 0;
 
   virtual void SetHadStickyUserActivationBeforeNavigation(bool value) = 0;
-  virtual void EnableAutoResize(const gfx::Size& min_size,
-                                const gfx::Size& max_size) = 0;
-  virtual void DisableAutoResize() = 0;
 
   virtual void SynchronizeVisualProperties() = 0;
   virtual void ResendVisualProperties() = 0;

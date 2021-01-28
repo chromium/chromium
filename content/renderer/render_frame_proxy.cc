@@ -368,17 +368,6 @@ void RenderFrameProxy::DidUpdateVisualProperties(
   web_frame_->SynchronizeVisualProperties();
 }
 
-void RenderFrameProxy::EnableAutoResize(const gfx::Size& min_size,
-                                        const gfx::Size& max_size) {
-  DCHECK(ancestor_web_frame_widget_);
-  web_frame_->EnableAutoResize(min_size, max_size);
-}
-
-void RenderFrameProxy::DisableAutoResize() {
-  DCHECK(ancestor_web_frame_widget_);
-  web_frame_->DisableAutoResize();
-}
-
 void RenderFrameProxy::SetFrameSinkId(const viz::FrameSinkId& frame_sink_id) {
   FrameSinkIdChanged(frame_sink_id);
 }

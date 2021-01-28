@@ -28,12 +28,6 @@ interface RenderFrameProxy {
   // contents has terminated.
   ChildProcessGone();
 
-  // This function enables auto-resize mode from the parent renderer.
-  EnableAutoResize(gfx.mojom.Size min_size, gfx.mojom.Size max_size);
-
-  // This function disables auto-resize-mode from the parent renderer.
-  DisableAutoResize();
-
   // Informs the completion of an autoresize transaction from the parent
   // renderer and updates with the provided viz::LocalSurfaceId.
   DidUpdateVisualProperties(cc.mojom.RenderFrameMetadata metadata);

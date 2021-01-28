@@ -95,4 +95,9 @@ void FakeRemoteFrame::FakeRemoteFrame::BindFrameHostReceiver(
 
 void FakeRemoteFrame::DetachAndDispose() {}
 
+void FakeRemoteFrame::EnableAutoResize(const gfx::Size& min_size,
+                                       const gfx::Size& max_size) {}
+
+void FakeRemoteFrame::DisableAutoResize() {}
+
 }  // namespace content

@@ -387,15 +387,6 @@ void WebRemoteFrameImpl::SetHadStickyUserActivationBeforeNavigation(
   GetFrame()->SetHadStickyUserActivationBeforeNavigation(value);
 }
 
-void WebRemoteFrameImpl::EnableAutoResize(const gfx::Size& min_size,
-                                          const gfx::Size& max_size) {
-  GetFrame()->EnableAutoResize(min_size, max_size);
-}
-
-void WebRemoteFrameImpl::DisableAutoResize() {
-  GetFrame()->DisableAutoResize();
-}
-
 v8::Local<v8::Object> WebRemoteFrameImpl::GlobalProxy() const {
   return GetFrame()
       ->GetWindowProxy(DOMWrapperWorld::MainWorld())
