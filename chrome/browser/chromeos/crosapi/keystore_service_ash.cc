@@ -78,13 +78,9 @@ base::Optional<std::string> StringFromSigningAlgorithmName(
 
 }  // namespace
 
-KeystoreServiceAsh::KeystoreServiceAsh() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-}
+KeystoreServiceAsh::KeystoreServiceAsh() = default;
 
-KeystoreServiceAsh::~KeystoreServiceAsh() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-}
+KeystoreServiceAsh::~KeystoreServiceAsh() = default;
 
 void KeystoreServiceAsh::BindReceiver(
     mojo::PendingReceiver<mojom::KeystoreService> receiver) {

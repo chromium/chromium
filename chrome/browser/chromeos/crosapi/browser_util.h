@@ -70,6 +70,11 @@ bool IsLacrosWindow(const aura::Window* window);
 // Returns the UUID and version for all tracked interfaces. Exposed for testing.
 base::flat_map<base::Token, uint32_t> GetInterfaceVersions();
 
+// Returns the initial parameter to be passed to Crosapi client,
+// such as lacros-chrome.
+mojom::BrowserInitParamsPtr GetBrowserInitParams(
+    EnvironmentProvider* environment_provider);
+
 // Invite the lacros-chrome to the mojo universe.
 // Queue messages to establish the mojo connection, so that the passed IPC is
 // available already when lacros-chrome accepts the invitation.

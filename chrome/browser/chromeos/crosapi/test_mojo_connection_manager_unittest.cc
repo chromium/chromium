@@ -6,7 +6,11 @@
 
 #include <fcntl.h>
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
@@ -20,10 +24,15 @@
 #include "base/test/multiprocess_test.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
+#include "chrome/browser/chromeos/crosapi/crosapi_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/login/login_state/login_state.h"
 #include "chromeos/startup/startup_switches.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/fake_user_manager.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
@@ -76,17 +85,37 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
 using TestMojoConnectionManagerTest = testing::Test;
 
 TEST_F(TestMojoConnectionManagerTest, ConnectWithBrowser) {
-  // Constructing BrowserInitParams requires local state prefs.
-  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
-
   // Create temp dir before task environment, just in case lingering tasks need
   // to access it.
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   // Use IO type to support the FileDescriptorWatcher API on POSIX.
+  // TestingProfileManager instantiated below requires a TaskRunner.
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::MainThreadType::IO};
+
+  chromeos::LoginState::Initialize();
+  base::ScopedClosureRunner login_state_teardown(
+      base::BindOnce(&chromeos::LoginState::Shutdown));
+
+  // Constructing CrosapiManager requires ProfileManager.
+  // Also, constructing BrowserInitParams requires local state prefs.
+  TestingProfileManager testing_profile_manager(
+      TestingBrowserProcess::GetGlobal());
+  ASSERT_TRUE(testing_profile_manager.SetUp());
+
+  // Set up UserManager to fake the login state.
+  user_manager::FakeUserManager user_manager;
+  user_manager.Initialize();
+  base::ScopedClosureRunner user_manager_teardown(
+      base::BindOnce(base::BindLambdaForTesting(
+          [&user_manager]() { user_manager.Destroy(); })));
+  const AccountId account = AccountId::FromUserEmail("test@test");
+  const user_manager::User* user = user_manager.AddUser(account);
+  user_manager.UserLoggedIn(account, user->username_hash(), false, false);
+
+  auto crosapi_manager = std::make_unique<CrosapiManager>();
 
   // Ash-chrome queues an invitation, drop a socket and wait for connection.
   std::string socket_path =

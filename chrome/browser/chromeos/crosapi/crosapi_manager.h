@@ -6,16 +6,23 @@
 #define CHROME_BROWSER_CHROMEOS_CROSAPI_CROSAPI_MANAGER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/callback.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
+namespace mojo {
+class PlatformChannelEndpoint;
+}  // namespace mojo
 
 namespace crosapi {
 namespace mojom {
+class BrowserService;
 class Crosapi;
 }  // namespace mojom
 
 class CrosapiAsh;
+class EnvironmentProvider;
 
 // Maintains the crosapi connection provided by ash-chrome.
 class CrosapiManager {
@@ -28,15 +35,27 @@ class CrosapiManager {
   CrosapiManager& operator=(const CrosapiManager&) = delete;
   ~CrosapiManager();
 
-  // Binds the given receiver to the CrosapiAsh implementation.
-  // |disconnect_handler| is called, when the connection is lost.
-  void BindCrosapi(mojo::PendingReceiver<mojom::Crosapi> pending_receiver,
-                   base::OnceClosure disconnect_handler);
-
-  // TODO(crbug.com/1148448): Move invitation sending flow to here.
+  // Binds local_endpoint to BrowserService, and invites to the Mojo universe.
+  // Then, request Crosapi pending receiver to the client, and on its callback,
+  // binds it to |crosapi_|.
+  // Also, BrowserService's version is queried, and on its completion,
+  // |completion_callback| is called. |disconnect_handler| invocation is bound
+  // to BrowserService at first, but on Crosapi binding, it is transferred to
+  // Crosapi. So, before Crosapi binding, |disconnect_handler| is called on
+  // BrowserService disconnection. After Crosapi binding, it is called on
+  // Crosapi disconnection, but not on BrowserService disconnection.
+  void SendInvitation(
+      EnvironmentProvider* environment_provider,
+      mojo::PlatformChannelEndpoint local_endpoint,
+      base::OnceClosure disconnect_handler,
+      base::OnceCallback<void(mojo::Remote<mojom::BrowserService>)>
+          completion_callback);
 
  private:
+  class InvitationFlow;
+
   std::unique_ptr<CrosapiAsh> crosapi_;
+  std::vector<std::unique_ptr<InvitationFlow>> pending_invitation_flow_list_;
 };
 
 }  // namespace crosapi

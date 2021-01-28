@@ -160,6 +160,10 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   void OnCrosapiReceiverReceived(
       mojo::PendingReceiver<mojom::Crosapi> pending_receiver);
 
+  // Called when crosapi connection is established.
+  void OnCrosapiConnected(
+      mojo::Remote<crosapi::mojom::BrowserService> browser_service);
+
   // Called when the Mojo connection to lacros-chrome is disconnected.
   // It may be "just a Mojo error" or "lacros-chrome crash".
   // In either case, terminates lacros-chrome, because there's no longer a
@@ -193,9 +197,6 @@ class BrowserManager : public session_manager::SessionManagerObserver {
   // {browser version} {channel}
   // For example, "87.0.0.1 dev", "86.0.4240.38 beta".
   std::string browser_version_;
-
-  // Version of BrowserService mojo interface.
-  uint32_t browser_service_version_ = 0;
 
   // Called when the binary download completes.
   LoadCompleteCallback load_complete_callback_;

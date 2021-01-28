@@ -19,7 +19,7 @@
 
 namespace crosapi {
 namespace mojom {
-class Crosapi;
+class BrowserService;
 }  // namespace mojom
 
 // An extension of BrowserManager to help set up and manage the mojo connections
@@ -53,9 +53,9 @@ class TestMojoConnectionManager {
   // Called when a client, such as a test launcher, attempts to connect.
   void OnTestingSocketAvailable();
 
-  // Called when PendingReceiver of Crosapi is passed from lacros-chrome.
-  void OnCrosapiReceiverReceived(
-      mojo::PendingReceiver<crosapi::mojom::Crosapi> pending_receiver);
+  // Called when Crosapi is connected.
+  void OnCrosapiConnected(
+      mojo::Remote<crosapi::mojom::BrowserService> browser_service);
 
   // Called when the Mojo connection to lacros-chrome is disconnected.
   // It may be "just a Mojo error" or "test is finished".

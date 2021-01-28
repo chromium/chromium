@@ -93,36 +93,6 @@ void AddVersion(InterfaceVersions* map) {
   (*map)[T::Uuid_] = T::Version_;
 }
 
-mojom::BrowserInitParamsPtr GetBrowserInitParams(
-    EnvironmentProvider* environment_provider) {
-  auto params = mojom::BrowserInitParams::New();
-  params->crosapi_version = crosapi::mojom::Crosapi::Version_;
-  params->deprecated_ash_metrics_enabled_has_value = true;
-  PrefService* local_state = g_browser_process->local_state();
-  params->ash_metrics_enabled =
-      local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
-  params->ash_metrics_managed =
-      local_state->IsManagedPreference(metrics::prefs::kMetricsReportingEnabled)
-          ? mojom::MetricsReportingManaged::kManaged
-          : mojom::MetricsReportingManaged::kNotManaged;
-
-  params->session_type = environment_provider->GetSessionType();
-  params->device_mode = environment_provider->GetDeviceMode();
-  params->interface_versions = GetInterfaceVersions();
-  params->default_paths = environment_provider->GetDefaultPaths();
-  params->device_account_gaia_id =
-      environment_provider->GetDeviceAccountGaiaId();
-  // TODO(crbug.com/1093194): This should be updated to a new value when
-  // the long term fix is made in ash-chrome, atomically.
-  params->exo_ime_support =
-      crosapi::mojom::ExoImeSupport::kConsumedByImeWorkaround;
-  params->cros_user_id_hash = chromeos::ProfileHelper::GetUserIdHashFromProfile(
-      ProfileManager::GetPrimaryUserProfile());
-  params->device_account_policy = GetDeviceAccountPolicy(environment_provider);
-
-  return params;
-}
-
 }  // namespace
 
 // When this feature is enabled, Lacros will be available on stable channel.
@@ -241,28 +211,34 @@ base::flat_map<base::Token, uint32_t> GetInterfaceVersions() {
   return versions;
 }
 
-mojo::Remote<crosapi::mojom::BrowserService> SendMojoInvitationToLacrosChrome(
-    EnvironmentProvider* environment_provider,
-    mojo::PlatformChannelEndpoint local_endpoint,
-    base::OnceClosure mojo_disconnected_callback,
-    base::OnceCallback<void(mojo::PendingReceiver<crosapi::mojom::Crosapi>)>
-        crosapi_callback) {
-  mojo::OutgoingInvitation invitation;
-  mojo::Remote<crosapi::mojom::BrowserService> browser_service;
-  browser_service.Bind(mojo::PendingRemote<crosapi::mojom::BrowserService>(
-      invitation.AttachMessagePipe(0 /* token */), /*version=*/0));
-  browser_service.set_disconnect_handler(std::move(mojo_disconnected_callback));
+mojom::BrowserInitParamsPtr GetBrowserInitParams(
+    EnvironmentProvider* environment_provider) {
+  auto params = mojom::BrowserInitParams::New();
+  params->crosapi_version = crosapi::mojom::Crosapi::Version_;
+  params->deprecated_ash_metrics_enabled_has_value = true;
+  PrefService* local_state = g_browser_process->local_state();
+  params->ash_metrics_enabled =
+      local_state->GetBoolean(metrics::prefs::kMetricsReportingEnabled);
+  params->ash_metrics_managed =
+      local_state->IsManagedPreference(metrics::prefs::kMetricsReportingEnabled)
+          ? mojom::MetricsReportingManaged::kManaged
+          : mojom::MetricsReportingManaged::kNotManaged;
 
-  // This is for backward compatibility.
-  // TODO(crbug.com/1156033): Remove InitDeprecated() invocation when lacros
-  // becomes mature enough.
-  browser_service->InitDeprecated(GetBrowserInitParams(environment_provider));
+  params->session_type = environment_provider->GetSessionType();
+  params->device_mode = environment_provider->GetDeviceMode();
+  params->interface_versions = GetInterfaceVersions();
+  params->default_paths = environment_provider->GetDefaultPaths();
+  params->device_account_gaia_id =
+      environment_provider->GetDeviceAccountGaiaId();
+  // TODO(crbug.com/1093194): This should be updated to a new value when
+  // the long term fix is made in ash-chrome, atomically.
+  params->exo_ime_support =
+      crosapi::mojom::ExoImeSupport::kConsumedByImeWorkaround;
+  params->cros_user_id_hash = chromeos::ProfileHelper::GetUserIdHashFromProfile(
+      ProfileManager::GetPrimaryUserProfile());
+  params->device_account_policy = GetDeviceAccountPolicy(environment_provider);
 
-  browser_service->RequestCrosapiReceiver(std::move(crosapi_callback));
-  mojo::OutgoingInvitation::Send(std::move(invitation),
-                                 base::kNullProcessHandle,
-                                 std::move(local_endpoint));
-  return browser_service;
+  return params;
 }
 
 base::ScopedFD CreateStartupData(EnvironmentProvider* environment_provider) {

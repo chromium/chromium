@@ -219,7 +219,7 @@ void BrowserManager::NewWindow() {
     return;
   }
 
-  if (state_ == State::CREATING_LOG_FILE) {
+  if (state_ == State::CREATING_LOG_FILE || state_ == State::STARTING) {
     LOG(WARNING) << "lacros-chrome is in the process of launching";
     return;
   }
@@ -235,31 +235,31 @@ void BrowserManager::NewWindow() {
 }
 
 bool BrowserManager::GetFeedbackDataSupported() const {
-  return browser_service_version_ >= kGetFeedbackDataMinVersion;
+  return browser_service_.is_bound() && browser_service_.is_connected() &&
+         browser_service_.version() >= kGetFeedbackDataMinVersion;
 }
 
 void BrowserManager::GetFeedbackData(GetFeedbackDataCallback callback) {
-  DCHECK(browser_service_.is_connected());
   DCHECK(GetFeedbackDataSupported());
   browser_service_->GetFeedbackData(std::move(callback));
 }
 
 bool BrowserManager::GetHistogramsSupported() const {
-  return browser_service_version_ >= kGetHistogramsMinVersion;
+  return browser_service_.is_bound() && browser_service_.is_connected() &&
+         browser_service_.version() >= kGetHistogramsMinVersion;
 }
 
 void BrowserManager::GetHistograms(GetHistogramsCallback callback) {
-  DCHECK(browser_service_.is_connected());
   DCHECK(GetHistogramsSupported());
   browser_service_->GetHistograms(std::move(callback));
 }
 
 bool BrowserManager::GetActiveTabUrlSupported() const {
-  return browser_service_version_ >= kGetActiveTabUrlMinVersion;
+  return browser_service_.is_bound() && browser_service_.is_connected() &&
+         browser_service_.version() >= kGetActiveTabUrlMinVersion;
 }
 
 void BrowserManager::GetActiveTabUrl(GetActiveTabUrlCallback callback) {
-  DCHECK(browser_service_.is_connected());
   DCHECK(GetActiveTabUrlSupported());
   browser_service_->GetActiveTabUrl(std::move(callback));
 }
@@ -395,15 +395,11 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
   channel.PrepareToPassRemoteEndpoint(&options, &command_line);
 
   // TODO(crbug.com/1124490): Support multiple mojo connections from lacros.
-  browser_service_ = browser_util::SendMojoInvitationToLacrosChrome(
+  CrosapiManager::Get()->SendInvitation(
       environment_provider_.get(), channel.TakeLocalEndpoint(),
       base::BindOnce(&BrowserManager::OnMojoDisconnected,
                      weak_factory_.GetWeakPtr()),
-      base::BindOnce(&BrowserManager::OnCrosapiReceiverReceived,
-                     weak_factory_.GetWeakPtr()));
-
-  browser_service_.QueryVersion(
-      base::BindOnce(&BrowserManager::OnBrowserServiceVersionReady,
+      base::BindOnce(&BrowserManager::OnCrosapiConnected,
                      weak_factory_.GetWeakPtr()));
 
   // Create the lacros-chrome subprocess.
@@ -422,16 +418,12 @@ void BrowserManager::StartWithLogFile(base::ScopedFD logfd) {
   channel.RemoteProcessLaunchAttempted();
 }
 
-void BrowserManager::OnCrosapiReceiverReceived(
-    mojo::PendingReceiver<mojom::Crosapi> pending_receiver) {
+void BrowserManager::OnCrosapiConnected(
+    mojo::Remote<mojom::BrowserService> browser_service) {
   DCHECK_EQ(state_, State::STARTING);
-  // Transfer the disconnect handler from BrowserService to Crosapi.
-  browser_service_.set_disconnect_handler(base::OnceClosure());
-  CrosapiManager::Get()->BindCrosapi(
-      std::move(pending_receiver),
-      base::BindOnce(&BrowserManager::OnMojoDisconnected,
-                     weak_factory_.GetWeakPtr()));
+
   state_ = State::RUNNING;
+  browser_service_ = std::move(browser_service);
   base::UmaHistogramMediumTimes("ChromeOS.Lacros.StartTime",
                                 base::TimeTicks::Now() - lacros_launch_time_);
   // Set the launch-on-login pref every time lacros-chrome successfully starts,
@@ -517,10 +509,6 @@ void BrowserManager::OnLoadComplete(const base::FilePath& path) {
 void BrowserManager::NotifyMojoDisconnected() {
   for (auto& observer : observers_)
     observer.OnMojoDisconnected();
-}
-
-void BrowserManager::OnBrowserServiceVersionReady(uint32_t version) {
-  browser_service_version_ = version;
 }
 
 void BrowserManager::SetDeviceAccountPolicy(const std::string& policy_blob) {

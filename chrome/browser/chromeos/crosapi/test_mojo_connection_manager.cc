@@ -100,11 +100,11 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
 
   // TODO(crbug.com/1124490): Support multiple mojo connections from lacros.
   mojo::PlatformChannel channel;
-  browser_service_ = browser_util::SendMojoInvitationToLacrosChrome(
+  CrosapiManager::Get()->SendInvitation(
       environment_provider_.get(), channel.TakeLocalEndpoint(),
       base::BindOnce(&TestMojoConnectionManager::OnMojoDisconnected,
                      weak_factory_.GetWeakPtr()),
-      base::BindOnce(&TestMojoConnectionManager::OnCrosapiReceiverReceived,
+      base::BindOnce(&TestMojoConnectionManager::OnCrosapiConnected,
                      weak_factory_.GetWeakPtr()));
 
   base::ScopedFD startup_fd =
@@ -129,14 +129,9 @@ void TestMojoConnectionManager::OnTestingSocketAvailable() {
   }
 }
 
-void TestMojoConnectionManager::OnCrosapiReceiverReceived(
-    mojo::PendingReceiver<crosapi::mojom::Crosapi> pending_receiver) {
-  // Transfer the disconnect handler to Crosapi.
-  browser_service_.set_disconnect_handler(base::OnceClosure());
-  CrosapiManager::Get()->BindCrosapi(
-      std::move(pending_receiver),
-      base::BindOnce(&TestMojoConnectionManager::OnMojoDisconnected,
-                     weak_factory_.GetWeakPtr()));
+void TestMojoConnectionManager::OnCrosapiConnected(
+    mojo::Remote<crosapi::mojom::BrowserService> browser_service) {
+  browser_service_ = std::move(browser_service);
   LOG(INFO) << "Connection to lacros-chrome is established.";
 }
 
