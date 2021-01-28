@@ -31,11 +31,6 @@ BPFBasePolicy::~BPFBasePolicy() {}
 ResultExpr BPFBasePolicy::EvaluateSyscall(int system_call_number) const {
   DCHECK(baseline_policy_);
 
-  // Used for shared memory Mojo channels on Linux.
-  if (system_call_number == __NR_memfd_create) {
-    return Allow();
-  }
-
   // set_robust_list(2) is part of the futex(2) infrastructure.
   // Chrome on Linux/Chrome OS will call set_robust_list(2) frequently.
   // The baseline policy will EPERM set_robust_list(2), but on systems with

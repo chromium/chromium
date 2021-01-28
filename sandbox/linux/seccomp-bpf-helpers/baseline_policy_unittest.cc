@@ -303,6 +303,7 @@ TEST_BASELINE_SIGSYS(__NR_syslog)
 TEST_BASELINE_SIGSYS(__NR_timer_create)
 
 #if !defined(__aarch64__)
+TEST_BASELINE_SIGSYS(__NR_eventfd)
 TEST_BASELINE_SIGSYS(__NR_inotify_init)
 TEST_BASELINE_SIGSYS(__NR_vserver)
 #endif

@@ -853,9 +853,6 @@ extern const char kMobileIdentityConsistencyVarDescription[];
 extern const char kMobilePwaInstallUseBottomSheetName[];
 extern const char kMobilePwaInstallUseBottomSheetDescription[];
 
-extern const char kMojoLinuxChannelSharedMemName[];
-extern const char kMojoLinuxChannelSharedMemDescription[];
-
 extern const char kMouseSubframeNoImplicitCaptureName[];
 extern const char kMouseSubframeNoImplicitCaptureDescription[];
 
