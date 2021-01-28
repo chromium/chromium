@@ -7,6 +7,7 @@
 #include <queue>
 
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/event_rewriter_controller.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/root_window_controller.h"
@@ -20,6 +21,7 @@
 #include "base/command_line.h"
 #include "base/macros.h"
 #include "base/task/post_task.h"
+#include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -53,6 +55,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/widget/widget.h"
 
 namespace {
@@ -123,15 +127,6 @@ void LoggedInSpokenFeedbackTest::SendStickyKeyCommand() {
 void LoggedInSpokenFeedbackTest::SendMouseMoveTo(const gfx::Point& location) {
   ASSERT_NO_FATAL_FAILURE(
       ASSERT_TRUE(ui_controls::SendMouseMove(location.x(), location.y())));
-}
-
-void LoggedInSpokenFeedbackTest::SimulateTouchScreenInChromeVox() {
-  // ChromeVox looks at whether 'ontouchstart' exists to know whether
-  // or not it should respond to hover events. Fake it so that touch
-  // exploration events get spoken.
-  extensions::browsertest_util::ExecuteScriptInBackgroundPageNoWait(
-      browser()->profile(), extension_misc::kChromeVoxExtensionId,
-      "window.ontouchstart = function() {};");
 }
 
 bool LoggedInSpokenFeedbackTest::PerformAcceleratorAction(
@@ -806,7 +801,6 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, ChromeVoxStickyMode) {
 
 IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreStatusTray) {
   EnableChromeVox();
-  sm_.Call([this]() { SimulateTouchScreenInChromeVox(); });
 
   // Send an accessibility hover event on the system tray, which is
   // what we get when you tap it on a touch screen when ChromeVox is on.
@@ -818,6 +812,108 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, TouchExploreStatusTray) {
     tray->NotifyAccessibilityEvent(ax::mojom::Event::kHover, true);
   });
   sm_.ExpectSpeechPattern("Status tray, time* Battery at* percent*");
+  sm_.ExpectSpeech("Button");
+
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
+                       TouchExploreRightEdgeVolumeSliderOn) {
+  EnableChromeVox();
+
+  base::SimpleTestTickClock clock;
+  auto* clock_ptr = &clock;
+  ui::SetEventTickClockForTesting(clock_ptr);
+
+  auto* root_window = ash::Shell::Get()->GetPrimaryRootWindow();
+  ui::test::EventGenerator generator(root_window);
+  auto* generator_ptr = &generator;
+
+  // Force right edge volume slider gesture on.
+  sm_.Call([] {
+    ash::AccessibilityController::Get()->EnableChromeVoxVolumeSlideGesture();
+  });
+
+  // Touch and slide on the right edge of the screen.
+  sm_.Call([clock_ptr, generator_ptr]() {
+    ui::TouchEvent touch_press(
+        ui::ET_TOUCH_PRESSED, gfx::Point(1280, 200), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_press);
+
+    clock_ptr->Advance(base::TimeDelta::FromSeconds(1));
+
+    ui::TouchEvent touch_move(
+        ui::ET_TOUCH_MOVED, gfx::Point(1280, 300), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move);
+
+    clock_ptr->Advance(base::TimeDelta::FromSeconds(1));
+
+    ui::TouchEvent touch_move2(
+        ui::ET_TOUCH_MOVED, gfx::Point(1280, 400), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move2);
+  });
+
+  sm_.ExpectSpeech("Volume");
+  sm_.ExpectSpeech("Slider");
+
+  sm_.Replay();
+}
+
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest,
+                       TouchExploreRightEdgeVolumeSliderOff) {
+  EnableChromeVox();
+
+  base::SimpleTestTickClock clock;
+  auto* clock_ptr = &clock;
+  ui::SetEventTickClockForTesting(clock_ptr);
+
+  auto* root_window = ash::Shell::Get()->GetPrimaryRootWindow();
+  ui::test::EventGenerator generator(root_window);
+  auto* generator_ptr = &generator;
+
+  // Build a simple window with a button and position it at the right edge of
+  // the screen.
+  views::Widget* widget = new views::Widget;
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+
+  // This is the right edge of the screen.
+  params.bounds = {1250, 0, 50, 700};
+  widget->Init(std::move(params));
+
+  views::View* view = new views::View();
+  view->GetViewAccessibility().OverrideName("hello");
+  view->GetViewAccessibility().OverrideRole(ax::mojom::Role::kButton);
+  view->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
+  widget->GetRootView()->AddChildView(view);
+
+  // Show the widget, then touch and slide on the right edge of the screen.
+  sm_.Call([widget, clock_ptr, generator_ptr]() {
+    widget->Show();
+    ui::TouchEvent touch_press(
+        ui::ET_TOUCH_PRESSED, gfx::Point(1280, 200), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_press);
+
+    clock_ptr->Advance(base::TimeDelta::FromSeconds(1));
+
+    ui::TouchEvent touch_move(
+        ui::ET_TOUCH_MOVED, gfx::Point(1280, 300), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move);
+
+    clock_ptr->Advance(base::TimeDelta::FromSeconds(1));
+
+    ui::TouchEvent touch_move2(
+        ui::ET_TOUCH_MOVED, gfx::Point(1280, 400), base::TimeTicks::Now(),
+        ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+    generator_ptr->Dispatch(&touch_move2);
+  });
+
+  // This should trigger reading of the button.
+  sm_.ExpectSpeech("hello");
   sm_.ExpectSpeech("Button");
 
   sm_.Replay();

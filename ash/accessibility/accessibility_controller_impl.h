@@ -492,7 +492,7 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   std::unique_ptr<ScopedBacklightsForcedOff> scoped_backlights_forced_off_;
 
   // True if ChromeVox should enable its volume slide gesture.
-  bool enable_chromevox_volume_slide_gesture_ = true;
+  bool enable_chromevox_volume_slide_gesture_ = false;
 
   base::ObserverList<AccessibilityObserver> observers_;
 

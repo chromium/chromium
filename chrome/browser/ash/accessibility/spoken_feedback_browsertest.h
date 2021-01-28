@@ -38,8 +38,6 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
 
   void SendMouseMoveTo(const gfx::Point& location);
 
-  void SimulateTouchScreenInChromeVox();
-
   bool PerformAcceleratorAction(ash::AcceleratorAction action);
 
   void DisableEarcons();
