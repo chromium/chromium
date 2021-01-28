@@ -819,7 +819,7 @@ Document::Document(const DocumentInit& initializer,
       fragment_directive_(MakeGarbageCollected<FragmentDirective>()),
       display_lock_document_state_(
           MakeGarbageCollected<DisplayLockDocumentState>(this)),
-      font_preload_manager_(*this),
+      font_preload_manager_(MakeGarbageCollected<FontPreloadManager>(*this)),
       data_(MakeGarbageCollected<DocumentData>(GetExecutionContext())) {
   if (GetFrame()) {
     DCHECK(GetFrame()->GetPage());
@@ -7058,7 +7058,7 @@ void Document::BeginLifecycleUpdatesIfRenderingReady() {
     return;
   if (!HaveRenderBlockingResourcesLoaded())
     return;
-  font_preload_manager_.WillBeginRendering();
+  font_preload_manager_->WillBeginRendering();
   View()->BeginLifecycleUpdates();
 }
 
@@ -7764,7 +7764,7 @@ bool Document::HaveScriptBlockingStylesheetsLoaded() const {
 bool Document::HaveRenderBlockingResourcesLoaded() const {
   return HaveImportsLoaded() &&
          style_engine_->HaveRenderBlockingStylesheetsLoaded() &&
-         !font_preload_manager_.HasPendingRenderBlockingFonts();
+         !font_preload_manager_->HasPendingRenderBlockingFonts();
 }
 
 Locale& Document::GetCachedLocale(const AtomicString& locale) {
@@ -8569,7 +8569,7 @@ void Document::ClearUseCounterForTesting(mojom::WebFeature feature) {
 }
 
 void Document::FontPreloadingFinishedOrTimedOut() {
-  DCHECK(!font_preload_manager_.HasPendingRenderBlockingFonts());
+  DCHECK(!font_preload_manager_->HasPendingRenderBlockingFonts());
   if (IsA<HTMLDocument>(this) && body()) {
     // For HTML, we resume only when we're past the body tag, so that we should
     // have something to paint now.
