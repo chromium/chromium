@@ -28,17 +28,15 @@ namespace {
 class AccountInfoRetriever : public ProfileDownloaderDelegate {
  public:
   AccountInfoRetriever(Profile* profile,
-                       const CoreAccountId& account_id,
-                       const std::string& email,
+                       const CoreAccountInfo& core_account_info,
                        const int desired_image_side_pixels)
       : profile_(profile),
-        account_id_(account_id),
-        email_(email),
+        core_account_info_(core_account_info),
         desired_image_side_pixels_(desired_image_side_pixels) {}
 
   void Start() {
     profile_image_downloader_.reset(new ProfileDownloader(this));
-    profile_image_downloader_->StartForAccount(account_id_);
+    profile_image_downloader_->StartForAccount(core_account_info_.account_id);
   }
 
  private:
@@ -80,7 +78,8 @@ class AccountInfoRetriever : public ProfileDownloaderDelegate {
 
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_ProfileDownloader_onProfileDownloadSuccess(
-        env, base::android::ConvertUTF8ToJavaString(env, email_),
+        env,
+        base::android::ConvertUTF8ToJavaString(env, core_account_info_.email),
         base::android::ConvertUTF16ToJavaString(env, full_name),
         base::android::ConvertUTF16ToJavaString(env, given_name), jbitmap);
     Shutdown();
@@ -99,9 +98,8 @@ class AccountInfoRetriever : public ProfileDownloaderDelegate {
   // The browser profile associated with this download request.
   Profile* profile_;
 
-  // The account ID and email address of account to be loaded.
-  const CoreAccountId account_id_;
-  const std::string email_;
+  // The account info of account to be loaded.
+  const CoreAccountInfo core_account_info_;
 
   // Desired side length of the profile image (in pixels).
   const int desired_image_side_pixels_;
@@ -115,23 +113,11 @@ class AccountInfoRetriever : public ProfileDownloaderDelegate {
 void JNI_ProfileDownloader_StartFetchingAccountInfoFor(
     JNIEnv* env,
     const JavaParamRef<jobject>& jprofile,
-    const JavaParamRef<jstring>& jemail,
+    const JavaParamRef<jobject>& jcore_account_info,
     jint image_side_pixels) {
-  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
-  const std::string email = base::android::ConvertJavaStringToUTF8(env, jemail);
-
-  auto maybe_account_info =
-      IdentityManagerFactory::GetForProfile(profile)
-          ->FindExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
-              email);
-
-  if (!maybe_account_info.has_value()) {
-    LOG(ERROR) << "Attempted to get AccountInfo for account not in the "
-               << "IdentityManager";
-    return;
-  }
-
   AccountInfoRetriever* retriever = new AccountInfoRetriever(
-      profile, maybe_account_info.value().account_id, email, image_side_pixels);
+      ProfileAndroid::FromProfileAndroid(jprofile),
+      ConvertFromJavaCoreAccountInfo(env, jcore_account_info),
+      image_side_pixels);
   retriever->Start();
 }

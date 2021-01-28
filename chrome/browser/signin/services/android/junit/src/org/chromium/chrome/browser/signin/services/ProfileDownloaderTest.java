@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.signin.services;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -16,6 +15,7 @@ import android.graphics.Bitmap;
 
 import androidx.annotation.Px;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -34,6 +34,9 @@ import org.chromium.chrome.browser.signin.services.ProfileDownloader.PendingProf
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.ProfileDataSource;
 import org.chromium.components.signin.ProfileDataSource.ProfileData;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountId;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 
 /**
  * Unit tests for {@link ProfileDownloader}.
@@ -61,6 +64,12 @@ public class ProfileDownloaderTest {
     @Mock
     private AccountTrackerService mAccountTrackerServiceMock;
 
+    @Mock
+    private IdentityManager mIdentityManagerMock;
+
+    @Mock
+    private ProfileDataSource.Observer mObserverMock;
+
     @Captor
     private ArgumentCaptor<ProfileData> mProfileDataCaptor;
 
@@ -71,32 +80,92 @@ public class ProfileDownloaderTest {
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProviderMock);
         when(mIdentityServicesProviderMock.getAccountTrackerService(mProfileMock))
                 .thenReturn(mAccountTrackerServiceMock);
+        when(mIdentityServicesProviderMock.getIdentityManager(mProfileMock))
+                .thenReturn(mIdentityManagerMock);
+    }
+
+    @After
+    public void tearDown() {
+        ProfileDownloader.resetForTests();
     }
 
     @Test
     public void testFetchingAccountInfoWhenAccountsAreNotSeeded() {
         when(mAccountTrackerServiceMock.checkAndSeedSystemAccounts()).thenReturn(false);
+
+        ProfileDownloader.get().addObserver(mObserverMock);
+        ProfileDownloader.get().startFetchingAccountInfoFor(ACCOUNT_EMAIL, IMAGE_SIZE);
+        final PendingProfileDownloads pendingProfileDownloads =
+                ProfileDownloader.PendingProfileDownloads.get();
+
+        verify(mAccountTrackerServiceMock).addSystemAccountsSeededListener(pendingProfileDownloads);
+        verify(mProfileDownloaderNativeMock, never())
+                .startFetchingAccountInfoFor(any(), any(), anyInt());
+        verify(mObserverMock, never()).onProfileDataUpdated(any());
+    }
+
+    @Test
+    public void testFetchingAccountInfoWhenAccountsAreSeededAndNoAccountInfoAvailable() {
+        when(mAccountTrackerServiceMock.checkAndSeedSystemAccounts()).thenReturn(true);
+
+        ProfileDownloader.get().addObserver(mObserverMock);
+        ProfileDownloader.get().startFetchingAccountInfoFor(ACCOUNT_EMAIL, IMAGE_SIZE);
+        final PendingProfileDownloads pendingProfileDownloads =
+                ProfileDownloader.PendingProfileDownloads.get();
+
+        verify(mAccountTrackerServiceMock).addSystemAccountsSeededListener(pendingProfileDownloads);
+        verify(mIdentityManagerMock)
+                .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(ACCOUNT_EMAIL);
+        verify(mProfileDownloaderNativeMock, never())
+                .startFetchingAccountInfoFor(any(), any(), anyInt());
+        verify(mObserverMock, never()).onProfileDataUpdated(any());
+    }
+
+    @Test
+    public void testFetchingAccountInfoWhenAccountsAreSeededAndAccountInfoHasNoImage() {
+        when(mAccountTrackerServiceMock.checkAndSeedSystemAccounts()).thenReturn(true);
+        final AccountInfo accountInfo = new AccountInfo(new CoreAccountId("gaia-id-test"),
+                ACCOUNT_EMAIL, "gaia-id-test", "full name", "given name", null);
+        when(mIdentityManagerMock.findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
+                     ACCOUNT_EMAIL))
+                .thenReturn(accountInfo);
+
+        ProfileDownloader.get().addObserver(mObserverMock);
         ProfileDownloader.get().startFetchingAccountInfoFor(ACCOUNT_EMAIL, IMAGE_SIZE);
         final PendingProfileDownloads pendingProfileDownloads =
                 ProfileDownloader.PendingProfileDownloads.get();
         verify(mAccountTrackerServiceMock).addSystemAccountsSeededListener(pendingProfileDownloads);
-        verify(mProfileDownloaderNativeMock, never())
-                .startFetchingAccountInfoFor(any(), anyString(), anyInt());
-        pendingProfileDownloads.onSystemAccountsSeedingComplete();
+        verify(mIdentityManagerMock)
+                .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(ACCOUNT_EMAIL);
         verify(mProfileDownloaderNativeMock)
-                .startFetchingAccountInfoFor(mProfileMock, ACCOUNT_EMAIL, IMAGE_SIZE);
+                .startFetchingAccountInfoFor(mProfileMock, accountInfo, IMAGE_SIZE);
+        verify(mObserverMock, never()).onProfileDataUpdated(any());
     }
 
     @Test
-    public void testFetchingAccountInfoWhenAccountsAreSeeded() {
+    public void testFetchingAccountInfoWhenAccountsAreSeededAndAccountInfoHasImage() {
         when(mAccountTrackerServiceMock.checkAndSeedSystemAccounts()).thenReturn(true);
+        final AccountInfo accountInfo = new AccountInfo(new CoreAccountId("gaia-id-test"),
+                ACCOUNT_EMAIL, "gaia-id-test", "full name", "given name", mock(Bitmap.class));
+        when(mIdentityManagerMock.findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
+                     ACCOUNT_EMAIL))
+                .thenReturn(accountInfo);
+
+        ProfileDownloader.get().addObserver(mObserverMock);
         ProfileDownloader.get().startFetchingAccountInfoFor(ACCOUNT_EMAIL, IMAGE_SIZE);
         final PendingProfileDownloads pendingProfileDownloads =
                 ProfileDownloader.PendingProfileDownloads.get();
-        verify(mAccountTrackerServiceMock, never())
-                .addSystemAccountsSeededListener(pendingProfileDownloads);
-        verify(mProfileDownloaderNativeMock)
-                .startFetchingAccountInfoFor(mProfileMock, ACCOUNT_EMAIL, IMAGE_SIZE);
+        verify(mAccountTrackerServiceMock).addSystemAccountsSeededListener(pendingProfileDownloads);
+        verify(mIdentityManagerMock)
+                .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(ACCOUNT_EMAIL);
+        verify(mProfileDownloaderNativeMock, never())
+                .startFetchingAccountInfoFor(any(), any(), anyInt());
+        verify(mObserverMock).onProfileDataUpdated(mProfileDataCaptor.capture());
+        final ProfileData profileData = mProfileDataCaptor.getValue();
+        Assert.assertEquals(ACCOUNT_EMAIL, profileData.getAccountEmail());
+        Assert.assertEquals(accountInfo.getFullName(), profileData.getFullName());
+        Assert.assertEquals(accountInfo.getGivenName(), profileData.getGivenName());
+        Assert.assertEquals(accountInfo.getAccountImage(), profileData.getAvatar());
     }
 
     @Test
@@ -104,12 +173,11 @@ public class ProfileDownloaderTest {
         final String fullName = "Full name";
         final String givenName = "Given name";
         final Bitmap avatar = mock(Bitmap.class);
-        final ProfileDataSource.Observer observer = mock(ProfileDataSource.Observer.class);
 
-        ProfileDownloader.get().addObserver(observer);
+        ProfileDownloader.get().addObserver(mObserverMock);
         ProfileDownloader.onProfileDownloadSuccess(ACCOUNT_EMAIL, fullName, givenName, avatar);
 
-        verify(observer).onProfileDataUpdated(mProfileDataCaptor.capture());
+        verify(mObserverMock).onProfileDataUpdated(mProfileDataCaptor.capture());
         final ProfileData profileData = mProfileDataCaptor.getValue();
         Assert.assertEquals(ACCOUNT_EMAIL, profileData.getAccountEmail());
         Assert.assertEquals(fullName, profileData.getFullName());

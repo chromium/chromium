@@ -6,9 +6,12 @@ package org.chromium.chrome.browser.signin.services;
 
 import android.graphics.Bitmap;
 
+import androidx.annotation.GuardedBy;
+import androidx.annotation.MainThread;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -16,6 +19,8 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.ProfileDataSource;
+import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.util.ArrayList;
 
@@ -25,8 +30,10 @@ import java.util.ArrayList;
  * See chrome/browser/profiles/profile_downloader.h/cc for more details.
  */
 class ProfileDownloader {
+    private static final String TAG = "ProfileDownloader";
     private static final Object LOCK = new Object();
 
+    @GuardedBy("LOCK")
     private static ProfileDownloader sInstance;
 
     private final ObserverList<ProfileDataSource.Observer> mObservers = new ObserverList<>();
@@ -39,8 +46,16 @@ class ProfileDownloader {
             if (sInstance == null) {
                 sInstance = new ProfileDownloader();
             }
+            return sInstance;
         }
-        return sInstance;
+    }
+
+    @VisibleForTesting
+    static void resetForTests() {
+        synchronized (LOCK) {
+            sInstance = null;
+        }
+        PendingProfileDownloads.sPendingProfileDownloads = null;
     }
 
     /**
@@ -76,12 +91,10 @@ class ProfileDownloader {
             implements AccountTrackerService.OnSystemAccountsSeededListener {
         private static PendingProfileDownloads sPendingProfileDownloads;
 
-        private final ArrayList<Profile> mProfiles;
         private final ArrayList<String> mAccountEmails;
         private final ArrayList<Integer> mImageSizes;
 
         private PendingProfileDownloads() {
-            mProfiles = new ArrayList<>();
             mAccountEmails = new ArrayList<>();
             mImageSizes = new ArrayList<>();
         }
@@ -97,8 +110,7 @@ class ProfileDownloader {
             return sPendingProfileDownloads;
         }
 
-        void pendProfileDownload(Profile profile, String accountEmail, int imageSize) {
-            mProfiles.add(profile);
+        void pendProfileDownload(String accountEmail, int imageSize) {
             mAccountEmails.add(accountEmail);
             mImageSizes.add(imageSize);
         }
@@ -109,9 +121,7 @@ class ProfileDownloader {
             while (numberOfPendingRequests > 0) {
                 // Pending requests here must be pre-signin request since SigninManager will wait
                 // system accounts been seeded into AccountTrackerService before finishing sign in.
-                ProfileDownloaderJni.get().startFetchingAccountInfoFor(
-                        mProfiles.get(0), mAccountEmails.get(0), mImageSizes.get(0));
-                mProfiles.remove(0);
+                fetchAccountInfo(mAccountEmails.get(0), mImageSizes.get(0));
                 mAccountEmails.remove(0);
                 mImageSizes.remove(0);
                 numberOfPendingRequests--;
@@ -120,7 +130,6 @@ class ProfileDownloader {
 
         @Override
         public void onSystemAccountsChanged() {
-            mProfiles.clear();
             mAccountEmails.clear();
             mImageSizes.clear();
         }
@@ -134,13 +143,13 @@ class ProfileDownloader {
     public void startFetchingAccountInfoFor(String accountEmail, @Px int imageSize) {
         ThreadUtils.assertOnUiThread();
         final Profile profile = Profile.getLastUsedRegularProfile();
-        if (!IdentityServicesProvider.get()
+        if (IdentityServicesProvider.get()
                         .getAccountTrackerService(profile)
                         .checkAndSeedSystemAccounts()) {
-            PendingProfileDownloads.get().pendProfileDownload(profile, accountEmail, imageSize);
-            return;
+            fetchAccountInfo(accountEmail, imageSize);
+        } else {
+            PendingProfileDownloads.get().pendProfileDownload(accountEmail, imageSize);
         }
-        ProfileDownloaderJni.get().startFetchingAccountInfoFor(profile, accountEmail, imageSize);
     }
 
     @VisibleForTesting
@@ -152,8 +161,27 @@ class ProfileDownloader {
                 new ProfileDataSource.ProfileData(accountEmail, avatar, fullName, givenName));
     }
 
+    @MainThread
+    private static void fetchAccountInfo(String accountEmail, @Px int imageSize) {
+        final Profile profile = Profile.getLastUsedRegularProfile();
+        final AccountInfo accountInfo =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(profile)
+                        .findExtendedAccountInfoForAccountWithRefreshTokenByEmailAddress(
+                                accountEmail);
+        if (accountInfo == null) {
+            Log.i(TAG, "No AccountInfo available for email:" + accountEmail);
+        } else if (accountInfo.getAccountImage() != null) {
+            onProfileDownloadSuccess(accountEmail, accountInfo.getFullName(),
+                    accountInfo.getGivenName(), accountInfo.getAccountImage());
+        } else {
+            ProfileDownloaderJni.get().startFetchingAccountInfoFor(profile, accountInfo, imageSize);
+        }
+    }
+
     @NativeMethods
     interface Natives {
-        void startFetchingAccountInfoFor(Profile profile, String accountEmail, int imageSize);
+        void startFetchingAccountInfoFor(
+                Profile profile, CoreAccountInfo coreAccountInfo, int imageSize);
     }
 }
