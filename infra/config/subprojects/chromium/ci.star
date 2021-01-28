@@ -1791,10 +1791,6 @@ ci.cipd_builder(
                 "cipd_yaml": "third_party/android_sdk/cipd/emulator.yaml",
             },
             {
-                "sdk_package_name": "extras;google;gcm",
-                "cipd_yaml": "third_party/android_sdk/cipd/extras/google/gcm.yaml",
-            },
-            {
                 "sdk_package_name": "patcher;v4",
                 "cipd_yaml": "third_party/android_sdk/cipd/patcher/v4.yaml",
             },

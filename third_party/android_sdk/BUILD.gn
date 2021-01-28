@@ -63,7 +63,4 @@ if (enable_java_templates) {
     testonly = true
     sources = [ "//third_party/android_sdk/public/extras/chromium/support/src/org/chromium/android/support/PackageManagerWrapper.java" ]
   }
-  android_java_prebuilt("android_gcm_java") {
-    jar_path = "//third_party/android_sdk/public/extras/google/gcm/gcm-client/dist/gcm.jar"
-  }
 }

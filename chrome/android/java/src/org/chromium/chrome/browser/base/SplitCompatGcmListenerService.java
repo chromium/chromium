@@ -7,13 +7,14 @@ package org.chromium.chrome.browser.base;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.google.android.gms.gcm.GcmListenerService;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
 /**
  * GcmListenerService base class which will call through to the given {@link Impl}. This class must
  * be present in the base module, while the Impl can be in the chrome module.
  */
-public class SplitCompatGcmListenerService extends GcmListenerService {
+public class SplitCompatGcmListenerService extends FirebaseMessagingService {
     private String mServiceClassName;
     private Impl mImpl;
 
@@ -36,7 +37,9 @@ public class SplitCompatGcmListenerService extends GcmListenerService {
     }
 
     @Override
-    public void onMessageReceived(String from, Bundle data) {
+    public void onMessageReceived(RemoteMessage message) {
+        String from = message.getFrom();
+        Bundle data = message.toIntent().getExtras();
         mImpl.onMessageReceived(from, data);
     }
 
@@ -46,13 +49,18 @@ public class SplitCompatGcmListenerService extends GcmListenerService {
     }
 
     @Override
-    public void onSendError(String msgId, String error) {
+    public void onSendError(String msgId, Exception error) {
         mImpl.onSendError(msgId, error);
     }
 
     @Override
     public void onDeletedMessages() {
         mImpl.onDeletedMessages();
+    }
+
+    @Override
+    public void onNewToken(String token) {
+        mImpl.onNewToken(token);
     }
 
     /**
@@ -76,8 +84,10 @@ public class SplitCompatGcmListenerService extends GcmListenerService {
 
         public void onMessageSent(String msgId) {}
 
-        public void onSendError(String msgId, String error) {}
+        public void onSendError(String msgId, Exception error) {}
 
         public void onDeletedMessages() {}
+
+        public void onNewToken(String token) {}
     }
 }

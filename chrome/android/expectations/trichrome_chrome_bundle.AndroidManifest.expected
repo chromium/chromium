@@ -832,16 +832,6 @@
         android:exported="false"
         android:name="com.google.android.gms.cast.framework.media.MediaIntentReceiver">
     </receiver>  # DIFF-ANCHOR: 1091f66b
-    <receiver  # DIFF-ANCHOR: 0ea504ef
-        android:exported="true"
-        android:name="com.google.android.gms.gcm.GcmReceiver"
-        android:permission="com.google.android.c2dm.permission.SEND">
-      <intent-filter>  # DIFF-ANCHOR: aae22013
-        <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
-        <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
-        <category android:name="$PACKAGE"/>
-      </intent-filter>  # DIFF-ANCHOR: aae22013
-    </receiver>  # DIFF-ANCHOR: 0ea504ef
     <receiver  # DIFF-ANCHOR: f1c9c29d
         android:exported="true"
         android:name="com.google.firebase.iid.FirebaseInstanceIdReceiver"
@@ -1116,9 +1106,9 @@
     <service  # DIFF-ANCHOR: d930289b
         android:exported="false"
         android:name="org.chromium.chrome.browser.services.gcm.ChromeGcmListenerService">
-      <intent-filter>  # DIFF-ANCHOR: aae22013
-        <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
-      </intent-filter>  # DIFF-ANCHOR: aae22013
+      <intent-filter>  # DIFF-ANCHOR: 69e70070
+        <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+      </intent-filter>  # DIFF-ANCHOR: 69e70070
     </service>  # DIFF-ANCHOR: d930289b
     <service  # DIFF-ANCHOR: 682abdc1
         android:exported="false"
