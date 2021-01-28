@@ -25,16 +25,6 @@ namespace autofill {
 
 using structured_address::VerificationStatus;
 
-namespace {
-
-// TODO(crbug.com/1103421): Clean legacy implementation once structured names
-// are fully launched.
-bool StructuredAddressesEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kAutofillEnableSupportForMoreStructureInNames);
-}
-}  // namespace
-
 NameInfo::NameInfo() = default;
 
 NameInfo::NameInfo(const NameInfo& info) {
@@ -49,7 +39,7 @@ NameInfo& NameInfo::operator=(const NameInfo& info) {
 
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
   // are fully launched.
-  if (StructuredAddressesEnabled()) {
+  if (structured_address::StructuredNamesEnabled()) {
     name_ = info.name_;
   } else {
     given_ = info.given_;
@@ -69,14 +59,14 @@ void NameInfo::MergeStructuredNameValidationStatuses(const NameInfo& newer) {
 }
 
 bool NameInfo::IsStructuredNameMergeable(const NameInfo& newer) const {
-  if (!StructuredAddressesEnabled())
+  if (!structured_address::StructuredNamesEnabled())
     NOTREACHED();
 
   return name_.IsMergeableWithComponent(newer.GetStructuredName());
 }
 
 bool NameInfo::FinalizeAfterImport(bool profile_is_verified) {
-  if (StructuredAddressesEnabled()) {
+  if (structured_address::StructuredNamesEnabled()) {
     name_.MigrateLegacyStructure(profile_is_verified);
     return name_.CompleteFullTree();
   }
@@ -89,7 +79,7 @@ bool NameInfo::operator==(const NameInfo& other) const {
 
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
   // are fully launched.
-  if (StructuredAddressesEnabled())
+  if (structured_address::StructuredNamesEnabled())
     return name_ == other.name_;
 
   return given_ == other.given_ && middle_ == other.middle_ &&
@@ -101,7 +91,7 @@ base::string16 NameInfo::GetRawInfo(ServerFieldType type) const {
 
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
   // are fully launched.
-  if (StructuredAddressesEnabled()) {
+  if (structured_address::StructuredNamesEnabled()) {
     // TODO(crbug.com/1113617): Honorifics are temporally disabled.
     if (type == NAME_HONORIFIC_PREFIX)
       return base::string16();
@@ -134,7 +124,7 @@ void NameInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
   DCHECK_EQ(NAME, AutofillType(type).group());
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
   // are fully launched.
-  if (StructuredAddressesEnabled()) {
+  if (structured_address::StructuredNamesEnabled()) {
     // TODO(crbug.com/1113617): Honorifics are temporally disabled.
     if (type == NAME_HONORIFIC_PREFIX)
       return;
@@ -174,7 +164,7 @@ void NameInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
 void NameInfo::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
   // are fully launched.
-  if (StructuredAddressesEnabled()) {
+  if (structured_address::StructuredNamesEnabled()) {
     name_.GetSupportedTypes(supported_types);
   } else {
     supported_types->insert(NAME_FIRST);
@@ -189,7 +179,7 @@ base::string16 NameInfo::GetInfoImpl(const AutofillType& type,
                                      const std::string& app_locale) const {
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
   // are fully launched.
-  if (!StructuredAddressesEnabled()) {
+  if (!structured_address::StructuredNamesEnabled()) {
     if (type.GetStorableType() == NAME_FULL)
       return FullName();
   }
@@ -202,7 +192,7 @@ bool NameInfo::SetInfoWithVerificationStatusImpl(const AutofillType& type,
                                                  VerificationStatus status) {
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
   // are fully launched.
-  if (StructuredAddressesEnabled()) {
+  if (structured_address::StructuredNamesEnabled()) {
     if (type.GetStorableType() == NAME_FULL) {
       // If the set string is token equivalent to the old one, the value can
       // just be updated, otherwise create a new name record and complete it in
@@ -233,7 +223,7 @@ VerificationStatus NameInfo::GetVerificationStatusImpl(
     ServerFieldType type) const {
   // TODO(crbug.com/1103421): Clean legacy implementation once structured
   // names are fully launched.
-  if (StructuredAddressesEnabled())
+  if (structured_address::StructuredNamesEnabled())
     return name_.GetVerificationStatusForType(type);
   return VerificationStatus::kNoStatus;
 }
@@ -241,7 +231,7 @@ VerificationStatus NameInfo::GetVerificationStatusImpl(
 base::string16 NameInfo::FullName() const {
   // TODO(crbug.com/1103421): Clean legacy implementation once structured
   // names are fully launched.
-  if (StructuredAddressesEnabled())
+  if (structured_address::StructuredNamesEnabled())
     NOTREACHED();
   if (!full_.empty())
     return full_;
@@ -252,7 +242,7 @@ base::string16 NameInfo::FullName() const {
 base::string16 NameInfo::MiddleInitial() const {
   // TODO(crbug.com/1103421): Clean legacy implementation once structured
   // names are fully launched.
-  if (StructuredAddressesEnabled())
+  if (structured_address::StructuredNamesEnabled())
     NOTREACHED();
   return middle_.empty() ? base::string16() : middle_.substr(0U, 1U);
 }
@@ -260,7 +250,7 @@ base::string16 NameInfo::MiddleInitial() const {
 void NameInfo::SetFullName(const base::string16& full) {
   // TODO(crbug.com/1103421): Clean legacy implementation once structured
   // names are fully launched.
-  if (StructuredAddressesEnabled())
+  if (structured_address::StructuredNamesEnabled())
     NOTREACHED();
   full_ = full;
   data_util::NameParts parts = data_util::SplitName(full);
