@@ -7,13 +7,7 @@ package org.chromium.chrome.browser.sync;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.is;
-
-import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
 
 import androidx.test.filters.LargeTest;
 
@@ -26,6 +20,7 @@ import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -47,7 +42,6 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 /**
  * Tests for ManageSyncSettings.
@@ -57,9 +51,6 @@ import org.chromium.ui.test.util.DisableAnimationsTestRule;
 public class GoogleServicesSettingsTest {
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
-
-    @Rule
-    public final DisableAnimationsTestRule sNoAnimationRule = new DisableAnimationsTestRule();
 
     public final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
@@ -120,6 +111,7 @@ public class GoogleServicesSettingsTest {
     @Test
     @LargeTest
     @Features.EnableFeatures(ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY)
+    @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1142481")
     public void showSignOutDialogBeforeSigningUserOut() {
         mAccountManagerTestRule.addTestAccountThenSigninAndEnableSync();
         final GoogleServicesSettings googleServicesSettings = startGoogleServicesSettings();
@@ -128,7 +120,6 @@ public class GoogleServicesSettingsTest {
                         GoogleServicesSettings.PREF_ALLOW_SIGNIN);
         Assert.assertTrue("Chrome Signin should be allowed", allowChromeSignin.isChecked());
 
-        onViewWaiting(allOf(is(googleServicesSettings.getView()), isDisplayed()));
         onView(withText(R.string.allow_chrome_signin_title)).perform(click());
         // Accept the sign out Dialog
         onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
