@@ -137,9 +137,8 @@ class ArcNotificationContentViewTest : public AshTestBase {
 
     surface_manager_ = std::make_unique<ArcNotificationSurfaceManagerImpl>();
 
-    message_center::MessageViewFactory::
-        ClearCustomNotificationViewFactoryForTest(
-            kArcNotificationCustomViewType);
+    message_center::MessageViewFactory::ClearCustomNotificationViewFactory(
+        kArcNotificationCustomViewType);
     ArcNotificationManager::SetCustomNotificationViewFactory();
   }
 
@@ -347,7 +346,7 @@ TEST_F(ArcNotificationContentViewTest, CloseButton) {
 TEST_F(ArcNotificationContentViewTest, CloseButtonInMessageCenterView) {
   std::string notification_key("notification id");
 
-  message_center::MessageViewFactory::ClearCustomNotificationViewFactoryForTest(
+  message_center::MessageViewFactory::ClearCustomNotificationViewFactory(
       kArcNotificationCustomViewType);
 
   // Override MessageView factory to capture the created notification view in
