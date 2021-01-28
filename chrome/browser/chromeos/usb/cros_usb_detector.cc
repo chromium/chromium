@@ -12,7 +12,6 @@
 #include "ash/public/cpp/notification_utils.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chromeos/crostini/crostini_features.h"
@@ -51,10 +50,6 @@ const char kParallelsShortName[] = "Parallels";
 static CrosUsbDetector* g_cros_usb_detector = nullptr;
 
 const char kNotifierUsb[] = "crosusb.connected";
-
-void RecordNotificationClosure(CrosUsbNotificationClosed disposition) {
-  UMA_HISTOGRAM_ENUMERATION("CrosUsb.NotificationClosed", disposition);
-}
 
 base::string16 ProductLabelFromDevice(
     const device::mojom::UsbDeviceInfoPtr& device_info) {
@@ -170,7 +165,6 @@ class CrosUsbNotificationDelegate
   void Close(bool by_user) override {
     if (by_user)
       disposition_ = chromeos::CrosUsbNotificationClosed::kByUser;
-    RecordNotificationClosure(disposition_);
   }
 
  private:

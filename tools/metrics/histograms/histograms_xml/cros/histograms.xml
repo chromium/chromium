@@ -219,6 +219,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="CrosUsb.NotificationClosed" enum="CrosUsbNotificationClosed"
     expires_after="2021-01-31">
+  <obsolete>
+    Removed 01/2021. We haven't been making use of this.
+  </obsolete>
   <owner>clumptini@google.com</owner>
   <owner>tbuckley@chromium.org</owner>
   <summary>
