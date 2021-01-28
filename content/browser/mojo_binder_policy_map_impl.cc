@@ -6,11 +6,20 @@
 
 #include "base/no_destructor.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/mojo_binder_policy_map.h"
 #include "content/public/common/content_client.h"
+#include "device/gamepad/public/mojom/gamepad.mojom.h"
 
 namespace content {
 
 namespace {
+
+// Register mojo binder policies for prerendering for content/ interfaces.
+void RegisterContentBinderPoliciesForPrerendering(MojoBinderPolicyMap& map) {
+  map.SetPolicy<device::mojom::GamepadMonitor>(MojoBinderPolicy::kCancel);
+  map.SetPolicy<device::mojom::GamepadHapticsManager>(
+      MojoBinderPolicy::kCancel);
+}
 
 // A singleton class that stores the `MojoBinderPolicyMap` of interfaces which
 // are obtained via `BrowserInterfaceBrowser` for frames.
@@ -19,6 +28,7 @@ namespace {
 class BrowserInterfaceBrokerMojoBinderPolicyMapHolder {
  public:
   BrowserInterfaceBrokerMojoBinderPolicyMapHolder() {
+    RegisterContentBinderPoliciesForPrerendering(map_);
     GetContentClient()->browser()->RegisterMojoBinderPoliciesForPrerendering(
         map_);
   }
