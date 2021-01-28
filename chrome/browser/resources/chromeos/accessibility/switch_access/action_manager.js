@@ -25,8 +25,8 @@ export class ActionManager {
     /** @private {!Array<!SAConstants.MenuType>} */
     this.menuStack_ = [];
 
-    /** @private {constants.Point} */
-    this.pointScanPoint_ = {x: 0, y: 0};
+    /** @private {?constants.Point} */
+    this.pointScanPoint_ = null;
 
     /** @private {function(constants.Point)} */
     this.pointScanListener_ = this.handleOnPointScanSet_.bind(this);
@@ -205,6 +205,28 @@ export class ActionManager {
   }
 
   /**
+   * @return {chrome.accessibilityPrivate.ScreenRect|undefined}
+   * @private
+   */
+  getLocationForCurrentMenuAndNode_() {
+    if (this.currentMenuType_ === SAConstants.MenuType.POINT_SCAN_MENU &&
+        this.pointScanPoint_) {
+      return {
+        left: Math.floor(this.pointScanPoint_.x),
+        top: Math.floor(this.pointScanPoint_.y),
+        width: 1,
+        height: 1
+      };
+    }
+
+    if (this.actionNode_) {
+      return this.actionNode_.location;
+    }
+
+    return undefined;
+  }
+
+  /**
    * If the action is a global action, perform the action and return true.
    * Otherwise return false.
    * @param {!SwitchAccessMenuAction} action
@@ -236,11 +258,16 @@ export class ActionManager {
    * @private
    */
   handlePointScanActions_(action) {
+    if (!this.pointScanPoint_) {
+      return false;
+    }
+
     switch (action) {
       case SwitchAccessMenuAction.LEFT_CLICK:
         EventGenerator.sendMouseClick(
             this.pointScanPoint_.x, this.pointScanPoint_.y);
         chrome.accessibilityPrivate.setPointScanState(chrome.accessibilityPrivate.PointScanState.STOP);
+        this.pointScanPoint_ = null;
         return true;
       case SwitchAccessMenuAction.RIGHT_CLICK:
         EventGenerator.sendMouseClick(
@@ -249,6 +276,7 @@ export class ActionManager {
                   chrome.accessibilityPrivate.SyntheticMouseEventButton.RIGHT
             });
         chrome.accessibilityPrivate.setPointScanState(chrome.accessibilityPrivate.PointScanState.STOP);
+        this.pointScanPoint_ = null;
         return true;
       default:
         return false;
@@ -258,11 +286,12 @@ export class ActionManager {
   /** @private */
   openCurrentMenu_() {
     const actions = this.getActionsForCurrentMenuAndNode_();
+    const location = this.getLocationForCurrentMenuAndNode_();
 
     if (actions.length < 2) {
       ActionManager.exitCurrentMenu();
     }
-    MenuManager.open(actions, this.actionNode_.location);
+    MenuManager.open(actions, location);
   }
 
   /**
