@@ -68,6 +68,11 @@ enum ShouldComputePreferred { kComputeActual, kComputePreferred };
 
 enum ShouldClampToContentBox { kDoNotClampToContentBox, kClampToContentBox };
 
+enum ShouldIncludeScrollbarGutter {
+  kExcludeScrollbarGutter,
+  kIncludeScrollbarGutter
+};
+
 using SnapAreaSet = HashSet<LayoutBox*>;
 
 struct LayoutBoxRareData final : public GarbageCollected<LayoutBoxRareData> {
@@ -2115,7 +2120,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   void ExcludeScrollbars(
       PhysicalRect&,
-      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
+      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
+      ShouldIncludeScrollbarGutter = kIncludeScrollbarGutter) const;
 
   LayoutUnit ContainingBlockLogicalWidthForPositioned(
       const LayoutBoxModelObject* containing_block,
@@ -2271,7 +2277,8 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   bool HasScrollbarGutters(ScrollbarOrientation orientation) const;
   NGPhysicalBoxStrut ComputeScrollbarsInternal(
       ShouldClampToContentBox = kDoNotClampToContentBox,
-      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize) const;
+      OverlayScrollbarClipBehavior = kIgnoreOverlayScrollbarSize,
+      ShouldIncludeScrollbarGutter = kIncludeScrollbarGutter) const;
 
   LayoutUnit FlipForWritingModeInternal(
       LayoutUnit position,
