@@ -32,6 +32,10 @@ const char kAccessibilityScreenMagnifierEnabled[] =
 // is enabled.
 const char kAccessibilityScreenMagnifierFocusFollowingEnabled[] =
     "settings.a11y.screen_magnifier_focus_following";
+// An integer pref which indicates the mouse panning mode for screen magnifier.
+// This maps to AccessibilityController::MagnifierMousePanningMode.
+const char kAccessibilityScreenMagnifierMousePanningMode[] =
+    "settings.a11y.screen_magnifier_mouse_panning_mode";
 // A boolean pref which determines whether screen magnifier should center
 // the text input focus.
 const char kAccessibilityScreenMagnifierCenterFocus[] =
@@ -61,7 +65,7 @@ const char kAccessibilityShortcutsEnabled[] = "settings.a11y.shortcuts_enabled";
 const char kAccessibilityAutoclickDelayMs[] =
     "settings.a11y.autoclick_delay_ms";
 // An integer pref which determines the event type for an autoclick event. This
-// maps to mojom::AccessibilityController::AutoclickEventType.
+// maps to AccessibilityController::AutoclickEventType.
 const char kAccessibilityAutoclickEventType[] =
     "settings.a11y.autoclick_event_type";
 // Whether Autoclick should immediately return to left click after performing

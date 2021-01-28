@@ -178,6 +178,24 @@ enum class FloatingMenuPosition {
   kSystemDefault,
 };
 
+// Mouse panning mode for magnifier. This indicates the way the magnified
+// viewport is panned as the mouse is moved across the screen. These values are
+// written to prefs so they should not be changed. New values should be added at
+// the end.
+enum class MagnifierMousePanningMode {
+  // Default value, indicates no mouse panning mode chosen.
+  kNone,
+
+  // Continuous panning mode.
+  kContinuous,
+
+  // Centered panning mode.
+  kCentered,
+
+  // Edge panning mode.
+  kEdge,
+};
+
 }  // namespace ash
 
 #endif  // ASH_PUBLIC_CPP_ACCESSIBILITY_CONTROLLER_ENUMS_H_

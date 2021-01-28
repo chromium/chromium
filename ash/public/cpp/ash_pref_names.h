@@ -20,6 +20,8 @@ ASH_PUBLIC_EXPORT extern const char kAccessibilityScreenMagnifierCenterFocus[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilityScreenMagnifierEnabled[];
 ASH_PUBLIC_EXPORT extern const char
     kAccessibilityScreenMagnifierFocusFollowingEnabled[];
+ASH_PUBLIC_EXPORT extern const char
+    kAccessibilityScreenMagnifierMousePanningMode[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilityScreenMagnifierScale[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilityVirtualKeyboardEnabled[];
 ASH_PUBLIC_EXPORT extern const char kAccessibilityVirtualKeyboardFeatures[];
