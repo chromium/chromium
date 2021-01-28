@@ -390,11 +390,6 @@ TEST_F(FrameSequenceTrackerTest, TestJankWithZeroIntervalInFeedback) {
   collection_.NotifyFramePresented(
       frame_token,
       /*feedback=*/{args_timestamp, zero_interval, 0});
-  ImplThroughput().frames_expected = 100u;
-  ReportMetrics();
-  histogram_tester.ExpectTotalCount(histogram_name, 1u);
-  EXPECT_THAT(histogram_tester.GetAllSamples(histogram_name),
-              testing::ElementsAre(base::Bucket(0, 1)));
 
   // Frame 3: There is one jank (frame interval incremented from 16.67ms
   // to 30.0ms)
@@ -409,13 +404,6 @@ TEST_F(FrameSequenceTrackerTest, TestJankWithZeroIntervalInFeedback) {
   collection_.NotifyFramePresented(
       frame_token,
       /*feedback=*/{args_timestamp, zero_interval, 0});
-
-  ImplThroughput().frames_expected = 100u;
-  ReportMetrics();
-  histogram_tester.ExpectTotalCount(
-      "Graphics.Smoothness.Jank.Compositor.TouchScroll", 2u);
-  EXPECT_THAT(histogram_tester.GetAllSamples(histogram_name),
-              testing::ElementsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
 
   // Frame 4: There is no jank since the increment from 30ms to  31ms is too
   // small. This tests if |NotifyFramePresented| can correctly handle the
@@ -434,9 +422,11 @@ TEST_F(FrameSequenceTrackerTest, TestJankWithZeroIntervalInFeedback) {
   ImplThroughput().frames_expected = 100u;
   ReportMetrics();
   histogram_tester.ExpectTotalCount(
-      "Graphics.Smoothness.Jank.Compositor.TouchScroll", 3u);
+      "Graphics.Smoothness.Jank.Compositor.TouchScroll", 1u);
+
+  // There should be only one jank for frame 3.
   EXPECT_THAT(histogram_tester.GetAllSamples(histogram_name),
-              testing::ElementsAre(base::Bucket(0, 1), base::Bucket(1, 2)));
+              testing::ElementsAre(base::Bucket(1, 1)));
 }
 
 // Base case for checkerboarding: present a single frame with checkerboarding,
