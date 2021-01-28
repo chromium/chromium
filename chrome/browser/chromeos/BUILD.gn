@@ -3168,6 +3168,7 @@ source_set("chromeos") {
     deps += [
       "//chromeos/components/chromebox_for_meetings/features",
       "//chromeos/dbus/chromebox_for_meetings",
+      "//chromeos/services/chromebox_for_meetings/public/cpp",
       "//chromeos/services/chromebox_for_meetings/public/mojom",
     ]
   }
