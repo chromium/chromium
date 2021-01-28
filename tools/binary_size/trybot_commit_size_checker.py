@@ -73,41 +73,45 @@ class _SizeDelta(collections.namedtuple(
     return self.name < other.name
 
 
-def _SymbolDiffHelper(symbols):
+def _SymbolDiffHelper(title_fragment, symbols):
   added = symbols.WhereDiffStatusIs(models.DIFF_STATUS_ADDED)
   removed = symbols.WhereDiffStatusIs(models.DIFF_STATUS_REMOVED)
   both = (added + removed).SortedByName()
-  lines = None
+  lines = []
   if len(both) > 0:
-    lines = [
-        'Added: {}'.format(len(added)),
-        'Removed: {}'.format(len(removed)),
-    ]
-    lines.extend(describe.GenerateLines(both, summarize=False))
+    for group in both.GroupedByContainer():
+      counts = group.CountsByDiffStatus()
+      lines += [
+          '===== {} Added & Removed ({}) ====='.format(
+              title_fragment, group.full_name),
+          'Added: {}'.format(counts[models.DIFF_STATUS_ADDED]),
+          'Removed: {}'.format(counts[models.DIFF_STATUS_REMOVED]),
+          ''
+      ]
+      lines.extend(describe.GenerateLines(group, summarize=False))
+      lines += ['']
 
   return lines, len(added) - len(removed)
 
 
 def _CreateMutableConstantsDelta(symbols):
   symbols = symbols.WhereInSection('d').WhereNameMatches(r'\bk[A-Z]|\b[A-Z_]+$')
-  lines, net_added = _SymbolDiffHelper(symbols)
+  lines, net_added = _SymbolDiffHelper('Mutable Constants', symbols)
 
   return lines, _SizeDelta('Mutable Constants', 'symbols', 0, net_added)
 
 
 def _CreateMethodCountDelta(symbols):
   method_symbols = symbols.WhereInSection(models.SECTION_DEX_METHOD)
-  method_lines, net_method_added = _SymbolDiffHelper(method_symbols)
+  method_lines, net_method_added = _SymbolDiffHelper('Methods', method_symbols)
   class_symbols = symbols.WhereInSection(
       models.SECTION_DEX).WhereNameMatches('#').Inverted()
-  class_lines, _ = _SymbolDiffHelper(class_symbols)
+  class_lines, _ = _SymbolDiffHelper('Classes', class_symbols)
   lines = []
   if class_lines:
-    lines.append('===== Classes Added & Removed =====')
     lines.extend(class_lines)
     lines.extend(['', ''])  # empty lines added for clarity
   if method_lines:
-    lines.append('===== Methods Added & Removed =====')
     lines.extend(method_lines)
 
   return lines, _SizeDelta('Dex Methods Count', 'methods',

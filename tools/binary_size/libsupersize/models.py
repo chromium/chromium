@@ -1265,6 +1265,9 @@ class SymbolGroup(BaseSymbol):
   def GroupedByContainerAndSectionName(self):
     return self.GroupedBy(lambda s: (s.container_name, s.section_name))
 
+  def GroupedByContainer(self):
+    return self.GroupedBy(lambda s: s.container_name)
+
   def GroupedBySectionName(self):
     return self.GroupedBy(lambda s: s.section_name)
 
