@@ -224,17 +224,17 @@ void FrameCaptionButtonContainerView::SetButtonImage(
   views::FrameCaptionButton* buttons[] = {menu_button_, minimize_button_,
                                           size_button_, close_button_};
   for (size_t i = 0; i < base::size(buttons); ++i) {
-    if (buttons[i]->icon() == icon)
+    if (buttons[i]->GetIcon() == icon)
       buttons[i]->SetImage(icon, views::FrameCaptionButton::ANIMATE_NO,
                            icon_definition);
   }
 }
 
 void FrameCaptionButtonContainerView::SetPaintAsActive(bool paint_as_active) {
-  menu_button_->set_paint_as_active(paint_as_active);
-  minimize_button_->set_paint_as_active(paint_as_active);
-  size_button_->set_paint_as_active(paint_as_active);
-  close_button_->set_paint_as_active(paint_as_active);
+  menu_button_->SetPaintAsActive(paint_as_active);
+  minimize_button_->SetPaintAsActive(paint_as_active);
+  size_button_->SetPaintAsActive(paint_as_active);
+  close_button_->SetPaintAsActive(paint_as_active);
   SchedulePaint();
 }
 
@@ -389,7 +389,7 @@ void FrameCaptionButtonContainerView::SetButtonIcon(
   // The early return is dependent on |animate| because callers use
   // SetButtonIcon() with ANIMATE_NO to progress |button|'s crossfade animation
   // to the end.
-  if (button->icon() == icon &&
+  if (button->GetIcon() == icon &&
       (animate == ANIMATE_YES || !button->IsAnimatingImageSwap())) {
     return;
   }

@@ -1254,11 +1254,11 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest,
   SetUpWebApp();
   chromeos::FrameCaptionButtonContainerView::TestApi test(
       GetFrameViewAsh(browser_view_)->caption_button_container_);
-  EXPECT_TRUE(test.size_button()->paint_as_active());
+  EXPECT_TRUE(test.size_button()->GetPaintAsActive());
   EXPECT_TRUE(GetPaintingAsActive());
 
   browser_view_->GetWidget()->Deactivate();
-  EXPECT_FALSE(test.size_button()->paint_as_active());
+  EXPECT_FALSE(test.size_button()->GetPaintAsActive());
   EXPECT_FALSE(GetPaintingAsActive());
 }
 

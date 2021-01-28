@@ -44,7 +44,7 @@ bool HitTestButton(const views::FrameCaptionButton* button,
 
 SnapDirection GetSnapDirection(const views::FrameCaptionButton* to_hover) {
   if (to_hover) {
-    switch (to_hover->icon()) {
+    switch (to_hover->GetIcon()) {
       case views::CAPTION_BUTTON_ICON_LEFT_SNAPPED:
         return SnapDirection::kLeft;
       case views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED:
@@ -272,8 +272,8 @@ const views::FrameCaptionButton* FrameSizeButton::GetButtonToHover(
   views::View::ConvertPointToScreen(this, &event_location_in_screen);
   const views::FrameCaptionButton* closest_button =
       delegate_->GetButtonClosestTo(event_location_in_screen);
-  if ((closest_button->icon() == views::CAPTION_BUTTON_ICON_LEFT_SNAPPED ||
-       closest_button->icon() == views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED) &&
+  if ((closest_button->GetIcon() == views::CAPTION_BUTTON_ICON_LEFT_SNAPPED ||
+       closest_button->GetIcon() == views::CAPTION_BUTTON_ICON_RIGHT_SNAPPED) &&
       HitTestButton(closest_button, event_location_in_screen)) {
     return closest_button;
   }

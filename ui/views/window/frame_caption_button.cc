@@ -22,6 +22,7 @@
 #include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 #include "ui/views/window/hit_test_utils.h"
 
@@ -57,15 +58,12 @@ class FrameCaptionButton::HighlightPathGenerator
     gfx::Rect bounds = gfx::ToRoundedRect(rect);
     bounds.Inset(frame_caption_button_->GetInkdropInsets(bounds.size()));
     return gfx::RRectF(gfx::RectF(bounds),
-                       frame_caption_button_->ink_drop_corner_radius());
+                       frame_caption_button_->GetInkDropCornerRadius());
   }
 
  private:
   FrameCaptionButton* const frame_caption_button_;
 };
-
-// static
-const char FrameCaptionButton::kViewClassName[] = "FrameCaptionButton";
 
 FrameCaptionButton::FrameCaptionButton(PressedCallback callback,
                                        CaptionButtonIcon icon,
@@ -166,10 +164,6 @@ void FrameCaptionButton::SetAlpha(int alpha) {
   }
 }
 
-const char* FrameCaptionButton::GetClassName() const {
-  return kViewClassName;
-}
-
 void FrameCaptionButton::OnGestureEvent(ui::GestureEvent* event) {
   // Button does not become pressed when the user drags off and then back
   // onto the button. Make FrameCaptionButton pressed in this case because this
@@ -222,6 +216,30 @@ void FrameCaptionButton::SetBackgroundColor(SkColor background_color) {
   if (icon_definition_)
     SetImage(icon_, ANIMATE_NO, *icon_definition_);
   UpdateInkDropBaseColor();
+}
+
+SkColor FrameCaptionButton::GetBackgroundColor() const {
+  return background_color_;
+}
+
+void FrameCaptionButton::SetPaintAsActive(bool paint_as_active) {
+  paint_as_active_ = paint_as_active;
+  OnPropertyChanged(&paint_as_active, kPropertyEffectsPaint);
+}
+
+bool FrameCaptionButton::GetPaintAsActive() const {
+  return paint_as_active_;
+}
+
+void FrameCaptionButton::SetInkDropCornerRadius(int ink_drop_corner_radius) {
+  ink_drop_corner_radius_ = ink_drop_corner_radius;
+  // Changes to |ink_drop_corner_radius| will affect the ink drop. Therefore
+  // this effect is handled by the ink drop.
+  OnPropertyChanged(&ink_drop_corner_radius_, kPropertyEffectsNone);
+}
+
+int FrameCaptionButton::GetInkDropCornerRadius() const {
+  return ink_drop_corner_radius_;
 }
 
 void FrameCaptionButton::PaintButtonContents(gfx::Canvas* canvas) {
@@ -320,5 +338,35 @@ void FrameCaptionButton::UpdateInkDropBaseColor() {
   SetInkDropBaseColor(
       GetColorWithMaxContrast(GetColorWithMaxContrast(button_color)));
 }
+
+DEFINE_ENUM_CONVERTERS(
+    views::CaptionButtonIcon,
+    {{views::CaptionButtonIcon::CAPTION_BUTTON_ICON_MINIMIZE,
+      base::ASCIIToUTF16("CAPTION_BUTTON_ICON_MINIMIZE")},
+     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE,
+      base::ASCIIToUTF16("CAPTION_BUTTON_ICON_MAXIMIZE_RESTORE")},
+     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_CLOSE,
+      base::ASCIIToUTF16("CAPTION_BUTTON_ICON_CLOSE")},
+     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_LEFT_SNAPPED,
+      base::ASCIIToUTF16("CAPTION_BUTTON_ICON_LEFT_SNAPPED")},
+     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_RIGHT_SNAPPED,
+      base::ASCIIToUTF16("CAPTION_BUTTON_ICON_RIGHT_SNAPPED")},
+     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_BACK,
+      base::ASCIIToUTF16("CAPTION_BUTTON_ICON_BACK")},
+     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_LOCATION,
+      base::ASCIIToUTF16("CAPTION_BUTTON_ICON_LOCATION")},
+     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_MENU,
+      base::ASCIIToUTF16("CAPTION_BUTTON_ICON_MENU")},
+     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_ZOOM,
+      base::ASCIIToUTF16("CAPTION_BUTTON_ICON_ZOOM")},
+     {views::CaptionButtonIcon::CAPTION_BUTTON_ICON_COUNT,
+      base::ASCIIToUTF16("CAPTION_BUTTON_ICON_COUNT")}})
+
+BEGIN_METADATA(FrameCaptionButton, Button)
+ADD_PROPERTY_METADATA(SkColor, BackgroundColor)
+ADD_PROPERTY_METADATA(bool, PaintAsActive)
+ADD_PROPERTY_METADATA(int, InkDropCornerRadius)
+ADD_READONLY_PROPERTY_METADATA(CaptionButtonIcon, Icon)
+END_METADATA
 
 }  // namespace views
