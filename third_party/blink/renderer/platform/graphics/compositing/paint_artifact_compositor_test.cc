@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/scroll_paint_property_node.h"
 #include "third_party/blink/renderer/platform/testing/fake_display_item_client.h"
+#include "third_party/blink/renderer/platform/testing/fake_graphics_layer_client.h"
 #include "third_party/blink/renderer/platform/testing/layer_tree_host_embedder.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
@@ -157,31 +158,14 @@ class PaintArtifactCompositorTest : public testing::Test,
 
   cc::Layer* RootLayer() { return paint_artifact_compositor_->RootLayer(); }
 
-  // CompositeAfterPaint creates scroll hit test data (which create scroll hit
-  // test layers in PaintArtifactCompositor) whereas before CompositeAfterPaint,
-  // scrollable foreign layers are created in ScrollingCoordinator and passed
-  // to PaintArtifactCompositor.
   void CreateScrollableChunk(
       TestPaintArtifact& artifact,
       const TransformPaintPropertyNode& scroll_translation,
       const ClipPaintPropertyNodeOrAlias& clip,
       const EffectPaintPropertyNodeOrAlias& effect) {
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      artifact.Chunk(*scroll_translation.Parent(), clip, effect)
-          .ScrollHitTest(&scroll_translation);
-      return;
-    }
-
-    // Create a foreign layer for scrolling, roughly matching the layer
-    // created by ScrollingCoordinator.
-    const auto* scroll_node = scroll_translation.ScrollNode();
-    auto rect = scroll_node->ContainerRect();
-    scoped_refptr<cc::Layer> layer = cc::Layer::Create();
-    layer->SetBounds(gfx::Size(rect.Size()));
-    layer->SetElementId(scroll_node->GetCompositorElementId());
-    layer->SetHitTestable(true);
-    artifact.Chunk(scroll_translation, clip, effect)
-        .ForeignLayer(layer, rect.Location());
+    artifact.Chunk(*scroll_translation.Parent(), clip, effect)
+        .ScrollHitTest(scroll_translation.ScrollNode()->ContainerRect(),
+                       &scroll_translation);
   }
 
   // Returns the |num|th scrollable layer. In CompositeAfterPaint, this will be
@@ -1177,10 +1161,10 @@ TEST_P(PaintArtifactCompositorTest, OneScrollNodeNonComposited) {
       .RectDrawing(IntRect(-110, 12, 170, 19), Color::kWhite);
 
   Update(artifact.Build());
-  // Node #0 reserved for null; #1 for root render surface. Blink nodes are all
-  // decomposited.
-  EXPECT_EQ(2u, GetPropertyTrees().scroll_tree.size());
-  EXPECT_EQ(2u, GetPropertyTrees().transform_tree.size());
+  // Node #0 reserved for null; #1 for root render surface; #2 is the blink
+  // scroll translation.
+  EXPECT_EQ(3u, GetPropertyTrees().scroll_tree.size());
+  EXPECT_EQ(3u, GetPropertyTrees().transform_tree.size());
   EXPECT_EQ(1u, LayerCount());
 }
 
@@ -5037,6 +5021,39 @@ TEST_P(PaintArtifactCompositorTest, AddNonCompositedScrollNodes) {
   auto* scroll_node = scroll_tree.FindNodeFromElementId(scroll_element_id);
   EXPECT_TRUE(scroll_node);
   EXPECT_FALSE(scroll_node->is_composited);
+}
+
+TEST_P(PaintArtifactCompositorTest, PreCompositedLayerNonCompositedScrolling) {
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  FakeGraphicsLayerClient client;
+  GraphicsLayer graphics_layer(client);
+  auto parent_scroll_translation = CreateScrollTranslation(
+      t0(), 10, 20, IntRect(0, 0, 100, 100), IntSize(200, 200),
+      CompositingReason::kRootScroller);
+  PropertyTreeState layer_state(*parent_scroll_translation, c0(), e0());
+  graphics_layer.SetLayerState(layer_state, IntPoint());
+  auto scroll_translation = CreateScrollTranslation(
+      *parent_scroll_translation, 10, 20, IntRect(0, 0, 150, 150),
+      IntSize(200, 200), CompositingReason::kNone);
+
+  TestPaintArtifact artifact;
+  CreateScrollableChunk(artifact, *scroll_translation, c0(), e0());
+  Vector<PreCompositedLayerInfo> pre_composited_layers = {
+      {PaintChunkSubset(artifact.Build()), &graphics_layer}};
+  GetPaintArtifactCompositor().SetNeedsUpdate();
+  GetPaintArtifactCompositor().Update(
+      pre_composited_layers, PaintArtifactCompositor::ViewportProperties(), {},
+      {});
+
+  EXPECT_EQ(1u, LayerCount());
+  EXPECT_EQ(&graphics_layer.CcLayer(), LayerAt(0));
+  EXPECT_EQ(gfx::Rect(0, 0, 150, 150),
+            graphics_layer.CcLayer().non_fast_scrollable_region().bounds());
+  EXPECT_EQ(parent_scroll_translation->CcNodeId(
+                graphics_layer.CcLayer().property_tree_sequence_number()),
+            graphics_layer.CcLayer().scroll_tree_index());
 }
 
 }  // namespace blink
