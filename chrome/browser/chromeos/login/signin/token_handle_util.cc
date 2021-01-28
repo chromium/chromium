@@ -67,6 +67,7 @@ void OnStatusChecked(TokenHandleUtil::TokenValidationCallback callback,
       if (token != *latest_token) {
         LOG(WARNING) << "Outdated token, assuming status is unknown";
         std::move(callback).Run(account_id, TokenHandleUtil::UNKNOWN);
+        return;
       }
     }
   }
