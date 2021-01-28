@@ -44,6 +44,16 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * The currently selected profile avatar icon index, or '-1' if none is
+     * selected.
+     * @type {number}
+     */
+    tabFocusableAvatar_: {
+      type: Number,
+      computed: 'computeTabFocusableAvatar_(avatars, selectedAvatar)',
+    },
   },
 
   /**
@@ -53,6 +63,34 @@ Polymer({
    */
   getAvatarId_(index) {
     return 'avatarId' + index;
+  },
+
+  /**
+   * @param {number} index
+   * @param {!AvatarIcon} item
+   * @return {string}
+   * @private
+   */
+  getTabIndex_(index, item) {
+    if (item.index === this.tabFocusableAvatar_) {
+      return '0';
+    }
+
+    // If no avatar is selected, focus the first element of the grid on 'tab'.
+    if (this.tabFocusableAvatar_ === -1 && index === 0) {
+      return '0';
+    }
+    return '-1';
+  },
+
+  /**
+   * @return {number}
+   * @private
+   */
+  computeTabFocusableAvatar_() {
+    const selectedAvatar =
+        this.avatars.find(avatar => this.isAvatarSelected(avatar));
+    return selectedAvatar ? selectedAvatar.index : -1;
   },
 
   /** @private */

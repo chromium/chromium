@@ -5,7 +5,7 @@
 // clang-format off
 // #import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.m.js';
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+// #import {keyDownOn, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 // #import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 // #import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
 // clang-format on
@@ -20,9 +20,24 @@ suite('cr-profile-avatar-selector', function() {
     const avatarSelector = /** @type {!CrProfileAvatarSelectorElement} */ (
         document.createElement('cr-profile-avatar-selector'));
     avatarSelector.avatars = [
-      {url: 'chrome://avatar1.png', label: 'avatar1', index: '1'},
-      {url: 'chrome://avatar2.png', label: 'avatar2', index: '2'},
-      {url: 'chrome://avatar3.png', label: 'avatar3', index: '3'}
+      {
+        url: 'chrome://avatar1.png',
+        label: 'avatar1',
+        index: '1',
+        selected: false
+      },
+      {
+        url: 'chrome://avatar2.png',
+        label: 'avatar2',
+        index: '2',
+        selected: false
+      },
+      {
+        url: 'chrome://avatar3.png',
+        label: 'avatar3',
+        index: '3',
+        selected: false
+      }
     ];
     return avatarSelector;
   }
@@ -30,6 +45,13 @@ suite('cr-profile-avatar-selector', function() {
   /** @return {!NodeList<!Element>} */
   function getGridItems() {
     return avatarSelector.shadowRoot.querySelectorAll('.avatar');
+  }
+
+  function verifyTabIndex(items, tabIndexArr) {
+    assertEquals(items.length, tabIndexArr.length);
+    for (let i = 0; i < items.length; i++) {
+      assertEquals(items[i].tabIndex, tabIndexArr[i]);
+    }
   }
 
   setup(function() {
@@ -57,6 +79,64 @@ suite('cr-profile-avatar-selector', function() {
     getGridItems().forEach(function(item) {
       assertFalse(item.classList.contains('iron-selected'));
     });
+  });
+
+  test('No avatar initially selected', function() {
+    const items = getGridItems();
+    assertEquals(items.length, 3);
+    // First element of the grid should get the focus on 'tab' key.
+    verifyTabIndex(items, [0, -1, -1]);
+
+    // Tab key should not move the focus.
+    items[0].focus();
+    MockInteractions.pressAndReleaseKeyOn(items[0], 9);
+    assertEquals(getDeepActiveElement(), items[0]);
+
+    MockInteractions.keyDownOn(items[0], 39, [], 'ArrowRight');
+    assertEquals(getDeepActiveElement(), items[1]);
+
+    items[1].click();
+    assertTrue(items[1].classList.contains('iron-selected'));
+    verifyTabIndex(items, [-1, 0, -1]);
+  });
+
+  test('Avatar already selected', function() {
+    let items = getGridItems();
+    verifyTabIndex(items, [0, -1, -1]);
+    avatarSelector.avatars = [
+      {
+        url: 'chrome://avatar1.png',
+        label: 'avatar1',
+        index: '1',
+        selected: false
+      },
+      {
+        url: 'chrome://avatar2.png',
+        label: 'avatar2',
+        index: '2',
+        selected: true
+      }
+    ];
+    Polymer.dom.flush();
+    items = getGridItems();
+    assertTrue(items[1].classList.contains('iron-selected'));
+    verifyTabIndex(items, [-1, 0]);
+
+    items[0].click();
+    assertTrue(items[0].classList.contains('iron-selected'));
+    verifyTabIndex(items, [0, -1]);
+  });
+
+  test('Avatar selected by setting selectedAvatar', async function() {
+    const items = getGridItems();
+    verifyTabIndex(items, [0, -1, -1]);
+    avatarSelector.selectedAvatar = avatarSelector.avatars[1];
+    Polymer.dom.flush();
+    verifyTabIndex(getGridItems(), [-1, 0, -1]);
+
+    items[0].click();
+    assertTrue(items[0].classList.contains('iron-selected'));
+    verifyTabIndex(items, [0, -1, -1]);
   });
 
   test('Can select avatar', function() {

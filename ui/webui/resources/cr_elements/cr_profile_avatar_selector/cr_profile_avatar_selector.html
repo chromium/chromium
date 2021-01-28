@@ -73,8 +73,8 @@
     <cr-profile-avatar-selector-grid id="avatar-grid" role="radiogroup"
         ignore-modified-key-events="[[ignoreModifiedKeyEvents]]">
       <template is="dom-repeat" items="[[avatars]]">
-        <cr-button id="[[getAvatarId_(index)]]"
-            aria-label="[[item.label]]"
+        <cr-button id="[[getAvatarId_(index)]]" aria-label="[[item.label]]"
+            tabindex$="[[getTabIndex_(index, item, tabFocusableAvatar_)]]"
             class$="avatar [[getSelectedClass_(item, selectedAvatar)]]"
             style$="background-image: [[getIconImageSet_(item.url)]]"
             on-click="onAvatarTap_"
