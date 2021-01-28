@@ -37,7 +37,7 @@ class EmojiGroupComponent extends PolymerElement {
   }
 
   _className(alternates) {
-    return 'emoji-button ' + (alternates.length > 0 ? 'variants' : '');
+    return alternates.length > 0 ? 'variants' : '';
   }
 }
 
