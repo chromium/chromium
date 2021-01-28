@@ -102,7 +102,7 @@ InMemoryURLIndex::InMemoryURLIndex(bookmarks::BookmarkModel* bookmark_model,
   InitializeSchemeAllowlist(&scheme_allowlist_, client_schemes_to_allowlist);
   // TODO(mrossetti): Register for language change notifications.
   if (history_service_)
-    history_service_->AddObserver(this);
+    history_service_observation_.Observe(history_service_);
 
   base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
       this, "InMemoryURLIndex", base::ThreadTaskRunnerHandle::Get());
@@ -304,7 +304,7 @@ void InMemoryURLIndex::OnCacheLoadDone(
 
 void InMemoryURLIndex::Shutdown() {
   if (history_service_) {
-    history_service_->RemoveObserver(this);
+    history_service_observation_.Reset();
     history_service_ = nullptr;
   }
   cache_reader_tracker_.TryCancelAll();

@@ -86,7 +86,7 @@ MediaHistoryKeyedService::MediaHistoryKeyedService(Profile* profile)
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::IMPLICIT_ACCESS);
   if (history)
-    history->AddObserver(this);
+    history_service_observation_.Observe(history);
 
   if (profile->IsOffTheRecord()) {
     MediaHistoryKeyedService* original =
@@ -116,11 +116,7 @@ bool MediaHistoryKeyedService::IsEnabled() {
 }
 
 void MediaHistoryKeyedService::Shutdown() {
-  history::HistoryService* history = HistoryServiceFactory::GetForProfile(
-      profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  if (history)
-    history->RemoveObserver(this);
-
+  history_service_observation_.Reset();
   store_->Shutdown();
 }
 

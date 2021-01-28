@@ -35,7 +35,7 @@ CartService::CartService(Profile* profile)
           profile_,
           ServiceAccessType::EXPLICIT_ACCESS)) {
   if (history_service_) {
-    history_service_->AddObserver(this);
+    history_service_observation_.Observe(history_service_);
   }
   if (base::GetFieldTrialParamValueByFeature(
           ntp_features::kNtpChromeCartModule,
@@ -169,7 +169,7 @@ void CartService::OnOperationFinishedWithCallback(
 
 void CartService::Shutdown() {
   if (history_service_) {
-    history_service_->RemoveObserver(this);
+    history_service_observation_.Reset();
   }
   DeleteCartsWithFakeData();
   // Delete all carts that are removed.

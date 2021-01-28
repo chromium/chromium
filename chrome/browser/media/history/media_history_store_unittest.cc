@@ -139,7 +139,10 @@ class MediaHistoryStoreUnitTest
         profile_->GetPrimaryOTRProfile());
   }
 
-  void TearDown() override { WaitForDB(); }
+  void TearDown() override {
+    otr_service_->Shutdown();
+    WaitForDB();
+  }
 
   void WaitForDB() {
     base::RunLoop run_loop;

@@ -6,14 +6,12 @@
 #define IOS_CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_CLIENT_IMPL_H_
 
 #include "base/macros.h"
+#include "base/scoped_observation.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/search_engines/template_url_service_client.h"
 
 class TemplateURLService;
-
-namespace history {
-class HistoryService;
-}
 
 namespace ios {
 
@@ -45,6 +43,9 @@ class TemplateURLServiceClientImpl : public TemplateURLServiceClient,
 
   TemplateURLService* owner_;
   history::HistoryService* history_service_;
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(TemplateURLServiceClientImpl);
 };

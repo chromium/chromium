@@ -115,7 +115,7 @@ MediaEngagementService::MediaEngagementService(Profile* profile,
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::IMPLICIT_ACCESS);
   if (history)
-    history->AddObserver(this);
+    history_service_observation_.Observe(history);
 
   // If kSchemaVersion is higher than what we have stored we should wipe
   // all Media Engagement data.
@@ -149,10 +149,7 @@ void MediaEngagementService::ClearDataBetweenTime(
 }
 
 void MediaEngagementService::Shutdown() {
-  history::HistoryService* history = HistoryServiceFactory::GetForProfile(
-      profile_, ServiceAccessType::IMPLICIT_ACCESS);
-  if (history)
-    history->RemoveObserver(this);
+  history_service_observation_.Reset();
 }
 
 void MediaEngagementService::OnURLsDeleted(
@@ -285,6 +282,13 @@ MediaEngagementContentsObserver* MediaEngagementService::GetContentsObserverFor(
     content::WebContents* web_contents) const {
   const auto& it = contents_observers_.find(web_contents);
   return it == contents_observers_.end() ? nullptr : it->second;
+}
+
+void MediaEngagementService::SetHistoryServiceForTesting(
+    history::HistoryService* history) {
+  history_service_observation_.Reset();
+  if (history)
+    history_service_observation_.Observe(history);
 }
 
 Profile* MediaEngagementService::profile() const {

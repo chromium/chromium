@@ -103,7 +103,7 @@ FlocIdProviderImpl::FlocIdProviderImpl(
       floc_event_logger_(std::move(floc_event_logger)),
       floc_id_(FlocId::ReadFromPrefs(prefs_)) {
   privacy_sandbox_settings->AddObserver(this);
-  history_service->AddObserver(this);
+  history_service_observation_.Observe(history_service);
   g_browser_process->floc_sorting_lsh_clusters_service()->AddObserver(this);
 
   StartupComputeDecision decision = GetStartupComputeDecision(
@@ -177,7 +177,7 @@ void FlocIdProviderImpl::LogFlocComputedEvent(const ComputeFlocResult& result) {
 
 void FlocIdProviderImpl::Shutdown() {
   privacy_sandbox_settings_->RemoveObserver(this);
-  history_service_->RemoveObserver(this);
+  history_service_observation_.Reset();
   g_browser_process->floc_sorting_lsh_clusters_service()->RemoveObserver(this);
 }
 

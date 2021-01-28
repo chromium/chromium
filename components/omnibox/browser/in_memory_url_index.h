@@ -17,11 +17,13 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/history/core/browser/history_db_task.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -42,7 +44,6 @@ class BookmarkModel;
 
 namespace history {
 class HistoryDatabase;
-class HistoryService;
 class HQPPerfTestOnePopularURL;
 }
 
@@ -322,6 +323,10 @@ class InMemoryURLIndex : public KeyedService,
   // This flag is set to true if we want to listen to the
   // HistoryServiceLoaded Notification.
   bool listen_to_history_service_loaded_;
+
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   base::ThreadChecker thread_checker_;
 };

@@ -17,6 +17,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_profile_validator.h"
@@ -35,6 +36,7 @@
 #include "components/autofill/core/browser/webdata/autofill_change.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_observer.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -816,6 +818,9 @@ class PersonalDataManager : public KeyedService,
 
   // Whether sync should be considered on in a test.
   bool is_syncing_for_test_ = false;
+
+  base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
+      history_service_observation_{this};
 
   base::WeakPtrFactory<PersonalDataManager> weak_factory_{this};
 

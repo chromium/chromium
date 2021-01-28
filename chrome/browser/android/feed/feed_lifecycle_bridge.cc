@@ -30,7 +30,7 @@ FeedLifecycleBridge::FeedLifecycleBridge(Profile* profile) : profile_(profile) {
       HistoryServiceFactory::GetForProfile(profile_,
                                            ServiceAccessType::IMPLICIT_ACCESS);
   if (history_service)
-    history_service->AddObserver(this);
+    history_service_observation_.Observe(history_service);
 }
 
 FeedLifecycleBridge::~FeedLifecycleBridge() {
@@ -38,7 +38,7 @@ FeedLifecycleBridge::~FeedLifecycleBridge() {
       HistoryServiceFactory::GetForProfile(profile_,
                                            ServiceAccessType::IMPLICIT_ACCESS);
   if (history_service)
-    history_service->RemoveObserver(this);
+    history_service_observation_.Reset();
 }
 
 void FeedLifecycleBridge::Destroy(JNIEnv* env, const JavaRef<jobject>& j_this) {

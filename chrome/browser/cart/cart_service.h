@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -112,6 +113,8 @@ class CartService : public history::HistoryServiceObserver,
   Profile* profile_;
   std::unique_ptr<CartDB> cart_db_;
   history::HistoryService* history_service_;
+  base::ScopedObservation<history::HistoryService, HistoryServiceObserver>
+      history_service_observation_{this};
   base::WeakPtrFactory<CartService> weak_ptr_factory_{this};
 };
 

@@ -294,7 +294,7 @@ void PersonalDataManager::Init(
   // Listen for URL deletions from browsing history.
   history_service_ = history_service;
   if (history_service_)
-    history_service_->AddObserver(this);
+    history_service_observation_.Observe(history_service_);
 
   // Listen for account cookie deletion by the user.
   identity_manager_ = identity_manager;
@@ -344,7 +344,7 @@ void PersonalDataManager::Shutdown() {
   sync_service_ = nullptr;
 
   if (history_service_)
-    history_service_->RemoveObserver(this);
+    history_service_observation_.Reset();
   history_service_ = nullptr;
 
   if (identity_manager_)

@@ -9,11 +9,9 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
+#include "base/scoped_observation.h"
+#include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
-
-namespace history {
-class HistoryService;
-}
 
 class Profile;
 
@@ -42,6 +40,10 @@ class FeedLifecycleBridge : public history::HistoryServiceObserver {
   base::android::ScopedJavaGlobalRef<jobject> j_this_;
 
   Profile* profile_;
+
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(FeedLifecycleBridge);
 };

@@ -176,6 +176,7 @@ class MediaEngagementServiceTest : public ChromeRenderViewHostTestHarness,
       scoped_refptr<base::SequencedTaskRunner> backend_runner) {
     // Triggers destruction of the existing HistoryService and waits for all
     // cleanup work to be done.
+    service()->SetHistoryServiceForTesting(nullptr);
     BlockUntilHistoryBackendDestroyed(profile());
 
     // Force the creation of a new HistoryService that runs its backend on
@@ -183,7 +184,7 @@ class MediaEngagementServiceTest : public ChromeRenderViewHostTestHarness,
     ConfigureHistoryService(std::move(backend_runner));
     history::HistoryService* history = HistoryServiceFactory::GetForProfile(
         profile(), ServiceAccessType::IMPLICIT_ACCESS);
-    history->AddObserver(service());
+    service()->SetHistoryServiceForTesting(history);
   }
 
   void RecordVisitAndPlaybackAndAdvanceClock(const url::Origin& origin) {

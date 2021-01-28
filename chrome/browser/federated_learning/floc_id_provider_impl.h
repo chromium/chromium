@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_FEDERATED_LEARNING_FLOC_ID_PROVIDER_IMPL_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/federated_learning/floc_id_provider.h"
@@ -113,8 +114,6 @@ class FlocIdProviderImpl : public FlocIdProvider,
   // compute the current floc.
   void OnFlocDataAccessibleSinceUpdated() override;
 
-  // history::HistoryServiceObserver
-
   // On history deletion, we'll either invalidate or keep using the floc. This
   // will depend on the deletion type and the time range.
   void OnURLsDeleted(history::HistoryService* history_service,
@@ -196,6 +195,10 @@ class FlocIdProviderImpl : public FlocIdProvider,
 
   // The timer used to schedule a floc computation.
   base::OneShotTimer compute_floc_timer_;
+
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   base::WeakPtrFactory<FlocIdProviderImpl> weak_ptr_factory_{this};
 };
