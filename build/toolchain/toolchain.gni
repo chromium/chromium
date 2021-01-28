@@ -39,7 +39,12 @@ if (generate_linker_map) {
 
 declare_args() {
   # Clang compiler version. Clang files are placed at version-dependent paths.
-  clang_version = "12.0.0"
+  if (llvm_force_head_revision) {
+    clang_version = "13.0.0"
+  } else {
+    # TODO(crbug.com/1171687): Remove in the next Clang roll.
+    clang_version = "12.0.0"
+  }
 }
 
 # Check target_os here instead of is_ios as this file is loaded for secondary
