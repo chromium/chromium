@@ -101,7 +101,8 @@ void WindowCycleController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   }
 }
 
-void WindowCycleController::HandleCycleWindow(Direction direction) {
+void WindowCycleController::HandleCycleWindow(
+    WindowCyclingDirection direction) {
   if (!CanCycle())
     return;
 
@@ -111,7 +112,43 @@ void WindowCycleController::HandleCycleWindow(Direction direction) {
   Step(direction);
 }
 
-void WindowCycleController::Scroll(Direction direction) {
+void WindowCycleController::HandleKeyboardNavigation(
+    KeyboardNavDirection direction) {
+  if (!CanCycle() || !IsCycling())
+    return;
+
+  // Left/right should cycling the window list or switching alt-tab mode
+  // depending on which components it is focusing.
+  if (direction == WindowCycleController::LEFT ||
+      direction == WindowCycleController::RIGHT) {
+    if (!window_cycle_list_->is_tab_slider_focused()) {
+      // Cycling through the window list if focusing on it.
+      HandleCycleWindow(direction == WindowCycleController::RIGHT
+                            ? WindowCycleController::FORWARD
+                            : WindowCycleController::BACKWARD);
+    } else {
+      // Switch the mode: navigating right triggers the right button
+      // corresponding to the active desk mode. On the other hand, navigating
+      // left enables the all-desk mode.
+      window_cycle_list_->OnModeChanged(
+          direction == WindowCycleController::RIGHT,
+          WindowCycleTabSlider::ModeSwitchSource::KEYBOARD);
+    }
+  } else {
+    // Focus the tab slider component or the window cycle list. Pressing up
+    // while already focusing the tab slider or pressing down while already
+    // focusing the window cycle list should do nothing.
+    if (direction == WindowCycleController::UP &&
+        !window_cycle_list_->is_tab_slider_focused()) {
+      window_cycle_list_->SetFocusTabSlider(true);
+    } else if (direction == WindowCycleController::DOWN &&
+               window_cycle_list_->is_tab_slider_focused()) {
+      window_cycle_list_->SetFocusTabSlider(false);
+    }
+  }
+}
+
+void WindowCycleController::Scroll(WindowCyclingDirection direction) {
   if (!CanCycle())
     return;
 
@@ -127,8 +164,7 @@ void WindowCycleController::StartCycling() {
   // the window view item for the preview is transparent
   // (http://crbug.com/895265).
   Shell::Get()->wallpaper_controller()->MaybeClosePreviewWallpaper();
-  Shell::Get()->event_rewriter_controller()->SetAltLeftClickRemappingEnabled(
-      false);
+  Shell::Get()->event_rewriter_controller()->SetAltDownRemappingEnabled(false);
 
   WindowCycleController::WindowList window_list = CreateWindowList();
   SaveCurrentActiveDeskAndWindow(window_list);
@@ -191,6 +227,10 @@ bool WindowCycleController::IsSwitchingMode() {
   return features::IsBentoEnabled() && is_switching_mode_;
 }
 
+bool WindowCycleController::IsTabSliderFocused() {
+  return window_cycle_list_->is_tab_slider_focused();
+}
+
 void WindowCycleController::OnActiveUserPrefServiceChanged(
     PrefService* pref_service) {
   if (!features::IsBentoEnabled())
@@ -221,7 +261,7 @@ void WindowCycleController::SaveCurrentActiveDeskAndWindow(
   active_window_before_window_cycle_ = GetActiveWindow(window_list);
 }
 
-void WindowCycleController::Step(Direction direction) {
+void WindowCycleController::Step(WindowCyclingDirection direction) {
   DCHECK(window_cycle_list_);
   window_cycle_list_->Step(direction);
 }
@@ -250,8 +290,7 @@ void WindowCycleController::StopCycling() {
 
   active_window_before_window_cycle_ = nullptr;
   active_desk_container_id_before_cycle_ = kShellWindowId_Invalid;
-  Shell::Get()->event_rewriter_controller()->SetAltLeftClickRemappingEnabled(
-      true);
+  Shell::Get()->event_rewriter_controller()->SetAltDownRemappingEnabled(true);
 
   if (has_window_targeter) {
     // Resend the alt-key release, dropped by |window_targeter_|, to the
@@ -297,8 +336,11 @@ void WindowCycleController::OnAltTabModePrefChanged() {
   HandleCycleWindow(WindowCycleController::FORWARD);
 
   // Update tab slider button UI.
-  if (window_cycle_list_)
-    window_cycle_list_->OnModePrefsChanged();
+  if (window_cycle_list_) {
+    window_cycle_list_->OnModeChanged(
+        IsAltTabPerActiveDesk(),
+        WindowCycleTabSlider::ModeSwitchSource::USER_PREFS);
+  }
 
   is_switching_mode_ = false;
 }

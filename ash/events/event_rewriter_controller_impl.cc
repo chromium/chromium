@@ -113,10 +113,9 @@ void EventRewriterControllerImpl::SetSendMouseEvents(bool value) {
   accessibility_event_rewriter_->set_send_mouse_events(value);
 }
 
-void EventRewriterControllerImpl::SetAltLeftClickRemappingEnabled(
-    bool enabled) {
+void EventRewriterControllerImpl::SetAltDownRemappingEnabled(bool enabled) {
   if (event_rewriter_chromeos_)
-    event_rewriter_chromeos_->set_alt_left_click_remapping_enabled(enabled);
+    event_rewriter_chromeos_->set_alt_down_remapping_enabled(enabled);
 }
 
 void EventRewriterControllerImpl::OnHostInitialized(

@@ -45,10 +45,9 @@ class ASH_EXPORT EventRewriterControllerImpl : public EventRewriterController,
   // aura::EnvObserver:
   void OnHostInitialized(aura::WindowTreeHost* host) override;
 
-  // Enable/disable Alt + left click mapping in EventRewriterChromeOS. This
-  // only applies if the feature
-  // `chromeos::features::kUseSearchClickForRightClick` is not enabled.
-  void SetAltLeftClickRemappingEnabled(bool enabled);
+  // Enable/disable the combination of alt + other key or mouse event
+  // mapping in EventRewriterChromeOS.
+  void SetAltDownRemappingEnabled(bool enabled);
 
  private:
   // The |EventRewriter|s managed by this controller.

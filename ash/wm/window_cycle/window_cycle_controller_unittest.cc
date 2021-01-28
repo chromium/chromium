@@ -378,7 +378,8 @@ TEST_F(WindowCycleControllerTest, Scroll) {
   std::unique_ptr<Window> w0 = CreateTestWindow(gfx::Rect(0, 0, 200, 200));
 
   auto ScrollAndReturnCurrentIndex =
-      [this](WindowCycleController::Direction direction, int num_of_scrolls) {
+      [this](WindowCycleController::WindowCyclingDirection direction,
+             int num_of_scrolls) {
         WindowCycleController* controller =
             Shell::Get()->window_cycle_controller();
         for (int i = 0; i < num_of_scrolls; i++)
@@ -2120,6 +2121,111 @@ TEST_F(ModeSelectionWindowCycleControllerTest,
   EXPECT_EQ(5u, GetWindowCycleItemViews().size());
   EXPECT_EQ(win0.get(), GetTargetWindow());
   cycle_controller->CompleteCycling();
+}
+
+// Tests that pressing an up arrow focus the active tab slider button.
+// While a tab slider button is focus, user can switch to the other button
+// via left or right key. Note that if user already selects the left button,
+// attempting to go further left would do nothing.
+TEST_F(ModeSelectionWindowCycleControllerTest,
+       TabSliderButtonsKeyboardNavigation) {
+  ui::test::EventGenerator* generator = GetEventGenerator();
+  WindowCycleController* cycle_controller =
+      Shell::Get()->window_cycle_controller();
+
+  // Create two windows for desk1 and three windows for desk2 in the reversed
+  // order of the most recently active window.
+  auto win4 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+  auto win3 = CreateAppWindow(gfx::Rect(50, 50, 200, 200));
+  auto* desks_controller = DesksController::Get();
+  desks_controller->NewDesk(DesksCreationRemovalSource::kButton);
+  ASSERT_EQ(2u, desks_controller->desks().size());
+  const Desk* desk_2 = desks_controller->desks()[1].get();
+  ActivateDesk(desk_2);
+  EXPECT_EQ(desk_2, desks_controller->active_desk());
+  auto win2 = CreateAppWindow(gfx::Rect(0, 0, 300, 200));
+  auto win1 = CreateAppWindow(gfx::Rect(10, 30, 400, 200));
+  auto win0 = CreateAppWindow(gfx::Rect(10, 30, 400, 200));
+
+  // Start alt-tab.
+  cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  EXPECT_EQ(win1.get(), GetTargetWindow());
+  views::View::Views tab_slider_buttons = GetWindowCycleTabSliderButtons();
+  EXPECT_FALSE(cycle_controller->IsTabSliderFocused());
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+
+  // Focus tab slider mode: pressing the up arrow key should focus the
+  // default all-desks, which is the left button. This should not affect
+  // the focus on the window cycle.
+  generator->PressKey(ui::VKEY_UP, ui::EF_NONE);
+  EXPECT_TRUE(cycle_controller->IsTabSliderFocused());
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(win1.get(), GetTargetWindow());
+
+  // Switching to the right, active-desk button via a right arrow key changes
+  // to active-desk mode and does not affect the highlighted window.
+  generator->PressKey(ui::VKEY_RIGHT, ui::EF_NONE);
+  EXPECT_TRUE(cycle_controller->IsTabSliderFocused());
+  EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(3u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(win1.get(), GetTargetWindow());
+  // Trying to move the focus further right should do nothing since it is
+  // already on the right most button.
+  generator->PressKey(ui::VKEY_RIGHT, ui::EF_NONE);
+  EXPECT_TRUE(cycle_controller->IsTabSliderFocused());
+  EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_FALSE(wm::IsActiveWindow(win1.get()));
+  EXPECT_EQ(win1.get(), GetTargetWindow());
+  cycle_controller->CompleteCycling();
+  // Exit alt-tab while focusing the tab slider and check that the keyboard
+  // navigation within the tab slider does not affect the window activation.
+  EXPECT_TRUE(wm::IsActiveWindow(win1.get()));
+
+  // Start alt-tab and focus the tab slider. The order of cycle window is now
+  // [1, 0, 2, 3, 4].
+  cycle_controller->HandleCycleWindow(WindowCycleController::FORWARD);
+  generator->PressKey(ui::VKEY_UP, ui::EF_NONE);
+  EXPECT_TRUE(cycle_controller->IsTabSliderFocused());
+  EXPECT_TRUE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(win0.get(), GetTargetWindow());
+  // Switching to the left, all-desks button via a left arrow key changes
+  // to active-desk mode and does not affect the highlighted window.
+  generator->PressKey(ui::VKEY_LEFT, ui::EF_NONE);
+  EXPECT_TRUE(cycle_controller->IsTabSliderFocused());
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(5u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(win0.get(), GetTargetWindow());
+  // Trying to move the focus further left should do nothing since it is
+  // already on the left most button.
+  generator->PressKey(ui::VKEY_LEFT, ui::EF_NONE);
+  EXPECT_TRUE(cycle_controller->IsTabSliderFocused());
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(win0.get(), GetTargetWindow());
+
+  // Stop focusing the tab slider button by pressing a down arrow key to
+  // continue navigation in the window cycle list.
+  generator->PressKey(ui::VKEY_DOWN, ui::EF_NONE);
+  EXPECT_FALSE(cycle_controller->IsTabSliderFocused());
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(5u, GetWindowCycleItemViews().size());
+  EXPECT_EQ(win0.get(), GetTargetWindow());
+
+  // Now navigating left and right should only affect the highlighted window
+  // but not the tab slider buttons.
+  // Pressing right twice should move the focus to win3.
+  generator->PressKey(ui::VKEY_RIGHT, ui::EF_NONE);
+  generator->PressKey(ui::VKEY_RIGHT, ui::EF_NONE);
+  EXPECT_FALSE(cycle_controller->IsTabSliderFocused());
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(win3.get(), GetTargetWindow());
+  // Pressing left once should move focus back to win2.
+  generator->PressKey(ui::VKEY_LEFT, ui::EF_NONE);
+  EXPECT_FALSE(cycle_controller->IsTabSliderFocused());
+  EXPECT_FALSE(cycle_controller->IsAltTabPerActiveDesk());
+  EXPECT_EQ(win2.get(), GetTargetWindow());
+
+  cycle_controller->CompleteCycling();
+  EXPECT_TRUE(wm::IsActiveWindow(win2.get()));
 }
 
 namespace {

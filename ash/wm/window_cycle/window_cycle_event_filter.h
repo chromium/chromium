@@ -96,9 +96,14 @@ class ASH_EXPORT WindowCycleEventFilter : public ui::EventHandler {
   // otherwise return false.
   bool CycleWindowCycleList(int finger_count, float scroll_x, float scroll_y);
 
-  // Returns the direction the window cycle should cycle depending on the
-  // combination of keys being pressed.
-  WindowCycleController::Direction GetDirection(ui::KeyEvent* event) const;
+  // Returns the cycling direction the window cycle should cycle depending on
+  // the combination of keys being pressed.
+  WindowCycleController::WindowCyclingDirection GetWindowCyclingDirection(
+      ui::KeyEvent* event) const;
+
+  // Returns the navigation direction to move the focus to.
+  WindowCycleController::KeyboardNavDirection GetKeyboardNavDirection(
+      ui::KeyEvent* event) const;
 
   // When the user holds Alt+Tab, this timer is used to send repeated
   // cycle commands to WindowCycleController. Note this is not accomplished

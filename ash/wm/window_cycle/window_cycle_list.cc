@@ -19,6 +19,7 @@
 #include "ash/shell_delegate.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/default_colors.h"
 #include "ash/wm/window_cycle/window_cycle_tab_slider.h"
 #include "ash/wm/window_cycle/window_cycle_tab_slider_button.h"
 #include "ash/wm/window_mini_view.h"
@@ -575,6 +576,10 @@ class WindowCycleView : public views::WidgetDelegateView,
 
   aura::Window* GetTargetWindow() { return target_window_; }
 
+  void SetFocusTabSlider(bool focus) {
+    tab_slider_container_->SetHighlightVisibility(focus);
+  }
+
   const views::View::Views& GetPreviewViewsForTesting() const {
     return mirror_container_->children();
   }
@@ -590,9 +595,10 @@ class WindowCycleView : public views::WidgetDelegateView,
     return target_window_;
   }
 
-  void OnModePrefsChanged() {
+  void OnModeChanged(bool per_desk,
+                     WindowCycleTabSlider::ModeSwitchSource source) {
     if (tab_slider_container_)
-      tab_slider_container_->OnModePrefsChanged();
+      tab_slider_container_->OnModeChanged(per_desk, source);
   }
 
   // ui::ImplicitAnimationObserver:
@@ -699,7 +705,8 @@ void WindowCycleList::ReplaceWindows(const WindowList& windows) {
     cycle_view_->UpdateWindows(windows_);
 }
 
-void WindowCycleList::Step(WindowCycleController::Direction direction) {
+void WindowCycleList::Step(
+    WindowCycleController::WindowCyclingDirection direction) {
   if (windows_.empty())
     return;
 
@@ -725,7 +732,7 @@ void WindowCycleList::Step(WindowCycleController::Direction direction) {
 }
 
 void WindowCycleList::ScrollInDirection(
-    WindowCycleController::Direction direction) {
+    WindowCycleController::WindowCyclingDirection direction) {
   if (windows_.empty())
     return;
 
@@ -756,9 +763,11 @@ bool WindowCycleList::ShouldShowUi() {
   return windows_.size() > 1u;
 }
 
-void WindowCycleList::OnModePrefsChanged() {
+void WindowCycleList::OnModeChanged(
+    bool per_desk,
+    WindowCycleTabSlider::ModeSwitchSource source) {
   if (cycle_view_)
-    cycle_view_->OnModePrefsChanged();
+    cycle_view_->OnModeChanged(per_desk, source);
 }
 
 // static
@@ -944,6 +953,14 @@ int WindowCycleList::GetOffsettedWindowIndex(int offset) const {
   DCHECK(windows_[offsetted_index]);
 
   return offsetted_index;
+}
+
+void WindowCycleList::SetFocusTabSlider(bool focus) {
+  if (is_tab_slider_focused_ == focus)
+    return;
+
+  is_tab_slider_focused_ = focus;
+  cycle_view_->SetFocusTabSlider(focus);
 }
 
 const views::View::Views& WindowCycleList::GetWindowCycleItemViewsForTesting()
