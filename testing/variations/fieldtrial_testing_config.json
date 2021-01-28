@@ -2793,6 +2793,21 @@
             ]
         }
     ],
+    "EarlyLibraryLoad": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EarlyLibraryLoad"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableCloseAllTabsConfirmation": [
         {
             "platforms": [
