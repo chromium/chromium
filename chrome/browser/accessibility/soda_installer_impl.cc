@@ -63,6 +63,11 @@ SodaInstallerImpl::~SodaInstallerImpl() {
   component_updater_observer_.RemoveAll();
 }
 
+base::FilePath SodaInstallerImpl::GetSodaLibPath() const {
+  DLOG(FATAL) << "GetSodaLibPath not supported on this platform";
+  return base::FilePath();
+}
+
 void SodaInstallerImpl::InstallSoda(PrefService* prefs) {
   component_updater::RegisterSodaComponent(
       g_browser_process->component_updater(), prefs,

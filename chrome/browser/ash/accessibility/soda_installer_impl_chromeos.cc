@@ -32,6 +32,10 @@ void SodaInstallerImplChromeOS::InstallSoda(PrefService* prefs) {
   if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
     return;
 
+  // Clear cached path in case this is a reinstallation (path could
+  // change).
+  SetSodaLibPath(base::FilePath());
+
   // Install SODA DLC.
   chromeos::DlcserviceClient::Get()->Install(
       kSodaDlcName,
@@ -39,6 +43,10 @@ void SodaInstallerImplChromeOS::InstallSoda(PrefService* prefs) {
                      base::Unretained(this)),
       base::BindRepeating(&SodaInstallerImplChromeOS::OnSodaProgress,
                           base::Unretained(this)));
+}
+
+base::FilePath SodaInstallerImplChromeOS::GetSodaLibPath() const {
+  return soda_lib_path_;
 }
 
 void SodaInstallerImplChromeOS::InstallLanguage(PrefService* prefs) {
@@ -50,9 +58,14 @@ bool SodaInstallerImplChromeOS::IsSodaRegistered() {
   return !base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption);
 }
 
+void SodaInstallerImplChromeOS::SetSodaLibPath(base::FilePath new_path) {
+  soda_lib_path_ = new_path;
+}
+
 void SodaInstallerImplChromeOS::OnSodaInstaller(
     const chromeos::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error == dlcservice::kErrorNone) {
+    SetSodaLibPath(base::FilePath(install_result.root_path));
     NotifyOnSodaInstalled();
   } else {
     NotifyOnSodaError();

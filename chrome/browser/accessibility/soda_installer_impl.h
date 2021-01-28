@@ -8,6 +8,7 @@
 #include <map>
 #include <string>
 
+#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/accessibility/soda_installer.h"
@@ -30,6 +31,9 @@ class SodaInstallerImpl : public SodaInstaller,
   ~SodaInstallerImpl() override;
   SodaInstallerImpl(const SodaInstallerImpl&) = delete;
   SodaInstallerImpl& operator=(const SodaInstallerImpl&) = delete;
+
+  // Currently only implemented in the chromeos-specific subclass.
+  base::FilePath GetSodaLibPath() const override;
 
   // SodaInstaller:
   void InstallSoda(PrefService* prefs) override;

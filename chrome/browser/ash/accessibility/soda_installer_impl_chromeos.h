@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ACCESSIBILITY_SODA_INSTALLER_IMPL_CHROMEOS_H_
 #define CHROME_BROWSER_ASH_ACCESSIBILITY_SODA_INSTALLER_IMPL_CHROMEOS_H_
 
+#include "base/files/file_path.h"
 #include "chrome/browser/accessibility/soda_installer.h"
 #include "chromeos/dbus/dlcservice/dlcservice_client.h"
 
@@ -22,18 +23,26 @@ class SodaInstallerImplChromeOS : public SodaInstaller {
   SodaInstallerImplChromeOS& operator=(const SodaInstallerImplChromeOS&) =
       delete;
 
+  // Where the SODA DLC was installed. Cached on completed installation.
+  // Empty if SODA DLC not installed yet.
+  base::FilePath GetSodaLibPath() const override;
+
   // SodaInstaller:
   void InstallSoda(PrefService* prefs) override;
   void InstallLanguage(PrefService* prefs) override;
   bool IsSodaRegistered() override;
 
  private:
+  void SetSodaLibPath(base::FilePath new_path);
+
   // This function is the InstallCallback for DlcserviceClient::Install().
   void OnSodaInstaller(
       const chromeos::DlcserviceClient::InstallResult& install_result);
 
   // This function is the ProgressCallback for DlcserviceClient::Install().
   void OnSodaProgress(double progress);
+
+  base::FilePath soda_lib_path_;
 };
 
 }  // namespace speech

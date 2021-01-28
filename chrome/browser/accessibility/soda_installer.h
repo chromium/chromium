@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACCESSIBILITY_SODA_INSTALLER_H_
 #define CHROME_BROWSER_ACCESSIBILITY_SODA_INSTALLER_H_
 
+#include "base/files/file_path.h"
 #include "base/observer_list.h"
 
 class PrefService;
@@ -37,6 +38,11 @@ class SodaInstaller {
   // Implemented in the platform-specific subclass to get the SodaInstaller
   // instance.
   static SodaInstaller* GetInstance();
+
+  // Gets the directory path of the installed SODA lib bundle, or an empty path
+  // if not installed. Currently Chrome OS only, returns empty path on other
+  // platforms.
+  virtual base::FilePath GetSodaLibPath() const = 0;
 
   // Installs the SODA binary. Called by CaptionController when the
   // kLiveCaptionEnabled preference changes. PrefService is passed to share
