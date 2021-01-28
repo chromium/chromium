@@ -156,6 +156,11 @@ class CC_EXPORT CompositorFrameReporter {
   CompositorFrameReporter& operator=(const CompositorFrameReporter& reporter) =
       delete;
 
+  // Creates and returns a clone of the reporter, only if it is currently in the
+  // 'begin impl frame' stage. For any other state, it returns null.
+  // This is used only when there is a partial update. So the cloned reporter
+  // depends in this reporter to decide whether it contains be partial updates
+  // or complete updates.
   std::unique_ptr<CompositorFrameReporter> CopyReporterAtBeginImplStage();
 
   // Note that the started stage may be reported to UMA. If the histogram is
@@ -200,10 +205,10 @@ class CC_EXPORT CompositorFrameReporter {
     tick_clock_ = tick_clock;
   }
 
-  bool has_partial_update() const { return has_partial_update_; }
-  void set_has_partial_update(bool has_partial_update) {
-    has_partial_update_ = has_partial_update;
-  }
+  void SetPartialUpdateDecider(base::WeakPtr<CompositorFrameReporter> decider);
+
+  bool MightHavePartialUpdate() const;
+  size_t GetPartialUpdateDependentsCount() const;
 
   const viz::BeginFrameId& frame_id() const { return args_.frame_id; }
 
@@ -214,10 +219,17 @@ class CC_EXPORT CompositorFrameReporter {
 
   // If this is a cloned reporter, then this returns a weak-ptr to the original
   // reporter this was cloned from (using |CopyReporterAtBeginImplStage()|).
-  base::WeakPtr<CompositorFrameReporter> cloned_from() { return cloned_from_; }
+
+  base::WeakPtr<CompositorFrameReporter> partial_update_decider() {
+    return partial_update_decider_;
+  }
+
+  base::WeakPtr<CompositorFrameReporter> GetWeakPtr();
 
  protected:
-  base::WeakPtr<CompositorFrameReporter> GetWeakPtr();
+  void set_has_partial_update(bool has_partial_update) {
+    has_partial_update_ = has_partial_update;
+  }
 
  private:
   void TerminateReporter();
@@ -324,18 +336,24 @@ class CC_EXPORT CompositorFrameReporter {
   const SmoothThread smooth_thread_;
   const int layer_tree_host_id_;
 
-  // If this is a cloned pointer, then |cloned_from_| is a weak pointer to the
-  // original reporter this was cloned from.
-  base::WeakPtr<CompositorFrameReporter> cloned_from_;
+  // For a reporter A, if the main-thread takes a long time to respond
+  // to a begin-main-frame, then all reporters created (and terminated) until
+  // the main-thread responds depends on this reporter to decide whether those
+  // frames contained partial updates (i.e. main-thread made some visual
+  // updates, but were not included in the frame), or complete updates.
+  // In such cases, |partial_update_dependents_| for A contains all the frames
+  // that depend on A for deciding whether they had partial updates or not, and
+  // |partial_update_decider_| is set to A for all these reporters.
+  std::vector<base::WeakPtr<CompositorFrameReporter>>
+      partial_update_dependents_;
+  base::WeakPtr<CompositorFrameReporter> partial_update_decider_;
 
-  // If this reporter was cloned, then |cloned_to_| is a weak pointer to the
-  // cloned repoter.
-  base::WeakPtr<CompositorFrameReporter> cloned_to_;
-
-  // A cloned reporter is not originally owned by the original reporter.
-  // However, it can 'adopt' it (using |AdoptReporter()| if the cloned reporter
-  // needs to stay alive until the original reporter terminates.
-  std::unique_ptr<CompositorFrameReporter> own_cloned_to_;
+  // From the above example, it may be necessary for A to keep all the
+  // dependents alive until A terminates, so that the dependents can set their
+  // |has_partial_update_| flags correctly. This is done by passing ownership of
+  // these reporters (using |AdoptReporter()|).
+  std::vector<std::unique_ptr<CompositorFrameReporter>>
+      owned_partial_update_dependents_;
 
   base::WeakPtrFactory<CompositorFrameReporter> weak_factory_{this};
 };

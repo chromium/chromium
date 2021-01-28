@@ -55,6 +55,39 @@ class TestCompositorFrameReportingController
       reporters()[i] = nullptr;
     }
   }
+
+  size_t GetBlockingReportersCount() {
+    size_t count = 0;
+    const PipelineStage kStages[] = {
+        PipelineStage::kBeginImplFrame,
+        PipelineStage::kBeginMainFrame,
+        PipelineStage::kCommit,
+        PipelineStage::kActivate,
+    };
+    for (auto stage : kStages) {
+      auto& reporter = reporters()[stage];
+      if (reporter && reporter->GetPartialUpdateDependentsCount() > 0) {
+        ++count;
+      }
+    }
+    return count;
+  }
+
+  size_t GetBlockedReportersCount() {
+    size_t count = 0;
+    const PipelineStage kStages[] = {
+        PipelineStage::kBeginImplFrame,
+        PipelineStage::kBeginMainFrame,
+        PipelineStage::kCommit,
+        PipelineStage::kActivate,
+    };
+    for (auto stage : kStages) {
+      auto& reporter = reporters()[stage];
+      if (reporter)
+        count += reporter->GetPartialUpdateDependentsCount();
+    }
+    return count;
+  }
 };
 
 class CompositorFrameReportingControllerTest : public testing::Test {
@@ -1384,6 +1417,10 @@ TEST_F(CompositorFrameReportingControllerTest,
 
 TEST_F(CompositorFrameReportingControllerTest,
        NewMainUpdateIsNotPartialUpdate) {
+  // Start a frame with main-thread update. Submit the frame (and present)
+  // before the main-thread responds. This creates two reporters: R1C and R1M
+  // (R1C for the submitted frame with updates from compositor-thread, and R1M
+  // for the pending main-thread frame).
   SimulateBeginMainFrame();
   reporting_controller_.OnFinishImplFrame(current_id_);
   reporting_controller_.DidSubmitCompositorFrame(1u, current_id_, {}, {});
@@ -1391,6 +1428,7 @@ TEST_F(CompositorFrameReportingControllerTest,
   details.presentation_feedback.timestamp = AdvanceNowByMs(10);
   reporting_controller_.DidPresentCompositorFrame(1u, details);
 
+  // The main-thread responds now, triggering a commit and activation.
   reporting_controller_.WillCommit();
   reporting_controller_.DidCommit();
   reporting_controller_.WillActivate();
@@ -1398,6 +1436,9 @@ TEST_F(CompositorFrameReportingControllerTest,
 
   const auto previous_id = current_id_;
 
+  // Start a new frame with main-thread update. Submit the frame (and present)
+  // before the main-thread responds. This also again creates two reporters: R2C
+  // and R2M.
   SimulateBeginMainFrame();
   reporting_controller_.OnFinishImplFrame(current_id_);
   reporting_controller_.DidSubmitCompositorFrame(1u, current_id_, previous_id,
@@ -1405,8 +1446,13 @@ TEST_F(CompositorFrameReportingControllerTest,
   details.presentation_feedback.timestamp = AdvanceNowByMs(10);
   reporting_controller_.DidPresentCompositorFrame(1u, details);
 
-  EXPECT_EQ(3u, dropped_counter.total_frames());
+  // In total, two frames have been completed: R1C, and R1M.
+  // R2C has been presented, but it is blocked on R2M to know whether R2C
+  // contains partial update, or complete updates. So it is kept alive.
+  EXPECT_EQ(2u, dropped_counter.total_frames());
   EXPECT_EQ(1u, dropped_counter.total_main_dropped());
+  EXPECT_EQ(1u, reporting_controller_.GetBlockingReportersCount());
+  EXPECT_EQ(1u, reporting_controller_.GetBlockedReportersCount());
 
   reporting_controller_.ResetReporters();
   reporting_controller_.SetDroppedFrameCounter(nullptr);
