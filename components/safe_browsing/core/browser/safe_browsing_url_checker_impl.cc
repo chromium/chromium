@@ -294,6 +294,8 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResult(const GURL& url,
       "SB2.ResourceTypes2.Unsafe",
       safe_browsing::GetResourceTypeFromRequestDestination(
           request_destination_));
+  UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Unsafe",
+                            request_destination_);
 
   security_interstitials::UnsafeResource resource =
       MakeUnsafeResource(url, threat_type, metadata, is_from_real_time_check);
@@ -366,6 +368,8 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
           "SB2.ResourceTypes2.Skipped",
           safe_browsing::GetResourceTypeFromRequestDestination(
               request_destination_));
+      UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Skipped",
+                                request_destination_);
 
       if (!RunNextCallback(true, false))
         return;
@@ -379,6 +383,8 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
         "SB2.ResourceTypes2.Checked",
         safe_browsing::GetResourceTypeFromRequestDestination(
             request_destination_));
+    UMA_HISTOGRAM_ENUMERATION("SB2.RequestDestination.Checked",
+                              request_destination_);
 
     SBThreatType threat_type = CheckWebUIUrls(url);
     if (threat_type != safe_browsing::SB_THREAT_TYPE_SAFE) {
@@ -411,6 +417,8 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
           "SafeBrowsing.RT.ResourceTypes.Checked",
           safe_browsing::GetResourceTypeFromRequestDestination(
               request_destination_));
+      UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.RT.RequestDestinations.Checked",
+                                request_destination_);
       safe_synchronously = false;
       AsyncMatch match =
           can_check_db_

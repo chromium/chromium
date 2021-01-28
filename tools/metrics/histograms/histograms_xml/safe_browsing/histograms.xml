@@ -67,6 +67,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.BlockingPage.RequestDestination"
+    enum="RequestDestination" expires_after="2021-05-30">
+  <owner>xinghuilu@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the request destination that triggers the safe browsing blocking page.
+    Logged each time a safe browsing blocking page is created. This metric is
+    useful to show the priority of checking each request destination in real
+    time. Note that this metric may be bias towards kDocument, because the
+    default request destination is set to kDocument.
+  </summary>
+</histogram>
+
 <histogram name="SafeBrowsing.BlockingPage.ResourceType"
     enum="ContentResourceType2" expires_after="2021-05-30">
   <owner>xinghuilu@chromium.org</owner>
@@ -1064,6 +1077,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Logs the user population that was checked by Safe Browsing real time URL
     lookup. Logged on each resource check for which a lookup request is sent to
     the server.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.RequestDestinations.Checked"
+    enum="RequestDestination" expires_after="2021-08-05">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the request destination that was checked by Safe Browsing real time URL
+    lookup. Logged on each resource check that is eligible for real time checks.
+  </summary>
+</histogram>
+
+<histogram name="SafeBrowsing.RT.RequestDestinations.Requested"
+    enum="RequestDestination" expires_after="2021-08-05">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Logs the request destination that was requested to be checked by Safe
+    Browsing real time URL lookup. Logged on each resource check.
   </summary>
 </histogram>
 

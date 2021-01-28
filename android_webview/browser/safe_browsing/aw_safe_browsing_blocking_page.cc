@@ -99,6 +99,9 @@ AwSafeBrowsingBlockingPage* AwSafeBrowsingBlockingPage::CreateBlockingPage(
       "SafeBrowsing.BlockingPage.ResourceType",
       safe_browsing::GetResourceTypeFromRequestDestination(
           unsafe_resource.request_destination));
+  // Log the request destination that triggers the safe browsing blocking page.
+  UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
+                            unsafe_resource.request_destination);
   const UnsafeResourceList unsafe_resources{unsafe_resource};
   AwBrowserContext* browser_context =
       AwBrowserContext::FromWebContents(web_contents);

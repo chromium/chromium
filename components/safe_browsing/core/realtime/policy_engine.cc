@@ -117,6 +117,8 @@ bool RealTimePolicyEngine::CanPerformFullURLLookupForRequestDestination(
       "SafeBrowsing.RT.ResourceTypes.Requested",
       safe_browsing::GetResourceTypeFromRequestDestination(
           request_destination));
+  UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.RT.RequestDestinations.Requested",
+                            request_destination);
   if (request_destination == network::mojom::RequestDestination::kDocument) {
     return true;
   }

@@ -65388,6 +65388,31 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="6" label="No request with timeout"/>
 </enum>
 
+<enum name="RequestDestination">
+  <int value="0" label="EMPTY"/>
+  <int value="1" label="AUDIO"/>
+  <int value="2" label="AUDIO_WORKLET"/>
+  <int value="3" label="DOCUMENT"/>
+  <int value="4" label="EMBED"/>
+  <int value="5" label="FONT"/>
+  <int value="6" label="FRAME"/>
+  <int value="7" label="IFRAME"/>
+  <int value="8" label="IMAGE"/>
+  <int value="9" label="MANIFEST"/>
+  <int value="10" label="OBJECT"/>
+  <int value="11" label="PAINT_WORKLET"/>
+  <int value="12" label="REPORT"/>
+  <int value="13" label="SCRIPT"/>
+  <int value="14" label="SERVICE_WORKER"/>
+  <int value="15" label="SHARED_WORKER"/>
+  <int value="16" label="STYLE"/>
+  <int value="17" label="TRACK"/>
+  <int value="18" label="VIDEO"/>
+  <int value="19" label="WEB_BUNDLE"/>
+  <int value="20" label="WORKER"/>
+  <int value="21" label="XSLT"/>
+</enum>
+
 <enum name="RequestedImageMimeType">
   <int value="0" label="Png"/>
   <int value="1" label="Jpeg"/>

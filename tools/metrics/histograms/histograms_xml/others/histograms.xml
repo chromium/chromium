@@ -13429,6 +13429,16 @@ Safe Browsing lookups, which is critical for security. -->
   </summary>
 </histogram>
 
+<histogram name="SB2.RequestDestination" enum="RequestDestination"
+    expires_after="2021-07-11">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Request destinations of resources that were inspected by Safe Browsing in
+    the SafeBrowsingResourceThrottle.
+  </summary>
+</histogram>
+
 <histogram name="SB2.ResourceTypes2" enum="ContentResourceType2"
     expires_after="2021-07-11">
   <owner>vakh@chromium.org</owner>

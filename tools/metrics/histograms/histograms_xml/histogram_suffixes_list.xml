@@ -16400,6 +16400,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Startup.TimeSinceLastStartup"/>
 </histogram_suffixes>
 
+<histogram_suffixes name="SB2RequestDestinations" separator=".">
+  <suffix name="Checked"
+      label="Resources that were checked. Logged before the resource starts
+             loading and again for each redirect."/>
+  <suffix name="Skipped"
+      label="Resources that were not checked because they are not active-ish
+             content types. Only used on mobile. Logged before the resource
+             request starts."/>
+  <suffix name="Unsafe"
+      label="Resources that were checked and classified as unsafe. Logged
+             when the URL check is completed."/>
+  <affected-histogram name="SB2.RequestDestination"/>
+</histogram_suffixes>
+
 <histogram_suffixes name="SB2ResourceTypes" separator=".">
   <suffix name="Checked"
       label="Resources that were checked. Logged before the resource starts

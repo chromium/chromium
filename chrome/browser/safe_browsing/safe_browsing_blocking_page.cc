@@ -218,6 +218,8 @@ SafeBrowsingBlockingPage* SafeBrowsingBlockingPage::CreateBlockingPage(
       "SafeBrowsing.BlockingPage.ResourceType",
       safe_browsing::GetResourceTypeFromRequestDestination(
           unsafe_resource.request_destination));
+  UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.BlockingPage.RequestDestination",
+                            unsafe_resource.request_destination);
   const UnsafeResourceList resources{unsafe_resource};
   // Set up the factory if this has not been done already (tests do that
   // before this method is called).
