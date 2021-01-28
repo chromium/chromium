@@ -59,7 +59,7 @@
 <translation id="8304833501377495048">Ne jelenjen meg újra ez a lapsor?</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> kijelölt lap bezárása}other{<ph name="TABS_COUNT_MANY" /> kijelölt lap bezárása}}</translation>
 <translation id="8557923272772633250"><ph name="NUMBER_OF_TABS" /> lapot tartalmazó lapcsoport kibontása.</translation>
-<translation id="860282621117673749">Árcsökkenéssel kapcsolatos értesítések</translation>
+<translation id="860282621117673749">Árcsökkenési értesítések</translation>
 <translation id="8714939927607906138">Alacsonyabb ár</translation>
 <translation id="8749939518995770034">Lapsor bezárva</translation>
 <translation id="8820741577754260431">Láthatja az árcsökkenéseket a megnyitott lapokon</translation>

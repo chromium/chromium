@@ -2152,7 +2152,6 @@
 <translation id="3429271624041785769">වෙබ් අන්තර්ගත භාෂා</translation>
 <translation id="3429275422858276529">පහසුවෙන් පසුව සොයා ගැනීමට මෙම පිටුව පිටුසන් කරන්න</translation>
 <translation id="3432227430032737297">පෙන්වන සියල්ල ඉවත් කරන්න</translation>
-<translation id="3432757130254800023">පෙදෙසි ජාලයේ ඇති දර්ශක වෙත ශ්‍රව්‍ය සහ වීඩියෝ යවන්න</translation>
 <translation id="3432762828853624962">හවුල් වැඩකරුවන්</translation>
 <translation id="3433621910545056227">අපොයි!  පද්ධතිය උපාංගයේ ස්ථාපන-කාල උපලක්ෂණ අගුල පිහිටුවීමට අසමත් විය.</translation>
 <translation id="3434272557872943250">ඔබේ දරුවා සඳහා අමතර වෙබ් සහ යෙදුම් ක්‍රියාකාරකම් සැකසීම සක්‍රීය කර තිබේ නම්, මෙම දත්ත ඔවුන්ගේ Google ගිණුමට සුරැකිය හැක. මෙම සැකසීම් සහ ඒවා සීරුමාරු කරන ආකාරය ගැන families.google.com හි තවත් දැන ගන්න.</translation>
@@ -6241,7 +6240,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8147900440966275470">ටැබ <ph name="NUM" />ක් සොයා ගන්නා ලදි</translation>
 <translation id="8148760431881541277">පුරනය සීමා කරන්න</translation>
 <translation id="8150259863378108853">Lacros යනු පරීක්ෂණාත්මක බ්‍රව්සරයකි. කිනම් හෝ ගැටලු උදවු &gt; "ගැටලුවක් වාර්තා කරන්න..." සමගින් වාර්තා කරන්න</translation>
-<translation id="8151579390896831136">එහි නම ඇතුළුව, ඔබගේ පැතිකඩ අභිරුචිකරණය කරන්න</translation>
 <translation id="8151638057146502721">වින්‍යාස කරන්න</translation>
 <translation id="8154790740888707867">ගොනු නොමැත</translation>
 <translation id="815491593104042026">ඕහ්!  අනාරක්ශිත ලිපිනයක් (<ph name="BLOCKED_URL" />) භාවිත කිරීමට සකසා ඇති බැවින් අවසරදීම අසාර්ථකයි. කරුණාකර පරිපාලක සබඳ කරගන්න.</translation>
@@ -6432,7 +6430,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8378714024927312812">ඔබේ ආයතනය විසින් කළමනා කෙරේ</translation>
 <translation id="8379878387931047019">මෙම උපාංගය මෙම වෙබ් අඩවියෙන් ඉල්ලා සිටින ආරක්ෂක යතුරක් සඳහා සහාය නොදක්වයි</translation>
 <translation id="8379991678458444070">මෙම පටිත්ත පිටුසන් කිරීමෙන් ඉක්මනින් මෙහි ආපසු පිවිසෙන්න</translation>
-<translation id="8380266723152870797">කවුළු නම</translation>
 <translation id="8382913212082956454">ඊමේල් ලිපිනය පිටපත් කරන්න (&amp;E)</translation>
 <translation id="8386091599636877289">ප්‍රතිපත්තිය හමු නොවිය.</translation>
 <translation id="8386903983509584791">ස්කෑන් කිරීම සම්පූර්ණයි</translation>
@@ -6858,7 +6855,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8859402192569844210">සේවා නියම පූරණය කළ නොහැකි විය</translation>
 <translation id="8859662783913000679">මාපිය ගිණුම</translation>
 <translation id="8862003515646449717">වේගවත් බ්‍රව්සරයකට මාරු වන්න</translation>
-<translation id="8863140399813345099">ඔබගේ තිරය අගුලු හැර ඇති අතරතුර ඔබට බෙදා ගත හැක්කේ කාටද යන්න ඔබේ උපාංග දෘශ්‍යතාව පාලනය කරයි</translation>
 <translation id="8863753581171631212">සබැඳිය නව <ph name="APP" /> තුළ විවෘත කරන්න</translation>
 <translation id="8864055848767439877"><ph name="APP_NAME" /> වෙත <ph name="TAB_NAME" /> බෙදා ගැනේ</translation>
 <translation id="8864458770072227512">මෙම උපාංගයෙන් <ph name="EMAIL" /> ඉවත් කරන ලදි</translation>
@@ -6912,7 +6908,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8912810933860534797">ස්වයංක්‍රීය ස්කෑන් සබල කරන්න</translation>
 <translation id="8915370057835397490">යෝජනාව පූර්ණය වෙමින්</translation>
 <translation id="8916476537757519021">අප්‍රකට උපරාමුව: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="8916749157829986308">කවුළු නම සකසන්න</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />ගේ <ph name="DEVICE_TYPE" /></translation>
 <translation id="8923880975836399332">තද සේරා</translation>
 <translation id="8925458182817574960">පසුතල</translation>

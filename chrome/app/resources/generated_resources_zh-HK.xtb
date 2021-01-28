@@ -2153,7 +2153,6 @@
 <translation id="3429271624041785769">網頁內容語言</translation>
 <translation id="3429275422858276529">將此網頁加入書籤，以便日後輕鬆查找</translation>
 <translation id="3432227430032737297">移除所有顯示項目</translation>
-<translation id="3432757130254800023">傳送要在區域網絡顯示的音效檔案和影片</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">糟糕！系統無法鎖定裝置安裝時的屬性。</translation>
 <translation id="3434272557872943250">如果您為子女開啟其他「網絡及應用程式活動記錄」設定，此資料可能會儲存在他們的 Google 帳戶中。您可以前往 families.google.com 詳細瞭解這些設定及其調整方式</translation>
@@ -2973,7 +2972,7 @@
 <translation id="4364327530094270451">蜜瓜</translation>
 <translation id="4364567974334641491"><ph name="APP_NAME" /> 正在共用視窗。</translation>
 <translation id="4364830672918311045">顯示通知</translation>
-<translation id="4366138410738374926">已開始列印</translation>
+<translation id="4366138410738374926">列印已開始</translation>
 <translation id="437004882363131692">取得 <ph name="DEVICE_TYPE" /> 提示、優惠和最新資訊，並分享意見。您可隨時取消訂閱。</translation>
 <translation id="4370425812909262207">已隱藏購物車。當您作出變更時，購物車就會重新顯示。</translation>
 <translation id="4370975561335139969">您所輸入的電郵與密碼不符</translation>
@@ -6244,7 +6243,6 @@
 <translation id="8147900440966275470">找到 <ph name="NUM" /> 個分頁</translation>
 <translation id="8148760431881541277">限制登入</translation>
 <translation id="8150259863378108853">Lacros 是實驗版瀏覽器。請按一下 [說明] &gt; [報告問題…] 以報告任何問題</translation>
-<translation id="8151579390896831136">自訂您嘅設定檔，包括設定檔個名</translation>
 <translation id="8151638057146502721">設定</translation>
 <translation id="8154790740888707867">沒有檔案</translation>
 <translation id="815491593104042026">糟糕！由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致驗證失敗。請與您的管理員聯絡。</translation>
@@ -6435,7 +6433,6 @@
 <translation id="8378714024927312812">由您的機構管理</translation>
 <translation id="8379878387931047019">此裝置不支援此網站要求的安全密鑰類型</translation>
 <translation id="8379991678458444070">將此分頁加入書籤，方便您快速返回此處</translation>
-<translation id="8380266723152870797">視窗名稱</translation>
 <translation id="8382913212082956454">複製電郵地址(&amp;E)</translation>
 <translation id="8386091599636877289">找不到政策。</translation>
 <translation id="8386903983509584791">掃瞄完成</translation>
@@ -6859,7 +6856,6 @@
 <translation id="8859402192569844210">無法載入《服務條款》</translation>
 <translation id="8859662783913000679">家長帳戶</translation>
 <translation id="8862003515646449717">改用速度快的瀏覽器</translation>
-<translation id="8863140399813345099">您可使用裝置分享設定來控制哪些人可在螢幕解鎖時與您分享檔案</translation>
 <translation id="8863753581171631212">在「<ph name="APP" />」的新視窗中開啟連結</translation>
 <translation id="8864055848767439877">正在與 <ph name="APP_NAME" /> 共用 <ph name="TAB_NAME" /></translation>
 <translation id="8864458770072227512">已從此裝置移除 <ph name="EMAIL" /></translation>
@@ -6913,7 +6909,6 @@
 <translation id="8912810933860534797">啟用自動掃瞄</translation>
 <translation id="8915370057835397490">正在載入建議</translation>
 <translation id="8916476537757519021">無痕模式子頁框：<ph name="SUBFRAME_SITE" /></translation>
-<translation id="8916749157829986308">設定視窗名稱</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8923880975836399332">深藍綠色</translation>
 <translation id="8925458182817574960">設定(&amp;S)</translation>

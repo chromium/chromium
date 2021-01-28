@@ -2154,7 +2154,6 @@
 <translation id="3429271624041785769">웹 콘텐츠 언어</translation>
 <translation id="3429275422858276529">이 페이지를 북마크에 추가하여 나중에 쉽게 찾으세요.</translation>
 <translation id="3432227430032737297">표시된 항목 모두 삭제</translation>
-<translation id="3432757130254800023">로컬 네트워크의 디스플레이로 오디오 및 동영상 전송</translation>
 <translation id="3432762828853624962">공유 작업자</translation>
 <translation id="3433621910545056227">시스템이 기기 설치 시간 속성 잠금을 설정하는 데 실패했습니다.</translation>
 <translation id="3434272557872943250">자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다. families.google.com에서 이러한 설정 및 설정 조정 방법을 자세히 알아보세요.</translation>
@@ -6244,7 +6243,6 @@
 <translation id="8147900440966275470">탭 <ph name="NUM" />개 찾음</translation>
 <translation id="8148760431881541277">로그인 제한</translation>
 <translation id="8150259863378108853">Lacros는 실험 단계의 브라우저입니다. 문제가 발생하면 도움말 &gt; ‘문제 신고...’에서 신고해 주세요.</translation>
-<translation id="8151579390896831136">이름을 포함한 프로필 맞춤설정</translation>
 <translation id="8151638057146502721">구성</translation>
 <translation id="8154790740888707867">파일 없음</translation>
 <translation id="815491593104042026">보안되지 않는 URL(<ph name="BLOCKED_URL" />)을 사용하도록 설정되었기 때문에 인증할 수 없습니다. 관리자에게 문의하세요.</translation>
@@ -6435,7 +6433,6 @@
 <translation id="8378714024927312812">조직에서 관리</translation>
 <translation id="8379878387931047019">이 기기는 이 웹사이트에서 요청하는 유형의 보안 키를 지원하지 않습니다.</translation>
 <translation id="8379991678458444070">이 탭을 북마크에 추가하여 간편하게 다시 방문하세요.</translation>
-<translation id="8380266723152870797">창 이름</translation>
 <translation id="8382913212082956454">이메일 주소 복사(&amp;E)</translation>
 <translation id="8386091599636877289">정책을 찾을 수 없습니다.</translation>
 <translation id="8386903983509584791">검색 완료</translation>
@@ -6860,7 +6857,6 @@
 <translation id="8859402192569844210">서비스 약관을 로드할 수 없습니다.</translation>
 <translation id="8859662783913000679">부모 계정</translation>
 <translation id="8862003515646449717">빠른 브라우저로 전환</translation>
-<translation id="8863140399813345099">화면이 잠금 해제되어 있을 때 나와 파일을 공유할 수 있는 사람은 기기 공개 범위에 따라 다릅니다.</translation>
 <translation id="8863753581171631212">새 <ph name="APP" />에서 링크 열기</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> 탭을 <ph name="APP_NAME" /> 앱과 공유하는 중</translation>
 <translation id="8864458770072227512">기기에서 <ph name="EMAIL" />이(가) 삭제되었습니다.</translation>
@@ -6914,7 +6910,6 @@
 <translation id="8912810933860534797">자동 스캔 사용</translation>
 <translation id="8915370057835397490">추천 단어 로드 중...</translation>
 <translation id="8916476537757519021">시크릿 모드 서브프레임: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="8916749157829986308">창 이름 설정</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />님의 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8923880975836399332">진한 청록색</translation>
 <translation id="8925458182817574960">설정(&amp;S)</translation>

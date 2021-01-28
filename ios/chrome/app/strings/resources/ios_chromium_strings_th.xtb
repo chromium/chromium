@@ -71,6 +71,7 @@
 <translation id="7890287942691234100">เริ่มใช้โปรแกรมสแกนของ Chromium</translation>
 <translation id="8013573822802650211">ลงชื่อเข้าใช้ในอุปกรณ์ทุกเครื่องเพื่อดูแท็บที่เปิดไว้จากอุปกรณ์ที่คุณใช้ Chromium</translation>
 <translation id="8073677936375100957">ล้างข้อมูล Chromium ของคุณออกจากอุปกรณ์นี้ไหม</translation>
+<translation id="8097322092271030751">เนื่องจากบัญชีของคุณจัดการโดย <ph name="HOSTED_DOMAIN" /> ระบบจึงจะลบข้อมูล Chromium ในอุปกรณ์นี้เมื่อออกจากระบบ ข้อมูลที่ซิงค์ไว้จะยังอยู่ในบัญชี Google</translation>
 <translation id="8175055321229419309">เคล็ดลับ: <ph name="BEGIN_LINK" />ย้าย Chromium ไปไว้ที่ Dock<ph name="END_LINK" /></translation>
 <translation id="8235785158661376110">ในการกำหนดให้ Chromium เป็นเบราว์เซอร์เริ่มต้น ให้เปิดการตั้งค่าแล้วแตะ "แอปเบราว์เซอร์เริ่มต้น" จากนั้นเลือก Chromium</translation>
 <translation id="8240981428553046115">Chromium ตรวจหาอัปเดตไม่ได้ โปรดลองอีกครั้งภายหลัง</translation>

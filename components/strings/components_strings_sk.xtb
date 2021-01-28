@@ -917,7 +917,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="4579056131138995126">Personal (obálka)</translation>
 <translation id="4582204425268416675">Odstrániť kartu</translation>
 <translation id="4587425331216688090">Chcete adresu odstrániť z prehliadača Chrome?</translation>
-<translation id="459089498662672729">Pravidlá správcu neodporúčajú prilepenie z umiestnenia <ph name="ORIGIN_NAME" /> do tohto miesta</translation>
+<translation id="459089498662672729">Pravidlá správcu neodporúčajú prilepenie z umiestnenia <ph name="ORIGIN_NAME" /> na toto miesto</translation>
 <translation id="4592951414987517459">Vaše pripojenie k doméne <ph name="DOMAIN" /> je šifrované pomocou modernej šifrovacej súpravy.</translation>
 <translation id="4594403342090139922">&amp;Vrátiť späť odstránenie</translation>
 <translation id="4597348597567598915">Veľkosť 8</translation>
@@ -1080,7 +1080,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="519422657042045905">Anotácia nie je k dispozícii</translation>
 <translation id="5201306358585911203">Vložená stránka na tejto stránke hovorí</translation>
 <translation id="5205222826937269299">Meno je povinný údaj</translation>
-<translation id="5208899478506185232"><ph name="ONE_TIME_CODE" /> toto je váš kód pre položku <ph name="TOP_ORIGIN" /> (prostredníctvom <ph name="EMBEDDED_ORIGIN" />)</translation>
+<translation id="5208899478506185232"><ph name="ONE_TIME_CODE" /> je váš kód pre položku <ph name="TOP_ORIGIN" /> (prostredníctvom <ph name="EMBEDDED_ORIGIN" />)</translation>
 <translation id="5209518306177824490">Odtlačok SHA-1</translation>
 <translation id="5215116848420601511">Spôsoby platby a adresy pomocou Google Pay</translation>
 <translation id="5215363486134917902">Folio-Sp</translation>
@@ -1516,7 +1516,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="7004583254764674281">Potvrdzujte karty rýchlejšie pomocou služby Windows Hello</translation>
 <translation id="7006930604109697472">Aj tak odoslať</translation>
 <translation id="7012363358306927923">China UnionPay</translation>
-<translation id="7014741021609395734">Úroveň priblíženia alebo oddialenia</translation>
+<translation id="7014741021609395734">Úroveň lupy</translation>
 <translation id="7016992613359344582">Tieto poplatky môžu byť jednorazové alebo opakované a nemusia byť predvídateľné.</translation>
 <translation id="7029809446516969842">Heslá</translation>
 <translation id="7031646650991750659">Ktoré aplikácie Google Play máte nainštalované.</translation>

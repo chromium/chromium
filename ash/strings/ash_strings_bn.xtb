@@ -668,6 +668,7 @@
 <translation id="6818242057446442178">শব্দ অনুযায়ী পেছনে যান</translation>
 <translation id="6820676911989879663">বিরতি নিন!</translation>
 <translation id="6850010208275816200">আপনার বর্তমান অ্যাপ ফুল স্ক্রিনে দেখছেন। অ্যাপটি পাসওয়ার্ড চাইলে, আগে ফুল স্ক্রিন থেকে বেরিয়ে আসুন।</translation>
+<translation id="6852052252232534364">চালু করতে ক্লিক করুন</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> সে</translation>
 <translation id="6857811139397017780">সক্রিয় করুন <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{আরও ১টি সংখ্যা লিখতে হবে}one{আরও #টি সংখ্যা লিখতে হবে}other{আরও #টি সংখ্যা লিখতে হবে}}</translation>
@@ -728,6 +729,7 @@
 <translation id="742594950370306541">ক্যামেরা ব্যবহার করা হচ্ছে।</translation>
 <translation id="742608627846767349">সুপ্রভাত,</translation>
 <translation id="743058460480092004">ক্যামেরা এবং মাইক্রোফোন ব্যবহার করা হচ্ছে।</translation>
+<translation id="7434543979546293336">এটিকে প্রধান বিচার্য বিষয় হিসেবে চিহ্নিত করা হয়েছে</translation>
 <translation id="7452560014878697800">কোনও অ্যাপ্লিকেশন আপনার ক্যামেরা ব্যবহার করছে</translation>
 <translation id="7456049842111127849">ক্যাপচার মোড, এই <ph name="SOURCE" /> <ph name="TYPE" /> ডিফল্ট হিসেবে সেট করা হয়েছে।</translation>
 <translation id="7461924472993315131">পিন</translation>

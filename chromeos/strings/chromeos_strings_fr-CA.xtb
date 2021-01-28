@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">Passerelle</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">Ajuster à la zone de numérisation</translation>
+<translation id="1387854245479784695">Il s'agit d'une agrégation de tous les cœurs</translation>
 <translation id="1397738625398125236">Ping de la passerelle</translation>
 <translation id="1398634363027580500">Latence HTTPS très élevée</translation>
 <translation id="1413240736185167732">Échec : problème de filtre</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">Échec : erreur inconnue</translation>
 <translation id="357889014807611375">réseau Wi-Fi mesuré</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP 802.1x</translation>
+<translation id="3712633734921637892">La vitesse du processeur est actuellement limitée afin d'économiser la pile ou de faire baisser la température</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> avis)</translation>
 <translation id="3748026146096797577">Non connecté</translation>
 <translation id="3749289110408117711">Nom du fichier</translation>
@@ -230,6 +232,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6146993107019042706">Pour terminer cette opération, entrez votre nouveau mot de passe</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">En savoir plus</translation>
+<translation id="6189418609903030344">La capacité des piles décline avec l'usage</translation>
 <translation id="6191293864534840972">Le format des serveurs de nom est incorrect</translation>
 <translation id="6232017090690406397">Pile</translation>
 <translation id="6325525973963619867">Échec</translation>
@@ -327,6 +330,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">Par défaut</translation>
 <translation id="8798441408945964110">Nom du fournisseur</translation>
+<translation id="880791622116642296">Nombre de cycles de recharge complets effectués par la pile de votre appareil</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">Obtenir de l'aide</translation>
 <translation id="8881098542468797602">Test réussi</translation>

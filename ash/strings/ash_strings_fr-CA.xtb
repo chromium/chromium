@@ -668,6 +668,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="6818242057446442178">Déplacer un mot vers l'arrière</translation>
 <translation id="6820676911989879663">Prenez une pause!</translation>
 <translation id="6850010208275816200">L'application actuelle s'affiche en plein écran. Si l'application vous demande votre mot de passe, quittez d'abord le mode plein écran.</translation>
+<translation id="6852052252232534364">Cliquer pour activer</translation>
 <translation id="6857725247182211756"><ph name="SECONDS" /> s</translation>
 <translation id="6857811139397017780">Activer <ph name="NETWORKSERVICE" /></translation>
 <translation id="685782768769951078">{NUM_DIGITS,plural, =1{Il reste 1 chiffre}one{Il reste # chiffre}other{Il reste # chiffres}}</translation>
@@ -728,6 +729,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="742594950370306541">La caméra est en cours d'utilisation.</translation>
 <translation id="742608627846767349">Bonjour,</translation>
 <translation id="743058460480092004">La caméra et le microphone sont actuellement utilisés.</translation>
+<translation id="7434543979546293336">Indiquée comme idée clé</translation>
 <translation id="7452560014878697800">Une application utilise votre caméra</translation>
 <translation id="7456049842111127849">Mode de capture, la valeur par défaut est <ph name="TYPE" /> <ph name="SOURCE" />.</translation>
 <translation id="7461924472993315131">NIP</translation>

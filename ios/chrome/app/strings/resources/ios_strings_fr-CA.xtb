@@ -257,6 +257,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="3533436815740441613">Nouvel onglet</translation>
 <translation id="3551320343578183772">Fermer l'onglet</translation>
 <translation id="3581564640715911333">Proposer des traductions de pages dans d'autres langues</translation>
+<translation id="3588492282865875287">Se déconnecter?</translation>
 <translation id="3588820906588687999">Ouvrir l'image dans un nouvel onglet</translation>
 <translation id="359441731697487922">Vous pouvez ouvrir automatiquement les sites dans Chrome en le définissant comme application de navigation par défaut.
       
@@ -410,6 +411,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5327248766486351172">Nom</translation>
 <translation id="5339316356165661760">Activer la synchronisation</translation>
+<translation id="5351284593342054342">Effacer de cet appareil</translation>
 <translation id="5388358297987318779">Ouvrir l'image</translation>
 <translation id="5407969256130905701">Supprimer les modifications</translation>
 <translation id="5409365236829784218">Aucune application installée ne peut ouvrir ce fichier.</translation>
@@ -465,6 +467,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5948291296578561264">Cela vous permet d'enregistrer vos photos dans votre bibliothèque de photos.</translation>
 <translation id="5955891643922670672">Affichage de la version hors ligne</translation>
 <translation id="5957613098218939406">Autres options</translation>
+<translation id="5961521066940389233">Garder sur cet appareil</translation>
 <translation id="5964480694698977962">Créer un nouvel onglet de navigation privée.</translation>
 <translation id="5965679971710331625">Vous êtes connecté</translation>
 <translation id="5979837087407522202">Rechercher des mots de passe</translation>
@@ -479,6 +482,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="605721222689873409">AA</translation>
 <translation id="6059830886158432458">Gérez vos histoires et votre activité ici</translation>
 <translation id="6066301408025741299">Appuyez pour annuler.</translation>
+<translation id="6085282545406522838">Vos données synchronisées resteront dans votre compte Google.</translation>
 <translation id="6108923351542677676">Configuration en cours...</translation>
 <translation id="6119050551270742952">La page Web actuelle est ouverte en mode de navigation privée</translation>
 <translation id="6122191549521593678">En ligne</translation>
@@ -631,6 +635,7 @@ Tâchez d'utiliser un mot de passe différent pour chaque site.</translation>
 <translation id="7514365320538308">Télécharger</translation>
 <translation id="7537586195939242955">Imposs. d'install. votre pass. pour Passbook pour le moment.</translation>
 <translation id="7554791636758816595">Nouvel onglet</translation>
+<translation id="7558943807639707687">Que souhaitez-vous faire avec vos favoris, votre historique et les autres données sur cet appareil?</translation>
 <translation id="7561196759112975576">Toujours</translation>
 <translation id="7583004045319035904">Utiliser <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> pour déverrouiller vos onglets de navigation privée.</translation>
 <translation id="7600965453749440009">Ne jamais traduire les pages rédigées en <ph name="LANGUAGE" /></translation>

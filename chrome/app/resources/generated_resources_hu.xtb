@@ -2154,7 +2154,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3429271624041785769">Webes tartalmak nyelvei</translation>
 <translation id="3429275422858276529">Adja hozzá az oldalt a könyvjelzőkhöz, hogy később könnyen megtalálja</translation>
 <translation id="3432227430032737297">Az összes megjelenített eltávolítása</translation>
-<translation id="3432757130254800023">Hang és videó küldése a helyi hálózaton lévő kijelzőkre</translation>
 <translation id="3432762828853624962">Shared workers</translation>
 <translation id="3433621910545056227">Hoppá! A rendszer nem tudta létrehozni az eszköz telepítésiidő-attribútumainak zárolását.</translation>
 <translation id="3434272557872943250">Ha az Internetes és alkalmazástevékenységek beállítás is be van kapcsolva a gyermekénél, akkor a rendszer ezeket az adatokat mentheti a gyermek Google-fiókjába. Ezekről a funkciókról és beállításuk módjáról a families.google.com oldalon találhat további információt.</translation>
@@ -6247,7 +6246,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8147900440966275470"><ph name="NUM" /> lapot találtunk</translation>
 <translation id="8148760431881541277">Bejelentkezés korlátozása</translation>
 <translation id="8150259863378108853">A Lacros egy kísérleti böngésző. Az esetleges hibákat a Súgó &gt; „Probléma bejelentése...” pontjában jelentheti be.</translation>
-<translation id="8151579390896831136">Szabja személyre profilját, a profil nevével együtt.</translation>
 <translation id="8151638057146502721">Konfigurálás</translation>
 <translation id="8154790740888707867">Nincs fájl</translation>
 <translation id="815491593104042026">Hoppá! A hitelesítés nem sikerült, mert azt egy nem biztonságos URL használatára állították be (<ph name="BLOCKED_URL" />). Kérjük, forduljon rendszergazdájához.</translation>
@@ -6438,7 +6436,6 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8378714024927312812">Az Ön szervezete kezeli</translation>
 <translation id="8379878387931047019">Az eszköz nem támogatja a webhely által kért biztonsági hardverkulcstípust</translation>
 <translation id="8379991678458444070">Gyorsan visszajuthat ide, ha hozzáadja a lapot a könyvjelzőkhöz</translation>
-<translation id="8380266723152870797">Ablak neve</translation>
 <translation id="8382913212082956454">&amp;E-mail cím másolása</translation>
 <translation id="8386091599636877289">Az irányelv nem található.</translation>
 <translation id="8386903983509584791">Keresés befejezve</translation>
@@ -6863,7 +6860,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8859402192569844210">Nem sikerült az Általános Szerződési Feltételek betöltése</translation>
 <translation id="8859662783913000679">Szülői fiók</translation>
 <translation id="8862003515646449717">Váltás gyors böngészőre</translation>
-<translation id="8863140399813345099">Eszközének láthatósága befolyásolja azt, hogy ki oszthat meg Önnel fájlokat, amíg az Ön képernyőjének zárolása fel van oldva.</translation>
 <translation id="8863753581171631212">Link megnyitása új <ph name="APP" />-ablakban</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> megosztása a következővel: <ph name="APP_NAME" /></translation>
 <translation id="8864458770072227512">A(z) <ph name="EMAIL" /> fiókot eltávolítottuk erről az eszközről</translation>
@@ -6917,7 +6913,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8912810933860534797">Automatikus keresés engedélyezése</translation>
 <translation id="8915370057835397490">Javaslatok betöltése</translation>
 <translation id="8916476537757519021">Inkognitó subframe: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="8916749157829986308">Ablak nevének beállítása</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> – <ph name="DEVICE_TYPE" /></translation>
 <translation id="8923880975836399332">Sötét pávakék</translation>
 <translation id="8925458182817574960">&amp;Beállítások</translation>

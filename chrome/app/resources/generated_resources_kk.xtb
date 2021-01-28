@@ -2151,7 +2151,6 @@
 <translation id="3429271624041785769">Веб-мазмұн тілдері</translation>
 <translation id="3429275422858276529">Бетті кейінірек табу үшін оған бетбелгі қою</translation>
 <translation id="3432227430032737297">Барлық көрсетілгендерді өшіру</translation>
-<translation id="3432757130254800023">Жергілікті желідегі дисплейлерге аудио және бейне жіберу</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Жүйенің құрылғы орнату уақытының атрибуттары құлпын орнатуы сәтсіз аяқталды.</translation>
 <translation id="3434272557872943250">Егер "Интернет пен қолданбаларды пайдаланудың қосымша тарихы" параметрі қосулы болса, бұл деректер балаңыздың Google есептік жазбасына сақталуы мүмкін. Бұл параметрлер және оларды қалай реттеу керектігі туралы ақпаратты families.google.com сайтынан біле аласыз.</translation>
@@ -3235,7 +3234,7 @@
 <translation id="4651484272688821107">Демо режиміндегі ресурстары бар онлайн компонент жүктелмеді.</translation>
 <translation id="4652935475563630866">Камераның параметріне өзгеріс енгізілгендіктен, Parallels Desktop қайта іске қосылуы қажет. Жалғастыру үшін Parallels Desktop қолданбасын қайта іске қосыңыз.</translation>
 <translation id="4653405415038586100">Linux-ті конфигурациялау қатесі шықты</translation>
-<translation id="4654236001025007561">Файлдарды Chromebook және Android құрылғыларымен бөлісіңіз.</translation>
+<translation id="4654236001025007561">Файлдарды маңайдағы Chromebook және Android құрылғыларымен бөлісіңіз.</translation>
 <translation id="4657914796247705218">TrackPoint жылдамдығы</translation>
 <translation id="465878909996028221">Тек http, https және файл протоколдары браузер бағытын ауыстырады.</translation>
 <translation id="4659077111144409915">Негізгі есептік жазба</translation>
@@ -6241,7 +6240,6 @@
 <translation id="8147900440966275470"><ph name="NUM" /> қойынды табылды.</translation>
 <translation id="8148760431881541277">Кіруді шектеу</translation>
 <translation id="8150259863378108853">Lacros – эксперименттік браузер. Ондағы кез келген ақауды "Анықтама &gt; Ақау туралы хабарлау" тармағынан көрсетіңіз.</translation>
-<translation id="8151579390896831136">Профиліңізді, сонымен қатар оның атын реттеу</translation>
 <translation id="8151638057146502721">Конфигурациялау</translation>
 <translation id="8154790740888707867">Файл жоқ</translation>
 <translation id="815491593104042026">Аутентификация сәтсіз аяқталды, себебі ол қауіпсіз емес URL (<ph name="BLOCKED_URL" />) пайдалануға конфигурацияланған. Әкімшіңізге хабарласыңыз.</translation>
@@ -6432,7 +6430,6 @@
 <translation id="8378714024927312812">Ұйым басқарады</translation>
 <translation id="8379878387931047019">Бұл құрылғы веб-сайт талап еткен қауіпсіздік кілтін қолдамайды</translation>
 <translation id="8379991678458444070">Осы қойындыға бетбелгі қою арқылы оған жылдам оралыңыз.</translation>
-<translation id="8380266723152870797">Терезенің аты</translation>
 <translation id="8382913212082956454">&amp;Электрондық пошта мекенжайын көшіру</translation>
 <translation id="8386091599636877289">Саясат табылмады.</translation>
 <translation id="8386903983509584791">Іздеу аяқталды</translation>
@@ -6857,7 +6854,6 @@
 <translation id="8859402192569844210">Қызмет көрсету шарттары жүктелмеді.</translation>
 <translation id="8859662783913000679">Ата-ананың есептік жазбасы</translation>
 <translation id="8862003515646449717">Жылдам браузерге ауысыңыз</translation>
-<translation id="8863140399813345099">Экранның құлпы ашық кезде, көріну мүмкіндігі сізбен кім бөлісе алатынын басқарады.</translation>
 <translation id="8863753581171631212">Сілтемені жаңа <ph name="APP" /> қолданбасында ашу</translation>
 <translation id="8864055848767439877">"<ph name="TAB_NAME" />" қойындысы <ph name="APP_NAME" /> қолданбасына жіберілуде.</translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> осы құрылғыдан өшірілген.</translation>
@@ -6911,7 +6907,6 @@
 <translation id="8912810933860534797">Автоматты түрде іздеу функциясын қосу</translation>
 <translation id="8915370057835397490">Ұсынысты жүктеу</translation>
 <translation id="8916476537757519021">Инкогнито режиміндегі ішкі жақтау: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="8916749157829986308">Терезе атауын көрсетіңіз</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> иелік ететін <ph name="DEVICE_TYPE" /></translation>
 <translation id="8923880975836399332">Қою көкшіл жасыл</translation>
 <translation id="8925458182817574960">&amp;Параметрлер</translation>

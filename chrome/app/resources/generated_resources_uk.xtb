@@ -2157,7 +2157,6 @@
 <translation id="3429271624041785769">Мови веб-контенту</translation>
 <translation id="3429275422858276529">Створіть закладку цієї сторінки, щоб легко знайти її пізніше</translation>
 <translation id="3432227430032737297">Вилучити всі показані</translation>
-<translation id="3432757130254800023">Надсилати аудіо та відео на дисплеї в локальній мережі</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">На жаль, системі не вдалося заблокувати атрибути часу встановлення на пристрої.</translation>
 <translation id="3434272557872943250">Якщо ввімкнено також запис Історії додатків і веб-пошуку, ці дані зберігаються в обліковому записі Google дитини. Докладніше про це налаштування читайте на сторінці families.google.com.</translation>
@@ -4820,7 +4819,7 @@
 <translation id="652948702951888897">Історія Chrome</translation>
 <translation id="6530186581263215931">Ці налаштування застосовує адміністратор</translation>
 <translation id="6531282281159901044">Завантажити небезпечний файл</translation>
-<translation id="6532101170117367231">Зберегти на Диску Google</translation>
+<translation id="6532101170117367231">Зберегти на Google Диску</translation>
 <translation id="6532106788206463496">Зберегти зміни</translation>
 <translation id="6532206849875187177">Безпека та вхід</translation>
 <translation id="6532527800157340614">Не вдалось отримати маркер доступу та ввійти. Перевірте з'єднання з мережею та повторіть спробу.</translation>
@@ -6249,7 +6248,6 @@
 <translation id="8147900440966275470">Знайдено стільки вкладок: <ph name="NUM" /></translation>
 <translation id="8148760431881541277">Обмежити вхід</translation>
 <translation id="8150259863378108853">Lacros – це експериментальний веб-переглядач. Щоб повідомити про проблему, натисніть "Довідка" &gt; "Повідомити про проблему…"</translation>
-<translation id="8151579390896831136">Налаштуйте свій профіль, зокрема вкажіть назву</translation>
 <translation id="8151638057146502721">Налаштувати</translation>
 <translation id="8154790740888707867">Немає файлу</translation>
 <translation id="815491593104042026">Помилка. Не вдалося отримати дозвіл, оскільки вас було переспрямовано на незахищену URL-адресу (<ph name="BLOCKED_URL" />). Зверніться до свого адміністратора.</translation>
@@ -6440,7 +6438,6 @@
 <translation id="8378714024927312812">Профілем керує ваша організація</translation>
 <translation id="8379878387931047019">Пристрій не підтримує тип ключа безпеки, потрібний для цього веб-сайту</translation>
 <translation id="8379991678458444070">Зробіть закладку для цієї вкладки, щоб швидко повертатися на неї</translation>
-<translation id="8380266723152870797">Назва вікна</translation>
 <translation id="8382913212082956454">Копіювати &amp;адресу електронної пошти</translation>
 <translation id="8386091599636877289">Правило не знайдено.</translation>
 <translation id="8386903983509584791">Сканування завершено</translation>
@@ -6868,7 +6865,6 @@
 <translation id="8859402192569844210">Не вдалося завантажити Умови використання</translation>
 <translation id="8859662783913000679">Батьківський обліковий запис</translation>
 <translation id="8862003515646449717">Виберіть швидкий веб-переглядач</translation>
-<translation id="8863140399813345099">Видимість пристрою визначає, хто може надсилати вам дані, коли ваш екран розблоковано</translation>
 <translation id="8863753581171631212">Відкрити посилання в новому вікні додатка <ph name="APP" /></translation>
 <translation id="8864055848767439877">Додаток <ph name="APP_NAME" /> має доступ до вкладки <ph name="TAB_NAME" /></translation>
 <translation id="8864458770072227512">Обліковий запис <ph name="EMAIL" /> видалено з цього пристрою</translation>
@@ -6922,7 +6918,6 @@
 <translation id="8912810933860534797">Увімкнути автоматичне сканування</translation>
 <translation id="8915370057835397490">Завантаження пропозиції</translation>
 <translation id="8916476537757519021">Додатковий анонімний фрейм: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="8916749157829986308">Укажіть назву вікна</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> (<ph name="GIVEN_NAME" />)</translation>
 <translation id="8923880975836399332">Темно-бірюзовий</translation>
 <translation id="8925458182817574960">&amp;Налаштування</translation>

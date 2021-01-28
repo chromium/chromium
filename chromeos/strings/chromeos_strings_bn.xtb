@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">গেটওয়ে</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">স্ক্যান করতে ক্ষেত্রটি ফিট করান</translation>
+<translation id="1387854245479784695">এটি সব কোরকে একসাথে দেখায়</translation>
 <translation id="1397738625398125236">গেটওয়ে পিং করা যেতে পারে</translation>
 <translation id="1398634363027580500">খুব বেশি HTTPS লেটেন্সি</translation>
 <translation id="1413240736185167732">প্রিন্ট করা যায়নি - ফিল্টার কাজ করছে না</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">প্রিন্ট করা যায়নি - অজানা সমস্যা</translation>
 <translation id="357889014807611375">মিটার্ড ওয়াই-ফাই</translation>
 <translation id="360565022852130722">দুর্বল WEP 802.1x প্রোটোকল ব্যবহার করে ওয়াই-ফাই নেটওয়ার্ক সুরক্ষিত করা হয়েছে</translation>
+<translation id="3712633734921637892">বর্তমানে সিপিইউ-এর স্পিড ব্যাটারির চার্জ সংরক্ষণ করা বা তাপমাত্রা কম করা পর্যন্ত সীমিত করা হচ্ছে</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" />টি রিভিউ)</translation>
 <translation id="3748026146096797577">সংযুক্ত নয়</translation>
 <translation id="3749289110408117711">ফাইলের নাম</translation>
@@ -229,6 +231,7 @@
 <translation id="6146993107019042706">সম্পূর্ণ করতে, আপনার নতুন পাসওয়ার্ড লিখুন</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">আরও জানুন</translation>
+<translation id="6189418609903030344">ব্যবহার করতে করতে ব্যাটারির ক্ষমতা কমে আসতে থাকে</translation>
 <translation id="6191293864534840972">ডোমেন নেম সার্ভারের ফর্ম্যাট ঠিক নেই</translation>
 <translation id="6232017090690406397">ব্যাটারি: %</translation>
 <translation id="6325525973963619867">ব্যর্থ</translation>
@@ -326,6 +329,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">ডিফল্ট</translation>
 <translation id="8798441408945964110">পরিষেবা প্রদানকারীর নাম</translation>
+<translation id="880791622116642296">এর থেকে জানতে পারা যায় যে আপনার ব্যাটারি কতবার পুরো চার্জ দেওয়া হয়েছে</translation>
 <translation id="8814190375133053267">ওয়াই-ফাই</translation>
 <translation id="8845001906332463065">সাহায্য পান</translation>
 <translation id="8881098542468797602">টেস্ট সফল হয়েছে</translation>

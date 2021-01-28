@@ -2153,7 +2153,6 @@
 <translation id="3429271624041785769">網路內容語言</translation>
 <translation id="3429275422858276529">將這個網頁加入書籤，方便日後查看</translation>
 <translation id="3432227430032737297">將顯示的項目全部移除</translation>
-<translation id="3432757130254800023">傳送要在區域網路顯示的影音內容</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">糟糕！系統無法鎖定裝置安裝時的屬性。</translation>
 <translation id="3434272557872943250">如果貴子女的「其他網路和應用程式活動」設定為開啟，這些資料可能會儲存在他們的 Google 帳戶中。如要進一步瞭解這些設定及其調整方式，請前往 families.google.com。</translation>
@@ -6243,7 +6242,6 @@
 <translation id="8147900440966275470">找到 <ph name="NUM" /> 個分頁</translation>
 <translation id="8148760431881541277">限制登入</translation>
 <translation id="8150259863378108853">Lacros 是實驗性瀏覽器。如有任何問題，請依序按一下 [說明] &gt; [回報問題...] 進行回報</translation>
-<translation id="8151579390896831136">自訂你的設定檔 (包括設定檔名稱)</translation>
 <translation id="8151638057146502721">設定</translation>
 <translation id="8154790740888707867">沒有檔案</translation>
 <translation id="815491593104042026">糟糕！由於設定使用的網址 (<ph name="BLOCKED_URL" />) 不安全，導致驗證失敗。請與你的管理員聯絡。</translation>
@@ -6434,7 +6432,6 @@
 <translation id="8378714024927312812">由貴機構管理</translation>
 <translation id="8379878387931047019">這部裝置不支援這個網站所要求的安全金鑰類型</translation>
 <translation id="8379991678458444070">將此分頁加入書籤，日後便能快速開啟這個頁面</translation>
-<translation id="8380266723152870797">視窗名稱</translation>
 <translation id="8382913212082956454">複製電子郵件地址(&amp;E)</translation>
 <translation id="8386091599636877289">找不到政策。</translation>
 <translation id="8386903983509584791">掃描完成</translation>
@@ -6859,7 +6856,6 @@
 <translation id="8859402192569844210">無法載入《服務條款》</translation>
 <translation id="8859662783913000679">家長帳戶</translation>
 <translation id="8862003515646449717">改用速度飛快的瀏覽器</translation>
-<translation id="8863140399813345099">螢幕處於解鎖狀態時，利用裝置瀏覽權限可以控管哪些人可與你分享內容</translation>
 <translation id="8863753581171631212">另外在「<ph name="APP" />」中開啟連結</translation>
 <translation id="8864055848767439877">正在與 <ph name="APP_NAME" /> 共用 <ph name="TAB_NAME" /></translation>
 <translation id="8864458770072227512">已將 <ph name="EMAIL" /> 從這個裝置中移除</translation>
@@ -6913,7 +6909,6 @@
 <translation id="8912810933860534797">啟用自動掃描</translation>
 <translation id="8915370057835397490">正在載入建議</translation>
 <translation id="8916476537757519021">無痕模式子頁框：<ph name="SUBFRAME_SITE" /></translation>
-<translation id="8916749157829986308">設定視窗名稱</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" />的 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8923880975836399332">深藍綠色</translation>
 <translation id="8925458182817574960">設定(&amp;S)</translation>

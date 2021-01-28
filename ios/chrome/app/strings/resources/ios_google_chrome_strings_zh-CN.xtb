@@ -17,6 +17,7 @@
 <translation id="257708665678654955">下次访问这个网站时，您希望 Google Chrome 翻译其中的<ph name="LANGUAGE_NAME" />网页吗？</translation>
 <translation id="2695886661449553974">Chrome 无法检查是否有更新。请稍后再试。</translation>
 <translation id="2732745070297234559">Chrome 无法检查所有密码。请明天再试。</translation>
+<translation id="2786324948676799004">您的帐号是由 <ph name="HOSTED_DOMAIN" /> 管理，因此当您退出帐号后，您的 Chrome 数据将会从此设备中删除，但已同步的数据仍会保留在您的 Google 帐号中。</translation>
 <translation id="2919738076569633423">使用 Chrome 即表示您同意接受<ph name="BEGIN_LINK_TOS" />服务条款<ph name="END_LINK_TOS" />。</translation>
 <translation id="3030414234702425231">由于您正要退出的帐号是由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理，因此系统将会从这部设备中删除您的 Chrome 数据，但这些数据仍会保留在您的 Google 帐号中。</translation>
 <translation id="3148688391461398285">要在Chrome中获得更好的使用体验，需要用到您的位置信息。</translation>

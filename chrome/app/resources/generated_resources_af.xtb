@@ -2154,7 +2154,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3429271624041785769">Webinhoudtale</translation>
 <translation id="3429275422858276529">Boekmerk hierdie bladsy om dit later maklik te kry</translation>
 <translation id="3432227430032737297">Verwyder alles wat gewys word</translation>
-<translation id="3432757130254800023">Stuur oudio en video na skerms in die plaaslike netwerk</translation>
 <translation id="3432762828853624962">Gedeelde werkers</translation>
 <translation id="3433621910545056227">Oeps! Die stelsel kon nie die toestel se kenmerkeslot by installering vasmaak nie.</translation>
 <translation id="3434272557872943250">As die bykomende Web- en Programaktiwiteit-instelling vir jou kind aangeskakel is, kan hierdie data in hul Google-rekening gestoor word. Kom by families.google.com meer te wete oor hierdie instellings en hoe om hulle te verstel.</translation>
@@ -6245,7 +6244,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8147900440966275470">Het <ph name="NUM" /> oortjie gekry</translation>
 <translation id="8148760431881541277">Beperk aanmelding</translation>
 <translation id="8150259863378108853">Lacros is 'n eksperimentele blaaier. Gee asseblief enige kwessies aan met Hulp &gt; "Gee 'n kwessie aan"</translation>
-<translation id="8151579390896831136">Pasmaak jou profiel, insluitend die naam daarvan</translation>
 <translation id="8151638057146502721">Stel op</translation>
 <translation id="8154790740888707867">Geen lêer nie</translation>
 <translation id="815491593104042026">Oeps! Kon nie staaf nie omdat dit opgestel is om 'n onveilige URL (<ph name="BLOCKED_URL" />) te gebruik. Kontak asseblief jou administrateur.</translation>
@@ -6436,7 +6434,6 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8378714024927312812">Bestuur deur jou organisasie</translation>
 <translation id="8379878387931047019">Hierdie toestel steun nie die tipe sekuriteitsleutel wat deur hierdie webwerf versoek word nie</translation>
 <translation id="8379991678458444070">Boekmerk hierdie oortjie om vinnig terug te kom hierheen</translation>
-<translation id="8380266723152870797">Vensternaam</translation>
 <translation id="8382913212082956454">Kopieer e-posadres</translation>
 <translation id="8386091599636877289">Kon nie beleid kry nie.</translation>
 <translation id="8386903983509584791">Skandering voltooi</translation>
@@ -6861,7 +6858,6 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="8859402192569844210">Kon nie diensbepalings laai nie</translation>
 <translation id="8859662783913000679">Ouerrekening</translation>
 <translation id="8862003515646449717">Wissel na 'n vinnige blaaier</translation>
-<translation id="8863140399813345099">Jou toestelsigbaarheid beheer wie met jou kan deel terwyl jou skerm ontsluit is</translation>
 <translation id="8863753581171631212">Maak skakel in nuwe <ph name="APP" /> oop</translation>
 <translation id="8864055848767439877">Deel <ph name="TAB_NAME" /> tans na <ph name="APP_NAME" /></translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> is van hierdie toestel af verwyder</translation>
@@ -6915,7 +6911,6 @@ Druk 'n toegewysde skakelaar om toewysing te verwyder.</translation>
 <translation id="8912810933860534797">Aktiveer outoskandering</translation>
 <translation id="8915370057835397490">Laai tans voorstel</translation>
 <translation id="8916476537757519021">Incognitosubraam: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="8916749157829986308">Stel vensternaam</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> se <ph name="DEVICE_TYPE" /></translation>
 <translation id="8923880975836399332">Donkergroenblou</translation>
 <translation id="8925458182817574960">Instellings</translation>

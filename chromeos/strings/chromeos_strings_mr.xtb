@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">गेटवे</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">स्कॅन क्षेत्रावर फिट करा</translation>
+<translation id="1387854245479784695">हे सर्व कोअरचे एकत्रीकरण आहे</translation>
 <translation id="1397738625398125236">गेटवेला पिंग करता येते</translation>
 <translation id="1398634363027580500">अत्युच्च HTTPS लेटन्सी</translation>
 <translation id="1413240736185167732">अयशस्वी झाले - फिल्टर अयशस्वी झाले</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">अयशस्वी झाले - अज्ञात एरर</translation>
 <translation id="357889014807611375">मर्यादित वाय-फाय</translation>
 <translation id="360565022852130722">वायफाय नेटवर्क कमकुवत प्रोटोकॉल WEP 802.1x सह सुरक्षित केले गेले आहे</translation>
+<translation id="3712633734921637892">बॅटरीची क्षमता वाढवण्यासाठी किंवा तापमान कमी करण्यासाठी सीपीयूचा वेग सध्या मर्यादित केला आहे</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> परीक्षणे)</translation>
 <translation id="3748026146096797577">कनेक्टेड नाही</translation>
 <translation id="3749289110408117711">फाइल नाव</translation>
@@ -229,6 +231,7 @@
 <translation id="6146993107019042706">पूर्ण करण्यासाठी, तुमचा नवीन पासवर्ड एंटर करा</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">अधिक जाणून घ्या</translation>
+<translation id="6189418609903030344">वापरानुसार बॅटरीची क्षमता कमी होत जाते</translation>
 <translation id="6191293864534840972">समस्या असलेले नेम सर्व्हर</translation>
 <translation id="6232017090690406397">बॅटरी</translation>
 <translation id="6325525973963619867">अयशस्वी</translation>
@@ -326,6 +329,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">डीफॉल्ट</translation>
 <translation id="8798441408945964110">प्रदात्याचे नाव</translation>
+<translation id="880791622116642296">तुमची बॅटरी किती वेळा पूर्ण चार्ज झाली ते या चार्जिंग सायकलवरून कळते</translation>
 <translation id="8814190375133053267">वाय-फाय</translation>
 <translation id="8845001906332463065">मदत मिळवा</translation>
 <translation id="8881098542468797602">चाचणी यशस्वी झाली</translation>

@@ -2154,7 +2154,6 @@
 <translation id="3429271624041785769">ウェブ コンテンツの言語</translation>
 <translation id="3429275422858276529">後で見つけやすいようにこのページをブックマークできます</translation>
 <translation id="3432227430032737297">表示中のサイトをすべて削除</translation>
-<translation id="3432757130254800023">映像と音声をローカル ネットワーク経由でディスプレイに送信する</translation>
 <translation id="3432762828853624962">共有ワーカー</translation>
 <translation id="3433621910545056227">デバイス インストール時の属性のロックを確立できませんでした。</translation>
 <translation id="3434272557872943250">お子様の [その他のウェブとアプリのアクティビティ] の設定がオンになっている場合、このデータはお子様の Google アカウントに保存されます。これらの設定の詳細と変更方法については、families.google.com をご覧ください。</translation>
@@ -6246,7 +6245,6 @@
 <translation id="8147900440966275470"><ph name="NUM" /> 個のタブが見つかりました</translation>
 <translation id="8148760431881541277">ログインの制限</translation>
 <translation id="8150259863378108853">Lacros は試験運用版のブラウザです。問題が発生した場合は、[ヘルプ] &gt; [問題の報告...] からご報告ください。</translation>
-<translation id="8151579390896831136">プロファイルの名前などをカスタマイズします</translation>
 <translation id="8151638057146502721">設定</translation>
 <translation id="8154790740888707867">ファイルがありません</translation>
 <translation id="815491593104042026">セキュリティで保護されていない URL（<ph name="BLOCKED_URL" />）を使用するよう設定されているため、認証に失敗しました。管理者にお問い合わせください。</translation>
@@ -6437,7 +6435,6 @@
 <translation id="8378714024927312812">組織によって管理されています</translation>
 <translation id="8379878387931047019">このデバイスでは、このウェブサイトからリクエストされているセキュリティ キーのタイプはサポートされていません。</translation>
 <translation id="8379991678458444070">このタブをブックマークに追加すると、すばやくこのタブに戻ることができます</translation>
-<translation id="8380266723152870797">ウィンドウ名</translation>
 <translation id="8382913212082956454">メール アドレスをコピー(&amp;E)</translation>
 <translation id="8386091599636877289">ポリシーが見つかりません。</translation>
 <translation id="8386903983509584791">スキャンが完了しました</translation>
@@ -6862,7 +6859,6 @@
 <translation id="8859402192569844210">利用規約を読み込むことができませんでした。</translation>
 <translation id="8859662783913000679">保護者のアカウント</translation>
 <translation id="8862003515646449717">高速なブラウザをぜひご利用ください</translation>
-<translation id="8863140399813345099">デバイスの公開設定では、画面のロックが解除されているときに、あなたとファイルを共有できる相手を管理します</translation>
 <translation id="8863753581171631212">新しい <ph name="APP" /> でリンクを開く</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> を <ph name="APP_NAME" /> に共有しています</translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> はこのデバイスから削除されました</translation>
@@ -6916,7 +6912,6 @@
 <translation id="8912810933860534797">自動スキャンを有効にする</translation>
 <translation id="8915370057835397490">候補を読み込んでいます</translation>
 <translation id="8916476537757519021">シークレット サブフレーム: <ph name="SUBFRAME_SITE" /></translation>
-<translation id="8916749157829986308">ウィンドウ名の設定</translation>
 <translation id="8918637186205009138"><ph name="GIVEN_NAME" /> さんの <ph name="DEVICE_TYPE" /></translation>
 <translation id="8923880975836399332">暗い青緑</translation>
 <translation id="8925458182817574960">設定(&amp;S)</translation>

@@ -1407,7 +1407,7 @@ Se questo criterio non viene impostato, la Schermata sulla privacy verrà inizia
 
       Per informazioni dettagliate sui pattern URL validi, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.</translation>
 <translation id="2976429807269247880">Impostazioni del comportamento per i cookie <ph name="ATTRIBUTE_SAMESITE_NAME" /> precedenti</translation>
-<translation id="2981998788751314539">Consenti di proseguire dalla pagina di avviso SSL in pagine specifiche</translation>
+<translation id="2981998788751314539">Consenti di proseguire dalla pagina di avviso SSL su pagine specifiche</translation>
 <translation id="2985927503455169394">Usa la modalità predefinita dell'esperienza di onboarding dell'assistente</translation>
 <translation id="2987155890997901449">Attiva ARC</translation>
 <translation id="2987227569419001736">Controlla l'utilizzo dell'API Web Bluetooth</translation>
@@ -4171,7 +4171,7 @@ Se il criterio viene configurato, gli utenti non possono apportare modifiche. Gl
 <translation id="686079137349561371">Microsoft Windows 7 o versioni successive</translation>
 <translation id="6877233375929006871">Se il criterio viene configurato, puoi impostare un elenco di pattern URL che specificano i siti in cui gli utenti possono fare clic nelle pagine di avviso mostrate in <ph name="PRODUCT_NAME" /> quando visitano siti che presentano errori SSL. Gli utenti non potranno fare clic nelle pagine di avviso SSL su siti non presenti in questo elenco.
 
-      Se il criterio <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> è impostato su Disattivato, questo criterio non ha effetto.
+      Se <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> è impostato su Disattivato, questo criterio non ha effetto.
 
       Se il criterio non viene configurato, <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> si applica per tutti i siti.
 

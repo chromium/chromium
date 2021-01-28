@@ -2156,7 +2156,6 @@
 <translation id="3429271624041785769">Վեբ բովանդակության լեզուներ</translation>
 <translation id="3429275422858276529">Էջանշեք այս կայքէջը՝ ավելի ուշ այն հեշտությամբ գտնելու համար</translation>
 <translation id="3432227430032737297">Հեռացնել բոլոր ցուցադրվածները</translation>
-<translation id="3432757130254800023">Ուղարկել աուդիո և վիդեո ֆայլերը տեղային ցանցի սարքերին</translation>
 <translation id="3432762828853624962">Shared Workers</translation>
 <translation id="3433621910545056227">Համակարգին չհաջողվեց կողպել սարքի հատկությունները՝ տեղադրման ժամանակ:</translation>
 <translation id="3434272557872943250">Եթե Վեբ որոնման և հավելվածների լրացուցիչ պատմությունը միացված է, այս տվյալները կպահվեն երեխայի Google հաշվում։ Այս կարգավորումների մասին ավելին իմանալու և դրանք ըստ ձեր հայեցողության փոփոխելու համար անցեք families.google.com էջ։</translation>
@@ -6248,7 +6247,6 @@
 <translation id="8147900440966275470">Գտնվել է <ph name="NUM" /> ներդիր</translation>
 <translation id="8148760431881541277">Մուտքի սահմանափակում</translation>
 <translation id="8150259863378108853">Lacros-ը փորձնական դիտարկիչ է։ Խնդիրների մասին կարող եք հաղորդել՝ սեղմելով Օգնություն &gt; «Հաղորդել խնդրի մասին»։</translation>
-<translation id="8151579390896831136">Անհատականացրեք պրոֆիլը, այդ թվում՝ դրա անունը</translation>
 <translation id="8151638057146502721">Կազմաձևել</translation>
 <translation id="8154790740888707867">Ֆայլ չի գտնվել</translation>
 <translation id="815491593104042026">Իսկորոշումը չհաջողվեց, քանի որ նրա կազմաձևումը թույլ է տալիս օգտագործել ոչ ապահով URL (<ph name="BLOCKED_URL" />): Կապվեք ձեր ադմինիստրատորի հետ:</translation>
@@ -6439,7 +6437,6 @@
 <translation id="8378714024927312812">Կառավարվում է ձեր կազմակերպության կողմից</translation>
 <translation id="8379878387931047019">Սարքը չի աջակցում այս կայքի պահանջած անվտանգության բանալու տեսակը</translation>
 <translation id="8379991678458444070">Էջանշեք այս ներդիրը՝ ավելի ուշ այցելելու համար</translation>
-<translation id="8380266723152870797">Պատուհանի անունը</translation>
 <translation id="8382913212082956454">Պատճենել &amp;հասցեն</translation>
 <translation id="8386091599636877289">Քաղաքականությունը չգտնվեց։</translation>
 <translation id="8386903983509584791">Որոնումն ավարտվեց</translation>
@@ -6865,7 +6862,6 @@
 <translation id="8859402192569844210">Չհաջողվեց բեռնել օգտագործման պայմանները</translation>
 <translation id="8859662783913000679">Ծնողի հաշիվը</translation>
 <translation id="8862003515646449717">Ընտրեք արագ դիտարկիչ</translation>
-<translation id="8863140399813345099">Տեսանելիության կարգավորումների միջոցով դուք կարող եք նշել, թե ում եք թույլատրում կիսվել ձեզ հետ տվյալներով, երբ ձեր սարքն ապակողպված է։</translation>
 <translation id="8863753581171631212">Բացել հղումը <ph name="APP" />-ի նոր պատուհանում</translation>
 <translation id="8864055848767439877"><ph name="TAB_NAME" /> ներդիրն ուղարկվում է <ph name="APP_NAME" /></translation>
 <translation id="8864458770072227512"><ph name="EMAIL" /> հասցեն հեռացվեց այս սարքից</translation>
@@ -6919,7 +6915,6 @@
 <translation id="8912810933860534797">Միացնել ավտոմատ որոնումը</translation>
 <translation id="8915370057835397490">Առաջարկը բեռնվում է</translation>
 <translation id="8916476537757519021">Ինկոգնիտո ռեժիմի ենթաշրջանակ՝ <ph name="SUBFRAME_SITE" /></translation>
-<translation id="8916749157829986308">Նշեք պատուհանի անվանումը</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> (<ph name="GIVEN_NAME" />)</translation>
 <translation id="8923880975836399332">Մուգ փիրուզագույն</translation>
 <translation id="8925458182817574960">&amp;Կարգավորումներ</translation>

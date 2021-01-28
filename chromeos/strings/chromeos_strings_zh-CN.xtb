@@ -21,6 +21,7 @@
 <translation id="1327977588028644528">网关</translation>
 <translation id="1330426557709298164">JPG</translation>
 <translation id="1337912285145772892">适合扫描区域</translation>
+<translation id="1387854245479784695">此指标是所有核心的汇总数据</translation>
 <translation id="1397738625398125236">可以对网关执行 ping 操作</translation>
 <translation id="1398634363027580500">HTTPS 延迟非常高</translation>
 <translation id="1413240736185167732">失败 - 过滤器出问题了</translation>
@@ -104,6 +105,7 @@
 <translation id="3527036260304016759">失败 - 不明错误</translation>
 <translation id="357889014807611375">按流量计费的 Wi-Fi</translation>
 <translation id="360565022852130722">Wi-Fi 网络采用了防护能力较弱的 WEP 802.1x 协议</translation>
+<translation id="3712633734921637892">目前 CPU 速度受限，这是为了节省电池电量或降低温度</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 条评价）</translation>
 <translation id="3748026146096797577">未建立连接</translation>
 <translation id="3749289110408117711">文件名</translation>
@@ -230,6 +232,7 @@
 <translation id="6146993107019042706">要完成更改，请输入您的新密码</translation>
 <translation id="6147514244879357420">PNG</translation>
 <translation id="6165508094623778733">了解详情</translation>
+<translation id="6189418609903030344">电池容量会随使用时长的增加而减少</translation>
 <translation id="6191293864534840972">域名服务器格式不正确</translation>
 <translation id="6232017090690406397">电池</translation>
 <translation id="6325525973963619867">失败</translation>
@@ -327,6 +330,7 @@
 <translation id="877985182522063539">A4</translation>
 <translation id="8798099450830957504">默认</translation>
 <translation id="8798441408945964110">提供商名称</translation>
+<translation id="880791622116642296">这是电池已经历的完整充电循环次数</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8845001906332463065">获取帮助</translation>
 <translation id="8881098542468797602">测试成功</translation>

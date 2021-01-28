@@ -105,7 +105,7 @@
 <translation id="3527036260304016759">Bajarilmadi - Notanish xato</translation>
 <translation id="357889014807611375">Cheklangan trafikli Wi-Fi</translation>
 <translation id="360565022852130722">WiFi tarmoq zaif WEP 802.1x protokoli bilan himoyalangan</translation>
-<translation id="3712633734921637892">Batareyani tejash yoki haroratni tushurish maqsadida protsessor tezligi cheklangan</translation>
+<translation id="3712633734921637892">Batareyani tejash yoki haroratni tushurish maqsadida CPU (markaziy protsessor) tezligi cheklangan</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ta sharh)</translation>
 <translation id="3748026146096797577">Ulanilmagan</translation>
 <translation id="3749289110408117711">Fayl nomi</translation>
@@ -263,6 +263,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="6977381486153291903">Mikrodastur versiyasi</translation>
 <translation id="7028979494427204405">Bu qurilma va uning foydalanuvchilari harakatlari, ochilgan sahifalar, parollar va emaillar <ph name="MANAGER" /> domenida boshqariladi.</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7059230779847288458">Quvvat olmoqda (<ph name="TIME_VALUE" /> qoldi)</translation>
 <translation id="708426984172631313">TOʻXTATILDI</translation>
 <translation id="7143207342074048698">Ulanmoqda</translation>
 <translation id="714876143603641390">LAN aloqasi</translation>
@@ -281,6 +282,7 @@ Mikrofon ustiga bosing va savolni ayting.</translation>
 <translation id="7502658306369382406">IPv6 manzil</translation>
 <translation id="7561454561030345039">Bu sozlama administrator tomonidan boshqariladi</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> qoldi</translation>
 <translation id="7620771111601174153">Yordam markazi orqali batafsil</translation>
 <translation id="7648838807254605802">HTTPS kechikishi yuqori</translation>
 <translation id="7658239707568436148">Bekor qilish</translation>

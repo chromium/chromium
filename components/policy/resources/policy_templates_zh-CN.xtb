@@ -1326,6 +1326,7 @@
 <translation id="2886969306951284125">如果 Android 应用已开启，并且此政策设为 True，已注册的设备将会报告 Android 状态信息。
 
       如果此政策已停用或未设置，已注册的设备将不会报告 Android 状态信息</translation>
+<translation id="288923520817177650">允许创建 <ph name="WEBXR_API_NAME_SHORT" /> 的<ph name="WEBXR_AR_SESSION_ENUM_VALUE" />会话</translation>
 <translation id="2890645751406497668">自动授权这些网站通过给定的供应商 ID 和产品 ID 连接到 USB 设备。</translation>
 <translation id="2893546967669465276">将系统日志发送到管理服务器</translation>
 <translation id="2899002520262095963">Android 应用可以使用通过此政策设置的网络配置和 CA 证书，但无法访问某些配置选项。</translation>
@@ -1388,6 +1389,7 @@
 
       要详细了解有效网址格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。</translation>
 <translation id="2976429807269247880">旧版 <ph name="ATTRIBUTE_SAMESITE_NAME" /> Cookie 行为设置</translation>
+<translation id="2981998788751314539">允许从特定网页上的 SSL 警告页面继续操作</translation>
 <translation id="2985927503455169394">使用 Google 助理新手入门体验的默认模式</translation>
 <translation id="2987155890997901449">启用 ARC</translation>
 <translation id="2987227569419001736">控制对 Web Bluetooth API 的使用</translation>
@@ -2020,6 +2022,13 @@
 <translation id="377044054160169374">针对误导性体验的强制干预政策</translation>
 <translation id="3778689139323007309">对于已成功通过验证且已由安装在本地的 CA 证书签名的服务器证书，一律执行撤消检查</translation>
 <translation id="3780152581321609624">在 Kerberos SPN 中加入非标准端口</translation>
+<translation id="378495749480642482">此政策旨在配置是否允许用户所导航到的网站使用 <ph name="WEBXR_API_NAME" /> 创建沉浸式增强现实会话。
+
+      如果此政策未设置或已启用，<ph name="WEBXR_API_NAME" /> 将会在会话创建过程中接受<ph name="WEBXR_AR_SESSION_ENUM_VALUE" />，从而允许用户进入增强现实体验。
+
+      如果此政策已停用，<ph name="WEBXR_API_NAME" /> 将会拒绝针对<ph name="WEBXR_AR_SESSION_ENUM_VALUE" />模式会话的创建请求，但已在进行的<ph name="WEBXR_AR_SESSION_ENUM_VALUE" />会话（若有）不会被终止。
+
+      如需详细了解<ph name="WEBXR_AR_SESSION_ENUM_VALUE" />会话，请查看 <ph name="WEBXR_AR_MODULE_API_NAME" />规范。</translation>
 <translation id="3788662722837364290">设备闲置时的电源管理设置</translation>
 <translation id="3790085888761753785">如果此设置处于启用状态，用户将能够使用 Smart Lock 登录他们的帐号。一般情况下 Smart Lock 只允许用户解锁屏幕，相较之下，这是限制性更低的设置。
 
@@ -4127,6 +4136,13 @@
       指定要在 <ph name="PRODUCT_NAME" /> 启动时向其应用的实验性设置。指定的实验性设置仅会应用于登录屏幕。通过此政策设定的实验性设置不会反映在用户会话中。</translation>
 <translation id="685769593149966548">强制启用 YouTube“严格”受限模式</translation>
 <translation id="686079137349561371">Microsoft Windows 7 或更高版本</translation>
+<translation id="6877233375929006871">通过设置此政策，您可以创建一个网址格式列表，从而指定在哪些含 SSL 错误的网站上用户可点击 <ph name="PRODUCT_NAME" /> 显示的警告页面以继续浏览相应网站。如果用户访问的网站不在此列表中，他们将无法点击该网站上的 SSL 警告页面继续浏览。
+
+      如果 <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> 已停用，此政策不会起到任何作用。
+
+      如果您未设置此政策，系统会将 <ph name="SSL_ERROR_OVERRIDE_ALLOWED_POLICY_NAME" /> 应用于所有网站。
+
+      如需详细了解有效的<ph name="URL_LABEL" />格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="68818134518270542">通过设置此政策，您可以指定用户能在 <ph name="PRODUCT_OS_NAME" />锁定屏幕中将哪些应用作为笔记应用开启。
 
       如果首选的应用已添加到锁定屏幕中，屏幕上将会显示用于启动首选笔记应用的界面元素。启动后，该应用便可在锁定屏幕之上创建窗口，并在此情境中创建笔记。当主要用户会话解锁时，该应用便可将所创建的笔记导入此会话中。目前，锁定屏幕上仅支持 <ph name="PRODUCT_NAME" /> 笔记应用。
@@ -4194,6 +4210,7 @@
       如果您启用了此政策，逗号分隔列表中指定的每个来源都将在自己的进程中运行。以子网域形式指定的来源也会被隔离；例如，指定 https://example.com/ 也会导致 https://foo.example.com/ 被隔离（作为 https://example.com/ 网站的一部分）。
       如果您未配置或停用了此政策，系统将为登录屏幕使用平台默认的网站隔离设置。
       </translation>
+<translation id="6947587367703216074">禁止创建 <ph name="WEBXR_API_NAME_SHORT" /> 的<ph name="WEBXR_AR_SESSION_ENUM_VALUE" />会话</translation>
 <translation id="6949867264289339206">通过设置此政策，您可为绑定到设备的企业打印机提供配置。其格式与 <ph name="PRINTERS_POLICY_NAME" /> 字典一样，不过每台打印机都还对应一个额外的必填字段“id”或“guid”，以用于将相应打印机加入许可名单/拒绝名单。该文件不得超过 5MB，且必须采用 JSON 格式。一个包含大约 21000 台打印机的文件在编码后的大小是 5MB。相应的加密哈希值可帮助您验证下载内容的完整性。系统会下载、缓存该文件。当相应网址或哈希值发生变化时，系统会重新下载该文件。<ph name="PRODUCT_OS_NAME" />会下载该文件以获取打印机配置，并会根据 <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" />、<ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" /> 和 <ph name="DEVICE_PRINTERS_BLOCKLIST_POLICY_NAME" /> 向用户提供可用的打印机。
 
       此政策：
