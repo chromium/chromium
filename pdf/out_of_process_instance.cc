@@ -67,12 +67,14 @@
 #include "ppapi/cpp/var_array.h"
 #include "ppapi/cpp/var_array_buffer.h"
 #include "ppapi/cpp/var_dictionary.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/vector2d.h"
+#include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
 
 namespace chrome_pdf {
@@ -835,18 +837,20 @@ void OutOfProcessInstance::DidChangeView(const pp::View& view) {
 
     paint_manager().SetSize(view_device_size, device_scale());
 
-    const gfx::Size old_image_data_size = SizeFromPPSize(image_data_.size());
+    const gfx::Size old_image_data_size =
+        gfx::SkISizeToSize(image_data_.dimensions());
     gfx::Size new_image_data_size =
         PaintManager::GetNewContextSize(old_image_data_size, plugin_size());
     if (new_image_data_size != old_image_data_size) {
-      image_data_ = pp::ImageData(this, PP_IMAGEDATAFORMAT_BGRA_PREMUL,
-                                  PPSizeFromSize(new_image_data_size), false);
-      skia_image_data_ =
-          SkBitmapFromPPImageData(std::make_unique<pp::ImageData>(image_data_));
+      pepper_image_data_ =
+          pp::ImageData(this, PP_IMAGEDATAFORMAT_BGRA_PREMUL,
+                        PPSizeFromSize(new_image_data_size), false);
+      image_data_ = SkBitmapFromPPImageData(
+          std::make_unique<pp::ImageData>(pepper_image_data_));
       set_first_paint(true);
     }
 
-    if (image_data_.is_null()) {
+    if (image_data_.drawsNothing()) {
       DCHECK(plugin_size().IsEmpty());
       return;
     }
@@ -1172,15 +1176,16 @@ void OutOfProcessInstance::DidOpenPreview(std::unique_ptr<UrlLoader> loader,
 void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
                                    std::vector<PaintReadyRect>* ready,
                                    std::vector<gfx::Rect>* pending) {
-  if (image_data_.is_null()) {
+  if (image_data_.drawsNothing()) {
     DCHECK(plugin_size().IsEmpty());
     return;
   }
   if (first_paint()) {
     set_first_paint(false);
-    gfx::Rect rect(SizeFromPPSize(image_data_.size()));
-    FillRect(rect, GetBackgroundColor());
-    ready->push_back(PaintReadyRect(rect, image_data_, /*flush_now=*/true));
+    image_data_.eraseColor(GetBackgroundColor());
+    gfx::Rect rect(gfx::SkISizeToSize(image_data_.dimensions()));
+    ready->push_back(
+        PaintReadyRect(rect, pepper_image_data_, /*flush_now=*/true));
   }
 
   if (!received_viewport_message_ || !needs_reraster_)
@@ -1201,10 +1206,10 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
 
       std::vector<gfx::Rect> pdf_ready;
       std::vector<gfx::Rect> pdf_pending;
-      engine()->Paint(pdf_rect, skia_image_data_, pdf_ready, pdf_pending);
+      engine()->Paint(pdf_rect, image_data_, pdf_ready, pdf_pending);
       for (auto& ready_rect : pdf_ready) {
         ready_rect.Offset(available_area().OffsetFromOrigin());
-        ready->push_back(PaintReadyRect(ready_rect, image_data_));
+        ready->push_back(PaintReadyRect(ready_rect, pepper_image_data_));
       }
       for (auto& pending_rect : pdf_pending) {
         pending_rect.Offset(available_area().OffsetFromOrigin());
@@ -1219,16 +1224,17 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
     if (rect.y() < first_page_ypos) {
       gfx::Rect region = gfx::IntersectRects(
           rect, gfx::Rect(gfx::Size(plugin_size().width(), first_page_ypos)));
-      ready->push_back(PaintReadyRect(region, image_data_));
-      FillRect(region, GetBackgroundColor());
+      ready->push_back(PaintReadyRect(region, pepper_image_data_));
+      image_data_.erase(GetBackgroundColor(), gfx::RectToSkIRect(region));
     }
 
     for (const auto& background_part : background_parts()) {
       gfx::Rect intersection =
           gfx::IntersectRects(background_part.location, rect);
       if (!intersection.IsEmpty()) {
-        FillRect(intersection, background_part.color);
-        ready->push_back(PaintReadyRect(intersection, image_data_));
+        image_data_.erase(background_part.color,
+                          gfx::RectToSkIRect(intersection));
+        ready->push_back(PaintReadyRect(intersection, pepper_image_data_));
       }
     }
   }
@@ -1266,20 +1272,6 @@ pp::VarArray OutOfProcessInstance::GetDocumentAttachments() {
   return attachments;
 }
 
-void OutOfProcessInstance::FillRect(const gfx::Rect& rect, uint32_t color) {
-  DCHECK(!image_data_.is_null() || rect.IsEmpty());
-  uint32_t* buffer_start = static_cast<uint32_t*>(image_data_.data());
-  int stride = image_data_.stride();
-  uint32_t* ptr = buffer_start + rect.y() * stride / 4 + rect.x();
-  int height = rect.height();
-  int width = rect.width();
-  for (int y = 0; y < height; ++y) {
-    for (int x = 0; x < width; ++x)
-      *(ptr + x) = color;
-    ptr += stride / 4;
-  }
-}
-
 void OutOfProcessInstance::ProposeDocumentLayout(const DocumentLayout& layout) {
   pp::VarDictionary dimensions;
   dimensions.Set(kType, kJSDocumentDimensionsType);
@@ -1306,7 +1298,7 @@ void OutOfProcessInstance::ProposeDocumentLayout(const DocumentLayout& layout) {
 }
 
 void OutOfProcessInstance::DidScroll(const gfx::Vector2d& offset) {
-  if (!image_data_.is_null())
+  if (!image_data_.drawsNothing())
     paint_manager().ScrollRect(available_area(), offset);
 }
 
