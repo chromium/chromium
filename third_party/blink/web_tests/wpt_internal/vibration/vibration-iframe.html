@@ -1,13 +1,9 @@
 <!DOCTYPE html>
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/services/device/public/mojom/vibration_manager.mojom.js"></script>
-<script src="resources/vibration-helpers.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
 <body>
-<script>
-
-'use strict';
+<script type="module">
+import {vibration_test} from './resources/vibration-helpers.js';
 
 if (!window.testRunner)
   debug('This test cannot be run without the TestRunner');

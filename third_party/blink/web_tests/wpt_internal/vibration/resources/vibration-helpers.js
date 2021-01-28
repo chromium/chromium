@@ -1,4 +1,4 @@
-'use strict';
+import {VibrationManager, VibrationManagerReceiver} from '/gen/services/device/public/mojom/vibration_manager.mojom.m.js';
 
 // A helper for forwarding MojoHandle instances from one frame to another.
 class CrossFrameHandleProxy {
@@ -19,16 +19,14 @@ class CrossFrameHandleProxy {
 
 class MockVibrationManager {
   constructor() {
-    this.bindingSet_ =
-        new mojo.BindingSet(device.mojom.VibrationManager);
-
+    this.receiver_ = new VibrationManagerReceiver(this);
     this.interceptor_ =
-        new MojoInterfaceInterceptor(device.mojom.VibrationManager.name);
+        new MojoInterfaceInterceptor(VibrationManager.$interfaceName);
     this.interceptor_.oninterfacerequest =
-        e => this.bindingSet_.addBinding(this, e.handle);
+        e => this.receiver_.$.bindHandle(e.handle);
     this.interceptor_.start();
     this.crossFrameHandleProxy_ = new CrossFrameHandleProxy(
-        handle => this.bindingSet_.addBinding(this, handle));
+        handle => this.receiver_.$.bindHandle(handle));
 
     this.vibrate_milliseconds_ = -1;
     this.cancelled_ = false;
@@ -37,14 +35,14 @@ class MockVibrationManager {
   attachToWindow(otherWindow) {
     otherWindow.vibrationManagerInterceptor =
         new otherWindow.MojoInterfaceInterceptor(
-            device.mojom.VibrationManager.name);
+            VibrationManager.$interfaceName);
     otherWindow.vibrationManagerInterceptor.oninterfacerequest =
         e => this.crossFrameHandleProxy_.forwardHandle(e.handle);
     otherWindow.vibrationManagerInterceptor.start();
   }
 
   vibrate(milliseconds) {
-    this.vibrate_milliseconds_ = milliseconds;
+    this.vibrate_milliseconds_ = Number(milliseconds);
     window.postMessage('Vibrate', '*');
     return Promise.resolve();
   }
@@ -71,7 +69,7 @@ class MockVibrationManager {
 
 let mockVibrationManager = new MockVibrationManager();
 
-function vibration_test(func, name, properties) {
+export function vibration_test(func, name, properties) {
   promise_test(async function() {
     try {
       await Promise.resolve(func({
