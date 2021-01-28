@@ -91,8 +91,6 @@ class NewTabPageHandler : public new_tab_page::mojom::PageHandler,
       GetBackgroundCollectionsCallback callback) override;
   void GetBackgroundImages(const std::string& collection_id,
                            GetBackgroundImagesCallback callback) override;
-  void FocusOmnibox() override;
-  void PasteIntoOmnibox(const std::string& text) override;
   void GetDoodle(GetDoodleCallback callback) override;
   void ChooseLocalCustomBackground(
       ChooseLocalCustomBackgroundCallback callback) override;

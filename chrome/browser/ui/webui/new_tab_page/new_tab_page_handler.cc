@@ -30,7 +30,6 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_provider_logos/logo_service_factory.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
-#include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/webui/realbox/realbox.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/search/instant_types.h"
@@ -520,14 +519,6 @@ void NewTabPageHandler::GetBackgroundImages(
   background_images_request_start_time_ = base::TimeTicks::Now();
   background_images_callback_ = std::move(callback);
   ntp_background_service_->FetchCollectionImageInfo(collection_id);
-}
-
-void NewTabPageHandler::FocusOmnibox() {
-  search::FocusOmnibox(true, web_contents_);
-}
-
-void NewTabPageHandler::PasteIntoOmnibox(const std::string& text) {
-  search::PasteIntoOmnibox(base::UTF8ToUTF16(text), web_contents_);
 }
 
 void NewTabPageHandler::GetDoodle(GetDoodleCallback callback) {

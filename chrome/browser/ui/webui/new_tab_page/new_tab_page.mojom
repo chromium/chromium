@@ -306,10 +306,6 @@ interface PageHandler {
   GetBackgroundCollections() => (array<BackgroundCollection> collections);
   // Returns the images of a collection identified by |collection_id|.
   GetBackgroundImages(string collection_id) => (array<CollectionImage> images);
-  // Invisibly focuses the omnibox.
-  FocusOmnibox();
-  // Pastes |text| into the omnibox.
-  PasteIntoOmnibox(string text);
   // Gets current doodle if there is one.
   GetDoodle() => (Doodle? doodle);
   // Choose custom background from local file system.
