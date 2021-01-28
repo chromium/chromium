@@ -139,7 +139,7 @@
     },
     {
       name: "AddEventListenerAbortSignal",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "AddressSpace",
