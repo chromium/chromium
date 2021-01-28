@@ -452,4 +452,32 @@ TEST_P(PrePaintTreeWalkTest, InsideBlockingWheelEventHandlerUpdate) {
   EXPECT_TRUE(descendant.InsideBlockingWheelEventHandler());
 }
 
+TEST_P(PrePaintTreeWalkTest, CullRectUpdateOnSVGTransformChange) {
+  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled())
+    return;
+
+  SetBodyInnerHTML(R"HTML(
+    <svg style="width: 200px; height: 200px">
+      <rect id="rect"/>
+      <g id="g"><foreignObject id="foreign"/></g>
+    </svg>
+  )HTML");
+
+  auto& foreign = *GetLayoutObjectByElementId("foreign");
+  EXPECT_EQ(IntRect(0, 0, 200, 200),
+            foreign.FirstFragment().GetCullRect().Rect());
+
+  GetDocument().getElementById("rect")->setAttribute(
+      html_names::kStyleAttr, "transform: translateX(20px)");
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_EQ(IntRect(0, 0, 200, 200),
+            foreign.FirstFragment().GetCullRect().Rect());
+
+  GetDocument().getElementById("g")->setAttribute(
+      html_names::kStyleAttr, "transform: translateY(20px)");
+  UpdateAllLifecyclePhasesExceptPaint();
+  EXPECT_EQ(IntRect(0, -20, 200, 200),
+            foreign.FirstFragment().GetCullRect().Rect());
+}
+
 }  // namespace blink

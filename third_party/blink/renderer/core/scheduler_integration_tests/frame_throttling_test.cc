@@ -1968,4 +1968,67 @@ TEST_P(FrameThrottlingTest, ForceUnthrottled) {
   EXPECT_FALSE(inner_frame_view->GetLayoutView()->NeedsPaintPropertyUpdate());
 }
 
+TEST_P(FrameThrottlingTest, CullRectUpdate) {
+  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled())
+    return;
+
+  SimRequest main_resource("https://example.com/", "text/html");
+  SimRequest frame_resource("https://example.com/iframe.html", "text/html");
+
+  LoadURL("https://example.com/");
+  // The frame is initially throttled.
+  main_resource.Complete(R"HTML(
+    <style>#clip { width: 100px; height: 100px; overflow: hidden }</style>
+    <div id="container" style="transform: translateY(480px)">
+      <div id="clip">
+        <iframe id="frame" sandbox src="iframe.html"
+                style="width: 400px; height: 400px; border: none"></iframe>
+      </div>
+    </div>
+  )HTML");
+  frame_resource.Complete("");
+  CompositeFrame();
+
+  auto* frame_element =
+      To<HTMLIFrameElement>(GetDocument().getElementById("frame"));
+  auto* frame_object = frame_element->GetLayoutBox();
+  auto* frame_document = frame_element->contentDocument();
+  auto* child_layout_view = frame_document->GetLayoutView();
+
+  EXPECT_TRUE(frame_document->View()->ShouldThrottleRenderingForTest());
+  EXPECT_EQ(IntRect(0, 0, 100, 100),
+            frame_object->FirstFragment().GetCullRect().Rect());
+  EXPECT_FALSE(child_layout_view->Layer()->NeedsCullRectUpdate());
+
+  // Change clip. |frame_element| should update its cull rect.
+  // |child_layout_view|'s cull rect update is pending.
+  GetDocument().getElementById("clip")->setAttribute(kStyleAttr,
+                                                     "width: 630px");
+  CompositeFrame();
+  EXPECT_EQ(IntRect(0, 0, 630, 100),
+            frame_object->FirstFragment().GetCullRect().Rect());
+  EXPECT_TRUE(child_layout_view->Layer()->NeedsCullRectUpdate());
+
+  // Move the frame into the visible viewport.
+  GetDocument()
+      .getElementById("container")
+      ->setAttribute(kStyleAttr, "transform: translate(0)");
+  // Update throttling, which will schedule visual update on unthrottling of the
+  // frame.
+  CompositeFrame();
+  EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
+  EXPECT_EQ(IntRect(0, 0, 630, 100),
+            frame_object->FirstFragment().GetCullRect().Rect());
+  EXPECT_TRUE(child_layout_view->Layer()->NeedsCullRectUpdate());
+
+  // The frame is unthrottled.
+  CompositeFrame();
+  EXPECT_FALSE(frame_document->View()->ShouldThrottleRenderingForTest());
+  EXPECT_EQ(IntRect(0, 0, 630, 100),
+            frame_object->FirstFragment().GetCullRect().Rect());
+  EXPECT_EQ(IntRect(-4000, -4000, 8630, 8100),
+            child_layout_view->FirstFragment().GetCullRect().Rect());
+  EXPECT_FALSE(child_layout_view->Layer()->NeedsCullRectUpdate());
+}
+
 }  // namespace blink

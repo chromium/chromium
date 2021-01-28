@@ -3417,4 +3417,54 @@ TEST_F(DisplayLockContextTest, PrintingUnlocksAutoLocks) {
   EXPECT_TRUE(nested->GetDisplayLockContext()->IsLocked());
 }
 
+TEST_F(DisplayLockContextTest, CullRectUpdate) {
+  ScopedCullRectUpdateForTest cull_rect_update(true);
+  ResizeAndFocus();
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+    #clip {
+      width: 100px;
+      height: 100px;
+      overflow: hidden;
+    }
+    #container {
+      width: 300px;
+      height: 300px;
+      contain: paint layout;
+    }
+    .locked {
+      content-visibility: hidden;
+    }
+    </style>
+    <div id="clip">
+      <div id="container"
+           style="width: 300px; height: 300px; contain: paint layout">
+        <div id="target" style="position: relative"></div>
+      </div>
+    </div>
+  )HTML");
+
+  // Check if the result is correct if we update the contents.
+  auto* container = GetDocument().getElementById("container");
+  auto* target = GetDocument().getElementById("target")->GetLayoutBox();
+  EXPECT_EQ(IntRect(0, 0, 100, 100),
+            target->FirstFragment().GetCullRect().Rect());
+
+  container->classList().Add("locked");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(IntRect(0, 0, 100, 100),
+            target->FirstFragment().GetCullRect().Rect());
+
+  GetDocument().getElementById("clip")->setAttribute(html_names::kStyleAttr,
+                                                     "width: 200px");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(IntRect(0, 0, 100, 100),
+            target->FirstFragment().GetCullRect().Rect());
+
+  container->classList().Remove("locked");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(IntRect(0, 0, 200, 100),
+            target->FirstFragment().GetCullRect().Rect());
+}
+
 }  // namespace blink

@@ -55,7 +55,6 @@ class CORE_EXPORT PrePaintTreeWalk {
           blocking_wheel_event_handler_changed(
               parent_context.blocking_wheel_event_handler_changed),
           clip_changed(parent_context.clip_changed),
-          needs_cull_rect_update(parent_context.needs_cull_rect_update),
           paint_invalidation_container(
               parent_context.paint_invalidation_container),
           paint_invalidation_container_for_stacked_contents(
@@ -98,12 +97,6 @@ class CORE_EXPORT PrePaintTreeWalk {
     // create tree_builder_context. Used only when CullRectUpdate is not
     // enabled.
     bool clip_changed = false;
-
-    // This is set to true once we see any paint property change on a
-    // non-PaintLayer LayoutObject. It's used to set affected child PaintLayers
-    // needing cull rect update, so it's propagated to descendant contexts
-    // we see a PaintLayer.
-    bool needs_cull_rect_update = false;
 
     const LayoutBoxModelObject* paint_invalidation_container = nullptr;
     const LayoutBoxModelObject*

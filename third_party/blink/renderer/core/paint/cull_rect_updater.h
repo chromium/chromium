@@ -35,7 +35,7 @@ class CORE_EXPORT CullRectUpdater {
   void UpdateInternal(const CullRect& input_cull_rect);
   void UpdateRecursively(PaintLayer&,
                          const PaintLayer& parent_painting_layer,
-                         bool force_update);
+                         bool force_update_self);
   // Returns true if the contents cull rect changed which requires forced update
   // for children.
   bool UpdateForSelf(PaintLayer&, const PaintLayer& parent_painting_layer);

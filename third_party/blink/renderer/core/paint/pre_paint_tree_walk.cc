@@ -677,11 +677,17 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
   }
 
   if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-    if (property_changed != PaintPropertyChangeType::kUnchanged)
-      context.needs_cull_rect_update = true;
-    if (context.needs_cull_rect_update && object.HasLayer()) {
-      To<LayoutBoxModelObject>(object).Layer()->SetNeedsCullRectUpdate();
-      context.needs_cull_rect_update = false;
+    if (property_changed != PaintPropertyChangeType::kUnchanged) {
+      if (object.HasLayer()) {
+        To<LayoutBoxModelObject>(object).Layer()->SetNeedsCullRectUpdate();
+      } else if (object.SlowFirstChild()) {
+        // This ensures cull rect update of the child PaintLayers affected by
+        // the paint property change on a non-PaintLayer. Though this may
+        // unnecessarily force update of unrelated children, the situation is
+        // rare and this is much easier.
+        context.paint_invalidator_context.painting_layer
+            ->SetForcesChildrenCullRectUpdate();
+      }
     }
   } else if (context.clip_changed && object.HasLayer()) {
     // When this or ancestor clip changed, the layer needs repaint because it

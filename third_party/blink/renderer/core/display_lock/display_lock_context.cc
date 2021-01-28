@@ -579,6 +579,7 @@ void DisplayLockContext::Unlock() {
   MarkForLayoutIfNeeded();
   MarkAncestorsForPrePaintIfNeeded();
   MarkNeedsRepaintAndPaintArtifactCompositorUpdate();
+  MarkNeedsCullRectUpdate();
 }
 
 void DisplayLockContext::AddToWhitespaceReattachSet(Element& element) {
@@ -733,6 +734,18 @@ bool DisplayLockContext::MarkNeedsRepaintAndPaintArtifactCompositorUpdate() {
   if (auto* layout_object = element_->GetLayoutObject()) {
     layout_object->PaintingLayer()->SetNeedsRepaint();
     document_->View()->SetPaintArtifactCompositorNeedsUpdate();
+    return true;
+  }
+  return false;
+}
+
+bool DisplayLockContext::MarkNeedsCullRectUpdate() {
+  DCHECK(ConnectedToView());
+  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled())
+    return false;
+
+  if (auto* layout_object = element_->GetLayoutObject()) {
+    layout_object->PaintingLayer()->SetForcesChildrenCullRectUpdate();
     return true;
   }
   return false;

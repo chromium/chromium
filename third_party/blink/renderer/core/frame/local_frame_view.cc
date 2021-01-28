@@ -2806,6 +2806,12 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
                 layout_view->DescendantBlockingWheelEventHandlerChanged()) {
               owner->MarkDescendantBlockingWheelEventHandlerChanged();
             }
+            if (RuntimeEnabledFeatures::CullRectUpdateEnabled() &&
+                (layout_view->Layer()->NeedsCullRectUpdate() ||
+                 layout_view->Layer()->DescendantNeedsCullRectUpdate())) {
+              layout_view->Layer()
+                  ->MarkCompositingContainerChainForNeedsCullRectUpdate();
+            }
           }
         }
       },

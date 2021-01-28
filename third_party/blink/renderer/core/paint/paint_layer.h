@@ -1026,14 +1026,21 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
     DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
     return needs_cull_rect_update_;
   }
+  bool ForcesChildrenCullRectUpdate() const {
+    DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
+    return forces_children_cull_rect_update_;
+  }
   bool DescendantNeedsCullRectUpdate() const {
     DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
     return descendant_needs_cull_rect_update_;
   }
   void SetNeedsCullRectUpdate();
+  void SetForcesChildrenCullRectUpdate();
+  void MarkCompositingContainerChainForNeedsCullRectUpdate();
   void ClearNeedsCullRectUpdate() {
     DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
     needs_cull_rect_update_ = false;
+    forces_children_cull_rect_update_ = false;
     descendant_needs_cull_rect_update_ = false;
   }
 
@@ -1379,11 +1386,12 @@ class CORE_EXPORT PaintLayer : public DisplayItemClient {
 
   unsigned self_needs_repaint_ : 1;
   unsigned descendant_needs_repaint_ : 1;
-  // True if all layers in paint order in the whole subtree need to update
-  // their cull rects.
+
   unsigned needs_cull_rect_update_ : 1;
-  // True if any descendant subtree needs cull rect update.
+  unsigned forces_children_cull_rect_update_ : 1;
+  // True if any descendant needs cull rect update.
   unsigned descendant_needs_cull_rect_update_ : 1;
+
   unsigned previous_paint_result_ : 1;  // PaintResult
   static_assert(kMaxPaintResult < 2,
                 "Should update number of bits of previous_paint_result_");

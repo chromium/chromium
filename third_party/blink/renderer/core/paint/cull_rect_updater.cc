@@ -88,11 +88,11 @@ void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
 
 void CullRectUpdater::UpdateRecursively(PaintLayer& layer,
                                         const PaintLayer& parent_painting_layer,
-                                        bool force_update) {
-  bool force_update_children = false;
-  if (force_update || layer.NeedsCullRectUpdate() ||
+                                        bool force_update_self) {
+  bool force_update_children = layer.ForcesChildrenCullRectUpdate();
+  if (force_update_self || layer.NeedsCullRectUpdate() ||
       ShouldProactivelyUpdateCullRect(layer))
-    force_update_children = UpdateForSelf(layer, parent_painting_layer);
+    force_update_children |= UpdateForSelf(layer, parent_painting_layer);
 
   if (force_update_children || layer.DescendantNeedsCullRectUpdate())
     UpdateForDescendants(layer, force_update_children);
@@ -101,13 +101,12 @@ void CullRectUpdater::UpdateRecursively(PaintLayer& layer,
 }
 
 void CullRectUpdater::UpdateForDescendants(PaintLayer& layer,
-                                           bool force_update) {
+                                           bool force_update_children) {
   const auto& object = layer.GetLayoutObject();
-  if (object.ChildPaintBlockedByDisplayLock()) {
-    // DisplayLockContext will force cull rect update of the subtree on unlock.
-    DCHECK(object.GetDisplayLockContext());
+
+  // DisplayLockContext will force cull rect update of the subtree on unlock.
+  if (object.ChildPaintBlockedByDisplayLock())
     return;
-  }
 
   if (auto* embedded_content = DynamicTo<LayoutEmbeddedContent>(object)) {
     if (auto* embedded_view = embedded_content->GetEmbeddedContentView()) {
@@ -117,11 +116,11 @@ void CullRectUpdater::UpdateForDescendants(PaintLayer& layer,
         if (auto* sub_layout_view = embedded_frame_view->GetLayoutView())
           subframe_root_layer = sub_layout_view->Layer();
         if (embedded_frame_view->ShouldThrottleRendering()) {
-          if (force_update && subframe_root_layer)
+          if (force_update_children && subframe_root_layer)
             subframe_root_layer->SetNeedsCullRectUpdate();
         } else {
           DCHECK(subframe_root_layer);
-          UpdateRecursively(*subframe_root_layer, layer, force_update);
+          UpdateRecursively(*subframe_root_layer, layer, force_update_children);
         }
       }
     }
@@ -150,18 +149,18 @@ void CullRectUpdater::UpdateForDescendants(PaintLayer& layer,
       // In the above example, during UpdateForDescendants(child), this
       // forces cull rect update of |stacked-child| which will be updated in
       // the next loop during UpdateForDescendants(layer).
-      if (force_update)
+      if (force_update_children)
         child->SetNeedsCullRectUpdate();
       continue;
     }
-    UpdateRecursively(*child, layer, force_update);
+    UpdateRecursively(*child, layer, force_update_children);
   }
 
   // Then stacked children (which may not be direct children in PaintLayer
   // hierarchy) in paint order.
   PaintLayerPaintOrderIterator iterator(layer, kStackedChildren);
   while (PaintLayer* child = iterator.Next())
-    UpdateRecursively(*child, layer, force_update);
+    UpdateRecursively(*child, layer, force_update_children);
 }
 
 bool CullRectUpdater::UpdateForSelf(PaintLayer& layer,
