@@ -123,9 +123,9 @@ void OneShotAccessibilityTreeSearchTest::SetUp() {
   list.child_ids = {list_item_1.id, list_item_2.id};
   root.child_ids = {heading.id, table.id, list.id, footer.id};
 
-  tree_.reset(new TestBrowserAccessibilityManager(MakeAXTreeUpdate(
-      root, heading, table, table_row, table_column_header_1,
-      table_column_header_2, list, list_item_1, list_item_2, footer)));
+  tree_ = std::make_unique<TestBrowserAccessibilityManager>(MakeAXTreeUpdate(
+      {root, heading, table, table_row, table_column_header_1,
+       table_column_header_2, list, list_item_1, list_item_2, footer}));
 }
 
 TEST_F(OneShotAccessibilityTreeSearchTest, GetAll) {

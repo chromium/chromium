@@ -154,7 +154,7 @@ TEST_F(BrowserAccessibilityWinTest, TestNoLeaks) {
   // created. Note that the manager takes ownership of the factory.
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, button, checkbox),
+          MakeAXTreeUpdate({root, button, checkbox}),
           test_browser_accessibility_delegate_.get()));
 
   // Delete the manager and test that all 3 instances are deleted.
@@ -163,7 +163,7 @@ TEST_F(BrowserAccessibilityWinTest, TestNoLeaks) {
   // Construct a manager again, and this time use the IAccessible interface
   // to get new references to two of the three nodes in the tree.
   manager.reset(BrowserAccessibilityManager::Create(
-      MakeAXTreeUpdate(root, button, checkbox),
+      MakeAXTreeUpdate({root, button, checkbox}),
       test_browser_accessibility_delegate_.get()));
   IAccessible* root_accessible =
       ToBrowserAccessibilityWin(manager->GetRoot())->GetCOM();
@@ -206,7 +206,7 @@ TEST_F(BrowserAccessibilityWinTest, TestChildrenChange) {
   // BrowserAccessibility.
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, text),
+          MakeAXTreeUpdate({root, text}),
           test_browser_accessibility_delegate_.get()));
 
   // Query for the text IAccessible and verify that it returns "old text" as its
@@ -294,7 +294,7 @@ TEST_F(BrowserAccessibilityWinTest, TestChildrenChangeNoLeaks) {
   // created. Note that the manager takes ownership of the factory.
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, div, text3, text4),
+          MakeAXTreeUpdate({root, div, text3, text4}),
           test_browser_accessibility_delegate_.get()));
 
   // Notify the BrowserAccessibilityManager that the div node and its children
@@ -417,9 +417,9 @@ TEST_F(BrowserAccessibilityWinTest, TestTextBoundaries) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, text_field, static_text1, inline_box1,
-                           line_break1, static_text2, inline_box2, line_break2,
-                           static_text3, inline_box3),
+          MakeAXTreeUpdate({root, text_field, static_text1, inline_box1,
+                            line_break1, static_text2, inline_box2, line_break2,
+                            static_text3, inline_box3}),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityWin* root_obj =
@@ -622,7 +622,7 @@ TEST_F(BrowserAccessibilityWinTest, TestSimpleHypertext) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, text1, text2),
+          MakeAXTreeUpdate({root, text1, text2}),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityComWin* root_obj =
@@ -739,8 +739,8 @@ TEST_F(BrowserAccessibilityWinTest, TestComplexHypertext) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, text1, combo_box, text2, check_box, button,
-                           button_text, link, link_text),
+          MakeAXTreeUpdate({root, text1, combo_box, text2, check_box, button,
+                            button_text, link, link_text}),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityComWin* root_obj =
@@ -891,8 +891,8 @@ TEST_F(BrowserAccessibilityWinTest, TestGetUIADescendants) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, para1, text1, text2, text3, para2, text4,
-                           text5, button, image),
+          MakeAXTreeUpdate({root, para1, text1, text2, text3, para2, text4,
+                            text5, button, image}),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_obj = manager->GetRoot();
@@ -1089,7 +1089,7 @@ TEST_F(BrowserAccessibilityWinTest, TestIA2Attributes) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, pseudo_before, checkbox),
+          MakeAXTreeUpdate({root, pseudo_before, checkbox}),
           test_browser_accessibility_delegate_.get()));
 
   ASSERT_NE(nullptr, manager->GetRoot());
@@ -1199,9 +1199,9 @@ TEST_F(BrowserAccessibilityWinTest, TestValueAttributeInTextControls) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, combo_box, combo_box_text, search_box,
-                           search_box_text, new_line, text_field, link,
-                           link_text, slider, slider_text),
+          MakeAXTreeUpdate({root, combo_box, combo_box_text, search_box,
+                            search_box_text, new_line, text_field, link,
+                            link_text, slider, slider_text}),
           test_browser_accessibility_delegate_.get()));
 
   ASSERT_NE(nullptr, manager->GetRoot());
@@ -1363,9 +1363,9 @@ TEST_F(BrowserAccessibilityWinTest, TestWordBoundariesInTextControls) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, textarea, textarea_div, textarea_text,
-                           textarea_line1, textarea_line2, text_field,
-                           text_field_div, text_field_text, text_field_line),
+          MakeAXTreeUpdate({root, textarea, textarea_div, textarea_text,
+                            textarea_line1, textarea_line2, text_field,
+                            text_field_div, text_field_text, text_field_line}),
           test_browser_accessibility_delegate_.get()));
 
   ASSERT_NE(nullptr, manager->GetRoot());
@@ -1464,8 +1464,8 @@ TEST_F(BrowserAccessibilityWinTest, TextBoundariesOnlyEmbeddedObjectsNoCrash) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root_data, menu_data, button_1_data, button_2_data,
-                           static_text_data),
+          MakeAXTreeUpdate({root_data, menu_data, button_1_data, button_2_data,
+                            static_text_data}),
           test_browser_accessibility_delegate_.get()));
 
   ASSERT_NE(nullptr, manager->GetRoot());
@@ -1868,7 +1868,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretAndSelectionInSimpleFields) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, combo_box, text_field),
+          MakeAXTreeUpdate({root, combo_box, text_field}),
           test_browser_accessibility_delegate_.get()));
 
   ASSERT_NE(nullptr, manager->GetRoot());
@@ -1973,7 +1973,7 @@ TEST_F(BrowserAccessibilityWinTest, TestCaretInContentEditables) {
   link.child_ids.push_back(5);
 
   ui::AXTreeUpdate update =
-      MakeAXTreeUpdate(root, div_editable, link, link_text, text);
+      MakeAXTreeUpdate({root, div_editable, link, link_text, text});
 
   // Place the caret between 'h' and 'e'.
   update.has_tree_data = true;
@@ -2095,7 +2095,7 @@ TEST_F(BrowserAccessibilityWinTest, TestSelectionInContentEditables) {
   link.child_ids.push_back(5);
 
   ui::AXTreeUpdate update =
-      MakeAXTreeUpdate(root, div_editable, link, link_text, text);
+      MakeAXTreeUpdate({root, div_editable, link, link_text, text});
 
   // Select the following part of the text: "lick here".
   update.has_tree_data = true;
@@ -2240,7 +2240,7 @@ TEST_F(BrowserAccessibilityWinTest, TestIAccessibleHyperlink) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, div, link, text),
+          MakeAXTreeUpdate({root, div, link, text}),
           test_browser_accessibility_delegate_.get()));
 
   ASSERT_NE(nullptr, manager->GetRoot());
@@ -2436,8 +2436,8 @@ TEST_F(BrowserAccessibilityWinTest, TestTextAttributesInContentEditables) {
   div_editable.child_ids.push_back(text_after.id);
   link.child_ids.push_back(link_text.id);
 
-  ui::AXTreeUpdate update = MakeAXTreeUpdate(root, div_editable, text_before,
-                                             link, link_text, text_after);
+  ui::AXTreeUpdate update = MakeAXTreeUpdate(
+      {root, div_editable, text_before, link, link_text, text_after});
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
@@ -2670,8 +2670,8 @@ TEST_F(BrowserAccessibilityWinTest,
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, combo_box, combo_box_div, static_text1,
-                           static_text2),
+          MakeAXTreeUpdate(
+              {root, combo_box, combo_box_div, static_text1, static_text2}),
           test_browser_accessibility_delegate_.get()));
 
   ASSERT_NE(nullptr, manager->GetRoot());
@@ -2769,8 +2769,8 @@ TEST_F(BrowserAccessibilityWinTest, TestNewMisspellingsInSimpleTextFields) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, combo_box, combo_box_div, static_text1,
-                           static_text2),
+          MakeAXTreeUpdate(
+              {root, combo_box, combo_box_div, static_text1, static_text2}),
           test_browser_accessibility_delegate_.get()));
 
   ASSERT_NE(nullptr, manager->GetRoot());
@@ -2810,7 +2810,7 @@ TEST_F(BrowserAccessibilityWinTest, TestNewMisspellingsInSimpleTextFields) {
                                    marker_ends);
   ui::AXTree* tree = const_cast<ui::AXTree*>(manager->ax_tree());
   ASSERT_NE(nullptr, tree);
-  ASSERT_TRUE(tree->Unserialize(MakeAXTreeUpdate(static_text2)));
+  ASSERT_TRUE(tree->Unserialize(MakeAXTreeUpdate({static_text2})));
 
   // Ensure that value1 is still not marked misspelled.
   for (LONG offset = 0; offset < value1_length; ++offset) {
@@ -2875,7 +2875,8 @@ TEST_F(BrowserAccessibilityWinTest, TestDeepestFirstLastChild) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, child1, child2, child2_child1, child2_child2),
+          MakeAXTreeUpdate(
+              {root, child1, child2, child2_child1, child2_child2}),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_accessible = manager->GetRoot();
@@ -2958,7 +2959,8 @@ TEST_F(BrowserAccessibilityWinTest, TestInheritedStringAttributes) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, child1, child2, child2_child1, child2_child2),
+          MakeAXTreeUpdate(
+              {root, child1, child2, child2_child1, child2_child2}),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_accessible = manager->GetRoot();
@@ -3017,7 +3019,7 @@ TEST_F(BrowserAccessibilityWinTest, UniqueIdWinInvalidAfterDeletingTree) {
 
   std::unique_ptr<BrowserAccessibilityManagerWin> manager(
       new BrowserAccessibilityManagerWin(
-          MakeAXTreeUpdate(root_node, child_node),
+          MakeAXTreeUpdate({root_node, child_node}),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root = manager->GetRoot();
@@ -3027,7 +3029,7 @@ TEST_F(BrowserAccessibilityWinTest, UniqueIdWinInvalidAfterDeletingTree) {
 
   // Now destroy that original tree and create a new tree.
   manager.reset(new BrowserAccessibilityManagerWin(
-      MakeAXTreeUpdate(root_node, child_node),
+      MakeAXTreeUpdate({root_node, child_node}),
       test_browser_accessibility_delegate_.get()));
   root = manager->GetRoot();
   int32_t root_unique_id_2 = GetUniqueId(root);
@@ -3076,7 +3078,7 @@ TEST_F(BrowserAccessibilityWinTest, AccChildOnlyReturnsDescendants) {
 
   std::unique_ptr<BrowserAccessibilityManagerWin> manager(
       new BrowserAccessibilityManagerWin(
-          MakeAXTreeUpdate(root_node, child_node),
+          MakeAXTreeUpdate({root_node, child_node}),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root = manager->GetRoot();
@@ -3115,7 +3117,7 @@ TEST_F(BrowserAccessibilityWinTest, DISABLED_TestIAccessible2Relations) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, child1, child2),
+          MakeAXTreeUpdate({root, child1, child2}),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibilityWin* ax_root =

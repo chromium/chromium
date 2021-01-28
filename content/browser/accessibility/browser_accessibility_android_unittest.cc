@@ -88,7 +88,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetTextOnly) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, para1, text1),
+          MakeAXTreeUpdate({root, para1, text1}),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_obj = manager->GetRoot();
@@ -127,7 +127,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetHeading) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, heading1, text1),
+          MakeAXTreeUpdate({root, heading1, text1}),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_obj = manager->GetRoot();
@@ -167,7 +167,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetFocusable) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, para1, text1),
+          MakeAXTreeUpdate({root, para1, text1}),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_obj = manager->GetRoot();
@@ -254,8 +254,9 @@ TEST_F(BrowserAccessibilityAndroidTest, TestRetargetInputControl) {
 
   std::unique_ptr<BrowserAccessibilityManager> manager(
       BrowserAccessibilityManager::Create(
-          MakeAXTreeUpdate(root, container, form, label, label_text, input_time,
-                           input_container, input_text, button, button_text),
+          MakeAXTreeUpdate({root, container, form, label, label_text,
+                            input_time, input_container, input_text, button,
+                            button_text}),
           test_browser_accessibility_delegate_.get()));
 
   BrowserAccessibility* root_obj = manager->GetRoot();
