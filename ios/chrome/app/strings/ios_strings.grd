@@ -700,6 +700,9 @@ locale.  The strings in this file are specific to iOS.
       <message name="IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE" desc="The title of the continue button on the disconnect dialog [Length: 20em].">
         Sign Out
       </message>
+      <message name="IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE_MICE" desc="The title of the continue button on the disconnect dialog [Length: 20em].">
+        Sign Out…
+      </message>
       <message name="IDS_IOS_DISCONNECT_DIALOG_CONTINUE_AND_CLEAR_MOBILE" desc="The title of the continue and clear browsing data button on the disconnect dialog [iOS only].">
         Sign Out and Clear Data from this Device
       </message>

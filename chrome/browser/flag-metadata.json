@@ -4601,6 +4601,11 @@
     "expiry_milestone": 77
   },
   {
+    "name": "simplify-sign-out-ios",
+    "owners": [ "jlebel", "msarda", "fernandex" ],
+    "expiry_milestone": 95
+  },
+  {
     "_comment1": "Shipping some form of Site Isolation to Android is tracked",
     "_comment2": "in https://crbug.com/849815.",
     "name": "site-isolation-trial-opt-out",

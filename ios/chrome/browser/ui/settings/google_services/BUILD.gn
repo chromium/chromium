@@ -44,6 +44,7 @@ source_set("google_services") {
     "//components/prefs",
     "//components/safe_browsing/core:features",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/signin/ios/browser",
     "//components/signin/public/identity_manager",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",

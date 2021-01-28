@@ -9,6 +9,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#import "components/signin/ios/browser/features.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "components/strings/grit/components_strings.h"
@@ -24,6 +25,7 @@
 #include "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
+#import "ios/chrome/browser/ui/authentication/authentication_ui_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/resized_avatar_cache.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -80,6 +82,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   // Detailed description of the actions taken by sign out, e.g. turning off
   // sync.
   ItemTypeSignOutNonManagedAccountFooter,
+  // Detailed description of the actions taken by sign out, e.g. turning off
+  // sync. Related to kSimplifySignOutIOS feature only.
+  ItemTypeSignOutSyncingFooter,
 };
 
 }  // namespace
@@ -240,18 +245,31 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // Sign out section.
   [model addSectionWithIdentifier:SectionIdentifierSignOut];
-  // Adds a signout option if the account is not managed.
-  if (![self authService]->IsAuthenticatedIdentityManaged()) {
+  if (base::FeatureList::IsEnabled(signin::kSimplifySignOutIOS)) {
     [model addItem:[self signOutItem]
         toSectionWithIdentifier:SectionIdentifierSignOut];
+  } else {
+    // Adds a signout option if the account is not managed.
+    if (![self authService]->IsAuthenticatedIdentityManaged()) {
+      [model addItem:[self signOutItem]
+          toSectionWithIdentifier:SectionIdentifierSignOut];
+    }
+    // Adds a signout and clear data option.
+    [model addItem:[self signOutAndClearDataItem]
+        toSectionWithIdentifier:SectionIdentifierSignOut];
   }
-  // Adds a signout and clear data option.
-  [model addItem:[self signOutAndClearDataItem]
-      toSectionWithIdentifier:SectionIdentifierSignOut];
 
   // Adds a footer with signout explanation depending on the type of
   // account whether managed or non-managed.
-  if ([self authService]->IsAuthenticatedIdentityManaged()) {
+  if (base::FeatureList::IsEnabled(signin::kSimplifySignOutIOS)) {
+    SyncSetupService* syncSetupService =
+        SyncSetupServiceFactory::GetForBrowserState(
+            _browser->GetBrowserState());
+    if (syncSetupService->IsFirstSetupComplete()) {
+      [model setFooter:[self signOutSyncingFooterItem]
+          forSectionWithIdentifier:SectionIdentifierSignOut];
+    }
+  } else if ([self authService]->IsAuthenticatedIdentityManaged()) {
     [model setFooter:[self signOutManagedAccountFooterItem]
         forSectionWithIdentifier:SectionIdentifierSignOut];
   } else {
@@ -270,6 +288,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (TableViewLinkHeaderFooterItem*)signOutNonManagedAccountFooterItem {
+  DCHECK(!base::FeatureList::IsEnabled(signin::kSimplifySignOutIOS));
   TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
       initWithType:ItemTypeSignOutNonManagedAccountFooter];
   footer.text = l10n_util::GetNSString(
@@ -278,10 +297,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (TableViewLinkHeaderFooterItem*)signOutManagedAccountFooterItem {
+  DCHECK(!base::FeatureList::IsEnabled(signin::kSimplifySignOutIOS));
   TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
       initWithType:ItemTypeSignOutManagedAccountFooter];
+  base::string16 hostedDomain = HostedDomainForPrimaryAccount(_browser);
   footer.text = l10n_util::GetNSStringF(
-      IDS_IOS_DISCONNECT_MANAGED_ACCOUNT_FOOTER_INFO_MOBILE, self.hostedDomain);
+      IDS_IOS_DISCONNECT_MANAGED_ACCOUNT_FOOTER_INFO_MOBILE, hostedDomain);
+  return footer;
+}
+
+- (TableViewLinkHeaderFooterItem*)signOutSyncingFooterItem {
+  DCHECK(base::FeatureList::IsEnabled(signin::kSimplifySignOutIOS));
+  TableViewLinkHeaderFooterItem* footer = [[TableViewLinkHeaderFooterItem alloc]
+      initWithType:ItemTypeSignOutSyncingFooter];
+  footer.text = l10n_util::GetNSString(
+      IDS_IOS_DISCONNECT_DIALOG_SYNCING_FOOTER_INFO_MOBILE);
   return footer;
 }
 
@@ -315,9 +345,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (TableViewItem*)signOutItem {
   TableViewTextItem* item =
       [[TableViewTextItem alloc] initWithType:ItemTypeSignOut];
-  item.text =
-      l10n_util::GetNSString(IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE);
-  item.textColor = [UIColor colorNamed:kBlueColor];
+  if (base::FeatureList::IsEnabled(signin::kSimplifySignOutIOS)) {
+    item.text = l10n_util::GetNSString(
+        IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE_MICE);
+    item.textColor = [UIColor colorNamed:kRedColor];
+  } else {
+    item.text = l10n_util::GetNSString(
+        IDS_IOS_DISCONNECT_DIALOG_CONTINUE_BUTTON_MOBILE);
+    item.textColor = [UIColor colorNamed:kBlueColor];
+  }
   item.accessibilityTraits |= UIAccessibilityTraitButton;
   item.accessibilityIdentifier = kSettingsAccountsTableViewSignoutCellId;
   return item;
@@ -368,10 +404,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeSignOut: {
       UIView* itemView =
           [[tableView cellForRowAtIndexPath:indexPath] contentView];
-      [self showSignOutWithClearData:NO itemView:itemView];
+      if (base::FeatureList::IsEnabled(signin::kSimplifySignOutIOS)) {
+        [self showMICESignOutWithItemView:itemView];
+      } else {
+        [self showSignOutWithClearData:NO itemView:itemView];
+      }
       break;
     }
     case ItemTypeSignOutAndClearData: {
+      DCHECK(!base::FeatureList::IsEnabled(signin::kSimplifySignOutIOS));
       UIView* itemView =
           [[tableView cellForRowAtIndexPath:indexPath] contentView];
       [self showSignOutWithClearData:YES itemView:itemView];
@@ -509,9 +550,26 @@ typedef NS_ENUM(NSInteger, ItemType) {
       });
 }
 
+- (void)showMICESignOutWithItemView:(UIView*)itemView {
+  DCHECK(!_alertCoordinator);
+  DCHECK(base::FeatureList::IsEnabled(signin::kSimplifySignOutIOS));
+  if (_authenticationOperationInProgress ||
+      self != [self.navigationController topViewController]) {
+    // An action is already in progress, ignore user's request.
+    return;
+  }
+  __weak AccountsTableViewController* weakSelf = self;
+  _alertCoordinator = SignoutActionSheetCoordinator(
+      self, _browser, itemView, ^(SignoutActionSheetCoordinatorResult result) {
+        [weakSelf handleSignoutActionCoordinatorWithResult:result];
+      });
+  [_alertCoordinator start];
+}
+
 - (void)showSignOutWithClearData:(BOOL)forceClearData
                         itemView:(UIView*)itemView {
   DCHECK(!_alertCoordinator);
+  DCHECK(!base::FeatureList::IsEnabled(signin::kSimplifySignOutIOS));
   if (_authenticationOperationInProgress ||
       self != [self.navigationController topViewController]) {
     // An action is already in progress, ignore user's request.
@@ -557,6 +615,27 @@ typedef NS_ENUM(NSInteger, ItemType) {
                                }
                                 style:UIAlertActionStyleCancel];
   [_alertCoordinator start];
+}
+
+- (void)handleSignoutActionCoordinatorWithResult:
+    (SignoutActionSheetCoordinatorResult)result {
+  DCHECK(_alertCoordinator);
+  switch (result) {
+    case SignoutActionSheetCoordinatorResultCanceled:
+      // |_alertCoordinator| should not be stopped, since the coordinator has
+      // been canceled.
+      _alertCoordinator = nil;
+      break;
+    case SignoutActionSheetCoordinatorResultClearFromDevice:
+      // |_alertCoordinator| is dropped by |handleSignOutWithForceClearData:|.
+      [self handleSignOutWithForceClearData:YES];
+      break;
+    case SignoutActionSheetCoordinatorResultKeepOnDevice:
+      // |_alertCoordinator| is dropped by |handleSignOutWithForceClearData:|.
+      [self handleSignOutWithForceClearData:NO];
+      break;
+  }
+  DCHECK(!_alertCoordinator);
 }
 
 - (void)handleSignOutWithForceClearData:(BOOL)forceClearData {
@@ -635,20 +714,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (AuthenticationService*)authService {
   return AuthenticationServiceFactory::GetForBrowserState(
       _browser->GetBrowserState());
-}
-
-#pragma mark - IdentityManager
-
-- (base::string16)hostedDomain {
-  signin::IdentityManager* identityManager =
-      IdentityManagerFactory::GetForBrowserState(_browser->GetBrowserState());
-  base::Optional<AccountInfo> accountInfo =
-      identityManager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          identityManager->GetPrimaryAccountInfo());
-  std::string hosted_domain = accountInfo.has_value()
-                                  ? accountInfo.value().hosted_domain
-                                  : std::string();
-  return base::UTF8ToUTF16(hosted_domain);
 }
 
 #pragma mark - ChromeIdentityBrowserOpener

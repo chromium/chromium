@@ -406,6 +406,10 @@ const char kSnapshotDrawViewName[] = "Use DrawViewHierarchy for Snapshots";
 const char kSnapshotDrawViewDescription[] =
     "When enabled, snapshots will be taken using |-drawViewHierarchy:|.";
 
+const char kSimplifySignOutIOSName[] = "Simplify sign-out";
+const char kSimplifySignOutIOSDescription[] =
+    "When enabled, sign-out UI in the account table view is simplified.";
+
 const char kSyncSandboxName[] = "Use Chrome Sync sandbox";
 const char kSyncSandboxDescription[] =
     "Connects to the testing server for Chrome Sync.";

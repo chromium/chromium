@@ -9,6 +9,9 @@ namespace signin {
 const base::Feature kForceStartupSigninPromo{"ForceStartupSigninPromo",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature kSimplifySignOutIOS{"SimplifySignOutIOS",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 bool ForceStartupSigninPromo() {
   return base::FeatureList::IsEnabled(kForceStartupSigninPromo);
 }

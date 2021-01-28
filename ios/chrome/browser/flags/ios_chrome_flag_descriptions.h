@@ -344,6 +344,10 @@ extern const char kSharedHighlightingUseBlocklistIOSDescription[];
 extern const char kShowAutofillTypePredictionsName[];
 extern const char kShowAutofillTypePredictionsDescription[];
 
+// Title and description for the flag to enable simplify sign-out on iOS.
+extern const char kSimplifySignOutIOSName[];
+extern const char kSimplifySignOutIOSDescription[];
+
 // Title and description for the flag to use |-drawViewHierarchy:| for taking
 // snapshots.
 extern const char kSnapshotDrawViewName[];
