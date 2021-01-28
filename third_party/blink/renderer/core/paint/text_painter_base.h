@@ -23,6 +23,7 @@ class ComputedStyle;
 class Document;
 class GraphicsContext;
 class GraphicsContextStateSaver;
+class Node;
 class TextDecorationOffsetBase;
 struct PaintInfo;
 

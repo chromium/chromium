@@ -484,6 +484,11 @@ struct TraceTrait<Member<T>> : public MemberTraceTraits<Member<T>> {};
 template <typename T>
 struct TraceTrait<WeakMember<T>> : public MemberTraceTraits<WeakMember<T>> {};
 
+template <typename T>
+inline bool IsHashTableDeletedValue(const Member<T>& m) {
+  return m.IsHashTableDeletedValue();
+}
+
 }  // namespace blink
 
 namespace WTF {

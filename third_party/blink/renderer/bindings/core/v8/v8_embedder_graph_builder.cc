@@ -17,6 +17,17 @@
 #include "third_party/blink/renderer/platform/heap/unified_heap_controller.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/buildflags.h"
+
+#if BUILDFLAG(USE_V8_OILPAN)
+
+namespace blink {
+void EmbedderGraphBuilder::BuildEmbedderGraphCallback(v8::Isolate* isolate,
+                                                      v8::EmbedderGraph* graph,
+                                                      void*) {}
+}  // namespace blink
+
+#else  // !USE_V8_OILPAN
 
 namespace blink {
 
@@ -722,3 +733,5 @@ void EmbedderGraphBuilder::BuildEmbedderGraphCallback(v8::Isolate* isolate,
 }
 
 }  // namespace blink
+
+#endif  // !USE_V8_OILPAN

@@ -18,6 +18,11 @@ using WeakMember = cppgc::WeakMember<T>;
 template <typename T>
 using UntracedMember = cppgc::UntracedMember<T>;
 
+template <typename T>
+inline bool IsHashTableDeletedValue(const Member<T>& m) {
+  return m == cppgc::kSentinelPointer;
+}
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_V8_WRAPPER_MEMBER_H_

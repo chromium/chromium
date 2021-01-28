@@ -58,6 +58,7 @@ class CORE_EXPORT PerformanceMark final : public PerformanceEntry {
                   double start_time,
                   scoped_refptr<SerializedScriptValue>,
                   ExceptionState& exception_state);
+  ~PerformanceMark() override = default;
 
   AtomicString entryType() const override;
   PerformanceEntryType EntryTypeEnum() const override;
@@ -69,8 +70,6 @@ class CORE_EXPORT PerformanceMark final : public PerformanceEntry {
   void Trace(Visitor*) const override;
 
  private:
-  ~PerformanceMark() override = default;
-
   scoped_refptr<SerializedScriptValue> serialized_detail_;
   // In order to prevent cross-world reference leak, we create a copy of the
   // detail for each world.

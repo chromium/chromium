@@ -16,12 +16,13 @@ class AnimationHost;
 }
 
 namespace blink {
-class GraphicsContext;
-class Page;
-class LinkHighlightImpl;
 class CompositorAnimationTimeline;
-class LocalFrame;
+class GraphicsContext;
+class LinkHighlightImpl;
 class LayoutObject;
+class LocalFrame;
+class Node;
+class Page;
 
 class CORE_EXPORT LinkHighlight final : public GarbageCollected<LinkHighlight> {
  public:

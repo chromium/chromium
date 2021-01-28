@@ -40,6 +40,7 @@ class IdleSpellCheckController;
 class LocalDOMWindow;
 class LocalFrame;
 class HTMLElement;
+class Node;
 class SpellCheckMarker;
 class SpellCheckRequest;
 class SpellCheckRequester;

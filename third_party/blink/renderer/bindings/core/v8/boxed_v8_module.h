@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
 #include "v8/include/v8.h"
@@ -50,9 +51,9 @@ struct BoxedV8ModuleHash {
 
   static bool Equal(const Member<BoxedV8Module>& a,
                     const Member<BoxedV8Module>& b) {
-    if (a.IsHashTableDeletedValue() && b.IsHashTableDeletedValue())
+    if (IsHashTableDeletedValue(a) && IsHashTableDeletedValue(b))
       return true;
-    if (a.IsHashTableDeletedValue() || b.IsHashTableDeletedValue())
+    if (IsHashTableDeletedValue(a) || IsHashTableDeletedValue(b))
       return false;
 
     if (!a && !b)

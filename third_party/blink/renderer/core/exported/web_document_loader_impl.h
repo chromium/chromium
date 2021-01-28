@@ -55,6 +55,7 @@ class CORE_EXPORT WebDocumentLoaderImpl final : public DocumentLoader,
                         WebNavigationType navigation_type,
                         ContentSecurityPolicy*,
                         std::unique_ptr<WebNavigationParams> navigation_params);
+  ~WebDocumentLoaderImpl() override;
 
   static WebDocumentLoaderImpl* FromDocumentLoader(DocumentLoader* loader) {
     return static_cast<WebDocumentLoaderImpl*>(loader);
@@ -92,7 +93,6 @@ class CORE_EXPORT WebDocumentLoaderImpl final : public DocumentLoader,
   void Trace(Visitor*) const override;
 
  private:
-  ~WebDocumentLoaderImpl() override;
   void DetachFromFrame(bool flush_microtask_queue) override;
 
   // Mutable because the const getters will magically sync these to the

@@ -36,12 +36,11 @@ class MODULES_EXPORT BarcodeDetector final : public ShapeDetector {
   explicit BarcodeDetector(ExecutionContext*,
                            const BarcodeDetectorOptions*,
                            ExceptionState& exception_state);
+  ~BarcodeDetector() override = default;
 
   void Trace(Visitor*) const override;
 
  private:
-  ~BarcodeDetector() override = default;
-
   ScriptPromise DoDetect(ScriptPromiseResolver*, SkBitmap) override;
   void OnDetectBarcodes(
       ScriptPromiseResolver*,

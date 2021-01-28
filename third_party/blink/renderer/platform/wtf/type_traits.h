@@ -123,7 +123,8 @@ template <typename T>
 struct IsTraceable : cppgc::internal::IsTraceable<T> {};
 
 template <typename T>
-struct IsGarbageCollectedType : cppgc::internal::IsGarbageCollectedType<T> {};
+struct IsGarbageCollectedType
+    : cppgc::internal::IsGarbageCollectedOrMixinType<T> {};
 
 template <typename T>
 struct IsWeak : cppgc::internal::IsWeak<T> {};

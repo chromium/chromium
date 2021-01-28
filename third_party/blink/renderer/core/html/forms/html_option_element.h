@@ -54,6 +54,7 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
                                                    ExceptionState&);
 
   explicit HTMLOptionElement(Document&);
+  ~HTMLOptionElement() override;
   void Trace(Visitor* visitor) const override;
 
   // A text to be shown to users.  The difference from |label()| is |label()|
@@ -112,8 +113,6 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
   void DidChangeTextContent();
 
  private:
-  ~HTMLOptionElement() override;
-
   bool SupportsFocus() const override;
   bool MatchesDefaultPseudoClass() const override;
   bool MatchesEnabledPseudoClass() const override;
