@@ -570,7 +570,8 @@ class MODULES_EXPORT RTCPeerConnection final
 
   DOMException* checkSdpForStateErrors(ExecutionContext*,
                                        const ParsedSessionDescription&);
-  void MaybeWarnAboutUnsafeSdp(const ParsedSessionDescription&) const;
+  void RecordSdpCategoryAndMaybeEmitWarnings(
+      const ParsedSessionDescription&) const;
 
   HeapHashSet<Member<RTCIceTransport>> ActiveIceTransports() const;
 

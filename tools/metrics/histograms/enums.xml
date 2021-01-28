@@ -31002,6 +31002,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3773" label="RTCPeerConnectionSdpSemanticsPlanB"/>
   <int value="3774" label="FetchRespondWithNoResponseWithUsedRequestBody"/>
   <int value="3784" label="WindowOpenWithAdditionalBoolParameter"/>
+  <int value="3785" label="RTCPeerConnectionConstructedWithPlanB"/>
+  <int value="3786" label="RTCPeerConnectionConstructedWithUnifiedPlan"/>
+  <int value="3787" label="RTCPeerConnectionUsingComplexPlanB"/>
+  <int value="3788" label="RTCPeerConnectionUsingComplexUnifiedPlan"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
