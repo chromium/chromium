@@ -77,7 +77,9 @@ if (crashpad_is_mac || crashpad_is_ios) {
           migcom_path,
         ]
       }
-      deps = [ "//build/config/mac:sdk_inputs" ]
+      if (crashpad_is_mac) {
+        deps = [ "//build/config/mac:sdk_inputs" ]
+      }
     }
     if (sysroot != "") {
       if (crashpad_is_in_chromium) {
