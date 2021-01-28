@@ -44219,6 +44219,7 @@ from previous Chrome versions.
   <int value="-662064703" label="MediaSessionService:enabled"/>
   <int value="-661978438" label="enable-data-reduction-proxy-lo-fi"/>
   <int value="-660160292" label="enable-apps-show-on-first-paint"/>
+  <int value="-658319177" label="VaapiAV1Decoder:disabled"/>
   <int value="-657808907" label="CopyLinkToText:disabled"/>
   <int value="-654196854" label="PasswordsKeyboardAccessory:enabled"/>
   <int value="-653616608" label="MacSyscallSandbox:disabled"/>
@@ -45563,6 +45564,7 @@ from previous Chrome versions.
   <int value="636341169" label="ExploreSites:disabled"/>
   <int value="636413416" label="OmniboxKeywordSearchButton:disabled"/>
   <int value="636425179" label="mhtml-generator-option"/>
+  <int value="636909796" label="VaapiAV1Decoder:enabled"/>
   <int value="637396292" label="AllBookmarks:enabled"/>
   <int value="637452937" label="ChromeHomeSurvey:enabled"/>
   <int value="638845342"

@@ -2418,6 +2418,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-vaapi-av1-decode-acceleration",
+    "owners": [ "andrescj", "chromeos-gfx-video@google.com" ],
+    "expiry_milestone": 93
+  },
+  {
     "name": "enable-vaapi-jpeg-image-decode-acceleration",
     "owners": [ "andrescj", "chromeos-gfx@google.com" ],
     "expiry_milestone": 90

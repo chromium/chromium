@@ -7042,6 +7042,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kWallpaperWebUI)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // TODO(b/177462291): make flag available on LaCrOS.
+    {"enable-vaapi-av1-decode-acceleration",
+     flag_descriptions::kVaapiAV1DecoderName,
+     flag_descriptions::kVaapiAV1DecoderDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(media::kVaapiAV1Decoder)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
