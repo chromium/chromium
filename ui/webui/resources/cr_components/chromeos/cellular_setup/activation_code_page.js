@@ -67,10 +67,10 @@ Polymer({
     },
 
     /** @private */
-    hasMultipleCameras_: {
-      type: Boolean,
-      value: false,
-      observer: 'onHasMultipleCamerasChanged_',
+    cameraCount_: {
+      type: Number,
+      value: 0,
+      observer: 'onHasCameraCountChanged_',
     },
 
     /**
@@ -109,9 +109,18 @@ Polymer({
    */
   qrCodeDetectorTimer_: null,
 
+  /**
+   *  TODO(crbug.com/1093185): add type |BarcodeDetector| when externs
+   *  becomes available
+   *  @private
+   */
+  qrCodeDetector_: null,
+
+
   /** @override */
   ready() {
     this.setMediaDevices(navigator.mediaDevices);
+    this.initBarcodeDetector_();
     this.state_ = PageState.INITIAL;
   },
 
@@ -124,7 +133,29 @@ Polymer({
       clearTimeout(this.qrCodeDetectorTimer_);
     }
     this.mediaDevices_.removeEventListener(
-        'devicechange', this.updateHasMultipleCameras_.bind(this));
+        'devicechange', this.updateCameraCount_.bind(this));
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  isScanningAvailable_() {
+    return this.cameraCount_ > 0 && !!this.qrCodeDetector_;
+  },
+
+  /**
+   * TODO(crbug.com/1093185): Remove suppression when shape_detection extern
+   * definitions become available.
+   * @suppress {undefinedVars|missingProperties}
+   * @private
+   */
+  initBarcodeDetector_() {
+    this.qrCodeDetector_ = new BarcodeDetector({
+      formats: [
+        'qr_code',
+      ]
+    });
   },
 
   /**
@@ -132,25 +163,42 @@ Polymer({
    */
   setMediaDevices(mediaDevices) {
     this.mediaDevices_ = mediaDevices;
+    this.updateCameraCount_();
     this.mediaDevices_.addEventListener(
-        'devicechange', this.updateHasMultipleCameras_.bind(this));
+        'devicechange', this.updateCameraCount_.bind(this));
+  },
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeActivationCodeClass_() {
+    return this.isScanningAvailable_() ? 'relative' : 'center width-92';
   },
 
   /** @private */
-  updateHasMultipleCameras_() {
-    this.mediaDevices_.enumerateDevices().then(devices => {
-      const numVideoInputDevices =
-          devices.filter(device => device.kind === 'videoinput').length;
-      this.hasMultipleCameras_ = numVideoInputDevices > 1;
-    });
+  updateCameraCount_() {
+    if (!this.mediaDevices_ || !this.mediaDevices_.enumerateDevices) {
+      this.cameraCount_ = 0;
+      return;
+    }
+
+    this.mediaDevices_.enumerateDevices()
+        .then(devices => {
+          this.cameraCount_ =
+              devices.filter(device => device.kind === 'videoinput').length;
+        })
+        .catch(e => {
+          this.cameraCount_ = 0;
+        });
   },
 
   /** @private */
-  onHasMultipleCamerasChanged_() {
+  onHasCameraCountChanged_() {
     // If the user was using an environment-facing camera and it was removed,
     // restart scanning with the user-facing camera.
     if ((this.state_ === PageState.SCANNING_ENVIRONMENT_FACING) &&
-        !this.hasMultipleCameras_) {
+        this.cameraCount_ === 1) {
       this.state_ = PageState.SWITCHING_CAM_ENVIRONMENT_TO_USER;
       this.startScanning_();
     }
@@ -215,8 +263,7 @@ Polymer({
           }).bind(this),
           QR_CODE_DETECTION_INTERVAL_MS);
     } catch (error) {
-      // TODO(crbug.com/1093185): Update the UI in response to the error.
-      console.log(error);
+      this.state_ = PageState.FAILURE;
     }
   },
 
@@ -229,12 +276,7 @@ Polymer({
    * @private
    */
   async detectActivationCode_(frame) {
-    const qrCodeDetector = new BarcodeDetector({
-      formats: [
-        'qr_code',
-      ]
-    });
-    const qrCodes = await qrCodeDetector.detect(frame);
+    const qrCodes = await this.qrCodeDetector_.detect(frame);
     if (qrCodes.length > 0) {
       return qrCodes[0].rawValue;
     }
@@ -298,10 +340,10 @@ Polymer({
   /**
    * @param {UiElement} uiElement
    * @param {PageState} state
-   * @param {boolean} hasMultipleCameras
+   * @param {number} cameraCount
    * @private
    */
-  isUiElementHidden_(uiElement, state, hasMultipleCameras) {
+  isUiElementHidden_(uiElement, state, cameraCount) {
     switch (uiElement) {
       case UiElement.START_SCANNING:
         return state !== PageState.INITIAL;
@@ -311,7 +353,7 @@ Polymer({
       case UiElement.SWITCH_CAMERA:
         const isScanning = state === PageState.SCANNING_USER_FACING ||
             state === PageState.SCANNING_ENVIRONMENT_FACING;
-        return !(isScanning && hasMultipleCameras);
+        return !(isScanning && this.cameraCount_ > 1);
       case UiElement.SCAN_FINISH:
         return state !== PageState.SUCCESS && state !== PageState.FAILURE;
       case UiElement.SCAN_SUCCESS:
@@ -336,8 +378,14 @@ Polymer({
     }
   },
 
-  /** @private */
+  /**
+   * @return {string}
+   * @private
+   */
   getDescription_() {
+    if (!this.isScanningAvailable_()) {
+      return this.i18n('scanQRCodeEnterActivationCode');
+    }
     return this.showNoProfilesMessage ? this.i18n('scanQRCodeNoProfiles') :
                                         this.i18n('scanQRCode');
   },

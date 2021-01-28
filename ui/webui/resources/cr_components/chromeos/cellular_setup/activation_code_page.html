@@ -46,6 +46,10 @@
         transform: translateY(-50%) translateX(-50%);
       }
 
+      .width-92 {
+        width: 92%;
+      }
+
       .label {
         font-weight: 500;
       }
@@ -67,11 +71,11 @@
         cursor: default;
       }
 
-      #startScanningContainer {
+      .blue-icon {
         --iron-icon-fill-color: #1A73E8;
       }
 
-      #scanSuccessContainer {
+      #scanSucessHeader {
         --iron-icon-fill-color: #1E8E3E;
         margin-bottom: 8px;
       }
@@ -81,7 +85,7 @@
         font-size: medium;
       }
 
-      #scanFailureContainer {
+      #scanFailureHeader {
         --iron-icon-fill-color: #D93025;
         margin-bottom: 4px;
       }
@@ -93,6 +97,11 @@
       #useCameraAgainButton {
         display: block;
         font-weight: 500;
+        text-align: center;
+      }
+
+      #tryAgainButton {
+        display: block;
         text-align: center;
       }
 
@@ -132,54 +141,67 @@
     <base-page>
       <div slot="page-body">
         <span id="scanQrCodeDescription">
-          [[getDescription_(showNoProfilesMessage)]]
+          [[getDescription_(showNoProfilesMessage, cameraCount_ )]]
         </span>
-        <div id="esimQrCodeDetection">
-          <cr-button id="switchCameraButton"
-              on-click="onSwitchCameraButtonPressed_"
-              hidden$="[[isUiElementHidden_(UiElement.SWITCH_CAMERA, state_, hasMultipleCameras_)]]"
-              disabled="[[isUiElementDisabled_(UiElement.SWITCH_CAMERA, state_)]]">
-            <iron-icon class="button-image" icon="cellular-setup:switch-camera"></iron-icon>
-            [[i18n('switchCamera')]]
-          </cr-button>
-          <video id="video"
-              hidden$="[[isUiElementHidden_(UiElement.VIDEO, state_)]]">
-          </video>
-          <div class="center" id="startScanningContainer"
-              hidden$="[[isUiElementHidden_(UiElement.START_SCANNING, state_)]]">
-            <cr-button class="label"
-                id="startScanningButton"
-                on-click="startScanning_"
-                aria-describedby="scanQrCodeDescription">
-              <iron-icon class="button-image" icon="cellular-setup:camera"></iron-icon>
-              [[i18n('useCamera')]]
+        <template is="dom-if"
+            if="[[isScanningAvailable_(cameraCount_)]]" restamp>
+          <div id="esimQrCodeDetection">
+            <cr-button id="switchCameraButton"
+                on-click="onSwitchCameraButtonPressed_"
+                hidden$="[[isUiElementHidden_(UiElement.SWITCH_CAMERA, state_, cameraCount_)]]"
+                disabled="[[isUiElementDisabled_(UiElement.SWITCH_CAMERA, state_)]]">
+              <iron-icon class="button-image" icon="cellular-setup:switch-camera"></iron-icon>
+              [[i18n('switchCamera')]]
             </cr-button>
-          </div>
-          <div class="center" id="scanFinishContainer"
-              hidden$="[[isUiElementHidden_(UiElement.SCAN_FINISH, state_)]]">
-            <div>
-              <div id="scanSuccessContainer"
-                  hidden$="[[isUiElementHidden_(UiElement.SCAN_SUCCESS, state_)]]">
-                <iron-icon class="scan-finish-image" icon="cellular-setup:checked"></iron-icon>
-                <span class="label scan-finish-message" id="scanSuccessMessage">
-                  [[i18n('scanQRCodeSuccess')]]
-                </span>
-              </div>
-              <div id="scanFailureContainer"
-                  hidden$="[[isUiElementHidden_(UiElement.SCAN_FAILURE, state_)]]">
-                <iron-icon class="scan-finish-image" icon="cellular-setup:error"></iron-icon>
-                <span class="label scan-finish-message" id="scanFailureMessage">
-                  [[i18n('scanQrCodeInvalid')]]
-                </span>
+            <video id="video"
+                hidden$="[[isUiElementHidden_(UiElement.VIDEO, state_)]]">
+            </video>
+            <div class="center" id="startScanningContainer" class="blue-icon"
+                hidden$="[[isUiElementHidden_(UiElement.START_SCANNING, state_)]]">
+              <cr-button class="label"
+                  id="startScanningButton"
+                  on-click="startScanning_"
+                  aria-describedby="scanQrCodeDescription">
+                <iron-icon class="button-image" icon="cellular-setup:camera"></iron-icon>
+                [[i18n('useCamera')]]
+              </cr-button>
+            </div>
+            <div class="center" id="scanFinishContainer"
+                hidden$="[[isUiElementHidden_(UiElement.SCAN_FINISH, state_)]]">
+              <div>
+                <div id="scanSuccessContainer"
+                    hidden$="[[isUiElementHidden_(UiElement.SCAN_SUCCESS, state_)]]">
+                  <div id=scanSucessHeader>
+                    <iron-icon class="scan-finish-image" icon="cellular-setup:checked"></iron-icon>
+                    <span class="label scan-finish-message" id="scanSuccessMessage">
+                      [[i18n('scanQRCodeSuccess')]]
+                    </span>
+                  </div>
+                  <cr-button id="useCameraAgainButton" class="blue-icon"
+                      on-click="startScanning_">
+                    <iron-icon class="button-image" icon="cellular-setup:camera"></iron-icon>
+                    [[i18n('qrCodeUseCameraAgain')]]
+                  </cr-button>
+                </div>
+                <div id="scanFailureContainer"
+                    hidden$="[[isUiElementHidden_(UiElement.SCAN_FAILURE, state_)]]">
+                  <div id="scanFailureHeader" class="blue-icon">
+                    <iron-icon class="scan-finish-image" icon="cellular-setup:error"></iron-icon>
+                    <span class="label scan-finish-message" id="scanFailureMessage">
+                      [[i18n('scanQrCodeError')]]
+                    </span>
+                  </div>
+                  <cr-button id="tryAgainButton" class="blue-icon"
+                      on-click="startScanning_">
+                    <iron-icon class="button-image" icon="cellular-setup:try-again"></iron-icon>
+                    [[i18n('qrCodeRetry')]]
+                  </cr-button>
+                </div>
               </div>
             </div>
-            <cr-button id="useCameraAgainButton"
-                on-click="startScanning_">
-              [[i18n('qrCodeRetry')]]
-            </cr-button>
           </div>
-        </div>
-        <div class="relative">
+        </template>
+        <div id="activationCodeContainer" class$="[[computeActivationCodeClass_(cameraCount_)]]">
           <cr-input id="activationCode"
             label="[[i18n('activationCode')]]"
             value="{{activationCode}}">

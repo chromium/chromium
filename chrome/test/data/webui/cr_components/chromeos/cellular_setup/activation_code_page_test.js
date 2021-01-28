@@ -34,6 +34,10 @@ suite('CrComponentsActivationCodePageTest', function() {
   });
 
   test('UI states', async function() {
+    await flushAsync();
+    let qrCodeDetectorContainer = activationCodePage.$$('#esimQrCodeDetection');
+    const activationCodeContainer =
+        activationCodePage.$$('#activationCodeContainer');
     const video = activationCodePage.$$('#video');
     const startScanningContainer =
         activationCodePage.$$('#startScanningContainer');
@@ -44,6 +48,8 @@ suite('CrComponentsActivationCodePageTest', function() {
     const scanFailureContainer = activationCodePage.$$('#scanFailureContainer');
     const spinner = activationCodePage.$$('paper-spinner-lite');
 
+    assertTrue(!!qrCodeDetectorContainer);
+    assertTrue(!!activationCodeContainer);
     assertTrue(!!video);
     assertTrue(!!startScanningContainer);
     assertTrue(!!startScanningButton);
@@ -55,6 +61,7 @@ suite('CrComponentsActivationCodePageTest', function() {
 
     // Initial state should only be showing the start scanning UI.
     assertFalse(startScanningContainer.hidden);
+    assertFalse(activationCodeContainer.hidden);
     assertTrue(video.hidden);
     assertTrue(scanFinishContainer.hidden);
     assertTrue(switchCameraButton.hidden);
@@ -119,9 +126,20 @@ suite('CrComponentsActivationCodePageTest', function() {
 
     activationCodePage.showLoadingIndicator = true;
     assertFalse(spinner.hidden);
+
+    // Mock, no media devices present
+    mediaDevices.removeDevice();
+    await flushAsync();
+
+    // When no camera device is present qrCodeDetector container should
+    // not be shown
+    qrCodeDetectorContainer = activationCodePage.$$('#esimQrCodeDetection');
+
+    assertFalse(!!qrCodeDetectorContainer);
   });
 
   test('Switch camera button states', async function() {
+    await flushAsync();
     const video = activationCodePage.$$('#video');
     const startScanningButton = activationCodePage.$$('#startScanningButton');
     const switchCameraButton = activationCodePage.$$('#switchCameraButton');
