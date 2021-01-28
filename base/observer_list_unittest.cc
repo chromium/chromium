@@ -365,7 +365,6 @@ TYPED_TEST(ObserverListTest, CompactsWhenNoActiveIterator) {
   EXPECT_FALSE(col.HasObserver(&c));
 
   EXPECT_TRUE(!col.empty());
-  EXPECT_TRUE(col.might_have_observers());
 
   using It = typename ObserverListConstFoo::const_iterator;
 
@@ -381,55 +380,44 @@ TYPED_TEST(ObserverListTest, CompactsWhenNoActiveIterator) {
     EXPECT_EQ(++it, col.end());
 
     EXPECT_TRUE(!col.empty());
-    EXPECT_TRUE(col.might_have_observers());
     EXPECT_EQ(&*ita, &a);
     EXPECT_EQ(&*itb, &b);
 
     ol.RemoveObserver(&a);
     EXPECT_TRUE(!col.empty());
-    EXPECT_TRUE(col.might_have_observers());
     EXPECT_FALSE(col.HasObserver(&a));
     EXPECT_EQ(&*itb, &b);
 
     ol.RemoveObserver(&b);
     EXPECT_FALSE(!col.empty());
-    EXPECT_TRUE(col.might_have_observers());
     EXPECT_FALSE(col.HasObserver(&a));
     EXPECT_FALSE(col.HasObserver(&b));
 
     it = It();
     ita = It();
     EXPECT_FALSE(!col.empty());
-    EXPECT_TRUE(col.might_have_observers());
     ita = itb;
     itb = It();
     EXPECT_FALSE(!col.empty());
-    EXPECT_TRUE(col.might_have_observers());
     ita = It();
     EXPECT_FALSE(!col.empty());
-    EXPECT_FALSE(col.might_have_observers());
   }
 
   ol.AddObserver(&a);
   ol.AddObserver(&b);
   EXPECT_TRUE(!col.empty());
-  EXPECT_TRUE(col.might_have_observers());
   ol.Clear();
   EXPECT_FALSE(!col.empty());
-  EXPECT_FALSE(col.might_have_observers());
 
   ol.AddObserver(&a);
   ol.AddObserver(&b);
   EXPECT_TRUE(!col.empty());
-  EXPECT_TRUE(col.might_have_observers());
   {
     const It it = col.begin();
     ol.Clear();
     EXPECT_FALSE(!col.empty());
-    EXPECT_TRUE(col.might_have_observers());
   }
   EXPECT_FALSE(!col.empty());
-  EXPECT_FALSE(col.might_have_observers());
 }
 
 TYPED_TEST(ObserverListTest, DisruptSelf) {
@@ -1014,7 +1002,6 @@ TEST_F(CheckedObserverListTest, CheckedObserver) {
     // notified, but also the observer list still has |l2| in it. Check that.
     list->RemoveObserver(&l1);
     EXPECT_TRUE(!list->empty());
-    EXPECT_TRUE(list->might_have_observers());
 
     // Now (in the non-death fork()) there's a problem. To delete |it|, we need
     // to compact the list, but that needs to iterate, which would CHECK again.

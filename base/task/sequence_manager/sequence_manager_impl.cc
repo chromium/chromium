@@ -774,7 +774,7 @@ TimeRecordingPolicy SequenceManagerImpl::ShouldRecordTaskTiming(
   if (task_queue->RequiresTaskTiming())
     return TimeRecordingPolicy::DoRecord;
   if (main_thread_only().nesting_depth == 0 &&
-      main_thread_only().task_time_observers.might_have_observers()) {
+      !main_thread_only().task_time_observers.empty()) {
     return TimeRecordingPolicy::DoRecord;
   }
   return TimeRecordingPolicy::DoNotRecord;
