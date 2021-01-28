@@ -11,7 +11,7 @@
 #include "chrome/test/base/web_ui_browser_test.h"
 
 class NetInternalsTest : public WebUIBrowserTest {
- public:
+ protected:
   NetInternalsTest();
   ~NetInternalsTest() override;
 
