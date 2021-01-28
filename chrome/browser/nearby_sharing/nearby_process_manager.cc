@@ -143,7 +143,12 @@ NearbyProcessManager::GetOrStartNearbyConnections(Profile* profile) {
     return nullptr;
 
   EnsureProcessIsRunning();
-  return reference_->GetNearbyConnections().get();
+
+  if (reference_) {
+    return reference_->GetNearbyConnections().get();
+  } else {
+    return nullptr;
+  }
 }
 
 sharing::mojom::NearbySharingDecoder*
@@ -152,7 +157,12 @@ NearbyProcessManager::GetOrStartNearbySharingDecoder(Profile* profile) {
     return nullptr;
 
   EnsureProcessIsRunning();
-  return reference_->GetNearbySharingDecoder().get();
+
+  if (reference_) {
+    return reference_->GetNearbySharingDecoder().get();
+  } else {
+    return nullptr;
+  }
 }
 
 void NearbyProcessManager::StopProcess(Profile* profile) {
@@ -202,10 +212,12 @@ void NearbyProcessManager::EnsureProcessIsRunning() {
   // Note: base::Unretained(this) is used because this is a singleton.
   reference_ = process_manager->GetNearbyProcessReference(base::BindOnce(
       &NearbyProcessManager::OnNearbyProcessStopped, base::Unretained(this)));
-  DCHECK(reference_);
-
-  for (auto& observer : observers_)
-    observer.OnNearbyProcessStarted();
+  if (reference_) {
+    for (auto& observer : observers_)
+      observer.OnNearbyProcessStarted();
+  } else {
+    NS_LOG(ERROR) << "Failed to start process.";
+  }
 }
 
 void NearbyProcessManager::OnNearbyProcessStopped() {
