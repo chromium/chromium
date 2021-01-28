@@ -114,7 +114,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Cookie.Count" units="units" expires_after="2021-05-23">
+<histogram name="Cookie.Count" units="units" expires_after="2021-07-27">
   <owner>battre@chromium.org</owner>
   <summary>
     Number of cookies in the store (recorded every 10 minutes of active browsing

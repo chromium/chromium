@@ -200,7 +200,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PluginVm.SetupFailureReason" enum="PluginVmSetupFailureReason"
-    expires_after="2021-05-16">
+    expires_after="2021-07-27">
   <owner>timloh@chromium.org</owner>
   <owner>chromeos-core-services@google.com</owner>
   <summary>Recorded when the Plugin VM installer fails.</summary>

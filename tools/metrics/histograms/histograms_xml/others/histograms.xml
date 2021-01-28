@@ -699,7 +699,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="appcache.UpdateJob.ExistingResourceCorruptionRecovery"
-    units="units" expires_after="2021-05-25">
+    units="units" expires_after="2021-07-27">
   <owner>cmp@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
   <summary>
@@ -797,7 +797,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AppManagement.AppDetailViews" enum="AppManagementUserAction"
-    expires_after="2021-05-16">
+    expires_after="2021-07-27">
 <!-- Name completed by histogram_suffixes name="AppType" -->
 
   <owner>jshikaram@chromium.org</owner>
@@ -1025,7 +1025,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Autocomplete.MatchType" enum="AutocompleteMatchType"
-    expires_after="2021-05-21">
+    expires_after="2021-07-27">
   <owner>tbansal@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
   <owner>chrome-omnibox-team@google.com</owner>
@@ -2137,7 +2137,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ChildAccountReconcilor.ForcedUserExitOnReconcileError"
-    enum="BooleanHit" expires_after="2021-05-23">
+    enum="BooleanHit" expires_after="2021-07-27">
   <owner>sinhak@chromium.org</owner>
   <owner>escordeiro@chromium.org</owner>
   <summary>
@@ -4384,7 +4384,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DocumentScan.ScanFailed" enum="DocumentScanSaneBackend"
-    expires_after="2021-05-23">
+    expires_after="2021-07-27">
   <owner>fletcherw@chromium.org</owner>
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
@@ -4406,7 +4406,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="DocumentScan.ScanSucceeded" enum="DocumentScanSaneBackend"
-    expires_after="2021-05-23">
+    expires_after="2021-07-27">
   <owner>fletcherw@chromium.org</owner>
   <owner>bmgordon@chromium.org</owner>
   <owner>project-bolton@google.com</owner>
@@ -5037,7 +5037,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ExploreSites.CatalogRequestResult"
-    enum="ExploreSitesCatalogUpdateRequestResult" expires_after="2021-04-18">
+    enum="ExploreSitesCatalogUpdateRequestResult" expires_after="2021-07-27">
   <owner>dewittj@chromium.org</owner>
   <owner>petewil@chromium.org</owner>
   <summary>Results of the Explore Sites network request for a catalog.</summary>
@@ -5484,7 +5484,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FirstRun.LaunchSource" enum="FirstRunLaunchSource"
-    expires_after="2021-05-23">
+    expires_after="2021-07-27">
   <owner>jlebel@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
   <summary>
@@ -5532,7 +5532,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="FirstRun.NewUserExperience.NtpBackgroundInteraction"
-    enum="NuxNtpBackgroundInteractions" expires_after="2021-05-23">
+    enum="NuxNtpBackgroundInteractions" expires_after="2021-07-27">
   <owner>hcarmona@chromium.org</owner>
   <owner>johntlee@chromium.org</owner>
   <summary>
@@ -6522,7 +6522,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Hardware.Concurrency" units="CPU cores"
-    expires_after="2021-05-02">
+    expires_after="2021-07-27">
   <owner>sadrul@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
@@ -7015,7 +7015,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ImportantFile.FileWriteError" enum="PlatformFileError"
-    expires_after="2021-05-23">
+    expires_after="2021-07-27">
   <owner>grt@chromium.org</owner>
   <owner>xaerox@yandex-team.ru</owner>
   <summary>
@@ -7697,7 +7697,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="KeyboardAccessory.AccessoryActionImpression"
-    enum="AccessoryAction" expires_after="2021-05-23">
+    enum="AccessoryAction" expires_after="2021-07-27">
   <owner>fhorschig@chromium.org</owner>
   <summary>
     Android only. Records whenever users faces an action in the accessory bar or
@@ -7706,7 +7706,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="KeyboardAccessory.AccessoryActionSelected"
-    enum="AccessoryAction" expires_after="2021-05-23">
+    enum="AccessoryAction" expires_after="2021-07-27">
   <owner>fhorschig@chromium.org</owner>
   <summary>
     Android only. Records whenever users select an action in the accessory bar
@@ -7715,7 +7715,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="KeyboardAccessory.AccessoryBarShown"
-    enum="AccessoryBarContents" expires_after="2021-05-23">
+    enum="AccessoryBarContents" expires_after="2021-07-27">
   <owner>fhorschig@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
@@ -7726,7 +7726,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="KeyboardAccessory.AccessorySheetSuggestionCount" units="count"
-    expires_after="2021-05-23">
+    expires_after="2021-07-27">
   <owner>fhorschig@chromium.org</owner>
   <summary>
     Android only. Records how many suggestions a user faced when opening a
@@ -7810,7 +7810,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Kiosk.Launch.Error" enum="KioskLaunchError"
-    expires_after="2021-05-23">
+    expires_after="2021-07-27">
   <owner>xiyuan@chromium.org</owner>
   <owner>apotapchuk@chromium.org</owner>
   <summary>Tracks kiosk launch errors.</summary>
@@ -10630,7 +10630,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OccludedWindowMouseEvents" units="events"
-    expires_after="2021-05-02">
+    expires_after="2021-07-27">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>
@@ -11095,7 +11095,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2021-05-23">
+<histogram name="PDF.FormType" enum="PDFFormTypes" expires_after="2021-07-27">
   <owner>rharrison@chromium.org</owner>
   <owner>thestig@chromium.org</owner>
   <summary>
@@ -11123,7 +11123,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="PDF.LinkHighlightOverlapsInPage" units="overlaps"
-    expires_after="2021-05-02">
+    expires_after="2021-07-27">
   <owner>thestig@chromium.org</owner>
   <owner>ankk@microsoft.com</owner>
   <owner>mohitb@microsoft.com</owner>
@@ -11170,7 +11170,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Pepper.InterfaceUsed" enum="PepperInterface"
-    expires_after="2021-05-16">
+    expires_after="2021-07-27">
   <owner>bbudge@chromium.org</owner>
   <owner>raymes@chromium.org</owner>
   <summary>
@@ -12103,7 +12103,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Process.Sandbox.Launch.Error" enum="WinGetLastError"
-    expires_after="2021-05-02">
+    expires_after="2021-07-27">
   <owner>forshaw@chromium.org</owner>
   <owner>wfh@chromium.org</owner>
   <summary>
@@ -14915,7 +14915,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram base="true" name="Spellcheck.Windows.ChromeLocalesSupport"
-    units="locales" expires_after="2021-05-02">
+    units="locales" expires_after="2021-07-27">
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -14935,7 +14935,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram base="true" name="Spellcheck.Windows.SpellcheckLocalesSupport"
-    units="locales" expires_after="2021-05-02">
+    units="locales" expires_after="2021-07-27">
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -14951,7 +14951,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram base="true" name="Spellcheck.Windows.SpellcheckRequestDuration"
-    units="ms" expires_after="2021-05-02">
+    units="ms" expires_after="2021-07-27">
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -14965,7 +14965,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram base="true" name="Spellcheck.Windows.SuggestionGatheringDuration"
-    units="ms" expires_after="2021-05-02">
+    units="ms" expires_after="2021-07-27">
   <owner>gujen@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -16742,7 +16742,7 @@ should be kept until we use this API.  -->
   </summary>
 </histogram>
 
-<histogram name="UI.DeviceScale" units="%" expires_after="2021-05-02">
+<histogram name="UI.DeviceScale" units="%" expires_after="2021-07-27">
   <owner>bsep@chromium.org</owner>
   <summary>
     The device scales available on the system at startup. A system may report
@@ -18512,7 +18512,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.CloseAction" enum="WebUITabStripCloseActions"
-    expires_after="2021-03-21">
+    expires_after="2021-07-27">
   <owner>collinbaker@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
@@ -18534,7 +18534,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUITabStrip.OpenAction" enum="WebUITabStripOpenActions"
-    expires_after="2021-05-23">
+    expires_after="2021-07-27">
   <owner>collinbaker@chromium.org</owner>
   <owner>dfried@chromium.org</owner>
   <summary>
@@ -18733,7 +18733,7 @@ regressions. -->
 </histogram>
 
 <histogram name="WindowOcclusionChanged" enum="WindowOcclusionState"
-    expires_after="2021-05-02">
+    expires_after="2021-07-27">
   <owner>davidbienvenu@chromium.org</owner>
   <owner>fdoray@chromium.org</owner>
   <summary>

@@ -1343,7 +1343,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Network.Shill.Wifi.LinkMonitorsDetectionTimeDiff.NeighborBetter"
-    units="ms" expires_after="M91">
+    units="ms" expires_after="2021-07-27">
   <owner>jiejiang@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
   <summary>
@@ -2029,7 +2029,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Network.Wifi.Synced.UpdateOperation.FailureReason"
-    enum="ConnectionFailureReason" expires_after="2021-04-22">
+    enum="ConnectionFailureReason" expires_after="2021-07-27">
   <owner>jonmann@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>

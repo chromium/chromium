@@ -244,7 +244,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosDockedMagnifier" enum="BooleanEnabled"
-    expires_after="2021-05-23">
+    expires_after="2021-07-27">
   <owner>dmazzoni@chromium.org</owner>
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -320,7 +320,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Accessibility.CrosSelectToSpeak.BackgroundShading"
-    enum="BooleanEnabled" expires_after="2021-05-28">
+    enum="BooleanEnabled" expires_after="2021-07-27">
   <owner>katie@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
@@ -412,7 +412,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Accessibility.CrosShelfNavigationButtonsInTabletModeChanged.OOBE"
-    enum="BooleanEnabled" expires_after="M91">
+    enum="BooleanEnabled" expires_after="2021-07-27">
   <owner>gzadina@google.com</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
