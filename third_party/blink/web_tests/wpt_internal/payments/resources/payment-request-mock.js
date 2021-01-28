@@ -1,18 +1,14 @@
-/*
- * payment-request-mock contains a mock implementation of PaymentRequest.
- */
+import {PaymentRequest, PaymentRequestReceiver} from '/gen/third_party/blink/public/mojom/payments/payment_request.mojom.m.js';
 
-"use strict";
-
-class PaymentRequestMock {
+export class PaymentRequestMock {
   constructor() {
     this.pendingResponse_ = null;
-    this.bindings_ = new mojo.BindingSet(payments.mojom.PaymentRequest);
+    this.receiver_ = new PaymentRequestReceiver(this);
 
     this.interceptor_ =
-        new MojoInterfaceInterceptor(payments.mojom.PaymentRequest.name);
+        new MojoInterfaceInterceptor(PaymentRequest.$interfaceName);
     this.interceptor_.oninterfacerequest =
-        e => this.bindings_.addBinding(this, e.handle);
+        e => this.receiver_.$.bindHandle(e.handle);
     this.interceptor_.start();
   }
 
@@ -26,22 +22,23 @@ class PaymentRequestMock {
   }
 
   show() {}
-
   updateWith(details) {}
-
+  onPaymentDetailsNotUpdated() {}
+  abort() {}
   complete(success) {}
+  retry(errors) {}
+  canMakePayment() {}
+  hasEnrolledInstrument() {}
 
   onPaymentResponse(data) {
     if (!this.client_) {
       this.pendingResponse_ = data;
       return;
     }
-    this.client_.onPaymentResponse(new payments.mojom.PaymentResponse(data));
+    this.client_.onPaymentResponse(data);
   }
 
   onComplete() {
     this.client_.onComplete();
   }
 }
-
-let paymentRequestMock = new PaymentRequestMock(mojo.frameInterfaces);

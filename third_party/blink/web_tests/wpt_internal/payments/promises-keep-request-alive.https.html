@@ -1,10 +1,8 @@
 <!DOCTYPE html>
-<script src="../resources/testharness.js"></script>
-<script src="../resources/testharnessreport.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/third_party/blink/public/mojom/payments/payment_request.mojom.js"></script>
-<script src="resources/payment-request-mock.js"></script>
-<script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {PaymentRequestMock} from './resources/payment-request-mock.js';
 var details = {
   total: {
     label: 'Total',
@@ -17,6 +15,8 @@ var response_data = {
   stringifiedDetails: '{}',
   payer: {}
 };
+
+const paymentRequestMock = new PaymentRequestMock();
 
 promise_test(async () => {
   let result = new PaymentRequest([

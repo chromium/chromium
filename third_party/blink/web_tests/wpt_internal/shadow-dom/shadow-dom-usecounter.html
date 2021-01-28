@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<div id="container"></div>
+<div id="placeholder" role="searchbox"></div>
+<input id="input-container"></input>
+
+<script type="module">
+import {WebFeature} from '/gen/third_party/blink/public/mojom/web_feature/web_feature.mojom.m.js';
+
+test(() => {
+  // Verify that aria-placeholder is counted in light DOM.
+  internals.clearUseCounter(document, WebFeature.kARIAPlaceholderAttribute);
+  var domPlaceholder = document.getElementById('placeholder');
+  domPlaceholder.setAttribute('aria-placeholder', 'MM-DD-YYYY');
+  assert_true(internals.isUseCounted(document, WebFeature.kARIAPlaceholderAttribute));
+
+  // <input type=datetime-local> generates shadow DOM and makes use of the aria-placeholder attribute.
+  internals.clearUseCounter(document, WebFeature.kARIAPlaceholderAttribute);
+  assert_false(internals.isUseCounted(document, WebFeature.kARIAPlaceholderAttribute), "Check that the attribute has been cleared.");
+  var input = document.getElementById('input-container');
+  input.setAttribute('type', 'datetime-local');
+  assert_not_equals(internals.shadowRoot(input).querySelector('[aria-placeholder]'), null, "Attribute should exist in UA shadow DOM");
+  assert_false(internals.isUseCounted(document, WebFeature.kARIAPlaceholderAttribute), "Attribute should not be counted in UA shadow DOM.");
+}, "Attributes should not be counted in user agent shadow DOM.");
+</script>
+</body>
