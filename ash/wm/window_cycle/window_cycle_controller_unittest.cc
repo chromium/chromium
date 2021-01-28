@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/focus_cycler.h"
 #include "ash/frame_throttler/frame_throttling_controller.h"
@@ -1018,6 +1019,40 @@ TEST_F(WindowCycleControllerTest, DoubleAltTabWithDeskSwitch) {
   waiter.Wait();
   EXPECT_EQ(desk_0, desks_controller->active_desk());
   EXPECT_EQ(win0.get(), window_util::GetActiveWindow());
+}
+
+// A regression test for crbug.com/1160676. Tests that the alt-key release
+// to quit alt-tab is acknowledged by the accelerator controller.
+TEST_F(WindowCycleControllerTest, AltKeyRelease) {
+  std::unique_ptr<Window> window0(CreateTestWindowInShellWithId(0));
+  std::unique_ptr<Window> window1(CreateTestWindowInShellWithId(1));
+
+  // Press Alt and start cycling.
+  auto* generator = GetEventGenerator();
+  generator->PressKey(ui::VKEY_MENU, ui::EF_NONE);
+  auto currently_pressed_keys = Shell::Get()
+                                    ->accelerator_controller()
+                                    ->accelerator_history()
+                                    ->currently_pressed_keys();
+  // Expect exactly one key pressed, which is Alt.
+  EXPECT_EQ(1u, currently_pressed_keys.size());
+  EXPECT_TRUE(base::Contains(currently_pressed_keys, ui::VKEY_MENU));
+
+  WindowCycleController* controller = Shell::Get()->window_cycle_controller();
+  controller->HandleCycleWindow(WindowCycleController::FORWARD);
+
+  // Release Alt key to end alt-tab cycling and open up window0.
+  generator->ReleaseKey(ui::VKEY_MENU, ui::EF_NONE);
+  EXPECT_FALSE(controller->IsCycling());
+  EXPECT_TRUE(WindowState::Get(window0.get())->IsActive());
+
+  // Expect all keys pressed to be released.
+  currently_pressed_keys = Shell::Get()
+                               ->accelerator_controller()
+                               ->accelerator_history()
+                               ->currently_pressed_keys();
+  EXPECT_EQ(0u, currently_pressed_keys.size());
+  EXPECT_FALSE(base::Contains(currently_pressed_keys, ui::VKEY_MENU));
 }
 
 class LimitedWindowCycleControllerTest : public WindowCycleControllerTest {

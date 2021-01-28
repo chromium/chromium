@@ -4,10 +4,12 @@
 
 #include "ash/wm/window_cycle/window_cycle_controller.h"
 
+#include "ash/accelerators/accelerator_controller_impl.h"
 #include "ash/events/event_rewriter_controller_impl.h"
 #include "ash/metrics/task_switch_metrics_recorder.h"
 #include "ash/metrics/task_switch_source.h"
 #include "ash/metrics/user_metrics_recorder.h"
+#include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -225,6 +227,7 @@ void WindowCycleController::Step(Direction direction) {
 }
 
 void WindowCycleController::StopCycling() {
+  const bool has_window_targeter = window_cycle_list_->HasWindowTargeter();
   window_cycle_list_.reset();
 
   // We can't use the MRU window list here to get the active window, since
@@ -249,6 +252,19 @@ void WindowCycleController::StopCycling() {
   active_desk_container_id_before_cycle_ = kShellWindowId_Invalid;
   Shell::Get()->event_rewriter_controller()->SetAltLeftClickRemappingEnabled(
       true);
+
+  if (has_window_targeter) {
+    // Resend the alt-key release, dropped by |window_targeter_|, to the
+    // accelerator controller to cancel out the alt-key press in its
+    // history from using the accelerator, prior to the targeter creation.
+    // Without this resending, the future key events will be interpreted
+    // incorrectly as if the user still holds the alt key (crbug.com/1160676).
+    ui::Accelerator alt_release(ui::VKEY_MENU, ui::EF_NONE,
+                                ui::Accelerator::KeyState::RELEASED);
+    AcceleratorController::Get()
+        ->GetAcceleratorHistory()
+        ->StoreCurrentAccelerator(alt_release);
+  }
 }
 
 void WindowCycleController::InitFromUserPrefs() {
