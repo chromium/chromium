@@ -192,16 +192,55 @@ Mp2tStreamParser::BufferQueueWithConfig::BufferQueueWithConfig(
 Mp2tStreamParser::BufferQueueWithConfig::~BufferQueueWithConfig() {
 }
 
-Mp2tStreamParser::Mp2tStreamParser(bool sbr_in_mimetype)
-  : sbr_in_mimetype_(sbr_in_mimetype),
-    selected_audio_pid_(-1),
-    selected_video_pid_(-1),
-    is_initialized_(false),
-    segment_started_(false) {
+Mp2tStreamParser::Mp2tStreamParser(
+    const std::vector<std::string>& allowed_codecs,
+    bool sbr_in_mimetype)
+    : sbr_in_mimetype_(sbr_in_mimetype),
+      selected_audio_pid_(-1),
+      selected_video_pid_(-1),
+      is_initialized_(false),
+      segment_started_(false) {
+  for (const std::string& codec_name : allowed_codecs) {
+    switch (StringToVideoCodec(codec_name)) {
+      case VideoCodec::kCodecH264:
+        allowed_stream_types_.insert(kStreamTypeAVC);
+#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
+        allowed_stream_types_.insert(kStreamTypeAVCWithSampleAES);
+#endif
+        continue;
+      case VideoCodec::kUnknownVideoCodec:
+        // Probably audio.
+        break;
+      default:
+        DLOG(WARNING) << "Unsupported video codec " << codec_name;
+        continue;
+    }
+
+    switch (StringToAudioCodec(codec_name)) {
+      case AudioCodec::kCodecAAC:
+        allowed_stream_types_.insert(kStreamTypeAAC);
+#if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
+        allowed_stream_types_.insert(kStreamTypeAACWithSampleAES);
+#endif
+        continue;
+      case AudioCodec::kCodecMP3:
+        allowed_stream_types_.insert(kStreamTypeMpeg1Audio);
+        allowed_stream_types_.insert(kStreamTypeMpeg2Audio);
+        continue;
+      case AudioCodec::kUnknownAudioCodec:
+        // Neither audio, nor video.
+        break;
+      default:
+        DLOG(WARNING) << "Unsupported audio codec " << codec_name;
+        continue;
+    }
+
+    // Failed to parse as an audio or a video codec.
+    DLOG(WARNING) << "Unknown codec " << codec_name;
+  }
 }
 
-Mp2tStreamParser::~Mp2tStreamParser() {
-}
+Mp2tStreamParser::~Mp2tStreamParser() {}
 
 void Mp2tStreamParser::Init(
     InitCB init_cb,
@@ -480,6 +519,15 @@ void Mp2tStreamParser::RegisterPes(int pes_pid,
   auto it = pids_.find(pes_pid);
   if (it != pids_.end())
     return;
+
+  // Ignore stream types not specified in the creation of the SourceBuffer.
+  // See https://crbug.com/1169393.
+  // TODO(https://crbug.com/535738): Remove this hack when MSE stream/mime type
+  // checks have been relaxed.
+  if (allowed_stream_types_.find(stream_type) == allowed_stream_types_.end()) {
+    DVLOG(1) << "Stream type not allowed for this parser: " << stream_type;
+    return;
+  }
 
   // Create a stream parser corresponding to the stream type.
   bool is_audio = true;

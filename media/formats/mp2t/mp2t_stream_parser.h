@@ -34,7 +34,8 @@ class PidState;
 
 class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
  public:
-  explicit Mp2tStreamParser(bool sbr_in_mimetype);
+  explicit Mp2tStreamParser(const std::vector<std::string>& allowed_codecs,
+                            bool sbr_in_mimetype);
   ~Mp2tStreamParser() override;
 
   // StreamParser implementation.
@@ -143,6 +144,9 @@ class MEDIA_EXPORT Mp2tStreamParser : public StreamParser {
   NewMediaSegmentCB new_segment_cb_;
   EndMediaSegmentCB end_of_segment_cb_;
   MediaLog* media_log_;
+
+  // List of allowed stream types for this parser.
+  std::set<int> allowed_stream_types_;
 
   // True when AAC SBR extension is signalled in the mimetype
   // (mp4a.40.5 in the codecs parameter).
