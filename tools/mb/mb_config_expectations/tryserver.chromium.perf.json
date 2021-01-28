@@ -41,6 +41,17 @@
       "use_goma": true
     }
   },
+  "Mac arm Builder Perf": {
+    "gn_args": {
+      "enable_keystone_registration_framework": false,
+      "ignore_missing_widevine_signing_cert": true,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "symbol_level": 2,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
   "Win Builder Perf": {
     "gn_args": {
       "is_chrome_branded": true,
