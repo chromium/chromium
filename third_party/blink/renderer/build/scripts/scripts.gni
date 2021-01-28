@@ -92,8 +92,7 @@ make_core_generated_deps = [
 #  - //third_party/blink/renderer/build/scripts
 #  - //third_party
 template("blink_python_runner") {
-  # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-  python2_action(target_name) {
+  action(target_name) {
     script = "$_scripts_dir/run_with_pythonpath.py"
     sources = [ invoker.script ]
     if (defined(invoker.sources)) {

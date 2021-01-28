@@ -251,8 +251,7 @@ blink_modules_sources("bindings_modules_impl") {
   ]
 }
 
-# TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-python2_action("generate_v8_context_snapshot_external_references") {
+action("generate_v8_context_snapshot_external_references") {
   script = "$bindings_scripts_dir/generate_v8_context_snapshot_external_references.py"
   idl_files =
       core_interface_idl_files_core_only +
