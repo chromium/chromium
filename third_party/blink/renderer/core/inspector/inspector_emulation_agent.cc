@@ -589,6 +589,9 @@ Response InspectorEmulationAgent::setUserAgentOverride(
   }
 
   if (ua_metadata_override.isJust()) {
+    blink::UserAgentMetadata default_ua_metadata =
+        Platform::Current()->UserAgentMetadata();
+
     if (user_agent.IsEmpty()) {
       ua_metadata_override_ = base::nullopt;
       serialized_ua_metadata_override_.Set(std::vector<uint8_t>());
@@ -598,15 +601,25 @@ Response InspectorEmulationAgent::setUserAgentOverride(
     std::unique_ptr<protocol::Emulation::UserAgentMetadata> ua_metadata =
         ua_metadata_override.takeJust();
     ua_metadata_override_.emplace();
-    if (ua_metadata->getBrands()) {
-      for (const auto& bv : *ua_metadata->getBrands()) {
+    if (ua_metadata->hasBrands()) {
+      for (const auto& bv : *ua_metadata->getBrands(nullptr)) {
         blink::UserAgentBrandVersion out_bv;
         out_bv.brand = bv->getBrand().Ascii();
         out_bv.major_version = bv->getVersion().Ascii();
         ua_metadata_override_->brand_version_list.push_back(std::move(out_bv));
       }
+    } else {
+      ua_metadata_override_->brand_version_list =
+          std::move(default_ua_metadata.brand_version_list);
     }
-    ua_metadata_override_->full_version = ua_metadata->getFullVersion().Ascii();
+
+    if (ua_metadata->hasFullVersion()) {
+      ua_metadata_override_->full_version =
+          ua_metadata->getFullVersion("").Ascii();
+    } else {
+      ua_metadata_override_->full_version =
+          std::move(default_ua_metadata.full_version);
+    }
     ua_metadata_override_->platform = ua_metadata->getPlatform().Ascii();
     ua_metadata_override_->platform_version =
         ua_metadata->getPlatformVersion().Ascii();

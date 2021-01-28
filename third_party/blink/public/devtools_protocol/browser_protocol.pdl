@@ -3163,10 +3163,11 @@ domain Emulation
       string version
 
   # Used to specify User Agent Cient Hints to emulate. See https://wicg.github.io/ua-client-hints
+  # Missing optional values will be filled in by the target with what it would normally use.
   experimental type UserAgentMetadata extends object
     properties
-      array of UserAgentBrandVersion brands
-      string fullVersion
+      optional array of UserAgentBrandVersion brands
+      optional string fullVersion
       string platform
       string platformVersion
       string architecture
