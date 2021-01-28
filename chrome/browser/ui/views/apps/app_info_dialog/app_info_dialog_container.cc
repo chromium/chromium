@@ -174,10 +174,13 @@ class NativeDialogContainer : public views::DialogDelegateView {
     SetButtons(ui::DIALOG_BUTTON_NONE);
     SetModalType(kModalType);
     AddChildView(std::move(dialog_body));
-    RegisterWindowClosingCallback(std::move(close_callback));
     SetLayoutManager(std::make_unique<views::FillLayout>());
     chrome::RecordDialogCreation(chrome::DialogIdentifier::NATIVE_CONTAINER);
     SetPreferredSize(size);
+
+    if (!close_callback.is_null()) {
+      RegisterWindowClosingCallback(std::move(close_callback));
+    }
   }
   NativeDialogContainer(const NativeDialogContainer&) = delete;
   NativeDialogContainer& operator=(const NativeDialogContainer&) = delete;
