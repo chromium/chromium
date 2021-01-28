@@ -306,18 +306,19 @@ void AuthenticationService::SignIn(ChromeIdentity* identity) {
   ResetPromptForSignIn();
   sync_setup_service_->PrepareForFirstSyncSetup();
 
+  // Load all credentials from SSO library. This must load the credentials
+  // for the primary account too.
+  identity_manager_->GetDeviceAccountsSynchronizer()
+      ->ReloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountId());
+
   const CoreAccountId account_id = identity_manager_->PickAccountIdForAccount(
       base::SysNSStringToUTF8(identity.gaiaID),
       base::SysNSStringToUTF8(identity.userEmail));
 
-  // Load all credentials from SSO library. This must load the credentials
-  // for the primary account too.
-  identity_manager_->GetDeviceAccountsSynchronizer()
-      ->ReloadAllAccountsFromSystem();
-
   // Ensure that the account the user is trying to sign into has been loaded
   // from the SSO library and that hosted_domain is set (should be the proper
   // hosted domain or kNoHostedDomainFound that are both non-empty strings).
+  CHECK(identity_manager_->HasAccountWithRefreshToken(account_id));
   const base::Optional<AccountInfo> account_info =
       identity_manager_
           ->FindExtendedAccountInfoForAccountWithRefreshTokenByAccountId(
@@ -553,7 +554,8 @@ void AuthenticationService::ReloadCredentialsFromIdentities(
   HandleForgottenIdentity(nil, should_prompt);
   if (IsAuthenticated()) {
     identity_manager_->GetDeviceAccountsSynchronizer()
-        ->ReloadAllAccountsFromSystem();
+        ->ReloadAllAccountsFromSystemWithPrimaryAccount(
+            identity_manager_->GetPrimaryAccountId());
   }
 }
 

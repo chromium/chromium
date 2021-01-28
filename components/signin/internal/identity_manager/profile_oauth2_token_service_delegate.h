@@ -126,11 +126,13 @@ class ProfileOAuth2TokenServiceDelegate {
   // and false otherwise.
   virtual bool FixRequestErrorIfPossible();
 
-#if defined(OS_IOS)
-  // Triggers platform specific implementation for iOS to reload all accounts
-  // from system.
-  virtual void ReloadAllAccountsFromSystem() {}
+#if defined(OS_IOS) || defined(OS_ANDROID)
+  // Triggers platform specific implementation to reload accounts from system.
+  virtual void ReloadAllAccountsFromSystemWithPrimaryAccount(
+      const base::Optional<CoreAccountId>& primary_account_id) {}
+#endif
 
+#if defined(OS_IOS)
   // Triggers platform specific implementation for iOS to add a given account
   // to the token service from a system account.
   virtual void ReloadAccountFromSystem(const CoreAccountId& account_id) {}
@@ -139,11 +141,6 @@ class ProfileOAuth2TokenServiceDelegate {
 #if defined(OS_ANDROID)
   // Returns a reference to the corresponding Java object.
   virtual base::android::ScopedJavaLocalRef<jobject> GetJavaObject() = 0;
-
-  // Triggers platform specific implementation for Android to reload accounts
-  // from system.
-  virtual void ReloadAllAccountsFromSystemWithPrimaryAccount(
-      const base::Optional<CoreAccountId>& primary_account_id) {}
 #endif
 
   // -----------------------------------------------------------------------

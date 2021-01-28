@@ -18,20 +18,13 @@ class DeviceAccountsSynchronizer {
   DeviceAccountsSynchronizer() = default;
   virtual ~DeviceAccountsSynchronizer() = default;
 
-#if defined(OS_ANDROID)
   // Reloads the information of all device-level accounts. All device-level
   // accounts will be visible in IdentityManager::GetAccountsWithRefreshTokens()
   // with any persistent errors cleared after this method is called.
   virtual void ReloadAllAccountsFromSystemWithPrimaryAccount(
       const base::Optional<CoreAccountId>& primary_account_id) = 0;
-#endif
 
 #if defined(OS_IOS)
-  // Reloads the information of all device-level accounts. All device-level
-  // accounts will be visible in IdentityManager::GetAccountsWithRefreshTokens()
-  // with any persistent errors cleared after this method is called.
-  virtual void ReloadAllAccountsFromSystem() = 0;
-
   // Reloads the information of the device-level account with |account_id|. The
   // account will be visible in IdentityManager::GetAccountsWithRefreshTokens()
   // with any persistent error cleared after this method is called.

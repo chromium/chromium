@@ -20,13 +20,10 @@ class DeviceAccountsSynchronizerImpl : public DeviceAccountsSynchronizer {
   ~DeviceAccountsSynchronizerImpl() override;
 
   // DeviceAccountsSynchronizer implementation.
-#if defined(OS_ANDROID)
   void ReloadAllAccountsFromSystemWithPrimaryAccount(
       const base::Optional<CoreAccountId>& primary_account_id) override;
-#endif
 
 #if defined(OS_IOS)
-  void ReloadAllAccountsFromSystem() override;
   void ReloadAccountFromSystem(const CoreAccountId& account_id) override;
 #endif
 

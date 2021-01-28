@@ -174,12 +174,12 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
   DCHECK(!self.currentIdentity)
       << "Already syncing! Call -stopSyncAndClearIdentity first.";
 
+  _identityManager->GetDeviceAccountsSynchronizer()
+      ->ReloadAllAccountsFromSystemWithPrimaryAccount(CoreAccountId());
+
   const CoreAccountId accountId = _identityManager->PickAccountIdForAccount(
       base::SysNSStringToUTF8(identity.gaiaID),
       base::SysNSStringToUTF8(identity.email));
-
-  _identityManager->GetDeviceAccountsSynchronizer()
-      ->ReloadAllAccountsFromSystem();
   CHECK(_identityManager->HasAccountWithRefreshToken(accountId));
 
   _identityManager->GetPrimaryAccountMutator()->SetPrimaryAccount(accountId);
@@ -258,7 +258,8 @@ __weak id<CWVSyncControllerDataSource> gSyncDataSource;
 
 - (void)reloadAccounts {
   _identityManager->GetDeviceAccountsSynchronizer()
-      ->ReloadAllAccountsFromSystem();
+      ->ReloadAllAccountsFromSystemWithPrimaryAccount(
+          _identityManager->GetPrimaryAccountInfo().account_id);
 }
 
 @end

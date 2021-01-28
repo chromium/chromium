@@ -193,14 +193,35 @@ void ProfileOAuth2TokenServiceIOSDelegate::LoadCredentials(
     return;
   }
 
-  ReloadCredentials();
+  ReloadCredentials(primary_account_id);
+  if (RefreshTokenIsAvailable(primary_account_id)) {
+    set_load_credentials_state(
+        signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS);
+  } else {
+    // Account must have been seeded before (when the primary account was set).
+    DCHECK(!account_tracker_service_->GetAccountInfo(primary_account_id)
+                .gaia.empty());
+    DCHECK(!account_tracker_service_->GetAccountInfo(primary_account_id)
+                .email.empty());
 
-  set_load_credentials_state(
-      signin::LoadCredentialsState::LOAD_CREDENTIALS_FINISHED_WITH_SUCCESS);
+    // For whatever reason, we failed to load the device account for the primary
+    // account. There must always be an account for the primary account
+    accounts_[primary_account_id].last_auth_error =
+        GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+            GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                CREDENTIALS_MISSING);
+    FireAuthErrorChanged(primary_account_id,
+                         accounts_[primary_account_id].last_auth_error);
+    FireRefreshTokenAvailable(primary_account_id);
+    set_load_credentials_state(
+        signin::LoadCredentialsState::
+            LOAD_CREDENTIALS_FINISHED_WITH_NO_TOKEN_FOR_PRIMARY_ACCOUNT);
+  }
   FireRefreshTokensLoaded();
 }
 
-void ProfileOAuth2TokenServiceIOSDelegate::ReloadCredentials() {
+void ProfileOAuth2TokenServiceIOSDelegate::ReloadCredentials(
+    const CoreAccountId& primary_account_id) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   // Get the list of new account ids.
@@ -235,7 +256,14 @@ void ProfileOAuth2TokenServiceIOSDelegate::ReloadCredentials() {
   // load |new_accounts|.
   ScopedBatchChange batch(this);
   for (const auto& account_to_remove : accounts_to_remove) {
-    RemoveAccount(account_to_remove);
+    if (account_to_remove == primary_account_id) {
+      UpdateAuthError(account_to_remove,
+                      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+                          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+                              CREDENTIALS_MISSING));
+    } else {
+      RemoveAccount(account_to_remove);
+    }
   }
 
   // Load all new_accounts.
@@ -263,8 +291,10 @@ void ProfileOAuth2TokenServiceIOSDelegate::RevokeAllCredentials() {
   DCHECK_EQ(0u, accounts_.size());
 }
 
-void ProfileOAuth2TokenServiceIOSDelegate::ReloadAllAccountsFromSystem() {
-  ReloadCredentials();
+void ProfileOAuth2TokenServiceIOSDelegate::
+    ReloadAllAccountsFromSystemWithPrimaryAccount(
+        const base::Optional<CoreAccountId>& primary_account_id) {
+  ReloadCredentials(primary_account_id.value_or(CoreAccountId()));
 }
 
 void ProfileOAuth2TokenServiceIOSDelegate::ReloadAccountFromSystem(
