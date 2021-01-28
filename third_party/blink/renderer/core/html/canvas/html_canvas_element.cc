@@ -1067,6 +1067,32 @@ void HTMLCanvasElement::toBlob(V8BlobCallback* callback,
   }
 }
 
+bool HTMLCanvasElement::IsPresentationAttribute(
+    const QualifiedName& name) const {
+  if (name == html_names::kWidthAttr || name == html_names::kHeightAttr)
+    return true;
+  return HTMLElement::IsPresentationAttribute(name);
+}
+
+void HTMLCanvasElement::CollectStyleForPresentationAttribute(
+    const QualifiedName& name,
+    const AtomicString& value,
+    MutableCSSPropertyValueSet* style) {
+  if (name == html_names::kWidthAttr) {
+    if (FastHasAttribute(html_names::kHeightAttr)) {
+      const AtomicString& height = FastGetAttribute(html_names::kHeightAttr);
+      ApplyAspectRatioToStyle(value, height, style);
+    }
+  } else if (name == html_names::kHeightAttr) {
+    if (FastHasAttribute(html_names::kWidthAttr)) {
+      const AtomicString& width = FastGetAttribute(html_names::kWidthAttr);
+      ApplyAspectRatioToStyle(width, value, style);
+    }
+  } else {
+    HTMLElement::CollectStyleForPresentationAttribute(name, value, style);
+  }
+}
+
 void HTMLCanvasElement::AddListener(CanvasDrawListener* listener) {
   listeners_.insert(listener);
 }

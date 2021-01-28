@@ -141,6 +141,11 @@ class CORE_EXPORT HTMLCanvasElement final
     return toBlob(callback, mime_type, ScriptValue(), exception_state);
   }
 
+  bool IsPresentationAttribute(const QualifiedName&) const final;
+  void CollectStyleForPresentationAttribute(const QualifiedName&,
+                                            const AtomicString&,
+                                            MutableCSSPropertyValueSet*) final;
+
   // Used for canvas capture.
   void AddListener(CanvasDrawListener*);
   void RemoveListener(CanvasDrawListener*);
