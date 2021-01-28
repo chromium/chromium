@@ -40,6 +40,7 @@ enum class MergeType {
 
 namespace test {
 class BridgedNativeWidgetTest;
+class TextfieldTest;
 }  // namespace test
 
 // A model that represents text content for a views::Textfield.
@@ -270,7 +271,7 @@ class VIEWS_EXPORT TextfieldModel {
   friend class internal::Edit;
   friend class test::BridgedNativeWidgetTest;
   friend class TextfieldModelTest;
-  friend class TextfieldTest;
+  friend class test::TextfieldTest;
 
   FRIEND_TEST_ALL_PREFIXES(TextfieldModelTest, UndoRedo_BasicTest);
   FRIEND_TEST_ALL_PREFIXES(TextfieldModelTest, UndoRedo_CutCopyPasteTest);

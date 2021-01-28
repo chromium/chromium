@@ -11,6 +11,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 
 #if defined(OS_WIN)
 #include <vector>
@@ -84,6 +85,29 @@ class VIEWS_EXPORT Textfield : public View,
     kSelectAll,
     kLastCommandId = kSelectAll,
   };
+
+#if defined(OS_APPLE)
+  static constexpr gfx::SelectionBehavior kLineSelectionBehavior =
+      gfx::SELECTION_EXTEND;
+  static constexpr gfx::SelectionBehavior kWordSelectionBehavior =
+      gfx::SELECTION_CARET;
+  static constexpr gfx::SelectionBehavior kMoveParagraphSelectionBehavior =
+      gfx::SELECTION_CARET;
+  static constexpr gfx::SelectionBehavior kPageSelectionBehavior =
+      gfx::SELECTION_EXTEND;
+#else
+  static constexpr gfx::SelectionBehavior kLineSelectionBehavior =
+      gfx::SELECTION_RETAIN;
+  static constexpr gfx::SelectionBehavior kWordSelectionBehavior =
+      gfx::SELECTION_RETAIN;
+  static constexpr gfx::SelectionBehavior kMoveParagraphSelectionBehavior =
+      gfx::SELECTION_RETAIN;
+  static constexpr gfx::SelectionBehavior kPageSelectionBehavior =
+      gfx::SELECTION_RETAIN;
+#endif
+
+  // Pair of |text_changed|, |cursor_changed|.
+  using EditCommandResult = std::pair<bool, bool>;
 
   // Returns the text cursor blink time, or 0 for no blinking.
   static base::TimeDelta GetCaretBlinkInterval();
@@ -437,6 +461,8 @@ class VIEWS_EXPORT Textfield : public View,
       views::PropertyChangedCallback callback) WARN_UNUSED_RESULT;
 
  protected:
+  TextfieldModel* textfield_model() { return model_.get(); }
+
   // Inserts or appends a character in response to an IME operation.
   virtual void DoInsertChar(base::char16 ch);
 
@@ -473,6 +499,20 @@ class VIEWS_EXPORT Textfield : public View,
   // Like RequestFocus, but explicitly states that the focus is triggered by a
   // gesture event.
   void RequestFocusForGesture(const ui::GestureEventDetails& details);
+
+  virtual Textfield::EditCommandResult DoExecuteTextEditCommand(
+      ui::TextEditCommand command);
+
+  // Handles key press event ahead of OnKeyPressed(). This is used for Textarea
+  // to handle the return key. Use TextfieldController::HandleKeyEvent to
+  // intercept the key event in other cases.
+  virtual bool PreHandleKeyPressed(const ui::KeyEvent& event);
+
+  // Get the default command for a given key |event|.
+  virtual ui::TextEditCommand GetCommandForKeyEvent(const ui::KeyEvent& event);
+
+  // Update the cursor position in the text field.
+  void UpdateCursorViewPosition();
 
  private:
   friend class TextfieldTestApi;
@@ -526,9 +566,6 @@ class VIEWS_EXPORT Textfield : public View,
 
   // A callback function to periodically update the cursor node_data.
   void UpdateCursorVisibility();
-
-  // Update the cursor position in the text field.
-  void UpdateCursorViewPosition();
 
   // Gets the style::TextStyle that should be used.
   int GetTextStyle() const;

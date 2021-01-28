@@ -626,6 +626,11 @@ bool TextfieldModel::Paste() {
   if (text.empty())
     return false;
 
+  if (render_text()->multiline()) {
+    InsertTextInternal(text, false);
+    return true;
+  }
+
   // Leading/trailing whitespace is often selected accidentally, and is rarely
   // critical to include (e.g. when pasting into a find bar).  Trim it.  By
   // contrast, whitespace in the middle of the string may need exact

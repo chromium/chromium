@@ -69,6 +69,8 @@ component("views_examples_lib") {
     "table_example.h",
     "text_example.cc",
     "text_example.h",
+    "textarea_example.cc",
+    "textarea_example.h",
     "textfield_example.cc",
     "textfield_example.h",
     "throbber_example.cc",

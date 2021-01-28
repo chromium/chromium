@@ -582,6 +582,7 @@ class GFX_EXPORT RenderText {
 
   const Vector2d& GetUpdatedDisplayOffset();
   void SetDisplayOffset(int horizontal_offset);
+  void SetDisplayOffset(Vector2d offset);
 
   // Returns the line offset from the origin after applying the text alignment
   // and the display offset.

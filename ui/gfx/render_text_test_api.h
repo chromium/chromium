@@ -66,6 +66,10 @@ class RenderTextTestApi {
     return render_text_->GetShapedText()->lines();
   }
 
+  const Vector2d& display_offset() const {
+    return render_text_->display_offset_;
+  }
+
   SelectionModel EdgeSelectionModel(VisualCursorDirection direction) {
     return render_text_->EdgeSelectionModel(direction);
   }

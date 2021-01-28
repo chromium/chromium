@@ -3332,6 +3332,56 @@ TEST_F(RenderTextTest, DirectionalityInvalidation) {
   EXPECT_EQ(original_text_direction, render_text->GetDisplayTextDirection());
 }
 
+TEST_F(RenderTextTest, MoveCursor_UpDown_Scroll) {
+  RenderText* render_text = GetRenderText();
+  render_text->SetDisplayRect(Rect(100, 30));
+  render_text->SetMultiline(true);
+  render_text->SetVerticalAlignment(ALIGN_TOP);
+
+  const size_t kLineSize = 50;
+  std::string text;
+  for (size_t i = 0; i < kLineSize - 1; ++i)
+    text += "a\n";
+
+  render_text->SetText(ASCIIToUTF16(text));
+  EXPECT_EQ(kLineSize, render_text->GetNumLines());
+
+  // Move cursor down with scroll.
+  render_text->SelectRange(Range(0));
+  // |line_height| is the distance from the top.
+  float line_height =
+      render_text->GetLineSizeF(render_text->selection_model()).height();
+  for (size_t i = 1; i < kLineSize; ++i) {
+    SCOPED_TRACE(base::StringPrintf("Testing line [%" PRIuS "]", i));
+    render_text->MoveCursor(CHARACTER_BREAK, CURSOR_DOWN, SELECTION_NONE);
+    ASSERT_EQ(Range(i * 2), render_text->selection());
+    ASSERT_TRUE(render_text->display_rect().Contains(
+        render_text->GetUpdatedCursorBounds()));
+    line_height +=
+        render_text->GetLineSizeF(render_text->selection_model()).height();
+    ASSERT_FLOAT_EQ(test_api()->display_offset().y(),
+                    std::min(0.0f, 30.0f - line_height));
+  }
+
+  // Move cursor up with scroll.
+  // |line_height| is the distance from the bottom.
+  line_height =
+      render_text->GetLineSizeF(render_text->selection_model()).height();
+  int offset_y = test_api()->display_offset().y();
+  for (size_t i = kLineSize - 2; i != size_t{-1}; --i) {
+    SCOPED_TRACE(base::StringPrintf("Testing line [%" PRIuS "]", i));
+    render_text->MoveCursor(CHARACTER_BREAK, CURSOR_UP, SELECTION_NONE);
+    ASSERT_EQ(Range(i * 2), render_text->selection());
+    ASSERT_TRUE(render_text->display_rect().Contains(
+        render_text->GetUpdatedCursorBounds()));
+    line_height +=
+        render_text->GetLineSizeF(render_text->selection_model()).height();
+    ASSERT_FLOAT_EQ(test_api()->display_offset().y(),
+                    offset_y + std::max(0.0f, line_height - 30.0f));
+  }
+  EXPECT_EQ(0, test_api()->display_offset().y());
+}
+
 TEST_F(RenderTextTest, GetDisplayTextDirection) {
   struct {
     const char* text;

@@ -1190,6 +1190,10 @@ const Vector2d& RenderText::GetUpdatedDisplayOffset() {
 }
 
 void RenderText::SetDisplayOffset(int horizontal_offset) {
+  SetDisplayOffset({horizontal_offset, display_offset_.y()});
+}
+
+void RenderText::SetDisplayOffset(Vector2d offset) {
   const int extra_content = GetContentWidth() - display_rect_.width();
   const int cursor_width = cursor_enabled_ ? 1 : 0;
 
@@ -1215,24 +1219,30 @@ void RenderText::SetDisplayOffset(int horizontal_offset) {
         break;
     }
   }
-  if (horizontal_offset < min_offset)
-    horizontal_offset = min_offset;
-  else if (horizontal_offset > max_offset)
-    horizontal_offset = max_offset;
+
+  const int horizontal_offset =
+      base::ClampToRange(offset.x(), min_offset, max_offset);
+
+  // y-offset is set only when the vertical alignment is ALIGN_TOP.
+  // TODO(jongkown.lee): Support other vertical alignments.
+  DCHECK(vertical_alignment_ == ALIGN_TOP || offset.y() == 0);
+  const int vertical_offset = base::ClampToRange(
+      offset.y(),
+      std::min(display_rect_.height() - GetStringSize().height(), 0), 0);
 
   cached_bounds_and_offset_valid_ = true;
-  display_offset_.set_x(horizontal_offset);
+  display_offset_ = {horizontal_offset, vertical_offset};
   cursor_bounds_ = GetCursorBounds(selection_model_, true);
 }
 
 Vector2d RenderText::GetLineOffset(size_t line_number) {
   const internal::ShapedText* shaped_text = GetShapedText();
   Vector2d offset = display_rect().OffsetFromOrigin();
-  // TODO(ckocagil): Apply the display offset for multiline scrolling.
   if (!multiline()) {
     offset.Add(GetUpdatedDisplayOffset());
   } else {
     DCHECK_LT(line_number, shaped_text->lines().size());
+    offset.Add(GetUpdatedDisplayOffset());
     offset.Add(
         Vector2d(0, shaped_text->lines()[line_number].preceding_heights));
   }
@@ -2224,9 +2234,8 @@ void RenderText::UpdateCachedBoundsAndOffset() {
   if (cached_bounds_and_offset_valid_)
     return;
 
-  // TODO(ckocagil): Add support for scrolling multiline text.
-
   int delta_x = 0;
+  int delta_y = 0;
 
   if (cursor_enabled()) {
     // When cursor is enabled, ensure it is visible. For this, set the valid
@@ -2241,9 +2250,16 @@ void RenderText::UpdateCachedBoundsAndOffset() {
       delta_x = display_rect_.right() - cursor_bounds_.right();
     else if (cursor_bounds_.x() < display_rect_.x())
       delta_x = display_rect_.x() - cursor_bounds_.x();
+
+    if (vertical_alignment_ == ALIGN_TOP) {
+      if (cursor_bounds_.bottom() > display_rect_.bottom())
+        delta_y = display_rect_.bottom() - cursor_bounds_.bottom();
+      else if (cursor_bounds_.y() < display_rect_.y())
+        delta_y = display_rect_.y() - cursor_bounds_.y();
+    }
   }
 
-  SetDisplayOffset(display_offset_.x() + delta_x);
+  SetDisplayOffset(display_offset_ + Vector2d(delta_x, delta_y));
 }
 
 internal::GraphemeIterator RenderText::GetGraphemeIteratorAtIndex(
