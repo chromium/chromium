@@ -54,8 +54,7 @@ IN_PROC_BROWSER_TEST_F(ProtocolHandlerApiTest, Registration) {
   // Load the extension test page.
   base::FilePath extension_path =
       test_data_dir_.AppendASCII("protocol_handler");
-  const Extension* extension =
-      LoadExtensionWithFlags(extension_path, kFlagNone);
+  const Extension* extension = LoadExtension(extension_path);
   ASSERT_TRUE(extension);
   GURL url = extension->GetResourceURL("test_registration.html");
   ui_test_utils::NavigateToURL(browser(), url);

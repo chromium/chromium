@@ -131,9 +131,9 @@ class FileSystemProviderApiTest : public ExtensionApiTest {
   // Loads a helper testing extension.
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
-    const extensions::Extension* extension = LoadExtensionWithFlags(
+    const extensions::Extension* extension = LoadExtension(
         test_data_dir_.AppendASCII("file_system_provider/test_util"),
-        kFlagEnableIncognito);
+        {.allow_in_incognito = true});
     ASSERT_TRUE(extension);
 
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(

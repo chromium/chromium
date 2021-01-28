@@ -509,7 +509,7 @@ IN_PROC_BROWSER_TEST_F(LazyBackgroundPageApiTest, DISABLED_IncognitoSplitMode) {
     LoadedIncognitoObserver loaded(browser()->profile());
     base::FilePath extdir = test_data_dir_.AppendASCII("lazy_background_page").
         AppendASCII("incognito_split");
-    ASSERT_TRUE(LoadExtensionIncognito(extdir));
+    ASSERT_TRUE(LoadExtension(extdir, {.allow_in_incognito = true}));
     loaded.Wait();
   }
 

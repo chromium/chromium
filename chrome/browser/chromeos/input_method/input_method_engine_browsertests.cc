@@ -116,8 +116,8 @@ class InputMethodEngineBrowserTest
       case kTestTypeNormal:
         return LoadExtension(test_data_dir_.AppendASCII(extension_name));
       case kTestTypeIncognito:
-        return LoadExtensionIncognito(
-            test_data_dir_.AppendASCII(extension_name));
+        return LoadExtension(test_data_dir_.AppendASCII(extension_name),
+                             {.allow_in_incognito = true});
       case kTestTypeComponent:
         return LoadExtensionAsComponent(
             test_data_dir_.AppendASCII(extension_name));

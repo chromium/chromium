@@ -126,10 +126,9 @@ class NonPersistentExtensionTabsTest
       public testing::WithParamInterface<ContextType> {
  protected:
   const Extension* LoadNonPersistentExtension(const char* relative_path) {
-    return LoadExtensionWithFlags(test_data_dir_.AppendASCII(relative_path),
-                                  GetParam() == ContextType::kEventPage
-                                      ? kFlagNone
-                                      : kFlagRunAsServiceWorkerBasedExtension);
+    return LoadExtension(
+        test_data_dir_.AppendASCII(relative_path),
+        {.load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
 };
 

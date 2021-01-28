@@ -286,54 +286,73 @@ void ExtensionBrowserTest::TearDownOnMainThread() {
 
 const Extension* ExtensionBrowserTest::LoadExtension(
     const base::FilePath& path) {
-  return LoadExtensionWithFlags(path, kFlagNone);
+  return LoadExtension(path, {});
 }
 
-const Extension* ExtensionBrowserTest::LoadExtensionIncognito(
-    const base::FilePath& path) {
-  return LoadExtensionWithFlags(path, kFlagEnableIncognito);
-}
+const Extension* ExtensionBrowserTest::LoadExtension(
+    const base::FilePath& path,
+    const LoadOptions& options) {
+  ChromeTestExtensionLoader loader(profile());
+  loader.set_allow_incognito_access(options.allow_in_incognito);
+  loader.set_allow_file_access(options.allow_file_access);
+  loader.set_ignore_manifest_warnings(options.ignore_manifest_warnings);
+  loader.set_require_modern_manifest_version(
+      options.require_modern_manifest_version);
+  if (options.load_for_login_screen) {
+    loader.add_creation_flag(Extension::FOR_LOGIN_SCREEN);
+    loader.set_location(Manifest::EXTERNAL_POLICY);
+  }
+  loader.set_wait_for_renderers(options.wait_for_renderers);
 
-const Extension* ExtensionBrowserTest::LoadExtensionWithFlags(
-    const base::FilePath& path, int flags) {
+  if (options.install_param != nullptr) {
+    loader.set_install_param(options.install_param);
+  }
+  // Attempt to convert the extension to run as a Service Worker-based
+  // extension if requested.
   base::FilePath extension_path = path;
-  if (flags & kFlagRunAsServiceWorkerBasedExtension) {
+  if (options.load_as_service_worker) {
     if (!CreateServiceWorkerBasedExtension(path, &extension_path))
       return nullptr;
   }
-  return LoadExtensionWithInstallParam(extension_path, flags, std::string());
+
+  scoped_refptr<const Extension> extension =
+      loader.LoadExtension(extension_path);
+  if (extension)
+    observer_->set_last_loaded_extension_id(extension->id());
+  return extension.get();
 }
 
 const Extension* ExtensionBrowserTest::LoadExtensionWithInstallParam(
     const base::FilePath& path,
     int flags,
     const std::string& install_param) {
-  // Make sure there aren't any stray bits in "flags." This could happen
-  // if someone inadvertently used any of the ExtensionApiTest flag values.
-  CHECK_LT(flags, kFlagNextValue);
-  ChromeTestExtensionLoader loader(profile());
-  loader.set_require_modern_manifest_version(
-      (flags & kFlagAllowOldManifestVersions) == 0);
-  loader.set_ignore_manifest_warnings(flags & kFlagIgnoreManifestWarnings);
-  loader.set_allow_incognito_access(flags & kFlagEnableIncognito);
-  loader.set_allow_file_access(flags & kFlagEnableFileAccess);
+  LoadOptions options;
+  if (flags & kFlagEnableIncognito) {
+    options.allow_in_incognito = true;
+  }
+  if (flags & kFlagEnableFileAccess) {
+    options.allow_file_access = true;
+  }
+  if (flags & kFlagIgnoreManifestWarnings) {
+    options.ignore_manifest_warnings = true;
+  }
+  if (flags & kFlagAllowOldManifestVersions) {
+    options.require_modern_manifest_version = false;
+  }
+  if (flags & kFlagLoadForLoginScreen) {
+    options.load_for_login_screen = true;
+  }
+  if (flags & kFlagRunAsServiceWorkerBasedExtension) {
+    options.load_as_service_worker = true;
+  }
+  if (flags & kFlagDontWaitForExtensionRenderers) {
+    options.wait_for_renderers = false;
+  }
   if (!install_param.empty()) {
-    loader.set_install_param(install_param);
+    options.install_param = install_param.c_str();
   }
 
-  // Note: Rely on the default value to wait for renderers unless otherwise
-  // specified.
-  if (flags & kFlagDontWaitForExtensionRenderers)
-    loader.set_wait_for_renderers(false);
-
-  if ((flags & kFlagLoadForLoginScreen) != 0) {
-    loader.add_creation_flag(Extension::FOR_LOGIN_SCREEN);
-    loader.set_location(Manifest::EXTERNAL_POLICY);
-  }
-  scoped_refptr<const Extension> extension = loader.LoadExtension(path);
-  if (extension)
-    observer_->set_last_loaded_extension_id(extension->id());
-  return extension.get();
+  return LoadExtension(path, options);
 }
 
 bool ExtensionBrowserTest::CreateServiceWorkerBasedExtension(

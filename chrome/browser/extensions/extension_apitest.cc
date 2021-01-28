@@ -268,7 +268,11 @@ bool ExtensionApiTest::RunExtensionTestImpl(const std::string& extension_name,
     if (load_as_component) {
       extension = LoadExtensionAsComponent(extension_path);
     } else {
-      extension = LoadExtensionWithFlags(extension_path, browser_test_flags);
+      // TODO(crbug.com/1171429): This call needs to be removed when this
+      // bug is addressed for the ExtensionApiTest "RunExtensionTest"
+      // overloads.
+      extension = LoadExtensionWithInstallParam(
+          extension_path, browser_test_flags, std::string());
     }
     if (!extension) {
       message_ = "Failed to load extension.";

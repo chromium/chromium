@@ -74,8 +74,9 @@ IN_PROC_BROWSER_TEST_F(ActivityLogApiTest, MAYBE_TriggerEvent) {
       &ActivityLogApiTest::HandleRequest, base::Unretained(this)));
   ASSERT_TRUE(StartEmbeddedTestServer());
 
-  const Extension* friend_extension = LoadExtensionIncognito(
-      test_data_dir_.AppendASCII("activity_log_private/friend"));
+  const Extension* friend_extension =
+      LoadExtension(test_data_dir_.AppendASCII("activity_log_private/friend"),
+                    {.allow_in_incognito = true});
   ASSERT_TRUE(friend_extension);
   ASSERT_TRUE(RunExtensionTest("activity_log_private/test"));
   ActivityLog::GetInstance(profile())->SetWatchdogAppActiveForTesting(false);

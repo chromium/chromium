@@ -345,8 +345,8 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
         } )";
     dir_.WriteManifest(kManifestTemplate);
     dir_.WriteFile(FILE_PATH_LITERAL("background_script.js"), "");
-    int flags = enable_file_access ? kFlagEnableFileAccess : kFlagNone;
-    extension_ = LoadExtensionWithFlags(dir_.UnpackedPath(), flags);
+    extension_ = LoadExtension(dir_.UnpackedPath(),
+                               {.allow_file_access = enable_file_access});
     DCHECK(extension_);
 
     return extension_;
@@ -2264,7 +2264,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   extension_dir.WriteManifest(kManifest);
   extension_dir.WriteFile(FILE_PATH_LITERAL("bg_script.js"), "");
   const Extension* extension =
-      LoadExtensionIncognito(extension_dir.UnpackedPath());
+      LoadExtension(extension_dir.UnpackedPath(), {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
 
   // Set up a test scenario:
@@ -2380,7 +2380,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   extension_dir.WriteManifest(kManifest);
   extension_dir.WriteFile(FILE_PATH_LITERAL("bg_script.js"), "");
   const Extension* extension =
-      LoadExtensionIncognito(extension_dir.UnpackedPath());
+      LoadExtension(extension_dir.UnpackedPath(), {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
 
   // Set up a test scenario:
@@ -2524,7 +2524,7 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   extension_dir.WriteManifest(kManifest);
   extension_dir.WriteFile(FILE_PATH_LITERAL("bg_script.js"), "");
   const Extension* extension =
-      LoadExtensionIncognito(extension_dir.UnpackedPath());
+      LoadExtension(extension_dir.UnpackedPath(), {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
 
   // Set up a test scenario:

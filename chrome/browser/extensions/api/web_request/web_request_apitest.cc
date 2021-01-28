@@ -768,13 +768,10 @@ void ExtensionWebRequestApiTest::RunPermissionTest(
   ExtensionTestMessageListener listener("done", false);
   ExtensionTestMessageListener listener_incognito("done_incognito", false);
 
-  int load_extension_flags = kFlagNone;
-  if (load_extension_with_incognito_permission)
-    load_extension_flags |= kFlagEnableIncognito;
-  ASSERT_TRUE(LoadExtensionWithFlags(
+  ASSERT_TRUE(LoadExtension(
       test_data_dir_.AppendASCII("webrequest_permissions")
-                    .AppendASCII(extension_directory),
-      load_extension_flags));
+          .AppendASCII(extension_directory),
+      {.allow_in_incognito = load_extension_with_incognito_permission}));
 
   // Test that navigation in regular window is properly redirected.
   EXPECT_TRUE(listener.WaitUntilSatisfied());
@@ -881,8 +878,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, IncognitoSplitModeReload) {
   ExtensionTestMessageListener listener("done", false);
   ExtensionTestMessageListener listener_incognito("done_incognito", false);
 
-  const Extension* extension = LoadExtensionWithFlags(
-      test_data_dir_.AppendASCII("webrequest_reload"), kFlagEnableIncognito);
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("webrequest_reload"),
+                    {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
   OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
 
@@ -2883,9 +2881,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionWebRequestApiTest, Initiator_SplitIncognito) {
   ExtensionTestMessageListener ready_listener("ready", will_reply);
   ExtensionTestMessageListener incognito_ready_listener("incognito ready",
                                                         will_reply);
-  const Extension* extension = LoadExtensionWithFlags(
+  const Extension* extension = LoadExtension(
       test_data_dir_.AppendASCII("webrequest").AppendASCII("initiator_split"),
-      kFlagEnableIncognito);
+      {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 

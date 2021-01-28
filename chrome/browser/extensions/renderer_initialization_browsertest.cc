@@ -47,8 +47,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
   // modify the source tree.
   ThemeService::DisableThemePackForTesting();
 
-  const Extension* extension = LoadExtensionWithFlags(
-      test_data_dir_.AppendASCII("theme"), kFlagAllowOldManifestVersions);
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("theme"));
   ASSERT_TRUE(extension);
   ASSERT_TRUE(extension->is_theme());
   GURL url = extension->GetResourceURL("manifest.json");

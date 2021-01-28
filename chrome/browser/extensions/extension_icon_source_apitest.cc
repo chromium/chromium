@@ -64,10 +64,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, InvalidURL) {
 
 IN_PROC_BROWSER_TEST_F(ExtensionIconSourceTest, IconsLoadedIncognito) {
   base::FilePath basedir = test_data_dir_.AppendASCII("icons");
-  ASSERT_TRUE(LoadExtensionIncognito(
-      basedir.AppendASCII("extension_with_permission")));
-  ASSERT_TRUE(LoadExtensionIncognito(
-      basedir.AppendASCII("extension_no_permission")));
+  ASSERT_TRUE(LoadExtension(basedir.AppendASCII("extension_with_permission"),
+                            {.allow_in_incognito = true}));
+  ASSERT_TRUE(LoadExtension(basedir.AppendASCII("extension_no_permission"),
+                            {.allow_in_incognito = true}));
   std::string result;
 
   // Test that the icons are loaded and that the chrome://extension-icon

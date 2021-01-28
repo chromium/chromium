@@ -91,6 +91,36 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
     kFlagNextValue = 1 << 7,
   };
 
+  struct LoadOptions {
+    // Allows the extension to run in incognito mode.
+    bool allow_in_incognito = false;
+
+    // Allows file access for the extension.
+    bool allow_file_access = false;
+
+    // Doesn't fail when the loaded manifest has warnings (should only be used
+    // when testing deprecated features).
+    bool ignore_manifest_warnings = false;
+
+    // Requires a modern manifest version. Extensions with older manifest
+    // versions won't load if this is true.
+    bool require_modern_manifest_version = true;
+
+    // Passes the FOR_LOGIN_SCREEN flag and sets the location to EXTERNAL_POLICY
+    // when loading the extension. This flag is usually provided for
+    // force-installed extension on the login screen.
+    bool load_for_login_screen = false;
+
+    // Loads the provided extension as Service Worker based extension.
+    bool load_as_service_worker = false;
+
+    // Waits for extension renderers to fully load.
+    bool wait_for_renderers = true;
+
+    // An optional install param.
+    const char* install_param = nullptr;
+  };
+
   ExtensionBrowserTest();
   ~ExtensionBrowserTest() override;
 
@@ -138,13 +168,8 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
 
   const Extension* LoadExtension(const base::FilePath& path);
 
-  // Load extension and enable it in incognito mode.
-  const Extension* LoadExtensionIncognito(const base::FilePath& path);
-
-  // Load extension from the |path| folder. |flags| is bit mask of values from
-  // |Flags| enum.
-  const Extension* LoadExtensionWithFlags(const base::FilePath& path,
-                                          int flags);
+  const Extension* LoadExtension(const base::FilePath& path,
+                                 const LoadOptions& options);
 
   // Same as above, but sets the installation parameter to the extension
   // preferences.

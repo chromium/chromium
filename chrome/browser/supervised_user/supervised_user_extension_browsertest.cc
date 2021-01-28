@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserExtensionTest,
   EXPECT_TRUE(profile()->IsChild());
 
   base::FilePath path = test_data_dir_.AppendASCII("good.crx");
-  EXPECT_FALSE(LoadExtensionWithFlags(path, kFlagNone));
+  EXPECT_FALSE(LoadExtension(path));
   const Extension* extension =
       extension_registry()->GetInstalledExtension(kGoodCrxId);
   EXPECT_TRUE(extension);

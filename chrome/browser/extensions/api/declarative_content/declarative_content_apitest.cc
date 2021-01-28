@@ -152,9 +152,8 @@ void DeclarativeContentApiTest::CheckIncognito(IncognitoMode mode,
   ExtensionTestMessageListener ready("ready", false);
   ExtensionTestMessageListener ready_incognito("ready (split)", false);
 
-  const Extension* extension =
-      is_enabled_in_incognito ? LoadExtensionIncognito(ext_dir_.UnpackedPath())
-                              : LoadExtension(ext_dir_.UnpackedPath());
+  const Extension* extension = LoadExtension(
+      ext_dir_.UnpackedPath(), {.allow_in_incognito = is_enabled_in_incognito});
   ASSERT_TRUE(extension);
 
   Browser* incognito_browser = CreateIncognitoBrowser();
@@ -640,7 +639,8 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest,
   ext_dir_.WriteFile(FILE_PATH_LITERAL("background.js"),
                      kIncognitoSpecificBackground);
   ExtensionTestMessageListener ready("ready", false);
-  const Extension* extension = LoadExtensionIncognito(ext_dir_.UnpackedPath());
+  const Extension* extension =
+      LoadExtension(ext_dir_.UnpackedPath(), {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
   ASSERT_TRUE(ready.WaitUntilSatisfied());
 
@@ -669,8 +669,9 @@ IN_PROC_BROWSER_TEST_F(DeclarativeContentApiTest, MAYBE_PRE_RulesPersistence) {
   // An on-disk extension is required so that it can be reloaded later in the
   // RulesPersistence test.
   const Extension* extension =
-      LoadExtensionIncognito(test_data_dir_.AppendASCII("declarative_content")
-                             .AppendASCII("persistence"));
+      LoadExtension(test_data_dir_.AppendASCII("declarative_content")
+                        .AppendASCII("persistence"),
+                    {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
   ASSERT_EQ(kRulesExtensionName, extension->name());
   ASSERT_TRUE(ready.WaitUntilSatisfied());

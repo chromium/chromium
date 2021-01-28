@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest, OnChangeSplit) {
 
   base::FilePath extension_data_dir =
       test_data_dir_.AppendASCII("preference").AppendASCII("onchange_split");
-  ASSERT_TRUE(LoadExtensionIncognito(extension_data_dir));
+  ASSERT_TRUE(LoadExtension(extension_data_dir, {.allow_in_incognito = true}));
 
   // Test 1 - changeDefault
   EXPECT_TRUE(listener1.WaitUntilSatisfied()); // Regular ready
@@ -388,9 +388,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionPreferenceApiTest,
 
   ExtensionTestMessageListener change_pref_listener("change pref value", false);
 
-  ASSERT_TRUE(
-      LoadExtensionIncognito(test_data_dir_.AppendASCII("preference")
-                                 .AppendASCII("onchange_split_regular_only")));
+  ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("preference")
+                                .AppendASCII("onchange_split_regular_only"),
+                            {.allow_in_incognito = true}));
 
   ASSERT_TRUE(change_pref_listener.WaitUntilSatisfied());
   SetCookieControlsMode(prefs, CookieControlsMode::kOff);

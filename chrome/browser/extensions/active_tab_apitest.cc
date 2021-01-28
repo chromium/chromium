@@ -188,8 +188,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, FileURLs) {
   ExtensionTestMessageListener background_page_ready("ready",
                                                      false /*will_reply*/);
   scoped_refptr<const Extension> extension =
-      LoadExtensionWithFlags(test_data_dir_.AppendASCII("active_tab_file_urls"),
-                             kFlagEnableFileAccess);
+      LoadExtension(test_data_dir_.AppendASCII("active_tab_file_urls"),
+                    {.allow_file_access = true});
   ASSERT_TRUE(extension);
   const std::string extension_id = extension->id();
 

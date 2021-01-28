@@ -35,12 +35,10 @@ class AlarmsApiTest : public ExtensionApiTest,
   }
 
   const Extension* LoadAlarmsExtensionIncognito(const char* path) {
-    int flags = kFlagEnableIncognito;
-    if (GetParam() == ContextType::kServiceWorker)
-      flags |= kFlagRunAsServiceWorkerBasedExtension;
-
-    return LoadExtensionWithFlags(
-        test_data_dir_.AppendASCII("alarms").AppendASCII(path), flags);
+    return LoadExtension(
+        test_data_dir_.AppendASCII("alarms").AppendASCII(path),
+        {.allow_in_incognito = true,
+         .load_as_service_worker = GetParam() == ContextType::kServiceWorker});
   }
 };
 

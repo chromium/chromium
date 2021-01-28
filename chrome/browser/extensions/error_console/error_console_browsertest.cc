@@ -43,7 +43,6 @@ const char kTestingPage[] = "/extensions/test_file.html";
 const char kAnonymousFunction[] = "(anonymous function)";
 const char* const kBackgroundPageName =
     extensions::kGeneratedBackgroundPageFilename;
-const int kNoFlags = 0;
 
 const StackTrace& GetStackTraceFromError(const ExtensionError* error) {
   CHECK(error->type() == ExtensionError::RUNTIME_ERROR);
@@ -226,15 +225,13 @@ class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
   // Load the extension at |path|, take the specified |action|, and wait for
   // |expected_errors| errors. Populate |extension| with a pointer to the loaded
   // extension.
-  void LoadExtensionAndCheckErrors(
-      const std::string& path,
-      int flags,
-      size_t errors_expected,
-      Action action,
-      const Extension** extension) {
+  void LoadExtensionAndCheckErrors(const std::string& path,
+                                   const LoadOptions& options,
+                                   size_t errors_expected,
+                                   Action action,
+                                   const Extension** extension) {
     ErrorObserver observer(errors_expected, error_console_);
-    *extension =
-        LoadExtensionWithFlags(test_data_dir_.AppendASCII(path), flags);
+    *extension = LoadExtension(test_data_dir_.AppendASCII(path), options);
     ASSERT_TRUE(*extension);
 
     switch (action) {
@@ -286,8 +283,9 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, ReportManifestErrors) {
   const Extension* extension = nullptr;
   // We expect two errors - one for an invalid permission, and a second for
   // an unknown key.
-  LoadExtensionAndCheckErrors("manifest_warnings", kFlagIgnoreManifestWarnings,
-                              2, ACTION_NONE, &extension);
+  LoadExtensionAndCheckErrors("manifest_warnings",
+                              {.ignore_manifest_warnings = true}, 2,
+                              ACTION_NONE, &extension);
 
   const ErrorList& errors =
       error_console()->GetErrorsForExtension(extension->id());
@@ -338,8 +336,9 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
   const Extension* extension = nullptr;
   // Same test as ReportManifestErrors, except we don't expect any errors since
   // we disable Developer Mode.
-  LoadExtensionAndCheckErrors("manifest_warnings", kFlagIgnoreManifestWarnings,
-                              0, ACTION_NONE, &extension);
+  LoadExtensionAndCheckErrors("manifest_warnings",
+                              {.ignore_manifest_warnings = true}, 0,
+                              ACTION_NONE, &extension);
 
   // Now if we enable developer mode, the errors should be reported...
   profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
@@ -358,10 +357,9 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
       "content_script_log_and_runtime_error",
-      kNoFlags,
+      {.ignore_manifest_warnings = false},
       2u,  // Two errors: A log message and a JS type error.
-      ACTION_NAVIGATE,
-      &extension);
+      ACTION_NAVIGATE, &extension);
 
   std::string script_url =
       extension->GetResourceURL("content_script.js").spec();
@@ -411,11 +409,9 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest,
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BrowserActionRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
-      "browser_action_runtime_error",
-      kNoFlags,
+      "browser_action_runtime_error", {.ignore_manifest_warnings = false},
       1u,  // One error: A reference error from within the browser action.
-      ACTION_BROWSER_ACTION,
-      &extension);
+      ACTION_BROWSER_ACTION, &extension);
 
   std::string script_url =
       extension->GetResourceURL("browser_action.js").spec();
@@ -446,11 +442,9 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BrowserActionRuntimeError) {
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIArgumentsRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
-      "bad_api_arguments_runtime_error",
-      kNoFlags,
+      "bad_api_arguments_runtime_error", {.ignore_manifest_warnings = false},
       1,  // One error: call an API with improper arguments.
-      ACTION_NONE,
-      &extension);
+      ACTION_NONE, &extension);
 
   const ErrorList& errors =
       error_console()->GetErrorsForExtension(extension->id());
@@ -475,12 +469,10 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIArgumentsRuntimeError) {
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIPermissionsRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
-      "bad_api_permissions_runtime_error",
-      kNoFlags,
+      "bad_api_permissions_runtime_error", {.ignore_manifest_warnings = false},
       1,  // One error: we try to call addUrl() on chrome.history without
           // permission, which results in a TypeError.
-      ACTION_NONE,
-      &extension);
+      ACTION_NONE, &extension);
 
   std::string script_url = extension->GetResourceURL("background.js").spec();
 
@@ -506,11 +498,9 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIPermissionsRuntimeError) {
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadExtensionPage) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
-      "bad_extension_page",
-      kNoFlags,
+      "bad_extension_page", {.ignore_manifest_warnings = false},
       1,  // One error: the page will load JS which has a reference error.
-      ACTION_NEW_TAB,
-      &extension);
+      ACTION_NEW_TAB, &extension);
 }
 
 // Test that extension errors that go to chrome.runtime.lastError are caught
@@ -518,12 +508,10 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadExtensionPage) {
 IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, CatchesLastError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
-      "trigger_last_error",
-      kNoFlags,
+      "trigger_last_error", {.ignore_manifest_warnings = false},
       1,  // One error, which is sent through last error when trying to remove
           // a non-existent permisison.
-      ACTION_NONE,
-      &extension);
+      ACTION_NONE, &extension);
 
   const ErrorList& errors =
       error_console()->GetErrorsForExtension(extension->id());

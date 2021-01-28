@@ -267,19 +267,19 @@ class ExtensionContextMenuLazyTest
   }
 
  protected:
-  const extensions::Extension* LoadExtensionWithParamFlags(
+  const extensions::Extension* LoadExtensionWithParamOptions(
       const base::FilePath& path,
-      int flags) {
+      LoadOptions options) {
     if (GetParam() == ContextType::kServiceWorker)
-      flags |= kFlagRunAsServiceWorkerBasedExtension;
+      options.load_as_service_worker = true;
 
-    return LoadExtensionWithFlags(path, flags);
+    return LoadExtension(path, options);
   }
 
   const extensions::Extension* LoadContextMenuExtension(
       base::StringPiece subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
-    return LoadExtensionWithParamFlags(extension_dir, kFlagNone);
+    return LoadExtensionWithParamOptions(extension_dir, {});
   }
 
   // Helper to load an extension from context_menus/top_level/|subdirectory| in
@@ -288,13 +288,14 @@ class ExtensionContextMenuLazyTest
       base::StringPiece subdirectory) {
     base::FilePath extension_dir =
         GetRootDir().AppendASCII("top_level").AppendASCII(subdirectory);
-    return LoadExtensionWithParamFlags(extension_dir, kFlagNone);
+    return LoadExtensionWithParamOptions(extension_dir, {});
   }
 
   const extensions::Extension* LoadContextMenuExtensionWithIncognitoFlags(
       base::StringPiece subdirectory) {
     base::FilePath extension_dir = GetRootDir().AppendASCII(subdirectory);
-    return LoadExtensionWithParamFlags(extension_dir, kFlagEnableIncognito);
+    return LoadExtensionWithParamOptions(extension_dir,
+                                         {.allow_in_incognito = true});
   }
 
   base::FilePath GetDirForContext(base::StringPiece subdirectory) {
@@ -384,8 +385,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionContextMenuLazyTest, PRE_Persistent) {
   ResultCatcher catcher;
   base::FilePath path =
       GetDirForContext("persistent").AddExtensionASCII(".crx");
-  const extensions::Extension* extension =
-      LoadExtensionWithFlags(path, kFlagNone);
+  const extensions::Extension* extension = LoadExtension(path);
   ASSERT_TRUE(extension);
 
   // Wait for the extension to tell us it's been installed and the

@@ -298,8 +298,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TestOpenPopupIncognito) {
 IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
                        TestOpenPopupIncognitoFromBackground) {
   const Extension* extension =
-      LoadExtensionIncognito(test_data_dir_.AppendASCII("browser_action").
-          AppendASCII("open_popup_background"));
+      LoadExtension(test_data_dir_.AppendASCII("browser_action")
+                        .AppendASCII("open_popup_background"),
+                    {.allow_in_incognito = true});
   ASSERT_TRUE(extension);
   ExtensionTestMessageListener listener(false);
   listener.set_extension_id(extension->id());

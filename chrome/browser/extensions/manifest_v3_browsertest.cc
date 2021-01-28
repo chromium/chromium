@@ -35,15 +35,6 @@ class ManifestV3BrowserTest : public ExtensionBrowserTest {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
 
-  // Loads and returns an extension while ignoring warnings.
-  const Extension* LoadMv3Extension(const base::FilePath& path) {
-    // We ignore the manifest warnings on the extension because it includes the
-    // "manifest v3 ain't quite ready yet" warning.
-    // TODO(devlin): We should probably introduce a flag to specifically ignore
-    // *that* warning, but no others.
-    return LoadExtensionWithFlags(path, kFlagIgnoreManifestWarnings);
-  }
-
  private:
   ScopedCurrentChannel channel_override_{version_info::Channel::UNKNOWN};
 
@@ -56,9 +47,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {
            "name": "Programmatic Script Injection",
            "manifest_version": 3,
            "version": "0.1",
-           "background": {
-             "service_worker": "worker.js"
-           },
+           "background": { "service_worker": "worker.js" },
            "permissions": ["tabs", "scripting"],
            "host_permissions": ["*://example.com/*"]
          })";
@@ -100,7 +89,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ProgrammaticScriptInjection) {
   test_dir.WriteFile(FILE_PATH_LITERAL("worker.js"), kWorker);
 
   ExtensionTestMessageListener listener("ready", /*will_reply=*/false);
-  const Extension* extension = LoadMv3Extension(test_dir.UnpackedPath());
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 
@@ -141,7 +130,7 @@ IN_PROC_BROWSER_TEST_F(ManifestV3BrowserTest, ActionAPI) {
       FILE_PATH_LITERAL("blue_icon.png"));
 
   ExtensionTestMessageListener listener("ready", /*will_reply=*/false);
-  const Extension* extension = LoadMv3Extension(test_dir.UnpackedPath());
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
   ASSERT_TRUE(listener.WaitUntilSatisfied());
 

@@ -201,8 +201,9 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
     // initialisation race conditions.
     const Extension* extension = NULL;
     if (extension_dir) {
-      extension = LoadExtensionIncognito(
-          test_data_dir_.AppendASCII("settings").AppendASCII(*extension_dir));
+      extension = LoadExtension(
+          test_data_dir_.AppendASCII("settings").AppendASCII(*extension_dir),
+          {.allow_in_incognito = true});
       EXPECT_TRUE(extension);
     }
 

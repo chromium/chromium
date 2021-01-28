@@ -339,12 +339,9 @@ class DownloadExtensionTest : public ExtensionApiTest {
     // Store the created Extension object so that we can attach it to
     // ExtensionFunctions.  Also load the extension in incognito profiles for
     // testing incognito.
-    int flags = kFlagEnableIncognito;
-    if (enable_file_access)
-      flags |= kFlagEnableFileAccess;
-
-    extension_ =
-        LoadExtensionWithFlags(test_data_dir_.AppendASCII(name), flags);
+    extension_ = ExtensionBrowserTest::LoadExtension(
+        test_data_dir_.AppendASCII(name),
+        {.allow_in_incognito = true, .allow_file_access = enable_file_access});
     CHECK(extension_);
     content::WebContents* tab = chrome::AddSelectedTabWithURL(
         current_browser(),

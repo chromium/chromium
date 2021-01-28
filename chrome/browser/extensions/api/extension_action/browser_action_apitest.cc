@@ -153,19 +153,17 @@ class BrowserActionApiLazyTest
     : public BrowserActionApiTest,
       public testing::WithParamInterface<ContextType> {
  protected:
-  const extensions::Extension* LoadExtensionWithParamFlags(
+  const extensions::Extension* LoadExtensionWithParamOptions(
       const base::FilePath& path) {
-    int flags = kFlagNone;
-    if (GetParam() == ContextType::kServiceWorker)
-      flags |= ExtensionBrowserTest::kFlagRunAsServiceWorkerBasedExtension;
-    return LoadExtensionWithFlags(path, flags);
+    return LoadExtension(path, {.load_as_service_worker =
+                                    GetParam() == ContextType::kServiceWorker});
   }
 
   void RunUpdateTest(base::StringPiece path, bool expect_failure) {
     ExtensionTestMessageListener ready_listener("ready", true);
     ASSERT_TRUE(embedded_test_server()->Start());
     const Extension* extension =
-        LoadExtensionWithParamFlags(test_data_dir_.AppendASCII(path));
+        LoadExtensionWithParamOptions(test_data_dir_.AppendASCII(path));
     ASSERT_TRUE(extension) << message_;
     // Test that there is a browser action in the toolbar.
     ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
@@ -202,7 +200,7 @@ class BrowserActionApiLazyTest
   void RunEnableTest(base::StringPiece path, bool start_enabled) {
     ExtensionTestMessageListener ready_listener("ready", true);
     const Extension* extension =
-        LoadExtensionWithParamFlags(test_data_dir_.AppendASCII(path));
+        LoadExtensionWithParamOptions(test_data_dir_.AppendASCII(path));
     ASSERT_TRUE(extension) << message_;
     // Test that there is a browser action in the toolbar.
     ASSERT_EQ(1, GetBrowserActionsBar()->NumberOfBrowserActions());
@@ -234,7 +232,7 @@ class BrowserActionApiLazyTest
 IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, Basic) {
   ExtensionTestMessageListener ready_listener("ready", false);
   ASSERT_TRUE(embedded_test_server()->Start());
-  const Extension* extension = LoadExtensionWithParamFlags(
+  const Extension* extension = LoadExtensionWithParamOptions(
       test_data_dir_.AppendASCII("browser_action/basics"));
   ASSERT_TRUE(extension) << message_;
 
@@ -683,7 +681,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, BrowserActionRemovePopup) {
 IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, IncognitoBasic) {
   ExtensionTestMessageListener ready_listener("ready", false);
   ASSERT_TRUE(embedded_test_server()->Start());
-  scoped_refptr<const Extension> extension = LoadExtensionWithParamFlags(
+  scoped_refptr<const Extension> extension = LoadExtensionWithParamOptions(
       test_data_dir_.AppendASCII("browser_action/basics"));
   ASSERT_TRUE(extension) << message_;
 
@@ -732,7 +730,7 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, IncognitoUpdate) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ExtensionTestMessageListener incognito_not_allowed_listener(
       "incognito not allowed", false);
-  scoped_refptr<const Extension> extension = LoadExtensionWithParamFlags(
+  scoped_refptr<const Extension> extension = LoadExtensionWithParamOptions(
       test_data_dir_.AppendASCII("browser_action/update"));
   ASSERT_TRUE(extension) << message_;
   ASSERT_TRUE(incognito_not_allowed_listener.WaitUntilSatisfied());
@@ -793,9 +791,9 @@ IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, IncognitoUpdate) {
 // extensions.
 IN_PROC_BROWSER_TEST_P(BrowserActionApiLazyTest, IncognitoSplit) {
   ResultCatcher catcher;
-  const Extension* extension = LoadExtensionWithFlags(
-      test_data_dir_.AppendASCII("browser_action/split_mode"),
-      kFlagEnableIncognito);
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("browser_action/split_mode"),
+                    {.allow_in_incognito = true});
   ASSERT_TRUE(extension) << message_;
 
   // Open an incognito browser.

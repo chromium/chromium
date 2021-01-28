@@ -236,8 +236,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
     base::FilePath file_path = test_doc.NormalizePathSeparators();
 
     base::FilePath extension_path = test_data_dir_.AppendASCII(extension_name);
-    const extensions::Extension* extension =
-        LoadExtensionWithFlags(extension_path, kFlagNone);
+    const extensions::Extension* extension = LoadExtension(extension_path);
     ASSERT_TRUE(extension);
 
     apps::mojom::FilePathsPtr launch_files = apps::mojom::FilePaths::New();
@@ -260,8 +259,7 @@ class PlatformAppWithFileBrowserTest : public PlatformAppBrowserTest {
     extensions::ResultCatcher catcher;
 
     base::FilePath extension_path = test_data_dir_.AppendASCII(extension_name);
-    const extensions::Extension* extension =
-        LoadExtensionWithFlags(extension_path, kFlagNone);
+    const extensions::Extension* extension = LoadExtension(extension_path);
     if (!extension) {
       message_ = "Failed to load extension.";
       return false;
