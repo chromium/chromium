@@ -38,6 +38,8 @@ component("network") {
   sources = [
     "auto_connect_handler.cc",
     "auto_connect_handler.h",
+    "cellular_esim_profile.cc",
+    "cellular_esim_profile.h",
     "cellular_inhibitor.cc",
     "cellular_inhibitor.h",
     "cellular_metrics_logger.cc",
@@ -240,6 +242,7 @@ source_set("unit_tests") {
   ]
   sources = [
     "auto_connect_handler_unittest.cc",
+    "cellular_esim_profile_unittest.cc",
     "cellular_inhibitor_unittest.cc",
     "cellular_metrics_logger_unittest.cc",
     "certificate_helper_unittest.cc",

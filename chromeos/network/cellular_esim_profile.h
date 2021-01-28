@@ -1,0 +1,92 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROMEOS_NETWORK_CELLULAR_ESIM_PROFILE_H_
+#define CHROMEOS_NETWORK_CELLULAR_ESIM_PROFILE_H_
+
+#include <string>
+
+#include "base/component_export.h"
+#include "base/optional.h"
+#include "base/strings/string16.h"
+#include "base/values.h"
+
+namespace chromeos {
+
+// Metadata representing an eSIM profile.
+class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfile {
+ public:
+  // Note that numerical values are stored in prefs and should not be changed or
+  // reused.
+  enum class State {
+    // Profile is not installed on the device. This likely means that it was
+    // discovered via SMDS.
+    kPending = 0,
+
+    // Profile is being installed (i.e., being loaded into the EIUCC).
+    kInstalling = 1,
+
+    // Profile is installed but inactive.
+    kInactive = 2,
+
+    // Profile is installed and active.
+    kActive = 3,
+  };
+
+  // Returns null if the provided value does not have the required dictionary
+  // properties. Should be provided a dictionary created via
+  // ToDictionaryValue().
+  static base::Optional<CellularESimProfile> FromDictionaryValue(
+      const base::Value& value);
+
+  CellularESimProfile(State state,
+                      const std::string& eid,
+                      const std::string& iccid,
+                      const base::string16& name,
+                      const base::string16& nickname,
+                      const base::string16& service_provider,
+                      const std::string& activation_code);
+  CellularESimProfile(const CellularESimProfile&);
+  CellularESimProfile& operator=(const CellularESimProfile&);
+  ~CellularESimProfile();
+
+  State state() const { return state_; }
+  const std::string& eid() const { return eid_; }
+  const std::string& iccid() const { return iccid_; }
+  const base::string16& name() const { return name_; }
+  const base::string16& nickname() const { return nickname_; }
+  const base::string16& service_provider() const { return service_provider_; }
+  const std::string& activation_code() const { return activation_code_; }
+
+  base::Value ToDictionaryValue() const;
+
+  bool operator==(const CellularESimProfile& other) const;
+  bool operator!=(const CellularESimProfile& other) const;
+
+ private:
+  State state_;
+
+  // EID of the Euicc in which this profile is installed or available for
+  // installation.
+  std::string eid_;
+
+  // A 19-20 character long numeric id that uniquely identifies this profile.
+  std::string iccid_;
+
+  // Service provider’s name for this profile. e.g. “Verizon Plan 1”
+  base::string16 name_;
+
+  // A user configurable nickname for this profile. e.g. “My Personal SIM”
+  base::string16 nickname_;
+
+  // Name of the service provider. e.g. “Verizon Wireless”
+  base::string16 service_provider_;
+
+  // An alphanumeric code that can be used to install this profile.
+  std::string activation_code_;
+};
+
+}  // namespace chromeos
+
+#endif  // CHROMEOS_NETWORK_CELLULAR_ESIM_PROFILE_H_
