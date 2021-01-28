@@ -37,6 +37,7 @@ preprocess_if_expr("preprocess_src") {
   out_manifest = "$target_gen_dir/$preprocess_src_manifest"
   in_files = [
     "array_data_model.js",
+    "bubble_button.js",
     "bubble.js",
     "command.js",
     "context_menu_handler.js",
