@@ -534,6 +534,19 @@ bool ServiceWorkerVersion::OnRequestTermination() {
     // But when activation is happening and this worker needs to be terminated
     // asap, it'll be terminated.
     will_be_terminated = needs_to_be_terminated_asap_;
+
+    if (!will_be_terminated) {
+      // When the worker is being kept alive due to devtools, it's important to
+      // set the service worker's idle delay back to the default value rather
+      // than zero. Otherwise, the service worker might see that it has no work
+      // and immediately send a RequestTermination() back to the browser again,
+      // repeating this over and over. In the non-devtools case, it's
+      // necessarily being kept alive due to an inflight request, and will only
+      // send a RequestTermination() once that request settles (which is the
+      // intended behavior).
+      endpoint()->SetIdleDelay(base::TimeDelta::FromSeconds(
+          blink::mojom::kServiceWorkerDefaultIdleDelayInSeconds));
+    }
   }
 
   if (will_be_terminated) {
