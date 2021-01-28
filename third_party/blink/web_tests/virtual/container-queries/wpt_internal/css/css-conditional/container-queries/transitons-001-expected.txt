@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Container Queries - Style Change Event for transitions assert_unreached: Transition event incorrectly triggered: transitionrun Reached unreachable code
+Harness: the test ran to completion.
+
