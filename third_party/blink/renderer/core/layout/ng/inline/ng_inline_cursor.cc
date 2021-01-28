@@ -946,6 +946,12 @@ void NGInlineCursor::MoveToFirstNonPseudoLeaf() {
       // <p dir=rtl>&#x202B;xyz ABC.&#x202C;</p>
       // See "editing/selection/home-end.html".
       DCHECK(!cursor.Current().IsLayoutGeneratedText()) << cursor;
+      if (cursor.Current().IsLineBreak()) {
+        // We ignore line break character, e.g. newline with white-space:pre,
+        // like |MoveToLastNonPseudoLeaf()| as consistency.
+        // See |ParameterizedVisibleUnitsLineTest.EndOfLineWithWhiteSpacePre|
+        continue;
+      }
       *this = cursor;
       return;
     }
