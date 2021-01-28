@@ -401,6 +401,7 @@ source_set("unit_tests") {
     "ime/key_event_result_receiver_unittest.cc",
     "intent_helper/activity_icon_loader_unittest.cc",
     "intent_helper/arc_intent_helper_bridge_unittest.cc",
+    "intent_helper/custom_tab_unittest.cc",
     "intent_helper/intent_filter_unittest.cc",
     "intent_helper/link_handler_model_unittest.cc",
     "metrics/arc_metrics_service_unittest.cc",
@@ -467,6 +468,8 @@ source_set("unit_tests") {
     "//ui/events",
     "//ui/events:dom_keycode_converter",
     "//ui/ozone",
+    "//ui/views",
+    "//ui/views:test_support",
     "//url:url",
   ]
 }
