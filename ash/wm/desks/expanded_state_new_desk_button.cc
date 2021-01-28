@@ -10,7 +10,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_name_view.h"
-#include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -28,17 +27,6 @@ constexpr int kNewDeskButtonAndNameSpacing = 8;
 constexpr int kBorderCornerRadius = 6;
 
 constexpr int kCornerRadius = 4;
-
-// The new desk button in expand desks bar in Bento has the same size as the
-// desk preview, which is proportional to the size of the display on which it
-// resides.
-gfx::Rect GetExpandedStateNewDeskButtonBounds(aura::Window* root_window) {
-  const int preview_height =
-      DeskPreviewView::GetHeight(root_window, /*compact=*/false);
-  const auto root_size = root_window->bounds().size();
-  return gfx::Rect(preview_height * root_size.width() / root_size.height(),
-                   preview_height);
-}
 
 // The button belongs to ExpandedStateNewDeskButton.
 class ASH_EXPORT InnerNewDeskButton : public DeskButtonBase {
@@ -123,8 +111,9 @@ void ExpandedStateNewDeskButton::Layout() {
   if (bar_view_->mini_views().empty())
     return;
 
-  const gfx::Rect new_desk_button_bounds = GetExpandedStateNewDeskButtonBounds(
-      bar_view_->GetWidget()->GetNativeWindow()->GetRootWindow());
+  const gfx::Rect new_desk_button_bounds = DeskMiniView::GetDeskPreviewBounds(
+      bar_view_->GetWidget()->GetNativeWindow()->GetRootWindow(),
+      /*compact=*/false);
   new_desk_button_->SetBoundsRect(new_desk_button_bounds);
 
   const gfx::Size label_size =

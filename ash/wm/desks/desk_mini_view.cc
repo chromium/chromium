@@ -36,24 +36,24 @@ constexpr int kCloseButtonMargin = 8;
 
 constexpr int kMinDeskNameViewWidth = 56;
 
-// Returns the width of the desk preview based on its |preview_height| and the
-// aspect ratio of the root window taken from |root_window_size|.
-int GetPreviewWidth(const gfx::Size& root_window_size, int preview_height) {
-  return preview_height * root_window_size.width() / root_window_size.height();
-}
-
-// The desk preview bounds are proportional to the bounds of the display on
-// which it resides, and whether the |compact| layout is used.
-gfx::Rect GetDeskPreviewBounds(aura::Window* root_window, bool compact) {
-  const int preview_height = DeskPreviewView::GetHeight(root_window, compact);
-  const auto root_size = root_window->bounds().size();
-  return gfx::Rect(GetPreviewWidth(root_size, preview_height), preview_height);
-}
-
 }  // namespace
 
 // -----------------------------------------------------------------------------
 // DeskMiniView
+
+// static
+int DeskMiniView::GetPreviewWidth(const gfx::Size& root_window_size,
+                                  int preview_height) {
+  return preview_height * root_window_size.width() / root_window_size.height();
+}
+
+// static
+gfx::Rect DeskMiniView::GetDeskPreviewBounds(aura::Window* root_window,
+                                             bool compact) {
+  const int preview_height = DeskPreviewView::GetHeight(root_window, compact);
+  const auto root_size = root_window->bounds().size();
+  return gfx::Rect(GetPreviewWidth(root_size, preview_height), preview_height);
+}
 
 DeskMiniView::DeskMiniView(DesksBarView* owner_bar,
                            aura::Window* root_window,

@@ -272,6 +272,13 @@ class BentoDesksBarLayout : public views::LayoutManager {
           gfx::Rect(gfx::Point((desks_bar_bounds.width() - content_width) / 2,
                                kZeroStateY),
                     zero_state_default_desk_button_size));
+      // Update this button's text since it may changes while removing a desk
+      // and going back to the zero state.
+      zero_state_default_desk_button->UpdateLabelText();
+      // Make sure these two buttons are always visible while in zero state bar
+      // since they are invisible in expanded state bar.
+      zero_state_default_desk_button->SetVisible(true);
+      zero_state_new_desk_button->SetVisible(true);
       zero_state_new_desk_button->SetBoundsRect(gfx::Rect(
           gfx::Point(zero_state_default_desk_button->bounds().right() +
                          kZeroStateButtonSpacing,
@@ -671,7 +678,9 @@ void DesksBarView::OnDeskRemoved(const Desk* desk) {
     removed_mini_views.push_back(removed_mini_view);
     removed_mini_views.push_back(mini_views_[0]);
     mini_views_.clear();
-    // Keep current layout until the animation is completed.
+    // Keep current layout until the animation is completed since the animation
+    // for going back to zero state is based on the expanded bar's current
+    // layout.
     PerformExpandedStateToZeroStateMiniViewAnimation(this, removed_mini_views);
     return;
   }
