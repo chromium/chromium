@@ -1123,8 +1123,9 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
   EXPECT_CALL(permission_context_, CanObtainReadPermission(kTestOrigin))
       .WillOnce(testing::Return(true));
 
-  EXPECT_CALL(permission_context_,
-              GetCommonDirectoryPath(blink::mojom::CommonDirectory::kDefault))
+  EXPECT_CALL(
+      permission_context_,
+      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context_, GetLastPickedDirectory(kTestOrigin))
       .WillOnce(testing::Return(PathInfo()));
@@ -1157,7 +1158,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenFile) {
   base::RunLoop loop;
   manager_remote->ChooseEntries(
       blink::mojom::ChooseFileSystemEntryType::kOpenFile, /*accepts=*/{},
-      blink::mojom::CommonDirectory::kDefault, /*include_accepts_all=*/true,
+      blink::mojom::WellKnownDirectory::kDefault, /*include_accepts_all=*/true,
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
               std::vector<blink::mojom::FileSystemAccessEntryPtr> entries) {
@@ -1190,8 +1191,9 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
   EXPECT_CALL(permission_context_, CanObtainWritePermission(kTestOrigin))
       .WillOnce(testing::Return(true));
 
-  EXPECT_CALL(permission_context_,
-              GetCommonDirectoryPath(blink::mojom::CommonDirectory::kDefault))
+  EXPECT_CALL(
+      permission_context_,
+      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context_, GetLastPickedDirectory(kTestOrigin))
       .WillOnce(testing::Return(PathInfo()));
@@ -1224,7 +1226,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_SaveFile) {
   base::RunLoop loop;
   manager_remote->ChooseEntries(
       blink::mojom::ChooseFileSystemEntryType::kSaveFile, /*accepts=*/{},
-      blink::mojom::CommonDirectory::kDefault, /*include_accepts_all=*/true,
+      blink::mojom::WellKnownDirectory::kDefault, /*include_accepts_all=*/true,
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
               std::vector<blink::mojom::FileSystemAccessEntryPtr> entries) {
@@ -1254,8 +1256,9 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
   EXPECT_CALL(permission_context_, CanObtainReadPermission(kTestOrigin))
       .WillOnce(testing::Return(true));
 
-  EXPECT_CALL(permission_context_,
-              GetCommonDirectoryPath(blink::mojom::CommonDirectory::kDefault))
+  EXPECT_CALL(
+      permission_context_,
+      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context_, GetLastPickedDirectory(kTestOrigin))
       .WillOnce(testing::Return(PathInfo()));
@@ -1287,7 +1290,7 @@ TEST_F(FileSystemAccessManagerImplTest, ChooseEntries_OpenDirectory) {
   base::RunLoop loop;
   manager_remote->ChooseEntries(
       blink::mojom::ChooseFileSystemEntryType::kOpenDirectory, {},
-      blink::mojom::CommonDirectory::kDefault, true,
+      blink::mojom::WellKnownDirectory::kDefault, true,
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
               std::vector<blink::mojom::FileSystemAccessEntryPtr> entries) {

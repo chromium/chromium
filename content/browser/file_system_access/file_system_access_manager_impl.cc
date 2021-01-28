@@ -282,7 +282,7 @@ void FileSystemAccessManagerImpl::GetSandboxedFileSystem(
 void FileSystemAccessManagerImpl::ChooseEntries(
     blink::mojom::ChooseFileSystemEntryType type,
     std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
-    blink::mojom::CommonDirectory starting_directory,
+    blink::mojom::WellKnownDirectory well_known_starting_directory,
     bool include_accepts_all,
     ChooseEntriesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -332,12 +332,14 @@ void FileSystemAccessManagerImpl::ChooseEntries(
 
   PathInfo path_info;
   if (permission_context_) {
-    if (starting_directory != blink::mojom::CommonDirectory::kDefault) {
+    if (well_known_starting_directory !=
+        blink::mojom::WellKnownDirectory::kDefault) {
       // Priotitize an explicitly stated starting directory over an implicitly
       // remembered LastPicked directory.
-      path_info.path =
-          permission_context_->GetCommonDirectoryPath(starting_directory);
-    } else { /*starting_directory == blink::mojom::CommonDirectory::kDefault*/
+      path_info.path = permission_context_->GetWellKnownDirectoryPath(
+          well_known_starting_directory);
+    } else { /*well_known_starting_directory ==
+                blink::mojom::WellKnownDirectory::kDefault*/
       path_info = permission_context_->GetLastPickedDirectory(context.origin);
     }
   }
@@ -370,8 +372,8 @@ void FileSystemAccessManagerImpl::SetDefaultPathAndShowPicker(
   if (result != base::File::Error::FILE_OK) {
     // |path| does not exist. Resort to the default.
     if (permission_context_)
-      default_directory = permission_context_->GetCommonDirectoryPath(
-          blink::mojom::CommonDirectory::kDefault);
+      default_directory = permission_context_->GetWellKnownDirectoryPath(
+          blink::mojom::WellKnownDirectory::kDefault);
   }
 
   // TODO(https://crbug.com/1019408): Append suggested filename to

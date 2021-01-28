@@ -18,7 +18,7 @@ enum ChooseFileSystemEntryType {
   kOpenDirectory
 };
 
-enum CommonDirectory {
+enum WellKnownDirectory {
   kDefault,
   kDirDesktop,
   kDirDocuments,
@@ -56,7 +56,7 @@ interface FileSystemAccessManager {
   // |include_accepts_all| is treated as if it was true.
   ChooseEntries(ChooseFileSystemEntryType type,
                 array<ChooseFileSystemEntryAcceptsOption> accepts,
-                CommonDirectory starting_directory,
+                WellKnownDirectory well_known_starting_directory,
                 bool include_accepts_all) =>
       (FileSystemAccessError result,
        array<FileSystemAccessEntry> entries);

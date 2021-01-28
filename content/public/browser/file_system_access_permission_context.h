@@ -134,8 +134,8 @@ class FileSystemAccessPermissionContext {
   // Return the path associated with well-known directories such as "desktop"
   // and "music", or a default path if the |directory| cannot be matched to a
   // well-known directory.
-  virtual base::FilePath GetCommonDirectoryPath(
-      blink::mojom::CommonDirectory directory) = 0;
+  virtual base::FilePath GetWellKnownDirectoryPath(
+      blink::mojom::WellKnownDirectory directory) = 0;
 
  protected:
   virtual ~FileSystemAccessPermissionContext() = default;

@@ -486,8 +486,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
   EXPECT_CALL(permission_context, CanObtainReadPermission(origin))
       .WillOnce(testing::Return(true));
 
-  EXPECT_CALL(permission_context,
-              GetCommonDirectoryPath(blink::mojom::CommonDirectory::kDefault))
+  EXPECT_CALL(
+      permission_context,
+      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
       .WillOnce(testing::Return(PathInfo()));
@@ -560,8 +561,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_CALL(permission_context, CanObtainWritePermission(origin))
       .WillOnce(testing::Return(true));
 
-  EXPECT_CALL(permission_context,
-              GetCommonDirectoryPath(blink::mojom::CommonDirectory::kDefault))
+  EXPECT_CALL(
+      permission_context,
+      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
       .WillOnce(testing::Return(PathInfo()));
@@ -621,8 +623,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_CALL(permission_context, CanObtainWritePermission(origin))
       .WillOnce(testing::Return(true));
 
-  EXPECT_CALL(permission_context,
-              GetCommonDirectoryPath(blink::mojom::CommonDirectory::kDefault))
+  EXPECT_CALL(
+      permission_context,
+      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
       .WillOnce(testing::Return(base::FilePath()));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
       .WillOnce(testing::Return(PathInfo()));
@@ -825,8 +828,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   base::FilePath default_dir;
   default_dir = temp_dir_.GetPath().AppendASCII("default");
 
-  EXPECT_CALL(permission_context,
-              GetCommonDirectoryPath(blink::mojom::CommonDirectory::kDefault))
+  EXPECT_CALL(
+      permission_context,
+      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
       .WillOnce(testing::Return(default_dir));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
       .WillOnce(testing::Return(bad_dir_info));
@@ -996,8 +1000,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   base::FilePath default_dir;
   default_dir = temp_dir_.GetPath().AppendASCII("default");
 
-  EXPECT_CALL(permission_context,
-              GetCommonDirectoryPath(blink::mojom::CommonDirectory::kDefault))
+  EXPECT_CALL(
+      permission_context,
+      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDefault))
       .WillOnce(testing::Return(default_dir));
   EXPECT_CALL(permission_context, GetLastPickedDirectory(origin))
       .WillOnce(testing::Return(bad_dir_info));
@@ -1047,7 +1052,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   EXPECT_EQ(default_dir, dialog_params.default_path);
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartInCommonDirectory) {
+IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
+                       StartInWellKnownDirectory) {
   base::FilePath test_dir = CreateTestDir();
 
   SelectFileDialogParams dialog_params;
@@ -1083,10 +1089,11 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartInCommonDirectory) {
         temp_dir_.GetPath(), FILE_PATH_LITERAL("Desktop"), &desktop_dir));
   }
 
-  // Starting directory specified, so do not call GetLastPickedDirectory.
+  // Well-known starting directory specified, so do not call
+  // GetLastPickedDirectory.
   EXPECT_CALL(
       permission_context,
-      GetCommonDirectoryPath(blink::mojom::CommonDirectory::kDirDesktop))
+      GetWellKnownDirectoryPath(blink::mojom::WellKnownDirectory::kDirDesktop))
       .WillOnce(testing::Return(desktop_dir));
   EXPECT_CALL(permission_context,
               SetLastPickedDirectory(origin, test_dir, PathType::kLocal));
@@ -1136,7 +1143,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartInCommonDirectory) {
 }
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
-                       StartInCommonDirectory_Nulled) {
+                       StartInWellKnownDirectory_Nulled) {
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
       new CancellingSelectFileDialogFactory(&dialog_params));

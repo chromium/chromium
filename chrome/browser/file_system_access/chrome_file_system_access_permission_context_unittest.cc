@@ -464,29 +464,29 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
-       GetCommonDirectoryPath_Base_OK) {
+       GetWellKnownDirectoryPath_Base_OK) {
   base::ScopedPathOverride user_desktop_override(
       base::DIR_USER_DESKTOP, temp_dir_.GetPath(), true, true);
-  EXPECT_EQ(permission_context_->GetCommonDirectoryPath(
-                blink::mojom::CommonDirectory::kDirDesktop),
+  EXPECT_EQ(permission_context_->GetWellKnownDirectoryPath(
+                blink::mojom::WellKnownDirectory::kDirDesktop),
             temp_dir_.GetPath());
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
-       GetCommonDirectoryPath_Chrome_OK) {
+       GetWellKnownDirectoryPath_Chrome_OK) {
   base::ScopedPathOverride user_documents_override(
       chrome::DIR_USER_DOCUMENTS, temp_dir_.GetPath(), true, true);
-  EXPECT_EQ(permission_context_->GetCommonDirectoryPath(
-                blink::mojom::CommonDirectory::kDirDocuments),
+  EXPECT_EQ(permission_context_->GetWellKnownDirectoryPath(
+                blink::mojom::WellKnownDirectory::kDirDocuments),
             temp_dir_.GetPath());
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
-       GetCommonDirectoryPath_Default) {
+       GetWellKnownDirectoryPath_Default) {
   base::ScopedPathOverride user_documents_override(
       chrome::DIR_USER_DOCUMENTS, temp_dir_.GetPath(), true, true);
-  EXPECT_EQ(permission_context_->GetCommonDirectoryPath(
-                blink::mojom::CommonDirectory::kDefault),
+  EXPECT_EQ(permission_context_->GetWellKnownDirectoryPath(
+                blink::mojom::WellKnownDirectory::kDefault),
             temp_dir_.GetPath());
 }
 

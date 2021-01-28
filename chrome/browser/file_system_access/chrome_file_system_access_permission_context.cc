@@ -475,29 +475,30 @@ ChromeFileSystemAccessPermissionContext::GetLastPickedDirectory(
   return path_info;
 }
 
-base::FilePath ChromeFileSystemAccessPermissionContext::GetCommonDirectoryPath(
-    blink::mojom::CommonDirectory directory) {
+base::FilePath
+ChromeFileSystemAccessPermissionContext::GetWellKnownDirectoryPath(
+    blink::mojom::WellKnownDirectory directory) {
   int key = base::PATH_START;
   switch (directory) {
-    case blink::mojom::CommonDirectory::kDefault:
+    case blink::mojom::WellKnownDirectory::kDefault:
       key = chrome::DIR_USER_DOCUMENTS;
       break;
-    case blink::mojom::CommonDirectory::kDirDesktop:
+    case blink::mojom::WellKnownDirectory::kDirDesktop:
       key = base::DIR_USER_DESKTOP;
       break;
-    case blink::mojom::CommonDirectory::kDirDocuments:
+    case blink::mojom::WellKnownDirectory::kDirDocuments:
       key = chrome::DIR_USER_DOCUMENTS;
       break;
-    case blink::mojom::CommonDirectory::kDirDownloads:
+    case blink::mojom::WellKnownDirectory::kDirDownloads:
       key = chrome::DIR_DEFAULT_DOWNLOADS;
       break;
-    case blink::mojom::CommonDirectory::kDirMusic:
+    case blink::mojom::WellKnownDirectory::kDirMusic:
       key = chrome::DIR_USER_MUSIC;
       break;
-    case blink::mojom::CommonDirectory::kDirPictures:
+    case blink::mojom::WellKnownDirectory::kDirPictures:
       key = chrome::DIR_USER_PICTURES;
       break;
-    case blink::mojom::CommonDirectory::kDirVideos:
+    case blink::mojom::WellKnownDirectory::kDirVideos:
       key = chrome::DIR_USER_VIDEOS;
       break;
   }

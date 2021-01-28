@@ -104,7 +104,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   void ChooseEntries(
       blink::mojom::ChooseFileSystemEntryType type,
       std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
-      blink::mojom::CommonDirectory starting_directory,
+      blink::mojom::WellKnownDirectory well_known_starting_directory,
       bool include_accepts_all,
       ChooseEntriesCallback callback) override;
   void GetFileHandleFromToken(

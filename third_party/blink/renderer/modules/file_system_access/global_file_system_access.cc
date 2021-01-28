@@ -168,26 +168,26 @@ void VerifyIsAllowedToShowFilePicker(const LocalDOMWindow& window,
   }
 }
 
-mojom::blink::CommonDirectory ConvertCommonDirectory(
-    const String& starting_directory,
+mojom::blink::WellKnownDirectory ConvertWellKnownDirectory(
+    const String& directory,
     ExceptionState& exception_state) {
-  if (starting_directory == "")
-    return mojom::blink::CommonDirectory::kDefault;
-  else if (starting_directory == "desktop")
-    return mojom::blink::CommonDirectory::kDirDesktop;
-  else if (starting_directory == "documents")
-    return mojom::blink::CommonDirectory::kDirDocuments;
-  else if (starting_directory == "downloads")
-    return mojom::blink::CommonDirectory::kDirDownloads;
-  else if (starting_directory == "music")
-    return mojom::blink::CommonDirectory::kDirMusic;
-  else if (starting_directory == "pictures")
-    return mojom::blink::CommonDirectory::kDirPictures;
-  else if (starting_directory == "videos")
-    return mojom::blink::CommonDirectory::kDirVideos;
+  if (directory == "")
+    return mojom::blink::WellKnownDirectory::kDefault;
+  else if (directory == "desktop")
+    return mojom::blink::WellKnownDirectory::kDirDesktop;
+  else if (directory == "documents")
+    return mojom::blink::WellKnownDirectory::kDirDocuments;
+  else if (directory == "downloads")
+    return mojom::blink::WellKnownDirectory::kDirDownloads;
+  else if (directory == "music")
+    return mojom::blink::WellKnownDirectory::kDirMusic;
+  else if (directory == "pictures")
+    return mojom::blink::WellKnownDirectory::kDirPictures;
+  else if (directory == "videos")
+    return mojom::blink::WellKnownDirectory::kDirVideos;
 
   NOTREACHED();
-  return mojom::blink::CommonDirectory::kDefault;
+  return mojom::blink::WellKnownDirectory::kDefault;
 }
 
 ScriptPromise ShowFilePickerImpl(
@@ -195,7 +195,7 @@ ScriptPromise ShowFilePickerImpl(
     LocalDOMWindow& window,
     mojom::blink::ChooseFileSystemEntryType chooser_type,
     Vector<mojom::blink::ChooseFileSystemEntryAcceptsOptionPtr> accepts,
-    mojom::blink::CommonDirectory starting_directory,
+    mojom::blink::WellKnownDirectory well_known_starting_directory,
     bool accept_all,
     bool return_as_sequence) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -213,8 +213,8 @@ ScriptPromise ShowFilePickerImpl(
   raw_manager->ChooseEntries(
       chooser_type, std::move(accepts),
       RuntimeEnabledFeatures::FileSystemAccessAPIExperimentalEnabled()
-          ? starting_directory
-          : mojom::blink::CommonDirectory::kDefault,
+          ? std::move(well_known_starting_directory)
+          : mojom::blink::WellKnownDirectory::kDefault,
       accept_all,
       WTF::Bind(
           [](ScriptPromiseResolver* resolver,
@@ -283,9 +283,10 @@ ScriptPromise GlobalFileSystemAccess::showOpenFilePicker(
     return ScriptPromise();
   }
 
-  auto starting_directory = mojom::blink::CommonDirectory::kDefault;
+  auto well_known_starting_directory =
+      mojom::blink::WellKnownDirectory::kDefault;
   if (options->hasStartInNonNull()) {
-    starting_directory = ConvertCommonDirectory(
+    well_known_starting_directory = ConvertWellKnownDirectory(
         IDLEnumAsString(options->startInNonNull()), exception_state);
     if (exception_state.HadException())
       return ScriptPromise();
@@ -300,7 +301,7 @@ ScriptPromise GlobalFileSystemAccess::showOpenFilePicker(
       options->multiple()
           ? mojom::blink::ChooseFileSystemEntryType::kOpenMultipleFiles
           : mojom::blink::ChooseFileSystemEntryType::kOpenFile,
-      std::move(accepts), starting_directory,
+      std::move(accepts), std::move(well_known_starting_directory),
       !options->excludeAcceptAllOption(),
       /*return_as_sequence=*/true);
 }
@@ -324,9 +325,10 @@ ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
     return ScriptPromise();
   }
 
-  auto starting_directory = mojom::blink::CommonDirectory::kDefault;
+  auto well_known_starting_directory =
+      mojom::blink::WellKnownDirectory::kDefault;
   if (options->hasStartInNonNull()) {
-    starting_directory = ConvertCommonDirectory(
+    well_known_starting_directory = ConvertWellKnownDirectory(
         IDLEnumAsString(options->startInNonNull()), exception_state);
     if (exception_state.HadException())
       return ScriptPromise();
@@ -336,11 +338,11 @@ ScriptPromise GlobalFileSystemAccess::showSaveFilePicker(
   if (exception_state.HadException())
     return ScriptPromise();
 
-  return ShowFilePickerImpl(script_state, window,
-                            mojom::blink::ChooseFileSystemEntryType::kSaveFile,
-                            std::move(accepts), starting_directory,
-                            !options->excludeAcceptAllOption(),
-                            /*return_as_sequence=*/false);
+  return ShowFilePickerImpl(
+      script_state, window, mojom::blink::ChooseFileSystemEntryType::kSaveFile,
+      std::move(accepts), std::move(well_known_starting_directory),
+      !options->excludeAcceptAllOption(),
+      /*return_as_sequence=*/false);
 }
 
 // static
@@ -351,9 +353,10 @@ ScriptPromise GlobalFileSystemAccess::showDirectoryPicker(
     ExceptionState& exception_state) {
   UseCounter::Count(window, WebFeature::kFileSystemPickerMethod);
 
-  auto starting_directory = mojom::blink::CommonDirectory::kDefault;
+  auto well_known_starting_directory =
+      mojom::blink::WellKnownDirectory::kDefault;
   if (options->hasStartInNonNull()) {
-    starting_directory = ConvertCommonDirectory(
+    well_known_starting_directory = ConvertWellKnownDirectory(
         IDLEnumAsString(options->startInNonNull()), exception_state);
     if (exception_state.HadException())
       return ScriptPromise();
@@ -365,7 +368,7 @@ ScriptPromise GlobalFileSystemAccess::showDirectoryPicker(
   return ShowFilePickerImpl(
       script_state, window,
       mojom::blink::ChooseFileSystemEntryType::kOpenDirectory, {},
-      starting_directory,
+      std::move(well_known_starting_directory),
       /*accept_all=*/true,
       /*return_as_sequence=*/false);
 }

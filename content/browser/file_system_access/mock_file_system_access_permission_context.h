@@ -80,8 +80,8 @@ class MockFileSystemAccessPermissionContext
               (override));
 
   MOCK_METHOD(base::FilePath,
-              GetCommonDirectoryPath,
-              (blink::mojom::CommonDirectory directory),
+              GetWellKnownDirectoryPath,
+              (blink::mojom::WellKnownDirectory directory),
               (override));
 };
 
