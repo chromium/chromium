@@ -1622,6 +1622,11 @@ Profile* ProfileManager::CreateAndInitializeProfile(
   if (!profile)
     return nullptr;
 
+  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile() ||
+      profile->IsSystemProfile()) {
+    SetNonPersonalProfilePrefs(profile.get());
+  }
+
   Profile* profile_ptr = profile.get();
   bool result = AddProfile(std::move(profile));
   DCHECK(result);
