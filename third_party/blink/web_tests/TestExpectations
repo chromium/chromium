@@ -5781,9 +5781,6 @@ crbug.com/1050549 http/tests/devtools/network/preview-searchable.js [ Pass Failu
 crbug.com/1050549 http/tests/devtools/console/console-correct-suggestions.js [ Pass Failure ]
 crbug.com/1050549 http/tests/devtools/extensions/extensions-timeline-api.js [ Pass Failure ]
 
-# Sheriff 2021-01-22
-crbug.com/1169908 http/tests/devtools/profiler/cpu-profiler-bottom-up-large-tree-search.js [ Pass Timeout ]
-
 # Sheriff 2018-01-25
 crbug.com/893869 css3/masking/mask-repeat-space-padding.html [ Failure Pass ]
 crbug.com/1155125 [ Linux ] http/tests/history/replacestate-post-to-get-2.html [ Pass Timeout ]

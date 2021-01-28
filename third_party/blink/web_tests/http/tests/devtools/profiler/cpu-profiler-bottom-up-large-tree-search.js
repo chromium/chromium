@@ -6,7 +6,7 @@
   TestRunner.addResult(`Tests that search works for large bottom-up view of CPU profile.\n`);
   await TestRunner.loadModule('cpu_profiler_test_runner');
 
-  var nodesCount = 1000;
+  var nodesCount = 200;
   function buildTree(startId, count) {
     // Build a call tree of a chain form: foo1 -> foo2 -> foo3 -> ...
     // This should give a O(n^2) nodes in bottom-up tree.
