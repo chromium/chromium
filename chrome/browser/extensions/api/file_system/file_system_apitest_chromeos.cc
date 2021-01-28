@@ -124,9 +124,9 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
 
     ASSERT_TRUE(test_cache_root_.CreateUniqueTempDir());
 
-    create_drive_integration_service_ =
-        base::Bind(&FileSystemApiTestForDrive::CreateDriveIntegrationService,
-                   base::Unretained(this));
+    create_drive_integration_service_ = base::BindRepeating(
+        &FileSystemApiTestForDrive::CreateDriveIntegrationService,
+        base::Unretained(this));
     service_factory_for_test_.reset(
         new drive::DriveIntegrationServiceFactory::ScopedFactoryForTest(
             &create_drive_integration_service_));
