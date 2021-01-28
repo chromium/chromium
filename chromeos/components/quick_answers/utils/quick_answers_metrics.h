@@ -45,6 +45,9 @@ void RecordNoticeImpression(int nth_impression);
 // Record the intent generated on-device.
 void RecordIntentType(IntentType intent_type);
 
+// Record the intent type when network error occurs.
+void RecordNetworkError(IntentType intent_type);
+
 }  // namespace quick_answers
 }  // namespace chromeos
 

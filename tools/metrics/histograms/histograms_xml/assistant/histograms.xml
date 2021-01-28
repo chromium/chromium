@@ -348,6 +348,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="QuickAnswers.NetworkError.IntentType"
+    enum="QuickAnswersIntentType" expires_after="2021-06-27">
+  <owner>updowndota@google.com</owner>
+  <owner>croissant-eng@chromium.org</owner>
+  <summary>
+    Records the intent type when network error occurs during the quick answers
+    fetch. ChromeOS only.
+  </summary>
+</histogram>
+
 <histogram name="QuickAnswers.Result" enum="QuickAnswersResultType"
     expires_after="2021-06-27">
   <owner>llin@google.com</owner>

@@ -93,6 +93,7 @@ void ResultLoader::OnSimpleURLLoaderComplete(
   if (!response_body || loader_->NetError() != net::OK ||
       !loader_->ResponseInfo() || !loader_->ResponseInfo()->headers) {
     RecordLoadingStatus(LoadStatus::kNetworkError, duration);
+    RecordNetworkError(preprocessed_output.intent_info.intent_type);
     delegate_->OnNetworkError();
     return;
   }
