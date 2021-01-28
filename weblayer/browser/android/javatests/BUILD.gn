@@ -75,6 +75,7 @@ android_library("weblayer_private_java_tests") {
     "src/org/chromium/weblayer/test/BrowserControlsTest.java",
     "src/org/chromium/weblayer/test/FullscreenCallbackPrivateTest.java",
     "src/org/chromium/weblayer/test/GeolocationTest.java",
+    "src/org/chromium/weblayer/test/GoogleAccountAccessTokenFetcherTest.java",
     "src/org/chromium/weblayer/test/InfoBarTest.java",
     "src/org/chromium/weblayer/test/MediaCaptureTest.java",
     "src/org/chromium/weblayer/test/MediaRouterTest.java",

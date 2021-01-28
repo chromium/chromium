@@ -63,6 +63,7 @@ android_library("java") {
     "org/chromium/weblayer/FindInPageCallback.java",
     "org/chromium/weblayer/FindInPageController.java",
     "org/chromium/weblayer/FullscreenCallback.java",
+    "org/chromium/weblayer/GoogleAccountAccessTokenFetcher.java",
     "org/chromium/weblayer/GoogleAccountServiceType.java",
     "org/chromium/weblayer/GoogleAccountsCallback.java",
     "org/chromium/weblayer/GoogleAccountsParams.java",

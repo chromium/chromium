@@ -24,6 +24,7 @@ import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.BrowsingDataType;
 import org.chromium.weblayer_private.interfaces.ICookieManager;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
+import org.chromium.weblayer_private.interfaces.IGoogleAccountAccessTokenFetcherClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IPrerenderController;
 import org.chromium.weblayer_private.interfaces.IProfile;
@@ -55,6 +56,7 @@ public final class ProfileImpl
     private boolean mDownloadsInitialized;
     private DownloadCallbackProxy mDownloadCallbackProxy;
     private IUserIdentityCallbackClient mUserIdentityCallbackClient;
+    private IGoogleAccountAccessTokenFetcherClient mGoogleAccountAccessTokenFetcherClient;
     private List<Intent> mDownloadNotificationIntents = new ArrayList<>();
 
     private IProfileClient mClient;
@@ -210,6 +212,17 @@ public final class ProfileImpl
 
     public IUserIdentityCallbackClient getUserIdentityCallbackClient() {
         return mUserIdentityCallbackClient;
+    }
+
+    @Override
+    public void setGoogleAccountAccessTokenFetcherClient(
+            IGoogleAccountAccessTokenFetcherClient client) {
+        StrictModeWorkaround.apply();
+        mGoogleAccountAccessTokenFetcherClient = client;
+    }
+
+    public IGoogleAccountAccessTokenFetcherClient getGoogleAccountAccessTokenFetcherClient() {
+        return mGoogleAccountAccessTokenFetcherClient;
     }
 
     @Override
@@ -372,6 +385,12 @@ public final class ProfileImpl
     @Override
     public boolean getBooleanSetting(@SettingType int type) {
         return ProfileImplJni.get().getBooleanSetting(mNativeProfile, type);
+    }
+
+    public void fetchAccessTokenForTesting(IObjectWrapper scopes, IObjectWrapper onTokenFetched)
+            throws RemoteException {
+        // Before invoking this method the test should have set the fetcher.
+        mGoogleAccountAccessTokenFetcherClient.fetchAccessToken(scopes, onTokenFetched);
     }
 
     @NativeMethods

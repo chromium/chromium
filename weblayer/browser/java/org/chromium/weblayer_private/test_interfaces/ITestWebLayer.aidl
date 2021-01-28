@@ -6,6 +6,7 @@ package org.chromium.weblayer_private.test_interfaces;
 
 import android.os.Bundle;
 import org.chromium.weblayer_private.interfaces.IBrowser;
+import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.ITab;
 
@@ -70,4 +71,5 @@ interface ITestWebLayer {
 
   boolean isWindowOnSmallDevice(in IBrowser browser) = 21;
   IObjectWrapper getSecurityButton(IObjectWrapper /* View */ urlBarView) = 22;
+  void fetchAccessToken(in IProfile profile, in IObjectWrapper /* Set<String */ scopes, in IObjectWrapper /* ValueCallback<String> */ onTokenFetched) = 23;
 }

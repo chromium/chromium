@@ -483,6 +483,7 @@ android_aidl("aidl") {
     "org/chromium/weblayer_private/interfaces/IFaviconFetcherClient.aidl",
     "org/chromium/weblayer_private/interfaces/IFindInPageCallbackClient.aidl",
     "org/chromium/weblayer_private/interfaces/IFullscreenCallbackClient.aidl",
+    "org/chromium/weblayer_private/interfaces/IGoogleAccountAccessTokenFetcherClient.aidl",
     "org/chromium/weblayer_private/interfaces/IGoogleAccountsCallbackClient.aidl",
     "org/chromium/weblayer_private/interfaces/IMediaCaptureCallbackClient.aidl",
     "org/chromium/weblayer_private/interfaces/IMediaRouteDialogFragment.aidl",

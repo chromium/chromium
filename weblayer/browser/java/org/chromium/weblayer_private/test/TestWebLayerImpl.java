@@ -5,6 +5,7 @@
 package org.chromium.weblayer_private.test;
 
 import android.os.IBinder;
+import android.os.RemoteException;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,10 +31,12 @@ import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.weblayer_private.BrowserImpl;
 import org.chromium.weblayer_private.InfoBarContainer;
+import org.chromium.weblayer_private.ProfileImpl;
 import org.chromium.weblayer_private.TabImpl;
 import org.chromium.weblayer_private.WebLayerAccessibilityUtil;
 import org.chromium.weblayer_private.interfaces.IBrowser;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
+import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.ITab;
 import org.chromium.weblayer_private.interfaces.ObjectWrapper;
 import org.chromium.weblayer_private.media.MediaRouteDialogFragmentImpl;
@@ -262,5 +265,12 @@ public final class TestWebLayerImpl extends ITestWebLayer.Stub {
         View securityIconView = urlBarLayout.getChildAt(0);
         assert (securityIconView instanceof ImageView);
         return ObjectWrapper.wrap((ImageView) securityIconView);
+    }
+
+    @Override
+    public void fetchAccessToken(IProfile profile, IObjectWrapper /* Set<String> */ scopes,
+            IObjectWrapper /* ValueCallback<String> */ onTokenFetched) throws RemoteException {
+        ProfileImpl profileImpl = (ProfileImpl) profile;
+        profileImpl.fetchAccessTokenForTesting(scopes, onTokenFetched);
     }
 }

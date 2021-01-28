@@ -16,6 +16,7 @@ import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IClientDownload;
 import org.chromium.weblayer_private.interfaces.IDownload;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
+import org.chromium.weblayer_private.interfaces.IGoogleAccountAccessTokenFetcherClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IProfile;
 import org.chromium.weblayer_private.interfaces.IProfileClient;
@@ -111,6 +112,10 @@ public class Profile {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
+    }
+
+    IProfile getIProfile() {
+        return mImpl;
     }
 
     /**
@@ -427,6 +432,25 @@ public class Profile {
         }
     }
 
+    /**
+     * See {@link GoogleAccountAccessTokenFetcher}.
+     * @since 89
+     */
+    public void setGoogleAccountAccessTokenFetcher(
+            @Nullable GoogleAccountAccessTokenFetcher fetcher) {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 89) {
+            throw new UnsupportedOperationException();
+        }
+        try {
+            mImpl.setGoogleAccountAccessTokenFetcherClient(fetcher == null
+                            ? null
+                            : new GoogleAccountAccessTokenFetcherClientImpl(fetcher));
+        } catch (RemoteException e) {
+            throw new APICallException(e);
+        }
+    }
+
     static final class DownloadCallbackClientImpl extends IDownloadCallbackClient.Stub {
         private final DownloadCallback mCallback;
 
@@ -519,6 +543,26 @@ public class Profile {
                     (ValueCallback<Bitmap>) ObjectWrapper.unwrap(
                             avatarLoadedWrapper, ValueCallback.class);
             mCallback.getAvatar(desiredSize, avatarLoadedCallback);
+        }
+    }
+
+    private static final class GoogleAccountAccessTokenFetcherClientImpl
+            extends IGoogleAccountAccessTokenFetcherClient.Stub {
+        private GoogleAccountAccessTokenFetcher mFetcher;
+
+        GoogleAccountAccessTokenFetcherClientImpl(GoogleAccountAccessTokenFetcher fetcher) {
+            mFetcher = fetcher;
+        }
+
+        @Override
+        public void fetchAccessToken(
+                IObjectWrapper scopesWrapper, IObjectWrapper onTokenFetchedWrapper) {
+            StrictModeWorkaround.apply();
+            Set<String> scopes = ObjectWrapper.unwrap(scopesWrapper, Set.class);
+            ValueCallback<String> valueCallback =
+                    ObjectWrapper.unwrap(onTokenFetchedWrapper, ValueCallback.class);
+
+            mFetcher.fetchAccessToken(scopes, (token) -> valueCallback.onReceiveValue(token));
         }
     }
 

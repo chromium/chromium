@@ -7,6 +7,7 @@ package org.chromium.weblayer_private.interfaces;
 import org.chromium.weblayer_private.interfaces.ICookieManager;
 import org.chromium.weblayer_private.interfaces.IDownloadCallbackClient;
 import org.chromium.weblayer_private.interfaces.IUserIdentityCallbackClient;
+import org.chromium.weblayer_private.interfaces.IGoogleAccountAccessTokenFetcherClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
 import org.chromium.weblayer_private.interfaces.IPrerenderController;
 import org.chromium.weblayer_private.interfaces.IProfileClient;
@@ -43,4 +44,7 @@ interface IProfile {
   boolean isIncognito() = 16;
   void setClient(in IProfileClient client) = 17;
   void destroyAndDeleteDataFromDiskSoon(in IObjectWrapper completeCallback) = 18;
+
+  // Added in 89.
+  void setGoogleAccountAccessTokenFetcherClient(IGoogleAccountAccessTokenFetcherClient client) = 19;
 }
