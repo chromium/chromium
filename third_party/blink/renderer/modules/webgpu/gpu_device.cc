@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_uncaptured_error_event.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_validation_error.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_image_bitmap_handler.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {

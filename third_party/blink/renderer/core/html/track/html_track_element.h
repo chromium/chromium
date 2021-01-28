@@ -42,6 +42,7 @@ class HTMLTrackElement final : public HTMLElement,
 
  public:
   explicit HTMLTrackElement(Document&);
+  ~HTMLTrackElement() override;
 
   const AtomicString& kind();
   void setKind(const AtomicString&);
@@ -55,8 +56,6 @@ class HTMLTrackElement final : public HTMLElement,
   void Trace(Visitor*) const override;
 
  private:
-  ~HTMLTrackElement() override;
-
   void ParseAttribute(const AttributeModificationParams&) override;
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;

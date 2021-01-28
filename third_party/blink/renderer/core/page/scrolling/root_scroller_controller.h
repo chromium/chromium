@@ -13,6 +13,7 @@ namespace blink {
 class Document;
 class Element;
 class HTMLFrameOwnerElement;
+class Node;
 
 // Manages the root scroller associated with a given document. The root
 // scroller causes browser controls movement, overscroll effects and prevents

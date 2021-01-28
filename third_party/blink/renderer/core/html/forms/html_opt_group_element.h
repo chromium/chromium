@@ -37,6 +37,7 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
 
  public:
   explicit HTMLOptGroupElement(Document&);
+  ~HTMLOptGroupElement() override;
 
   bool IsDisabledFormControl() const override;
   String DefaultToolTip() const override;
@@ -49,8 +50,6 @@ class CORE_EXPORT HTMLOptGroupElement final : public HTMLElement {
   static bool CanAssignToOptGroupSlot(const Node&);
 
  private:
-  ~HTMLOptGroupElement() override;
-
   bool SupportsFocus() const override;
   void ChildrenChanged(const ChildrenChange& change) override;
   bool ChildrenChangedAllChildrenRemovedNeedsList() const override;

@@ -33,6 +33,7 @@ class CORE_EXPORT HTMLMeterElement final : public HTMLElement {
 
  public:
   explicit HTMLMeterElement(Document&);
+  ~HTMLMeterElement() override;
 
   enum GaugeRegion {
     kGaugeRegionOptimum,
@@ -66,8 +67,6 @@ class CORE_EXPORT HTMLMeterElement final : public HTMLElement {
   void Trace(Visitor*) const override;
 
  private:
-  ~HTMLMeterElement() override;
-
   bool AreAuthorShadowsAllowed() const override { return false; }
 
   bool IsLabelable() const override { return true; }

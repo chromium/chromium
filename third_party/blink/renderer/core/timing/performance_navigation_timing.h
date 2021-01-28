@@ -35,6 +35,7 @@ class CORE_EXPORT PerformanceNavigationTiming final
                               ResourceTimingInfo*,
                               base::TimeTicks time_origin,
                               HeapVector<Member<PerformanceServerTiming>>);
+  ~PerformanceNavigationTiming() override;
 
   // Attributes inherited from PerformanceEntry.
   DOMHighResTimeStamp duration() const override;
@@ -67,8 +68,6 @@ class CORE_EXPORT PerformanceNavigationTiming final
   void BuildJSONValue(V8ObjectBuilder&) const override;
 
  private:
-  ~PerformanceNavigationTiming() override;
-
   static AtomicString GetNavigationType(WebNavigationType, const Document*);
 
   const DocumentTiming* GetDocumentTiming() const;

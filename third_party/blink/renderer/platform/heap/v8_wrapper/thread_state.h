@@ -98,6 +98,9 @@ class ThreadState final {
     // TODO(1056170): Implement, if necessary for testing.
   }
 
+  bool IsMainThread() const { return this == MainThreadState(); }
+  bool IsCreationThread() const { return thread_id_ == CurrentThread(); }
+
  private:
   // Main-thread ThreadState avoids TLS completely by using a regular global.
   // The object is manually managed and should not rely on global ctor/dtor.
@@ -109,9 +112,6 @@ class ThreadState final {
 
   explicit ThreadState(v8::CppHeap&);
   ~ThreadState();
-
-  bool IsMainThread() const { return this == MainThreadState(); }
-  bool IsCreationThread() const { return thread_id_ == CurrentThread(); }
 
   // Handle is the most frequently accessed field as it is required for
   // MakeGarbageCollected().
