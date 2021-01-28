@@ -1,15 +1,11 @@
 <!DOCTYPE html>
 <html>
 <body>
-<script src="../../resources/testharness.js"></script>
-<script src="../../resources/testharnessreport.js"></script>
-<script src="../../resources/visibility.js"></script>
-<script src="../../http/tests/resources/sensor-helpers.js"></script>
-<script src="../resources/device-orientation-helpers.js"></script>
-<script src="file:///gen/layout_test_data/mojo/public/js/mojo_bindings.js"></script>
-<script src="file:///gen/services/device/public/mojom/sensor_provider.mojom.js"></script>
-<script>
-'use strict';
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {generateOrientationData, setMainWindowHidden, setMockOrientationData, waitForOrientation} from '../resources/device-orientation-helpers.js';
+import {sensor_test} from '../resources/sensor-helpers.js';
 
 function sleep(time_ms) {
   return new Promise(resolve => window.setTimeout(resolve, time_ms));
@@ -23,7 +19,7 @@ sensor_test(async (t, sensorProvider) => {
 
   await setMainWindowHidden(true);
   let hidden = true;
-  
+
   let hiddenEventPromise = new Promise((resolve, reject) => {
     window.addEventListener(
         'deviceorientation',

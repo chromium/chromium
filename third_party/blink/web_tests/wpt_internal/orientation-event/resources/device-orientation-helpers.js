@@ -1,11 +1,11 @@
-'use strict';
+import {setMockSensorDataForType, waitForEvent} from './sensor-helpers.js';
 
-function generateMotionData(accelerationX, accelerationY, accelerationZ,
-                            accelerationIncludingGravityX,
-                            accelerationIncludingGravityY,
-                            accelerationIncludingGravityZ,
-                            rotationRateAlpha, rotationRateBeta, rotationRateGamma,
-                            interval = 16) {
+export function generateMotionData(accelerationX, accelerationY, accelerationZ,
+                                   accelerationIncludingGravityX,
+                                   accelerationIncludingGravityY,
+                                   accelerationIncludingGravityZ,
+                                   rotationRateAlpha, rotationRateBeta, rotationRateGamma,
+                                   interval = 16) {
   var motionData = {accelerationX: accelerationX,
                     accelerationY: accelerationY,
                     accelerationZ: accelerationZ,
@@ -19,7 +19,7 @@ function generateMotionData(accelerationX, accelerationY, accelerationZ,
   return motionData;
 }
 
-function generateOrientationData(alpha, beta, gamma, absolute) {
+export function generateOrientationData(alpha, beta, gamma, absolute) {
   var orientationData = {alpha: alpha,
                          beta: beta,
                          gamma: gamma,
@@ -30,7 +30,7 @@ function generateOrientationData(alpha, beta, gamma, absolute) {
 // Device[Orientation|Motion]EventPump treat NaN as a missing value.
 let nullToNan = x => (x === null ? NaN : x);
 
-function setMockMotionData(sensorProvider, motionData) {
+export function setMockMotionData(sensorProvider, motionData) {
   const degToRad = Math.PI / 180;
   return Promise.all([
       setMockSensorDataForType(sensorProvider, "Accelerometer", [
@@ -51,7 +51,7 @@ function setMockMotionData(sensorProvider, motionData) {
   ]);
 }
 
-function setMockOrientationData(sensorProvider, orientationData) {
+export function setMockOrientationData(sensorProvider, orientationData) {
   let sensorType = orientationData.absolute
       ? "AbsoluteOrientationEulerAngles" : "RelativeOrientationEulerAngles";
   return setMockSensorDataForType(sensorProvider, sensorType, [
@@ -61,7 +61,8 @@ function setMockOrientationData(sensorProvider, orientationData) {
   ]);
 }
 
-function waitForOrientation(expectedOrientationData, targetWindow = window) {
+export function waitForOrientation(expectedOrientationData,
+                                   targetWindow = window) {
   return waitForEvent(
       new DeviceOrientationEvent('deviceorientation', {
         alpha: expectedOrientationData.alpha,
@@ -72,7 +73,7 @@ function waitForOrientation(expectedOrientationData, targetWindow = window) {
       targetWindow);
 }
 
-function waitForMotion(expectedMotionData, targetWindow = window) {
+export function waitForMotion(expectedMotionData, targetWindow = window) {
   return waitForEvent(
       new DeviceMotionEvent('devicemotion', {
         acceleration: {
@@ -93,4 +94,11 @@ function waitForMotion(expectedMotionData, targetWindow = window) {
         interval: expectedMotionData.interval,
       }),
       targetWindow);
+}
+
+export async function setMainWindowHidden(hidden) {
+  return new Promise(resolve => {
+    document.addEventListener('visibilitychange', resolve, {once: true});
+    testRunner.setMainWindowHidden(hidden);
+  });
 }
