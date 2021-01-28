@@ -611,7 +611,8 @@ void BaseRenderingContext2D::resetTransform() {
 
   // resetTransform() resolves the non-invertible CTM state.
   ModifiableState().ResetTransform();
-  c->setMatrix(TransformationMatrixToSkMatrix(TransformationMatrix()));
+  // Set the SkCanvas' matrix to identity.
+  c->setMatrix(SkM44());
 
   if (invertible_ctm)
     path_.Transform(ctm);
@@ -632,15 +633,7 @@ void BaseRenderingContext2D::setTransform(double m11,
     return;
 
   resetTransform();
-  // clamp to float to avoid float cast overflow when used as SkScalar
-  float fm11 = clampTo<float>(m11);
-  float fm12 = clampTo<float>(m12);
-  float fm21 = clampTo<float>(m21);
-  float fm22 = clampTo<float>(m22);
-  float fdx = clampTo<float>(dx);
-  float fdy = clampTo<float>(dy);
-
-  transform(fm11, fm12, fm21, fm22, fdx, fdy);
+  transform(m11, m12, m21, m22, dx, dy);
 }
 
 void BaseRenderingContext2D::setTransform(DOMMatrix2DInit* transform,
