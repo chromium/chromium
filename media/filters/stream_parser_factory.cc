@@ -457,24 +457,6 @@ static SupportsType CheckTypeAndCodecs(
     ParserFactoryFunction* factory_function,
     std::vector<CodecInfo::HistogramTag>* audio_codecs,
     std::vector<CodecInfo::HistogramTag>* video_codecs) {
-#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
-    BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  // TODO(crbug.com/535738): Undo this special-casing for just EME+HEVC+ChromeOS
-  // relaxed codec-specificity when widening the relaxation, while maintaining
-  // requirement of platform support for all detected tracks in SouceBufferState
-  // handling of parser new-configs callback.
-  if (type == "video/mp4" && codecs.empty()) {
-    // Assume EME+HEVC track will be included. Signal only MayBeSupported,
-    // because isTypeSupported(...) should still require full codec-specificity.
-    if (factory_function)
-      *factory_function = &BuildMP4Parser;
-    if (video_codecs)
-      video_codecs->push_back(CodecInfo::HISTOGRAM_HEVC);
-    return MayBeSupported;
-  }
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_HEVC)
-        // && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-
   // Search for the SupportedTypeInfo for |type|.
   for (size_t i = 0; i < base::size(kSupportedTypeInfo); ++i) {
     const SupportedTypeInfo& type_info = kSupportedTypeInfo[i];
@@ -558,31 +540,16 @@ std::unique_ptr<StreamParser> StreamParserFactory::Create(
   std::vector<CodecInfo::HistogramTag> audio_codecs;
   std::vector<CodecInfo::HistogramTag> video_codecs;
 
-  // TODO(crbug.com/535738): Fully relax the requirement for specific codecs
-  // (allow MayBeSupported here), and relocate the logging to the parser
-  // configuration callback. This creation method is called in AddId(), and also
-  // in CanChangeType() and ChangeType(), so potentially overlogs codecs leading
-  // to disproportion versus actually parsed codec configurations from
+  // TODO(crbug.com/535738): Relax the requirement for specific codecs (allow
+  // MayBeSupported here), and relocate the logging to the parser configuration
+  // callback. This creation method is called in AddId(), and also in
+  // CanChangeType() and ChangeType(), so potentially overlogs codecs leading to
+  // disproportion versus actually parsed codec configurations from
   // initialization segments. For this work and also recording when implicit
   // codec switching occurs (without explicit ChangeType), see
   // https://crbug.com/535738.
   SupportsType supportsType = CheckTypeAndCodecs(
       type, codecs, media_log, &factory_function, &audio_codecs, &video_codecs);
-#if BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_HEVC) && \
-    BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  // TODO(crbug.com/535738): Undo this special-casing when widening relaxation
-  // support beyond EME+HEVC+ChromeOS.
-  if (supportsType == MayBeSupported && type == "video/mp4" && codecs.empty()) {
-    DCHECK(audio_codecs.empty());
-    DCHECK_EQ(video_codecs.size(), 1U);
-    DCHECK_EQ(video_codecs[0], CodecInfo::HISTOGRAM_HEVC);
-    // Override the addSourceBuffer(), canChangeType() and changeType() result
-    // for just "video/mp4" in this case to be IsSupported locally here, to let
-    // the actual parser creation proceed.
-    supportsType = IsSupported;
-  }
-#endif  // BUILDFLAG(USE_PROPRIETARY_CODECS) && BUILDFLAG(ENABLE_PLATFORM_HEVC)
-        // && BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 
   if (IsSupported == supportsType) {
     // Log the expected codecs.
