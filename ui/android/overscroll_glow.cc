@@ -44,6 +44,7 @@ OverscrollGlow::OverscrollGlow(OverscrollGlowClient* client)
 
 OverscrollGlow::~OverscrollGlow() {
   Detach();
+  client_ = nullptr;
 }
 
 void OverscrollGlow::Reset() {
@@ -192,6 +193,9 @@ void OverscrollGlow::Detach() {
 bool OverscrollGlow::InitializeIfNecessary() {
   if (initialized_)
     return true;
+
+  if (client_ == nullptr)
+    return false;
 
   DCHECK(!root_layer_.get());
   root_layer_ = cc::Layer::Create();

@@ -36,6 +36,9 @@ void OverscrollSceneLayer::Prepare(JNIEnv* env,
   start_pos_ = gfx::Vector2dF(start_x, start_y);
   const gfx::SizeF viewport_size(width, height);
 
+  if (!glow_effect_)
+    return;
+
   // |OverscrollGlow| activates glow effect only when content is bigger than
   // viewport. Make it bigger by 1.f.
   const gfx::SizeF content_size(width + 1.f, height);
@@ -58,9 +61,9 @@ jboolean OverscrollSceneLayer::Update(
   }
   gfx::Vector2dF accumulated_overscroll(accumulated_overscroll_x, 0);
   gfx::Vector2dF overscroll_delta(delta_x, 0);
-  if (glow_effect_->OnOverscrolled(base::TimeTicks::Now(),
-                                   accumulated_overscroll, overscroll_delta,
-                                   gfx::Vector2dF(0, 0), start_pos_)) {
+  if (glow_effect_ && glow_effect_->OnOverscrolled(
+                          base::TimeTicks::Now(), accumulated_overscroll,
+                          overscroll_delta, gfx::Vector2dF(0, 0), start_pos_)) {
     window_->SetNeedsAnimate();
     return true;
   }
@@ -68,7 +71,7 @@ jboolean OverscrollSceneLayer::Update(
 }
 
 void OverscrollSceneLayer::OnAnimate(base::TimeTicks frame_time) {
-  if (glow_effect_->Animate(frame_time, layer().get()))
+  if (glow_effect_ && glow_effect_->Animate(frame_time, layer().get()))
     window_->SetNeedsAnimate();
 }
 
