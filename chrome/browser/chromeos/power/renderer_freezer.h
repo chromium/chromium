@@ -35,7 +35,7 @@ class RendererFreezer : public PowerManagerClient::RenderProcessManagerDelegate,
  public:
   class Delegate {
    public:
-    typedef base::Callback<void(bool)> ResultCallback;
+    using ResultCallback = base::OnceCallback<void(bool)>;
 
     virtual ~Delegate() {}
 

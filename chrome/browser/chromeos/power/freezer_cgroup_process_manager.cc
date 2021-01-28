@@ -111,13 +111,15 @@ class FreezerCgroupProcessManager::FileWorker {
     if (!result && !froze_successfully_)
       result = true;
 
-    ui_thread_->PostTask(FROM_HERE, base::BindOnce(callback, result));
+    ui_thread_->PostTask(FROM_HERE,
+                         base::BindOnce(std::move(callback), result));
   }
 
   void CheckCanFreezeRenderers(ResultCallback callback) {
     DCHECK(file_thread_->RunsTasksInCurrentSequence());
 
-    ui_thread_->PostTask(FROM_HERE, base::BindOnce(callback, enabled_));
+    ui_thread_->PostTask(FROM_HERE,
+                         base::BindOnce(std::move(callback), enabled_));
   }
 
  private:
@@ -184,18 +186,18 @@ void FreezerCgroupProcessManager::FreezeRenderers() {
 }
 
 void FreezerCgroupProcessManager::ThawRenderers(ResultCallback callback) {
-  file_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FileWorker::ThawRenderers,
-                     base::Unretained(file_worker_.get()), callback));
+  file_thread_->PostTask(FROM_HERE,
+                         base::BindOnce(&FileWorker::ThawRenderers,
+                                        base::Unretained(file_worker_.get()),
+                                        std::move(callback)));
 }
 
 void FreezerCgroupProcessManager::CheckCanFreezeRenderers(
     ResultCallback callback) {
-  file_thread_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&FileWorker::CheckCanFreezeRenderers,
-                     base::Unretained(file_worker_.get()), callback));
+  file_thread_->PostTask(FROM_HERE,
+                         base::BindOnce(&FileWorker::CheckCanFreezeRenderers,
+                                        base::Unretained(file_worker_.get()),
+                                        std::move(callback)));
 }
 
 }  // namespace chromeos

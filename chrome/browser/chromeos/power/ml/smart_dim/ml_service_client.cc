@@ -65,7 +65,7 @@ class MlServiceClientImpl : public MlServiceClient {
   // to the ExecuteCallback during while calling the Execute() function
   // on the Mojo API.
   void ExecuteCallback(
-      base::RepeatingCallback<UserActivityEvent::ModelPrediction(float)>
+      base::OnceCallback<UserActivityEvent::ModelPrediction(float)>
           get_prediction_callback,
       SmartDimModel::DimDecisionCallback decision_callback,
       ::chromeos::machine_learning::mojom::ExecuteResult result,
@@ -104,7 +104,7 @@ void MlServiceClientImpl::CreateGraphExecutorCallback(
 }
 
 void MlServiceClientImpl::ExecuteCallback(
-    base::Callback<UserActivityEvent::ModelPrediction(float)>
+    base::OnceCallback<UserActivityEvent::ModelPrediction(float)>
         get_prediction_callback,
     SmartDimModel::DimDecisionCallback decision_callback,
     const ExecuteResult result,
@@ -118,7 +118,7 @@ void MlServiceClientImpl::ExecuteCallback(
   } else {
     float inactivity_score =
         (outputs.value())[0]->data->get_float_list()->value[0];
-    prediction = get_prediction_callback.Run(inactivity_score);
+    prediction = std::move(get_prediction_callback).Run(inactivity_score);
     LogPowerMLSmartDimModelResult(SmartDimModelResult::kSuccess);
   }
 
@@ -159,7 +159,7 @@ void MlServiceClientImpl::OnMojoDisconnect() {
 
 void MlServiceClientImpl::DoInference(
     const std::vector<float>& features,
-    base::Callback<UserActivityEvent::ModelPrediction(float)>
+    base::OnceCallback<UserActivityEvent::ModelPrediction(float)>
         get_prediction_callback,
     SmartDimModel::DimDecisionCallback decision_callback) {
   InitMlServiceHandlesIfNeeded();
@@ -177,11 +177,11 @@ void MlServiceClientImpl::DoInference(
 
   std::vector<std::string> outputs({std::string("output")});
 
-  executor_->Execute(
-      std::move(inputs), std::move(outputs),
-      base::BindOnce(&MlServiceClientImpl::ExecuteCallback,
-                     weak_factory_.GetWeakPtr(), get_prediction_callback,
-                     std::move(decision_callback)));
+  executor_->Execute(std::move(inputs), std::move(outputs),
+                     base::BindOnce(&MlServiceClientImpl::ExecuteCallback,
+                                    weak_factory_.GetWeakPtr(),
+                                    std::move(get_prediction_callback),
+                                    std::move(decision_callback)));
 }
 
 }  // namespace

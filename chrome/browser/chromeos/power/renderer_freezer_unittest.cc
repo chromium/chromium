@@ -100,10 +100,10 @@ class TestDelegate : public RendererFreezer::Delegate, public ActionRecorder {
   void ThawRenderers(ResultCallback callback) override {
     AppendAction(kThawRenderers);
 
-    callback.Run(thaw_renderers_result_);
+    std::move(callback).Run(thaw_renderers_result_);
   }
   void CheckCanFreezeRenderers(ResultCallback callback) override {
-    callback.Run(can_freeze_renderers_);
+    std::move(callback).Run(can_freeze_renderers_);
   }
 
   void set_thaw_renderers_result(bool result) {

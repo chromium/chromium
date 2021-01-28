@@ -32,8 +32,8 @@ RendererFreezer::RendererFreezer(
     std::unique_ptr<RendererFreezer::Delegate> delegate)
     : delegate_(std::move(delegate)) {
   delegate_->CheckCanFreezeRenderers(
-      base::Bind(&RendererFreezer::OnCheckCanFreezeRenderersComplete,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&RendererFreezer::OnCheckCanFreezeRenderersComplete,
+                     weak_factory_.GetWeakPtr()));
 }
 
 RendererFreezer::~RendererFreezer() {
@@ -54,8 +54,8 @@ void RendererFreezer::SuspendImminent() {
 }
 
 void RendererFreezer::SuspendDone() {
-  delegate_->ThawRenderers(base::Bind(&RendererFreezer::OnThawRenderersComplete,
-                                      weak_factory_.GetWeakPtr()));
+  delegate_->ThawRenderers(base::BindOnce(
+      &RendererFreezer::OnThawRenderersComplete, weak_factory_.GetWeakPtr()));
 }
 
 void RendererFreezer::Observe(int type,
