@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/secure_channel/background_eid_generator.h"
@@ -117,6 +118,9 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
   void SetUp() {
     EXPECT_CALL(*adapter_, AddObserver(_)).Times(AtLeast(1));
     EXPECT_CALL(*adapter_, RemoveObserver(_)).Times(AtLeast(1));
+
+    auto test_task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+
     characteristic_finder_ =
         std::make_unique<BluetoothLowEnergyCharacteristicsFinder>(
             adapter_, device_.get(), remote_service_, to_peripheral_char_,
@@ -129,7 +133,9 @@ class SecureChannelBluetoothLowEnergyCharacteristicFinderTest
                 &SecureChannelBluetoothLowEnergyCharacteristicFinderTest::
                     OnCharacteristicsFinderError,
                 base::Unretained(this)),
-            remote_device_, CreateBackgroundEidGenerator());
+            remote_device_, CreateBackgroundEidGenerator(), test_task_runner);
+
+    test_task_runner->RunUntilIdle();
   }
 
   std::unique_ptr<device::MockBluetoothGattCharacteristic>
@@ -435,7 +441,9 @@ TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
   SetUpServiceWithCharacteristics(kServiceID, characteristics,
                                   /* is_discovery_complete */ true);
 
-  std::make_unique<BluetoothLowEnergyCharacteristicsFinder>(
+  auto test_task_runner = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+
+  auto finder = std::make_unique<BluetoothLowEnergyCharacteristicsFinder>(
       adapter_, device_.get(), remote_service_, to_peripheral_char_,
       from_peripheral_char_,
       base::BindOnce(&SecureChannelBluetoothLowEnergyCharacteristicFinderTest::
@@ -444,7 +452,9 @@ TEST_F(SecureChannelBluetoothLowEnergyCharacteristicFinderTest,
       base::BindOnce(&SecureChannelBluetoothLowEnergyCharacteristicFinderTest::
                          OnCharacteristicsFinderError,
                      base::Unretained(this)),
-      remote_device_, CreateBackgroundEidGenerator());
+      remote_device_, CreateBackgroundEidGenerator(), test_task_runner);
+
+  test_task_runner->RunUntilIdle();
 
   EXPECT_EQ(kToPeripheralCharID, found_to_char.id);
   EXPECT_EQ(kFromPeripheralCharID, found_from_char.id);
