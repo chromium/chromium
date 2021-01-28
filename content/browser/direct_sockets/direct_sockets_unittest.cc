@@ -6,6 +6,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/test_renderer_host.h"
 #include "net/base/ip_address.h"
@@ -25,6 +27,7 @@ class DirectSocketsUnitTest : public RenderViewHostTestHarness {
     RenderViewHostTestHarness::SetUp();
     direct_sockets_service_ =
         std::make_unique<DirectSocketsServiceImpl>(*main_rfh());
+    SimulateUserActivation();
   }
 
   DirectSocketsServiceImpl& direct_sockets_service() {
@@ -41,6 +44,13 @@ class DirectSocketsUnitTest : public RenderViewHostTestHarness {
   }
 
  private:
+  void SimulateUserActivation() {
+    static_cast<RenderFrameHostImpl*>(main_rfh())
+        ->UpdateUserActivationState(
+            blink::mojom::UserActivationUpdateType::kNotifyActivation,
+            blink::mojom::UserActivationNotificationType::kTest);
+  }
+
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<DirectSocketsServiceImpl> direct_sockets_service_;
 };

@@ -12,6 +12,8 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -588,6 +590,27 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_MDNS) {
 #endif  // BUILDFLAG(ENABLE_MDNS)
 }
 
+IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_TransientActivation) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kPermissionDeniedHistogramName,
+      DirectSocketsServiceImpl::FailureType::kTransientActivation, 0);
+
+  const uint16_t listening_port = StartTcpServer();
+  const std::string script = base::StringPrintf(
+      "openTcp({remoteAddress: '127.0.0.1', remotePort: %d});\
+       openTcp({remoteAddress: '127.0.0.1', remotePort: %d})",
+      listening_port, listening_port);
+
+  EXPECT_EQ("openTcp failed: NotAllowedError: Permission denied",
+            EvalJs(shell(), script));
+  histogram_tester.ExpectBucketCount(
+      kPermissionDeniedHistogramName,
+      DirectSocketsServiceImpl::FailureType::kTransientActivation, 1);
+}
+
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenTcp_CannotEvadeCors) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
 
@@ -784,6 +807,26 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, DISABLED_OpenUdp_Success) {
       "openUdp({remoteAddress: '127.0.0.1', remotePort: %d})", 0);
 
   EXPECT_EQ("openUdp succeeded", EvalJs(shell(), script));
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenUdp_TransientActivation) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestPageURL()));
+
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectBucketCount(
+      kPermissionDeniedHistogramName,
+      DirectSocketsServiceImpl::FailureType::kTransientActivation, 0);
+
+  const std::string script = base::StringPrintf(
+      "openUdp({remoteAddress: '127.0.0.1', remotePort: %d});\
+       openUdp({remoteAddress: '127.0.0.1', remotePort: %d})",
+      0, 0);
+
+  EXPECT_EQ("openUdp failed: NotAllowedError: Permission denied",
+            EvalJs(shell(), script));
+  histogram_tester.ExpectBucketCount(
+      kPermissionDeniedHistogramName,
+      DirectSocketsServiceImpl::FailureType::kTransientActivation, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsBrowserTest, OpenUdp_NotAllowedError) {

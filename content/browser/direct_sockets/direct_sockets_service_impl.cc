@@ -10,6 +10,8 @@
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/optional.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -339,6 +341,21 @@ net::Error DirectSocketsServiceImpl::ValidateOptions(
 
   if (!frame_host_)
     return net::ERR_CONTEXT_SHUT_DOWN;
+
+  // TODO(crbug.com/1119600): Do not consume (or check) transient activation
+  // for reconnection attempts.
+  bool is_consumed =
+      static_cast<RenderFrameHostImpl*>(frame_host_)
+          ->frame_tree_node()
+          ->UpdateUserActivationState(
+              blink::mojom::UserActivationUpdateType::
+                  kConsumeTransientActivation,
+              blink::mojom::UserActivationNotificationType::kNone);
+  if (!is_consumed) {
+    base::UmaHistogramEnumeration(kPermissionDeniedHistogramName,
+                                  FailureType::kTransientActivation);
+    return net::ERR_NETWORK_ACCESS_DENIED;
+  }
 
   if (GetPermissionCallbackForTesting())
     return GetPermissionCallbackForTesting().Run(options);  // IN-TEST

@@ -450,6 +450,11 @@
              "--enable-blink-features=CorsRFC1918"]
   },
   {
+    "prefix": "direct-sockets",
+    "bases": ["external/wpt/raw-sockets"],
+    "args": ["--enable-features=DirectSockets"]
+  },
+  {
     "prefix": "webrtc-wpt-plan-b",
     "bases": ["external/wpt/webrtc"],
     "args": ["--disable-features=RTCUnifiedPlanByDefault"]
