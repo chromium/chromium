@@ -84,7 +84,7 @@ const gfx::VectorIcon* GetTransportVectorIcon(
     case AuthenticatorTransport::kUsbHumanInterfaceDevice:
       return &vector_icons::kUsbIcon;
     case AuthenticatorTransport::kInternal:
-      return &kFingerprintIcon;
+      return &kLaptopIcon;
     case AuthenticatorTransport::kCloudAssistedBluetoothLowEnergy:
       return &kSmartphoneIcon;
     case AuthenticatorTransport::kAndroidAccessory:
