@@ -59,6 +59,15 @@ void NavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
                     : network::mojom::RequestDestination::kIframe,
       is_main_frame ? net::HIGHEST : net::LOWEST);
   size_t redirect_count = commit_params->redirect_response.size();
+
+  if (redirect_count != commit_params->redirects.size()) {
+    // We currently incorrectly send empty redirect_response and redirect_infos
+    // on frame reloads and some cases involving throttles.
+    // TODO(https://crbug.com/1171225): Fix this.
+    DCHECK_EQ(0u, redirect_count);
+    DCHECK_EQ(0u, commit_params->redirect_infos.size());
+    DCHECK_NE(0u, commit_params->redirects.size());
+  }
   navigation_params->redirects.reserve(redirect_count);
   navigation_params->redirects.resize(redirect_count);
   for (size_t i = 0; i < redirect_count; ++i) {

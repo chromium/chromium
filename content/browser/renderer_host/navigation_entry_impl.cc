@@ -754,6 +754,11 @@ NavigationEntryImpl::ConstructCommitNavigationParams(
     const blink::FramePolicy& frame_policy) {
   // Set the redirect chain to the navigation's redirects, unless returning to a
   // completed navigation (whose previous redirects don't apply).
+  // Note that this is actually does not work as intended right now because
+  // we're only copying the redirect URLs into the new CommitNavigationParams,
+  // keeping redirect_response and redirect_infos as empty.
+  // TODO(https://crbug.com/1171225): Save redirect_response & redirect_infos in
+  // FNE and copy them too?
   std::vector<GURL> redirects;
   if (ui::PageTransitionIsNewNavigation(GetTransitionType())) {
     redirects = frame_entry.redirect_chain();

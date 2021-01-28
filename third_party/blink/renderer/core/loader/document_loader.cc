@@ -406,7 +406,10 @@ DocumentLoader::DocumentLoader(
   }
 
   // The document URL needs to be added to the head of the list as that is
-  // where the redirects originated.
+  // where the redirects originated. Note that this is currently broken if we
+  // don't reuse the RenderFrame (e.g. cross-site navigations) - this will
+  // result in an empty URL or about:blank in that case.
+  // TODO(https://crbug.com/1171210): Fix this.
   if (is_client_redirect_)
     redirect_chain_.push_back(frame_->GetDocument()->Url());
 
