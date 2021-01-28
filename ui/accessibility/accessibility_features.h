@@ -13,6 +13,13 @@
 
 namespace features {
 
+AX_BASE_EXPORT extern const base::Feature
+    kEnableAccessibilityAriaVirtualContent;
+
+// Returns true if "aria-virtualcontent" should be recognized as a valid aria
+// property.
+AX_BASE_EXPORT bool IsAccessibilityAriaVirtualContentEnabled();
+
 AX_BASE_EXPORT extern const base::Feature kEnableAccessibilityExposeDisplayNone;
 
 // Returns true if "display: none" nodes should be exposed to the

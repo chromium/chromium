@@ -105,6 +105,10 @@ void WebRuntimeFeatures::EnableAccelerated2dCanvas(bool enable) {
   RuntimeEnabledFeatures::SetAccelerated2dCanvasEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableAccessibilityAriaVirtualContent(bool enable) {
+  RuntimeEnabledFeatures::SetAccessibilityAriaVirtualContentEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableAccessibilityExposeDisplayNone(bool enable) {
   RuntimeEnabledFeatures::SetAccessibilityExposeDisplayNoneEnabled(enable);
 }

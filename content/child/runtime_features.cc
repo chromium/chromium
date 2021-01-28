@@ -253,6 +253,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      features::kLazyImageVisibleLoadTimeMetrics},
     {wf::EnablePictureInPicture, media::kPictureInPicture},
     {wf::EnableCacheInlineScriptCode, features::kCacheInlineScriptCode},
+    {wf::EnableAccessibilityAriaVirtualContent,
+     features::kEnableAccessibilityAriaVirtualContent},
     {wf::EnableAccessibilityExposeDisplayNone,
      features::kEnableAccessibilityExposeDisplayNone},
     {wf::EnableAccessibilityExposeHTMLElement,

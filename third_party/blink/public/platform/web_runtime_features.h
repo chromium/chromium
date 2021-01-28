@@ -70,6 +70,7 @@ class WebRuntimeFeatures {
 
   BLINK_PLATFORM_EXPORT static void EnableAOMAriaRelationshipProperties(bool);
   BLINK_PLATFORM_EXPORT static void EnableAccelerated2dCanvas(bool);
+  BLINK_PLATFORM_EXPORT static void EnableAccessibilityAriaVirtualContent(bool);
   BLINK_PLATFORM_EXPORT static void EnableAccessibilityExposeDisplayNone(bool);
   BLINK_PLATFORM_EXPORT static void EnableAccessibilityExposeHTMLElement(bool);
   BLINK_PLATFORM_EXPORT static void EnableAccessibilityExposeIgnoredNodes(bool);

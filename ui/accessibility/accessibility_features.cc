@@ -10,6 +10,15 @@
 
 namespace features {
 
+// Enable recognizing "aria-virtualcontent" as a valid aria property.
+const base::Feature kEnableAccessibilityAriaVirtualContent{
+    "AccessibilityAriaVirtualContent", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsAccessibilityAriaVirtualContentEnabled() {
+  return base::FeatureList::IsEnabled(
+      ::features::kEnableAccessibilityAriaVirtualContent);
+}
+
 // Enable exposing "display: none" nodes to the browser process AXTree
 const base::Feature kEnableAccessibilityExposeDisplayNone{
     "AccessibilityExposeDisplayNone", base::FEATURE_DISABLED_BY_DEFAULT};

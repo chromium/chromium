@@ -116,6 +116,10 @@
       status: "stable",
     },
     {
+      name: "AccessibilityAriaVirtualContent",
+      status: "experimental",
+    },
+    {
       name: "AccessibilityExposeDisplayNone",
       status: "test",
     },
