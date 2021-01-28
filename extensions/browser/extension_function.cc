@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/dcheck_is_on.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/singleton.h"
@@ -29,6 +30,7 @@
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/browser/extension_message_filter.h"
+#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/error_utils.h"
@@ -388,14 +390,30 @@ ExtensionFunction::~ExtensionFunction() {
         extension(), is_from_service_worker(), name());
   }
 
-  // The extension function should always respond to avoid leaks in the
-  // renderer, dangling callbacks, etc. The exception is if the system is
-  // shutting down.
-  extensions::ExtensionsBrowserClient* browser_client =
-      extensions::ExtensionsBrowserClient::Get();
-  DCHECK(!browser_client || browser_client->IsShuttingDown() || did_respond() ||
-         ignore_all_did_respond_for_testing_do_not_use)
-      << name();
+// The extension function should always respond to avoid leaks in the
+// renderer, dangling callbacks, etc. The exception is if the system is
+// shutting down or if the extension has been unloaded.
+#if DCHECK_IS_ON()
+  auto can_be_destroyed_before_responding = [this]() {
+    extensions::ExtensionsBrowserClient* browser_client =
+        extensions::ExtensionsBrowserClient::Get();
+    if (!browser_client || browser_client->IsShuttingDown())
+      return true;
+
+    if (ignore_all_did_respond_for_testing_do_not_use)
+      return true;
+
+    auto* registry = extensions::ExtensionRegistry::Get(browser_context());
+    if (registry && extension() &&
+        !registry->enabled_extensions().Contains(extension_id())) {
+      return true;
+    }
+
+    return false;
+  };
+
+  CHECK(did_respond() || can_be_destroyed_before_responding()) << name();
+#endif  // DCHECK_IS_ON()
 }
 
 void ExtensionFunction::AddWorkerResponseTarget() {

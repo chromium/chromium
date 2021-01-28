@@ -202,19 +202,7 @@ class RulesMonitorService::FileSequenceBridge {
 class RulesMonitorService::ApiCallQueue {
  public:
   ApiCallQueue() = default;
-  ~ApiCallQueue() {
-    // We currently require that any ExtensionFunction should Respond before
-    // being deleted. To satisfy this, dispatch all pending api calls; even
-    // though we know this will be a no-op.
-    // TODO(karandeepb): Change this requirement and remove the code below.
-    in_destruction_ = true;
-    while (!api_call_queue_.empty()) {
-      base::OnceClosure api_call = std::move(api_call_queue_.front());
-      api_call_queue_.pop();
-      std::move(api_call).Run();
-    }
-  }
-
+  ~ApiCallQueue() = default;
   ApiCallQueue(const ApiCallQueue&) = delete;
   ApiCallQueue& operator=(const ApiCallQueue&) = delete;
   ApiCallQueue(ApiCallQueue&&) = delete;
@@ -267,10 +255,6 @@ class RulesMonitorService::ApiCallQueue {
  private:
   // Signals that the last posted api call has completed.
   void OnApiCallCompleted() {
-    // This should never be called synchronously from the destructor since this
-    // is scheduled via `PostOnApiCallCompleted()`.
-    DCHECK(!in_destruction_);
-
     DCHECK(executing_api_call_);
     executing_api_call_ = false;
     ExecuteApiCallIfNecessary();
@@ -292,9 +276,6 @@ class RulesMonitorService::ApiCallQueue {
   bool executing_api_call_ = false;
   bool ready_to_execute_api_calls_ = false;
   base::queue<base::OnceClosure> api_call_queue_;
-
-  // Whether we are in the `ApiCallQueue` destructor.
-  bool in_destruction_ = false;
 
   // Must be the last member variable. See WeakPtrFactory documentation for
   // details.
