@@ -112,4 +112,20 @@ Polymer({
   onExpandClicked_() {
     this.fire('expand-clicked');
   },
+
+  /** @private */
+  onRadioFocus_() {
+    this.getRipple().showAndHoldDown();
+  },
+
+  /**
+   * Clear the ripple associated with the radio button when the expand button
+   * is focused. Stop propagation to prevent the ripple being re-created.
+   * @param {!Event} e
+   * @private
+   */
+  onNonRadioFocus_(e) {
+    this.getRipple().clear();
+    e.stopPropagation();
+  },
 });
