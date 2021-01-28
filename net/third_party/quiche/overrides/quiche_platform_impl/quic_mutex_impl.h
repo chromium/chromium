@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef NET_QUIC_PLATFORM_IMPL_QUIC_MUTEX_IMPL_H_
-#define NET_QUIC_PLATFORM_IMPL_QUIC_MUTEX_IMPL_H_
+#ifndef NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUIC_MUTEX_IMPL_H_
+#define NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUIC_MUTEX_IMPL_H_
 
 #include "base/macros.h"
 #include "base/synchronization/lock.h"
@@ -107,4 +107,4 @@ class QUIC_EXPORT_PRIVATE QuicNotificationImpl {
 
 }  // namespace quic
 
-#endif  // NET_QUIC_PLATFORM_IMPL_QUIC_MUTEX_IMPL_H_
+#endif  // NET_THIRD_PARTY_QUICHE_OVERRIDES_QUICHE_PLATFORM_IMPL_QUIC_MUTEX_IMPL_H_

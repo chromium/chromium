@@ -7,7 +7,13 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 config("quiche_config") {
-  include_dirs = [ "src" ]
+  include_dirs = [
+    # The ordering here is important, since headers in overrides/ replace
+    # headers in src/common/platform/default.
+    "overrides",
+    "src/common/platform/default",
+    "src",
+  ]
 }
 
 # Since //net and //net/third_party/quiche have a circular dependency on each
@@ -29,6 +35,8 @@ source_set("quiche") {
 
   if (!is_nacl) {
     sources += [
+      "overrides/quiche_platform_impl/quic_mutex_impl.cc",
+      "overrides/quiche_platform_impl/quic_mutex_impl.h",
       "src/common/platform/api/quiche_export.h",
       "src/common/platform/api/quiche_flag_utils.h",
       "src/common/platform/api/quiche_flags.h",
@@ -526,7 +534,6 @@ source_set("quiche") {
       "src/quic/core/uber_received_packet_manager.cc",
       "src/quic/core/uber_received_packet_manager.h",
       "src/quic/platform/api/quic_bug_tracker.h",
-      "src/quic/platform/api/quic_cert_utils.h",
       "src/quic/platform/api/quic_client_stats.h",
       "src/quic/platform/api/quic_containers.h",
       "src/quic/platform/api/quic_error_code_wrappers.h",

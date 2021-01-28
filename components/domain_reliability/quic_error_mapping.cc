@@ -449,6 +449,8 @@ const struct QuicErrorMapping {
      "quic::quic_tls_certificate_required"},
     {quic::QUIC_CONNECTION_ID_LIMIT_ERROR,
      "quic::quic_connection_id_limit_error"},
+    {quic::QUIC_TOO_MANY_CONNECTION_ID_WAITING_TO_RETIRE,
+     "quic::quic_too_many_connection_id_waiting_to_retire"},
 
     // No error. Used as bound while iterating.
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};

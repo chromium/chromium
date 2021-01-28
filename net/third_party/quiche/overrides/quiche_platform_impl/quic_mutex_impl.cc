@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "net/quic/platform/impl/quic_mutex_impl.h"
+#include "net/third_party/quiche/overrides/quiche_platform_impl/quic_mutex_impl.h"
 
 namespace quic {
 
