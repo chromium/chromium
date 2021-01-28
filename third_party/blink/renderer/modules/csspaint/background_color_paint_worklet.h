@@ -42,6 +42,9 @@ class MODULES_EXPORT BackgroundColorPaintWorklet : public NativePaintWorklet {
   static bool GetBGColorPaintWorkletParams(Node* node,
                                            Vector<Color>* animated_colors,
                                            Vector<double>* offsets);
+
+  // For testing purpose only.
+  static sk_sp<cc::PaintRecord> ProxyClientPaintForTest();
 };
 
 }  // namespace blink

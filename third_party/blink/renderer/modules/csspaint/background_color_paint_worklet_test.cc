@@ -143,4 +143,11 @@ TEST_F(BackgroundColorPaintWorkletTest, FallbackToMainMultipleAnimations) {
       element, &animated_colors, &offsets));
 }
 
+// Test that calling BackgroundColorPaintWorkletProxyClient::Paint won't crash
+// when the animated property value is empty.
+TEST_F(BackgroundColorPaintWorkletTest, ProxyClientPaintNoCrash) {
+  ScopedCompositeBGColorAnimationForTest composite_bgcolor_animation(true);
+  BackgroundColorPaintWorklet::ProxyClientPaintForTest();
+}
+
 }  // namespace blink

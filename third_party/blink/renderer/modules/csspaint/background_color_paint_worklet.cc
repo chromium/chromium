@@ -65,6 +65,8 @@ class BackgroundColorPaintWorkletProxyClient
       const CompositorPaintWorkletInput* compositor_input,
       const CompositorPaintWorkletJob::AnimatedPropertyValues&
           animated_property_values) override {
+    if (animated_property_values.empty())
+      return nullptr;
     const BackgroundColorPaintWorkletInput* input =
         static_cast<const BackgroundColorPaintWorkletInput*>(compositor_input);
     FloatSize container_size = input->ContainerSize();
@@ -253,6 +255,20 @@ bool BackgroundColorPaintWorklet::GetBGColorPaintWorkletParams(
   if (!success)
     element->EnsureElementAnimations().SetDidBGColorAnimFallBack();
   return success;
+}
+
+sk_sp<PaintRecord> BackgroundColorPaintWorklet::ProxyClientPaintForTest() {
+  FloatSize container_size(100, 100);
+  Vector<Color> animated_colors = {Color(0, 255, 0), Color(255, 0, 0)};
+  Vector<double> offsets = {0, 1};
+  CompositorPaintWorkletInput::PropertyKeys property_keys;
+  scoped_refptr<BackgroundColorPaintWorkletInput> input =
+      base::MakeRefCounted<BackgroundColorPaintWorkletInput>(
+          container_size, 1u, animated_colors, offsets, property_keys);
+  CompositorPaintWorkletJob::AnimatedPropertyValues property_values;
+  BackgroundColorPaintWorkletProxyClient* client =
+      BackgroundColorPaintWorkletProxyClient::Create(1u);
+  return client->Paint(input.get(), property_values);
 }
 
 }  // namespace blink
