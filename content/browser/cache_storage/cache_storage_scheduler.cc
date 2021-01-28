@@ -16,7 +16,6 @@
 #include "build/build_config.h"
 #include "content/browser/cache_storage/cache_storage_histogram_utils.h"
 #include "content/browser/cache_storage/cache_storage_operation.h"
-#include "content/public/common/content_features.h"
 
 namespace content {
 
@@ -28,8 +27,7 @@ namespace {
 constexpr int kDefaultMaxSharedOps = 16;
 
 const base::FeatureParam<int> kCacheStorageMaxSharedOps{
-    &features::kCacheStorageParallelOps, "max_shared_ops",
-    kDefaultMaxSharedOps};
+    &kCacheStorageParallelOps, "max_shared_ops", kDefaultMaxSharedOps};
 
 bool OpPointerLessThan(const std::unique_ptr<CacheStorageOperation>& left,
                        const std::unique_ptr<CacheStorageOperation>& right) {
@@ -51,6 +49,11 @@ bool OpPointerLessThan(const std::unique_ptr<CacheStorageOperation>& left,
 }
 
 }  // namespace
+
+// Enables support for parallel cache_storage operations via the
+// "max_shared_ops" fieldtrial parameter.
+const base::Feature kCacheStorageParallelOps{"CacheStorageParallelOps",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 CacheStorageScheduler::CacheStorageScheduler(
     CacheStorageSchedulerClient client_type,

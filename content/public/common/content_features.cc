@@ -126,11 +126,6 @@ const base::Feature kBrowserVerifiedUserActivationMouse{
 const base::Feature kCacheInlineScriptCode{"CacheInlineScriptCode",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables support for parallel cache_storage operations via the
-// "max_shared_ops" fieldtrial parameter.
-const base::Feature kCacheStorageParallelOps{"CacheStorageParallelOps",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
 // If Canvas2D Image Chromium is allowed, this feature controls whether it is
 // enabled.
 const base::Feature kCanvas2DImageChromium {
