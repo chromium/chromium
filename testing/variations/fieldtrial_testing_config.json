@@ -7753,7 +7753,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "WebViewZeroCopyVideoBlocklist": ""
+                        "WebViewZeroCopyVideoBlocklist": "MIBOX, MITV, PHILIPS, SONY, TPM191E"
                     },
                     "enable_features": [
                         "WebViewZeroCopyVideo"
