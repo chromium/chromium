@@ -32,7 +32,10 @@ def FindDeletedCSSVariables(input_api, output_api, input_file_filter):
     def get_css_var_names_for_contents(contents_function):
         style_generator = CSSStyleGenerator()
         for f in files:
-            style_generator.AddJSONToModel('\n'.join(contents_function(f)),
+            file_contents = contents_function(f)
+            if len(file_contents) == 0:
+                continue
+            style_generator.AddJSONToModel('\n'.join(file_contents),
                                            in_file=f.LocalPath())
         return style_generator.GetCSSVarNames()
 

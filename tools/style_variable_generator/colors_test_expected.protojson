@@ -1,4 +1,5 @@
 /* This file is generated from:
+ *  additional_colors_test.json5
  *  colors_test_palette.json5
  *  colors_test.json5
  */
@@ -16,5 +17,9 @@ test_colors: {
   toggle_color: {
     light_value: 0x19202124,
     dark_value: 0x19FFFFFF
+  },
+  text_color: {
+    light_value: 0xFF000000,
+    dark_value: 0xFFFFFFFF
   }
 }
