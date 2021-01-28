@@ -69,7 +69,6 @@ message SystemWebAppDataProto {
     SCANNING = 10;
     DIAGNOSTICS = 11;
     CONNECTIVITY_DIAGNOSTICS = 12;
-    ECHE = 13;
   };
 
   optional SystemAppType system_app_type = 1;

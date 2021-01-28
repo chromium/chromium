@@ -230,8 +230,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OFFICIAL_BUILD)
 #include "chrome/browser/chromeos/web_applications/chrome_file_manager_ui_delegate.h"
 #include "chrome/browser/ui/webui/chromeos/emulator/device_emulator_ui.h"
-#include "chromeos/components/eche_app_ui/eche_app_ui.h"
-#include "chromeos/components/eche_app_ui/url_constants.h"
 #include "chromeos/components/file_manager/file_manager_ui.h"
 #include "chromeos/components/file_manager/url_constants.h"
 #include "chromeos/components/sample_system_web_app_ui/sample_system_web_app_ui.h"
@@ -793,10 +791,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIEmojiPickerHost &&
       base::FeatureList::IsEnabled(chromeos::features::kImeSystemEmojiPicker)) {
     return &NewWebUI<chromeos::EmojiPicker>;
-  }
-  if (url.host_piece() == chromeos::kChromeUIEcheAppHost &&
-      base::FeatureList::IsEnabled(chromeos::features::kEcheSWA)) {
-    return &NewWebUI<chromeos::EcheAppUI>;
   }
 
 #if !defined(OFFICIAL_BUILD)

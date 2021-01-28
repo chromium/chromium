@@ -274,20 +274,3 @@ grit("diagnostics_app_resources") {
 
   output_dir = "$root_gen_dir/chromeos"
 }
-
-# Resources used by chrome://eche-app
-grit("eche_app_resources") {
-  # These arguments are needed since the grd is generated at build time.
-  enable_input_discovery_for_gn_analyze = false
-  eche_app_gen_dir = "$root_gen_dir/chromeos/components/eche_app_ui"
-  source = "$eche_app_gen_dir/chromeos_eche_app_resources.grd"
-  deps = [ "//chromeos/components/eche_app_ui:build_grd" ]
-
-  outputs = [
-    "grit/chromeos_eche_app_resources.h",
-    "grit/chromeos_eche_app_resources_map.cc",
-    "grit/chromeos_eche_app_resources_map.h",
-    "chromeos_eche_app_resources.pak",
-  ]
-  output_dir = "$root_gen_dir/chromeos"
-}

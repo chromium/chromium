@@ -59,7 +59,6 @@ group("closure_compile") {
     "//chromeos/components/camera_app_ui:closure_compile",
     "//chromeos/components/connectivity_diagnostics:closure_compile",
     "//chromeos/components/diagnostics_ui:closure_compile",
-    "//chromeos/components/eche_app_ui:closure_compile",
     "//chromeos/components/help_app_ui:closure_compile",
     "//chromeos/components/media_app_ui:closure_compile",
     "//chromeos/components/multidevice/debug_webui/resources:closure_compile",

@@ -1793,7 +1793,6 @@ if (!is_android) {
       if (is_chromeos_ash) {
         deps += [
           "//chrome/browser/resources/gaia_auth_host:browser_tests",
-          "//chromeos/components/eche_app_ui:browser_tests_js",
           "//chromeos/components/help_app_ui:browser_tests_js",
           "//chromeos/components/media_app_ui:browser_tests_js",
           "//chromeos/components/system_apps:browser_tests",
@@ -2737,7 +2736,6 @@ if (!is_android) {
         "../browser/chromeos/system/tray_accessibility_browsertest.cc",
         "../browser/chromeos/web_applications/camera_app_integration_browsertest.cc",
         "../browser/chromeos/web_applications/diagnostics_app_integration_browsertest.cc",
-        "../browser/chromeos/web_applications/eche_app_integration_browsertest.cc",
         "../browser/chromeos/web_applications/help_app_integration_browsertest.cc",
         "../browser/chromeos/web_applications/media_app_integration_browsertest.cc",
         "../browser/chromeos/web_applications/print_management_app_integration_browsertest.cc",

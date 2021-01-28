@@ -2659,7 +2659,6 @@ static_library("ui") {
       "//chromeos/components/connectivity_diagnostics",
       "//chromeos/components/diagnostics_ui",
       "//chromeos/components/drivefs/mojom:mojom",
-      "//chromeos/components/eche_app_ui",
       "//chromeos/components/help_app_ui",
       "//chromeos/components/local_search_service/public/cpp",
       "//chromeos/components/local_search_service/public/mojom",
