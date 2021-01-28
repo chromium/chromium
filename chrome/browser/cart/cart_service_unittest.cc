@@ -29,6 +29,8 @@ const char kMockMerchantA[] = "foo.com";
 const char kMockMerchantURLA[] = "https://www.foo.com";
 const char kMockMerchantB[] = "bar.com";
 const char kMockMerchantURLB[] = "https://www.bar.com";
+const char kMockMerchantC[] = "baz.com";
+const char kMockMerchantURLC[] = "https://www.baz.com";
 const cart_db::ChromeCartContentProto kMockProtoA =
     BuildProto(kMockMerchantA, kMockMerchantURLA);
 const cart_db::ChromeCartContentProto kMockProtoB =
@@ -448,4 +450,55 @@ TEST_F(CartServiceTest, TestControlShowWelcomeSurface) {
   EXPECT_FALSE(service_->ShouldShowWelcomSurface());
   EXPECT_EQ(limit, profile_.GetPrefs()->GetInteger(
                        prefs::kCartModuleWelcomeSurfaceShownTimes));
+}
+
+// Tests cart data is loaded in the order of timestamp.
+TEST_F(CartServiceTest, TestOrderInTimestamp) {
+  base::RunLoop run_loop[3];
+  cart_db::ChromeCartContentProto merchant_A_proto =
+      BuildProto(kMockMerchantA, kMockMerchantURLA);
+  merchant_A_proto.set_timestamp(0);
+  cart_db::ChromeCartContentProto merchant_B_proto =
+      BuildProto(kMockMerchantB, kMockMerchantURLB);
+  merchant_B_proto.set_timestamp(1);
+  cart_db::ChromeCartContentProto merchant_C_proto =
+      BuildProto(kMockMerchantC, kMockMerchantURLC);
+  merchant_C_proto.set_timestamp(2);
+  service_->AddCart(kMockMerchantA, merchant_A_proto);
+  service_->AddCart(kMockMerchantB, merchant_B_proto);
+  service_->AddCart(kMockMerchantC, merchant_C_proto);
+
+  const std::vector<
+      ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
+      result1 = {{kMockMerchantC, merchant_C_proto},
+                 {kMockMerchantB, merchant_B_proto},
+                 {kMockMerchantA, merchant_A_proto}};
+  service_->LoadAllActiveCarts(base::BindOnce(
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
+      run_loop[0].QuitClosure(), result1));
+  run_loop[0].Run();
+
+  merchant_A_proto.set_timestamp(3);
+  service_->AddCart(kMockMerchantA, merchant_A_proto);
+  const std::vector<
+      ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
+      result2 = {{kMockMerchantA, merchant_A_proto},
+                 {kMockMerchantC, merchant_C_proto},
+                 {kMockMerchantB, merchant_B_proto}};
+  service_->LoadAllActiveCarts(base::BindOnce(
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
+      run_loop[1].QuitClosure(), result2));
+  run_loop[1].Run();
+
+  merchant_C_proto.set_timestamp(4);
+  service_->AddCart(kMockMerchantC, merchant_C_proto);
+  const std::vector<
+      ProfileProtoDB<cart_db::ChromeCartContentProto>::KeyAndValue>
+      result3 = {{kMockMerchantC, merchant_C_proto},
+                 {kMockMerchantA, merchant_A_proto},
+                 {kMockMerchantB, merchant_B_proto}};
+  service_->LoadAllActiveCarts(base::BindOnce(
+      &CartServiceTest::GetEvaluationLoadCarts, base::Unretained(this),
+      run_loop[2].QuitClosure(), result3));
+  run_loop[2].Run();
 }
