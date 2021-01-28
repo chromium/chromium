@@ -1336,7 +1336,7 @@ void StoragePartitionImpl::Initialize(
 
   font_access_manager_ = std::make_unique<FontAccessManagerImpl>();
 
-  if (base::FeatureList::IsEnabled(blink::features::kPrerender2)) {
+  if (blink::features::IsPrerender2Enabled()) {
     prerender_host_registry_ =
         std::make_unique<PrerenderHostRegistry>(*browser_context_);
   }
@@ -1610,7 +1610,7 @@ FontAccessManagerImpl* StoragePartitionImpl::GetFontAccessManager() {
 }
 
 PrerenderHostRegistry* StoragePartitionImpl::GetPrerenderHostRegistry() {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
+  DCHECK(blink::features::IsPrerender2Enabled());
   DCHECK(initialized_);
   return prerender_host_registry_.get();
 }

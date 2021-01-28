@@ -836,7 +836,7 @@ void PopulateBinderMapWithContext(
   // production embedder (such as in tests).
   map->Add<blink::mojom::InsecureInputService>(base::BindRepeating(
       &EmptyBinderForFrame<blink::mojom::InsecureInputService>));
-  if (base::FeatureList::IsEnabled(blink::features::kPrerender2)) {
+  if (blink::features::IsPrerender2Enabled()) {
     map->Add<blink::mojom::PrerenderProcessor>(base::BindRepeating(
         &RenderFrameHostImpl::BindPrerenderProcessor, base::Unretained(host)));
   } else {

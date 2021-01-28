@@ -161,6 +161,10 @@ const base::FeatureParam<Prerender2ActivationMode> kPrerender2Param{
     &kPrerender2, "activation", Prerender2ActivationMode::kEnabled,
     &prerender2_types};
 
+bool IsPrerender2Enabled() {
+  return base::FeatureList::IsEnabled(blink::features::kPrerender2);
+}
+
 // Enable limiting previews loading hints to specific resource types.
 const base::Feature kPreviewsResourceLoadingHintsSpecificResourceTypes{
     "PreviewsResourceLoadingHintsSpecificResourceTypes",

@@ -146,7 +146,7 @@ void PopulateWebLayerFrameBinders(
       base::BindRepeating(&BindContentTranslateDriver));
 
   // When Prerender2 is enabled, the content layer already added a binder.
-  if (!base::FeatureList::IsEnabled(blink::features::kPrerender2)) {
+  if (!blink::features::IsPrerender2Enabled()) {
     map->Add<blink::mojom::PrerenderProcessor>(
         base::BindRepeating(&BindPrerenderProcessor));
   }

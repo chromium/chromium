@@ -1575,7 +1575,7 @@ void NavigationRequest::BeginNavigation() {
   // Prerender2:
   // Find an available prerendered page for the request URL. If it's found,
   // this navigation will activate it instead of loading a page via network.
-  if (base::FeatureList::IsEnabled(blink::features::kPrerender2)) {
+  if (blink::features::IsPrerender2Enabled()) {
     auto* storage_partition_impl = static_cast<StoragePartitionImpl*>(
         frame_tree_node_->current_frame_host()->GetStoragePartition());
     PrerenderHostRegistry* prerender_host_registry =
@@ -3380,8 +3380,7 @@ void NavigationRequest::CommitNavigation() {
     return;
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kPrerender2) &&
-      IsPrerenderedPageActivation()) {
+  if (blink::features::IsPrerender2Enabled() && IsPrerenderedPageActivation()) {
     RenderFrameHostImpl* current_frame_host =
         frame_tree_node_->current_frame_host();
     DCHECK(!current_frame_host->GetParent());

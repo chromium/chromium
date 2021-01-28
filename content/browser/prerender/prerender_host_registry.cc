@@ -18,7 +18,7 @@ namespace content {
 
 PrerenderHostRegistry::PrerenderHostRegistry(BrowserContext& browser_context)
     : browser_context_(browser_context) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
+  DCHECK(blink::features::IsPrerender2Enabled());
 }
 
 PrerenderHostRegistry::~PrerenderHostRegistry() = default;

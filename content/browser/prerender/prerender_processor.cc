@@ -18,7 +18,7 @@ PrerenderProcessor::PrerenderProcessor(
     RenderFrameHostImpl& initiator_render_frame_host)
     : initiator_render_frame_host_(initiator_render_frame_host),
       initiator_origin_(initiator_render_frame_host.GetLastCommittedOrigin()) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
+  DCHECK(blink::features::IsPrerender2Enabled());
 }
 
 PrerenderProcessor::~PrerenderProcessor() {

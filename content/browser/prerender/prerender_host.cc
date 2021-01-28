@@ -19,7 +19,7 @@ PrerenderHost::PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,
                              const url::Origin& initiator_origin,
                              BrowserContext& browser_context)
     : attributes_(std::move(attributes)), initiator_origin_(initiator_origin) {
-  DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
+  DCHECK(blink::features::IsPrerender2Enabled());
   // Create a new WebContents for prerendering.
   WebContents::CreateParams web_contents_params(&browser_context);
   // TODO(https://crbug.com/1132746): Set up other fields of

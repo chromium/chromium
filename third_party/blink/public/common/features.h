@@ -53,6 +53,9 @@ enum class Prerender2ActivationMode { kEnabled, kDisabled };
 BLINK_COMMON_EXPORT extern const base::FeatureParam<Prerender2ActivationMode>
     kPrerender2Param;
 
+// Returns true when Prerender2 feature is enabled.
+BLINK_COMMON_EXPORT bool IsPrerender2Enabled();
+
 BLINK_COMMON_EXPORT extern const base::Feature
     kPreviewsResourceLoadingHintsSpecificResourceTypes;
 BLINK_COMMON_EXPORT extern const base::Feature
