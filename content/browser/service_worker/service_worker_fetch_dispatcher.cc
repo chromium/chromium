@@ -353,13 +353,25 @@ class ServiceWorkerFetchDispatcher::ResponseCallback
       ServiceWorkerVersion* version)
       : receiver_(this, std::move(receiver)),
         fetch_dispatcher_(fetch_dispatcher),
-        version_(version) {}
+        version_(version) {
+    receiver_.set_disconnect_handler(base::BindOnce(
+        &ResponseCallback::OnDisconnected, base::Unretained(this)));
+  }
 
   ~ResponseCallback() override { DCHECK(fetch_event_id_.has_value()); }
 
   void set_fetch_event_id(int id) {
     DCHECK(!fetch_event_id_);
     fetch_event_id_ = id;
+  }
+
+  void OnDisconnected() {
+    version_->FinishRequest(fetch_event_id_.value(), /*was_handled=*/false);
+    // HandleResponse() is not needed to be called here because
+    // OnFetchEventFinished() should be called with an error code when
+    // disconnecting without response, and it lets the request failed.
+
+    // Do not add code here because FinishRequest() removes `this`.
   }
 
   // Implements blink::mojom::ServiceWorkerFetchResponseCallback.

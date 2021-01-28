@@ -499,13 +499,15 @@ class MODULES_EXPORT ServiceWorkerGlobalScope final
   void NoteNewFetchEvent(const KURL& request_url);
   void NoteRespondedToFetchEvent(const KURL& request_url);
 
+  void AbortCallbackForFetchEvent(
+      int event_id,
+      mojom::blink::ServiceWorkerEventStatus status);
+
   // Dispatches the event synchronously. Enqueued by Dispatch*Event methods to
   // the event queue, and executed immediately or sometimes later.
   void StartFetchEvent(
       mojom::blink::DispatchFetchEventParamsPtr params,
       base::WeakPtr<CrossOriginResourcePolicyChecker> corp_checker,
-      mojo::PendingRemote<mojom::blink::ServiceWorkerFetchResponseCallback>
-          response_callback,
       base::Optional<base::TimeTicks> created_time,
       int event_id);
   void StartInstallEvent(int event_id);
