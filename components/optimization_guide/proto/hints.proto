@@ -324,11 +324,3 @@ message Version {
   // The source from which the hint was served from.
   optional HintSource hint_source = 3;
 }
-
-message Any {
-  // A URL/resource name that uniquely identifies the type of the serialized
-  // protocol buffer message.
-  optional string type_url = 1;
-  // Must be a valid serialized protocol buffer of the above specified type.
-  optional bytes value = 2;
-}

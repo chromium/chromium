@@ -86,3 +86,11 @@ message Duration {
   // to +999,999,999 inclusive.
   optional int32 nanos = 2;
 }
+
+message Any {
+  // A URL/resource name that uniquely identifies the type of the serialized
+  // protocol buffer message.
+  optional string type_url = 1;
+  // Must be a valid serialized protocol buffer of the above specified type.
+  optional bytes value = 2;
+}
