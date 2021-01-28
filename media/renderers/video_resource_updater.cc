@@ -663,6 +663,8 @@ void VideoResourceUpdater::AppendQuads(
                            nearest_neighbor, false, protected_video_type);
       texture_quad->set_resource_size_in_pixels(coded_size);
       texture_quad->is_video_frame = true;
+      texture_quad->hw_protected_validation_id =
+          frame->metadata().hw_protected_validation_id;
       for (viz::ResourceId resource_id : texture_quad->resources) {
         resource_provider_->ValidateResource(resource_id);
       }

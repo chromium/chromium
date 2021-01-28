@@ -76,6 +76,10 @@ class VIZ_COMMON_EXPORT TextureDrawQuad : public DrawQuad {
   // hardware overlay.
   gfx::ProtectedVideoType protected_video_type : 2;
 
+  // Identifier passed through by the video decoder that allows us to validate
+  // if a protected surface can still be displayed. Non-zero when valid.
+  uint32_t hw_protected_validation_id = 0;
+
   struct OverlayResources {
     OverlayResources();
 

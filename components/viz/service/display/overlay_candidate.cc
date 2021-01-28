@@ -371,8 +371,10 @@ bool OverlayCandidate::FromTextureQuad(
   candidate->resource_size_in_pixels = quad->resource_size_in_pixels();
   candidate->uv_rect = BoundingRect(quad->uv_top_left, quad->uv_bottom_right);
   // Only handle clip rect for required overlays
-  if (candidate->requires_overlay)
+  if (candidate->requires_overlay) {
     HandleClipAndSubsampling(candidate);
+    candidate->hw_protected_validation_id = quad->hw_protected_validation_id;
+  }
   return true;
 }
 

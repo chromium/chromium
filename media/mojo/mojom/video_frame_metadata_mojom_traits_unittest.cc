@@ -70,6 +70,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, EmptyMetadata) {
   EXPECT_FALSE(metadata_out.wants_promotion_hint);
   EXPECT_FALSE(metadata_out.protected_video);
   EXPECT_FALSE(metadata_out.hw_protected);
+  EXPECT_FALSE(metadata_out.hw_protected_validation_id);
   EXPECT_FALSE(metadata_out.power_efficient);
   EXPECT_FALSE(metadata_out.read_lock_fences_enabled);
   EXPECT_FALSE(metadata_out.interactive_content);
@@ -99,6 +100,7 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
 
   // ints
   metadata_in.capture_counter = 123;
+  metadata_in.hw_protected_validation_id = 456;
 
   // gfx::Rects
   metadata_in.capture_update_rect = gfx::Rect(12, 34, 360, 480);
@@ -162,6 +164,8 @@ TEST_F(VideoFrameMetadataStructTraitsTest, ValidMetadata) {
             metadata_out.wants_promotion_hint);
   EXPECT_EQ(metadata_in.protected_video, metadata_out.protected_video);
   EXPECT_EQ(metadata_in.hw_protected, metadata_out.hw_protected);
+  EXPECT_EQ(metadata_in.hw_protected_validation_id,
+            metadata_out.hw_protected_validation_id);
   EXPECT_EQ(metadata_in.power_efficient, metadata_out.power_efficient);
   EXPECT_EQ(metadata_in.read_lock_fences_enabled,
             metadata_out.read_lock_fences_enabled);
