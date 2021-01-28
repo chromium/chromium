@@ -701,6 +701,7 @@ TEST_F(DesksTest, TransientWindows) {
   // it's tracked in desk_1 (even though desk_2 is the currently active one).
   // This is because the transient parent exists in desk_1.
   auto win2 = CreateTransientWindow(win1.get(), gfx::Rect(100, 100, 50, 50));
+  EXPECT_FALSE(controller->AreDesksBeingModified());
   EXPECT_EQ(3u, desk_1->windows().size());
   EXPECT_TRUE(desk_2->windows().empty());
   EXPECT_FALSE(DoesActiveDeskContainWindow(win2.get()));
@@ -719,6 +720,47 @@ TEST_F(DesksTest, TransientWindows) {
   EXPECT_EQ(win0.get(), desk_2_container->children()[0]);
   EXPECT_EQ(win1.get(), desk_2_container->children()[1]);
   EXPECT_EQ(win2.get(), desk_2_container->children()[2]);
+}
+
+TEST_F(DesksTest, WindowStackingAfterWindowMoveToAnotherDesk) {
+  auto* controller = DesksController::Get();
+  auto win0 = CreateAppWindow(gfx::Rect(0, 0, 250, 100));
+
+  NewDesk();
+  Desk* desk_2 = controller->desks()[1].get();
+  ActivateDesk(desk_2);
+
+  auto win1 = CreateAppWindow(gfx::Rect(10, 10, 250, 100));
+  auto win2 = CreateTransientWindow(win1.get(), gfx::Rect(100, 100, 100, 100));
+  wm::ActivateWindow(win2.get());
+  auto win3 = CreateAppWindow(gfx::Rect(20, 20, 250, 100));
+
+  // Move back to desk_1, so |win0| becomes the most recent.
+  Desk* desk_1 = controller->desks()[0].get();
+  ActivateDesk(desk_1);
+  EXPECT_EQ(win0.get(), window_util::GetActiveWindow());
+
+  // The global MRU order should be {win0, win3, win2, win1}.
+  auto* mru_tracker = Shell::Get()->mru_window_tracker();
+  EXPECT_EQ(std::vector<aura::Window*>(
+                {win0.get(), win3.get(), win2.get(), win1.get()}),
+            mru_tracker->BuildMruWindowList(DesksMruType::kAllDesks));
+
+  // Now move back to desk_2, and move its windows to desk_1. Their window
+  // stacking should match their order in the MRU.
+  ActivateDesk(desk_2);
+  // The global MRU order is updated to be {win3, win0, win2, win1}.
+  EXPECT_EQ(std::vector<aura::Window*>(
+                {win3.get(), win0.get(), win2.get(), win1.get()}),
+            mru_tracker->BuildMruWindowList(DesksMruType::kAllDesks));
+
+  // Moving |win2| should be enough to get its transient parent |win1| moved as
+  // well.
+  desk_2->MoveWindowToDesk(win2.get(), desk_1, win1->GetRootWindow());
+  desk_2->MoveWindowToDesk(win3.get(), desk_1, win1->GetRootWindow());
+  EXPECT_TRUE(IsStackedBelow(win1.get(), win2.get()));
+  EXPECT_TRUE(IsStackedBelow(win2.get(), win0.get()));
+  EXPECT_TRUE(IsStackedBelow(win0.get(), win3.get()));
 }
 
 TEST_F(DesksTest, TransientModalChildren) {
