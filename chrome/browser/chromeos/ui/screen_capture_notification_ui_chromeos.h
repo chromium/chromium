@@ -23,8 +23,6 @@ class ScreenCaptureNotificationUIChromeOS : public ScreenCaptureNotificationUI {
       base::OnceClosure stop_callback,
       content::MediaStreamUI::SourceCallback source_callback) override;
 
-  void SetStopCallback(base::OnceClosure stop_callback) override;
-
  private:
   void ProcessStopRequestFromUI();
 

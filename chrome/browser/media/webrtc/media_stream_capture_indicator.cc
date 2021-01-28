@@ -248,12 +248,6 @@ class MediaStreamCaptureIndicator::UIDelegate : public content::MediaStreamUI {
 #endif
   }
 
-  void SetStopCallback(base::OnceClosure stop_callback) override {
-    if (ui_) {
-      ui_->SetStopCallback(std::move(stop_callback));
-    }
-  }
-
   base::WeakPtr<WebContentsDeviceUsage> device_usage_;
   const blink::MediaStreamDevices devices_;
   const std::unique_ptr<::MediaStreamUI> ui_;

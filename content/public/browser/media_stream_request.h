@@ -114,9 +114,6 @@ class MediaStreamUI {
 
   virtual void OnDeviceStopped(const std::string& label,
                                const DesktopMediaID& media_id) = 0;
-
-  // Replaces the stop callback set in OnStarted(), if any.
-  virtual void SetStopCallback(base::OnceClosure stop) = 0;
 };
 
 // Callback used return results of media access requests.

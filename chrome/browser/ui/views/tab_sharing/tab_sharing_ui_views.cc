@@ -152,10 +152,6 @@ gfx::NativeViewId TabSharingUIViews::OnStarted(
   return 0;
 }
 
-void TabSharingUIViews::SetStopCallback(base::OnceClosure stop_callback) {
-  stop_callback_ = std::move(stop_callback);
-}
-
 void TabSharingUIViews::StartSharing(infobars::InfoBar* infobar) {
   if (source_callback_.is_null())
     return;

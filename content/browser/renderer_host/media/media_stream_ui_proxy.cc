@@ -99,6 +99,10 @@ class MediaStreamUIProxy::Core {
   // cancel media requests.
   base::WeakPtrFactory<Core> weak_factory_{this};
 
+  // Used for calls supplied to `ui_`. Invalidated every time a new UI is
+  // created.
+  base::WeakPtrFactory<Core> weak_factory_for_ui_{this};
+
   DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
@@ -144,20 +148,22 @@ void MediaStreamUIProxy::Core::OnStarted(
     std::vector<DesktopMediaID> screen_share_ids) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // base::Unretained is safe here because |ui_| is owned by Core.
+  if (!ui_)
+    return;
+
   MediaStreamUI::SourceCallback device_change_cb;
   if (has_source_callback) {
-    device_change_cb = base::BindRepeating(
-        &Core::ProcessChangeSourceRequestFromUI, base::Unretained(this));
+    device_change_cb =
+        base::BindRepeating(&Core::ProcessChangeSourceRequestFromUI,
+                            weak_factory_for_ui_.GetWeakPtr());
   }
 
-  if (ui_) {
-    *window_id = ui_->OnStarted(
-        base::BindOnce(&Core::ProcessStopRequestFromUI, base::Unretained(this)),
-        device_change_cb, label, screen_share_ids,
-        base::BindRepeating(&Core::ProcessStateChangeFromUI,
-                            base::Unretained(this)));
-  }
+  *window_id =
+      ui_->OnStarted(base::BindOnce(&Core::ProcessStopRequestFromUI,
+                                    weak_factory_for_ui_.GetWeakPtr()),
+                     device_change_cb, label, screen_share_ids,
+                     base::BindRepeating(&Core::ProcessStateChangeFromUI,
+                                         weak_factory_for_ui_.GetWeakPtr()));
 }
 
 void MediaStreamUIProxy::Core::OnDeviceStopped(const std::string& label,
@@ -197,13 +203,12 @@ void MediaStreamUIProxy::Core::ProcessAccessRequestResponse(
     result = blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED;
 
   if (stream_ui) {
-    // Default TabSharingUIViews always calls stop callback when destroyed
-    // due to security reasons (see crbug.com/1155426 for details).
-    // However here the UI is replaced while the screencast is ongoing.
-    // Clearing the callback here ensures that screencast is not terminated.
-    if (ui_) {
-      ui_->SetStopCallback(base::DoNothing());
-    }
+    // Callbacks that were supplied to the existing `ui_` are no longer
+    // applicable. This is important as some implementions (TabSharingUIViews)
+    // always run the callback when destroyed. However at the point the UI is
+    // replaced while the screencast is ongoing. Invalidating ensures the
+    // screencast is not terminated. See crbug.com/1155426 for details.
+    weak_factory_for_ui_.InvalidateWeakPtrs();
     ui_ = std::move(stream_ui);
   }
 
