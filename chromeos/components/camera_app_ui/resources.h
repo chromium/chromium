@@ -6,9 +6,6 @@
 #define CHROMEOS_COMPONENTS_CAMERA_APP_UI_RESOURCES_H_
 
 #include "chromeos/components/camera_app_ui/resources/strings/grit/chromeos_camera_app_strings.h"
-#include "chromeos/grit/chromeos_camera_app_resources.h"
-#include "chromeos/grit/chromeos_camera_app_resources_map.h"
-#include "mojo/public/js/grit/mojo_bindings_resources.h"
 
 namespace chromeos {
 
@@ -114,36 +111,6 @@ const struct {
     {"banner_msg", IDS_BANNER_MSG},
     {"banner_close_button", IDS_BANNER_CLOSE_BUTTON},
     {"error_msg_camera_being_used", IDS_ERROR_MSG_CAMERA_BEING_USED},
-};
-
-const struct {
-  const char* path;
-  int id;
-} kGritResourceMap[] = {
-    {"js/browser_proxy/browser_proxy.js", IDR_CAMERA_WEBUI_BROWSER_PROXY_JS},
-    {"js/preload_images.js", IDR_CAMERA_PRELOAD_IMAGES_JS},
-    {"js/window_controller/window_controller.js",
-     IDR_CAMERA_MOJO_WINDOW_CONTROLLER_JS},
-    {"js/mojo/camera_intent.mojom-lite.js",
-     IDR_CAMERA_CAMERA_INTENT_MOJOM_LITE_JS},
-    {"js/mojo/image_capture.mojom-lite.js",
-     IDR_CAMERA_IMAGE_CAPTURE_MOJOM_LITE_JS},
-    {"js/mojo/camera_common.mojom-lite.js",
-     IDR_CAMERA_CAMERA_COMMON_MOJOM_LITE_JS},
-    {"js/mojo/camera_metadata.mojom-lite.js",
-     IDR_CAMERA_CAMERA_METADATA_MOJOM_LITE_JS},
-    {"js/mojo/camera_metadata_tags.mojom-lite.js",
-     IDR_CAMERA_CAMERA_METADATA_TAGS_MOJOM_LITE_JS},
-    {"js/mojo/camera_app.mojom-lite.js", IDR_CAMERA_CAMERA_APP_MOJOM_LITE_JS},
-    {"js/mojo/mojo_bindings_lite.js", IDR_MOJO_MOJO_BINDINGS_LITE_JS},
-    {"js/mojo/camera_app_helper.mojom-lite.js",
-     IDR_CAMERA_CAMERA_APP_HELPER_MOJOM_LITE_JS},
-    {"js/mojo/time.mojom-lite.js", IDR_CAMERA_TIME_MOJOM_LITE_JS},
-    {"js/mojo/idle_manager.mojom-lite.js",
-     IDR_CAMERA_IDLE_MANAGER_MOJOM_LITE_JS},
-    {"js/mojo/camera_app.mojom-lite.js", IDR_CAMERA_CAMERA_APP_MOJOM_LITE_JS},
-    {"js/mojo/geometry.mojom-lite.js", IDR_CAMERA_GEOMETRY_MOJOM_LITE_JS},
-    {"js/mojo/range.mojom-lite.js", IDR_CAMERA_RANGE_MOJOM_LITE_JS},
 };
 
 }  // namespace chromeos

@@ -7,8 +7,9 @@
 #include "chrome/browser/chromeos/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
-#include "chromeos/components/camera_app_ui/resources.h"
+#include "chromeos/components/camera_app_ui/resources/strings/grit/chromeos_camera_app_strings.h"
 #include "chromeos/components/camera_app_ui/url_constants.h"
+#include "chromeos/grit/chromeos_camera_app_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 
 std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForCameraSystemWebApp() {

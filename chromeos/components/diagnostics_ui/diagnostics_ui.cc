@@ -29,9 +29,6 @@ namespace chromeos {
 
 namespace {
 
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chromeos/components/diagnostics_ui/resources/";
-
 void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"batteryCalculatingText", IDS_DIAGNOSTICS_BATTERY_CALCULATING_TEXT},
@@ -112,18 +109,12 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
 // longer requires a dependency on //chrome/browser.
 void SetUpWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const GritResourceMap> resources,
-                          const std::string& generated_path,
                           int default_resource) {
   for (const auto& resource : resources) {
-    std::string path = resource.name;
-    if (path.rfind(generated_path, 0) == 0)
-      path = path.substr(generated_path.size());
-
-    source->AddResourcePath(path, resource.value);
+    source->AddResourcePath(resource.name, resource.value);
   }
 
   source->SetDefaultResource(default_resource);
-  source->AddResourcePath("d3.min.js", IDR_D3_SRC_D3_MIN_JS);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
 }
@@ -145,16 +136,8 @@ DiagnosticsUI::DiagnosticsUI(content::WebUI* web_ui)
 
   const auto resources = base::make_span(kChromeosDiagnosticsAppResources,
                                          kChromeosDiagnosticsAppResourcesSize);
-  SetUpWebUIDataSource(html_source.get(), resources, kGeneratedPath,
+  SetUpWebUIDataSource(html_source.get(), resources,
                        IDR_DIAGNOSTICS_APP_INDEX_HTML);
-
-  html_source->AddResourcePath(
-      "system_data_provider.mojom-lite.js",
-      IDR_DIAGNOSTICS_SYSTEM_DATA_PROVIDER_MOJO_LITE_JS);
-  html_source->AddResourcePath(
-      "system_routine_controller.mojom-lite.js",
-      IDR_DIAGNOSTICS_SYSTEM_ROUTINE_CONTROLLER_MOJO_LITE_JS);
-
   AddDiagnosticsStrings(html_source.get());
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 html_source.release());

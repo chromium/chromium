@@ -29,21 +29,13 @@ namespace chromeos {
 
 namespace {
 
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chromeos/components/scanning/resources/";
-
 // TODO(jschettler): Replace with webui::SetUpWebUIDataSource() once it no
 // longer requires a dependency on //chrome/browser.
 void SetUpWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const GritResourceMap> resources,
-                          const std::string& generated_path,
                           int default_resource) {
   for (const auto& resource : resources) {
-    std::string path = resource.name;
-    if (path.rfind(generated_path, 0) == 0)
-      path = path.substr(generated_path.size());
-
-    source->AddResourcePath(path, resource.value);
+    source->AddResourcePath(resource.name, resource.value);
   }
 
   source->SetDefaultResource(default_resource);
@@ -136,7 +128,7 @@ ScanningUI::ScanningUI(
 
   const auto resources = base::make_span(kChromeosScanningAppResources,
                                          kChromeosScanningAppResourcesSize);
-  SetUpWebUIDataSource(html_source.get(), resources, kGeneratedPath,
+  SetUpWebUIDataSource(html_source.get(), resources,
                        IDR_SCANNING_APP_INDEX_HTML);
 
   html_source->AddResourcePath("scanning.mojom-lite.js",

@@ -23,14 +23,17 @@ static_library("camera_app_ui") {
     "url_constants.h",
   ]
 
+  public_deps = [
+    "resources/strings",
+    "//chromeos/resources:camera_app_resources",
+  ]
+
   deps = [
     ":mojo_bindings",
     ":mojo_bindings_js",
-    "resources/strings",
     "//ash/public/cpp",
     "//chromeos/components/web_applications",
     "//chromeos/constants",
-    "//chromeos/resources:camera_app_resources",
     "//chromeos/strings",
     "//chromeos/system",
     "//components/arc",

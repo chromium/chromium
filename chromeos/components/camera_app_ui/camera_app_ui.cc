@@ -10,6 +10,7 @@
 #include "chromeos/components/camera_app_ui/camera_app_helper_impl.h"
 #include "chromeos/components/camera_app_ui/resources.h"
 #include "chromeos/components/camera_app_ui/url_constants.h"
+#include "chromeos/grit/chromeos_camera_app_resources_map.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/browser_context.h"
@@ -25,6 +26,7 @@
 #include "media/capture/video/chromeos/mojom/camera_app.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "mojo/public/js/grit/mojo_bindings_resources.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/aura/window.h"
 #include "ui/webui/webui_allowlist.h"
@@ -46,9 +48,8 @@ content::WebUIDataSource* CreateCameraAppUIHTMLSource(
                             kChromeosCameraAppResources[i].value);
   }
 
-  for (const auto& res : kGritResourceMap) {
-    source->AddResourcePath(res.path, res.id);
-  }
+  source->AddResourcePath("js/mojo/mojo_bindings_lite.js",
+                          IDR_MOJO_MOJO_BINDINGS_LITE_JS);
 
   delegate->PopulateLoadTimeData(source);
 

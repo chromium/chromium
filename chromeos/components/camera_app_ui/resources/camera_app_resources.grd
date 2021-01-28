@@ -62,7 +62,6 @@
       <structure name="IDR_CAMERA_MODE_RECORD_TIME_JS" file="js/views/camera/mode/record_time.js" type="chrome_html" />
       <structure name="IDR_CAMERA_MODE_SQUARE_JS" file="js/views/camera/mode/square.js" type="chrome_html" />
       <structure name="IDR_CAMERA_MODE_VIDEO_JS" file="js/views/camera/mode/video.js" type="chrome_html" />
-      <structure name="IDR_CAMERA_MOJO_WINDOW_CONTROLLER_JS" file="js/window_controller/mojo_window_controller.js" type="chrome_html" />
       <structure name="IDR_CAMERA_MP4_VIDEO_PROCESSOR_JS" file="js/models/mp4_video_processor.js" type="chrome_html" />
       <structure name="IDR_CAMERA_NATIVE_FILE_SYSTEM_ENTRY_JS" file="js/models/native_file_system_entry.js" type="chrome_html" />
       <structure name="IDR_CAMERA_NAV_JS" file="js/nav.js" type="chrome_html" />
@@ -93,59 +92,78 @@
       <structure name="IDR_CAMERA_VIEW_JS" file="js/views/view.js" type="chrome_html" />
       <structure name="IDR_CAMERA_WAITABLE_EVENT_JS" file="js/waitable_event.js" type="chrome_html" />
       <structure name="IDR_CAMERA_WARNING_JS" file="js/views/warning.js" type="chrome_html" />
-      <structure name="IDR_CAMERA_WEBUI_BROWSER_PROXY_JS" file="js/browser_proxy/webui_browser_proxy.js" type="chrome_html" />
       <structure name="IDR_CAMERA_WINDOW_CONTROLLER_INTERFACE_JS" file="js/window_controller/window_controller_interface.js" type="chrome_html" />
     </structures>
     <includes>
+      <include name="IDR_CAMERA_MOJO_WINDOW_CONTROLLER_JS"
+          file="js/window_controller/mojo_window_controller.js"
+          resource_path="js/window_controller/window_controller.js"
+          type="chrome_html" />
+      <include name="IDR_CAMERA_WEBUI_BROWSER_PROXY_JS"
+          file="js/browser_proxy/webui_browser_proxy.js"
+          resource_path="js/browser_proxy/browser_proxy.js"
+          type="chrome_html" />
       <!-- Mojo Lite Bindings -->
       <include name="IDR_CAMERA_CAMERA_APP_HELPER_MOJOM_LITE_JS"
           file="${root_gen_dir}/chromeos/components/camera_app_ui/camera_app_helper.mojom-lite.js"
+          resource_path="js/mojo/camera_app_helper.mojom-lite.js"
           use_base_dir="false"
           type="BINDATA"/>
       <include name="IDR_CAMERA_CAMERA_APP_MOJOM_LITE_JS"
           file="${root_gen_dir}/media/capture/video/chromeos/mojom/camera_app.mojom-lite.js"
+          resource_path="js/mojo/camera_app.mojom-lite.js"
           use_base_dir="false"
           type="BINDATA"/>
       <include name="IDR_CAMERA_CAMERA_COMMON_MOJOM_LITE_JS"
           file="${root_gen_dir}/media/capture/video/chromeos/mojom/camera_common.mojom-lite.js"
+          resource_path="js/mojo/camera_common.mojom-lite.js"
           use_base_dir="false"
           type="BINDATA"/>
       <include name="IDR_CAMERA_CAMERA_INTENT_MOJOM_LITE_JS"
           file="${root_gen_dir}/components/arc/mojom/camera_intent.mojom-lite.js"
+          resource_path="js/mojo/camera_intent.mojom-lite.js"
           use_base_dir="false"
           type="BINDATA"/>
       <include name="IDR_CAMERA_CAMERA_METADATA_MOJOM_LITE_JS"
           file="${root_gen_dir}/media/capture/video/chromeos/mojom/camera_metadata.mojom-lite.js"
+          resource_path="js/mojo/camera_metadata.mojom-lite.js"
           use_base_dir="false"
           type="BINDATA"/>
       <include name="IDR_CAMERA_CAMERA_METADATA_TAGS_MOJOM_LITE_JS"
           file="${root_gen_dir}/media/capture/video/chromeos/mojom/camera_metadata_tags.mojom-lite.js"
+          resource_path="js/mojo/camera_metadata_tags.mojom-lite.js"
           use_base_dir="false"
           type="BINDATA"/>
       <include name="IDR_CAMERA_GEOMETRY_MOJOM_LITE_JS"
           file="${root_gen_dir}/ui/gfx/geometry/mojom/geometry.mojom-lite.js"
+          resource_path="js/mojo/geometry.mojom-lite.js"
           use_base_dir="false"
           type="BINDATA"/>
       <include name="IDR_CAMERA_IDLE_MANAGER_MOJOM_LITE_JS"
           file="${root_gen_dir}/third_party/blink/public/mojom/idle/idle_manager.mojom-lite.js"
+          resource_path="js/mojo/idle_manager.mojom-lite.js"
           use_base_dir="false"
           type="BINDATA"/>
       <include name="IDR_CAMERA_IMAGE_CAPTURE_MOJOM_LITE_JS"
           file="${root_gen_dir}/media/capture/mojom/image_capture.mojom-lite.js"
+          resource_path="js/mojo/image_capture.mojom-lite.js"
           use_base_dir="false"
           type="BINDATA"/>
       <include name="IDR_CAMERA_RANGE_MOJOM_LITE_JS"
           file="${root_gen_dir}/ui/gfx/range/mojom/range.mojom-lite.js"
+          resource_path="js/mojo/range.mojom-lite.js"
           use_base_dir="false"
           type="BINDATA"/>
       <include name="IDR_CAMERA_TIME_MOJOM_LITE_JS"
           file="${root_gen_dir}/mojo/public/mojom/base/time.mojom-lite.js"
+          resource_path="js/mojo/time.mojom-lite.js"
           use_base_dir="false"
           type="BINDATA"/>
 
       <!-- Dynamic generated -->
       <include name="IDR_CAMERA_PRELOAD_IMAGES_JS"
           file="${root_gen_dir}/chromeos/components/camera_app_ui/resources/js/preload_images.js"
+          resource_path="js/preload_images.js"
           use_base_dir="false"
           type="chrome_html"/>
 

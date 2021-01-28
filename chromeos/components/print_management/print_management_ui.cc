@@ -23,19 +23,11 @@ namespace printing {
 namespace printing_manager {
 namespace {
 
-constexpr char kGeneratedPath[] =
-    "@out_folder@/gen/chromeos/components/print_management/resources/";
-
 void SetUpWebUIDataSource(content::WebUIDataSource* source,
                           base::span<const GritResourceMap> resources,
-                          const std::string& generated_path,
                           int default_resource) {
   for (const auto& resource : resources) {
-    std::string path = resource.name;
-    if (path.rfind(generated_path, 0) == 0) {
-      path = path.substr(generated_path.size());
-    }
-    source->AddResourcePath(path, resource.value);
+    source->AddResourcePath(resource.name, resource.value);
   }
   source->SetDefaultResource(default_resource);
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
@@ -127,7 +119,7 @@ PrintManagementUI::PrintManagementUI(
 
   const auto resources = base::make_span(kChromeosPrintManagementResources,
                                          kChromeosPrintManagementResourcesSize);
-  SetUpWebUIDataSource(html_source.get(), resources, kGeneratedPath,
+  SetUpWebUIDataSource(html_source.get(), resources,
                        IDR_PRINT_MANAGEMENT_INDEX_HTML);
 
   html_source->AddResourcePath("printing_manager.mojom-lite.js",
