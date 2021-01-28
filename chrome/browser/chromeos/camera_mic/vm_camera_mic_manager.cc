@@ -64,6 +64,41 @@ constexpr VmCameraMicManager::NotificationType
 constexpr VmCameraMicManager::NotificationType
     VmCameraMicManager::kCameraAndMicNotification;
 
+class VmCameraMicManager::VmInfo {
+ public:
+  VmInfo() = default;
+  VmInfo(const VmInfo&) = default;
+  ~VmInfo() = default;
+
+  NotificationType notification_type() const { return notification_type_; }
+
+  void SetMicActive(bool active) {
+    notification_type_.set(static_cast<size_t>(DeviceType::kMic), active);
+  }
+
+  void SetCameraAccessing(bool accessing) {
+    camera_accessing_ = accessing;
+    OnCameraUpdated();
+  }
+  void SetCameraPrivacyIsOn(bool on) {
+    camera_privacy_is_on_ = on;
+    OnCameraUpdated();
+  }
+
+ private:
+  void OnCameraUpdated() {
+    notification_type_.set(static_cast<size_t>(DeviceType::kCamera),
+                           camera_accessing_ && !camera_privacy_is_on_);
+  }
+
+  bool camera_accessing_ = false;
+  // We don't actually need to store this separately for each VM, but this
+  // makes code simpler.
+  bool camera_privacy_is_on_ = false;
+
+  NotificationType notification_type_;
+};
+
 VmCameraMicManager* VmCameraMicManager::Get() {
   static base::NoDestructor<VmCameraMicManager> manager;
   return manager.get();
@@ -187,10 +222,13 @@ void VmCameraMicManager::OnActiveClientChange(
   if (type == cros::mojom::CameraClientType::PLUGINVM) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
-        base::BindOnce(&VmCameraMicManager::UpdateVmInfoAndNotifications,
-                       base::Unretained(this), VmType::kPluginVm,
-                       &VmInfo::SetCameraAccessing, is_active));
+        base::BindOnce(&VmCameraMicManager::SetCameraAccessing,
+                       base::Unretained(this), VmType::kPluginVm, is_active));
   }
+}
+
+void VmCameraMicManager::SetCameraAccessing(VmType vm, bool accessing) {
+  UpdateVmInfoAndNotifications(vm, &VmInfo::SetCameraAccessing, accessing);
 }
 
 void VmCameraMicManager::OnCameraPrivacySwitchStatusChanged(
@@ -207,14 +245,16 @@ void VmCameraMicManager::OnCameraPrivacySwitchStatusChanged(
       break;
   }
 
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&VmCameraMicManager::SetCameraPrivacyIsOn,
+                                base::Unretained(this), is_on));
+}
+
+void VmCameraMicManager::SetCameraPrivacyIsOn(bool is_on) {
   DCHECK(!vm_info_map_.empty());
   for (auto& vm_and_info : vm_info_map_) {
-    VmType vm = vm_and_info.first;
-    content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(&VmCameraMicManager::UpdateVmInfoAndNotifications,
-                       base::Unretained(this), vm,
-                       &VmInfo::SetCameraPrivacyIsOn, is_on));
+    UpdateVmInfoAndNotifications(/*vm=*/vm_and_info.first,
+                                 &VmInfo::SetCameraPrivacyIsOn, is_on);
   }
 }
 
@@ -325,29 +365,6 @@ void VmCameraMicManager::CloseNotification(VmType vm, NotificationType type) {
               GetNotificationId(vm, type));
 }
 
-VmCameraMicManager::VmInfo::VmInfo() = default;
-VmCameraMicManager::VmInfo::VmInfo(const VmInfo&) = default;
-VmCameraMicManager::VmInfo::~VmInfo() = default;
-
-void VmCameraMicManager::VmInfo::SetMicActive(bool active) {
-  notification_type_.set(static_cast<size_t>(DeviceType::kMic), active);
-}
-
-void VmCameraMicManager::VmInfo::SetCameraAccessing(bool accessing) {
-  camera_accessing_ = accessing;
-  OnCameraUpdated();
-}
-
-void VmCameraMicManager::VmInfo::SetCameraPrivacyIsOn(bool on) {
-  camera_privacy_is_on_ = on;
-  OnCameraUpdated();
-}
-
-void VmCameraMicManager::VmInfo::OnCameraUpdated() {
-  notification_type_.set(static_cast<size_t>(DeviceType::kCamera),
-                         camera_accessing_ && !camera_privacy_is_on_);
-}
-
 VmCameraMicManager::VmNotificationObserver::VmNotificationObserver() = default;
 VmCameraMicManager::VmNotificationObserver::~VmNotificationObserver() = default;
 
@@ -380,11 +397,15 @@ void VmCameraMicManager::OnNumberOfInputStreamsWithPermissionChanged() {
     auto it = clients_and_numbers.find(cras_client_type);
     bool active = (it != clients_and_numbers.end() && it->second != 0);
 
-    UpdateVmInfoAndNotifications(vm, &VmInfo::SetMicActive, active);
+    SetMicActive(vm, active);
   };
 
   update(CrasAudioHandler::ClientType::VM_TERMINA, VmType::kCrostiniVm);
   update(CrasAudioHandler::ClientType::VM_PLUGIN, VmType::kPluginVm);
+}
+
+void VmCameraMicManager::SetMicActive(VmType vm, bool active) {
+  UpdateVmInfoAndNotifications(vm, &VmInfo::SetMicActive, active);
 }
 
 }  // namespace chromeos
