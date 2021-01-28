@@ -647,6 +647,46 @@ TEST_P(LayoutViewHitTestTest, PseudoElementAfterBlock) {
   EXPECT_EQ(expected, HitTest(PhysicalOffset(50, 5))) << "after XY";
 }
 
+// http://crbug.com/1043471
+TEST_P(LayoutViewHitTestTest, PseudoElementAfterInline) {
+  LoadAhem();
+  InsertStyleElement(
+      "body { margin: 0px; font: 10px/10px Ahem; }"
+      "#cd::after { content: 'XYZ'; margin-left: 100px; }");
+  SetBodyInnerHTML("<div id=ab>ab<span id=cd>cd</span></div>");
+  const auto& text_ab = *To<Text>(GetElementById("ab")->firstChild());
+  const auto& text_cd = *To<Text>(GetElementById("cd")->lastChild());
+
+  EXPECT_EQ(PositionWithAffinity(Position(text_ab, 0)),
+            HitTest(PhysicalOffset(5, 5)));
+  // Because of hit testing at "b", position should be |kDownstream|.
+  EXPECT_EQ(PositionWithAffinity(Position(text_ab, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(PhysicalOffset(15, 5)));
+  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 0)),
+            HitTest(PhysicalOffset(25, 5)));
+  // Because of hit testing at "d", position should be |kDownstream|.
+  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 1),
+                                 LayoutNG() ? TextAffinity::kDownstream
+                                            : TextAffinity::kUpstream),
+            HitTest(PhysicalOffset(35, 5)));
+  // Because of hit testing at right of <span cd>, result position should be
+  // |kUpstream|.
+  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 2),
+                                 LayoutNG() ? TextAffinity::kUpstream
+                                            : TextAffinity::kDownstream),
+            HitTest(PhysicalOffset(45, 5)));
+  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 2),
+                                 LayoutNG() ? TextAffinity::kUpstream
+                                            : TextAffinity::kDownstream),
+            HitTest(PhysicalOffset(55, 5)));
+  EXPECT_EQ(PositionWithAffinity(Position(text_cd, 2),
+                                 LayoutNG() ? TextAffinity::kUpstream
+                                            : TextAffinity::kDownstream),
+            HitTest(PhysicalOffset(65, 5)));
+}
+
 TEST_P(LayoutViewHitTestTest, PseudoElementAfterBlockWithMargin) {
   LoadAhem();
   InsertStyleElement(
