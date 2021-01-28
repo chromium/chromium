@@ -25,55 +25,7 @@ namespace gpu {
 namespace webgpu {
 
 class DawnClientMemoryTransferService;
-
-#if BUILDFLAG(USE_DAWN)
-class WebGPUCommandSerializer final : public dawn_wire::CommandSerializer {
- public:
-  WebGPUCommandSerializer(
-      DawnDeviceClientID device_client_id,
-      WebGPUCmdHelper* helper,
-      DawnClientMemoryTransferService* memory_transfer_service,
-      std::unique_ptr<TransferBuffer> c2s_transfer_buffer);
-  ~WebGPUCommandSerializer() override;
-
-  // Send WGPUDeviceProperties to the server side
-  // Note that this function should only be called once for each
-  // WebGPUCommandSerializer object.
-  void RequestDeviceCreation(
-      uint32_t requested_adapter_id,
-      const WGPUDeviceProperties& requested_device_properties);
-
-  // dawn_wire::CommandSerializer implementation
-  size_t GetMaximumAllocationSize() const final;
-  void* GetCmdSpace(size_t size) final;
-  bool Flush() final;
-
-  void SetClientAwaitingFlush(bool awaiting_flush);
-  bool ClientAwaitingFlush() const { return client_awaiting_flush_; }
-
-  // Called upon context lost.
-  void HandleGpuControlLostContext();
-
-  // For the WebGPUInterface implementation of WebGPUImplementation
-  WGPUDevice GetDevice() const;
-  ReservedTexture ReserveTexture();
-  bool HandleCommands(const char* commands, size_t command_size);
-
- private:
-  DawnDeviceClientID device_client_id_;
-  WebGPUCmdHelper* helper_;
-  DawnClientMemoryTransferService* memory_transfer_service_;
-
-  std::unique_ptr<dawn_wire::WireClient> wire_client_;
-
-  uint32_t c2s_buffer_default_size_ = 0;
-  uint32_t c2s_put_offset_ = 0;
-  std::unique_ptr<TransferBuffer> c2s_transfer_buffer_;
-  ScopedTransferBufferPtr c2s_buffer_;
-
-  bool client_awaiting_flush_ = false;
-};
-#endif
+class DawnClientSerializer;
 
 class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
                                                  public ImplementationBase {
@@ -188,12 +140,12 @@ class WEBGPU_EXPORT WebGPUImplementation final : public WebGPUInterface,
 #if BUILDFLAG(USE_DAWN)
   std::unique_ptr<DawnClientMemoryTransferService> memory_transfer_service_;
 
-  WebGPUCommandSerializer* GetCommandSerializerWithDeviceClientID(
+  DawnClientSerializer* GetCommandSerializerWithDeviceClientID(
       DawnDeviceClientID device_client_id) const;
   void FlushAllCommandSerializers();
   void ClearAllCommandSerializers();
   bool AddNewCommandSerializer(DawnDeviceClientID device_client_id);
-  base::flat_map<DawnDeviceClientID, std::unique_ptr<WebGPUCommandSerializer>>
+  base::flat_map<DawnDeviceClientID, std::unique_ptr<DawnClientSerializer>>
       command_serializers_;
 #endif
   DawnProcTable procs_ = {};
