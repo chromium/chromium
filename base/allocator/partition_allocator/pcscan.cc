@@ -663,7 +663,7 @@ void PCScan<thread_safe>::PCScanTask::RunOnce() && {
   pcscan_.quarantine_data_.GrowLimitIfNeeded(total_pa_heap_size);
 
   // Check that concurrent task can't be scheduled twice.
-  PA_CHECK(pcscan_.in_progress_.exchange(false));
+  PA_CHECK(pcscan_.in_progress_.exchange(false, std::memory_order_acq_rel));
 }
 
 template <bool thread_safe>
@@ -757,7 +757,7 @@ void PCScan<thread_safe>::PerformScan(InvocationMode invocation_mode) {
   PA_DCHECK(std::all_of(roots_.begin(), roots_.end(),
                         [](Root* root) { return root->IsScanEnabled(); }));
 
-  if (in_progress_.exchange(true)) {
+  if (in_progress_.exchange(true, std::memory_order_acq_rel)) {
     // Bail out if PCScan is already in progress.
     return;
   }

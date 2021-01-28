@@ -168,7 +168,10 @@ ALWAYS_INLINE void PCScan<thread_safe>::MoveToQuarantine(void* ptr,
 
   const bool is_limit_reached =
       quarantine_data_.Account(slot_span->bucket->slot_size);
-  if (is_limit_reached) {
+  if (UNLIKELY(is_limit_reached)) {
+    // Perform a quick check if another scan is already in progress.
+    if (in_progress_.load(std::memory_order_relaxed))
+      return;
     // Avoid blocking the current thread for regular scans.
     PerformScan(InvocationMode::kNonBlocking);
   }
