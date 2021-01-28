@@ -22,11 +22,13 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/system_web_app_manager_browsertest.h"
 #include "chrome/browser/web_applications/test/test_system_web_app_installation.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/browser/web_contents_user_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 
@@ -738,6 +740,32 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchProfileGuestSessionBrowserTest,
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && !DCHECK_IS_ON()
 
+using SystemWebAppLaunchOmniboxNavigateBrowsertest =
+    SystemWebAppManagerBrowserTest;
+
+IN_PROC_BROWSER_TEST_P(SystemWebAppLaunchOmniboxNavigateBrowsertest,
+                       OpenInTab) {
+  WaitForTestSystemAppInstall();
+
+  content::TestNavigationObserver observer(GetStartUrl());
+  // The app should load in the blank WebContents created when browser starts.
+  observer.WatchExistingWebContents();
+  ui_test_utils::SendToOmniboxAndSubmit(browser(), GetStartUrl().spec());
+  observer.Wait();
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  EXPECT_EQ(web_contents->GetLastCommittedURL(), GetStartUrl());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+
+  // Verifies the tab has an associated tab helper for System App's AppId.
+  auto* tab_helper = web_app::WebAppTabHelper::FromWebContents(web_contents);
+  EXPECT_TRUE(tab_helper);
+  EXPECT_EQ(tab_helper->GetAppId(),
+            *web_app::GetAppIdForSystemWebApp(browser()->profile(),
+                                              GetMockAppType()));
+}
+
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppLinkCaptureBrowserTest);
 
@@ -751,5 +779,10 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerNonResizeableWindowTest);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_ALL_PROFILE_TYPES_P(
+    SystemWebAppLaunchOmniboxNavigateBrowsertest);
+#endif
 
 }  // namespace web_app
