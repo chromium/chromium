@@ -31,11 +31,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
-#include "content/browser/cache_storage/cache_storage.h"
-#include "content/browser/cache_storage/cache_storage_cache.h"
-#include "content/browser/cache_storage/cache_storage_cache_handle.h"
-#include "content/browser/cache_storage/cache_storage_context_impl.h"
-#include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -2115,31 +2110,36 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBlackBoxBrowserTest, Registration) {
 class CacheStorageSideDataSizeChecker
     : public base::RefCountedThreadSafe<CacheStorageSideDataSizeChecker> {
  public:
-  static int GetSize(CacheStorageContextImpl* cache_storage_context,
+  static int GetSize(storage::mojom::CacheStorageControl* cache_storage_control,
                      const GURL& origin,
                      const std::string& cache_name,
                      const GURL& url) {
-    scoped_refptr<CacheStorageSideDataSizeChecker> checker(
-        new CacheStorageSideDataSizeChecker(cache_storage_context, origin,
-                                            cache_name, url));
+    mojo::PendingRemote<blink::mojom::CacheStorage> cache_storage_remote;
+    network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+    cache_storage_control->AddReceiver(
+        cross_origin_embedder_policy, mojo::NullRemote(),
+        url::Origin::Create(origin),
+        storage::mojom::CacheStorageOwner::kCacheAPI,
+        cache_storage_remote.InitWithNewPipeAndPassReceiver());
+
+    auto checker = base::MakeRefCounted<CacheStorageSideDataSizeChecker>(
+        std::move(cache_storage_remote), cache_name, url);
     return checker->GetSizeImpl();
   }
+
+  CacheStorageSideDataSizeChecker(
+      mojo::PendingRemote<blink::mojom::CacheStorage> cache_storage,
+      const std::string& cache_name,
+      const GURL& url)
+      : cache_storage_(std::move(cache_storage)),
+        cache_name_(cache_name),
+        url_(url) {}
 
  private:
   using self = CacheStorageSideDataSizeChecker;
   friend class base::RefCountedThreadSafe<self>;
 
-  CacheStorageSideDataSizeChecker(
-      CacheStorageContextImpl* cache_storage_context,
-      const GURL& origin,
-      const std::string& cache_name,
-      const GURL& url)
-      : cache_storage_context_(cache_storage_context),
-        origin_(origin),
-        cache_name_(cache_name),
-        url_(url) {}
-
-  ~CacheStorageSideDataSizeChecker() {}
+  virtual ~CacheStorageSideDataSizeChecker() = default;
 
   int GetSizeImpl() {
     int result = 0;
@@ -2149,45 +2149,45 @@ class CacheStorageSideDataSizeChecker
   }
 
   void OpenCacheOnCoreThread(int* result, base::OnceClosure continuation) {
-    CacheStorageHandle cache_storage =
-        cache_storage_context_->CacheManager()->OpenCacheStorage(
-            url::Origin::Create(origin_),
-            storage::mojom::CacheStorageOwner::kCacheAPI);
-    cache_storage.value()->OpenCache(
-        cache_name_, /* trace_id = */ 0,
-        base::BindOnce(&self::OnCacheStorageOpenCallback, this, result,
-                       std::move(continuation)));
+    cache_storage_->Open(base::UTF8ToUTF16(cache_name_), /*trace_id=*/0,
+                         base::BindOnce(&self::OnCacheStorageOpenCallback, this,
+                                        result, std::move(continuation)));
   }
 
   void OnCacheStorageOpenCallback(int* result,
                                   base::OnceClosure continuation,
-                                  CacheStorageCacheHandle cache_handle,
-                                  CacheStorageError error) {
-    ASSERT_EQ(CacheStorageError::kSuccess, error);
+                                  blink::mojom::OpenResultPtr open_result) {
+    ASSERT_TRUE(open_result->is_cache());
+
     auto scoped_request = blink::mojom::FetchAPIRequest::New();
     scoped_request->url = url_;
-    CacheStorageCache* cache = cache_handle.value();
-    cache->Match(
-        std::move(scoped_request), nullptr,
-        CacheStorageSchedulerPriority::kNormal, /* trace_id = */ 0,
-        base::BindOnce(&self::OnCacheStorageCacheMatchCallback, this, result,
-                       std::move(continuation), std::move(cache_handle)));
+
+    // Preserve lifetime of this remote across the Match call.
+    cache_storage_cache_.emplace(std::move(open_result->get_cache()));
+
+    (*cache_storage_cache_)
+        ->Match(std::move(scoped_request),
+                blink::mojom::CacheQueryOptions::New(),
+                /*in_related_fetch_event=*/false, /*trace_id=*/0,
+                base::BindOnce(&self::OnCacheStorageCacheMatchCallback, this,
+                               result, std::move(continuation)));
   }
 
   void OnCacheStorageCacheMatchCallback(
       int* result,
       base::OnceClosure continuation,
-      CacheStorageCacheHandle cache_handle,
-      CacheStorageError error,
-      blink::mojom::FetchAPIResponsePtr response) {
-    if (error == CacheStorageError::kErrorNotFound) {
+      blink::mojom::MatchResultPtr match_result) {
+    if (match_result->is_status()) {
+      ASSERT_EQ(match_result->get_status(), CacheStorageError::kErrorNotFound);
       *result = 0;
       std::move(continuation).Run();
       return;
     }
+    ASSERT_TRUE(match_result->is_response());
 
-    ASSERT_EQ(CacheStorageError::kSuccess, error);
+    auto& response = match_result->get_response();
     ASSERT_TRUE(response->side_data_blob);
+
     auto blob_handle = base::MakeRefCounted<storage::BlobHandle>(
         std::move(response->side_data_blob->blob));
     blob_handle->get()->ReadSideData(base::BindOnce(
@@ -2200,8 +2200,9 @@ class CacheStorageSideDataSizeChecker
         blob_handle, result, std::move(continuation)));
   }
 
-  CacheStorageContextImpl* cache_storage_context_;
-  const GURL origin_;
+  mojo::Remote<blink::mojom::CacheStorage> cache_storage_;
+  base::Optional<mojo::AssociatedRemote<blink::mojom::CacheStorageCache>>
+      cache_storage_cache_;
   const std::string cache_name_;
   const GURL url_;
   DISALLOW_COPY_AND_ASSIGN(CacheStorageSideDataSizeChecker);
@@ -2267,10 +2268,8 @@ class ServiceWorkerV8CodeCacheForCacheStorageTest
     StoragePartition* partition = BrowserContext::GetDefaultStoragePartition(
         shell()->web_contents()->GetBrowserContext());
     return CacheStorageSideDataSizeChecker::GetSize(
-        static_cast<CacheStorageContextImpl*>(
-            partition->GetCacheStorageContext()),
-        embedded_test_server()->base_url(), std::string("cache_name"),
-        embedded_test_server()->GetURL(kScriptUrl));
+        partition->GetCacheStorageControl(), embedded_test_server()->base_url(),
+        std::string("cache_name"), embedded_test_server()->GetURL(kScriptUrl));
   }
 
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerV8CodeCacheForCacheStorageTest);
