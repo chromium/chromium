@@ -53,11 +53,11 @@ def get_timeout_multiplier(test_type, run_info_data, **kwargs):
     if kwargs["timeout_multiplier"] is not None:
         return kwargs["timeout_multiplier"]
     if test_type == "reftest":
-        if run_info_data["debug"] or run_info_data.get("asan"):
+        if run_info_data["debug"] or run_info_data.get("asan") or run_info_data.get("tsan"):
             return 4
         else:
             return 2
-    elif run_info_data["debug"] or run_info_data.get("asan"):
+    elif run_info_data["debug"] or run_info_data.get("asan") or run_info_data.get("tsan"):
         if run_info_data.get("ccov"):
             return 4
         else:
@@ -101,7 +101,7 @@ def browser_kwargs(logger, test_type, run_info_data, config, **kwargs):
             "config": config,
             "browser_channel": kwargs["browser_channel"],
             "headless": kwargs["headless"],
-            "preload_browser": kwargs["preload_browser"],
+            "preload_browser": kwargs["preload_browser"] and not kwargs["pause_after_test"] and not kwargs["num_test_groups"] == 1,
             "specialpowers_path": kwargs["specialpowers_path"]}
 
 
@@ -158,6 +158,7 @@ def executor_kwargs(logger, test_type, server_config, cache_manager, run_info_da
     executor_kwargs["debug"] = run_info_data["debug"]
     executor_kwargs["ccov"] = run_info_data.get("ccov", False)
     executor_kwargs["browser_version"] = run_info_data.get("browser_version")
+    executor_kwargs["debug_test"] = kwargs["debug_test"]
     return executor_kwargs
 
 
