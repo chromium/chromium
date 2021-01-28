@@ -9,6 +9,8 @@ import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.Log;
+
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,6 +71,9 @@ public class AutofillAssistantArguments {
             return mArguments;
         }
     }
+
+    /** Used for logging. */
+    private static final String TAG = "AutofillAssistant";
 
     private static final String UTF8 = "UTF-8";
 
@@ -178,6 +183,9 @@ public class AutofillAssistantArguments {
     private boolean getBooleanParameter(String key) {
         Object value = mAutofillAssistantParameters.get(key);
         if (!(value instanceof Boolean)) { // Also catches null.
+            if (value != null) {
+                Log.v(TAG, "Expected " + key + " to be boolean, but was " + value.toString());
+            }
             return false;
         }
 
@@ -188,6 +196,9 @@ public class AutofillAssistantArguments {
     private String getStringParameter(String key) {
         Object value = mAutofillAssistantParameters.get(key);
         if (!(value instanceof String)) { // Also catches null.
+            if (value != null) {
+                Log.v(TAG, "Expected " + key + " to be string, but was " + value.toString());
+            }
             return null;
         }
 
