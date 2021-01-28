@@ -47,7 +47,7 @@ class PermissionsParser;
 // Once created, an Extension object is immutable, with the exception of its
 // RuntimeData. This makes it safe to use on any thread, since access to the
 // RuntimeData is protected by a lock.
-class Extension : public base::RefCountedThreadSafe<Extension> {
+class Extension final : public base::RefCountedThreadSafe<Extension> {
  public:
   // Do not renumber or reorder these values, as they are stored on-disk in the
   // user's preferences.
@@ -348,7 +348,7 @@ class Extension : public base::RefCountedThreadSafe<Extension> {
 
   Extension(const base::FilePath& path,
             std::unique_ptr<extensions::Manifest> manifest);
-  virtual ~Extension();
+  ~Extension();
 
   // Initialize the extension from a parsed manifest.
   // TODO(aa): Rename to just Init()? There's no Value here anymore.

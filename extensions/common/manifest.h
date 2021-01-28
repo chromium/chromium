@@ -23,7 +23,7 @@ struct InstallWarning;
 
 // Wraps the DictionaryValue form of extension's manifest. Enforces access to
 // properties of the manifest using ManifestFeatureProvider.
-class Manifest {
+class Manifest final {
  public:
   // Historically, where an extension was loaded from, and whether an
   // extension's files were inside or outside of the profile's directory. In
@@ -152,7 +152,7 @@ class Manifest {
   Manifest(Location location,
            std::unique_ptr<base::DictionaryValue> value,
            ExtensionId extension_id);
-  virtual ~Manifest();
+  ~Manifest();
 
   const ExtensionId& extension_id() const { return extension_id_; }
   const HashedExtensionId& hashed_id() const { return hashed_id_; }
