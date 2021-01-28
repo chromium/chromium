@@ -37,6 +37,9 @@ constexpr base::FeatureParam<base::TimeDelta> kFallbackDelay{
 
 int g_https_port_for_testing = 0;
 
+// Used to compute the fallback URL from the https URL.
+int g_http_port_for_testing = 0;
+
 bool IsNavigationUsingHttpsAsDefaultScheme(content::NavigationHandle* handle) {
   content::NavigationUIData* ui_data = handle->GetNavigationUIData();
   // UI data can be null in the case of navigations to interstitials.
@@ -88,10 +91,20 @@ class TypedNavigationUpgradeLifetimeHelper
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(TypedNavigationUpgradeLifetimeHelper)
 
-GURL GetHttpUrl(const GURL& url) {
+GURL GetHttpUrl(const GURL& url, int http_fallback_port_for_testing) {
   DCHECK_EQ(url::kHttpsScheme, url.scheme());
   GURL::Replacements replacements;
   replacements.SetSchemeStr(url::kHttpScheme);
+
+  // This needs to be in scope when ReplaceComponents() is called:
+  const std::string port_str =
+      base::NumberToString(http_fallback_port_for_testing);
+  if (http_fallback_port_for_testing) {
+    // We'll only get here in tests. Tests should always have a non-default
+    // port on the input text.
+    DCHECK(!url.port().empty());
+    replacements.SetPortStr(port_str);
+  }
   return url.ReplaceComponents(replacements);
 }
 
@@ -215,10 +228,16 @@ void TypedNavigationUpgradeThrottle::SetHttpsPortForTesting(
   g_https_port_for_testing = https_port_for_testing;
 }
 
+// static
+void TypedNavigationUpgradeThrottle::SetHttpPortForTesting(
+    int http_port_for_testing) {
+  g_http_port_for_testing = http_port_for_testing;
+}
+
 TypedNavigationUpgradeThrottle::TypedNavigationUpgradeThrottle(
     content::NavigationHandle* handle)
     : content::NavigationThrottle(handle),
-      http_url_(GetHttpUrl(handle->GetURL())) {}
+      http_url_(GetHttpUrl(handle->GetURL(), g_http_port_for_testing)) {}
 
 void TypedNavigationUpgradeThrottle::OnHttpsLoadTimeout() {
   RecordUMA(Event::kHttpsLoadTimedOut);

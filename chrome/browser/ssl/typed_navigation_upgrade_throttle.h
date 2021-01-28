@@ -65,6 +65,10 @@ class TypedNavigationUpgradeThrottle : public content::NavigationThrottle {
   // the correct port while upgrading URLs to https if the original URL has a
   // non-default port.
   static void SetHttpsPortForTesting(int https_port_for_testing);
+  // Sets the port used by the embedded http server. This is used to determine
+  // the correct port while falling back to http if the upgraded https URL has a
+  // non-default port.
+  static void SetHttpPortForTesting(int http_port_for_testing);
   static int GetHttpsPortForTesting();
 
   static const char kHistogramName[];
