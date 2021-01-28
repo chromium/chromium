@@ -4718,6 +4718,7 @@ static_library("browser") {
       "metrics/google_update_metrics_provider_win.h",
       "metrics/jumplist_metrics_win.cc",
       "metrics/jumplist_metrics_win.h",
+      "metrics/power/battery_level_provider_win.cc",
       "metrics/tab_stats_tracker_delegate_win.cc",
       "metrics/tab_stats_tracker_win.cc",
       "net/service_providers_win.cc",
