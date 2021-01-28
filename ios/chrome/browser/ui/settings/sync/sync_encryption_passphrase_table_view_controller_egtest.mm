@@ -18,11 +18,17 @@
 
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::NavigationBarCancelButton;
+using chrome_test_util::MatchInWindowWithNumber;
 
 @interface SyncEncryptionPassphraseTestCase : ChromeTestCase
 @end
 
 @implementation SyncEncryptionPassphraseTestCase
+
+- (void)tearDown {
+  [ChromeEarlGrey closeAllExtraWindows];
+  [super tearDown];
+}
 
 // Tests to open the sync passphrase view, and to close it.
 - (void)testShowSyncPassphraseAndDismiss {
@@ -38,6 +44,38 @@ using chrome_test_util::NavigationBarCancelButton;
       performAction:grey_tap()];
   // Wait until the settings is fully removed.
   [ChromeEarlGreyUI waitForAppToIdle];
+}
+
+// Tests opening the sync passphrase view, then a new window and check that
+// enter passphrase message appears.
+- (void)testShowSyncPassphraseInNewWindowAndDismiss {
+  if (![ChromeEarlGrey areMultipleWindowsSupported])
+    EARL_GREY_TEST_DISABLED(@"Multiple windows can't be opened.");
+
+  [ChromeEarlGrey addBookmarkWithSyncPassphrase:@"hello"];
+  // Signin.
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGrey openNewWindow];
+  [ChromeEarlGrey waitForForegroundWindowCount:2];
+
+  [[EarlGrey
+      selectElementWithMatcher:MatchInWindowWithNumber(
+                                   1, ButtonWithAccessibilityLabelId(
+                                          IDS_IOS_SYNC_ENTER_PASSPHRASE))]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:MatchInWindowWithNumber(
+                                          1, NavigationBarCancelButton())]
+      performAction:grey_tap()];
+  // Wait until the settings is fully removed.
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [ChromeEarlGrey closeWindowWithNumber:1];
+  [ChromeEarlGrey waitForForegroundWindowCount:1];
+
+  [SigninEarlGrey signOut];
+  [SigninEarlGrey verifySignedOut];
 }
 
 @end
