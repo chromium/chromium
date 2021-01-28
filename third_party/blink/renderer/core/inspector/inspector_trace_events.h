@@ -64,7 +64,7 @@ class LocalFrameView;
 class Node;
 struct PhysicalRect;
 class QualifiedName;
-enum class RenderBlockingBehavior;
+enum class RenderBlockingBehavior : uint8_t;
 class Resource;
 class ResourceError;
 class ResourceRequest;

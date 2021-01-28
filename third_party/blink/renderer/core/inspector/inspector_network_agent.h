@@ -64,7 +64,7 @@ class LocalFrame;
 class HTTPHeaderMap;
 class KURL;
 class NetworkResourcesData;
-enum class RenderBlockingBehavior;
+enum class RenderBlockingBehavior : uint8_t;
 class Resource;
 class ResourceError;
 class ResourceResponse;

@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_RENDER_BLOCKING_BEHAVIOR_H_
 
 namespace blink {
-enum class RenderBlockingBehavior {
+enum class RenderBlockingBehavior : uint8_t {
   kUnset,                 // Render blocking value was not set.
   kBlocking,              // Render Blocking resource.
   kNonBlocking,           // Non-blocking resource.
