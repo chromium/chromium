@@ -33,8 +33,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * AccountManagerFacade and forwards callbacks to native code.
  * <p/>
  */
-@VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
-public final class ProfileOAuth2TokenServiceDelegate
+final class ProfileOAuth2TokenServiceDelegate
         implements AccountTrackerService.OnSystemAccountsSeededListener {
     private static final String TAG = "OAuth2TokenService";
 
@@ -69,29 +68,25 @@ public final class ProfileOAuth2TokenServiceDelegate
     // CoreAccountId instead of String.
     private String mPendingUpdateAccountId;
 
-    @VisibleForTesting
-    ProfileOAuth2TokenServiceDelegate(long nativeProfileOAuth2TokenServiceDelegateDelegate,
+    private ProfileOAuth2TokenServiceDelegate(long nativeProfileOAuth2TokenServiceDelegate,
             AccountTrackerService accountTrackerService,
             AccountManagerFacade accountManagerFacade) {
-        mNativeProfileOAuth2TokenServiceDelegate = nativeProfileOAuth2TokenServiceDelegateDelegate;
+        assert nativeProfileOAuth2TokenServiceDelegate
+                != 0 : "nativeProfileOAuth2TokenServiceDelegate should not be zero!";
+        assert accountTrackerService != null : "accountTrackerService should not be null!";
+        mNativeProfileOAuth2TokenServiceDelegate = nativeProfileOAuth2TokenServiceDelegate;
         mAccountTrackerService = accountTrackerService;
         mAccountManagerFacade = accountManagerFacade;
-
-        // AccountTrackerService might be null in tests.
-        if (mAccountTrackerService != null) {
-            mAccountTrackerService.addSystemAccountsSeededListener(this);
-        }
+        mAccountTrackerService.addSystemAccountsSeededListener(this);
     }
 
+    @VisibleForTesting
     @CalledByNative
-    private static ProfileOAuth2TokenServiceDelegate create(
-            long nativeProfileOAuth2TokenServiceDelegateDelegate,
+    static ProfileOAuth2TokenServiceDelegate create(long nativeProfileOAuth2TokenServiceDelegate,
             AccountTrackerService accountTrackerService,
             AccountManagerFacade accountManagerFacade) {
-        assert nativeProfileOAuth2TokenServiceDelegateDelegate != 0;
-        return new ProfileOAuth2TokenServiceDelegate(
-                nativeProfileOAuth2TokenServiceDelegateDelegate, accountTrackerService,
-                accountManagerFacade);
+        return new ProfileOAuth2TokenServiceDelegate(nativeProfileOAuth2TokenServiceDelegate,
+                accountTrackerService, accountManagerFacade);
     }
 
     /**
@@ -220,17 +215,17 @@ public final class ProfileOAuth2TokenServiceDelegate
         }
     }
 
+    @VisibleForTesting
     @CalledByNative
-    private void seedAndReloadAccountsWithPrimaryAccount(@Nullable String accountId) {
+    void seedAndReloadAccountsWithPrimaryAccount(@Nullable String accountId) {
         ThreadUtils.assertOnUiThread();
-        if (!mAccountTrackerService.checkAndSeedSystemAccounts()) {
+        if (mAccountTrackerService.checkAndSeedSystemAccounts()) {
+            reloadAllAccountsWithPrimaryAccountAfterSeeding(accountId);
+        } else {
             assert !mPendingUpdate && mPendingUpdateAccountId == null;
             mPendingUpdate = true;
             mPendingUpdateAccountId = accountId;
-            return;
         }
-
-        reloadAllAccountsWithPrimaryAccountAfterSeeding(accountId);
     }
 
     private void reloadAllAccountsWithPrimaryAccountAfterSeeding(@Nullable String accountId) {

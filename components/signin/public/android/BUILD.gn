@@ -58,6 +58,7 @@ android_library("javatests") {
     "//third_party/android_support_test_runner:rules_java",
     "//third_party/android_support_test_runner:runner_java",
     "//third_party/junit",
+    "//third_party/mockito:mockito_java",
   ]
 
   sources = [ "java/src/org/chromium/components/signin/identitymanager/ProfileOAuth2TokenServiceDelegateTest.java" ]

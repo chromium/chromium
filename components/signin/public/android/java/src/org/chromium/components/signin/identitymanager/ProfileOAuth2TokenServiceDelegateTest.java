@@ -4,20 +4,29 @@
 
 package org.chromium.components.signin.identitymanager;
 
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import android.accounts.Account;
 
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.components.signin.AccessTokenData;
+import org.chromium.components.signin.AccountTrackerService;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
@@ -28,10 +37,7 @@ import java.util.concurrent.CountDownLatch;
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ProfileOAuth2TokenServiceDelegateTest {
-    private FakeAccountManagerFacade mAccountManagerFacade;
-
-    private ProfileOAuth2TokenServiceDelegate mProfileOAuth2TokenServiceDelegate;
-
+    private static final long NATIVE_DELEGATE = 1000L;
     /**
      * Class handling GetAccessToken callbacks and providing a blocking {@link
      * #getToken()}.
@@ -67,19 +73,35 @@ public class ProfileOAuth2TokenServiceDelegateTest {
         }
     }
 
+    @Rule
+    public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Rule
+    public final JniMocker mocker = new JniMocker();
+
+    @Mock
+    private AccountTrackerService mAccountTrackerServiceMock;
+
+    @Mock
+    private ProfileOAuth2TokenServiceDelegate.Natives mNativeMock;
+
+    private final FakeAccountManagerFacade mAccountManagerFacade =
+            new FakeAccountManagerFacade(null);
+
+    private ProfileOAuth2TokenServiceDelegate mDelegate;
+
     @Before
     public void setUp() {
-        mAccountManagerFacade = new FakeAccountManagerFacade(null);
-        mProfileOAuth2TokenServiceDelegate = new ProfileOAuth2TokenServiceDelegate(
-                0 /*nativeProfileOAuth2TokenServiceDelegateDelegate*/,
-                null /* AccountTrackerService */, mAccountManagerFacade);
+        mocker.mock(ProfileOAuth2TokenServiceDelegateJni.TEST_HOOKS, mNativeMock);
+        mDelegate = ProfileOAuth2TokenServiceDelegate.create(
+                NATIVE_DELEGATE, mAccountTrackerServiceMock, mAccountManagerFacade);
     }
 
     @Test
     @SmallTest
     @Feature({"Sync"})
     public void testGetAccountsNoAccountsRegistered() {
-        String[] sysAccounts = mProfileOAuth2TokenServiceDelegate.getSystemAccountNames();
+        String[] sysAccounts = mDelegate.getSystemAccountNames();
         Assert.assertEquals("There should be no accounts registered", 0, sysAccounts.length);
     }
 
@@ -90,7 +112,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
         Account account1 = AccountUtils.createAccountFromName("foo@gmail.com");
         mAccountManagerFacade.addAccount(account1);
 
-        String[] sysAccounts = mProfileOAuth2TokenServiceDelegate.getSystemAccountNames();
+        String[] sysAccounts = mDelegate.getSystemAccountNames();
         Assert.assertEquals("There should be one registered account", 1, sysAccounts.length);
         Assert.assertEquals("The account should be " + account1, account1.name, sysAccounts[0]);
     }
@@ -104,7 +126,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
         Account account2 = AccountUtils.createAccountFromName("bar@gmail.com");
         mAccountManagerFacade.addAccount(account2);
 
-        String[] sysAccounts = mProfileOAuth2TokenServiceDelegate.getSystemAccountNames();
+        String[] sysAccounts = mDelegate.getSystemAccountNames();
         Assert.assertEquals("There should be two registered account", 2, sysAccounts.length);
         Assert.assertTrue("The list should contain " + account1,
                 Arrays.asList(sysAccounts).contains(account1.name));
@@ -136,9 +158,8 @@ public class ProfileOAuth2TokenServiceDelegateTest {
         mAccountManagerFacade.addAccount(account);
         GetAccessTokenCallbackForTest callback = new GetAccessTokenCallbackForTest();
 
-        ThreadUtils.runOnUiThreadBlocking(() -> {
-            mProfileOAuth2TokenServiceDelegate.getAccessToken(account, scope, callback);
-        });
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> { mDelegate.getAccessToken(account, scope, callback); });
 
         Assert.assertEquals(mAccountManagerFacade.getAccessToken(account, scope).getToken(),
                 callback.getToken());
@@ -148,8 +169,7 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     @SmallTest
     public void testHasOAuth2RefreshTokenWhenAccountIsNotOnDevice() {
         mAccountManagerFacade.addAccount(AccountUtils.createAccountFromName("test1@gmail.com"));
-        Assert.assertFalse(
-                mProfileOAuth2TokenServiceDelegate.hasOAuth2RefreshToken("test2@gmail.com"));
+        Assert.assertFalse(mDelegate.hasOAuth2RefreshToken("test2@gmail.com"));
     }
 
     @Test
@@ -157,6 +177,15 @@ public class ProfileOAuth2TokenServiceDelegateTest {
     public void testHasOAuth2RefreshTokenWhenAccountIsOnDevice() {
         final String accountEmail = "test1@gmail.com";
         mAccountManagerFacade.addAccount(AccountUtils.createAccountFromName(accountEmail));
-        Assert.assertTrue(mProfileOAuth2TokenServiceDelegate.hasOAuth2RefreshToken(accountEmail));
+        Assert.assertTrue(mDelegate.hasOAuth2RefreshToken(accountEmail));
+    }
+
+    @Test
+    @SmallTest
+    public void testSeedAndReloadAccountsWhenAccountsAreSeeded() {
+        when(mAccountTrackerServiceMock.checkAndSeedSystemAccounts()).thenReturn(true);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> { mDelegate.seedAndReloadAccountsWithPrimaryAccount(null); });
+        verify(mNativeMock).reloadAllAccountsWithPrimaryAccountAfterSeeding(NATIVE_DELEGATE, null);
     }
 }
