@@ -48,9 +48,10 @@ void AccountManagerPolicyController::Start() {
 
   chromeos::ChildAccountTypeChangedUserData* user_data =
       chromeos::ChildAccountTypeChangedUserData::GetForProfile(profile_);
-  child_account_type_changed_subscription_ = user_data->RegisterCallback(
-      base::Bind(&AccountManagerPolicyController::OnChildAccountTypeChanged,
-                 base::Unretained(this)));
+  child_account_type_changed_subscription_ =
+      user_data->RegisterCallback(base::BindRepeating(
+          &AccountManagerPolicyController::OnChildAccountTypeChanged,
+          base::Unretained(this)));
   // Take any necessary initial action based on the current value.
   OnChildAccountTypeChanged(user_data->value());
 
