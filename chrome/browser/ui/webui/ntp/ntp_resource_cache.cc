@@ -182,16 +182,19 @@ NTPResourceCache::~NTPResourceCache() = default;
 
 NTPResourceCache::WindowType NTPResourceCache::GetWindowType(
     Profile* profile, content::RenderProcessHost* render_host) {
-  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile()) {
+  if (profile->IsGuestSession() || profile->IsEphemeralGuestProfile())
     return GUEST;
-  } else if (render_host) {
-    // Sometimes the |profile| is the parent (non-incognito) version of the user
-    // so we check the |render_host| if it is provided.
-    if (render_host->GetBrowserContext()->IsOffTheRecord())
-      return INCOGNITO;
-  } else if (profile->IsOffTheRecord()) {
+
+  // Sometimes the |profile| is the parent (non-incognito) version of the user
+  // so we check the |render_host| if it is provided.
+  if (render_host && render_host->GetBrowserContext()->IsOffTheRecord())
+    profile = Profile::FromBrowserContext(render_host->GetBrowserContext());
+
+  if (profile->IsIncognitoProfile())
     return INCOGNITO;
-  }
+  if (profile->IsOffTheRecord())
+    return NON_PRIMARY_OTR;
+
   return NORMAL;
 }
 
@@ -213,14 +216,27 @@ base::RefCountedMemory* NTPResourceCache::GetNewTabGuestHTML() {
 
 base::RefCountedMemory* NTPResourceCache::GetNewTabHTML(WindowType win_type) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (win_type == GUEST) {
-    return GetNewTabGuestHTML();
-  }
+  switch (win_type) {
+    case GUEST:
+      return GetNewTabGuestHTML();
 
-  DCHECK(win_type == INCOGNITO);
-  if (!new_tab_incognito_html_)
-    CreateNewTabIncognitoHTML();
-  return new_tab_incognito_html_.get();
+    case INCOGNITO:
+      if (!new_tab_incognito_html_)
+        CreateNewTabIncognitoHTML();
+      return new_tab_incognito_html_.get();
+
+    case NON_PRIMARY_OTR:
+      if (!new_tab_non_primary_otr_html_) {
+        std::string empty_html;
+        new_tab_non_primary_otr_html_ =
+            base::RefCountedString::TakeString(&empty_html);
+      }
+      return new_tab_non_primary_otr_html_.get();
+
+    case NORMAL:
+      NOTREACHED();
+      return nullptr;
+  }
 }
 
 base::RefCountedMemory* NTPResourceCache::GetNewTabCSS(WindowType win_type) {
@@ -259,14 +275,12 @@ void NTPResourceCache::OnPreferenceChanged() {
   // A change occurred to one of the preferences we care about, so flush the
   // cache.
   new_tab_incognito_html_ = nullptr;
-  new_tab_html_ = nullptr;
   new_tab_css_ = nullptr;
 }
 
 // TODO(dbeam): why must Invalidate() and OnPreferenceChanged() both exist?
 void NTPResourceCache::Invalidate() {
   new_tab_incognito_html_ = nullptr;
-  new_tab_html_ = nullptr;
   new_tab_incognito_css_ = nullptr;
   new_tab_css_ = nullptr;
   new_tab_guest_html_ = nullptr;
@@ -453,10 +467,8 @@ scoped_refptr<base::RefCountedString> NTPResourceCache::CreateNewTabGuestHTML(
 }
 
 void NTPResourceCache::CreateNewTabIncognitoCSS() {
-  // Same theme is used by all off-the-record profiles, so just getting it from
-  // the first one.
   const ui::ThemeProvider& tp = ThemeService::GetThemeProviderForProfile(
-      profile_->GetAllOffTheRecordProfiles()[0]);
+      profile_->GetPrimaryOTRProfile());
 
   // Generate the replacements.
   ui::TemplateReplacements substitutions;
