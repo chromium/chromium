@@ -567,10 +567,8 @@ base::string16 GetLabelForNetworkList(const NetworkStateProperties* network) {
     }
     if (activation_state == ActivationStateType::kNotActivated ||
         activation_state == ActivationStateType::kPartiallyActivated) {
-      if (base::FeatureList::IsEnabled(
-              chromeos::features::kUpdatedCellularActivationUi)) {
+      if (chromeos::features::IsCellularActivationUiEnabled())
         return base::UTF8ToUTF16(network->name);
-      }
 
       return l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_LIST_ACTIVATE,

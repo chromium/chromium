@@ -95,8 +95,7 @@ struct NamedBoolean {
 const std::vector<const NamedBoolean>& GetBooleanValues() {
   static const base::NoDestructor<std::vector<const NamedBoolean>> named_bools({
       {"updatedCellularActivationUi",
-       base::FeatureList::IsEnabled(
-           chromeos::features::kUpdatedCellularActivationUi)},
+       chromeos::features::IsCellularActivationUiEnabled()},
   });
   return *named_bools;
 }

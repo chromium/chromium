@@ -15,7 +15,6 @@
 #include "ash/system/session/session_limit_notification_controller.h"
 #include "ash/system/tracing_notification_controller.h"
 #include "ash/system/update/update_notification_controller.h"
-#include "base/feature_list.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "ui/message_center/message_center.h"
 
@@ -23,8 +22,7 @@ namespace ash {
 namespace {
 
 std::unique_ptr<ash::CellularSetupNotifier> CreateCellularSetupNotifier() {
-  return base::FeatureList::IsEnabled(
-             chromeos::features::kUpdatedCellularActivationUi)
+  return chromeos::features::IsCellularActivationUiEnabled()
              ? std::make_unique<ash::CellularSetupNotifier>()
              : nullptr;
 }

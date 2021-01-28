@@ -745,6 +745,10 @@ bool IsBetterUpdateEnabled() {
   return base::FeatureList::IsEnabled(kBetterUpdateScreen);
 }
 
+bool IsCellularActivationUiEnabled() {
+  return base::FeatureList::IsEnabled(kUpdatedCellularActivationUi);
+}
+
 bool IsChildSpecificSigninEnabled() {
   return base::FeatureList::IsEnabled(kChildSpecificSignin);
 }

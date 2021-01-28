@@ -276,10 +276,8 @@ void MobileSectionHeaderView::OnToggleToggled(bool is_on) {
 }
 
 void MobileSectionHeaderView::AddExtraButtons(bool enabled) {
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kUpdatedCellularActivationUi)) {
+  if (!chromeos::features::IsCellularActivationUiEnabled())
     return;
-  }
 
   TopShortcutButton* add_cellular_button = new TopShortcutButton(
       base::BindRepeating(&MobileSectionHeaderView::AddCellularButtonPressed,

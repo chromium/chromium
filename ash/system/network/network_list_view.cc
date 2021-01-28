@@ -83,8 +83,7 @@ bool IsManagedByPolicy(const NetworkInfo& info) {
 bool ShouldShowActivateCellularNetwork(const NetworkInfo& info) {
   return NetworkTypeMatchesType(info.type, NetworkType::kCellular) &&
          info.activation_state == ActivationStateType::kNotActivated &&
-         base::FeatureList::IsEnabled(
-             chromeos::features::kUpdatedCellularActivationUi);
+         chromeos::features::IsCellularActivationUiEnabled();
 }
 
 }  // namespace
@@ -487,8 +486,7 @@ base::string16 NetworkListView::GenerateAccessibilityDescription(
     }
     case NetworkType::kCellular:
       if (info.activation_state == ActivationStateType::kNotActivated &&
-          base::FeatureList::IsEnabled(
-              chromeos::features::kUpdatedCellularActivationUi)) {
+          chromeos::features::IsCellularActivationUiEnabled()) {
         return l10n_util::GetStringUTF16(
             IDS_ASH_STATUS_TRAY_NETWORK_STATUS_CLICK_TO_ACTIVATE);
       }

@@ -123,8 +123,7 @@ bool ShouldOpenCellularSetupPsimFlowOnClick(const std::string& network_id) {
   return network_state && network_state->type() == shill::kTypeCellular &&
          network_state->activation_state() ==
              shill::kActivationStateNotActivated &&
-         base::FeatureList::IsEnabled(
-             chromeos::features::kUpdatedCellularActivationUi);
+         chromeos::features::IsCellularActivationUiEnabled();
 }
 
 }  // namespace

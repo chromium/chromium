@@ -731,8 +731,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   network_element::AddConfigLocalizedStrings(html_source);
   network_element::AddErrorLocalizedStrings(html_source);
   cellular_setup::AddNonStringLoadTimeData(html_source);
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kUpdatedCellularActivationUi)) {
+  if (features::IsCellularActivationUiEnabled()) {
     cellular_setup::AddLocalizedStrings(html_source);
   }
 
@@ -1049,10 +1048,8 @@ void InternetSection::OnNetworkList(
         if (base::FeatureList::IsEnabled(::features::kMeteredShowToggle))
           updater.AddSearchTags(GetCellularMeteredSearchConcepts());
 
-        if (base::FeatureList::IsEnabled(
-                chromeos::features::kUpdatedCellularActivationUi)) {
+        if (features::IsCellularActivationUiEnabled())
           updater.AddSearchTags(GetCellularSetupAndDetailMenuSearchConcepts());
-        }
         break;
 
       case NetworkType::kTether:
