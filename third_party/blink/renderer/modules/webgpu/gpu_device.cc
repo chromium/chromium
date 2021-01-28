@@ -213,7 +213,14 @@ ScriptPromise GPUDevice::lost(ScriptState* script_state) {
   return lost_property_->Promise(script_state->World());
 }
 
+GPUQueue* GPUDevice::queue() {
+  return queue_;
+}
+
 GPUQueue* GPUDevice::defaultQueue() {
+  AddConsoleWarning(
+      "The defaultQueue attribute has been deprecated in favor of the queue "
+      "attribute, and will soon be removed.");
   return queue_;
 }
 

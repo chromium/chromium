@@ -68,6 +68,7 @@ class GPUDevice final : public EventTargetWithInlineData,
   Vector<String> extensions() const;
   ScriptPromise lost(ScriptState* script_state);
 
+  GPUQueue* queue();
   GPUQueue* defaultQueue();
 
   GPUBuffer* createBuffer(const GPUBufferDescriptor* descriptor);

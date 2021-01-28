@@ -11,6 +11,8 @@
     readonly attribute FrozenArray<GPUExtensionName> extensions;
     [CallWith=ScriptState] readonly attribute Promise<GPUDeviceLostInfo> lost;
 
+    [SameObject] readonly attribute GPUQueue queue;
+    // Deprecated
     [SameObject] readonly attribute GPUQueue defaultQueue;
 
     GPUBuffer createBuffer(GPUBufferDescriptor descriptor);
