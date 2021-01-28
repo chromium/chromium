@@ -19642,6 +19642,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       Deprecated as of 2020-10-21.
     </obsolete>
   </suffix>
+  <suffix name="Eche" label="Eche"/>
   <suffix name="Help" label="Help"/>
   <suffix name="Media" label="Media"/>
   <suffix name="OSSettings" label="OS Settings"/>

@@ -57,6 +57,7 @@
 #include "chrome/browser/chromeos/web_applications/camera_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/connectivity_diagnostics_system_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/diagnostics_system_web_app_info.h"
+#include "chrome/browser/chromeos/web_applications/eche_app_info.h"
 #include "chrome/browser/chromeos/web_applications/help_app_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/media_web_app_info.h"
 #include "chrome/browser/chromeos/web_applications/os_settings_web_app_info.h"
@@ -222,6 +223,14 @@ base::flat_map<SystemAppType, SystemAppInfo> CreateSystemWebApps(
             GURL(chromeos::kChromeUIConnectivityDiagnosticsUrl),
             base::BindRepeating(
                 &CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp)));
+  }
+
+  if (SystemWebAppManager::IsAppEnabled(SystemAppType::ECHE)) {
+    infos.emplace(
+        SystemAppType::ECHE,
+        SystemAppInfo("Eche", GURL("chrome://eche-app"),
+                      base::BindRepeating(&CreateWebAppInfoForEcheApp)));
+    infos.at(SystemAppType::ECHE).capture_navigations = true;
   }
 
 #if !defined(OFFICIAL_BUILD)
@@ -390,6 +399,8 @@ bool SystemWebAppManager::IsAppEnabled(SystemAppType type) {
       if (install_experimental_apps)
         NOTREACHED();
       return false;
+    case SystemAppType::ECHE:
+      return base::FeatureList::IsEnabled(chromeos::features::kEcheSWA);
   }
 #else
   return false;
