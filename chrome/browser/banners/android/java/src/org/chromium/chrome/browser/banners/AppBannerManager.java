@@ -15,6 +15,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.components.webapps.AppData;
+import org.chromium.components.webapps.AppDetailsDelegate;
 import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.browser.WebContents;
 

@@ -7,6 +7,14 @@ import("//build/config/android/rules.gni")
 
 android_library("java") {
   resources_package = "org.chromium.components.webapps"
+  sources = [
+    "java/src/org/chromium/components/webapps/AddToHomescreenInstaller.java",
+    "java/src/org/chromium/components/webapps/AppData.java",
+    "java/src/org/chromium/components/webapps/AppDetailsDelegate.java",
+    "java/src/org/chromium/components/webapps/WebappsIconUtils.java",
+    "java/src/org/chromium/components/webapps/WebappsUtils.java",
+    "java/src/org/chromium/components/webapps/installable/InstallableAmbientBadgeInfoBar.java",
+  ]
   deps = [
     ":java_resources",
     "//base:base_java",
@@ -14,13 +22,9 @@ android_library("java") {
     "//components/browser_ui/widget/android:java",
     "//components/infobars/android:java",
     "//components/webapk/android/libs/client:java",
+    "//content/public/android:content_java",
     "//third_party/android_deps:androidx_annotation_annotation_java",
     "//ui/android:ui_no_recycler_view_java",
-  ]
-  sources = [
-    "java/src/org/chromium/components/webapps/WebappsIconUtils.java",
-    "java/src/org/chromium/components/webapps/WebappsUtils.java",
-    "java/src/org/chromium/components/webapps/installable/InstallableAmbientBadgeInfoBar.java",
   ]
   srcjar_deps = [ ":webapps_java_enums_srcjar" ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -28,6 +32,7 @@ android_library("java") {
 
 generate_jni("webapps_jni_headers") {
   sources = [
+    "java/src/org/chromium/components/webapps/AddToHomescreenInstaller.java",
     "java/src/org/chromium/components/webapps/WebappsIconUtils.java",
     "java/src/org/chromium/components/webapps/WebappsUtils.java",
     "java/src/org/chromium/components/webapps/installable/InstallableAmbientBadgeInfoBar.java",

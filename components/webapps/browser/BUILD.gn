@@ -49,6 +49,8 @@ source_set("browser") {
     sources += [
       "android/add_to_homescreen_data_fetcher.cc",
       "android/add_to_homescreen_data_fetcher.h",
+      "android/add_to_homescreen_installer.cc",
+      "android/add_to_homescreen_installer.h",
       "android/add_to_homescreen_params.cc",
       "android/add_to_homescreen_params.h",
       "android/features.cc",

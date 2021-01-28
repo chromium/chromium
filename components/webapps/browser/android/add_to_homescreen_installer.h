@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_WEBAPPS_ADD_TO_HOMESCREEN_INSTALLER_H_
-#define CHROME_BROWSER_ANDROID_WEBAPPS_ADD_TO_HOMESCREEN_INSTALLER_H_
+#ifndef COMPONENTS_WEBAPPS_BROWSER_ANDROID_ADD_TO_HOMESCREEN_INSTALLER_H_
+#define COMPONENTS_WEBAPPS_BROWSER_ANDROID_ADD_TO_HOMESCREEN_INSTALLER_H_
 
 #include "base/callback_forward.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
@@ -45,10 +45,6 @@ class AddToHomescreenInstaller {
       const AddToHomescreenParams& params,
       const base::RepeatingCallback<void(Event, const AddToHomescreenParams&)>&
           event_callback);
-  static void InstallShortcut(content::WebContents* web_contents,
-                              const AddToHomescreenParams& params);
-  static void InstallWebApk(content::WebContents* web_contents,
-                            const AddToHomescreenParams& params);
 
   AddToHomescreenInstaller() = delete;
   AddToHomescreenInstaller(const AddToHomescreenInstaller&) = delete;
@@ -57,4 +53,4 @@ class AddToHomescreenInstaller {
 
 }  // namespace webapps
 
-#endif  // CHROME_BROWSER_ANDROID_WEBAPPS_ADD_TO_HOMESCREEN_INSTALLER_H_
+#endif  // COMPONENTS_WEBAPPS_BROWSER_ANDROID_ADD_TO_HOMESCREEN_INSTALLER_H_

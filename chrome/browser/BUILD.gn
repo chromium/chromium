@@ -2941,8 +2941,6 @@ static_library("browser") {
       "android/webapk/webapk_update_manager.cc",
       "android/webapps/add_to_homescreen_coordinator.cc",
       "android/webapps/add_to_homescreen_coordinator.h",
-      "android/webapps/add_to_homescreen_installer.cc",
-      "android/webapps/add_to_homescreen_installer.h",
       "android/webapps/add_to_homescreen_mediator.cc",
       "android/webapps/add_to_homescreen_mediator.h",
       "android/webapps/webapp_registry.cc",

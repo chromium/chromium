@@ -10,8 +10,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/android/chrome_jni_headers/AddToHomescreenCoordinator_jni.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/webapps/add_to_homescreen_installer.h"
 #include "chrome/browser/android/webapps/add_to_homescreen_mediator.h"
+#include "components/webapps/browser/android/add_to_homescreen_installer.h"
 #include "components/webapps/browser/android/add_to_homescreen_params.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
 

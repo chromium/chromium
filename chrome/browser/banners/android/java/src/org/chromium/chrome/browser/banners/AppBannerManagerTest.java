@@ -92,6 +92,8 @@ import org.chromium.components.infobars.InfoBarUiItem;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 import org.chromium.components.site_engagement.SiteEngagementService;
+import org.chromium.components.webapps.AppData;
+import org.chromium.components.webapps.AppDetailsDelegate;
 import org.chromium.components.webapps.installable.InstallableAmbientBadgeInfoBar;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
@@ -161,7 +163,7 @@ public class AppBannerManagerTest {
         private String mReferrer;
 
         @Override
-        protected void getAppDetailsAsynchronously(
+        public void getAppDetailsAsynchronously(
                 Observer observer, String url, String packageName, String referrer, int iconSize) {
             mNumRetrieved += 1;
             mObserver = observer;

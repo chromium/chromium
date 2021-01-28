@@ -6,6 +6,7 @@ include_rules = [
   "+components/favicon_base",
   "+components/strings",
   "+components/webapk/android/libs/client",
+  "+content/public/android",
   "+content/public/test",
   "+mojo/public/cpp",
   "+services/device/public/mojom",

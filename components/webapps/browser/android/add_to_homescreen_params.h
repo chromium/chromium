@@ -19,7 +19,7 @@ struct ShortcutInfo;
 struct AddToHomescreenParams {
   // A Java counterpart will be generated for this enum.
   // GENERATED_JAVA_ENUM_PACKAGE: (
-  //  org.chromium.components.webapps.addtohomescreen)
+  //  org.chromium.components.webapps)
   enum class AppType {
     NATIVE,
     WEBAPK,
