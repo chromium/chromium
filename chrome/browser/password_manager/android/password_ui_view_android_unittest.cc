@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/password_ui_view_android.h"
+#include "chrome/browser/password_manager/android/password_ui_view_android.h"
 
 #include <jni.h>
 

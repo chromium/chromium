@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ANDROID_PASSWORD_UI_VIEW_ANDROID_H_
-#define CHROME_BROWSER_ANDROID_PASSWORD_UI_VIEW_ANDROID_H_
+#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_UI_VIEW_ANDROID_H_
+#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_UI_VIEW_ANDROID_H_
 
 #include <stddef.h>
 
@@ -14,7 +14,6 @@
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
-#include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/ui/passwords/settings/password_manager_presenter.h"
 #include "chrome/browser/ui/passwords/settings/password_ui_view.h"
 #include "components/password_manager/core/browser/password_store.h"
@@ -117,7 +116,7 @@ class PasswordUIViewAndroid : public PasswordUIView {
   // DELETION_PENDING:
   //   * Destroy() was called, a background task is pending and |this| should
   //     be deleted once the tasks complete.
-  //   * This state should not be reached anywhere but in the compeltion call
+  //   * This state should not be reached anywhere but in the completion call
   //     of the pending task.
   enum class State { ALIVE, ALIVE_SERIALIZATION_PENDING, DELETION_PENDING };
 
@@ -158,4 +157,4 @@ class PasswordUIViewAndroid : public PasswordUIView {
   DISALLOW_COPY_AND_ASSIGN(PasswordUIViewAndroid);
 };
 
-#endif  // CHROME_BROWSER_ANDROID_PASSWORD_UI_VIEW_ANDROID_H_
+#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_UI_VIEW_ANDROID_H_
