@@ -54,7 +54,7 @@ export function assertNotReached(optMessage) {
 
 /**
  * @param {*} value The value to check.
- * @param {function(new: T, ...)} type A user-defined constructor.
+ * @param {function(new: T, ...?)} type A user-defined constructor.
  * @param {string=} optMessage A message to show when this is hit.
  * @return {T}
  * @template T
