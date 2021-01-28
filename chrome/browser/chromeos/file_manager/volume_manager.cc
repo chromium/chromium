@@ -82,10 +82,9 @@ bool RegisterDownloadsMountPoint(Profile* profile, const base::FilePath& path) {
   // In some tests we want to override existing Downloads mount point, so we
   // first revoke the existing mount point (if any).
   mount_points->RevokeFileSystem(mount_point_name);
-  return mount_points->RegisterFileSystem(mount_point_name,
-                                          storage::kFileSystemTypeNativeLocal,
-                                          storage::FileSystemMountOption(),
-                                          path);
+  return mount_points->RegisterFileSystem(
+      mount_point_name, storage::kFileSystemTypeLocal,
+      storage::FileSystemMountOption(), path);
 }
 
 // Registers a mount point for Android files to ExternalMountPoints.
@@ -94,7 +93,7 @@ bool RegisterAndroidFilesMountPoint() {
       storage::ExternalMountPoints::GetSystemInstance();
   return mount_points->RegisterFileSystem(
       file_manager::util::GetAndroidFilesMountPointName(),
-      storage::kFileSystemTypeNativeLocal, storage::FileSystemMountOption(),
+      storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
       base::FilePath(util::kAndroidFilesPath));
 }
 
@@ -697,7 +696,7 @@ bool VolumeManager::RegisterAndroidFilesDirectoryForTesting(
   bool result =
       storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
           file_manager::util::GetAndroidFilesMountPointName(),
-          storage::kFileSystemTypeNativeLocal, storage::FileSystemMountOption(),
+          storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
           path);
   DCHECK(result);
   DoMountEvent(chromeos::MOUNT_ERROR_NONE, Volume::CreateForAndroidFiles(path));
@@ -753,7 +752,7 @@ bool VolumeManager::RegisterCrostiniDirectoryForTesting(
   bool success =
       storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
           file_manager::util::GetCrostiniMountPointName(profile_),
-          storage::kFileSystemTypeNativeLocal, storage::FileSystemMountOption(),
+          storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
           path);
   DoMountEvent(
       success ? chromeos::MOUNT_ERROR_NONE : chromeos::MOUNT_ERROR_INVALID_PATH,

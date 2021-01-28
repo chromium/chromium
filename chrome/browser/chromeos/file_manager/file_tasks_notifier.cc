@@ -34,8 +34,8 @@ namespace {
 
 bool IsSupportedFileSystemType(storage::FileSystemType type) {
   switch (type) {
-    case storage::kFileSystemTypeNativeLocal:
-    case storage::kFileSystemTypeRestrictedNativeLocal:
+    case storage::kFileSystemTypeLocal:
+    case storage::kFileSystemTypeRestrictedLocal:
     case storage::kFileSystemTypeDriveFs:
       return true;
     default:

@@ -68,7 +68,7 @@ class PluginVmFilesTest : public testing::Test {
     mount_points_ = storage::ExternalMountPoints::GetSystemInstance();
     mount_name_ = file_manager::util::GetDownloadsMountPointName(&profile_);
     mount_points_->RegisterFileSystem(
-        mount_name_, storage::kFileSystemTypeNativeLocal,
+        mount_name_, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(), GetMyFilesFolderPath());
   }
 
@@ -212,7 +212,7 @@ TEST_F(PluginVmFilesTest, LaunchAppFail) {
 
   // Path in different volume.
   mount_points_->RegisterFileSystem(
-      "other-volume", storage::kFileSystemTypeNativeLocal,
+      "other-volume", storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(), GetMyFilesFolderPath());
   storage::FileSystemURL url = mount_points_->CreateExternalFileSystemURL(
       url::Origin(), "other-volume", base::FilePath("other/volume"));

@@ -759,7 +759,7 @@ class CrostiniManager::CrostiniRestarter
     base::FilePath mount_path = base::FilePath(mount_info.mount_path);
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         file_manager::util::GetCrostiniMountPointName(profile_),
-        storage::kFileSystemTypeNativeLocal, storage::FileSystemMountOption(),
+        storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         mount_path);
 
     // VolumeManager is null in unittest.

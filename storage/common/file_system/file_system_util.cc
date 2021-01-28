@@ -282,21 +282,21 @@ std::string GetFileSystemTypeString(FileSystemType type) {
       return "External";
     case kFileSystemTypeTest:
       return "Test";
-    case kFileSystemTypeNativeLocal:
-      return "NativeLocal";
-    case kFileSystemTypeRestrictedNativeLocal:
-      return "RestrictedNativeLocal";
+    case kFileSystemTypeLocal:
+      return "Local";
+    case kFileSystemTypeRestrictedLocal:
+      return "RestrictedLocal";
     case kFileSystemTypeDragged:
       return "Dragged";
-    case kFileSystemTypeNativeMedia:
-      return "NativeMedia";
+    case kFileSystemTypeLocalMedia:
+      return "LocalMedia";
     case kFileSystemTypeDeviceMedia:
       return "DeviceMedia";
     case kFileSystemTypeSyncable:
     case kFileSystemTypeSyncableForInternalSync:
       return "Syncable";
-    case kFileSystemTypeNativeForPlatformApp:
-      return "NativeForPlatformApp";
+    case kFileSystemTypeLocalForPlatformApp:
+      return "LocalForPlatformApp";
     case kFileSystemTypeForTransientFile:
       return "TransientFile";
     case kFileSystemTypePluginPrivate:

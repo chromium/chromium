@@ -53,9 +53,9 @@ bool IsolatedFileSystemBackend::CanHandleType(FileSystemType type) const {
     case kFileSystemTypeDragged:
     case kFileSystemTypeForTransientFile:
       return true;
-    case kFileSystemTypeNativeLocal:
+    case kFileSystemTypeLocal:
       return use_for_type_native_local_;
-    case kFileSystemTypeNativeForPlatformApp:
+    case kFileSystemTypeLocalForPlatformApp:
       return use_for_type_platform_app_;
     default:
       return false;
@@ -76,7 +76,7 @@ void IsolatedFileSystemBackend::ResolveURL(const FileSystemURL& url,
 AsyncFileUtil* IsolatedFileSystemBackend::GetAsyncFileUtil(
     FileSystemType type) {
   switch (type) {
-    case kFileSystemTypeNativeLocal:
+    case kFileSystemTypeLocal:
       return isolated_file_util_.get();
     case kFileSystemTypeDragged:
       return dragged_file_util_.get();
@@ -117,7 +117,7 @@ bool IsolatedFileSystemBackend::SupportsStreaming(
 
 bool IsolatedFileSystemBackend::HasInplaceCopyImplementation(
     FileSystemType type) const {
-  DCHECK(type == kFileSystemTypeNativeLocal || type == kFileSystemTypeDragged ||
+  DCHECK(type == kFileSystemTypeLocal || type == kFileSystemTypeDragged ||
          type == kFileSystemTypeForTransientFile);
   return false;
 }

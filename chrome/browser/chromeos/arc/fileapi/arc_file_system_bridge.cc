@@ -514,7 +514,7 @@ base::FilePath ArcFileSystemBridge::GetLinuxVFSPathForPathOnFileSystemType(
     case storage::FileSystemType::kFileSystemTypeDriveFs:
     case storage::FileSystemType::kFileSystemTypeSmbFs:
       return path;
-    case storage::FileSystemType::kFileSystemTypeNativeLocal: {
+    case storage::FileSystemType::kFileSystemTypeLocal: {
       base::FilePath crostini_mount_path =
           file_manager::util::GetCrostiniMountDirectory(profile);
       if (crostini_mount_path == path || crostini_mount_path.IsParent(path))

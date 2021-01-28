@@ -1015,8 +1015,8 @@ class FakeTestVolume : public LocalTestVolume {
     // Revoke name() mount point first, then re-add its mount point.
     GetMountPoints()->RevokeFileSystem(name());
     const bool added = GetMountPoints()->RegisterFileSystem(
-        name(), storage::kFileSystemTypeNativeLocal,
-        storage::FileSystemMountOption(), root_path());
+        name(), storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+        root_path());
     if (!added)
       return false;
 

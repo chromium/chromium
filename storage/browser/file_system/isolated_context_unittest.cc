@@ -119,7 +119,7 @@ TEST_F(IsolatedContextTest, RegisterAndRevokeTest) {
 
   IsolatedContext::ScopedFSHandle fs2 =
       isolated_context()->RegisterFileSystemForPath(
-          kFileSystemTypeNativeLocal, std::string(),
+          kFileSystemTypeLocal, std::string(),
           base::FilePath(DRIVE FPL("/foo")), nullptr);
 
   // Make sure the GetDraggedFileInfo returns false for both ones.
@@ -133,13 +133,13 @@ TEST_F(IsolatedContextTest, RegisterAndRevokeTest) {
   // Try registering three more file systems for the same path as id2.
   IsolatedContext::ScopedFSHandle fs3 =
       isolated_context()->RegisterFileSystemForPath(
-          kFileSystemTypeNativeLocal, std::string(), path, nullptr);
+          kFileSystemTypeLocal, std::string(), path, nullptr);
   IsolatedContext::ScopedFSHandle fs4 =
       isolated_context()->RegisterFileSystemForPath(
-          kFileSystemTypeNativeLocal, std::string(), path, nullptr);
+          kFileSystemTypeLocal, std::string(), path, nullptr);
   IsolatedContext::ScopedFSHandle fs5 =
       isolated_context()->RegisterFileSystemForPath(
-          kFileSystemTypeNativeLocal, std::string(), path, nullptr);
+          kFileSystemTypeLocal, std::string(), path, nullptr);
 
   // Remove file system for id4.
   fs4 = IsolatedContext::ScopedFSHandle();
@@ -317,12 +317,12 @@ TEST_F(IsolatedContextTest, CanHandleURL) {
   EXPECT_FALSE(
       isolated_context()->HandlesFileSystemMountType(kFileSystemTypeTest));
   // Not even if it's isolated subtype.
-  EXPECT_FALSE(isolated_context()->HandlesFileSystemMountType(
-      kFileSystemTypeNativeLocal));
+  EXPECT_FALSE(
+      isolated_context()->HandlesFileSystemMountType(kFileSystemTypeLocal));
   EXPECT_FALSE(
       isolated_context()->HandlesFileSystemMountType(kFileSystemTypeDragged));
   EXPECT_FALSE(isolated_context()->HandlesFileSystemMountType(
-      kFileSystemTypeNativeMedia));
+      kFileSystemTypeLocalMedia));
   EXPECT_FALSE(isolated_context()->HandlesFileSystemMountType(
       kFileSystemTypeDeviceMedia));
 }

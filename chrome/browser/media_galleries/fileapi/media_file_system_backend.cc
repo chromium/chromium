@@ -216,7 +216,7 @@ bool MediaFileSystemBackend::AttemptAutoMountForURLRequest(
 
 bool MediaFileSystemBackend::CanHandleType(storage::FileSystemType type) const {
   switch (type) {
-    case storage::kFileSystemTypeNativeMedia:
+    case storage::kFileSystemTypeLocalMedia:
     case storage::kFileSystemTypeDeviceMedia:
       return true;
     default:
@@ -241,7 +241,7 @@ storage::AsyncFileUtil* MediaFileSystemBackend::GetAsyncFileUtil(
   // We count file system usages here, because we want to count (per session)
   // when the file system is actually used for I/O, rather than merely present.
   switch (type) {
-    case storage::kFileSystemTypeNativeMedia:
+    case storage::kFileSystemTypeLocalMedia:
       return native_media_file_util_.get();
 #if defined(OS_WIN) || defined(OS_MAC) || BUILDFLAG(IS_CHROMEOS_ASH)
     case storage::kFileSystemTypeDeviceMedia:
@@ -265,7 +265,7 @@ MediaFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
   DCHECK(error_code);
   *error_code = base::File::FILE_OK;
   switch (type) {
-    case storage::kFileSystemTypeNativeMedia:
+    case storage::kFileSystemTypeLocalMedia:
     case storage::kFileSystemTypeDeviceMedia:
       if (!media_copy_or_move_file_validator_factory_) {
         *error_code = base::File::FILE_ERROR_SECURITY;
@@ -301,7 +301,7 @@ bool MediaFileSystemBackend::SupportsStreaming(
 
 bool MediaFileSystemBackend::HasInplaceCopyImplementation(
     storage::FileSystemType type) const {
-  DCHECK(type == storage::kFileSystemTypeNativeMedia ||
+  DCHECK(type == storage::kFileSystemTypeLocalMedia ||
          type == storage::kFileSystemTypeDeviceMedia);
   return true;
 }

@@ -428,7 +428,7 @@ class LocalFileSystemExtensionApiTest : public FileSystemExtensionApiTestBase {
   void AddTestMountPoint() override {
     EXPECT_TRUE(
         content::BrowserContext::GetMountPoints(profile())->RegisterFileSystem(
-            kLocalMountPointName, storage::kFileSystemTypeNativeLocal,
+            kLocalMountPointName, storage::kFileSystemTypeLocal,
             storage::FileSystemMountOption(), mount_point_dir_));
     VolumeManager::Get(profile())->AddVolumeForTesting(
         mount_point_dir_, VOLUME_TYPE_TESTING, chromeos::DEVICE_TYPE_UNKNOWN,
@@ -459,8 +459,7 @@ class RestrictedFileSystemExtensionApiTest
   void AddTestMountPoint() override {
     EXPECT_TRUE(
         content::BrowserContext::GetMountPoints(profile())->RegisterFileSystem(
-            kRestrictedMountPointName,
-            storage::kFileSystemTypeRestrictedNativeLocal,
+            kRestrictedMountPointName, storage::kFileSystemTypeRestrictedLocal,
             storage::FileSystemMountOption(), mount_point_dir_));
     VolumeManager::Get(profile())->AddVolumeForTesting(
         mount_point_dir_, VOLUME_TYPE_TESTING, chromeos::DEVICE_TYPE_UNKNOWN,
@@ -667,7 +666,7 @@ class LocalAndDriveFileSystemExtensionApiTest
   void AddTestMountPoint() override {
     EXPECT_TRUE(
         content::BrowserContext::GetMountPoints(profile())->RegisterFileSystem(
-            kLocalMountPointName, storage::kFileSystemTypeNativeLocal,
+            kLocalMountPointName, storage::kFileSystemTypeLocal,
             storage::FileSystemMountOption(), local_mount_point_dir_));
     VolumeManager::Get(profile())->AddVolumeForTesting(
         local_mount_point_dir_, VOLUME_TYPE_TESTING,

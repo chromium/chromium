@@ -90,8 +90,8 @@ int FileSystemContext::GetPermissionPolicy(FileSystemType type) {
     case kFileSystemTypeSyncable:
       return FILE_PERMISSION_SANDBOX;
 
-    case kFileSystemTypeNativeForPlatformApp:
-    case kFileSystemTypeNativeLocal:
+    case kFileSystemTypeLocalForPlatformApp:
+    case kFileSystemTypeLocal:
     case kFileSystemTypeCloudDevice:
     case kFileSystemTypeProvided:
     case kFileSystemTypeDeviceMediaAsFileStorage:
@@ -101,11 +101,11 @@ int FileSystemContext::GetPermissionPolicy(FileSystemType type) {
     case kFileSystemTypeSmbFs:
       return FILE_PERMISSION_USE_FILE_PERMISSION;
 
-    case kFileSystemTypeRestrictedNativeLocal:
+    case kFileSystemTypeRestrictedLocal:
       return FILE_PERMISSION_READ_ONLY | FILE_PERMISSION_USE_FILE_PERMISSION;
 
     case kFileSystemTypeDeviceMedia:
-    case kFileSystemTypeNativeMedia:
+    case kFileSystemTypeLocalMedia:
       return FILE_PERMISSION_USE_FILE_PERMISSION;
 
     // Following types are only accessed via IsolatedFileSystem, and
@@ -180,13 +180,13 @@ FileSystemContext::FileSystemContext(
     RegisterBackend(backend.get());
 
   // If the embedder's additional backends already provide support for
-  // kFileSystemTypeNativeLocal and kFileSystemTypeNativeForPlatformApp then
+  // kFileSystemTypeLocal and kFileSystemTypeLocalForPlatformApp then
   // IsolatedFileSystemBackend does not need to handle them. For example, on
   // Chrome OS the additional backend chromeos::FileSystemBackend handles these
   // types.
   isolated_backend_ = std::make_unique<IsolatedFileSystemBackend>(
-      !base::Contains(backend_map_, kFileSystemTypeNativeLocal),
-      !base::Contains(backend_map_, kFileSystemTypeNativeForPlatformApp));
+      !base::Contains(backend_map_, kFileSystemTypeLocal),
+      !base::Contains(backend_map_, kFileSystemTypeLocalForPlatformApp));
   RegisterBackend(isolated_backend_.get());
 
   if (quota_manager_proxy) {

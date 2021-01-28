@@ -303,9 +303,9 @@ void WebRtcLoggingController::GrantLogsDirectoryAccess(
 
   std::string registered_name;
   storage::IsolatedContext::ScopedFSHandle file_system =
-      isolated_context->RegisterFileSystemForPath(
-          storage::kFileSystemTypeNativeLocal, std::string(), logs_path,
-          &registered_name);
+      isolated_context->RegisterFileSystemForPath(storage::kFileSystemTypeLocal,
+                                                  std::string(), logs_path,
+                                                  &registered_name);
 
   // Only granting read and delete access to reduce contention with
   // webrtcLogging APIs that modify files in that folder.

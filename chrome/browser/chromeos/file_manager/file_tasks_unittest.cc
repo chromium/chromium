@@ -1400,7 +1400,7 @@ class FileManagerFileTasksCrostiniTest
   void SetUp() override {
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         util::GetDownloadsMountPointName(&test_profile_),
-        storage::kFileSystemTypeNativeLocal, storage::FileSystemMountOption(),
+        storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         util::GetMyFilesFolderForProfile(&test_profile_));
   }
 

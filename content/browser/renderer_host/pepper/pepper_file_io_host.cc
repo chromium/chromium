@@ -194,7 +194,7 @@ int32_t PepperFileIOHost::OnHostMsgOpen(
     // Whitelist the supported ones.
     if (file_system_url_.mount_type() == storage::kFileSystemTypeExternal) {
       switch (file_system_url_.type()) {
-        case storage::kFileSystemTypeNativeMedia:
+        case storage::kFileSystemTypeLocalMedia:
         case storage::kFileSystemTypeDeviceMedia:
           break;
         default:

@@ -733,8 +733,7 @@ RuntimeGetPackageDirectoryEntryFunction::Run() {
   base::FilePath path = extension_->path();
   storage::IsolatedContext::ScopedFSHandle filesystem =
       isolated_context->RegisterFileSystemForPath(
-          storage::kFileSystemTypeNativeLocal, std::string(), path,
-          &relative_path);
+          storage::kFileSystemTypeLocal, std::string(), path, &relative_path);
 
   content::ChildProcessSecurityPolicy* policy =
       content::ChildProcessSecurityPolicy::GetInstance();

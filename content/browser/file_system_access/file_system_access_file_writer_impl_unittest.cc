@@ -127,7 +127,7 @@ class FileSystemAccessFileWriterImplTest : public testing::Test {
     std::string base_name;
     IsolatedContext::ScopedFSHandle fs =
         isolated_context->RegisterFileSystemForPath(
-            storage::kFileSystemTypeNativeLocal, std::string(), dir_.GetPath(),
+            storage::kFileSystemTypeLocal, std::string(), dir_.GetPath(),
             &base_name);
     base::FilePath root_path =
         isolated_context->CreateVirtualRootPath(fs.id()).AppendASCII(base_name);

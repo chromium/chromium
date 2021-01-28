@@ -228,8 +228,8 @@ FileBrowserHandlerExecutor::SetupFileAccessPermissions(
     base::FilePath virtual_path = url.virtual_path();
 
     const bool is_native_file =
-        url.type() == storage::kFileSystemTypeNativeLocal ||
-        url.type() == storage::kFileSystemTypeRestrictedNativeLocal;
+        url.type() == storage::kFileSystemTypeLocal ||
+        url.type() == storage::kFileSystemTypeRestrictedLocal;
 
     // If the file is from a physical volume, actual file must be found.
     if (is_native_file) {

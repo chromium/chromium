@@ -127,8 +127,8 @@ void PrepareFileOnIOThread(
 
 bool IsNonNativeFileSystemType(storage::FileSystemType type) {
   switch (type) {
-    case storage::kFileSystemTypeNativeLocal:
-    case storage::kFileSystemTypeRestrictedNativeLocal:
+    case storage::kFileSystemTypeLocal:
+    case storage::kFileSystemTypeRestrictedLocal:
     case storage::kFileSystemTypeDriveFs:
     case storage::kFileSystemTypeSmbFs:
       return false;

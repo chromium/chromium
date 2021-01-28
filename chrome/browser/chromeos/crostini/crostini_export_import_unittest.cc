@@ -148,7 +148,7 @@ class CrostiniExportImportTest : public testing::Test {
 
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         file_manager::util::GetDownloadsMountPointName(profile()),
-        storage::kFileSystemTypeNativeLocal, storage::FileSystemMountOption(),
+        storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         profile()->GetPath());
     tarball_ = file_manager::util::GetMyFilesFolderForProfile(profile()).Append(
         "crostini_export_import_unittest_tarball.tar.gz");

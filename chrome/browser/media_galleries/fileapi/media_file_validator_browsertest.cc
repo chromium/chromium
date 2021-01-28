@@ -148,7 +148,7 @@ class MediaFileValidatorTest : public InProcessBrowserTest {
     ASSERT_TRUE(base::CreateDirectory(dest_path));
     dest_fs_ =
         storage::IsolatedContext::GetInstance()->RegisterFileSystemForPath(
-            storage::kFileSystemTypeNativeMedia, std::string(), dest_path,
+            storage::kFileSystemTypeLocalMedia, std::string(), dest_path,
             nullptr);
 
     size_t extension_index = filename.find_last_of(".");

@@ -106,7 +106,7 @@ class StorageHandlerTest : public testing::Test {
     CHECK(base::CreateDirectory(my_files_path));
     CHECK(storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         file_manager::util::GetDownloadsMountPointName(profile_),
-        storage::kFileSystemTypeNativeLocal, storage::FileSystemMountOption(),
+        storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         my_files_path));
   }
 
@@ -320,7 +320,7 @@ TEST_F(StorageHandlerTest, MyFilesSize) {
   // Register android files mount point.
   CHECK(storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
       file_manager::util::GetAndroidFilesMountPointName(),
-      storage::kFileSystemTypeNativeLocal, storage::FileSystemMountOption(),
+      storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
       android_files_path));
 
   // Add files in My files and android files.

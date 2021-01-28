@@ -81,7 +81,7 @@ class PlatformUtilTestBase : public BrowserWithTestWindowTest {
 
     // The test_directory needs to be mounted for it to be accessible.
     content::BrowserContext::GetMountPoints(GetProfile())
-        ->RegisterFileSystem("test", storage::kFileSystemTypeNativeLocal,
+        ->RegisterFileSystem("test", storage::kFileSystemTypeLocal,
                              storage::FileSystemMountOption(), test_directory);
 
     // To test opening a file, we are going to register a mock extension that

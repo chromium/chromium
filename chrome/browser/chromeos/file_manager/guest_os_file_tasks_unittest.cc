@@ -40,7 +40,7 @@ class GuestOsFileTasksTest : public testing::Test {
   void SetUp() override {
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
         util::GetDownloadsMountPointName(&profile_),
-        storage::kFileSystemTypeNativeLocal, storage::FileSystemMountOption(),
+        storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
         util::GetMyFilesFolderForProfile(&profile_));
     fake_crostini_features_.set_enabled(true);
     fake_plugin_vm_features_.set_enabled(true);

@@ -699,7 +699,7 @@ class MediaFileSystemRegistry::MediaFileSystemContextImpl
     CHECK(!path.ReferencesParent());
 
     return ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-        fs_name, storage::kFileSystemTypeNativeMedia,
+        fs_name, storage::kFileSystemTypeLocalMedia,
         storage::FileSystemMountOption(), path);
   }
 

@@ -36,7 +36,7 @@ base::FilePath NormalizeFilePath(const base::FilePath& path) {
 }
 
 bool IsOverlappingMountPathForbidden(FileSystemType type) {
-  return type != kFileSystemTypeNativeMedia &&
+  return type != kFileSystemTypeLocalMedia &&
          type != kFileSystemTypeDeviceMedia;
 }
 
@@ -115,7 +115,7 @@ bool ExternalMountPoints::RegisterFileSystem(
 bool ExternalMountPoints::HandlesFileSystemMountType(
     FileSystemType type) const {
   return type == kFileSystemTypeExternal ||
-         type == kFileSystemTypeNativeForPlatformApp;
+         type == kFileSystemTypeLocalForPlatformApp;
 }
 
 bool ExternalMountPoints::RevokeFileSystem(const std::string& mount_name) {
@@ -264,7 +264,7 @@ FileSystemURL ExternalMountPoints::CrackFileSystemURL(
     return FileSystemURL();
 
   base::FilePath virtual_path = url.path();
-  if (url.type() == kFileSystemTypeNativeForPlatformApp) {
+  if (url.type() == kFileSystemTypeLocalForPlatformApp) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // On Chrome OS, find a mount point and virtual path for the external fs.
     if (!GetVirtualPath(url.path(), &virtual_path))
@@ -272,7 +272,7 @@ FileSystemURL ExternalMountPoints::CrackFileSystemURL(
 #else
     // On other OS, it is simply a native local path.
     return FileSystemURL(url.origin(), url.mount_type(), url.virtual_path(),
-                         url.mount_filesystem_id(), kFileSystemTypeNativeLocal,
+                         url.mount_filesystem_id(), kFileSystemTypeLocal,
                          url.path(), url.filesystem_id(), url.mount_option());
 #endif
   }

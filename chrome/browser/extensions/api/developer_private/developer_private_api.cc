@@ -1433,8 +1433,8 @@ ExtensionFunction::ResponseAction DeveloperPrivateLoadDirectoryFunction::Run() {
       storage::kFileSystemTypeIsolated, virtual_path);
 
   if (directory_url.is_valid() &&
-      directory_url.type() != storage::kFileSystemTypeNativeLocal &&
-      directory_url.type() != storage::kFileSystemTypeRestrictedNativeLocal &&
+      directory_url.type() != storage::kFileSystemTypeLocal &&
+      directory_url.type() != storage::kFileSystemTypeRestrictedLocal &&
       directory_url.type() != storage::kFileSystemTypeDragged) {
     return LoadByFileSystemAPI(directory_url);
   }

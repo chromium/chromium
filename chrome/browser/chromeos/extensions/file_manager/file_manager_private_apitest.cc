@@ -161,7 +161,7 @@ void AddLocalFileSystem(Profile* profile, base::FilePath root) {
 
   ASSERT_TRUE(
       content::BrowserContext::GetMountPoints(profile)->RegisterFileSystem(
-          kLocalMountPointName, storage::kFileSystemTypeNativeLocal,
+          kLocalMountPointName, storage::kFileSystemTypeLocal,
           storage::FileSystemMountOption(), root));
   file_manager::VolumeManager::Get(profile)->AddVolumeForTesting(
       root, file_manager::VOLUME_TYPE_TESTING, chromeos::DEVICE_TYPE_UNKNOWN,

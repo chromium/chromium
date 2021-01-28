@@ -654,7 +654,7 @@ void FileSystemAccessFileWriterImpl::DidSwapFileDoQuarantine(
          target_url.type() != storage::kFileSystemTypePersistent)
       << target_url.type();
 #else
-  DCHECK(target_url.type() == storage::kFileSystemTypeNativeLocal ||
+  DCHECK(target_url.type() == storage::kFileSystemTypeLocal ||
          target_url.type() == storage::kFileSystemTypeTest)
       << target_url.type();
 #endif

@@ -812,8 +812,8 @@ class DeviceStatusCollectorTest : public testing::Test {
     // Setup a fake file system that should show up in mount points.
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-        "c", storage::kFileSystemTypeNativeLocal,
-        storage::FileSystemMountOption(), base::FilePath(kExternalMountPoint));
+        "c", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+        base::FilePath(kExternalMountPoint));
 
     // Just verify that we are properly setting the mount points.
     std::vector<storage::MountPoints::MountPointInfo> external_mount_points;

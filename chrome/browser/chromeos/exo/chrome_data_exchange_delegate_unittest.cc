@@ -83,14 +83,14 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
     myfiles_dir_ =
         file_manager::util::GetMyFilesFolderForProfile(profile_.get());
     mount_points_->RegisterFileSystem(
-        myfiles_mount_name_, storage::kFileSystemTypeNativeLocal,
+        myfiles_mount_name_, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(), myfiles_dir_);
     crostini_mount_name_ =
         file_manager::util::GetCrostiniMountPointName(profile_.get());
     crostini_dir_ =
         file_manager::util::GetCrostiniMountDirectory(profile_.get());
     mount_points_->RegisterFileSystem(
-        crostini_mount_name_, storage::kFileSystemTypeNativeLocal,
+        crostini_mount_name_, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(), crostini_dir_);
 
     // DBus seneschal client.

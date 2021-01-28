@@ -57,8 +57,8 @@ class ScopedExternalMountPoint {
       return;
 
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-        name_, storage::kFileSystemTypeNativeLocal,
-        storage::FileSystemMountOption(), temp_dir_.GetPath());
+        name_, storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+        temp_dir_.GetPath());
     file_manager::util::GetFileSystemContextForExtensionId(
         profile, file_manager::kImageLoaderExtensionId)
         ->external_backend()

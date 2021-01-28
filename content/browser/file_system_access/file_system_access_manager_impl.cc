@@ -569,7 +569,7 @@ void FileSystemAccessManagerImpl::DidResolveForSerializeHandle(
                            ? FileSystemAccessHandleData::kFile
                            : FileSystemAccessHandleData::kDirectory);
 
-  if (url.type() == storage::kFileSystemTypeNativeLocal ||
+  if (url.type() == storage::kFileSystemTypeLocal ||
       url.mount_type() == storage::kFileSystemTypeExternal) {
     // A url can have mount_type = external and type = native local at the same
     // time. In that case we want to still treat it as an external path.
@@ -1179,7 +1179,7 @@ FileSystemAccessManagerImpl::CreateFileSystemURLFromPath(
 
       FileSystemURLAndFSHandle result;
       result.file_system = isolated_context->RegisterFileSystemForPath(
-          storage::kFileSystemTypeNativeLocal, std::string(), path,
+          storage::kFileSystemTypeLocal, std::string(), path,
           &result.base_name);
 
       base::FilePath root_path =

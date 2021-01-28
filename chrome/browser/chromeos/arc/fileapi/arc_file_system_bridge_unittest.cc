@@ -318,7 +318,7 @@ TEST_F(ArcFileSystemBridgeTest, GetLinuxVFSPathForPathOnFileSystemType) {
           "path/to/file");
   base::FilePath crostini_vfs_path =
       arc_file_system_bridge_->GetLinuxVFSPathForPathOnFileSystemType(
-          profile_, crostini_path, storage::kFileSystemTypeNativeLocal);
+          profile_, crostini_path, storage::kFileSystemTypeLocal);
   EXPECT_EQ(crostini_vfs_path, crostini_path);
 
   // Check: fuse-zip and rar2fs paths are returned as passed in.
@@ -327,17 +327,16 @@ TEST_F(ArcFileSystemBridgeTest, GetLinuxVFSPathForPathOnFileSystemType) {
           .Append("path/to/file");
   base::FilePath archive_vfs_path =
       arc_file_system_bridge_->GetLinuxVFSPathForPathOnFileSystemType(
-          profile_, archive_path, storage::kFileSystemTypeNativeLocal);
+          profile_, archive_path, storage::kFileSystemTypeLocal);
   EXPECT_EQ(archive_vfs_path, archive_path);
 
-  // Check: Other kFileSystemTypeNativeLocal paths that are not descendants of
+  // Check: Other kFileSystemTypeLocal paths that are not descendants of
   // the Crostini, fuse-zip or rar2fs mount points return an empty path.
   const base::FilePath empty_path,
       unsupported_local_path = base::FilePath("/path/to/file");
   base::FilePath unsupported_local_vfs_path =
       arc_file_system_bridge_->GetLinuxVFSPathForPathOnFileSystemType(
-          profile_, unsupported_local_path,
-          storage::kFileSystemTypeNativeLocal);
+          profile_, unsupported_local_path, storage::kFileSystemTypeLocal);
   EXPECT_EQ(empty_path, unsupported_local_vfs_path);
 
   // Check: Paths from unsupported FileSystemTypes return an empty path.

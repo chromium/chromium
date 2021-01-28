@@ -37,7 +37,7 @@ using testing::_;
 
 storage::FileSystemURL CreateFileSystemUrl(
     const base::FilePath& path,
-    storage::FileSystemType type = storage::kFileSystemTypeNativeLocal) {
+    storage::FileSystemType type = storage::kFileSystemTypeLocal) {
   return storage::FileSystemURL::CreateForTest({}, {}, {}, "", type, path, "",
                                                {});
 }
@@ -140,7 +140,7 @@ class FileTasksNotifierTest : public testing::Test {
     ASSERT_TRUE(base::CreateDirectory(my_files_));
     base::WriteFile(my_files_.Append("file"), "data", 4);
     ASSERT_TRUE(mount_points->RegisterFileSystem(
-        "downloads", storage::kFileSystemTypeNativeLocal, {}, my_files_));
+        "downloads", storage::kFileSystemTypeLocal, {}, my_files_));
     ASSERT_TRUE(mount_points->RegisterFileSystem(
         "drivefs", storage::kFileSystemTypeDriveFs, {},
         base::FilePath("/media/fuse/drivefs")));

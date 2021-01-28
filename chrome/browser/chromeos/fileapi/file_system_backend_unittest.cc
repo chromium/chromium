@@ -82,22 +82,18 @@ TEST(ChromeOSFileSystemBackendTest, GetRootDirectories) {
   const size_t initial_root_dirs_size = backend.GetRootDirectories().size();
 
   // Register 'local' test mount points.
-  mount_points->RegisterFileSystem("c",
-                                   storage::kFileSystemTypeNativeLocal,
+  mount_points->RegisterFileSystem("c", storage::kFileSystemTypeLocal,
                                    storage::FileSystemMountOption(),
                                    base::FilePath(FPL("/a/b/c")));
-  mount_points->RegisterFileSystem("d",
-                                   storage::kFileSystemTypeNativeLocal,
+  mount_points->RegisterFileSystem("d", storage::kFileSystemTypeLocal,
                                    storage::FileSystemMountOption(),
                                    base::FilePath(FPL("/b/c/d")));
 
   // Register system test mount points.
-  system_mount_points->RegisterFileSystem("d",
-                                          storage::kFileSystemTypeNativeLocal,
+  system_mount_points->RegisterFileSystem("d", storage::kFileSystemTypeLocal,
                                           storage::FileSystemMountOption(),
                                           base::FilePath(FPL("/g/c/d")));
-  system_mount_points->RegisterFileSystem("e",
-                                          storage::kFileSystemTypeNativeLocal,
+  system_mount_points->RegisterFileSystem("e", storage::kFileSystemTypeLocal,
                                           storage::FileSystemMountOption(),
                                           base::FilePath(FPL("/g/d/e")));
 
@@ -129,20 +125,15 @@ TEST(ChromeOSFileSystemBackendTest, AccessPermissions) {
 
   // Initialize mount points.
   ASSERT_TRUE(system_mount_points->RegisterFileSystem(
-      "system",
-      storage::kFileSystemTypeNativeLocal,
-      storage::FileSystemMountOption(),
+      "system", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
       base::FilePath(FPL("/g/system"))));
   ASSERT_TRUE(mount_points->RegisterFileSystem(
-      "removable",
-      storage::kFileSystemTypeNativeLocal,
+      "removable", storage::kFileSystemTypeLocal,
       storage::FileSystemMountOption(),
       base::FilePath(FPL("/media/removable"))));
   ASSERT_TRUE(mount_points->RegisterFileSystem(
-      "oem",
-      storage::kFileSystemTypeRestrictedNativeLocal,
-      storage::FileSystemMountOption(),
-      base::FilePath(FPL("/usr/share/oem"))));
+      "oem", storage::kFileSystemTypeRestrictedLocal,
+      storage::FileSystemMountOption(), base::FilePath(FPL("/usr/share/oem"))));
 
   // Backend specific mount point access.
   EXPECT_FALSE(backend.IsAccessAllowed(
@@ -169,11 +160,9 @@ TEST(ChromeOSFileSystemBackendTest, AccessPermissions) {
 
   // The extension cannot access new mount points.
   // TODO(tbarzic): This should probably be changed.
-  ASSERT_TRUE(
-      mount_points->RegisterFileSystem("test",
-                                       storage::kFileSystemTypeNativeLocal,
-                                       storage::FileSystemMountOption(),
-                                       base::FilePath(FPL("/foo/test"))));
+  ASSERT_TRUE(mount_points->RegisterFileSystem(
+      "test", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+      base::FilePath(FPL("/foo/test"))));
   EXPECT_FALSE(backend.IsAccessAllowed(
       CreateFileSystemURL(extension, "test_/foo", mount_points.get())));
 
@@ -197,7 +186,7 @@ TEST(ChromeOSFileSystemBackendTest, GetVirtualPathConflictWithSystemPoints) {
       nullptr,  // smbfs_delegate
       mount_points.get(), system_mount_points.get());
 
-  const storage::FileSystemType type = storage::kFileSystemTypeNativeLocal;
+  const storage::FileSystemType type = storage::kFileSystemTypeLocal;
   const storage::FileSystemMountOption option =
       storage::FileSystemMountOption();
 

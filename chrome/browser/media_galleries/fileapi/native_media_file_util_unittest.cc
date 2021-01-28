@@ -142,7 +142,7 @@ class NativeMediaFileUtilTest : public testing::Test {
         storage::CreateAllowFileAccessOptions());
 
     filesystem_ = isolated_context()->RegisterFileSystemForPath(
-        storage::kFileSystemTypeNativeMedia, std::string(), root_path(),
+        storage::kFileSystemTypeLocalMedia, std::string(), root_path(),
         nullptr);
     filesystem_id_ = filesystem_.id();
   }
@@ -177,7 +177,7 @@ class NativeMediaFileUtilTest : public testing::Test {
 
   GURL origin() { return GURL("http://example.com"); }
 
-  storage::FileSystemType type() { return storage::kFileSystemTypeNativeMedia; }
+  storage::FileSystemType type() { return storage::kFileSystemTypeLocalMedia; }
 
   storage::FileSystemOperationRunner* operation_runner() {
     return file_system_context_->operation_runner();

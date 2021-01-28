@@ -28,7 +28,7 @@ FileSystemAccessHandleBase::FileSystemAccessHandleBase(
       << url_.mount_type();
 
   // We support sandboxed file system and local file systems on all platforms.
-  DCHECK(url_.type() == storage::kFileSystemTypeNativeLocal ||
+  DCHECK(url_.type() == storage::kFileSystemTypeLocal ||
          url_.type() == storage::kFileSystemTypeTemporary ||
          url_.mount_type() == storage::kFileSystemTypeExternal ||
          url_.type() == storage::kFileSystemTypeTest)
@@ -39,7 +39,7 @@ FileSystemAccessHandleBase::FileSystemAccessHandleBase(
            url_.mount_type() == storage::kFileSystemTypeExternal)
         << url_.mount_type();
     if (url_.mount_type() == storage::kFileSystemTypeIsolated)
-      DCHECK_EQ(url_.type(), storage::kFileSystemTypeNativeLocal);
+      DCHECK_EQ(url_.type(), storage::kFileSystemTypeLocal);
 
     Observe(WebContentsImpl::FromRenderFrameHostID(context_.frame_id));
 

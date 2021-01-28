@@ -134,7 +134,7 @@ class FileSystemAccessManagerImplTest : public testing::Test {
     // path round trips as an external path, even if the path resolves to a
     // local path.
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-        kTestMountPoint, storage::kFileSystemTypeNativeLocal,
+        kTestMountPoint, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(), dir_.GetPath());
 
     chrome_blob_context_ = base::MakeRefCounted<ChromeBlobStorageContext>();
@@ -737,7 +737,7 @@ TEST_F(FileSystemAccessManagerImplTest, SerializeHandle_Native_SingleFile) {
   const storage::FileSystemURL& url = token->url();
   EXPECT_EQ(kTestOrigin, url.origin());
   EXPECT_EQ(kTestPath, url.path());
-  EXPECT_EQ(storage::kFileSystemTypeNativeLocal, url.type());
+  EXPECT_EQ(storage::kFileSystemTypeLocal, url.type());
   EXPECT_EQ(storage::kFileSystemTypeIsolated, url.mount_type());
   EXPECT_EQ(HandleType::kFile, token->type());
   EXPECT_EQ(ask_grant_, token->GetReadGrant());
@@ -773,7 +773,7 @@ TEST_F(FileSystemAccessManagerImplTest,
   const storage::FileSystemURL& url = token->url();
   EXPECT_EQ(kTestOrigin, url.origin());
   EXPECT_EQ(kTestPath, url.path());
-  EXPECT_EQ(storage::kFileSystemTypeNativeLocal, url.type());
+  EXPECT_EQ(storage::kFileSystemTypeLocal, url.type());
   EXPECT_EQ(storage::kFileSystemTypeIsolated, url.mount_type());
   EXPECT_EQ(HandleType::kDirectory, token->type());
   EXPECT_EQ(ask_grant_, token->GetReadGrant());
@@ -829,7 +829,7 @@ TEST_F(FileSystemAccessManagerImplTest,
   EXPECT_EQ(kTestOrigin, url.origin());
   EXPECT_EQ(kDirectoryPath.Append(base::FilePath::FromUTF8Unsafe(kTestName)),
             url.path());
-  EXPECT_EQ(storage::kFileSystemTypeNativeLocal, url.type());
+  EXPECT_EQ(storage::kFileSystemTypeLocal, url.type());
   EXPECT_EQ(storage::kFileSystemTypeIsolated, url.mount_type());
   EXPECT_EQ(HandleType::kFile, token->type());
   EXPECT_EQ(ask_grant_, token->GetReadGrant());
@@ -884,7 +884,7 @@ TEST_F(FileSystemAccessManagerImplTest,
   const storage::FileSystemURL& url = token->url();
   EXPECT_EQ(kTestOrigin, url.origin());
   EXPECT_EQ(kDirectoryPath.AppendASCII(kTestName), url.path());
-  EXPECT_EQ(storage::kFileSystemTypeNativeLocal, url.type());
+  EXPECT_EQ(storage::kFileSystemTypeLocal, url.type());
   EXPECT_EQ(storage::kFileSystemTypeIsolated, url.mount_type());
   EXPECT_EQ(HandleType::kDirectory, token->type());
   EXPECT_EQ(ask_grant_, token->GetReadGrant());

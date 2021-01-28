@@ -1440,13 +1440,13 @@ TEST_F(HoldingSpaceKeyedServiceTest,
 // Tests that items from an unmounted volume get removed from the holding space.
 TEST_F(HoldingSpaceKeyedServiceTest, RemoveItemsFromUnmountedVolumes) {
   auto test_mount_1 = std::make_unique<ScopedTestMountPoint>(
-      "test_mount_1", storage::kFileSystemTypeNativeLocal,
+      "test_mount_1", storage::kFileSystemTypeLocal,
       file_manager::VOLUME_TYPE_TESTING);
   test_mount_1->Mount(GetProfile());
   HoldingSpaceModelAttachedWaiter(GetProfile()).Wait();
 
   auto test_mount_2 = std::make_unique<ScopedTestMountPoint>(
-      "test_mount_2", storage::kFileSystemTypeNativeLocal,
+      "test_mount_2", storage::kFileSystemTypeLocal,
       file_manager::VOLUME_TYPE_TESTING);
   test_mount_2->Mount(GetProfile());
   HoldingSpaceModelAttachedWaiter(GetProfile()).Wait();

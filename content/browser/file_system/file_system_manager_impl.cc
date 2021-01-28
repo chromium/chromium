@@ -86,14 +86,14 @@ blink::mojom::FileSystemType ToMojoFileSystemType(
     case storage::FileSystemType::kFileSystemTypeUnknown:
     case storage::FileSystemType::kFileSystemInternalTypeEnumStart:
     case storage::FileSystemType::kFileSystemTypeTest:
-    case storage::FileSystemType::kFileSystemTypeNativeLocal:
-    case storage::FileSystemType::kFileSystemTypeRestrictedNativeLocal:
+    case storage::FileSystemType::kFileSystemTypeLocal:
+    case storage::FileSystemType::kFileSystemTypeRestrictedLocal:
     case storage::FileSystemType::kFileSystemTypeDragged:
-    case storage::FileSystemType::kFileSystemTypeNativeMedia:
+    case storage::FileSystemType::kFileSystemTypeLocalMedia:
     case storage::FileSystemType::kFileSystemTypeDeviceMedia:
     case storage::FileSystemType::kFileSystemTypeSyncable:
     case storage::FileSystemType::kFileSystemTypeSyncableForInternalSync:
-    case storage::FileSystemType::kFileSystemTypeNativeForPlatformApp:
+    case storage::FileSystemType::kFileSystemTypeLocalForPlatformApp:
     case storage::FileSystemType::kFileSystemTypeForTransientFile:
     case storage::FileSystemType::kFileSystemTypePluginPrivate:
     case storage::FileSystemType::kFileSystemTypeCloudDevice:

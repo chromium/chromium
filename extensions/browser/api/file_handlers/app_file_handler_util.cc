@@ -422,7 +422,7 @@ GrantedFileEntry CreateFileEntry(content::BrowserContext* context,
 
   storage::IsolatedContext::ScopedFSHandle filesystem =
       isolated_context->RegisterFileSystemForPath(
-          storage::kFileSystemTypeNativeForPlatformApp, std::string(), path,
+          storage::kFileSystemTypeLocalForPlatformApp, std::string(), path,
           &result.registered_name);
   result.filesystem_id = filesystem.id();
 
@@ -501,7 +501,7 @@ bool ValidateFileEntryAndGetPath(const std::string& filesystem_name,
   // The file system API is only intended to operate on file entries that
   // correspond to a native file, selected by the user so only allow file
   // systems returned by the file system API or from a drag and drop operation.
-  if (type != storage::kFileSystemTypeNativeForPlatformApp &&
+  if (type != storage::kFileSystemTypeLocalForPlatformApp &&
       type != storage::kFileSystemTypeDragged) {
     *error = kInvalidParameters;
     return false;

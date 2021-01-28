@@ -191,7 +191,7 @@ class CrostiniPackageServiceTest : public testing::Test {
     std::string mount_point_name =
         file_manager::util::GetDownloadsMountPointName(profile_.get());
     mount_points->RegisterFileSystem(
-        mount_point_name, storage::kFileSystemTypeNativeLocal,
+        mount_point_name, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(),
         file_manager::util::GetDownloadsFolderForProfile(profile_.get()));
     package_file_url_ = mount_points->CreateExternalFileSystemURL(

@@ -171,7 +171,7 @@ void OnConsentReceived(content::BrowserContext* browser_context,
   std::string register_name = "fs";
   const storage::IsolatedContext::ScopedFSHandle file_system =
       isolated_context->RegisterFileSystemForPath(
-          storage::kFileSystemTypeNativeForPlatformApp,
+          storage::kFileSystemTypeLocalForPlatformApp,
           std::string() /* file_system_id */, original_url.path(),
           &register_name);
   if (!file_system.is_valid()) {

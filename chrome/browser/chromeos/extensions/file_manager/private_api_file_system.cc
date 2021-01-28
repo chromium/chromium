@@ -1352,7 +1352,7 @@ FileManagerPrivateInternalGetDirectorySizeFunction::Run() {
     return RespondNow(
         Error("FileSystemBackend failed to handle the entry's url."));
   }
-  if (file_system_url.type() != storage::kFileSystemTypeNativeLocal &&
+  if (file_system_url.type() != storage::kFileSystemTypeLocal &&
       file_system_url.type() != storage::kFileSystemTypeDriveFs) {
     return RespondNow(Error("Only local directories are supported."));
   }

@@ -206,7 +206,7 @@ FileManagerPrivateInternalGetPdfThumbnailFunction::Run() {
   const storage::FileSystemURL file_system_url =
       file_system_context->CrackURL(url);
 
-  if (file_system_url.type() != storage::kFileSystemTypeNativeLocal) {
+  if (file_system_url.type() != storage::kFileSystemTypeLocal) {
     return RespondNow(Error("Expected a native local URL"));
   }
 

@@ -20,7 +20,7 @@ std::unique_ptr<ScopedTestMountPoint>
 ScopedTestMountPoint::CreateAndMountDownloads(Profile* profile) {
   auto mount_point = std::make_unique<ScopedTestMountPoint>(
       file_manager::util::GetDownloadsMountPointName(profile),
-      storage::kFileSystemTypeNativeLocal,
+      storage::kFileSystemTypeLocal,
       file_manager::VOLUME_TYPE_DOWNLOADS_DIRECTORY);
   mount_point->Mount(profile);
   return mount_point;

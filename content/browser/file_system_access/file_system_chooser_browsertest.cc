@@ -55,7 +55,7 @@ class FileSystemChooserBrowserTest : public ContentBrowserTest {
     // on all platforms. We're not testing more complicated ChromeOS specific
     // file system backends here.
     storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
-        kTestMountPoint, storage::kFileSystemTypeNativeLocal,
+        kTestMountPoint, storage::kFileSystemTypeLocal,
         storage::FileSystemMountOption(), temp_dir_.GetPath());
 
     ASSERT_TRUE(embedded_test_server()->Start());
