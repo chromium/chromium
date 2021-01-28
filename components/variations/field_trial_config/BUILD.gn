@@ -28,8 +28,7 @@ action("field_trial_testing_config_action") {
   if (current_os == "win") {
     platform = "windows"
   } else if (is_chromeos_lacros) {
-    # TODO(crbug.com/1170185): Set platform to "chromeos_lacros" instead.
-    platform = "linux"
+    platform = "chromeos_lacros"
   } else {
     platform = current_os
   }

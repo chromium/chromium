@@ -66,7 +66,9 @@ class LoginDetectionPasswordStoreSitesBrowserTest
   base::HistogramTester histogram_tester;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+// The code under test depends on feature EnablePasswordsAccountStorage which
+// is not enabled for Chrome OS (ash or lacros).
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define DISABLE_ON_CHROMEOS(x) DISABLED_##x
 #else
 #define DISABLE_ON_CHROMEOS(x) x
