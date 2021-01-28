@@ -10,6 +10,7 @@
 #include "ash/shelf/shelf_button.h"
 #include "ash/shelf/shelf_button_delegate.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/gfx/shadow_value.h"
@@ -191,10 +192,6 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   gfx::ShadowValues icon_shadows_;
 
-  // If non-null the destuctor sets this to true. This is set while the menu is
-  // showing and used to detect if the menu was deleted while running.
-  bool* destroyed_flag_;
-
   // Whether the notification indicator is enabled.
   const bool is_notification_indicator_enabled_;
 
@@ -218,6 +215,9 @@ class ASH_EXPORT ShelfAppButton : public ShelfButton,
 
   std::unique_ptr<ShelfButtonDelegate::ScopedActiveInkDropCount>
       ink_drop_count_;
+
+  // Used to track whether the menu was deleted while running. Must be last.
+  base::WeakPtrFactory<ShelfAppButton> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(ShelfAppButton);
 };

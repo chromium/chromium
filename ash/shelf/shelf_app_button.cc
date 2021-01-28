@@ -327,7 +327,6 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
       indicator_(new AppStatusIndicatorView()),
       notification_indicator_(nullptr),
       state_(STATE_NORMAL),
-      destroyed_flag_(nullptr),
       is_notification_indicator_enabled_(
           features::IsNotificationIndicatorEnabled()) {
   const gfx::ShadowValue kShadows[] = {
@@ -376,8 +375,6 @@ ShelfAppButton::ShelfAppButton(ShelfView* shelf_view,
 
 ShelfAppButton::~ShelfAppButton() {
   GetInkDrop()->RemoveObserver(this);
-  if (destroyed_flag_)
-    *destroyed_flag_ = true;
 }
 
 void ShelfAppButton::SetShadowedImage(const gfx::ImageSkia& image) {
@@ -489,8 +486,7 @@ void ShelfAppButton::ShowContextMenu(const gfx::Point& p,
   if (!context_menu_controller())
     return;
 
-  bool destroyed = false;
-  destroyed_flag_ = &destroyed;
+  auto weak_this = weak_factory_.GetWeakPtr();
 
   if (source_type == ui::MenuSourceType::MENU_SOURCE_MOUSE ||
       source_type == ui::MenuSourceType::MENU_SOURCE_KEYBOARD) {
@@ -499,8 +495,8 @@ void ShelfAppButton::ShowContextMenu(const gfx::Point& p,
 
   ShelfButton::ShowContextMenu(p, source_type);
 
-  if (!destroyed) {
-    destroyed_flag_ = nullptr;
+  // This object may have been destroyed by ShowContextMenu.
+  if (weak_this) {
     // The menu will not propagate mouse events while it's shown. To address,
     // the hover state gets cleared once the menu was shown (and this was not
     // destroyed). In case context menu is shown target view does not receive
