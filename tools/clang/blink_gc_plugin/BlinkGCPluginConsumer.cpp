@@ -120,13 +120,14 @@ void BlinkGCPluginConsumer::HandleTranslationUnit(ASTContext& context) {
         0,                                       // ResultPathName
         0));                                     // TempPathName
 #else
-    json_ = JsonWriter::from(instance_.createDefaultOutputFile(
+    SmallString<128> OutputFile(instance_.getFrontendOpts().OutputFile);
+    llvm::sys::path::replace_extension(OutputFile, "graph.json");
+    json_ = JsonWriter::from(instance_.createOutputFile(
+        OutputFile,                              // OutputPath
         true,                                    // Binary
-        instance_.getFrontendOpts().OutputFile,  // InFile
-        "graph.json",                            // Extension
         true,                                    // RemoveFileOnSignal
+        false,                                   // UseTemporary
         false));                                 // CreateMissingDirectories
-    (void)err;
 #endif
     if (!err && json_) {
       json_->OpenList();
