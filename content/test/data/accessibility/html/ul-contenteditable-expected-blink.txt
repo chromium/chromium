@@ -1,0 +1,19 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++textField value='Hello<newline><newline>Bye'
+++++++++list
+++++++++++listItem
+++++++++++++listMarker name='• '
+++++++++++++++staticText name='• '
+++++++++++++++++inlineTextBox name='• '
+++++++++++++presentational ignored
+++++++++++++++staticText name='Hello'
+++++++++++++++++inlineTextBox name='Hello'
+++++++++++listItem
+++++++++++++listMarker name='• '
+++++++++++++++staticText name='• '
+++++++++++++++++inlineTextBox name='• '
+++++++++++++presentational ignored
+++++++++++++++staticText name='Bye'
+++++++++++++++++inlineTextBox name='Bye'

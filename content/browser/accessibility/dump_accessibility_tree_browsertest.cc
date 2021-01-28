@@ -2630,6 +2630,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityUl) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityUlContenteditable) {
+  RunHtmlTest(FILE_PATH_LITERAL("ul-contenteditable.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityNotUserSelectable) {
   RunCSSTest(FILE_PATH_LITERAL("user-select.html"));
 }
