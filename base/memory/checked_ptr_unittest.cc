@@ -707,8 +707,7 @@ TEST_F(CheckedPtrTest, AssignmentFromNullptr) {
 namespace base {
 namespace internal {
 
-#if BUILDFLAG(USE_PARTITION_ALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR) && \
-    !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if BUILDFLAG(USE_BACKUP_REF_PTR) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 void HandleOOM(size_t unused_size) {
   LOG(FATAL) << "Out of memory";
@@ -819,7 +818,7 @@ TEST(BackupRefPtrImpl, EndPointer) {
   }
 }
 
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR) &&
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR) &&
         // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 }  // namespace internal

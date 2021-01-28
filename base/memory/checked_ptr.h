@@ -16,7 +16,9 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+// USE_BACKUP_REF_PTR implies USE_PARTITION_ALLOC, needed for code under
+// allocator/partition_allocator/ to be built.
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
@@ -215,7 +217,7 @@ struct BackupRefPtrImpl {
 //    we aren't striving to maximize compatibility with raw pointers, merely
 //    adding support for cases encountered so far).
 template <typename T,
-#if BUILDFLAG(USE_PARTITION_ALLOC) && BUILDFLAG(USE_BACKUP_REF_PTR)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
           typename Impl = internal::BackupRefPtrImpl>
 #else
           typename Impl = internal::CheckedPtrNoOpImpl>

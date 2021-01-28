@@ -2340,9 +2340,10 @@ buildflag_header("anchor_functions_buildflags") {
   ]
 }
 
-should_use_backup_ref_ptr = use_backup_ref_ptr && !is_nacl
+should_use_backup_ref_ptr =
+    use_backup_ref_ptr && use_partition_alloc && !is_nacl
 should_enable_runtime_backup_ref_ptr_control =
-    enable_runtime_backup_ref_ptr_control && !is_nacl
+    enable_runtime_backup_ref_ptr_control && use_partition_alloc && !is_nacl
 
 buildflag_header("partition_alloc_buildflags") {
   header = "partition_alloc_buildflags.h"

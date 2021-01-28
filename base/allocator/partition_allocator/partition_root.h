@@ -70,10 +70,6 @@
 
 namespace base {
 
-// This file may end up getting included even when PartitionAlloc isn't used,
-// but the .cc file won't be linked. Exclude the code that relies on it.
-#if BUILDFLAG(USE_PARTITION_ALLOC)
-
 namespace internal {
 // Avoid including partition_address_space.h from this .h file, by moving the
 // call to IfManagedByPartitionAllocNormalBuckets into the .cc file.
@@ -83,8 +79,6 @@ BASE_EXPORT void DCheckIfManagedByPartitionAllocNormalBuckets(const void* ptr);
 ALWAYS_INLINE void DCheckIfManagedByPartitionAllocNormalBuckets(const void*) {}
 #endif
 }  // namespace internal
-
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
 enum PartitionPurgeFlags {
   // Decommitting the ring list of empty slot spans is reasonably fast.
@@ -657,9 +651,6 @@ PartitionAllocGetSlotSpanForSizeQuery(void* ptr) {
   return slot_span;
 }
 
-// This file may end up getting included even when PartitionAlloc isn't used,
-// but the .cc file won't be linked. Exclude the code that relies on it.
-#if BUILDFLAG(USE_PARTITION_ALLOC)
 // Gets the offset from the beginning of the allocated slot.
 //
 // CAUTION! Use only for normal buckets. Using on direct-mapped allocations may
@@ -758,7 +749,6 @@ ALWAYS_INLINE void PartitionAllocFreeForRefCounting(void* slot_start) {
                                                non_thread_safe_slot_span);
 }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
 }  // namespace internal
 
