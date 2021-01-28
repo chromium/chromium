@@ -22,7 +22,8 @@ class PCScanTest : public testing::Test {
     PartitionAllocGlobalInit([](size_t) { LOG(FATAL) << "Out of memory"; });
     allocator_.init({PartitionOptions::Alignment::kRegular,
                      PartitionOptions::ThreadCache::kDisabled,
-                     PartitionOptions::PCScan::kForcedEnabledForTesting});
+                     PartitionOptions::PCScan::kForcedEnabledForTesting,
+                     PartitionOptions::RefCount::kDisabled});
   }
   ~PCScanTest() override {
     allocator_.root()->PurgeMemory(PartitionPurgeDecommitEmptySlotSpans |
@@ -315,11 +316,13 @@ TEST_F(PCScanTest, DanglingInterPartitionReference) {
   ThreadSafePartitionRoot source_root(
       {PartitionOptions::Alignment::kRegular,
        PartitionOptions::ThreadCache::kDisabled,
-       PartitionOptions::PCScan::kForcedEnabledForTesting});
+       PartitionOptions::PCScan::kForcedEnabledForTesting,
+       PartitionOptions::RefCount::kDisabled});
   ThreadSafePartitionRoot value_root(
       {PartitionOptions::Alignment::kRegular,
        PartitionOptions::ThreadCache::kDisabled,
-       PartitionOptions::PCScan::kForcedEnabledForTesting});
+       PartitionOptions::PCScan::kForcedEnabledForTesting,
+       PartitionOptions::RefCount::kDisabled});
 
   auto* source = SourceList::Create(source_root);
   auto* value = ValueList::Create(value_root);

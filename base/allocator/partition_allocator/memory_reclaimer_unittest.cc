@@ -41,7 +41,8 @@ class PartitionAllocMemoryReclaimerTest : public ::testing::Test {
     allocator_ = std::make_unique<PartitionAllocator>();
     allocator_->init({PartitionOptions::Alignment::kRegular,
                       PartitionOptions::ThreadCache::kDisabled,
-                      PartitionOptions::PCScan::kAlwaysDisabled});
+                      PartitionOptions::PCScan::kAlwaysDisabled,
+                      PartitionOptions::RefCount::kDisabled});
   }
 
   void TearDown() override {

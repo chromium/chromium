@@ -120,10 +120,10 @@ base::ThreadSafePartitionRoot* Allocator() {
 base::ThreadSafePartitionRoot* AlignedAllocator() {
   // Since the general-purpose allocator uses the thread cache, this one cannot.
   static base::NoDestructor<base::ThreadSafePartitionRoot> aligned_allocator(
-      base::PartitionOptions{
-          base::PartitionOptions::Alignment::kAlignedAlloc,
-          base::PartitionOptions::ThreadCache::kDisabled,
-          base::PartitionOptions::PCScan::kDisabledByDefault});
+      base::PartitionOptions{base::PartitionOptions::Alignment::kAlignedAlloc,
+                             base::PartitionOptions::ThreadCache::kDisabled,
+                             base::PartitionOptions::PCScan::kDisabledByDefault,
+                             base::PartitionOptions::RefCount::kDisabled});
   return aligned_allocator.get();
 }
 

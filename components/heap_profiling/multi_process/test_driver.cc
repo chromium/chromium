@@ -345,7 +345,8 @@ TestDriver::TestDriver()
   base::PartitionAllocGlobalInit(HandleOOM);
   partition_allocator_.init({base::PartitionOptions::Alignment::kRegular,
                              base::PartitionOptions::ThreadCache::kDisabled,
-                             base::PartitionOptions::PCScan::kAlwaysDisabled});
+                             base::PartitionOptions::PCScan::kAlwaysDisabled,
+                             base::PartitionOptions::RefCount::kDisabled});
 }
 TestDriver::~TestDriver() {
   base::PartitionAllocGlobalUninitForTesting();

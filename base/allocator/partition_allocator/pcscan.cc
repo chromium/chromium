@@ -54,7 +54,8 @@ ThreadSafePartitionRoot& PCScanMetadataAllocator() {
   static base::NoDestructor<ThreadSafePartitionRoot> allocator{
       PartitionOptions{PartitionOptions::Alignment::kRegular,
                        PartitionOptions::ThreadCache::kDisabled,
-                       PartitionOptions::PCScan::kAlwaysDisabled}};
+                       PartitionOptions::PCScan::kAlwaysDisabled,
+                       PartitionOptions::RefCount::kDisabled}};
   return *allocator;
 }
 

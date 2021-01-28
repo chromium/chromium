@@ -714,6 +714,12 @@ void HandleOOM(size_t unused_size) {
   LOG(FATAL) << "Out of memory";
 }
 
+static constexpr PartitionOptions kOpts = {
+    PartitionOptions::Alignment::kRegular,
+    PartitionOptions::ThreadCache::kDisabled,
+    PartitionOptions::PCScan::kAlwaysDisabled,
+    PartitionOptions::RefCount::kEnabled};
+
 TEST(BackupRefPtrImpl, Basic) {
   // This test works only if GigaCage is enabled. Bail out otherwise.
   if (!features::IsPartitionAllocGigaCageEnabled())
@@ -723,7 +729,7 @@ TEST(BackupRefPtrImpl, Basic) {
   // new/delete once PartitionAlloc Everywhere is fully enabled.
   PartitionAllocGlobalInit(HandleOOM);
   PartitionAllocator<ThreadSafe> allocator;
-  allocator.init({});
+  allocator.init(kOpts);
   uint64_t* raw_ptr1 = reinterpret_cast<uint64_t*>(
       allocator.root()->Alloc(sizeof(uint64_t), ""));
   // Use the actual CheckedPtr implementation, not a test substitute, to
@@ -763,7 +769,7 @@ TEST(BackupRefPtrImpl, ZeroSized) {
   // new/delete once PartitionAlloc Everywhere is fully enabled.
   PartitionAllocGlobalInit(HandleOOM);
   PartitionAllocator<ThreadSafe> allocator;
-  allocator.init({});
+  allocator.init(kOpts);
 
   std::vector<CheckedPtr<void>> ptrs;
   // Use a reasonable number of elements to fill up the slot span.

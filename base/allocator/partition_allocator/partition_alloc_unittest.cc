@@ -186,8 +186,14 @@ class PartitionAllocTest : public testing::Test {
     scoped_feature_list.InitWithFeatures({features::kPartitionAllocGigaCage},
                                          {});
     PartitionAllocGlobalInit(HandleOOM);
-    allocator.init({PartitionOptions::Alignment::kRegular});
-    aligned_allocator.init({PartitionOptions::Alignment::kAlignedAlloc});
+    allocator.init({PartitionOptions::Alignment::kRegular,
+                    PartitionOptions::ThreadCache::kDisabled,
+                    PartitionOptions::PCScan::kAlwaysDisabled,
+                    PartitionOptions::RefCount::kEnabled});
+    aligned_allocator.init({PartitionOptions::Alignment::kAlignedAlloc,
+                            PartitionOptions::ThreadCache::kDisabled,
+                            PartitionOptions::PCScan::kAlwaysDisabled,
+                            PartitionOptions::RefCount::kDisabled});
     test_bucket_index_ = SizeToIndex(kRealAllocSize);
   }
 

@@ -132,9 +132,19 @@ struct PartitionOptions {
   };
 
   enum class RefCount {
-    kEnabled,
     kDisabled,
+    kEnabled,
   };
+
+  // Constructor to suppress aggregate initialization.
+  constexpr PartitionOptions(Alignment alignment,
+                             ThreadCache thread_cache,
+                             PCScan pcscan,
+                             RefCount ref_count)
+      : alignment(alignment),
+        thread_cache(thread_cache),
+        pcscan(pcscan),
+        ref_count(ref_count) {}
 
   Alignment alignment;
   ThreadCache thread_cache;
