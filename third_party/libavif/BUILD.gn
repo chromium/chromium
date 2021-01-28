@@ -2,13 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//media/media_options.gni")
+
 source_set("libavif") {
   sources = [
     "src/include/avif/avif.h",
     "src/include/avif/internal.h",
     "src/src/alpha.c",
     "src/src/avif.c",
-    "src/src/codec_dav1d.c",
     "src/src/colr.c",
     "src/src/io.c",
     "src/src/mem.c",
@@ -25,9 +26,21 @@ source_set("libavif") {
   # configs += [ "//build/config/compiler:no_chromium_code" ]
   include_dirs = [
     "src/include/",
-    "../dav1d/libdav1d/include/",
   ]
-  defines = [ "AVIF_CODEC_DAV1D" ]
+  defines = []
 
-  deps = [ "//third_party/dav1d" ]
+  deps = []
+
+  if (enable_dav1d_decoder) {
+    sources += [ "src/src/codec_dav1d.c" ]
+    include_dirs += [ "../dav1d/libdav1d/include/" ]
+    defines += [ "AVIF_CODEC_DAV1D" ]
+    deps += [ "//third_party/dav1d" ]
+  }
+
+  if (enable_libgav1_decoder) {
+    sources += [ "src/src/codec_libgav1.c" ]
+    defines += [ "AVIF_CODEC_LIBGAV1" ]
+    deps += [ "//third_party/libgav1" ]
+  }
 }
