@@ -2212,6 +2212,25 @@
             ]
         }
     ],
+    "DeleteOverwrittenDownloads": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DeleteOverwrittenDownloads"
+                    ]
+                }
+            ]
+        }
+    ],
     "DesktopHats": [
         {
             "platforms": [
