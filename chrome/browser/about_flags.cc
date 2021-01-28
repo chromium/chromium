@@ -4463,7 +4463,8 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNewTabstripAnimationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kNewTabstripAnimation)},
 
-    {"scrollable-tabstrip", flag_descriptions::kScrollableTabStripName,
+    {flag_descriptions::kScrollableTabStripFlagId,
+     flag_descriptions::kScrollableTabStripName,
      flag_descriptions::kScrollableTabStripDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kScrollableTabStrip)},
 
