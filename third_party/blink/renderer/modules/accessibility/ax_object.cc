@@ -2474,10 +2474,6 @@ bool AXObject::AncestorExposesActiveDescendant() const {
   return parent->AncestorExposesActiveDescendant();
 }
 
-bool AXObject::HasIndirectChildren() const {
-  return RoleValue() == ax::mojom::blink::Role::kTableHeaderContainer;
-}
-
 bool AXObject::CanSetSelectedAttribute() const {
   // Sub-widget elements can be selected if not disabled (native or ARIA)
   return IsSubWidget() && Restriction() != kRestrictionDisabled;
@@ -3309,16 +3305,12 @@ AXObject::InOrderTraversalIterator AXObject::GetInOrderTraversalIterator() {
 }
 
 int AXObject::ChildCountIncludingIgnored() const {
-  return HasIndirectChildren() ? 0 : int{ChildrenIncludingIgnored().size()};
+  return int{ChildrenIncludingIgnored().size()};
 }
 
 AXObject* AXObject::ChildAtIncludingIgnored(int index) const {
-  // We need to use "ChildCountIncludingIgnored()" and
-  // "ChildrenIncludingIgnored()" instead of using the "children_" member
-  // directly, because we might need to update children and check for the
-  // presence of indirect children.
-  if (index < 0 || index >= ChildCountIncludingIgnored())
-    return nullptr;
+  DCHECK_GE(index, 0);
+  DCHECK_LT(index, ChildCountIncludingIgnored());
   return ChildrenIncludingIgnored()[index];
 }
 
@@ -4701,7 +4693,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kCaret:
     case ax::mojom::blink::Role::kClient:
     case ax::mojom::blink::Role::kColorWell:
-    case ax::mojom::blink::Role::kColumn:
     case ax::mojom::blink::Role::kComboBoxMenuButton:  // Only value from
                                                        // content.
     case ax::mojom::blink::Role::kComboBoxGrouping:
@@ -4796,7 +4787,6 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
     case ax::mojom::blink::Role::kSuggestion:
     case ax::mojom::blink::Role::kSvgRoot:
     case ax::mojom::blink::Role::kTable:
-    case ax::mojom::blink::Role::kTableHeaderContainer:
     case ax::mojom::blink::Role::kTabList:
     case ax::mojom::blink::Role::kTabPanel:
     case ax::mojom::blink::Role::kTerm:
@@ -4920,8 +4910,10 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
       return is_inside_portal && is_main_frame;
     }
 
+    case ax::mojom::blink::Role::kColumn:
+    case ax::mojom::blink::Role::kTableHeaderContainer:
     case ax::mojom::blink::Role::kUnknown:
-      NOTREACHED() << "Illegal Role::kUnknown for " << ToString(true, true);
+      NOTREACHED() << "Role shouldn't occur in Blink: " << ToString(true, true);
       break;
   }
 

@@ -392,6 +392,9 @@ AXPosition::AXPosition(const AXObject& container)
 const AXObject* AXPosition::ChildAfterTreePosition() const {
   if (!IsValid() || IsTextPosition())
     return nullptr;
+  if (ChildIndex() == container_object_->ChildCountIncludingIgnored())
+    return nullptr;
+  DCHECK_LT(ChildIndex(), container_object_->ChildCountIncludingIgnored());
   return container_object_->ChildAtIncludingIgnored(ChildIndex());
 }
 

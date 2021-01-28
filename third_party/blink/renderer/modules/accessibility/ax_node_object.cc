@@ -3410,8 +3410,7 @@ void AXNodeObject::InsertChild(AXObject* child,
     int new_index = index;
     for (wtf_size_t i = 0; i < length; ++i) {
       // If the child was owned, it will be added elsewhere as a direct
-      // child of the object owning it, and not as an indirect child under
-      // an object not included in the tree.
+      // child of the object owning it.
       if (!AXObjectCache().IsAriaOwned(children[i])) {
         DCHECK(!children[i]->IsDetached()) << "Cannot add a detached child: "
                                            << children[i]->ToString(true, true);

@@ -80,22 +80,6 @@ void AddIntListAttributeFromWebObjects(ax::mojom::IntListAttribute attr,
     dst->AddIntListAttribute(attr, ids);
 }
 
-WebAXObject ParentObjectUnignored(WebAXObject child) {
-  WebAXObject parent = child.ParentObject();
-  while (!parent.IsDetached() && !parent.AccessibilityIsIncludedInTree())
-    parent = parent.ParentObject();
-  return parent;
-}
-
-// Returns true if |ancestor| is the first unignored parent of |child|,
-// which means that when walking up the parent chain from |child|,
-// |ancestor| is the *first* ancestor that isn't marked as
-// accessibilityIsIgnored().
-bool IsParentUnignoredOf(WebAXObject ancestor, WebAXObject child) {
-  WebAXObject parent = ParentObjectUnignored(child);
-  return parent.Equals(ancestor);
-}
-
 // Helper function that searches in the subtree of |obj| to a max
 // depth of |max_depth| for an image.
 //
@@ -422,19 +406,15 @@ void BlinkAXTreeSource::GetChildren(
     WebAXObject child = parent.ChildAt(i);
 
     // The child may be invalid due to issues in blink accessibility code.
-    if (child.IsDetached())
+    if (child.IsDetached()) {
+      NOTREACHED();
       continue;
+    }
 
-    // Skip children whose parent isn't |parent|.
-    // As an exception, include children of an iframe element.
-    if (!is_iframe && !IsParentUnignoredOf(parent, child))
-      continue;
-
-    // Skip table headers and columns, they're only needed on Mac
-    // and soon we'll get rid of this code entirely.
-    if (child.Role() == ax::mojom::Role::kColumn ||
-        child.Role() == ax::mojom::Role::kTableHeaderContainer)
-      continue;
+    // These should not be produced by Blink. They are only needed on Mac and
+    // handled in AXTableInfo on the browser side.
+    DCHECK_NE(child.Role(), ax::mojom::Role::kColumn);
+    DCHECK_NE(child.Role(), ax::mojom::Role::kTableHeaderContainer);
 
     // If an optional exclude_offscreen flag is set (only intended to be
     // used for a one-time snapshot of the accessibility tree), prune any
@@ -537,23 +517,6 @@ void BlinkAXTreeSource::SerializeNode(WebAXObject src,
     // Presence of other ARIA attributes.
     if (src.HasAriaAttribute())
       dst->AddBoolAttribute(ax::mojom::BoolAttribute::kHasAriaAttribute, true);
-  }
-
-  // Add the ids of *indirect* children - those who are children of this node,
-  // but whose parent is *not* this node. One example is a table
-  // cell, which is a child of both a row and a column. Because the cell's
-  // parent is the row, the row adds it as a child, and the column adds it
-  // as an indirect child.
-  int child_count = src.ChildCount();
-  std::vector<int32_t> indirect_child_ids;
-  for (int i = 0; i < child_count; ++i) {
-    WebAXObject child = src.ChildAt(i);
-    if (!is_iframe && !child.IsDetached() && !IsParentUnignoredOf(src, child))
-      indirect_child_ids.push_back(child.AxID());
-  }
-  if (indirect_child_ids.size() > 0) {
-    dst->AddIntListAttribute(ax::mojom::IntListAttribute::kIndirectChildIds,
-                             indirect_child_ids);
   }
 
   if (dst->id == image_data_node_id_) {
