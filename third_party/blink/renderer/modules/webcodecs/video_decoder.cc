@@ -167,18 +167,9 @@ VideoDecoderConfig* CopyConfig(const VideoDecoderConfig& config) {
   copy->setCodec(config.codec());
 
   if (config.hasDescription()) {
-    DOMArrayBuffer* buffer_copy;
-    if (config.description().IsArrayBuffer()) {
-      DOMArrayBuffer* buffer = config.description().GetAsArrayBuffer();
-      buffer_copy =
-          DOMArrayBuffer::Create(buffer->Data(), buffer->ByteLength());
-    } else {
-      DCHECK(config.description().IsArrayBufferView());
-      DOMArrayBufferView* view =
-          config.description().GetAsArrayBufferView().Get();
-      buffer_copy =
-          DOMArrayBuffer::Create(view->BaseAddress(), view->byteLength());
-    }
+    DOMArrayPiece buffer(config.description());
+    DOMArrayBuffer* buffer_copy =
+        DOMArrayBuffer::Create(buffer.Data(), buffer.ByteLength());
     copy->setDescription(
         ArrayBufferOrArrayBufferView::FromArrayBuffer(buffer_copy));
   }
@@ -305,19 +296,10 @@ CodecConfigEval VideoDecoder::MakeMediaVideoDecoderConfig(
   // TODO(sandersd): Can we allow shared ArrayBuffers?
   std::vector<uint8_t> extra_data;
   if (config.hasDescription()) {
-    if (config.description().IsArrayBuffer()) {
-      DOMArrayBuffer* buffer = config.description().GetAsArrayBuffer();
-      uint8_t* start = static_cast<uint8_t*>(buffer->Data());
-      size_t size = buffer->ByteLength();
-      extra_data.assign(start, start + size);
-    } else {
-      DCHECK(config.description().IsArrayBufferView());
-      DOMArrayBufferView* view =
-          config.description().GetAsArrayBufferView().Get();
-      uint8_t* start = static_cast<uint8_t*>(view->BaseAddress());
-      size_t size = view->byteLength();
-      extra_data.assign(start, start + size);
-    }
+    DOMArrayPiece buffer(config.description());
+    uint8_t* start = static_cast<uint8_t*>(buffer.Data());
+    size_t size = buffer.ByteLength();
+    extra_data.assign(start, start + size);
   }
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
