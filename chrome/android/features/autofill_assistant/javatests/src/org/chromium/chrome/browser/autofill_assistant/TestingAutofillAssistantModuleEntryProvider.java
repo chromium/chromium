@@ -110,12 +110,13 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
     }
 
     @Override
-    public void getModuleEntry(Tab tab, Callback<AutofillAssistantModuleEntry> callback) {
+    public void getModuleEntry(
+            Tab tab, Callback<AutofillAssistantModuleEntry> callback, boolean showUi) {
         if (mCannotInstall) {
             callback.onResult(null);
             return;
         }
         mNotInstalled = false;
-        super.getModuleEntry(tab, callback);
+        super.getModuleEntry(tab, callback, showUi);
     }
 }
