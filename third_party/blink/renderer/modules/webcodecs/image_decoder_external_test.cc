@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_track.h"
@@ -41,6 +42,14 @@ class ImageDecoderTest : public testing::Test {
                                    ScriptValue value) {
     return NativeValueTraits<ImageFrameExternal>::NativeValue(
         v8_scope->GetIsolate(), value.V8Value(), v8_scope->GetExceptionState());
+  }
+
+  ImageDecodeOptions* MakeOptions(uint32_t frame_index = 0,
+                                  bool complete_frames_only = true) {
+    auto* options = MakeGarbageCollected<ImageDecodeOptions>();
+    options->setFrameIndex(frame_index);
+    options->setCompleteFramesOnly(complete_frames_only);
+    return options;
   }
 
   scoped_refptr<SharedBuffer> ReadFile(StringView file_name) {
@@ -138,7 +147,7 @@ TEST_F(ImageDecoderTest, DecodeNeuteredAtDecodeTime) {
   ArrayBufferContents contents;
   ASSERT_TRUE(buffer->Transfer(v8_scope.GetIsolate(), contents));
 
-  auto promise = decoder->decode(0, true);
+  auto promise = decoder->decode(MakeOptions(0, true));
   ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
   tester.WaitUntilSettled();
   ASSERT_TRUE(tester.IsRejected());
@@ -192,7 +201,7 @@ TEST_F(ImageDecoderTest, DecodeGif) {
   EXPECT_EQ(tracks[0]->animated(), true);
 
   {
-    auto promise = decoder->decode(0, true);
+    auto promise = decoder->decode(MakeOptions(0, true));
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
     ASSERT_TRUE(tester.IsFulfilled());
@@ -206,7 +215,7 @@ TEST_F(ImageDecoderTest, DecodeGif) {
   }
 
   {
-    auto promise = decoder->decode(1, true);
+    auto promise = decoder->decode(MakeOptions(1, true));
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
     ASSERT_TRUE(tester.IsFulfilled());
@@ -220,7 +229,7 @@ TEST_F(ImageDecoderTest, DecodeGif) {
   }
 
   // Decoding past the end should result in a rejected promise.
-  auto promise = decoder->decode(3, true);
+  auto promise = decoder->decode(MakeOptions(3, true));
   ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
   tester.WaitUntilSettled();
   ASSERT_TRUE(tester.IsRejected());

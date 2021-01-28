@@ -16,16 +16,11 @@
   // Returns true if ImageDecoder supports decoding of the given mime type.
   static boolean canDecodeType(USVString type);
 
-  // Decodes the frame at the given index. If we're still receiving data, this
-  // method will wait to resolve the promise until the given |frameIndex| is
-  // available or reject the promise if we receive all data or fail before
-  // |frameIndex| is available.
-  //
-  // When |completeFramesOnly| is set to false, partial progressive frames will
-  // be returned. When in this mode, decode() calls will resolve only once per
-  // new partial image at |frameIndex| until the frame is complete.
-  Promise<ImageFrame> decode(optional unsigned long frameIndex = 0,
-                             optional boolean completeFramesOnly = true);
+  // Decodes a frame using the given |options| or the first frame if no options
+  // are provided. If data is still being received, the promise won't be
+  // resolved or rejected until the given |options.frameIndex| is available,
+  // all data is received, or a decoding error occurs.
+  Promise<ImageFrame> decode(optional ImageDecodeOptions options);
 
   // Decodes only the metadata for an image; resolves the promise when metadata
   // can be decoded. Normally this is done automatically at construction time.

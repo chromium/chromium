@@ -20,6 +20,7 @@ namespace blink {
 class ExceptionState;
 class ScriptState;
 class ImageBitmapOptions;
+class ImageDecodeOptions;
 class ImageDecoder;
 class ImageDecoderInit;
 class ImageFrameExternal;
@@ -48,7 +49,7 @@ class MODULES_EXPORT ImageDecoderExternal final
   using ImageTrackList = HeapVector<Member<ImageTrackExternal>>;
 
   // image_decoder.idl implementation.
-  ScriptPromise decode(uint32_t frame_index, bool complete_frames_only);
+  ScriptPromise decode(const ImageDecodeOptions* options = nullptr);
   ScriptPromise decodeMetadata();
   void selectTrack(uint32_t track_id, ExceptionState&);
   uint32_t frameCount() const;

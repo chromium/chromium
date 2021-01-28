@@ -6,6 +6,7 @@
 #include "testing/libfuzzer/proto/lpm_interface.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decoder_init.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -131,14 +132,16 @@ DEFINE_BINARY_PROTO_FUZZER(
                                      IGNORE_EXCEPTION_FOR_TESTING);
 
     if (image_decoder) {
+      Persistent<ImageDecodeOptions> options = ImageDecodeOptions::Create();
       // Promises will be fulfilled synchronously since we're using an array
       // buffer based source.
       for (auto& invocation : proto.invocations()) {
         switch (invocation.Api_case()) {
           case wc_fuzzer::ImageDecoderApiInvocation::kDecodeImage:
-            image_decoder->decode(
-                invocation.decode_image().frame_index(),
+            options->setFrameIndex(invocation.decode_image().frame_index());
+            options->setCompleteFramesOnly(
                 invocation.decode_image().complete_frames_only());
+            image_decoder->decode(options);
             break;
           case wc_fuzzer::ImageDecoderApiInvocation::kDecodeMetadata:
             image_decoder->decodeMetadata();

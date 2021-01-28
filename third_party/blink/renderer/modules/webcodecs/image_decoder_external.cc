@@ -11,6 +11,7 @@
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_image_decode_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_frame.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_track.h"
@@ -147,14 +148,14 @@ ImageDecoderExternal::~ImageDecoderExternal() {
   DVLOG(1) << __func__;
 }
 
-ScriptPromise ImageDecoderExternal::decode(uint32_t frame_index,
-                                           bool complete_frames_only) {
+ScriptPromise ImageDecoderExternal::decode(const ImageDecodeOptions* options) {
   DVLOG(1) << __func__;
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
   auto promise = resolver->Promise();
   pending_decodes_.push_back(MakeGarbageCollected<DecodeRequest>(
-      resolver, frame_index, complete_frames_only));
+      resolver, options ? options->frameIndex() : 0,
+      options ? options->completeFramesOnly() : true));
   MaybeSatisfyPendingDecodes();
   return promise;
 }
