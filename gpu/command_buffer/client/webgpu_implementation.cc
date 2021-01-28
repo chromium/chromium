@@ -149,7 +149,7 @@ bool WebGPUCommandSerializer::Flush() {
     client_awaiting_flush_ = false;
   }
 
-  memory_transfer_service_->FreeHandlesPendingToken(helper_->InsertToken());
+  memory_transfer_service_->FreeHandles(helper_);
   return true;
 }
 
@@ -215,7 +215,7 @@ WebGPUImplementation::~WebGPUImplementation() {
   // All client-side Dawn objects are now destroyed.
   // Shared memory allocations for buffers that were still mapped at the time
   // of destruction can now be safely freed.
-  memory_transfer_service_->FreeHandlesPendingToken(helper_->InsertToken());
+  memory_transfer_service_->FreeHandles(helper_);
   helper_->Finish();
 #endif
 }
