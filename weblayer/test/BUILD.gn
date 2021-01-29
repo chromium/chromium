@@ -226,6 +226,7 @@ test("weblayer_browsertests") {
       "//components/safe_browsing/content/common:interfaces",
       "//components/safe_browsing/core:client_model_proto",
       "//components/safe_browsing/core:features",
+      "//components/safe_browsing/core/browser:token_fetcher",
       "//components/safe_browsing/core/common",
       "//components/viz/service:service_java",
       "//content/public/test/android:android_test_message_pump_support_java",
@@ -279,12 +280,15 @@ test("weblayer_unittests") {
     "//components/favicon/core:database",
     "//components/site_isolation",
   ]
-  if (is_android) {
-    deps += [ ":weblayer_test_assets" ]
-  }
   sources = [
     "../browser/favicon/favicon_backend_wrapper_unittest.cc",
     "../browser/profile_disk_operations_unittests.cc",
     "../browser/site_isolation_policy_unittest.cc",
   ]
+  if (is_android) {
+    deps += [ ":weblayer_test_assets" ]
+    sources += [
+      "../browser/safe_browsing/safe_browsing_token_fetcher_impl_unittest.cc",
+    ]
+  }
 }

@@ -591,6 +591,8 @@ source_set("weblayer_lib_base") {
       "browser/safe_browsing/safe_browsing_subresource_helper.h",
       "browser/safe_browsing/safe_browsing_tab_observer.cc",
       "browser/safe_browsing/safe_browsing_tab_observer.h",
+      "browser/safe_browsing/safe_browsing_token_fetcher_impl.cc",
+      "browser/safe_browsing/safe_browsing_token_fetcher_impl.h",
       "browser/safe_browsing/safe_browsing_ui_manager.cc",
       "browser/safe_browsing/safe_browsing_ui_manager.h",
       "browser/safe_browsing/url_checker_delegate_impl.cc",
