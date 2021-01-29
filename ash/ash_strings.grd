@@ -3158,6 +3158,18 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_ALT_TAB_CURRENT_DESK_MODE" desc="Alt-tab shows only windows from the current desk.">
         Current desk
       </message>
+      <message name="IDS_ASH_ALT_TAB_ALL_DESKS_MODE_SELECTED_TITLE" desc="Accessibility text read by ChromeVox to indicate that alt-tab is in the all-desks mode.">
+        Show windows from all desks, radio button selected
+      </message>
+      <message name="IDS_ASH_ALT_TAB_CURRENT_DESK_MODE_SELECTED_TITLE" desc="Accessibility text read by ChromeVox to indicate that alt-tab is in the current-desk mode.">
+        Show windows from the current desk, radio button selected
+      </message>
+      <message name="IDS_ASH_ALT_TAB_FOCUS_WINDOW_LIST_TITLE" desc="Accessibility text read by ChromeVox to suggest that the user can continue cycling the window list by pressing Down arrow key.">
+        Press the Down arrow key to switch windows
+      </message>
+      <message name="IDS_ASH_ALT_TAB_WINDOW_SELECTED_TITLE" desc="Accessibility text read by ChromeVox to inform that the window is selected during alt-tab mode switching.">
+        <ph name="WINDOW_TITLE">$1<ex>Chrome New tab</ex></ph> window selected
+      </message>
 
       <!-- Back gesture -->
       <message name="IDS_ASH_BACK_GESTURE_CONTEXTUAL_NUDGE" desc="Information shown in the suggestion label for the contextual nudge of the back gesture in tablet mode">
