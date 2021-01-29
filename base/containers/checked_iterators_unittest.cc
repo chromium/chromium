@@ -81,9 +81,6 @@ TEST(CheckedContiguousIterator, ConvertingComparisonOperators) {
 }
 
 #if defined(_LIBCPP_VERSION)
-// TODO(crbug.com/1166360): This optimization was broken by upstream libc++
-// changes. Work around the issue and re-enable the test.
-#if 0
 namespace {
 
 // Helper template that wraps an iterator and disables its dereference and
@@ -123,7 +120,6 @@ TEST(CheckedContiguousIterator, OptimizedCopy) {
   EXPECT_TRUE(std::equal(std::begin(arr_in), std::end(arr_in),
                          std::begin(arr_out), std::end(arr_out)));
 }
-#endif
 
 TEST(CheckedContiguousIterator, UnwrapIter) {
   static_assert(
