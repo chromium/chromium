@@ -97,8 +97,7 @@ void SodaInstallerImpl::InstallLanguage(PrefService* prefs) {
 }
 
 bool SodaInstallerImpl::IsSodaRegistered() {
-  if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption))
-    return true;
+  DCHECK(base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption));
   std::vector<std::string> component_ids =
       g_browser_process->component_updater()->GetComponentIDs();
   const bool has_soda = base::Contains(

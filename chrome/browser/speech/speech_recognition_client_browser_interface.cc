@@ -11,6 +11,7 @@
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "media/base/media_switches.h"
 
 class PrefChangeRegistrar;
 
@@ -62,7 +63,8 @@ void SpeechRecognitionClientBrowserInterface::
   bool enabled = profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled);
 
   if (enabled) {
-    if (speech::SodaInstaller::GetInstance()->IsSodaRegistered()) {
+    if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
+        speech::SodaInstaller::GetInstance()->IsSodaRegistered()) {
       NotifyObservers(enabled);
     } else {
       speech::SodaInstaller::GetInstance()->AddObserver(this);

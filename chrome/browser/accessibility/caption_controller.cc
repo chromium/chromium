@@ -108,7 +108,8 @@ void CaptionController::OnLiveCaptionEnabledChanged() {
     // which case the UI will construct prematurely.
     // TODO(crbug.com/1160272): Check whether SODA has downloaded without
     // blocking the process.
-    if (speech::SodaInstaller::GetInstance()->IsSodaRegistered()) {
+    if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
+        speech::SodaInstaller::GetInstance()->IsSodaRegistered()) {
       UpdateUIEnabled();
     } else {
       // Register SODA component and download speech model.
