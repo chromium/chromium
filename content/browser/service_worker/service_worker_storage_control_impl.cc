@@ -282,10 +282,8 @@ void ServiceWorkerStorageControlImpl::CreateResourceMetadataWriter(
 
 void ServiceWorkerStorageControlImpl::StoreUncommittedResourceId(
     int64_t resource_id,
-    const GURL& origin,
     StoreUncommittedResourceIdCallback callback) {
-  storage_->StoreUncommittedResourceId(resource_id, origin,
-                                       std::move(callback));
+  storage_->StoreUncommittedResourceId(resource_id, std::move(callback));
 }
 
 void ServiceWorkerStorageControlImpl::DoomUncommittedResources(
@@ -452,9 +450,10 @@ void ServiceWorkerStorageControlImpl::DidStoreRegistration(
     StoreRegistrationCallback callback,
     storage::mojom::ServiceWorkerDatabaseStatus status,
     int64_t deleted_version_id,
+    uint64_t deleted_resources_size,
     const std::vector<int64_t>& newly_purgeable_resources) {
   MaybePurgeResources(deleted_version_id, newly_purgeable_resources);
-  std::move(callback).Run(status);
+  std::move(callback).Run(status, deleted_resources_size);
 }
 
 void ServiceWorkerStorageControlImpl::DidDeleteRegistration(
@@ -462,9 +461,10 @@ void ServiceWorkerStorageControlImpl::DidDeleteRegistration(
     storage::mojom::ServiceWorkerDatabaseStatus status,
     ServiceWorkerStorage::OriginState origin_state,
     int64_t deleted_version_id,
+    uint64_t deleted_resources_size,
     const std::vector<int64_t>& newly_purgeable_resources) {
   MaybePurgeResources(deleted_version_id, newly_purgeable_resources);
-  std::move(callback).Run(status, origin_state);
+  std::move(callback).Run(status, deleted_resources_size, origin_state);
 }
 
 void ServiceWorkerStorageControlImpl::DidGetNewVersionId(

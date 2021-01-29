@@ -283,6 +283,7 @@ ServiceWorkerContextCore::ServiceWorkerContextCore(
                                     ServiceWorkerContainerHost*>>()),
       registry_(
           std::make_unique<ServiceWorkerRegistry>(this,
+                                                  quota_manager_proxy,
                                                   special_storage_policy)),
       job_coordinator_(std::make_unique<ServiceWorkerJobCoordinator>(this)),
       loader_factory_getter_(url_loader_factory_getter),

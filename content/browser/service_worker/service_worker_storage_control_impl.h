@@ -109,7 +109,6 @@ class CONTENT_EXPORT ServiceWorkerStorageControlImpl
           writer) override;
   void StoreUncommittedResourceId(
       int64_t resource_id,
-      const GURL& origin,
       StoreUncommittedResourceIdCallback callback) override;
   void DoomUncommittedResources(
       const std::vector<int64_t>& resource_ids,
@@ -180,12 +179,14 @@ class CONTENT_EXPORT ServiceWorkerStorageControlImpl
       StoreRegistrationCallback callback,
       storage::mojom::ServiceWorkerDatabaseStatus status,
       int64_t deleted_version_id,
+      uint64_t deleted_resources_size,
       const std::vector<int64_t>& newly_purgeable_resources);
   void DidDeleteRegistration(
       DeleteRegistrationCallback callback,
       storage::mojom::ServiceWorkerDatabaseStatus status,
       ServiceWorkerStorage::OriginState origin_state,
       int64_t deleted_version_id,
+      uint64_t deleted_resources_size,
       const std::vector<int64_t>& newly_purgeable_resources);
   void DidGetNewVersionId(GetNewVersionIdCallback callback, int64_t version_id);
 

@@ -78,6 +78,21 @@ void RecordRetryCount(size_t retries) {
                               retries);
 }
 
+// Notifies quota manager that a disk write operation failed so that it can
+// check for storage pressure.
+void MaybeNotifyWriteFailed(
+    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
+    storage::mojom::ServiceWorkerDatabaseStatus status,
+    const url::Origin& origin) {
+  if (!quota_manager_proxy)
+    return;
+
+  if (status == storage::mojom::ServiceWorkerDatabaseStatus::kErrorFailed ||
+      status == storage::mojom::ServiceWorkerDatabaseStatus::kErrorIOError) {
+    quota_manager_proxy->NotifyWriteFailed(origin);
+  }
+}
+
 }  // namespace
 
 using Invoker = base::RepeatingCallback<void(ServiceWorkerRegistry*)>;
@@ -102,7 +117,8 @@ class ServiceWorkerRegistry::InflightCallStoreRegistration
       storage::mojom::ServiceWorkerRegistrationDataPtr data,
       std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources,
       base::RepeatingCallback<
-          void(storage::mojom::ServiceWorkerDatabaseStatus status)> callback)
+          void(storage::mojom::ServiceWorkerDatabaseStatus status,
+               uint64_t deleted_resources_size)> callback)
       : data_(std::move(data)),
         resources_(std::move(resources)),
         callback_(std::move(callback)) {}
@@ -124,7 +140,8 @@ class ServiceWorkerRegistry::InflightCallStoreRegistration
   storage::mojom::ServiceWorkerRegistrationDataPtr data_;
   std::vector<storage::mojom::ServiceWorkerResourceRecordPtr> resources_;
   base::RepeatingCallback<void(
-      storage::mojom::ServiceWorkerDatabaseStatus status)>
+      storage::mojom::ServiceWorkerDatabaseStatus status,
+      uint64_t deleted_resources_size)>
       callback_;
 };
 
@@ -231,8 +248,10 @@ class ServiceWorkerRegistry::StoragePolicyObserver
 
 ServiceWorkerRegistry::ServiceWorkerRegistry(
     ServiceWorkerContextCore* context,
+    storage::QuotaManagerProxy* quota_manager_proxy,
     storage::SpecialStoragePolicy* special_storage_policy)
     : context_(context),
+      quota_manager_proxy_(quota_manager_proxy),
       special_storage_policy_(special_storage_policy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(context_);
@@ -243,6 +262,7 @@ ServiceWorkerRegistry::ServiceWorkerRegistry(
     ServiceWorkerContextCore* context,
     ServiceWorkerRegistry* old_registry)
     : context_(context),
+      quota_manager_proxy_(old_registry->quota_manager_proxy_),
       special_storage_policy_(old_registry->special_storage_policy_) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(context_);
@@ -542,8 +562,9 @@ void ServiceWorkerRegistry::UpdateToActiveState(int64_t registration_id,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::UpdateToActiveState,
-      base::BindRepeating(&ServiceWorkerRegistry::DidUpdateRegistration,
-                          weak_factory_.GetWeakPtr(), base::Passed(&callback)),
+      base::BindRepeating(&ServiceWorkerRegistry::DidUpdateToActiveState,
+                          weak_factory_.GetWeakPtr(),
+                          url::Origin::Create(origin), base::Passed(&callback)),
       static_cast<const int64_t>(registration_id), origin);
 }
 
@@ -597,8 +618,8 @@ void ServiceWorkerRegistry::StoreUncommittedResourceId(int64_t resource_id,
       &storage::mojom::ServiceWorkerStorageControl::StoreUncommittedResourceId,
       base::BindRepeating(
           &ServiceWorkerRegistry::DidWriteUncommittedResourceIds,
-          weak_factory_.GetWeakPtr()),
-      static_cast<const int64_t>(resource_id), origin);
+          weak_factory_.GetWeakPtr(), url::Origin::Create(origin)),
+      static_cast<const int64_t>(resource_id));
 }
 
 void ServiceWorkerRegistry::DoomUncommittedResource(int64_t resource_id) {
@@ -670,7 +691,7 @@ void ServiceWorkerRegistry::StoreUserData(
       registration_id, origin, std::move(user_data),
       base::BindRepeating(&ServiceWorkerRegistry::DidStoreUserData,
                           weak_factory_.GetWeakPtr(), base::Passed(&callback),
-                          call_id));
+                          call_id, origin));
   StartRemoteCall(call_id, std::move(call));
 }
 
@@ -1237,16 +1258,29 @@ void ServiceWorkerRegistry::DidStoreRegistration(
     const GURL& stored_scope,
     StatusCallback callback,
     uint64_t call_id,
-    storage::mojom::ServiceWorkerDatabaseStatus database_status) {
+    storage::mojom::ServiceWorkerDatabaseStatus database_status,
+    uint64_t deleted_resources_size) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FinishRemoteCall(call_id);
   blink::ServiceWorkerStatusCode status =
       DatabaseStatusToStatusCode(database_status);
+  url::Origin origin = url::Origin::Create(stored_scope);
+
+  MaybeNotifyWriteFailed(quota_manager_proxy_, database_status, origin);
 
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     ScheduleDeleteAndStartOver();
     std::move(callback).Run(status);
     return;
+  }
+
+  if (quota_manager_proxy_) {
+    // Can be nullptr in tests.
+    quota_manager_proxy_->NotifyStorageModified(
+        storage::QuotaClientType::kServiceWorker, origin,
+        blink::mojom::StorageType::kTemporary,
+        stored_resources_total_size_bytes - deleted_resources_size,
+        base::Time::Now());
   }
 
   scoped_refptr<ServiceWorkerRegistration> registration =
@@ -1259,7 +1293,7 @@ void ServiceWorkerRegistry::DidStoreRegistration(
   context_->NotifyRegistrationStored(stored_registration_id, stored_scope);
 
   if (special_storage_policy_) {
-    EnsureRegisteredOriginIsTracked(url::Origin::Create(stored_scope));
+    EnsureRegisteredOriginIsTracked(origin);
     OnStoragePolicyChanged();
   }
 
@@ -1272,6 +1306,7 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
     StatusCallback callback,
     uint64_t call_id,
     storage::mojom::ServiceWorkerDatabaseStatus database_status,
+    uint64_t deleted_resources_size,
     ServiceWorkerStorage::OriginState origin_state) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FinishRemoteCall(call_id);
@@ -1282,6 +1317,14 @@ void ServiceWorkerRegistry::DidDeleteRegistration(
     ScheduleDeleteAndStartOver();
     std::move(callback).Run(status);
     return;
+  }
+
+  if (quota_manager_proxy_) {
+    // Can be nullptr in tests.
+    quota_manager_proxy_->NotifyStorageModified(
+        storage::QuotaClientType::kServiceWorker, url::Origin::Create(origin),
+        blink::mojom::StorageType::kTemporary, -deleted_resources_size,
+        base::Time::Now());
   }
 
   scoped_refptr<ServiceWorkerRegistration> registration =
@@ -1313,11 +1356,22 @@ void ServiceWorkerRegistry::DidUpdateRegistration(
   std::move(callback).Run(DatabaseStatusToStatusCode(status));
 }
 
+void ServiceWorkerRegistry::DidUpdateToActiveState(
+    const url::Origin& origin,
+    StatusCallback callback,
+    uint64_t call_id,
+    storage::mojom::ServiceWorkerDatabaseStatus status) {
+  MaybeNotifyWriteFailed(quota_manager_proxy_, status, origin);
+  DidUpdateRegistration(std::move(callback), call_id, status);
+}
+
 void ServiceWorkerRegistry::DidWriteUncommittedResourceIds(
+    const url::Origin& origin,
     uint64_t call_id,
     storage::mojom::ServiceWorkerDatabaseStatus status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FinishRemoteCall(call_id);
+  MaybeNotifyWriteFailed(quota_manager_proxy_, status, origin);
   if (status != storage::mojom::ServiceWorkerDatabaseStatus::kOk)
     ScheduleDeleteAndStartOver();
 }
@@ -1362,9 +1416,11 @@ void ServiceWorkerRegistry::DidGetUserKeysAndData(
 void ServiceWorkerRegistry::DidStoreUserData(
     StatusCallback callback,
     uint64_t call_id,
+    const url::Origin& origin,
     storage::mojom::ServiceWorkerDatabaseStatus status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   FinishRemoteCall(call_id);
+  MaybeNotifyWriteFailed(quota_manager_proxy_, status, origin);
   // |status| can be NOT_FOUND when the associated registration did not exist in
   // the database. In the case, we don't have to schedule the corruption
   // recovery.

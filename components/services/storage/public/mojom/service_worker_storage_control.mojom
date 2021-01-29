@@ -172,15 +172,21 @@ interface ServiceWorkerStorageControl {
       (ServiceWorkerDatabaseStatus status,
        array<ServiceWorkerRegistrationData> registrations);
 
-  // Stores |registration_data| and |resources|.
+  // Stores |registration_data| and |resources|. If exists, the previous
+  // registration for `registration.registration_id` will be deleted when
+  // storing succeeds. `deleted_resources_size` carries the total size of
+  // deleted resources.
   StoreRegistration(ServiceWorkerRegistrationData registration,
                     array<ServiceWorkerResourceRecord> resources) =>
-      (ServiceWorkerDatabaseStatus status);
+      (ServiceWorkerDatabaseStatus status, uint64 deleted_resources_size);
 
-  // Deletes the registration specified by |registration_id|. |origin_state| is
-  // kDelete if there is no registration for |origin| after deletion.
+  // Deletes the registration specified by `registration_id`.
+  // `deleted_resources_size` carries the total size of deleted resources.
+  // `origin_state` is kDelete if there is no registration for |origin| after
+  // deletion.
   DeleteRegistration(int64 registration_id, url.mojom.Url origin) =>
       (ServiceWorkerDatabaseStatus status,
+       uint64 deleted_resources_size,
        ServiceWorkerStorageOriginState origin_state);
 
   // Updates the state of the registration's stored version to active.
@@ -235,7 +241,7 @@ interface ServiceWorkerStorageControl {
   // with any registration yet.
   // StoreRegistration() or DoomUncommittedResources() needs to be
   // called later to clear the |resource_id| from the uncommitted resource list.
-  StoreUncommittedResourceId(int64 resource_id, url.mojom.Url origin) =>
+  StoreUncommittedResourceId(int64 resource_id) =>
       (ServiceWorkerDatabaseStatus status);
 
   // Removes |resource_ids| from the uncommitted resource list.

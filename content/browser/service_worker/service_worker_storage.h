@@ -32,10 +32,6 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-namespace storage {
-class QuotaManagerProxy;
-}
-
 namespace content {
 
 class ServiceWorkerStorageControlImplTest;
@@ -83,11 +79,13 @@ class CONTENT_EXPORT ServiceWorkerStorage {
   using StoreRegistrationDataCallback = base::OnceCallback<void(
       ServiceWorkerDatabase::Status status,
       int64_t deleted_version_id,
+      uint64_t deleted_resources_size,
       const std::vector<int64_t>& newly_purgeable_resources)>;
   using DeleteRegistrationCallback = base::OnceCallback<void(
       ServiceWorkerDatabase::Status status,
       OriginState origin_state,
       int64_t deleted_version_id,
+      uint64_t deleted_resources_size,
       const std::vector<int64_t>& newly_purgeable_resources)>;
   using ResourceIdsCallback =
       base::OnceCallback<void(ServiceWorkerDatabase::Status status,
@@ -107,8 +105,7 @@ class CONTENT_EXPORT ServiceWorkerStorage {
 
   static std::unique_ptr<ServiceWorkerStorage> Create(
       const base::FilePath& user_data_directory,
-      scoped_refptr<base::SequencedTaskRunner> database_task_runner,
-      storage::QuotaManagerProxy* quota_manager_proxy);
+      scoped_refptr<base::SequencedTaskRunner> database_task_runner);
 
   // Returns all origins which have service worker registrations.
   void GetRegisteredOrigins(GetRegisteredOriginsCallback callback);
@@ -195,7 +192,6 @@ class CONTENT_EXPORT ServiceWorkerStorage {
   // Adds |resource_id| to the set of resources that are in the disk cache
   // but not yet stored with a registration.
   void StoreUncommittedResourceId(int64_t resource_id,
-                                  const GURL& origin,
                                   DatabaseStatusCallback callback);
 
   // Removes resource ids from uncommitted list, adds them to the purgeable list
@@ -354,8 +350,7 @@ class CONTENT_EXPORT ServiceWorkerStorage {
 
   ServiceWorkerStorage(
       const base::FilePath& user_data_directory,
-      scoped_refptr<base::SequencedTaskRunner> database_task_runner,
-      storage::QuotaManagerProxy* quota_manager_proxy);
+      scoped_refptr<base::SequencedTaskRunner> database_task_runner);
 
   base::FilePath GetDatabasePath();
   base::FilePath GetDiskCachePath();
@@ -378,23 +373,14 @@ class CONTENT_EXPORT ServiceWorkerStorage {
       const GURL& origin,
       const ServiceWorkerDatabase::DeletedVersion& deleted_version,
       ServiceWorkerDatabase::Status status);
-  void DidUpdateToActiveState(DatabaseStatusCallback callback,
-                              const GURL& origin,
-                              ServiceWorkerDatabase::Status status);
   void DidDeleteRegistration(
       std::unique_ptr<DidDeleteRegistrationParams> params,
       OriginState origin_state,
       const ServiceWorkerDatabase::DeletedVersion& deleted_version,
       ServiceWorkerDatabase::Status status);
-  void DidWriteUncommittedResourceIds(DatabaseStatusCallback callback,
-                                      const GURL& origin,
-                                      ServiceWorkerDatabase::Status status);
   void DidDoomUncommittedResourceIds(const std::vector<int64_t>& resource_ids,
                                      DatabaseStatusCallback callback,
                                      ServiceWorkerDatabase::Status status);
-  void DidStoreUserData(DatabaseStatusCallback callback,
-                        const url::Origin& origin,
-                        ServiceWorkerDatabase::Status status);
 
   // Lazy disk_cache getter.
   ServiceWorkerDiskCache* disk_cache();
@@ -558,8 +544,6 @@ class CONTENT_EXPORT ServiceWorkerStorage {
   // |database_| is only accessed using |database_task_runner_|.
   std::unique_ptr<ServiceWorkerDatabase> database_;
   scoped_refptr<base::SequencedTaskRunner> database_task_runner_;
-
-  scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
   std::unique_ptr<ServiceWorkerDiskCache> disk_cache_;
 

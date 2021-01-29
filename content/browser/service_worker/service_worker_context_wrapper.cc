@@ -1606,8 +1606,7 @@ void ServiceWorkerContextWrapper::BindStorageControl(
             {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
     storage_control_ = std::make_unique<ServiceWorkerStorageControlImpl>(
         ServiceWorkerStorage::Create(user_data_directory_,
-                                     std::move(database_task_runner),
-                                     quota_manager_proxy_.get()));
+                                     std::move(database_task_runner)));
     storage_control_->Bind(std::move(receiver));
   }
 }

@@ -25,9 +25,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
-#include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
-#include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
@@ -37,21 +35,6 @@ namespace {
 
 void RunSoon(const base::Location& from_here, base::OnceClosure closure) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(from_here, std::move(closure));
-}
-
-// Notifies quota manager that a disk write operation failed so that it can
-// check for storage pressure.
-void MaybeNotifyWriteFailed(
-    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-    ServiceWorkerDatabase::Status status,
-    const GURL& origin) {
-  if (!quota_manager_proxy)
-    return;
-
-  if (status == ServiceWorkerDatabase::Status::kErrorFailed ||
-      status == ServiceWorkerDatabase::Status::kErrorIOError) {
-    quota_manager_proxy->NotifyWriteFailed(url::Origin::Create(origin));
-  }
 }
 
 const base::FilePath::CharType kDatabaseName[] = FILE_PATH_LITERAL("Database");
@@ -100,11 +83,9 @@ ServiceWorkerStorage::~ServiceWorkerStorage() {
 // static
 std::unique_ptr<ServiceWorkerStorage> ServiceWorkerStorage::Create(
     const base::FilePath& user_data_directory,
-    scoped_refptr<base::SequencedTaskRunner> database_task_runner,
-    storage::QuotaManagerProxy* quota_manager_proxy) {
+    scoped_refptr<base::SequencedTaskRunner> database_task_runner) {
   return base::WrapUnique(new ServiceWorkerStorage(
-      user_data_directory, std::move(database_task_runner),
-      quota_manager_proxy));
+      user_data_directory, std::move(database_task_runner)));
 }
 
 void ServiceWorkerStorage::GetRegisteredOrigins(
@@ -373,6 +354,7 @@ void ServiceWorkerStorage::StoreRegistrationData(
       std::move(callback).Run(
           ServiceWorkerDatabase::Status::kErrorDisabled,
           /*deleted_version=*/blink::mojom::kInvalidServiceWorkerVersionId,
+          /*deleted_resources_size=*/0,
           /*newly_purgeable_resources=*/{});
       return;
     case STORAGE_STATE_INITIALIZING:
@@ -427,8 +409,7 @@ void ServiceWorkerStorage::UpdateToActiveState(
       base::BindOnce(&ServiceWorkerDatabase::UpdateVersionToActive,
                      base::Unretained(database_.get()), registration_id,
                      origin),
-      base::BindOnce(&ServiceWorkerStorage::DidUpdateToActiveState,
-                     weak_factory_.GetWeakPtr(), std::move(callback), origin));
+      std::move(callback));
 }
 
 void ServiceWorkerStorage::UpdateLastUpdateCheckTime(
@@ -528,6 +509,7 @@ void ServiceWorkerStorage::DeleteRegistration(
           ServiceWorkerDatabase::Status::kErrorDisabled,
           storage::mojom::ServiceWorkerStorageOriginState::kKeep,
           /*deleted_version_id=*/blink::mojom::kInvalidServiceWorkerVersionId,
+          /*deleted_resources_size=*/0,
           /*newly_purgeable_resources=*/std::vector<int64_t>());
       return;
     case STORAGE_STATE_INITIALIZING:
@@ -664,7 +646,6 @@ void ServiceWorkerStorage::CreateResourceMetadataWriter(
 
 void ServiceWorkerStorage::StoreUncommittedResourceId(
     int64_t resource_id,
-    const GURL& origin,
     DatabaseStatusCallback callback) {
   DCHECK_NE(blink::mojom::kInvalidServiceWorkerResourceId, resource_id);
   switch (state_) {
@@ -674,10 +655,9 @@ void ServiceWorkerStorage::StoreUncommittedResourceId(
     case STORAGE_STATE_INITIALIZING:
       // Fall-through.
     case STORAGE_STATE_UNINITIALIZED:
-      LazyInitialize(
-          base::BindOnce(&ServiceWorkerStorage::StoreUncommittedResourceId,
-                         weak_factory_.GetWeakPtr(), resource_id, origin,
-                         std::move(callback)));
+      LazyInitialize(base::BindOnce(
+          &ServiceWorkerStorage::StoreUncommittedResourceId,
+          weak_factory_.GetWeakPtr(), resource_id, std::move(callback)));
       return;
     case STORAGE_STATE_INITIALIZED:
       break;
@@ -691,8 +671,7 @@ void ServiceWorkerStorage::StoreUncommittedResourceId(
       database_task_runner_.get(), FROM_HERE,
       base::BindOnce(&ServiceWorkerDatabase::WriteUncommittedResourceIds,
                      base::Unretained(database_.get()), resource_ids),
-      base::BindOnce(&ServiceWorkerStorage::DidWriteUncommittedResourceIds,
-                     weak_factory_.GetWeakPtr(), std::move(callback), origin));
+      std::move(callback));
 }
 
 void ServiceWorkerStorage::DoomUncommittedResources(
@@ -766,8 +745,7 @@ void ServiceWorkerStorage::StoreUserData(
       base::BindOnce(&ServiceWorkerDatabase::WriteUserData,
                      base::Unretained(database_.get()), registration_id, origin,
                      std::move(user_data)),
-      base::BindOnce(&ServiceWorkerStorage::DidStoreUserData,
-                     weak_factory_.GetWeakPtr(), std::move(callback), origin));
+      std::move(callback));
 }
 
 void ServiceWorkerStorage::GetUserData(int64_t registration_id,
@@ -1238,8 +1216,7 @@ void ServiceWorkerStorage::ApplyPolicyUpdates(
 
 ServiceWorkerStorage::ServiceWorkerStorage(
     const base::FilePath& user_data_directory,
-    scoped_refptr<base::SequencedTaskRunner> database_task_runner,
-    storage::QuotaManagerProxy* quota_manager_proxy)
+    scoped_refptr<base::SequencedTaskRunner> database_task_runner)
     : next_registration_id_(blink::mojom::kInvalidServiceWorkerRegistrationId),
       next_version_id_(blink::mojom::kInvalidServiceWorkerVersionId),
       next_resource_id_(blink::mojom::kInvalidServiceWorkerResourceId),
@@ -1247,7 +1224,6 @@ ServiceWorkerStorage::ServiceWorkerStorage(
       expecting_done_with_disk_on_disable_(false),
       user_data_directory_(user_data_directory),
       database_task_runner_(std::move(database_task_runner)),
-      quota_manager_proxy_(quota_manager_proxy),
       is_purge_pending_(false),
       has_checked_for_stale_resources_(false) {
   database_.reset(new ServiceWorkerDatabase(GetDatabasePath()));
@@ -1372,34 +1348,17 @@ void ServiceWorkerStorage::DidStoreRegistrationData(
     const ServiceWorkerDatabase::DeletedVersion& deleted_version,
     ServiceWorkerDatabase::Status status) {
   if (status != ServiceWorkerDatabase::Status::kOk) {
-    MaybeNotifyWriteFailed(quota_manager_proxy_, status, origin);
     std::move(callback).Run(status, deleted_version.version_id,
+                            deleted_version.resources_total_size_bytes,
                             deleted_version.newly_purgeable_resources);
     return;
   }
   registered_origins_.insert(url::Origin::Create(origin));
 
-  if (quota_manager_proxy_) {
-    // Can be nullptr in tests.
-    quota_manager_proxy_->NotifyStorageModified(
-        storage::QuotaClientType::kServiceWorker, url::Origin::Create(origin),
-        blink::mojom::StorageType::kTemporary,
-        new_resources_total_size_bytes -
-            deleted_version.resources_total_size_bytes,
-        base::Time::Now());
-  }
-
   std::move(callback).Run(ServiceWorkerDatabase::Status::kOk,
                           deleted_version.version_id,
+                          deleted_version.resources_total_size_bytes,
                           deleted_version.newly_purgeable_resources);
-}
-
-void ServiceWorkerStorage::DidUpdateToActiveState(
-    DatabaseStatusCallback callback,
-    const GURL& origin,
-    ServiceWorkerDatabase::Status status) {
-  MaybeNotifyWriteFailed(quota_manager_proxy_, status, origin);
-  std::move(callback).Run(status);
 }
 
 void ServiceWorkerStorage::DidDeleteRegistration(
@@ -1410,17 +1369,9 @@ void ServiceWorkerStorage::DidDeleteRegistration(
   if (status != ServiceWorkerDatabase::Status::kOk) {
     std::move(params->callback)
         .Run(status, origin_state, deleted_version.version_id,
+             deleted_version.resources_total_size_bytes,
              deleted_version.newly_purgeable_resources);
     return;
-  }
-
-  if (quota_manager_proxy_) {
-    // Can be nullptr in tests.
-    quota_manager_proxy_->NotifyStorageModified(
-        storage::QuotaClientType::kServiceWorker,
-        url::Origin::Create(params->origin),
-        blink::mojom::StorageType::kTemporary,
-        -deleted_version.resources_total_size_bytes, base::Time::Now());
   }
 
   if (origin_state == OriginState::kDelete)
@@ -1429,15 +1380,8 @@ void ServiceWorkerStorage::DidDeleteRegistration(
   std::move(params->callback)
       .Run(ServiceWorkerDatabase::Status::kOk, origin_state,
            deleted_version.version_id,
+           deleted_version.resources_total_size_bytes,
            deleted_version.newly_purgeable_resources);
-}
-
-void ServiceWorkerStorage::DidWriteUncommittedResourceIds(
-    DatabaseStatusCallback callback,
-    const GURL& origin,
-    ServiceWorkerDatabase::Status status) {
-  MaybeNotifyWriteFailed(quota_manager_proxy_, status, origin);
-  std::move(callback).Run(status);
 }
 
 void ServiceWorkerStorage::DidDoomUncommittedResourceIds(
@@ -1446,14 +1390,6 @@ void ServiceWorkerStorage::DidDoomUncommittedResourceIds(
     ServiceWorkerDatabase::Status status) {
   if (status == ServiceWorkerDatabase::Status::kOk)
     PurgeResources(resource_ids);
-  std::move(callback).Run(status);
-}
-
-void ServiceWorkerStorage::DidStoreUserData(
-    DatabaseStatusCallback callback,
-    const url::Origin& origin,
-    ServiceWorkerDatabase::Status status) {
-  MaybeNotifyWriteFailed(quota_manager_proxy_, status, origin.GetURL());
   std::move(callback).Run(status);
 }
 

@@ -18,6 +18,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace storage {
+class QuotaManagerProxy;
 class SpecialStoragePolicy;
 }  // namespace storage
 
@@ -80,9 +81,9 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
   using StatusCallback =
       base::OnceCallback<void(blink::ServiceWorkerStatusCode status)>;
 
-  ServiceWorkerRegistry(
-      ServiceWorkerContextCore* context,
-      storage::SpecialStoragePolicy* special_storage_policy);
+  ServiceWorkerRegistry(ServiceWorkerContextCore* context,
+                        storage::QuotaManagerProxy* quota_manager_proxy,
+                        storage::SpecialStoragePolicy* special_storage_policy);
 
   // For re-creating the registry from the old one. This is called when
   // something went wrong during storage access.
@@ -337,20 +338,28 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       const GURL& stored_scope,
       StatusCallback callback,
       uint64_t call_id,
-      storage::mojom::ServiceWorkerDatabaseStatus database_status);
+      storage::mojom::ServiceWorkerDatabaseStatus database_status,
+      uint64_t deleted_resources_size);
   void DidDeleteRegistration(
       int64_t registration_id,
       const GURL& origin,
       StatusCallback callback,
       uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus database_status,
+      uint64_t deleted_resources_size,
       ServiceWorkerStorage::OriginState origin_state);
 
   void DidUpdateRegistration(
       StatusCallback callback,
       uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus status);
+  void DidUpdateToActiveState(
+      const url::Origin& origin,
+      StatusCallback callback,
+      uint64_t call_id,
+      storage::mojom::ServiceWorkerDatabaseStatus status);
   void DidWriteUncommittedResourceIds(
+      const url::Origin& origin,
       uint64_t call_id,
       storage::mojom::ServiceWorkerDatabaseStatus status);
   void DidDoomUncommittedResourceIds(
@@ -367,6 +376,7 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
       const base::flat_map<std::string, std::string>& data_map);
   void DidStoreUserData(StatusCallback callback,
                         uint64_t call_id,
+                        const url::Origin& origin,
                         storage::mojom::ServiceWorkerDatabaseStatus status);
   void DidClearUserData(StatusCallback callback,
                         uint64_t call_id,
@@ -482,6 +492,9 @@ class CONTENT_EXPORT ServiceWorkerRegistry {
 
   bool is_storage_disabled_ = false;
 
+  // TODO(crbug.com/1016065): Consider moving QuotaManagerProxy to
+  // ServiceWorkerStorage once QuotaManager gets mojofied.
+  const scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
   const scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy_;
   class StoragePolicyObserver;
   base::SequenceBound<StoragePolicyObserver> storage_policy_observer_;

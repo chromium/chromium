@@ -218,8 +218,8 @@ void EmbeddedWorkerTestHelper::BindStorageControl(
     mojo::PendingReceiver<storage::mojom::ServiceWorkerStorageControl>
         receiver) {
   storage_control_ = std::make_unique<ServiceWorkerStorageControlImpl>(
-      ServiceWorkerStorage::Create(user_data_directory_, database_task_runner_,
-                                   /*quota_manager_proxy=*/nullptr));
+      ServiceWorkerStorage::Create(user_data_directory_,
+                                   database_task_runner_));
   storage_control_->Bind(std::move(receiver));
 }
 

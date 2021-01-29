@@ -179,8 +179,7 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
   void SetUpStorage() {
     auto storage = ServiceWorkerStorage::Create(
         user_data_directory_.GetPath(),
-        /*database_task_runner=*/base::ThreadTaskRunnerHandle::Get(),
-        /*quota_manager_proxy=*/nullptr);
+        /*database_task_runner=*/base::ThreadTaskRunnerHandle::Get());
     storage_impl_ =
         std::make_unique<ServiceWorkerStorageControlImpl>(std::move(storage));
   }
@@ -281,10 +280,11 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
     base::RunLoop loop;
     storage()->StoreRegistration(
         std::move(registration), std::move(resources),
-        base::BindLambdaForTesting([&](DatabaseStatus status) {
-          out_status = status;
-          loop.Quit();
-        }));
+        base::BindLambdaForTesting(
+            [&](DatabaseStatus status, uint64_t /*deleted_resources_size*/) {
+              out_status = status;
+              loop.Quit();
+            }));
     loop.Run();
     return out_status;
   }
@@ -296,7 +296,7 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
     storage()->DeleteRegistration(
         registration_id, origin,
         base::BindLambdaForTesting(
-            [&](DatabaseStatus status,
+            [&](DatabaseStatus status, uint64_t /*deleted_resources_size*/,
                 storage::mojom::ServiceWorkerStorageOriginState origin_state) {
               result.status = status;
               result.origin_state = origin_state;
@@ -404,13 +404,11 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
     return return_value;
   }
 
-  DatabaseStatus StoreUncommittedResourceId(int64_t resource_id,
-                                            const GURL& origin) {
+  DatabaseStatus StoreUncommittedResourceId(int64_t resource_id) {
     DatabaseStatus return_value;
     base::RunLoop loop;
     storage()->StoreUncommittedResourceId(
-        resource_id, origin,
-        base::BindLambdaForTesting([&](DatabaseStatus status) {
+        resource_id, base::BindLambdaForTesting([&](DatabaseStatus status) {
           return_value = status;
           loop.Quit();
         }));
@@ -1092,9 +1090,9 @@ TEST_F(ServiceWorkerStorageControlImplTest, UncommittedResources) {
 
   // Put these resources ids on the uncommitted list in storage.
   DatabaseStatus status;
-  status = StoreUncommittedResourceId(resource_id1, kScope.GetOrigin());
+  status = StoreUncommittedResourceId(resource_id1);
   ASSERT_EQ(status, DatabaseStatus::kOk);
-  status = StoreUncommittedResourceId(resource_id2, kScope.GetOrigin());
+  status = StoreUncommittedResourceId(resource_id2);
   ASSERT_EQ(status, DatabaseStatus::kOk);
 
   std::vector<int64_t> uncommitted_ids = GetUncommittedResourceIds();
@@ -1126,9 +1124,9 @@ TEST_F(ServiceWorkerStorageControlImplTest, DoomUncommittedResources) {
   const int64_t resource_id2 = GetNewResourceId();
 
   DatabaseStatus status;
-  status = StoreUncommittedResourceId(resource_id1, kScope.GetOrigin());
+  status = StoreUncommittedResourceId(resource_id1);
   ASSERT_EQ(status, DatabaseStatus::kOk);
-  status = StoreUncommittedResourceId(resource_id2, kScope.GetOrigin());
+  status = StoreUncommittedResourceId(resource_id2);
   ASSERT_EQ(status, DatabaseStatus::kOk);
 
   std::vector<int64_t> uncommitted_ids = GetUncommittedResourceIds();

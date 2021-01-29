@@ -541,7 +541,8 @@ class ServiceWorkerRegistryTest : public testing::Test {
     storage_control()->StoreRegistration(
         std::move(registration_data), std::move(resources),
         base::BindLambdaForTesting(
-            [&](storage::mojom::ServiceWorkerDatabaseStatus status) {
+            [&](storage::mojom::ServiceWorkerDatabaseStatus status,
+                uint64_t /*deleted_resources_size*/) {
               ASSERT_EQ(storage::mojom::ServiceWorkerDatabaseStatus::kOk,
                         status);
               loop.Quit();

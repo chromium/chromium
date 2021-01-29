@@ -88,8 +88,7 @@ class ServiceWorkerStorageTest : public testing::Test {
   void SetUp() override {
     storage_ = ServiceWorkerStorage::Create(
         user_data_directory_path_,
-        /*database_task_runner=*/base::ThreadTaskRunnerHandle::Get(),
-        /*quota_manager_proxy=*/nullptr);
+        /*database_task_runner=*/base::ThreadTaskRunnerHandle::Get());
   }
 
   void TearDown() override {
@@ -118,8 +117,9 @@ class ServiceWorkerStorageTest : public testing::Test {
         registration_id, origin,
         base::BindLambdaForTesting(
             [&](ServiceWorkerDatabase::Status status,
-                ServiceWorkerStorage::OriginState, int64_t deleted_version,
-                const std::vector<int64_t>& newly_purgeable_resources) {
+                ServiceWorkerStorage::OriginState, int64_t /*deleted_version*/,
+                uint64_t /*deleted_resources_size*/,
+                const std::vector<int64_t>& /*newly_purgeable_resources*/) {
               result = status;
               loop.Quit();
             }));
@@ -514,6 +514,7 @@ class ServiceWorkerStorageTest : public testing::Test {
         base::BindLambdaForTesting(
             [&](storage::mojom::ServiceWorkerDatabaseStatus status,
                 int64_t /*deleted_version_id*/,
+                uint64_t /*deleted_resources_size*/,
                 const std::vector<int64_t>& /*newly_purgeable_resources*/) {
               result = status;
               loop.Quit();
