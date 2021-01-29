@@ -114,7 +114,6 @@ let ChromeCleanupFilePath;
  * @typedef {{
  *   files: Array<ChromeCleanupFilePath>,
  *   registryKeys: Array<string>,
- *   extensions: Array<string>,
  * }}
  */
 let ChromeCleanerScannerResults;
@@ -230,7 +229,7 @@ Polymer({
     scannerResults_: {
       type: Array,
       value() {
-        return {'files': [], 'registryKeys': [], 'extensions': []};
+        return {'files': [], 'registryKeys': []};
       },
     },
 
@@ -244,12 +243,6 @@ Polymer({
     hasRegistryKeysToShow_: {
       type: Boolean,
       computed: 'computeHasRegistryKeysToShow_(scannerResults_)',
-    },
-
-    /** @private */
-    hasExtensionsToShow_: {
-      type: Boolean,
-      computed: 'computeHasExtensionsToShow_(scannerResults_)',
     },
 
     /** @private {chrome.settingsPrivate.PrefObject} */
@@ -282,8 +275,7 @@ Polymer({
   },
 
   /** @private {!ChromeCleanerScannerResults} */
-  emptyChromeCleanerScannerResults_:
-      {'files': [], 'registryKeys': [], 'extensions': []},
+  emptyChromeCleanerScannerResults_: {'files': [], 'registryKeys': []},
 
   /** @private {?ChromeCleanupProxy} */
   browserProxy_: null,
@@ -383,18 +375,6 @@ Polymer({
    */
   computeHasRegistryKeysToShow_(scannerResults) {
     return scannerResults.registryKeys.length > 0;
-  },
-
-  /**
-   * Returns true if user-initiated cleanups are enabled and there are
-   * extensions to show to the user.
-   * @param {!ChromeCleanerScannerResults} scannerResults The cleanup
-   *     items to be presented to the user.
-   * @return {boolean}
-   * @private
-   */
-  computeHasExtensionsToShow_(scannerResults) {
-    return scannerResults.extensions.length > 0;
   },
 
   /**
@@ -626,8 +606,7 @@ Polymer({
     this.browserProxy_
         .getItemsToRemovePluralString(
             this.scannerResults_.files.length +
-            this.scannerResults_.registryKeys.length +
-            this.scannerResults_.extensions.length)
+            this.scannerResults_.registryKeys.length)
         .then(setShowItemsLabel);
   },
 

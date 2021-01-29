@@ -19,10 +19,6 @@
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_prompt_actions_win.h"
 #include "components/component_updater/component_updater_service.h"
 
-namespace extensions {
-class ExtensionRegistry;
-}
-
 namespace safe_browsing {
 
 // Delegate class that provides services to the ChromeCleanerController class
@@ -74,7 +70,6 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   void OnSwReporterReady(SwReporterInvocationSequence&& invocations) override;
   void Scan(const SwReporterInvocation& reporter_invocation) override;
   void ReplyWithUserResponse(Profile* profile,
-                             extensions::ExtensionService* extension_service,
                              UserResponse user_response) override;
   void Reboot() override;
   bool IsAllowedByPolicy() override;
@@ -128,9 +123,6 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   std::unique_ptr<ChromeCleanerControllerDelegate> real_delegate_;
   // Pointer to either real_delegate_ or one set by tests.
   ChromeCleanerControllerDelegate* delegate_;
-
-  extensions::ExtensionService* extension_service_ = nullptr;
-  extensions::ExtensionRegistry* extension_registry_ = nullptr;
 
   State state_ = State::kIdle;
   // Whether Cleanup is powered by an external partner.

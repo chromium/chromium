@@ -4761,7 +4761,6 @@ test("unit_tests") {
         "../browser/safe_browsing/chrome_cleaner/mock_chrome_cleaner_process_win.cc",
         "../browser/safe_browsing/chrome_cleaner/mock_chrome_cleaner_process_win.h",
         "../browser/safe_browsing/chrome_cleaner/reporter_runner_win_unittest.cc",
-        "../browser/safe_browsing/chrome_cleaner/srt_delete_extension_win_unittest.cc",
         "../browser/safe_browsing/chrome_cleaner/srt_field_trial_win_unittest.cc",
         "../browser/task_manager/sampling/shared_sampler_win_unittest.cc",
         "../utility/importer/edge_database_reader_unittest_win.cc",
@@ -5496,12 +5495,6 @@ test("unit_tests") {
         "../browser/extensions/extension_garbage_collector_chromeos_unittest.cc",
         "../browser/extensions/external_provider_impl_chromeos_unittest.cc",
         "../browser/extensions/system_display/display_info_provider_chromeos_unittest.cc",
-      ]
-    }
-
-    if (is_win) {
-      sources += [
-        "../browser/ui/webui/settings/chrome_cleanup_handler_win_unittest.cc",
       ]
     }
 

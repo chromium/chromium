@@ -18,10 +18,6 @@
 
 class Profile;
 
-namespace extensions {
-class ExtensionService;
-}
-
 namespace safe_browsing {
 
 // These values are used to send UMA information and are replicated in the
@@ -194,7 +190,6 @@ class ChromeCleanerController {
   // "Cleanup" button multiple times.
   virtual void ReplyWithUserResponse(
       Profile* profile,
-      extensions::ExtensionService* extension_service,
       UserResponse user_response) = 0;
 
   // If the controller is in the kRebootRequired state, initiates a reboot of

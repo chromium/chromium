@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/chrome_cleanup_handler_win.h"
 
 #include <memory>
+#include <set>
 #include <string>
 #include <utility>
 
@@ -15,13 +16,11 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/strings/string16.h"
-#include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/grit/generated_resources.h"
@@ -30,8 +29,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_system.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using safe_browsing::ChromeCleanerController;
@@ -71,10 +68,6 @@ base::DictionaryValue GetScannerResultsAsDictionary(
                 GetFilesAsListStorage(scanner_results.files_to_delete()));
   value.SetList("registryKeys",
                 GetStringSetAsListStorage(scanner_results.registry_keys()));
-  std::set<base::string16> extensions;
-  ChromeCleanupHandler::GetExtensionNamesFromIds(
-      profile, scanner_results.extension_ids(), &extensions);
-  value.SetList("extensions", GetStringSetAsListStorage(extensions));
   return value;
 }
 
@@ -113,28 +106,6 @@ ChromeCleanupHandler::ChromeCleanupHandler(Profile* profile)
 
 ChromeCleanupHandler::~ChromeCleanupHandler() {
   controller_->RemoveObserver(this);
-}
-
-// static
-void ChromeCleanupHandler::GetExtensionNamesFromIds(
-    Profile* profile,
-    const std::set<base::string16>& extension_ids,
-    std::set<base::string16>* extension_names) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  extensions::ExtensionRegistry* extension_registry =
-      extensions::ExtensionRegistry::Get(profile);
-  for (const base::string16& extension_id : extension_ids) {
-    const extensions::Extension* extension =
-        extension_registry->GetInstalledExtension(
-            base::UTF16ToUTF8(extension_id));
-    if (extension) {
-      extension_names->insert(base::UTF8ToUTF16(extension->name()));
-    } else {
-      extension_names->insert(l10n_util::GetStringFUTF16(
-          IDS_SETTINGS_RESET_CLEANUP_DETAILS_EXTENSION_UNKNOWN, extension_id));
-    }
-  }
-#endif
 }
 
 void ChromeCleanupHandler::RegisterMessages() {
@@ -269,11 +240,8 @@ void ChromeCleanupHandler::HandleStartCleanup(const base::ListValue* args) {
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.CleanupWebui_StartCleanup"));
 
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile_)->extension_service();
-
   controller_->ReplyWithUserResponse(
-      profile_, extension_service,
+      profile_,
       allow_logs_upload
           ? ChromeCleanerController::UserResponse::kAcceptedWithLogs
           : ChromeCleanerController::UserResponse::kAcceptedWithoutLogs);

@@ -47,8 +47,6 @@ ChromeCleanerRunner::ProcessStatus::ProcessStatus(LaunchStatus launch_status,
 
 // static
 void ChromeCleanerRunner::RunChromeCleanerAndReplyWithExitCode(
-    extensions::ExtensionService* extension_service,
-    extensions::ExtensionRegistry* extension_registry,
     const base::FilePath& cleaner_executable_path,
     const SwReporterInvocation& reporter_invocation,
     ChromeMetricsStatus metrics_status,
@@ -62,11 +60,7 @@ void ChromeCleanerRunner::RunChromeCleanerAndReplyWithExitCode(
       std::move(on_process_done), std::move(task_runner)));
   auto launch_and_wait = base::BindOnce(
       &ChromeCleanerRunner::LaunchAndWaitForExitOnBackgroundThread,
-      cleaner_runner,
-      // base::Unretained is safe because these are long-running services that
-      // will outlive ChromeCleanerRunner.
-      base::Unretained(extension_service),
-      base::Unretained(extension_registry));
+      cleaner_runner);
   auto process_done =
       base::BindOnce(&ChromeCleanerRunner::OnProcessDone, cleaner_runner);
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -157,15 +151,12 @@ ChromeCleanerRunner::ChromeCleanerRunner(
 }
 
 ChromeCleanerRunner::ProcessStatus
-ChromeCleanerRunner::LaunchAndWaitForExitOnBackgroundThread(
-    extensions::ExtensionService* extension_service,
-    extensions::ExtensionRegistry* extension_registry) {
+ChromeCleanerRunner::LaunchAndWaitForExitOnBackgroundThread() {
   TRACE_EVENT0("safe_browsing",
                "ChromeCleanerRunner::LaunchAndWaitForExitOnBackgroundThread");
   auto on_connection_closed = base::BindOnce(
       &ChromeCleanerRunner::OnConnectionClosed, base::RetainedRef(this));
   auto actions = std::make_unique<ChromePromptActions>(
-      extension_service, extension_registry,
       base::BindOnce(&ChromeCleanerRunner::OnPromptUser,
                      base::RetainedRef(this)));
 

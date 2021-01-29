@@ -472,8 +472,6 @@ void AddChromeCleanupStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"chromeCleanupPageTitle",
        IDS_SETTINGS_RESET_CLEAN_UP_COMPUTER_PAGE_TITLE},
-      {"chromeCleanupDetailsExtensions",
-       IDS_SETTINGS_RESET_CLEANUP_DETAILS_EXTENSIONS},
       {"chromeCleanupDetailsFilesAndPrograms",
        IDS_SETTINGS_RESET_CLEANUP_DETAILS_FILES_AND_PROGRAMS},
       {"chromeCleanupDetailsRegistryEntries",

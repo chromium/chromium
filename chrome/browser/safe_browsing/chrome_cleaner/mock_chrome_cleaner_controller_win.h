@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_CLEANER_MOCK_CHROME_CLEANER_CONTROLLER_WIN_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_CLEANER_MOCK_CHROME_CLEANER_CONTROLLER_WIN_H_
 
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -34,8 +33,7 @@ class MockChromeCleanerController
   MOCK_METHOD1(RequestUserInitiatedScan, void(Profile*));
   MOCK_METHOD1(MockedOnSwReporterReady, void(SwReporterInvocationSequence&));
   MOCK_METHOD1(Scan, void(const safe_browsing::SwReporterInvocation&));
-  MOCK_METHOD3(ReplyWithUserResponse,
-               void(Profile*, extensions::ExtensionService*, UserResponse));
+  MOCK_METHOD2(ReplyWithUserResponse, void(Profile*, UserResponse));
   MOCK_METHOD0(Reboot, void());
   MOCK_METHOD0(IsAllowedByPolicy, bool());
   MOCK_METHOD1(IsReportingManagedByPolicy, bool(Profile*));

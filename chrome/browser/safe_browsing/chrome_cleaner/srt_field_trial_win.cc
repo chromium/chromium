@@ -39,9 +39,6 @@ const base::Feature kChromeCleanupInBrowserPromptFeature{
 const base::Feature kChromeCleanupDistributionFeature{
     "ChromeCleanupDistribution", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kChromeCleanupExtensionsFeature{
-    "ChromeCleanupExtensions", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kResetShortcutsFeature{"ChromeCleanupResetShortcuts",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
