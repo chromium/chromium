@@ -504,22 +504,19 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
 
   // If we don't have a node, then ignore the node object.
   // TODO(vmpstr/aleventhal): Investigate how this can happen.
-  if (!GetNode())
+  if (!GetNode()) {
+    NOTREACHED();
     return true;
+  }
 
   // All nodes must have an unignored parent within their tree under
   // the root node of the web area, so force that node to always be unignored.
   if (IsWebArea())
     return false;
 
-  if (GetLayoutObject()) {
-    if (role_ == ax::mojom::blink::Role::kUnknown) {
-      if (ignored_reasons)
-        ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
-      return true;
-    }
-    return false;
-  }
+  DCHECK_NE(role_, ax::mojom::blink::Role::kUnknown);
+  // Use AXLayoutObject::ComputeAccessibilityIsIgnored().
+  DCHECK(!GetLayoutObject());
 
   if (DisplayLockUtilities::NearestLockedExclusiveAncestor(*GetNode())) {
     if (DisplayLockUtilities::ShouldIgnoreNodeDueToDisplayLock(
