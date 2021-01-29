@@ -96,8 +96,7 @@ FileSystemBackend::FileSystemBackend(
       mount_points_(mount_points),
       system_mount_points_(system_mount_points) {}
 
-FileSystemBackend::~FileSystemBackend() {
-}
+FileSystemBackend::~FileSystemBackend() {}
 
 void FileSystemBackend::AddSystemMountPoints() {
   // RegisterFileSystem() is no-op if the mount point with the same name
@@ -135,8 +134,7 @@ bool FileSystemBackend::CanHandleType(storage::FileSystemType type) const {
   }
 }
 
-void FileSystemBackend::Initialize(storage::FileSystemContext* context) {
-}
+void FileSystemBackend::Initialize(storage::FileSystemContext* context) {}
 
 void FileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
                                    storage::OpenFileSystemMode mode,
@@ -146,10 +144,10 @@ void FileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
   std::string cracked_id;
   base::FilePath path;
   storage::FileSystemMountOption option;
-  if (!mount_points_->CrackVirtualPath(
-           url.virtual_path(), &id, &type, &cracked_id, &path, &option) &&
-      !system_mount_points_->CrackVirtualPath(
-           url.virtual_path(), &id, &type, &cracked_id, &path, &option)) {
+  if (!mount_points_->CrackVirtualPath(url.virtual_path(), &id, &type,
+                                       &cracked_id, &path, &option) &&
+      !system_mount_points_->CrackVirtualPath(url.virtual_path(), &id, &type,
+                                              &cracked_id, &path, &option)) {
     // Not under a mount point, so return an error, since the root is not
     // accessible.
     GURL root_url = GURL(storage::GetExternalFileSystemRootURIString(
@@ -257,7 +255,8 @@ bool FileSystemBackend::IsAccessAllowed(
 }
 
 void FileSystemBackend::GrantFileAccessToExtension(
-    const std::string& extension_id, const base::FilePath& virtual_path) {
+    const std::string& extension_id,
+    const base::FilePath& virtual_path) {
   std::string id;
   storage::FileSystemType type;
   std::string cracked_id;
@@ -274,7 +273,7 @@ void FileSystemBackend::GrantFileAccessToExtension(
 }
 
 void FileSystemBackend::RevokeAccessForExtension(
-      const std::string& extension_id) {
+    const std::string& extension_id) {
   file_access_permissions_->RevokePermissions(extension_id);
 }
 
@@ -459,8 +458,8 @@ FileSystemBackend::CreateFileStreamWriter(
 
   switch (url.type()) {
     case storage::kFileSystemTypeProvided:
-      return file_system_provider_delegate_->CreateFileStreamWriter(
-          url, offset, context);
+      return file_system_provider_delegate_->CreateFileStreamWriter(url, offset,
+                                                                    context);
     case storage::kFileSystemTypeLocal:
     case storage::kFileSystemTypeDriveFs:
     case storage::kFileSystemTypeSmbFs:
