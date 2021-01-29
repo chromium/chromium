@@ -40,11 +40,13 @@ namespace {
 constexpr int kDeskPreviewHeightInCompactLayout = 48;
 
 // In non-compact layouts, the height of the preview is a percentage of the
-// total display height (divided by |kRootHeightDivider|), with a max of
-// |kDeskPreviewMaxHeight| dips.
+// total display height, with a max of |kDeskPreviewMaxHeight| dips and a min of
+// |kDeskPreviewMinHeight| dips.
 constexpr int kRootHeightDivider = 12;
+constexpr int kRootHeightDividerForSmallScreen = 8;
 constexpr int kDeskPreviewMaxHeight = 140;
 constexpr int kDeskPreviewMinHeight = 48;
+constexpr int kUseSmallerHeightDividerWidthThreshold = 600;
 
 // The corner radius of the border in dips.
 constexpr int kBorderCornerRadius = 6;
@@ -54,6 +56,15 @@ constexpr int kCornerRadius = 4;
 constexpr gfx::RoundedCornersF kCornerRadii(kCornerRadius);
 
 constexpr int kShadowElevation = 4;
+
+int GetHeightDivider(const int root_width) {
+  if (!features::IsBentoEnabled())
+    return kRootHeightDivider;
+
+  return root_width <= kUseSmallerHeightDividerWidthThreshold
+             ? kRootHeightDividerForSmallScreen
+             : kRootHeightDivider;
+}
 
 // Holds data about the original desk's layers to determine what we should do
 // when we attempt to mirror those layers.
@@ -330,7 +341,8 @@ int DeskPreviewView::GetHeight(aura::Window* root, bool compact) {
   DCHECK(root->IsRootWindow());
   return std::min(kDeskPreviewMaxHeight,
                   std::max(kDeskPreviewMinHeight,
-                           root->bounds().height() / kRootHeightDivider));
+                           root->bounds().height() /
+                               GetHeightDivider(root->bounds().width())));
 }
 
 void DeskPreviewView::SetBorderColor(SkColor color) {
