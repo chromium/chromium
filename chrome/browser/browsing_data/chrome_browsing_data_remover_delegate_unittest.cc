@@ -479,14 +479,14 @@ class RemoveFaviconTester {
   void SaveResultAndQuit(const favicon_base::FaviconRawBitmapResult& result) {
     got_favicon_ = result.is_valid();
     got_expired_favicon_ = result.is_valid() && result.expired;
-    quit_closure_.Run();
+    std::move(quit_closure_).Run();
   }
 
   // For favicon requests.
   base::CancelableTaskTracker tracker_;
   bool got_favicon_ = false;
   bool got_expired_favicon_ = false;
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
 
   // Owned by TestingProfile.
   history::HistoryService* history_service_ = nullptr;

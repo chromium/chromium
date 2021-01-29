@@ -157,8 +157,8 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, Empty) {
     CacheCounter counter(profile);
     counter.Init(profile->GetPrefs(),
                  browsing_data::ClearBrowsingDataTab::ADVANCED,
-                 base::Bind(&CacheCounterTest::CountingCallback,
-                            base::Unretained(this)));
+                 base::BindRepeating(&CacheCounterTest::CountingCallback,
+                                     base::Unretained(this)));
     counter.Restart();
     WaitForCountingResult();
 
@@ -179,9 +179,10 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, NonEmpty) {
 
   Profile* profile = browser()->profile();
   CacheCounter counter(profile);
-  counter.Init(
-      profile->GetPrefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
-      base::Bind(&CacheCounterTest::CountingCallback, base::Unretained(this)));
+  counter.Init(profile->GetPrefs(),
+               browsing_data::ClearBrowsingDataTab::ADVANCED,
+               base::BindRepeating(&CacheCounterTest::CountingCallback,
+                                   base::Unretained(this)));
   counter.Restart();
 
   WaitForCountingResult();
@@ -195,9 +196,10 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, AfterDoom) {
 
   Profile* profile = browser()->profile();
   CacheCounter counter(profile);
-  counter.Init(
-      profile->GetPrefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
-      base::Bind(&CacheCounterTest::CountingCallback, base::Unretained(this)));
+  counter.Init(profile->GetPrefs(),
+               browsing_data::ClearBrowsingDataTab::ADVANCED,
+               base::BindRepeating(&CacheCounterTest::CountingCallback,
+                                   base::Unretained(this)));
 
   content::BrowserContext::GetDefaultStoragePartition(browser()->profile())
       ->GetNetworkContext()
@@ -216,9 +218,10 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, PrefChanged) {
 
   Profile* profile = browser()->profile();
   CacheCounter counter(profile);
-  counter.Init(
-      profile->GetPrefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
-      base::Bind(&CacheCounterTest::CountingCallback, base::Unretained(this)));
+  counter.Init(profile->GetPrefs(),
+               browsing_data::ClearBrowsingDataTab::ADVANCED,
+               base::BindRepeating(&CacheCounterTest::CountingCallback,
+                                   base::Unretained(this)));
   SetCacheDeletionPref(true);
 
   // Test that changing the pref causes the counter to be restarted. If it
@@ -233,9 +236,10 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, PeriodChanged) {
 
   Profile* profile = browser()->profile();
   CacheCounter counter(profile);
-  counter.Init(
-      profile->GetPrefs(), browsing_data::ClearBrowsingDataTab::ADVANCED,
-      base::Bind(&CacheCounterTest::CountingCallback, base::Unretained(this)));
+  counter.Init(profile->GetPrefs(),
+               browsing_data::ClearBrowsingDataTab::ADVANCED,
+               base::BindRepeating(&CacheCounterTest::CountingCallback,
+                                   base::Unretained(this)));
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::LAST_HOUR);
   WaitForCountingResult();

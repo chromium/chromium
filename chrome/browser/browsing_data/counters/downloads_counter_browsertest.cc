@@ -356,8 +356,8 @@ IN_PROC_BROWSER_TEST_F(DownloadsCounterTest, MAYBE_TimeRanges) {
   DownloadsCounter counter(profile);
   counter.Init(profile->GetPrefs(),
                browsing_data::ClearBrowsingDataTab::ADVANCED,
-               base::Bind(&DownloadsCounterTest::ResultCallback,
-                          base::Unretained(this)));
+               base::BindRepeating(&DownloadsCounterTest::ResultCallback,
+                                   base::Unretained(this)));
 
   SetDeletionPeriodPref(browsing_data::TimePeriod::LAST_HOUR);
   EXPECT_EQ(2u, GetResult());
