@@ -393,7 +393,8 @@ scoped_refptr<StaticBitmapImage> ScaleImage(
         CreateProvider(image->ContextProviderWrapper(), image_info, image,
                        false /* fallback_to_software */);
     if (resource_provider) {
-      SkSamplingOptions sampling(parsed_options.resize_quality);
+      SkSamplingOptions sampling(parsed_options.resize_quality,
+                                 SkSamplingOptions::kMedium_asMipmapLinear);
       resource_provider->Canvas()->drawImageRect(
           image->PaintImageForCurrentFrame(),
           SkRect::MakeWH(src_image_info.width(), src_image_info.height()),
@@ -419,8 +420,10 @@ scoped_refptr<StaticBitmapImage> ScaleImage(
   auto sk_image = image->PaintImageForCurrentFrame().GetSwSkImage();
   if (!sk_image)
     return nullptr;
-  sk_image->scalePixels(resized_pixmap,
-                        SkSamplingOptions(parsed_options.resize_quality));
+  sk_image->scalePixels(
+      resized_pixmap,
+      SkSamplingOptions(parsed_options.resize_quality,
+                        SkSamplingOptions::kMedium_asMipmapLinear));
   // Tag the resized Pixmap with the correct color space.
   resized_pixmap.setColorSpace(GetSkImageInfo(image).refColorSpace());
 

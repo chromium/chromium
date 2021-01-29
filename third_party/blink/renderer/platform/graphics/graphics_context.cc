@@ -314,7 +314,8 @@ void GraphicsContext::CompositeRecord(sk_sp<PaintRecord> record,
   PaintFlags flags;
   flags.setBlendMode(op);
   SkSamplingOptions sampling(
-      static_cast<SkFilterQuality>(ImageInterpolationQuality()));
+      static_cast<SkFilterQuality>(ImageInterpolationQuality()),
+      SkSamplingOptions::kMedium_asMipmapLinear);
   canvas_->save();
   canvas_->concat(SkMatrix::RectToRect(src, dest));
   canvas_->drawImage(PaintImageBuilder::WithDefault()
