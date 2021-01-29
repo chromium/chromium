@@ -31,12 +31,11 @@ void StorageModule::AddRecord(Priority priority,
   storage_->Write(priority, std::move(record), std::move(callback));
 }
 
-void StorageModule::ReportSuccess(
-    SequencingInformation sequencing_information) {
+void StorageModule::ReportSuccess(SequencingInformation sequencing_information,
+                                  bool force) {
   storage_->Confirm(
       sequencing_information.priority(), sequencing_information.sequencing_id(),
-      /*force=*/false,  // TODO(b/176997912): deliver it from ReportClient.
-      base::BindOnce([](Status status) {
+      force, base::BindOnce([](Status status) {
         if (!status.ok()) {
           LOG(ERROR) << "Unable to confirm record deletion: " << status;
         }

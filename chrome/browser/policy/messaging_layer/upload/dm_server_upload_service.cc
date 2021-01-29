@@ -222,13 +222,14 @@ void DmServerUploadService::InitRecordHandler(
 }
 
 void DmServerUploadService::UploadCompletion(
-    StatusOr<SequencingInformation> upload_result) const {
+    CompletionResponse upload_result) const {
   if (!upload_result.ok()) {
     LOG(WARNING) << upload_result.status();
     return;
   }
 
-  upload_cb_.Run(upload_result.ValueOrDie());
+  upload_cb_.Run(upload_result.ValueOrDie().sequencing_information,
+                 upload_result.ValueOrDie().force_confirm);
 }
 
 CloudPolicyClient* DmServerUploadService::GetClient() {

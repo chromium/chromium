@@ -4,6 +4,8 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/record_handler_impl.h"
 
+#include <tuple>
+
 #include "base/base64.h"
 #include "base/json/json_writer.h"
 #include "base/optional.h"
@@ -43,16 +45,21 @@ using ::testing::WithArgs;
 namespace reporting {
 namespace {
 
-MATCHER_P(ValueEqualsProto,
+MATCHER_P(ResponseEquals,
           expected,
-          "Compares StatusOr<MessageLite> to expected MessageLite") {
+          "Compares StatusOr<response> to expected response") {
   if (!arg.ok()) {
     return false;
   }
-  if (arg.ValueOrDie().GetTypeName() != expected.GetTypeName()) {
+  if (arg.ValueOrDie().sequencing_information.GetTypeName() !=
+      expected.sequencing_information.GetTypeName()) {
     return false;
   }
-  return arg.ValueOrDie().SerializeAsString() == expected.SerializeAsString();
+  if (arg.ValueOrDie().sequencing_information.SerializeAsString() !=
+      expected.sequencing_information.SerializeAsString()) {
+    return false;
+  }
+  return arg.ValueOrDie().force_confirm == expected.force_confirm;
 }
 
 MATCHER_P(StatusOrErrorCodeEquals,
@@ -160,12 +167,18 @@ base::Optional<base::Value> BuildEncryptionSettingsFromRequest(
 // steps and tests require the response from the server to be accurate, ASSERTS
 // that the |request| must be valid, and on a valid request updates |response|.
 void SucceedResponseFromRequest(const base::Value& request,
+                                bool force_confirm_by_server,
                                 base::Value& response) {
   base::Value seq_info{base::Value::Type::DICTIONARY};
   RetrieveFinalSequencingInformation(request, seq_info);
   response.SetPath("lastSucceedUploadedRecord", std::move(seq_info));
 
-  // If attach_encryption_settings it true, process that.
+  // If force_confirm is true, process that.
+  if (force_confirm_by_server) {
+    response.SetPath("forceConfirm", base::Value(true));
+  }
+
+  // If attach_encryption_settings is true, process that.
   auto encryption_settings_result = BuildEncryptionSettingsFromRequest(request);
   if (encryption_settings_result.has_value()) {
     response.SetPath("encryptionSettings",
@@ -205,7 +218,9 @@ void FailedResponseFromRequest(const base::Value& request,
   }
 }
 
-class RecordHandlerImplTest : public ::testing::TestWithParam<bool> {
+class RecordHandlerImplTest : public ::testing::TestWithParam<
+                                  ::testing::tuple</*need_encryption_key*/ bool,
+                                                   /*force_confirm*/ bool>> {
  public:
   RecordHandlerImplTest()
       : client_(std::make_unique<policy::MockCloudPolicyClient>()) {}
@@ -216,7 +231,9 @@ class RecordHandlerImplTest : public ::testing::TestWithParam<bool> {
         policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
   }
 
-  bool need_encryption_key() const { return GetParam(); }
+  bool need_encryption_key() const { return std::get<0>(GetParam()); }
+
+  bool force_confirm() const { return std::get<1>(GetParam()); }
 
   content::BrowserTaskEnvironment task_environment_;
 
@@ -247,15 +264,17 @@ TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
   static constexpr int64_t kNumTestRecords = 10;
   static constexpr int64_t kGenerationId = 1234;
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
+  const auto force_confirm_by_server = force_confirm();
 
   TestCallbackWaiter client_waiter;
   EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
       .WillOnce(WithArgs<0, 2>(
-          Invoke([&client_waiter](
+          Invoke([&client_waiter, &force_confirm_by_server](
                      base::Value request,
                      policy::CloudPolicyClient::ResponseCallback callback) {
             base::Value response{base::Value::Type::DICTIONARY};
-            SucceedResponseFromRequest(request, response);
+            SucceedResponseFromRequest(request, force_confirm_by_server,
+                                       response);
             std::move(callback).Run(std::move(response));
             client_waiter.Signal();
           })));
@@ -274,7 +293,10 @@ TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
 
   EXPECT_CALL(
       responder,
-      Call(ValueEqualsProto(test_records->back().sequencing_information())))
+      Call(ResponseEquals(DmServerUploadService::SuccessfulUploadResponse{
+          .sequencing_information =
+              test_records->back().sequencing_information(),
+          .force_confirm = force_confirm()})))
       .WillOnce(Invoke([&responder_waiter]() { responder_waiter.Signal(); }));
 
   auto encryption_key_attached_callback =
@@ -335,6 +357,7 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
   static constexpr int64_t kNumTestRecords = 10;
   static constexpr int64_t kGenerationId = 1234;
   auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
+  const auto force_confirm_by_server = force_confirm();
 
   // Once for failure, and once for gap.
   TestCallbackWaiterWithCounter client_waiter{2};
@@ -352,11 +375,12 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
             })));
     EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
         .WillOnce(WithArgs<0, 2>(
-            Invoke([&client_waiter](
+            Invoke([&client_waiter, &force_confirm_by_server](
                        base::Value request,
                        policy::CloudPolicyClient::ResponseCallback callback) {
               base::Value response{base::Value::Type::DICTIONARY};
-              SucceedResponseFromRequest(request, response);
+              SucceedResponseFromRequest(request, force_confirm_by_server,
+                                         response);
               std::move(callback).Run(std::move(response));
               client_waiter.Signal();
             })));
@@ -366,8 +390,10 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
   TestCompletionResponder responder;
   EXPECT_CALL(
       responder,
-      Call(ValueEqualsProto(
-          (*test_records)[kNumTestRecords - 1].sequencing_information())))
+      Call(ResponseEquals(DmServerUploadService::SuccessfulUploadResponse{
+          .sequencing_information =
+              (*test_records)[kNumTestRecords - 1].sequencing_information(),
+          .force_confirm = force_confirm()})))
       .WillOnce(Invoke([&responder_waiter]() { responder_waiter.Signal(); }));
 
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
@@ -418,7 +444,7 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
 
   EXPECT_CALL(
       responder,
-      Call(Property(&StatusOr<SequencingInformation>::status,
+      Call(Property(&DmServerUploadService::CompletionResponse::status,
                     Property(&Status::error_code, Eq(error::INTERNAL)))))
       .WillOnce(Invoke([&responder_waiter]() { responder_waiter.Signal(); }));
 
@@ -438,8 +464,10 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
   responder_waiter.Wait();
 }
 
-INSTANTIATE_TEST_SUITE_P(NeedOrNoNeedKey,
-                         RecordHandlerImplTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    NeedOrNoNeedKey,
+    RecordHandlerImplTest,
+    ::testing::Combine(/*need_encryption_key*/ ::testing::Bool(),
+                       /*force_confirm*/ ::testing::Bool()));
 }  // namespace
 }  // namespace reporting

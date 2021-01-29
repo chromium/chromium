@@ -5,6 +5,7 @@
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -143,7 +144,9 @@ class TestRecordHandler : public DmServerUploadService::RecordHandler {
                DmServerUploadService::EncryptionKeyAttachedCallback&));
 };
 
-class DmServerUploaderTest : public ::testing::TestWithParam<bool> {
+class DmServerUploaderTest : public ::testing::TestWithParam<
+                                 ::testing::tuple</*need_encryption_key*/ bool,
+                                                  /*force_confirm*/ bool>> {
  public:
   DmServerUploaderTest()
       : sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner({})),
@@ -151,7 +154,9 @@ class DmServerUploaderTest : public ::testing::TestWithParam<bool> {
         records_(std::make_unique<std::vector<EncryptedRecord>>()) {}
 
  protected:
-  bool need_encryption_key() const { return GetParam(); }
+  bool need_encryption_key() const { return std::get<0>(GetParam()); }
+
+  bool force_confirm() const { return std::get<1>(GetParam()); }
 
   content::BrowserTaskEnvironment task_envrionment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -170,16 +175,20 @@ TEST_P(DmServerUploaderTest, ProcessesRecord) {
   // Add an empty record.
   records_->emplace_back();
 
+  const bool force_confirm_flag = force_confirm();
   EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _))
       .WillOnce(WithArgs<0, 2, 3>(
-          Invoke([](bool need_encryption_key,
-                    DmServerUploadService::CompletionCallback& callback,
-                    DmServerUploadService::EncryptionKeyAttachedCallback&
-                        encryption_key_attached_cb) {
+          Invoke([&force_confirm_flag](
+                     bool need_encryption_key,
+                     DmServerUploadService::CompletionCallback& callback,
+                     DmServerUploadService::EncryptionKeyAttachedCallback&
+                         encryption_key_attached_cb) {
             if (need_encryption_key) {
               encryption_key_attached_cb.Run(SignedEncryptionInfo());
             }
-            std::move(callback).Run(SequencingInformation());
+            std::move(callback).Run(
+                DmServerUploadService::SuccessfulUploadResponse{
+                    .force_confirm = force_confirm_flag});
           })));
 
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
@@ -217,16 +226,20 @@ TEST_P(DmServerUploaderTest, ProcessesRecords) {
     records_->push_back(std::move(encrypted_record));
   }
 
+  const bool force_confirm_flag = force_confirm();
   EXPECT_CALL(*handler_, HandleRecords_(_, _, _, _))
       .WillOnce(WithArgs<0, 2, 3>(
-          Invoke([](bool need_encryption_key,
-                    DmServerUploadService::CompletionCallback& callback,
-                    DmServerUploadService::EncryptionKeyAttachedCallback&
-                        encryption_key_attached_cb) {
+          Invoke([&force_confirm_flag](
+                     bool need_encryption_key,
+                     DmServerUploadService::CompletionCallback& callback,
+                     DmServerUploadService::EncryptionKeyAttachedCallback&
+                         encryption_key_attached_cb) {
             if (need_encryption_key) {
               encryption_key_attached_cb.Run(SignedEncryptionInfo());
             }
-            std::move(callback).Run(SequencingInformation());
+            std::move(callback).Run(
+                DmServerUploadService::SuccessfulUploadResponse{
+                    .force_confirm = force_confirm_flag});
           })));
 
   StrictMock<TestEncryptionKeyAttached> encryption_key_attached;
@@ -325,9 +338,11 @@ TEST_P(DmServerUploaderTest, FailWithZeroRecords) {
   callback_waiter.Wait();
 }
 
-INSTANTIATE_TEST_SUITE_P(NeedOrNoNeedKey,
-                         DmServerUploaderTest,
-                         testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    NeedOrNoNeedKey,
+    DmServerUploaderTest,
+    ::testing::Combine(/*need_encryption_key*/ ::testing::Bool(),
+                       /*force_confirm*/ ::testing::Bool()));
 
 }  // namespace
 }  // namespace reporting

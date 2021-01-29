@@ -4,6 +4,8 @@
 
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
 
+#include <tuple>
+
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -36,6 +38,7 @@ namespace {
 using ::policy::MockCloudPolicyClient;
 using ::testing::_;
 using ::testing::AllOf;
+using ::testing::Eq;
 using ::testing::Gt;
 using ::testing::Invoke;
 using ::testing::InvokeArgument;
@@ -98,8 +101,11 @@ class TestCallbackWaiter {
   virtual void Signal() { run_loop_->Quit(); }
 
   void CompleteExpectSequencingInformation(SequencingInformation expected,
-                                           SequencingInformation info) {
+                                           bool expected_force_confirm,
+                                           SequencingInformation info,
+                                           bool force_confirm) {
     EXPECT_THAT(info, EqualsProto(expected));
+    EXPECT_THAT(force_confirm, Eq(expected_force_confirm));
     Signal();
   }
 
@@ -132,7 +138,8 @@ class TestCallbackWaiterWithCounter : public TestCallbackWaiter {
 // Helper function composes JSON represented as base::Value from Sequencing
 // information in request.
 base::Value ValueFromSucceededSequencingInfo(
-    const base::Optional<base::Value> request) {
+    const base::Optional<base::Value> request,
+    bool force_confirm_flag) {
   EXPECT_TRUE(request.has_value());
   EXPECT_TRUE(request.value().is_dict());
   base::Value response(base::Value::Type::DICTIONARY);
@@ -154,6 +161,11 @@ base::Value ValueFromSucceededSequencingInfo(
   EXPECT_TRUE(seq_info != nullptr);
   response.SetPath("lastSucceedUploadedRecord", seq_info->Clone());
 
+  // If forceConfirm confirm is expected, set it.
+  if (force_confirm_flag) {
+    response.SetPath("forceConfirm", base::Value(true));
+  }
+
   // If attach_encryption_settings it true, process that.
   const auto attach_encryption_settings =
       request.value().FindBoolKey("attachEncryptionSettings");
@@ -174,7 +186,9 @@ base::Value ValueFromSucceededSequencingInfo(
   return response;
 }
 
-class UploadClientTest : public ::testing::TestWithParam<bool> {
+class UploadClientTest : public ::testing::TestWithParam<
+                             ::testing::tuple</*need_encryption_key*/ bool,
+                                              /*force_confirm*/ bool>> {
  public:
   UploadClientTest() = default;
 
@@ -205,7 +219,9 @@ class UploadClientTest : public ::testing::TestWithParam<bool> {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
-  bool need_encryption_key() const { return GetParam(); }
+  bool need_encryption_key() const { return std::get<0>(GetParam()); }
+
+  bool force_confirm() const { return std::get<1>(GetParam()); }
 
   content::BrowserTaskEnvironment task_envrionment_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -264,12 +280,15 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
       policy::DMToken::CreateValidTokenForTesting("FAKE_DM_TOKEN").value());
 
   TestCallbackWaiter waiter;
+  const bool force_confirm_flag = force_confirm();
   EXPECT_CALL(*client, UploadEncryptedReport(_, _, _))
-      .WillOnce(WithArgs<0, 2>(Invoke(
-          [&waiter](base::Value request,
-                    policy::CloudPolicyClient::ResponseCallback response_cb) {
+      .WillOnce(WithArgs<0, 2>(
+          Invoke([&waiter, &force_confirm_flag](
+                     base::Value request,
+                     policy::CloudPolicyClient::ResponseCallback response_cb) {
             std::move(response_cb)
-                .Run(ValueFromSucceededSequencingInfo(std::move(request)));
+                .Run(ValueFromSucceededSequencingInfo(std::move(request),
+                                                      force_confirm_flag));
             base::ThreadPool::PostTask(
                 FROM_HERE, {base::TaskPriority::BEST_EFFORT},
                 base::BindOnce(&TestCallbackWaiter::Signal,
@@ -281,7 +300,7 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
       base::BindRepeating(
           &TestCallbackWaiter::CompleteExpectSequencingInformation,
           base::Unretained(&completion_callback_waiter),
-          records->back().sequencing_information());
+          records->back().sequencing_information(), force_confirm());
 
   TestEvent<StatusOr<std::unique_ptr<UploadClient>>> e;
   UploadClient::Create(client.get(), completion_cb, encryption_key_attached_cb,
@@ -298,7 +317,11 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   completion_callback_waiter.Wait();
 }
 
-INSTANTIATE_TEST_SUITE_P(NeedOrNoNeedKey, UploadClientTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    NeedOrNoNeedKey,
+    UploadClientTest,
+    ::testing::Combine(/*need_encryption_key*/ ::testing::Bool(),
+                       /*force_confirm*/ ::testing::Bool()));
 
 }  // namespace
 }  // namespace reporting

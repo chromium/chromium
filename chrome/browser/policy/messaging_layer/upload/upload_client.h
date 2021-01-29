@@ -22,9 +22,10 @@ namespace reporting {
 class UploadClient {
  public:
   // ReportSuccessfulUploadCallback is used to pass server responses back to
-  // the owner of |this|.
+  // the owner of |this| (the respone consists of sequencing information and
+  // forceConfirm flag).
   using ReportSuccessfulUploadCallback =
-      base::RepeatingCallback<void(SequencingInformation)>;
+      DmServerUploadService::ReportSuccessfulUploadCallback;
 
   // ReceivedEncryptionKeyCallback is called if server attached encryption key
   // to the response.

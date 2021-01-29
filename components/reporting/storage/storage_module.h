@@ -42,7 +42,11 @@ class StorageModule : public base::RefCountedThreadSafe<StorageModule> {
 
   // Once a record has been successfully uploaded, the sequencing information
   // can be passed back to the StorageModule here for record deletion.
-  virtual void ReportSuccess(SequencingInformation sequencing_information);
+  // If |force| is false (which is used in most cases), |sequencing_information|
+  // only affects Storage if no higher sequeincing was confirmed before;
+  // otherwise it is accepted unconditionally.
+  virtual void ReportSuccess(SequencingInformation sequencing_information,
+                             bool force);
 
   // If the server attached signed encryption key to the response, it needs to
   // be paased here.
