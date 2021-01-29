@@ -126,7 +126,9 @@ void PartitionAllocSupport::ReconfigureAfterZygoteFork(
     established_process_type_ = process_type;
   }
 
-  ReconfigurePartitionForKnownProcess(process_type);
+  if (process_type != switches::kZygoteProcess) {
+    ReconfigurePartitionForKnownProcess(process_type);
+  }
 }
 
 void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
