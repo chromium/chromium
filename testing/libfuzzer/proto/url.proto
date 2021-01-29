@@ -1,0 +1,92 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// This file contains the definition of the Url protobuf used in the
+// url_parse_proto_fuzzer that is meant to serve as an example for future
+// Chromium fuzzers that use libprotobuf-mutator. We will consider the format of
+// a URL for this fuzzer, to be
+// [scheme:][//[user[:password]@]host[:port]][/path][?query][#value] There may
+// be some URLs Chromium treats as valid that this syntax does not capture.
+// However, we will ignore them for the sake of simplicity. It is recommended to
+// read this file in conjunction with Convert() in url_proto_converter.cc as
+// logic in this function is sometimes used to ensure that the Url Protocol
+// Buffer obeys the syntax we have defined for URLs. Though reading it is
+// completely unnecessary for understanding this fuzzer, we have roughly
+// followed RFC 3986 (https://tools.ietf.org/html/rfc3986) which defines the
+// syntax of URIs (which URLs are a subset of).
+
+syntax = "proto2";
+
+package url_proto;
+
+// Here we define the format for a Url Protocol Buffer. This will be passed to
+// our fuzzer function.
+message Url {
+  // If there is a scheme, then it must be followed by a colon. A scheme is in
+  // practice not required in a URL. Therefore, we will define the scheme as
+  // optional but ensure it is followed by a colon in our conversion code if it
+  // is included.
+  optional string scheme = 1;
+
+  enum Slash {
+    NONE = 0;      // Separate path segments using ""
+    FORWARD = 1;   // Separate path segments using /
+    BACKWARD = 2;  // Separate path segments using \
+  }
+    // The syntax rules of the two slashes that precede the host in a URL are
+    // surprisingly complex. They are not required, even if a scheme is included
+    // (http:example.com is treated as valid), and are valid even if a scheme is
+    // not included (//example.com is treated as file:///example.com). They can
+    // even be backslashes (http:\\example.com and http\/example.com are both
+    // valid) and there can be any number of them (http:/example.com and
+    // http://////example.com are both valid).
+    // We will therefore define slashes as a list of enum values (repeated
+    // Slash). In our conversion code, this will be read to append the
+    // appropriate kind and appropriate number of slashes to the URL.
+    repeated Slash slashes = 2 [packed = true];
+
+    // The [user:password@] part of the URL shown above is called the userinfo.
+    // Userinfo is not mandatory, but if it is included in a URL, then it must
+    // contain a string called user. There is another optional field in userinfo
+    // called the password. If a password is included, the user must be
+    // separated from it by ":". In either case, the userinfo must be separated
+    // from the host by "@". A URL must have a host if it has a userinfo. These
+    // requirements will be ensured by the conversion code.
+    message Userinfo {
+      required string user = 1;
+      optional string password = 2;
+    }
+    optional Userinfo userinfo = 3;
+
+    // Hosts, like most else in our Url definition, are optional (there are
+    // are URLs such as data URLs that do not have hosts).
+    optional string host = 4;
+
+    // Ports are unsigned integers between 1-2^16. The closest type to this in
+    // the proto2 format is uint32. Also if a port number is specified it must
+    // be preceded by a colon (consider "google.com80" 80 will be interpreted as
+    // part of the host). The conversion code will ensure this is the case.
+    optional uint32 port = 5;
+
+    // The rules for the path are somewhat complex. A path is not required,
+    // however if it follows a port or host, it must start with "/" according
+    // to the RFC, though Chromium accepts "\" as it converts all backslashes to
+    // slashes. It does not need to start with "/" if there is no host (in data
+    // URLs for example). Thus we will define path as a repeated string where
+    // each member contains a segment of the path and will be preceded by the
+    // path_separator. The one exception to this is for the first segment if
+    // path_seperator == NONE and there is a non empty path and host, then the
+    // first segment will be preceded by "/".
+    repeated string path = 6;
+    required Slash path_separator = 7 [default = FORWARD];
+
+    // A query must preceded by "?". This will be ensured in the conversion
+    // code. Queries can have many components which the converter will separate
+    // using "&", as is the convention.
+    repeated string query = 8;
+
+    // A fragment must preceded by "#". This will be ensured in the conversion
+    // code.
+    optional string fragment = 9;
+  }
