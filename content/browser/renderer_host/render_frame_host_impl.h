@@ -1502,6 +1502,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
       mojo::PendingReceiver<blink::mojom::PrerenderProcessor> pending_receiver);
 
   // Prerender2:
+  // Tells PrerenderHostRegistry to cancel the prerendering of the page this
+  // frame is in, which destroys this frame.
+  void CancelPrerendering();
+
+  // Prerender2:
   // Returns true if this frame is for a prerendering page.
   // This should be called after CommitNavigation().
   bool IsPrerendering() const;

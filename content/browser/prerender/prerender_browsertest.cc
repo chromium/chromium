@@ -500,7 +500,8 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, PrerenderBlankIframe) {
 class MojoCapabilityControlTestContentBrowserClient
     : public TestContentBrowserClient,
       mojom::TestInterfaceForDefer,
-      mojom::TestInterfaceForGrant {
+      mojom::TestInterfaceForGrant,
+      mojom::TestInterfaceForCancel {
  public:
   void RegisterBrowserInterfaceBindersForFrame(
       RenderFrameHost* render_frame_host,
@@ -511,12 +512,17 @@ class MojoCapabilityControlTestContentBrowserClient
     map->Add<mojom::TestInterfaceForGrant>(base::BindRepeating(
         &MojoCapabilityControlTestContentBrowserClient::BindGrantInterface,
         base::Unretained(this)));
+    map->Add<mojom::TestInterfaceForCancel>(base::BindRepeating(
+        &MojoCapabilityControlTestContentBrowserClient::BindCancelInterface,
+        base::Unretained(this)));
   }
 
   void RegisterMojoBinderPoliciesForPrerendering(
       MojoBinderPolicyMap& policy_map) override {
     policy_map.SetPolicy<mojom::TestInterfaceForGrant>(
         MojoBinderPolicy::kGrant);
+    policy_map.SetPolicy<mojom::TestInterfaceForCancel>(
+        MojoBinderPolicy::kCancel);
   }
 
   void BindDeferInterface(
@@ -531,6 +537,12 @@ class MojoCapabilityControlTestContentBrowserClient
     grant_receiver_set_.Add(this, std::move(receiver));
   }
 
+  void BindCancelInterface(
+      RenderFrameHost* render_frame_host,
+      mojo::PendingReceiver<mojom::TestInterfaceForCancel> receiver) {
+    cancel_receiver_.Bind(std::move(receiver));
+  }
+
   size_t GetDeferReceiverSetSize() { return defer_receiver_set_.size(); }
 
   size_t GetGrantReceiverSetSize() { return grant_receiver_set_.size(); }
@@ -538,6 +550,7 @@ class MojoCapabilityControlTestContentBrowserClient
  private:
   mojo::ReceiverSet<mojom::TestInterfaceForDefer> defer_receiver_set_;
   mojo::ReceiverSet<mojom::TestInterfaceForGrant> grant_receiver_set_;
+  mojo::Receiver<mojom::TestInterfaceForCancel> cancel_receiver_{this};
 };
 
 // Tests that binding requests are handled according to MojoBinderPolicyMap
@@ -590,8 +603,6 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MojoCapabilityControl) {
   // Verify that BrowserInterfaceBrokerImpl executes kGrant binders immediately.
   EXPECT_EQ(test_browser_client.GetGrantReceiverSetSize(), frames.size());
 
-  // TODO(https://crbug.com/1132752): Test kCancel interface binding requests.
-
   // The rest of this test is only meaningful with activation.
   if (IsActivationDisabled()) {
     SetBrowserClientForTesting(old_browser_client);
@@ -604,7 +615,84 @@ IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest, MojoCapabilityControl) {
   SetBrowserClientForTesting(old_browser_client);
 }
 
-// TODO(https://crbug.com/1132746): Test canceling prerendering.
+// Tests that mojo capability control will cancel prerendering if the main frame
+// receives a request for a kCancel interface.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
+                       MojoCapabilityControl_CancelMainFrame) {
+  MojoCapabilityControlTestContentBrowserClient test_browser_client;
+  auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
+
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // Start a prerender.
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  RenderFrameHostImpl* prerendered_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+  mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =
+      prerendered_render_frame_host
+          ->browser_interface_broker_receiver_for_testing();
+  blink::mojom::BrowserInterfaceBroker* prerender_broker =
+      bib.internal_state()->impl();
+
+  // Send a kCancel request to cancel prerendering.
+  EXPECT_NE(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+  mojo::Remote<mojom::TestInterfaceForCancel> remote;
+  prerender_broker->GetInterface(remote.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+
+  SetBrowserClientForTesting(old_browser_client);
+}
+
+// Tests that mojo capability control will cancel prerendering if child frames
+// receive a request for a kCancel interface.
+IN_PROC_BROWSER_TEST_P(PrerenderBrowserTest,
+                       MojoCapabilityControl_CancelIframe) {
+  MojoCapabilityControlTestContentBrowserClient test_browser_client;
+  auto* old_browser_client = SetBrowserClientForTesting(&test_browser_client);
+
+  const GURL kInitialUrl = GetUrl("/prerender/add_prerender.html");
+  const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(shell()->web_contents()->GetURL(), kInitialUrl);
+
+  // Start a prerender.
+  AddPrerender(kPrerenderingUrl);
+  PrerenderHostRegistry& registry = GetPrerenderHostRegistry();
+  PrerenderHost* prerender_host =
+      registry.FindHostByUrlForTesting(kPrerenderingUrl);
+  RenderFrameHostImpl* main_render_frame_host =
+      prerender_host->GetPrerenderedMainFrameHostForTesting();
+  ASSERT_GE(main_render_frame_host->child_count(), 1U);
+  RenderFrameHostImpl* child_render_frame_host =
+      main_render_frame_host->child_at(0U)->current_frame_host();
+  EXPECT_NE(main_render_frame_host->GetLastCommittedURL(),
+            child_render_frame_host->GetLastCommittedURL());
+  mojo::Receiver<blink::mojom::BrowserInterfaceBroker>& bib =
+      child_render_frame_host->browser_interface_broker_receiver_for_testing();
+  blink::mojom::BrowserInterfaceBroker* prerender_broker =
+      bib.internal_state()->impl();
+
+  // Send a kCancel request to cancel prerendering.
+  EXPECT_NE(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+  mojo::Remote<mojom::TestInterfaceForCancel> remote;
+  prerender_broker->GetInterface(remote.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(registry.FindHostByUrlForTesting(kPrerenderingUrl), nullptr);
+
+  SetBrowserClientForTesting(old_browser_client);
+}
+
+// TODO(https://crbug.com/1132746): Test canceling prerendering when its
+// initiator is no longer interested in prerending this page.
 
 // TODO(https://crbug.com/1132746): Test prerendering for 404 page, auth error,
 // cross origin, etc.

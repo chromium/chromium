@@ -6424,11 +6424,11 @@ void RenderFrameHostImpl::CommitNavigation(
 
   if (blink::features::IsPrerender2Enabled()) {
     is_prerendering_ = commit_params->is_prerendering;
-    // TODO(https://crbug.com/1132752): Set cancellation_closure after replacing
-    // is_prerendering with prerender_host_id.
     if (is_prerendering_) {
       broker_.ApplyMojoBinderPolicies(
-          MojoBinderPolicyApplier::CreateForPrerendering(base::DoNothing()));
+          MojoBinderPolicyApplier::CreateForPrerendering(
+              base::BindOnce(&RenderFrameHostImpl::CancelPrerendering,
+                             base::Unretained(this))));
     }
   }
 
@@ -7934,6 +7934,19 @@ void RenderFrameHostImpl::BindPrerenderProcessor(
       std::make_unique<PrerenderProcessor>(*this), std::move(pending_receiver));
 }
 
+void RenderFrameHostImpl::CancelPrerendering() {
+  DCHECK(base::FeatureList::IsEnabled(blink::features::kPrerender2));
+  // TODO(https://crbug.com/1172065): Handle the case where the page was already
+  // activated.
+  auto* storage_partition_impl =
+      static_cast<StoragePartitionImpl*>(GetStoragePartition());
+  PrerenderHostRegistry* prerender_host_registry =
+      storage_partition_impl->GetPrerenderHostRegistry();
+  DCHECK(prerender_host_registry);
+  const int frame_tree_node_id = frame_tree()->root()->frame_tree_node_id();
+  prerender_host_registry->AbandonHost(frame_tree_node_id);
+}
+
 bool RenderFrameHostImpl::IsPrerendering() const {
   DCHECK(!is_prerendering_ || blink::features::IsPrerender2Enabled());
   return is_prerendering_;
@@ -8886,7 +8899,9 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
       is_prerendering_ = parent_->IsPrerendering();
       if (is_prerendering_) {
         broker_.ApplyMojoBinderPolicies(
-            MojoBinderPolicyApplier::CreateForPrerendering(base::DoNothing()));
+            MojoBinderPolicyApplier::CreateForPrerendering(
+                base::BindOnce(&RenderFrameHostImpl::CancelPrerendering,
+                               base::Unretained(this))));
       }
     }
 
