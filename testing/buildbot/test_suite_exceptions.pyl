@@ -713,21 +713,25 @@
       },
     },
   },
-  # TODO(crbug.com/1127110): Remove experimental once it works fine.
-  'chrome_modern_public_bundle_fake_modules_smoke_test': {
+  'chrome_java_test_wpr_tests': {
+    # TODO(crbug.com/1127110): Remove experimental once it works fine.
     'modifications': {
       'android-marshmallow-x86-rel': {
         'experiment_percentage': 100,
       },
     },
   },
-  # TODO(crbug.com/1127110): Remove experimental once it works fine.
+  'chrome_modern_public_bundle_fake_modules_smoke_test': {
+    'remove_from': [
+      # Runs on android-marshmallow-x86-rel already (crbug.com/1127110)
+      'android-marshmallow-arm64-rel',
+    ],
+  },
   'chrome_modern_public_bundle_smoke_test': {
-    'modifications': {
-      'android-marshmallow-x86-rel': {
-        'experiment_percentage': 100,
-      },
-    },
+    'remove_from': [
+      # Runs on android-marshmallow-x86-rel already (crbug.com/1127110)
+      'android-marshmallow-arm64-rel',
+    ],
   },
   'chrome_public_smoke_test': {
     'remove_from': [
@@ -2711,6 +2715,10 @@
         'swarming': {
           'hard_timeout': 1200,
         },
+      },
+      # TODO(crbug.com/1127110): Remove experimental once it works fine.
+      'android-marshmallow-x86-rel': {
+        'experiment_percentage': 100,
       },
       'linux-blink-heap-concurrent-marking-tsan-rel': {
         'swarming': {
