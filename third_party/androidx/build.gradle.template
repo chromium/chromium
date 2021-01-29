@@ -23,6 +23,7 @@ dependencies {
     compile "androidx.lifecycle:lifecycle-livedata:{{androidx_dependency_version}}"
     compile "androidx.lifecycle:lifecycle-livedata-core:{{androidx_dependency_version}}"
     compile "androidx.lifecycle:lifecycle-viewmodel:{{androidx_dependency_version}}"
+    compile "androidx.lifecycle:lifecycle-viewmodel-savedstate:{{androidx_dependency_version}}"
 
     compile "androidx.core:core:{{androidx_dependency_version}}"
     compile "androidx.core:core-animation:{{androidx_dependency_version}}"
@@ -56,6 +57,7 @@ dependencies {
     compile "androidx.tvprovider:tvprovider:{{androidx_dependency_version}}"
     compile "androidx.viewpager:viewpager:{{androidx_dependency_version}}"
     compile "androidx.exifinterface:exifinterface:{{androidx_dependency_version}}"
+    compile "androidx.window:window:{{androidx_dependency_version}}"
 
     // Those are for use by doubledown libraries.
     compile "androidx.arch.core:core-common:{{androidx_dependency_version}}"
