@@ -129,6 +129,9 @@ class ASH_EXPORT CaptureModeController
   void StartVideoRecordingImmediatelyForTesting();
 
   CaptureModeDelegate* delegate_for_testing() const { return delegate_.get(); }
+  VideoRecordingWatcher* video_recording_watcher_for_testing() const {
+    return video_recording_watcher_.get();
+  }
 
  private:
   friend class CaptureModeTestApi;

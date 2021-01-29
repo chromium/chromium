@@ -36,6 +36,10 @@ constexpr float kBlurQuality = 0.33f;
 
 constexpr int kSpaceBetweenCaptureBarAndSettingsMenu = 8;
 
+// Constants needed to paint the highlight around the area being captured.
+constexpr int kCaptureRegionBorderStrokePx = 1;
+constexpr SkColor kRegionBorderColor = SK_ColorWHITE;
+
 }  // namespace capture_mode
 
 }  // namespace ash
