@@ -9,6 +9,7 @@
 #include "chromeos/components/file_manager/file_manager_page_handler.h"
 #include "chromeos/components/file_manager/url_constants.h"
 #include "chromeos/grit/chromeos_file_manager_resources.h"
+#include "chromeos/grit/chromeos_file_manager_resources_map.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
@@ -52,17 +53,10 @@ content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {
   source->SetDefaultResource(IDR_FILE_MANAGER_SWA_MAIN_HTML);
 
   // Add chrome://file-manager content.
-  source->AddResourcePath("main.js", IDR_FILE_MANAGER_SWA_MAIN_JS);
-  source->AddResourcePath("file_manager_private_fakes.js",
-                          IDR_FILE_MANAGER_SWA_FILE_MANAGER_PRIVATE_FAKES_JS);
-  source->AddResourcePath("file_manager_fakes.js",
-                          IDR_FILE_MANAGER_SWA_FILE_MANAGER_FAKES_JS);
-  source->AddResourcePath("file_manager.mojom-lite.js",
-                          IDR_FILE_MANAGER_SWA_MOJO_LITE_JS);
-  source->AddResourcePath("browser_proxy.js",
-                          IDR_FILE_MANAGER_SWA_BROWSER_PROXY_JS);
-  source->AddResourcePath("script_loader.js",
-                          IDR_FILE_MANAGER_SWA_SCRIPT_LOADER_JS);
+  for (size_t i = 0; i < kChromeosFileManagerResourcesSize; i++) {
+    source->AddResourcePath(kChromeosFileManagerResources[i].name,
+                            kChromeosFileManagerResources[i].value);
+  }
 
   AddFilesAppResources(source, kFileManagerResources,
                        kFileManagerResourcesSize);
