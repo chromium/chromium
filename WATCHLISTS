@@ -1464,10 +1464,6 @@
                   '^components/omnibox/|'\
                   '^components/search_engines/'
     },
-    'optimization_guide': {
-      'filepath': 'optimization_guide|'\
-                  'optimization_hints',
-    },
     'origin_trials': {
       'filepath': 'origin_trial'\
                   '|OriginTrial'\
@@ -2666,7 +2662,6 @@
                       'romax+watch@chromium.org',
                       'harringtond+watch@google.com'],
     'omnibox': ['jdonnelly+watch@chromium.org'],
-    'optimization_guide': ['dougarnett+watch-optguide@chromium.org'],
     'origin_trials': ['chasej+watch@chromium.org',
                       'iclelland+watch@chromium.org'],
     'ozone': ['kalyan.kondapally@intel.com',
