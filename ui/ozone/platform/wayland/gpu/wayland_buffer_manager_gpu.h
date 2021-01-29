@@ -26,7 +26,6 @@
 
 namespace gfx {
 enum class SwapResult;
-class Rect;
 }  // namespace gfx
 
 namespace ui {
@@ -104,10 +103,13 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // logic as well. This call must not be done twice for the same |widget| until
   // the OnSubmission is called (which actually means the client can continue
   // sending buffer swap requests).
+  //
+  // CommitBuffer() calls CommitOverlays() to commit only a primary plane
+  // buffer.
   void CommitBuffer(gfx::AcceleratedWidget widget,
                     uint32_t buffer_id,
+                    const gfx::Rect& bounds_rect,
                     const gfx::Rect& damage_region);
-
   // Send overlay configurations for a frame to a WaylandWindow identified by
   // |widget|.
   void CommitOverlays(
@@ -151,9 +153,6 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
                                     size_t length,
                                     gfx::Size size,
                                     uint32_t buffer_id);
-  void CommitBufferInternal(gfx::AcceleratedWidget widget,
-                            uint32_t buffer_id,
-                            const gfx::Rect& damage_region);
   void CommitOverlaysInternal(
       gfx::AcceleratedWidget widget,
       std::vector<ozone::mojom::WaylandOverlayConfigPtr> overlays);

@@ -750,7 +750,12 @@ bool WaylandWindow::CommitOverlays(
     }
   }
 
+  if (!num_primary_planes && overlays.front()->z_order == INT32_MIN)
+    split = overlays.begin();
+  root_surface_->SetViewportDestination((*split)->bounds_rect.size());
+
   if (!wayland_overlay_delegation_enabled_) {
+    root_surface_->SetViewportSource((*split)->crop_rect);
     connection_->buffer_manager_host()->CommitBufferInternal(
         root_surface(), (*split)->buffer_id, (*split)->damage_region,
         /*wait_for_frame_callback=*/true);
@@ -769,15 +774,16 @@ bool WaylandWindow::CommitOverlays(
         std::move((*split)->access_fence_handle));
   }
 
-  root_surface_->SetViewportDestination(bounds_px_.size());
-
+  gfx::Rect background_damage;
   if (overlays.front()->z_order == INT32_MIN) {
     background_buffer_id_ = overlays.front()->buffer_id;
+    background_damage = overlays.front()->damage_region;
     should_attach_background_buffer_ = true;
   }
 
   if (should_attach_background_buffer_) {
-    connection_->buffer_manager_host()->EndFrame(background_buffer_id_);
+    connection_->buffer_manager_host()->EndFrame(background_buffer_id_,
+                                                 background_damage);
     should_attach_background_buffer_ = false;
   } else {
     // Subsurfaces are set to sync, above surface configs will only take effect

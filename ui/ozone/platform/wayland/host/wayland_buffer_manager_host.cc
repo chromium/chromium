@@ -62,13 +62,22 @@ std::string NumberToString(uint32_t number) {
 }  // namespace
 
 struct WaylandBufferManagerHost::Frame {
-  explicit Frame(WaylandSurface* root_surface)
-      : root_surface(root_surface), weak_factory(this) {}
+  explicit Frame(WaylandSurface* root_surface,
+                 WaylandBufferManagerHost* manager)
+      : root_surface(root_surface),
+        buffer_manager_(manager),
+        weak_factory(this) {}
   void IncrementPendingActions() { ++pending_actions; }
   void PendingActionComplete() {
+    DCHECK(base::CurrentUIThread::IsSet());
     CHECK_GT(pending_actions, 0u);
     if (!--pending_actions)
-      std::move(frame_commit_cb).Run();
+      if (!std::move(frame_commit_cb).Run()) {
+        buffer_manager_->error_message_ =
+            base::StrCat({"Buffer with ", NumberToString(buffer_id),
+                          " id does not exist or failed to be created."});
+        buffer_manager_->TerminateGpuProcess();
+      }
   }
 
   // |root_surface| and |buffer_id| are saved so this Frame can be destroyed to
@@ -76,6 +85,9 @@ struct WaylandBufferManagerHost::Frame {
   // is removed.
   WaylandSurface* root_surface;
   uint32_t buffer_id = 0u;
+
+  // Calls TerminateGpuProcess() if buffer does not exist.
+  WaylandBufferManagerHost* const buffer_manager_;
 
   // Number of actions to be completed before |frame_commit_cb| is run
   // automatically. Such actions include:
@@ -873,14 +885,18 @@ void WaylandBufferManagerHost::StartFrame(WaylandSurface* root_surface) {
   RemovePendingFrames(nullptr, 0u);
   DCHECK_LE(pending_frames_.size(), 10u);
   pending_frames_.push_back(
-      std::make_unique<WaylandBufferManagerHost::Frame>(root_surface));
+      std::make_unique<WaylandBufferManagerHost::Frame>(root_surface, this));
   pending_frames_.back()->IncrementPendingActions();
 }
 
-void WaylandBufferManagerHost::EndFrame(uint32_t buffer_id) {
+void WaylandBufferManagerHost::EndFrame(uint32_t buffer_id,
+                                        const gfx::Rect& damage_region) {
   DCHECK(base::CurrentUIThread::IsSet());
 
-  DCHECK(!pending_frames_.empty());
+  // If TerminateGpuProcess() is called, pending_frames_ would be cleared.
+  if (pending_frames_.empty())
+    return;
+
   pending_frames_.back()->buffer_id = buffer_id;
   Surface* surface = GetSurface(pending_frames_.back()->root_surface);
   if (!surface) {
@@ -889,10 +905,10 @@ void WaylandBufferManagerHost::EndFrame(uint32_t buffer_id) {
   }
 
   base::OnceClosure post_commit_cb = base::DoNothing();
-  pending_frames_.back()->frame_commit_cb =
-      base::BindOnce(&WaylandBufferManagerHost::Surface::CommitBuffer,
-                     base::Unretained(surface), buffer_id, gfx::Rect(), false,
-                     std::move(post_commit_cb), gfx::GpuFenceHandle());
+  pending_frames_.back()->frame_commit_cb = base::BindOnce(
+      &WaylandBufferManagerHost::Surface::CommitBuffer,
+      base::Unretained(surface), buffer_id, damage_region, !!buffer_id,
+      std::move(post_commit_cb), gfx::GpuFenceHandle());
 
   pending_frames_.back()->PendingActionComplete();
 }
@@ -939,28 +955,6 @@ bool WaylandBufferManagerHost::CommitBufferInternal(
   if (!error_message_.empty())
     TerminateGpuProcess();
   return true;
-}
-
-void WaylandBufferManagerHost::CommitBuffer(gfx::AcceleratedWidget widget,
-                                            uint32_t buffer_id,
-                                            const gfx::Rect& damage_region) {
-  DCHECK(base::CurrentUIThread::IsSet());
-
-  TRACE_EVENT1("wayland", "WaylandBufferManagerHost::CommitBuffer", "Buffer id",
-               buffer_id);
-
-  DCHECK(error_message_.empty());
-
-  if (widget == gfx::kNullAcceleratedWidget) {
-    error_message_ = "Invalid widget.";
-    TerminateGpuProcess();
-  } else {
-    auto* window = connection_->wayland_window_manager()->GetWindow(widget);
-    if (!window)
-      return;
-    CommitBufferInternal(window->root_surface(), buffer_id, damage_region,
-                         true);
-  }
 }
 
 void WaylandBufferManagerHost::CommitOverlays(

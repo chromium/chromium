@@ -140,13 +140,6 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
   // Called by the GPU to destroy the imported wl_buffer with a |buffer_id|.
   void DestroyBuffer(gfx::AcceleratedWidget widget,
                      uint32_t buffer_id) override;
-  // Called by the GPU and asks to attach a wl_buffer with a |buffer_id| to a
-  // WaylandWindow with the specified |widget|.
-  // Calls OnSubmission and OnPresentation on successful swap and pixels
-  // presented.
-  void CommitBuffer(gfx::AcceleratedWidget widget,
-                    uint32_t buffer_id,
-                    const gfx::Rect& damage_region) override;
   // Called by the GPU and asks to configure the surface/subsurfaces and attach
   // wl_buffers to WaylandWindow with the specified |widget|. Calls OnSubmission
   // and OnPresentation on successful swap and pixels presented.
@@ -160,7 +153,8 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost,
   // This pairs with an EndCommitFrame(). Every CommitBufferInternal() in
   // between increases the number of needed pending commits by 1.
   void StartFrame(WaylandSurface* root_surface);
-  void EndFrame(uint32_t buffer_id = 0u);
+  void EndFrame(uint32_t buffer_id = 0u,
+                const gfx::Rect& damage_region = gfx::Rect());
 
   // Called by the WaylandWindow and asks to attach a wl_buffer with a
   // |buffer_id| to a WaylandSurface.

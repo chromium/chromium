@@ -33,7 +33,7 @@ interface WaylandBufferManagerHost {
   // buffer, which is used to identify imported wl_buffers on the browser
   // process side and map them with the buffer objects on the gpu process side.
   // The buffer will be associated with an AcceleratedWidget as soon as the
-  // very first CommitBuffer request comes from viz to browser process.
+  // very first CommitOverlays request comes from viz to browser process.
   // If the buffer has been committed at least once, it is not possible to
   // reassign it to another AcceleratedWidget.
   CreateDmabufBasedBuffer(handle<platform> dmabuf_fd,
@@ -50,7 +50,7 @@ interface WaylandBufferManagerHost {
   // The |length| is the length of the shared memory, |size|
   // is the size of buffer and |buffer_id| is the id of the buffer.
   // The buffer will be associated with an AcceleratedWidget as soon as the
-  // very first CommitBuffer request comes from viz to browser process. If
+  // very first CommitOverlays request comes from viz to browser process. If
   // the buffer has been committed at least once, it is not possible to
   // reassign it to another AcceleratedWidget.
   CreateShmBasedBuffer(handle<platform> shm_fd,
@@ -68,14 +68,6 @@ interface WaylandBufferManagerHost {
   // with a correct buffer id. Providing wrong pair of the |widget| and the
   // |buffer_id| will result in the termination of the GPU process.
   DestroyBuffer(gfx.mojom.AcceleratedWidget widget, uint32 buffer_id);
-
-  // Attaches a wl_buffer to a WaylandWindow's surface with the following
-  // |widget|. The |damage_region| describes the changed region of the buffer.
-  // The |buffer_id| is a unique id for the buffer, which is used to
-  // identify imported wl_buffers on the browser process side mapped with
-  // the ones on the gpu process.
-  CommitBuffer(gfx.mojom.AcceleratedWidget widget, uint32 buffer_id,
-               gfx.mojom.Rect damage_region);
 
   // Send overlay configurations for a frame to a WaylandWindow with the
   // following |widget|.
