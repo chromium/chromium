@@ -11,12 +11,6 @@ import("//chrome/test/base/js2gtest.gni")
 import("//testing/test.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 
-declare_args() {
-  # Whether to compress the main Chromevox javascript files or load the
-  # modules individually from source files.
-  chromevox_compress_js = true
-}
-
 closure_library_dir =
     "//third_party/chromevox/third_party/closure-library/closure/goog"
 
@@ -150,7 +144,13 @@ chromevox_out_dir = "$root_out_dir/resources/chromeos/accessibility/chromevox"
 
 group("build") {
   deps = [
+    ":chromevox_background_script",
     ":chromevox_copied_files",
+    ":chromevox_learn_mode_script",
+    ":chromevox_log_script",
+    ":chromevox_min_content_script",
+    ":chromevox_options_script",
+    ":chromevox_panel_script",
     ":chromevox_phonetic_dictionaries_js",
     ":i_tutorial",
     ":tutorial_lesson",
@@ -161,18 +161,6 @@ group("build") {
     "//third_party/chromevox:chromevox_third_party_resources",
     "//third_party/liblouis",
   ]
-  if (chromevox_compress_js) {
-    deps += [
-      ":chromevox_background_script",
-      ":chromevox_learn_mode_script",
-      ":chromevox_log_script",
-      ":chromevox_min_content_script",
-      ":chromevox_options_script",
-      ":chromevox_panel_script",
-    ]
-  } else {
-    deps += [ ":chromevox_deps_js" ]
-  }
 }
 
 chromevox_background_script_loader_file = "background/loader.js"
@@ -221,21 +209,6 @@ run_jsbundler("chromevox_copied_files") {
     "panel/panel.css",
     "panel/panel.html",
   ]
-  if (!chromevox_compress_js) {
-    sources += chromevox_modules
-    sources += [
-      "closure/closure_preinit.js",
-      chromevox_background_script_loader_file,
-      chromevox_learn_mode_loader_file,
-      chromevox_log_loader_file,
-      chromevox_min_content_script_loader_file,
-      chromevox_options_script_loader_file,
-      chromevox_panel_script_loader_file,
-    ]
-  }
-  if (!chromevox_compress_js) {
-    sources += closure_library_modules
-  }
   rewrite_rules = [
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
@@ -287,55 +260,44 @@ action("chromevox_phonetic_dictionaries_js") {
          ] + rebase_path(src_dir, root_build_dir)
 }
 
-if (chromevox_compress_js) {
-  template("compress_js") {
-    run_jsbundler(target_name) {
-      assert(defined(invoker.output_file))
-      mode = "compressed_bundle"
-      modules = chromevox_modules + closure_library_modules
-      sources = invoker.sources
-      output_file = invoker.output_file
-    }
+template("compress_js") {
+  run_jsbundler(target_name) {
+    assert(defined(invoker.output_file))
+    mode = "compressed_bundle"
+    modules = chromevox_modules + closure_library_modules
+    sources = invoker.sources
+    output_file = invoker.output_file
   }
+}
 
-  compress_js("chromevox_learn_mode_script") {
-    sources = [ chromevox_learn_mode_loader_file ]
-    output_file = "$chromevox_out_dir/chromeVoxKbExplorerScript.js"
-  }
+compress_js("chromevox_learn_mode_script") {
+  sources = [ chromevox_learn_mode_loader_file ]
+  output_file = "$chromevox_out_dir/chromeVoxKbExplorerScript.js"
+}
 
-  compress_js("chromevox_log_script") {
-    sources = [ chromevox_log_loader_file ]
-    output_file = "$chromevox_out_dir/chromeVoxLogScript.js"
-  }
+compress_js("chromevox_log_script") {
+  sources = [ chromevox_log_loader_file ]
+  output_file = "$chromevox_out_dir/chromeVoxLogScript.js"
+}
 
-  compress_js("chromevox_options_script") {
-    sources = [ chromevox_options_script_loader_file ]
-    output_file = "$chromevox_out_dir/chromeVoxChromeOptionsScript.js"
-  }
+compress_js("chromevox_options_script") {
+  sources = [ chromevox_options_script_loader_file ]
+  output_file = "$chromevox_out_dir/chromeVoxChromeOptionsScript.js"
+}
 
-  compress_js("chromevox_background_script") {
-    sources = [ chromevox_background_script_loader_file ]
-    output_file = "$chromevox_out_dir/chromeVoxChromeBackgroundScript.js"
-  }
+compress_js("chromevox_background_script") {
+  sources = [ chromevox_background_script_loader_file ]
+  output_file = "$chromevox_out_dir/chromeVoxChromeBackgroundScript.js"
+}
 
-  compress_js("chromevox_min_content_script") {
-    sources = [ chromevox_min_content_script_loader_file ]
-    output_file = "$chromevox_out_dir/chromeVoxChromePageScript.js"
-  }
+compress_js("chromevox_min_content_script") {
+  sources = [ chromevox_min_content_script_loader_file ]
+  output_file = "$chromevox_out_dir/chromeVoxChromePageScript.js"
+}
 
-  compress_js("chromevox_panel_script") {
-    sources = [ chromevox_panel_script_loader_file ]
-    output_file = "$chromevox_out_dir/chromeVoxPanelScript.js"
-  }
-} else {
-  generate_deps_js("chromevox_deps_js") {
-    sources = chromevox_modules + closure_library_modules
-    output_file = "$chromevox_out_dir/deps.js"
-    rewrite_rules = [
-      rebase_path(".", root_build_dir) + ":..",
-      rebase_path(closure_library_dir, root_build_dir) + ":../closure",
-    ]
-  }
+compress_js("chromevox_panel_script") {
+  sources = [ chromevox_panel_script_loader_file ]
+  output_file = "$chromevox_out_dir/chromeVoxPanelScript.js"
 }
 
 if (is_chromeos_ash) {
