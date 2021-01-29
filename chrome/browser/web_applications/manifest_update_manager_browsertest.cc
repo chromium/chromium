@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -171,7 +172,7 @@ class UpdateCheckResultAwaiter {
   }
 
  private:
-  Browser* browser_ = nullptr;
+  CheckedPtr<Browser> browser_ = nullptr;
   const GURL& url_;
   base::RunLoop run_loop_;
   base::Optional<ManifestUpdateResult> result_;

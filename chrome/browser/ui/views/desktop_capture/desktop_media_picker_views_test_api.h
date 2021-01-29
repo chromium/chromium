@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_TEST_API_H_
 #define CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_TEST_API_H_
 
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/desktop_media_id.h"
 
 class DesktopMediaPickerViews;
@@ -48,7 +49,7 @@ class DesktopMediaPickerViewsTestApi {
   const views::TableView* GetTableView() const;
   views::TableView* GetTableView();
 
-  DesktopMediaPickerViews* picker_;
+  CheckedPtr<DesktopMediaPickerViews> picker_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_DESKTOP_CAPTURE_DESKTOP_MEDIA_PICKER_VIEWS_TEST_API_H_

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/download/download_shelf.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/geometry/insets.h"
@@ -98,18 +99,18 @@ class DownloadShelfView : public DownloadShelf,
   std::vector<DownloadItemView*> download_views_;
 
   // Button for showing all downloads (chrome://downloads).
-  views::MdTextButton* show_all_view_;
+  CheckedPtr<views::MdTextButton> show_all_view_;
 
   // Button for closing the downloads. This is contained as a child, and
   // deleted by View.
-  views::ImageButton* close_button_;
+  CheckedPtr<views::ImageButton> close_button_;
 
   // Hidden view that will contain status text for immediate output by
   // screen readers.
-  views::View* accessible_alert_;
+  CheckedPtr<views::View> accessible_alert_;
 
   // The window this shelf belongs to.
-  BrowserView* parent_;
+  CheckedPtr<BrowserView> parent_;
 
   views::MouseWatcher mouse_watcher_{
       std::make_unique<views::MouseWatcherViewHost>(this, gfx::Insets()), this};

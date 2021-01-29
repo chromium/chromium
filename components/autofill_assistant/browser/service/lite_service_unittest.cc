@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/service/lite_service.h"
+#include "base/memory/checked_ptr.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/service/mock_service.h"
 #include "components/autofill_assistant/browser/service/mock_service_request_sender.h"
@@ -79,7 +80,7 @@ class LiteServiceTest : public testing::Test {
     EXPECT_CALL(mock_finished_callback_, Run(state));
   }
 
-  NiceMock<MockServiceRequestSender>* mock_request_sender_;
+  CheckedPtr<NiceMock<MockServiceRequestSender>> mock_request_sender_;
   base::MockCallback<base::OnceCallback<void(Metrics::LiteScriptFinishedState)>>
       mock_finished_callback_;
   base::MockCallback<base::RepeatingCallback<void(bool)>>

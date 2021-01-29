@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/callback_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/history/core/browser/history_client.h"
 #include "components/history/core/browser/history_service.h"
@@ -55,7 +56,7 @@ class ChromeHistoryClient : public history::HistoryClient,
 
   // BookmarkModel instance providing access to bookmarks. May be null during
   // testing, and is null while shutting down.
-  bookmarks::BookmarkModel* bookmark_model_;
+  CheckedPtr<bookmarks::BookmarkModel> bookmark_model_;
 
   // Callback invoked when URLs are removed from BookmarkModel.
   base::RepeatingCallback<void(const std::set<GURL>&)> on_bookmarks_removed_;

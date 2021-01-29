@@ -10,6 +10,7 @@
 
 #include "base/auto_reset.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/ui/user_manager.h"
@@ -86,7 +87,7 @@ class UserManagerView : public views::DialogDelegateView {
   // views::DialogDelegateView:
   void WindowClosing() override;
 
-  views::WebView* web_view_;
+  CheckedPtr<views::WebView> web_view_;
 
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
   base::Time user_manager_started_showing_;

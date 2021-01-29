@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEB_CONTENTS_WEB_CONTENTS_VIEW_CHILD_FRAME_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/web_contents/web_contents_view.h"
 
@@ -69,7 +70,7 @@ class WebContentsViewChildFrame : public WebContentsView,
   RenderViewHostDelegateView* GetOuterDelegateView();
 
   // The WebContentsImpl whose contents we display.
-  WebContentsImpl* web_contents_;
+  CheckedPtr<WebContentsImpl> web_contents_;
 
   // The delegate ownership is passed to WebContentsView.
   std::unique_ptr<WebContentsViewDelegate> delegate_;

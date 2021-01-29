@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "mojo/core/system_impl_export.h"
@@ -47,7 +48,7 @@ class MOJO_SYSTEM_IMPL_EXPORT PlatformSharedMemoryMapping {
   const Type type_;
   const size_t offset_;
   const size_t length_;
-  void* base_ = nullptr;
+  CheckedPtr<void> base_ = nullptr;
   std::unique_ptr<base::SharedMemoryMapping> mapping_;
 
   DISALLOW_COPY_AND_ASSIGN(PlatformSharedMemoryMapping);

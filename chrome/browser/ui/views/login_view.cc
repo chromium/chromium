@@ -43,7 +43,8 @@ void AddHeaderLabel(views::GridLayout* layout,
 LoginView::LoginView(const base::string16& authority,
                      const base::string16& explanation,
                      LoginHandler::LoginModelData* login_model_data)
-    : http_auth_manager_(login_model_data ? login_model_data->model : nullptr) {
+    : http_auth_manager_(login_model_data ? login_model_data->model.get()
+                                          : nullptr) {
   // TODO(tapted): When Harmony is default, this should be removed and left up
   // to textfield_layout.h to decide.
   constexpr int kMessageWidth = 320;

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/chromeos/settings/cros_settings.h"
 #include "chrome/browser/chromeos/ui/adb_sideloading_policy_change_notification.h"
@@ -89,9 +90,9 @@ class AdbSideloadingAllowanceModePolicyHandler {
   void MaybeShowPowerwashNotification(bool is_sideloading_enabled);
   void MaybeShowPowerwashUponRebootNotification();
 
-  chromeos::CrosSettings* const cros_settings_;
+  const CheckedPtr<chromeos::CrosSettings> cros_settings_;
 
-  PrefService* const local_state_;
+  const CheckedPtr<PrefService> local_state_;
 
   std::unique_ptr<chromeos::AdbSideloadingPolicyChangeNotification>
       adb_sideloading_policy_change_notification_;

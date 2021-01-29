@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/device/geolocation/geolocation_provider_impl.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
@@ -50,7 +51,7 @@ class GeolocationImpl : public mojom::Geolocation {
   mojo::Receiver<mojom::Geolocation> receiver_;
 
   // Owns this object.
-  GeolocationContext* context_;
+  CheckedPtr<GeolocationContext> context_;
 
   // Token that unsubscribes from GeolocationProvider updates when destroyed.
   base::CallbackListSubscription geolocation_subscription_;

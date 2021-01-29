@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/base/ime/ime_text_span.h"
 #include "ui/base/ime/input_method_delegate.h"
@@ -317,10 +318,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) TSFTextStore
   HWND window_handle_ = nullptr;
 
   // Current TextInputClient which is set in SetFocusedTextInputClient.
-  TextInputClient* text_input_client_ = nullptr;
+  CheckedPtr<TextInputClient> text_input_client_ = nullptr;
 
   // InputMethodDelegate instance which is used dispatch key events.
-  internal::InputMethodDelegate* input_method_delegate_ = nullptr;
+  CheckedPtr<internal::InputMethodDelegate> input_method_delegate_ = nullptr;
 
   //  |string_buffer_document_| contains all string in current active view.
   //  |string_pending_insertion_| contains only string in current edit session.

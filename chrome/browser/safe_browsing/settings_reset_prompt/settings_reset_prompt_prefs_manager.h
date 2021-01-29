@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_SETTINGS_RESET_PROMPT_SETTINGS_RESET_PROMPT_PREFS_MANAGER_H_
 #define CHROME_BROWSER_SAFE_BROWSING_SETTINGS_RESET_PROMPT_SETTINGS_RESET_PROMPT_PREFS_MANAGER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 
 class Profile;
@@ -40,8 +41,8 @@ class SettingsResetPromptPrefsManager {
   void RecordPromptShownForHomepage(const base::Time& prompt_time);
 
  private:
-  Profile* const profile_;
-  PrefService* const prefs_;
+  const CheckedPtr<Profile> profile_;
+  const CheckedPtr<PrefService> prefs_;
 };
 
 }  // namespace safe_browsing

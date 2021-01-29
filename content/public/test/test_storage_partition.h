@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/indexed_db_control.mojom.h"
@@ -214,29 +215,31 @@ class TestStoragePartition : public StoragePartition {
  private:
   base::FilePath file_path_;
   mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
-  network::mojom::NetworkContext* network_context_ = nullptr;
-  network::mojom::CookieManager* cookie_manager_for_browser_process_ = nullptr;
-  storage::QuotaManager* quota_manager_ = nullptr;
-  AppCacheService* app_cache_service_ = nullptr;
-  BackgroundSyncContext* background_sync_context_ = nullptr;
-  storage::FileSystemContext* file_system_context_ = nullptr;
-  storage::DatabaseTracker* database_tracker_ = nullptr;
-  DOMStorageContext* dom_storage_context_ = nullptr;
+  CheckedPtr<network::mojom::NetworkContext> network_context_ = nullptr;
+  CheckedPtr<network::mojom::CookieManager>
+      cookie_manager_for_browser_process_ = nullptr;
+  CheckedPtr<storage::QuotaManager> quota_manager_ = nullptr;
+  CheckedPtr<AppCacheService> app_cache_service_ = nullptr;
+  CheckedPtr<BackgroundSyncContext> background_sync_context_ = nullptr;
+  CheckedPtr<storage::FileSystemContext> file_system_context_ = nullptr;
+  CheckedPtr<storage::DatabaseTracker> database_tracker_ = nullptr;
+  CheckedPtr<DOMStorageContext> dom_storage_context_ = nullptr;
   mojo::Remote<storage::mojom::IndexedDBControl> indexed_db_control_;
-  ServiceWorkerContext* service_worker_context_ = nullptr;
-  DedicatedWorkerService* dedicated_worker_service_ = nullptr;
-  SharedWorkerService* shared_worker_service_ = nullptr;
+  CheckedPtr<ServiceWorkerContext> service_worker_context_ = nullptr;
+  CheckedPtr<DedicatedWorkerService> dedicated_worker_service_ = nullptr;
+  CheckedPtr<SharedWorkerService> shared_worker_service_ = nullptr;
   mojo::Remote<storage::mojom::CacheStorageControl> cache_storage_control_;
-  CacheStorageContext* cache_storage_context_ = nullptr;
-  GeneratedCodeCacheContext* generated_code_cache_context_ = nullptr;
-  PlatformNotificationContext* platform_notification_context_ = nullptr;
-  DevToolsBackgroundServicesContext* devtools_background_services_context_ =
+  CheckedPtr<CacheStorageContext> cache_storage_context_ = nullptr;
+  CheckedPtr<GeneratedCodeCacheContext> generated_code_cache_context_ = nullptr;
+  CheckedPtr<PlatformNotificationContext> platform_notification_context_ =
       nullptr;
-  ContentIndexContext* content_index_context_ = nullptr;
+  CheckedPtr<DevToolsBackgroundServicesContext>
+      devtools_background_services_context_ = nullptr;
+  CheckedPtr<ContentIndexContext> content_index_context_ = nullptr;
 #if !defined(OS_ANDROID)
-  HostZoomMap* host_zoom_map_ = nullptr;
-  HostZoomLevelContext* host_zoom_level_context_ = nullptr;
-  ZoomLevelDelegate* zoom_level_delegate_ = nullptr;
+  CheckedPtr<HostZoomMap> host_zoom_map_ = nullptr;
+  CheckedPtr<HostZoomLevelContext> host_zoom_level_context_ = nullptr;
+  CheckedPtr<ZoomLevelDelegate> zoom_level_delegate_ = nullptr;
 #endif  // !defined(OS_ANDROID)
   int data_removal_observer_count_ = 0;
 

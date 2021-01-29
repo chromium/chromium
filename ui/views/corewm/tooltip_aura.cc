@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -180,7 +181,7 @@ class TooltipAura::TooltipWidget : public Widget {
   }
 
  private:
-  TooltipView* tooltip_view_ = nullptr;
+  CheckedPtr<TooltipView> tooltip_view_ = nullptr;
 };
 
 gfx::RenderText* TooltipAura::GetRenderTextForTest() {

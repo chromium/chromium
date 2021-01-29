@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
@@ -313,9 +314,9 @@ class WebRequestProxyingURLLoaderFactory
   void RemoveRequest(int32_t network_service_request_id, uint64_t request_id);
   void MaybeRemoveProxy();
 
-  content::BrowserContext* const browser_context_;
+  const CheckedPtr<content::BrowserContext> browser_context_;
   const int render_process_id_;
-  WebRequestAPI::RequestIDGenerator* const request_id_generator_;
+  const CheckedPtr<WebRequestAPI::RequestIDGenerator> request_id_generator_;
   std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data_;
   base::Optional<int64_t> navigation_id_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> proxy_receivers_;
@@ -323,7 +324,7 @@ class WebRequestProxyingURLLoaderFactory
   mojo::Receiver<network::mojom::TrustedURLLoaderHeaderClient>
       url_loader_header_client_receiver_{this};
   // Owns |this|.
-  WebRequestAPI::ProxySet* const proxies_;
+  const CheckedPtr<WebRequestAPI::ProxySet> proxies_;
 
   const content::ContentBrowserClient::URLLoaderFactoryType
       loader_factory_type_;

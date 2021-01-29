@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -121,7 +122,7 @@ class DesktopSessionWin
   std::unique_ptr<WorkerProcessLauncher> launcher_;
 
   // Used to unsubscribe from session attach and detach events.
-  WtsTerminalMonitor* monitor_;
+  CheckedPtr<WtsTerminalMonitor> monitor_;
 
   // True if |this| is subsribed to receive session attach/detach notifications.
   bool monitoring_notifications_;

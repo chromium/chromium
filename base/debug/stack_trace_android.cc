@@ -12,6 +12,7 @@
 #include <ostream>
 
 #include "base/debug/proc_maps_linux.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -31,7 +32,7 @@ struct StackCrawlState {
         max_depth(max_depth),
         have_skipped_self(false) {}
 
-  uintptr_t* frames;
+  CheckedPtr<uintptr_t> frames;
   size_t frame_count;
   size_t max_depth;
   bool have_skipped_self;

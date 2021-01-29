@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/default_clock.h"
 #include "components/sync/driver/active_devices_provider.h"
@@ -42,8 +43,8 @@ class ActiveDevicesProviderImpl : public syncer::ActiveDevicesProvider,
  private:
   std::vector<std::unique_ptr<syncer::DeviceInfo>> GetActiveDevices() const;
 
-  syncer::DeviceInfoTracker* const device_info_tracker_;
-  const base::Clock* const clock_;
+  const CheckedPtr<syncer::DeviceInfoTracker> device_info_tracker_;
+  const CheckedPtr<const base::Clock> clock_;
   ActiveDevicesChangedCallback callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);

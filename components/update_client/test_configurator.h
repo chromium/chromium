@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/update_client/configurator.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -129,7 +130,7 @@ class TestConfigurator : public Configurator {
   std::string download_preference_;
   bool enabled_cup_signing_;
   bool enabled_component_updates_;
-  PrefService* pref_service_;  // Not owned by this class.
+  CheckedPtr<PrefService> pref_service_;  // Not owned by this class.
   GURL update_check_url_;
   GURL ping_url_;
 

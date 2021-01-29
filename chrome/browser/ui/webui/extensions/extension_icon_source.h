@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon/core/favicon_service.h"
@@ -144,7 +145,7 @@ class ExtensionIconSource : public content::URLDataSource,
   // Removes temporary data associated with |request_id|.
   void ClearData(int request_id);
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
   // Maps tracker ids to request ids.
   std::map<int, int> tracker_map_;

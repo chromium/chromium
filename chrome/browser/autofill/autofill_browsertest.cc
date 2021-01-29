@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -106,7 +107,7 @@ class WindowedPersonalDataManagerObserver : public PersonalDataManagerObserver {
  private:
   bool alerted_;
   bool has_run_message_loop_;
-  Browser* browser_;
+  CheckedPtr<Browser> browser_;
 };
 
 class AutofillTest : public InProcessBrowserTest {
@@ -812,7 +813,7 @@ class FormSubmissionDetectionTest
         blink::WebMouseEvent::Button::kLeft);
   }
 
-  MockAutofillManager* autofill_manager_ = nullptr;
+  CheckedPtr<MockAutofillManager> autofill_manager_ = nullptr;
 
  private:
   void InitializeFeatures() {

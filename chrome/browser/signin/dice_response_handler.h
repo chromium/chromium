@@ -12,6 +12,7 @@
 #include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/timer/timer.h"
@@ -125,7 +126,7 @@ class DiceResponseHandler : public KeyedService {
     std::string email_;
     std::string authorization_code_;
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate_;
-    DiceResponseHandler* dice_response_handler_;
+    CheckedPtr<DiceResponseHandler> dice_response_handler_;
     base::CancelableClosure timeout_closure_;
     bool should_enable_sync_;
     std::unique_ptr<GaiaAuthFetcher> gaia_auth_fetcher_;
@@ -165,10 +166,10 @@ class DiceResponseHandler : public KeyedService {
   // Called to unlock the reconcilor after a SLO outage.
   void OnTimeoutUnlockReconcilor();
 
-  SigninClient* signin_client_;
-  signin::IdentityManager* identity_manager_;
-  AccountReconcilor* account_reconcilor_;
-  AboutSigninInternals* about_signin_internals_;
+  CheckedPtr<SigninClient> signin_client_;
+  CheckedPtr<signin::IdentityManager> identity_manager_;
+  CheckedPtr<AccountReconcilor> account_reconcilor_;
+  CheckedPtr<AboutSigninInternals> about_signin_internals_;
   base::FilePath profile_path_;
   std::vector<std::unique_ptr<DiceTokenFetcher>> token_fetchers_;
   // Lock the account reconcilor for kLockAccountReconcilorTimeoutHours

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
+#include "base/memory/checked_ptr.h"
 #include "base/test/task_environment.h"
 
 #include "base/power_monitor/power_monitor.h"
@@ -60,7 +61,7 @@ class GpuWatchdogPowerTest : public GpuWatchdogTest {
 
  protected:
   ~GpuWatchdogPowerTest() override = default;
-  base::PowerMonitorTestSource* power_monitor_source_ = nullptr;
+  CheckedPtr<base::PowerMonitorTestSource> power_monitor_source_ = nullptr;
 };
 
 void GpuWatchdogTest::SetUp() {

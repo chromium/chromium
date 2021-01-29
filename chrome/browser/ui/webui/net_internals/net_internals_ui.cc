@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -92,7 +93,7 @@ class NetInternalsMessageHandler
   void OnCloseIdleSockets(const base::ListValue* list);
   void OnFlushSocketPools(const base::ListValue* list);
 
-  content::WebUI* web_ui_;
+  CheckedPtr<content::WebUI> web_ui_;
 
   DISALLOW_COPY_AND_ASSIGN(NetInternalsMessageHandler);
 };

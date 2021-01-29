@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
@@ -277,7 +278,7 @@ class TestSurface : public FeedStream::SurfaceInterface {
   }
 
   // The stream if it was attached using the constructor.
-  FeedStream* stream_ = nullptr;
+  CheckedPtr<FeedStream> stream_ = nullptr;
   std::vector<std::string> described_updates_;
   std::map<std::string, std::string> data_store_entries_;
 };
@@ -516,7 +517,8 @@ class TestPrefetchService : public offline_pages::StubPrefetchService {
   }
 
  private:
-  offline_pages::SuggestionsProvider* suggestions_provider_ = nullptr;
+  CheckedPtr<offline_pages::SuggestionsProvider> suggestions_provider_ =
+      nullptr;
   int new_suggestions_available_call_count_ = 0;
 };
 

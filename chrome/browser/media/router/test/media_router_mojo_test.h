@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/media/router/event_page_request_manager.h"
 #include "chrome/browser/media/router/mojo/media_router_mojo_impl.h"
@@ -277,7 +278,7 @@ class MediaRouterMojoTest : public ::testing::Test {
   // Mock objects.
   MockMediaRouteProvider mock_extension_provider_;
   MockMediaRouteProvider mock_wired_display_provider_;
-  MockEventPageRequestManager* request_manager_ = nullptr;
+  CheckedPtr<MockEventPageRequestManager> request_manager_ = nullptr;
 
  private:
   // Helper method for RegisterExtensionProvider() and

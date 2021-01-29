@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/completion_once_callback.h"
@@ -66,7 +67,7 @@ class WebSocket {
   base::ThreadChecker thread_checker_;
 
   GURL url_;
-  WebSocketListener* listener_;
+  CheckedPtr<WebSocketListener> listener_;
   State state_;
   std::unique_ptr<net::TCPClientSocket> socket_;
 

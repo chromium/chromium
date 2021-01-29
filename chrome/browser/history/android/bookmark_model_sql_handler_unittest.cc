@@ -4,6 +4,7 @@
 
 #include "chrome/browser/history/android/bookmark_model_sql_handler.h"
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -72,7 +73,7 @@ class BookmarkModelSQLHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   TestingProfileManager profile_manager_;
-  BookmarkModel* bookmark_model_;
+  CheckedPtr<BookmarkModel> bookmark_model_;
   base::ScopedTempDir temp_dir_;
   TestHistoryDatabase history_db_;
 };

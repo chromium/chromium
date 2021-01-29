@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/process/process_handle.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
@@ -82,7 +83,7 @@ class CONTENT_EXPORT AccessibilityEventRecorder {
  protected:
   void OnEvent(const std::string& event);
 
-  BrowserAccessibilityManager* const manager_;
+  const CheckedPtr<BrowserAccessibilityManager> manager_;
   bool only_web_events_ = false;
 
  private:

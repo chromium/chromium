@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
@@ -181,7 +182,7 @@ class HidManagerTest : public DeviceServiceTestBase {
   }
 
   mojo::Remote<mojom::HidManager> hid_manager_;
-  MockHidService* mock_hid_service_;
+  CheckedPtr<MockHidService> mock_hid_service_;
 
   DISALLOW_COPY_AND_ASSIGN(HidManagerTest);
 };

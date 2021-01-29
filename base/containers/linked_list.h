@@ -6,6 +6,7 @@
 #define BASE_CONTAINERS_LINKED_LIST_H_
 
 #include "base/check_op.h"
+#include "base/memory/checked_ptr.h"
 
 // Simple LinkedList type. (See the Q&A section to understand how this
 // differs from std::list).
@@ -107,8 +108,8 @@ class BASE_EXPORT LinkNodeBase {
   LinkNodeBase* next_base() const { return next_; }
 
  private:
-  LinkNodeBase* previous_ = nullptr;
-  LinkNodeBase* next_ = nullptr;
+  CheckedPtr<LinkNodeBase> previous_ = nullptr;
+  CheckedPtr<LinkNodeBase> next_ = nullptr;
 };
 
 }  // namespace internal

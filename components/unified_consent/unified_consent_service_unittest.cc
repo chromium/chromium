@@ -6,6 +6,7 @@
 
 #include <map>
 #include <memory>
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 
 #include "base/test/metrics/histogram_tester.h"
@@ -38,7 +39,7 @@ class TestSyncService : public syncer::TestSyncService {
   }
 
  private:
-  syncer::SyncServiceObserver* observer_ = nullptr;
+  CheckedPtr<syncer::SyncServiceObserver> observer_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TestSyncService);
 };

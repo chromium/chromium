@@ -10,6 +10,7 @@
 #include <memory>
 
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
@@ -120,15 +121,15 @@ class GPU_GLES2_EXPORT SharedImageRepresentation {
     }
 
    private:
-    RepresentationClass* const representation_;
+    const CheckedPtr<RepresentationClass> representation_;
 
     DISALLOW_COPY_AND_ASSIGN(ScopedAccessBase);
   };
 
  private:
-  SharedImageManager* const manager_;
-  SharedImageBacking* const backing_;
-  MemoryTypeTracker* const tracker_;
+  const CheckedPtr<SharedImageManager> manager_;
+  const CheckedPtr<SharedImageBacking> backing_;
+  const CheckedPtr<MemoryTypeTracker> tracker_;
   bool has_context_ = true;
   bool has_scoped_access_ = false;
 };
@@ -438,7 +439,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationOverlay
     }
 
    private:
-    gl::GLImage* const gl_image_;
+    const CheckedPtr<gl::GLImage> gl_image_;
     std::vector<gfx::GpuFence> acquire_fences_;
     gfx::GpuFenceHandle release_fence_;
   };
@@ -559,7 +560,7 @@ class GPU_GLES2_EXPORT SharedImageRepresentationVaapi
   std::unique_ptr<ScopedWriteAccess> BeginScopedWriteAccess();
 
  private:
-  VaapiDependencies* vaapi_deps_;
+  CheckedPtr<VaapiDependencies> vaapi_deps_;
   virtual void EndAccess() = 0;
   virtual void BeginAccess() = 0;
 };

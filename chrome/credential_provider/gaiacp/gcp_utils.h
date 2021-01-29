@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -336,8 +337,8 @@ struct FakesForTesting {
   ~FakesForTesting();
 
   ScopedLsaPolicy::CreatorCallback scoped_lsa_policy_creator;
-  OSUserManager* os_user_manager_for_testing = nullptr;
-  OSProcessManager* os_process_manager_for_testing = nullptr;
+  CheckedPtr<OSUserManager> os_user_manager_for_testing = nullptr;
+  CheckedPtr<OSProcessManager> os_process_manager_for_testing = nullptr;
   WinHttpUrlFetcher::CreatorCallback fake_win_http_url_fetcher_creator;
 };
 

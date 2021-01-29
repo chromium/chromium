@@ -11,6 +11,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
@@ -89,7 +90,7 @@ class MenuRunnerTest : public ViewsTestBase {
 
  private:
   // Owned by menu_runner_.
-  views::TestMenuItemView* menu_item_view_ = nullptr;
+  CheckedPtr<views::TestMenuItemView> menu_item_view_ = nullptr;
 
   std::unique_ptr<TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> menu_runner_;
@@ -326,8 +327,8 @@ class MenuLauncherEventHandler : public ui::EventHandler {
     }
   }
 
-  MenuRunner* runner_;
-  Widget* owner_;
+  CheckedPtr<MenuRunner> runner_;
+  CheckedPtr<Widget> owner_;
 
   DISALLOW_COPY_AND_ASSIGN(MenuLauncherEventHandler);
 };
@@ -365,7 +366,7 @@ class MenuRunnerWidgetTest : public MenuRunnerTest {
 
     event_count_view_ = new EventCountView();
     event_count_view_->SetBounds(0, 0, 300, 300);
-    widget_->GetRootView()->AddChildView(event_count_view_);
+    widget_->GetRootView()->AddChildView(event_count_view_.get());
 
     InitMenuRunner(0);
   }
@@ -376,8 +377,8 @@ class MenuRunnerWidgetTest : public MenuRunnerTest {
   }
 
  private:
-  Widget* widget_ = nullptr;
-  EventCountView* event_count_view_ = nullptr;
+  CheckedPtr<Widget> widget_ = nullptr;
+  CheckedPtr<EventCountView> event_count_view_ = nullptr;
   std::unique_ptr<MenuLauncherEventHandler> consumer_;
 
   DISALLOW_COPY_AND_ASSIGN(MenuRunnerWidgetTest);
@@ -549,7 +550,7 @@ class MenuRunnerDestructionTest : public MenuRunnerTest {
 
  private:
   // Not owned
-  ReleaseRefTestViewsDelegate* test_views_delegate_ = nullptr;
+  CheckedPtr<ReleaseRefTestViewsDelegate> test_views_delegate_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(MenuRunnerDestructionTest);
 };

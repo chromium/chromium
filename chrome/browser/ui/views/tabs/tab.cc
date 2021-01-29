@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/debug/alias.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
@@ -133,7 +134,7 @@ class TabStyleHighlightPathGenerator : public views::HighlightPathGenerator {
   }
 
  private:
-  TabStyle* const tab_style_;
+  const CheckedPtr<TabStyle> tab_style_;
 };
 
 }  // namespace
@@ -146,7 +147,7 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
                                   TabController* controller)
       : tab_(tab), close_button_(close_button), controller_(controller) {
     DCHECK(close_button_);
-    tab_close_button_observation_.Observe(close_button_);
+    tab_close_button_observation_.Observe(close_button_.get());
   }
   TabCloseButtonObserver(const TabCloseButtonObserver&) = delete;
   TabCloseButtonObserver& operator=(const TabCloseButtonObserver&) = delete;
@@ -170,9 +171,9 @@ class Tab::TabCloseButtonObserver : public views::ViewObserver {
   base::ScopedObservation<views::View, views::ViewObserver>
       tab_close_button_observation_{this};
 
-  Tab* tab_;
-  views::View* close_button_;
-  TabController* controller_;
+  CheckedPtr<Tab> tab_;
+  CheckedPtr<views::View> close_button_;
+  CheckedPtr<TabController> controller_;
 };
 
 // Tab -------------------------------------------------------------------------
@@ -213,24 +214,24 @@ Tab::Tab(TabController* controller)
   // need a manual suppression by detecting cases where the text is painted onto
   // onto opaque parts of a not-entirely-opaque layer.
   title_->SetSkipSubpixelRenderingOpacityCheck(true);
-  AddChildView(title_);
+  AddChildView(title_.get());
 
   SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
 
   icon_ = new TabIcon;
-  AddChildView(icon_);
+  AddChildView(icon_.get());
 
   alert_indicator_ = new AlertIndicator(this);
-  AddChildView(alert_indicator_);
+  AddChildView(alert_indicator_.get());
 
   // Unretained is safe here because this class outlives its close button, and
   // the controller outlives this Tab.
   close_button_ = new TabCloseButton(
       base::BindRepeating(&Tab::CloseButtonPressed, base::Unretained(this)),
       base::BindRepeating(&TabController::OnMouseEventInTab,
-                          base::Unretained(controller_)));
+                          base::Unretained(controller_.get())));
   close_button_->SetHasInkDropActionOnClick(true);
-  AddChildView(close_button_);
+  AddChildView(close_button_.get());
 
   tab_close_button_observer_ = std::make_unique<TabCloseButtonObserver>(
       this, close_button_, controller_);
@@ -723,7 +724,7 @@ void Tab::SetClosing(bool closing) {
     // cc::Layer::IsPropertyChangeAllowed() returns false. Deleting
     // the focus ring fixes this. TODO(collinbaker): investigate why
     // this happens.
-    RemoveChildViewT(focus_ring_);
+    RemoveChildViewT(focus_ring_.get());
     focus_ring_ = nullptr;
   }
 }

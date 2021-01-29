@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_ANDROID_NFC_HOST_H_
 
 #include "base/android/jni_android.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -39,7 +40,7 @@ class NFCHost : public WebContentsObserver {
   void Close();
 
   // The permission controller for this browser context.
-  PermissionControllerImpl* permission_controller_;
+  CheckedPtr<PermissionControllerImpl> permission_controller_;
 
   mojo::Remote<device::mojom::NFCProvider> nfc_provider_;
 

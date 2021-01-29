@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_MESSAGE_BOX_DIALOG_H_
 #define CHROME_BROWSER_UI_VIEWS_MESSAGE_BOX_DIALOG_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/simple_message_box.h"
 
 #include "ui/views/widget/widget_observer.h"
@@ -59,7 +60,7 @@ class MessageBoxDialog : public views::DialogDelegate,
 
   const base::string16 window_title_;
   const chrome::MessageBoxType type_;
-  views::MessageBoxView* message_box_view_;
+  CheckedPtr<views::MessageBoxView> message_box_view_;
   MessageBoxResultCallback result_callback_;
 
   DISALLOW_COPY_AND_ASSIGN(MessageBoxDialog);

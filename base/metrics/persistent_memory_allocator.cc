@@ -952,7 +952,8 @@ LocalPersistentMemoryAllocator::LocalPersistentMemoryAllocator(
                                 size, 0, id, name, false) {}
 
 LocalPersistentMemoryAllocator::~LocalPersistentMemoryAllocator() {
-  DeallocateLocalMemory(const_cast<char*>(mem_base_), mem_size_, mem_type_);
+  DeallocateLocalMemory(const_cast<char*>(mem_base_), mem_size_,
+                        mem_type_);
 }
 
 // static

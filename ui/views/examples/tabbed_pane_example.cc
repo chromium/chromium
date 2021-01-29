@@ -46,7 +46,7 @@ void TabbedPaneExample::CreateExampleView(View* container) {
             if (pane->GetTabCount() > 1)
               pane->SelectTabAt(1);
           },
-          base::Unretained(tabbed_pane_)),
+          base::Unretained(tabbed_pane_.get())),
       GetStringUTF16(IDS_TABBED_PANE_SELECT_1_LABEL));
 
   container->SetLayoutManager(std::make_unique<views::FlexLayout>())

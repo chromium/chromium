@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -202,7 +203,7 @@ class FakeImageDownloader {
   }
 
  private:
-  URLVector* downloads_;
+  CheckedPtr<URLVector> downloads_;
   int next_download_id_ = 1;
 
   // URL to disable automatic callbacks for.
@@ -279,7 +280,7 @@ class FakeManifestDownloader {
   }
 
  private:
-  URLVector* downloads_;
+  CheckedPtr<URLVector> downloads_;
 
   // URL to disable automatic callbacks for.
   GURL manual_callback_url_;

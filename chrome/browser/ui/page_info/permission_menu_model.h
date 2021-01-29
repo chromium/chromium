@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_PAGE_INFO_PERMISSION_MENU_MODEL_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/page_info_ui.h"
@@ -37,7 +38,7 @@ class PermissionMenuModel : public ui::SimpleMenuModel,
   bool ShouldShowAllow(const GURL& url);
   bool ShouldShowAsk(const GURL& url);
 
-  HostContentSettingsMap* host_content_settings_map_;
+  CheckedPtr<HostContentSettingsMap> host_content_settings_map_;
 
   // The permission info represented by the menu model.
   PageInfo::PermissionInfo permission_;

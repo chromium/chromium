@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/views_export.h"
@@ -152,7 +153,7 @@ class VIEWS_EXPORT MenuRunner {
   const int32_t run_types_;
 
   // We own this. No scoped_ptr because it is destroyed by calling Release().
-  internal::MenuRunnerImplInterface* impl_;
+  CheckedPtr<internal::MenuRunnerImplInterface> impl_;
 
   // An implementation of RunMenuAt. This is usually NULL and ignored. If this
   // is not NULL, this implementation will be used.

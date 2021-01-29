@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "content/public/test/browser_task_environment.h"
@@ -125,7 +126,7 @@ class GeneratedCodeCacheTest : public testing::Test {
   bool received_;
   bool received_null_;
   base::FilePath cache_path_;
-  disk_cache::Backend* backend_;
+  CheckedPtr<disk_cache::Backend> backend_;
 };
 
 constexpr char GeneratedCodeCacheTest::kInitialUrl[];

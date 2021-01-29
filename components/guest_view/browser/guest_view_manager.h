@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/browser_plugin_guest_manager.h"
 #include "content/public/browser/web_contents.h"
@@ -250,7 +251,7 @@ class GuestViewManager : public content::BrowserPluginGuestManager,
   // |last_instance_id_removed_| are kept here.
   std::set<int> removed_instance_ids_;
 
-  content::BrowserContext* const context_;
+  const CheckedPtr<content::BrowserContext> context_;
 
   std::unique_ptr<GuestViewManagerDelegate> delegate_;
 

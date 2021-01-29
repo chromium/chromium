@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -318,10 +319,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) MdnsResponder
   // responder should be destroyed before |manager_| becomes invalid or a weak
   // reference should be used to access the manager when there is no such
   // guarantee in an operation.
-  MdnsResponderManager* const manager_;
+  const CheckedPtr<MdnsResponderManager> manager_;
   std::map<std::string, net::IPAddress> name_addr_map_;
   std::map<std::string, uint16_t> name_refcount_map_;
-  MdnsResponderManager::NameGenerator* name_generator_;
+  CheckedPtr<MdnsResponderManager::NameGenerator> name_generator_;
 
   DISALLOW_COPY_AND_ASSIGN(MdnsResponder);
 };

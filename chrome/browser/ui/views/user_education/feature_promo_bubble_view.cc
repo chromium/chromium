@@ -247,7 +247,7 @@ FeaturePromoBubbleView::FeaturePromoBubbleView(
         dismiss_is_leading ? 0 : 1);
 
     auto* leading_button =
-        dismiss_is_leading ? dismiss_button_ : snooze_button_;
+        dismiss_is_leading ? dismiss_button_.get() : snooze_button_.get();
     leading_button->SetProperty(
         views::kMarginsKey,
         gfx::Insets(0, layout_provider->GetDistanceMetric(

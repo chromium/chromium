@@ -9,6 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/sync/profile_signin_confirmation_helper.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -50,7 +51,7 @@ class ProfileSigninConfirmationDialogViews : public views::DialogDelegateView {
   void BuildWorkProfileView();
 
   // Weak ptr to parent view.
-  Browser* const browser_;
+  const CheckedPtr<Browser> browser_;
 
   // The GAIA username being signed in.
   std::string username_;

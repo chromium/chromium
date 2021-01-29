@@ -60,13 +60,13 @@ ChooserDialogView::ChooserDialogView(
 
   SetAcceptCallback(
       base::BindOnce(&DeviceChooserContentView::Accept,
-                     base::Unretained(device_chooser_content_view_)));
+                     base::Unretained(device_chooser_content_view_.get())));
   SetCancelCallback(
       base::BindOnce(&DeviceChooserContentView::Cancel,
-                     base::Unretained(device_chooser_content_view_)));
+                     base::Unretained(device_chooser_content_view_.get())));
   SetCloseCallback(
       base::BindOnce(&DeviceChooserContentView::Close,
-                     base::Unretained(device_chooser_content_view_)));
+                     base::Unretained(device_chooser_content_view_.get())));
 
   chrome::RecordDialogCreation(chrome::DialogIdentifier::CHOOSER);
 }

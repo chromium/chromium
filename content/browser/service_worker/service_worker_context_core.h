@@ -16,6 +16,7 @@
 #include "base/containers/id_map.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
@@ -93,7 +94,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
                           ContainerHostPredicate predicate);
     void ForwardUntilMatchingContainerHost();
 
-    ContainerHostByClientUUIDMap* const map_;
+    const CheckedPtr<ContainerHostByClientUUIDMap> map_;
     ContainerHostPredicate predicate_;
     ContainerHostByClientUUIDMap::iterator container_host_iterator_;
 

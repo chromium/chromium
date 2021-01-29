@@ -4,6 +4,7 @@
 #include "ui/views/controls/menu/menu_controller.h"
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -96,7 +97,7 @@ class MenuControllerUITest : public InProcessBrowserTest {
   }
 
  protected:
-  MenuItemView* first_item_ = nullptr;
+  CheckedPtr<MenuItemView> first_item_ = nullptr;
   std::unique_ptr<MenuRunner> menu_runner_;
   std::unique_ptr<MenuDelegate> menu_delegate_;
   // Middle of first menu item.

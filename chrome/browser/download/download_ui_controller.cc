@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -71,7 +72,7 @@ class DownloadShelfUIControllerDelegate
   // DownloadUIController::Delegate
   void OnNewDownloadReady(download::DownloadItem* item) override;
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 };
 
 void DownloadShelfUIControllerDelegate::OnNewDownloadReady(

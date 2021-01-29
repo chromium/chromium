@@ -32,6 +32,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "media/base/audio_decoder_config.h"
@@ -171,13 +172,13 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   // Create new bitstream converter, destroying active converter if present.
   void InitBitstreamConverter();
 
-  FFmpegDemuxer* demuxer_;
+  CheckedPtr<FFmpegDemuxer> demuxer_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  AVStream* stream_;
+  CheckedPtr<AVStream> stream_;
   base::TimeDelta start_time_;
   std::unique_ptr<AudioDecoderConfig> audio_config_;
   std::unique_ptr<VideoDecoderConfig> video_config_;
-  MediaLog* media_log_;
+  CheckedPtr<MediaLog> media_log_;
   Type type_;
   Liveness liveness_;
   base::TimeDelta duration_;

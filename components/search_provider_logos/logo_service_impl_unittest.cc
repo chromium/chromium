@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -371,7 +372,7 @@ class LogoServiceImplTest : public ::testing::Test {
         base::BindRepeating(&LogoServiceImplTest::use_gray_background,
                             base::Unretained(this)));
     logo_service_->SetClockForTests(&test_clock_);
-    logo_service_->SetLogoCacheForTests(base::WrapUnique(logo_cache_));
+    logo_service_->SetLogoCacheForTests(base::WrapUnique(logo_cache_.get()));
   }
 
   void TearDown() override {
@@ -420,7 +421,7 @@ class LogoServiceImplTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   TemplateURLService template_url_service_;
   base::SimpleTestClock test_clock_;
-  NiceMock<MockLogoCache>* logo_cache_;
+  CheckedPtr<NiceMock<MockLogoCache>> logo_cache_;
 
   // Used for mocking |logo_service_| URLs.
   network::TestURLLoaderFactory test_url_loader_factory_;

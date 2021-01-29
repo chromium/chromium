@@ -6,6 +6,7 @@
 #define COMPONENTS_BOOKMARKS_BROWSER_TYPED_COUNT_SORTER_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/bookmarks/browser/titled_url_node_sorter.h"
 
 namespace bookmarks {
@@ -25,7 +26,7 @@ class TypedCountSorter : public TitledUrlNodeSorter {
                    TitledUrlNodes* sorted_nodes) const override;
 
  private:
-  BookmarkClient* client_;
+  CheckedPtr<BookmarkClient> client_;
 
   DISALLOW_COPY_AND_ASSIGN(TypedCountSorter);
 };

@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/containers/span.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -212,7 +213,7 @@ class FidoDeviceEnumerateCallbackReceiver
   }
 
  private:
-  device::mojom::HidManager* hid_manager_;
+  CheckedPtr<device::mojom::HidManager> hid_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(FidoDeviceEnumerateCallbackReceiver);
 };

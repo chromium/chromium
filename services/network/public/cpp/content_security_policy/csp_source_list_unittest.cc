@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/network/public/cpp/content_security_policy/csp_source_list.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/content_security_policy/content_security_policy.h"
@@ -1018,7 +1019,7 @@ TEST(CSPSourceList, SubsumeListNoScheme) {
   struct TestCase {
     std::string required;
     std::vector<std::string> response_csp;
-    mojom::CSPSource* origin;
+    CheckedPtr<mojom::CSPSource> origin;
     bool expected;
   } cases[] = {
       {"http://a.com", {"a.com"}, origin_https.get(), true},

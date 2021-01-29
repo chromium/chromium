@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/active_install_data.h"
 #include "chrome/browser/extensions/extension_install_prompt.h"
@@ -195,7 +196,7 @@ class WebstoreStandaloneInstaller
   // Input configuration.
   std::string id_;
   Callback callback_;
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
   WebstoreInstaller::InstallSource install_source_;
 
   // Installation dialog and its underlying prompt.

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "components/tab_groups/tab_group_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
@@ -60,11 +61,11 @@ class TabGroupViews {
   SkColor GetGroupBackgroundColor() const;
 
  private:
-  TabStrip* const tab_strip_;
+  const CheckedPtr<TabStrip> tab_strip_;
   const tab_groups::TabGroupId group_;
-  TabGroupHeader* header_;
-  TabGroupHighlight* highlight_;
-  TabGroupUnderline* underline_;
+  CheckedPtr<TabGroupHeader> header_;
+  CheckedPtr<TabGroupHighlight> highlight_;
+  CheckedPtr<TabGroupUnderline> underline_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_GROUP_VIEWS_H_

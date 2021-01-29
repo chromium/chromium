@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/mru_cache.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
@@ -275,7 +276,7 @@ class TabHoverCardBubbleView::WidgetFadeAnimationDelegate
     set_animation_state(FadeAnimationState::IDLE);
   }
 
-  views::Widget* const widget_;
+  const CheckedPtr<views::Widget> widget_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::Optional<ui::ThroughputTracker> throughput_tracker_;
 #endif
@@ -354,9 +355,9 @@ class TabHoverCardBubbleView::WidgetSlideAnimationDelegate
     AnimationEnded(animation);
   }
 
-  TabHoverCardBubbleView* const bubble_delegate_;
+  const CheckedPtr<TabHoverCardBubbleView> bubble_delegate_;
   std::unique_ptr<gfx::LinearAnimation> slide_animation_;
-  views::View* desired_anchor_view_ = nullptr;
+  CheckedPtr<views::View> desired_anchor_view_ = nullptr;
   gfx::Rect starting_bubble_bounds_;
   gfx::Rect target_bubble_bounds_;
   gfx::Rect current_bubble_bounds_;
@@ -434,7 +435,7 @@ class TabHoverCardBubbleView::ThumbnailObserver {
 
   scoped_refptr<ThumbnailImage> current_image_;
   std::unique_ptr<ThumbnailImage::Subscription> subscription_;
-  TabHoverCardBubbleView* const hover_card_;
+  const CheckedPtr<TabHoverCardBubbleView> hover_card_;
 };
 
 TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)

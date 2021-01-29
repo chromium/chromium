@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_TAB_STRIP_REGION_VIEW_H_
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/accessible_pane_view.h"
@@ -78,15 +79,15 @@ class TabStripRegionView final : public views::AccessiblePaneView,
   // whenever any input of the computation of the border's sizing changes.
   void UpdateNewTabButtonBorder();
 
-  views::FlexLayout* layout_manager_ = nullptr;
-  views::View* tab_strip_container_;
-  views::View* reserved_grab_handle_space_;
-  TabStrip* tab_strip_;
-  NewTabButton* new_tab_button_ = nullptr;
-  TabSearchButton* tab_search_button_ = nullptr;
-  views::ImageButton* leading_scroll_button_;
-  views::ImageButton* trailing_scroll_button_;
-  TipMarqueeView* tip_marquee_view_ = nullptr;
+  CheckedPtr<views::FlexLayout> layout_manager_ = nullptr;
+  CheckedPtr<views::View> tab_strip_container_;
+  CheckedPtr<views::View> reserved_grab_handle_space_;
+  CheckedPtr<TabStrip> tab_strip_;
+  CheckedPtr<NewTabButton> new_tab_button_ = nullptr;
+  CheckedPtr<TabSearchButton> tab_search_button_ = nullptr;
+  CheckedPtr<views::ImageButton> leading_scroll_button_;
+  CheckedPtr<views::ImageButton> trailing_scroll_button_;
+  CheckedPtr<TipMarqueeView> tip_marquee_view_ = nullptr;
 
   const base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(

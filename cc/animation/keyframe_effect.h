@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "cc/animation/animation_events.h"
@@ -169,7 +170,7 @@ class CC_ANIMATION_EXPORT KeyframeEffect {
       base::TimeTicks monotonic_time);
 
   std::vector<std::unique_ptr<KeyframeModel>> keyframe_models_;
-  Animation* animation_;
+  CheckedPtr<Animation> animation_;
 
   ElementId element_id_;
 

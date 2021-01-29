@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/hats/hats_next_web_dialog.h"
 
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 
 #include "base/metrics/histogram_functions.h"
@@ -109,8 +110,8 @@ class HatsNextWebDialog::HatsWebView : public views::WebView {
   }
 
  private:
-  HatsNextWebDialog* dialog_;
-  Browser* browser_;
+  CheckedPtr<HatsNextWebDialog> dialog_;
+  CheckedPtr<Browser> browser_;
 };
 
 HatsNextWebDialog::HatsNextWebDialog(Browser* browser,

@@ -16,6 +16,7 @@
 #include "base/cancelable_callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/sequenced_task_runner.h"
@@ -859,12 +860,12 @@ class PasswordStore : protected PasswordStoreSync,
 
   std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper_;
 
-  PrefService* prefs_ = nullptr;
+  CheckedPtr<PrefService> prefs_ = nullptr;
 
   // PasswordReuseDetector can be only destroyed on the background sequence. It
   // can't be owned by PasswordStore because PasswordStore can be destroyed on
   // the UI thread and DestroyOnBackgroundThread isn't guaranteed to be called.
-  PasswordReuseDetector* reuse_detector_ = nullptr;
+  CheckedPtr<PasswordReuseDetector> reuse_detector_ = nullptr;
   std::unique_ptr<PasswordStoreSigninNotifier> notifier_;
   HashPasswordManager hash_password_manager_;
 

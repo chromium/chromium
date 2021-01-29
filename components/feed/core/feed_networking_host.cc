@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -87,13 +88,13 @@ class NetworkFetch {
   const std::string request_type_;
   std::string access_token_;
   const std::vector<uint8_t> request_body_;
-  IdentityManager* const identity_manager_;
+  const CheckedPtr<IdentityManager> identity_manager_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
   FeedNetworkingHost::ResponseCallback done_callback_;
-  network::SharedURLLoaderFactory* loader_factory_;
+  CheckedPtr<network::SharedURLLoaderFactory> loader_factory_;
   const std::string api_key_;
-  const base::TickClock* tick_clock_;
+  CheckedPtr<const base::TickClock> tick_clock_;
 
   // Set when the NetworkFetch is constructed, before token and article fetch.
   const base::TimeTicks entire_send_start_ticks_;
@@ -101,7 +102,7 @@ class NetworkFetch {
   // Should be set right before the article fetch, and after the token fetch if
   // there is one.
   base::TimeTicks loader_only_start_ticks_;
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
   bool host_overridden_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(NetworkFetch);

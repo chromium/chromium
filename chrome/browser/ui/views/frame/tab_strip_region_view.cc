@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
 
 #include "base/bind.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/layout_constants.h"
@@ -122,7 +123,7 @@ class TabStripContainerOverflowIndicator : public views::View {
   }
 
  private:
-  TabStrip* tab_strip_;
+  CheckedPtr<TabStrip> tab_strip_;
   views::OverflowIndicatorAlignment side_;
 };
 
@@ -172,7 +173,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
     tab_strip_scroll_container->SetProperty(
         views::kFlexBehaviorKey,
         views::FlexSpecification(base::BindRepeating(
-            &TabScrollContainerFlexRule, base::Unretained(tab_strip_))));
+            &TabScrollContainerFlexRule, base::Unretained(tab_strip_.get()))));
   } else {
     tab_strip_container_ = AddChildView(std::move(tab_strip));
 
@@ -188,7 +189,7 @@ TabStripRegionView::TabStripRegionView(std::unique_ptr<TabStrip> tab_strip) {
 
   new_tab_button_ = AddChildView(std::make_unique<NewTabButton>(
       tab_strip_, base::BindRepeating(&TabStrip::NewTabButtonPressed,
-                                      base::Unretained(tab_strip_))));
+                                      base::Unretained(tab_strip_.get()))));
   new_tab_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_TOOLTIP_NEW_TAB));
   new_tab_button_->SetAccessibleName(

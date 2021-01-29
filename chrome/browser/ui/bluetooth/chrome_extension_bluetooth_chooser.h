@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "content/public/browser/bluetooth_chooser.h"
 
 class BluetoothChooserController;
@@ -38,7 +39,7 @@ class ChromeExtensionBluetoothChooser : public content::BluetoothChooser {
 
  private:
   // Weak. DeviceChooserContentView[Cocoa] owns it.
-  BluetoothChooserController* bluetooth_chooser_controller_;
+  CheckedPtr<BluetoothChooserController> bluetooth_chooser_controller_;
   std::unique_ptr<ChromeExtensionChooserDialog> chooser_dialog_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeExtensionBluetoothChooser);

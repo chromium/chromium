@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
@@ -42,8 +43,8 @@ class VIEWS_EXPORT ScrollBarViews : public ScrollBar {
 
  private:
   // The scroll bar buttons (Up/Down, Left/Right).
-  Button* prev_button_;
-  Button* next_button_;
+  CheckedPtr<Button> prev_button_;
+  CheckedPtr<Button> next_button_;
 
   ui::NativeTheme::ExtraParams params_;
   ui::NativeTheme::Part part_;

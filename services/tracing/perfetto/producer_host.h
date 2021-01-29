@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/tracing/perfetto/producer_host.h"
 #include "services/tracing/public/mojom/perfetto_service.mojom.h"
@@ -103,7 +104,7 @@ class ProducerHost : public tracing::mojom::ProducerHost,
 
  private:
   mojo::Remote<mojom::ProducerClient> producer_client_;
-  PerfettoTaskRunner* task_runner_;
+  CheckedPtr<PerfettoTaskRunner> task_runner_;
 
  protected:
   // Perfetto guarantees that no OnXX callbacks are invoked on |this|

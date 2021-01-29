@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_WEB_CONTENTS_FILE_CHOOSER_IMPL_H_
 
 #include "base/callback_helpers.h"
+#include "base/memory/checked_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/file_select_listener.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -48,7 +49,7 @@ class CONTENT_EXPORT FileChooserImpl : public blink::mojom::FileChooser,
     void SetListenerFunctionCalledTrueForTesting();
 
    private:
-    FileChooserImpl* owner_;
+    CheckedPtr<FileChooserImpl> owner_;
     base::ScopedClosureRunner fullscreen_block_;
 #if DCHECK_IS_ON()
     bool was_file_select_listener_function_called_ = false;
@@ -87,7 +88,7 @@ class CONTENT_EXPORT FileChooserImpl : public blink::mojom::FileChooser,
   void RenderFrameDeleted(RenderFrameHost* render_frame_host) override;
   void WebContentsDestroyed() override;
 
-  RenderFrameHostImpl* render_frame_host_;
+  CheckedPtr<RenderFrameHostImpl> render_frame_host_;
   scoped_refptr<FileSelectListenerImpl> listener_impl_;
   base::OnceCallback<void(blink::mojom::FileChooserResultPtr)> callback_;
 };

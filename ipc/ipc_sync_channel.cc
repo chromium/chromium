@@ -14,6 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
@@ -126,10 +127,10 @@ class SyncChannel::ReceivedSyncMsgQueue :
 
     void StopWatching() { watcher_.StopWatching(); }
 
-    ReceivedSyncMsgQueue* const sync_msg_queue_;
-    NestedSendDoneWatcher* const outer_state_;
+    const CheckedPtr<ReceivedSyncMsgQueue> sync_msg_queue_;
+    const CheckedPtr<NestedSendDoneWatcher> outer_state_;
 
-    base::WaitableEvent* const event_;
+    const CheckedPtr<base::WaitableEvent> event_;
     base::WaitableEventWatcher::EventCallback callback_;
     base::WaitableEventWatcher watcher_;
     scoped_refptr<base::SequencedTaskRunner> task_runner_;
@@ -317,7 +318,7 @@ class SyncChannel::ReceivedSyncMsgQueue :
   // Holds information about a queued synchronous message or reply.
   struct QueuedMessage {
     QueuedMessage(Message* m, SyncContext* c) : message(m), context(c) { }
-    Message* message;
+    CheckedPtr<Message> message;
     scoped_refptr<SyncChannel::SyncContext> context;
   };
 
@@ -341,13 +342,13 @@ class SyncChannel::ReceivedSyncMsgQueue :
   // The current NestedSendDoneWatcher for this thread, if we're currently
   // in a SyncChannel::WaitForReplyWithNestedMessageLoop. See
   // NestedSendDoneWatcher comments for more details.
-  NestedSendDoneWatcher* top_send_done_event_watcher_ = nullptr;
+  CheckedPtr<NestedSendDoneWatcher> top_send_done_event_watcher_ = nullptr;
 
   // If not null, the address of a flag to set when the dispatch event signals,
   // in lieu of actually dispatching messages. This is used by
   // SyncChannel::WaitForReply to restrict the scope of queued messages we're
   // allowed to process while it's waiting.
-  bool* dispatch_flag_ = nullptr;
+  CheckedPtr<bool> dispatch_flag_ = nullptr;
 
   // Watches |dispatch_event_| during all sync handle watches on this thread.
   std::unique_ptr<mojo::SyncEventWatcher> sync_dispatch_watcher_;
