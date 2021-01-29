@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_TAB_DIALOGS_VIEWS_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 
 // Views implementation of TabDialogs interface.
@@ -33,7 +32,7 @@ class TabDialogsViews : public TabDialogs {
   void HideManagePasswordsBubble() override;
 
  private:
-  CheckedPtr<content::WebContents> web_contents_;  // Weak. Owns this.
+  content::WebContents* web_contents_;  // Weak. Owns this.
 
   DISALLOW_COPY_AND_ASSIGN(TabDialogsViews);
 };

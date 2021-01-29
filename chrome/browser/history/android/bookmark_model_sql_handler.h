@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/history/core/browser/android/sql_handler.h"
 
 namespace bookmarks {
@@ -72,7 +71,7 @@ class BookmarkModelSQLHandler : public SQLHandler {
     DISALLOW_COPY_AND_ASSIGN(Task);
   };
 
-  CheckedPtr<URLDatabase> url_database_;
+  URLDatabase* url_database_;
 
   DISALLOW_COPY_AND_ASSIGN(BookmarkModelSQLHandler);
 };

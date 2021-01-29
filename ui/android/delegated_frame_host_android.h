@@ -6,7 +6,6 @@
 #define UI_ANDROID_DELEGATED_FRAME_HOST_ANDROID_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/safe_conversions.h"
 #include "cc/layers/deadline_policy.h"
@@ -147,11 +146,11 @@ class UI_ANDROID_EXPORT DelegatedFrameHostAndroid
 
   const viz::FrameSinkId frame_sink_id_;
 
-  CheckedPtr<ViewAndroid> view_;
+  ViewAndroid* view_;
 
-  const CheckedPtr<viz::HostFrameSinkManager> host_frame_sink_manager_;
-  CheckedPtr<WindowAndroidCompositor> registered_parent_compositor_ = nullptr;
-  CheckedPtr<Client> client_;
+  viz::HostFrameSinkManager* const host_frame_sink_manager_;
+  WindowAndroidCompositor* registered_parent_compositor_ = nullptr;
+  Client* client_;
 
   float top_controls_visible_height_ = 0.f;
 

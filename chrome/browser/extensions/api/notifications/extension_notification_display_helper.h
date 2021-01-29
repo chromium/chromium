@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class GURL;
@@ -65,7 +64,7 @@ class ExtensionNotificationDisplayHelper : public KeyedService {
   NotificationDisplayService* GetDisplayService();
 
   // The Profile instance that owns this keyed service.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // Vector of notifications that are being shown for extensions.
   NotificationVector notifications_;

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece_forward.h"
 
 #include "third_party/icu/source/common/unicode/uniset.h"
@@ -57,7 +56,7 @@ class SkeletonGenerator {
   std::unique_ptr<icu::Transliterator> diacritic_remover_;
   std::unique_ptr<icu::Transliterator> extra_confusable_mapper_;
 
-  CheckedPtr<const USpoofChecker> checker_;
+  const USpoofChecker* checker_;
 };
 
 #endif  // COMPONENTS_URL_FORMATTER_SPOOF_CHECKS_SKELETON_GENERATOR_H_

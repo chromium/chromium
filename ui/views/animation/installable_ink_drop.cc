@@ -93,7 +93,7 @@ InstallableInkDrop::InstallableInkDrop(InkDropHostView* ink_drop_host_view)
   // need to register here instead.
   RegisterHighlightedChangedCallback(
       base::BindRepeating(&InkDropHostView::OnInkDropHighlightedChanged,
-                          base::Unretained(ink_drop_host_view_.get())));
+                          base::Unretained(ink_drop_host_view_)));
 }
 
 InstallableInkDrop::~InstallableInkDrop() {

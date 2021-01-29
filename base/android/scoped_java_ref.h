@@ -14,7 +14,6 @@
 #include "base/base_export.h"
 #include "base/check_op.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 namespace base {
 namespace android {
@@ -31,7 +30,7 @@ class BASE_EXPORT ScopedJavaLocalFrame {
  private:
   // This class is only good for use on the thread it was created on so
   // it's safe to cache the non-threadsafe JNIEnv* inside this object.
-  CheckedPtr<JNIEnv> env_;
+  JNIEnv* env_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedJavaLocalFrame);
 };
@@ -279,7 +278,7 @@ class ScopedJavaLocalRef : public JavaRef<T> {
  private:
   // This class is only good for use on the thread it was created on so
   // it's safe to cache the non-threadsafe JNIEnv* inside this object.
-  CheckedPtr<JNIEnv> env_ = nullptr;
+  JNIEnv* env_ = nullptr;
 
   // Prevent ScopedJavaLocalRef(JNIEnv*, T obj) from being used to take
   // ownership of a JavaParamRef's underlying object - parameters are not
@@ -492,7 +491,7 @@ class JavaObjectArrayReader {
    private:
     iterator(const JavaObjectArrayReader* reader, jsize i)
         : reader_(reader), i_(i) {}
-    CheckedPtr<const JavaObjectArrayReader<T>> reader_;
+    const JavaObjectArrayReader* reader_;
     jsize i_;
 
     friend JavaObjectArrayReader;

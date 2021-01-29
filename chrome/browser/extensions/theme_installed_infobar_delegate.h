@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "content/public/browser/notification_observer.h"
@@ -55,7 +54,7 @@ class ThemeInstalledInfoBarDelegate : public ConfirmInfoBarDelegate,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override;
 
-  CheckedPtr<ThemeService> theme_service_;
+  ThemeService* theme_service_;
 
   // Name of theme that's just been installed.
   std::string theme_name_;

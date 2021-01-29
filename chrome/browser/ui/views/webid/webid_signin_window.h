@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 
 class GURL;
 
@@ -43,6 +42,6 @@ class WebIdSigninWindow {
   // hierarchy. Once modal is deleted, this gets deleted as well.
   ~WebIdSigninWindow();
 
-  CheckedPtr<views::Widget> modal_;
+  views::Widget* modal_;
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBID_WEBID_SIGNIN_WINDOW_H_

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/display/display.h"
 #include "ui/display/display_export.h"
 #include "ui/display/display_layout.h"
@@ -71,7 +70,7 @@ class DISPLAY_EXPORT DisplayManagerTestApi {
   // Indicate the maximum number of displays that chrome device can support.
   static size_t maximum_support_display_;
 
-  CheckedPtr<DisplayManager> display_manager_;  // not owned
+  DisplayManager* display_manager_;  // not owned
 
   DISALLOW_COPY_AND_ASSIGN(DisplayManagerTestApi);
 };

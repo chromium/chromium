@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -659,11 +658,11 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   const bool client_headers_include_h2_stream_dependency_;
 
   RecordingBoundTestNetLog net_log_;
-  CheckedPtr<quic::test::MockSendAlgorithm> send_algorithm_;
+  quic::test::MockSendAlgorithm* send_algorithm_;
   scoped_refptr<TestTaskRunner> runner_;
   std::unique_ptr<MockWrite[]> mock_writes_;
   quic::MockClock clock_;
-  CheckedPtr<TestQuicConnection> connection_;
+  TestQuicConnection* connection_;
   std::unique_ptr<QuicChromiumConnectionHelper> helper_;
   std::unique_ptr<QuicChromiumAlarmFactory> alarm_factory_;
   testing::StrictMock<quic::test::MockQuicConnectionVisitor> visitor_;

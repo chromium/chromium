@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/service/display_embedder/skia_output_surface_dependency.h"
 
@@ -64,7 +63,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependencyImpl
   bool NeedsSupportForExternalStencil() override;
 
  private:
-  const CheckedPtr<GpuServiceImpl> gpu_service_impl_;
+  GpuServiceImpl* const gpu_service_impl_;
   const gpu::SurfaceHandle surface_handle_;
   scoped_refptr<base::SingleThreadTaskRunner> client_thread_task_runner_;
 

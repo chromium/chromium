@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/webauthn/hover_list_model.h"
 
 namespace device {
@@ -45,9 +44,8 @@ class AccountHoverListModel : public HoverListModel {
   bool StyleForTwoLines() const override;
 
  private:
-  CheckedPtr<const std::vector<device::AuthenticatorGetAssertionResponse>>
-      response_list_;
-  const CheckedPtr<Delegate> delegate_;
+  const std::vector<device::AuthenticatorGetAssertionResponse>* response_list_;
+  Delegate* const delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(AccountHoverListModel);
 };

@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "components/constrained_window/constrained_window_views.h"
-#include "base/memory/checked_ptr.h"
 
 #include <memory>
 #include <vector>
@@ -137,9 +136,9 @@ class ConstrainedWindowViewsTest : public views::ViewsTestBase {
   Widget* dialog() { return dialog_; }
 
  private:
-  CheckedPtr<DialogContents> contents_ = nullptr;
+  DialogContents* contents_ = nullptr;
   std::unique_ptr<web_modal::TestWebContentsModalDialogHost> dialog_host_;
-  CheckedPtr<Widget> dialog_ = nullptr;
+  Widget* dialog_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ConstrainedWindowViewsTest);
 };

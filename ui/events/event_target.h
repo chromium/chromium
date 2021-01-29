@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/events_export.h"
 #include "ui/gfx/geometry/point.h"
@@ -31,7 +30,7 @@ class EVENTS_EXPORT EventTarget {
 
    private:
     DispatcherApi();
-    CheckedPtr<EventTarget> target_;
+    EventTarget* target_;
 
     DISALLOW_COPY_AND_ASSIGN(DispatcherApi);
   };
@@ -127,7 +126,7 @@ class EVENTS_EXPORT EventTarget {
 
   EventHandlerPriorityList pre_target_list_;
   EventHandlerList post_target_list_;
-  CheckedPtr<EventHandler> target_handler_ = nullptr;
+  EventHandler* target_handler_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(EventTarget);
 };

@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/extensions/extension_action_test_helper.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -82,7 +81,7 @@ class ToolbarActionsBarUnitTest : public BrowserWithTestWindowTest,
   base::test::ScopedFeatureList feature_list_;
 
   // The associated ToolbarActionsModel (owned by the keyed service setup).
-  CheckedPtr<ToolbarActionsModel> toolbar_model_ = nullptr;
+  ToolbarActionsModel* toolbar_model_ = nullptr;
 
   // A ExtensionActionTestHelper object constructed with the associated
   // ToolbarActionsBar.

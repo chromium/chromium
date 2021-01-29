@@ -157,7 +157,7 @@ void ExtensionPopup::OnExtensionUnloaded(
   if (extension->id() == host_->extension_id()) {
     // To ensure |extension_view_| cannot receive any messages that cause it to
     // try to access the host during Widget closure, destroy it immediately.
-    RemoveChildViewT(extension_view_.get());
+    RemoveChildViewT(extension_view_);
 
     host_.reset();
     // Stop observing the registry immediately to prevent any subsequent

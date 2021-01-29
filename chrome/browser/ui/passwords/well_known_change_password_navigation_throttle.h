@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
 
 #include "components/password_manager/core/browser/well_known_change_password_state.h"
@@ -66,10 +65,9 @@ class WellKnownChangePasswordNavigationThrottle
   password_manager::WellKnownChangePasswordState
       well_known_change_password_state_{this};
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
-  CheckedPtr<password_manager::ChangePasswordUrlService>
-      change_password_url_service_ = nullptr;
-  CheckedPtr<password_manager::AffiliationService> affiliation_service_ =
+  password_manager::ChangePasswordUrlService* change_password_url_service_ =
       nullptr;
+  password_manager::AffiliationService* affiliation_service_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_WELL_KNOWN_CHANGE_PASSWORD_NAVIGATION_THROTTLE_H_

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/payments/internal_authenticator.h"
@@ -67,8 +66,7 @@ class MockAuthenticator : public autofill::InternalAuthenticator {
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
-  CheckedPtr<content::WebContents>
-      web_contents_;  // Owned by `web_contents_factory_`.
+  content::WebContents* web_contents_;  // Owned by `web_contents_factory_`.
 };
 
 class SecurePaymentConfirmationAppTest : public testing::Test {

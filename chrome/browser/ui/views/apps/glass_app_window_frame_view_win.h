@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_VIEWS_APPS_GLASS_APP_WINDOW_FRAME_VIEW_WIN_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
@@ -48,7 +47,7 @@ class GlassAppWindowFrameViewWin : public views::NonClientFrameView {
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
 
-  CheckedPtr<views::Widget> widget_;
+  views::Widget* widget_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

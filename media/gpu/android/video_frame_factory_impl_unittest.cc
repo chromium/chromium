@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -133,11 +132,11 @@ class VideoFrameFactoryImplTest : public testing::Test {
 
   std::unique_ptr<VideoFrameFactoryImpl> impl_;
 
-  CheckedPtr<MockMaybeRenderEarlyManager> mre_manager_raw_ = nullptr;
-  CheckedPtr<MockSharedImageVideoProvider> image_provider_raw_ = nullptr;
+  MockMaybeRenderEarlyManager* mre_manager_raw_ = nullptr;
+  MockSharedImageVideoProvider* image_provider_raw_ = nullptr;
 
   // Most recently created CodecOutputBuffer.
-  CheckedPtr<CodecOutputBuffer> output_buffer_raw_ = nullptr;
+  CodecOutputBuffer* output_buffer_raw_ = nullptr;
 
   // Sent to |impl_| by RequestVideoFrame..
   base::MockCallback<VideoFrameFactory::OnceOutputCB> output_cb_;

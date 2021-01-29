@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
@@ -211,7 +210,7 @@ class PDFiumEngine : public PDFEngine,
     // compensate for any rounding errors.
     void Invalidate(const gfx::Rect& selection);
 
-    const CheckedPtr<PDFiumEngine> engine_;
+    PDFiumEngine* const engine_;
     // The origin at the time this object was constructed.
     const gfx::Point previous_origin_;
     // Screen rectangles that were selected on construction.

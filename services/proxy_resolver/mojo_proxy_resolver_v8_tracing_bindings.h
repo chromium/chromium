@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "net/base/address_family.h"
@@ -75,7 +74,7 @@ class MojoProxyResolverV8TracingBindings
   }
 
   base::ThreadChecker thread_checker_;
-  const CheckedPtr<Client> client_;
+  Client* const client_;
   HostResolverMojo host_resolver_;
 };
 

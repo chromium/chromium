@@ -4,7 +4,6 @@
 
 #include "base/base_switches.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
@@ -96,7 +95,7 @@ class SiteIsolationBrowserTest : public WebLayerBrowserTest {
   };
 
   SiteIsolationContentBrowserClient browser_client_;
-  CheckedPtr<content::ContentBrowserClient> original_client_ = nullptr;
+  content::ContentBrowserClient* original_client_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 };
 

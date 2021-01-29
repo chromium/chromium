@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
@@ -317,9 +316,9 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
 
   // Provides driver-level context to the shared code of the component. Must
   // outlive this object.
-  const CheckedPtr<AutofillDriver> driver_;
+  AutofillDriver* const driver_;
 
-  const CheckedPtr<LogManager> log_manager_;
+  LogManager* const log_manager_;
 
   // Our copy of the form data.
   std::map<FormRendererId, std::unique_ptr<FormStructure>> form_structures_;
@@ -340,7 +339,7 @@ class AutofillHandler : public AutofillDownloadManager::Observer {
   const bool is_rich_query_enabled_ = false;
 
   // Will be not null only for |SaveCardBubbleViewsFullFormBrowserTest|.
-  CheckedPtr<ObserverForTest> observer_for_testing_ = nullptr;
+  ObserverForTest* observer_for_testing_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillHandler);
 };

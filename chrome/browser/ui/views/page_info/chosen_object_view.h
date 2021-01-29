@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_CHOSEN_OBJECT_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_CHOSEN_OBJECT_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "components/page_info/page_info_ui.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -40,9 +39,8 @@ class ChosenObjectView : public views::View {
 
   void ExecuteDeleteCommand();
 
-  CheckedPtr<views::ImageView> icon_;  // Owned by the views hierarchy.
-  CheckedPtr<views::ImageButton>
-      delete_button_;  // Owned by the views hierarchy.
+  views::ImageView* icon_;             // Owned by the views hierarchy.
+  views::ImageButton* delete_button_;  // Owned by the views hierarchy.
 
   base::ObserverList<ChosenObjectViewObserver>::Unchecked observer_list_;
   std::unique_ptr<PageInfoUI::ChosenObjectInfo> info_;

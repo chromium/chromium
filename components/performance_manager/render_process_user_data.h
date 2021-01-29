@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/public/browser/render_process_host_observer.h"
 
@@ -68,11 +67,11 @@ class RenderProcessUserData : public base::SupportsUserData::Data,
       const content::ChildProcessTerminationInfo& info) override;
   void RenderProcessHostDestroyed(content::RenderProcessHost* host) override;
 
-  const CheckedPtr<content::RenderProcessHost> host_;
+  content::RenderProcessHost* const host_;
 
   std::unique_ptr<ProcessNodeImpl> process_node_;
 
-  CheckedPtr<DestructionObserver> destruction_observer_ = nullptr;
+  DestructionObserver* destruction_observer_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(RenderProcessUserData);
 };

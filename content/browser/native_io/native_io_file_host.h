@@ -4,7 +4,6 @@
 #ifndef CONTENT_BROWSER_NATIVE_IO_NATIVE_IO_FILE_HOST_H_
 #define CONTENT_BROWSER_NATIVE_IO_NATIVE_IO_FILE_HOST_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/native_io/native_io.mojom.h"
@@ -50,7 +49,7 @@ class NativeIOFileHost : public blink::mojom::NativeIOFileHost {
 
   // Raw pointer use is safe because NativeIOHost owns this NativeIOFileHost,
   // and therefore is guaranteed to outlive it.
-  const CheckedPtr<NativeIOHost> origin_host_;
+  NativeIOHost* const origin_host_;
 
   // As long as the receiver is connected, the renderer has an exclusive lock on
   // the file represented by this host.

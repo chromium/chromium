@@ -6,7 +6,6 @@
 #define UI_VIEWS_EXAMPLES_DIALOG_EXAMPLE_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
@@ -69,8 +68,8 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
   void ContentsChanged(Textfield* sender,
                        const base::string16& new_contents) override;
 
-  CheckedPtr<DialogDelegate> last_dialog_ = nullptr;
-  CheckedPtr<Label> last_body_label_ = nullptr;
+  DialogDelegate* last_dialog_ = nullptr;
+  Label* last_body_label_ = nullptr;
 
   Textfield* title_;
   Textfield* body_;
@@ -80,10 +79,10 @@ class VIEWS_EXAMPLES_EXPORT DialogExample : public ExampleBase,
   Checkbox* has_cancel_button_;
   Textfield* extra_button_label_;
   Checkbox* has_extra_button_;
-  CheckedPtr<Combobox> mode_;
+  Combobox* mode_;
   Checkbox* bubble_;
   Checkbox* persistent_bubble_;
-  CheckedPtr<LabelButton> show_;
+  LabelButton* show_;
   ui::SimpleComboboxModel mode_model_;
 
   DISALLOW_COPY_AND_ASSIGN(DialogExample);

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -92,7 +91,7 @@ class BookmarkContextMenuTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  CheckedPtr<BookmarkModel> model_;
+  BookmarkModel* model_;
   TestingPageNavigator navigator_;
 
  private:

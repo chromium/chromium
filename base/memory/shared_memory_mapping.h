@@ -11,7 +11,6 @@
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/span.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/unguessable_token.h"
 
 namespace base {

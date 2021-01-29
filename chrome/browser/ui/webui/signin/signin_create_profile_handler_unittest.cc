@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/signin/signin_create_profile_handler.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -89,7 +88,7 @@ class TestSigninCreateProfileHandler : public SigninCreateProfileHandler {
   MOCK_METHOD1(OpenForceSigninDialogForProfile, void(Profile* profile));
 
  private:
-  CheckedPtr<TestingProfileManager> profile_manager_;
+  TestingProfileManager* profile_manager_;
   DISALLOW_COPY_AND_ASSIGN(TestSigninCreateProfileHandler);
 };
 

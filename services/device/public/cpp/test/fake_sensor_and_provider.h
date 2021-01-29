@@ -6,7 +6,6 @@
 #define SERVICES_DEVICE_PUBLIC_CPP_TEST_FAKE_SENSOR_AND_PROVIDER_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -46,7 +45,7 @@ class FakeSensor : public mojom::Sensor {
   void SensorReadingChanged();
 
   mojom::SensorType sensor_type_;
-  CheckedPtr<SensorReadingSharedBuffer> buffer_;
+  SensorReadingSharedBuffer* buffer_;
   bool reading_notification_enabled_ = true;
   mojo::Remote<mojom::SensorClient> client_;
   SensorReading reading_;
@@ -123,12 +122,12 @@ class FakeSensorProvider : public mojom::SensorProvider {
 
   // The following sensor pointers are owned by the caller of
   // FakeSensorProvider::GetSensor().
-  CheckedPtr<FakeSensor> ambient_light_sensor_ = nullptr;
-  CheckedPtr<FakeSensor> accelerometer_ = nullptr;
-  CheckedPtr<FakeSensor> linear_acceleration_sensor_ = nullptr;
-  CheckedPtr<FakeSensor> gyroscope_ = nullptr;
-  CheckedPtr<FakeSensor> relative_orientation_sensor_ = nullptr;
-  CheckedPtr<FakeSensor> absolute_orientation_sensor_ = nullptr;
+  FakeSensor* ambient_light_sensor_ = nullptr;
+  FakeSensor* accelerometer_ = nullptr;
+  FakeSensor* linear_acceleration_sensor_ = nullptr;
+  FakeSensor* gyroscope_ = nullptr;
+  FakeSensor* relative_orientation_sensor_ = nullptr;
+  FakeSensor* absolute_orientation_sensor_ = nullptr;
 
   SensorReading ambient_light_sensor_reading_;
   SensorReading accelerometer_reading_;

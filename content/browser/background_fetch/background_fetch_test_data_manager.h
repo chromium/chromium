@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/background_fetch_request_info.h"
@@ -46,8 +45,8 @@ class BackgroundFetchTestDataManager : public BackgroundFetchDataManager {
   friend class BackgroundFetchDataManagerTest;
 
   scoped_refptr<storage::MockQuotaManager> mock_quota_manager_;
-  CheckedPtr<BrowserContext> browser_context_;
-  CheckedPtr<StoragePartition> storage_partition_;
+  BrowserContext* browser_context_;
+  StoragePartition* storage_partition_;
   scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundFetchTestDataManager);

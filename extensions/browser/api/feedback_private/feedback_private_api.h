@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/system_logs/system_logs_source.h"
@@ -65,7 +64,7 @@ class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
 
   static const bool kServiceHasOwnInstanceInIncognito = true;
 
-  const CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
   std::unique_ptr<FeedbackService> service_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

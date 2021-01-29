@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/login/login_handler.h"
 
 #include "base/macros.h"
@@ -156,15 +155,15 @@ class LoginHandlerViews : public LoginHandler {
         handler_->OnDialogDestroyed();
     }
 
-    CheckedPtr<LoginHandlerViews> handler_;
+    LoginHandlerViews* handler_;
     // The LoginView that contains the user's login information.
-    CheckedPtr<LoginView> login_view_;
-    CheckedPtr<views::Widget> widget_;
+    LoginView* login_view_;
+    views::Widget* widget_;
 
     DISALLOW_COPY_AND_ASSIGN(Dialog);
   };
 
-  CheckedPtr<Dialog> dialog_ = nullptr;
+  Dialog* dialog_ = nullptr;
   std::unique_ptr<PopunderPreventer> popunder_preventer_;
 
   DISALLOW_COPY_AND_ASSIGN(LoginHandlerViews);

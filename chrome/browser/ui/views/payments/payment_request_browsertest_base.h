@@ -13,7 +13,6 @@
 
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
@@ -276,7 +275,7 @@ class PaymentRequestBrowserTestBase
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
   // Weak, owned by the PaymentRequest object.
-  CheckedPtr<TestChromePaymentRequestDelegate> delegate_ = nullptr;
+  TestChromePaymentRequestDelegate* delegate_ = nullptr;
   syncer::TestSyncService sync_service_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   bool is_incognito_ = false;

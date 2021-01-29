@@ -13,7 +13,6 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "net/base/ip_address.h"
@@ -287,8 +286,8 @@ class NET_EXPORT NetworkErrorLoggingService {
   NetworkErrorLoggingService();
 
   // Unowned:
-  CheckedPtr<const base::Clock> clock_;
-  CheckedPtr<ReportingService> reporting_service_;
+  const base::Clock* clock_;
+  ReportingService* reporting_service_;
   bool shut_down_;
 
  private:

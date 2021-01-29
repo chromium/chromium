@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/webid/webid_signin_window.h"
-#include "base/memory/checked_ptr.h"
 
 #include "chrome/browser/ui/webid/identity_dialog_controller.h"
 #include "chrome/browser/ui/webid/identity_dialogs.h"
@@ -63,9 +62,9 @@ class ModalDialog : public views::DialogDelegateView {
   }
 
  private:
-  CheckedPtr<content::WebContents> initiator_web_contents_;
+  content::WebContents* initiator_web_contents_;
   // The contents of the dialog, owned by the view hierarchy.
-  CheckedPtr<views::WebView> web_view_;
+  views::WebView* web_view_;
 };
 
 WebIdSigninWindow::WebIdSigninWindow(

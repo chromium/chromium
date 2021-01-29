@@ -9,7 +9,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
@@ -132,7 +131,7 @@ class GCMProfileServiceTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  CheckedPtr<GCMProfileService> gcm_profile_service_;
+  GCMProfileService* gcm_profile_service_;
   std::unique_ptr<FakeGCMAppHandler> gcm_app_handler_;
 
   std::string registration_id_;

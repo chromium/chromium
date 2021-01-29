@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 #include "chrome/common/extensions/manifest_handlers/settings_overrides_handler.h"
 
@@ -68,7 +67,7 @@ class SettingsApiBubbleDelegate
   // The ID of the extension we are showing the bubble for.
   std::string extension_id_;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(SettingsApiBubbleDelegate);
 };

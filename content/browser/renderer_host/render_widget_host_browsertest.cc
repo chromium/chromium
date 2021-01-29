@@ -5,7 +5,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
@@ -181,9 +180,9 @@ class RenderWidgetHostTouchEmulatorBrowserTest : public ContentBrowserTest {
   RenderWidgetHostViewBase* view() { return view_; }
 
  private:
-  CheckedPtr<RenderWidgetHostViewBase> view_;
-  CheckedPtr<RenderWidgetHostImpl> host_;
-  CheckedPtr<RenderWidgetHostInputEventRouter> router_;
+  RenderWidgetHostViewBase* view_;
+  RenderWidgetHostImpl* host_;
+  RenderWidgetHostInputEventRouter* router_;
 
   base::TimeTicks last_simulated_event_time_;
   const base::TimeDelta simulated_event_time_delta_;

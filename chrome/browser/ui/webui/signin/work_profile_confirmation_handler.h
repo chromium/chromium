@@ -9,7 +9,6 @@
 #include <unordered_map>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -82,16 +81,16 @@ class WorkProfileConfirmationHandler : public content::WebUIMessageHandler,
   void CloseModalSigninWindow(DiceTurnSyncOnHelper::SigninChoice result);
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // Records whether the user clicked on Undo, Ok, or Settings.
   bool did_user_explicitly_interact_ = false;
 
   // Weak reference to the browser that showed the work profile confirmation
   // dialog (if such a dialog exists).
-  CheckedPtr<Browser> browser_;
+  Browser* browser_;
 
-  CheckedPtr<signin::IdentityManager> identity_manager_;
+  signin::IdentityManager* identity_manager_;
 
   DiceTurnSyncOnHelper::SigninChoiceCallback callback_;
 

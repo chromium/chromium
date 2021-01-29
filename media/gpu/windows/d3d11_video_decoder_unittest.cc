@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/optional.h"
 #include "base/run_loop.h"
@@ -234,7 +233,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
 
   std::unique_ptr<VideoDecoder> decoder_;
-  CheckedPtr<D3D11VideoDecoder> d3d11_decoder_raw_ = nullptr;
+  D3D11VideoDecoder* d3d11_decoder_raw_ = nullptr;
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;
   MockD3D11VideoDecoderImpl* impl_ = nullptr;

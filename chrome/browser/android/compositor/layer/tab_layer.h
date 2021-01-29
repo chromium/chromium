@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/android/compositor/layer/layer.h"
 #include "ui/android/resources/nine_patch_resource.h"
 
@@ -132,9 +131,9 @@ class TabLayer : public Layer {
                             float inner_shadow_alpha);
 
   const bool incognito_;
-  CheckedPtr<ui::ResourceManager> resource_manager_;
-  CheckedPtr<TabContentManager> tab_content_manager_;
-  CheckedPtr<LayerTitleCache> layer_title_cache_;
+  ui::ResourceManager* resource_manager_;
+  TabContentManager* tab_content_manager_;
+  LayerTitleCache* layer_title_cache_;
 
   // [layer]-+-[toolbar]
   //         +-[close button]

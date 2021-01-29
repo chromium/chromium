@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/sync_socket.h"
@@ -159,7 +158,7 @@ class InputSyncWriterTest : public testing::Test {
   base::test::TaskEnvironment env_;
   MockLogger mock_logger_;
   std::unique_ptr<InputSyncWriter> writer_;
-  CheckedPtr<MockCancelableSyncSocket> socket_;
+  MockCancelableSyncSocket* socket_;
   std::unique_ptr<media::AudioBus> audio_bus_;
 
  private:

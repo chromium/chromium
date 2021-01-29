@@ -7,7 +7,6 @@
 
 #include <unordered_set>
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_export.h"

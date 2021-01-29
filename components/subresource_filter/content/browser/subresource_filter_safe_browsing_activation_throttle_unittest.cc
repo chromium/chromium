@@ -13,7 +13,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -372,7 +371,7 @@ class SubresourceFilterSafeBrowsingActivationThrottleTest
   std::unique_ptr<ContentSubresourceFilterThrottleManager> throttle_manager_;
 
   std::unique_ptr<content::NavigationSimulator> navigation_simulator_;
-  CheckedPtr<MockSubresourceFilterClient> client_;
+  MockSubresourceFilterClient* client_;
   std::unique_ptr<TestSubresourceFilterObserver> observer_;
   scoped_refptr<FakeSafeBrowsingDatabaseManager> fake_safe_browsing_database_;
   base::HistogramTester tester_;

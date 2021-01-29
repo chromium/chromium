@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_COMPROMISED_CREDENTIALS_READER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_UI_COMPROMISED_CREDENTIALS_READER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_multi_source_observation.h"
 #include "components/password_manager/core/browser/compromised_credentials_consumer.h"
@@ -61,8 +60,8 @@ class CompromisedCredentialsReader
 
   // The password stores containing the compromised credentials.
   // |profile_store_| must not be null and must outlive this class.
-  CheckedPtr<PasswordStore> profile_store_;
-  CheckedPtr<PasswordStore> account_store_;
+  PasswordStore* profile_store_;
+  PasswordStore* account_store_;
 
   // Cache of the most recently obtained compromised credentials.
   std::vector<CompromisedCredentials> compromised_credentials_;

@@ -232,7 +232,7 @@ void ChromeExtensionMessageFilter::OnAddEventToExtensionActivityLog(
 
 void ChromeExtensionMessageFilter::OnProfileWillBeDestroyed(Profile* profile) {
   DCHECK_EQ(profile_, profile);
-  observed_profiles_.Remove(profile_.get());
+  observed_profiles_.Remove(profile_);
   profile_ = nullptr;
   activity_log_ = nullptr;
 }

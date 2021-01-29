@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "extensions/browser/extension_registry.h"
@@ -135,7 +134,7 @@ class ExtensionServiceTestWithInstall : public ExtensionServiceTestBase,
 
   // TODO(treib,devlin): Make these private and add accessors as needed.
   extensions::ExtensionList loaded_;
-  CheckedPtr<const Extension> installed_;
+  const Extension* installed_;
   bool was_update_;
   std::string old_name_;
   std::string unloaded_id_;

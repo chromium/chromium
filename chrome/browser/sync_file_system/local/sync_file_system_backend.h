@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/sync_file_system/sync_callbacks.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
 #include "storage/browser/file_system/file_system_backend.h"
@@ -82,14 +81,14 @@ class SyncFileSystemBackend : public storage::FileSystemBackend {
 
  private:
   // Not owned.
-  CheckedPtr<storage::FileSystemContext> context_ = nullptr;
+  storage::FileSystemContext* context_ = nullptr;
 
   std::unique_ptr<LocalFileChangeTracker> change_tracker_;
   scoped_refptr<LocalFileSyncContext> sync_context_;
 
   // |profile_| will initially be valid but may be destroyed before |this|, so
   // it should be checked before being accessed.
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   // A flag to skip the initialization sequence of SyncFileSystemService for
   // testing.

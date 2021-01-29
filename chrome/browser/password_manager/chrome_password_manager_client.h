@@ -12,7 +12,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "build/build_config.h"
@@ -339,7 +338,7 @@ class ChromePasswordManagerClient
       content::RenderFrameHost* frame_host,
       const gfx::RectF& bounds_in_frame_coordinates);
 
-  const CheckedPtr<Profile> profile_;
+  Profile* const profile_;
 
   password_manager::PasswordManager password_manager_;
   password_manager::PasswordFeatureManagerImpl password_feature_manager_;
@@ -369,8 +368,7 @@ class ChromePasswordManagerClient
 
   std::unique_ptr<ChromeBiometricAuthenticator> biometric_authenticator_;
 
-  CheckedPtr<password_manager::ContentPasswordManagerDriverFactory>
-      driver_factory_;
+  password_manager::ContentPasswordManagerDriverFactory* driver_factory_;
 
   // As a mojo service, will be registered into service registry
   // of the main frame host by ChromeContentBrowserClient
@@ -382,7 +380,7 @@ class ChromePasswordManagerClient
       password_generation_driver_receivers_;
 
   // Observer for password generation popup.
-  CheckedPtr<PasswordGenerationPopupObserver> observer_;
+  PasswordGenerationPopupObserver* observer_;
 
   // Controls the popup
   base::WeakPtr<PasswordGenerationPopupControllerImpl> popup_controller_;

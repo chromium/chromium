@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_USER_INTERACTION_OBSERVER_H_
 #define CHROME_BROWSER_SAFE_BROWSING_USER_INTERACTION_OBSERVER_H_
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "components/permissions/permission_request_manager.h"
@@ -143,7 +142,7 @@ class SafeBrowsingUserInteractionObserver
   content::RenderWidgetHost::KeyPressEventCallback key_press_callback_;
   content::RenderWidgetHost::MouseEventCallback mouse_event_callback_;
 
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
   security_interstitials::UnsafeResource resource_;
   scoped_refptr<SafeBrowsingUIManager> ui_manager_;
   bool interstitial_shown_ = false;
@@ -163,7 +162,7 @@ class SafeBrowsingUserInteractionObserver
   base::Time creation_time_;
   // This clock is used to record the delta from |creation_time_| when the
   // observer is detached, and can be injected by tests.
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
 };
 
 }  // namespace safe_browsing

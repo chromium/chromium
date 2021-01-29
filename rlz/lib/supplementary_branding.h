@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
-
 namespace rlz_lib {
 
 class ScopedRlzValueStoreLock;
@@ -50,7 +48,7 @@ class SupplementaryBranding {
   static const std::string& GetBrand();
 
  private:
-  CheckedPtr<ScopedRlzValueStoreLock> lock_;
+  ScopedRlzValueStoreLock* lock_;
 };
 
 }  // namespace rlz_lib

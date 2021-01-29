@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view.h"
 
 #include "base/callback_helpers.h"
@@ -221,7 +220,7 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
         .size();
   }
 
-  const CheckedPtr<MediaToolbarButtonView> button_;
+  MediaToolbarButtonView* const button_;
   std::unique_ptr<base::RunLoop> run_loop_;
 
   bool waiting_for_dialog_opened_ = false;
@@ -229,7 +228,7 @@ class MediaToolbarButtonWatcher : public MediaToolbarButtonObserver,
   bool waiting_for_notification_count_ = false;
   bool waiting_for_pip_visibility_changed_ = false;
 
-  CheckedPtr<MediaDialogView> observed_dialog_ = nullptr;
+  MediaDialogView* observed_dialog_ = nullptr;
   bool waiting_for_dialog_to_contain_text_ = false;
   base::string16 expected_text_;
   int expected_notification_count_ = 0;
@@ -555,7 +554,7 @@ class MediaDialogViewBrowserTest : public InProcessBrowserTest {
 
  protected:
   std::unique_ptr<TestWebContentsPresentationManager> presentation_manager_;
-  CheckedPtr<TestMediaRouter> media_router_ = nullptr;
+  TestMediaRouter* media_router_ = nullptr;
 
  private:
   void ClickButton(views::Button* button) {

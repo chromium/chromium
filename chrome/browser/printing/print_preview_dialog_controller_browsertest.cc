@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
@@ -210,8 +209,8 @@ class PrintPreviewDialogControllerBrowserTest : public InProcessBrowserTest {
 
 
   std::unique_ptr<PrintPreviewDialogClonedObserver> cloned_tab_observer_;
-  CheckedPtr<TestPrintViewManager> test_print_view_manager_;
-  CheckedPtr<WebContents> initiator_ = nullptr;
+  TestPrintViewManager* test_print_view_manager_;
+  WebContents* initiator_ = nullptr;
 };
 
 // Test to verify that when a initiator navigates, we can create a new preview

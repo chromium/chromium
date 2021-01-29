@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/scoped_observation.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/feeds/media_feeds_store.mojom.h"
 #include "chrome/browser/media/history/media_history_store.mojom.h"
@@ -364,7 +363,7 @@ class MediaHistoryKeyedService : public KeyedService,
 
   std::unique_ptr<StoreHolder> store_;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

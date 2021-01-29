@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CARET_BROWSING_DIALOG_DELEGATE_H_
 #define CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CARET_BROWSING_DIALOG_DELEGATE_H_
 
-#include "base/memory/checked_ptr.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -27,11 +26,11 @@ class CaretBrowsingDialogDelegate : public views::DialogDelegateView {
       delete;
   ~CaretBrowsingDialogDelegate() override;
 
-  const CheckedPtr<PrefService> pref_service_;
+  PrefService* const pref_service_;
 
   // Checkbox where the user can say they don't want to be asked when they
   // toggle caret browsing next time.
-  CheckedPtr<views::Checkbox> do_not_ask_checkbox_ = nullptr;
+  views::Checkbox* do_not_ask_checkbox_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_ACCESSIBILITY_CARET_BROWSING_DIALOG_DELEGATE_H_

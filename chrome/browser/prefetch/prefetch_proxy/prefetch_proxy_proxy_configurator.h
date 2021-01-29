@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/clock.h"
@@ -70,7 +69,7 @@ class PrefetchProxyProxyConfigurator
   const net::ProxyServer prefetch_proxy_server_;
 
   // The time clock used to calculate |prefetch_proxy_not_available_until_|.
-  CheckedPtr<const base::Clock> clock_;
+  const base::Clock* clock_;
 
   // If set, the prefetch proxy should not be used until this time.
   base::Optional<base::Time> prefetch_proxy_not_available_until_;

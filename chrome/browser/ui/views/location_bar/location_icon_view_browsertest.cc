@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/location_bar/location_icon_view.h"
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -33,7 +32,7 @@ class LocationIconViewBrowserTest : public InProcessBrowserTest {
   LocationIconView* icon_view() const { return icon_view_.get(); }
 
  private:
-  CheckedPtr<LocationBarView> location_bar_;
+  LocationBarView* location_bar_;
 
   std::unique_ptr<LocationIconView> icon_view_;
 

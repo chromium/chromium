@@ -11,7 +11,6 @@
 #include "android_webview/browser/permission/permission_request_handler_client.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace android_webview {
@@ -93,7 +92,7 @@ class TestPermissionRequestHandlerClient
 
  private:
   base::android::ScopedJavaLocalRef<jobject> java_request_;
-  CheckedPtr<AwPermissionRequest> request_;
+  AwPermissionRequest* request_;
   Permission requested_permission_;
   Permission canceled_permission_;
 };

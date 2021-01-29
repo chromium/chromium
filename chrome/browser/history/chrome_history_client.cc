@@ -35,7 +35,7 @@ void ChromeHistoryClient::OnHistoryServiceCreated(
     favicons_changed_subscription_ =
         history_service->AddFaviconsChangedCallback(
             base::BindRepeating(&bookmarks::BookmarkModel::OnFaviconsChanged,
-                                base::Unretained(bookmark_model_.get())));
+                                base::Unretained(bookmark_model_)));
   }
 }
 

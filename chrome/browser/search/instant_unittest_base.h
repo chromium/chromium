@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/simple_test_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/search/instant_service.h"
@@ -32,9 +31,9 @@ class InstantUnitTestBase : public BrowserWithTestWindowTest {
   // search_terms_replacement_key.
   void SetUserSelectedDefaultSearchProvider(const std::string& base_url);
 
-  CheckedPtr<InstantService> instant_service_;
-  CheckedPtr<TemplateURLService> template_url_service_;
-  CheckedPtr<base::SimpleTestClock> clock_;
+  InstantService* instant_service_;
+  TemplateURLService* template_url_service_;
+  base::SimpleTestClock* clock_;
 
  private:
   // BrowserWithTestWindowTest override:
