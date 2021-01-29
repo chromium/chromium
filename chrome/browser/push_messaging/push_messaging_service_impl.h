@@ -174,8 +174,8 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   void OnRefreshFinished(
       const PushMessagingAppIdentifier& app_identifier) override;
 
-  void SetMessageCallbackForTesting(const base::Closure& callback);
-  void SetUnsubscribeCallbackForTesting(const base::Closure& callback);
+  void SetMessageCallbackForTesting(const base::RepeatingClosure& callback);
+  void SetUnsubscribeCallbackForTesting(base::OnceClosure callback);
   void SetInvalidationCallbackForTesting(base::OnceClosure callback);
   void SetContentSettingChangedCallbackForTesting(
       base::RepeatingClosure callback);
@@ -391,10 +391,10 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   // Callback to be invoked when a message has been dispatched. Enables tests to
   // observe message delivery before it's dispatched to the Service Worker.
   using MessageDispatchedCallback =
-      base::Callback<void(const std::string& app_id,
-                          const GURL& origin,
-                          int64_t service_worker_registration_id,
-                          base::Optional<std::string> payload)>;
+      base::RepeatingCallback<void(const std::string& app_id,
+                                   const GURL& origin,
+                                   int64_t service_worker_registration_id,
+                                   base::Optional<std::string> payload)>;
 
   void SetMessageDispatchedCallbackForTesting(
       const MessageDispatchedCallback& callback) {
@@ -409,11 +409,11 @@ class PushMessagingServiceImpl : public content::PushMessagingService,
   int push_subscription_count_;
   int pending_push_subscription_count_;
 
-  base::Closure message_callback_for_testing_;
-  base::Closure unsubscribe_callback_for_testing_;
-  base::Closure content_setting_changed_callback_for_testing_;
-  base::Closure service_worker_unregistered_callback_for_testing_;
-  base::Closure service_worker_database_wiped_callback_for_testing_;
+  base::RepeatingClosure message_callback_for_testing_;
+  base::OnceClosure unsubscribe_callback_for_testing_;
+  base::RepeatingClosure content_setting_changed_callback_for_testing_;
+  base::RepeatingClosure service_worker_unregistered_callback_for_testing_;
+  base::RepeatingClosure service_worker_database_wiped_callback_for_testing_;
   base::OnceClosure remove_expired_subscriptions_callback_for_testing_;
   base::OnceClosure invalidation_callback_for_testing_;
 

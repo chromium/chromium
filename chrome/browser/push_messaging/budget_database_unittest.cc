@@ -43,9 +43,9 @@ class BudgetDatabaseTest : public ::testing::Test {
         db_(&profile_),
         origin_(url::Origin::Create(GURL(kTestOrigin))) {}
 
-  void WriteBudgetComplete(base::Closure run_loop_closure, bool success) {
+  void WriteBudgetComplete(base::OnceClosure run_loop_closure, bool success) {
     success_ = success;
-    run_loop_closure.Run();
+    std::move(run_loop_closure).Run();
   }
 
   // Spend budget for the origin.
@@ -60,11 +60,11 @@ class BudgetDatabaseTest : public ::testing::Test {
     return success_;
   }
 
-  void GetBudgetDetailsComplete(base::Closure run_loop_closure,
+  void GetBudgetDetailsComplete(base::OnceClosure run_loop_closure,
                                 std::vector<BudgetState> predictions) {
     success_ = !predictions.empty();
     prediction_.swap(predictions);
-    run_loop_closure.Run();
+    std::move(run_loop_closure).Run();
   }
 
   // Get the full set of budget predictions for the origin.

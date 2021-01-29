@@ -623,7 +623,7 @@ void PushMessagingServiceImpl::DidHandleMessage(
 }
 
 void PushMessagingServiceImpl::SetMessageCallbackForTesting(
-    const base::Closure& callback) {
+    const base::RepeatingClosure& callback) {
   message_callback_for_testing_ = callback;
 }
 
@@ -1154,12 +1154,12 @@ void PushMessagingServiceImpl::DidUnsubscribe(
     DecreasePushSubscriptionCount(1, false /* was_pending */);
 
   if (!unsubscribe_callback_for_testing_.is_null())
-    unsubscribe_callback_for_testing_.Run();
+    std::move(unsubscribe_callback_for_testing_).Run();
 }
 
 void PushMessagingServiceImpl::SetUnsubscribeCallbackForTesting(
-    const base::Closure& callback) {
-  unsubscribe_callback_for_testing_ = callback;
+    base::OnceClosure callback) {
+  unsubscribe_callback_for_testing_ = std::move(callback);
 }
 
 // DidDeleteServiceWorkerRegistration methods ----------------------------------

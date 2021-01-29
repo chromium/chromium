@@ -118,7 +118,7 @@ std::string GetTestApplicationServerKey(bool base64_url_encoded = false) {
   return application_server_key;
 }
 
-void LegacyRegisterCallback(const base::Closure& done_callback,
+void LegacyRegisterCallback(base::OnceClosure done_callback,
                             std::string* out_registration_id,
                             gcm::GCMClient::Result* out_result,
                             const std::string& registration_id,
@@ -127,10 +127,10 @@ void LegacyRegisterCallback(const base::Closure& done_callback,
     *out_registration_id = registration_id;
   if (out_result)
     *out_result = result;
-  done_callback.Run();
+  std::move(done_callback).Run();
 }
 
-void DidRegister(base::Closure done_callback,
+void DidRegister(base::OnceClosure done_callback,
                  const std::string& registration_id,
                  const GURL& endpoint,
                  const base::Optional<base::Time>& expiration_time,
@@ -139,15 +139,15 @@ void DidRegister(base::Closure done_callback,
                  blink::mojom::PushRegistrationStatus status) {
   EXPECT_EQ(blink::mojom::PushRegistrationStatus::SUCCESS_FROM_PUSH_SERVICE,
             status);
-  done_callback.Run();
+  std::move(done_callback).Run();
 }
 
-void InstanceIDResultCallback(base::Closure done_callback,
+void InstanceIDResultCallback(base::OnceClosure done_callback,
                               instance_id::InstanceID::Result* out_result,
                               instance_id::InstanceID::Result result) {
   DCHECK(out_result);
   *out_result = result;
-  done_callback.Run();
+  std::move(done_callback).Run();
 }
 
 }  // namespace
@@ -340,11 +340,11 @@ class PushMessagingBrowserTest : public InProcessBrowserTest {
   // To be called when delivery of a push message has finished. The |run_loop|
   // will be told to quit after |messages_required| messages were received.
   void OnDeliveryFinished(std::vector<size_t>* number_of_notifications_shown,
-                          const base::Closure& done_closure) {
+                          base::OnceClosure done_closure) {
     DCHECK(number_of_notifications_shown);
     number_of_notifications_shown->push_back(GetNotificationCount());
 
-    done_closure.Run();
+    std::move(done_closure).Run();
   }
 
   PushMessagingServiceImpl* push_service() const { return push_service_; }
@@ -1878,7 +1878,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
 
   {
     base::RunLoop run_loop;
-    push_service()->SetMessageCallbackForTesting(base::Bind(
+    push_service()->SetMessageCallbackForTesting(base::BindRepeating(
         &PushMessagingBrowserTest::OnDeliveryFinished, base::Unretained(this),
         &number_of_notifications_shown,
         base::BarrierClosure(2 /* num_closures */, run_loop.QuitClosure())));
@@ -1916,7 +1916,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest,
   ASSERT_EQ("true - is controlled", script_result);
 
   base::RunLoop run_loop;
-  base::Closure quit_barrier =
+  base::RepeatingClosure quit_barrier =
       base::BarrierClosure(2 /* num_closures */, run_loop.QuitClosure());
   push_service()->SetMessageCallbackForTesting(quit_barrier);
   notification_tester_->SetNotificationAddedClosure(quit_barrier);
