@@ -410,11 +410,24 @@ void CompositorFrameReportingController::RemoveActiveTracker(
 void CompositorFrameReportingController::SetThreadAffectsSmoothness(
     FrameSequenceMetrics::ThreadType thread_type,
     bool affects_smoothness) {
+  auto current_smooth_thread = GetSmoothThread();
+
   if (thread_type == FrameSequenceMetrics::ThreadType::kCompositor) {
     is_compositor_thread_driving_smoothness_ = affects_smoothness;
   } else {
     DCHECK_EQ(thread_type, FrameSequenceMetrics::ThreadType::kMain);
     is_main_thread_driving_smoothness_ = affects_smoothness;
+  }
+
+  // keep the history for the last 3 seconds.
+  auto expired_smooth_thread = smooth_thread_history_.lower_bound(
+      Now() - base::TimeDelta::FromSeconds(3))--;
+  smooth_thread_history_.erase(smooth_thread_history_.begin(),
+                               expired_smooth_thread);
+
+  // Only trackes the history if there is a change in smooth_thread_
+  if (current_smooth_thread != GetSmoothThread()) {
+    smooth_thread_history_.insert(std::make_pair(Now(), current_smooth_thread));
   }
 }
 
@@ -488,6 +501,15 @@ CompositorFrameReportingController::GetSmoothThread() const {
              : SmoothThread::kSmoothNone;
 }
 
+CompositorFrameReporter::SmoothThread
+CompositorFrameReportingController::GetSmoothThreadAtTime(
+    base::TimeTicks timestamp) const {
+  if (smooth_thread_history_.lower_bound(timestamp) ==
+      smooth_thread_history_.end())
+    return GetSmoothThread();
+  return smooth_thread_history_.lower_bound(timestamp)->second;
+}
+
 base::WeakPtr<CompositorFrameReporter>
 CompositorFrameReportingController::HasOutstandingUpdatesFromMain(
     const viz::BeginFrameId& id) const {
@@ -535,8 +557,8 @@ void CompositorFrameReportingController::CreateReportersForDroppedFrames(
         viz::BeginFrameArgs::NORMAL);
     auto reporter = std::make_unique<CompositorFrameReporter>(
         active_trackers_, args, latency_ukm_reporter_.get(),
-        should_report_metrics_, GetSmoothThread(), layer_tree_host_id_,
-        dropped_frame_counter_);
+        should_report_metrics_, GetSmoothThreadAtTime(timestamp),
+        layer_tree_host_id_, dropped_frame_counter_);
     reporter->set_tick_clock(tick_clock_);
     reporter->StartStage(StageType::kBeginImplFrameToSendBeginMainFrame,
                          timestamp);
