@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
@@ -93,6 +95,7 @@ public class SearchEngineLogoUtilsUnitTest {
         doReturn(false).when(mLocaleManager).needToCheckForSearchEnginePromo();
         LocaleManager.setInstanceForTest(mLocaleManager);
 
+        doReturn(true).when(mBrowserStartupController).isFullBrowserStarted();
         mSearchEngineLogoUtils = new SearchEngineLogoUtils(mBrowserStartupController);
         mSearchEngineLogoUtils.setFaviconHelperForTesting(mFaviconHelper);
         mSearchEngineLogoUtils.setRoundedIconGeneratorForTesting(mRoundedIconGenerator);
@@ -102,6 +105,15 @@ public class SearchEngineLogoUtilsUnitTest {
     public void tearDown() {
         ShadowRecordHistogram.reset();
         SearchEngineLogoUtils.resetForTesting();
+    }
+
+    @Test
+    public void testDefaultEnabledBehavior() {
+        // Verify the default behavior of the feature being enabled matches expectations.
+        assertTrue(mSearchEngineLogoUtils.shouldShowRoundedSearchEngineLogo(
+                /* isOffTheRecord= */ false));
+        assertFalse(mSearchEngineLogoUtils.shouldShowSearchLoupeEverywhere(
+                /* isOffTheRecord= */ false));
     }
 
     @Test

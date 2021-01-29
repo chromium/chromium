@@ -126,7 +126,8 @@ public class SearchEngineLogoUtils {
     public boolean shouldShowRoundedSearchEngineLogo(boolean isOffTheRecord) {
         return shouldShowSearchEngineLogo(isOffTheRecord) && ChromeFeatureList.isInitialized()
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO, ROUNDED_EDGES_VARIANT, false);
+                        ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO, ROUNDED_EDGES_VARIANT,
+                        /* default= */ true);
     }
 
     /** Ignores the incognito state for instances where a caller would otherwise pass "false". */
@@ -143,7 +144,7 @@ public class SearchEngineLogoUtils {
         return shouldShowSearchEngineLogo(isOffTheRecord)
                 && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                         ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO, LOUPE_EVERYWHERE_VARIANT,
-                        false);
+                        /* default= */ false);
     }
 
     /** @return Whether the status icon should be hidden when the LocationBar is unfocused. */
