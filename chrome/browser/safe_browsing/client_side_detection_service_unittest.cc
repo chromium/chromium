@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
@@ -135,15 +134,11 @@ class ClientSideDetectionServiceTest : public testing::Test {
                 response_data, net_error);
   }
 
-  int GetNumReports(base::queue<base::Time>* report_times) {
-    return csd_service_->GetNumReports(report_times);
-  }
-
   bool OverPhishingReportLimit() {
     return csd_service_->OverPhishingReportLimit();
   }
 
-  base::queue<base::Time>& GetPhishingReportTimes() {
+  std::deque<base::Time>& GetPhishingReportTimes() {
     return csd_service_->phishing_report_times_;
   }
 
@@ -279,12 +274,12 @@ TEST_F(ClientSideDetectionServiceTest, SendClientReportPhishingRequest) {
   base::Time after = base::Time::Now();
 
   // Check that we have recorded all 3 requests within the correct time range.
-  base::queue<base::Time>& report_times = GetPhishingReportTimes();
+  std::deque<base::Time>& report_times = GetPhishingReportTimes();
   EXPECT_EQ(5U, report_times.size());
   EXPECT_TRUE(OverPhishingReportLimit());
   while (!report_times.empty()) {
     base::Time time = report_times.back();
-    report_times.pop();
+    report_times.pop_back();
     EXPECT_LE(before, time);
     EXPECT_GE(after, time);
   }
@@ -302,15 +297,14 @@ TEST_F(ClientSideDetectionServiceTest, GetNumReportTest) {
   csd_service_ = std::make_unique<ClientSideDetectionService>(
       std::make_unique<ClientSideDetectionServiceDelegate>(profile_));
 
-  base::queue<base::Time>& report_times = GetPhishingReportTimes();
   base::Time now = base::Time::Now();
   base::TimeDelta twenty_five_hours = base::TimeDelta::FromHours(25);
-  report_times.push(now - twenty_five_hours);
-  report_times.push(now - twenty_five_hours);
-  report_times.push(now);
-  report_times.push(now);
+  csd_service_->AddPhishingReport(now - twenty_five_hours);
+  csd_service_->AddPhishingReport(now - twenty_five_hours);
+  csd_service_->AddPhishingReport(now);
+  csd_service_->AddPhishingReport(now);
 
-  EXPECT_EQ(2, GetNumReports(&report_times));
+  EXPECT_EQ(2, csd_service_->GetPhishingNumReports());
   EXPECT_FALSE(OverPhishingReportLimit());
 }
 

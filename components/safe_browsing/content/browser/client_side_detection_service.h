@@ -201,9 +201,12 @@ class ClientSideDetectionService : public KeyedService {
   // Get the number of phishing reports that we have sent over kReportsInterval.
   int GetPhishingNumReports();
 
-  // Get the number of reports that we have sent over kReportsInterval, and
-  // trims off the old elements.
-  int GetNumReports(base::queue<base::Time>* report_times);
+  // Adds a phishing report to |phishing_report_times_| and stores the result in
+  // prefs.
+  void AddPhishingReport(base::Time timestamp);
+
+  // Populates |phishing_report_times_| with the data stored in local prefs.
+  void LoadPhishingReportTimesFromPrefs();
 
   // Returns the URL that will be used for phishing requests.
   static GURL GetClientReportUrl(const std::string& report_url);
@@ -235,8 +238,7 @@ class ClientSideDetectionService : public KeyedService {
 
   // Timestamp of when we sent a phishing request. Used to limit the number
   // of phishing requests that we send in a day.
-  // TODO(gcasto): Serialize this so that it doesn't reset on browser restart.
-  base::queue<base::Time> phishing_report_times_;
+  std::deque<base::Time> phishing_report_times_;
 
   // The URLLoaderFactory we use to issue network requests.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

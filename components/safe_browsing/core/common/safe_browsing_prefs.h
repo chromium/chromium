@@ -19,6 +19,9 @@ class PrefService;
 class GURL;
 
 namespace prefs {
+// A list of times at which CSD pings were sent.
+extern const char kSafeBrowsingCsdPingTimestamps[];
+
 // Boolean that is true when SafeBrowsing is enabled.
 extern const char kSafeBrowsingEnabled[];
 

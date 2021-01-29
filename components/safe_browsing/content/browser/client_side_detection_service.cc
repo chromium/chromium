@@ -292,7 +292,7 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
   client_phishing_reports_[loader_ptr] = std::move(info);
 
   // Record that we made a request
-  phishing_report_times_.push(base::Time::Now());
+  AddPhishingReport(base::Time::Now());
 }
 
 void ClientSideDetectionService::HandlePhishingVerdict(
@@ -380,21 +380,40 @@ bool ClientSideDetectionService::OverPhishingReportLimit() {
 }
 
 int ClientSideDetectionService::GetPhishingNumReports() {
-  return GetNumReports(&phishing_report_times_);
+  return phishing_report_times_.size();
 }
 
-int ClientSideDetectionService::GetNumReports(
-    base::queue<base::Time>* report_times) {
+void ClientSideDetectionService::AddPhishingReport(base::Time timestamp) {
+  phishing_report_times_.push_back(timestamp);
+
   base::Time cutoff =
       base::Time::Now() - base::TimeDelta::FromDays(kReportsIntervalDays);
 
   // Erase items older than cutoff because we will never care about them again.
-  while (!report_times->empty() && report_times->front() < cutoff) {
-    report_times->pop();
+  while (!phishing_report_times_.empty() &&
+         phishing_report_times_.front() < cutoff) {
+    phishing_report_times_.pop_front();
   }
 
-  // Return the number of elements that are above the cutoff.
-  return report_times->size();
+  if (!delegate_ || !delegate_->GetPrefs())
+    return;
+
+  base::ListValue time_list;
+  for (const base::Time& timestamp : phishing_report_times_)
+    time_list.Append(base::Value(timestamp.ToDoubleT()));
+  delegate_->GetPrefs()->Set(prefs::kSafeBrowsingCsdPingTimestamps, time_list);
+}
+
+void ClientSideDetectionService::LoadPhishingReportTimesFromPrefs() {
+  if (!delegate_ || !delegate_->GetPrefs())
+    return;
+
+  phishing_report_times_.clear();
+  for (const base::Value& timestamp :
+       *delegate_->GetPrefs()->GetList(prefs::kSafeBrowsingCsdPingTimestamps)) {
+    phishing_report_times_.push_back(
+        base::Time::FromDoubleT(timestamp.GetDouble()));
+  }
 }
 
 // static
