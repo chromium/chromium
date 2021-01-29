@@ -22,6 +22,10 @@ class MockMediaInspectorContext : public blink::MediaInspectorContext {
 
   blink::WebString CreatePlayer() override { return "TestPlayer"; }
 
+  void DestroyPlayer(const blink::WebString& playerId) override {
+    MockDestroyPlayer();
+  }
+
   void NotifyPlayerEvents(blink::WebString id,
                           const blink::InspectorPlayerEvents& events) override {
     MockNotifyPlayerEvents(events);
@@ -48,6 +52,9 @@ class MockMediaInspectorContext : public blink::MediaInspectorContext {
   MOCK_METHOD1(MockSetPlayerProperties, void(blink::InspectorPlayerProperties));
   MOCK_METHOD1(MockNotifyPlayerErrors, void(blink::InspectorPlayerErrors));
   MOCK_METHOD1(MockNotifyPlayerMessages, void(blink::InspectorPlayerMessages));
+  MOCK_METHOD0(MockDestroyPlayer, void());
+  MOCK_METHOD0(MockIncrementActiveSessionCount, void());
+  MOCK_METHOD0(MockDecrementActiveSessionCount, void());
 };
 
 class InspectorMediaEventHandlerTest : public testing::Test {
