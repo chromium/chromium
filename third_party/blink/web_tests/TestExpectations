@@ -5598,10 +5598,6 @@ crbug.com/1150700 [ Win ] virtual/plz-dedicated-worker/external/wpt/service-work
 crbug.com/1130020 virtual/scroll-unification/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Pass Failure Timeout ]
 crbug.com/1130020 virtual/threaded-prefer-compositing/fast/scrolling/scrollbars/scrollbar-mousedown-move-mouseup.html [ Pass Failure Timeout ]
 
-# Disable tests temporarily for devtools frontend check-in
-crbug.com/1159502 http/tests/devtools/service-workers/service-workers-view.js [ Pass Failure ]
-crbug.com/1159502 http/tests/devtools/service-workers/service-workers-redundant.js [ Pass Failure ]
-
 # WebBundle tests which fail
 crbug.com/1168449 external/wpt/web-bundle/subresource-loading/subresource-loading-cross-origin.tentative.html [ Pass Timeout ]
 

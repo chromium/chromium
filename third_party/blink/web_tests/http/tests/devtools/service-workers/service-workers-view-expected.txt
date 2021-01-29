@@ -19,6 +19,25 @@ Sync
 Sync
 Periodic Sync
 Periodic Sync
+Update Cycle
+Version
+Update Activity
+Timeline
+#N
+Install
+​
+Start time
+End time
+#N
+Wait
+​
+Start time
+End time
+#N
+Activate
+​
+Start time
+End time
 Register ServiceWorker for scope2
 http://127.0.0.1:8000/devtools/service-workers/resources/scope2
 Network requests
@@ -37,6 +56,25 @@ Sync
 Sync
 Periodic Sync
 Periodic Sync
+Update Cycle
+Version
+Update Activity
+Timeline
+#N
+Install
+​
+Start time
+End time
+#N
+Wait
+​
+Start time
+End time
+#N
+Activate
+​
+Start time
+End time
 http://127.0.0.1:8000/devtools/service-workers/resources/scope1/
 Network requests
 Update
@@ -54,6 +92,25 @@ Sync
 Sync
 Periodic Sync
 Periodic Sync
+Update Cycle
+Version
+Update Activity
+Timeline
+#N
+Install
+​
+Start time
+End time
+#N
+Wait
+​
+Start time
+End time
+#N
+Activate
+​
+Start time
+End time
 Unregister ServiceWorker for scope1
 http://127.0.0.1:8000/devtools/service-workers/resources/scope2
 Network requests
@@ -72,6 +129,25 @@ Sync
 Sync
 Periodic Sync
 Periodic Sync
+Update Cycle
+Version
+Update Activity
+Timeline
+#N
+Install
+​
+Start time
+End time
+#N
+Wait
+​
+Start time
+End time
+#N
+Activate
+​
+Start time
+End time
 http://127.0.0.1:8000/devtools/service-workers/resources/scope1/ - deleted
 Network requests
 Update
@@ -88,5 +164,24 @@ Sync
 Sync
 Periodic Sync
 Periodic Sync
+Update Cycle
+Version
+Update Activity
+Timeline
+#N
+Install
+​
+Start time
+End time
+#N
+Wait
+​
+Start time
+End time
+#N
+Activate
+​
+Start time
+End time
 Unregister ServiceWorker for scope2
 
