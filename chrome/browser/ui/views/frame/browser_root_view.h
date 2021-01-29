@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "ui/views/widget/root_view.h"
 
@@ -86,7 +87,7 @@ class BrowserRootView : public views::internal::RootView {
     DropInfo();
     ~DropInfo();
 
-    DropTarget* target = nullptr;
+    CheckedPtr<DropTarget> target = nullptr;
 
     // Where to drop the url.
     base::Optional<DropIndex> index;

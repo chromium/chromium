@@ -67,7 +67,7 @@ MigratableCardView::MigratableCardView(
           ui::NativeTheme::kColorId_BubbleFooterBackground)));
   checkbox_uncheck_text_container_->SetVisible(false);
 
-  AddChildView(checkbox_uncheck_text_container_);
+  AddChildView(checkbox_uncheck_text_container_.get());
 }
 
 MigratableCardView::~MigratableCardView() = default;

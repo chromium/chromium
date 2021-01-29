@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
@@ -88,7 +89,7 @@ class Executor : public base::RefCountedThreadSafe<Executor> {
   friend class base::RefCountedThreadSafe<Executor>;
   ~Executor();
 
-  Coordinator* coordinator_;
+  CheckedPtr<Coordinator> coordinator_;
   const int thread_number_;
 
   // The currently active job for this executor (either a CreateProxyResolver or
@@ -207,7 +208,7 @@ class Job : public base::RefCountedThreadSafe<Job> {
   virtual ~Job() = default;
 
  private:
-  Executor* executor_;
+  CheckedPtr<Executor> executor_;
   bool was_cancelled_;
 };
 
@@ -261,7 +262,7 @@ class CreateResolverJob : public Job {
   }
 
   const scoped_refptr<PacFileData> script_data_;
-  ProxyResolverFactory* factory_;
+  CheckedPtr<ProxyResolverFactory> factory_;
   std::unique_ptr<ProxyResolver> resolver_;
 };
 
@@ -336,7 +337,7 @@ class MultiThreadedProxyResolver::GetProxyForURLJob : public Job {
   CompletionOnceCallback callback_;
 
   // Must only be used on the "origin" thread.
-  ProxyInfo* results_;
+  CheckedPtr<ProxyInfo> results_;
 
   // Can be used on either "origin" or worker thread.
   NetLogWithSource net_log_;
@@ -566,8 +567,8 @@ class MultiThreadedProxyResolverFactory::Job
     std::move(callback_).Run(error);
   }
 
-  MultiThreadedProxyResolverFactory* factory_;
-  std::unique_ptr<ProxyResolver>* const resolver_out_;
+  CheckedPtr<MultiThreadedProxyResolverFactory> factory_;
+  const CheckedPtr<std::unique_ptr<ProxyResolver>> resolver_out_;
   std::unique_ptr<ProxyResolverFactory> resolver_factory_;
   const size_t max_num_threads_;
   scoped_refptr<PacFileData> script_data_;

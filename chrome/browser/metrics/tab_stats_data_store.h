@@ -10,6 +10,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/metrics/tab_stats_observer.h"
@@ -142,7 +143,7 @@ class TabStatsDataStore : public TabStatsObserver {
   TabsStats tab_stats_;
 
   // A raw pointer to the PrefService used to read and write the statistics.
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
 
   // The interval maps, one per period of time that we want to observe.
   std::vector<std::unique_ptr<TabsStateDuringIntervalMap>> interval_maps_;

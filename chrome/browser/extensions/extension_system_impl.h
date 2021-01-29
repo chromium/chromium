@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/one_shot_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -124,7 +125,7 @@ class ExtensionSystemImpl : public ExtensionSystem {
     ContentVerifier* content_verifier();
 
    private:
-    Profile* profile_;
+    CheckedPtr<Profile> profile_;
 
     // The services that are shared between normal and incognito profiles.
 
@@ -166,9 +167,9 @@ class ExtensionSystemImpl : public ExtensionSystem {
     base::OneShotEvent ready_;
   };
 
-  Profile* profile_;
+  CheckedPtr<Profile> profile_;
 
-  Shared* shared_;
+  CheckedPtr<Shared> shared_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionSystemImpl);
 };

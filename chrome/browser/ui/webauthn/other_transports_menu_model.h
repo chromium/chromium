@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBAUTHN_OTHER_TRANSPORTS_MENU_MODEL_H_
 #define CHROME_BROWSER_UI_WEBAUTHN_OTHER_TRANSPORTS_MENU_MODEL_H_
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "ui/base/models/simple_menu_model.h"
@@ -41,7 +42,7 @@ class OtherTransportsMenuModel
   void AppendItemForNativeWinApi();
 #endif
 
-  AuthenticatorRequestDialogModel* dialog_model_;
+  CheckedPtr<AuthenticatorRequestDialogModel> dialog_model_;
 
   DISALLOW_COPY_AND_ASSIGN(OtherTransportsMenuModel);
 };

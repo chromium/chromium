@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/debug/stack_trace.h"
 #include "base/format_macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -47,9 +48,10 @@ class AutoRemoveKeyFromTaskMap {
   ~AutoRemoveKeyFromTaskMap() { task_map_->erase(key_); }
 
  private:
-  std::unordered_map<SoftwareImageDecodeCache::CacheKey,
-                     scoped_refptr<TileTask>,
-                     SoftwareImageDecodeCache::CacheKeyHash>* task_map_;
+  CheckedPtr<std::unordered_map<SoftwareImageDecodeCache::CacheKey,
+                                scoped_refptr<TileTask>,
+                                SoftwareImageDecodeCache::CacheKeyHash>>
+      task_map_;
   const SoftwareImageDecodeCache::CacheKey& key_;
 };
 
@@ -104,7 +106,7 @@ class SoftwareImageDecodeTaskImpl : public TileTask {
   ~SoftwareImageDecodeTaskImpl() override = default;
 
  private:
-  SoftwareImageDecodeCache* cache_;
+  CheckedPtr<SoftwareImageDecodeCache> cache_;
   SoftwareImageDecodeCache::CacheKey image_key_;
   PaintImage paint_image_;
   SoftwareImageDecodeCache::DecodeTaskType task_type_;

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTERNAL_PROTOCOL_DIALOG_H_
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -53,7 +54,7 @@ class ExternalProtocolDialog : public views::DialogDelegateView,
   const base::Optional<url::Origin> initiating_origin_;
 
   // The message box whose commands we handle.
-  views::MessageBoxView* message_box_view_ = nullptr;
+  CheckedPtr<views::MessageBoxView> message_box_view_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ExternalProtocolDialog);
 };

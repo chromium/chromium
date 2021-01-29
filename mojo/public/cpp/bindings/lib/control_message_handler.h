@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/lib/serialization_context.h"
 #include "mojo/public/cpp/bindings/message.h"
 
@@ -39,7 +40,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ControlMessageHandler
            std::unique_ptr<MessageReceiverWithStatus> responder);
   bool RunOrClosePipe(Message* message);
 
-  InterfaceEndpointClient* const owner_;
+  const CheckedPtr<InterfaceEndpointClient> owner_;
   uint32_t interface_version_;
   SerializationContext context_;
 

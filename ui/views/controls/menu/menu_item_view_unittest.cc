@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -227,7 +228,7 @@ class MenuItemViewLayoutTest : public ViewsTestBase {
 
  private:
   TestMenuItemView root_menu_;
-  MenuItemView* const test_item_;
+  const CheckedPtr<MenuItemView> test_item_;
   std::unique_ptr<View> submenu_parent_;
 };
 
@@ -334,7 +335,7 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
 
  private:
   // Owned by MenuRunner.
-  MenuItemView* menu_item_view_;
+  CheckedPtr<MenuItemView> menu_item_view_;
 
   std::unique_ptr<test::TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> menu_runner_;

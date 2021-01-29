@@ -7,6 +7,7 @@
 #include <pthread.h>
 
 #include "base/check.h"
+#include "base/partition_alloc_buildflags.h"
 #include "base/profiler/stack_copier_signal.h"
 #include "base/profiler/stack_sampler_impl.h"
 #include "base/profiler/thread_delegate_posix.h"
@@ -21,6 +22,9 @@ std::unique_ptr<StackSampler> StackSampler::Create(
     UnwindersFactory core_unwinders_factory,
     RepeatingClosure record_sample_callback,
     StackSamplerTestDelegate* test_delegate) {
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+  return nullptr;
+#else
   auto thread_delegate = ThreadDelegatePosix::Create(thread_token);
   if (!thread_delegate)
     return nullptr;
@@ -28,6 +32,7 @@ std::unique_ptr<StackSampler> StackSampler::Create(
       std::make_unique<StackCopierSignal>(std::move(thread_delegate)),
       std::move(core_unwinders_factory), module_cache,
       std::move(record_sample_callback), test_delegate);
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 }
 
 size_t StackSampler::GetStackBufferSize() {

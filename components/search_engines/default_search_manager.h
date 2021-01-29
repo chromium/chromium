@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace base {
@@ -146,7 +147,7 @@ class DefaultSearchManager {
   // Invokes |change_observer_| if it is not NULL.
   void NotifyObserver();
 
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
   const ObserverCallback change_observer_;
   PrefChangeRegistrar pref_change_registrar_;
 

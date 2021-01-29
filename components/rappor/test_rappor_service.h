@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/rappor/rappor_service_impl.h"
 #include "components/rappor/test_log_uploader.h"
@@ -126,7 +127,7 @@ class TestRapporServiceImpl : public RapporServiceImpl {
   TestingPrefServiceSimple test_prefs_;
 
   // Holds a weak ref to the uploader_ object.
-  rappor::TestLogUploader* test_uploader_;
+  CheckedPtr<rappor::TestLogUploader> test_uploader_;
 
   // The last scheduled log rotation.
   base::TimeDelta next_rotation_;

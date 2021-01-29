@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/find_bar/find_bar_platform_helper.h"
@@ -96,7 +97,7 @@ class FindBarController : public content::NotificationObserver,
   std::unique_ptr<FindBar> find_bar_;
 
   // The WebContents we are currently associated with.  Can be NULL.
-  content::WebContents* web_contents_ = nullptr;
+  CheckedPtr<content::WebContents> web_contents_ = nullptr;
 
   std::unique_ptr<FindBarPlatformHelper> find_bar_platform_helper_;
 

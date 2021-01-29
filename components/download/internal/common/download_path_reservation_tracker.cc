@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_util.h"
@@ -78,7 +79,7 @@ class DownloadItemObserver : public DownloadItem::Observer,
   void OnDownloadUpdated(DownloadItem* download) override;
   void OnDownloadDestroyed(DownloadItem* download) override;
 
-  DownloadItem* download_item_;
+  CheckedPtr<DownloadItem> download_item_;
 
   // Last known target path for the download.
   base::FilePath last_target_path_;

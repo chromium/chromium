@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 
@@ -68,7 +69,7 @@ class AppMenuButton : public ToolbarButton {
 
   base::ObserverList<AppMenuButtonObserver>::Unchecked observer_list_;
 
-  views::MenuButtonController* menu_button_controller_;
+  CheckedPtr<views::MenuButtonController> menu_button_controller_;
 
   DISALLOW_COPY_AND_ASSIGN(AppMenuButton);
 };

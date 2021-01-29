@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "components/viz/common/delegated_ink_metadata.h"
 
 namespace viz {
@@ -50,7 +51,7 @@ class DelegatedInkPointPixelTestHelper {
   const DelegatedInkMetadata& metadata() { return metadata_; }
 
  private:
-  DirectRenderer* renderer_ = nullptr;
+  CheckedPtr<DirectRenderer> renderer_ = nullptr;
   std::vector<DelegatedInkPoint> ink_points_;
   DelegatedInkMetadata metadata_;
 };

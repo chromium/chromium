@@ -143,7 +143,7 @@ void WebView::SetCrashedOverlayView(View* crashed_overlay_view) {
 
   crashed_overlay_view_ = crashed_overlay_view;
   if (crashed_overlay_view_) {
-    AddChildView(crashed_overlay_view_);
+    AddChildView(crashed_overlay_view_.get());
     holder_->SetVisible(false);
     crashed_overlay_view_->SetBoundsRect(gfx::Rect(size()));
   }

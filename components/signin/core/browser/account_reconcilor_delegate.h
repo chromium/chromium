@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/signin/public/base/multilogin_parameters.h"
 #include "components/signin/public/identity_manager/consent_level.h"
@@ -178,7 +179,7 @@ class AccountReconcilorDelegate {
       bool first_execution,
       bool primary_has_error) const;
 
-  AccountReconcilor* reconcilor_;
+  CheckedPtr<AccountReconcilor> reconcilor_;
 };
 
 }  // namespace signin

@@ -12,6 +12,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -72,9 +73,9 @@ class ViewsAXTreeManagerTest : public ViewsTestBase,
                         ui::AXEventGenerator::Event event,
                         ui::AXNode::AXID node_id);
 
-  Widget* widget_ = nullptr;
-  Button* button_ = nullptr;
-  Label* label_ = nullptr;
+  CheckedPtr<Widget> widget_ = nullptr;
+  CheckedPtr<Button> button_ = nullptr;
+  CheckedPtr<Label> label_ = nullptr;
   std::unique_ptr<ViewsAXTreeManager> manager_;
   ui::AXEventGenerator::Event event_to_wait_for_;
   std::unique_ptr<base::RunLoop> loop_runner_;
@@ -99,9 +100,9 @@ void ViewsAXTreeManagerTest::SetUp() {
   button_->SetSize(gfx::Size(20, 20));
 
   label_ = new Label();
-  button_->AddChildView(label_);
+  button_->AddChildView(label_.get());
 
-  widget_->GetContentsView()->AddChildView(button_);
+  widget_->GetContentsView()->AddChildView(button_.get());
   widget_->Show();
 
   // AccessibilityTreeForViewsEnabled will create and manage its own

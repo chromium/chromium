@@ -63,6 +63,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "chrome/browser/policy/messaging_layer/util/status.h"
 
@@ -263,7 +264,7 @@ class WARN_UNUSED_RESULT StatusOr {
     }
 
    private:
-    StatusOr<T>* const status_or_;
+    const CheckedPtr<StatusOr<T>> status_or_;
     const Status reset_to_status_;
   };
 

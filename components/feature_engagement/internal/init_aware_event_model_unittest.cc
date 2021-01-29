@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "components/feature_engagement/internal/proto/feature_event.pb.h"
 #include "components/feature_engagement/internal/test/event_util.h"
@@ -60,7 +61,7 @@ class InitAwareEventModelTest : public testing::Test {
   void OnModelInitialized(bool success) { load_success_ = success; }
 
   std::unique_ptr<InitAwareEventModel> model_;
-  MockEventModel* mocked_model_;
+  CheckedPtr<MockEventModel> mocked_model_;
 
   // Load callback tracking.
   base::Optional<bool> load_success_;

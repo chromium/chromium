@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -72,10 +73,10 @@ class BrowserNonClientFrameViewBrowserTest
 
  protected:
   base::Optional<SkColor> app_theme_color_ = SK_ColorBLUE;
-  Browser* app_browser_ = nullptr;
-  BrowserView* app_browser_view_ = nullptr;
-  content::WebContents* web_contents_ = nullptr;
-  BrowserNonClientFrameView* app_frame_view_ = nullptr;
+  CheckedPtr<Browser> app_browser_ = nullptr;
+  CheckedPtr<BrowserView> app_browser_view_ = nullptr;
+  CheckedPtr<content::WebContents> web_contents_ = nullptr;
+  CheckedPtr<BrowserNonClientFrameView> app_frame_view_ = nullptr;
 
  private:
   GURL GetAppURL() { return embedded_test_server()->GetURL("/empty.html"); }
@@ -213,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest,
   EXPECT_EQ(app_frame_view_->GetFrameColor(), *app_theme_color_);
 
   content::ThemeChangeWaiter waiter(web_contents_);
-  EXPECT_TRUE(content::ExecJs(web_contents_, R"(
+  EXPECT_TRUE(content::ExecJs(web_contents_.get(), R"(
       document.documentElement.innerHTML =
           '<meta name="theme-color" content="yellow">';
   )"));
@@ -251,7 +252,7 @@ class SaveCardOfferObserver
   void Wait() { run_loop_.Run(); }
 
  private:
-  autofill::CreditCardSaveManager* manager_ = nullptr;
+  CheckedPtr<autofill::CreditCardSaveManager> manager_ = nullptr;
   base::RunLoop run_loop_;
 };
 
@@ -259,11 +260,11 @@ class SaveCardOfferObserver
 IN_PROC_BROWSER_TEST_F(BrowserNonClientFrameViewBrowserTest, SaveCardIcon) {
   InstallAndLaunchBookmarkApp(embedded_test_server()->GetURL(
       "/autofill/credit_card_upload_form_address_and_cc.html"));
-  ASSERT_TRUE(content::ExecJs(web_contents_, "fill_form.click();"));
+  ASSERT_TRUE(content::ExecJs(web_contents_.get(), "fill_form.click();"));
 
   content::TestNavigationObserver nav_observer(web_contents_);
   SaveCardOfferObserver offer_observer(web_contents_);
-  ASSERT_TRUE(content::ExecJs(web_contents_, "submit.click();"));
+  ASSERT_TRUE(content::ExecJs(web_contents_.get(), "submit.click();"));
   nav_observer.Wait();
   offer_observer.Wait();
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/autofill_popup_base_view.h"
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view_delegate.h"
@@ -77,7 +78,7 @@ class AutofillPopupBaseViewTest : public InProcessBrowserTest {
 
  protected:
   testing::NiceMock<MockAutofillPopupViewDelegate> mock_delegate_;
-  AutofillPopupBaseView* view_;
+  CheckedPtr<AutofillPopupBaseView> view_;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillPopupBaseViewTest);
 };

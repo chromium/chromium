@@ -5,6 +5,7 @@
 #include "base/base_paths.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
+#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -791,13 +792,13 @@ class WebAppIntegrationBrowserTest
   std::unique_ptr<StateSnapshot> before_action_state_;
   std::unique_ptr<StateSnapshot> after_action_state_;
   base::flat_map<std::string, bool> site_installability_map_;
-  Browser* app_browser_ = nullptr;
+  CheckedPtr<Browser> app_browser_ = nullptr;
   std::vector<AppId> app_ids_;
   std::vector<std::string> testing_actions_;
   NavigateToSiteResult last_navigation_result_;
   AppId active_app_id_;
   net::EmbeddedTestServer https_server_;
-  PageActionIconView* pwa_install_view_ = nullptr;
+  CheckedPtr<PageActionIconView> pwa_install_view_ = nullptr;
   ScopedOsHooksSuppress os_hooks_suppress_;
 };
 

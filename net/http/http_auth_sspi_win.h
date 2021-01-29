@@ -10,6 +10,8 @@
 
 // security.h needs to be included for CredHandle. Unfortunately CredHandle
 // is a typedef and can't be forward declared.
+#include "base/memory/checked_ptr.h"
+
 #define SECURITY_WIN32 1
 #include <windows.h>
 #include <security.h>
@@ -175,7 +177,7 @@ class NET_EXPORT_PRIVATE HttpAuthSSPI : public HttpAuthMechanism {
 
   void ResetSecurityContext();
 
-  SSPILibrary* library_;
+  CheckedPtr<SSPILibrary> library_;
   HttpAuth::Scheme scheme_;
   std::string decoded_server_auth_token_;
   CredHandle cred_;

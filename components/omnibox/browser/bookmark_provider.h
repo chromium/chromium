@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/checked_ptr.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_provider.h"
 
@@ -63,8 +64,8 @@ class BookmarkProvider : public AutocompleteProvider {
   // starts immediately after a '?' or '&').
   void RemoveQueryParamKeyMatches(bookmarks::TitledUrlMatch& match);
 
-  AutocompleteProviderClient* client_;
-  bookmarks::BookmarkModel* bookmark_model_;
+  CheckedPtr<AutocompleteProviderClient> client_;
+  CheckedPtr<bookmarks::BookmarkModel> bookmark_model_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_BOOKMARK_PROVIDER_H_

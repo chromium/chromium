@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -88,9 +89,9 @@ class FakeDesktopResizer : public DesktopResizer {
  private:
   bool exact_size_supported_;
   ScreenResolution initial_resolution_;
-  ScreenResolution *current_resolution_;
+  CheckedPtr<ScreenResolution> current_resolution_;
   std::vector<ScreenResolution> supported_resolutions_;
-  CallCounts* call_counts_;
+  CheckedPtr<CallCounts> call_counts_;
   bool check_final_resolution_;
 };
 

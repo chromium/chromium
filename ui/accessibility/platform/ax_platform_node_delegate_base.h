@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 
@@ -96,7 +97,7 @@ class AX_EXPORT AXPlatformNodeDelegateBase : public AXPlatformNodeDelegate {
 
    private:
     int index_;
-    AXPlatformNodeDelegateBase* parent_;
+    CheckedPtr<AXPlatformNodeDelegateBase> parent_;
   };
   std::unique_ptr<AXPlatformNodeDelegate::ChildIterator> ChildrenBegin()
       override;

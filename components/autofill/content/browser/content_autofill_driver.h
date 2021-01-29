@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "components/autofill/content/browser/key_press_handler_manager.h"
@@ -189,7 +190,7 @@ class ContentAutofillDriver : public AutofillDriver,
 
   // Weak ref to the RenderFrameHost the driver is associated with. Should
   // always be non-NULL and valid for lifetime of |this|.
-  content::RenderFrameHost* const render_frame_host_;
+  const CheckedPtr<content::RenderFrameHost> render_frame_host_;
 
   // The form pushed from the AutofillAgent to the AutofillDriver. When the
   // ProbablyFormSubmitted() event is fired, this form is considered the
@@ -207,14 +208,14 @@ class ContentAutofillDriver : public AutofillDriver,
   // The pointer to autofill_handler_ if it is AutofillManager instance.
   // TODO: unify autofill_handler_ and autofill_manager_ to a single pointer to
   // a common root.
-  AutofillManager* autofill_manager_;
+  CheckedPtr<AutofillManager> autofill_manager_;
 
   // Pointer to an implementation of InternalAuthenticator.
   std::unique_ptr<InternalAuthenticator> authenticator_impl_;
 
   KeyPressHandlerManager key_press_handler_manager_;
 
-  LogManager* const log_manager_;
+  const CheckedPtr<LogManager> log_manager_;
 
   mojo::AssociatedReceiver<mojom::AutofillDriver> receiver_{this};
 

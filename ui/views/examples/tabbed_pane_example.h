@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
 #include "ui/views/examples/example_base.h"
@@ -40,12 +41,12 @@ class VIEWS_EXAMPLES_EXPORT TabbedPaneExample : public ExampleBase,
   void AddAtButtonPressed();
 
   // The tabbed pane to be tested.
-  TabbedPane* tabbed_pane_;
+  CheckedPtr<TabbedPane> tabbed_pane_;
 
   // Control buttons to add and select tabs.
-  Button* add_;
-  Button* add_at_;
-  Button* select_at_;
+  CheckedPtr<Button> add_;
+  CheckedPtr<Button> add_at_;
+  CheckedPtr<Button> select_at_;
 
   DISALLOW_COPY_AND_ASSIGN(TabbedPaneExample);
 };

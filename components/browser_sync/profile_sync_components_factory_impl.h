@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequenced_task_runner.h"
 #include "components/sync/base/model_type.h"
@@ -115,7 +116,7 @@ class ProfileSyncComponentsFactoryImpl
       syncer::SyncService* sync_service);
 
   // Client/platform specific members.
-  BrowserSyncClient* const sync_client_;
+  const CheckedPtr<BrowserSyncClient> sync_client_;
   const version_info::Channel channel_;
   const char* history_disabled_pref_;
   const scoped_refptr<base::SequencedTaskRunner> ui_thread_;
@@ -128,7 +129,7 @@ class ProfileSyncComponentsFactoryImpl
       web_data_service_in_memory_;
   const scoped_refptr<password_manager::PasswordStore> profile_password_store_;
   const scoped_refptr<password_manager::PasswordStore> account_password_store_;
-  sync_bookmarks::BookmarkSyncService* const bookmark_sync_service_;
+  const CheckedPtr<sync_bookmarks::BookmarkSyncService> bookmark_sync_service_;
 };
 
 }  // namespace browser_sync

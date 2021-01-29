@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "ui/gfx/canvas.h"
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/metadata/metadata_header_macros.h"
@@ -76,7 +77,7 @@ class TipMarqueeView : public views::View {
   bool IsPointInIcon(const gfx::Point& p) const;
 
   base::string16 tip_text_;
-  views::StyledLabel* tip_text_label_ = nullptr;
+  CheckedPtr<views::StyledLabel> tip_text_label_ = nullptr;
   gfx::ImageSkia chrome_icon_;
   LearnMoreLinkClickedCallback learn_more_link_clicked_callback_;
   bool collapsed_ = false;

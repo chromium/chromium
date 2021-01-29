@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -156,7 +157,7 @@ class AURA_EXPORT WindowEventDispatcher : public ui::EventProcessor,
     ~ObserverNotifier();
 
    private:
-    WindowEventDispatcher* dispatcher_;
+    CheckedPtr<WindowEventDispatcher> dispatcher_;
 
     DISALLOW_COPY_AND_ASSIGN(ObserverNotifier);
   };

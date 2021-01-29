@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
@@ -47,7 +48,7 @@ class ManagementPolicyMock : public ManagementPolicy::Provider {
   }
 
  private:
-  const Extension* extension_;
+  CheckedPtr<const Extension> extension_;
   bool may_load_;
 };
 

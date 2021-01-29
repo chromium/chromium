@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/sync/trusted_vault/trusted_vault_connection.h"
 #include "components/sync/trusted_vault/trusted_vault_request.h"
@@ -72,7 +73,7 @@ class RegisterAuthenticationFactorRequest
   const scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   const CoreAccountId account_id_;
   const std::unique_ptr<SecureBoxPublicKey> authentication_factor_public_key_;
-  TrustedVaultAccessTokenFetcher* const access_token_fetcher_;
+  const CheckedPtr<TrustedVaultAccessTokenFetcher> access_token_fetcher_;
 
   std::unique_ptr<TrustedVaultRequest> ongoing_request_;
   TrustedVaultConnection::RegisterAuthenticationFactorCallback

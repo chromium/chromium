@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/message_loop/message_pump_default.h"
 #include "base/notreached.h"
@@ -218,7 +219,7 @@ class MockProxyResolvingSocketFactory
       proxy_resolving_socket_receivers_;
 
   // Owned by |proxy_resolving_socket_receivers_|.
-  MockProxyResolvingSocket* socket_raw_;
+  CheckedPtr<MockProxyResolvingSocket> socket_raw_;
 
   DISALLOW_COPY_AND_ASSIGN(MockProxyResolvingSocketFactory);
 };
@@ -576,7 +577,8 @@ class NetworkServiceAsyncSocketTest : public testing::Test,
   std::unique_ptr<net::MockClientSocketFactory> mock_client_socket_factory_;
   std::unique_ptr<net::TestURLRequestContext> test_url_request_context_;
   // Either null or owned by proxy_resolving_socket_factory_.
-  MockProxyResolvingSocketFactory* mock_proxy_resolving_socket_factory_;
+  CheckedPtr<MockProxyResolvingSocketFactory>
+      mock_proxy_resolving_socket_factory_;
   std::unique_ptr<network::mojom::ProxyResolvingSocketFactory>
       proxy_resolving_socket_factory_;
   std::unique_ptr<mojo::Receiver<network::mojom::ProxyResolvingSocketFactory>>

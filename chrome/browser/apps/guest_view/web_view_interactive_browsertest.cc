@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/stringprintf.h"
@@ -411,7 +412,7 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
     }
 
     size_t initial_widget_count_ = 0;
-    content::RenderWidgetHost* last_render_widget_host_ = nullptr;
+    CheckedPtr<content::RenderWidgetHost> last_render_widget_host_ = nullptr;
     scoped_refptr<content::MessageLoopRunner> message_loop_;
   };
 
@@ -472,8 +473,8 @@ class WebViewInteractiveTest : public extensions::PlatformAppBrowserTest {
 
  protected:
   TestGuestViewManagerFactory factory_;
-  content::WebContents* guest_web_contents_;
-  content::WebContents* embedder_web_contents_;
+  CheckedPtr<content::WebContents> guest_web_contents_;
+  CheckedPtr<content::WebContents> embedder_web_contents_;
   gfx::Point corner_;
   bool mouse_click_result_;
   bool first_click_;

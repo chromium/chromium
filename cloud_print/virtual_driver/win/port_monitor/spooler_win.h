@@ -9,6 +9,8 @@
 
 // Compatible structures and prototypes are also defined in the Windows DDK in
 // winsplp.h.
+#include "base/memory/checked_ptr.h"
+
 #ifndef _WINSPLP_
 
 typedef struct {
@@ -84,7 +86,7 @@ typedef struct {
   DWORD cbSize;
   HANDLE hSpooler;
   HKEY hckRegistryRoot;
-  void* pMonitorReg;  // Unused
+  CheckedPtr<void> pMonitorReg;  // Unused
   BOOL bLocal;
   LPCWSTR pszServerName;
 } MONITORINIT;

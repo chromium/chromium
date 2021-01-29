@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "components/password_manager/core/browser/site_affiliation/affiliation_service.h"
 
 #include "base/memory/scoped_refptr.h"
@@ -93,7 +94,7 @@ class AffiliationServiceImpl : public AffiliationService,
       const AffiliationFetcherInterface::RequestInfo request_info,
       base::OnceClosure callback);
 
-  syncer::SyncService* sync_service_;
+  CheckedPtr<syncer::SyncService> sync_service_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::map<url::SchemeHostPort, ChangePasswordUrlMatch> change_password_urls_;
   std::vector<FetchInfo> pending_fetches_;

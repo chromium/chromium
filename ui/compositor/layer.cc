@@ -14,6 +14,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/ranges.h"
 #include "base/trace_event/trace_event.h"
@@ -97,8 +98,8 @@ class Layer::LayerMirror : public LayerDelegate, LayerObserver {
   }
 
  private:
-  Layer* const source_;
-  Layer* const dest_;
+  const CheckedPtr<Layer> source_;
+  const CheckedPtr<Layer> dest_;
 
   DISALLOW_COPY_AND_ASSIGN(LayerMirror);
 };

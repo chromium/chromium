@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/sessions/core/session_id.h"
 
@@ -102,7 +103,7 @@ class SessionServiceTestHelper {
   void SetIsOnlyOneTabLeft(bool is_only_one_tab_left);
 
  private:
-  SessionService* service_;
+  CheckedPtr<SessionService> service_;
 };
 
 #endif  // CHROME_BROWSER_SESSIONS_SESSION_SERVICE_TEST_HELPER_H_

@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/values.h"
 #include "content/public/browser/render_frame_host.h"
@@ -33,7 +34,7 @@ class WebDialogDelegateUserData : public base::SupportsUserData::Data {
   WebDialogDelegate* delegate() { return delegate_; }
 
  private:
-  WebDialogDelegate* delegate_;  // unowned
+  CheckedPtr<WebDialogDelegate> delegate_;  // unowned
 };
 
 }  // namespace

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/checked_ptr.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -48,9 +49,9 @@ class RoundedOmniboxResultsFrame : public views::View {
   void OnThemeChanged() override;
 
  private:
-  views::View* top_background_ = nullptr;
-  views::View* contents_host_ = nullptr;
-  views::View* contents_;
+  CheckedPtr<views::View> top_background_ = nullptr;
+  CheckedPtr<views::View> contents_host_ = nullptr;
+  CheckedPtr<views::View> contents_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_ROUNDED_OMNIBOX_RESULTS_FRAME_H_

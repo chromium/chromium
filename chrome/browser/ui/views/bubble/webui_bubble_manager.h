@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
@@ -58,7 +59,7 @@ class WebUIBubbleManagerBase : public views::WidgetObserver {
   virtual void WebViewHidden() = 0;
   void ResetWebView();
 
-  views::View* anchor_view_;
+  CheckedPtr<views::View> anchor_view_;
   base::WeakPtr<WebUIBubbleDialogView> bubble_view_;
 
   // Tracks whether the current bubble was created by reusing
@@ -123,7 +124,7 @@ class WebUIBubbleManager : public WebUIBubbleManagerBase {
   // Used for tagging the web contents so that a distinctive name shows up in
   // the task manager.
   const int task_manager_string_id_;
-  content::BrowserContext* browser_context_;
+  CheckedPtr<content::BrowserContext> browser_context_;
   const GURL webui_url_;
   const bool enable_extension_apis_;
 };

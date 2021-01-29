@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/local_discovery/service_discovery_device_lister.h"
 #include "chrome/common/buildflags.h"
 
@@ -48,14 +49,15 @@ class DnsSdDeviceLister
 
  private:
   // The delegate to notify of changes to services.
-  DnsSdDelegate* const delegate_;
+  const CheckedPtr<DnsSdDelegate> delegate_;
 
   // Created when Discover() is called, if service discovery is enabled.
   std::unique_ptr<local_discovery::ServiceDiscoveryDeviceLister> device_lister_;
 
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
   // The client and service type used to create |device_lister_|.
-  local_discovery::ServiceDiscoveryClient* const service_discovery_client_;
+  const CheckedPtr<local_discovery::ServiceDiscoveryClient>
+      service_discovery_client_;
   const std::string service_type_;
 #endif
 

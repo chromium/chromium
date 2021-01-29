@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/callback.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
@@ -63,7 +64,7 @@ class AudibleContentsTracker : public BrowserListObserver,
   void AddAudibleWebContents(content::WebContents* web_contents);
   void RemoveAudibleWebContents(content::WebContents* web_contents);
 
-  Observer* observer_;
+  CheckedPtr<Observer> observer_;
 
   // The set of WebContents that are currently playing audio.
   std::set<content::WebContents*> audible_contents_;

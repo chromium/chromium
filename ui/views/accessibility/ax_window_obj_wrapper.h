@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
@@ -59,7 +60,7 @@ class AXWindowObjWrapper : public AXAuraObjWrapper,
   // Fires an accessibility event.
   void FireEvent(ax::mojom::Event event_type);
 
-  aura::Window* const window_;
+  const CheckedPtr<aura::Window> window_;
 
   const bool is_root_window_;
 

@@ -17,6 +17,7 @@
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -408,7 +409,7 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
 
   State state_;
 
-  PrefService* pref_service_;
+  CheckedPtr<PrefService> pref_service_;
 
   const Category articles_category_;
 
@@ -418,10 +419,10 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
   const std::string application_language_code_;
 
   // Ranker that orders the categories. Not owned.
-  CategoryRanker* category_ranker_;
+  CheckedPtr<CategoryRanker> category_ranker_;
 
   // Scheduler to inform about scheduling-related events. Not owned.
-  RemoteSuggestionsScheduler* remote_suggestions_scheduler_;
+  CheckedPtr<RemoteSuggestionsScheduler> remote_suggestions_scheduler_;
 
   // The suggestions fetcher.
   std::unique_ptr<RemoteSuggestionsFetcher> suggestions_fetcher_;
@@ -447,7 +448,7 @@ class RemoteSuggestionsProviderImpl final : public RemoteSuggestionsProvider {
   bool clear_cached_suggestions_when_initialized_;
 
   // A clock for getting the time. This allows to inject a clock in tests.
-  base::Clock* clock_;
+  CheckedPtr<base::Clock> clock_;
 
   // A Timer for canceling too long fetches.
   std::unique_ptr<base::OneShotTimer> fetch_timeout_timer_;

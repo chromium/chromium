@@ -13,6 +13,7 @@
 #include <utility>
 
 #include "base/location.h"
+#include "base/memory/checked_ptr.h"
 #include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/animation/animation_host.h"
@@ -6063,9 +6064,9 @@ class LCDTextTest : public PictureLayerImplTest,
     }
   }
 
-  LayerTreeImpl* tree_ = nullptr;
-  PictureLayerImpl* layer_ = nullptr;
-  PictureLayerImpl* descendant_ = nullptr;
+  CheckedPtr<LayerTreeImpl> tree_ = nullptr;
+  CheckedPtr<PictureLayerImpl> layer_ = nullptr;
+  CheckedPtr<PictureLayerImpl> descendant_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -6083,7 +6084,7 @@ TEST_P(LCDTextTest, IdentityTransform) {
 TEST_P(LCDTextTest, IntegralTransform) {
   gfx::Transform integral_translation;
   integral_translation.Translate(1.0, 2.0);
-  SetTransform(layer_, integral_translation);
+  SetTransform(layer_.get(), integral_translation);
 
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "integral transform");
 }
@@ -6092,13 +6093,13 @@ TEST_P(LCDTextTest, NonIntegralTranslation) {
   // Non-integral translation.
   gfx::Transform non_integral_translation;
   non_integral_translation.Translate(1.5, 2.5);
-  SetTransform(layer_, non_integral_translation);
+  SetTransform(layer_.get(), non_integral_translation);
   // We can use LCD-text as raster translation can align the text to physical
   // pixels for fragtional transform in the render target.
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone,
                      "non-integeral translation");
 
-  SetTransform(layer_, gfx::Transform());
+  SetTransform(layer_.get(), gfx::Transform());
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "identity transform");
 }
 
@@ -6106,13 +6107,13 @@ TEST_P(LCDTextTest, NonIntegralTranslationAboveRenderTarget) {
   // Non-integral translation above render target.
   gfx::Transform non_integral_translation;
   non_integral_translation.Translate(1.5, 2.5);
-  SetTransform(layer_, non_integral_translation);
-  SetRenderSurfaceReason(layer_, RenderSurfaceReason::kTest);
+  SetTransform(layer_.get(), non_integral_translation);
+  SetRenderSurfaceReason(layer_.get(), RenderSurfaceReason::kTest);
   // Raster translation can't handle fractional transform above the render
   // target, so LCD text is not allowed.
   CheckCanUseLCDText(LCDTextDisallowedReason::kNonIntegralTranslation,
                      "non-integeral translation above render target");
-  SetTransform(layer_, gfx::Transform());
+  SetTransform(layer_.get(), gfx::Transform());
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "identity transform");
 }
 
@@ -6120,34 +6121,34 @@ TEST_P(LCDTextTest, NonTranslation) {
   // Rotation.
   gfx::Transform rotation;
   rotation.Rotate(10.0);
-  SetTransform(layer_, rotation);
+  SetTransform(layer_.get(), rotation);
   CheckCanUseLCDText(LCDTextDisallowedReason::kNonIntegralTranslation,
                      "Rotation transform");
 
   // Scale. LCD text is allowed.
   gfx::Transform scale;
   scale.Scale(2.0, 2.0);
-  SetTransform(layer_, scale);
+  SetTransform(layer_.get(), scale);
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "Scale transform");
 
   // Skew.
   gfx::Transform skew;
   skew.Skew(10.0, 0.0);
-  SetTransform(layer_, skew);
+  SetTransform(layer_.get(), skew);
   CheckCanUseLCDText(LCDTextDisallowedReason::kNonIntegralTranslation,
                      "Skew transform");
 
-  SetTransform(layer_, gfx::Transform());
+  SetTransform(layer_.get(), gfx::Transform());
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "identity transform");
 }
 
 TEST_P(LCDTextTest, NonTranslationAboveRenderTarget) {
-  SetRenderSurfaceReason(layer_, RenderSurfaceReason::kTest);
+  SetRenderSurfaceReason(layer_.get(), RenderSurfaceReason::kTest);
 
   // Rotation.
   gfx::Transform rotation;
   rotation.Rotate(10.0);
-  SetTransform(layer_, rotation);
+  SetTransform(layer_.get(), rotation);
   CheckCanUseLCDText(LCDTextDisallowedReason::kNonIntegralTranslation,
                      "rotation transform above render target");
 
@@ -6157,26 +6158,26 @@ TEST_P(LCDTextTest, NonTranslationAboveRenderTarget) {
   // Apply perspective to prevent the scale from applying to the layers below
   // the render target.
   scale.ApplyPerspectiveDepth(10);
-  SetTransform(layer_, scale);
+  SetTransform(layer_.get(), scale);
   CheckCanUseLCDText(LCDTextDisallowedReason::kNonIntegralTranslation,
                      "scale transform above render target");
 
   // Skew.
   gfx::Transform skew;
   skew.Skew(10.0, 0.0);
-  SetTransform(layer_, skew);
+  SetTransform(layer_.get(), skew);
   CheckCanUseLCDText(LCDTextDisallowedReason::kNonIntegralTranslation,
                      "skew transform above render target");
 
-  SetTransform(layer_, gfx::Transform());
+  SetTransform(layer_.get(), gfx::Transform());
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "identity transform");
 }
 
 TEST_P(LCDTextTest, Opacity) {
   // LCD-text is allowed with opacity paint property.
-  SetOpacity(layer_, 0.5f);
+  SetOpacity(layer_.get(), 0.5f);
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "opacity: 0.5");
-  SetOpacity(layer_, 1.f);
+  SetOpacity(layer_.get(), 1.f);
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "opacity: 1.0");
 }
 
@@ -6201,11 +6202,11 @@ TEST_P(LCDTextTest, ContentsNotOpaque) {
 }
 
 TEST_P(LCDTextTest, WillChangeTransform) {
-  SetWillChangeTransform(layer_, true);
+  SetWillChangeTransform(layer_.get(), true);
   CheckCanUseLCDText(LCDTextDisallowedReason::kWillChangeTransform,
                      "will-change:transform");
 
-  SetWillChangeTransform(layer_, false);
+  SetWillChangeTransform(layer_.get(), false);
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone,
                      "no will-change: transform");
 }
@@ -6213,40 +6214,40 @@ TEST_P(LCDTextTest, WillChangeTransform) {
 TEST_P(LCDTextTest, Filter) {
   FilterOperations blur_filter;
   blur_filter.Append(FilterOperation::CreateBlurFilter(4.0f));
-  SetFilter(layer_, blur_filter);
+  SetFilter(layer_.get(), blur_filter);
   CheckCanUseLCDText(LCDTextDisallowedReason::kPixelOrColorEffect, "filter");
 
-  SetFilter(layer_, FilterOperations());
+  SetFilter(layer_.get(), FilterOperations());
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "no filter");
 }
 
 TEST_P(LCDTextTest, FilterAnimation) {
   FilterOperations blur_filter;
   blur_filter.Append(FilterOperation::CreateBlurFilter(4.0f));
-  SetFilter(layer_, blur_filter);
+  SetFilter(layer_.get(), blur_filter);
   CheckCanUseLCDText(LCDTextDisallowedReason::kPixelOrColorEffect, "filter");
 
-  GetEffectNode(layer_)->has_potential_filter_animation = true;
-  SetFilter(layer_, FilterOperations());
+  GetEffectNode(layer_.get())->has_potential_filter_animation = true;
+  SetFilter(layer_.get(), FilterOperations());
   CheckCanUseLCDText(LCDTextDisallowedReason::kPixelOrColorEffect,
                      "filter animation");
 
-  GetEffectNode(layer_)->has_potential_filter_animation = false;
-  SetFilter(layer_, FilterOperations());
+  GetEffectNode(layer_.get())->has_potential_filter_animation = false;
+  SetFilter(layer_.get(), FilterOperations());
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "no filter");
 }
 
 TEST_P(LCDTextTest, BackdropFilter) {
   FilterOperations backdrop_filter;
   backdrop_filter.Append(FilterOperation::CreateBlurFilter(4.0f));
-  SetBackdropFilter(descendant_, backdrop_filter);
+  SetBackdropFilter(descendant_.get(), backdrop_filter);
   UpdateDrawProperties(host_impl()->active_tree());
   CheckCanUseLCDText(LCDTextDisallowedReason::kPixelOrColorEffect,
                      "backdrop-filter", layer_);
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "backdrop-filter",
                      descendant_);
 
-  SetBackdropFilter(descendant_, FilterOperations());
+  SetBackdropFilter(descendant_.get(), FilterOperations());
   UpdateDrawProperties(host_impl()->active_tree());
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "no backdrop-filter",
                      layer_);
@@ -6255,20 +6256,22 @@ TEST_P(LCDTextTest, BackdropFilter) {
 TEST_P(LCDTextTest, BackdropFilterAnimation) {
   FilterOperations backdrop_filter;
   backdrop_filter.Append(FilterOperation::CreateBlurFilter(4.0f));
-  SetBackdropFilter(descendant_, backdrop_filter);
+  SetBackdropFilter(descendant_.get(), backdrop_filter);
   UpdateDrawProperties(host_impl()->active_tree());
   CheckCanUseLCDText(LCDTextDisallowedReason::kPixelOrColorEffect,
                      "backdrop-filter", layer_);
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "backdrop-filter",
                      descendant_);
 
-  GetEffectNode(descendant_)->has_potential_backdrop_filter_animation = true;
-  SetBackdropFilter(descendant_, FilterOperations());
+  GetEffectNode(descendant_.get())->has_potential_backdrop_filter_animation =
+      true;
+  SetBackdropFilter(descendant_.get(), FilterOperations());
   UpdateDrawProperties(host_impl()->active_tree());
   CheckCanUseLCDText(LCDTextDisallowedReason::kPixelOrColorEffect,
                      "backdrop-filter animation", layer_);
 
-  GetEffectNode(descendant_)->has_potential_backdrop_filter_animation = false;
+  GetEffectNode(descendant_.get())->has_potential_backdrop_filter_animation =
+      false;
   UpdateDrawProperties(host_impl()->active_tree());
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "no backdrop-filter",
                      layer_);
@@ -6287,13 +6290,13 @@ TEST_P(LCDTextTest, ContentsOpaqueForText) {
 }
 
 TEST_P(LCDTextTest, TransformAnimation) {
-  GetTransformNode(layer_)->has_potential_animation = true;
-  SetLocalTransformChanged(layer_);
+  GetTransformNode(layer_.get())->has_potential_animation = true;
+  SetLocalTransformChanged(layer_.get());
   CheckCanUseLCDText(LCDTextDisallowedReason::kTransformAnimation,
                      "transform animation");
 
-  GetTransformNode(layer_)->has_potential_animation = false;
-  SetLocalTransformChanged(layer_);
+  GetTransformNode(layer_.get())->has_potential_animation = false;
+  SetLocalTransformChanged(layer_.get());
   CheckCanUseLCDText(LCDTextDisallowedReason::kNone, "no transform animation");
 }
 

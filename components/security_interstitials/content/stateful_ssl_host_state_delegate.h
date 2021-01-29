@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/ssl_host_state_delegate.h"
@@ -125,9 +126,9 @@ class StatefulSSLHostStateDelegate : public content::SSLHostStateDelegate,
       CreateDictionaryEntriesDisposition create_entries);
 
   std::unique_ptr<base::Clock> clock_;
-  content::BrowserContext* browser_context_;
-  PrefService* pref_service_;
-  HostContentSettingsMap* host_content_settings_map_;
+  CheckedPtr<content::BrowserContext> browser_context_;
+  CheckedPtr<PrefService> pref_service_;
+  CheckedPtr<HostContentSettingsMap> host_content_settings_map_;
 
   using AllowedCert = std::pair<std::string /* certificate fingerprint */,
                                 base::FilePath /* StoragePartition path */>;

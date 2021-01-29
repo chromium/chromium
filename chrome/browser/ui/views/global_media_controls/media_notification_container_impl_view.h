@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
@@ -151,26 +152,27 @@ class MediaNotificationContainerImplView
   void OnSizeChanged();
 
   const std::string id_;
-  views::View* swipeable_container_ = nullptr;
+  CheckedPtr<views::View> swipeable_container_ = nullptr;
 
   base::string16 title_;
 
   // Always "visible" so that it reserves space in the header so that the
   // dismiss button can appear without forcing things to shift.
-  views::View* dismiss_button_placeholder_ = nullptr;
+  CheckedPtr<views::View> dismiss_button_placeholder_ = nullptr;
 
   // Shows the colored circle background behind the dismiss button to give it
   // proper contrast against the artwork. The background can't be on the dismiss
   // button itself because it messes up the ink drop.
-  views::View* dismiss_button_container_ = nullptr;
+  CheckedPtr<views::View> dismiss_button_container_ = nullptr;
 
-  DismissButton* dismiss_button_ = nullptr;
-  media_message_center::MediaNotificationView* view_ = nullptr;
-  MediaNotificationDeviceSelectorView* audio_device_selector_view_ = nullptr;
+  CheckedPtr<DismissButton> dismiss_button_ = nullptr;
+  CheckedPtr<media_message_center::MediaNotificationView> view_ = nullptr;
+  CheckedPtr<MediaNotificationDeviceSelectorView> audio_device_selector_view_ =
+      nullptr;
 
   // Only shows up for cast notifications.
-  views::View* stop_button_strip_ = nullptr;
-  views::LabelButton* stop_cast_button_ = nullptr;
+  CheckedPtr<views::View> stop_button_strip_ = nullptr;
+  CheckedPtr<views::LabelButton> stop_cast_button_ = nullptr;
 
   SkColor foreground_color_;
   SkColor background_color_;
@@ -206,11 +208,11 @@ class MediaNotificationContainerImplView
   // Handles gesture events for swiping to dismiss notifications.
   std::unique_ptr<views::SlideOutController> slide_out_controller_;
 
-  OverlayMediaNotificationView* overlay_ = nullptr;
+  CheckedPtr<OverlayMediaNotificationView> overlay_ = nullptr;
 
   views::UniqueWidgetPtr drag_image_widget_;
 
-  MediaNotificationService* const service_;
+  const CheckedPtr<MediaNotificationService> service_;
 
   const bool is_cros_;
 

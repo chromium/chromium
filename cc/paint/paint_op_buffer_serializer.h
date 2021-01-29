@@ -5,6 +5,7 @@
 #ifndef CC_PAINT_PAINT_OP_BUFFER_SERIALIZER_H_
 #define CC_PAINT_PAINT_OP_BUFFER_SERIALIZER_H_
 
+#include "base/memory/checked_ptr.h"
 #include "cc/paint/paint_op_buffer.h"
 
 #include "third_party/skia/src/core/SkRemoteGlyphCache.h"
@@ -105,10 +106,10 @@ class CC_PAINT_EXPORT PaintOpBufferSerializer {
                                 const PlaybackParams& params);
 
   SerializeCallback serialize_cb_;
-  ImageProvider* image_provider_;
-  TransferCacheSerializeHelper* transfer_cache_;
-  ClientPaintCache* paint_cache_;
-  SkStrikeServer* strike_server_;
+  CheckedPtr<ImageProvider> image_provider_;
+  CheckedPtr<TransferCacheSerializeHelper> transfer_cache_;
+  CheckedPtr<ClientPaintCache> paint_cache_;
+  CheckedPtr<SkStrikeServer> strike_server_;
   sk_sp<SkColorSpace> color_space_;
   bool can_use_lcd_text_;
   bool context_supports_distance_field_text_;
@@ -139,7 +140,7 @@ class CC_PAINT_EXPORT SimpleBufferSerializer : public PaintOpBufferSerializer {
   size_t SerializeToMemory(const PaintOp* op,
                            const PaintOp::SerializeOptions& options);
 
-  void* memory_;
+  CheckedPtr<void> memory_;
   const size_t total_;
   size_t written_ = 0u;
 };

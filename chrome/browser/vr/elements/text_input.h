@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/elements/ui_texture.h"
 #include "chrome/browser/vr/model/color_scheme.h"
@@ -76,15 +77,15 @@ class VR_UI_EXPORT TextInput : public UiElement {
 
   OnInputEditedCallback input_edit_callback_;
   OnInputEditedCallback input_commit_callback_;
-  TextInputDelegate* delegate_ = nullptr;
+  CheckedPtr<TextInputDelegate> delegate_ = nullptr;
   EditedText edited_text_;
   bool focused_ = false;
   bool cursor_visible_ = false;
   base::TimeTicks cursor_blink_start_ticks_;
 
-  Text* hint_element_ = nullptr;
-  Text* text_element_ = nullptr;
-  Rect* cursor_element_ = nullptr;
+  CheckedPtr<Text> hint_element_ = nullptr;
+  CheckedPtr<Text> text_element_ = nullptr;
+  CheckedPtr<Rect> cursor_element_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(TextInput);
 };

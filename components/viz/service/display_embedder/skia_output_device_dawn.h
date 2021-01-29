@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/service/display_embedder/skia_output_device.h"
 #include "third_party/dawn/src/include/dawn/dawn_wsi.h"
@@ -51,7 +52,7 @@ class SkiaOutputDeviceDawn : public SkiaOutputDevice {
   // Create a platform-specific swapchain implementation.
   void CreateSwapChainImplementation();
 
-  DawnContextProvider* const context_provider_;
+  const CheckedPtr<DawnContextProvider> context_provider_;
   DawnSwapChainImplementation swap_chain_implementation_;
   wgpu::SwapChain swap_chain_;
   wgpu::Texture texture_;

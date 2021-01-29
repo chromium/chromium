@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
@@ -118,12 +119,12 @@ class ExtensionDialog : public views::DialogDelegate,
   // The contained host for the view.
   std::unique_ptr<extensions::ExtensionViewHost> host_;
 
-  ExtensionViewViews* extension_view_ = nullptr;
+  CheckedPtr<ExtensionViewViews> extension_view_ = nullptr;
 
   content::NotificationRegistrar registrar_;
 
   // The observer of this popup.
-  ExtensionDialogObserver* observer_;
+  CheckedPtr<ExtensionDialogObserver> observer_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionDialog);
 };

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "cc/animation/animation_export.h"
@@ -203,7 +204,7 @@ class CC_ANIMATION_EXPORT ElementAnimations
   bool KeyframeModelAffectsPendingElements(KeyframeModel* keyframe_model) const;
 
   base::ObserverList<KeyframeEffect>::Unchecked keyframe_effects_list_;
-  AnimationHost* animation_host_;
+  CheckedPtr<AnimationHost> animation_host_;
   ElementId element_id_;
 
   bool has_element_in_active_list_;

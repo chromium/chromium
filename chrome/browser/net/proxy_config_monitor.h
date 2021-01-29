@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/memory/checked_ptr.h"
 #include "build/buildflag.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -91,7 +92,7 @@ class ProxyConfigMonitor : public net::ProxyConfigService::Observer,
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   mojo::ReceiverSet<network::mojom::ProxyErrorClient> error_receiver_set_;
-  Profile* profile_ = nullptr;
+  CheckedPtr<Profile> profile_ = nullptr;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(ProxyConfigMonitor);
