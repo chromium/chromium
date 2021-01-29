@@ -360,12 +360,7 @@ TEST_F(CorsTest, SafelistedAccept) {
   EXPECT_FALSE(IsCorsSafelistedHeader("AccepT", std::string(129, 'a')));
 }
 
-#if defined(OS_ANDROID)
-#define MAYBE_SafelistedAcceptLanguage DISABLED_SafelistedAcceptLanguage
-#else
-#define MAYBE_SafelistedAcceptLanguage SafelistedAcceptLanguage
-#endif
-TEST_F(CorsTest, MAYBE_SafelistedAcceptLanguage) {
+TEST_F(CorsTest, SafelistedAcceptLanguage) {
   EXPECT_TRUE(IsCorsSafelistedHeader("accept-language", "en,ja"));
   EXPECT_TRUE(IsCorsSafelistedHeader("aCcEPT-lAngUAge", "en,ja"));
 
@@ -406,12 +401,7 @@ TEST_F(CorsTest, SafelistedSecCHUA) {
   // https://crbug.com/924969
 }
 
-#if defined(OS_ANDROID)
-#define MAYBE_SafelistedContentLanguage DISABLED_SafelistedContentLanguage
-#else
-#define MAYBE_SafelistedContentLanguage SafelistedContentLanguage
-#endif
-TEST_F(CorsTest, MAYBE_SafelistedContentLanguage) {
+TEST_F(CorsTest, SafelistedContentLanguage) {
   EXPECT_TRUE(IsCorsSafelistedHeader("content-language", "en,ja"));
   EXPECT_TRUE(IsCorsSafelistedHeader("cONTent-LANguaGe", "en,ja"));
 
