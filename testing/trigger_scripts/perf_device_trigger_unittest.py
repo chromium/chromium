@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env vpython
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -24,6 +24,7 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
     self._swarming_runs = []
     self._files = files
     self._temp_file_id = 0
+    self._triggered_with_swarming_go = 0
     super(FakeTriggerer, self).__init__(args, swarming_args)
 
 
@@ -51,10 +52,16 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
     del verbose #unused
     self._swarming_runs.append(args)
 
+  def run_swarming_go(self, args, verbose, _json_path, _shard_index, _shard,
+                      _merged_json=None):
+    self._triggered_with_swarming_go += 1
+    self.run_swarming(args, verbose)
 
 class UnitTest(unittest.TestCase):
-  def setup_and_trigger(
-      self, previous_task_assignment_map, alive_bots, dead_bots):
+  def setup_and_trigger(self,
+                        previous_task_assignment_map,
+                        alive_bots,
+                        dead_bots):
     args = Args()
     args.shards = len(previous_task_assignment_map)
     args.dump_json = 'output.json'
@@ -63,8 +70,6 @@ class UnitTest(unittest.TestCase):
         'trigger',
         '--swarming',
         'http://foo_server',
-        '--auth-service-account-json',
-        '/creds/test_service_account',
         '--dimension',
         'pool',
         'chrome-perf-fyi',
@@ -105,18 +110,11 @@ class UnitTest(unittest.TestCase):
       file_index = file_index + 1
     for i in xrange(num_shards):
       task = {
-        'base_task_name': 'webgl_conformance_tests',
-        'request': {
-          'expiration_secs': 3600,
-          'properties': {
-            'execution_timeout_secs': 3600,
-          },
-        },
-        'tasks': {
-          'webgl_conformance_tests on NVIDIA GPU on Windows': {
+        'tasks': [{
+          'request': {
             'task_id': 'f%d' % i,
           },
-        },
+        }],
       }
       files['base_trigger_dimensions%d.json' % file_index] = task
       file_index = file_index + 1
@@ -164,9 +162,6 @@ class UnitTest(unittest.TestCase):
       self.assertTrue('query' in triggerer._swarming_runs[i])
       self.assertTrue(self.list_contains_sublist(
         triggerer._swarming_runs[i], ['-S', 'foo_server']))
-      self.assertTrue(self.list_contains_sublist(
-        triggerer._swarming_runs[i], ['--auth-service-account-json',
-                                      '/creds/test_service_account']))
 
   def get_triggered_shard_to_bot(self, triggerer, num_shards):
     self.assert_query_swarming_args(triggerer, num_shards)

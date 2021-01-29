@@ -65,17 +65,10 @@ def parse_args(triggerer):
       dest='optional_dimensions',
       help='Optional dimensions which will result in additional task slices. '
            'Duplicated from the `swarming.py trigger` command.')
-  # BaseTestTriggerer's setup_parser_contract() takes care of adding needed
-  # swarming.py args if they're not already present. But only do this if
-  # '--shard-index' is passed in. (The exact usage of trigger scripts are
-  # currently changing. See crbug.com/926987 for more info.)
-  if '--shard-index' in sys.argv:
-    base_test_triggerer.BaseTestTriggerer.setup_parser_contract(parser)
-    args, additional_args = parser.parse_known_args()
-    additional_args = triggerer.modify_args(
-        additional_args, 0, args.shard_index, args.shards, args.dump_json)
-  else:
-    args, additional_args = parser.parse_known_args()
+  base_test_triggerer.BaseTestTriggerer.setup_parser_contract(parser)
+  args, additional_args = parser.parse_known_args()
+  additional_args = triggerer.modify_args(
+      additional_args, 0, args.shard_index, args.shards, args.dump_json)
 
   if additional_args[0] != 'trigger':
     parser.error(
@@ -121,14 +114,13 @@ def main():
     new_args.extend(['--dimension', 'device_status', 'available'])
 
   new_args.extend([
-      '--optional-dimension',
-      'device_os',
-      current_lkgm,
-      str(PRIMARY_SLICE_EXPIRATION_S),
+      '-optional-dimension',
+      'device_os=%s:%d' % (current_lkgm, PRIMARY_SLICE_EXPIRATION_S),
   ])
   new_args += additional_args[1:]
 
-  return triggerer.run_swarming(new_args, True)
+  return triggerer.run_swarming_go(
+    new_args, True, args.dump_json, args.shard_index or 0, args.shards)
 
 
 if __name__ == '__main__':

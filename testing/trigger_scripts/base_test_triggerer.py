@@ -26,7 +26,37 @@ import logging
 SRC_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
   __file__))))
 
+# .exe on Windows.
+EXECUTABLE_SUFFIX = '.exe' if sys.platform == 'win32' else ''
+
 SWARMING_PY = os.path.join(SRC_DIR, 'tools', 'swarming_client', 'swarming.py')
+SWARMING_GO = os.path.join(SRC_DIR, 'tools', 'luci-go',
+                           'swarming' + EXECUTABLE_SUFFIX)
+
+
+def _convert_to_go_swarming_args(args):
+  go_args = []
+  map_flags = {'--dimension', '--env', '--env-prefix', '--named-cache'}
+  i = 0
+  while i < len(args):
+    current_arg = args[i]
+    if current_arg == '--swarming':
+      current_arg = '--server'
+    elif current_arg == '--resultdb':
+      current_arg = '--enable-resultdb'
+    go_args.append(current_arg)
+    i += 1
+    if current_arg in map_flags:
+      go_args.append('{}={}'.format(args[i], args[i + 1]))
+      i += 2
+    elif current_arg == '--cipd-package':
+      # https://source.chromium.org/chromium/infra/infra/+/master:luci/client/swarming.py;l=1175-1177;drc=67e502dbf7a2a863c95e0d54fa486413d24d57a5
+      path, name, version = args[i].split(':', 2)
+      # https://source.chromium.org/chromium/infra/infra/+/master:go/src/go.chromium.org/luci/client/cmd/swarming/lib/trigger.go;l=458-465;drc=ef40d3f3503c2cc7bb0f3f6807b14a39bafb6ce4
+      go_args.append('{}:{}={}'.format(path, name, version))
+      i += 1
+  return go_args
+
 
 def strip_unicode(obj):
   """Recursively re-encodes strings as utf-8 inside |obj|. Returns the result.
@@ -116,8 +146,7 @@ class BaseTestTriggerer(object):
   # swarming to its own object to make trigger logic more clear.
   def query_swarming(self, api, query_args, verbose,
                      limit='0',
-                     server='chromium-swarm.appspot.com',
-                     service_account=None):
+                     server='chromium-swarm.appspot.com'):
     try:
       temp_file = self.make_temp_file(prefix='base_trigger_dimensions',
                                       suffix='.json')
@@ -129,10 +158,6 @@ class BaseTestTriggerer(object):
              limit,
              '--json',
              temp_file]
-      # Add in service account auth if present
-      if service_account:
-        args.append('--auth-service-account-json')
-        args.append(service_account)
       # Append the query at the end
       args.append(('%s?%s' % (api, encoded_args)))
       ret = self.run_swarming(args, verbose)
@@ -197,8 +222,32 @@ class BaseTestTriggerer(object):
 
   def run_swarming(self, args, verbose):
     if verbose:
-      logging.info('Running Swarming with args: %s' % args)
+      logging.info('Running Swarming with args: %s', args)
     return subprocess.call([sys.executable, SWARMING_PY] + args)
+
+  def run_swarming_go(self, args, verbose, json_path, shard_index, shards,
+                      merged_json=None):
+    if verbose:
+      logging.info('Running Go `swarming` with args: %s', args)
+
+    if merged_json is None:
+      merged_json = {}
+
+    if 'tasks' not in merged_json:
+      merged_json['tasks'] = {}
+
+    ret = subprocess.call([SWARMING_GO] + _convert_to_go_swarming_args(args))
+    result_json = self.read_json_from_temp_file(json_path)
+
+    tasks = {
+      task['request']['task_id']: task['request']
+      for task  in result_json['tasks']
+    }
+    for k, v in tasks.items():
+      v['shard_index'] = shard_index
+      merged_json['tasks'][k + ':%d:%d' % (shard_index, shards)] = v
+    self.write_json_to_file(merged_json, json_path)
+    return ret
 
   def prune_test_specific_configs(self, args, verbose):
     # Ability for base class to further prune configs to
@@ -262,23 +311,12 @@ class BaseTestTriggerer(object):
                                         suffix='.json')
         args_to_pass = self.modify_args(filtered_remaining_args, bot_index,
                                         shard_index, args.shards, json_temp)
-        ret = self.run_swarming(args_to_pass, verbose)
+        ret = self.run_swarming_go(
+          args_to_pass, verbose, json_temp, shard_index, args.shards,
+          merged_json)
         if ret:
           sys.stderr.write('Failed to trigger a task, aborting\n')
           return ret
-        result_json = self.read_json_from_temp_file(json_temp)
-        if not merged_json:
-          # Copy the entire JSON -- in particular, the "request"
-          # dictionary -- from the first shard. "swarming.py collect" uses
-          # some keys from this dictionary, in particular related to
-          # expiration. It also contains useful debugging information.
-          merged_json = copy.deepcopy(result_json)
-          # However, reset the "tasks" entry to an empty dictionary,
-          # which will be handled specially.
-          merged_json['tasks'] = {}
-        for k, v in result_json['tasks'].items():
-          v['shard_index'] = shard_index
-          merged_json['tasks'][k + ':%d:%d' % (shard_index, args.shards)] = v
       finally:
         self.delete_temp_file(json_temp)
     self.write_json_to_file(merged_json, args.dump_json)
@@ -304,4 +342,3 @@ class BaseTestTriggerer(object):
                         help='Which shard to trigger. Duplicated from the '
                              '`swarming.py trigger` command.')
     return parser
-
