@@ -3202,12 +3202,10 @@ void RenderFrameHostImpl::DidAddContentSecurityPolicies(
                "RenderFrameHostImpl::OnDidAddContentSecurityPolicies",
                "frame_tree_node", frame_tree_node_->frame_tree_node_id());
 
-  std::vector<network::mojom::ContentSecurityPolicyHeaderPtr> headers;
   for (auto& policy : policies) {
-    headers.push_back(policy->header.Clone());
-    AddContentSecurityPolicy(std::move(policy));
+    AddContentSecurityPolicy(policy->Clone());
   }
-  frame_tree_node()->AddContentSecurityPolicies(std::move(headers));
+  frame_tree_node()->AddContentSecurityPolicies(std::move(policies));
 }
 
 void RenderFrameHostImpl::CancelInitialHistoryLoad() {

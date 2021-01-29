@@ -7389,10 +7389,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       embedded_test_server()->GetURL("b.com", "/title2.html"));
   EXPECT_FALSE(root->child_at(0)->HasSameOrigin(*root));
   EXPECT_EQ(old_subframe_url, root->child_at(0)->current_url());
-  const std::vector<network::mojom::ContentSecurityPolicyHeaderPtr>& root_csp =
-      root->current_replication_state().accumulated_csp_headers;
+  const std::vector<network::mojom::ContentSecurityPolicyPtr>& root_csp =
+      root->current_replication_state().accumulated_csps;
   EXPECT_EQ(1u, root_csp.size());
-  EXPECT_EQ("frame-src 'self' http://b.com:*", root_csp[0]->header_value);
+  EXPECT_EQ("frame-src 'self' http://b.com:*",
+            root_csp[0]->header->header_value);
 
   // Monitor subframe's load events via main frame's title.
   EXPECT_TRUE(ExecuteScript(shell(),
@@ -7460,10 +7461,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   // (the CSP should not have an effect on the already loaded frames).
   EXPECT_FALSE(root->child_at(0)->HasSameOrigin(*root));
   EXPECT_EQ(old_subframe_url, root->child_at(0)->current_url());
-  const std::vector<network::mojom::ContentSecurityPolicyHeaderPtr>& root_csp =
-      root->current_replication_state().accumulated_csp_headers;
+  const std::vector<network::mojom::ContentSecurityPolicyPtr>& root_csp =
+      root->current_replication_state().accumulated_csps;
   EXPECT_EQ(1u, root_csp.size());
-  EXPECT_EQ("frame-src https://a.com:*", root_csp[0]->header_value);
+  EXPECT_EQ("frame-src https://a.com:*", root_csp[0]->header->header_value);
 
   // Monitor subframe's load events via main frame's title.
   EXPECT_TRUE(ExecJs(shell(),
@@ -7522,11 +7523,11 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_TRUE(srcdoc_frame->HasSameOrigin(*root));
   EXPECT_FALSE(srcdoc_frame->HasSameOrigin(*navigating_frame));
   EXPECT_EQ(old_subframe_url, navigating_frame->current_url());
-  const std::vector<network::mojom::ContentSecurityPolicyHeaderPtr>&
-      srcdoc_csp =
-          srcdoc_frame->current_replication_state().accumulated_csp_headers;
+  const std::vector<network::mojom::ContentSecurityPolicyPtr>& srcdoc_csp =
+      srcdoc_frame->current_replication_state().accumulated_csps;
   EXPECT_EQ(1u, srcdoc_csp.size());
-  EXPECT_EQ("frame-src 'self' http://b.com:*", srcdoc_csp[0]->header_value);
+  EXPECT_EQ("frame-src 'self' http://b.com:*",
+            srcdoc_csp[0]->header->header_value);
 
   // Monitor navigating_frame's load events via srcdoc_frame posting
   // a message to the parent frame.
@@ -7572,9 +7573,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       srcdoc_frame, embedded_test_server()->GetURL("a.com", "/title1.html")));
 
   // Verify that the frame's CSP got correctly reset to an empty set.
-  EXPECT_EQ(
-      0u,
-      srcdoc_frame->current_replication_state().accumulated_csp_headers.size());
+  EXPECT_EQ(0u,
+            srcdoc_frame->current_replication_state().accumulated_csps.size());
 }
 
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ScreenCoordinates) {

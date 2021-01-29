@@ -825,7 +825,7 @@ interface RemoteFrame {
   // Updates replicated ContentSecurityPolicy on the remote frame's
   // SecurityContent.
   AddReplicatedContentSecurityPolicies(
-      array<network.mojom.ContentSecurityPolicyHeader> headers);
+      array<network.mojom.ContentSecurityPolicy> csps);
 
   // Resets the replicated ContentSecurityPolicy on the remote frame's
   // SecurityContext. Used to reset CSP from the previous document on

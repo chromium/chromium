@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_update_types.mojom-shared.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-shared.h"
+#include "third_party/blink/public/platform/web_content_security_policy_struct.h"
 #include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "ui/events/types/scroll_types.h"
@@ -117,11 +118,9 @@ class WebRemoteFrame : public WebFrame {
   virtual void SetReplicatedFeaturePolicyHeader(
       const ParsedFeaturePolicy& parsed_header) = 0;
 
-  // Adds |header| to the set of replicated CSP headers.
-  virtual void AddReplicatedContentSecurityPolicyHeader(
-      const WebString& header_value,
-      network::mojom::ContentSecurityPolicyType,
-      network::mojom::ContentSecurityPolicySource) = 0;
+  // Adds |csps| to the set of replicated CSPs.
+  virtual void AddReplicatedContentSecurityPolicies(
+      const WebVector<WebContentSecurityPolicy>& csps) = 0;
 
   // Resets replicated CSP headers to an empty set.
   virtual void ResetReplicatedContentSecurityPolicy() = 0;

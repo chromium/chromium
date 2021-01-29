@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
+#include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_client_impl.h"
@@ -336,14 +337,10 @@ void WebRemoteFrameImpl::SetReplicatedFeaturePolicyHeader(
   GetFrame()->SetReplicatedFeaturePolicyHeader(parsed_header);
 }
 
-void WebRemoteFrameImpl::AddReplicatedContentSecurityPolicyHeader(
-    const WebString& header_value,
-    network::mojom::ContentSecurityPolicyType type,
-    network::mojom::ContentSecurityPolicySource source) {
-  GetFrame()
-      ->GetSecurityContext()
-      ->GetContentSecurityPolicy()
-      ->AddPolicyFromHeaderValue(header_value, type, source);
+void WebRemoteFrameImpl::AddReplicatedContentSecurityPolicies(
+    const WebVector<WebContentSecurityPolicy>& csps) {
+  GetFrame()->GetSecurityContext()->GetContentSecurityPolicy()->AddPolicies(
+      ConvertToMojoBlink(csps));
 }
 
 void WebRemoteFrameImpl::ResetReplicatedContentSecurityPolicy() {

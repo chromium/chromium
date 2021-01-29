@@ -81,10 +81,10 @@ struct FrameReplicationState {
   // frame.
   blink.mojom.FramePolicy frame_policy;
 
-  // Accumulated CSP headers - gathered from http headers, <meta> elements,
-  // parent frames (in case of about:blank frames).
-  array<network.mojom.ContentSecurityPolicyHeader>
-      accumulated_csp_headers;
+  // Accumulated CSPs, containing all CSPs currently applying to the frame,
+  // gathered from http headers, <meta> elements, inherited CSPs.
+  array<network.mojom.ContentSecurityPolicy>
+      accumulated_csps;
 
   // Whether the frame is in a document tree or a shadow tree, per the Shadow
   // DOM spec: https://w3c.github.io/webcomponents/spec/shadow/

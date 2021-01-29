@@ -133,7 +133,7 @@ FrameTreeNode::FrameTreeNode(
           blink::ParsedFeaturePolicy(),
           network::mojom::WebSandboxFlags::kNone,
           blink::FramePolicy(),
-          std::vector<network::mojom::ContentSecurityPolicyHeaderPtr>(),
+          std::vector<network::mojom::ContentSecurityPolicyPtr>(),
           scope,
           blink::mojom::InsecureRequestPolicy::
               kLeaveInsecureRequestsAlone /* should enforce strict mixed content
@@ -244,13 +244,12 @@ bool FrameTreeNode::IsMainFrame() const {
 
 void FrameTreeNode::ResetForNavigation(
     bool was_served_from_back_forward_cache) {
-  replication_state_->accumulated_csp_headers.clear();
+  replication_state_->accumulated_csps.clear();
   if (!was_served_from_back_forward_cache) {
     render_manager_.OnDidResetContentSecurityPolicy();
   } else {
     for (auto& policy : current_frame_host()->ContentSecurityPolicies()) {
-      replication_state_->accumulated_csp_headers.push_back(
-          policy->header->Clone());
+      replication_state_->accumulated_csps.push_back(policy->Clone());
     }
     // Note: there is no need to call OnDidResetContentSecurityPolicy or any
     // other update as the proxies are being restored from bfcache as well and
@@ -376,10 +375,10 @@ void FrameTreeNode::SetFrameName(const std::string& name,
 }
 
 void FrameTreeNode::AddContentSecurityPolicies(
-    std::vector<network::mojom::ContentSecurityPolicyHeaderPtr> headers) {
-  for (auto& header : headers)
-    replication_state_->accumulated_csp_headers.push_back(header->Clone());
-  render_manager_.OnDidAddContentSecurityPolicies(std::move(headers));
+    std::vector<network::mojom::ContentSecurityPolicyPtr> csps) {
+  for (auto& csp : csps)
+    replication_state_->accumulated_csps.push_back(csp->Clone());
+  render_manager_.OnDidAddContentSecurityPolicies(std::move(csps));
 }
 
 void FrameTreeNode::SetInsecureRequestPolicy(

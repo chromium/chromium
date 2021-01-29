@@ -312,11 +312,8 @@ void RenderFrameProxy::SetReplicatedState(
       state->has_received_user_gesture_before_nav);
 
   web_frame_->ResetReplicatedContentSecurityPolicy();
-  for (const auto& header : state->accumulated_csp_headers) {
-    web_frame_->AddReplicatedContentSecurityPolicyHeader(
-        blink::WebString::FromUTF8(header->header_value), header->type,
-        header->source);
-  }
+  web_frame_->AddReplicatedContentSecurityPolicies(
+      ToWebContentSecurityPolicies(std::move(state->accumulated_csps)));
 }
 
 std::string RenderFrameProxy::unique_name() const {

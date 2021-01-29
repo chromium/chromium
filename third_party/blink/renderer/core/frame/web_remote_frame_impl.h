@@ -92,10 +92,8 @@ class CORE_EXPORT WebRemoteFrameImpl final
                          const WebString& unique_name) override;
   void SetReplicatedFeaturePolicyHeader(
       const ParsedFeaturePolicy& parsed_header) override;
-  void AddReplicatedContentSecurityPolicyHeader(
-      const WebString& header_value,
-      network::mojom::ContentSecurityPolicyType,
-      network::mojom::ContentSecurityPolicySource) override;
+  void AddReplicatedContentSecurityPolicies(
+      const WebVector<WebContentSecurityPolicy>& csps) override;
   void ResetReplicatedContentSecurityPolicy() override;
   void SetReplicatedInsecureRequestPolicy(
       mojom::blink::InsecureRequestPolicy) override;

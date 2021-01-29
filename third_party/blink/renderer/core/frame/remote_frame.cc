@@ -457,12 +457,9 @@ void RemoteFrame::WillEnterFullscreen(
 }
 
 void RemoteFrame::AddReplicatedContentSecurityPolicies(
-    WTF::Vector<network::mojom::blink::ContentSecurityPolicyHeaderPtr>
-        headers) {
-  for (auto& header : headers) {
-    GetSecurityContext()->GetContentSecurityPolicy()->AddPolicyFromHeaderValue(
-        header->header_value, header->type, header->source);
-  }
+    WTF::Vector<network::mojom::blink::ContentSecurityPolicyPtr> csps) {
+  GetSecurityContext()->GetContentSecurityPolicy()->AddPolicies(
+      std::move(csps));
 }
 
 void RemoteFrame::ResetReplicatedContentSecurityPolicy() {

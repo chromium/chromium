@@ -359,9 +359,9 @@ class CONTENT_EXPORT RenderFrameHostManager
   // frame proxies.
   void OnDidUpdateName(const std::string& name, const std::string& unique_name);
 
-  // Sends the newly added Content Security Policy headers to all the proxies.
+  // Sends the newly added Content Security Policies to all the proxies.
   void OnDidAddContentSecurityPolicies(
-      std::vector<network::mojom::ContentSecurityPolicyHeaderPtr> headers);
+      std::vector<network::mojom::ContentSecurityPolicyPtr> csps);
 
   // Resets Content Security Policy in all the proxies.
   void OnDidResetContentSecurityPolicy();

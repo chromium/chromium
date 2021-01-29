@@ -41,8 +41,7 @@ class FakeRemoteFrame : public blink::mojom::RemoteFrame {
   // blink::mojom::RemoteFrame overrides:
   void WillEnterFullscreen(blink::mojom::FullscreenOptionsPtr) override;
   void AddReplicatedContentSecurityPolicies(
-      std::vector<network::mojom::ContentSecurityPolicyHeaderPtr> headers)
-      override;
+      std::vector<network::mojom::ContentSecurityPolicyPtr> csps) override;
   void ResetReplicatedContentSecurityPolicy() override;
   void EnforceInsecureNavigationsSet(const std::vector<uint32_t>& set) override;
   void SetFrameOwnerProperties(
