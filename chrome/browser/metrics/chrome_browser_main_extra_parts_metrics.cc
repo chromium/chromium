@@ -558,7 +558,7 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
 #endif
   );
 
-#if defined(OS_WIN)
+#if defined(OS_WIN) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // Records whether or not PartitionAlloc-Everywhere is enabled, and whether
   // PCScan is enabled on top of it. This is meant for a 3-way experiment with 2
   // binaries:
@@ -581,11 +581,9 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
       "Disabled"
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   );
-#endif  // defined(OS_WIN)
+#endif  // defined(OS_WIN) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
-#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-
-#if defined(OS_WIN)
+#if defined(OS_WIN) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   // Records whether or not BackupRefPtr and/or PCScan is enabled. This is meant
   // for a 3-way experiment with 2 binaries:
   // - binary A: deployed to 66% users, with half of them having PCScan on and
@@ -607,17 +605,7 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
           : "Disabled"
 #endif
   );
-#else  // defined(OS_WIN)
-  ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial("BackupRefPtr",
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-                                                            "Enabled"
-#else
-                                                            "Disabled"
-#endif
-  );
-#endif  // defined(OS_WIN)
-
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#endif  // defined(OS_WIN) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
   ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
       "PartitionAllocGigaCageSynthetic",
