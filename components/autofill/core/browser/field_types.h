@@ -324,21 +324,22 @@ enum HtmlFieldMode {
   HTML_MODE_SHIPPING,
 };
 
-enum FieldTypeGroup {
-  NO_GROUP,
-  NAME,
-  NAME_BILLING,
-  EMAIL,
-  COMPANY,
-  ADDRESS_HOME,
-  ADDRESS_BILLING,
-  PHONE_HOME,
-  PHONE_BILLING,
-  CREDIT_CARD,
-  PASSWORD_FIELD,
-  TRANSACTION,
-  USERNAME_FIELD,
-  UNFILLABLE,
+enum class FieldTypeGroup {
+  kNoGroup,
+  kName,
+  kNameBilling,
+  kEmail,
+  kCompany,
+  kAddressHome,
+  kAddressBilling,
+  kPhoneHome,
+  kPhoneBilling,
+  kCreditCard,
+  kPasswordField,
+  kTransaction,
+  kUsernameField,
+  kUnfillable,
+  kMaxValue = kUnfillable,
 };
 
 using ServerFieldTypeSet = DenseSet<ServerFieldType, MAX_VALID_FIELD_TYPE>;

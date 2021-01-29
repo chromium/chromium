@@ -27,7 +27,7 @@ AddressPhoneFormLabelFormatter::~AddressPhoneFormLabelFormatter() {}
 base::string16 AddressPhoneFormLabelFormatter::GetLabelForProfile(
     const AutofillProfile& profile,
     FieldTypeGroup focused_group) const {
-  return focused_group == ADDRESS_HOME &&
+  return focused_group == FieldTypeGroup::kAddressHome &&
                  !IsStreetAddressPart(focused_field_type())
              ? GetLabelForProfileOnFocusedNonStreetAddress(
                    form_has_street_address_, profile, app_locale(),
@@ -45,17 +45,18 @@ base::string16 AddressPhoneFormLabelFormatter::
         const AutofillProfile& profile,
         FieldTypeGroup focused_group) const {
   std::vector<base::string16> label_parts;
-  if (focused_group != NAME && data_util::ContainsName(groups())) {
+  if (focused_group != FieldTypeGroup::kName &&
+      data_util::ContainsName(groups())) {
     AddLabelPartIfNotEmpty(
         GetLabelName(field_types_for_labels(), profile, app_locale()),
         &label_parts);
   }
 
-  if (focused_group != PHONE_HOME) {
+  if (focused_group != FieldTypeGroup::kPhoneHome) {
     AddLabelPartIfNotEmpty(GetLabelPhone(profile, app_locale()), &label_parts);
   }
 
-  if (focused_group != ADDRESS_HOME) {
+  if (focused_group != FieldTypeGroup::kAddressHome) {
     AddLabelPartIfNotEmpty(
         GetLabelAddress(form_has_street_address_, profile, app_locale(),
                         field_types_for_labels()),

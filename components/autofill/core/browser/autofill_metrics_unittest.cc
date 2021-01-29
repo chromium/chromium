@@ -1774,7 +1774,7 @@ TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldSignatureName,
          field_signature[0].value()},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::
              kFieldOverallTypeName,
          ADDRESS_HOME_LINE1},
@@ -1793,7 +1793,7 @@ TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldSignatureName,
          field_signature[1].value()},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::
              kFieldOverallTypeName,
          ADDRESS_HOME_CITY},
@@ -1812,7 +1812,7 @@ TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldSignatureName,
          field_signature[2].value()},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::
              kFieldOverallTypeName,
          ADDRESS_HOME_STATE},
@@ -1831,7 +1831,7 @@ TEST_F(AutofillMetricsTest, LogHiddenRepresentationalFieldSkipDecision) {
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldSignatureName,
          field_signature[3].value()},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogHiddenRepresentationalFieldSkipDecisionType::
              kFieldOverallTypeName,
          ADDRESS_HOME_COUNTRY},
@@ -1929,7 +1929,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldSignatureName,
          field_signature[0].value()},
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogRepeatedServerTypePredictionRationalized::
              kFieldOldOverallTypeName,
          ADDRESS_HOME_STREET_ADDRESS},
@@ -1949,7 +1949,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedAddressTypeRationalized) {
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldSignatureName,
          field_signature[1].value()},
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogRepeatedServerTypePredictionRationalized::
              kFieldOldOverallTypeName,
          ADDRESS_HOME_STREET_ADDRESS},
@@ -2047,7 +2047,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldSignatureName,
          field_signature[0].value()},
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogRepeatedServerTypePredictionRationalized::
              kFieldOldOverallTypeName,
          ADDRESS_HOME_COUNTRY},
@@ -2067,7 +2067,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldSignatureName,
          field_signature[1].value()},
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogRepeatedServerTypePredictionRationalized::
              kFieldOldOverallTypeName,
          ADDRESS_HOME_COUNTRY},
@@ -2087,7 +2087,7 @@ TEST_F(AutofillMetricsTest, LogRepeatedStateCountryTypeRationalized) {
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldSignatureName,
          field_signature[2].value()},
         {UkmLogRepeatedServerTypePredictionRationalized::kFieldTypeGroupName,
-         ADDRESS_HOME},
+         static_cast<int64_t>(FieldTypeGroup::kAddressHome)},
         {UkmLogRepeatedServerTypePredictionRationalized::
              kFieldOldOverallTypeName,
          ADDRESS_HOME_COUNTRY},
@@ -8137,7 +8137,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessMetric_PasswordForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogUserHappinessMetric(
-        AutofillMetrics::USER_DID_AUTOFILL, PASSWORD_FIELD,
+        AutofillMetrics::USER_DID_AUTOFILL, FieldTypeGroup::kPasswordField,
         security_state::SecurityLevel::SECURITY_LEVEL_COUNT,
         /*profile_form_bitmask=*/0);
     histogram_tester.ExpectBucketCount("Autofill.UserHappiness",
@@ -8152,7 +8152,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessMetric_PasswordForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogUserHappinessMetric(
-        AutofillMetrics::USER_DID_AUTOFILL, USERNAME_FIELD,
+        AutofillMetrics::USER_DID_AUTOFILL, FieldTypeGroup::kUsernameField,
         security_state::SecurityLevel::SECURITY_LEVEL_COUNT,
         /*profile_form_bitmask=*/0);
     histogram_tester.ExpectBucketCount("Autofill.UserHappiness",
@@ -8169,7 +8169,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessMetric_UnknownForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogUserHappinessMetric(
-        AutofillMetrics::USER_DID_AUTOFILL, NO_GROUP,
+        AutofillMetrics::USER_DID_AUTOFILL, FieldTypeGroup::kNoGroup,
         security_state::SecurityLevel::SECURITY_LEVEL_COUNT,
         /*profile_form_bitmask=*/0);
     histogram_tester.ExpectBucketCount("Autofill.UserHappiness",
@@ -8184,7 +8184,7 @@ TEST_F(AutofillMetricsTest, LogUserHappinessMetric_UnknownForm) {
   {
     base::HistogramTester histogram_tester;
     AutofillMetrics::LogUserHappinessMetric(
-        AutofillMetrics::USER_DID_AUTOFILL, TRANSACTION,
+        AutofillMetrics::USER_DID_AUTOFILL, FieldTypeGroup::kTransaction,
         security_state::SecurityLevel::SECURITY_LEVEL_COUNT,
         /*profile_form_bitmask=*/0);
     histogram_tester.ExpectBucketCount("Autofill.UserHappiness",
@@ -8606,7 +8606,8 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
          Collapse(CalculateFormSignature(form)).value()}}});
   VerifyUkm(
       test_ukm_recorder_, form, UkmTextFieldDidChangeType::kEntryName,
-      {{{UkmTextFieldDidChangeType::kFieldTypeGroupName, NAME},
+      {{{UkmTextFieldDidChangeType::kFieldTypeGroupName,
+         static_cast<int64_t>(FieldTypeGroup::kName)},
         {UkmTextFieldDidChangeType::kHeuristicTypeName, NAME_FULL},
         {UkmTextFieldDidChangeType::kServerTypeName, NO_SERVER_DATA},
         {UkmTextFieldDidChangeType::kHtmlFieldTypeName, HTML_TYPE_UNSPECIFIED},
@@ -8618,7 +8619,8 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
          Collapse(CalculateFieldSignatureForField(form.fields[0])).value()},
         {UkmTextFieldDidChangeType::kFormSignatureName,
          Collapse(CalculateFormSignature(form)).value()}},
-       {{UkmTextFieldDidChangeType::kFieldTypeGroupName, NAME},
+       {{UkmTextFieldDidChangeType::kFieldTypeGroupName,
+         static_cast<int64_t>(FieldTypeGroup::kName)},
         {UkmTextFieldDidChangeType::kHeuristicTypeName, NAME_FULL},
         {UkmTextFieldDidChangeType::kServerTypeName, NO_SERVER_DATA},
         {UkmTextFieldDidChangeType::kHtmlFieldTypeName, HTML_TYPE_UNSPECIFIED},
@@ -8630,7 +8632,8 @@ TEST_F(AutofillMetricsTest, UserHappinessFormInteraction_AddressForm) {
          Collapse(CalculateFieldSignatureForField(form.fields[0])).value()},
         {UkmTextFieldDidChangeType::kFormSignatureName,
          Collapse(CalculateFormSignature(form)).value()}},
-       {{UkmTextFieldDidChangeType::kFieldTypeGroupName, EMAIL},
+       {{UkmTextFieldDidChangeType::kFieldTypeGroupName,
+         static_cast<int64_t>(FieldTypeGroup::kEmail)},
         {UkmTextFieldDidChangeType::kHeuristicTypeName, EMAIL_ADDRESS},
         {UkmTextFieldDidChangeType::kServerTypeName, NO_SERVER_DATA},
         {UkmTextFieldDidChangeType::kHtmlFieldTypeName, HTML_TYPE_UNSPECIFIED},

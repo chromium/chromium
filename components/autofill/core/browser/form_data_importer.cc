@@ -71,7 +71,8 @@ bool IsValidFieldTypeAndValue(const ServerFieldTypeSet types_seen,
   if (types_seen.count(field_type) && field_type != EMAIL_ADDRESS &&
       (base::FeatureList::IsEnabled(
            features::kAutofillEnableImportWhenMultiplePhoneNumbers)
-           ? field_type_group != PHONE_BILLING && field_type_group != PHONE_HOME
+           ? field_type_group != FieldTypeGroup::kPhoneBilling &&
+                 field_type_group != FieldTypeGroup::kPhoneHome
            : field_type != PHONE_HOME_NUMBER)) {
     if (import_log_buffer) {
       *import_log_buffer << LogMessage::kImportAddressProfileFromFormFailed
@@ -467,7 +468,7 @@ bool FormDataImporter::ImportAddressProfiles(const FormStructure& form) {
     // Relevant sections for address fields.
     std::set<std::string> sections;
     for (const auto& field : form) {
-      if (field->Type().group() != CREDIT_CARD)
+      if (field->Type().group() != FieldTypeGroup::kCreditCard)
         sections.insert(field->section);
     }
 
@@ -571,7 +572,7 @@ bool FormDataImporter::ImportAddressProfileForSection(
     AutofillType field_type = field->Type();
 
     // Credit card fields are handled by ImportCreditCard().
-    if (field_type.group() == CREDIT_CARD)
+    if (field_type.group() == FieldTypeGroup::kCreditCard)
       continue;
 
     // There can be multiple email fields (e.g. in the case of 'confirm email'
@@ -597,8 +598,8 @@ bool FormDataImporter::ImportAddressProfileForSection(
 
     // Found phone number component field.
     // TODO(crbug.com/1156315) Remove feature check when launched.
-    if ((field_type.group() == PHONE_BILLING ||
-         field_type.group() == PHONE_HOME) &&
+    if ((field_type.group() == FieldTypeGroup::kPhoneBilling ||
+         field_type.group() == FieldTypeGroup::kPhoneHome) &&
         base::FeatureList::IsEnabled(
             features::kAutofillEnableImportWhenMultiplePhoneNumbers)) {
       if (ignore_phone_number_fields)
@@ -864,7 +865,7 @@ CreditCard FormDataImporter::ExtractCreditCardFromForm(
 
     AutofillType field_type = field->Type();
     // Field was not identified as a credit card field.
-    if (field_type.group() != CREDIT_CARD)
+    if (field_type.group() != FieldTypeGroup::kCreditCard)
       continue;
 
     if (form.value_from_dynamic_change_form())

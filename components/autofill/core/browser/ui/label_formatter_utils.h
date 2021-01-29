@@ -52,11 +52,6 @@ std::vector<ServerFieldType> ExtractSpecifiedAddressFieldTypes(
     bool extract_street_address_types,
     const std::vector<ServerFieldType>& types);
 
-// Returns a collection of the types in |types| that belong to the
-// ADDRESS_HOME or ADDRESS_BILLING FieldTypeGroups.
-std::vector<ServerFieldType> ExtractAddressFieldTypes(
-    const std::vector<ServerFieldType>& types);
-
 // Returns a collection of the types in |types| without |field_type_to_remove|.
 std::vector<ServerFieldType> TypesWithoutFocusedField(
     const std::vector<ServerFieldType>& types,

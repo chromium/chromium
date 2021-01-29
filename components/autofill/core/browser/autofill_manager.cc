@@ -137,7 +137,8 @@ base::string16 SanitizeCreditCardFieldValue(const base::string16& value) {
 
 // Returns whether the |field| is predicted as being any kind of name.
 bool IsNameType(const AutofillField& field) {
-  return field.Type().group() == NAME || field.Type().group() == NAME_BILLING ||
+  return field.Type().group() == FieldTypeGroup::kName ||
+         field.Type().group() == FieldTypeGroup::kNameBilling ||
          field.Type().GetStorableType() == CREDIT_CARD_NAME_FULL ||
          field.Type().GetStorableType() == CREDIT_CARD_NAME_FIRST ||
          field.Type().GetStorableType() == CREDIT_CARD_NAME_LAST;
@@ -157,8 +158,8 @@ void SelectRightNameType(AutofillField* field, bool is_credit_card) {
 
   for (auto type : old_types) {
     FieldTypeGroup group = AutofillType(type).group();
-    if ((is_credit_card && group == CREDIT_CARD) ||
-        (!is_credit_card && group == NAME)) {
+    if ((is_credit_card && group == FieldTypeGroup::kCreditCard) ||
+        (!is_credit_card && group == FieldTypeGroup::kName)) {
       types_to_keep.insert(type);
     }
   }
@@ -221,21 +222,21 @@ void LogLanguageMetrics(const translate::LanguageState* language_state) {
 
 bool IsAddressForm(FieldTypeGroup field_type_group) {
   switch (field_type_group) {
-    case NAME:
-    case NAME_BILLING:
-    case EMAIL:
-    case COMPANY:
-    case ADDRESS_HOME:
-    case ADDRESS_BILLING:
-    case PHONE_HOME:
-    case PHONE_BILLING:
+    case FieldTypeGroup::kName:
+    case FieldTypeGroup::kNameBilling:
+    case FieldTypeGroup::kEmail:
+    case FieldTypeGroup::kCompany:
+    case FieldTypeGroup::kAddressHome:
+    case FieldTypeGroup::kAddressBilling:
+    case FieldTypeGroup::kPhoneHome:
+    case FieldTypeGroup::kPhoneBilling:
       return true;
-    case CREDIT_CARD:
-    case TRANSACTION:
-    case PASSWORD_FIELD:
-    case USERNAME_FIELD:
-    case NO_GROUP:
-    case UNFILLABLE:
+    case FieldTypeGroup::kCreditCard:
+    case FieldTypeGroup::kTransaction:
+    case FieldTypeGroup::kPasswordField:
+    case FieldTypeGroup::kUsernameField:
+    case FieldTypeGroup::kNoGroup:
+    case FieldTypeGroup::kUnfillable:
       return false;
   }
   NOTREACHED();
@@ -568,26 +569,26 @@ PopupType AutofillManager::GetPopupType(const FormData& form,
     return PopupType::kUnspecified;
 
   switch (autofill_field->Type().group()) {
-    case NO_GROUP:
-    case PASSWORD_FIELD:
-    case TRANSACTION:
-    case USERNAME_FIELD:
-    case UNFILLABLE:
+    case FieldTypeGroup::kNoGroup:
+    case FieldTypeGroup::kPasswordField:
+    case FieldTypeGroup::kTransaction:
+    case FieldTypeGroup::kUsernameField:
+    case FieldTypeGroup::kUnfillable:
       return PopupType::kUnspecified;
 
-    case CREDIT_CARD:
+    case FieldTypeGroup::kCreditCard:
       return PopupType::kCreditCards;
 
-    case ADDRESS_HOME:
-    case ADDRESS_BILLING:
+    case FieldTypeGroup::kAddressHome:
+    case FieldTypeGroup::kAddressBilling:
       return PopupType::kAddresses;
 
-    case NAME:
-    case NAME_BILLING:
-    case EMAIL:
-    case COMPANY:
-    case PHONE_HOME:
-    case PHONE_BILLING:
+    case FieldTypeGroup::kName:
+    case FieldTypeGroup::kNameBilling:
+    case FieldTypeGroup::kEmail:
+    case FieldTypeGroup::kCompany:
+    case FieldTypeGroup::kPhoneHome:
+    case FieldTypeGroup::kPhoneBilling:
       return FormHasAddressField(form) ? PopupType::kAddresses
                                        : PopupType::kPersonalInformation;
 
@@ -602,7 +603,8 @@ bool AutofillManager::ShouldShowCreditCardSigninPromo(
   // Check whether we are dealing with a credit card field and whether it's
   // appropriate to show the promo (e.g. the platform is supported).
   AutofillField* autofill_field = GetAutofillField(form, field);
-  if (!autofill_field || autofill_field->Type().group() != CREDIT_CARD ||
+  if (!autofill_field ||
+      autofill_field->Type().group() != FieldTypeGroup::kCreditCard ||
       !client_->ShouldShowSigninPromo())
     return false;
 
@@ -628,7 +630,8 @@ bool AutofillManager::ShouldShowCardsFromAccountOption(
     const FormFieldData& field) {
   // Check whether we are dealing with a credit card field.
   AutofillField* autofill_field = GetAutofillField(form, field);
-  if (!autofill_field || autofill_field->Type().group() != CREDIT_CARD ||
+  if (!autofill_field ||
+      autofill_field->Type().group() != FieldTypeGroup::kCreditCard ||
       // Exclude CVC and card type fields, because these will not have
       // suggestions available after the user opts in.
       autofill_field->Type().GetStorableType() ==
@@ -655,7 +658,7 @@ void AutofillManager::RefetchCardsAndUpdatePopup(
   AutofillType type = autofill_field ? autofill_field->Type()
                                      : AutofillType(CREDIT_CARD_NUMBER);
 
-  DCHECK_EQ(CREDIT_CARD, type.group());
+  DCHECK_EQ(FieldTypeGroup::kCreditCard, type.group());
 
   bool should_display_gpay_logo;
   auto cards =
@@ -1313,7 +1316,7 @@ void AutofillManager::DidShowSuggestions(bool has_autofill_suggestions,
                                  sync_state_, driver()->IsIncognito());
   }
 
-  if (autofill_field->Type().group() == CREDIT_CARD &&
+  if (autofill_field->Type().group() == FieldTypeGroup::kCreditCard &&
       base::FeatureList::IsEnabled(
           features::kAutofillCreditCardAuthentication)) {
     credit_card_access_manager_->PrepareToFetchCreditCard();
@@ -1774,7 +1777,7 @@ void AutofillManager::FillOrPreviewDataModelForm(
       continue;
     }
 
-    if (field_group_type == NO_GROUP) {
+    if (field_group_type == FieldTypeGroup::kNoGroup) {
       buffer << Tr{} << field_number
              << "Skipped: field type has no fillable group";
       continue;
@@ -1908,8 +1911,9 @@ AutofillField* AutofillManager::GetAutofillField(const FormData& form,
 bool AutofillManager::FormHasAddressField(const FormData& form) {
   for (const FormFieldData& field : form.fields) {
     const AutofillField* autofill_field = GetAutofillField(form, field);
-    if (autofill_field && (autofill_field->Type().group() == ADDRESS_HOME ||
-                           autofill_field->Type().group() == ADDRESS_BILLING)) {
+    if (autofill_field &&
+        (autofill_field->Type().group() == FieldTypeGroup::kAddressHome ||
+         autofill_field->Type().group() == FieldTypeGroup::kAddressBilling)) {
       return true;
     }
   }
@@ -2001,7 +2005,7 @@ void AutofillManager::OnFormProcessed(const FormData& form,
   bool card_form = false;
   bool address_form = false;
   for (const auto& field : form_structure) {
-    if (field->Type().group() == CREDIT_CARD) {
+    if (field->Type().group() == FieldTypeGroup::kCreditCard) {
       card_form = true;
     } else if (IsAddressForm(field->Type().group())) {
       address_form = true;
@@ -2209,10 +2213,10 @@ void AutofillManager::DisambiguateUploadTypes(FormStructure* form) {
     bool undisambiuatable_types = false;
     for (const auto& type : upload_types) {
       switch (AutofillType(type).group()) {
-        case CREDIT_CARD:
+        case FieldTypeGroup::kCreditCard:
           ++credit_card_type_count;
           break;
-        case NAME:
+        case FieldTypeGroup::kName:
           ++name_type_count;
           break;
         // If there is any other type left, do not disambiguate.
@@ -2310,7 +2314,8 @@ void AutofillManager::DisambiguateNameUploadTypes(
     AutofillField* prev_field = form->field(index);
     if (!IsNameType(*prev_field)) {
       has_found_previous_type = true;
-      is_previous_credit_card = prev_field->Type().group() == CREDIT_CARD;
+      is_previous_credit_card =
+          prev_field->Type().group() == FieldTypeGroup::kCreditCard;
     }
   }
 
@@ -2322,7 +2327,8 @@ void AutofillManager::DisambiguateNameUploadTypes(
     AutofillField* next_field = form->field(index);
     if (!IsNameType(*next_field)) {
       has_found_next_type = true;
-      is_next_credit_card = next_field->Type().group() == CREDIT_CARD;
+      is_next_credit_card =
+          next_field->Type().group() == FieldTypeGroup::kCreditCard;
     }
   }
 
@@ -2550,7 +2556,7 @@ void AutofillManager::GetAvailableSuggestions(
 
   // Log interactions of forms that are autofillable.
   if (got_autofillable_form) {
-    if (context->focused_field->Type().group() == CREDIT_CARD) {
+    if (context->focused_field->Type().group() == FieldTypeGroup::kCreditCard) {
       context->is_filling_credit_card = true;
     }
     auto* logger = GetEventFormLogger(context->focused_field->Type().group());
@@ -2685,22 +2691,22 @@ bool AutofillManager::ShouldShowVirtualCardOption(
 FormEventLoggerBase* AutofillManager::GetEventFormLogger(
     FieldTypeGroup field_type_group) const {
   switch (field_type_group) {
-    case NAME:
-    case NAME_BILLING:
-    case EMAIL:
-    case COMPANY:
-    case ADDRESS_HOME:
-    case ADDRESS_BILLING:
-    case PHONE_HOME:
-    case PHONE_BILLING:
+    case FieldTypeGroup::kName:
+    case FieldTypeGroup::kNameBilling:
+    case FieldTypeGroup::kEmail:
+    case FieldTypeGroup::kCompany:
+    case FieldTypeGroup::kAddressHome:
+    case FieldTypeGroup::kAddressBilling:
+    case FieldTypeGroup::kPhoneHome:
+    case FieldTypeGroup::kPhoneBilling:
       return address_form_event_logger_.get();
-    case CREDIT_CARD:
+    case FieldTypeGroup::kCreditCard:
       return credit_card_form_event_logger_.get();
-    case TRANSACTION:
-    case PASSWORD_FIELD:
-    case USERNAME_FIELD:
-    case NO_GROUP:
-    case UNFILLABLE:
+    case FieldTypeGroup::kTransaction:
+    case FieldTypeGroup::kPasswordField:
+    case FieldTypeGroup::kUsernameField:
+    case FieldTypeGroup::kNoGroup:
+    case FieldTypeGroup::kUnfillable:
       return nullptr;
   }
   NOTREACHED();

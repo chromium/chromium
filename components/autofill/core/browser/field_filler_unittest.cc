@@ -178,37 +178,37 @@ TEST_F(AutofillFieldFillerTest, Type) {
   // Set the heuristic type and check it.
   field.set_heuristic_type(NAME_FIRST);
   EXPECT_EQ(NAME_FIRST, field.Type().GetStorableType());
-  EXPECT_EQ(NAME, field.Type().group());
+  EXPECT_EQ(FieldTypeGroup::kName, field.Type().group());
 
   // Set the server type and check it.
   field.set_server_type(ADDRESS_BILLING_LINE1);
   EXPECT_EQ(ADDRESS_HOME_LINE1, field.Type().GetStorableType());
-  EXPECT_EQ(ADDRESS_BILLING, field.Type().group());
+  EXPECT_EQ(FieldTypeGroup::kAddressBilling, field.Type().group());
 
   // Checks that overall_type trumps everything.
   field.SetTypeTo(AutofillType(ADDRESS_BILLING_ZIP));
   EXPECT_EQ(ADDRESS_HOME_ZIP, field.Type().GetStorableType());
-  EXPECT_EQ(ADDRESS_BILLING, field.Type().group());
+  EXPECT_EQ(FieldTypeGroup::kAddressBilling, field.Type().group());
 
   // Checks that setting server type resets overall type.
   field.set_server_type(ADDRESS_BILLING_LINE1);
   EXPECT_EQ(ADDRESS_HOME_LINE1, field.Type().GetStorableType());
-  EXPECT_EQ(ADDRESS_BILLING, field.Type().group());
+  EXPECT_EQ(FieldTypeGroup::kAddressBilling, field.Type().group());
 
   // Remove the server type to make sure the heuristic type is preserved.
   field.set_server_type(NO_SERVER_DATA);
   EXPECT_EQ(NAME_FIRST, field.Type().GetStorableType());
-  EXPECT_EQ(NAME, field.Type().group());
+  EXPECT_EQ(FieldTypeGroup::kName, field.Type().group());
 
   // Checks that overall_type trumps everything.
   field.SetTypeTo(AutofillType(ADDRESS_BILLING_ZIP));
   EXPECT_EQ(ADDRESS_HOME_ZIP, field.Type().GetStorableType());
-  EXPECT_EQ(ADDRESS_BILLING, field.Type().group());
+  EXPECT_EQ(FieldTypeGroup::kAddressBilling, field.Type().group());
 
   // Set the heuristic type and check it and reset overall Type.
   field.set_heuristic_type(NAME_FIRST);
   EXPECT_EQ(NAME_FIRST, field.Type().GetStorableType());
-  EXPECT_EQ(NAME, field.Type().group());
+  EXPECT_EQ(FieldTypeGroup::kName, field.Type().group());
 }
 
 // Tests that a credit card related prediction made by the heuristics overrides

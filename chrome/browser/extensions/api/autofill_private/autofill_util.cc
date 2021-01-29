@@ -39,7 +39,7 @@ std::unique_ptr<std::vector<std::string>> GetValueList(
   std::unique_ptr<std::vector<std::string>> list(new std::vector<std::string>);
 
   std::vector<base::string16> values;
-  if (autofill::AutofillType(type).group() == autofill::NAME) {
+  if (autofill::AutofillType(type).group() == autofill::FieldTypeGroup::kName) {
     values.push_back(
         profile.GetInfo(autofill::AutofillType(type),
                         g_browser_process->GetApplicationLocale()));

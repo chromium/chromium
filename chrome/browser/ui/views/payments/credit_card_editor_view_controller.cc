@@ -443,7 +443,7 @@ bool CreditCardEditorViewController::ValidateModelAndSave() {
 
   for (const auto& field : text_fields()) {
     // ValidatingTextfield* is the key, EditorField is the value.
-    DCHECK_EQ(autofill::CREDIT_CARD,
+    DCHECK_EQ(autofill::FieldTypeGroup::kCreditCard,
               autofill::AutofillType(field.second.type).group());
     credit_card.SetInfo(autofill::AutofillType(field.second.type),
                         field.first->GetText(), locale);

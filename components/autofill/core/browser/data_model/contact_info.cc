@@ -87,7 +87,7 @@ bool NameInfo::operator==(const NameInfo& other) const {
 }
 
 base::string16 NameInfo::GetRawInfo(ServerFieldType type) const {
-  DCHECK_EQ(NAME, AutofillType(type).group());
+  DCHECK_EQ(FieldTypeGroup::kName, AutofillType(type).group());
 
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
   // are fully launched.
@@ -121,7 +121,7 @@ base::string16 NameInfo::GetRawInfo(ServerFieldType type) const {
 void NameInfo::SetRawInfoWithVerificationStatus(ServerFieldType type,
                                                 const base::string16& value,
                                                 VerificationStatus status) {
-  DCHECK_EQ(NAME, AutofillType(type).group());
+  DCHECK_EQ(FieldTypeGroup::kName, AutofillType(type).group());
   // TODO(crbug.com/1103421): Clean legacy implementation once structured names
   // are fully launched.
   if (structured_address::StructuredNamesEnabled()) {

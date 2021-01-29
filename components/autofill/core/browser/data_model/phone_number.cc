@@ -74,7 +74,7 @@ void PhoneNumber::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {
 }
 
 base::string16 PhoneNumber::GetRawInfo(ServerFieldType type) const {
-  DCHECK_EQ(PHONE_HOME, AutofillType(type).group());
+  DCHECK_EQ(FieldTypeGroup::kPhoneHome, AutofillType(type).group());
   if (type == PHONE_HOME_WHOLE_NUMBER)
     return number_;
 
@@ -87,7 +87,7 @@ base::string16 PhoneNumber::GetRawInfo(ServerFieldType type) const {
 void PhoneNumber::SetRawInfoWithVerificationStatus(ServerFieldType type,
                                                    const base::string16& value,
                                                    VerificationStatus status) {
-  DCHECK_EQ(PHONE_HOME, AutofillType(type).group());
+  DCHECK_EQ(FieldTypeGroup::kPhoneHome, AutofillType(type).group());
   if (type != PHONE_HOME_CITY_AND_NUMBER && type != PHONE_HOME_WHOLE_NUMBER) {
     // Only full phone numbers should be set directly.  The remaining field
     // field types are read-only.

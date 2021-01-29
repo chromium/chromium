@@ -135,7 +135,7 @@ std::vector<ServerFieldType> ExtractSpecifiedAddressFieldTypes(
   auto should_be_extracted =
       [&extract_street_address_types](ServerFieldType type) -> bool {
     return AutofillType(AutofillType(type).GetStorableType()).group() ==
-               ADDRESS_HOME &&
+               FieldTypeGroup::kAddressHome &&
            (extract_street_address_types ? IsStreetAddressPart(type)
                                          : !IsStreetAddressPart(type));
   };
@@ -146,21 +146,6 @@ std::vector<ServerFieldType> ExtractSpecifiedAddressFieldTypes(
                should_be_extracted);
 
   return extracted_address_types;
-}
-
-std::vector<ServerFieldType> ExtractAddressFieldTypes(
-    const std::vector<ServerFieldType>& types) {
-  std::vector<ServerFieldType> only_address_types;
-
-  // Note that GetStorableType maps billing fields to their corresponding non-
-  // billing fields, e.g. ADDRESS_HOME_ZIP is mapped to ADDRESS_BILLING_ZIP.
-  std::copy_if(
-      types.begin(), types.end(), std::back_inserter(only_address_types),
-      [](ServerFieldType type) {
-        return AutofillType(AutofillType(type).GetStorableType()).group() ==
-               ADDRESS_HOME;
-      });
-  return only_address_types;
 }
 
 std::vector<ServerFieldType> TypesWithoutFocusedField(
@@ -301,7 +286,8 @@ base::string16 GetLabelName(const std::vector<ServerFieldType>& types,
   // The form contains neither a full name field nor a first name field,
   // so choose some name field in the form and make it the label text.
   for (const ServerFieldType type : types) {
-    if (AutofillType(AutofillType(type).GetStorableType()).group() == NAME) {
+    if (AutofillType(AutofillType(type).GetStorableType()).group() ==
+        FieldTypeGroup::kName) {
       return profile.GetInfo(AutofillType(type), app_locale);
     }
   }
@@ -390,31 +376,34 @@ bool HaveSameStreetAddresses(const std::vector<AutofillProfile*>& profiles,
 
 bool HasUnfocusedEmailField(FieldTypeGroup focused_group,
                             uint32_t form_groups) {
-  return ContainsEmail(form_groups) && focused_group != EMAIL;
+  return ContainsEmail(form_groups) && focused_group != FieldTypeGroup::kEmail;
 }
 
 bool HasUnfocusedNameField(FieldTypeGroup focused_group, uint32_t form_groups) {
-  return ContainsName(form_groups) && focused_group != NAME;
+  return ContainsName(form_groups) && focused_group != FieldTypeGroup::kName;
 }
 
 bool HasUnfocusedNonStreetAddressField(
     ServerFieldType focused_field,
     FieldTypeGroup focused_group,
     const std::vector<ServerFieldType>& types) {
-  return HasNonStreetAddress(types) && (focused_group != ADDRESS_HOME ||
-                                        !IsNonStreetAddressPart(focused_field));
+  return HasNonStreetAddress(types) &&
+         (focused_group != FieldTypeGroup::kAddressHome ||
+          !IsNonStreetAddressPart(focused_field));
 }
 
 bool HasUnfocusedPhoneField(FieldTypeGroup focused_group,
                             uint32_t form_groups) {
-  return ContainsPhone(form_groups) && focused_group != PHONE_HOME;
+  return ContainsPhone(form_groups) &&
+         focused_group != FieldTypeGroup::kPhoneHome;
 }
 
 bool HasUnfocusedStreetAddressField(ServerFieldType focused_field,
                                     FieldTypeGroup focused_group,
                                     const std::vector<ServerFieldType>& types) {
   return HasStreetAddress(types) &&
-         (focused_group != ADDRESS_HOME || !IsStreetAddressPart(focused_field));
+         (focused_group != FieldTypeGroup::kAddressHome ||
+          !IsStreetAddressPart(focused_field));
 }
 
 bool FormHasOnlyNonStreetAddressFields(

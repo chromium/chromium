@@ -105,10 +105,14 @@ void AutofillField::SetTypeTo(const AutofillType& type) {
 AutofillType AutofillField::ComputedType() const {
   // If autocomplete=tel/tel-* and server confirms it really is a phone field,
   // we always user the server prediction as html types are not very reliable.
-  if ((GroupTypeOfHtmlFieldType(html_type_, html_mode_) == PHONE_BILLING ||
-       GroupTypeOfHtmlFieldType(html_type_, html_mode_) == PHONE_HOME) &&
-      (GroupTypeOfServerFieldType(server_type_) == PHONE_BILLING ||
-       GroupTypeOfServerFieldType(server_type_) == PHONE_HOME)) {
+  if ((GroupTypeOfHtmlFieldType(html_type_, html_mode_) ==
+           FieldTypeGroup::kPhoneBilling ||
+       GroupTypeOfHtmlFieldType(html_type_, html_mode_) ==
+           FieldTypeGroup::kPhoneHome) &&
+      (GroupTypeOfServerFieldType(server_type_) ==
+           FieldTypeGroup::kPhoneBilling ||
+       GroupTypeOfServerFieldType(server_type_) ==
+           FieldTypeGroup::kPhoneHome)) {
     return AutofillType(server_type_);
   }
 
@@ -149,9 +153,10 @@ AutofillType AutofillField::ComputedType() const {
 
     // Either way, retain a preference for the the CVC heuristic over the
     // server's password predictions (http://crbug.com/469007)
-    believe_server = believe_server &&
-                     !(AutofillType(server_type_).group() == PASSWORD_FIELD &&
-                       heuristic_type_ == CREDIT_CARD_VERIFICATION_CODE);
+    believe_server =
+        believe_server && !(AutofillType(server_type_).group() ==
+                                FieldTypeGroup::kPasswordField &&
+                            heuristic_type_ == CREDIT_CARD_VERIFICATION_CODE);
 
     // For new name tokens the heuristic predictions get precedence over the
     // server predictions.
@@ -231,8 +236,8 @@ void AutofillField::NormalizePossibleTypesValidities() {
 }
 
 bool AutofillField::IsCreditCardPrediction() const {
-  return AutofillType(server_type_).group() == CREDIT_CARD ||
-         AutofillType(heuristic_type_).group() == CREDIT_CARD;
+  return AutofillType(server_type_).group() == FieldTypeGroup::kCreditCard ||
+         AutofillType(heuristic_type_).group() == FieldTypeGroup::kCreditCard;
 }
 
 }  // namespace autofill

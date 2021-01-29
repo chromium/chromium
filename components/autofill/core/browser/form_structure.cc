@@ -1818,7 +1818,7 @@ bool FormStructure::FieldShouldBeRationalizedToCountry(size_t upper_index) {
   for (int field_index = upper_index - 1; field_index >= 0; --field_index) {
     if (fields_[field_index]->IsVisible() &&
         AutofillType(fields_[field_index]->Type().GetStorableType()).group() ==
-            ADDRESS_HOME &&
+            FieldTypeGroup::kAddressHome &&
         fields_[field_index]->section == fields_[upper_index]->section) {
       return false;
     }
@@ -2122,7 +2122,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
     const ServerFieldType current_type = field->Type().GetStorableType();
     // All credit card fields belong to the same section that's different
     // from address sections.
-    if (AutofillType(current_type).group() == CREDIT_CARD) {
+    if (AutofillType(current_type).group() == FieldTypeGroup::kCreditCard) {
       field->section = "credit-card";
       continue;
     }
@@ -2132,7 +2132,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
     // Forms often ask for multiple phone numbers -- e.g. both a daytime and
     // evening phone number.  Our phone number detection is also generally a
     // little off.  Hence, ignore this field type as a signal here.
-    if (AutofillType(current_type).group() == PHONE_HOME)
+    if (AutofillType(current_type).group() == FieldTypeGroup::kPhoneHome)
       already_saw_current_type = false;
 
     if (is_enabled_autofill_redundant_name_sectioning) {
@@ -2249,7 +2249,7 @@ void FormStructure::IdentifySectionsWithNewMethod() {
   // This simplifies the section-aware logic in autofill_manager.cc.
   for (const auto& field : fields_) {
     FieldTypeGroup field_type_group = field->Type().group();
-    if (field_type_group == CREDIT_CARD)
+    if (field_type_group == FieldTypeGroup::kCreditCard)
       field->section = field->section + "-cc";
     else
       field->section = field->section + "-default";
@@ -2301,7 +2301,7 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
       const ServerFieldType current_type = field->Type().GetStorableType();
       // All credit card fields belong to the same section that's different
       // from address sections.
-      if (AutofillType(current_type).group() == CREDIT_CARD) {
+      if (AutofillType(current_type).group() == FieldTypeGroup::kCreditCard) {
         field->section = "credit-card";
         continue;
       }
@@ -2311,7 +2311,7 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
       // Forms often ask for multiple phone numbers -- e.g. both a daytime and
       // evening phone number.  Our phone number detection is also generally a
       // little off.  Hence, ignore this field type as a signal here.
-      if (AutofillType(current_type).group() == PHONE_HOME)
+      if (AutofillType(current_type).group() == FieldTypeGroup::kPhoneHome)
         already_saw_current_type = false;
 
       if (is_enabled_autofill_redundant_name_sectioning) {
@@ -2393,7 +2393,7 @@ void FormStructure::IdentifySections(bool has_author_specified_sections) {
   // This simplifies the section-aware logic in autofill_manager.cc.
   for (const auto& field : fields_) {
     FieldTypeGroup field_type_group = field->Type().group();
-    if (field_type_group == CREDIT_CARD)
+    if (field_type_group == FieldTypeGroup::kCreditCard)
       field->section = field->section + "-cc";
     else
       field->section = field->section + "-default";

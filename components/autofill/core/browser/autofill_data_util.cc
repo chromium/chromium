@@ -81,24 +81,23 @@ const char* const family_name_prefixes[] = {"d'", "de",  "del", "den", "der",
 // The common and non-ambiguous CJK surnames (last names) that have more than
 // one character.
 const char* common_cjk_multi_char_surnames[] = {
-  // Korean, taken from the list of surnames:
-  // https://ko.wikipedia.org/wiki/%ED%95%9C%EA%B5%AD%EC%9D%98_%EC%84%B1%EC%94%A8_%EB%AA%A9%EB%A1%9D
-  "남궁", "사공", "서문", "선우", "제갈", "황보", "독고", "망절",
+    // Korean, taken from the list of surnames:
+    // https://ko.wikipedia.org/wiki/%ED%95%9C%EA%B5%AD%EC%9D%98_%EC%84%B1%EC%94%A8_%EB%AA%A9%EB%A1%9D
+    "남궁", "사공", "서문", "선우", "제갈", "황보", "독고", "망절",
 
-  // Chinese, taken from the top 10 Chinese 2-character surnames:
-  // https://zh.wikipedia.org/wiki/%E8%A4%87%E5%A7%93#.E5.B8.B8.E8.A6.8B.E7.9A.84.E8.A4.87.E5.A7.93
-  // Simplified Chinese (mostly mainland China)
-  "欧阳", "令狐", "皇甫", "上官", "司徒", "诸葛", "司马", "宇文", "呼延", "端木",
-  // Traditional Chinese (mostly Taiwan)
-  "張簡", "歐陽", "諸葛", "申屠", "尉遲", "司馬", "軒轅", "夏侯"
-};
+    // Chinese, taken from the top 10 Chinese 2-character surnames:
+    // https://zh.wikipedia.org/wiki/%E8%A4%87%E5%A7%93#.E5.B8.B8.E8.A6.8B.E7.9A.84.E8.A4.87.E5.A7.93
+    // Simplified Chinese (mostly mainland China)
+    "欧阳", "令狐", "皇甫", "上官", "司徒", "诸葛", "司马", "宇文", "呼延",
+    "端木",
+    // Traditional Chinese (mostly Taiwan)
+    "張簡", "歐陽", "諸葛", "申屠", "尉遲", "司馬", "軒轅", "夏侯"};
 
 // All Korean surnames that have more than one character, even the
 // rare/ambiguous ones.
 const char* korean_multi_char_surnames[] = {
-  "강전", "남궁", "독고", "동방", "망절", "사공", "서문", "선우",
-  "소봉", "어금", "장곡", "제갈", "황목", "황보"
-};
+    "강전", "남궁", "독고", "동방", "망절", "사공", "서문",
+    "선우", "소봉", "어금", "장곡", "제갈", "황목", "황보"};
 
 // Returns true if |set| contains |element|, modulo a final period.
 bool ContainsString(const char* const set[],
@@ -146,7 +145,8 @@ void StripSuffixes(std::vector<base::StringPiece16>* name_tokens) {
 // Find whether |name| starts with any of the strings from the array
 // |prefixes|. The returned value is the length of the prefix found, or 0 if
 // none is found.
-size_t StartsWithAny(base::StringPiece16 name, const char** prefixes,
+size_t StartsWithAny(base::StringPiece16 name,
+                     const char** prefixes,
                      size_t prefix_count) {
   base::string16 buffer;
   for (size_t i = 0; i < prefix_count; i++) {
@@ -250,16 +250,16 @@ void AddGroupToBitmask(uint32_t* group_bitmask, ServerFieldType type) {
   const FieldTypeGroup group =
       AutofillType(AutofillType(type).GetStorableType()).group();
   switch (group) {
-    case autofill::NAME:
+    case autofill::FieldTypeGroup::kName:
       *group_bitmask |= kName;
       break;
-    case autofill::ADDRESS_HOME:
+    case autofill::FieldTypeGroup::kAddressHome:
       *group_bitmask |= kAddress;
       break;
-    case autofill::EMAIL:
+    case autofill::FieldTypeGroup::kEmail:
       *group_bitmask |= kEmail;
       break;
-    case autofill::PHONE_HOME:
+    case autofill::FieldTypeGroup::kPhoneHome:
       *group_bitmask |= kPhone;
       break;
     default:
@@ -383,12 +383,12 @@ bool IsCJKName(base::StringPiece16 name) {
 
 NameParts SplitName(base::StringPiece16 name) {
   static const base::char16 kWordSeparators[] = {
-    u' ', // ASCII space.
-    u',', // ASCII comma.
-    u'\u3000', // 'IDEOGRAPHIC SPACE' (U+3000).
-    u'\u30FB', // 'KATAKANA MIDDLE DOT' (U+30FB).
-    u'\u00B7', // 'MIDDLE DOT' (U+00B7).
-    u'\0' // End of string.
+      u' ',       // ASCII space.
+      u',',       // ASCII comma.
+      u'\u3000',  // 'IDEOGRAPHIC SPACE' (U+3000).
+      u'\u30FB',  // 'KATAKANA MIDDLE DOT' (U+30FB).
+      u'\u00B7',  // 'MIDDLE DOT' (U+00B7).
+      u'\0'       // End of string.
   };
   std::vector<base::StringPiece16> name_tokens = base::SplitStringPiece(
       name, kWordSeparators, base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);

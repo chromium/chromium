@@ -108,7 +108,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
             /* is_masked_server_card= */ false, &prefix_matched_suggestion)) {
       matched_profiles->push_back(profile);
 
-      if (type.group() == PHONE_HOME) {
+      if (type.group() == FieldTypeGroup::kPhoneHome) {
         bool format_phone;
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
@@ -213,7 +213,8 @@ bool IsValidSuggestionForFieldContents(base::string16 suggestion_canon,
   // Phones should do a substring match because they can be trimmed to remove
   // the first parts (e.g. country code or prefix). It is still considered a
   // prefix match in order to put it at the top of the suggestions.
-  if ((type.group() == PHONE_HOME || type.group() == PHONE_BILLING) &&
+  if ((type.group() == FieldTypeGroup::kPhoneHome ||
+       type.group() == FieldTypeGroup::kPhoneBilling) &&
       suggestion_canon.find(field_contents_canon) != base::string16::npos) {
     return true;
   }

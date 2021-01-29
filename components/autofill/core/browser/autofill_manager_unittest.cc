@@ -5688,7 +5688,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 
   // Set the validity state for the matching field type.
   for (auto type : expected_possible_types) {
-    if (GroupTypeOfServerFieldType(type) != CREDIT_CARD) {
+    if (GroupTypeOfServerFieldType(type) != FieldTypeGroup::kCreditCard) {
       for (auto& profile : profiles) {
         ASSERT_GT(test_case.field_types.size(), 0U);
         if (type == UNKNOWN_TYPE) {
@@ -5735,7 +5735,7 @@ TEST_P(ProfileMatchingTypesTest, DeterminePossibleFieldTypesForUpload) {
 
   for (auto type : expected_possible_types) {
     // We don't add validity states for credit card fields.
-    if (GroupTypeOfServerFieldType(type) != CREDIT_CARD) {
+    if (GroupTypeOfServerFieldType(type) != FieldTypeGroup::kCreditCard) {
       ServerFieldTypeValidityStatesMap possible_types_validities =
           form_structure.field(0)->possible_types_validities();
       ASSERT_EQ(expected_possible_types.size(),

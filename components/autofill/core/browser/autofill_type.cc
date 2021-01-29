@@ -21,7 +21,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case NAME_MIDDLE_INITIAL:
     case NAME_FULL:
     case NAME_SUFFIX:
-      return NAME;
+      return FieldTypeGroup::kName;
 
     case NAME_BILLING_FIRST:
     case NAME_BILLING_MIDDLE:
@@ -29,11 +29,11 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case NAME_BILLING_MIDDLE_INITIAL:
     case NAME_BILLING_FULL:
     case NAME_BILLING_SUFFIX:
-      return NAME_BILLING;
+      return FieldTypeGroup::kNameBilling;
 
     case EMAIL_ADDRESS:
     case USERNAME_AND_EMAIL_ADDRESS:
-      return EMAIL;
+      return FieldTypeGroup::kEmail;
 
     case PHONE_HOME_NUMBER:
     case PHONE_HOME_CITY_CODE:
@@ -41,14 +41,14 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case PHONE_HOME_CITY_AND_NUMBER:
     case PHONE_HOME_WHOLE_NUMBER:
     case PHONE_HOME_EXTENSION:
-      return PHONE_HOME;
+      return FieldTypeGroup::kPhoneHome;
 
     case PHONE_BILLING_NUMBER:
     case PHONE_BILLING_CITY_CODE:
     case PHONE_BILLING_COUNTRY_CODE:
     case PHONE_BILLING_CITY_AND_NUMBER:
     case PHONE_BILLING_WHOLE_NUMBER:
-      return PHONE_BILLING;
+      return FieldTypeGroup::kPhoneBilling;
 
     case ADDRESS_HOME_LINE1:
     case ADDRESS_HOME_LINE2:
@@ -71,7 +71,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case ADDRESS_HOME_ADDRESS:
     case ADDRESS_HOME_ADDRESS_WITH_NAME:
     case ADDRESS_HOME_FLOOR:
-      return ADDRESS_HOME;
+      return FieldTypeGroup::kAddressHome;
 
     case ADDRESS_BILLING_LINE1:
     case ADDRESS_BILLING_LINE2:
@@ -84,7 +84,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case ADDRESS_BILLING_STREET_ADDRESS:
     case ADDRESS_BILLING_SORTING_CODE:
     case ADDRESS_BILLING_DEPENDENT_LOCALITY:
-      return ADDRESS_BILLING;
+      return FieldTypeGroup::kAddressBilling;
 
     case CREDIT_CARD_NAME_FULL:
     case CREDIT_CARD_NAME_FIRST:
@@ -97,10 +97,10 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
     case CREDIT_CARD_TYPE:
     case CREDIT_CARD_VERIFICATION_CODE:
-      return CREDIT_CARD;
+      return FieldTypeGroup::kCreditCard;
 
     case COMPANY_NAME:
-      return COMPANY;
+      return FieldTypeGroup::kCompany;
 
     case PASSWORD:
     case ACCOUNT_CREATION_PASSWORD:
@@ -112,7 +112,7 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case NOT_PASSWORD:
     case SINGLE_USERNAME:
     case NOT_USERNAME:
-      return PASSWORD_FIELD;
+      return FieldTypeGroup::kPasswordField;
 
     case NO_SERVER_DATA:
     case EMPTY_TYPE:
@@ -126,24 +126,24 @@ FieldTypeGroup GroupTypeOfServerFieldType(ServerFieldType field_type) {
     case MERCHANT_EMAIL_SIGNUP:
     case MERCHANT_PROMO_CODE:
     case UPI_VPA:
-      return NO_GROUP;
+      return FieldTypeGroup::kNoGroup;
 
     case MAX_VALID_FIELD_TYPE:
       NOTREACHED();
-      return NO_GROUP;
+      return FieldTypeGroup::kNoGroup;
 
     case USERNAME:
-      return USERNAME_FIELD;
+      return FieldTypeGroup::kUsernameField;
 
     case PRICE:
     case SEARCH_TERM:
-      return UNFILLABLE;
+      return FieldTypeGroup::kUnfillable;
 
     case UNKNOWN_TYPE:
-      return NO_GROUP;
+      return FieldTypeGroup::kNoGroup;
   }
   NOTREACHED();
-  return NO_GROUP;
+  return FieldTypeGroup::kNoGroup;
 }
 
 FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
@@ -155,10 +155,11 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
     case HTML_TYPE_ADDITIONAL_NAME:
     case HTML_TYPE_ADDITIONAL_NAME_INITIAL:
     case HTML_TYPE_FAMILY_NAME:
-      return field_mode == HTML_MODE_BILLING ? NAME_BILLING : NAME;
+      return field_mode == HTML_MODE_BILLING ? FieldTypeGroup::kNameBilling
+                                             : FieldTypeGroup::kName;
 
     case HTML_TYPE_ORGANIZATION:
-      return COMPANY;
+      return FieldTypeGroup::kCompany;
 
     case HTML_TYPE_STREET_ADDRESS:
     case HTML_TYPE_ADDRESS_LINE1:
@@ -171,7 +172,8 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
     case HTML_TYPE_COUNTRY_NAME:
     case HTML_TYPE_POSTAL_CODE:
     case HTML_TYPE_FULL_ADDRESS:
-      return field_mode == HTML_MODE_BILLING ? ADDRESS_BILLING : ADDRESS_HOME;
+      return field_mode == HTML_MODE_BILLING ? FieldTypeGroup::kAddressBilling
+                                             : FieldTypeGroup::kAddressHome;
 
     case HTML_TYPE_CREDIT_CARD_NAME_FULL:
     case HTML_TYPE_CREDIT_CARD_NAME_FIRST:
@@ -186,11 +188,11 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
     case HTML_TYPE_CREDIT_CARD_EXP_4_DIGIT_YEAR:
     case HTML_TYPE_CREDIT_CARD_VERIFICATION_CODE:
     case HTML_TYPE_CREDIT_CARD_TYPE:
-      return CREDIT_CARD;
+      return FieldTypeGroup::kCreditCard;
 
     case HTML_TYPE_TRANSACTION_AMOUNT:
     case HTML_TYPE_TRANSACTION_CURRENCY:
-      return TRANSACTION;
+      return FieldTypeGroup::kTransaction;
 
     case HTML_TYPE_TEL:
     case HTML_TYPE_TEL_COUNTRY_CODE:
@@ -200,24 +202,25 @@ FieldTypeGroup GroupTypeOfHtmlFieldType(HtmlFieldType field_type,
     case HTML_TYPE_TEL_LOCAL_PREFIX:
     case HTML_TYPE_TEL_LOCAL_SUFFIX:
     case HTML_TYPE_TEL_EXTENSION:
-      return field_mode == HTML_MODE_BILLING ? PHONE_BILLING : PHONE_HOME;
+      return field_mode == HTML_MODE_BILLING ? FieldTypeGroup::kPhoneBilling
+                                             : FieldTypeGroup::kPhoneHome;
 
     case HTML_TYPE_EMAIL:
-      return EMAIL;
+      return FieldTypeGroup::kEmail;
 
     case HTML_TYPE_UPI_VPA:
       // TODO(crbug/702223): Add support for UPI-VPA.
-      return NO_GROUP;
+      return FieldTypeGroup::kNoGroup;
 
     case HTML_TYPE_ONE_TIME_CODE:
-      return NO_GROUP;
+      return FieldTypeGroup::kNoGroup;
 
     case HTML_TYPE_UNSPECIFIED:
     case HTML_TYPE_UNRECOGNIZED:
-      return NO_GROUP;
+      return FieldTypeGroup::kNoGroup;
   }
   NOTREACHED();
-  return NO_GROUP;
+  return FieldTypeGroup::kNoGroup;
 }
 
 AutofillType::AutofillType(ServerFieldType field_type)
@@ -236,7 +239,7 @@ AutofillType::AutofillType(HtmlFieldType field_type, HtmlFieldMode mode)
     : server_type_(UNKNOWN_TYPE), html_type_(field_type), html_mode_(mode) {}
 
 FieldTypeGroup AutofillType::group() const {
-  FieldTypeGroup result = NO_GROUP;
+  FieldTypeGroup result = FieldTypeGroup::kNoGroup;
   if (server_type_ != UNKNOWN_TYPE) {
     result = GroupTypeOfServerFieldType(server_type_);
   } else {

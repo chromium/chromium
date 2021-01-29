@@ -99,9 +99,9 @@ std::string PreviousSaveCreditCardPromptUserDecisionToString(
 // Returns the interpolated index.
 //
 // The interpolation maps the pair (|group|, |metric|) to a single index, so
-// that all the indicies for a given group are adjacent.  In particular, with
-// the groups {AMBIGUOUS, NAME, ...} combining with the metrics {UNKNOWN, MATCH,
-// MISMATCH}, we create this set of mapped indices:
+// that all the indices for a given group are adjacent.  In particular, with
+// the groups {AMBIGUOUS, NAME, ...} combining with the metrics
+// {UNKNOWN, MATCH, MISMATCH}, we create this set of mapped indices:
 // {
 //   AMBIGUOUS+UNKNOWN,
 //   AMBIGUOUS+MATCH,
@@ -125,21 +125,21 @@ int GetFieldTypeGroupPredictionQualityMetric(
 
   FieldTypeGroupForMetrics group = GROUP_AMBIGUOUS;
   switch (AutofillType(field_type).group()) {
-    case NO_GROUP:
+    case FieldTypeGroup::kNoGroup:
       group = GROUP_AMBIGUOUS;
       break;
 
-    case NAME:
-    case NAME_BILLING:
+    case FieldTypeGroup::kName:
+    case FieldTypeGroup::kNameBilling:
       group = GROUP_NAME;
       break;
 
-    case COMPANY:
+    case FieldTypeGroup::kCompany:
       group = GROUP_COMPANY;
       break;
 
-    case ADDRESS_HOME:
-    case ADDRESS_BILLING:
+    case FieldTypeGroup::kAddressHome:
+    case FieldTypeGroup::kAddressBilling:
       switch (AutofillType(field_type).GetStorableType()) {
         case ADDRESS_HOME_LINE1:
           group = GROUP_ADDRESS_LINE_1;
@@ -187,16 +187,16 @@ int GetFieldTypeGroupPredictionQualityMetric(
       }
       break;
 
-    case EMAIL:
+    case FieldTypeGroup::kEmail:
       group = GROUP_EMAIL;
       break;
 
-    case PHONE_HOME:
-    case PHONE_BILLING:
+    case FieldTypeGroup::kPhoneHome:
+    case FieldTypeGroup::kPhoneBilling:
       group = GROUP_PHONE;
       break;
 
-    case CREDIT_CARD:
+    case FieldTypeGroup::kCreditCard:
       switch (field_type) {
         case CREDIT_CARD_NAME_FULL:
         case CREDIT_CARD_NAME_FIRST:
@@ -226,19 +226,19 @@ int GetFieldTypeGroupPredictionQualityMetric(
       }
       break;
 
-    case PASSWORD_FIELD:
+    case FieldTypeGroup::kPasswordField:
       group = GROUP_PASSWORD;
       break;
 
-    case USERNAME_FIELD:
+    case FieldTypeGroup::kUsernameField:
       group = GROUP_USERNAME;
       break;
 
-    case UNFILLABLE:
+    case FieldTypeGroup::kUnfillable:
       group = GROUP_UNFILLABLE;
       break;
 
-    case TRANSACTION:
+    case FieldTypeGroup::kTransaction:
       NOTREACHED();
       break;
   }

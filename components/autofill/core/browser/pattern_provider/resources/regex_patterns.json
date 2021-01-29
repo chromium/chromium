@@ -251,7 +251,7 @@
       }
     ]
   },
-  "COMPANY": {
+  "COMPANY_NAME": {
     "en": [
       {
         "pattern_identifier": "en_company_preserving",

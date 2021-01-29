@@ -30,17 +30,18 @@ base::string16 ContactFormLabelFormatter::GetLabelForProfile(
     const AutofillProfile& profile,
     FieldTypeGroup focused_group) const {
   std::vector<base::string16> label_parts;
-  if (focused_group != NAME && data_util::ContainsName(groups())) {
+  if (focused_group != FieldTypeGroup::kName &&
+      data_util::ContainsName(groups())) {
     AddLabelPartIfNotEmpty(
         GetLabelName(field_types_for_labels(), profile, app_locale()),
         &label_parts);
   }
 
-  if (focused_group != PHONE_HOME) {
+  if (focused_group != FieldTypeGroup::kPhoneHome) {
     AddLabelPartIfNotEmpty(MaybeGetPhone(profile), &label_parts);
   }
 
-  if (focused_group != EMAIL) {
+  if (focused_group != FieldTypeGroup::kEmail) {
     AddLabelPartIfNotEmpty(MaybeGetEmail(profile), &label_parts);
   }
 

@@ -53,7 +53,7 @@ class LabelFormatter {
   // Returns the FieldTypeGroup with which |focused_field_type_| is associated.
   // Billing field types are mapped to their corresponding home address field
   // types. For example, if focused_field_type_ is ADDRESS_BILLING_ZIP, then
-  // the resulting FieldTypeGroup is ADDRESS_HOME instead of ADDRESS_BILLING.
+  // the resulting FieldTypeGroup is kAddressHome instead of kAddressBilling.
   FieldTypeGroup GetFocusedNonBillingGroup() const;
 
   const std::string& app_locale() const { return app_locale_; }

@@ -202,7 +202,8 @@ bool AddressField::ParseCompany(AutofillScanner* scanner,
     return false;
 
   const std::vector<MatchingPattern>& company_patterns =
-      PatternProvider::GetInstance().GetMatchPatterns("COMPANY", page_language);
+      PatternProvider::GetInstance().GetMatchPatterns("COMPANY_NAME",
+                                                      page_language);
 
   return ParseField(scanner, UTF8ToUTF16(kCompanyRe), company_patterns,
                     &company_, {log_manager_, "kCompanyRe"});

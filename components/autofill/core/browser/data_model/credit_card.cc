@@ -356,7 +356,7 @@ bool CreditCard::IsDeletable() const {
 }
 
 base::string16 CreditCard::GetRawInfo(ServerFieldType type) const {
-  DCHECK_EQ(CREDIT_CARD, AutofillType(type).group());
+  DCHECK_EQ(FieldTypeGroup::kCreditCard, AutofillType(type).group());
   switch (type) {
     case CREDIT_CARD_NAME_FULL:
       return name_on_card_;
@@ -411,7 +411,7 @@ base::string16 CreditCard::GetRawInfo(ServerFieldType type) const {
 void CreditCard::SetRawInfoWithVerificationStatus(ServerFieldType type,
                                                   const base::string16& value,
                                                   VerificationStatus status) {
-  DCHECK_EQ(CREDIT_CARD, AutofillType(type).group());
+  DCHECK_EQ(FieldTypeGroup::kCreditCard, AutofillType(type).group());
   switch (type) {
     case CREDIT_CARD_NAME_FULL:
       name_on_card_ = value;

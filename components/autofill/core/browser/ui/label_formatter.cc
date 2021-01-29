@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/ui/contact_form_label_formatter.h"
 #include "components/autofill/core/browser/ui/label_formatter_utils.h"
 #include "components/autofill/core/browser/ui/mobile_label_formatter.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 
@@ -40,14 +41,15 @@ LabelFormatter::LabelFormatter(const std::vector<AutofillProfile*>& profiles,
       focused_field_type_(focused_field_type),
       groups_(groups) {
   const FieldTypeGroup focused_group = GetFocusedNonBillingGroup();
-  std::set<FieldTypeGroup> groups_for_labels{NAME, ADDRESS_HOME, EMAIL,
-                                             PHONE_HOME};
+  DenseSet<FieldTypeGroup> groups_for_labels{
+      FieldTypeGroup::kName, FieldTypeGroup::kAddressHome,
+      FieldTypeGroup::kEmail, FieldTypeGroup::kPhoneHome};
 
   // If a user is focused on an address field, then parts of the address may be
   // shown in the label. For example, if the user is focusing on a street
   // address field, then it may be helpful to show the city in the label.
   // Otherwise, the focused field should not appear in the label.
-  if (focused_group != ADDRESS_HOME) {
+  if (focused_group != FieldTypeGroup::kAddressHome) {
     groups_for_labels.erase(focused_group);
   }
 

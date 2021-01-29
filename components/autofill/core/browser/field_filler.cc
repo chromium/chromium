@@ -851,7 +851,7 @@ bool FieldFiller::FillFormField(
     return false;
   }
 
-  if (type.group() == PHONE_HOME) {
+  if (type.group() == FieldTypeGroup::kPhoneHome) {
     // If the |field_data| is a selection box and having the type
     // |PHONE_HOME_COUNTRY_CODE|, call |FillPhoneCountryCodeSelectControl|.
     if (base::FeatureList::IsEnabled(

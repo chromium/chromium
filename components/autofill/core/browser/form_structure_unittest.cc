@@ -7800,7 +7800,7 @@ TEST_F(FormStructureTestImpl, CreateForPasswordManagerUpload) {
 }
 
 // Tests if a new logical form is started with the second appearance of a field
-// of type |NAME|.
+// of type |FieldTypeGroup::kName|.
 TEST_P(ParameterizedFormStructureTest, NoAutocompleteSectionNames) {
   bool section_with_renderer_ids = GetParam();
   base::test::ScopedFeatureList scoped_features;
