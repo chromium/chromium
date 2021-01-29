@@ -378,7 +378,7 @@ PdfViewWebPlugin::CreateAssociatedURLLoader(
 }
 
 void PdfViewWebPlugin::OnMessage(const base::Value& message) {
-  NOTIMPLEMENTED() << message;
+  PdfViewPluginBase::HandleMessage(message);
 }
 
 base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {

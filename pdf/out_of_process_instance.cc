@@ -212,9 +212,6 @@ constexpr char kJSEmailBody[] = "body";
 // Rotation (Page -> Plugin)
 constexpr char kJSRotateClockwiseType[] = "rotateClockwise";
 constexpr char kJSRotateCounterclockwiseType[] = "rotateCounterclockwise";
-// Toggle two-up view (Page -> Plugin)
-constexpr char kJSSetTwoUpViewType[] = "setTwoUpView";
-constexpr char kJSEnableTwoUpView[] = "enableTwoUpView";
 // Display annotations (Page -> Plugin)
 constexpr char kJSDisplayAnnotationsType[] = "displayAnnotations";
 constexpr char kJSDisplayAnnotations[] = "display";
@@ -731,8 +728,6 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
     RotateCounterclockwise();
   } else if (type == kJSSetReadOnlyType) {
     HandleSetReadOnlyMessage(dict);
-  } else if (type == kJSSetTwoUpViewType) {
-    HandleSetTwoUpViewMessage(dict);
   } else if (type == kJSDisplayAnnotationsType) {
     HandleDisplayAnnotations(dict);
   } else if (type == kJSSelectAllType) {
@@ -752,7 +747,7 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
   } else if (type == kJSGetThumbnailType) {
     HandleGetThumbnailMessage(dict);
   } else {
-    NOTREACHED();
+    PdfViewPluginBase::HandleMessage(ValueFromVar(message));
   }
 }
 
@@ -1925,16 +1920,6 @@ void OutOfProcessInstance::HandleSetReadOnlyMessage(
   }
 
   engine()->SetReadOnly(dict.Get(pp::Var(kJSEnableReadOnly)).AsBool());
-}
-
-void OutOfProcessInstance::HandleSetTwoUpViewMessage(
-    const pp::VarDictionary& dict) {
-  if (!dict.Get(pp::Var(kJSEnableTwoUpView)).is_bool()) {
-    NOTREACHED();
-    return;
-  }
-
-  engine()->SetTwoUpView(dict.Get(pp::Var(kJSEnableTwoUpView)).AsBool());
 }
 
 void OutOfProcessInstance::HandleUpdateScrollMessage(

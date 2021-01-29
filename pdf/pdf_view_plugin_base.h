@@ -18,6 +18,10 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect.h"
 
+namespace base {
+class Value;
+}  // namespace base
+
 namespace chrome_pdf {
 
 class PDFiumEngine;
@@ -80,6 +84,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Handles `LoadUrl()` result for print preview.
   virtual void DidOpenPreview(std::unique_ptr<UrlLoader> loader,
                               int32_t result) = 0;
+
+  // Handles `postMessage()` calls from the embedder.
+  void HandleMessage(const base::Value& message);
 
   // Paints the given invalid area of the plugin to the given graphics device.
   // PaintManager::Client::OnPaint() should be its only caller.
@@ -166,6 +173,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   }
 
  private:
+  // Message handlers.
+  void HandleSetTwoUpViewMessage(const base::Value& message);
+
   std::unique_ptr<PDFiumEngine> engine_;
   PaintManager paint_manager_{this};
 

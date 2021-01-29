@@ -13,7 +13,12 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notreached.h"
+#include "base/optional.h"
+#include "base/values.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "ui/gfx/geometry/rect.h"
@@ -39,6 +44,28 @@ void PdfViewPluginBase::Invalidate(const gfx::Rect& rect) {
 
 uint32_t PdfViewPluginBase::GetBackgroundColor() {
   return background_color_;
+}
+
+void PdfViewPluginBase::HandleMessage(const base::Value& message) {
+  using MessageHandler = void (PdfViewPluginBase::*)(const base::Value&);
+  static constexpr auto kMessageHandlers =
+      base::MakeFixedFlatMap<base::StringPiece, MessageHandler>({
+          {"setTwoUpView", &PdfViewPluginBase::HandleSetTwoUpViewMessage},
+      });
+
+  const std::string* type = message.FindStringKey("type");
+  CHECK(type);
+
+  // TODO(crbug.com/1109796): Use `fixed_flat_map<>::at()` when migration is
+  // complete to CHECK out-of-bounds lookups.
+  const auto* it = kMessageHandlers.find(*type);
+  if (it == kMessageHandlers.end()) {
+    NOTIMPLEMENTED() << message;
+    return;
+  }
+
+  MessageHandler handler = it->second;
+  (this->*handler)(message);
 }
 
 void PdfViewPluginBase::OnPaint(const std::vector<gfx::Rect>& paint_rects,
@@ -151,6 +178,10 @@ void PdfViewPluginBase::SetZoom(double scale) {
   double old_zoom = zoom_;
   zoom_ = scale;
   OnGeometryChanged(old_zoom, device_scale_);
+}
+
+void PdfViewPluginBase::HandleSetTwoUpViewMessage(const base::Value& message) {
+  engine()->SetTwoUpView(message.FindBoolKey("enableTwoUpView").value());
 }
 
 }  // namespace chrome_pdf
