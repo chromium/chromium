@@ -27,7 +27,7 @@
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/passwords_private.h"
-#include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
 #include "components/password_manager/core/browser/bulk_leak_check_service.h"
 #include "components/password_manager/core/browser/leak_detection/bulk_leak_check.h"
@@ -37,6 +37,8 @@
 #include "components/safety_check/test_update_check_helper.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension.h"
@@ -278,7 +280,7 @@ class TestChromeCleanerControllerDelegate
 
 }  // namespace
 
-class SafetyCheckHandlerTest : public ChromeRenderViewHostTestHarness {
+class SafetyCheckHandlerTest : public testing::Test {
  public:
   void SetUp() override;
   void TearDown() override;
@@ -303,6 +305,9 @@ class SafetyCheckHandlerTest : public ChromeRenderViewHostTestHarness {
   void ReplaceBrowserName(base::string16* s);
 
  protected:
+  content::BrowserTaskEnvironment browser_task_environment_;
+  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<content::WebContents> web_contents_;
   safety_check::TestUpdateCheckHelper* update_helper_ = nullptr;
   TestVersionUpdater* version_updater_ = nullptr;
   std::unique_ptr<password_manager::BulkLeakCheckService> test_leak_service_;
@@ -319,9 +324,13 @@ class SafetyCheckHandlerTest : public ChromeRenderViewHostTestHarness {
 };
 
 void SafetyCheckHandlerTest::SetUp() {
-  ChromeRenderViewHostTestHarness::SetUp();
-
   feature_list_.InitWithFeatures({features::kSafetyCheckWeakPasswords}, {});
+
+  TestingProfile::Builder builder;
+  profile_ = builder.Build();
+
+  web_contents_ = content::WebContents::Create(
+      content::WebContents::CreateParams(profile_.get()));
 
   // The unique pointer to a TestVersionUpdater gets moved to
   // SafetyCheckHandler, but a raw pointer is retained here to change its
@@ -333,8 +342,8 @@ void SafetyCheckHandlerTest::SetUp() {
   test_leak_service_ = std::make_unique<password_manager::BulkLeakCheckService>(
       nullptr, nullptr);
   test_passwords_delegate_.SetBulkLeakCheckService(test_leak_service_.get());
-  test_web_ui_.set_web_contents(web_contents());
-  test_extension_prefs_ = extensions::ExtensionPrefs::Get(profile());
+  test_web_ui_.set_web_contents(web_contents_.get());
+  test_extension_prefs_ = extensions::ExtensionPrefs::Get(profile_.get());
   auto timestamp_delegate = std::make_unique<TestTimestampDelegate>();
   safety_check_ = std::make_unique<TestingSafetyCheckHandler>(
       std::move(update_helper), std::move(version_updater),
@@ -344,11 +353,12 @@ void SafetyCheckHandlerTest::SetUp() {
   test_web_ui_.ClearTrackedCalls();
   safety_check_->set_web_ui(&test_web_ui_);
   safety_check_->AllowJavascript();
+
+  browser_task_environment_.RunUntilIdle();
 }
 
 void SafetyCheckHandlerTest::TearDown() {
   test_passwords_delegate_.TearDown();
-  ChromeRenderViewHostTestHarness::TearDown();
 }
 
 const base::DictionaryValue*
