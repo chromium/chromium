@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_omnibox_positioning.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
@@ -136,15 +137,17 @@ layoutAttributesForSupplementaryViewOfKind:(NSString*)kind
     // Keep the header in front of all other views.
     attributes.zIndex = NSIntegerMax;
 
-    // Prevent the fake omnibox from scrolling up off of the screen.
-    CGFloat topSafeArea = IsRefactoredNTP() && [self isFeedVisible]
-                              ? self.parentCollectionView.safeAreaInsets.top
-                              : self.collectionView.safeAreaInsets.top;
+    // TODO(crbug.com/1114792): Remove this and only use omniboxPositioner after
+    // refactoring is complete.
     CGFloat minY =
         headerHeight - ntp_header::kFakeOmniboxScrolledToTopMargin -
         ToolbarExpandedHeight(
             [UIApplication sharedApplication].preferredContentSizeCategory) -
-        topSafeArea;
+        self.collectionView.safeAreaInsets.top;
+
+    if (IsRefactoredNTP() && [self isFeedVisible]) {
+      minY = [self.omniboxPositioner stickyOmniboxHeight];
+    }
     // TODO(crbug.com/1114792): Remove mentioned of "refactored" from the
     // variable name once this launches.
     BOOL hasScrolledIntoRefactoredDiscoverFeed =

@@ -148,14 +148,6 @@ const NSString* kScribbleFakeboxElementId = @"fakebox";
   [self.accessibilityButton removeObserver:self forKeyPath:@"highlighted"];
 }
 
-- (CGFloat)heightAboveFakeOmnibox {
-  return self.view.frame.size.height -
-         ntp_header::kFakeOmniboxScrolledToTopMargin -
-         self.fakeOmnibox.frame.size.height -
-         ToolbarExpandedHeight(
-             [UIApplication sharedApplication].preferredContentSizeCategory);
-}
-
 #pragma mark - ContentSuggestionsHeaderControlling
 
 - (void)updateFakeOmniboxForOffset:(CGFloat)offset

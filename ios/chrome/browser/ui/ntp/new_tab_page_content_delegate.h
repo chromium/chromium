@@ -11,10 +11,6 @@
 // Reloads content suggestions collection view.
 - (void)reloadContentSuggestions;
 
-// Returns the height of the content suggestions header, not including the
-// omnibox.
-- (CGFloat)heightAboveFakeOmnibox;
-
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_NTP_NEW_TAB_PAGE_CONTENT_DELEGATE_H_

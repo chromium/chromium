@@ -12,6 +12,8 @@
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/ntp/discover_feed_wrapper_view_controller.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_content_delegate.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_omnibox_positioning.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
@@ -29,12 +31,9 @@ namespace {
 // it look smooth). Otherwise, the omnibox hides beneath the feed before
 // changing ownership.
 const CGFloat kOffsetToPinOmnibox = 100;
-// Offset so the FakeOmnibox owned by this ViewController completely covers the
-// top of the screen.
-const CGFloat kFakeOmniboxTopOffset = 3;
 }
 
-@interface NewTabPageViewController ()
+@interface NewTabPageViewController () <NewTabPageOmniboxPositioning>
 
 // View controller representing the NTP content suggestions. These suggestions
 // include the most visited site tiles, the shortcut tiles, the fake omnibox and
@@ -177,6 +176,7 @@ const CGFloat kFakeOmniboxTopOffset = 3;
       self.contentSuggestionsViewController.collectionView
           .collectionViewLayout);
   _contentSuggestionsLayout.isScrolledIntoFeed = self.isScrolledIntoFeed;
+  _contentSuggestionsLayout.omniboxPositioner = self;
 }
 
 - (void)viewDidLayoutSubviews {
@@ -359,6 +359,20 @@ const CGFloat kFakeOmniboxTopOffset = 3;
   return self.discoverFeedWrapperViewController.feedCollectionView;
 }
 
+#pragma mark - NewTabPageOmniboxPositioning
+
+- (CGFloat)stickyOmniboxHeight {
+  // Takes the height of the entire header and subtracts the margin to stick the
+  // fake omnibox. Adjusts this for the device by further subtracting the
+  // toolbar height and safe area insets.
+  return self.headerController.view.frame.size.height -
+         ntp_header::kFakeOmniboxScrolledToTopMargin -
+         ToolbarExpandedHeight(
+             [UIApplication sharedApplication].preferredContentSizeCategory) -
+         self.discoverFeedWrapperViewController.feedCollectionView
+             .safeAreaInsets.top;
+}
+
 #pragma mark - Private
 
 // Enables or disables overscroll actions.
@@ -389,9 +403,7 @@ const CGFloat kFakeOmniboxTopOffset = 3;
     [self.headerController.view.topAnchor
         constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
                                     .topAnchor
-                       constant:-([self.ntpContentDelegate
-                                        heightAboveFakeOmnibox]) -
-                                kFakeOmniboxTopOffset],
+                       constant:-[self stickyOmniboxHeight]],
     [self.headerController.view.leadingAnchor
         constraintEqualToAnchor:self.discoverFeedWrapperViewController.view
                                     .leadingAnchor],
