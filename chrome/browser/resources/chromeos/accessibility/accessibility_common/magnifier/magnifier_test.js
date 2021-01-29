@@ -66,35 +66,38 @@ MagnifierE2ETest = class extends E2ETestBase {
   }
 };
 
-TEST_F('MagnifierE2ETest', 'MovesScreenMagnifierToFocusedElement', function() {
-  const site = `
+// Flaky: http://crbug.com/1171635
+TEST_F(
+    'MagnifierE2ETest', 'DISABLED_MovesScreenMagnifierToFocusedElement',
+    function() {
+      const site = `
         <button id="apple">Apple</button><br />
         <button id="banana" style="margin-top: 400px">Banana</button>
       `;
-  this.runWithLoadedTree(site, async function(root) {
-    const magnifier = accessibilityCommon.getMagnifierForTest();
-    magnifier.setIsInitializingForTest(false);
+      this.runWithLoadedTree(site, async function(root) {
+        const magnifier = accessibilityCommon.getMagnifierForTest();
+        magnifier.setIsInitializingForTest(false);
 
-    const apple = root.find({attributes: {name: 'Apple'}});
-    const banana = root.find({attributes: {name: 'Banana'}});
+        const apple = root.find({attributes: {name: 'Apple'}});
+        const banana = root.find({attributes: {name: 'Banana'}});
 
-    // Focus and move magnifier to apple.
-    apple.focus();
+        // Focus and move magnifier to apple.
+        apple.focus();
 
-    // Verify magnifier bounds contains apple, but not banana.
-    let bounds = await this.getNextMagnifierBounds();
-    assertTrue(RectUtil.contains(bounds, apple.location));
-    assertFalse(RectUtil.contains(bounds, banana.location));
+        // Verify magnifier bounds contains apple, but not banana.
+        let bounds = await this.getNextMagnifierBounds();
+        assertTrue(RectUtil.contains(bounds, apple.location));
+        assertFalse(RectUtil.contains(bounds, banana.location));
 
-    // Focus and move magnifier to banana.
-    banana.focus();
+        // Focus and move magnifier to banana.
+        banana.focus();
 
-    // Verify magnifier bounds contains banana, but not apple.
-    bounds = await this.getNextMagnifierBounds();
-    assertFalse(RectUtil.contains(bounds, apple.location));
-    assertTrue(RectUtil.contains(bounds, banana.location));
-  });
-});
+        // Verify magnifier bounds contains banana, but not apple.
+        bounds = await this.getNextMagnifierBounds();
+        assertFalse(RectUtil.contains(bounds, apple.location));
+        assertTrue(RectUtil.contains(bounds, banana.location));
+      });
+    });
 
 // Disabled - flaky: https://crbug.com/1145612
 TEST_F(
