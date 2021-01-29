@@ -2021,22 +2021,13 @@ void LayerTreeHostImpl::DidReceiveCompositorFrameAck() {
 void LayerTreeHostImpl::DidPresentCompositorFrame(
     uint32_t frame_token,
     const viz::FrameTimingDetails& details) {
-  frame_trackers_.NotifyFramePresented(frame_token,
-                                       details.presentation_feedback);
-  PresentationTimeCallbackBuffer::PendingCallbacks activated =
+  PresentationTimeCallbackBuffer::PendingCallbacks activated_callbacks =
       presentation_time_callbacks_.PopPendingCallbacks(frame_token);
 
-  // The callbacks in |compositor_thread_callbacks| expect to be run on the
-  // compositor thread so we'll run them now.
-  for (LayerTreeHost::PresentationTimeCallback& callback :
-       activated.compositor_thread_callbacks) {
-    std::move(callback).Run(details.presentation_feedback);
-  }
-
-  // Send all the main-thread callbacks to the client in one batch. The client
-  // is in charge of posting them to the main thread.
+  // Send all tasks to the client so that it can decide which tasks
+  // should run on which thread.
   client_->DidPresentCompositorFrameOnImplThread(
-      frame_token, std::move(activated.main_thread_callbacks), details);
+      frame_token, std::move(activated_callbacks), details);
 
   // Send all pending lag events waiting on the frame pointed by |frame_token|.
   // It is posted as a task because LayerTreeHostImpl::DidPresentCompositorFrame
@@ -4864,6 +4855,20 @@ void LayerTreeHostImpl::SetUkmSmoothnessDestination(
   ukm_smoothness_mapping_ = std::move(ukm_smoothness_data);
   dropped_frame_counter_.SetUkmSmoothnessDestination(
       ukm_smoothness_mapping_.GetMemoryAs<UkmSmoothnessDataShared>());
+}
+
+void LayerTreeHostImpl::NotifyDidPresentCompositorFrameOnImplThread(
+    uint32_t frame_token,
+    PresentationTimeCallbackBuffer::PendingCallbacks callbacks,
+    const viz::FrameTimingDetails& details) {
+  frame_trackers_.NotifyFramePresented(frame_token,
+                                       details.presentation_feedback);
+  // The callbacks in |compositor_thread_callbacks| expect to be run on the
+  // compositor thread so we'll run them now.
+  for (LayerTreeHost::PresentationTimeCallback& callback :
+       callbacks.compositor_thread_callbacks) {
+    std::move(callback).Run(details.presentation_feedback);
+  }
 }
 
 void LayerTreeHostImpl::AllocateLocalSurfaceId() {

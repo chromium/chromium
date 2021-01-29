@@ -323,4 +323,34 @@ TEST_F(TotalAnimationThroughputReporterTest, OnceReporterShouldDelete) {
   EXPECT_TRUE(deleted);
 }
 
+TEST_F(TotalAnimationThroughputReporterTest, ThreadCheck) {
+  Layer layer;
+  layer.SetOpacity(0.5f);
+  root_layer()->Add(&layer);
+
+  // Set a persisted animator to |layer|.
+  LayerAnimator* animator =
+      new LayerAnimator(base::TimeDelta::FromMilliseconds(32));
+  layer.SetAnimator(animator);
+
+  ui::Compositor* c = compositor();
+
+  ThroughputReportChecker checker(this);
+  auto once_callback = checker.once_callback();
+  ThroughputReportChecker::ReportOnceCallback callback =
+      base::BindLambdaForTesting(
+          [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
+            // This call with fail if this is called on impl thread.
+            c->ScheduleDraw();
+            std::move(once_callback).Run(data);
+          });
+
+  TotalAnimationThroughputReporter reporter(c, std::move(callback),
+                                            /*should_delete=*/false);
+
+  // Report data for animation of opacity goes to 1.
+  layer.SetOpacity(1.0f);
+  EXPECT_TRUE(checker.WaitUntilReported());
+}
+
 }  // namespace ui

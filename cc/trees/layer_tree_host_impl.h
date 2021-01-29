@@ -162,10 +162,11 @@ class LayerTreeHostImplClient {
   virtual void RequestBeginMainFrameNotExpected(bool new_state) = 0;
 
   // Called when a presentation time is requested. |frame_token| identifies
-  // the frame that was presented.
+  // the frame that was presented. |callbacks| holds both impl side and main
+  // side callbacks to be called.
   virtual void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
-      std::vector<LayerTreeHost::PresentationTimeCallback> callbacks,
+      PresentationTimeCallbackBuffer::PendingCallbacks callbacks,
       const viz::FrameTimingDetails& details) = 0;
 
   // Returns whether the main-thread is expected to receive a BeginMainFrame.
@@ -798,6 +799,13 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
 
   void SetUkmSmoothnessDestination(
       base::WritableSharedMemoryMapping ukm_smoothness_data);
+
+  // Notifies FrameTrackers, impl side callbacks that the compsitor frame
+  // was presented.
+  void NotifyDidPresentCompositorFrameOnImplThread(
+      uint32_t frame_token,
+      PresentationTimeCallbackBuffer::PendingCallbacks callbacks,
+      const viz::FrameTimingDetails& details);
 
   CompositorFrameReportingController* compositor_frame_reporting_controller()
       const {

@@ -243,6 +243,7 @@ test("compositor_unittests") {
     "layer_owner_unittest.cc",
     "layer_unittest.cc",
     "run_all_unittests.cc",
+    "throughput_tracker_unittest.cc",
     "total_animation_throughput_reporter_unittest.cc",
     "transform_animation_curve_adapter_unittest.cc",
   ]

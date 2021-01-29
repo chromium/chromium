@@ -261,8 +261,12 @@ class LayerTreeHostImplTest : public testing::Test,
   void RequestBeginMainFrameNotExpected(bool new_state) override {}
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
-      std::vector<LayerTreeHost::PresentationTimeCallback> callbacks,
-      const viz::FrameTimingDetails& details) override {}
+      PresentationTimeCallbackBuffer::PendingCallbacks activated,
+      const viz::FrameTimingDetails& details) override {
+    std::move(activated.main_thread_callbacks);
+    host_impl_->NotifyDidPresentCompositorFrameOnImplThread(
+        frame_token, std::move(activated), details);
+  }
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
                                          ElementListType tree_type) override {}
   void NotifyPaintWorkletStateChange(
@@ -1667,9 +1671,13 @@ class LayerTreeHostImplTestInvokeMainThreadCallbacks
  public:
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
-      std::vector<LayerTreeHost::PresentationTimeCallback> callbacks,
+      PresentationTimeCallbackBuffer::PendingCallbacks activated,
       const viz::FrameTimingDetails& details) override {
-    for (LayerTreeHost::PresentationTimeCallback& callback : callbacks) {
+    auto main_thread_callbacks = std::move(activated.main_thread_callbacks);
+    host_impl_->NotifyDidPresentCompositorFrameOnImplThread(
+        frame_token, std::move(activated), details);
+    for (LayerTreeHost::PresentationTimeCallback& callback :
+         main_thread_callbacks) {
       std::move(callback).Run(details.presentation_feedback);
     }
   }
