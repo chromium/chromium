@@ -447,12 +447,10 @@ public class StatusMediator implements PermissionDialogController.Observer {
     /**
      * Called when the search engine status icon needs updating.
      *
-     * @param shouldShowSearchEngineLogo True if the search engine icon should be shown.
      * @param isSearchEngineGoogle True if the default search engine is google.
      * @param searchEngineUrl The URL for the search engine icon.
      */
-    public void updateSearchEngineStatusIcon(boolean shouldShowSearchEngineLogo,
-            boolean isSearchEngineGoogle, String searchEngineUrl) {
+    public void updateSearchEngineStatusIcon(boolean isSearchEngineGoogle, String searchEngineUrl) {
         mIsSearchEngineStateSetup = true;
         mIsSearchEngineGoogle = isSearchEngineGoogle;
         mSearchEngineLogoUrl = searchEngineUrl;

@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.WindowManager;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 
 import androidx.core.view.MarginLayoutParamsCompat;
 import androidx.test.filters.MediumTest;
@@ -46,17 +45,13 @@ import org.chromium.base.test.util.Matchers;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.LocationBarModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
-import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.security_state.ConnectionSecurityLevel;
-import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.ClickUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -75,9 +70,6 @@ public class LocationBarLayoutTest {
     private static final String SEARCH_TERMS = "machine learning";
     private static final String SEARCH_TERMS_URL = "testing.com";
     private static final String GOOGLE_SRP_URL = "https://www.google.com/search?q=machine+learning";
-
-    private static final String GOOGLE_URL = "https://www.google.com";
-    private static final String YAHOO_URL = "https://www.yahoo.com";
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -254,245 +246,6 @@ public class LocationBarLayoutTest {
         Assert.assertEquals("", getUrlText(getUrlBar()));
     }
 
-    /*
-     *  Search engine logo tests.
-     */
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO})
-    @Feature({"OmniboxSearchEngineLogo"})
-    public void testOmniboxSearchEngineLogo_unfocusedOnSRP() {
-        final LocationBarLayout locationBar = getLocationBar();
-        final ImageView iconView = (ImageView) locationBar.getSecurityIconView();
-        updateSearchEngineLogoWithGoogle(locationBar);
-        mTestLocationBarModel.setCurrentUrl(GOOGLE_SRP_URL);
-        mTestLocationBarModel.setSecurityLevel(ConnectionSecurityLevel.SECURE);
-        mTestLocationBarModel.mDisplayText = GOOGLE_SRP_URL;
-        mTestLocationBarModel.mEditingText = GOOGLE_SRP_URL;
-        updateLocationBar();
-
-        onView(withId(R.id.location_bar_status)).check((view, e) -> {
-            Assert.assertEquals(iconView.getVisibility(), VISIBLE);
-            Assert.assertEquals(R.drawable.omnibox_https_valid,
-                    locationBar.getStatusCoordinatorForTesting()
-                            .getSecurityIconResourceIdForTesting());
-        });
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO})
-    @Feature({"OmniboxSearchEngineLogo"})
-    public void testOmniboxSearchEngineLogo_focusedOnSRP() throws ExecutionException {
-        final LocationBarLayout locationBar = getLocationBar();
-        final View statusIconView = getStatusIconView();
-        updateSearchEngineLogoWithGoogle(locationBar);
-        mTestLocationBarModel.setCurrentUrl(GOOGLE_SRP_URL);
-        mTestLocationBarModel.setSecurityLevel(ConnectionSecurityLevel.SECURE);
-        mTestLocationBarModel.mDisplayText = GOOGLE_SRP_URL;
-        mTestLocationBarModel.mEditingText = GOOGLE_SRP_URL;
-        updateLocationBar();
-        setUrlBarTextAndFocus("");
-
-        onView(withId(R.id.location_bar_status)).check((view, e) -> {
-            Assert.assertEquals(statusIconView.getVisibility(), VISIBLE);
-            Assert.assertEquals(R.drawable.ic_logo_googleg_20dp,
-                    locationBar.getStatusCoordinatorForTesting()
-                            .getSecurityIconResourceIdForTesting());
-        });
-    }
-
-    /*
-     * End-to-end scenarios for search engine logo testing.
-     */
-
-    @Test
-    @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
-    public void testOmniboxSearchEngineLogo_ntp() {
-        final LocationBarLayout locationBar = getLocationBar();
-        final View statusIconView = getStatusIconView();
-        updateSearchEngineLogoWithGoogle(locationBar);
-        loadUrlInNewTabAndUpdateModels(UrlConstants.NTP_URL, /* incognito= */ false);
-        onView(withId(R.id.location_bar_status)).check(matches(not(isDisplayed())));
-
-        setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
-    public void testOmniboxSearchEngineLogo_ntpIncognito() {
-        final LocationBarLayout locationBar = getLocationBar();
-        final View statusIconView = getStatusIconView();
-        updateSearchEngineLogoWithGoogle(locationBar);
-        loadUrlInNewTabAndUpdateModels(UrlConstants.NTP_URL, /* incognito= */ true);
-        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
-
-        setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
-    }
-
-    @Test
-    @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
-    public void testOmniboxSearchEngineLogo_ntpToSite() throws ExecutionException {
-        final LocationBarLayout locationBar = getLocationBar();
-        final View statusIconView = getStatusIconView();
-        updateSearchEngineLogoWithGoogle(locationBar);
-        Tab tab = loadUrlInNewTabAndUpdateModels(UrlConstants.NTP_URL, /* incognito= */ false);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> tab.loadUrl(new LoadUrlParams(UrlConstants.ABOUT_URL)));
-        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
-
-        setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
-    public void testOmniboxSearchEngineLogo_site() {
-        final LocationBarLayout locationBar = getLocationBar();
-        final View statusIconView = getStatusIconView();
-        updateSearchEngineLogoWithGoogle(locationBar);
-        loadUrlInNewTabAndUpdateModels(UrlConstants.ABOUT_URL, /* incognito= */ false);
-        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
-
-        setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
-    public void testOmniboxSearchEngineLogo_siteIncognito() {
-        final LocationBarLayout locationBar = getLocationBar();
-        final View statusIconView = getStatusIconView();
-        updateSearchEngineLogoWithGoogle(locationBar);
-        loadUrlInNewTabAndUpdateModels(UrlConstants.ABOUT_URL, /* incognito= */ true);
-        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
-
-        setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
-    public void testOmniboxSearchEngineLogo_siteToSite() throws ExecutionException {
-        final LocationBarLayout locationBar = getLocationBar();
-        final View statusIconView = getStatusIconView();
-        updateSearchEngineLogoWithGoogle(locationBar);
-        Tab tab = loadUrlInNewTabAndUpdateModels(
-                UrlConstants.CHROME_BLANK_URL, /* incognito= */ false);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> tab.loadUrl(new LoadUrlParams(UrlConstants.ABOUT_URL)));
-        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
-
-        setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
-    public void testOmniboxSearchEngineLogo_ntp_nonGoogleg() {
-        final LocationBarLayout locationBar = getLocationBar();
-        final View statusIconView = getStatusIconView();
-        updateSearchEngineLogoWithYahoo(locationBar);
-        loadUrlInNewTabAndUpdateModels(UrlConstants.NTP_URL, /* incognito= */ false);
-        onView(withId(R.id.location_bar_status)).check(matches(not(isDisplayed())));
-
-        setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
-    public void testOmniboxSearchEngineLogo_ntpIncognito_nonGoogle() {
-        final LocationBarLayout locationBar = getLocationBar();
-        final View statusIconView = getStatusIconView();
-        updateSearchEngineLogoWithYahoo(locationBar);
-        loadUrlInNewTabAndUpdateModels(UrlConstants.NTP_URL, /* incognito= */ true);
-        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
-
-        setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
-    }
-
-    @Test
-    @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
-    public void testOmniboxSearchEngineLogo_ntpToSite_nonGoogle() throws ExecutionException {
-        final LocationBarLayout locationBar = getLocationBar();
-        final View statusIconView = getStatusIconView();
-        updateSearchEngineLogoWithYahoo(locationBar);
-        Tab tab = loadUrlInNewTabAndUpdateModels(UrlConstants.NTP_URL, /* incognito= */ false);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> tab.loadUrl(new LoadUrlParams(UrlConstants.ABOUT_URL)));
-        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
-
-        setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
-    public void testOmniboxSearchEngineLogo_site_nonGoogle() {
-        final LocationBarLayout locationBar = getLocationBar();
-        final View statusIconView = getStatusIconView();
-        updateSearchEngineLogoWithYahoo(locationBar);
-        loadUrlInNewTabAndUpdateModels(UrlConstants.ABOUT_URL, /* incognito= */ false);
-        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
-
-        setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
-    public void testOmniboxSearchEngineLogo_siteIncognito_nonGoogle() {
-        final LocationBarLayout locationBar = getLocationBar();
-        final View statusIconView = getStatusIconView();
-        updateSearchEngineLogoWithYahoo(locationBar);
-        loadUrlInNewTabAndUpdateModels(UrlConstants.ABOUT_URL, /* incognito= */ true);
-        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
-
-        setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status_icon)).check(matches(not(isDisplayed())));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_SEARCH_ENGINE_LOGO)
-    public void testOmniboxSearchEngineLogo_siteToSite_nonGoogle() throws ExecutionException {
-        final LocationBarLayout locationBar = getLocationBar();
-        final View statusIconView = getStatusIconView();
-        updateSearchEngineLogoWithYahoo(locationBar);
-        Tab tab = loadUrlInNewTabAndUpdateModels(
-                UrlConstants.CHROME_BLANK_URL, /* incognito= */ false);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> tab.loadUrl(new LoadUrlParams(UrlConstants.ABOUT_URL)));
-        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
-
-        setUrlBarTextAndFocus("");
-        onView(withId(R.id.location_bar_status)).check(matches(isDisplayed()));
-    }
-
     @Test
     @SmallTest
     public void testSetUrlBarFocus() {
@@ -617,26 +370,6 @@ public class LocationBarLayoutTest {
             mediator.onPrimaryColorChanged();
             mediator.onSecurityStateChanged();
             mediator.onUrlChanged();
-        });
-    }
-
-    /** Performs an update on {@link LocationBar} to show the Google logo. */
-    private void updateSearchEngineLogoWithGoogle(LocationBarLayout locationBar) {
-        updateSearchEngineLogo(locationBar, GOOGLE_URL);
-    }
-
-    /** Performs an update on {@link LocationBar} to show the Yahoo logo. */
-    private void updateSearchEngineLogoWithYahoo(LocationBarLayout locationBar) {
-        updateSearchEngineLogo(locationBar, YAHOO_URL);
-    }
-
-    private void updateSearchEngineLogo(LocationBarLayout locationBar, String url) {
-        doReturn(true)
-                .when(mSearchEngineLogoUtils)
-                .shouldShowSearchEngineLogo(/* incognito= */ false);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            locationBar.updateSearchEngineStatusIcon(
-                    /* shouldShow= */ true, /* isGoogle= */ url.equals(GOOGLE_URL), url);
         });
     }
 }

@@ -293,8 +293,7 @@ public class LocationBarLayout extends FrameLayout {
 
     protected void updateSearchEngineStatusIcon(boolean shouldShowSearchEngineLogo,
             boolean isSearchEngineGoogle, String searchEngineUrl) {
-        mStatusCoordinator.updateSearchEngineStatusIcon(
-                shouldShowSearchEngineLogo, isSearchEngineGoogle, searchEngineUrl);
+        mStatusCoordinator.updateSearchEngineStatusIcon(isSearchEngineGoogle, searchEngineUrl);
     }
 
     @VisibleForTesting

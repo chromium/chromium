@@ -187,7 +187,7 @@ public class StatusViewTest extends DummyUiActivityTestCase {
             mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE,
                     new StatusIconResource(R.drawable.ic_logo_googleg_24dp, 0));
             mStatusModel.set(StatusProperties.SHOW_STATUS_ICON, true);
-            mStatusView.updateSearchEngineStatusIcon(true, true, "");
+            mStatusView.updateSearchEngineStatusIcon();
         });
         int expectedWidth = getActivity().getResources().getDimensionPixelSize(
                 R.dimen.location_bar_status_icon_width);

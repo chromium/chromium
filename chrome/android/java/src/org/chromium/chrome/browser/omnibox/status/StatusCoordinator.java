@@ -289,14 +289,15 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
         mMediator.setShowIconsWhenUrlFocused(showIconsWithUrlFocused);
     }
 
-    /** Update information required to display the search engine icon. */
-    public void updateSearchEngineStatusIcon(boolean shouldShowSearchEngineLogo,
-            boolean isSearchEngineGoogle, String searchEngineUrl) {
-        mMediator.updateSearchEngineStatusIcon(
-                shouldShowSearchEngineLogo, isSearchEngineGoogle, searchEngineUrl);
+    /**
+     * Update information required to display the search engine icon.
+     * @param isSearchEngineGoogle Whether the current search engine is google.
+     * @param searchEngineUrl The URL for the current URL for the search engine.
+     */
+    public void updateSearchEngineStatusIcon(boolean isSearchEngineGoogle, String searchEngineUrl) {
+        mMediator.updateSearchEngineStatusIcon(isSearchEngineGoogle, searchEngineUrl);
         // TODO(crbug.com/1109369): Do not use the StatusView here
-        mStatusView.updateSearchEngineStatusIcon(
-                shouldShowSearchEngineLogo, isSearchEngineGoogle, searchEngineUrl);
+        mStatusView.updateSearchEngineStatusIcon();
     }
 
     /** Returns width of the status icon including start/end margins. */

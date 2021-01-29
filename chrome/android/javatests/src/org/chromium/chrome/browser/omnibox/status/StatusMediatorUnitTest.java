@@ -103,7 +103,6 @@ public final class StatusMediatorUnitTest {
 
         // By default return mBitmap, but this behavior is overridden in some tests.
         Answer bitmapAnswer = (invocation) -> {
-            //     mCallbackCaptor.getValue().onResult(mBitmap);
             ((Callback<Bitmap>) invocation.getArgument(2)).onResult(mBitmap);
             return null;
         };
@@ -132,7 +131,7 @@ public final class StatusMediatorUnitTest {
 
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
-        mMediator.updateSearchEngineStatusIcon(true, true, TEST_SEARCH_URL);
+        mMediator.updateSearchEngineStatusIcon(true, TEST_SEARCH_URL);
         Assert.assertEquals(R.drawable.ic_logo_googleg_20dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
     }
@@ -148,7 +147,7 @@ public final class StatusMediatorUnitTest {
         doReturn(true).when(mNewTabPageDelegate).isCurrentlyVisible();
         doReturn("chrome://newtab").when(mLocationBarDataProvider).getCurrentUrl();
 
-        mMediator.updateSearchEngineStatusIcon(true, true, TEST_SEARCH_URL);
+        mMediator.updateSearchEngineStatusIcon(true, TEST_SEARCH_URL);
         mMediator.setUrlHasFocus(false);
         mMediator.setUrlFocusChangePercent(0);
         mMediator.setUrlAnimationFinished(true);
@@ -165,7 +164,7 @@ public final class StatusMediatorUnitTest {
 
         mMediator.setUrlHasFocus(false);
         mMediator.setShowIconsWhenUrlFocused(true);
-        mMediator.updateSearchEngineStatusIcon(true, true, TEST_SEARCH_URL);
+        mMediator.updateSearchEngineStatusIcon(true, TEST_SEARCH_URL);
         mMediator.setUrlFocusChangePercent(1f);
         mMediator.setUrlAnimationFinished(true);
         Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_ICON));
@@ -182,7 +181,7 @@ public final class StatusMediatorUnitTest {
 
         mMediator.setUrlHasFocus(false);
         mMediator.setShowIconsWhenUrlFocused(true);
-        mMediator.updateSearchEngineStatusIcon(true, true, TEST_SEARCH_URL);
+        mMediator.updateSearchEngineStatusIcon(true, TEST_SEARCH_URL);
         mMediator.setUrlFocusChangePercent(1f);
         Assert.assertTrue(mModel.get(StatusProperties.SHOW_STATUS_ICON));
     }
@@ -203,7 +202,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlHasFocus(false);
         mMediator.setShowIconsWhenUrlFocused(true);
         mMediator.setUrlFocusChangePercent(1f);
-        mMediator.updateSearchEngineStatusIcon(true, true, TEST_SEARCH_URL);
+        mMediator.updateSearchEngineStatusIcon(true, TEST_SEARCH_URL);
         Assert.assertEquals(R.drawable.ic_logo_googleg_20dp,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
     }
@@ -218,7 +217,7 @@ public final class StatusMediatorUnitTest {
 
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
-        mMediator.updateSearchEngineStatusIcon(true, true, TEST_SEARCH_URL);
+        mMediator.updateSearchEngineStatusIcon(true, TEST_SEARCH_URL);
         Assert.assertEquals(R.drawable.ic_search,
                 mModel.get(StatusProperties.STATUS_ICON_RESOURCE).getIconResForTesting());
     }
@@ -365,7 +364,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlHasFocus(false);
         mMediator.setShowIconsWhenUrlFocused(true);
         mMediator.setSecurityIconResource(0);
-        mMediator.updateSearchEngineStatusIcon(true, false, TEST_SEARCH_URL);
+        mMediator.updateSearchEngineStatusIcon(false, TEST_SEARCH_URL);
 
         Assert.assertEquals(null, mModel.get(StatusProperties.STATUS_ICON_RESOURCE));
     }
@@ -378,7 +377,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(true);
         mMediator.setSecurityIconResource(0);
-        mMediator.updateSearchEngineStatusIcon(true, true, TEST_SEARCH_URL);
+        mMediator.updateSearchEngineStatusIcon(true, TEST_SEARCH_URL);
         setupSearchEngineLogoForTesting(
                 /* showLogo= */ true, /* isGoogle= */ true, /* loupeEverywhere= */ false);
 
@@ -395,7 +394,7 @@ public final class StatusMediatorUnitTest {
         mMediator.setUrlHasFocus(true);
         mMediator.setShowIconsWhenUrlFocused(false);
         mMediator.setSecurityIconResource(0);
-        mMediator.updateSearchEngineStatusIcon(true, true, TEST_SEARCH_URL);
+        mMediator.updateSearchEngineStatusIcon(true, TEST_SEARCH_URL);
         setupSearchEngineLogoForTesting(
                 /* showLogo= */ true, /* isGoogle= */ true, /* loupeEverywhere= */ false);
 
@@ -569,6 +568,6 @@ public final class StatusMediatorUnitTest {
                 .when(mSearchEngineLogoUtils)
                 .shouldShowSearchLoupeEverywhere(anyBoolean());
 
-        mMediator.updateSearchEngineStatusIcon(showLogo, isGoogle, TEST_SEARCH_URL);
+        mMediator.updateSearchEngineStatusIcon(isGoogle, TEST_SEARCH_URL);
     }
 }

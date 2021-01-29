@@ -87,10 +87,9 @@ public class StatusView extends LinearLayout {
     }
 
     /**
-     * @see {@link org.chromium.chrome.browser.omnibox.LocationBar#updateSearchEngineStatusIcon}.
+     * Update information required to display the search engine icon.
      */
-    public void updateSearchEngineStatusIcon(boolean shouldShowSearchEngineLogo,
-            boolean isSearchEngineGoogle, String searchEngineUrl) {
+    public void updateSearchEngineStatusIcon() {
         if (!mSearchEngineLogoUtils.isSearchEngineLogoEnabled()) return;
 
         LinearLayout.LayoutParams layoutParams =

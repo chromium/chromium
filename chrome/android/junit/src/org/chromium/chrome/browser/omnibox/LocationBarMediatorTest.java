@@ -605,28 +605,25 @@ public class LocationBarMediatorTest {
         doReturn(mNonGoogleSearchEngine)
                 .when(mTemplateUrlService)
                 .getDefaultSearchEngineTemplateUrl();
+        mMediator.onTemplateURLServiceChanged();
 
-        mMediator.registerTemplateUrlObserver();
-        verify(mLocationBarLayout)
-                .updateSearchEngineStatusIcon(mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                                                      mLocationBarDataProvider.isIncognito()),
+        verify(mStatusCoordinator)
+                .updateSearchEngineStatusIcon(
                         false, mSearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
 
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
         doReturn(mGoogleSearchEngine).when(mTemplateUrlService).getDefaultSearchEngineTemplateUrl();
         mMediator.onTemplateURLServiceChanged();
 
-        verify(mLocationBarLayout)
-                .updateSearchEngineStatusIcon(mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                                                      mLocationBarDataProvider.isIncognito()),
+        verify(mStatusCoordinator)
+                .updateSearchEngineStatusIcon(
                         true, mSearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
 
         // Calling onTemplateURLServiceChanged with the exact same data shouldn't trigger any calls.
         mMediator.onTemplateURLServiceChanged();
 
-        verify(mLocationBarLayout, times(1))
-                .updateSearchEngineStatusIcon(mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                                                      mLocationBarDataProvider.isIncognito()),
+        verify(mStatusCoordinator, times(1))
+                .updateSearchEngineStatusIcon(
                         true, mSearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
 
         doReturn(false).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
@@ -635,9 +632,8 @@ public class LocationBarMediatorTest {
                 .getDefaultSearchEngineTemplateUrl();
         mMediator.onTemplateURLServiceChanged();
 
-        verify(mLocationBarLayout, times(2))
-                .updateSearchEngineStatusIcon(mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                                                      mLocationBarDataProvider.isIncognito()),
+        verify(mStatusCoordinator, times(2))
+                .updateSearchEngineStatusIcon(
                         false, mSearchEngineLogoUtils.getSearchLogoUrl(mTemplateUrlService));
     }
 

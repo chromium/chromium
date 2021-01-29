@@ -30,6 +30,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.gsa.GSAState;
@@ -1022,6 +1023,54 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         }
         return false;
     }
+    /** Update the state of the search engine status icon. */
+    @VisibleForTesting
+    void updateSearchEngineStatusIcon() {
+        TemplateUrlService templateUrlService = mTemplateUrlServiceSupplier.get();
+        assert templateUrlService != null;
+
+        mStatusCoordinator.updateSearchEngineStatusIcon(
+                templateUrlService.isDefaultSearchEngineGoogle(),
+                mSearchEngineLogoUtils.getSearchLogoUrl(templateUrlService));
+
+        updateSearchEngineStatusIconPhone();
+    }
+
+    private void updateSearchEngineStatusIconPhone() {
+        if (mIsTablet) return;
+
+        // This branch will be hit if the search engine logo experiment is enabled.
+        if (mSearchEngineLogoUtils.isSearchEngineLogoEnabled()) {
+            // Setup the padding once we're loaded, the focused padding changes will happen with
+            // post-layout positioning via setTranslation. This is a byproduct of the way we do the
+            // omnibox un/focus animation which is by writing a function f(x) where x ranges from
+            // 0 (totally unfocused) to 1 (totally focused). Positioning the location bar and its
+            // children this way doesn't affect the views' bounds (including hit rect). But these
+            // hit rects are preserved for the views that matter (the icon and the url actions
+            // container).
+            int lateralPadding = mContext.getResources().getDimensionPixelOffset(
+                    R.dimen.sei_location_bar_lateral_padding);
+            mLocationBarLayout.setPaddingRelative(lateralPadding,
+                    mLocationBarLayout.getPaddingTop(), lateralPadding,
+                    mLocationBarLayout.getPaddingBottom());
+        }
+
+        // The search engine icon will be the first visible focused view when it's showing.
+        boolean shouldShowSearchEngineLogo = mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                mLocationBarDataProvider.isIncognito());
+
+        // This branch will be hit if the search engine logo experiment is enabled and we should
+        // show the logo.
+        if (shouldShowSearchEngineLogo && mLocationBarLayout instanceof LocationBarPhone) {
+            ((LocationBarPhone) mLocationBarLayout)
+                    .setFirstVisibleFocusedView(/* toStatusView= */ true);
+
+            // When the search engine icon is enabled, icons are translations into the parent view's
+            // padding area. Set clip padding to false to prevent them from getting clipped.
+            mLocationBarLayout.setClipToPadding(false);
+        }
+        mLocationBarLayout.setShowIconsWhenUrlFocused(shouldShowSearchEngineLogo);
+    }
 
     // LocationBarData.Observer implementation
     // Using the default empty onSecurityStateChanged.
@@ -1260,10 +1309,7 @@ class LocationBarMediator implements LocationBarDataProvider.Observer, FakeboxDe
         }
 
         mSearchEngine = searchEngine;
-        mLocationBarLayout.updateSearchEngineStatusIcon(
-                mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
-                        mLocationBarDataProvider.isIncognito()),
-                templateUrlService.isDefaultSearchEngineGoogle(),
-                mSearchEngineLogoUtils.getSearchLogoUrl(templateUrlService));
+        updateSearchEngineStatusIcon();
+        mLocationBarLayout.updateStatusVisibility();
     }
 }
