@@ -296,6 +296,19 @@ public class AwMetricsIntegrationTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    public void testMetadata_samplingRate() throws Throwable {
+        // Wait for a metrics log, since SamplingMetricsProvider only logs this histogram during log
+        // collection. Do not assert anything about this histogram before this point (ex. do not
+        // assert total count == 0), because this would race with the initial metrics log.
+        mPlatformServiceBridge.waitForNextMetricsLog();
+
+        Assert.assertEquals(
+                1, RecordHistogram.getHistogramTotalCountForTesting("UMA.SamplingRatePerMille"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
     public void testPageLoadsEnableMultipleUploads() throws Throwable {
         mPlatformServiceBridge.waitForNextMetricsLog();
 

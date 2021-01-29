@@ -92,6 +92,8 @@ static_library("metrics") {
     "persistent_system_profile.h",
     "reporting_service.cc",
     "reporting_service.h",
+    "sampling_metrics_provider.cc",
+    "sampling_metrics_provider.h",
     "stability_metrics_helper.cc",
     "stability_metrics_helper.h",
     "stability_metrics_provider.cc",

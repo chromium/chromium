@@ -818,8 +818,6 @@ static_library("browser") {
     "metrics/renderer_uptime_tracker.h",
     "metrics/renderer_uptime_web_contents_observer.cc",
     "metrics/renderer_uptime_web_contents_observer.h",
-    "metrics/sampling_metrics_provider.cc",
-    "metrics/sampling_metrics_provider.h",
     "metrics/tab_count_metrics.cc",
     "metrics/tab_count_metrics.h",
     "metrics/tab_footprint_aggregator.cc",

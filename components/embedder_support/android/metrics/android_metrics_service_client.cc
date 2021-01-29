@@ -37,6 +37,7 @@
 #include "components/metrics/net/net_metrics_log_uploader.h"
 #include "components/metrics/net/network_metrics_provider.h"
 #include "components/metrics/persistent_histograms.h"
+#include "components/metrics/sampling_metrics_provider.h"
 #include "components/metrics/stability_metrics_helper.h"
 #include "components/metrics/ui/screen_info_metrics_provider.h"
 #include "components/metrics/version_utils.h"
@@ -328,6 +329,9 @@ void AndroidMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
           base::DIR_ANDROID_APP_DATA));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::GPUMetricsProvider>());
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<metrics::SamplingMetricsProvider>(
+          GetSampleRatePerMille()));
   RegisterAdditionalMetricsProviders(metrics_service_.get());
 
   // The file metrics provider performs IO.
