@@ -70,7 +70,7 @@ namespace scripting {
 
   dictionary InjectionResult {
     // The result of the script execution.
-    any result;
+    any? result;
 
     // The frame associated with the injection.
     long frameId;

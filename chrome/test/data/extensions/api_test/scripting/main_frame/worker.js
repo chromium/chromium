@@ -65,6 +65,79 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
 
+  async function injectedFunctionReturnsNothing() {
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    const results = await new Promise(resolve => {
+      chrome.scripting.executeScript(
+          {
+            target: {
+              tabId: tab.id,
+            },
+            // Note: This function has no return statement; in JS, this means
+            // the return value will be undefined.
+            function: () => { },
+          },
+          resolve);
+    });
+    chrome.test.assertNoLastError();
+    chrome.test.assertEq(1, results.length);
+    // NOTE: Undefined results are mapped to null in our bindings layer,
+    // because they converted from empty base::Values in the same way.
+    // NOTE AS WELL: We use `val === null` (rather than
+    // `assertEq(null, val)` because assertEq will classify null and undefined
+    // as equal.
+    chrome.test.assertTrue(results[0].result === null);
+    chrome.test.succeed();
+  },
+
+  async function injectedFunctionReturnsNull() {
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    const results = await new Promise(resolve => {
+      chrome.scripting.executeScript(
+          {
+            target: {
+              tabId: tab.id,
+            },
+            function: () => { return null; },
+          },
+          resolve);
+    });
+    chrome.test.assertNoLastError();
+    chrome.test.assertEq(1, results.length);
+    // NOTE: We use `val === null` (rather than `assertEq(null, val)` because
+    // assertEq will classify null and undefined as equal.
+    chrome.test.assertTrue(results[0].result === null);
+    chrome.test.succeed();
+  },
+
+  async function injectedFunctionHasError() {
+    const query = {url: 'http://example.com/*'};
+    let tab = await getSingleTab(query);
+    chrome.scripting.executeScript(
+        {
+          target: {
+            tabId: tab.id,
+          },
+          // This will throw a runtime error, since foo, bar, and baz aren't
+          // defined.
+          function: () => {
+            foo.bar = baz;
+            return 3;
+          },
+        },
+        results => {
+          // TODO(devlin): Currently, we don't pass the error from the injected
+          // script back to the extension in any way. It'd be helpful to pass
+          // this along to the extension.
+          chrome.test.assertNoLastError();
+          chrome.test.assertEq(1, results.length);
+          chrome.test.assertEq(null, results[0].result);
+          chrome.test.succeed();
+        });
+  },
+
   async function noSuchTab() {
     const nonExistentTabId = 99999;
     // NOTE(devlin): We can't use a fancy `await` here, because the lastError
