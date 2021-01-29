@@ -2239,6 +2239,7 @@ android_library("base_module_java") {
     "//components/viz/service:service_java",
     "//content/public/android:content_main_dex_java",
     "//media/base/android:media_java",
+    "//services/shape_detection:shape_detection_java",
 
     # Deps for DFMs.
     "//chrome/android/modules/extra_icu/provider:java",
