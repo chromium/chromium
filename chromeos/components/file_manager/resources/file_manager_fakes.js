@@ -394,6 +394,13 @@ window.DriveSyncHandler = class extends EventTarget {
    * @return {boolean} Whether the handler is syncing items or not.
    */
   get syncing() {}
+
+  /**
+   * Adds a dialog to be controlled by DriveSyncHandler.
+   * @param {string} appId App ID of window containing the dialog.
+   * @param {DriveDialogControllerInterface} dialog Dialog to be controlled.
+   */
+  addDialog(appId, dialog) {}
 }
 
 window.Crostini = class {
