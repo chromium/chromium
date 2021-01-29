@@ -166,28 +166,14 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, RunsExternalCommand) {
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::FilePath path, base::OnceClosure quit) {
-            base::ScopedAllowBlockingForTesting allow_blocking;
-            base::File file(path,
-                            base::File::FLAG_OPEN | base::File::FLAG_READ);
-            ASSERT_TRUE(file.IsValid());
-            EXPECT_EQ(static_cast<int64_t>(strlen(kTestUrlWithLineEnding)),
-                      file.GetLength());
-
-            // File content should be equal to the navigated URL.
-            std::unique_ptr<char[]> buffer(new char[file.GetLength() + 1]);
-            buffer.get()[file.GetLength()] = '\0';
-            file.Read(0, buffer.get(), file.GetLength());
-            EXPECT_EQ(std::string(kTestUrlWithLineEnding),
-                      std::string(buffer.get()));
-
-            std::move(quit).Run();
-          },
-          std::move(temp_file), run_loop.QuitClosure()),
-      TestTimeouts::action_timeout());
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
   run_loop.Run();
+
+  // File content should be equal to the navigated URL.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::string output;
+  ASSERT_TRUE(base::ReadFileToString(temp_file, &output));
+  EXPECT_EQ(std::string(kTestUrlWithLineEnding), output);
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, DoesNotKeepSpaces) {
@@ -206,26 +192,15 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, DoesNotKeepSpaces) {
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::FilePath path, base::OnceClosure quit) {
-            base::ScopedAllowBlockingForTesting allow_blocking;
-            base::File file(path,
-                            base::File::FLAG_OPEN | base::File::FLAG_READ);
-            ASSERT_TRUE(file.IsValid());
-
-            std::unique_ptr<char[]> buffer(new char[file.GetLength() + 1]);
-            buffer.get()[file.GetLength()] = '\0';
-            file.Read(0, buffer.get(), file.GetLength());
-            // Check that there's no space in the URL (i.e. replaced with %20).
-            EXPECT_FALSE(strchr(buffer.get(), ' '));
-            EXPECT_TRUE(strstr(buffer.get(), "%20"));
-
-            std::move(quit).Run();
-          },
-          std::move(temp_file), run_loop.QuitClosure()),
-      TestTimeouts::action_timeout());
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
   run_loop.Run();
+
+  // Check that there's no space in the URL (i.e. replaced with %20).
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::string output;
+  ASSERT_TRUE(base::ReadFileToString(temp_file, &output));
+  EXPECT_FALSE(base::Contains(output, ' '));
+  EXPECT_TRUE(base::Contains(output, "%20"));
 }
 
 #if defined(OS_WIN)
@@ -247,26 +222,14 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, UnencodesSingleQUotes) {
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::FilePath path, base::OnceClosure quit) {
-            base::ScopedAllowBlockingForTesting allow_blocking;
-            base::File file(path,
-                            base::File::FLAG_OPEN | base::File::FLAG_READ);
-            ASSERT_TRUE(file.IsValid());
-
-            std::unique_ptr<char[]> buffer(new char[file.GetLength() + 1]);
-            buffer.get()[file.GetLength()] = '\0';
-            file.Read(0, buffer.get(), file.GetLength());
-            // Check that there's no space in the URL (i.e. replaced with %20).
-            EXPECT_EQ("http://example.com/?q='world'\r\n",
-                      std::string(buffer.get()));
-
-            std::move(quit).Run();
-          },
-          std::move(temp_file), run_loop.QuitClosure()),
-      TestTimeouts::action_timeout());
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
   run_loop.Run();
+
+  // Check that single-quotes aren't encoded in the URL.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  std::string output;
+  ASSERT_TRUE(base::ReadFileToString(temp_file, &output));
+  EXPECT_EQ("http://example.com/?q='world'\r\n", output);
 }
 #endif
 
@@ -285,16 +248,12 @@ IN_PROC_BROWSER_TEST_F(BrowserSwitcherBrowserTest, DoesNotRunOnRandomUrls) {
 
   base::RunLoop run_loop;
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::FilePath path, base::OnceClosure quit) {
-            base::ScopedAllowBlockingForTesting allow_blocking;
-            EXPECT_FALSE(base::PathExists(path));
-            std::move(quit).Run();
-          },
-          std::move(temp_file), run_loop.QuitClosure()),
-      TestTimeouts::action_timeout());
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
   run_loop.Run();
+
+  // Check that a random URL didn't cause a "browser switch" to trigger.
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  EXPECT_FALSE(base::PathExists(temp_file));
 }
 
 }  // namespace browser_switcher
