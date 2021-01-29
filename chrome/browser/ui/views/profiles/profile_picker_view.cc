@@ -613,6 +613,14 @@ views::View* ProfilePickerView::GetContentsView() {
   return this;
 }
 
+base::string16 ProfilePickerView::GetAccessibleWindowTitle() const {
+  if (!web_view_ || !web_view_->GetWebContents() ||
+      web_view_->GetWebContents()->GetTitle().empty()) {
+    return l10n_util::GetStringUTF16(IDS_PROFILE_PICKER_MAIN_VIEW_TITLE);
+  }
+  return web_view_->GetWebContents()->GetTitle();
+}
+
 gfx::Size ProfilePickerView::CalculatePreferredSize() const {
   gfx::Size preferred_size = gfx::Size(kWindowWidth, kWindowHeight);
   gfx::Size work_area_size = GetWidget()->GetWorkAreaBoundsInScreen().size();

@@ -84,6 +84,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
   void WindowClosing() override;
   views::ClientView* CreateClientView(views::Widget* widget) override;
   views::View* GetContentsView() override;
+  base::string16 GetAccessibleWindowTitle() const override;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;

@@ -6,8 +6,10 @@ import 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.m.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import './profile_picker_main_view.js';
 import './profile_picker_shared_css.js';
+import './strings.js';
 
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -21,7 +23,7 @@ Polymer({
 
   _template: html`{__html_template__}`,
 
-  behaviors: [NavigationBehavior],
+  behaviors: [I18nBehavior, NavigationBehavior],
 
   properties: {
     /**
@@ -76,6 +78,7 @@ Polymer({
       // main view will never be lazy loaded.
       if (this.currentRoute_ !== Routes.MAIN) {
         this.currentRoute_ = Routes.MAIN;
+        document.title = this.getDocumentTitle_('mainView');
         this.$.viewManager.switchView('mainView', 'fade-in', 'no-animation');
       }
       this.manageProfilesBrowserProxy_.loadSignInProfileCreationFlow(null);
@@ -87,6 +90,7 @@ Polymer({
         'LOAD_SIGNIN should not appear in navigation (only used for metrics)');
 
     const setStep = () => {
+      document.title = this.getDocumentTitle_(step);
       this.$.viewManager.switchView(step, 'fade-in', 'no-animation');
     };
 
@@ -96,6 +100,24 @@ Polymer({
       this.initializeModules_().then(setStep);
     } else {
       setStep();
+    }
+  },
+
+  /**
+   * @param {string} step
+   * @return {!string}
+   * @private
+   */
+  getDocumentTitle_(step) {
+    switch (step) {
+      case 'mainView':
+        return this.i18n('mainViewTitle');
+      case ProfileCreationSteps.PROFILE_TYPE_CHOICE:
+        return this.i18n('profileTypeChoiceTitle');
+      case ProfileCreationSteps.LOCAL_PROFILE_CUSTOMIZATION:
+        return this.i18n('localProfileCreationTitle');
+      default:
+        return '';
     }
   },
 
