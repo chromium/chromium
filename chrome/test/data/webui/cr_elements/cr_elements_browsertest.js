@@ -8,6 +8,7 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "build/chromeos_buildflags.h"');
 
 /**
  * Test fixture for shared Polymer elements.
@@ -547,7 +548,7 @@ TEST_F('CrElementsFindShortcutBehaviorTest', 'All', function() {
   mocha.run();
 });
 
-GEN('#if defined(OS_CHROMEOS)');
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 /**
  * @constructor
  * @extends {CrElementsBrowserTest}

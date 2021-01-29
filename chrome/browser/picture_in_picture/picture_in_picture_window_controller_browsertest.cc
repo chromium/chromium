@@ -1974,7 +1974,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 // Tests that a Next Track button is displayed in the Picture-in-Picture window
 // when Media Session Action "nexttrack" is handled by the website.
 // TODO(crbug.com/1167236): Flaky on Linux.
-#if defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_NextTrackButtonVisibility DISABLED_NextTrackButtonVisibility
 #else
 #define MAYBE_NextTrackButtonVisibility NextTrackButtonVisibility
@@ -2028,7 +2030,9 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureWindowControllerBrowserTest,
 // Tests that a Previous Track button is displayed in the Picture-in-Picture
 // window when Media Session Action "previoustrack" is handled by the website.
 // Flaky on Linux, see crbug.com/985303.
-#if defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_PreviousTrackButtonVisibility \
   DISABLED_PreviousTrackButtonVisibility
 #else

@@ -537,7 +537,9 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
 // Content-Security-Policy, the embed tag is still sized correctly.
 // Regression test for https://crbug.com/271452.
 // Flaky on win and linux: crbug.com/1150197
-#if defined(OS_WIN) || defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #define MAYBE_CSPDoesNotBlockEmbedStyles DISABLED_CSPDoesNotBlockEmbedStyles
 #else
 #define MAYBE_CSPDoesNotBlockEmbedStyles CSPDoesNotBlockEmbedStyles

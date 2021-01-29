@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/extension_checkup.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "extensions/common/extension_builder.h"
@@ -93,7 +94,9 @@ TEST_P(ExtensionCheckupTest, MAYBE_NoInstalledExtensions) {
 // installed, component extensions, or installed by default.
 //
 // Flaky on various Linux bots.  http://crbug.com/1163917
-#if defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_NoUserInstalledExtensions DISABLED_NoUserInstalledExtensions
 #else
 #define MAYBE_NoUserInstalledExtensions NoUserInstalledExtensions

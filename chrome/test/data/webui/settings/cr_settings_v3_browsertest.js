@@ -93,7 +93,7 @@ TEST_F('CrSettingsLanguagesPageV3Test', 'SpellcheckOfficialBuild', function() {
 });
 GEN('#endif');
 
-GEN('#if defined(OS_CHROMEOS)');
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 TEST_F(
     'CrSettingsLanguagesPageV3Test', 'ChromeOSLanguagesSettingsUpdate',
     function() {
@@ -141,7 +141,7 @@ TEST_F('CrSettingsClearBrowsingDataV3Test', 'InstalledApps', () => {
   runMochaSuite('InstalledApps');
 });
 
-GEN('#if !defined(OS_CHROMEOS)');
+GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
 TEST_F(
     'CrSettingsClearBrowsingDataV3Test', 'ClearBrowsingDataDesktop',
     function() {
@@ -459,7 +459,7 @@ TEST_F('CrSettingsRouteV3Test', 'DynamicParameters', function() {
 
 // Copied from Polymer 2 test:
 // Failing on ChromiumOS dbg. https://crbug.com/709442
-GEN('#if (defined(OS_WIN) || defined(OS_CHROMEOS)) && !defined(NDEBUG)');
+GEN('#if (defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)) && !defined(NDEBUG)');
 GEN('#define MAYBE_NonExistentRoute DISABLED_NonExistentRoute');
 GEN('#else');
 GEN('#define MAYBE_NonExistentRoute NonExistentRoute');
@@ -554,14 +554,14 @@ GEN('#if !defined(OS_MAC) || defined(NDEBUG)');
 ].forEach(test => registerTest(...test));
 GEN('#endif  // !defined(OS_MAC) || defined(NDEBUG)');
 
-GEN('#if defined(OS_CHROMEOS)');
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 [['LanguagesPageMetricsChromeOS', 'languages_page_metrics_test_cros.js'],
  ['PasswordsSectionCros', 'passwords_section_test_cros.js'],
  ['PeoplePageChromeOS', 'people_page_test_cros.js'],
  // Copied from Polymer 2 test. TODO(crbug.com/929455): flaky, fix.
  ['SiteListChromeOS', 'site_list_tests_cros.js', 'DISABLED_AndroidSmsInfo'],
 ].forEach(test => registerTest(...test));
-GEN('#endif  // defined(OS_CHROMEOS)');
+GEN('#endif  // BUILDFLAG(IS_CHROMEOS_ASH)');
 
 GEN('#if !defined(OS_MAC)');
 [['EditDictionaryPage', 'edit_dictionary_page_test.js'],
@@ -574,11 +574,11 @@ GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
 ].forEach(test => registerTest(...test));
 GEN('#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)');
 
-GEN('#if !defined(OS_CHROMEOS)');
+GEN('#if !BUILDFLAG(IS_CHROMEOS_ASH)');
 [['ImportDataDialog', 'import_data_dialog_test.js'],
  ['PeoplePageManageProfile', 'people_page_manage_profile_test.js'],
 ].forEach(test => registerTest(...test));
-GEN('#endif  // !defined(OS_CHROMEOS)');
+GEN('#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)');
 
 GEN('#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)');
 [['ChromeCleanupPage', 'chrome_cleanup_page_test.js'],
@@ -586,9 +586,10 @@ GEN('#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)');
 ].forEach(test => registerTest(...test));
 GEN('#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)');
 
-GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)');
+GEN('#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS_ASH)');
 registerTest('MetricsReporting', 'metrics_reporting_tests.js');
-GEN('#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && !defined(OS_CHROMEOS)');
+GEN('#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) ' +
+    '&& !BUILDFLAG(IS_CHROMEOS_ASH)');
 
 function registerTest(testName, module, caseName) {
   const className = `CrSettings${testName}V3Test`;

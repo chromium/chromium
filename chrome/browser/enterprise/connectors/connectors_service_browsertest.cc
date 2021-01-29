@@ -287,7 +287,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetDMTokenForRealTimeUrlCheck();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(maybe_dm_token.has_value());
   } else {
@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceNoProfileFeatureBrowserTest, Test) {
   auto maybe_dm_token =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetDMTokenForRealTimeUrlCheck();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_EQ(management_status() != ManagementStatus::UNMANAGED,
             maybe_dm_token.has_value());
   if (maybe_dm_token.has_value())

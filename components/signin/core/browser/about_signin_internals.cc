@@ -142,7 +142,7 @@ std::string TokenServiceLoadCredentialsStateToLabel(
   return std::string();
 }
 
-#if !defined (OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 std::string SigninStatusFieldToLabel(
     signin_internals_util::TimedSigninStatusField field) {
   switch (field) {
@@ -157,7 +157,7 @@ std::string SigninStatusFieldToLabel(
   NOTREACHED();
   return "Error";
 }
-#endif  // !defined (OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // It's quite unfortunate that |time| is saved in prefs as a string instead of
 // base::Time because any change of the format would create inconsistency.

@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, AccessibilityFocus) {
       << message_;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // TODO(http://crbug.com/1162238): flaky on ChromeOS.
 #define MAYBE_TextareaAppendPerf DISABLED_TextareaAppendPerf
 #else

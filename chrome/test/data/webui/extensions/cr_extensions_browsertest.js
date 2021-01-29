@@ -10,6 +10,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "chrome/browser/ui/webui/extensions/' +
     'extension_settings_browsertest.h"');
 GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "build/chromeos_buildflags.h"');
 
 /**
  * Basic test fixture for the MD chrome://extensions page. Installs no
@@ -112,7 +113,7 @@ TEST_F('CrExtensionsToolbarTest', 'MAYBE_ClickHandlers', function() {
   this.runMochaTest(extension_toolbar_tests.TestNames.ClickHandlers);
 });
 
-GEN('#if defined(OS_CHROMEOS)');
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 TEST_F('CrExtensionsToolbarTest', 'KioskMode', function() {
   this.runMochaTest(extension_toolbar_tests.TestNames.KioskMode);
 });
@@ -429,7 +430,7 @@ TEST_F(
           extension_manager_unit_tests.TestNames.UpdateFromActivityLog);
     });
 
-GEN('#if defined(OS_CHROMEOS)');
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 // eslint-disable-next-line no-var
 var CrExtensionsKioskModeManagerUnitTest =
     class extends CrExtensionsManagerUnitTest {
@@ -774,7 +775,7 @@ TEST_F('CrExtensionsToggleRowTest', 'ToggleRowTest', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // kiosk mode tests.
 
-GEN('#if defined(OS_CHROMEOS)');
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 
 // eslint-disable-next-line no-var
 var CrExtensionsKioskModeTest = class extends CrExtensionsBrowserTest {

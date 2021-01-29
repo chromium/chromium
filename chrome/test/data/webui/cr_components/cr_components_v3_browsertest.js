@@ -10,6 +10,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 GEN('#include "chrome/browser/browser_features.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "build/chromeos_buildflags.h"');
 
 /** Test fixture for shared Polymer 3 components. */
 // eslint-disable-next-line no-var
@@ -60,7 +61,7 @@ TEST_F('CrComponentsCertificateManagerV3Test', 'All', function() {
 GEN('#endif  // defined(USE_NSS_CERTS)');
 
 
-GEN('#if defined(USE_NSS_CERTS) && defined(OS_CHROMEOS)');
+GEN('#if defined(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS_ASH)');
 
 /**
  * ChromeOS specific test fixture for chrome://settings/certificates, testing
@@ -80,4 +81,4 @@ TEST_F('CrComponentsCertificateManagerProvisioningV3Test', 'All', function() {
   mocha.run();
 });
 
-GEN('#endif  // defined(USE_NSS_CERTS) && defined(OS_CHROMEOS)');
+GEN('#endif  // defined(USE_NSS_CERTS) && BUILDFLAG(IS_CHROMEOS_ASH)');
