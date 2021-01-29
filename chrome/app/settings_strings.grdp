@@ -1548,44 +1548,32 @@
   <message name="IDS_SETTINGS_RECENT_PERMISSIONS_NO_CHANGES" desc="Text shown to a user when they have not changed any site permissions instead of showing recently changed permissions">
     No recently changed permissions
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_CHANGE_AUTOBLOCKED_SENTENCE_START" desc="An indicator that a specific permission has been automatically blocked by the browser, This will be used to start a sentence or by itself">
-    Automatically blocked <ph name="PERMISSION">$1<ex>Notifications</ex></ph>
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_ALLOWED_ONE_ITEM" desc="Indicates that the user recently allowed one permission for a website.">
+    Allowed <ph name="PERMISSION">$1<ex>location</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_CHANGE_BLOCKED_SENTENCE_START" desc="An indicator that a specific permission has been blocked for a website by the user. This will be used to start a sentence or by itself">
-    Blocked <ph name="PERMISSION">$1<ex>Location</ex></ph>
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_ALLOWED_TWO_ITEMS" desc="Indicates that the user recently allowed two permissions for a website.">
+    Allowed <ph name="PERMISSION_1">$1<ex>location</ex></ph>, <ph name="PERMISSION_2">$2<ex>notifications</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_CHANGE_ALLOWED_SENTENCE_START" desc="An indicator that a specific permission has been allowed for a website by the user. This will be used to start a sentence or by itself">
-    Allowed <ph name="PERMISSION">$1<ex>Camera</ex></ph>
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_ALLOWED_MORE_THAN_TWO_ITEMS" desc="Indicates that the user recently allowed more than two permissions for a website.">
+    Allowed <ph name="PERMISSION">$1<ex>location</ex></ph> and <ph name="COUNT">$2<ex>2</ex></ph> more
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_CHANGE_AUTOBLOCKED" desc="An indicator that a specific permission has been automatically blocked by the browser, This will be used inside a sentance">
-    automatically blocked <ph name="PERMISSION">$1<ex>Notifications</ex></ph>
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_AUTOMATICALLY_BLOCKED_ONE_ITEM" desc="Indicates that recently a permission for a website has been automatically blocked by the browser">
+    Automatically blocked <ph name="PERMISSION">$1<ex>location</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_CHANGE_BLOCKED" desc="An indicator that a specific permission has been blocked for a website by the user. This will be used inside a sentance">
-    blocked <ph name="PERMISSION">$1<ex>Location</ex></ph>
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_AUTOMATICALLY_BLOCKED_TWO_ITEMS" desc="Indicates that recently two permissions for a website have been automatically blocked by the browser">
+    Automatically blocked <ph name="PERMISSION_1">$1<ex>location</ex></ph>, <ph name="PERMISSION_2">$2<ex>notifications</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_CHANGE_ALLOWED" desc="An indicator that a specific permission has been allowed for a website by the user. This will be used inside of a sentance">
-    allowed <ph name="PERMISSION">$1<ex>Camera</ex></ph>
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_AUTOMATICALLY_BLOCKED_MORE_THAN_TWO_ITEMS" desc="Indicates that recently more than two permissions for a website have been automatically blocked by the browser">
+    Automatically blocked <ph name="PERMISSION">$1<ex>location</ex></ph> and <ph name="COUNT">$2<ex>2</ex></ph> more
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_TWO_ITEMS" desc="A list containing two permissions which have recently changed">
-    <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START">$1<ex>Automatically blocked Notifications</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE">$2<ex>blocked Location</ex></ph>
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_BLOCKED_ONE_ITEM" desc="Indicates that the user recently blocked one permission for a website.">
+    Blocked <ph name="PERMISSION">$1<ex>location</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_THREE_ITEMS" desc="A list containing three permissions which have recently changed">
-    <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START">$1<ex>Automatically blocked Notifications</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_1">$2<ex>blocked Location</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_2">$3<ex>allowed Camera</ex></ph>
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_BLOCKED_TWO_ITEMS" desc="Indicates that the user recently blocked two permissions for a website.">
+    Blocked <ph name="PERMISSION_1">$1<ex>location</ex></ph>, <ph name="PERMISSION_2">$2<ex>notifications</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_OVER_THREE_ITEMS" desc="A list containing three permissions that have recently changed, but indicating that more have also changed recently">
-    <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START">$1<ex>Automatically blocked Notifications</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_1">$2<ex>blocked Location</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_2">$3<ex>allowed Camera</ex></ph>, and more
-  </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_ONE_ITEM_INCOGNITO" desc="A list containing a single permission which has recently changed in the users incognito session">
-    Current incognito session: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START">$1<ex>automatically blocked Notifications</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_TWO_ITEMS_INCOGNITO" desc="A list containing two permissions which have recently changed in the users incognito session">
-    Current incognito session: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START">$1<ex>automatically blocked Notifications</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_1">$2<ex>blocked Location</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_THREE_ITEMS_INCOGNITO" desc="A list containing three permissions which have recently changed in the users incognito session">
-    Current incognito session: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START">$1<ex>automatically blocked Notifications</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_1">$2<ex>blocked Location</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_2">$3<ex>allowed Camera</ex></ph>
-  </message>
-  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_OVER_THREE_ITEMS_INCOGNITO" desc="A list containing three permissions that have recently changed, but indicating that more have also changed recently">
-    Current incognito session: <ph name="RECENT_PERMISSIONS_CHANGE_SENTENCE_START">$1<ex>automatically blocked Notifications</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_1">$2<ex>blocked Location</ex></ph>, <ph name="RECENT_PERMISSIONS_CHANGE_2">$3<ex>allowed Camera</ex></ph>, and more
+  <message name="IDS_SETTINGS_RECENT_PERMISSIONS_BLOCKED_MORE_THAN_TWO_ITEMS" desc="Indicates that the user recently allowed more than two permissions for a website.">
+    Blocked <ph name="PERMISSION">$1<ex>location</ex></ph> and <ph name="COUNT">$2<ex>2</ex></ph> more
   </message>
 
   <!-- Reset Settings Page -->
@@ -2055,8 +2043,14 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_ADS" desc="Label for the ads site settings.">
     Ads
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ADS_MID_SENTENCE" desc="Label for the ads site setting when used mid-sentence.">
+    ads
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AR" desc="Label for the AR site settings.">
     Augmented reality
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_AR_MID_SENTENCE" desc="Label for the AR site setting when used mid-sentence.">
+    augmented reality
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_AR_ASK" desc="The ask label for the AR feature in site settings.">
     Ask when a site wants to create a 3D map of your surroundings or track camera position
@@ -2070,17 +2064,29 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOADS" desc="Label for the automatic downloads site settings.">
     Automatic downloads
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_AUTOMATIC_DOWNLOADS_MID_SENTENCE" desc="Label for the automatic downloads site setting when used mid-sentence.">
+    automatic downloads
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC" desc="Label for the background sync site settings.">
     Background sync
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BACKGROUND_SYNC_MID_SENTENCE" desc="Label for the background sync site setting when used mid-sentence.">
+    background sync
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA" desc="Label for the camera site settings.">
     Camera
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_MID_SENTENCE" desc="Label for the camera site setting when used mid-sentence">
+    camera
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CAMERA_LABEL" desc="The accessibility label of the 'camera device' select menu">
     Camera
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD" desc="Label for the clipboard site settings.">
     Clipboard
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_MID_SENTENCE" desc="Label for the clipboard site setting when used mid-sentence.">
+    clipboard
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_CLIPBOARD_ASK" desc="The ask label for clipboard access in site settings.">
     Ask when a site wants to see text and images copied to the clipboard
@@ -2154,14 +2160,26 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIES" desc="Label for the cookies and site data site settings.">
     Cookies and site data
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_COOKIES_MID_SENTENCE" desc="Label for the cookies and site data setting when used mid-sentence">
+    cookies and site data
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HANDLERS" desc="Label for the protocol handlers (e.g. mailto) in site settings.">
     Handlers
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_HANDLERS_MID_SENTENCE" desc="Label for the protocol handlers (e.g. mailto) site setting when used mid-sentence">
+    handlers
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION" desc="Label for the geolocation site settings." meaning="Geolocation">
     Location
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_LOCATION_MID_SENTENCE" desc="Label for the geolocation site setting when used mid-sentence." meaning="Geolocation">
+    location
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIC" desc="Label for the microphone site settings.">
     Microphone
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_MID_SENTENCE" desc="Label for the microphone site setting when used mid-sentence.">
+    microphone
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIC_LABEL" desc="The accessibility label of the 'microphone device' select menu">
     Microphone
@@ -2169,7 +2187,13 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS" desc="Label for notifications sites site settings.">
     Notifications
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_NOTIFICATIONS_MID_SENTENCE" desc="Label for notifications sites site settings when used mid-sentence">
+    notifications
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES" desc="Label for HID devices in site settings.">
+    HID devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_MID_SENTENCE" desc="Label for HID devices in site settings when used mid-sentence.">
     HID devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_HID_DEVICES_ASK" desc="The ask label for HID devices in site settings.">
@@ -2184,8 +2208,14 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES" desc="Label for the images site settings.">
     Images
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IMAGES_MID_SENTENCE" desc="Label for the images site setting when used mid-sentence.">
+    images
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT" desc="Label for the insecure content site settings. This setting controls whether HTTP content will be displayed on HTTPS sites.">
     Insecure content
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_MID_SENTENCE" desc="Label for the insecure content site settings when used mid-sentence. This setting controls whether HTTP content will be displayed on HTTPS sites.">
+    insecure content
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_INSECURE_CONTENT_BLOCK" desc="Label explaining that insecure content is blocked by default in secure sites. Insecure content refers to content served over HTTP, secure sites refers to sites served over HTTPS.">
     Insecure content is blocked by default on secure sites
@@ -2193,8 +2223,14 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT" desc="Label for the javascript site settings.">
     JavaScript
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_JAVASCRIPT_MID_SENTENCE" desc="Label for the javascript site setting when used mid-sentence.">
+    Javascript
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLER" desc="Label for the payment handler site settings.">
     Payment Handlers
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLER_MID_SENTENCE" desc="Label for the payment handler site setting when used mid-sentence.">
+    payment handlers
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PAYMENT_HANDLER_ALLOW" desc="The allow label for payment handler installation in site settings.">
     Allow sites to install payment handlers
@@ -2214,8 +2250,15 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS" desc="Label for the pop-ups and redirects site settings.">
     Pop-ups and redirects
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_POPUPS_MID_SENTENCE" desc="Label for the pop-ups and redirects site setting when
+    used mid-sentence.">
+    pop-ups and redirects
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT" desc="Label for the protected content site settings.">
     Protected content
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_MID_SENTENCE" desc="Label for the protected content site settings when used mid-sentence.">
+    protected content
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_PROTECTED_CONTENT_IDENTIFIERS" desc="Label for the permission to allow a site to use unique identifiers to access protected content in site details.">
     Protected content identifiers
@@ -2225,6 +2268,9 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_VR" desc="Label for the VR site settings.">
     Virtual reality
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_VR_MID_SENTENCE" desc="Label for the VR site setting when used mid-sentence.">
+    virtual reality
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_VR_ASK" desc="The ask label for the VR feature in site settings.">
     Ask when a site wants to use your virtual reality devices and data
@@ -2249,6 +2295,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_DEVICES" desc="Label for the MIDI devices in site settings.">
     MIDI devices
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_DEVICES_MID_SENTENCE" desc="Label for the MIDI devices in site settings when used mid-sentence.">
+    MIDI devices
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MIDI_DEVICES_ASK" desc="The ask label for MIDI devices in site settings.">
     Ask when a site wants to use system exclusive messages to access MIDI devices
   </message>
@@ -2261,13 +2310,25 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND" desc="Label for the sound site settings.">
     Sound
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SOUND_MID_SENTENCE" desc="Label for the sound site setting when used mid-sentence">
+    sound
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SENSORS" desc="Label for the sensors permission in Site Settings. Sensors are motion and light sensors, specifically accelerometers, gyroscope, magnetometers, and ambient-light sensors">
     Motion or light sensors
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SENSORS_MID_SENTENCE" desc="Label for the sensors permission in Site Settings when used mid-sentence. Sensors are motion and light sensors, specifically accelerometers, gyroscope, magnetometers, and ambient-light sensors">
+    motion or light sensors
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS" desc="Label for the motion sensors permission in Site Settings. Motion sensors are accelerometers, gyroscopes and magnetometers.">
     Motion sensors
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_MID_SENTENCE" desc="Label for the motion sensors permission in Site Settings when used mid-sentence. Motion sensors are accelerometers, gyroscopes and magnetometers.">
+    motion sensors
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES" desc="Label for Bluetooth devices in site settings.">
+    Bluetooth devices
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_MID_SENTENCE" desc="Label for Bluetooth devices in site settings when used mid-sentence.">
     Bluetooth devices
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_DEVICES_ASK" desc="The ask label for Bluetooth devices in site settings.">
@@ -2282,6 +2343,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_USB_DEVICES" desc="Label for USB devices in site settings.">
     USB devices
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_USB_DEVICES_MID_SENTENCE" desc="Label for USB devices in site settings when used mid-sentence.">
+    USB devices
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_USB_DEVICES_ASK" desc="The ask label for USB devices in site settings.">
     Ask when a site wants to access USB devices
   </message>
@@ -2294,6 +2358,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS" desc="Label for serial ports in site settings.">
     Serial ports
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_MID_SENTENCE" desc="Label for serial ports in site settings when used mid-sentence.">
+    serial ports
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_SERIAL_PORTS_ASK" desc="The ask label for serial ports in site settings.">
     Ask when a site wants to access serial ports
   </message>
@@ -2305,6 +2372,9 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NATIVE_FILE_SYSTEM_WRITE" desc="Label for native file system write permission, which enables sites to save changes to the original files that were selected by the user.">
     File editing
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_NATIVE_FILE_SYSTEM_WRITE_MID_SENTENCE" desc="Label for native file system write permission when used mid-sentence, which enables sites to save changes to the original files that were selected by the user.">
+    file editing
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NATIVE_FILE_SYSTEM_WRITE_ASK" desc="The ask label for native file system write permission in site settings.">
     Ask when a site wants to edit files or folders on your device
@@ -2320,6 +2390,9 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_ZOOM_LEVELS" desc="Label for the Zoom levels category in site settings.">
     Zoom levels
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_ZOOM_LEVELS_MID_SENTENCE" desc="Label for the Zoom levels category in site settings when used mid-sentence">
+    zoom levels
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MAY_SAVE_COOKIES" desc="Label for the cookies option description site settings.">
     Sites can save and read cookie data
@@ -2450,6 +2523,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT" desc="Label for the window placement site settings.">
     Window placement
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT_MID_SENTENCE" desc="Label for the window placement site setting when use mid sentence">
+    window placement
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT_ASK" desc="The ask label for the window placement site settings.">
     Ask when a site wants to open and place windows on your screens
   </message>
@@ -2459,6 +2535,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_WINDOW_PLACEMENT_BLOCK" desc="The block label for the window placement site settings.">
     Block sites from opening and placing windows on your screens
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_FONT_ACCESS_MID_SENTENCE" desc="The label for the local font access site setting when used mid-sentence.">
+    fonts
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_FONT_ACCESS_ASK" desc="The ask label for the local font access site settings.">
     Ask when a site wants to use fonts installed on your device
   </message>
@@ -2467,6 +2546,9 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION" desc="Label for the idle detection site settings.">
     Your presence
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION_MID_SENTENCE" desc="Label for the idle detection site setting when used mid-sentence.">
+    your presence
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_IDLE_DETECTION_ASK" desc="The ask label for the idle detection site settings.">
     Ask when a site wants to know when you're present
@@ -2725,7 +2807,7 @@
     Current incognito session only
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_INCOGNITO_SITE_EXCEPTION_DESC" desc="The text displayed in order to explain to a user that a content setting only applies to the current incognito session.">
-    This exception will be automatically removed after you exit the current Incognito session
+    This custom setting will be removed when you close all your Incognito windows
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_NO_ZOOMED_SITES" desc="A label explaining that no sites have a configured zoom in/out value.">
     No sites have been zoomed in or out
@@ -2743,6 +2825,9 @@
     No sites found
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_SCANNING" desc="The label that is used to show the Bluetooth scanning site settings to the user.">
+    Bluetooth scanning
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_SCANNING_MID_SENTENCE" desc="The label that is used to show the Bluetooth scanning site settings to the user when used mid-sentence.">
     Bluetooth scanning
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_BLUETOOTH_SCANNING_ASK" desc="The label that is used to show the Bluetooth scanning setting is set to ask in site settings.">

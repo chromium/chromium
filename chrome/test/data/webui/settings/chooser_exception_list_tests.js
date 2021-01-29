@@ -7,6 +7,7 @@ import 'chrome://settings/settings.js';
 import 'chrome://test/cr_elements/cr_policy_strings.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ChooserType,ContentSettingsTypes,SiteSettingSource,SiteSettingsPrefsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {TestSiteSettingsPrefsBrowserProxy} from 'chrome://test/settings/test_site_settings_prefs_browser_proxy.js';
@@ -552,9 +553,7 @@ suite('ChooserExceptionList', function() {
               assertTrue(!!tooltip);
               const innerTooltip = tooltip.$.tooltip;
               assertTrue(!!innerTooltip);
-              const text =
-                  'This exception will be automatically removed after you ' +
-                  'exit the current Incognito session';
+              const text = loadTimeData.getString('incognitoSiteExceptionDesc');
               // This filtered array should be non-empty due to above test that
               // checks for incognito exception.
               Array.from(siteListEntries)
