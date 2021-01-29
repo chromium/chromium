@@ -262,6 +262,25 @@ def GenerateXcodeProject(gn_path, root_dir, out_dir, settings):
     if os.path.exists(temp_path):
       shutil.rmtree(temp_path)
 
+  # Generate an .lldbinit file for the project that load the script that fixes
+  # the mapping of source files (see docs/ios/build_instructions.md#debugging).
+  with open(os.path.join(out_dir, 'build', '.lldbinit'), 'w') as lldbinit:
+    lldb_script_dir = os.path.join(os.path.abspath(root_dir), 'tools', 'lldb')
+    lldbinit.write('script sys.path[:0] = [\'%s\']\n' % lldb_script_dir)
+    lldbinit.write('script import lldbinit\n')
+
+    workspace_name = settings.getstring(
+        'gn_args',
+        'ios_internal_citc_workspace_name')
+
+    if workspace_name != '':
+      username = os.environ['USER']
+      for shortname in ('googlemac', 'third_party', 'blaze-out'):
+        lldbinit.write('settings append target.source-map %s %s\n' % (
+            shortname,
+            '/google/src/cloud/%s/%s/google3/%s' % (
+                username, workspace_name, shortname)))
+
 
 def GenerateGnBuildRules(gn_path, root_dir, out_dir, settings):
   '''Generates all template configurations for gn.'''

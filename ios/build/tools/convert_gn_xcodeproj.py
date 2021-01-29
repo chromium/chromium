@@ -16,14 +16,34 @@ import argparse
 import collections
 import copy
 import filecmp
-import json
 import hashlib
+import json
 import os
 import re
 import shutil
+import string
 import subprocess
 import sys
 import tempfile
+
+
+class Template(string.Template):
+
+  """A subclass of string.Template that changes delimiter."""
+
+  delimiter = '@'
+
+
+def LoadSchemeTemplate(root):
+  """Return a string.Template object for scheme file loaded relative to root."""
+  path = os.path.join(root, 'ios', 'build', 'tools', 'xcodescheme.template')
+  with open(path) as file:
+    return Template(file.read())
+
+
+def CreateIdentifier(str_id):
+  """Return a 24 characters string that can be used as an identifier."""
+  return hashlib.sha1(str_id.encode("utf-8")).hexdigest()[:24].upper()
 
 
 class XcodeProject(object):
@@ -36,7 +56,7 @@ class XcodeProject(object):
     while True:
       self.counter += 1
       str_id = "%s %s %d" % (parent_name, obj['isa'], self.counter)
-      new_id = hashlib.sha1(str_id.encode("utf-8")).hexdigest()[:24].upper()
+      new_id = CreateIdentifier(str_id)
 
       # Make sure ID is unique. It's possible there could be an id conflict
       # since this is run after GN runs.
@@ -103,6 +123,11 @@ def UpdateXcodeProject(project_dir, configurations, root_dir):
   json_data = json.loads(LoadXcodeProjectAsJSON(project_dir))
   project = XcodeProject(json_data['objects'])
 
+  schemes_template = LoadSchemeTemplate(root_dir)
+  schemes_directory = os.path.join(project_dir, 'xcshareddata', 'xcschemes')
+  if not os.path.isdir(schemes_directory):
+    os.makedirs(schemes_directory)
+
   objects_to_remove = []
   for value in list(project.objects.values()):
     isa = value['isa']
@@ -135,6 +160,27 @@ def UpdateXcodeProject(project_dir, configurations, root_dir):
         new_build_config['name'] = configuration
         value['buildConfigurations'].append(
             project.AddObject('products', new_build_config))
+
+    # Create scheme files for application, extensions and framework targets.
+    if isa == 'PBXNativeTarget':
+      product_type = value['productType']
+      if product_type not in (
+          'com.apple.product-type.app-extension',
+          'com.apple.product-type.application',
+          'com.apple.product-type.framework'):
+        continue
+
+      name, product_name = (value['name'], value['productName'])
+      identifier = CreateIdentifier('%s, %s' % (name, product_name))
+      product = project.objects[value['productReference']]
+
+      scheme_path = os.path.join(schemes_directory, value['name'] + '.xcscheme')
+      with open(scheme_path, 'w') as scheme_file:
+        scheme_file.write(
+            schemes_template.substitute(
+                BLUEPRINT_IDENTIFIER=identifier,
+                PRODUCT_NAME=product['path'],
+                TARGET_NAME=name))
 
   for object_id in objects_to_remove:
     del project.objects[object_id]

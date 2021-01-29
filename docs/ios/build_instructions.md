@@ -353,6 +353,10 @@ This will also allow you to see the content of some of Chromium types in the
 debugger like `base::string16`, ... If you want to use `lldb` directly, name
 the file `~/.lldbinit` instead of `~/.lldbinit-Xcode`.
 
+Note: if you are using `ios/build/tools/setup-gn.py` to generate the Xcode
+project, the script also generate an `.lldbinit` file next to the project and
+configure Xcode to use that file instead of the global one.
+
 ### Changing the version of Xcode
 
 To change the version of Xcode used to build Chromium on iOS, please follow
