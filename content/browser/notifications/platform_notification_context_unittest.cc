@@ -109,12 +109,12 @@ class PlatformNotificationContextTest : public ::testing::Test {
   }
 
  protected:
-  // Creates a new PlatformNotificationContextImpl instance. When using this
-  // method, the underlying database will always be created in memory.
+  // Creates a new PlatformNotificationContextImpl instance. When |path| is
+  // empty the underlying database will be created in memory.
   scoped_refptr<PlatformNotificationContextImpl>
-  CreatePlatformNotificationContext() {
+  CreatePlatformNotificationContext(base::FilePath path = {}) {
     auto context = base::MakeRefCounted<PlatformNotificationContextImpl>(
-        base::FilePath(), &browser_context_, nullptr);
+        path, &browser_context_, nullptr);
     OverrideTaskRunnerForTesting(context.get());
     context->Initialize();
     // Wait until initialization is done as we query the displayed notifications
@@ -275,6 +275,24 @@ TEST_F(PlatformNotificationContextTest, ReadNonExistentNotification) {
 
   // The read operation should have failed, as it does not exist.
   ASSERT_FALSE(success());
+}
+
+TEST_F(PlatformNotificationContextTest, InitializeIsLazy) {
+  NotificationBrowserClient notification_browser_client(browser_context());
+  SetBrowserClientForTesting(&notification_browser_client);
+  GURL origin("https://example.com");
+
+  base::ScopedTempDir database_dir;
+  ASSERT_TRUE(database_dir.CreateUniqueTempDir());
+  base::FilePath database_path = database_dir.GetPath();
+
+  // Make sure that if the database does not exist yet it won't be created.
+  auto context = CreatePlatformNotificationContext(database_path);
+  EXPECT_FALSE(base::PathExists(context->GetDatabasePath()));
+
+  // Make some database request to force initialization.
+  GetStoredNotificationsSync(context.get(), origin);
+  EXPECT_TRUE(base::PathExists(context->GetDatabasePath()));
 }
 
 TEST_F(PlatformNotificationContextTest, WriteReadNotification) {
@@ -652,11 +670,7 @@ TEST_F(PlatformNotificationContextTest, DestroyOnDiskDatabase) {
 
   // Manually construct the PlatformNotificationContextImpl because this test
   // requires the database to be created on the filesystem.
-  scoped_refptr<PlatformNotificationContextImpl> context(
-      new PlatformNotificationContextImpl(database_dir.GetPath(),
-                                          browser_context(), nullptr));
-
-  OverrideTaskRunnerForTesting(context.get());
+  auto context = CreatePlatformNotificationContext(database_dir.GetPath());
 
   // Trigger a read-operation to force creating the database.
   context->ReadNotificationDataAndRecordInteraction(

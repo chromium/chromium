@@ -143,7 +143,8 @@ void PlatformNotificationContextImpl::Initialize() {
           browser_context_);
   if (!service) {
     std::set<std::string> displayed_notifications;
-    DidGetNotifications(std::move(displayed_notifications), false);
+    DidGetNotifications(std::move(displayed_notifications),
+                        /* supports_synchronization= */ false);
     return;
   }
 
@@ -178,9 +179,13 @@ void PlatformNotificationContextImpl::DidGetNotifications(
   // that has since been closed, or because the platform does not support
   // notifications that exceed the lifetime of the browser process.
   if (supports_synchronization || next_trigger <= base::Time::Now()) {
-    LazyInitialize(base::BindOnce(
-        &PlatformNotificationContextImpl::DoSyncNotificationData, this,
-        supports_synchronization, std::move(displayed_notifications)));
+    // We can use |lazy| here as there's no point in synchronizing notifications
+    // if there is no database to clean them up from.
+    InitializeDatabase(
+        base::BindOnce(&PlatformNotificationContextImpl::DoSyncNotificationData,
+                       this, supports_synchronization,
+                       std::move(displayed_notifications)),
+        /* lazy= */ true);
   } else if (service_proxy_ && next_trigger != base::Time::Max()) {
     service_proxy_->ScheduleTrigger(next_trigger);
   }
@@ -279,7 +284,7 @@ void PlatformNotificationContextImpl::
     DeleteAllNotificationDataForBlockedOrigins(
         DeleteAllResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  LazyInitialize(base::BindOnce(
+  InitializeDatabase(base::BindOnce(
       &PlatformNotificationContextImpl::DoReadAllNotificationOrigins, this,
       base::BindOnce(
           &PlatformNotificationContextImpl::CheckPermissionsAndDeleteBlocked,
@@ -348,7 +353,7 @@ void PlatformNotificationContextImpl::CheckPermissionsAndDeleteBlocked(
     return;
   }
 
-  LazyInitialize(base::BindOnce(
+  InitializeDatabase(base::BindOnce(
       &PlatformNotificationContextImpl::DoDeleteAllNotificationDataForOrigins,
       this, std::move(origins), /* tag= */ std::string(), std::move(callback)));
 }
@@ -404,7 +409,7 @@ void PlatformNotificationContextImpl::DeleteAllNotificationDataWithTag(
     DeleteAllResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::set<GURL> origins = {origin};
-  LazyInitialize(base::BindOnce(
+  InitializeDatabase(base::BindOnce(
       &PlatformNotificationContextImpl::DoDeleteAllNotificationDataForOrigins,
       this, std::move(origins), tag, std::move(callback)));
 }
@@ -415,7 +420,7 @@ void PlatformNotificationContextImpl::ReadNotificationDataAndRecordInteraction(
     const PlatformNotificationContext::Interaction interaction,
     ReadResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  LazyInitialize(base::BindOnce(
+  InitializeDatabase(base::BindOnce(
       &PlatformNotificationContextImpl::DoReadNotificationData, this,
       notification_id, origin, interaction, std::move(callback)));
 }
@@ -461,7 +466,7 @@ void PlatformNotificationContextImpl::DoReadNotificationData(
 void PlatformNotificationContextImpl::TriggerNotifications() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   std::set<std::string> displayed_notifications;
-  LazyInitialize(base::BindOnce(
+  InitializeDatabase(base::BindOnce(
       &PlatformNotificationContextImpl::DoSyncNotificationData, this,
       /* supports_synchronization= */ false,
       std::move(displayed_notifications)));
@@ -521,7 +526,7 @@ void PlatformNotificationContextImpl::WriteNotificationResources(
   if (has_shutdown_ || !service_proxy_)
     return;
 
-  LazyInitialize(base::BindOnce(
+  InitializeDatabase(base::BindOnce(
       &PlatformNotificationContextImpl::DoWriteNotificationResources, this,
       std::move(resource_data), std::move(callback)));
 }
@@ -584,7 +589,7 @@ void PlatformNotificationContextImpl::ReDisplayNotifications(
   if (has_shutdown_ || !service_proxy_)
     return;
 
-  LazyInitialize(
+  InitializeDatabase(
       base::BindOnce(&PlatformNotificationContextImpl::DoReDisplayNotifications,
                      this, std::move(origins), std::move(callback)));
 }
@@ -648,7 +653,7 @@ void PlatformNotificationContextImpl::ReadNotificationResources(
     const GURL& origin,
     ReadResourcesResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  LazyInitialize(base::BindOnce(
+  InitializeDatabase(base::BindOnce(
       &PlatformNotificationContextImpl::DoReadNotificationResources, this,
       notification_id, origin, std::move(callback)));
 }
@@ -694,9 +699,9 @@ void PlatformNotificationContextImpl::OnGetDisplayedNotifications(
     std::set<std::string> notification_ids,
     bool supports_synchronization) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  LazyInitialize(base::BindOnce(std::move(callback),
-                                std::move(notification_ids),
-                                supports_synchronization));
+  InitializeDatabase(base::BindOnce(std::move(callback),
+                                    std::move(notification_ids),
+                                    supports_synchronization));
 }
 
 void PlatformNotificationContextImpl::TryGetDisplayedNotifications(
@@ -859,7 +864,7 @@ void PlatformNotificationContextImpl::WriteNotificationData(
     const NotificationDatabaseData& database_data,
     WriteResultCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  LazyInitialize(base::BindOnce(
+  InitializeDatabase(base::BindOnce(
       &PlatformNotificationContextImpl::DoWriteNotificationData, this,
       service_worker_registration_id, persistent_notification_id, origin,
       database_data, std::move(callback)));
@@ -1009,7 +1014,7 @@ void PlatformNotificationContextImpl::DeleteNotificationData(
     service_proxy_->CloseNotification(notification_id);
 
   bool should_log_close = service_proxy_->ShouldLogClose(origin);
-  LazyInitialize(base::BindOnce(
+  InitializeDatabase(base::BindOnce(
       &PlatformNotificationContextImpl::DoDeleteNotificationData, this,
       notification_id, origin, std::move(callback), should_log_close));
 }
@@ -1060,7 +1065,7 @@ void PlatformNotificationContextImpl::OnRegistrationDeleted(
     int64_t registration_id,
     const GURL& pattern) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  LazyInitialize(
+  InitializeDatabase(
       base::BindOnce(&PlatformNotificationContextImpl::
                          DoDeleteNotificationsForServiceWorkerRegistration,
                      this, pattern.GetOrigin(), registration_id));
@@ -1096,7 +1101,7 @@ void PlatformNotificationContextImpl::
 
 void PlatformNotificationContextImpl::OnStorageWiped() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  LazyInitialize(base::BindOnce(
+  InitializeDatabase(base::BindOnce(
       &PlatformNotificationContextImpl::OnStorageWipedInitialized, this));
 }
 
@@ -1108,8 +1113,9 @@ void PlatformNotificationContextImpl::OnStorageWipedInitialized(
   DestroyDatabase();
 }
 
-void PlatformNotificationContextImpl::LazyInitialize(
-    InitializeResultCallback callback) {
+void PlatformNotificationContextImpl::InitializeDatabase(
+    InitializeResultCallback callback,
+    bool lazy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (!task_runner_) {
@@ -1118,12 +1124,14 @@ void PlatformNotificationContextImpl::LazyInitialize(
   }
 
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&PlatformNotificationContextImpl::OpenDatabase,
-                                this, std::move(callback)));
+      FROM_HERE,
+      base::BindOnce(&PlatformNotificationContextImpl::OpenDatabase, this,
+                     std::move(callback), /* create_if_missing= */ !lazy));
 }
 
 void PlatformNotificationContextImpl::OpenDatabase(
-    InitializeResultCallback callback) {
+    InitializeResultCallback callback,
+    bool create_if_missing) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   if (database_) {
@@ -1131,10 +1139,16 @@ void PlatformNotificationContextImpl::OpenDatabase(
     return;
   }
 
-  database_ =
+  auto database =
       std::make_unique<NotificationDatabase>(GetDatabasePath(), ukm_callback_);
-  NotificationDatabase::Status status =
-      database_->Open(/* create_if_missing= */ true);
+  NotificationDatabase::Status status = database->Open(create_if_missing);
+
+  // Bail if we don't want to create a new database and there isn't one already.
+  if (!create_if_missing &&
+      status == NotificationDatabase::STATUS_ERROR_NOT_FOUND) {
+    std::move(callback).Run(/* initialized= */ false);
+    return;
+  }
 
   UMA_HISTOGRAM_ENUMERATION("Notifications.Database.OpenResult", status,
                             NotificationDatabase::STATUS_COUNT);
@@ -1143,9 +1157,15 @@ void PlatformNotificationContextImpl::OpenDatabase(
   // away the contents of the directory and try re-opening the database.
   if (status == NotificationDatabase::STATUS_ERROR_CORRUPTED) {
     if (DestroyDatabase()) {
-      database_ = std::make_unique<NotificationDatabase>(GetDatabasePath(),
-                                                         ukm_callback_);
-      status = database_->Open(/* create_if_missing= */ true);
+      // Bail if we just destroyed the database and don't need a new one.
+      if (!create_if_missing) {
+        std::move(callback).Run(/* initialized= */ false);
+        return;
+      }
+
+      database = std::make_unique<NotificationDatabase>(GetDatabasePath(),
+                                                        ukm_callback_);
+      status = database->Open(create_if_missing);
 
       UMA_HISTOGRAM_ENUMERATION(
           "Notifications.Database.OpenAfterCorruptionResult", status,
@@ -1153,14 +1173,14 @@ void PlatformNotificationContextImpl::OpenDatabase(
     }
   }
 
-  if (status == NotificationDatabase::STATUS_OK) {
-    std::move(callback).Run(/* initialized= */ true);
+  if (status != NotificationDatabase::STATUS_OK) {
+    std::move(callback).Run(/* initialized= */ false);
     return;
   }
 
-  database_.reset();
-
-  std::move(callback).Run(/* initialized= */ false);
+  // Success! Keep the database so we don't need to open it again.
+  database_ = std::move(database);
+  std::move(callback).Run(/* initialized= */ true);
 }
 
 bool PlatformNotificationContextImpl::DestroyDatabase() {
