@@ -15,6 +15,8 @@ extern const char kAssistiveInputFeatureSettings[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kAssistPersonalInfoEnabled[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const char kESimProfilesPrefName[];
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kEmojiSuggestionEnabled[];
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const char kEmojiSuggestionEnterpriseAllowed[];

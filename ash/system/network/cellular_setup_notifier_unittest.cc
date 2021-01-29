@@ -14,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/dbus/hermes/hermes_clients.h"
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/network/network_cert_loader.h"
 #include "chromeos/network/network_handler.h"
@@ -48,6 +49,7 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
 
     chromeos::NetworkCertLoader::Initialize();
     chromeos::shill_clients::InitializeFakes();
+    chromeos::hermes_clients::InitializeFakes();
     chromeos::NetworkHandler::Initialize();
     network_config_helper_ = std::make_unique<
         chromeos::network_config::CrosNetworkConfigTestHelper>();
@@ -68,6 +70,7 @@ class CellularSetupNotifierTest : public NoSessionAshTestBase {
     AshTestBase::TearDown();
     network_config_helper_.reset();
     chromeos::NetworkHandler::Shutdown();
+    chromeos::hermes_clients::Shutdown();
     chromeos::shill_clients::Shutdown();
     chromeos::NetworkCertLoader::Shutdown();
   }

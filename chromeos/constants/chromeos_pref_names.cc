@@ -23,6 +23,10 @@ const char kEmojiSuggestionEnabled[] =
 const char kEmojiSuggestionEnterpriseAllowed[] =
     "assistive_input.emoji_suggestion.enterprise_allowed";
 
+// Pref which stores a list of eSIM profiles. Each entry in the list is created
+// by serializing a CellularESimProfile.
+const char kESimProfilesPrefName[] = "cros.network.esim_profiles";
+
 // A dictionary pref to hold the mute setting for all the currently known
 // audio devices.
 const char kAudioDevicesMute[] = "settings.audio.devices.mute";

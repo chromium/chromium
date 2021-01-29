@@ -5,7 +5,9 @@
 #include "chromeos/network/network_handler.h"
 
 #include "base/threading/thread_task_runner_handle.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/network/auto_connect_handler.h"
+#include "chromeos/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/cellular_metrics_logger.h"
 #include "chromeos/network/client_cert_resolver.h"
@@ -35,7 +37,10 @@ NetworkHandler::NetworkHandler()
     : task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   network_state_handler_.reset(new NetworkStateHandler());
   network_device_handler_.reset(new NetworkDeviceHandlerImpl());
-  cellular_inhibitor_.reset(new CellularInhibitor());
+  if (features::IsCellularActivationUiEnabled()) {
+    cellular_esim_profile_handler_.reset(new CellularESimProfileHandlerImpl());
+    cellular_inhibitor_.reset(new CellularInhibitor());
+  }
   network_profile_handler_.reset(new NetworkProfileHandler());
   network_configuration_handler_.reset(new NetworkConfigurationHandler());
   managed_network_configuration_handler_.reset(
@@ -61,8 +66,11 @@ NetworkHandler::~NetworkHandler() {
 void NetworkHandler::Init() {
   network_state_handler_->InitShillPropertyHandler();
   network_device_handler_->Init(network_state_handler_.get());
-  cellular_inhibitor_->Init(network_state_handler_.get(),
-                            network_device_handler_.get());
+  if (features::IsCellularActivationUiEnabled()) {
+    cellular_esim_profile_handler_->Init();
+    cellular_inhibitor_->Init(network_state_handler_.get(),
+                              network_device_handler_.get());
+  }
   network_profile_handler_->Init();
   network_configuration_handler_->Init(network_state_handler_.get(),
                                        network_device_handler_.get());
@@ -123,6 +131,8 @@ bool NetworkHandler::IsInitialized() {
 void NetworkHandler::InitializePrefServices(
     PrefService* logged_in_profile_prefs,
     PrefService* device_prefs) {
+  if (features::IsCellularActivationUiEnabled())
+    cellular_esim_profile_handler_->SetDevicePrefs(device_prefs);
   ui_proxy_config_service_.reset(new UIProxyConfigService(
       logged_in_profile_prefs, device_prefs, network_state_handler_.get(),
       network_profile_handler_.get()));
@@ -135,6 +145,8 @@ void NetworkHandler::InitializePrefServices(
 }
 
 void NetworkHandler::ShutdownPrefServices() {
+  if (features::IsCellularActivationUiEnabled())
+    cellular_esim_profile_handler_->SetDevicePrefs(nullptr);
   ui_proxy_config_service_.reset();
   network_metadata_store_.reset();
 }

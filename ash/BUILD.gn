@@ -2459,6 +2459,8 @@ test("ash_unittests") {
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/audio",
     "//chromeos/dbus/hammerd",
+    "//chromeos/dbus/hermes:hermes_clients",
+    "//chromeos/dbus/hermes:hermes_fakes",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/services:test_support",
