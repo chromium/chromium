@@ -133,9 +133,7 @@ class FakeTetherDelegate : public NetworkConnectionHandler::TetherDelegate {
 
 class NetworkConnectionHandlerImplTest : public testing::Test {
  public:
-  NetworkConnectionHandlerImplTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
-
+  NetworkConnectionHandlerImplTest() = default;
   ~NetworkConnectionHandlerImplTest() override = default;
 
   void SetUp() override {
@@ -330,6 +328,10 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
         ->AddGloballyProhibitedTechnology(shill::kTypeVPN);
   }
 
+  void AdvanceClock(base::TimeDelta time_delta) {
+    task_environment_.FastForwardBy(time_delta);
+  }
+
   NetworkStateHandler* network_state_handler() {
     return helper_.network_state_handler();
   }
@@ -344,7 +346,8 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
   }
 
  private:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   NetworkStateTestHelper helper_{false /* use_default_devices_and_services */};
   std::unique_ptr<NetworkConfigurationHandler> network_config_handler_;
   std::unique_ptr<NetworkConnectionHandler> network_connection_handler_;
@@ -552,6 +555,33 @@ TEST_F(NetworkConnectionHandlerImplTest,
   // When the certificates got loaded, the connection request should have
   // proceeded and eventually succeeded.
   EXPECT_EQ(kSuccessResult, GetResultAndReset());
+}
+
+TEST_F(NetworkConnectionHandlerImplTest,
+       ConnectWithCertificateRequestedBeforeCertsAreLoaded_NeverLoaded) {
+  const base::TimeDelta kMaxCertLoadTimeSeconds =
+      base::TimeDelta::FromSeconds(15);
+
+  scoped_refptr<net::X509Certificate> cert = ImportTestClientCert();
+  ASSERT_TRUE(cert.get());
+
+  SetupPolicy(base::StringPrintf(kPolicyWithCertPatternTemplate,
+                                 cert->subject().common_name.c_str()),
+              base::DictionaryValue(),  // no global config
+              true);                    // load as user policy
+
+  Connect(ServicePathFromGuid("wifi4"));
+
+  // Connect request came before the cert loader loaded certificates, so the
+  // connect request should have been throttled until the certificates are
+  // loaded.
+  EXPECT_EQ("", GetResultAndReset());
+
+  AdvanceClock(kMaxCertLoadTimeSeconds);
+
+  // The result should indicate a certificate load timeout.
+  EXPECT_EQ(NetworkConnectionHandler::kErrorCertLoadTimeout,
+            GetResultAndReset());
 }
 
 TEST_F(NetworkConnectionHandlerImplTest,
