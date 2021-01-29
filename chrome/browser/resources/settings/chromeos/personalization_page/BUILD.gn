@@ -12,6 +12,7 @@ js_type_check("closure_compile") {
     ":change_picture",
     ":change_picture_browser_proxy",
     ":personalization_page",
+    ":wallpaper_subpage",
   ]
 }
 
@@ -57,6 +58,13 @@ js_library("wallpaper_browser_proxy") {
   externs_list = [ "$externs_path/chrome_send.js" ]
 }
 
+js_library("wallpaper_subpage") {
+  deps = [
+    ":wallpaper_browser_proxy",
+    "//ui/webui/resources/js:cr",
+  ]
+}
+
 js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
@@ -64,6 +72,7 @@ js_type_check("closure_compile_module") {
     ":change_picture_browser_proxy.m",
     ":personalization_page.m",
     ":wallpaper_browser_proxy.m",
+    ":wallpaper_subpage.m",
   ]
 }
 
@@ -118,11 +127,21 @@ js_library("wallpaper_browser_proxy.m") {
   extra_deps = [ ":modulize" ]
 }
 
+js_library("wallpaper_subpage.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/personalization_page/wallpaper_subpage.m.js" ]
+  deps = [
+    ":wallpaper_browser_proxy.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":wallpaper_subpage_module" ]
+}
+
 group("polymer3_elements") {
   public_deps = [
     ":change_picture_module",
     ":modulize",
     ":personalization_page_module",
+    ":wallpaper_subpage_module",
   ]
 }
 
@@ -141,6 +160,15 @@ polymer_modulizer("change_picture") {
 polymer_modulizer("personalization_page") {
   js_file = "personalization_page.js"
   html_file = "personalization_page.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("wallpaper_subpage") {
+  js_file = "wallpaper_subpage.js"
+  html_file = "wallpaper_subpage.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites

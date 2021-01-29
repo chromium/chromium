@@ -86,6 +86,7 @@
  *   STYLUS: !settings.Route,
  *   SYNC: !settings.Route,
  *   SYNC_ADVANCED: !settings.Route,
+ *   WALLPAPER: !settings.Route,
  * }}
  */
 /* #export */ let OsSettingsRoutes;

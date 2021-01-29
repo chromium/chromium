@@ -56579,6 +56579,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="502" label="Ambient Mode Photos (Deprecated)"/>
   <int value="503" label="Ambient Mode Google Photos Album"/>
   <int value="504" label="Ambient Mode Art Gallery Album"/>
+  <int value="505" label="Wallpaper"/>
   <int value="600" label="Assistant"/>
   <int value="700" label="App Management"/>
   <int value="701" label="App Details"/>

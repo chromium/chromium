@@ -12,6 +12,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/chromeos/ambient_mode_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/change_picture_handler.h"
+#include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_features_util.h"
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_tag_registry.h"
 #include "chrome/browser/ui/webui/settings/chromeos/wallpaper_handler.h"
@@ -41,14 +42,6 @@ const std::vector<SearchConcept>& GetPersonalizationSearchConcepts() {
        {.section = mojom::Section::kPersonalization},
        {IDS_OS_SETTINGS_TAG_PERSONALIZATION_ALT1,
         IDS_OS_SETTINGS_TAG_PERSONALIZATION_ALT2, SearchConcept::kAltTagEnd}},
-      {IDS_OS_SETTINGS_TAG_CHANGE_WALLPAPER,
-       mojom::kPersonalizationSectionPath,
-       mojom::SearchResultIcon::kWallpaper,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kOpenWallpaper},
-       {IDS_OS_SETTINGS_TAG_CHANGE_WALLPAPER_ALT1,
-        IDS_OS_SETTINGS_TAG_CHANGE_WALLPAPER_ALT2, SearchConcept::kAltTagEnd}},
       {IDS_OS_SETTINGS_TAG_CHANGE_DEVICE_ACCOUNT_IMAGE,
        mojom::kChangePictureSubpagePath,
        mojom::SearchResultIcon::kAvatar,
@@ -61,6 +54,34 @@ const std::vector<SearchConcept>& GetPersonalizationSearchConcepts() {
         IDS_OS_SETTINGS_TAG_CHANGE_DEVICE_ACCOUNT_IMAGE_ALT4,
         SearchConcept::kAltTagEnd}},
   });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetWallpaperChromeAppSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_CHANGE_WALLPAPER,
+        mojom::kPersonalizationSectionPath,
+        mojom::SearchResultIcon::kWallpaper,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSetting,
+        {.setting = mojom::Setting::kOpenWallpaper},
+        {IDS_OS_SETTINGS_TAG_CHANGE_WALLPAPER_ALT1,
+         IDS_OS_SETTINGS_TAG_CHANGE_WALLPAPER_ALT2,
+         SearchConcept::kAltTagEnd}}});
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetWallpaperWebUISearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags(
+      {{IDS_OS_SETTINGS_TAG_CHANGE_WALLPAPER,
+        mojom::kWallpaperSubpagePath,
+        mojom::SearchResultIcon::kWallpaper,
+        mojom::SearchResultDefaultRank::kMedium,
+        mojom::SearchResultType::kSubpage,
+        {.subpage = mojom::Subpage::kWallpaper},
+        {IDS_OS_SETTINGS_TAG_CHANGE_WALLPAPER_ALT1,
+         IDS_OS_SETTINGS_TAG_CHANGE_WALLPAPER_ALT2,
+         SearchConcept::kAltTagEnd}}});
   return *tags;
 }
 
@@ -151,6 +172,11 @@ PersonalizationSection::PersonalizationSection(
 
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPersonalizationSearchConcepts());
+
+  if (chromeos::features::IsWallpaperWebUIEnabled())
+    updater.AddSearchTags(GetWallpaperWebUISearchConcepts());
+  else
+    updater.AddSearchTags(GetWallpaperChromeAppSearchConcepts());
 
   if (IsAmbientModeAllowed()) {
     updater.AddSearchTags(GetAmbientModeSearchConcepts());
@@ -249,6 +275,9 @@ void PersonalizationSection::AddLoadTimeData(
       l10n_util::GetStringFUTF16(
           IDS_OS_SETTINGS_AMBIENT_MODE_ALBUMS_SUBPAGE_GOOGLE_PHOTOS_NO_ALBUM,
           base::UTF8ToUTF16(GetGooglePhotosURL().spec())));
+
+  html_source->AddBoolean("isWallpaperWebUIEnabled",
+                          chromeos::features::IsWallpaperWebUIEnabled());
 }
 
 void PersonalizationSection::AddHandlers(content::WebUI* web_ui) {
@@ -298,6 +327,12 @@ void PersonalizationSection::RegisterHierarchy(
       mojom::kChangePictureSubpagePath);
   generator->RegisterNestedSetting(mojom::Setting::kChangeDeviceAccountImage,
                                    mojom::Subpage::kChangePicture);
+
+  // Wallpaper.
+  generator->RegisterTopLevelSubpage(
+      IDS_OS_SETTINGS_SET_WALLPAPER, mojom::Subpage::kWallpaper,
+      mojom::SearchResultIcon::kWallpaper,
+      mojom::SearchResultDefaultRank::kMedium, mojom::kWallpaperSubpagePath);
 
   // Ambient mode.
   generator->RegisterTopLevelSubpage(

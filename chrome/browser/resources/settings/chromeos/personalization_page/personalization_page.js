@@ -36,6 +36,16 @@ Polymer({
       readOnly: true,
     },
 
+    /** @private */
+    isWallpaperWebUIEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isWallpaperWebUIEnabled') &&
+            this.showWallpaperRow_;
+      },
+      readOnly: true,
+    },
+
     /** @private {!Map<string, string>} */
     focusConfig_: {
       type: Object,
@@ -104,6 +114,11 @@ Polymer({
   /** @private */
   navigateToChangePicture_() {
     settings.Router.getInstance().navigateTo(settings.routes.CHANGE_PICTURE);
+  },
+
+  /** @private */
+  navigateToWallpaper_() {
+    settings.Router.getInstance().navigateTo(settings.routes.WALLPAPER);
   },
 
   /** @private */

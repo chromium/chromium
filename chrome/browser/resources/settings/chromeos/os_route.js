@@ -163,6 +163,8 @@ cr.define('settings', function() {
       r.CHANGE_PICTURE = createSubpage(
           r.PERSONALIZATION, mojom.CHANGE_PICTURE_SUBPAGE_PATH,
           Subpage.kChangePicture);
+      r.WALLPAPER = createSubpage(
+          r.PERSONALIZATION, mojom.WALLPAPER_SUBPAGE_PATH, Subpage.kWallpaper);
       r.AMBIENT_MODE = createSubpage(
           r.PERSONALIZATION, mojom.AMBIENT_MODE_SUBPAGE_PATH,
           Subpage.kAmbientMode);

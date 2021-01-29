@@ -52,6 +52,7 @@ suite('PersonalizationHandler', function() {
   setup(function() {
     WallpaperBrowserProxy = new settings.TestWallpaperBrowserProxy();
     settings.WallpaperBrowserProxyImpl.instance_ = WallpaperBrowserProxy;
+    loadTimeData.overrideValues({isWallpaperWebUIEnabled: false});
     createPersonalizationPage();
   });
 
@@ -66,7 +67,7 @@ suite('PersonalizationHandler', function() {
     // the page to be recreated.
     createPersonalizationPage();
     await WallpaperBrowserProxy.whenCalled('isWallpaperPolicyControlled');
-    const button = personalizationPage.$.wallpaperButton;
+    const button = personalizationPage.$$('#wallpaperButton');
     assertTrue(!!button);
     assertFalse(button.disabled);
     button.click();
@@ -99,7 +100,8 @@ suite('PersonalizationHandler', function() {
     settings.Router.getInstance().navigateTo(
         settings.routes.PERSONALIZATION, params);
 
-    const deepLinkElement = personalizationPage.$.wallpaperButton.$$('#icon');
+    const deepLinkElement =
+        personalizationPage.$$('#wallpaperButton').$$('#icon');
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(
         deepLinkElement, getDeepActiveElement(),
@@ -113,6 +115,19 @@ suite('PersonalizationHandler', function() {
     assertEquals(
         settings.routes.CHANGE_PICTURE,
         settings.Router.getInstance().getCurrentRoute());
+  });
+
+  suite('wallpaperSubpage', function() {
+    setup(function() {
+      loadTimeData.overrideValues({isWallpaperWebUIEnabled: true});
+      createPersonalizationPage();
+    });
+
+    test('wallpaperSettingVisible', function() {
+      personalizationPage.showWallpaperRow_ = false;
+      Polymer.dom.flush();
+      assertTrue(personalizationPage.$$('#wallpaperRow').hidden);
+    });
   });
 
   test('ambientMode', function() {
