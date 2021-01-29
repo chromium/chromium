@@ -311,7 +311,8 @@ void MediaDialogView::ToggleLiveCaption(bool enabled) {
   }
 }
 
-void MediaDialogView::OnSodaInstaller() {
+void MediaDialogView::OnSodaInstalled() {
+  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   live_caption_title_->SetText(
       l10n_util::GetStringUTF16(IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION));
 }

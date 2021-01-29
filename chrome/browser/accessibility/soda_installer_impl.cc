@@ -10,13 +10,14 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/numerics/ranges.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/soda_component_installer.h"
-#include "chrome/browser/component_updater/soda_en_us_component_installer.h"
-#include "chrome/browser/component_updater/soda_ja_jp_component_installer.h"
+#include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/crx_update_item.h"
@@ -66,6 +67,8 @@ void SodaInstallerImpl::InstallSoda(PrefService* prefs) {
   component_updater::RegisterSodaComponent(
       g_browser_process->component_updater(), prefs,
       g_browser_process->local_state(),
+      base::BindOnce(&SodaInstallerImpl::OnSodaBinaryInstalled,
+                     weak_factory_.GetWeakPtr()),
       base::BindOnce(&component_updater::SodaComponentInstallerPolicy::
                          UpdateSodaComponentOnDemand));
 
@@ -78,7 +81,9 @@ void SodaInstallerImpl::InstallSoda(PrefService* prefs) {
 void SodaInstallerImpl::InstallLanguage(PrefService* prefs) {
   component_updater::RegisterSodaLanguageComponent(
       g_browser_process->component_updater(), prefs,
-      g_browser_process->local_state());
+      g_browser_process->local_state(),
+      base::BindOnce(&SodaInstallerImpl::OnSodaLanguagePackInstalled,
+                     weak_factory_.GetWeakPtr()));
 
   if (!component_updater_observer_.IsObserving(
           g_browser_process->component_updater())) {
@@ -91,28 +96,28 @@ bool SodaInstallerImpl::IsSodaRegistered() {
     return true;
   std::vector<std::string> component_ids =
       g_browser_process->component_updater()->GetComponentIDs();
-  bool has_soda = false;
-  bool has_language_pack = false;
-  for (std::string id : component_ids) {
-    if (id == component_updater::SodaComponentInstallerPolicy::GetExtensionId())
-      has_soda = true;
-    if (id == component_updater::SodaEnUsComponentInstallerPolicy::
-                  GetExtensionId() ||
-        id == component_updater::SodaJaJpComponentInstallerPolicy::
-                  GetExtensionId()) {
-      has_language_pack = true;
-    }
-  }
+  const bool has_soda = base::Contains(
+      component_ids,
+      component_updater::SodaComponentInstallerPolicy::GetExtensionId());
+
+  base::flat_set<std::string> language_component_ids = component_updater::
+      SodaLanguagePackComponentInstallerPolicy::GetExtensionIds();
+  const bool has_language_pack =
+      std::any_of(language_component_ids.begin(), language_component_ids.end(),
+                  [&component_ids](const std::string& id) {
+                    return base::Contains(component_ids, id);
+                  });
+
   return has_soda && has_language_pack;
 }
 
 void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
-  if (id != component_updater::SodaComponentInstallerPolicy::GetExtensionId() &&
-      id != component_updater::SodaEnUsComponentInstallerPolicy::
-                GetExtensionId() &&
-      id !=
-          component_updater::SodaJaJpComponentInstallerPolicy::GetExtensionId())
+  if (!component_updater::SodaLanguagePackComponentInstallerPolicy::
+           GetExtensionIds()
+               .contains(id) &&
+      id != component_updater::SodaComponentInstallerPolicy::GetExtensionId()) {
     return;
+  }
 
   switch (event) {
     case Events::COMPONENT_UPDATE_FOUND:
@@ -130,17 +135,30 @@ void SodaInstallerImpl::OnEvent(Events event, const std::string& id) {
         NotifyOnSodaProgress(progress);
       }
     } break;
-    case Events::COMPONENT_UPDATED:
-      NotifyOnSodaInstaller();
-      break;
     case Events::COMPONENT_UPDATE_ERROR:
       NotifyOnSodaError();
       break;
     case Events::COMPONENT_CHECKING_FOR_UPDATES:
+    case Events::COMPONENT_UPDATED:
     case Events::COMPONENT_NOT_UPDATED:
       // Do nothing.
       break;
   }
 }
 
+void SodaInstallerImpl::OnSodaBinaryInstalled() {
+  has_soda_ = true;
+  if (has_language_pack_) {
+    component_updater_observer_.RemoveAll();
+    NotifyOnSodaInstalled();
+  }
+}
+
+void SodaInstallerImpl::OnSodaLanguagePackInstalled() {
+  has_language_pack_ = true;
+  if (has_soda_) {
+    component_updater_observer_.RemoveAll();
+    NotifyOnSodaInstalled();
+  }
+}
 }  // namespace speech

@@ -18,9 +18,9 @@ void SodaInstaller::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void SodaInstaller::NotifyOnSodaInstaller() {
+void SodaInstaller::NotifyOnSodaInstalled() {
   for (Observer& observer : observers_)
-    observer.OnSodaInstaller();
+    observer.OnSodaInstalled();
 }
 
 void SodaInstaller::NotifyOnSodaError() {
@@ -33,9 +33,9 @@ void SodaInstaller::NotifyOnSodaProgress(int percent) {
     observer.OnSodaProgress(percent);
 }
 
-void SodaInstaller::NotifySodaInstallerForTesting() {
+void SodaInstaller::NotifySodaInstalledForTesting() {
   if (!IsSodaRegistered())
-    NotifyOnSodaInstaller();
+    NotifyOnSodaInstalled();
 }
 
 }  // namespace speech

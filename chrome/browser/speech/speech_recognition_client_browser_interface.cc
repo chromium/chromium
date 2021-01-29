@@ -6,10 +6,12 @@
 
 #include <memory>
 
+#include "chrome/browser/accessibility/soda_installer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "media/base/media_switches.h"
 
 class PrefChangeRegistrar;
 
@@ -48,12 +50,31 @@ void SpeechRecognitionClientBrowserInterface::
   OnSpeechRecognitionAvailabilityChanged();
 }
 
+void SpeechRecognitionClientBrowserInterface::OnSodaInstalled() {
+  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
+  NotifyObservers(profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled));
+}
+
 void SpeechRecognitionClientBrowserInterface::
     OnSpeechRecognitionAvailabilityChanged() {
   if (speech_recognition_availibility_observers_.empty())
     return;
 
   bool enabled = profile_prefs_->GetBoolean(prefs::kLiveCaptionEnabled);
+
+  if (enabled) {
+    if (!base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) ||
+        speech::SodaInstaller::GetInstance()->IsSodaRegistered()) {
+      NotifyObservers(enabled);
+    } else {
+      speech::SodaInstaller::GetInstance()->AddObserver(this);
+    }
+  } else {
+    NotifyObservers(enabled);
+  }
+}
+
+void SpeechRecognitionClientBrowserInterface::NotifyObservers(bool enabled) {
   for (auto& observer : speech_recognition_availibility_observers_) {
     observer->SpeechRecognitionAvailabilityChanged(enabled);
   }

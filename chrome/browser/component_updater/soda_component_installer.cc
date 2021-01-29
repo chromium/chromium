@@ -8,8 +8,7 @@
 #include "base/files/file_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/component_updater/soda_en_us_component_installer.h"
-#include "chrome/browser/component_updater/soda_ja_jp_component_installer.h"
+#include "chrome/browser/component_updater/soda_language_pack_component_installer.h"
 #include "chrome/common/pref_names.h"
 #include "components/component_updater/component_updater_service.h"
 #include "components/crx_file/id_util.h"
@@ -48,8 +47,10 @@ constexpr char kSodaManifestName[] = "SODA Library";
 }  // namespace
 
 SodaComponentInstallerPolicy::SodaComponentInstallerPolicy(
-    OnSodaComponentReadyCallback callback)
-    : on_component_ready_callback_(callback) {}
+    OnSodaComponentInstalledCallback on_installed_callback,
+    OnSodaComponentReadyCallback on_ready_callback)
+    : on_installed_callback_(on_installed_callback),
+      on_ready_callback_(std::move(on_ready_callback)) {}
 
 SodaComponentInstallerPolicy::~SodaComponentInstallerPolicy() = default;
 
@@ -141,8 +142,11 @@ void SodaComponentInstallerPolicy::ComponentReady(
     std::unique_ptr<base::DictionaryValue> manifest) {
   VLOG(1) << "Component ready, version " << version.GetString() << " in "
           << install_dir.value();
+  if (on_installed_callback_)
+    on_installed_callback_.Run(install_dir);
 
-  on_component_ready_callback_.Run(install_dir);
+  if (on_ready_callback_)
+    std::move(on_ready_callback_).Run();
 }
 
 base::FilePath SodaComponentInstallerPolicy::GetRelativeInstallDir() const {
@@ -178,14 +182,19 @@ void UpdateSodaInstallDirPref(PrefService* prefs,
 void RegisterPrefsForSodaComponent(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kSodaScheduledDeletionTime, base::Time());
   registry->RegisterFilePathPref(prefs::kSodaBinaryPath, base::FilePath());
-  registry->RegisterFilePathPref(prefs::kSodaEnUsConfigPath, base::FilePath());
-  registry->RegisterFilePathPref(prefs::kSodaJaJpConfigPath, base::FilePath());
+
+  // Register language pack config path preferences.
+  for (const component_updater::SodaLanguagePackComponentConfig& config :
+       kLanguageComponentConfigs) {
+    registry->RegisterFilePathPref(config.config_path_pref, base::FilePath());
+  }
 }
 
 void RegisterSodaComponent(ComponentUpdateService* cus,
                            PrefService* profile_prefs,
                            PrefService* global_prefs,
-                           base::OnceClosure callback) {
+                           base::OnceClosure on_ready_callback,
+                           base::OnceClosure on_registered_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
@@ -193,20 +202,22 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
     if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
       global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
       auto installer = base::MakeRefCounted<ComponentInstaller>(
-          std::make_unique<SodaComponentInstallerPolicy>(base::BindRepeating(
-              [](ComponentUpdateService* cus, PrefService* global_prefs,
-                 const base::FilePath& install_dir) {
-                content::GetUIThreadTaskRunner(
-                    {base::TaskPriority::BEST_EFFORT})
-                    ->PostTask(FROM_HERE,
-                               base::BindOnce(&UpdateSodaInstallDirPref,
-                                              global_prefs, install_dir));
-              },
-              cus, global_prefs)));
+          std::make_unique<SodaComponentInstallerPolicy>(
+              base::BindRepeating(
+                  [](ComponentUpdateService* cus, PrefService* global_prefs,
+                     const base::FilePath& install_dir) {
+                    content::GetUIThreadTaskRunner(
+                        {base::TaskPriority::USER_BLOCKING})
+                        ->PostTask(FROM_HERE,
+                                   base::BindOnce(&UpdateSodaInstallDirPref,
+                                                  global_prefs, install_dir));
+                  },
+                  cus, global_prefs),
+              std::move(on_ready_callback)));
 
-      installer->Register(cus, std::move(callback));
+      installer->Register(cus, std::move(on_registered_callback));
     } else {
-      auto deletion_time =
+      base::Time deletion_time =
           global_prefs->GetTime(prefs::kSodaScheduledDeletionTime);
       if (!deletion_time.is_null() && deletion_time < base::Time::Now()) {
         base::DeletePathRecursively(speech::GetSodaDirectory());
@@ -219,30 +230,20 @@ void RegisterSodaComponent(ComponentUpdateService* cus,
 
 void RegisterSodaLanguageComponent(ComponentUpdateService* cus,
                                    PrefService* profile_prefs,
-                                   PrefService* global_prefs) {
+                                   PrefService* global_prefs,
+                                   base::OnceClosure on_ready_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption) &&
       base::FeatureList::IsEnabled(media::kLiveCaption)) {
     if (profile_prefs->GetBoolean(prefs::kLiveCaptionEnabled)) {
-      speech::LanguageCode language = speech::GetLanguageCode(
-          profile_prefs->GetString(prefs::kLiveCaptionLanguageCode));
-      switch (language) {
-        case speech::LanguageCode::kNone:
-          // Do nothing.
-          break;
-        case speech::LanguageCode::kEnUs:
-          RegisterSodaEnUsComponent(
-              cus, global_prefs,
-              base::BindOnce(&SodaEnUsComponentInstallerPolicy::
-                                 UpdateSodaEnUsComponentOnDemand));
-          break;
-        case speech::LanguageCode::kJaJp:
-          RegisterSodaJaJpComponent(
-              cus, global_prefs,
-              base::BindOnce(&SodaJaJpComponentInstallerPolicy::
-                                 UpdateSodaJaJpComponentOnDemand));
-          break;
+      base::Optional<component_updater::SodaLanguagePackComponentConfig>
+          config = SodaLanguagePackComponentInstallerPolicy::
+              GetLanguageComponentConfig(
+                  profile_prefs->GetString(prefs::kLiveCaptionLanguageCode));
+      if (config) {
+        RegisterSodaLanguagePackComponent(config.value(), cus, global_prefs,
+                                          std::move(on_ready_callback));
       }
     }
   }

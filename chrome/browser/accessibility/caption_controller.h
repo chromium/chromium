@@ -75,7 +75,7 @@ class CaptionController : public BrowserListObserver,
   void OnBrowserRemoved(Browser* browser) override;
 
   // SodaInstaller::Observer:
-  void OnSodaInstaller() override;
+  void OnSodaInstalled() override;
   void OnSodaProgress(int progress) override {}
   void OnSodaError() override {}
 

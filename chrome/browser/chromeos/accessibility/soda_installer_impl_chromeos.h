@@ -29,7 +29,7 @@ class SodaInstallerImplChromeOS : public SodaInstaller {
 
  private:
   // This function is the InstallCallback for DlcserviceClient::Install().
-  void OnSodaInstaller(
+  void OnSodaInstalled(
       const chromeos::DlcserviceClient::InstallResult& install_result);
 
   // This function is the ProgressCallback for DlcserviceClient::Install().

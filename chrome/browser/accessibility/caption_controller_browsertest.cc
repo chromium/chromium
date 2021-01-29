@@ -63,13 +63,13 @@ class CaptionControllerTest : public InProcessBrowserTest {
     browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
                                                  enabled);
     if (enabled)
-      speech::SodaInstaller::GetInstance()->NotifySodaInstallerForTesting();
+      speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   }
 
   void SetLiveCaptionEnabledForProfile(bool enabled, Profile* profile) {
     profile->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, enabled);
     if (enabled)
-      speech::SodaInstaller::GetInstance()->NotifySodaInstallerForTesting();
+      speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   }
 
   CaptionController* GetController() {
@@ -209,14 +209,14 @@ IN_PROC_BROWSER_TEST_F(CaptionControllerTest,
   EXPECT_EQ(0, NumBubbleControllers());
 }
 
-IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnSodaInstaller) {
+IN_PROC_BROWSER_TEST_F(CaptionControllerTest, OnSodaInstalled) {
   EXPECT_EQ(0, NumBubbleControllers());
   browser()->profile()->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled,
                                                true);
   EXPECT_EQ(0, NumBubbleControllers());
 
   // The UI is only created after SODA is installed.
-  speech::SodaInstaller::GetInstance()->NotifySodaInstallerForTesting();
+  speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
   EXPECT_EQ(1, NumBubbleControllers());
 }
 

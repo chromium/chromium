@@ -35,7 +35,7 @@ void SodaInstallerImplChromeOS::InstallSoda(PrefService* prefs) {
   // Install SODA DLC.
   chromeos::DlcserviceClient::Get()->Install(
       kSodaDlcName,
-      base::BindOnce(&SodaInstallerImplChromeOS::OnSodaInstaller,
+      base::BindOnce(&SodaInstallerImplChromeOS::OnSodaInstalled,
                      base::Unretained(this)),
       base::BindRepeating(&SodaInstallerImplChromeOS::OnSodaProgress,
                           base::Unretained(this)));
@@ -50,10 +50,10 @@ bool SodaInstallerImplChromeOS::IsSodaRegistered() {
   return !base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption);
 }
 
-void SodaInstallerImplChromeOS::OnSodaInstaller(
+void SodaInstallerImplChromeOS::OnSodaInstalled(
     const chromeos::DlcserviceClient::InstallResult& install_result) {
   if (install_result.error == dlcservice::kErrorNone) {
-    NotifyOnSodaInstaller();
+    NotifyOnSodaInstalled();
   } else {
     NotifyOnSodaError();
   }

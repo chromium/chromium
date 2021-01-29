@@ -57,7 +57,8 @@ void CaptionsHandler::HandleOpenSystemCaptionsDialog(
 #endif
 }
 
-void CaptionsHandler::OnSodaInstaller() {
+void CaptionsHandler::OnSodaInstalled() {
+  speech::SodaInstaller::GetInstance()->RemoveObserver(this);
   FireWebUIListener("enable-live-caption-subtitle-changed",
                     base::Value(l10n_util::GetStringUTF16(
                         IDS_SETTINGS_CAPTIONS_LIVE_CAPTION_DOWNLOAD_COMPLETE)));
