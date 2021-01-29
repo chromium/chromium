@@ -1213,6 +1213,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Ash.LoginAnimation.Duration" units="ms"
+    expires_after="2021-12-10">
+  <owner>oshima@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+  <summary>
+    The duration of how long it took to finish all animations applied during the
+    login process, from the time the first animation is added, to the time the
+    last animation is finished.
+  </summary>
+</histogram>
+
+<histogram name="Ash.LoginAnimation.Jank" units="%" expires_after="2021-12-10">
+  <owner>oshima@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+  <summary>
+    Jank metrics of all animations applied during the login process. This
+    represents how often the frame update rate changed during animation.
+  </summary>
+</histogram>
+
+<histogram name="Ash.LoginAnimation.Smoothness" units="%"
+    expires_after="2021-12-10">
+  <owner>oshima@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+  <summary>
+    Relative smoothness of all animations applied during the login process. 100%
+    represents the ideal smoothness for 60 frames per second.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Media.CameraPrivacySwitch.Event"
     enum="CameraPrivacySwitchEvent" expires_after="2021-12-31">
   <owner>tbarzic@chromium.org</owner>
@@ -2166,6 +2196,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>girard@chromium.org</owner>
   <summary>
     The total time that TouchView is not active during a session.
+  </summary>
+</histogram>
+
+<histogram name="Ash.UnlockAnimation.Jank" units="%" expires_after="2021-12-10">
+  <owner>oshima@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+  <summary>
+    Jank metrics of all animations applied during the unlock process. This
+    represents how often the frame update rate changed during animation.
+  </summary>
+</histogram>
+
+<histogram name="Ash.UnlockAnimation.Smoothness" units="%"
+    expires_after="2021-12-10">
+  <owner>oshima@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+  <summary>
+    Relative smoothness of all animations applied during the unlock process.
+    100% represents the ideal smoothness for 60 frames per second.
   </summary>
 </histogram>
 

@@ -73,6 +73,7 @@
 #include "ash/magnifier/partial_magnification_controller.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/media/media_notification_controller_impl.h"
+#include "ash/metrics/login_unlock_throughput_recorder.h"
 #include "ash/multi_device_setup/multi_device_notification_presenter.h"
 #include "ash/policy/policy_recommendation_restorer.h"
 #include "ash/projector/projector_controller.h"
@@ -592,6 +593,7 @@ Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
 
 Shell::~Shell() {
   TRACE_EVENT0("shutdown", "ash::Shell::Destructor");
+  login_unlock_throughput_recorder_.reset();
 
   hud_display::HUDDisplayView::Destroy();
 
@@ -905,6 +907,9 @@ void Shell::Init(
     PrefService* local_state,
     std::unique_ptr<keyboard::KeyboardUIFactory> keyboard_ui_factory,
     scoped_refptr<dbus::Bus> dbus_bus) {
+  login_unlock_throughput_recorder_ =
+      std::make_unique<LoginUnlockThroughputRecorder>();
+
   // Required by DetachableBaseHandler.
   chromeos::InitializeDBusClient<chromeos::HammerdClient>(dbus_bus.get());
 

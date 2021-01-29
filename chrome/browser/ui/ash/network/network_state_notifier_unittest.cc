@@ -15,7 +15,6 @@
 #include "chromeos/dbus/shill/shill_clients.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_handler.h"
 #include "testing/platform_test.h"
@@ -65,7 +64,6 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    LoginState::Initialize();
     shill_clients::InitializeFakes();
     SetupDefaultShillState();
     NetworkHandler::Initialize();
@@ -77,7 +75,6 @@ class NetworkStateNotifierTest : public BrowserWithTestWindowTest {
   void TearDown() override {
     NetworkConnect::Shutdown();
     network_connect_delegate_.reset();
-    LoginState::Shutdown();
     NetworkHandler::Shutdown();
     shill_clients::Shutdown();
     BrowserWithTestWindowTest::TearDown();

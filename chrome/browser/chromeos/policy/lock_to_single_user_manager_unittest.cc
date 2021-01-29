@@ -19,7 +19,6 @@
 #include "chromeos/dbus/cryptohome/fake_cryptohome_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/fake_concierge_client.h"
-#include "chromeos/login/login_state/login_state.h"
 #include "chromeos/login/session/session_termination_manager.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
@@ -45,7 +44,6 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
 
     arc::SetArcAvailableCommandLineForTesting(
         base::CommandLine::ForCurrentProcess());
-    chromeos::LoginState::Initialize();
     chromeos::CryptohomeClient::InitializeFake();
     lock_to_single_user_manager_ = std::make_unique<LockToSingleUserManager>();
 
@@ -76,7 +74,6 @@ class LockToSingleUserManagerTest : public BrowserWithTestWindowTest {
     arc_service_manager_.reset();
     BrowserWithTestWindowTest::TearDown();
     chromeos::CryptohomeClient::Shutdown();
-    chromeos::LoginState::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
 

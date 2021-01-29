@@ -700,6 +700,8 @@ component("ash") {
     "metrics/histogram_macros.h",
     "metrics/login_metrics_recorder.cc",
     "metrics/login_metrics_recorder.h",
+    "metrics/login_unlock_throughput_recorder.cc",
+    "metrics/login_unlock_throughput_recorder.h",
     "metrics/pip_uma.h",
     "metrics/pointer_metrics_recorder.cc",
     "metrics/pointer_metrics_recorder.h",
@@ -1837,6 +1839,7 @@ component("ash") {
     # TODO(https://crbug.com/644355): Remove Shill dependencies.
     "//chromeos/dbus/shill",
     "//chromeos/dbus/system_clock",
+    "//chromeos/login/login_state",
 
     # TODO(https://crbug.com/644355): Remove Shill dependencies.
     "//chromeos/network",
@@ -2802,6 +2805,7 @@ static_library("test_support") {
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/system_clock",
+    "//chromeos/login/login_state",
 
     # TODO(https://crbug.com/644355): Remove Shill dependencies.
     "//ash/keyboard/ui",
