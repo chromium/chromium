@@ -18,7 +18,7 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.UI_THEME_SETTING;
+import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.chrome.test.util.ViewUtils.onViewWaiting;
 import static org.chromium.components.content_settings.PrefNames.COOKIE_CONTROLS_MODE;
 
@@ -34,21 +34,25 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
+import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
+import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.night_mode.ThemeType;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -76,8 +80,11 @@ import java.util.concurrent.TimeoutException;
  * configurations correctly.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, ChromeSwitches.DISABLE_STARTUP_PROMOS,
         ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
+@Batch(PER_CLASS)
+@Batch.SplitByFeature
 public class PageInfoViewTest {
     private static final String TAG = "PageInfoViewTest";
 
@@ -87,8 +94,17 @@ public class PageInfoViewTest {
     private static String[] sCookieDataTypes = {"Cookie", "LocalStorage", "ServiceWorker",
             "CacheStorage", "IndexedDb", "FileSystem", "WebSql"};
 
+    @ClassRule
+    public static final ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
+    @ClassRule
+    public static DisableAnimationsTestRule sDisableAnimationsTestRule =
+            new DisableAnimationsTestRule();
+
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public final BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Rule
     public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
@@ -106,22 +122,19 @@ public class PageInfoViewTest {
         }
     }
 
-    @ClassRule
-    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
-
     private void loadUrlAndOpenPageInfo(String url) {
-        mActivityTestRule.loadUrl(url);
+        sActivityTestRule.loadUrl(url);
         openPageInfo();
     }
 
     private void openPageInfo() {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = sActivityTestRule.getActivity().getActivityTab();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            PageInfoController.show(mActivityTestRule.getActivity(), tab.getWebContents(), null,
+            PageInfoController.show(sActivityTestRule.getActivity(), tab.getWebContents(), null,
                     PageInfoController.OpenedFromSource.TOOLBAR,
-                    new ChromePageInfoControllerDelegate(mActivityTestRule.getActivity(),
+                    new ChromePageInfoControllerDelegate(sActivityTestRule.getActivity(),
                             tab.getWebContents(),
-                            mActivityTestRule.getActivity().getModalDialogManagerSupplier(),
+                            sActivityTestRule.getActivity().getModalDialogManagerSupplier(),
                             /*offlinePageLoadUrlDelegate=*/
                             new OfflinePageUtils.TabOfflinePageLoadUrlDelegate(tab)),
                     new ChromePermissionParamsListBuilderDelegate());
@@ -151,7 +164,7 @@ public class PageInfoViewTest {
 
     private String runJavascriptAsync(String type) throws TimeoutException {
         return JavaScriptUtils.runJavascriptWithAsyncResult(
-                mActivityTestRule.getWebContents(), type);
+                sActivityTestRule.getWebContents(), type);
     }
 
     private void expectHasCookies(boolean hasData) throws TimeoutException {
@@ -202,6 +215,15 @@ public class PageInfoViewTest {
         });
     }
 
+    private void clearPermissions() throws TimeoutException {
+        CallbackHelper helper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            BrowsingDataBridge.getInstance().clearBrowsingData(helper::notifyCalled,
+                    new int[] {BrowsingDataType.SITE_SETTINGS}, TimePeriod.ALL_TIME);
+        });
+        helper.waitForCallback(0);
+    }
+
     @Before
     public void setUp() throws InterruptedException {
         // Some test devices have geolocation disabled. Override LocationUtils for a stable result.
@@ -213,7 +235,7 @@ public class PageInfoViewTest {
     }
 
     @After
-    public void tearDown() {
+    public void tearDown() throws TimeoutException {
         LocationUtils.setFactory(null);
         // Notification channels don't get cleaned up automatically.
         // TODO(crbug.com/951402): Find a general solution to avoid leaking channels between tests.
@@ -223,6 +245,9 @@ public class PageInfoViewTest {
                 manager.deleteAllSiteChannels();
             });
         }
+
+        setThirdPartyCookieBlocking(CookieControlsMode.INCOGNITO_ONLY);
+        clearPermissions();
     }
 
     /**
@@ -233,7 +258,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowOnInsecureHttpWebsite() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         mTestServerRule.setServerUsesHttps(false);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_HttpWebsite");
@@ -247,7 +271,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowOnSecureWebsite() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_SecureWebsite");
     }
@@ -260,7 +283,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowOnExpiredCertificateWebsite() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         mTestServerRule.setCertificateType(ServerCertificate.CERT_EXPIRED);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_ExpiredCertWebsite");
@@ -274,7 +296,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testChromePage() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndOpenPageInfo("chrome://version/");
         mRenderTestRule.render(getPageInfoView(), "PageInfo_InternalSite");
     }
@@ -288,7 +309,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowWithPermissions() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         mIsSystemLocationSettingEnabled = false;
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -303,7 +323,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowWithCookieBlocking() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_CookieBlocking");
@@ -317,7 +336,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowWithPermissionsAndCookieBlocking() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
@@ -332,7 +350,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.DisableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowWithDefaultSettingPermissions() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         addDefaultSettingPermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_DefaultSettingPermissions");
@@ -346,25 +363,8 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowOnSecureWebsiteV2() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         mRenderTestRule.render(getPageInfoView(), "PageInfo_SecureWebsiteV2");
-    }
-
-    /**
-     * Tests the new PageInfo UI on a secure website in dark mode.
-     */
-    @Test
-    @MediumTest
-    @Feature({"RenderTest"})
-    @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
-    public void testShowOnSecureWebsiteDarkV2() throws IOException {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            SharedPreferencesManager.getInstance().writeInt(UI_THEME_SETTING, ThemeType.DARK);
-        });
-        mActivityTestRule.startMainActivityOnBlankPage();
-        loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
-        mRenderTestRule.render(getPageInfoView(), "PageInfo_SecureWebsiteDarkV2");
     }
 
     /**
@@ -375,7 +375,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowConnectionInfoSubpage() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_connection_row)).perform(click());
         onViewWaiting(
@@ -392,7 +391,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowPermissionsSubpage() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_permissions_row)).perform(click());
@@ -411,7 +409,6 @@ public class PageInfoViewTest {
             {PageInfoFeatureList.PAGE_INFO_V2, SiteSettingsFeatureList.ACTIONABLE_CONTENT_SETTINGS})
     public void
     testShowPermissionsActionableSubpage() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         addSomePermissions(mTestServerRule.getServer().getURL("/"));
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_permissions_row)).perform(click());
@@ -427,7 +424,6 @@ public class PageInfoViewTest {
     @Feature({"RenderTest"})
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testShowCookiesSubpage() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         setThirdPartyCookieBlocking(CookieControlsMode.BLOCK_THIRD_PARTY);
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_cookies_row)).perform(click());
@@ -444,7 +440,6 @@ public class PageInfoViewTest {
     @MediumTest
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testNoPermissionsSubpage() throws IOException {
-        mActivityTestRule.startMainActivityOnBlankPage();
         loadUrlAndOpenPageInfo(mTestServerRule.getServer().getURL(sSimpleHtml));
         onView(withId(R.id.page_info_permissions_row))
                 .check(matches(withEffectiveVisibility(GONE)));
@@ -458,8 +453,7 @@ public class PageInfoViewTest {
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     @FlakyTest(message = "https://crbug.com/1147236")
     public void testClearCookiesOnSubpage() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
+        sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         // Create cookies.
         expectHasCookies(false);
         createCookies();
@@ -485,8 +479,7 @@ public class PageInfoViewTest {
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     @DisabledTest(message = "Flaky, see crbug.com/1169667")
     public void testResetPermissionsOnSubpage() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
+        sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSiteDataHtml));
         String url = mTestServerRule.getServer().getURL("/");
         // Create permissions.
         expectHasPermissions(url, false);
@@ -513,9 +506,8 @@ public class PageInfoViewTest {
     @MediumTest
     @Features.EnableFeatures(PageInfoFeatureList.PAGE_INFO_V2)
     public void testPaintPreview() {
-        mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            final ChromeActivity activity = mActivityTestRule.getActivity();
+            final ChromeActivity activity = sActivityTestRule.getActivity();
             final Tab tab = activity.getActivityTab();
             ChromePageInfoControllerDelegate pageInfoControllerDelegate =
                     new ChromePageInfoControllerDelegate(activity, tab.getWebContents(),
@@ -526,7 +518,7 @@ public class PageInfoViewTest {
                             return true;
                         }
                     };
-            PageInfoController.show(mActivityTestRule.getActivity(), tab.getWebContents(), null,
+            PageInfoController.show(sActivityTestRule.getActivity(), tab.getWebContents(), null,
                     PageInfoController.OpenedFromSource.MENU, pageInfoControllerDelegate,
                     new ChromePermissionParamsListBuilderDelegate());
         });
