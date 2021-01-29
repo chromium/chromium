@@ -1700,10 +1700,6 @@
       status: "stable",
     },
     {
-      name: "ResizeObserverUpdates",
-      status: "stable",
-    },
-    {
       name: "RestrictAutomaticLazyFrameLoadingToDataSaver",
       depends_on: ["AutomaticLazyFrameLoading"],
       status: "stable",

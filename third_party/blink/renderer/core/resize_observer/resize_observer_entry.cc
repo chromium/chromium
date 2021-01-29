@@ -30,21 +30,18 @@ ResizeObserverEntry::ResizeObserverEntry(Element* target) : target_(target) {
           LayoutSize(svg_graphics_element->GetBBox().Size());
       content_rect_ = DOMRectReadOnly::FromFloatRect(
           FloatRect(FloatPoint(), FloatSize(bounding_box_size)));
-      if (RuntimeEnabledFeatures::ResizeObserverUpdatesEnabled()) {
-        ResizeObserverSize* size = ResizeObserverSize::Create(
-            bounding_box_size.Width(), bounding_box_size.Height());
-        content_box_size_.push_back(size);
-        border_box_size_.push_back(size);
-        bounding_box_size.Scale(style.EffectiveZoom());
-        FloatSize snapped_device_pixel_content_box =
-            ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
-                bounding_box_size, layout_object, style);
-        ResizeObserverSize* device_pixel_content_box_size =
-            ResizeObserverSize::Create(
-                snapped_device_pixel_content_box.Width(),
-                snapped_device_pixel_content_box.Height());
-        device_pixel_content_box_size_.push_back(device_pixel_content_box_size);
-      }
+      ResizeObserverSize* size = ResizeObserverSize::Create(
+          bounding_box_size.Width(), bounding_box_size.Height());
+      content_box_size_.push_back(size);
+      border_box_size_.push_back(size);
+      bounding_box_size.Scale(style.EffectiveZoom());
+      FloatSize snapped_device_pixel_content_box =
+          ResizeObserverUtilities::ComputeSnappedDevicePixelContentBox(
+              bounding_box_size, layout_object, style);
+      ResizeObserverSize* device_pixel_content_box_size =
+          ResizeObserverSize::Create(snapped_device_pixel_content_box.Width(),
+                                     snapped_device_pixel_content_box.Height());
+      device_pixel_content_box_size_.push_back(device_pixel_content_box_size);
     } else if (layout_object->IsBox()) {
       LayoutBox* layout_box = target->GetLayoutBox();
       LayoutRect content_rect(
@@ -53,42 +50,37 @@ ResizeObserverEntry::ResizeObserverEntry(Element* target) : target_(target) {
       content_rect_ =
           ResizeObserverUtilities::ZoomAdjustedLayoutRect(content_rect, style);
 
-      if (RuntimeEnabledFeatures::ResizeObserverUpdatesEnabled()) {
-        FloatSize content_box = ResizeObserverUtilities::ComputeZoomAdjustedBox(
-            ResizeObserverBoxOptions::ContentBox, layout_object, style);
-        FloatSize border_box = ResizeObserverUtilities::ComputeZoomAdjustedBox(
-            ResizeObserverBoxOptions::BorderBox, layout_object, style);
-        FloatSize device_pixel_content_box =
-            ResizeObserverUtilities::ComputeZoomAdjustedBox(
-                ResizeObserverBoxOptions::DevicePixelContentBox, layout_object,
-                style);
+      FloatSize content_box = ResizeObserverUtilities::ComputeZoomAdjustedBox(
+          ResizeObserverBoxOptions::ContentBox, layout_object, style);
+      FloatSize border_box = ResizeObserverUtilities::ComputeZoomAdjustedBox(
+          ResizeObserverBoxOptions::BorderBox, layout_object, style);
+      FloatSize device_pixel_content_box =
+          ResizeObserverUtilities::ComputeZoomAdjustedBox(
+              ResizeObserverBoxOptions::DevicePixelContentBox, layout_object,
+              style);
 
-        ResizeObserverSize* device_pixel_content_box_size =
-            ResizeObserverSize::Create(device_pixel_content_box.Width(),
-                                       device_pixel_content_box.Height());
-        ResizeObserverSize* content_box_size = ResizeObserverSize::Create(
-            content_box.Width(), content_box.Height());
-        ResizeObserverSize* border_box_size =
-            ResizeObserverSize::Create(border_box.Width(), border_box.Height());
+      ResizeObserverSize* device_pixel_content_box_size =
+          ResizeObserverSize::Create(device_pixel_content_box.Width(),
+                                     device_pixel_content_box.Height());
+      ResizeObserverSize* content_box_size =
+          ResizeObserverSize::Create(content_box.Width(), content_box.Height());
+      ResizeObserverSize* border_box_size =
+          ResizeObserverSize::Create(border_box.Width(), border_box.Height());
 
-        content_box_size_.push_back(content_box_size);
-        border_box_size_.push_back(border_box_size);
-        device_pixel_content_box_size_.push_back(device_pixel_content_box_size);
-      }
+      content_box_size_.push_back(content_box_size);
+      border_box_size_.push_back(border_box_size);
+      device_pixel_content_box_size_.push_back(device_pixel_content_box_size);
     }
   }
   if (!content_rect_)
     content_rect_ = DOMRectReadOnly::FromFloatRect(
         FloatRect(FloatPoint(LayoutPoint()), FloatSize(LayoutSize())));
-  if (RuntimeEnabledFeatures::ResizeObserverUpdatesEnabled()) {
-    if (content_box_size_.size() == 0)
-      content_box_size_.push_back(ResizeObserverSize::Create(0, 0));
-    if (border_box_size_.size() == 0)
-      border_box_size_.push_back(ResizeObserverSize::Create(0, 0));
-    if (device_pixel_content_box_size_.size() == 0) {
-      device_pixel_content_box_size_.push_back(
-          ResizeObserverSize::Create(0, 0));
-    }
+  if (content_box_size_.size() == 0)
+    content_box_size_.push_back(ResizeObserverSize::Create(0, 0));
+  if (border_box_size_.size() == 0)
+    border_box_size_.push_back(ResizeObserverSize::Create(0, 0));
+  if (device_pixel_content_box_size_.size() == 0) {
+    device_pixel_content_box_size_.push_back(ResizeObserverSize::Create(0, 0));
   }
 }
 
