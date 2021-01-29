@@ -1,10 +1,7 @@
 // Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 package org.chromium.components.signin;
-
-import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -21,7 +18,6 @@ import org.chromium.components.signin.util.PatternMatcher;
 @Config(manifest = Config.NONE)
 public class PatternMatcherTest {
     @Test
-    @SmallTest
     public void testPatternMatcher() throws PatternMatcher.IllegalPatternException {
         Assert.assertFalse(matchPattern("ab", "*a"));
         Assert.assertFalse(matchPattern("ab", "b*"));
@@ -55,7 +51,6 @@ public class PatternMatcherTest {
     }
 
     @Test(expected = PatternMatcher.IllegalPatternException.class)
-    @SmallTest
     public void testMalformedEscapeSequence() throws PatternMatcher.IllegalPatternException {
         // Unmatched backslash at the end of the pattern should trigger an exception.
         matchPattern("", "account@gmail.com\\");

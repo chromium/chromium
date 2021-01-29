@@ -822,7 +822,7 @@ if (is_android) {
       "//components/policy/android:components_policy_junit_tests",
       "//components/prefs/android:junit",
       "//components/query_tiles:query_tiles_junit_tests",
-      "//components/signin/core/browser/android:components_signin_junit_tests",
+      "//components/signin/public/android:junit",
       "//components/variations/android:components_variations_junit_tests",
       "//components/webapk/android/libs/client:junit",
     ]

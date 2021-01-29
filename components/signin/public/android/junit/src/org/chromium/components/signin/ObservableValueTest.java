@@ -1,7 +1,6 @@
 // Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 package org.chromium.components.signin;
 
 import static junit.framework.Assert.assertEquals;
@@ -11,8 +10,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
-
-import androidx.test.filters.SmallTest;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +26,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Config(manifest = Config.NONE)
 public class ObservableValueTest {
     @Test
-    @SmallTest
     public void testNullAllowed() {
         MutableObservableValue<Integer> value = new MutableObservableValue<>(null);
         // Using null as a value should be allowed.
@@ -37,7 +33,6 @@ public class ObservableValueTest {
     }
 
     @Test
-    @SmallTest
     public void testAddObserverNoCallsToOnValueChanged() {
         MutableObservableValue<Integer> value = new MutableObservableValue<>(0);
         ObservableValue.Observer observer = mock(ObservableValue.Observer.class);
@@ -46,7 +41,6 @@ public class ObservableValueTest {
     }
 
     @Test
-    @SmallTest
     public void testObserverIsNotifiedOnSet() {
         MutableObservableValue<Integer> value = new MutableObservableValue<>(0);
         ObservableValue.Observer observer = mock(ObservableValue.Observer.class);
@@ -58,7 +52,6 @@ public class ObservableValueTest {
     }
 
     @Test
-    @SmallTest
     public void testObserverIsNotNotifiedOnSetWithTheSameValue() {
         MutableObservableValue<Integer> value = new MutableObservableValue<>(123);
         ObservableValue.Observer observer = mock(ObservableValue.Observer.class);
@@ -75,7 +68,6 @@ public class ObservableValueTest {
     }
 
     @Test
-    @SmallTest
     public void testObserverIsNotNotifiedAfterRemoval() {
         MutableObservableValue<Integer> value = new MutableObservableValue<>(0);
         ObservableValue.Observer observer = mock(ObservableValue.Observer.class);
@@ -88,7 +80,6 @@ public class ObservableValueTest {
     }
 
     @Test
-    @SmallTest
     public void testGetReturnsUpdatedValueFromObserver() {
         MutableObservableValue<Integer> value = new MutableObservableValue<>(0);
         AtomicInteger valueHolder = new AtomicInteger(0);
@@ -99,7 +90,6 @@ public class ObservableValueTest {
     }
 
     @Test
-    @SmallTest
     public void testCanModifyObserverListFromOnValueChanged() {
         MutableObservableValue<Integer> value = new MutableObservableValue<>(0);
         AtomicInteger callCounter = new AtomicInteger(0);
