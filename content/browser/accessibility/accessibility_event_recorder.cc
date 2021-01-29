@@ -14,8 +14,6 @@ AccessibilityEventRecorder::AccessibilityEventRecorder(
     BrowserAccessibilityManager* manager)
     : manager_(manager) {}
 
-AccessibilityEventRecorder::~AccessibilityEventRecorder() = default;
-
 #if !defined(OS_WIN) && !defined(OS_MAC) && !BUILDFLAG(USE_ATK)
 // static
 std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
@@ -39,11 +37,5 @@ AccessibilityEventRecorder::GetTestPasses() {
 #endif  // defined(OS_ANDROID)
 }
 #endif
-
-void AccessibilityEventRecorder::OnEvent(const std::string& event) {
-  event_logs_.push_back(event);
-  if (callback_)
-    callback_.Run(event);
-}
 
 }  // namespace content

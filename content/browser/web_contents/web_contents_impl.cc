@@ -209,9 +209,6 @@
 
 namespace content {
 
-using AccessibilityEventCallback =
-    base::RepeatingCallback<void(const std::string&)>;
-
 namespace {
 
 const int kMinimumDelayBetweenLoadingUpdatesMS = 100;
@@ -4007,7 +4004,7 @@ std::string WebContentsImpl::DumpAccessibilityTree(
 
 void WebContentsImpl::RecordAccessibilityEvents(
     bool start_recording,
-    base::Optional<AccessibilityEventCallback> callback) {
+    base::Optional<ui::AXEventCallback> callback) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::RecordAccessibilityEvents");
   // Only pass a callback to RecordAccessibilityEvents when starting to record.

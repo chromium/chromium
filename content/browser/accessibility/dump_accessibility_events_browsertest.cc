@@ -108,7 +108,7 @@ bool IsRecordingComplete(AccessibilityEventRecorder& event_recorder,
   if (run_until.empty())
     return true;
 
-  std::vector<std::string> event_logs = event_recorder.event_logs();
+  std::vector<std::string> event_logs = event_recorder.EventLogs();
   LOG(ERROR) << "=== IsRecordingComplete#2 Logs size=" << event_logs.size();
 
   for (size_t i = 0; i < event_logs.size(); ++i)
@@ -143,7 +143,7 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
     std::unique_ptr<AccessibilityEventRecorder> event_recorder =
         event_recorder_factory_(
             web_contents->GetRootBrowserAccessibilityManager(), pid, {});
-    event_recorder->set_only_web_events(true);
+    event_recorder->SetOnlyWebEvents(true);
 
     waiter.reset(new AccessibilityNotificationWaiter(
         shell()->web_contents(), ui::kAXModeComplete, ax::mojom::Event::kNone));
@@ -188,7 +188,7 @@ std::vector<std::string> DumpAccessibilityEventsTest::Dump(
     // Dump the event logs, running them through any filters specified
     // in the HTML file.
     event_recorder->FlushAsyncEvents();
-    std::vector<std::string> event_logs = event_recorder->event_logs();
+    std::vector<std::string> event_logs = event_recorder->EventLogs();
 
     // Sort the logs so that results are predictable. There are too many
     // nondeterministic things that affect the exact order of events fired,

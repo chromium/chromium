@@ -27,7 +27,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/download/public/common/download_url_parameters.h"
-#include "content/browser/accessibility/accessibility_event_recorder.h"
 #include "content/browser/media/audio_stream_monitor.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -75,6 +74,7 @@
 #include "third_party/blink/public/mojom/page/display_cutout.mojom.h"
 #include "third_party/blink/public/mojom/page/page_visibility_state.mojom.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -142,9 +142,6 @@ class WebContentsAndroid;
 #if BUILDFLAG(ENABLE_PLUGINS)
 class PepperPlaybackObserver;
 #endif
-
-using AccessibilityEventCallback =
-    base::RepeatingCallback<void(const std::string&)>;
 
 // CreatedWindow holds the WebContentsImpl and target url between IPC calls to
 // CreateNewWindow and ShowCreatedWindow.
@@ -629,7 +626,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       std::vector<ui::AXPropertyFilter> property_filters) override;
   void RecordAccessibilityEvents(
       bool start_recording,
-      base::Optional<AccessibilityEventCallback> callback) override;
+      base::Optional<ui::AXEventCallback> callback) override;
   device::mojom::GeolocationContext* GetGeolocationContext() override;
   device::mojom::WakeLockContext* GetWakeLockContext() override;
 #if defined(OS_ANDROID)
@@ -1945,7 +1942,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // is created, and broadcast to all frames when it changes.
   ui::AXMode accessibility_mode_;
 
-  std::unique_ptr<content::AccessibilityEventRecorder> event_recorder_;
+  std::unique_ptr<ui::AXEventRecorder> event_recorder_;
 
   // Monitors power levels for audio streams associated with this WebContents.
   AudioStreamMonitor audio_stream_monitor_;
