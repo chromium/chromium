@@ -81,6 +81,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="OfflineIndicator.ShownDuration" units="ms"
     expires_after="2021-07-11">
+  <obsolete>
+    Removed M90. Replaced by OfflineIndicator.ShownDurationV2.
+  </obsolete>
   <owner>curranmax@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <owner>sinansahin@google.com</owner>
@@ -88,6 +91,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The duration the offline indicator was shown. Recorded when the offline
     indicator hides.
+  </summary>
+</histogram>
+
+<histogram name="OfflineIndicator.ShownDurationV2" units="ms"
+    expires_after="2021-08-01">
+  <owner>curranmax@chromium.org</owner>
+  <owner>tbansal@chromium.org</owner>
+  <summary>
+    The duration the offline indicator was shown. Recorded when the offline
+    indicator stops being shown. There are two differences between this
+    histogram and OfflineIndicator.ShownDuration: 1) the maximum bucket size and
+    total number of buckets are higher in this histogram, and 2) this histogram
+    is persisted in perfs. The second point means that if the user backgrounds
+    then kills Chrome when the Offline Indicator was shown, then we will still
+    record a sample. Note that in this case, when the user opens Chrome again
+    and if the Offline Indicator is shown, then it will be treated as a
+    continuation from before Chrome was killed.
   </summary>
 </histogram>
 

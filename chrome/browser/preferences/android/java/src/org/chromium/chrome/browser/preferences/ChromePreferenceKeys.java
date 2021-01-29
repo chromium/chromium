@@ -515,6 +515,12 @@ public final class ChromePreferenceKeys {
     public static final String OFFLINE_INDICATOR_V2_ENABLED = "offline_indicator_v2_enabled";
 
     /**
+     * The wall time of when the offline indicator was shown in milliseconds.
+     */
+    public static final String OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS =
+            "Chrome.OfflineIndicatorV2.WallTimeShownMs";
+
+    /**
      * The measurement interval (in minutes) used to schedule the currently running
      * OfflineMeasureBackgroundTask. This value is zero if the OfflineMeasureBackgroundTask is not
      * currently running.
@@ -873,6 +879,7 @@ public final class ChromePreferenceKeys {
                 IMAGE_DESCRIPTIONS_JUST_ONCE_COUNT,
                 IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN,
                 ISOLATED_SPLITS_DEX_COMPILE_VERSION,
+                OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS,
                 OFFLINE_MEASUREMENTS_CURRENT_TASK_MEASUREMENT_INTERVAL_IN_MINUTES,
                 OFFLINE_MEASUREMENTS_LAST_CHECK_MILLIS,
                 OFFLINE_MEASUREMENTS_TIME_BETWEEN_CHECKS_MILLIS_LIST,

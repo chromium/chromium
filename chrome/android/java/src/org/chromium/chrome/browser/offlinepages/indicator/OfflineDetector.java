@@ -64,6 +64,7 @@ class OfflineDetector
     // Effectively offline means that all checks have been passed and the
     // |mCallback| has been invoked to notify the observers.
     private boolean mIsEffectivelyOffline;
+    private boolean mIsEffectivelyOfflineInitialized;
 
     // True if the network is offline as detected by the connectivity detector.
     private boolean mIsOfflineLastReportedByConnectivityDetector;
@@ -122,10 +123,12 @@ class OfflineDetector
 
             // Connection state has not changed since |mUpdateOfflineStatusIndicatorDelayedRunnable|
             // was posted.
-            if (mIsOfflineLastReportedByConnectivityDetector == mIsEffectivelyOffline) {
+            if (mIsEffectivelyOfflineInitialized
+                    && mIsOfflineLastReportedByConnectivityDetector == mIsEffectivelyOffline) {
                 return;
             }
             mIsEffectivelyOffline = mIsOfflineLastReportedByConnectivityDetector;
+            mIsEffectivelyOfflineInitialized = true;
             mCallback.onResult(mIsEffectivelyOffline);
             if (sLoggingEnabled) {
                 logToAdbConsoleNow("Running mUpdateOfflineStatusIndicatorDelayedRunnable end.");
@@ -151,9 +154,9 @@ class OfflineDetector
                 mIsOfflineLastReportedByConnectivityDetector;
         mIsOfflineLastReportedByConnectivityDetector =
                 (connectionState != ConnectionState.VALIDATED);
-        if (previousLastReportedStateByOfflineDetector
-                == mIsOfflineLastReportedByConnectivityDetector) {
-            mConnectivityDetectorInitialized = true;
+        if (mConnectivityDetectorInitialized
+                && previousLastReportedStateByOfflineDetector
+                        == mIsOfflineLastReportedByConnectivityDetector) {
             return;
         }
 

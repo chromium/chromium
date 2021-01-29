@@ -15,18 +15,18 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.CommandLine;
-import org.chromium.base.TimeUtilsJni;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.status_indicator.StatusIndicatorCoordinator;
 import org.chromium.content_public.common.ContentSwitches;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Class that controls visibility and content of {@link StatusIndicatorCoordinator} to relay
@@ -47,6 +47,12 @@ public class OfflineIndicatorControllerV2 {
         int NUM_ENTRIES = 4;
     }
 
+    /** Clock to use so we can mock the time in tests */
+    public interface Clock {
+        long currentTimeMillis();
+    }
+    private static Clock sClock = System::currentTimeMillis;
+
     static final long STATUS_INDICATOR_WAIT_BEFORE_HIDE_DURATION_MS = 2000;
 
     // TODO(tbansal): Consider moving the cooldown logic to OfflineDetector.java.
@@ -54,6 +60,9 @@ public class OfflineIndicatorControllerV2 {
     // longer term, OfflineDetector should protect against sending signals to this class too
     // frequently.
     static final long STATUS_INDICATOR_COOLDOWN_BEFORE_NEXT_ACTION_MS = 5000;
+
+    public static final String OFFLINE_INDICATOR_SHOWN_DURATION_V2 =
+            "OfflineIndicator.ShownDurationV2";
 
     private static OfflineDetector sMockOfflineDetector;
     private static Supplier<Long> sMockElapsedTimeSupplier;
@@ -72,7 +81,8 @@ public class OfflineIndicatorControllerV2 {
     private Runnable mUpdateStatusIndicatorDelayedRunnable;
     private long mLastActionTime;
     private boolean mIsOffline;
-    private long mTimeShownMs;
+    private boolean mIsOfflineStateInitialized;
+    private long mWallTimeShownMs;
 
     /**
      * Constructs the offline indicator.
@@ -113,7 +123,15 @@ public class OfflineIndicatorControllerV2 {
 
         mShowRunnable = () -> {
             RecordUserAction.record("OfflineIndicator.Shown");
-            mTimeShownMs = TimeUnit.MICROSECONDS.toMillis(TimeUtilsJni.get().getTimeTicksNowUs());
+
+            // If the value of mWallTimeShownMs is already stored in Prefs, then we keep using that
+            // value.
+            if (isWallTimeShownMsInPrefs()) {
+                mWallTimeShownMs = getWallTimeShownMsFromPrefs();
+            } else {
+                mWallTimeShownMs = sClock.currentTimeMillis();
+                setWallTimeShownMsInPrefs(mWallTimeShownMs);
+            }
 
             setLastActionTime();
 
@@ -135,11 +153,15 @@ public class OfflineIndicatorControllerV2 {
 
         mUpdateAndHideRunnable = () -> {
             RecordUserAction.record("OfflineIndicator.Hidden");
-            final long shownDuration =
-                    TimeUnit.MICROSECONDS.toMillis(TimeUtilsJni.get().getTimeTicksNowUs())
-                    - mTimeShownMs;
-            RecordHistogram.recordMediumTimesHistogram(
-                    "OfflineIndicator.ShownDuration", shownDuration);
+
+            final long shownDurationWallTimeMs = sClock.currentTimeMillis() - mWallTimeShownMs;
+            clearWallTimeShownMsFromPrefs();
+
+            // shownDurationWallTimeMs can be negative in cases where the system time is changed, so
+            // we want to avoid recording metrics in cases where we know this happened.
+            if (shownDurationWallTimeMs >= 0) {
+                recordShownDurationV2Histogram(shownDurationWallTimeMs);
+            }
 
             setLastActionTime();
 
@@ -175,7 +197,7 @@ public class OfflineIndicatorControllerV2 {
     }
 
     public void onConnectionStateChanged(boolean offline) {
-        if (mIsOffline == offline) {
+        if (mIsOfflineStateInitialized && mIsOffline == offline) {
             return;
         }
 
@@ -213,6 +235,21 @@ public class OfflineIndicatorControllerV2 {
 
     private void updateStatusIndicator(boolean offline) {
         mIsOffline = offline;
+        if (!mIsOfflineStateInitialized && !offline) {
+            if (isWallTimeShownMsInPrefs()) {
+                // Record any metrics persisted in Prefs when Chrome starts up and is online.
+                mWallTimeShownMs = getWallTimeShownMsFromPrefs();
+                final long shownDurationWallTimeMs = sClock.currentTimeMillis() - mWallTimeShownMs;
+                clearWallTimeShownMsFromPrefs();
+
+                if (shownDurationWallTimeMs >= 0) {
+                    recordShownDurationV2Histogram(shownDurationWallTimeMs);
+                }
+            }
+            mIsOfflineStateInitialized = true;
+            return;
+        }
+        mIsOfflineStateInitialized = true;
         int surfaceState;
         if (mIsUrlBarFocusedSupplier.get()) {
             // We should clear the runnable if we would be assigning an unnecessary show or hide
@@ -250,6 +287,31 @@ public class OfflineIndicatorControllerV2 {
         mLastActionTime = getElapsedTime();
     }
 
+    private void recordShownDurationV2Histogram(long shownDurationMs) {
+        RecordHistogram.recordLongTimesHistogram100(
+                OFFLINE_INDICATOR_SHOWN_DURATION_V2, shownDurationMs);
+    }
+
+    private void setWallTimeShownMsInPrefs(long wallTimeShownMs) {
+        SharedPreferencesManager.getInstance().writeLong(
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS, wallTimeShownMs);
+    }
+
+    private long getWallTimeShownMsFromPrefs() {
+        return SharedPreferencesManager.getInstance().readLong(
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS);
+    }
+
+    private void clearWallTimeShownMsFromPrefs() {
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS);
+    }
+
+    private boolean isWallTimeShownMsInPrefs() {
+        return SharedPreferencesManager.getInstance().contains(
+                ChromePreferenceKeys.OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS);
+    }
+
     @VisibleForTesting
     static void setMockOfflineDetector(OfflineDetector offlineDetector) {
         sMockOfflineDetector = offlineDetector;
@@ -263,5 +325,10 @@ public class OfflineIndicatorControllerV2 {
     @VisibleForTesting
     void setHandlerForTesting(Handler handler) {
         mHandler = handler;
+    }
+
+    @VisibleForTesting
+    static void setClockForTesting(Clock clock) {
+        sClock = clock;
     }
 }
