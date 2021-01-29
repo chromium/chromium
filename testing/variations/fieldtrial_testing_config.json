@@ -1936,9 +1936,36 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "PSIThreshold_10_Percent",
+                    "params": {
+                        "CrOSLowMemoryPSIThreshold": "10"
+                    },
+                    "enable_features": [
+                        "CrOSLowMemoryNotificationPSI"
+                    ]
+                },
+                {
+                    "name": "PSIThreshold_20_Percent",
                     "params": {
                         "CrOSLowMemoryPSIThreshold": "20"
+                    },
+                    "enable_features": [
+                        "CrOSLowMemoryNotificationPSI"
+                    ]
+                },
+                {
+                    "name": "PSIThreshold_30_Percent",
+                    "params": {
+                        "CrOSLowMemoryPSIThreshold": "30"
+                    },
+                    "enable_features": [
+                        "CrOSLowMemoryNotificationPSI"
+                    ]
+                },
+                {
+                    "name": "PSIThreshold_40_Percent",
+                    "params": {
+                        "CrOSLowMemoryPSIThreshold": "40"
                     },
                     "enable_features": [
                         "CrOSLowMemoryNotificationPSI"
