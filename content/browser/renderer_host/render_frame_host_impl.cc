@@ -9017,10 +9017,6 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
   return true;
 }
 
-// TODO(arthursonzogni): Below, many NavigationRequest's objects are passed from
-// the navigation to the new document. Consider grouping them in a single
-// struct.
-//
 // TODO(arthursonzogni): Investigate what must be done when
 // navigation_request->IsWaitingToCommit() is false here.
 void RenderFrameHostImpl::DidCommitNewDocument(
@@ -9048,36 +9044,11 @@ void RenderFrameHostImpl::DidCommitNewDocument(
 
   dom_content_loaded_ = false;
 
-  is_error_page_ = (navigation_request->GetNetErrorCode() != net::OK);
-
   DCHECK(params.embedding_token.has_value());
   SetEmbeddingToken(params.embedding_token.value());
 
   renderer_reported_scheduler_tracked_features_ = 0;
   browser_reported_scheduler_tracked_features_ = 0;
-
-  cross_origin_opener_policy_ =
-      navigation_request->coop_status().current_coop();
-
-  // Only apply some parameters if this is not the fake initial navigation,
-  // because the values set at construction time should remain unmodified.
-  if (navigation_request->IsWaitingToCommit()) {
-    // IsWebSecureContext() must only be called on ready-to-commit navigations.
-    is_web_secure_context_ = navigation_request->IsWebSecureContext();
-
-    private_network_request_policy_ =
-        navigation_request->private_network_request_policy();
-    cross_origin_embedder_policy_ =
-        navigation_request->cross_origin_embedder_policy();
-  }
-
-  coop_reporter_ = navigation_request->coop_status().TakeCoopReporter();
-  virtual_browsing_context_group_ =
-      navigation_request->coop_status().virtual_browsing_context_group();
-
-  // Store the required CSP (it will be used by the AncestorThrottle if
-  // this frame embeds a subframe when that subframe navigates).
-  required_csp_ = navigation_request->TakeRequiredCSP();
 
   // TODO(https://crbug.com/1041376): The sandbox flags computed from the
   // browser must match with the ones computed from the renderer process.
@@ -9094,6 +9065,38 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   VerifyThatBrowserAndRendererCalculatedOriginsToCommitMatch(navigation_request,
                                                              params);
 
+  TakeNewDocumentPropertiesFromNavigation(navigation_request);
+
+  RecordWebPlatformSecurityMetrics(this, navigation_request);
+
+  CrossOriginOpenerPolicyReporter::InstallAccessMonitorsIfNeeded(
+      frame_tree_node_);
+
+  // Reset the salt so that media device IDs are reset for the new document
+  // if necessary.
+  media_device_id_salt_base_ = BrowserContext::CreateRandomMediaDeviceIDSalt();
+
+  accessibility_fatal_error_count_ = 0;
+}
+
+// TODO(arthursonzogni): Below, many NavigationRequest's objects are passed from
+// the navigation to the new document. Consider grouping them in a single
+// struct.
+void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
+    NavigationRequest* navigation_request) {
+  is_error_page_ = (navigation_request->GetNetErrorCode() != net::OK);
+
+  cross_origin_opener_policy_ =
+      navigation_request->coop_status().current_coop();
+
+  coop_reporter_ = navigation_request->coop_status().TakeCoopReporter();
+  virtual_browsing_context_group_ =
+      navigation_request->coop_status().virtual_browsing_context_group();
+
+  // Store the required CSP (it will be used by the AncestorThrottle if
+  // this frame embeds a subframe when that subframe navigates).
+  required_csp_ = navigation_request->TakeRequiredCSP();
+
   coep_reporter_ = navigation_request->TakeCoepReporter();
   if (coep_reporter_) {
     mojo::PendingRemote<blink::mojom::ReportingObserver> remote;
@@ -9106,15 +9109,6 @@ void RenderFrameHostImpl::DidCommitNewDocument(
         FROM_HERE,
         base::BindOnce(&RenderFrameHostImpl::BindReportingObserver,
                        weak_ptr_factory_.GetWeakPtr(), std::move(receiver)));
-  }
-
-  // We move the PolicyContainerHost of |navigation_request| into the
-  // RenderFrameHost unless this is the initial, "fake" navigation to
-  // about:blank (because otherwise we would overwrite the PolicyContainerHost
-  // of the new document, inherited at RenderFrameHost creation time, with an
-  // empty PolicyContainerHost).
-  if (navigation_request->IsWaitingToCommit()) {
-    SetPolicyContainerHost(navigation_request->TakePolicyContainerHost());
   }
 
   // Set the state whether this navigation is to an MHTML document, since there
@@ -9144,27 +9138,38 @@ void RenderFrameHostImpl::DidCommitNewDocument(
           frame_tree_node_->IsMainFrame(), navigation_request->common_params(),
           data_url_as_string);
 
-  RecordWebPlatformSecurityMetrics(this, navigation_request);
-
-  CrossOriginOpenerPolicyReporter::InstallAccessMonitorsIfNeeded(
-      frame_tree_node_);
-
-  // Reset the salt so that media device IDs are reset for the new document
-  // if necessary.
-  media_device_id_salt_base_ = BrowserContext::CreateRandomMediaDeviceIDSalt();
-
   // If we still have a PeakGpuMemoryTracker, then the loading it was observing
   // never completed. Cancel it's callback so that we don't report partial
   // loads to UMA.
-  if (loading_mem_tracker_)
+  if (loading_mem_tracker_) {
     loading_mem_tracker_->Cancel();
+  }
+
   // Main Frames will create the tracker, which will be triggered after we
   // receive DidStopLoading.
-  // TODO(arthursonzogni): Updating this flag for same-document or bfcache
-  // navigation isn't right. This should be moved to DidCommitNewDocument().
   loading_mem_tracker_ = navigation_request->TakePeakGpuMemoryTracker();
 
-  accessibility_fatal_error_count_ = 0;
+  // Only take some properties if this is not the synchronous initial
+  // `about:blank` navigation, because the values set at construction time
+  // should remain unmodified.
+  if (!navigation_request->IsWaitingToCommit()) {
+    return;
+  }
+
+  // IsWebSecureContext() must only be called on ready-to-commit navigations.
+  is_web_secure_context_ = navigation_request->IsWebSecureContext();
+
+  private_network_request_policy_ =
+      navigation_request->private_network_request_policy();
+  cross_origin_embedder_policy_ =
+      navigation_request->cross_origin_embedder_policy();
+
+  // We move the PolicyContainerHost of |navigation_request| into the
+  // RenderFrameHost unless this is the initial, "fake" navigation to
+  // about:blank (because otherwise we would overwrite the PolicyContainerHost
+  // of the new document, inherited at RenderFrameHost creation time, with an
+  // empty PolicyContainerHost).
+  SetPolicyContainerHost(navigation_request->TakePolicyContainerHost());
 }
 
 void RenderFrameHostImpl::OnSameDocumentCommitProcessed(

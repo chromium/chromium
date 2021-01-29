@@ -2515,6 +2515,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   void DidCommitNewDocument(const mojom::DidCommitProvisionalLoadParams& params,
                             NavigationRequest* navigation);
 
+  // Transfers several document properties stored by |navigation_request| into
+  // |this|. Helper for DidCommitNewDocument.
+  void TakeNewDocumentPropertiesFromNavigation(
+      NavigationRequest* navigation_request);
+
   // Called by the renderer process when it is done processing a same-document
   // commit request.
   void OnSameDocumentCommitProcessed(
