@@ -14,16 +14,19 @@
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
+#include "media/base/video_frame_pool.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/renderers/video_frame_yuv_converter.h"
 #include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_plane_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_pixel_format.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_factories.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -101,6 +104,103 @@ void OnYUVReadbackDone(
               std::unique_ptr<const SkImage::AsyncReadResult>>(),
           std::move(async_result))));
 }
+
+media::VideoPixelFormat ToMediaPixelFormat(V8VideoPixelFormat::Enum fmt) {
+  switch (fmt) {
+    case V8VideoPixelFormat::Enum::kI420:
+      return media::PIXEL_FORMAT_I420;
+    case V8VideoPixelFormat::Enum::kNV12:
+      return media::PIXEL_FORMAT_NV12;
+    case V8VideoPixelFormat::Enum::kABGR:
+      return media::PIXEL_FORMAT_ABGR;
+    case V8VideoPixelFormat::Enum::kXBGR:
+      return media::PIXEL_FORMAT_XBGR;
+    case V8VideoPixelFormat::Enum::kARGB:
+      return media::PIXEL_FORMAT_ARGB;
+    case V8VideoPixelFormat::Enum::kXRGB:
+      return media::PIXEL_FORMAT_XRGB;
+  }
+}
+
+class CachedVideoFramePool : public GarbageCollected<CachedVideoFramePool>,
+                             public Supplement<ExecutionContext> {
+ public:
+  static const char kSupplementName[];
+
+  static CachedVideoFramePool& From(ExecutionContext& context) {
+    CachedVideoFramePool* supplement =
+        Supplement<ExecutionContext>::From<CachedVideoFramePool>(context);
+    if (!supplement) {
+      supplement = MakeGarbageCollected<CachedVideoFramePool>(context);
+      Supplement<ExecutionContext>::ProvideTo(context, supplement);
+    }
+    return *supplement;
+  }
+
+  explicit CachedVideoFramePool(ExecutionContext& context)
+      : Supplement<ExecutionContext>(context),
+        task_runner_(Thread::Current()->GetTaskRunner()) {}
+  virtual ~CachedVideoFramePool() = default;
+
+  // Disallow copy and assign.
+  CachedVideoFramePool& operator=(const CachedVideoFramePool&) = delete;
+  CachedVideoFramePool(const CachedVideoFramePool&) = delete;
+
+  scoped_refptr<media::VideoFrame> CreateFrame(media::VideoPixelFormat format,
+                                               const gfx::Size& coded_size,
+                                               const gfx::Rect& visible_rect,
+                                               const gfx::Size& natural_size,
+                                               base::TimeDelta timestamp) {
+    if (!frame_pool_)
+      CreatePoolAndStartIdleObsever();
+
+    last_frame_creation_ = base::TimeTicks::Now();
+    return frame_pool_->CreateFrame(format, coded_size, visible_rect,
+                                    natural_size, timestamp);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    Supplement<ExecutionContext>::Trace(visitor);
+  }
+
+ private:
+  static const base::TimeDelta kIdleTimeout;
+
+  void PostMonitoringTask() {
+    DCHECK(!task_handle_.IsActive());
+    task_handle_ = PostDelayedCancellableTask(
+        *task_runner_, FROM_HERE,
+        WTF::Bind(&CachedVideoFramePool::PurgeIdleFramePool,
+                  WrapWeakPersistent(this)),
+        kIdleTimeout);
+  }
+
+  void CreatePoolAndStartIdleObsever() {
+    DCHECK(!frame_pool_);
+    frame_pool_ = std::make_unique<media::VideoFramePool>();
+    PostMonitoringTask();
+  }
+
+  // We don't want a VideoFramePool to stick around forever wasting memory, so
+  // once we haven't issued any VideoFrames for a while, turn down the pool.
+  void PurgeIdleFramePool() {
+    if (base::TimeTicks::Now() - last_frame_creation_ > kIdleTimeout) {
+      frame_pool_.reset();
+      return;
+    }
+    PostMonitoringTask();
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  std::unique_ptr<media::VideoFramePool> frame_pool_;
+  base::TimeTicks last_frame_creation_;
+  TaskHandle task_handle_;
+};
+
+// static -- defined out of line to satisfy link time requirements.
+const char CachedVideoFramePool::kSupplementName[] = "CachedVideoFramePool";
+const base::TimeDelta CachedVideoFramePool::kIdleTimeout =
+    base::TimeDelta::FromSeconds(10);
 
 }  // namespace
 
@@ -226,6 +326,177 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   auto* result = MakeGarbageCollected<VideoFrame>(
       std::move(frame), ExecutionContext::From(script_state));
   return result;
+}
+
+// static
+VideoFrame* VideoFrame::Create(ScriptState* script_state,
+                               const String& format,
+                               const HeapVector<Member<PlaneInit>>& planes,
+                               VideoFrameInit* init,
+                               ExceptionState& exception_state) {
+  if (!init->hasCodedWidth() || !init->hasCodedHeight()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kConstraintError,
+        "Coded size is required for planar construction");
+    return nullptr;
+  }
+
+  // Type formats are enforced by V8.
+  auto typed_fmt = V8VideoPixelFormat::Create(format);
+  DCHECK(typed_fmt);
+
+  auto media_fmt = ToMediaPixelFormat(typed_fmt->AsEnum());
+
+  // There's no I420A pixel format, so treat I420 + 4 planes as I420A.
+  if (media_fmt == media::PIXEL_FORMAT_I420 && planes.size() == 4u)
+    media_fmt = media::PIXEL_FORMAT_I420A;
+
+  if (media::VideoFrame::NumPlanes(media_fmt) != planes.size()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kConstraintError,
+        String::Format("Invalid number of planes for format %s; expected %zu, "
+                       "received %u",
+                       format.Ascii().c_str(),
+                       media::VideoFrame::NumPlanes(media_fmt), planes.size()));
+    return nullptr;
+  }
+
+  const gfx::Size coded_size(init->codedWidth(), init->codedHeight());
+  if (coded_size.IsEmpty()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kConstraintError,
+        String::Format("Invalid coded size (%d, %d) provided",
+                       init->codedWidth(), init->codedHeight()));
+    return nullptr;
+  }
+
+  for (size_t i = 0; i < planes.size(); ++i) {
+    const auto minimum_size =
+        media::VideoFrame::PlaneSize(media_fmt, i, coded_size);
+    if (planes[i]->stride() < uint32_t{minimum_size.width()}) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kConstraintError,
+          String::Format(
+              "The stride of plane %zu is too small for the given coded size "
+              "(%s); expected at least %d, received %u",
+              i, coded_size.ToString().c_str(), minimum_size.width(),
+              planes[i]->stride()));
+      return nullptr;
+    }
+    if (planes[i]->rows() != uint32_t{minimum_size.height()}) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kConstraintError,
+          String::Format(
+              "The row count for plane %zu is incorrect for the given coded "
+              "size (%s); expected %d, received %u",
+              i, coded_size.ToString().c_str(), minimum_size.height(),
+              planes[i]->rows()));
+      return nullptr;
+    }
+
+    // This requires the full stride to be provided for every row.
+    gfx::Size provided_size(planes[i]->stride(), planes[i]->rows());
+    const auto required_byte_size = provided_size.GetCheckedArea();
+    if (!required_byte_size.IsValid()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kConstraintError,
+          String::Format("The size of plane %zu is too large", i));
+      return nullptr;
+    }
+
+    DOMArrayPiece buffer(planes[i]->src());
+    if (buffer.ByteLength() < required_byte_size.ValueOrDie()) {
+      // Note: We use GetArea() below instead of area.ValueOrDie() since the
+      // base::StrictNumeric seems to confuse the printf() format checks.
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kConstraintError,
+          String::Format(
+              "The size of plane %zu is too small for the given coded "
+              "size (%s); expected at least %d, received %zu",
+              i, coded_size.ToString().c_str(), provided_size.GetArea(),
+              buffer.ByteLength()));
+      return nullptr;
+    }
+  }
+
+  auto visible_rect = gfx::Rect(coded_size);
+  if (init->hasCropLeft() || init->hasCropTop() || init->hasCropWidth() ||
+      init->hasCropHeight()) {
+    const auto crop_left = init->hasCropLeft() ? init->cropLeft() : 0;
+    const auto crop_top = init->hasCropTop() ? init->cropTop() : 0;
+    const auto crop_w =
+        init->hasCropWidth() ? visible_rect.width() - init->cropWidth() : 0;
+    const auto crop_h =
+        init->hasCropHeight() ? visible_rect.height() - init->cropHeight() : 0;
+    if (crop_w < 0 || crop_h < 0 || crop_w > unsigned{visible_rect.width()} ||
+        crop_h > unsigned{visible_rect.height()}) {
+      visible_rect = gfx::Rect();
+    } else {
+      visible_rect.Inset(crop_left, crop_top, crop_w, crop_h);
+    }
+
+    if (visible_rect.IsEmpty()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kConstraintError,
+          String::Format(
+              "Invalid visble rect (%s) after crop (%d, %d, %d, %d) applied",
+              visible_rect.ToString().c_str(), crop_left, crop_top, crop_w,
+              crop_h));
+      return nullptr;
+    }
+  }
+
+  auto natural_size = visible_rect.size();
+  if (init->hasDisplayWidth())
+    natural_size.set_width(init->displayWidth());
+  if (init->hasDisplayHeight())
+    natural_size.set_height(init->displayHeight());
+  if (coded_size.IsEmpty()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kConstraintError,
+        String::Format("Invalid display size (%s) provided",
+                       natural_size.ToString().c_str()));
+    return nullptr;
+  }
+
+  const auto timestamp = base::TimeDelta::FromMicroseconds(init->timestamp());
+  auto& frame_pool =
+      CachedVideoFramePool::From(*ExecutionContext::From(script_state));
+  auto frame = frame_pool.CreateFrame(media_fmt, coded_size, visible_rect,
+                                      natural_size, timestamp);
+  if (!frame) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kConstraintError,
+        String::Format(
+            "Failed to create a video frame with configuration {format:%s, "
+            "coded_size:%s, visible_rect:%s, display_size:%s}",
+            VideoPixelFormatToString(media_fmt).c_str(),
+            coded_size.ToString().c_str(), visible_rect.ToString().c_str(),
+            natural_size.ToString().c_str()));
+    return nullptr;
+  }
+
+  for (size_t i = 0; i < planes.size(); ++i) {
+    const auto minimum_size =
+        media::VideoFrame::PlaneSize(media_fmt, i, coded_size);
+
+    DOMArrayPiece buffer(planes[i]->src());
+
+    uint8_t* dest_ptr = frame->visible_data(i);
+    const uint8_t* src_ptr = reinterpret_cast<uint8_t*>(buffer.Data());
+    for (size_t r = 0; r < planes[i]->rows(); ++r) {
+      DCHECK_LE(
+          src_ptr + planes[i]->stride(),
+          reinterpret_cast<uint8_t*>(buffer.Data()) + buffer.ByteLength());
+
+      memcpy(dest_ptr, src_ptr, minimum_size.width());
+      src_ptr += planes[i]->stride();
+      dest_ptr += frame->stride(i);
+    }
+  }
+
+  return MakeGarbageCollected<VideoFrame>(std::move(frame),
+                                          ExecutionContext::From(script_state));
 }
 
 // static

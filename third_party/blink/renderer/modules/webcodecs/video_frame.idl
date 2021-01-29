@@ -9,7 +9,12 @@
     Serializable,
     RuntimeEnabled=WebCodecs
 ] interface VideoFrame {
-  [CallWith=ScriptState, RaisesException] constructor(ImageBitmap source, VideoFrameInit init);
+  [CallWith=ScriptState, RaisesException]
+  constructor(ImageBitmap source, VideoFrameInit init);
+  [CallWith=ScriptState, RaisesException]
+  constructor(VideoPixelFormat format,
+              sequence<PlaneInit> planes,
+              VideoFrameInit init);
 
   // TODO(sandersd): Provide a way to find out what pixel formats are supported.
   // TODO(sandersd): Provide a way to convert to a specific pixel format, and to
@@ -59,6 +64,6 @@
 
   // Create an ImageBitmap from the crop region, scaled to the display size.
   // TODO(sandersd): Should use the global createImageBitmap() instead.
-  [CallWith=ScriptState, RaisesException] Promise<ImageBitmap> createImageBitmap(
-    optional ImageBitmapOptions options = {});
+  [CallWith=ScriptState, RaisesException] Promise<ImageBitmap>
+  createImageBitmap(optional ImageBitmapOptions options = {});
 };

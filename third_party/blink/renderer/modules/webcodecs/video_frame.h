@@ -23,6 +23,7 @@ namespace blink {
 class ImageBitmap;
 class ExceptionState;
 class ExecutionContext;
+class PlaneInit;
 class ScriptPromise;
 class ScriptState;
 class VideoFrameInit;
@@ -44,6 +45,11 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   static VideoFrame* Create(ScriptState*,
                             ImageBitmap*,
                             VideoFrameInit*,
+                            ExceptionState&);
+  static VideoFrame* Create(ScriptState*,
+                            const String& format,
+                            const HeapVector<Member<PlaneInit>>& planes,
+                            VideoFrameInit* init,
                             ExceptionState&);
 
   String format() const;
