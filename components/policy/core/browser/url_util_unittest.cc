@@ -458,7 +458,7 @@ TEST(URLUtilTest, MultipleFilters) {
 
 TEST(URLUtilTest, BasicCoverage) {
   // Tests to cover the documentation from
-  // http://www.chromium.org/administrators/url-blacklist-filter-format
+  // http://www.chromium.org/administrators/url-blocklist-filter-format
 
   // [scheme://][.]host[:port][/path][@query]
   // Scheme can be http, https, ftp, chrome, etc. This field is optional, and

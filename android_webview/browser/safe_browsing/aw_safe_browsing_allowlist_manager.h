@@ -44,7 +44,7 @@ struct TrieNode;
 // The hostname with a leading dot means an exact match, otherwise subdomains
 // are also matched. This particular rule is similar to admiministration
 // policy format:
-//      https://www.chromium.org/administrators/url-blacklist-filter-format
+//      https://www.chromium.org/administrators/url-blocklist-filter-format
 //
 // The expected number of entries on the list should be 100s at most, however
 // the size is not enforced here. The list size can be enforced at
