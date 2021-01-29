@@ -1555,10 +1555,6 @@ bool AXLayoutObject::CanHaveChildren() const {
 // DOM and layout tree access.
 //
 
-Node* AXLayoutObject::GetNode() const {
-  return GetLayoutObject() ? GetLayoutObject()->GetNode() : nullptr;
-}
-
 Document* AXLayoutObject::GetDocument() const {
   if (!GetLayoutObject())
     return nullptr;
