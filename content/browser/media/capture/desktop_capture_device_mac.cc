@@ -6,7 +6,7 @@
 
 #include <CoreGraphics/CoreGraphics.h>
 
-#include "base/threading/thread.h"
+#include "base/threading/thread_checker.h"
 #include "media/capture/video/video_capture_device.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -21,9 +21,23 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
 
   ~DesktopCaptureDeviceMac() override = default;
 
+  static float ComputeMinFrameRate(float requested_frame_rate) {
+    // Set a minimum frame rate of 5 fps, unless the requested frame rate is
+    // even lower.
+    constexpr float kMinFrameRate = 5.f;
+
+    // Don't send frames at more than 80% the requested rate, because doing so
+    // can stochastically toggle between repeated and new frames.
+    constexpr float kRequestedFrameRateFactor = 0.8f;
+
+    return std::min(requested_frame_rate * kRequestedFrameRateFactor,
+                    kMinFrameRate);
+  }
+
   // media::VideoCaptureDevice:
   void AllocateAndStart(const media::VideoCaptureParams& params,
                         std::unique_ptr<Client> client) override {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     DCHECK(client && !client_);
     client_ = std::move(client);
 
@@ -31,20 +45,14 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
     requested_format_.pixel_format = media::PIXEL_FORMAT_NV12;
     DCHECK_GT(requested_format_.frame_size.GetArea(), 0);
     DCHECK_GT(requested_format_.frame_rate, 0);
+    min_frame_rate_ = ComputeMinFrameRate(requested_format_.frame_rate);
 
-    auto task_runner = base::SequencedTaskRunnerHandle::Get();
-    CGDisplayStreamFrameAvailableHandler handler = ^(
-        CGDisplayStreamFrameStatus status, uint64_t display_time,
-        IOSurfaceRef frame_surface, CGDisplayStreamUpdateRef update_ref) {
-      if (status == kCGDisplayStreamFrameStatusFrameComplete) {
-        task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(&DesktopCaptureDeviceMac::OnReceivedIOSurface,
-                           weak_factory_.GetWeakPtr(),
-                           gfx::ScopedInUseIOSurface(
-                               frame_surface, base::scoped_policy::RETAIN)));
-      }
-    };
+    CGDisplayStreamFrameAvailableHandler handler =
+        ^(CGDisplayStreamFrameStatus status, uint64_t display_time,
+          IOSurfaceRef frame_surface, CGDisplayStreamUpdateRef update_ref) {
+          if (status == kCGDisplayStreamFrameStatusFrameComplete)
+            OnReceivedIOSurfaceFromStream(frame_surface);
+        };
 
     base::ScopedCFTypeRef<CFDictionaryRef> properties;
     {
@@ -93,6 +101,9 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
     client_->OnStarted();
   }
   void StopAndDeAllocate() override {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+    min_frame_rate_enforcement_timer_.reset();
     weak_factory_.InvalidateWeakPtrs();
     if (display_stream_) {
       CFRunLoopRemoveSource(CFRunLoopGetCurrent(),
@@ -104,12 +115,22 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
   }
 
  private:
-  void OnReceivedIOSurface(gfx::ScopedInUseIOSurface io_surface) {
-    // Package |io_surface| as a GpuMemoryBuffer.
+  void OnReceivedIOSurfaceFromStream(IOSurfaceRef io_surface) {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+    last_received_io_surface_.reset(io_surface, base::scoped_policy::RETAIN);
+
+    // Immediately send the new frame to the client.
+    SendLastReceivedIOSurfaceToClient();
+  }
+  void SendLastReceivedIOSurfaceToClient() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+    // Package |last_received_io_surface_| as a GpuMemoryBuffer.
     gfx::GpuMemoryBufferHandle handle;
     handle.id.id = -1;
     handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-    handle.io_surface.reset(io_surface, base::scoped_policy::RETAIN);
+    handle.io_surface.reset(last_received_io_surface_,
+                            base::scoped_policy::RETAIN);
 
     const auto now = base::TimeTicks::Now();
     if (first_frame_time_.is_null())
@@ -118,17 +139,39 @@ class DesktopCaptureDeviceMac : public media::VideoCaptureDevice {
     client_->OnIncomingCapturedExternalBuffer(
         std::move(handle), requested_format_, gfx::ColorSpace::CreateSRGB(),
         now, now - first_frame_time_);
+
+    // Reset |min_frame_rate_enforcement_timer_|.
+    if (!min_frame_rate_enforcement_timer_) {
+      min_frame_rate_enforcement_timer_ =
+          std::make_unique<base::RepeatingTimer>(
+              FROM_HERE, base::TimeDelta::FromSecondsD(1 / min_frame_rate_),
+              base::BindRepeating(
+                  &DesktopCaptureDeviceMac::SendLastReceivedIOSurfaceToClient,
+                  weak_factory_.GetWeakPtr()));
+    }
+    min_frame_rate_enforcement_timer_->Reset();
   }
+
+  // This class assumes single threaded access.
+  THREAD_CHECKER(thread_checker_);
 
   const CGDirectDisplayID display_id_;
 
   std::unique_ptr<Client> client_;
   base::ScopedCFTypeRef<CGDisplayStreamRef> display_stream_;
   media::VideoCaptureFormat requested_format_;
+  float min_frame_rate_ = 1.f;
+  gfx::ScopedInUseIOSurface last_received_io_surface_;
 
-  // The time of the first call to OnReceivedIOSurface. Used to compute the
-  // timestamp of subsequent frames.
+  // The time of the first call to SendLastReceivedIOSurfaceToClient. Used to
+  // compute the timestamp of subsequent frames.
   base::TimeTicks first_frame_time_;
+
+  // Timer to enforce |min_frame_rate_| by repeatedly calling
+  // SendLastReceivedIOSurfaceToClient.
+  // TODO(https://crbug.com/1171127): Remove the need for the capture device
+  // to re-submit static content.
+  std::unique_ptr<base::RepeatingTimer> min_frame_rate_enforcement_timer_;
 
   base::WeakPtrFactory<DesktopCaptureDeviceMac> weak_factory_;
   DISALLOW_COPY_AND_ASSIGN(DesktopCaptureDeviceMac);
