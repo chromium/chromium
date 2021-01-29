@@ -1270,40 +1270,41 @@ void WebViewGuest::SetAllowScaling(bool allow) {
   allow_scaling_ = allow;
 }
 
-bool WebViewGuest::LoadDataWithBaseURL(const std::string& data_url,
-                                       const std::string& base_url,
-                                       const std::string& virtual_url,
+bool WebViewGuest::LoadDataWithBaseURL(const GURL& data_url,
+                                       const GURL& base_url,
+                                       const GURL& virtual_url,
                                        std::string* error) {
-  // Make GURLs from URLs.
-  const GURL data_gurl = GURL(data_url);
-  const GURL base_gurl = GURL(base_url);
-  const GURL virtual_gurl = GURL(virtual_url);
-
   // Check that the provided URLs are valid.
   // |data_url| must be a valid data URL.
-  if (!data_gurl.is_valid() || !data_gurl.SchemeIs(url::kDataScheme)) {
-    base::SStringPrintf(
-        error, webview::kAPILoadDataInvalidDataURL, data_url.c_str());
+  if (!data_url.is_valid() || !data_url.SchemeIs(url::kDataScheme)) {
+    base::SStringPrintf(error, webview::kAPILoadDataInvalidDataURL,
+                        data_url.possibly_invalid_spec().c_str());
     return false;
   }
-  // |base_url| must be a valid URL.
-  if (!base_gurl.is_valid()) {
-    base::SStringPrintf(
-        error, webview::kAPILoadDataInvalidBaseURL, base_url.c_str());
+  const url::Origin& owner_origin =
+      owner_web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+  const bool base_in_owner_origin =
+      owner_origin.IsSameOriginWith(url::Origin::Create(base_url));
+  // |base_url| must be a valid URL. It is also limited to URLs that the owner
+  // is trusted to have control over.
+  if (!base_url.is_valid() ||
+      (!base_url.SchemeIsHTTPOrHTTPS() && !base_in_owner_origin)) {
+    base::SStringPrintf(error, webview::kAPILoadDataInvalidBaseURL,
+                        base_url.possibly_invalid_spec().c_str());
     return false;
   }
   // |virtual_url| must be a valid URL.
-  if (!virtual_gurl.is_valid()) {
-    base::SStringPrintf(
-        error, webview::kAPILoadDataInvalidVirtualURL, virtual_url.c_str());
+  if (!virtual_url.is_valid()) {
+    base::SStringPrintf(error, webview::kAPILoadDataInvalidVirtualURL,
+                        virtual_url.possibly_invalid_spec().c_str());
     return false;
   }
 
   // Set up the parameters to load |data_url| with the specified |base_url|.
-  content::NavigationController::LoadURLParams load_params(data_gurl);
+  content::NavigationController::LoadURLParams load_params(data_url);
   load_params.load_type = content::NavigationController::LOAD_TYPE_DATA;
-  load_params.base_url_for_data_url = base_gurl;
-  load_params.virtual_url_for_data_url = virtual_gurl;
+  load_params.base_url_for_data_url = base_url;
+  load_params.virtual_url_for_data_url = virtual_url;
   load_params.override_user_agent =
       content::NavigationController::UA_OVERRIDE_INHERIT;
 

@@ -2852,7 +2852,41 @@ function testLoadDataAPI() {
 
   webview.addEventListener('loadstop', loadstopListener1);
   document.body.appendChild(webview);
-};
+}
+
+// loadDataWithBaseUrl cannot generally be used with a chrome-extension:// base
+// URL, however the embedding extension may use its own chrome-extension://
+// origin. We test that an embedder can use its own origin as the base and that
+// relative URLs resolve to it by loading something in the guest from the
+// embedder's accessible_resources.
+function testLoadDataAPIAccessibleResources() {
+  let webview = new WebView();
+  // The accessible_resources listed in the manifest file are under the
+  // "foobar" partition.
+  webview.partition = 'foobar';
+  webview.src = 'about:blank';
+
+  let loadstopListener2 = function() {
+    webview.executeScript(
+        {code: 'document.querySelector(\'img\').src'}, (e) => {
+          embedder.test.assertEq(e, location.origin + '/test.bmp');
+          embedder.test.succeed();
+        });
+  };
+
+  let loadstopListener1 = function() {
+    webview.removeEventListener('loadstop', loadstopListener1);
+    webview.addEventListener('loadstop', loadstopListener2);
+
+    let encodedData =
+        window.btoa('<html>This is a test.<br><img src="test.bmp"><br></html>');
+    webview.loadDataWithBaseUrl('data:text/html;base64,' + encodedData,
+                                location.origin);
+  };
+
+  webview.addEventListener('loadstop', loadstopListener1);
+  document.body.appendChild(webview);
+}
 
 // Test that the resize events fire with the correct values, and in the
 // correct order, when resizing occurs.
@@ -3362,6 +3396,7 @@ embedder.test.testList = {
   'testFindAPI_findupdate': testFindAPI_findupdate,
   'testFindInMultipleWebViews': testFindInMultipleWebViews,
   'testLoadDataAPI': testLoadDataAPI,
+  'testLoadDataAPIAccessibleResources': testLoadDataAPIAccessibleResources,
   'testResizeEvents': testResizeEvents,
   'testPerOriginZoomMode': testPerOriginZoomMode,
   'testPerViewZoomMode': testPerViewZoomMode,
