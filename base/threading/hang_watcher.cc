@@ -491,9 +491,7 @@ HangWatcher* HangWatcher::GetInstance() {
 // static
 void HangWatcher::RecordHang() {
   base::debug::DumpWithoutCrashing();
-  // Inhibit code folding.
-  const int line_number = __LINE__;
-  base::debug::Alias(&line_number);
+  NO_CODE_FOLDING();
 }
 
 ScopedClosureRunner HangWatcher::RegisterThreadInternal(
