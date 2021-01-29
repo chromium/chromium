@@ -434,12 +434,12 @@ public class Profile {
 
     /**
      * See {@link GoogleAccountAccessTokenFetcher}.
-     * @since 90
+     * @since 89
      */
     public void setGoogleAccountAccessTokenFetcher(
             @Nullable GoogleAccountAccessTokenFetcher fetcher) {
         ThreadCheck.ensureOnUiThread();
-        if (WebLayer.getSupportedMajorVersionInternal() < 90) {
+        if (WebLayer.getSupportedMajorVersionInternal() < 89) {
             throw new UnsupportedOperationException();
         }
         try {

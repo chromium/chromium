@@ -45,6 +45,6 @@ interface IProfile {
   void setClient(in IProfileClient client) = 17;
   void destroyAndDeleteDataFromDiskSoon(in IObjectWrapper completeCallback) = 18;
 
-  // Added in 90.
+  // Added in 89.
   void setGoogleAccountAccessTokenFetcherClient(IGoogleAccountAccessTokenFetcherClient client) = 19;
 }
