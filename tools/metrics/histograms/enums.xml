@@ -78011,6 +78011,17 @@ others/histograms.xml -->
   <int value="12" label="App ID mismatch"/>
 </enum>
 
+<enum name="WebAppMoverResult">
+  <summary>Result of executing the WebAppMover on Chrome startup.</summary>
+  <int value="0" label="Invalid Finch Configuration"/>
+  <int value="1" label="App-to-install already installed"/>
+  <int value="2" label="Apps-to-uninstall not installed"/>
+  <int value="3" label="App-to-install is not installable"/>
+  <int value="4" label="Failure during uninstall"/>
+  <int value="5" label="Failure during install"/>
+  <int value="6" label="Success"/>
+</enum>
+
 <enum name="WebappUninstallDialogAction">
   <int value="0" label="Uninstall only"/>
   <int value="1" label="Uninstall and remove data"/>
