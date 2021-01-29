@@ -77055,6 +77055,12 @@ Full version information for the fingerprint enum values:
   <int value="3" label="Video thumbnail request completed"/>
 </enum>
 
+<enum name="VideoTutorials.LanguagePickerAction">
+  <int value="0" label="Back press"/>
+  <int value="1" label="Close"/>
+  <int value="2" label="Watch"/>
+</enum>
+
 <enum name="VideoTutorials.UserAction">
   <int value="0" label="Change language"/>
   <int value="1" label="Watch next video"/>
@@ -77062,6 +77068,12 @@ Full version information for the fingerprint enum values:
   <int value="3" label="Share"/>
   <int value="4" label="Close"/>
   <int value="5" label="Back pressed when showing video player"/>
+  <int value="6" label="Open shared video"/>
+  <int value="7" label="Invalid shared URL"/>
+  <int value="8" label="IPH Shown on NTP"/>
+  <int value="9" label="IPH clicked"/>
+  <int value="10" label="IPH dismissed"/>
+  <int value="11" label="Played from recap"/>
 </enum>
 
 <enum name="VideoTutorials.WatchState">
