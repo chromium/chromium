@@ -277,7 +277,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetCurrentWindow) {
   EXPECT_GE(GetTabId(utils::ToDictionary(tab0)), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindows) {
+// TODO(http://crbug.com/1172393): flaky on many bots
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DISABLED_GetAllWindows) {
   const size_t NUM_WINDOWS = 5;
   std::set<int> window_ids;
   std::set<int> result_ids;
