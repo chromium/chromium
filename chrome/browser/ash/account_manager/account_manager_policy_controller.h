@@ -9,9 +9,6 @@
 #include <string>
 #include <vector>
 
-// TODO(https://crbug.com/1164001): move to forward declaration when migrated to
-// ash/components/.
-#include "ash/components/account_manager/account_manager.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
@@ -24,6 +21,7 @@
 class Profile;
 
 namespace ash {
+class AccountManager;
 class EduCoexistenceConsentInvalidationController;
 
 class AccountManagerPolicyController : public KeyedService {

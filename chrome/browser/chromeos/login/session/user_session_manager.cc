@@ -163,6 +163,7 @@ namespace chromeos {
 
 namespace {
 
+using ::ash::AccountManager;
 using ::ash::AccountManagerMigratorFactory;
 using ::signin::ConsentLevel;
 

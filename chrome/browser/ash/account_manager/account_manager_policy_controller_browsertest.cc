@@ -42,7 +42,7 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
     profile_builder.SetProfileName(kFakePrimaryUsername);
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment(profile_builder);
-    AccountManagerFactory* factory =
+    auto* factory =
         g_browser_process->platform_part()->GetAccountManagerFactory();
     account_manager_ = factory->GetAccountManager(profile()->GetPath().value());
     identity_test_environment_adaptor_ =

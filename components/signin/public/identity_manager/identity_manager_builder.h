@@ -42,7 +42,7 @@ class NetworkConnectionTracker;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace chromeos {
+namespace ash {
 class AccountManager;
 }
 #endif
@@ -70,7 +70,7 @@ struct IdentityManagerBuildParams {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManager* account_manager;
+  ash::AccountManager* account_manager;
   bool is_regular_profile;
 #endif
 

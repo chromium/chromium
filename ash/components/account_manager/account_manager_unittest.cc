@@ -25,11 +25,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using ::testing::_;
-
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::testing::_;
 
 constexpr char kGaiaToken[] = "gaia_token";
 constexpr char kNewGaiaToken[] = "new_gaia_token";
@@ -646,4 +646,4 @@ TEST_F(AccountManagerTest, HasDummyGaiaTokenReturnsFalseForValidTokens) {
   EXPECT_FALSE(HasDummyGaiaTokenBlocking(kGaiaAccountKey));
 }
 
-}  // namespace chromeos
+}  // namespace ash

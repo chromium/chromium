@@ -4,9 +4,9 @@
 
 #include "ash/components/account_manager/account_manager_ui.h"
 
-namespace chromeos {
+namespace ash {
 
 AccountManagerUI::AccountManagerUI() = default;
 AccountManagerUI::~AccountManagerUI() = default;
 
-}  // namespace chromeos
+}  // namespace ash

@@ -64,7 +64,7 @@ std::unique_ptr<signin::ProfileOAuth2TokenServiceDelegateChromeOS>
 CreateCrOsOAuthDelegate(
     AccountTrackerService* account_tracker_service,
     network::NetworkConnectionTracker* network_connection_tracker,
-    chromeos::AccountManager* account_manager,
+    ash::AccountManager* account_manager,
     bool is_regular_profile) {
   DCHECK(account_manager);
   return std::make_unique<signin::ProfileOAuth2TokenServiceDelegateChromeOS>(
@@ -108,7 +108,7 @@ CreateOAuth2TokenServiceDelegate(
     signin::AccountConsistencyMethod account_consistency,
     SigninClient* signin_client,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::AccountManager* account_manager,
+    ash::AccountManager* account_manager,
     bool is_regular_profile,
 #endif
 #if !defined(OS_ANDROID)
@@ -157,7 +157,7 @@ std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
     network::NetworkConnectionTracker* network_connection_tracker,
     signin::AccountConsistencyMethod account_consistency,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::AccountManager* account_manager,
+    ash::AccountManager* account_manager,
     bool is_regular_profile,
 #endif
 #if !defined(OS_ANDROID)

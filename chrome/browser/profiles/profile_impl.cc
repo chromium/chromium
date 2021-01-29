@@ -542,10 +542,9 @@ ProfileImpl::ProfileImpl(
     ash::InitializeAccountManager(
         path_, base::DoNothing() /* initialization_callback */);
 
-    chromeos::AccountManager* account_manager =
-        g_browser_process->platform_part()
-            ->GetAccountManagerFactory()
-            ->GetAccountManager(path_.value());
+    auto* account_manager = g_browser_process->platform_part()
+                                ->GetAccountManagerFactory()
+                                ->GetAccountManager(path_.value());
     account_manager->SetPrefService(GetPrefs());
   }
 #endif

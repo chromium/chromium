@@ -72,8 +72,8 @@ class PrimaryProfileServicesShutdownNotifierFactory
 
 BrowserProcessPlatformPart::BrowserProcessPlatformPart()
     : created_profile_helper_(false),
-      account_manager_factory_(
-          std::make_unique<chromeos::AccountManagerFactory>()) {}
+      account_manager_factory_(std::make_unique<ash::AccountManagerFactory>()) {
+}
 
 BrowserProcessPlatformPart::~BrowserProcessPlatformPart() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -269,7 +269,7 @@ void BrowserProcessPlatformPart::CreateProfileHelper() {
   profile_helper_ = chromeos::ProfileHelper::CreateInstance();
 }
 
-chromeos::AccountManagerFactory*
+ash::AccountManagerFactory*
 BrowserProcessPlatformPart::GetAccountManagerFactory() {
   return account_manager_factory_.get();
 }

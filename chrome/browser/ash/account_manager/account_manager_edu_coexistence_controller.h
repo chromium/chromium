@@ -8,9 +8,6 @@
 #include <string>
 #include <vector>
 
-// TODO(https://crbug.com/1164001): move to forward declaration when migrated to
-// ash/components/.
-#include "ash/components/account_manager/account_manager.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
@@ -21,6 +18,7 @@ class PrefRegistrySimple;
 class Profile;
 
 namespace ash {
+class AccountManager;
 
 // Listens to changes to chromeos::prefs::kEduCoexistenceToSVersion policy
 // preference and invalidates secondary edu accounts with outdated terms of

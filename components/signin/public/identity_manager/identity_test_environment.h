@@ -24,7 +24,7 @@ class IdentityTestEnvironmentProfileAdaptor;
 class PrefService;
 class TestSigninClient;
 
-namespace chromeos {
+namespace ash {
 class AccountManagerFactory;
 }
 
@@ -373,7 +373,7 @@ class IdentityTestEnvironment : public IdentityManager::DiagnosticsObserver {
       SigninClient* signin_client,
       PrefService* pref_service,
       base::FilePath user_data_dir,
-      chromeos::AccountManagerFactory* chromeos_account_manager_factory,
+      ash::AccountManagerFactory* account_manager_factory,
       AccountConsistencyMethod account_consistency =
           AccountConsistencyMethod::kDisabled);
 #else

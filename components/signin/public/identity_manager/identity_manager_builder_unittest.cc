@@ -48,7 +48,7 @@ class IdentityManagerBuilderTest : public testing::Test {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManagerFactory* GetAccountManagerFactory() {
+  ash::AccountManagerFactory* GetAccountManagerFactory() {
     return &account_manager_factory_;
   }
 #endif
@@ -64,7 +64,7 @@ class IdentityManagerBuilderTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestSigninClient signin_client_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManagerFactory account_manager_factory_;
+  ash::AccountManagerFactory account_manager_factory_;
 #endif
 };
 
@@ -95,7 +95,7 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManager* account_manager =
+  auto* account_manager =
       GetAccountManagerFactory()->GetAccountManager(dest_path.value());
   account_manager->Initialize(
       dest_path, GetSigninClient()->GetURLLoaderFactory(),
@@ -124,7 +124,7 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
   EXPECT_NE(init_params.accounts_mutator, nullptr);
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_NE(init_params.chromeos_account_manager, nullptr);
+  EXPECT_NE(init_params.ash_account_manager, nullptr);
 #endif
 
   // Manually shut down AccountFetcherService to avoid DCHECK failure inside its

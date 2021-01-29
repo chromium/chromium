@@ -27,6 +27,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
+
+using ::ash::AccountManager;
+
 constexpr char kGetAccountsMessage[] = "getAccounts";
 constexpr char kHandleFunctionName[] = "handleFunctionName";
 
@@ -57,7 +60,7 @@ DeviceAccountInfo GetActiveDirectoryDeviceAccountInfo() {
           "example.com" /*organization*/,
           user_manager::USER_TYPE_ACTIVE_DIRECTORY /*user_type*/,
           account_manager::AccountType::kActiveDirectory /*account_type*/,
-          chromeos::AccountManager::kActiveDirectoryDummyToken /*token*/};
+          AccountManager::kActiveDirectoryDummyToken /*token*/};
 }
 
 DeviceAccountInfo GetGaiaDeviceAccountInfo() {
@@ -161,7 +164,7 @@ class AccountManagerUIHandlerTest
 
     identity_manager_ = IdentityManagerFactory::GetForProfile(profile_.get());
 
-    chromeos::AccountManagerFactory* factory =
+    auto* factory =
         g_browser_process->platform_part()->GetAccountManagerFactory();
     account_manager_ = factory->GetAccountManager(profile_->GetPath().value());
 
@@ -229,7 +232,7 @@ class AccountManagerUIHandlerTest
 
   content::TestWebUI* web_ui() { return &web_ui_; }
   signin::IdentityManager* identity_manager() { return identity_manager_; }
-  chromeos::AccountManager* account_manager() { return account_manager_; }
+  AccountManager* account_manager() { return account_manager_; }
 
  private:
   chromeos::FakeChromeUserManager* GetFakeUserManager() const {
@@ -240,7 +243,7 @@ class AccountManagerUIHandlerTest
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<TestingProfile> profile_;
-  chromeos::AccountManager* account_manager_ = nullptr;
+  AccountManager* account_manager_ = nullptr;
   signin::IdentityManager* identity_manager_ = nullptr;
   content::TestWebUI web_ui_;
   AccountId primary_account_id_;

@@ -27,7 +27,7 @@ void MarshalAccounts(
 
 namespace crosapi {
 
-AccountManagerAsh::AccountManagerAsh(chromeos::AccountManager* account_manager)
+AccountManagerAsh::AccountManagerAsh(ash::AccountManager* account_manager)
     : account_manager_(account_manager) {
   DCHECK(account_manager_);
   account_manager_->AddObserver(this);

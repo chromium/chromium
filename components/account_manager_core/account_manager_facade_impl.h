@@ -17,7 +17,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 
 // ChromeOS-specific implementation of |AccountManagerFacade| that talks to
-// |chromeos::AccountManager| over Mojo. Used by both Lacros and Ash.
+// |ash::AccountManager| over Mojo. Used by both Lacros and Ash.
 class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerFacadeImpl
     : public account_manager::AccountManagerFacade,
       public crosapi::mojom::AccountManagerObserver {

@@ -60,7 +60,7 @@ void UpdateRefreshTokenForAccount(
     ProfileOAuth2TokenService* token_service,
     AccountTrackerService* account_tracker_service,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::AccountManager* account_manager,
+    ash::AccountManager* account_manager,
 #endif
     IdentityManager* identity_manager,
     const CoreAccountId& account_id,
@@ -304,7 +304,7 @@ void SetRefreshTokenForAccount(IdentityManager* identity_manager,
       identity_manager->GetTokenService(),
       identity_manager->GetAccountTrackerService(),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      identity_manager->GetChromeOSAccountManager(),
+      identity_manager->GetAshAccountManager(),
 #endif
       identity_manager, account_id,
       token_value.empty() ? "refresh_token_for_" + account_id.ToString() + "_" +
@@ -318,7 +318,7 @@ void SetInvalidRefreshTokenForAccount(IdentityManager* identity_manager,
 
                                identity_manager->GetAccountTrackerService(),
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-                               identity_manager->GetChromeOSAccountManager(),
+                               identity_manager->GetAshAccountManager(),
 #endif
                                identity_manager, account_id,
                                GaiaConstants::kInvalidRefreshToken);
@@ -338,7 +338,7 @@ void RemoveRefreshTokenForAccount(IdentityManager* identity_manager,
   const AccountInfo& account_info =
       identity_manager->GetAccountTrackerService()->GetAccountInfo(account_id);
 
-  identity_manager->GetChromeOSAccountManager()->RemoveAccount(
+  identity_manager->GetAshAccountManager()->RemoveAccount(
       account_manager::AccountKey{account_info.gaia,
                                   account_manager::AccountType::kGaia});
 #else

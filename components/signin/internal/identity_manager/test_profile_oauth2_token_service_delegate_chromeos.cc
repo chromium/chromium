@@ -12,7 +12,7 @@ namespace signin {
 TestProfileOAuth2TokenServiceDelegateChromeOS::
     TestProfileOAuth2TokenServiceDelegateChromeOS(
         AccountTrackerService* account_tracker_service,
-        chromeos::AccountManager* account_manager,
+        ash::AccountManager* account_manager,
         bool is_regular_profile) {
   if (!network::TestNetworkConnectionTracker::HasInstance()) {
     owned_tracker_ = network::TestNetworkConnectionTracker::CreateInstance();

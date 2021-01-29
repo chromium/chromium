@@ -550,9 +550,9 @@ bool AccountManagerMigrator::ShouldRunMigrations() const {
 }
 
 void AccountManagerMigrator::AddMigrationSteps() {
-  chromeos::AccountManagerFactory* factory =
+  auto* factory =
       g_browser_process->platform_part()->GetAccountManagerFactory();
-  chromeos::AccountManager* account_manager =
+  auto* account_manager =
       factory->GetAccountManager(profile_->GetPath().value());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile_);

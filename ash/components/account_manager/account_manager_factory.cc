@@ -10,7 +10,7 @@
 #include "ash/components/account_manager/account_manager.h"
 #include "base/macros.h"
 
-namespace chromeos {
+namespace ash {
 
 AccountManagerFactory::AccountManagerFactory() = default;
 AccountManagerFactory::~AccountManagerFactory() = default;
@@ -55,4 +55,4 @@ AccountManagerFactory::GetAccountManagerHolder(
   return it->second;
 }
 
-}  // namespace chromeos
+}  // namespace ash

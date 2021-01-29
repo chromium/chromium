@@ -172,7 +172,7 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
   init_params.primary_account_manager = std::move(primary_account_manager);
   init_params.token_service = std::move(token_service);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  init_params.chromeos_account_manager = params->account_manager;
+  init_params.ash_account_manager = params->account_manager;
 #endif
 
   return init_params;

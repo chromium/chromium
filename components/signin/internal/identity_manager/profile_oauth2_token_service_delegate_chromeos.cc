@@ -68,7 +68,7 @@ ProfileOAuth2TokenServiceDelegateChromeOS::
     ProfileOAuth2TokenServiceDelegateChromeOS(
         AccountTrackerService* account_tracker_service,
         network::NetworkConnectionTracker* network_connection_tracker,
-        chromeos::AccountManager* account_manager,
+        ash::AccountManager* account_manager,
         bool is_regular_profile)
     : account_tracker_service_(account_tracker_service),
       network_connection_tracker_(network_connection_tracker),

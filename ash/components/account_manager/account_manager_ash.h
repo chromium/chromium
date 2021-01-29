@@ -20,9 +20,9 @@ namespace crosapi {
 // Account Manager.
 class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerAsh
     : public mojom::AccountManager,
-      public chromeos::AccountManager::Observer {
+      public ash::AccountManager::Observer {
  public:
-  explicit AccountManagerAsh(chromeos::AccountManager* account_manager);
+  explicit AccountManagerAsh(ash::AccountManager* account_manager);
   AccountManagerAsh(const AccountManagerAsh&) = delete;
   AccountManagerAsh& operator=(const AccountManagerAsh&) = delete;
   ~AccountManagerAsh() override;
@@ -37,7 +37,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerAsh
   void ShowReauthAccountDialog(const std::string& email,
                                base::OnceClosure closure) override;
 
-  // chromeos::AccountManager::Observer:
+  // ash::AccountManager::Observer:
   void OnTokenUpserted(const account_manager::Account& account) override;
   void OnAccountRemoved(const account_manager::Account& account) override;
 
@@ -47,7 +47,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerAsh
 
   void FlushMojoForTesting();
 
-  chromeos::AccountManager* const account_manager_;
+  ash::AccountManager* const account_manager_;
   mojo::ReceiverSet<mojom::AccountManager> receivers_;
   mojo::RemoteSet<mojom::AccountManagerObserver> observers_;
 };

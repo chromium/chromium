@@ -218,10 +218,9 @@ void EduAccountLoginHandler::HandleUpdateEduCoexistenceFlowResult(
 void EduAccountLoginHandler::FetchFamilyMembers() {
   DCHECK(!family_fetcher_);
   Profile* profile = Profile::FromWebUI(web_ui());
-  chromeos::AccountManager* account_manager =
-      g_browser_process->platform_part()
-          ->GetAccountManagerFactory()
-          ->GetAccountManager(profile->GetPath().value());
+  auto* account_manager = g_browser_process->platform_part()
+                              ->GetAccountManagerFactory()
+                              ->GetAccountManager(profile->GetPath().value());
   DCHECK(account_manager);
 
   family_fetcher_ = std::make_unique<FamilyInfoFetcher>(
@@ -271,10 +270,9 @@ void EduAccountLoginHandler::FetchReAuthProofTokenForParent(
     const std::string& parent_credential) {
   DCHECK(!gaia_auth_fetcher_);
   Profile* profile = Profile::FromWebUI(web_ui());
-  chromeos::AccountManager* account_manager =
-      g_browser_process->platform_part()
-          ->GetAccountManagerFactory()
-          ->GetAccountManager(profile->GetPath().value());
+  auto* account_manager = g_browser_process->platform_part()
+                              ->GetAccountManagerFactory()
+                              ->GetAccountManager(profile->GetPath().value());
   DCHECK(account_manager);
 
   gaia_auth_fetcher_ = std::make_unique<GaiaAuthFetcher>(

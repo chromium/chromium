@@ -6,7 +6,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package chromeos.account_manager;
+package ash.account_manager;
 
 enum AccountType {
   ACCOUNT_TYPE_UNSPECIFIED = 0;  // Proto best practice for enums.

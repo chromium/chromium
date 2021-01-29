@@ -308,7 +308,7 @@ class IdentityManagerTest : public testing::Test {
                          std::string email,
                          std::string token) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    identity_manager()->GetChromeOSAccountManager()->UpsertAccount(
+    identity_manager()->GetAshAccountManager()->UpsertAccount(
         ::account_manager::AccountKey{gaia_id,
                                       account_manager::AccountType::kGaia},
         email, token);
@@ -319,7 +319,7 @@ class IdentityManagerTest : public testing::Test {
 
   void RevokeCredentials(const CoreAccountId& account_id, std::string gaia_id) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    identity_manager()->GetChromeOSAccountManager()->RemoveAccount(
+    identity_manager()->GetAshAccountManager()->RemoveAccount(
         ::account_manager::AccountKey{gaia_id,
                                       account_manager::AccountType::kGaia});
 #else
@@ -362,18 +362,17 @@ class IdentityManagerTest : public testing::Test {
                                         temp_profile_dir_.GetPath());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::AccountManager::RegisterPrefs(pref_service_.registry());
-    chromeos::AccountManager* chromeos_account_manager =
-        GetAccountManagerFactory()->GetAccountManager(
-            temp_profile_dir_.GetPath().value());
-    chromeos_account_manager->InitializeInEphemeralMode(
+    ash::AccountManager::RegisterPrefs(pref_service_.registry());
+    auto* ash_account_manager = GetAccountManagerFactory()->GetAccountManager(
+        temp_profile_dir_.GetPath().value());
+    ash_account_manager->InitializeInEphemeralMode(
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_));
-    chromeos_account_manager->SetPrefService(&pref_service_);
+    ash_account_manager->SetPrefService(&pref_service_);
     auto token_service = std::make_unique<CustomFakeProfileOAuth2TokenService>(
         &pref_service_,
         std::make_unique<TestProfileOAuth2TokenServiceDelegateChromeOS>(
-            account_tracker_service.get(), chromeos_account_manager,
+            account_tracker_service.get(), ash_account_manager,
             /*is_regular_profile=*/true));
 #else
     auto token_service =
@@ -442,7 +441,7 @@ class IdentityManagerTest : public testing::Test {
         primary_account_manager.get(), &pref_service_);
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    init_params.chromeos_account_manager = chromeos_account_manager;
+    init_params.ash_account_manager = ash_account_manager;
 #endif
 
     init_params.account_fetcher_service = std::move(account_fetcher_service);
@@ -493,7 +492,7 @@ class IdentityManagerTest : public testing::Test {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManagerFactory* GetAccountManagerFactory() {
+  ash::AccountManagerFactory* GetAccountManagerFactory() {
     return &account_manager_factory_;
   }
 #endif
@@ -502,7 +501,7 @@ class IdentityManagerTest : public testing::Test {
   base::ScopedTempDir temp_profile_dir_;
   base::test::TaskEnvironment task_environment_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManagerFactory account_manager_factory_;
+  ash::AccountManagerFactory account_manager_factory_;
 #endif
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   network::TestURLLoaderFactory test_url_loader_factory_;
@@ -534,7 +533,7 @@ TEST_F(IdentityManagerTest, Construct) {
   EXPECT_EQ(identity_manager()->GetDeviceAccountsSynchronizer(), nullptr);
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_NE(identity_manager()->GetChromeOSAccountManager(), nullptr);
+  EXPECT_NE(identity_manager()->GetAshAccountManager(), nullptr);
 #endif
 }
 

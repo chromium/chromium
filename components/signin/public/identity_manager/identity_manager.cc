@@ -85,7 +85,7 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos_account_manager_ = parameters.chromeos_account_manager;
+  ash_account_manager_ = parameters.ash_account_manager;
 #endif
 }
 
@@ -454,8 +454,8 @@ GaiaCookieManagerService* IdentityManager::GetGaiaCookieManagerService() const {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-chromeos::AccountManager* IdentityManager::GetChromeOSAccountManager() const {
-  return chromeos_account_manager_;
+ash::AccountManager* IdentityManager::GetAshAccountManager() const {
+  return ash_account_manager_;
 }
 #endif
 

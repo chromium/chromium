@@ -123,14 +123,14 @@ class AccountManagerAshTest : public ::testing::Test {
     return account_manager_async_waiter_.get();
   }
 
-  chromeos::AccountManager* account_manager() { return &account_manager_; }
+  ash::AccountManager* account_manager() { return &account_manager_; }
 
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   TestingPrefServiceSimple pref_service_;
-  chromeos::AccountManager account_manager_;
+  ash::AccountManager account_manager_;
   mojo::Remote<mojom::AccountManager> remote_;
   std::unique_ptr<AccountManagerAsh> account_manager_ash_;
   std::unique_ptr<mojom::AccountManagerAsyncWaiter>

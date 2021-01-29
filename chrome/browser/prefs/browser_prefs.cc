@@ -1010,7 +1010,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   arc::prefs::RegisterProfilePrefs(registry);
   ArcAppListPrefs::RegisterProfilePrefs(registry);
   certificate_manager::CertificatesHandler::RegisterProfilePrefs(registry);
-  chromeos::AccountManager::RegisterPrefs(registry);
+  ash::AccountManager::RegisterPrefs(registry);
   chromeos::ApkWebAppService::RegisterProfilePrefs(registry);
   chromeos::app_time::AppActivityRegistry::RegisterProfilePrefs(registry);
   chromeos::app_time::AppTimeController::RegisterProfilePrefs(registry);

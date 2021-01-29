@@ -48,10 +48,9 @@ bool IsAccountManagerAvailable(const Profile* const profile) {
 
 void InitializeAccountManager(const base::FilePath& cryptohome_root_dir,
                               base::OnceClosure initialization_callback) {
-  chromeos::AccountManager* account_manager =
-      g_browser_process->platform_part()
-          ->GetAccountManagerFactory()
-          ->GetAccountManager(cryptohome_root_dir.value());
+  auto* account_manager = g_browser_process->platform_part()
+                              ->GetAccountManagerFactory()
+                              ->GetAccountManager(cryptohome_root_dir.value());
 
   account_manager->Initialize(
       cryptohome_root_dir,

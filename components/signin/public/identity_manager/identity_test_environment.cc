@@ -55,6 +55,8 @@ using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
 
 namespace signin {
 
+using ::ash::AccountManagerFactory;
+
 class IdentityManagerDependenciesOwner {
  public:
   IdentityManagerDependenciesOwner(
@@ -64,13 +66,13 @@ class IdentityManagerDependenciesOwner {
 
   sync_preferences::TestingPrefServiceSyncable* pref_service();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManagerFactory* account_manager_factory();
+  AccountManagerFactory* account_manager_factory();
 #endif
   TestSigninClient* signin_client();
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  std::unique_ptr<chromeos::AccountManagerFactory> account_manager_factory_;
+  std::unique_ptr<AccountManagerFactory> account_manager_factory_;
 #endif
   // Depending on whether a |pref_service| instance is passed in
   // the constructor, exactly one of these will be non-null.
@@ -88,8 +90,7 @@ IdentityManagerDependenciesOwner::IdentityManagerDependenciesOwner(
     TestSigninClient* signin_client_param)
     :
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      account_manager_factory_(
-          std::make_unique<chromeos::AccountManagerFactory>()),
+      account_manager_factory_(std::make_unique<AccountManagerFactory>()),
 #endif
       owned_pref_service_(
           pref_service_param
@@ -115,7 +116,7 @@ IdentityManagerDependenciesOwner::pref_service() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-chromeos::AccountManagerFactory*
+AccountManagerFactory*
 IdentityManagerDependenciesOwner::account_manager_factory() {
   DCHECK(account_manager_factory_);
   return account_manager_factory_.get();
@@ -185,7 +186,7 @@ IdentityTestEnvironment::IdentityTestEnvironment(
   IdentityManager::RegisterProfilePrefs(test_pref_service->registry());
   IdentityManager::RegisterLocalStatePrefs(test_pref_service->registry());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManager::RegisterPrefs(test_pref_service->registry());
+  ash::AccountManager::RegisterPrefs(test_pref_service->registry());
 
   owned_identity_manager_ = BuildIdentityManagerForTests(
       test_signin_client, test_pref_service, base::FilePath(),
@@ -206,21 +207,20 @@ IdentityTestEnvironment::BuildIdentityManagerForTests(
     SigninClient* signin_client,
     PrefService* pref_service,
     base::FilePath user_data_dir,
-    chromeos::AccountManagerFactory* chromeos_account_manager_factory,
+    AccountManagerFactory* account_manager_factory,
     AccountConsistencyMethod account_consistency) {
   auto account_tracker_service = std::make_unique<AccountTrackerService>();
   account_tracker_service->Initialize(pref_service, user_data_dir);
 
   IdentityManager::InitParameters init_params;
-  chromeos::AccountManager* account_manager =
-      chromeos_account_manager_factory->GetAccountManager(
-          user_data_dir.value());
+  auto* account_manager =
+      account_manager_factory->GetAccountManager(user_data_dir.value());
 
   if (user_data_dir.empty()) {
     account_manager->InitializeInEphemeralMode(
         signin_client->GetURLLoaderFactory());
   } else {
-    chromeos::AccountManager::DelayNetworkCallRunner immediate_callback_runner =
+    ash::AccountManager::DelayNetworkCallRunner immediate_callback_runner =
         base::BindRepeating([](base::OnceClosure closure) -> void {
           std::move(closure).Run();
         });
@@ -231,7 +231,7 @@ IdentityTestEnvironment::BuildIdentityManagerForTests(
   account_manager->SetPrefService(pref_service);
   account_manager->SetUrlLoaderFactoryForTests(
       signin_client->GetURLLoaderFactory());
-  init_params.chromeos_account_manager = account_manager;
+  init_params.ash_account_manager = account_manager;
 
   auto token_service = std::make_unique<FakeProfileOAuth2TokenService>(
       pref_service,

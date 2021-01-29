@@ -5,10 +5,14 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_HELPER_CHROMEOS_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_HELPER_CHROMEOS_H_
 
-#include "ash/components/account_manager/account_manager.h"
+#include "components/account_manager_core/account.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace ash {
+class AccountManager;
+}
 
 namespace chromeos {
 
@@ -21,7 +25,7 @@ namespace chromeos {
 class SigninHelper : public GaiaAuthConsumer {
  public:
   SigninHelper(
-      chromeos::AccountManager* account_manager,
+      ash::AccountManager* account_manager,
       const base::RepeatingClosure& close_dialog_closure,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& gaia_id,
@@ -46,7 +50,7 @@ class SigninHelper : public GaiaAuthConsumer {
   // Deletes this object.
   void Exit();
 
-  chromeos::AccountManager* GetAccountManager();
+  ash::AccountManager* GetAccountManager();
 
   // Returns email address of the account being added.
   std::string GetEmail();
@@ -55,7 +59,7 @@ class SigninHelper : public GaiaAuthConsumer {
 
  private:
   // A non-owning pointer to Chrome OS AccountManager.
-  chromeos::AccountManager* const account_manager_;
+  ash::AccountManager* const account_manager_;
   // A closure to close the hosting dialog window.
   base::RepeatingClosure close_dialog_closure_;
   // The user's AccountKey for which |this| object has been created.

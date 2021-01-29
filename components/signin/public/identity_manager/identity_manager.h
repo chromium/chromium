@@ -30,9 +30,9 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-namespace chromeos {
+namespace ash {
 class AccountManager;
-}  // namespace chromeos
+}
 #endif
 
 namespace gaia {
@@ -374,7 +374,7 @@ class IdentityManager : public KeyedService,
     std::unique_ptr<DeviceAccountsSynchronizer> device_accounts_synchronizer;
     std::unique_ptr<DiagnosticsProvider> diagnostics_provider;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    chromeos::AccountManager* chromeos_account_manager = nullptr;
+    ash::AccountManager* ash_account_manager = nullptr;
 #endif
 
     InitParameters();
@@ -593,7 +593,7 @@ class IdentityManager : public KeyedService,
   AccountFetcherService* GetAccountFetcherService() const;
   GaiaCookieManagerService* GetGaiaCookieManagerService() const;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManager* GetChromeOSAccountManager() const;
+  ash::AccountManager* GetAshAccountManager() const;
 #endif
 
   // Populates and returns an AccountInfo object corresponding to |account_id|,
@@ -675,7 +675,7 @@ class IdentityManager : public KeyedService,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManager* chromeos_account_manager_ = nullptr;
+  ash::AccountManager* ash_account_manager_ = nullptr;
 #endif
 
   DISALLOW_COPY_AND_ASSIGN(IdentityManager);

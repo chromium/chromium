@@ -18,8 +18,11 @@
 class BrowserProcessPlatformPartTestApi;
 class Profile;
 
-namespace chromeos {
+namespace ash {
 class AccountManagerFactory;
+}
+
+namespace chromeos {
 class ChromeSessionManager;
 class ChromeUserManager;
 class InSessionPasswordChangeManager;
@@ -121,7 +124,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   chromeos::system::SystemClock* GetSystemClock();
   void DestroySystemClock();
 
-  chromeos::AccountManagerFactory* GetAccountManagerFactory();
+  ash::AccountManagerFactory* GetAccountManagerFactory();
 
   chromeos::InSessionPasswordChangeManager*
   in_session_password_change_manager() {
@@ -164,7 +167,7 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   scoped_refptr<component_updater::CrOSComponentManager>
       cros_component_manager_;
 
-  std::unique_ptr<chromeos::AccountManagerFactory> account_manager_factory_;
+  std::unique_ptr<ash::AccountManagerFactory> account_manager_factory_;
 
   std::unique_ptr<chromeos::InSessionPasswordChangeManager>
       in_session_password_change_manager_;

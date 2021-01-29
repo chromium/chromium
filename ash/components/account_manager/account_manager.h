@@ -35,7 +35,7 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
-namespace chromeos {
+namespace ash {
 
 class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
  public:
@@ -419,11 +419,12 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManager {
   base::WeakPtrFactory<AccountManager> weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove after moved to ash/.
-namespace ash {
-using ::chromeos::AccountManager;
+// TODO(https://crbug.com/1164001): remove after the pending migrations are
+// finished.
+namespace chromeos {
+using ::ash::AccountManager;
 }
 
 #endif  // ASH_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_H_

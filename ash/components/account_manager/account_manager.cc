@@ -35,7 +35,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -76,35 +76,34 @@ void RecordInitializationTime(
 
 // Returns `nullopt` if `account_type` is `ACCOUNT_TYPE_UNSPECIFIED`.
 base::Optional<::account_manager::AccountType> FromProtoAccountType(
-    const chromeos::account_manager::AccountType& account_type) {
+    const account_manager::AccountType& account_type) {
   switch (account_type) {
-    case chromeos::account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED:
+    case account_manager::AccountType::ACCOUNT_TYPE_UNSPECIFIED:
       return base::nullopt;
-    case chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA:
+    case account_manager::AccountType::ACCOUNT_TYPE_GAIA:
       static_assert(
-          static_cast<int>(
-              chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA) ==
+          static_cast<int>(account_manager::AccountType::ACCOUNT_TYPE_GAIA) ==
               static_cast<int>(::account_manager::AccountType::kGaia),
           "Underlying enum values must match");
       return ::account_manager::AccountType::kGaia;
-    case chromeos::account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY:
-      static_assert(static_cast<int>(chromeos::account_manager::AccountType::
-                                         ACCOUNT_TYPE_ACTIVE_DIRECTORY) ==
-                        static_cast<int>(
-                            ::account_manager::AccountType::kActiveDirectory),
-                    "Underlying enum values must match");
+    case account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY:
+      static_assert(
+          static_cast<int>(
+              account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY) ==
+              static_cast<int>(
+                  ::account_manager::AccountType::kActiveDirectory),
+          "Underlying enum values must match");
       return ::account_manager::AccountType::kActiveDirectory;
   }
 }
 
-chromeos::account_manager::AccountType ToProtoAccountType(
+account_manager::AccountType ToProtoAccountType(
     const ::account_manager::AccountType& account_type) {
   switch (account_type) {
     case ::account_manager::AccountType::kGaia:
-      return chromeos::account_manager::AccountType::ACCOUNT_TYPE_GAIA;
+      return account_manager::AccountType::ACCOUNT_TYPE_GAIA;
     case ::account_manager::AccountType::kActiveDirectory:
-      return chromeos::account_manager::AccountType::
-          ACCOUNT_TYPE_ACTIVE_DIRECTORY;
+      return account_manager::AccountType::ACCOUNT_TYPE_ACTIVE_DIRECTORY;
   }
 }
 
@@ -297,7 +296,7 @@ AccountManager::AccountMap AccountManager::LoadAccountsFromDisk(
     return accounts;
   }
 
-  chromeos::account_manager::Accounts accounts_proto;
+  account_manager::Accounts accounts_proto;
   success = accounts_proto.ParseFromString(token_file_data);
   if (!success) {
     LOG(ERROR) << "Failed to parse tokens from file";
@@ -591,7 +590,7 @@ void AccountManager::PersistAccountsAsync() {
 }
 
 std::string AccountManager::GetSerializedAccounts() {
-  chromeos::account_manager::Accounts accounts_proto;
+  account_manager::Accounts accounts_proto;
 
   for (const auto& account : accounts_) {
     account_manager::Account* account_proto = accounts_proto.add_accounts();
@@ -766,4 +765,4 @@ bool AccountManager::IsEphemeralMode() const {
   return home_dir_.empty();
 }
 
-}  // namespace chromeos
+}  // namespace ash

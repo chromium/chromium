@@ -11,7 +11,8 @@
 #include "services/network/test/test_network_connection_tracker.h"
 
 class AccountTrackerService;
-namespace chromeos {
+
+namespace ash {
 class AccountManager;
 }
 
@@ -27,7 +28,7 @@ class TestProfileOAuth2TokenServiceDelegateChromeOS
  public:
   TestProfileOAuth2TokenServiceDelegateChromeOS(
       AccountTrackerService* account_tracker_service,
-      chromeos::AccountManager* account_manager,
+      ash::AccountManager* account_manager,
       bool is_regular_profile);
   ~TestProfileOAuth2TokenServiceDelegateChromeOS() override;
   TestProfileOAuth2TokenServiceDelegateChromeOS(

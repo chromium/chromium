@@ -14,7 +14,7 @@
 #include "base/component_export.h"
 #include "base/sequence_checker.h"
 
-namespace chromeos {
+namespace ash {
 
 // This factory is needed because of multi signin on Chrome OS. Device Accounts,
 // which are simultaneously logged into Chrome OS, should see different
@@ -62,11 +62,6 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerFactory {
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove after moved to ash/.
-namespace ash {
-using ::chromeos::AccountManagerFactory;
-}
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_FACTORY_H_
