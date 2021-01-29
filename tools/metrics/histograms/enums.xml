@@ -76779,7 +76779,8 @@ Full version information for the fingerprint enum values:
   <int value="27" label="vaAttachProtectedSession()"/>
   <int value="28" label="vaDetachProtectedSession()"/>
   <int value="29" label="vaProtectedSessionHwUpdate()"/>
-  <int value="30" label="Other VA functions"/>
+  <int value="30" label="kVAProtectedSessionExecute()"/>
+  <int value="31" label="Other VA functions"/>
 </enum>
 
 <enum name="VAIPFailure">

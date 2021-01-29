@@ -63,7 +63,8 @@ class VaapiVideoDecoder : public DecoderInterface,
   void Initialize(const VideoDecoderConfig& config,
                   CdmContext* cdm_context,
                   InitCB init_cb,
-                  const OutputCB& output_cb) override;
+                  const OutputCB& output_cb,
+                  const WaitingCB& waiting_cb) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure reset_cb) override;
   void ApplyResolutionChange() override;
@@ -166,6 +167,10 @@ class VaapiVideoDecoder : public DecoderInterface,
 
   // Callback used to notify the client when a frame is available for output.
   OutputCB output_cb_;
+
+  // Callback used to notify the client when we have lost decode context and
+  // request a reset. (Used in protected decoding).
+  WaitingCB waiting_cb_;
 
   // The video stream's profile.
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;

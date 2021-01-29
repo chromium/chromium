@@ -134,8 +134,9 @@ enum class VaapiFunctions {
   kVAAttachProtectedSession = 27,
   kVADetachProtectedSession = 28,
   kVAProtectedSessionHwUpdate = 29,
+  kVAProtectedSessionExecute = 30,
   // Anything else is captured in this last entry.
-  kOtherVAFunction = 30,
+  kOtherVAFunction = 31,
   kMaxValue = kOtherVAFunction,
 };
 
@@ -176,6 +177,7 @@ constexpr std::array<const char*,
                            "vaAttachProtectedSession",
                            "vaDetachProtectedSession",
                            "vaProtectedSessionHwUpdate",
+                           "vaProtectedSessionExecute",
                            "Other VA function"};
 
 // Translates |function| into a human readable string for logging.
@@ -1953,6 +1955,57 @@ uint32_t VaapiWrapper::GetProtectedInstanceID() {
   query_tag.value = pxp_info.query_pxp_tag.pxp_tag;
   DCHECK_NE(query_tag.instance_id, 0u);
   return query_tag.instance_id;
+}
+
+bool VaapiWrapper::IsProtectedSessionDead() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (va_protected_session_id_ == VA_INVALID_ID)
+    return false;
+
+  constexpr uint32_t kVaTeeExecGpuFuncIdIsSessionAlive = 0x40000103;
+  uint8_t alive;
+  VAProtectedSessionExecuteBuffer tee_exec_buf = {};
+  tee_exec_buf.function_id = kVaTeeExecGpuFuncIdIsSessionAlive;
+  tee_exec_buf.input.data_size = 0;
+  tee_exec_buf.input.data = nullptr;
+  tee_exec_buf.output.data_size = sizeof(alive);
+  tee_exec_buf.output.data = &alive;
+
+  base::AutoLock auto_lock(*va_lock_);
+  VABufferID buf_id;
+  VAStatus va_res =
+      vaCreateBuffer(va_display_, va_protected_session_id_,
+                     VAProtectedSessionExecuteBufferType, sizeof(tee_exec_buf),
+                     1, &tee_exec_buf, &buf_id);
+  // Failure here is valid if the protected session has been closed.
+  if (va_res != VA_STATUS_SUCCESS)
+    return true;
+
+  va_res =
+      vaProtectedSessionExecute(va_display_, va_protected_session_id_, buf_id);
+  vaDestroyBuffer(va_display_, buf_id);
+  if (va_res != VA_STATUS_SUCCESS)
+    return true;
+
+  return !alive;
+#else  // BUILDFLAG(IS_CHROMEOS_ASH)
+  return false;
+#endif
+}
+
+void VaapiWrapper::DestroyProtectedSession() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (va_protected_session_id_ == VA_INVALID_ID)
+    return;
+  base::AutoLock auto_lock(*va_lock_);
+  VAStatus va_res =
+      vaDestroyProtectedSession(va_display_, va_protected_session_id_);
+  VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADestroyProtectedSession);
+  va_res = vaDestroyConfig(va_display_, va_protected_config_id_);
+  VA_LOG_ON_ERROR(va_res, VaapiFunctions::kVADestroyConfig);
+  va_protected_session_id_ = VA_INVALID_ID;
+  va_protected_config_id_ = VA_INVALID_ID;
+#endif
 }
 
 void VaapiWrapper::DestroyContextAndSurfaces(

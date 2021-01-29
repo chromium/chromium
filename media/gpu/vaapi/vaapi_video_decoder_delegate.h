@@ -63,6 +63,12 @@ class VaapiVideoDecoderDelegate {
   VaapiVideoDecoderDelegate& operator=(const VaapiVideoDecoderDelegate&) =
       delete;
 
+  // Should be called when kTryAgain is returned from decoding to determine if
+  // we should try to recover the session by sending a kDecodeStateLost message
+  // up through the WaitingCB in the decoder. Returns true if we should send the
+  // kDecodeStateLost message.
+  bool HasInitiatedProtectedRecovery();
+
  protected:
   // Sets the |decrypt_config| currently active for this stream. Returns true if
   // that config is compatible with the existing one (for example, you can't
@@ -73,6 +79,7 @@ class VaapiVideoDecoderDelegate {
     kNotCreated,
     kInProcess,
     kCreated,
+    kNeedsRecovery,
     kFailed
   };
 
@@ -97,6 +104,19 @@ class VaapiVideoDecoderDelegate {
   bool IsEncryptedSession() const {
     return encryption_scheme_ != EncryptionScheme::kUnencrypted;
   }
+
+  // Should be called by subclasses if a failure occurs during actual decoding.
+  // This will check if we are using protected mode and it's in a state that
+  // can be recovered which should resolve the error. If this method returns
+  // true, then the caller should return kTryAgain from the accelerator to kick
+  // off the rest of the recovery process.
+  bool NeedsProtectedSessionRecovery();
+
+  // Should be invoked by subclasses if they successfully decoded protected
+  // video. This is so we can reset our tracker to indicate we successfully
+  // recovered from protected session loss. It is fine to call this method on
+  // every successful protected decode.
+  void ProtectedDecodedSucceeded();
 
   // Fills *|proc_buffer| with the proper parameters for decode scaling and
   // returns true if that buffer was filled in and should be submitted, false
@@ -135,6 +155,11 @@ class VaapiVideoDecoderDelegate {
   VARectangle src_region_;
   VARectangle dst_region_;
   VASurfaceID scaled_surface_id_;
+
+  // This gets set to true if we indicated we should try to recover from
+  // protected session loss. We use this so that we don't go into a loop where
+  // we repeatedly retry recovery over and over.
+  bool performing_recovery_;
 
   base::WeakPtrFactory<VaapiVideoDecoderDelegate> weak_factory_{this};
 };

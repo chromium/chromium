@@ -239,10 +239,15 @@ DecodeStatus VP9VaapiVideoDecoderDelegate::SubmitDecode(
          {proc_params_->type(), proc_params_->size(), &proc_buffer}});
   }
 
-  return vaapi_wrapper_->MapAndCopyAndExecute(vaapi_pic->GetVADecodeSurfaceID(),
-                                              buffers)
-             ? DecodeStatus::kOk
-             : DecodeStatus::kFail;
+  bool success = vaapi_wrapper_->MapAndCopyAndExecute(
+      vaapi_pic->GetVADecodeSurfaceID(), buffers);
+  if (!success && NeedsProtectedSessionRecovery())
+    return DecodeStatus::kTryAgain;
+
+  if (success && IsEncryptedSession())
+    ProtectedDecodedSucceeded();
+
+  return success ? DecodeStatus::kOk : DecodeStatus::kFail;
 }
 
 bool VP9VaapiVideoDecoderDelegate::OutputPicture(

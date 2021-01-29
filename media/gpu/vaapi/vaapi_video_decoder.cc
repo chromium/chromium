@@ -158,7 +158,8 @@ VaapiVideoDecoder::~VaapiVideoDecoder() {
 void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                    CdmContext* cdm_context,
                                    InitCB init_cb,
-                                   const OutputCB& output_cb) {
+                                   const OutputCB& output_cb,
+                                   const WaitingCB& waiting_cb) {
   DVLOGF(2) << config.AsHumanReadableString();
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(config.IsValidConfig());
@@ -269,6 +270,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
   pixel_aspect_ratio_ = config.GetPixelAspectRatio();
 
   output_cb_ = std::move(output_cb);
+  waiting_cb_ = std::move(waiting_cb);
   SetState(State::kWaitingForInput);
 
   // Notify client initialization was successful.
@@ -390,7 +392,12 @@ void VaapiVideoDecoder::HandleDecodeTask() {
       break;
     case AcceleratedVideoDecoder::kTryAgain:
       DVLOG(1) << "Decoder going into the waiting for protected state";
+      DCHECK_NE(encryption_scheme_, EncryptionScheme::kUnencrypted);
       SetState(State::kWaitingForProtected);
+      // If we have lost our protected HW session, it should be recoverable, so
+      // indicate that we have lost our decoder state so it can be reloaded.
+      if (decoder_delegate_->HasInitiatedProtectedRecovery())
+        waiting_cb_.Run(WaitingReason::kDecoderStateLost);
       break;
   }
 }

@@ -510,6 +510,11 @@ DecodeStatus H264VaapiVideoDecoderDelegate::SubmitDecode(
   const bool success = vaapi_wrapper_->ExecuteAndDestroyPendingBuffers(
       vaapi_pic->GetVADecodeSurfaceID());
   encryption_segment_info_.clear();
+  if (!success && NeedsProtectedSessionRecovery())
+    return DecodeStatus::kTryAgain;
+
+  if (success && IsEncryptedSession())
+    ProtectedDecodedSucceeded();
   return success ? DecodeStatus::kOk : DecodeStatus::kFail;
 }
 

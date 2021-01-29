@@ -87,7 +87,8 @@ class MEDIA_GPU_EXPORT DecoderInterface {
   virtual void Initialize(const VideoDecoderConfig& config,
                           CdmContext* cdm_context,
                           InitCB init_cb,
-                          const OutputCB& output_cb) = 0;
+                          const OutputCB& output_cb,
+                          const WaitingCB& waiting_cb) = 0;
 
   // Requests a |buffer| to be decoded. The decode result will be returned via
   // |decode_cb|.
@@ -183,15 +184,18 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   void InitializeTask(const VideoDecoderConfig& config,
                       CdmContext* cdm_context,
                       InitCB init_cb,
-                      const OutputCB& output_cb);
+                      const OutputCB& output_cb,
+                      const WaitingCB& waiting_cb);
   void ResetTask(base::OnceClosure closure);
   void DecodeTask(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb);
 
   void CreateAndInitializeVD(VideoDecoderConfig config,
                              CdmContext* cdm_context,
+                             const WaitingCB& waiting_cb,
                              Status parent_error);
   void OnInitializeDone(VideoDecoderConfig config,
                         CdmContext* cdm_context,
+                        const WaitingCB& waiting_cb,
                         Status parent_error,
                         Status status);
 

@@ -54,7 +54,8 @@ class MEDIA_GPU_EXPORT V4L2VideoDecoder
   void Initialize(const VideoDecoderConfig& config,
                   CdmContext* cdm_context,
                   InitCB init_cb,
-                  const OutputCB& output_cb) override;
+                  const OutputCB& output_cb,
+                  const WaitingCB& waiting_cb) override;
   void Reset(base::OnceClosure closure) override;
   void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void ApplyResolutionChange() override;

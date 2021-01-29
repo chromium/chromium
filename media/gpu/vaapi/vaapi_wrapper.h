@@ -283,6 +283,13 @@ class MEDIA_GPU_EXPORT VaapiWrapper
   bool CreateProtectedSession(media::EncryptionScheme encryption,
                               const std::vector<uint8_t>& hw_config,
                               std::vector<uint8_t>* hw_identifier_out);
+  // Returns true if and only if we have created a protected session and
+  // querying libva indicates that our protected session is no longer alive,
+  // otherwise this will return false.
+  bool IsProtectedSessionDead();
+  // If we have a protected session, destroys it immediately. This should be
+  // used as part of recovering dead protected sessions.
+  void DestroyProtectedSession();
 
   // Releases the |va_surfaces| and destroys |va_context_id_|.
   void DestroyContextAndSurfaces(std::vector<VASurfaceID> va_surfaces);

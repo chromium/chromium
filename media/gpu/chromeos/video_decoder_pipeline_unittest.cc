@@ -56,9 +56,12 @@ class MockDecoder : public DecoderInterface {
                          base::WeakPtr<DecoderInterface::Client>(nullptr)) {}
   ~MockDecoder() override = default;
 
-  MOCK_METHOD4(
-      Initialize,
-      void(const VideoDecoderConfig&, CdmContext*, InitCB, const OutputCB&));
+  MOCK_METHOD5(Initialize,
+               void(const VideoDecoderConfig&,
+                    CdmContext*,
+                    InitCB,
+                    const OutputCB&,
+                    const WaitingCB&));
   MOCK_METHOD2(Decode, void(scoped_refptr<DecoderBuffer>, DecodeCB));
   MOCK_METHOD1(Reset, void(base::OnceClosure));
   MOCK_METHOD0(ApplyResolutionChange, void());
@@ -128,7 +131,7 @@ class VideoDecoderPipelineTest
       scoped_refptr<base::SequencedTaskRunner> /* decoder_task_runner */,
       base::WeakPtr<DecoderInterface::Client> /* client */) {
     std::unique_ptr<MockDecoder> decoder(new MockDecoder());
-    EXPECT_CALL(*decoder, Initialize(_, _, _, _))
+    EXPECT_CALL(*decoder, Initialize(_, _, _, _, _))
         .WillOnce(::testing::WithArgs<2>([](VideoDecoder::InitCB init_cb) {
           std::move(init_cb).Run(OkStatus());
         }));
@@ -140,7 +143,7 @@ class VideoDecoderPipelineTest
       scoped_refptr<base::SequencedTaskRunner> /* decoder_task_runner */,
       base::WeakPtr<DecoderInterface::Client> /* client */) {
     std::unique_ptr<MockDecoder> decoder(new MockDecoder());
-    EXPECT_CALL(*decoder, Initialize(_, _, _, _))
+    EXPECT_CALL(*decoder, Initialize(_, _, _, _, _))
         .WillOnce(::testing::WithArgs<2>([](VideoDecoder::InitCB init_cb) {
           std::move(init_cb).Run(StatusCode::kDecoderFailedInitialization);
         }));
