@@ -1811,7 +1811,9 @@ void AXObject::UpdateCachedAttributeValuesIfNeeded(
     cached_live_region_root_ = nullptr;
   } else {
     // Is a live region root if this or an ancestor is a live region.
-    DCHECK(parent_);
+    DCHECK(parent_) << "No parent and not a document, node=" << GetNode();
+    if (!parent_)
+      return;
     cached_live_region_root_ = IsLiveRegionRoot() ? const_cast<AXObject*>(this)
                                                   : parent_->LiveRegionRoot();
   }
