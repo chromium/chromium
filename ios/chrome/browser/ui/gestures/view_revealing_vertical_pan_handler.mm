@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/gestures/view_revealing_vertical_pan_handler.h"
 
+#import "base/check_op.h"
 #include "base/logging.h"
 #import "base/notreached.h"
 #include "base/numerics/ranges.h"
@@ -25,6 +26,21 @@ const CGFloat kRevealThreshold = 1 / 3.0f;
 
 // Duration of the animation to reveal/hide the view.
 const CGFloat kAnimationDuration = 0.25f;
+
+// The 3 stages or steps of the transitions handled by the view revealing
+// vertical pan handler class.
+enum class LayoutTransitionState {
+  // The layout is not transitioning.
+  Inactive,
+  // The layout is actively transitioning.
+  Active,
+  // The layout transition is in the process of finishing. The UIKit collection
+  // view transition API breaks if a transition is finished again in the time
+  // between when the finish is requested and the UIKit animations and cleanup
+  // are completed.
+  Finishing,
+};
+
 }  // namespace
 
 @interface ViewRevealingVerticalPanHandler ()
@@ -48,14 +64,13 @@ const CGFloat kAnimationDuration = 0.25f;
 @property(nonatomic, assign) CGFloat progressWhenInterrupted;
 // Set of UI elements which are animated during view reveal transitions.
 @property(nonatomic, strong) NSHashTable<id<ViewRevealingAnimatee>>* animatees;
-// Whether the revealed view is undergoing a transition of layout. Set to YES
-// when the transition layout is created and set to NO inside the transition's
-// completion block.
-@property(nonatomic, assign) BOOL layoutInTransition;
-// Whether the layout transition is being interactively scrubbed by the user.
-// Set to YES when the transition layout is created and set to NO when the pan
-// gesture ends.
-@property(nonatomic, assign) BOOL layoutBeingInteractedWith;
+// The current state tracking whether the revealed view is undergoing a
+// transition of layout. This is |::Inactive| initially. It is set to |::Active|
+// when the transition layout is created.  It is set to |::Finishing| when the
+// layout transition should start to finish. (This takes time because of
+// finishing animations/UIKit restrictions). Finally, in the transition's
+// completion block, this is set back to |::Inactive|.
+@property(nonatomic, assign) LayoutTransitionState layoutTransitionState;
 // Whether new pan gestures should be handled. Set to NO when a pan gesture ends
 // and set to YES when a pan gesture starts while layoutInTransition is NO.
 @property(nonatomic, assign) BOOL gesturesEnabled;
@@ -84,15 +99,14 @@ const CGFloat kAnimationDuration = 0.25f;
     _remainingHeight = _revealedHeight - peekedHeight;
     _currentState = ViewRevealState::Hidden;
     _animatees = [NSHashTable weakObjectsHashTable];
-    _layoutInTransition = NO;
+    _layoutTransitionState = LayoutTransitionState::Inactive;
   }
   return self;
 }
 
 - (void)handlePanGesture:(UIPanGestureRecognizer*)gesture {
-  // Avoid handling a pan gesture if it started before the layout transition was
-  // finished.
-  if (!self.layoutInTransition &&
+  // Start handling gestures again once the layout is no longer transitioning.
+  if (self.layoutTransitionState == LayoutTransitionState::Inactive &&
       gesture.state == UIGestureRecognizerStateBegan) {
     self.gesturesEnabled = YES;
   }
@@ -138,7 +152,11 @@ const CGFloat kAnimationDuration = 0.25f;
     [self.animator stopAnimation:NO];
     [self.animator finishAnimationAtPosition:UIViewAnimatingPositionEnd];
   }
-  [self completeLayoutTransitionSuccessfully:YES];
+  // If the layout is currently changing, finish the transition.
+  if (self.layoutTransitionState == LayoutTransitionState::Active) {
+    [self didTransitionToLayoutSuccessfully:YES];
+    self.gesturesEnabled = NO;
+  }
 }
 
 #pragma mark - Private Methods: Animating
@@ -196,13 +214,15 @@ const CGFloat kAnimationDuration = 0.25f;
 // Creates a transition layout in the revealed view if going from Peeked to
 // Revealed state or vice-versa.
 - (void)createLayoutTransitionIfNeeded {
-  if (self.layoutInTransition) {
+  if (self.layoutTransitionState == LayoutTransitionState::Finishing) {
+    return;
+  }
+
+  if (self.layoutTransitionState == LayoutTransitionState::Active) {
     // Cancel the current layout transition.
     [self.layoutSwitcherProvider.layoutSwitcher
         didUpdateTransitionLayoutProgress:0];
-    [self.layoutSwitcherProvider.layoutSwitcher
-        didTransitionToLayoutSuccessfully:NO];
-    self.layoutBeingInteractedWith = NO;
+    [self didTransitionToLayoutSuccessfully:NO];
     return;
   }
 
@@ -217,14 +237,23 @@ const CGFloat kAnimationDuration = 0.25f;
 
 // Notifies the layout switcher that a layout transition should happen.
 - (void)willTransitionToLayout:(LayoutSwitcherState)nextState {
+  DCHECK_EQ(self.layoutTransitionState, LayoutTransitionState::Inactive);
   auto completion = ^(BOOL completed, BOOL finished) {
-    self.layoutInTransition = NO;
+    self.layoutTransitionState = LayoutTransitionState::Inactive;
   };
   [self.layoutSwitcherProvider.layoutSwitcher
       willTransitionToLayout:nextState
                   completion:completion];
-  self.layoutInTransition = YES;
-  self.layoutBeingInteractedWith = YES;
+  self.layoutTransitionState = LayoutTransitionState::Active;
+}
+
+// Notifies the layout switcher that a layout transition finished with
+// |success|.
+- (void)didTransitionToLayoutSuccessfully:(BOOL)success {
+  DCHECK_EQ(self.layoutTransitionState, LayoutTransitionState::Active);
+  self.layoutTransitionState = LayoutTransitionState::Finishing;
+  [self.layoutSwitcherProvider.layoutSwitcher
+      didTransitionToLayoutSuccessfully:success];
 }
 
 // Initiates a transition if there isn't already one running
@@ -321,7 +350,7 @@ const CGFloat kAnimationDuration = 0.25f;
   progress += self.progressWhenInterrupted;
   progress = base::ClampToRange<CGFloat>(progress, 0, 1);
   self.animator.fractionComplete = progress;
-  if (self.layoutBeingInteractedWith) {
+  if (self.layoutTransitionState == LayoutTransitionState::Active) {
     [self.layoutSwitcherProvider.layoutSwitcher
         didUpdateTransitionLayoutProgress:progress];
   }
@@ -341,8 +370,11 @@ const CGFloat kAnimationDuration = 0.25f;
     // the state is Peeked), the current animation should be stopped and a new
     // one created.
     if (translation > 0) {
+      // The transition state may be inactive even while panning when going
+      // betwteen Hidden and Peeked states, as those two states don't involve a
+      // layout transition.
       if (self.nextState != ViewRevealState::Revealed &&
-          !self.layoutInTransition) {
+          self.layoutTransitionState == LayoutTransitionState::Inactive) {
         self.nextState = ViewRevealState::Revealed;
         [self createAnimatorIfNeeded];
       }
@@ -365,17 +397,10 @@ const CGFloat kAnimationDuration = 0.25f;
 
   [self.animator continueAnimationWithTimingParameters:nil durationFactor:1];
 
-  [self completeLayoutTransitionSuccessfully:!self.animator.reversed];
-}
-
-// If the layout is currently changing, tells the layout provider to
-// finish the transition.
-- (void)completeLayoutTransitionSuccessfully:(BOOL)success {
-  if (self.layoutBeingInteractedWith) {
-    [self.layoutSwitcherProvider.layoutSwitcher
-        didTransitionToLayoutSuccessfully:success];
+  // If the layout is currently changing, finish the transition.
+  if (self.layoutTransitionState == LayoutTransitionState::Active) {
+    [self didTransitionToLayoutSuccessfully:!self.animator.reversed];
     self.gesturesEnabled = NO;
-    self.layoutBeingInteractedWith = NO;
   }
 }
 
