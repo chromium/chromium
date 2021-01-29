@@ -1,0 +1,181 @@
+{{header}}
+{{include ../../../../../third_party/pdfium/testing/resources/xfa_catalog_1_0.fragment}}
+{{include ../../../../../third_party/pdfium/testing/resources/xfa_object_2_0.fragment}}
+{{include ../../../../../third_party/pdfium/testing/resources/xfa_preamble_3_0.fragment}}
+{{include ../../../../../third_party/pdfium/testing/resources/xfa_config_4_0.fragment}}
+{{object 5 0}} <<
+  {{streamlen}}
+>>
+stream
+<template>
+  <subform name="s6" x="0" y="0" h="512pt" w="512pt">
+    <border/>
+    <field name="field_31" x="10pt" y="10pt" h="40pt" w="90pt">
+      <border/>
+      <ui>
+        <button highlight="push"/>
+      </ui>
+      <caption>
+        <value>
+          <text>Button 31</text>
+        </value>
+      </caption>
+      <items>
+        <text name="down">Down Text</text>
+        <text name="rollover">Rollover Text</text>
+      </items>
+    </field>
+    <field name="field_32" x="110pt" y="10pt" h="40pt" w="90pt">
+      <border/>
+      <ui>
+        <barcode/>
+      </ui>
+      <caption>
+        <value>
+          <text>Button 32</text>
+        </value>
+      </caption>
+      <value>
+        <text>test</text>
+      </value>
+    </field>
+    <field name="field_33" x="210pt" y="10pt" h="40pt" w="90pt">
+      <border/>
+      <ui>
+        <checkButton shape="round">
+        </checkButton>
+      </ui>
+      <items>
+        <integer>2</integer>
+      </items>
+      <value>
+        <text>Select 2</text>
+      </value>
+      <caption placement="left">
+        <value>
+          <text>Option 2</text>
+        </value>
+      </caption>
+    </field>
+    <field name="field_34" x="310pt" y="10pt" h="40pt" w="90pt">
+      <border/>
+      <ui>
+        <textEdit/>
+      </ui>
+      <value>
+        <text>clams</text>
+      </value>
+    </field>
+    <field name="field_35" x="410pt" y="10pt" h="40pt" w="90pt">
+      <border/>
+      <ui>
+        <choiceList open="onEntry">
+          <border>
+            <edge/>
+          </border>
+        </choiceList>
+      </ui>
+      <items save="1">
+        <text>apples</text>
+        <text>bananas</text>
+        <text>pears</text>
+      </items>
+      <value>
+        <text>apples</text>
+      </value>
+    </field>
+    <subform name="s7" x="6pt" y="200pt" h="200pt" w="500pt">
+      <border/>
+      <field name="field_36" x="10pt" y="10pt" h="40pt" w="90pt">
+        <border/>
+        <ui>
+          <dateTimeEdit>
+            <comb numberOfCells="8"/>
+            <border hand="right">
+              <edge/>
+            </border>
+          </dateTimeEdit>
+        </ui>
+      </field>
+      <field name="field_37" x="110pt" y="10pt" h="40pt" w="90pt">
+        <border/>
+        <ui>
+          <button highlight="push"/>
+        </ui>
+        <caption>
+          <value>
+            <text>Button</text>
+          </value>
+        </caption>
+        <items>
+          <text name="down">Down Text again</text>
+          <text name="rollover">Rollover Text again</text>
+        </items>
+      </field>
+      <field name="field_38" x="210pt" y="10pt" h="40pt" w="90pt">
+        <border/>
+        <ui>
+          <barcode/>
+        </ui>
+        <value>
+          <text>test again</text>
+        </value>
+      </field>
+      <field name="field_39" x="310pt" y="10pt" h="40pt" w="90pt">
+        <border/>
+        <ui>
+          <checkButton shape="round">
+            <border>
+              <edge/>
+            </border>
+          </checkButton>
+        </ui>
+        <items>
+          <integer>2</integer>
+        </items>
+        <value>
+          <text>Select 2</text>
+        </value>
+        <caption placement="left">
+          <value>
+            <text>Option 2</text>
+          </value>
+        </caption>
+      </field>
+      <field name="field_40" x="410pt" y="10pt" h="40pt" w="90pt">
+        <border/>
+        <ui>
+          <textEdit/>
+        </ui>
+        <value>
+          <text>clams again</text>
+        </value>
+      </field>
+      <field name="field_41" x="10pt" y="110pt" h="40pt" w="90pt">
+        <border/>
+        <ui>
+          <choiceList open="onEntry">
+            <border><edge/></border>
+          </choiceList>
+        </ui>
+        <items save="1">
+          <text>apples</text>
+          <text>bananas</text>
+          <text>pears</text>
+        </items>
+        <value>
+          <text>apples</text>
+        </value>
+      </field>
+    </subform>
+  </subform>
+</template>
+endstream
+endobj
+{{include ../../../../../third_party/pdfium/testing/resources/xfa_locale_6_0.fragment}}
+{{include ../../../../../third_party/pdfium/testing/resources/xfa_postamble_7_0.fragment}}
+{{include ../../../../../third_party/pdfium/testing/resources/xfa_pages_8_0.fragment}}
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

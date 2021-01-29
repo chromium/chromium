@@ -3323,6 +3323,11 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, TextStyle) {
   RunPDFTest(FILE_PATH_LITERAL("text-style.pdf"));
 }
 
+// TODO(https://crbug.com/1172026)
+IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTreeDumpTest, XfaFields) {
+  RunPDFTest(FILE_PATH_LITERAL("xfa_fields.pdf"));
+}
+
 // This test suite validates the navigation done using the accessibility client.
 using PDFExtensionAccessibilityNavigationTest = PDFExtensionTest;
 
