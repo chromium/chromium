@@ -30,3 +30,38 @@ wheel: <
   name: "infra/python/wheels/six-py2_py3"
   version: "version:1.15.0"
 >
+
+# Common utilities.
+wheel: <
+  name: "infra/python/wheels/psutil/${platform}_${py_python}_${py_abi}"
+  version: "version:5.7.2"
+>
+wheel: <
+  name: "infra/python/wheels/requests-py2_py3"
+  version: "version:2.13.0"
+>
+
+# Used by various python unit tests.
+wheel: <
+  name: "infra/python/wheels/mock-py2_py3"
+  version: "version:2.0.0"
+>
+wheel: <
+  name: "infra/python/wheels/parameterized-py2_py3"
+  version: "version:0.7.1"
+>
+wheel: <
+  name: "infra/python/wheels/pbr-py2_py3"
+  version: "version:3.0.0"
+>
+
+# Used by:
+#   build/chromeos/test_runner.py
+wheel: <
+  name: "infra/python/wheels/jsonlines-py2_py3"
+  version: "version:1.2.0"
+>
+wheel: <
+  name: "infra/python/wheels/python-dateutil-py2_py3"
+  version: "version:2.7.3"
+>

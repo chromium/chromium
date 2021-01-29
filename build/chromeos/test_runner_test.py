@@ -14,6 +14,7 @@ import unittest
 # //.vpython
 import mock  # pylint: disable=import-error
 from parameterized import parameterized  # pylint: disable=import-error
+import six
 
 import test_runner
 
@@ -80,6 +81,16 @@ class TestRunnerTest(unittest.TestCase):
       ]
     return expectation
 
+  def safeAssertItemsEqual(self, list1, list2):
+    """A Py3 safe version of assertItemsEqual.
+
+    See https://bugs.python.org/issue17866.
+    """
+    if six.PY3:
+      self.assertSetEqual(set(list1), set(list2))
+    else:
+      self.assertItemsEqual(list1, list2)
+
   @parameterized.expand([
       [True],
       [False],
@@ -116,7 +127,7 @@ class TestRunnerTest(unittest.TestCase):
       expected_cmd.extend(['--start', '--copy-on-write']
                           if use_vm else ['--device', 'localhost:2222'])
       expected_cmd.extend(['--', './device_script.sh'])
-      self.assertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
+      self.safeAssertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
 
       fd_mock().write.assert_called_once_with(
           '#!/bin/sh\nexport HOME=/usr/local/tmp\n'
@@ -146,7 +157,7 @@ class TestRunnerTest(unittest.TestCase):
           '--tast', 'ui.ChromeLogin'
       ]
 
-      self.assertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
+      self.safeAssertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
 
   @parameterized.expand([
       [True],
@@ -169,7 +180,7 @@ class TestRunnerTest(unittest.TestCase):
           '--tast=( "group:mainline" && "dep:chrome" && !informational)',
       ]
 
-      self.assertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
+      self.safeAssertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
 
   @parameterized.expand([
       [True],
@@ -197,7 +208,7 @@ class TestRunnerTest(unittest.TestCase):
               '--deploy-lacros',
           ]
 
-      self.assertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
+      self.safeAssertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
 
   @parameterized.expand([
       [True],
@@ -220,7 +231,7 @@ class TestRunnerTest(unittest.TestCase):
           '--tast', 'ui.ChromeLogin', '--tast-var', 'key=value'
       ]
 
-      self.assertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
+      self.safeAssertItemsEqual(expected_cmd, mock_popen.call_args[0][0])
 
 
 if __name__ == '__main__':

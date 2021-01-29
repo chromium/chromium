@@ -22,6 +22,7 @@ import tempfile
 import dateutil.parser  # pylint: disable=import-error
 import jsonlines  # pylint: disable=import-error
 import psutil  # pylint: disable=import-error
+import six
 
 CHROMIUM_SRC_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -33,7 +34,10 @@ from pylib.base import base_test_result  # pylint: disable=import-error
 from pylib.base import result_sink  # pylint: disable=import-error
 from pylib.results import json_results  # pylint: disable=import-error
 
-import subprocess32 as subprocess  # pylint: disable=import-error
+if six.PY2:
+  import subprocess32 as subprocess  # pylint: disable=import-error
+else:
+  import subprocess  # pylint: disable=import-error,wrong-import-order
 
 DEFAULT_CROS_CACHE = os.path.abspath(
     os.path.join(CHROMIUM_SRC_PATH, 'build', 'cros_cache'))
@@ -161,7 +165,7 @@ class RemoteTest(object):
     logging.info('Running the following command on the device:')
     logging.info('\n' + '\n'.join(script_contents))
     fd, tmp_path = tempfile.mkstemp(suffix='.sh', dir=self._path_to_outdir)
-    os.fchmod(fd, 0755)
+    os.fchmod(fd, 0o755)
     with os.fdopen(fd, 'wb') as f:
       f.write('\n'.join(script_contents) + '\n')
     return tmp_path
@@ -186,7 +190,7 @@ class RemoteTest(object):
 
     signal.signal(signal.SIGTERM, _kill_child_procs)
 
-    for i in xrange(self._retries + 1):
+    for i in range(self._retries + 1):
       logging.info('########################################')
       logging.info('Test attempt #%d', i)
       logging.info('########################################')
@@ -197,13 +201,13 @@ class RemoteTest(object):
           env=self._test_env)
       try:
         test_proc.wait(timeout=self._timeout)
-      except subprocess.TimeoutExpired:
+      except subprocess.TimeoutExpired:  # pylint: disable=no-member
         logging.error('Test timed out. Sending SIGTERM.')
         # SIGTERM the proc and wait 10s for it to close.
         test_proc.terminate()
         try:
           test_proc.wait(timeout=10)
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired:  # pylint: disable=no-member
           # If it hasn't closed in 10s, SIGKILL it.
           logging.error('Test did not exit in time. Sending SIGKILL.')
           test_proc.kill()
