@@ -567,10 +567,14 @@ void SpeechRecognitionEngineTest::ProvideMockResponseStartDownstreamIfNeeded() {
       net::HttpUtil::AssembleRawHeaders(headers));
   downstream_request->client->OnReceiveResponse(std::move(head));
 
-  mojo::DataPipe data_pipe;
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
+            MOJO_RESULT_OK);
+
   downstream_request->client->OnStartLoadingResponseBody(
-      std::move(data_pipe.consumer_handle));
-  downstream_data_pipe_ = std::move(data_pipe.producer_handle);
+      std::move(consumer_handle));
+  downstream_data_pipe_ = std::move(producer_handle);
 }
 
 void SpeechRecognitionEngineTest::ProvideMockProtoResultDownstream(
@@ -719,10 +723,12 @@ std::string SpeechRecognitionEngineTest::ConsumeChunkedUploadData() {
           element.As<network::DataElementChunkedDataPipe>()
               .ReleaseChunkedDataPipeGetter());
     }
-    mojo::DataPipe data_pipe;
-    chunked_data_pipe_getter_->StartReading(
-        std::move(data_pipe.producer_handle));
-    upstream_data_pipe_ = std::move(data_pipe.consumer_handle);
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    EXPECT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
+              MOJO_RESULT_OK);
+    chunked_data_pipe_getter_->StartReading(std::move(producer_handle));
+    upstream_data_pipe_ = std::move(consumer_handle);
   }
   EXPECT_TRUE(upstream_data_pipe_.is_valid());
 

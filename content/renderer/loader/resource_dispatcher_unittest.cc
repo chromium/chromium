@@ -261,16 +261,20 @@ TEST_F(ResourceDispatcherTest, DelegateTest) {
   // The wrapper eats all messages until RequestComplete message is sent.
   CallOnReceiveResponse(client.get());
 
-  mojo::DataPipe data_pipe(DataPipeOptions());
-  client->OnStartLoadingResponseBody(std::move(data_pipe.consumer_handle));
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  auto options = DataPipeOptions();
+  ASSERT_EQ(mojo::CreateDataPipe(&options, producer_handle, consumer_handle),
+            MOJO_RESULT_OK);
+  client->OnStartLoadingResponseBody(std::move(consumer_handle));
 
   uint32_t size = strlen(kTestPageContents);
-  auto result = data_pipe.producer_handle->WriteData(kTestPageContents, &size,
-                                                     MOJO_WRITE_DATA_FLAG_NONE);
+  auto result = producer_handle->WriteData(kTestPageContents, &size,
+                                           MOJO_WRITE_DATA_FLAG_NONE);
   ASSERT_EQ(result, MOJO_RESULT_OK);
   ASSERT_EQ(size, strlen(kTestPageContents));
 
-  data_pipe.producer_handle.reset();
+  producer_handle.reset();
 
   base::RunLoop().RunUntilIdle();
 
@@ -307,14 +311,18 @@ TEST_F(ResourceDispatcherTest, CancelDuringCallbackWithWrapperPeer) {
   dispatcher()->set_delegate(&delegate);
 
   CallOnReceiveResponse(client.get());
-  mojo::DataPipe data_pipe(DataPipeOptions());
-  client->OnStartLoadingResponseBody(std::move(data_pipe.consumer_handle));
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  auto options = DataPipeOptions();
+  ASSERT_EQ(mojo::CreateDataPipe(&options, producer_handle, consumer_handle),
+            MOJO_RESULT_OK);
+  client->OnStartLoadingResponseBody(std::move(consumer_handle));
   uint32_t size = strlen(kTestPageContents);
-  auto result = data_pipe.producer_handle->WriteData(kTestPageContents, &size,
-                                                     MOJO_WRITE_DATA_FLAG_NONE);
+  auto result = producer_handle->WriteData(kTestPageContents, &size,
+                                           MOJO_WRITE_DATA_FLAG_NONE);
   ASSERT_EQ(result, MOJO_RESULT_OK);
   ASSERT_EQ(size, strlen(kTestPageContents));
-  data_pipe.producer_handle.reset();
+  producer_handle.reset();
 
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(peer_context.received_response);
@@ -433,9 +441,12 @@ class CompletionTimeConversionTest : public ResourceDispatcherTest {
         base::Time() + base::TimeDelta::FromSeconds(99);
     client->OnReceiveResponse(std::move(response_head));
 
-    mojo::DataPipe pipe;
-    client->OnStartLoadingResponseBody(std::move(pipe.consumer_handle));
-    pipe.producer_handle.reset();  // The response is empty.
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    ASSERT_EQ(mojo::CreateDataPipe(nullptr, producer_handle, consumer_handle),
+              MOJO_RESULT_OK);
+    client->OnStartLoadingResponseBody(std::move(consumer_handle));
+    producer_handle.reset();  // The response is empty.
 
     network::URLLoaderCompletionStatus status;
     status.completion_time = completion_time;

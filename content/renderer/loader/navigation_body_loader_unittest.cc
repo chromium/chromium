@@ -41,8 +41,13 @@ class NavigationBodyLoaderTest : public ::testing::Test,
   }
 
   void CreateBodyLoader() {
-    data_pipe_ = std::make_unique<mojo::DataPipe>(CreateDataPipeOptions());
-    writer_ = std::move(data_pipe_->producer_handle);
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    MojoCreateDataPipeOptions options = CreateDataPipeOptions();
+    ASSERT_EQ(mojo::CreateDataPipe(&options, producer_handle, consumer_handle),
+              MOJO_RESULT_OK);
+
+    writer_ = std::move(producer_handle);
     auto endpoints = network::mojom::URLLoaderClientEndpoints::New();
     endpoints->url_loader_client = client_remote_.BindNewPipeAndPassReceiver();
     blink::WebNavigationParams navigation_params;
@@ -50,8 +55,8 @@ class NavigationBodyLoaderTest : public ::testing::Test,
     auto commit_params = CreateCommitNavigationParams();
     NavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
         std::move(common_params), std::move(commit_params), /*request_id=*/1,
-        network::mojom::URLResponseHead::New(),
-        std::move(data_pipe_->consumer_handle), std::move(endpoints),
+        network::mojom::URLResponseHead::New(), std::move(consumer_handle),
+        std::move(endpoints),
         blink::scheduler::GetSingleThreadTaskRunnerForTesting(),
         /*render_frame_impl=*/nullptr, /*is_main_frame=*/true,
         &navigation_params);
@@ -154,7 +159,6 @@ class NavigationBodyLoaderTest : public ::testing::Test,
   static const MojoWriteDataFlags kNone = MOJO_WRITE_DATA_FLAG_NONE;
   mojo::Remote<network::mojom::URLLoaderClient> client_remote_;
   std::unique_ptr<blink::WebNavigationBodyLoader> loader_;
-  std::unique_ptr<mojo::DataPipe> data_pipe_;
   mojo::ScopedDataPipeProducerHandle writer_;
 
   base::RunLoop run_loop_;

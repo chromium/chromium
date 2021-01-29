@@ -1168,13 +1168,16 @@ void InterceptionJob::SendResponse(scoped_refptr<base::RefCountedMemory> body,
     // but just in case...
     DCHECK_LE(body_size, UINT32_MAX)
         << "Response bodies larger than " << UINT32_MAX << " are not supported";
-    mojo::DataPipe pipe(body_size);
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    CHECK_EQ(mojo::CreateDataPipe(body_size, producer_handle, consumer_handle),
+             MOJO_RESULT_OK);
     uint32_t num_bytes = body_size;
-    MojoResult res = pipe.producer_handle->WriteData(
+    MojoResult res = producer_handle->WriteData(
         body->front() + offset, &num_bytes, MOJO_WRITE_DATA_FLAG_NONE);
     DCHECK_EQ(0u, res);
     DCHECK_EQ(num_bytes, body_size);
-    client_->OnStartLoadingResponseBody(std::move(pipe.consumer_handle));
+    client_->OnStartLoadingResponseBody(std::move(consumer_handle));
   }
   if (response_metadata_->transfer_size)
     client_->OnTransferSizeUpdated(response_metadata_->transfer_size);

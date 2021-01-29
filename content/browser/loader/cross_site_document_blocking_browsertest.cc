@@ -387,14 +387,17 @@ class RequestInterceptor {
     if (status.error_code == net::OK) {
       original_client_->OnReceiveResponse(std::move(response_head));
 
-      mojo::DataPipe empty_data_pipe(response_body.size() + 1);
-      original_client_->OnStartLoadingResponseBody(
-          std::move(empty_data_pipe.consumer_handle));
+      mojo::ScopedDataPipeProducerHandle producer_handle;
+      mojo::ScopedDataPipeConsumerHandle consumer_handle;
+      ASSERT_EQ(mojo::CreateDataPipe(response_body.size() + 1, producer_handle,
+                                     consumer_handle),
+                MOJO_RESULT_OK);
+      original_client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 
       uint32_t num_bytes = response_body.size();
-      EXPECT_EQ(MOJO_RESULT_OK, empty_data_pipe.producer_handle->WriteData(
-                                    response_body.data(), &num_bytes,
-                                    MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+      EXPECT_EQ(MOJO_RESULT_OK,
+                producer_handle->WriteData(response_body.data(), &num_bytes,
+                                           MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
     }
     original_client_->OnComplete(status);
 

@@ -177,9 +177,12 @@ class ContentURLLoader : public network::mojom::URLLoader {
                                  net::ERR_REQUEST_RANGE_NOT_SATISFIABLE);
     }
 
-    mojo::DataPipe pipe(kDefaultContentUrlPipeSize);
-    if (!pipe.consumer_handle.is_valid())
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    if (mojo::CreateDataPipe(kDefaultContentUrlPipeSize, producer_handle,
+                             consumer_handle) != MOJO_RESULT_OK) {
       return CompleteWithFailure(std::move(client), net::ERR_FAILED);
+    }
 
     base::File file = base::OpenContentUriForRead(path);
     if (!file.IsValid()) {
@@ -225,7 +228,7 @@ class ContentURLLoader : public network::mojom::URLLoader {
     }
 
     client->OnReceiveResponse(std::move(head));
-    client->OnStartLoadingResponseBody(std::move(pipe.consumer_handle));
+    client->OnStartLoadingResponseBody(std::move(consumer_handle));
     client_ = std::move(client);
 
     if (total_bytes_to_send == 0) {
@@ -241,8 +244,8 @@ class ContentURLLoader : public network::mojom::URLLoader {
     data_source->SetRange(first_byte_to_send,
                           first_byte_to_send + total_bytes_to_send);
 
-    data_producer_ = std::make_unique<mojo::DataPipeProducer>(
-        std::move(pipe.producer_handle));
+    data_producer_ =
+        std::make_unique<mojo::DataPipeProducer>(std::move(producer_handle));
     data_producer_->Write(std::move(data_source),
                           base::BindOnce(&ContentURLLoader::OnFileWritten,
                                          base::Unretained(this)));
