@@ -28,6 +28,8 @@ viz_component("service") {
     "display/delegated_ink_point_renderer_base.h",
     "display/delegated_ink_point_renderer_skia.cc",
     "display/delegated_ink_point_renderer_skia.h",
+    "display/delegated_ink_trail_data.cc",
+    "display/delegated_ink_trail_data.h",
     "display/direct_renderer.cc",
     "display/direct_renderer.h",
     "display/display.cc",

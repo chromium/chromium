@@ -36,52 +36,76 @@ void DelegatedInkPointPixelTestHelper::CreateAndSendMetadata(
     const gfx::PointF& point,
     float diameter,
     SkColor color,
+    base::TimeTicks timestamp,
     const gfx::RectF& presentation_area) {
   DCHECK(renderer_);
-  metadata_ = DelegatedInkMetadata(point, diameter, color,
-                                   base::TimeTicks::Now(), presentation_area,
-                                   base::TimeTicks::Now(), /*hovering*/ false);
+  metadata_ =
+      DelegatedInkMetadata(point, diameter, color, timestamp, presentation_area,
+                           base::TimeTicks::Now(), /*hovering*/ false);
   GetInkRenderer()->SetDelegatedInkMetadata(
       std::make_unique<DelegatedInkMetadata>(metadata_));
 }
 
 void DelegatedInkPointPixelTestHelper::CreateAndSendMetadataFromLastPoint() {
-  DCHECK(renderer_);
-  metadata_ = DelegatedInkMetadata(
-      ink_points_.back().point(), metadata_.diameter(), metadata_.color(),
-      ink_points_.back().timestamp(), metadata_.presentation_area(),
-      metadata_.frame_time(), metadata_.is_hovering());
-  GetInkRenderer()->SetDelegatedInkMetadata(
-      std::make_unique<DelegatedInkMetadata>(metadata_));
+  DCHECK_EQ(static_cast<int>(ink_points_.size()), 1);
+  CreateAndSendMetadataFromLastPoint(ink_points_.begin()->first);
+}
+
+void DelegatedInkPointPixelTestHelper::CreateAndSendMetadataFromLastPoint(
+    int32_t pointer_id) {
+  DCHECK(ink_points_.find(pointer_id) != ink_points_.end());
+  CreateAndSendMetadata(ink_points_[pointer_id].back().point(),
+                        metadata_.diameter(), metadata_.color(),
+                        ink_points_[pointer_id].back().timestamp(),
+                        metadata_.presentation_area());
 }
 
 void DelegatedInkPointPixelTestHelper::CreateAndSendPoint(
     const gfx::PointF& point,
     base::TimeTicks timestamp) {
-  DCHECK(renderer_);
-  constexpr int32_t kPointerId = 1;
-  ink_points_.emplace_back(point, timestamp, kPointerId);
-  GetInkRenderer()->StoreDelegatedInkPoint(ink_points_.back());
+  CreateAndSendPoint(point, timestamp, /*pointer_id*/ 1);
 }
 
-void DelegatedInkPointPixelTestHelper::CreateAndSendPointFromMetadata() {
-  CreateAndSendPoint(metadata().point(), metadata().timestamp());
+void DelegatedInkPointPixelTestHelper::CreateAndSendPoint(
+    const gfx::PointF& point,
+    base::TimeTicks timestamp,
+    int32_t pointer_id) {
+  DCHECK(renderer_);
+  ink_points_[pointer_id].emplace_back(point, timestamp, pointer_id);
+  GetInkRenderer()->StoreDelegatedInkPoint(ink_points_[pointer_id].back());
 }
 
 void DelegatedInkPointPixelTestHelper::CreateAndSendPointFromLastPoint(
     const gfx::PointF& point) {
-  EXPECT_GT(static_cast<int>(ink_points_.size()), 0);
-  CreateAndSendPoint(point, ink_points_.back().timestamp() +
-                                base::TimeDelta::FromMicroseconds(10));
+  DCHECK_EQ(static_cast<int>(ink_points_.size()), 1);
+  CreateAndSendPointFromLastPoint(ink_points_.begin()->first, point);
+}
+
+void DelegatedInkPointPixelTestHelper::CreateAndSendPointFromLastPoint(
+    int32_t pointer_id,
+    const gfx::PointF& point) {
+  DCHECK(ink_points_.find(pointer_id) != ink_points_.end());
+  EXPECT_GT(static_cast<int>(ink_points_[pointer_id].size()), 0);
+  CreateAndSendPoint(point,
+                     ink_points_[pointer_id].back().timestamp() +
+                         base::TimeDelta::FromMicroseconds(10),
+                     pointer_id);
 }
 
 gfx::Rect DelegatedInkPointPixelTestHelper::GetDelegatedInkDamageRect() {
-  EXPECT_GT(static_cast<int>(ink_points_.size()), 0);
+  DCHECK_EQ(static_cast<int>(ink_points_.size()), 1);
+  return GetDelegatedInkDamageRect(ink_points_.begin()->first);
+}
+
+gfx::Rect DelegatedInkPointPixelTestHelper::GetDelegatedInkDamageRect(
+    int32_t pointer_id) {
+  DCHECK(ink_points_.find(pointer_id) != ink_points_.end());
+  EXPECT_GT(static_cast<int>(ink_points_[pointer_id].size()), 0);
   gfx::RectF ink_damage_rect_f =
-      gfx::RectF(ink_points_[0].point(), gfx::SizeF(1, 1));
-  for (uint64_t i = 1; i < ink_points_.size(); ++i) {
+      gfx::RectF(ink_points_[pointer_id][0].point(), gfx::SizeF(1, 1));
+  for (uint64_t i = 1; i < ink_points_[pointer_id].size(); ++i) {
     ink_damage_rect_f.Union(
-        gfx::RectF(ink_points_[i].point(), gfx::SizeF(1, 1)));
+        gfx::RectF(ink_points_[pointer_id][i].point(), gfx::SizeF(1, 1)));
   }
   ink_damage_rect_f.Inset(-metadata().diameter() / 2.f,
                           -metadata().diameter() / 2.f);

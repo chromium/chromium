@@ -5226,16 +5226,18 @@ INSTANTIATE_TEST_SUITE_P(,
 // Draw a single trail and erase it, making sure that no bits of trail are left
 // behind.
 TEST_P(DelegatedInkTest, DrawOneTrailAndErase) {
-  // First provide the metadata required to draw the trail, numbers arbitrary.
-  CreateAndSendMetadata(gfx::PointF(10, 10), 3.5f, SK_ColorBLACK,
-                        gfx::RectF(0, 0, 175, 172));
-
-  // Then provide some points for the trail to draw. Numbers chosen arbitrarily
-  // after the first point, which must match the metadata. This will predict no
+  // Send some DelegatedInkPoints, numbers arbitrary. This will predict no
   // points, so a trail made of 3 points will be drawn.
-  CreateAndSendPointFromMetadata();
+  const gfx::PointF kFirstPoint(10, 10);
+  const base::TimeTicks kFirstTimestamp = base::TimeTicks::Now();
+  CreateAndSendPoint(kFirstPoint, kFirstTimestamp);
   CreateAndSendPointFromLastPoint(gfx::PointF(75, 62));
   CreateAndSendPointFromLastPoint(gfx::PointF(124, 45));
+
+  // Provide the metadata required to draw the trail, matching the first
+  // DelegatedInkPoint sent.
+  CreateAndSendMetadata(kFirstPoint, 3.5f, SK_ColorBLACK, kFirstTimestamp,
+                        gfx::RectF(0, 0, 175, 172));
 
   // Confirm that the trail was drawn.
   EXPECT_TRUE(
@@ -5252,15 +5254,17 @@ TEST_P(DelegatedInkTest, DrawTwoTrailsAndErase) {
   if (renderer_type() == RendererType::kSkiaDawn)
     return;
 
-  // First provide the metadata required to draw the trail, numbers arbitrary.
-  CreateAndSendMetadata(gfx::PointF(140, 48), 8.2f, SK_ColorMAGENTA,
-                        gfx::RectF(0, 0, 200, 200));
-
-  // Then provide some points for the trail to draw. Numbers chosen arbitrarily
-  // after the first point, which must match the metadata. No points will be
-  // predicted, so a trail made of 2 points will be drawn.
-  CreateAndSendPointFromMetadata();
+  // Numbers chosen arbitrarily. No points will be predicted, so a trail made of
+  // 2 points will be drawn.
+  const gfx::PointF kFirstPoint(140, 48);
+  const base::TimeTicks kFirstTimestamp = base::TimeTicks::Now();
+  CreateAndSendPoint(kFirstPoint, kFirstTimestamp);
   CreateAndSendPointFromLastPoint(gfx::PointF(115, 85));
+
+  // Provide the metadata required to draw the trail, numbers matching the first
+  // DelegatedInkPoint sent.
+  CreateAndSendMetadata(kFirstPoint, 8.2f, SK_ColorMAGENTA, kFirstTimestamp,
+                        gfx::RectF(0, 0, 200, 200));
 
   // Confirm that the trail was drawn correctly.
   EXPECT_TRUE(DrawAndTestTrail(
@@ -5287,14 +5291,13 @@ TEST_P(DelegatedInkTest, TrailExtendsBeyondPresentationArea) {
   if (renderer_type() == RendererType::kSkiaDawn)
     return;
 
-  const gfx::RectF kPresentationArea(30, 30, 100, 100);
-  CreateAndSendMetadata(gfx::PointF(50.2f, 89.999f), 15.22f, SK_ColorCYAN,
-                        kPresentationArea);
+  const gfx::PointF kFirstPoint(50.2f, 89.999f);
+  const base::TimeTicks kFirstTimestamp = base::TimeTicks::Now();
 
   // Send points such that some extend beyond the presentation area to confirm
   // that the trail is clipped correctly. One point will be predicted, so the
   // trail will be made of 9 points.
-  CreateAndSendPointFromMetadata();
+  CreateAndSendPoint(kFirstPoint, kFirstTimestamp);
   CreateAndSendPointFromLastPoint(gfx::PointF(80.7f, 149.6f));
   CreateAndSendPointFromLastPoint(gfx::PointF(128.999f, 110.01f));
   CreateAndSendPointFromLastPoint(gfx::PointF(50, 50));
@@ -5302,6 +5305,11 @@ TEST_P(DelegatedInkTest, TrailExtendsBeyondPresentationArea) {
   CreateAndSendPointFromLastPoint(gfx::PointF(29.98f, 66));
   CreateAndSendPointFromLastPoint(gfx::PointF(52.3456f, 2.31f));
   CreateAndSendPointFromLastPoint(gfx::PointF(97, 36.9f));
+
+  const gfx::RectF kPresentationArea(30, 30, 100, 100);
+  CreateAndSendMetadata(kFirstPoint, 15.22f, SK_ColorCYAN, kFirstTimestamp,
+                        kPresentationArea);
+
   EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL(
       "delegated_ink_trail_clipped_by_presentation_area.png")));
 }
@@ -5332,12 +5340,15 @@ TEST_P(DelegatedInkTest, DelegatedInkTrailAfterBatchedQuads) {
   AggregatedRenderPassList pass_list;
   pass_list.push_back(std::move(pass));
 
-  const gfx::RectF kPresentationArea(0, 0, 200, 200);
-  CreateAndSendMetadata(gfx::PointF(34.f, 72.f), 7.77f, SK_ColorDKGRAY,
-                        kPresentationArea);
-  CreateAndSendPointFromMetadata();
+  const gfx::PointF kFirstPoint(34.f, 72.f);
+  const base::TimeTicks kFirstTimestamp = base::TimeTicks::Now();
+  CreateAndSendPoint(kFirstPoint, kFirstTimestamp);
   CreateAndSendPointFromLastPoint(gfx::PointF(79, 101));
   CreateAndSendPointFromLastPoint(gfx::PointF(134, 114));
+
+  const gfx::RectF kPresentationArea(0, 0, 200, 200);
+  CreateAndSendMetadata(kFirstPoint, 7.77f, SK_ColorDKGRAY, kFirstTimestamp,
+                        kPresentationArea);
 
   EXPECT_TRUE(this->RunPixelTest(
       &pass_list,
@@ -5375,12 +5386,15 @@ TEST_P(DelegatedInkTest, SimpleTrailNonRootRenderPass) {
   pass_list.push_back(std::move(root_pass));
 
   // Values for a simple delegated ink trail, numbers chosen arbitrarily.
-  const gfx::RectF kPresentationArea(0, 0, 200, 200);
-  CreateAndSendMetadata(gfx::PointF(156.f, 111.f), 19.177f, SK_ColorRED,
-                        kPresentationArea);
-  CreateAndSendPointFromMetadata();
+  const gfx::PointF kFirstPoint(156.f, 111.f);
+  const base::TimeTicks kFirstTimestamp = base::TimeTicks::Now();
+  CreateAndSendPoint(kFirstPoint, kFirstTimestamp);
   CreateAndSendPointFromLastPoint(gfx::PointF(119, 87.23f));
   CreateAndSendPointFromLastPoint(gfx::PointF(74.222f, 95.4f));
+
+  const gfx::RectF kPresentationArea(0, 0, 200, 200);
+  CreateAndSendMetadata(kFirstPoint, 19.177f, SK_ColorRED, kFirstTimestamp,
+                        kPresentationArea);
 
   // This will only check what was drawn in the child pass, which should never
   // contain a delegated ink trail, so it should be solid green.
@@ -5388,6 +5402,62 @@ TEST_P(DelegatedInkTest, SimpleTrailNonRootRenderPass) {
       &pass_list, child_pass_ptr,
       base::FilePath(FILE_PATH_LITERAL("green.png")),
       cc::ExactPixelComparator(true)));
+}
+
+// Draw two different trails that are made up of sets of DelegatedInkPoints with
+// different pointer IDs. All numbers arbitrarily chosen.
+TEST_P(DelegatedInkTest, DrawTrailsWithDifferentPointerIds) {
+  const int32_t kPointerId1 = 2;
+  const int32_t kPointerId2 = 100;
+
+  const base::TimeTicks kTimestamp = base::TimeTicks::Now();
+
+  // Constants used for sending points and making sure we can send matching
+  // DelegatedInkMetadata later.
+  const gfx::PointF kPointerId1StartPoint(40, 27);
+  const base::TimeTicks kPointerId1StartTime = kTimestamp;
+  const gfx::PointF kPointerId2StartPoint(160, 190);
+  const base::TimeTicks kPointerId2StartTime =
+      kTimestamp + base::TimeDelta::FromMilliseconds(15);
+
+  // Send four points for pointer ID 1 and two points for pointer ID 2 in mixed
+  // order to confirm that they get put in the right buckets. Some timestamps
+  // match intentionally to make sure that point is considered when matching
+  // DelegatedInkMetadata to DelegatedInkPoints
+  CreateAndSendPoint(kPointerId1StartPoint, kPointerId1StartTime, kPointerId1);
+  CreateAndSendPoint(gfx::PointF(24, 80),
+                     kTimestamp + base::TimeDelta::FromMilliseconds(15),
+                     kPointerId1);
+  CreateAndSendPoint(kPointerId2StartPoint, kPointerId2StartTime, kPointerId2);
+  CreateAndSendPoint(gfx::PointF(60, 130),
+                     kTimestamp + base::TimeDelta::FromMilliseconds(24),
+                     kPointerId1);
+  CreateAndSendPoint(gfx::PointF(80, 118),
+                     kTimestamp + base::TimeDelta::FromMilliseconds(20),
+                     kPointerId2);
+  CreateAndSendPoint(gfx::PointF(100, 190),
+                     kTimestamp + base::TimeDelta::FromMilliseconds(30),
+                     kPointerId1);
+
+  const gfx::RectF kPresentationArea(200, 200);
+
+  // Now send a metadata to match the first point of the first pointer id to
+  // confirm that only that trail is drawn.
+  CreateAndSendMetadata(kPointerId1StartPoint, 7, SK_ColorYELLOW,
+                        kPointerId1StartTime, kPresentationArea);
+  EXPECT_TRUE(
+      DrawAndTestTrail(FILE_PATH_LITERAL("delegated_ink_pointer_id_1.png")));
+
+  // Then send metadata that matches the first point of the other pointer id.
+  // These points should not have been erased, so all 3 points should be drawn.
+  CreateAndSendMetadata(kPointerId2StartPoint, 2.4f, SK_ColorRED,
+                        kPointerId2StartTime, kPresentationArea);
+  EXPECT_TRUE(
+      DrawAndTestTrail(FILE_PATH_LITERAL("delegated_ink_pointer_id_2.png")));
+
+  // The metadata should have been cleared after drawing, so confirm that there
+  // is no trail after another draw.
+  EXPECT_TRUE(DrawAndTestTrail(FILE_PATH_LITERAL("white.png")));
 }
 #endif  // !defined(OS_ANDROID)
 

@@ -5,24 +5,19 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_DELEGATED_INK_POINT_RENDERER_BASE_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DELEGATED_INK_POINT_RENDERER_BASE_H_
 
-#include <map>
 #include <memory>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
+#include "base/optional.h"
 #include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/mojom/compositing/delegated_ink_point.mojom.h"
-#include "ui/base/prediction/input_predictor.h"
-#include "ui/base/prediction/prediction_metrics_handler.h"
 
 namespace viz {
 class DelegatedInkMetadata;
-
-// The maximum number of delegated ink points that will be stored at a time.
-// When this is hit, the oldest one will be removed each time a new one is
-// added.
-constexpr int kMaximumDelegatedInkPointsStored = 10;
+class DelegatedInkTrailData;
 
 // The number of points to predict into the future, when prediction is
 // available.
@@ -73,9 +68,9 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
  private:
   friend class SkiaDelegatedInkRendererTest;
 
-  const std::map<base::TimeTicks, DelegatedInkPoint>& GetPointsMapForTest()
-      const {
-    return points_;
+  const std::unordered_map<int32_t, DelegatedInkTrailData>&
+  GetPointsMapForTest() const {
+    return pointer_ids_;
   }
 
   const DelegatedInkMetadata* GetMetadataForTest() const {
@@ -84,16 +79,16 @@ class VIZ_SERVICE_EXPORT DelegatedInkPointRendererBase
 
   virtual int GetPathPointCountForTest() const = 0;
 
+  // Cached pointer id that matches the most recent metadata. This is set when
+  // a metadata arrives, and if no stored DelegatedInkPoints match the metadata,
+  // then it is null.
+  base::Optional<int32_t> pointer_id_;
+
   // The points that arrived from the browser process and may be drawn as part
-  // of the ink trail.
-  std::map<base::TimeTicks, DelegatedInkPoint> points_;
-
-  // Kalman predictor that is used for generating predicted points.
-  std::unique_ptr<ui::InputPredictor> predictor_;
-
-  // Handler for calculating useful metrics for evaluating predicted points
-  // and populating the histograms with those metrics.
-  ui::PredictionMetricsHandler metrics_handler_;
+  // of the ink trail are stored according to their pointer ids so that if
+  // more than one source of points is arriving, we can choose the correct set
+  // of points to use when drawing the delegated ink trail.
+  std::unordered_map<int32_t, DelegatedInkTrailData> pointer_ids_;
 
   mojo::Receiver<mojom::DelegatedInkPointRenderer> receiver_{this};
 };

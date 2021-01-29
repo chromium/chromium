@@ -347,11 +347,15 @@ TEST_P(SurfaceAggregatorPixelTest, DrawAndEraseDelegatedInkTrail) {
 
   // Create and send metadata and points to the renderer that will be drawn.
   // Points and timestamps are chosen arbitrarily.
-  delegated_ink_helper.CreateAndSendMetadata(
-      gfx::PointF(10, 10), 7.7f, SK_ColorWHITE, gfx::RectF(0, 0, 200, 200));
-  delegated_ink_helper.CreateAndSendPointFromMetadata();
+  const gfx::PointF kFirstPoint(10, 10);
+  const base::TimeTicks kFirstTimestamp = base::TimeTicks::Now();
+  delegated_ink_helper.CreateAndSendPoint(kFirstPoint, kFirstTimestamp);
   delegated_ink_helper.CreateAndSendPointFromLastPoint(gfx::PointF(26, 37));
   delegated_ink_helper.CreateAndSendPointFromLastPoint(gfx::PointF(45, 87));
+
+  delegated_ink_helper.CreateAndSendMetadata(kFirstPoint, 7.7f, SK_ColorWHITE,
+                                             kFirstTimestamp,
+                                             gfx::RectF(0, 0, 200, 200));
 
   gfx::Rect rect(this->device_viewport_size_);
   CompositorRenderPassId id{1};
