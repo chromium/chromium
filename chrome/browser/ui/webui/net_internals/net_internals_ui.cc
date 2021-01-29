@@ -54,9 +54,7 @@ void IgnoreBoolCallback(bool result) {}
 // This class receives javascript messages from the renderer.
 // Note that the WebUI infrastructure runs on the UI thread, therefore all of
 // this class's methods are expected to run on the UI thread.
-class NetInternalsMessageHandler
-    : public content::WebUIMessageHandler,
-      public base::SupportsWeakPtr<NetInternalsMessageHandler> {
+class NetInternalsMessageHandler : public content::WebUIMessageHandler {
  public:
   explicit NetInternalsMessageHandler(content::WebUI* web_ui);
   ~NetInternalsMessageHandler() override = default;
@@ -64,6 +62,7 @@ class NetInternalsMessageHandler
  protected:
   // WebUIMessageHandler implementation:
   void RegisterMessages() override;
+  void OnJavascriptDisallowed() override;
 
  private:
   network::mojom::NetworkContext* GetNetworkContext();
@@ -93,6 +92,7 @@ class NetInternalsMessageHandler
   void OnFlushSocketPools(const base::ListValue* list);
 
   content::WebUI* web_ui_;
+  base::WeakPtrFactory<NetInternalsMessageHandler> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(NetInternalsMessageHandler);
 };
@@ -148,6 +148,10 @@ void NetInternalsMessageHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
+void NetInternalsMessageHandler::OnJavascriptDisallowed() {
+  weak_factory_.InvalidateWeakPtrs();
+}
+
 void NetInternalsMessageHandler::OnReloadProxySettings(
     const base::ListValue* list) {
   GetNetworkContext()->ForceReloadProxyConfig(base::NullCallback());
@@ -188,7 +192,7 @@ void NetInternalsMessageHandler::OnHSTSQuery(const base::ListValue* list) {
   GetNetworkContext()->GetHSTSState(
       domain,
       base::BindOnce(&NetInternalsMessageHandler::ResolveCallbackWithResult,
-                     base::Unretained(this), callback_id));
+                     weak_factory_.GetWeakPtr(), callback_id));
 }
 
 void NetInternalsMessageHandler::ResolveCallbackWithResult(
@@ -232,7 +236,7 @@ void NetInternalsMessageHandler::OnExpectCTQuery(const base::ListValue* list) {
       net::NetworkIsolationKey(origin /* top_frame_site */,
                                origin /* frame_site */),
       base::BindOnce(&NetInternalsMessageHandler::ResolveCallbackWithResult,
-                     base::Unretained(this), callback_id));
+                     weak_factory_.GetWeakPtr(), callback_id));
 }
 
 void NetInternalsMessageHandler::OnExpectCTAdd(const base::ListValue* list) {
@@ -280,7 +284,7 @@ void NetInternalsMessageHandler::OnExpectCTTestReport(
   GetNetworkContext()->SetExpectCTTestReport(
       report_uri,
       base::BindOnce(&NetInternalsMessageHandler::OnExpectCTTestReportCallback,
-                     base::Unretained(this), callback_id));
+                     weak_factory_.GetWeakPtr(), callback_id));
 }
 
 void NetInternalsMessageHandler::OnExpectCTTestReportCallback(
