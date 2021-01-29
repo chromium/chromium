@@ -82,10 +82,13 @@ def _CheckNotificationConstructors(input_api, output_api):
 def _CheckAlertDialogBuilder(input_api, output_api):
   # In general, preference and FRE related UIs are not relevant to VR mode.
   files_to_skip = (
+      BROWSER_ROOT + 'autofill/AutofillPopupBridge.java',
       BROWSER_ROOT + 'browserservices/ClearDataDialogActivity.java',
       BROWSER_ROOT + 'browsing_data/ConfirmImportantSitesDialogFragment.java',
       BROWSER_ROOT + 'browsing_data/OtherFormsOfHistoryDialogFragment.java',
       BROWSER_ROOT + 'datareduction/settings/DataReductionStatsPreference.java',
+      BROWSER_ROOT + 'dom_distiller/DistilledPagePrefsView.java',
+      BROWSER_ROOT + 'download/OMADownloadHandler.java',
       BROWSER_ROOT + 'password_manager/AccountChooserDialog.java',
       BROWSER_ROOT + 'password_manager/AutoSigninFirstRunDialog.java',
       BROWSER_ROOT + r'settings[\\\/].*',
@@ -106,6 +109,7 @@ def _CheckAlertDialogBuilder(input_api, output_api):
       BROWSER_ROOT + 'sync/ui/PassphraseCreationDialogFragment.java',
       BROWSER_ROOT + 'sync/ui/PassphraseDialogFragment.java',
       BROWSER_ROOT + 'sync/ui/PassphraseTypeDialogFragment.java',
+      BROWSER_ROOT + 'webapps/WebApkOfflineDialog.java',
   )
   error_msg = '''
   AlertDialog.Builder Check failed:
