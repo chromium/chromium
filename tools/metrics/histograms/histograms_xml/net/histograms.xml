@@ -1237,6 +1237,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.DNS.SecureDnsTaskFailure.FallbackDnsTask.Error"
     enum="NetErrorCodes" expires_after="2021-01-31">
+  <obsolete>
+    Removed from code 2021-01.
+  </obsolete>
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>
@@ -1247,6 +1250,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Net.DNS.SecureDnsTaskFailure.FallbackProcTask.Error"
     enum="NetErrorCodes" expires_after="2021-01-31">
+  <obsolete>
+    Removed from code 2021-01.
+  </obsolete>
   <owner>ericorth@chromium.org</owner>
   <owner>doh-core@google.com</owner>
   <summary>

@@ -261,10 +261,6 @@ the actual call to `getaddrinfo()` using the
 `net::HostResolverProc` may be replaced by a chain of test implementations to
 override behavior.
 
-Data collected specifically for this source:
-
-* "Net.DNS.SecureDnsTaskFailure.FallbackProcTask.Error"
-
 #### DNS
 
 `net::HostResolverSource::DNS`
@@ -318,7 +314,6 @@ Data collected specifically for this source (more internally to
 * "Net.DNS.SecureDnsTask.DnsModeAutomatic.FailureTime"
 * "Net.DNS.SecureDnsTask.ErrorBeforeFallback.Fast"
 * "Net.DNS.SecureDnsTask.ErrorBeforeFallback.Slow"
-* "Net.DNS.SecureDnsTaskFailure.FallbackDnsTask.Error"
 
 #### MULTICAST_DNS
 
