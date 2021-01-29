@@ -167,8 +167,6 @@ class MetricsLog {
   // record.  Must only be called after CloseLog() has been called.
   void GetEncodedLog(std::string* encoded_log);
 
-  const base::TimeTicks& creation_time() const { return creation_time_; }
-
   LogType log_type() const { return log_type_; }
 
   // Returns the number of samples in this log, it is only valid after the
