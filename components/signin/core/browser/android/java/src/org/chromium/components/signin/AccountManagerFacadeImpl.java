@@ -215,22 +215,20 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         mDelegate.invalidateAuthToken(accessToken);
     }
 
-    // Incorrectly infers that this is called on a worker thread because of AsyncTask doInBackground
-    // overriding.
-    @SuppressWarnings("WrongThread")
     @Override
     public void checkChildAccountStatus(Account account, ChildAccountStatusListener listener) {
         ThreadUtils.assertOnUiThread();
         new AsyncTask<Integer>() {
             @Override
             public @ChildAccountStatus.Status Integer doInBackground() {
-                if (hasFeature(account, FEATURE_IS_CHILD_ACCOUNT_KEY)) {
+                if (mDelegate.hasFeatures(account, new String[] {FEATURE_IS_CHILD_ACCOUNT_KEY})) {
                     return ChildAccountStatus.REGULAR_CHILD;
-                }
-                if (hasFeature(account, FEATURE_IS_USM_ACCOUNT_KEY)) {
+                } else if (mDelegate.hasFeatures(
+                                   account, new String[] {FEATURE_IS_USM_ACCOUNT_KEY})) {
                     return ChildAccountStatus.USM_CHILD;
+                } else {
+                    return ChildAccountStatus.NOT_CHILD;
                 }
-                return ChildAccountStatus.NOT_CHILD;
             }
 
             @Override
@@ -316,10 +314,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @Override
     public boolean isGooglePlayServicesAvailable() {
         return mDelegate.isGooglePlayServicesAvailable();
-    }
-
-    private boolean hasFeature(Account account, String feature) {
-        return mDelegate.hasFeatures(account, new String[] {feature});
     }
 
     private void updateAccounts() {
