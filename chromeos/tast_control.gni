@@ -40,4 +40,7 @@ tast_disabled_tests_from_chrome_all = [
 
   # crbug.com/1158051
   "policy.AllowDinosaurEasterEgg",
+
+  # crbug.com/1172179
+  "arc.IntentForward",
 ]
