@@ -1723,8 +1723,6 @@ VTVideoDecodeAccelerator::GetSupportedProfiles(
         continue;
       if (!base::mac::IsAtLeastOS11())
         continue;
-      if (!base::FeatureList::IsEnabled(kVideoToolboxVp9Decoding))
-        continue;
       if (__builtin_available(macOS 10.13, *)) {
         if ((supported_profile == VP9PROFILE_PROFILE0 ||
              supported_profile == VP9PROFILE_PROFILE2) &&

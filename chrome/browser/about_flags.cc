@@ -6662,13 +6662,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWindowNamingDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kWindowNaming)},
 
-#if defined(OS_MAC)
-    {"videotoolbox-vp9-decoding",
-     flag_descriptions::kVideoToolboxVp9DecodingName,
-     flag_descriptions::kVideoToolboxVp9DecodingDescription, kOsMac,
-     FEATURE_VALUE_TYPE(media::kVideoToolboxVp9Decoding)},
-#endif
-
 #if defined(OS_ANDROID)
     {"messages-for-android-infrastructure",
      flag_descriptions::kMessagesForAndroidInfrastructureName,

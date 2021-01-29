@@ -239,7 +239,6 @@ MEDIA_EXPORT extern const base::Feature kWasapiRawAudioCapture;
 #if defined(OS_MAC)
 MEDIA_EXPORT extern const base::Feature kAVFoundationCaptureV2;
 MEDIA_EXPORT extern const base::Feature kAVFoundationCaptureV2ZeroCopy;
-MEDIA_EXPORT extern const base::Feature kVideoToolboxVp9Decoding;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

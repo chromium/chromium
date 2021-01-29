@@ -2146,9 +2146,6 @@ extern const char kMacSystemMediaPermissionsInfoUiDescription[];
 extern const char kMetalName[];
 extern const char kMetalDescription[];
 
-extern const char kVideoToolboxVp9DecodingName[];
-extern const char kVideoToolboxVp9DecodingDescription[];
-
 #endif  // defined(OS_MAC)
 
 // Chrome OS ------------------------------------------------------------------
