@@ -59,9 +59,6 @@ class WebViewTestProxy : public RenderViewImpl {
                             const mojom::CreateViewParams& params,
                             TestRunner* test_runner);
 
-  // WebViewClient implementation.
-  void PrintPage(blink::WebLocalFrame* frame) override;
-
   TestRunner* GetTestRunner() { return test_runner_; }
   AccessibilityController* accessibility_controller() {
     return &accessibility_controller_;

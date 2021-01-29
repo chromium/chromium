@@ -20,6 +20,7 @@
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/public/web/web_testing_support.h"
 #include "third_party/blink/public/web/web_view.h"
 
@@ -211,6 +212,18 @@ class TestRenderFrameObserver : public RenderFrameObserver {
       test_runner()->PrintMessage(description +
                                   " - didHandleOnloadEventsForFrame\n");
     }
+  }
+
+  void ScriptedPrint(bool user_initiated) override {
+    // This is using the main frame for the size, but maybe it should be using
+    // the frame's size.
+    blink::WebSize page_size_in_pixels =
+        frame_proxy()->GetLocalRootWebFrameWidget()->Size();
+    if (page_size_in_pixels.IsEmpty())
+      return;
+    blink::WebPrintParams print_params(page_size_in_pixels);
+    render_frame()->GetWebFrame()->PrintBegin(print_params, blink::WebNode());
+    render_frame()->GetWebFrame()->PrintEnd();
   }
 
   WebViewTestProxy* web_view_test_proxy_;

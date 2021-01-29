@@ -16,7 +16,6 @@
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
 
@@ -33,18 +32,6 @@ WebViewTestProxy::WebViewTestProxy(AgentSchedulingGroup& agent_scheduling_group,
 
 WebViewTestProxy::~WebViewTestProxy() {
   test_runner_->RemoveRenderView(this);
-}
-
-void WebViewTestProxy::PrintPage(blink::WebLocalFrame* frame) {
-  // This is using the main frame for the size, but maybe it should be using the
-  // frame's size.
-  blink::WebSize page_size_in_pixels =
-      GetMainRenderFrame()->GetLocalRootWebFrameWidget()->Size();
-  if (page_size_in_pixels.IsEmpty())
-    return;
-  blink::WebPrintParams print_params(page_size_in_pixels);
-  frame->PrintBegin(print_params, blink::WebNode());
-  frame->PrintEnd();
 }
 
 void WebViewTestProxy::Reset() {
