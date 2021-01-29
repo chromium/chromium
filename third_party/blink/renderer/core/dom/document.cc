@@ -7419,15 +7419,6 @@ void Document::CheckLoadEventSoon() {
 }
 
 bool Document::IsDelayingLoadEvent() {
-  // Always delay load events until after garbage collection.
-  // This way we don't have to explicitly delay load events via
-  // incrementLoadEventDelayCount and decrementLoadEventDelayCount in
-  // Node destructors.
-  if (ThreadState::Current()->SweepForbidden()) {
-    if (!load_event_delay_count_)
-      CheckLoadEventSoon();
-    return true;
-  }
   return load_event_delay_count_;
 }
 
