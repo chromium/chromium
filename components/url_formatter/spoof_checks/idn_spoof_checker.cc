@@ -574,7 +574,10 @@ TopDomainEntry IDNSpoofChecker::GetSimilarTopDomain(
 }
 
 Skeletons IDNSpoofChecker::GetSkeletons(base::StringPiece16 hostname) const {
-  return skeleton_generator_->GetSkeletons(hostname);
+  // skeleton_generator_ may be null if uspoof_open fails. It's unclear why this
+  // happens, see crbug.com/1169079.
+  return skeleton_generator_ ? skeleton_generator_->GetSkeletons(hostname)
+                             : Skeletons();
 }
 
 TopDomainEntry IDNSpoofChecker::LookupSkeletonInTopDomains(
