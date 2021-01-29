@@ -60,17 +60,12 @@ if (enable_vulkan) {
       "vma_wrapper.h",
     ]
 
-    defines = [
-      "IS_VULKAN_IMPL",
-      "VMA_DYNAMIC_VULKAN_FUNCTIONS=0",
-      "VMA_STATS_STRING_ENABLED=0",
-      "VMA_IMPLEMENTATION",
-    ]
+    defines = [ "IS_VULKAN_IMPL" ]
 
     deps = [
       ":vulkan_function_pointers",
       "//base",
-      "//third_party/vulkan_memory_allocator",
+      "//third_party/vulkan_memory_allocator:vulkan_memory_allocator_with_usage",
     ]
   }
 

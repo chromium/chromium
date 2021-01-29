@@ -1487,7 +1487,7 @@ deps = {
   'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@676d3c095a281f5626a00da882274ca253e33f3a',
 
   'src/third_party/vulkan_memory_allocator':
-    Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + '6c656df63da5995a932aafd45b32af1974e497d9',
+    Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + 'b1d65a2b3373fe12c622eaab65e5cf21b906d178',
 
   # Display server protocol for Linux.
   'src/third_party/wayland/src': {
