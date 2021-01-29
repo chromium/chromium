@@ -148,9 +148,6 @@ class ProfileSyncServiceAndroid : public syncer::SyncServiceObserver {
   void SetPassphrasePrompted(JNIEnv* env,
                              const base::android::JavaParamRef<jobject>& obj,
                              jboolean prompted);
-  void SetSyncSessionsId(JNIEnv* env,
-                         const base::android::JavaParamRef<jobject>& obj,
-                         const base::android::JavaParamRef<jstring>& tag);
   jboolean HasKeepEverythingSynced(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);

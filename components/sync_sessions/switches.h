@@ -11,8 +11,6 @@ namespace switches {
 
 extern const base::Feature kSyncConsiderEmptyWindowsSyncable;
 
-extern const base::Feature kSyncUseCacheGuidAsSyncSessionTag;
-
 }  // namespace switches
 
 #endif  // COMPONENTS_SYNC_SESSIONS_SWITCHES_H_

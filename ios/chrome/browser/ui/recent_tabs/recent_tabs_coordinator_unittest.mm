@@ -63,7 +63,6 @@ class SessionSyncServiceMockForRecentTabsTableCoordinator
                base::WeakPtr<syncer::ModelTypeControllerDelegate>());
   MOCK_METHOD1(ProxyTabsStateChanged,
                void(syncer::DataTypeController::State state));
-  MOCK_METHOD1(SetSyncSessionsGUID, void(const std::string& guid));
 };
 
 std::unique_ptr<KeyedService>

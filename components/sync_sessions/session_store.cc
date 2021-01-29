@@ -12,7 +12,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -27,7 +26,6 @@
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync_device_info/local_device_info_util.h"
 #include "components/sync_sessions/session_sync_prefs.h"
-#include "components/sync_sessions/switches.h"
 #include "components/sync_sessions/sync_sessions_client.h"
 
 namespace sync_sessions {
@@ -90,17 +88,8 @@ std::string GetSessionTagWithPrefs(const std::string& cache_guid,
     return persisted_guid;
   }
 
-  if (base::FeatureList::IsEnabled(
-          switches::kSyncUseCacheGuidAsSyncSessionTag)) {
-    DVLOG(1) << "Using sync cache guid as session sync guid: " << cache_guid;
-    return cache_guid;
-  }
-
-  const std::string new_guid =
-      base::StringPrintf("session_sync%s", cache_guid.c_str());
-  DVLOG(1) << "Creating session sync guid: " << new_guid;
-  sync_prefs->SetLegacySyncSessionsGUID(new_guid);
-  return new_guid;
+  DVLOG(1) << "Using sync cache guid as session sync guid: " << cache_guid;
+  return cache_guid;
 }
 
 void ForwardError(syncer::OnceModelErrorHandler error_handler,
@@ -552,11 +541,7 @@ std::unique_ptr<SessionStore::WriteBatch> SessionStore::CreateWriteBatch(
 void SessionStore::DeleteAllDataAndMetadata() {
   session_tracker_.Clear();
   store_->DeleteAllDataAndMetadata(base::DoNothing());
-
-  if (base::FeatureList::IsEnabled(
-          switches::kSyncUseCacheGuidAsSyncSessionTag)) {
-    sessions_client_->GetSessionSyncPrefs()->ClearLegacySyncSessionsGUID();
-  }
+  sessions_client_->GetSessionSyncPrefs()->ClearLegacySyncSessionsGUID();
 
   // At all times, the local session must be tracked.
   session_tracker_.InitLocalSession(local_session_info_.session_tag,

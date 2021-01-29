@@ -41,7 +41,6 @@ class SessionSyncServiceMock : public sync_sessions::SessionSyncService {
                base::WeakPtr<syncer::ModelTypeControllerDelegate>());
   MOCK_METHOD1(ProxyTabsStateChanged,
                void(syncer::DataTypeController::State state));
-  MOCK_METHOD1(SetSyncSessionsGUID, void(const std::string& guid));
 };
 
 class OpenTabsUIDelegateMock : public sync_sessions::OpenTabsUIDelegate {
