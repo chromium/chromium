@@ -32,6 +32,8 @@ source_set("incognito_reauth_ui") {
     "incognito_reauth_consumer.h",
     "incognito_reauth_view.h",
     "incognito_reauth_view.mm",
+    "incognito_reauth_view_label.h",
+    "incognito_reauth_view_label.mm",
   ]
   deps = [
     ":incognito_reauth_util",

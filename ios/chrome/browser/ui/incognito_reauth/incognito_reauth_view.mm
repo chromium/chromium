@@ -6,6 +6,7 @@
 
 #include "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_util.h"
+#import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view_label.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -18,11 +19,13 @@ namespace {
 // Button content padding (Vertical and Horizontal).
 const CGFloat kButtonPaddingV = 15.0f;
 const CGFloat kButtonPaddingH = 38.0f;
+// Max radius for the authenticate button background.
+const CGFloat kAuthenticateButtonBagroundMaxCornerRadius = 30.0f;
 // Distance from top and bottom to content (buttons/logos).
 const CGFloat kVerticalContentPadding = 70.0f;
 }  // namespace
 
-@interface IncognitoReauthView ()
+@interface IncognitoReauthView () <IncognitoReauthViewLabelOwner>
 // The background view for the authenticate button.
 // Has to be separate from the button because it's a blur view (on iOS 13+).
 @property(nonatomic, weak) UIView* authenticateButtonBackgroundView;
@@ -104,12 +107,6 @@ const CGFloat kVerticalContentPadding = 70.0f;
   return self;
 }
 
-- (void)layoutSubviews {
-  [super layoutSubviews];
-  self.authenticateButtonBackgroundView.layer.cornerRadius =
-      self.authenticateButtonBackgroundView.frame.size.height / 2;
-}
-
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   [self setNeedsLayout];
@@ -121,9 +118,12 @@ const CGFloat kVerticalContentPadding = 70.0f;
 - (UIView*)buildAuthenticateButtonWithBlurEffect:(UIBlurEffect*)blurEffect {
   DCHECK(!_authenticateButton);
 
-  // Use a UILabel for the button label, because the built-in UIButton's
-  // |titleLabel| does not correctly resize for multiline labels.
-  UILabel* titleLabel = [[UILabel alloc] init];
+  // Use a IncognitoReauthViewLabel for the button label, because the built-in
+  // UIButton's |titleLabel| does not correctly resize for multiline labels and
+  // using a UILabel doesn't provide feedback to adjust the corner radius.
+  IncognitoReauthViewLabel* titleLabel =
+      [[IncognitoReauthViewLabel alloc] init];
+  titleLabel.owner = self;
   titleLabel.numberOfLines = 0;
   titleLabel.textColor = [UIColor whiteColor];
   titleLabel.textAlignment = NSTextAlignmentCenter;
@@ -190,6 +190,15 @@ const CGFloat kVerticalContentPadding = 70.0f;
   [self.authenticateButton
       sendActionsForControlEvents:UIControlEventTouchUpInside];
   return YES;
+}
+
+#pragma mark - IncognitoReauthViewLabelOwner
+
+- (void)labelDidLayout {
+  CGFloat cornerRadius =
+      std::min(kAuthenticateButtonBagroundMaxCornerRadius,
+               self.authenticateButtonBackgroundView.frame.size.height / 2);
+  self.authenticateButtonBackgroundView.layer.cornerRadius = cornerRadius;
 }
 
 @end
