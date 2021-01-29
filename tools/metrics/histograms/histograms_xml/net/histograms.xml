@@ -2622,8 +2622,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
-    The QUIC error code which resulted in the Google QUIC connection being
-    closed by the client.
+    The QUIC error code which resulted in the QUIC connection being closed by
+    the client.
   </summary>
 </histogram>
 
@@ -2632,8 +2632,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
-    The QUIC error code which resulted in the Google QUIC connection being
-    closed by the client to a server ending in .google.com.
+    The QUIC error code which resulted in the QUIC connection being closed by
+    the client to a Google server.
   </summary>
 </histogram>
 
@@ -2642,8 +2642,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
-    The QUIC error code which resulted in the Google QUIC connection being
-    closed by the server.
+    The QUIC error code which resulted in the QUIC connection being closed by
+    the server.
   </summary>
 </histogram>
 
@@ -2652,8 +2652,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/quic/OWNERS</owner>
   <summary>
-    The QUIC error code which resulted in the Google QUIC connection being
-    closed by the server with a name ending in .google.com.
+    The QUIC error code which resulted in the QUIC connection being closed by
+    the a Google server.
   </summary>
 </histogram>
 
@@ -2674,7 +2674,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The QUIC application transport error code in a CONNECTION_CLOSE frame
-    received from the server with a name ending in .google.com.
+    received from a Google server.
   </summary>
 </histogram>
 
@@ -2696,8 +2696,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The QUIC application transport error code in a CONNECTION_CLOSE frame
-    received from the server with a name ending in .google.com, when the GQUIC
-    error was missing.
+    received from a Google server, when the GQUIC error was missing.
   </summary>
 </histogram>
 
@@ -2718,7 +2717,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The QUIC application transport error code in a CONNECTION_CLOSE frame
-    received from the server with a name ending in .google.com.
+    received from a Google server.
   </summary>
 </histogram>
 
@@ -2740,8 +2739,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>src/net/quic/OWNERS</owner>
   <summary>
     The QUIC application transport error code in a CONNECTION_CLOSE frame
-    received from the server with a name ending in .google.com, when the GQUIC
-    error was missing.
+    received from a Google server, when the GQUIC error was missing.
   </summary>
 </histogram>
 
