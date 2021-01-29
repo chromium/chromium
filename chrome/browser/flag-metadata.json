@@ -2871,7 +2871,7 @@
   {
     "name": "freeze-user-agent",
     "owners": [ "yoavweiss", "aarontag" ],
-    "expiry_milestone": 89
+    "expiry_milestone": 99
   },
   {
     "name": "full-restore",
