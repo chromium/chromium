@@ -136,8 +136,6 @@
 -PictureInPictureWindowControllerBrowserTest.*
 -PopupTrackerBrowserTest.PopupInWindow_IsWindowTrue
 -PopupTrackerBrowserTest.ShiftClick_HasTracker
--PPAPINaClNewlibTest.TrueTypeFont
--PPAPINaClPNaClNonSfiTest.TrueTypeFont
 -PresentationReceiverWindowControllerBrowserTest.CreatesWindow
 -PreservedWindowPlacement.Test
 -PrintPreviewDestinationSelectTest.ChangeIconDeprecationWarnings
