@@ -28,10 +28,7 @@ class __thisIsHereToForceASemicolonAfterThisMacro;
 // non-garbage-collected objects to avoid unintended allocations.
 //
 // STACK_ALLOCATED(): Use if the object is only stack allocated.
-// Garbage-collected objects should be in Members but you do not need the
-// trace method as they are on the stack.  (Down the line these might turn
-// in to raw pointers, but for now Members indicate that we have thought
-// about them and explicitly taken care of them.)
+// Garbage-collected objects should be in raw pointers.
 //
 // DISALLOW_NEW(): Cannot be allocated with new operators but can be a
 // part of object, a value object in collections or stack allocated. If it has
