@@ -47,8 +47,9 @@ class MapsIntegrationTest(expected_color_test.ExpectedColorTest):
         options.dont_restore_color_profile_after_test)
     super(MapsIntegrationTest, cls).SetUpProcess()
     cls.CustomizeBrowserArgs([
-        cba.FORCE_COLOR_PROFILE_SRGB,
         cba.ENSURE_FORCED_COLOR_PROFILE,
+        cba.FORCE_BROWSER_CRASH_ON_GPU_CRASH,
+        cba.FORCE_COLOR_PROFILE_SRGB,
     ])
     cloud_storage.GetIfChanged(
         os.path.join(_MAPS_PERF_TEST_PATH, 'load_dataset'),
