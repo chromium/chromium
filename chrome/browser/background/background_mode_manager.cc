@@ -175,7 +175,8 @@ Browser* BackgroundModeManager::BackgroundModeData::GetBrowserWindow() {
 
 bool BackgroundModeManager::BackgroundModeData::HasPersistentBackgroundClient()
     const {
-  return applications_->HasPersistentBackgroundApps();
+  return applications_->HasPersistentBackgroundApps() ||
+         manager_->keep_alive_for_test_;
 }
 
 bool BackgroundModeManager::BackgroundModeData::HasAnyBackgroundClient() const {
