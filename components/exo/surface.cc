@@ -524,6 +524,12 @@ void Surface::SetFrame(SurfaceFrameType type) {
     delegate_->OnSetFrame(type);
 }
 
+void Surface::SetServerStartResize() {
+  if (delegate_)
+    delegate_->OnSetServerStartResize();
+  SetFrame(SurfaceFrameType::SHADOW);
+}
+
 void Surface::SetFrameColors(SkColor active_color, SkColor inactive_color) {
   TRACE_EVENT2("exo", "Surface::SetFrameColors", "active_color", active_color,
                "inactive_color", inactive_color);

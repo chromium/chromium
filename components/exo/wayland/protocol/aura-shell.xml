@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zaura_shell" version="14">
+  <interface name="zaura_shell" version="15">
     <description summary="aura_shell">
       The global interface exposing aura shell capabilities is used to
       instantiate an interface extension for a wl_surface object.
@@ -95,7 +95,7 @@
     </event>
   </interface>
 
-  <interface name="zaura_surface" version="12">
+  <interface name="zaura_surface" version="15">
     <description summary="aura shell interface to a wl_surface">
       An additional interface to a wl_surface object, which allows the
       client to access aura shell specific functionality for surface.
@@ -260,6 +260,16 @@
         Set the identifier of the surface assigned by the client.
       </description>
       <arg name="client_surface_id" type="string" />
+    </request>
+
+    <!-- Version 15 additions -->
+
+    <request name="set_server_start_resize" since="15">
+      <description summary="request a server-side shadow for surface">
+	Suggests a surface to have client-side decoration, but
+	server-side decides when and where to start the resize. The server may also
+	apply visual effects to indicate that the resize operation is ongoing.
+      </description>
     </request>
 
   </interface>

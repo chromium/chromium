@@ -94,6 +94,7 @@ class SurfaceTreeHost : public SurfaceDelegate,
   void SetUseImmersiveForFullscreen(bool value) override {}
   void OnActivationRequested() override {}
   void OnNewOutputAdded() override;
+  void OnSetServerStartResize() override {}
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,

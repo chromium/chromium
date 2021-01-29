@@ -500,10 +500,6 @@ bool ShellSurface::OnPreWidgetCommit() {
   return true;
 }
 
-void ShellSurface::SetDecorationMode(SurfaceFrameType type) {
-  OnSetFrame(type);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // ShellSurface, private:
 

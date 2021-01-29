@@ -168,6 +168,9 @@ class Surface final : public ui::PropertyHandler {
   // Request that surface should have the specified frame type.
   void SetFrame(SurfaceFrameType type);
 
+  // Request that the server should start resize on this surface.
+  void SetServerStartResize();
+
   // Request that surface should use a specific set of frame colors.
   void SetFrameColors(SkColor active_color, SkColor inactive_color);
 

@@ -44,6 +44,9 @@
 #include "ui/wm/core/shadow_types.h"
 #include "ui/wm/core/window_util.h"
 
+#include "ash/wm/resize_shadow.h"
+#include "ash/wm/resize_shadow_controller.h"
+
 namespace exo {
 
 using ShellSurfaceTest = test::ExoTestBase;
@@ -1244,6 +1247,45 @@ TEST_F(ShellSurfaceTest, NotifyLeaveEnter) {
   EXPECT_EQ(display::Screen::GetScreen()->GetPrimaryDisplay().id(),
             new_display_id);
   EXPECT_EQ(secondary_id, old_display_id);
+}
+
+// Make sure that the server side triggers resize when the
+// set_server_start_resize is called, and the resize shadow is created for the
+// window.
+TEST_F(ShellSurfaceTest, ServerStartResize) {
+  gfx::Size buffer_size(64, 64);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+  std::unique_ptr<Surface> surface(new Surface);
+  std::unique_ptr<ShellSurface> shell_surface(new ShellSurface(surface.get()));
+  shell_surface->OnSetServerStartResize();
+
+  surface->Attach(buffer.get());
+  surface->Commit();
+  ASSERT_TRUE(shell_surface->GetWidget());
+
+  auto* widget = shell_surface->GetWidget();
+
+  gfx::Size size = widget->GetWindowBoundsInScreen().size();
+  widget->SetBounds(gfx::Rect(size));
+
+  ui::test::EventGenerator* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(size.width() + 2, size.height() / 2);
+
+  // Ash creates resize shadow for resizable exo window when the
+  // server_start_resize is set.
+  ash::ResizeShadow* resize_shadow =
+      ash::Shell::Get()->resize_shadow_controller()->GetShadowForWindowForTest(
+          widget->GetNativeWindow());
+  ASSERT_TRUE(resize_shadow);
+
+  constexpr int kDragAmount = 10;
+  event_generator->PressLeftButton();
+  event_generator->MoveMouseBy(kDragAmount, 0);
+  event_generator->ReleaseLeftButton();
+
+  EXPECT_EQ(widget->GetWindowBoundsInScreen().size().width(),
+            size.width() + kDragAmount);
 }
 
 TEST_F(ShellSurfaceTest, PropertyResolverTest) {

@@ -98,8 +98,8 @@ class WaylandToplevelWindow : public WaylandWindow,
   // is available.
   void InitializeAuraShellSurface();
 
-  // Set decoration mode for a window.
-  void SetDecorationMode();
+  // Sets decoration mode for a window.
+  void OnDecorationModeChanged();
 
   // Wrappers around shell surface.
   std::unique_ptr<ShellToplevelWrapper> shell_toplevel_;

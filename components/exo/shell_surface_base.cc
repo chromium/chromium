@@ -99,11 +99,8 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
 
   CustomFrameView(views::Widget* widget,
                   ShellSurfaceBase* shell_surface,
-                  bool enabled,
-                  bool client_controlled)
-      : NonClientFrameViewAsh(widget),
-        shell_surface_(shell_surface),
-        client_controlled_(client_controlled) {
+                  bool enabled)
+      : NonClientFrameViewAsh(widget), shell_surface_(shell_surface) {
     SetEnabled(enabled);
     SetVisible(enabled);
     if (!enabled)
@@ -135,7 +132,7 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
     return client_bounds;
   }
   int NonClientHitTest(const gfx::Point& point) override {
-    if (GetVisible() || client_controlled_)
+    if (GetVisible() || shell_surface_->server_side_resize())
       return ash::NonClientFrameViewAsh::NonClientHitTest(point);
     return GetWidget()->client_view()->NonClientHitTest(point);
   }
@@ -180,14 +177,14 @@ class CustomFrameView : public ash::NonClientFrameViewAsh {
 
  private:
   ShellSurfaceBase* const shell_surface_;
-  bool client_controlled_;
 
   DISALLOW_COPY_AND_ASSIGN(CustomFrameView);
 };
 
 class CustomWindowTargeter : public aura::WindowTargeter {
  public:
-  explicit CustomWindowTargeter(views::Widget* widget) : widget_(widget) {}
+  explicit CustomWindowTargeter(ShellSurfaceBase* shell_surface)
+      : shell_surface_(shell_surface), widget_(shell_surface->GetWidget()) {}
   ~CustomWindowTargeter() override = default;
 
   // Overridden from aura::WindowTargeter:
@@ -228,14 +225,9 @@ class CustomWindowTargeter : public aura::WindowTargeter {
         !widget_->widget_delegate()->CanResize()) {
       return false;
     }
-    // Use ash's resize handle detection logic if
-    // a) ClientControlledShellSurface
-    // b) xdg shell is using the server side decoration.
-    if (!ash::WindowState::Get(widget_->GetNativeWindow())
-             ->allow_set_bounds_direct() &&
-        !widget_->non_client_view()->frame_view()->GetVisible()) {
+
+    if (!shell_surface_->server_side_resize())
       return false;
-    }
 
     ui::EventTarget* parent =
         static_cast<ui::EventTarget*>(window)->GetParentTarget();
@@ -263,6 +255,7 @@ class CustomWindowTargeter : public aura::WindowTargeter {
     return false;
   }
 
+  ShellSurfaceBase* shell_surface_;
   views::Widget* const widget_;
 
   DISALLOW_COPY_AND_ASSIGN(CustomWindowTargeter);
@@ -589,7 +582,7 @@ void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
   }
 
   bool frame_was_disabled = !frame_enabled();
-  bool frame_type_Changed = frame_type_ != frame_type;
+  bool frame_type_changed = frame_type_ != frame_type;
   frame_type_ = frame_type;
   switch (frame_type) {
     case SurfaceFrameType::NONE:
@@ -603,7 +596,7 @@ void ShellSurfaceBase::OnSetFrame(SurfaceFrameType frame_type) {
       // the frame type just switched from another enabled type or
       // there is a pending shadow_bounds_ change to avoid overriding
       // a shadow bounds which have been changed and not yet committed.
-      if (frame_type_Changed &&
+      if (frame_type_changed &&
           (!shadow_bounds_ || (frame_was_disabled && !shadow_bounds_changed_)))
         shadow_bounds_ = gfx::Rect();
       break;
@@ -655,6 +648,10 @@ void ShellSurfaceBase::OnSetApplicationId(const char* application_id) {
 void ShellSurfaceBase::OnActivationRequested() {
   if (widget_ && HasPermissionToActivate(widget_->GetNativeWindow()))
     this->Activate();
+}
+
+void ShellSurfaceBase::OnSetServerStartResize() {
+  server_side_resize_ = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -720,7 +717,7 @@ views::View* ShellSurfaceBase::GetContentsView() {
 
 std::unique_ptr<views::NonClientFrameView>
 ShellSurfaceBase::CreateNonClientFrameView(views::Widget* widget) {
-  return CreateNonClientFrameViewInternal(widget, /*client_controlled=*/false);
+  return CreateNonClientFrameViewInternal(widget);
 }
 
 bool ShellSurfaceBase::WidgetHasHitTestMask() const {
@@ -970,6 +967,9 @@ void ShellSurfaceBase::CreateShellSurfaceWidget(
     pending_show_widget_ = true;
 
   UpdateDisplayOnTree();
+
+  if (frame_type_ != SurfaceFrameType::NONE)
+    OnSetFrame(frame_type_);
 }
 
 bool ShellSurfaceBase::IsResizing() const {
@@ -1084,12 +1084,11 @@ gfx::Rect ShellSurfaceBase::GetShadowBounds() const {
 
 void ShellSurfaceBase::InstallCustomWindowTargeter() {
   aura::Window* window = widget_->GetNativeWindow();
-  window->SetEventTargeter(std::make_unique<CustomWindowTargeter>(widget_));
+  window->SetEventTargeter(std::make_unique<CustomWindowTargeter>(this));
 }
 
 std::unique_ptr<views::NonClientFrameView>
-ShellSurfaceBase::CreateNonClientFrameViewInternal(views::Widget* widget,
-                                                   bool client_controlled) {
+ShellSurfaceBase::CreateNonClientFrameViewInternal(views::Widget* widget) {
   aura::Window* window = widget_->GetNativeWindow();
   // ShellSurfaces always use immersive mode.
   window->SetProperty(chromeos::kImmersiveIsActive, true);
@@ -1097,8 +1096,8 @@ ShellSurfaceBase::CreateNonClientFrameViewInternal(views::Widget* widget,
   if (!frame_enabled() && !window_state->HasDelegate()) {
     window_state->SetDelegate(std::make_unique<CustomWindowStateDelegate>());
   }
-  auto frame_view = std::make_unique<CustomFrameView>(
-      widget, this, frame_enabled(), client_controlled);
+  auto frame_view =
+      std::make_unique<CustomFrameView>(widget, this, frame_enabled());
   if (has_frame_colors_)
     frame_view->SetFrameColors(active_frame_color_, inactive_frame_color_);
   return frame_view;

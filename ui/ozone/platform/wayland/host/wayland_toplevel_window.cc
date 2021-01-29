@@ -54,11 +54,11 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
 #else
   shell_toplevel_->SetAppId(wm_class_class_);
 #endif
-  SetDecorationMode();
   shell_toplevel_->SetTitle(window_title_);
   SetSizeConstraints();
   TriggerStateChanges();
   InitializeAuraShellSurface();
+  OnDecorationModeChanged();
   // This could be the proper time to update window mask using
   // NonClientView::GetWindowMask, since |non_client_view| is not created yet
   // during the call to WaylandWindow::Initialize().
@@ -212,7 +212,7 @@ void WaylandToplevelWindow::SetUseNativeFrame(bool use_native_frame) {
     return;
   use_native_frame_ = use_native_frame;
   if (shell_toplevel_)
-    SetDecorationMode();
+    OnDecorationModeChanged();
 
   UpdateWindowMask();
 }
@@ -420,13 +420,19 @@ void WaylandToplevelWindow::InitializeAuraShellSurface() {
   }
 }
 
-void WaylandToplevelWindow::SetDecorationMode() {
+void WaylandToplevelWindow::OnDecorationModeChanged() {
   DCHECK(shell_toplevel_);
   if (use_native_frame_) {
     // Set server-side decoration for windows using a native frame,
     // e.g. taskmanager
     shell_toplevel_->SetDecoration(
         ShellToplevelWrapper::DecorationMode::kServerSide);
+  } else if (aura_surface_ &&
+             zaura_surface_get_version(aura_surface_.get()) >=
+                 ZAURA_SURFACE_SET_SERVER_START_RESIZE_SINCE_VERSION) {
+    // Sets custom-decoration mode for window that supports aura_shell.
+    // e.g. lacros-browser.
+    zaura_surface_set_server_start_resize(aura_surface_.get());
   } else {
     shell_toplevel_->SetDecoration(
         ShellToplevelWrapper::DecorationMode::kClientSide);

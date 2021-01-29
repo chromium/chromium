@@ -160,6 +160,11 @@ void aura_surface_set_client_surface_str_id(wl_client* client,
   GetUserDataAs<AuraSurface>(resource)->SetClientSurfaceId(client_surface_id);
 }
 
+void aura_surface_set_server_start_resize(wl_client* client,
+                                          wl_resource* resource) {
+  GetUserDataAs<AuraSurface>(resource)->SetServerStartResize();
+}
+
 const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_set_frame,
     aura_surface_set_parent,
@@ -172,7 +177,8 @@ const struct zaura_surface_interface aura_surface_implementation = {
     aura_surface_activate,
     aura_surface_draw_attention,
     aura_surface_set_fullscreen_mode,
-    aura_surface_set_client_surface_str_id};
+    aura_surface_set_client_surface_str_id,
+    aura_surface_set_server_start_resize};
 
 }  // namespace
 
@@ -197,6 +203,11 @@ AuraSurface::~AuraSurface() {
 void AuraSurface::SetFrame(SurfaceFrameType type) {
   if (surface_)
     surface_->SetFrame(type);
+}
+
+void AuraSurface::SetServerStartResize() {
+  if (surface_)
+    surface_->SetServerStartResize();
 }
 
 void AuraSurface::SetFrameColors(SkColor active_frame_color,

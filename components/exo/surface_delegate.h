@@ -55,6 +55,9 @@ class SurfaceDelegate {
   // Called when the new outoupt resource is created.
   virtual void OnNewOutputAdded() = 0;
 
+  // Called when surface was requested to start resize.
+  virtual void OnSetServerStartResize() = 0;
+
  protected:
   virtual ~SurfaceDelegate() {}
 };

@@ -328,7 +328,9 @@ ClientControlledShellSurface::ClientControlledShellSurface(
     bool default_scale_cancellation)
     : ShellSurfaceBase(surface, gfx::Point(), true, can_minimize, container),
       current_pin_(chromeos::WindowPinType::kNone),
-      use_default_scale_cancellation_(default_scale_cancellation) {}
+      use_default_scale_cancellation_(default_scale_cancellation) {
+  server_side_resize_ = true;
+}
 
 ClientControlledShellSurface::~ClientControlledShellSurface() {
   // Reset the window delegate here so that we won't try to do any dragging
@@ -794,8 +796,7 @@ ClientControlledShellSurface::CreateNonClientFrameView(views::Widget* widget) {
   client_controlled_state_ = state.get();
   window_state->SetStateObject(std::move(state));
   window_state->SetDelegate(std::move(window_delegate));
-  auto frame_view =
-      CreateNonClientFrameViewInternal(widget, /*client_controlled=*/true);
+  auto frame_view = CreateNonClientFrameViewInternal(widget);
   immersive_fullscreen_controller_ =
       std::make_unique<chromeos::ImmersiveFullscreenController>();
   static_cast<ash::NonClientFrameViewAsh*>(frame_view.get())

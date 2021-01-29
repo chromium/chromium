@@ -146,6 +146,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   void OnSetApplicationId(const char* application_id) override;
   void SetUseImmersiveForFullscreen(bool value) override;
   void OnActivationRequested() override;
+  void OnSetServerStartResize() override;
 
   // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
@@ -200,6 +201,8 @@ class ShellSurfaceBase : public SurfaceTreeHost,
     return shadow_bounds_changed_;
   }
 
+  bool server_side_resize() const { return server_side_resize_; }
+
  protected:
   // Creates the |widget_| for |surface_|. |show_state| is the initial state
   // of the widget (e.g. maximized).
@@ -246,8 +249,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
 
   // Creates a NonClientFrameView for shell surface.
   std::unique_ptr<views::NonClientFrameView> CreateNonClientFrameViewInternal(
-      views::Widget* widget,
-      bool client_controlled);
+      views::Widget* widget);
 
   virtual void OnPostWidgetCommit();
 
@@ -269,6 +271,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   SurfaceFrameType frame_type_ = SurfaceFrameType::NONE;
   bool is_popup_ = false;
   bool has_grab_ = false;
+  bool server_side_resize_ = false;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ShellSurfaceTest,
