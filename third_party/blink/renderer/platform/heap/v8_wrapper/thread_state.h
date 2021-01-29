@@ -9,6 +9,7 @@
 #include "base/lazy_instance.h"
 #include "third_party/blink/renderer/platform/heap/blink_gc.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
 #include "v8/include/cppgc/prefinalizer.h"
@@ -49,6 +50,24 @@ struct ThreadingTrait {
 
 template <ThreadAffinity>
 class ThreadStateFor;
+class ThreadState;
+
+// Used to observe garbage collection events. The observer is imprecise wrt. to
+// garbage collection internals, i.e., it is not guaranteed that a garbage
+// collection is already finished. The observer guarantees that a full garbage
+// collection happens between two `OnGarbageCollection()` calls.
+//
+// The observer must outlive the corresponding ThreadState.
+class PLATFORM_EXPORT BlinkGCObserver {
+ public:
+  explicit BlinkGCObserver(ThreadState*);
+  virtual ~BlinkGCObserver();
+
+  virtual void OnGarbageCollection() = 0;
+
+ private:
+  ThreadState* thread_state_;
+};
 
 class ThreadState final {
  public:
@@ -103,6 +122,10 @@ class ThreadState final {
   bool IsMainThread() const { return this == MainThreadState(); }
   bool IsCreationThread() const { return thread_id_ == CurrentThread(); }
 
+  void NotifyGarbageCollection();
+
+  size_t GcAge() const { return gc_age_; }
+
  private:
   // Main-thread ThreadState avoids TLS completely by using a regular global.
   // The object is manually managed and should not rely on global ctor/dtor.
@@ -120,6 +143,10 @@ class ThreadState final {
   cppgc::AllocationHandle& allocation_handle_;
   v8::CppHeap& cpp_heap_;
   base::PlatformThreadId thread_id_;
+  size_t gc_age_ = 0;
+  WTF::HashSet<BlinkGCObserver*> observers_;
+
+  friend class BlinkGCObserver;
 };
 
 template <>

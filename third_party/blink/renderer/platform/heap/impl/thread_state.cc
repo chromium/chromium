@@ -925,9 +925,11 @@ void ThreadState::PostSweep() {
   DCHECK(!IsSweepingInProgress());
 
   gc_age_++;
-
-  for (auto* const observer : observers_)
-    observer->OnCompleteSweepDone();
+  WTF::Vector<BlinkGCObserver*> observers_to_notify;
+  CopyToVector(observers_, observers_to_notify);
+  for (auto* const observer : observers_to_notify) {
+    observer->OnGarbageCollection();
+  }
 
   Heap().stats_collector()->NotifySweepingCompleted();
 

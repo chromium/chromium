@@ -426,7 +426,7 @@ class DocumentOutliveTimeReporter : public BlinkGCObserver {
         GetOutliveTimeCount() + 1, 101);
   }
 
-  void OnCompleteSweepDone() override {
+  void OnGarbageCollection() override {
     enum GCCount {
       kGCCount5,
       kGCCount10,
@@ -473,7 +473,7 @@ class DocumentOutliveTimeReporter : public BlinkGCObserver {
   }
 
   WeakPersistent<Document> document_;
-  int gc_age_when_document_detached_ = 0;
+  size_t gc_age_when_document_detached_ = 0;
 };
 
 static const unsigned kCMaxWriteRecursionDepth = 21;
