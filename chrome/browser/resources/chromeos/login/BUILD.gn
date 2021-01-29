@@ -39,6 +39,7 @@ js_type_check("closure_compile_local") {
     ":oobe_a11y_option",
     ":oobe_enable_kiosk",
     ":oobe_eula",
+    ":oobe_hid_detection",
     ":oobe_i18n_dropdown",
     ":oobe_network",
     ":oobe_reset",
@@ -111,7 +112,7 @@ js_library("app_downloading") {
   deps = [
     "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
-    "components/oobe_dialog:oobe_dialog",
+    "components/oobe_adaptive_dialog:oobe_adaptive_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
@@ -129,7 +130,7 @@ js_library("demo_preferences") {
   deps = [
     "components:login_screen_behavior",
     "components:oobe_dialog_host_behavior",
-    "components/oobe_dialog:oobe_dialog",
+    "components/oobe_adaptive_dialog:oobe_adaptive_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
@@ -264,6 +265,16 @@ js_library("oobe_eula") {
     "components:oobe_dialog_host_behavior",
     "components:oobe_modal_dialog",
     "components/oobe_dialog:oobe_dialog",
+    "components/oobe_i18n_behavior:oobe_i18n_behavior",
+  ]
+}
+
+js_library("oobe_hid_detection") {
+  deps = [
+    "components:login_screen_behavior",
+    "components:oobe_dialog_host_behavior",
+    "components:oobe_modal_dialog",
+    "components/oobe_adaptive_dialog:oobe_adaptive_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
