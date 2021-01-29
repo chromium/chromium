@@ -878,6 +878,17 @@ can be compared for the same population). -->
   </summary>
 </histogram>
 
+<histogram name="Sync.RecordedUserEventType" enum="SyncUserEventType"
+    expires_after="2021-09-30">
+  <owner>mmoskvitin@chromium.org</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    For every user event that is recorded, this histogram records the type of
+    event (i.e. which of the &quot;oneof event&quot; entries in the
+    UserEventSpecifics proto was set).
+  </summary>
+</histogram>
+
 <histogram name="Sync.RedundantInvalidationPerModelType" enum="SyncModelTypes"
     expires_after="2020-12-16">
   <obsolete>
