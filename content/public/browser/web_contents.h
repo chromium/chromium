@@ -1173,8 +1173,10 @@ class WebContents : public PageNavigator,
   virtual const std::vector<blink::mojom::FaviconURLPtr>& GetFaviconURLs() = 0;
 
   // Intended for desktop pwas with manifest entry of window-controls-overlay,
-  // This sends the available title bar area bounds to the renderer process.
-  virtual void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect) = 0;
+  // This sends the available title bar area bounds and the insets to the
+  // renderer process.
+  virtual void UpdateWindowControlsOverlay(const gfx::Rect& bounding_rect,
+                                           const gfx::Insets& insets) = 0;
 
  private:
   // This interface should only be implemented inside content.

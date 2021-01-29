@@ -1041,7 +1041,8 @@ interface LocalMainFrame {
 
   // Notify renderer that the window controls overlay has changed size or
   // visibility.
-  UpdateWindowControlsOverlay(gfx.mojom.Rect window_controls_overlay_rect);
+  UpdateWindowControlsOverlay(gfx.mojom.Rect window_controls_overlay_rect,
+                              gfx.mojom.Insets insets);
 };
 
 // Implemented in Blink, this interface defines remote main-frame-specific

@@ -7756,9 +7756,10 @@ gfx::Size WebContentsImpl::GetSize() {
 #endif  // !defined(OS_MAC)
 
 void WebContentsImpl::UpdateWindowControlsOverlay(
-    const gfx::Rect& bounding_rect) {
+    const gfx::Rect& bounding_rect,
+    const gfx::Insets& insets) {
   GetMainFrame()->GetAssociatedLocalMainFrame()->UpdateWindowControlsOverlay(
-      bounding_rect);
+      bounding_rect, insets);
 }
 
 BrowserPluginEmbedder* WebContentsImpl::GetBrowserPluginEmbedder() const {

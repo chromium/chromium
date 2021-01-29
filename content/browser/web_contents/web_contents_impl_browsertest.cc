@@ -4506,19 +4506,36 @@ class WebContentsImplBrowserTestWindowControlsOverlay
     WebContentsImplBrowserTest::SetUp();
   }
 
+  void ValidateTitlebarAreaInsetValue(const std::string& name,
+                                      const std::string& expected_result) {
+    SCOPED_TRACE(name);
+
+    EXPECT_EQ(
+        expected_result,
+        EvalJs(shell()->web_contents(),
+               JsReplace(
+                   "(() => {const e = document.getElementById('target');const "
+                   "style = window.getComputedStyle(e, null); return "
+                   "style.getPropertyValue($1);})();",
+                   name)));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
                        UpdateWindowControlsOverlay) {
-  ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = shell()->web_contents();
 
-  GURL url("about:blank");
-  EXPECT_TRUE(NavigateToURL(shell(), url));
+  GURL url(
+      "data:text/html,<body><div id=target style=\"margin-left: "
+      "env(titlebar-area-inset-left);margin-right: "
+      "env(titlebar-area-inset-right);margin-top: "
+      "env(titlebar-area-inset-top);margin-bottom: "
+      "env(titlebar-area-inset-bottom);\"></div></body>");
 
-  WaitForLoadStop(web_contents);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
 
   // initial state with no visible bounds and empty rect
   int empty_rect_value = 0;
@@ -4546,10 +4563,18 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
       EvalJs(web_contents,
              "navigator.windowControlsOverlay.getBoundingClientRect().height"));
 
+  ValidateTitlebarAreaInsetValue("margin-left", "0px");
+  ValidateTitlebarAreaInsetValue("margin-right", "0px");
+  ValidateTitlebarAreaInsetValue("margin-top", "0px");
+  ValidateTitlebarAreaInsetValue("margin-bottom", "0px");
+
   gfx::Rect bounding_client_rect =
       gfx::Rect(2 /*x*/, 2 /*y*/, 2 /*width*/, 2 /*height*/);
 
-  web_contents->UpdateWindowControlsOverlay(bounding_client_rect);
+  gfx::Insets insets =
+      gfx::Insets(2 /*top*/, 2 /*left*/, 2 /*bottom*/, 2 /*right*/);
+
+  web_contents->UpdateWindowControlsOverlay(bounding_client_rect, insets);
 
   // information about the bounds should be updated
   int new_x = 2;
@@ -4579,5 +4604,11 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
       new_height,
       EvalJs(web_contents,
              "navigator.windowControlsOverlay.getBoundingClientRect().height"));
+
+  // check if the css environment variables were updated with the inset values
+  ValidateTitlebarAreaInsetValue("margin-left", "2px");
+  ValidateTitlebarAreaInsetValue("margin-right", "2px");
+  ValidateTitlebarAreaInsetValue("margin-top", "2px");
+  ValidateTitlebarAreaInsetValue("margin-bottom", "2px");
 }
 }  // namespace content

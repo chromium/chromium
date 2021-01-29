@@ -256,6 +256,8 @@ _CONFIG = [
             'cc::NodeInfo',
 
             # Chromium geometry types.
+            'gfx::Insets',
+            'gfx::InsetsF',
             'gfx::Point',
             'gfx::PointF',
             'gfx::Point3F',

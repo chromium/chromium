@@ -2828,9 +2828,21 @@ void LocalFrame::UpdateBrowserControlsState(
 }
 
 void LocalFrame::UpdateWindowControlsOverlay(
-    const gfx::Rect& window_controls_overlay_rect) {
+    const gfx::Rect& window_controls_overlay_rect,
+    const gfx::Insets& insets) {
   is_window_controls_overlay_visible_ = !window_controls_overlay_rect.IsEmpty();
   window_controls_overlay_rect_ = window_controls_overlay_rect;
+
+  DocumentStyleEnvironmentVariables& vars =
+      GetDocument()->GetStyleEngine().EnsureEnvironmentVariables();
+  vars.SetVariable(UADefinedVariable::kTitlebarAreaInsetTop,
+                   StyleEnvironmentVariables::FormatPx(insets.top()));
+  vars.SetVariable(UADefinedVariable::kTitlebarAreaInsetLeft,
+                   StyleEnvironmentVariables::FormatPx(insets.left()));
+  vars.SetVariable(UADefinedVariable::kTitlebarAreaInsetBottom,
+                   StyleEnvironmentVariables::FormatPx(insets.bottom()));
+  vars.SetVariable(UADefinedVariable::kTitlebarAreaInsetRight,
+                   StyleEnvironmentVariables::FormatPx(insets.right()));
 }
 
 void LocalFrame::RequestFullscreenVideoElement() {
