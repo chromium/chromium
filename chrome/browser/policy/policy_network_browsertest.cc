@@ -75,12 +75,12 @@ bool IsQuicEnabledForSafeBrowsing() {
 // Called when an additional profile has been created.
 // The created profile is stored in *|out_created_profile|.
 void OnProfileInitialized(Profile** out_created_profile,
-                          const base::Closure& closure,
+                          base::RunLoop* run_loop,
                           Profile* profile,
                           Profile::CreateStatus status) {
   if (status == Profile::CREATE_STATUS_INITIALIZED) {
     *out_created_profile = profile;
-    closure.Run();
+    run_loop->Quit();
   }
 }
 
@@ -371,8 +371,7 @@ class QuicAllowedPolicyDynamicTest : public QuicTestBase {
     base::RunLoop run_loop;
     profile_manager->CreateProfileAsync(
         path_profile,
-        base::BindRepeating(&OnProfileInitialized, &profile_2_,
-                            run_loop.QuitClosure()),
+        base::BindRepeating(&OnProfileInitialized, &profile_2_, &run_loop),
         base::string16(), std::string());
 
     // Run the message loop to allow profile creation to take place; the loop is

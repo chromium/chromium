@@ -139,8 +139,8 @@ class DeviceManagementServiceIntegrationTest
         std::make_unique<FakeJobConfiguration>(
             service_.get(), type, kClientID, critical, std::move(auth_data),
             oauth_token, GetFactory(),
-            base::Bind(&DeviceManagementServiceIntegrationTest::OnJobDone,
-                       base::Unretained(this)),
+            base::BindOnce(&DeviceManagementServiceIntegrationTest::OnJobDone,
+                           base::Unretained(this)),
             base::DoNothing(), base::DoNothing());
     config->SetRequestPayload(payload);
     return service_->CreateJob(std::move(config));

@@ -323,8 +323,7 @@ class CloudPolicyTest : public InProcessBrowserTest,
                        const PolicyMap& previous,
                        const PolicyMap& current) override {
     if (!on_policy_updated_.is_null()) {
-      on_policy_updated_.Run();
-      on_policy_updated_.Reset();
+      std::move(on_policy_updated_).Run();
     }
   }
 
@@ -333,7 +332,7 @@ class CloudPolicyTest : public InProcessBrowserTest,
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<LocalPolicyTestServer> test_server_;
   base::FilePath user_policy_key_file_;
-  base::Closure on_policy_updated_;
+  base::OnceClosure on_policy_updated_;
 };
 
 IN_PROC_BROWSER_TEST_F(CloudPolicyTest, FetchPolicy) {

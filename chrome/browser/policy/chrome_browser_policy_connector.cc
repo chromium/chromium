@@ -73,7 +73,7 @@ bool command_line_enabled_for_testing = false;
 }  // namespace
 
 ChromeBrowserPolicyConnector::ChromeBrowserPolicyConnector()
-    : BrowserPolicyConnector(base::Bind(&BuildHandlerList)) {
+    : BrowserPolicyConnector(base::BindRepeating(&BuildHandlerList)) {
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   chrome_browser_cloud_management_controller_ =
       std::make_unique<ChromeBrowserCloudManagementController>(

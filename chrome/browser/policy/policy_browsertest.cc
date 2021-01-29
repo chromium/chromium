@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(NetworkTimePolicyTest,
                nullptr);
   UpdateProviderPolicy(policies);
 
-  embedded_test_server()->RegisterRequestHandler(base::Bind(
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
       &NetworkTimePolicyTest::CountingRequestHandler, base::Unretained(this)));
   ASSERT_TRUE(embedded_test_server()->Start());
   g_browser_process->network_time_tracker()->SetTimeServerURLForTesting(

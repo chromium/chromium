@@ -87,12 +87,12 @@ namespace policy {
 // Called when an additional profile has been created.
 // The created profile is stored in *|out_created_profile|.
 void OnProfileInitialized(Profile** out_created_profile,
-                          const base::Closure& closure,
+                          base::RunLoop* run_loop,
                           Profile* profile,
                           Profile::CreateStatus status) {
   if (status == Profile::CREATE_STATUS_INITIALIZED) {
     *out_created_profile = profile;
-    closure.Run();
+    run_loop->Quit();
   }
 }
 namespace {
@@ -149,7 +149,7 @@ constexpr net::BackoffEntry::Policy kDefaultBackOffPolicyForTesting = {
 void RegisterURLReplacingHandler(net::EmbeddedTestServer* test_server,
                                  const std::string& match_path,
                                  const base::FilePath& template_file) {
-  test_server->RegisterRequestHandler(base::Bind(
+  test_server->RegisterRequestHandler(base::BindRepeating(
       [](net::EmbeddedTestServer* test_server, const std::string& match_path,
          const base::FilePath& template_file,
          const net::test_server::HttpRequest& request)
@@ -2175,8 +2175,7 @@ class ExtensionPolicyTest2Contexts : public PolicyTest {
     base::RunLoop run_loop;
     profile_manager->CreateProfileAsync(
         path_profile,
-        base::BindRepeating(&policy::OnProfileInitialized, &profile,
-                            run_loop.QuitClosure()),
+        base::BindRepeating(&policy::OnProfileInitialized, &profile, &run_loop),
         base::string16(), std::string());
 
     // Run the message loop to allow profile creation to take place; the loop is
