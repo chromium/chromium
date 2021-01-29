@@ -342,9 +342,16 @@ public class ChildProcessService {
                 intent.getBooleanExtra(ChildProcessConstants.EXTRA_BIND_TO_CALLER, false);
         mServiceBound = true;
         mDelegate.onServiceBound(intent);
+
+        String packageName =
+                intent.getStringExtra(ChildProcessConstants.EXTRA_BROWSER_PACKAGE_NAME);
+        if (packageName == null) {
+            packageName = getApplicationContext().getApplicationInfo().packageName;
+        }
         // Don't block bind() with any extra work, post it to the application thread instead.
+        final String preloadPackageName = packageName;
         new Handler(Looper.getMainLooper())
-                .post(() -> mDelegate.preloadNativeLibrary(getApplicationContext()));
+                .post(() -> mDelegate.preloadNativeLibrary(preloadPackageName));
         return mBinder;
     }
 

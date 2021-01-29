@@ -16,6 +16,7 @@ import android.os.RemoteException;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ChildBindingState;
 import org.chromium.base.Log;
 import org.chromium.base.MemoryPressureLevel;
@@ -260,6 +261,8 @@ public class ChildProcessConnection {
         mFallbackServiceName = fallbackServiceName;
         mServiceBundle = serviceBundle != null ? serviceBundle : new Bundle();
         mServiceBundle.putBoolean(ChildProcessConstants.EXTRA_BIND_TO_CALLER, bindToCaller);
+        mServiceBundle.putString(ChildProcessConstants.EXTRA_BROWSER_PACKAGE_NAME,
+                BuildInfo.getInstance().packageName);
         mBindToCaller = bindToCaller;
         mInstanceName = instanceName;
         mBindAsExternalService = bindAsExternalService;

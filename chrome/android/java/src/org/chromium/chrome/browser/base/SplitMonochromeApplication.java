@@ -6,10 +6,7 @@ package org.chromium.chrome.browser.base;
 
 import android.content.Context;
 
-import com.android.webview.chromium.MonochromeLibraryPreloader;
-
 import org.chromium.android_webview.nonembedded.WebViewApkApplication;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.content_public.browser.ChildProcessCreationParams;
@@ -49,9 +46,6 @@ public class SplitMonochromeApplication extends SplitChromeApplication {
 
     public static void initializeMonochromeProcessCommon(String packageName) {
         WebViewApkApplication.maybeInitProcessGlobals();
-        if (!LibraryLoader.getInstance().isLoadedByZygote()) {
-            LibraryLoader.getInstance().setNativeLibraryPreloader(new MonochromeLibraryPreloader());
-        }
 
         // ChildProcessCreationParams is only needed for browser process, though it is
         // created and set in all processes. We must set isExternalService to true for

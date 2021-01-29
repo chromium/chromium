@@ -78,11 +78,11 @@ public class ContentChildProcessServiceDelegate implements ChildProcessServiceDe
     }
 
     @Override
-    public void preloadNativeLibrary(Context hostContext) {
+    public void preloadNativeLibrary(String packageName) {
         // This function can be called before command line is set. That is fine because
         // preloading explicitly doesn't run any Chromium code, see NativeLibraryPreloader
         // for more info.
-        LibraryLoader.getInstance().preloadNowOverrideApplicationContext(hostContext);
+        LibraryLoader.getInstance().preloadNowOverridePackageName(packageName);
     }
 
     @Override

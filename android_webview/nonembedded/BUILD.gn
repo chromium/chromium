@@ -25,6 +25,7 @@ android_library("nonembedded_java") {
     "//android_webview:android_webview_product_config_java",
     "//android_webview:common_aidl_java",
     "//android_webview:common_java",
+    "//android_webview/glue:glue_java",
     "//android_webview/proto:metrics_bridge_records_proto_java",
     "//base:base_java",
     "//base:jni_java",

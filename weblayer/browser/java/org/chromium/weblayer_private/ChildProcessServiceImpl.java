@@ -7,7 +7,6 @@ package org.chromium.weblayer_private;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
 import android.os.Build;
 import android.os.IBinder;
 import android.webkit.WebViewFactory;
@@ -68,12 +67,12 @@ public final class ChildProcessServiceImpl extends IChildProcessService.Stub {
         mService = ChildProcessServiceFactory.create(service, context);
     }
 
-    private static void setLibraryPreloader(String packageName, ClassLoader classLoader) {
+    public static void setLibraryPreloader(String webLayerPackageName, ClassLoader classLoader) {
         if (!LibraryLoader.getInstance().isLoadedByZygote()) {
             LibraryLoader.getInstance().setNativeLibraryPreloader(new NativeLibraryPreloader() {
                 @Override
-                public int loadLibrary(ApplicationInfo info) {
-                    return loadNativeLibrary(packageName, classLoader);
+                public int loadLibrary(String packageName) {
+                    return loadNativeLibrary(webLayerPackageName, classLoader);
                 }
             });
         }

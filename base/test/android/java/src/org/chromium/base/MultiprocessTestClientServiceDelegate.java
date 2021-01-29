@@ -51,7 +51,7 @@ public class MultiprocessTestClientServiceDelegate implements ChildProcessServic
     }
 
     @Override
-    public void preloadNativeLibrary(Context hostContext) {
+    public void preloadNativeLibrary(String packageName) {
         LibraryLoader.getInstance().preloadNow();
     }
 

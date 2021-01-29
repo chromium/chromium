@@ -66,10 +66,10 @@ specific_include_rules = {
   # Special-case where monochrome composes chrome+webview
   "MonochromeApplication\.java": [
     "+android_webview/nonembedded/java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
-    "+android_webview/glue/java/src/com/android/webview/chromium/MonochromeLibraryPreloader.java",
+    "+android_webview/glue/java/src/com/android/webview/chromium/WebViewLibraryPreloader.java",
   ],
   "SplitMonochromeApplication\.java": [
     "+android_webview/nonembedded/java/src/org/chromium/android_webview/nonembedded/WebViewApkApplication.java",
-    "+android_webview/glue/java/src/com/android/webview/chromium/MonochromeLibraryPreloader.java",
+    "+android_webview/glue/java/src/com/android/webview/chromium/WebViewLibraryPreloader.java",
   ],
 }
