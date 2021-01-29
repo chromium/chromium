@@ -182,8 +182,6 @@ std::string BaseBlockingPage::GetMetricPrefix(
 std::string BaseBlockingPage::GetExtraMetricsSuffix(
     const UnsafeResourceList& unsafe_resources) {
   switch (unsafe_resources[0].threat_source) {
-    case safe_browsing::ThreatSource::DATA_SAVER:
-      return "from_data_saver";
     case safe_browsing::ThreatSource::REMOTE:
     case safe_browsing::ThreatSource::LOCAL_PVER3:
       // REMOTE and LOCAL_PVER3 can be distinguished in the logs

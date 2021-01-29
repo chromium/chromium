@@ -16575,7 +16575,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
              side detection."/>
   <suffix name="from_data_saver"
       label="Interstitial for a resource classified as unsafe by the Data
-             Saver service."/>
+             Saver service.">
+    <obsolete>
+      Deprecated as of 2021-1. Data saver has been completely turned down.
+    </obsolete>
+  </suffix>
   <suffix name="from_device"
       label="Interstitial for a resource classified as unsafe by the Safe
              Browsing database via either

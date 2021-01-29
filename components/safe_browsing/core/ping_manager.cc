@@ -168,9 +168,6 @@ GURL PingManager::SafeBrowsingHitUrl(
 
   std::string threat_source = "none";
   switch (hit_report.threat_source) {
-    case safe_browsing::ThreatSource::DATA_SAVER:
-      threat_source = "ds";
-      break;
     case safe_browsing::ThreatSource::REMOTE:
       threat_source = "rem";
       break;
