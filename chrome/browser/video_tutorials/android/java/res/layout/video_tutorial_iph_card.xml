@@ -63,16 +63,17 @@
     </RelativeLayout>
 
     <TextView
-      android:id="@+id/video_length"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:layout_alignBottom="@id/thumbnail_wrapper"
-      android:layout_marginStart="6dp"
-      android:layout_marginBottom="6dp"
-      android:paddingStart="4dp"
-      android:paddingEnd="4dp"
-      android:background="@color/modern_grey_900"
-      android:textAppearance="@style/TextAppearance.TextSmall.Primary.Light" />
+        android:id="@+id/video_length"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/thumbnail_wrapper"
+        android:layout_marginStart="6dp"
+        android:layout_marginBottom="6dp"
+        android:paddingStart="4dp"
+        android:paddingEnd="4dp"
+        android:background="@color/modern_grey_900"
+        android:importantForAccessibility="no"
+        android:textAppearance="@style/TextAppearance.TextSmall.Primary.Light" />
 
     <TextView
         android:id="@+id/title"
