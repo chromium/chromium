@@ -162,6 +162,7 @@ RenderProcessImpl::RenderProcessImpl()
   bool enable_shared_array_buffer = false;
   if (cross_origin_isolated) {
     enable_shared_array_buffer = true;
+    enable_wasm_threads = true;
   } else if (!restrict_shared_array_buffers) {
     enable_shared_array_buffer =
         enable_wasm_threads ||

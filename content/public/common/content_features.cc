@@ -622,6 +622,8 @@ const base::Feature kServiceWorkerTerminationOnNoControllee{
     base::FEATURE_DISABLED_BY_DEFAULT};
 
 // http://tc39.github.io/ecmascript_sharedmem/shmem.html
+// This feature is also enabled independently of this flag for cross-origin
+// isolated renderers.
 const base::Feature kSharedArrayBuffer {
   "SharedArrayBuffer",
 #if defined(OS_ANDROID)
@@ -774,6 +776,8 @@ const base::Feature kWebAssemblyTiering{"WebAssemblyTiering",
 
 // Enable WebAssembly threads.
 // https://github.com/WebAssembly/threads
+// This feature is also enabled independently of this flag for cross-origin
+// isolated renderers.
 const base::Feature kWebAssemblyThreads {
   "WebAssemblyThreads",
 #if defined(OS_ANDROID)
