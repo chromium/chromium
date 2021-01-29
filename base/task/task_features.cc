@@ -32,7 +32,8 @@ const Feature kWakeUpStrategyFeature = {"WakeUpStrategyFeature",
 constexpr FeatureParam<WakeUpStrategy>::Option kWakeUpStrategyOptions[] = {
     {WakeUpStrategy::kCentralizedWakeUps, "centralized-wakeups"},
     {WakeUpStrategy::kSerializedWakeUps, "serialized-wakeups"},
-    {WakeUpStrategy::kExponentialWakeUps, "exponential-wakeups"}};
+    {WakeUpStrategy::kExponentialWakeUps, "exponential-wakeups"},
+    {WakeUpStrategy::kGreedyWakeUps, "greedy-wakeups"}};
 
 const base::FeatureParam<WakeUpStrategy> kWakeUpStrategyParam{
     &kWakeUpStrategyFeature, "strategy", WakeUpStrategy::kExponentialWakeUps,

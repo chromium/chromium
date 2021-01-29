@@ -44,6 +44,9 @@ enum class WakeUpStrategy {
   // Each thread signals at most 2 threads, either when scheduling new
   // work or picking up pending work.
   kExponentialWakeUps,
+  // Each thread signals as many threads as necessary, either when scheduling
+  // new work or picking up pending work.
+  kGreedyWakeUps,
 };
 
 // Under this feature, a given WakeUpStrategy param is used.
