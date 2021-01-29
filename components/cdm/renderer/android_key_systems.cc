@@ -15,7 +15,7 @@
 #include "media/media_buildflags.h"
 #if BUILDFLAG(ENABLE_WIDEVINE)
 #include "components/cdm/renderer/widevine_key_system_properties.h"
-#include "third_party/widevine/cdm/widevine_cdm_common.h"
+#include "third_party/widevine/cdm/widevine_cdm_common.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_WIDEVINE)
 
 using media::EmeConfigRule;
