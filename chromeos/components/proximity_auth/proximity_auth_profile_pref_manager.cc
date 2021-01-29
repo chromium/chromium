@@ -123,6 +123,9 @@ void ProximityAuthProfilePrefManager::SetIsEasyUnlockEnabled(
 }
 
 bool ProximityAuthProfilePrefManager::IsEasyUnlockEnabled() const {
+  // Note: if GetFeatureState() is called in the first few hundred milliseconds
+  // of user session startup, it can incorrectly return a feature-default state
+  // of kProhibitedByPolicy. See https://crbug.com/1154766 for more.
   return multidevice_setup_client_->GetFeatureState(
              chromeos::multidevice_setup::mojom::Feature::kSmartLock) ==
          chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser;

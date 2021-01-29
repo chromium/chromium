@@ -520,6 +520,7 @@ void EasyUnlockServiceRegular::OnScreenDidUnlock(
     RecordEasyUnlockScreenUnlockEvent(event);
 
     if (will_authenticate_using_easy_unlock()) {
+      // TODO(crbug.com/1171972): Deprecate the AuthMethodChoice metric.
       SmartLockMetricsRecorder::RecordSmartLockUnlockAuthMethodChoice(
           SmartLockMetricsRecorder::SmartLockAuthMethodChoice::kSmartLock);
       SmartLockMetricsRecorder::RecordAuthResultUnlockSuccess();
@@ -528,6 +529,7 @@ void EasyUnlockServiceRegular::OnScreenDidUnlock(
     } else {
       SmartLockMetricsRecorder::RecordAuthMethodChoiceUnlockPasswordState(
           GetSmartUnlockPasswordAuthEvent());
+      // TODO(crbug.com/1171972): Deprecate the AuthMethodChoice metric.
       SmartLockMetricsRecorder::RecordSmartLockUnlockAuthMethodChoice(
           SmartLockMetricsRecorder::SmartLockAuthMethodChoice::kOther);
       OnUserEnteredPassword();

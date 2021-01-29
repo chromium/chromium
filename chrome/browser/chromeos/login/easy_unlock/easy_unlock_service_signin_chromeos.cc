@@ -362,12 +362,11 @@ void EasyUnlockServiceSignin::OnScreenDidUnlock(
       proximity_auth::ScreenlockBridge::LockHandler::SIGNIN_SCREEN)
     return;
 
-  // Only record metrics for users who have enabled the feature.
+  // TODO(crbug.com/1171972): Deprecate this metric. Note also that checking
+  // IsEnabled() here often incorrectly returns false, because
+  // OnScreenDidUnlock() is occurring during user session startup. See
+  // https://crbug.com/1154766 for more.
   if (IsEnabled()) {
-    if (will_authenticate_using_easy_unlock()) {
-      SmartLockMetricsRecorder::RecordAuthResultSignInSuccess();
-    }
-
     SmartLockMetricsRecorder::RecordSmartLockSignInAuthMethodChoice(
         will_authenticate_using_easy_unlock()
             ? SmartLockMetricsRecorder::SmartLockAuthMethodChoice::kSmartLock

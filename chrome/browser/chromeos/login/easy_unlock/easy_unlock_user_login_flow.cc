@@ -16,18 +16,20 @@ EasyUnlockUserLoginFlow::EasyUnlockUserLoginFlow(const AccountId& account_id)
 EasyUnlockUserLoginFlow::~EasyUnlockUserLoginFlow() {}
 
 bool EasyUnlockUserLoginFlow::HandleLoginFailure(const AuthFailure& failure) {
-  SmartLockMetricsRecorder::RecordAuthResultSignInFailure(
-      SmartLockMetricsRecorder::SmartLockAuthResultFailureReason::
-          kUserControllerSignInFailure);
-  UMA_HISTOGRAM_ENUMERATION(
-      "SmartLock.AuthResult.SignIn.Failure.UserControllerAuth",
-      failure.reason(), AuthFailure::FailureReason::NUM_FAILURE_REASONS);
   Profile* profile = ProfileHelper::GetSigninProfile();
   EasyUnlockService* service = EasyUnlockService::Get(profile);
   if (!service)
     return false;
   service->HandleAuthFailure(account_id());
   service->RecordEasySignInOutcome(account_id(), false);
+
+  SmartLockMetricsRecorder::RecordAuthResultSignInFailure(
+      SmartLockMetricsRecorder::SmartLockAuthResultFailureReason::
+          kUserControllerSignInFailure);
+  UMA_HISTOGRAM_ENUMERATION(
+      "SmartLock.AuthResult.SignIn.Failure.UserControllerAuth",
+      failure.reason(), AuthFailure::FailureReason::NUM_FAILURE_REASONS);
+
   UnregisterFlowSoon();
   return true;
 }
@@ -38,6 +40,7 @@ void EasyUnlockUserLoginFlow::HandleLoginSuccess(const UserContext& context) {
   if (!service)
     return;
   service->RecordEasySignInOutcome(account_id(), true);
+  SmartLockMetricsRecorder::RecordAuthResultSignInSuccess();
 }
 
 }  // namespace chromeos
