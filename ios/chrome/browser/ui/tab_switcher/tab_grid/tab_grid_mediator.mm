@@ -328,6 +328,13 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   self.webStateList->ActivateWebStateAt(index);
 }
 
+- (BOOL)isItemWithIDSelected:(NSString*)itemID {
+  int index = GetIndexOfTabWithId(self.webStateList, itemID);
+  if (index == WebStateList::kInvalidIndex)
+    return NO;
+  return index == self.webStateList->active_index();
+}
+
 - (void)closeItemWithID:(NSString*)itemID {
   int index = GetIndexOfTabWithId(self.webStateList, itemID);
   if (index != WebStateList::kInvalidIndex)

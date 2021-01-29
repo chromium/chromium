@@ -1409,19 +1409,25 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   // controller display the new selection, since there will be a transition
   // away from it immediately afterwards.
   gridViewController.showsSelectionUpdates = NO;
+  // Check if the tab being selected is already selected.
+  BOOL alreadySelected = NO;
   if (gridViewController == self.regularTabsViewController) {
+    alreadySelected = [self.regularTabsDelegate isItemWithIDSelected:itemID];
     [self.regularTabsDelegate selectItemWithID:itemID];
     // Record when a regular tab is opened.
     base::RecordAction(base::UserMetricsAction("MobileTabGridOpenRegularTab"));
   } else if (gridViewController == self.incognitoTabsViewController) {
+    alreadySelected = [self.incognitoTabsDelegate isItemWithIDSelected:itemID];
     [self.incognitoTabsDelegate selectItemWithID:itemID];
     // Record when an incognito tab is opened.
     base::RecordAction(
         base::UserMetricsAction("MobileTabGridOpenIncognitoTab"));
   }
   self.activePage = self.currentPage;
-  // When the tab grid is peeked, selecting an item should not close the grid.
-  BOOL closeTabGrid = self.currentState != ViewRevealState::Peeked;
+  // When the tab grid is peeked, selecting an item should not close the grid
+  // unless the user has selected an already selected tab.
+  BOOL closeTabGrid =
+      alreadySelected || self.currentState != ViewRevealState::Peeked;
   [self.tabPresentationDelegate showActiveTabInPage:self.currentPage
                                        focusOmnibox:NO
                                        closeTabGrid:closeTabGrid];
