@@ -1295,6 +1295,27 @@ Press an assigned switch to remove assignment.
   </message>
 
   <!-- Used by both Crostini and Plugin VM -->
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS" desc="Label for managing shared folders for Parallels.">
+    Manage shared folders
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_LIST_HEADING" desc="Label for list of shared folders.">
+    Shared folders
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_INSTRUCTIONS_REMOVE" desc="Instructions for removing shared folders in Parallels.">
+    Removing folders will stop sharing but will not delete files.
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_STOP_SHARING" desc="Tooltip to show when hovering on the remove icon for a Parallels shared folder.">
+    Stop sharing
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_REMOVE_FAILURE_DIALOG_TITLE" desc="Title of the error dialog shown to a user when unsharing a Parallels shared folder fails.">
+    Unshare failed
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_REMOVE_FAILURE_TRY_AGAIN" desc="Button text in the dialog shown when unsharing a Parallels shared folder fails.  Pressing this button will attempt to unshare the folder again.">
+    Try again
+  </message>
+  <message name="IDS_SETTINGS_GUEST_OS_SHARED_PATHS_LIST_EMPTY_MESSAGE" desc="Message shown when the user has not yet shared any folders in Parallels.">
+    Shared folders will appear here
+  </message>
   <message name="IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LABEL" desc="Label for managing shared USB devices.">
     Manage USB devices
   </message>
@@ -1318,35 +1339,14 @@ Press an assigned switch to remove assignment.
   <message name="IDS_SETTINGS_CROSTINI_LABEL" desc="The text associated with the primary section setting. This contains settings for a Linux container running in a virtual machine for use by software developers.">
     Linux development environment (Beta)
   </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS" desc="Label for managing shared folders in Crostini.">
-    Manage shared folders
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_LIST_HEADING" desc="Label for list of shared folders.">
-    Shared folders
-  </message>
   <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_INSTRUCTIONS_LOCATE" desc="Instructions for how to locate shared folders in Crostini.">
     Shared folders are available in Linux at <ph name="BASE_DIR">$1<ex>/mnt/chromeos</ex></ph>.
   </message>
   <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_INSTRUCTIONS_ADD" desc="Instructions for how to add shared folders in Crostini.">
     To share, right-click on a folder in Files app, then select "Share with Linux".
   </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_INSTRUCTIONS_REMOVE" desc="Instructions for removing shared folders in Crostini.">
-    Removing folders from here will stop sharing but will not delete files.
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_REMOVE_SHARING" desc="Tooltip to show when hovering on the remove icon for a crostini shared folder.">
-    Remove sharing
-  </message>
   <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE" desc="Message to show user when unsharing a crostini shared folder fails.">
     Couldn't unshare because an application is using this folder. The folder will be unshared when Linux is next shut down.
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_REMOVE_FAILURE_DIALOG_TITLE" desc="Title of the error dialog shown to a user when unsharing a crostini shared folder fails.">
-    Unshare failed
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_REMOVE_FAILURE_TRY_AGAIN" desc="Button text in the dialog shown when unsharing a crostini shared folder fails.  Pressing this button will attempt to unshare the folder again.">
-    Try again
-  </message>
-  <message name="IDS_SETTINGS_CROSTINI_SHARED_PATHS_LIST_EMPTY_MESSAGE" desc="Message shown when the user has not yet shared any folders in Crostini.">
-    Shared folders will appear here
   </message>
   <message name="IDS_SETTINGS_CROSTINI_EXPORT_IMPORT_TITLE" desc="Title for crostini container export and imoprt (backup and restore) section">
     Backup &amp; restore
@@ -3373,35 +3373,14 @@ Press an assigned switch to remove assignment.
   </message>
 
   <!-- Apps > Manage your apps > Parallels > Shared folders -->
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS" desc="Label for managing shared folders for Parallels.">
-    Manage shared folders
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_LIST_HEADING" desc="Label for list of shared folders.">
-    Shared folders
-  </message>
   <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_INSTRUCTIONS_LOCATE" desc="Instructions for how to locate shared folders in Parallels.">
       Shared folders are available in Windows at <ph name="BASE_DIR">$1<ex>Network › ChromeOS</ex></ph>.
   </message>
   <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_INSTRUCTIONS_ADD" desc="Instructions for how to add shared folders in Parallels.">
     To share, right-click on a folder in Files app, then select "Share with Parallels Desktop".
   </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_INSTRUCTIONS_REMOVE" desc="Instructions for removing shared folders in Parallels.">
-    Removing folders will stop sharing but will not delete files.
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_SHARING" desc="Tooltip to show when hovering on the remove icon for a Parallels shared folder.">
-    Stop sharing
-  </message>
   <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE" desc="Message to show user when unsharing a Parallels shared folder fails. Do not translate 'Parallels Desktop'">
     Couldn't unshare because an application is using this folder. The folder will be unshared when Parallels Desktop is next shut down.
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_FAILURE_DIALOG_TITLE" desc="Title of the error dialog shown to a user when unsharing a Parallels shared folder fails.">
-    Unshare failed
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_FAILURE_TRY_AGAIN" desc="Button text in the dialog shown when unsharing a Parallels shared folder fails.  Pressing this button will attempt to unshare the folder again.">
-    Try again
-  </message>
-  <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_LIST_EMPTY_MESSAGE" desc="Message shown when the user has not yet shared any folders in Parallels.">
-    Shared folders will appear here
   </message>
   <message name="IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_DESCRIPTION" desc="Description for managing shared USB devices. Do not translate 'Parallels Desktop'.">
     Give Parallels Desktop permission to access USB devices. Parallels Desktop won't remember a USB device after it's removed.

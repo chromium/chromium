@@ -153,7 +153,7 @@ suite('CrostiniPageTests', function() {
         subpage.$$('#crostini-shared-paths').click();
 
         await test_util.flushTasks();
-        subpage = crostiniPage.$$('settings-crostini-shared-paths');
+        subpage = crostiniPage.$$('settings-guest-os-shared-paths');
         assertTrue(!!subpage);
       });
 
@@ -973,12 +973,14 @@ suite('CrostiniPageTests', function() {
     });
   });
 
+  // Functionality is already tested in OSSettingsGuestOsSharedPathsTest,
+  // so just check that we correctly set up the page for our 'termina' VM.
   suite('SubPageSharedPaths', function() {
     let subpage;
 
     setup(async function() {
       setCrostiniPrefs(
-          true, {sharedPaths: {path1: ['termina'], path2: ['termina']}});
+          true, {sharedPaths: {path1: ['termina'], path2: ['some-other-vm']}});
 
       await test_util.flushTasks();
       settings.Router.getInstance().navigateTo(
@@ -986,75 +988,12 @@ suite('CrostiniPageTests', function() {
 
       await test_util.flushTasks();
       Polymer.dom.flush();
-      subpage = crostiniPage.$$('settings-crostini-shared-paths');
+      subpage = crostiniPage.$$('settings-guest-os-shared-paths');
       assertTrue(!!subpage);
     });
 
     test('Basic', function() {
-      assertEquals(
-          3, subpage.shadowRoot.querySelectorAll('.settings-box').length);
-      assertEquals(2, subpage.shadowRoot.querySelectorAll('.list-item').length);
-    });
-
-    test('Remove', async function() {
-      assertFalse(subpage.$.crostiniInstructionsRemove.hidden);
-      assertFalse(subpage.$.crostiniList.hidden);
-      assertTrue(subpage.$.crostiniListEmpty.hidden);
-      assertTrue(!!subpage.$$('.list-item cr-icon-button'));
-      const rows = '.list-item:not([hidden])';
-      assertEquals(2, subpage.shadowRoot.querySelectorAll(rows).length);
-
-      {
-        // Remove first shared path, still one left.
-        subpage.$$('.list-item cr-icon-button').click();
-        const [vmName, path] =
-            await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
-        assertEquals('termina', vmName);
-        assertEquals('path1', path);
-        setCrostiniPrefs(true, {sharedPaths: {path2: ['termina']}});
-      }
-
-      await test_util.flushTasks();
-      Polymer.dom.flush();
-      assertEquals(1, subpage.shadowRoot.querySelectorAll(rows).length);
-      assertFalse(subpage.$.crostiniInstructionsRemove.hidden);
-
-      {
-        // Remove remaining shared path, none left.
-        guestOsBrowserProxy.resetResolver('removeGuestOsSharedPath');
-        subpage.$$(`${rows} cr-icon-button`).click();
-        const [vmName, path] =
-            await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
-        assertEquals('termina', vmName);
-        assertEquals('path2', path);
-        setCrostiniPrefs(true, {sharedPaths: {}});
-      }
-
-      await test_util.flushTasks();
-      Polymer.dom.flush();
-      // Verify remove instructions are hidden, and empty list message is shown.
-      assertTrue(subpage.$.crostiniInstructionsRemove.hidden);
-      assertTrue(subpage.$.crostiniList.hidden);
-      assertFalse(subpage.$.crostiniListEmpty.hidden);
-    });
-
-    test('RemoveFailedRetry', async function() {
-      // Remove shared path fails.
-      guestOsBrowserProxy.removeSharedPathResult = false;
-      subpage.$$('.list-item cr-icon-button').click();
-
-      await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
-      Polymer.dom.flush();
-      assertTrue(subpage.$$('#removeSharedPathFailedDialog').open);
-
-      // Click retry and make sure 'removeCrostiniSharedPath' is called
-      // and dialog is closed/removed.
-      guestOsBrowserProxy.removeSharedPathResult = true;
-      subpage.$$('#removeSharedPathFailedDialog')
-          .querySelector('.action-button')
-          .click();
-      await guestOsBrowserProxy.whenCalled('removeGuestOsSharedPath');
-      assertFalse(!!subpage.$$('#removeSharedPathFailedDialog'));
+      assertEquals(1, subpage.shadowRoot.querySelectorAll('.list-item').length);
     });
   });
 

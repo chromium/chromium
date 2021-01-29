@@ -8,10 +8,6 @@ class TestCrostiniBrowserProxy extends TestBrowserProxy {
     super([
       'requestCrostiniInstallerView',
       'requestRemoveCrostini',
-      'getCrostiniSharedPathsDisplayText',
-      'notifyCrostiniSharedUsbDevicesPageReady',
-      'setCrostiniUsbDeviceShared',
-      'removeCrostiniSharedPath',
       'exportCrostiniContainer',
       'importCrostiniContainer',
       'requestCrostiniContainerUpgradeView',
@@ -33,8 +29,6 @@ class TestCrostiniBrowserProxy extends TestBrowserProxy {
       'getCrostiniMicSharingEnabled',
       'requestCrostiniInstallerStatus',
     ]);
-    this.sharedUsbDevices = [];
-    this.removeSharedPathResult = true;
     this.crostiniMicSharingEnabled = false;
     this.crostiniIsRunning = true;
     this.methodCalls_ = {};
@@ -75,30 +69,6 @@ class TestCrostiniBrowserProxy extends TestBrowserProxy {
   /** override */
   requestRemoveCrostini() {
     this.methodCalled('requestRemoveCrostini');
-  }
-
-  /** override */
-  getCrostiniSharedPathsDisplayText(paths) {
-    this.methodCalled('getCrostiniSharedPathsDisplayText');
-    return Promise.resolve(paths.map(path => path + '-displayText'));
-  }
-
-  /** @override */
-  notifyCrostiniSharedUsbDevicesPageReady() {
-    this.methodCalled('notifyCrostiniSharedUsbDevicesPageReady');
-    cr.webUIListenerCallback(
-        'crostini-shared-usb-devices-changed', this.sharedUsbDevices);
-  }
-
-  /** @override */
-  setCrostiniUsbDeviceShared(guid, shared) {
-    this.methodCalled('setCrostiniUsbDeviceShared', [guid, shared]);
-  }
-
-  /** override */
-  removeCrostiniSharedPath(vmName, path) {
-    this.methodCalled('removeCrostiniSharedPath', [vmName, path]);
-    return Promise.resolve(this.removeSharedPathResult);
   }
 
   /** @override */

@@ -14,7 +14,6 @@ js_type_check("closure_compile") {
     ":crostini_page",
     ":crostini_port_forwarding",
     ":crostini_port_forwarding_add_port_dialog",
-    ":crostini_shared_paths",
     ":crostini_subpage",
   ]
 }
@@ -34,9 +33,9 @@ js_library("crostini_arc_adb") {
 
 js_library("crostini_browser_proxy") {
   deps = [
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
     "//ui/webui/resources/js:cr",
     "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
   ]
 }
 
@@ -67,15 +66,6 @@ js_library("crostini_page") {
     "//ui/webui/resources/js:i18n_behavior",
   ]
   externs_list = [ "$externs_path/settings_private.js" ]
-}
-
-js_library("crostini_shared_paths") {
-  deps = [
-    "..:metrics_recorder",
-    "..:os_route",
-    "../../prefs:prefs_behavior",
-    "../guest_os:guest_os_browser_proxy",
-  ]
 }
 
 js_library("crostini_port_forwarding") {
@@ -129,8 +119,6 @@ js_type_check("closure_compile_module") {
     ":crostini_port_forwarding.m",
     ":crostini_port_forwarding_add_port_dialog.m",
 
-    #    ":crostini_shared_paths.m",
-    #    ":crostini_shared_usb_devices.m",
     #    ":crostini_subpage.m"
   ]
 }
@@ -164,9 +152,9 @@ js_library("crostini_arc_adb_confirmation_dialog.m") {
 js_library("crostini_browser_proxy.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_browser_proxy.m.js" ]
   deps = [
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
   ]
   extra_deps = [ ":modulize" ]
 }
@@ -277,14 +265,6 @@ js_library("crostini_port_forwarding_add_port_dialog.m") {
   extra_deps = [ ":crostini_port_forwarding_add_port_dialog_module" ]
 }
 
-js_library("crostini_shared_paths.m") {
-  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_shared_paths.m.js" ]
-  deps = [
-    # TODO: Fill those in.
-  ]
-  extra_deps = [ ":crostini_shared_paths_module" ]
-}
-
 js_library("crostini_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/crostini_page/crostini_subpage.m.js" ]
   deps = [
@@ -307,7 +287,6 @@ group("polymer3_elements") {
     ":crostini_page_module",
     ":crostini_port_forwarding_add_port_dialog_module",
     ":crostini_port_forwarding_module",
-    ":crostini_shared_paths_module",
     ":crostini_subpage_module",
     ":modulize",
   ]
@@ -389,12 +368,6 @@ polymer_modulizer("crostini_port_forwarding_add_port_dialog") {
   html_type = "dom-module"
   auto_imports = os_settings_auto_imports
   namespace_rewrites = os_settings_namespace_rewrites
-}
-
-polymer_modulizer("crostini_shared_paths") {
-  js_file = "crostini_shared_paths.js"
-  html_file = "crostini_shared_paths.html"
-  html_type = "dom-module"
 }
 
 polymer_modulizer("crostini_subpage") {

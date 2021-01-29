@@ -23,20 +23,6 @@
 };
 
 /**
- * @typedef {{path: string,
- *            pathDisplayText: string}}
- */
-/* #export */ let CrostiniSharedPath;
-
-/**
- * @typedef {{label: string,
- *            guid: string,
- *            shared: boolean,
- *            shareWillReassign: boolean}}
- */
-/* #export */ let CrostiniSharedUsbDevice;
-
-/**
  * @typedef {{label: string,
  *            port_number: number,
  *            protocol_type: !CrostiniPortProtocol}}
@@ -87,31 +73,6 @@ cr.define('settings', function() {
 
     /* Show remove crostini dialog. */
     requestRemoveCrostini() {}
-
-    /**
-     * @param {!Array<string>} paths Paths to sanitze.
-     * @return {!Promise<!Array<string>>} Text to display in UI.
-     */
-    getCrostiniSharedPathsDisplayText(paths) {}
-
-    /**
-     * Called when page is ready.
-     * @return {!Promise<boolean>}
-     */
-    notifyCrostiniSharedUsbDevicesPageReady() {}
-
-    /**
-     * @param {string} guid Unique device identifier.
-     * @param {boolean} shared Whether device is currently shared with Crostini.
-     */
-    setCrostiniUsbDeviceShared(guid, shared) {}
-
-    /**
-     * @param {string} vmName VM to stop sharing path with.
-     * @param {string} path Path to stop sharing.
-     * @return {!Promise<boolean>} Result of unsharing.
-     */
-    removeCrostiniSharedPath(vmName, path) {}
 
     /**
      * Request chrome send a crostini-installer-status-changed event with the
@@ -283,26 +244,6 @@ cr.define('settings', function() {
     /** @override */
     requestRemoveCrostini() {
       chrome.send('requestRemoveCrostini');
-    }
-
-    /** @override */
-    getCrostiniSharedPathsDisplayText(paths) {
-      return cr.sendWithPromise('getCrostiniSharedPathsDisplayText', paths);
-    }
-
-    /** @override */
-    notifyCrostiniSharedUsbDevicesPageReady() {
-      return cr.sendWithPromise('notifyCrostiniSharedUsbDevicesPageReady');
-    }
-
-    /** @override */
-    setCrostiniUsbDeviceShared(guid, shared) {
-      return chrome.send('setCrostiniUsbDeviceShared', [guid, shared]);
-    }
-
-    /** @override */
-    removeCrostiniSharedPath(vmName, path) {
-      return cr.sendWithPromise('removeCrostiniSharedPath', vmName, path);
     }
 
     /** @override */

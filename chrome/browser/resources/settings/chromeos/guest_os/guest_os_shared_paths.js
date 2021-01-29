@@ -1,27 +1,28 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /**
  * @fileoverview
- * 'crostini-shared-paths' is the settings shared paths subpage for Crostini.
+ * 'guest-os-shared-paths' is the settings shared paths subpage for guest OSes.
  */
 
 (function() {
 
-/**
- * The default crostini VM is named 'termina'.
- * https://cs.chromium.org/chromium/src/chrome/browser/chromeos/crostini/crostini_util.h?q=kCrostiniDefaultVmName&dr=CSs
- * @type {string}
- */
-const DEFAULT_CROSTINI_VM = 'termina';
+const CROSTINI_TYPE = 'crostini';
+const PLUGIN_VM_TYPE = 'pluginVm';
 
 Polymer({
-  is: 'settings-crostini-shared-paths',
+  is: 'settings-guest-os-shared-paths',
 
-  behaviors: [PrefsBehavior],
+  behaviors: [I18nBehavior],
 
   properties: {
+    /**
+     * The type of Guest OS to share with. Should be 'crostini' or 'pluginVm'.
+     */
+    guestOsType: String,
+
     /** Preferences state. */
     prefs: {
       type: Object,
@@ -36,7 +37,8 @@ Polymer({
 
     /**
      * The shared path which failed to be removed in the most recent attempt
-     * to remove a path. Null indicates that removal succeeded.
+     * to remove a path. Null indicates that removal succeeded. When non-null,
+     * the failure dialog is shown.
      * @private {?string}
      */
     sharedPathWhichFailedRemoval_: {
@@ -57,7 +59,7 @@ Polymer({
     const vmPaths = [];
     for (const path in paths) {
       const vms = paths[path];
-      if (vms.includes(DEFAULT_CROSTINI_VM)) {
+      if (vms.includes(this.vmName_())) {
         vmPaths.push(path);
       }
     }
@@ -76,13 +78,10 @@ Polymer({
   removeSharedPath_(path) {
     this.sharedPathWhichFailedRemoval_ = null;
     settings.GuestOsBrowserProxyImpl.getInstance()
-        .removeGuestOsSharedPath(DEFAULT_CROSTINI_VM, path)
-        .then(result => {
-          if (!result) {
+        .removeGuestOsSharedPath(this.vmName_(), path)
+        .then(success => {
+          if (!success) {
             this.sharedPathWhichFailedRemoval_ = path;
-            // Flush to make sure that the retry dialog is attached.
-            Polymer.dom.flush();
-            this.$$('#removeSharedPathFailedDialog').showModal();
           }
         });
     settings.recordSettingChange();
@@ -92,24 +91,44 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  onRemoveSharedPathTap_(event) {
+  onRemoveSharedPathClick_(event) {
     this.removeSharedPath_(event.model.item.path);
   },
 
-  /**
-   * @param {!Event} event
-   * @private
-   */
-  onRemoveFailedRetryTap_(event) {
+  /** @private */
+  onRemoveFailedRetryClick_() {
     this.removeSharedPath_(assert(this.sharedPathWhichFailedRemoval_));
   },
 
+  /** @private */
+  onRemoveFailedDismissClick_() {
+    this.sharedPathWhichFailedRemoval_ = null;
+  },
+
   /**
-   * @param {!Event} event
+   * @return {string} The name of the VM to share devices with.
    * @private
    */
-  onRemoveFailedDismissTap_(event) {
-    this.sharedPathWhichFailedRemoval_ = null;
+  vmName_() {
+    return {crostini: 'termina', pluginVm: 'PvmDefault'}[this.guestOsType];
+  },
+
+  /**
+   * @return {string} Description for the page.
+   * @private
+   */
+  getDescriptionText_() {
+    return this.i18n(this.guestOsType + 'SharedPathsInstructionsLocate') +
+        '\n' + this.i18n(this.guestOsType + 'SharedPathsInstructionsAdd');
+  },
+
+  /**
+   * @return {string} Message to display when removing a shared path fails.
+   * @private
+   */
+  getRemoveFailureMessage_() {
+    return this.i18n(
+        this.guestOsType + 'SharedPathsRemoveFailureDialogMessage');
   },
 
   /**

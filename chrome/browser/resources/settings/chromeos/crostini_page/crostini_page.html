@@ -12,13 +12,13 @@
 <link rel="import" href="../../settings_page/settings_animated_pages.html">
 <link rel="import" href="../../settings_page/settings_subpage.html">
 <link rel="import" href="../../settings_shared_css.html">
+<link rel="import" href="../guest_os/guest_os_shared_paths.html">
 <link rel="import" href="../guest_os/guest_os_shared_usb_devices.html">
 <link rel="import" href="../localized_link/localized_link.html">
 <link rel="import" href="crostini_arc_adb.html">
 <link rel="import" href="crostini_browser_proxy.html">
 <link rel="import" href="crostini_export_import.html">
 <link rel="import" href="crostini_port_forwarding.html">
-<link rel="import" href="crostini_shared_paths.html">
 <link rel="import" href="crostini_subpage.html">
 
 <dom-module id="settings-crostini-page">
@@ -103,9 +103,10 @@
       <template is="dom-if" route-path="/crostini/sharedPaths">
         <settings-subpage
             associated-control="[[$$('#crostini')]]"
-            page-title="$i18n{crostiniSharedPaths}">
-          <settings-crostini-shared-paths prefs="{{prefs}}">
-          </settings-crostini-shared-paths>
+            page-title="$i18n{guestOsSharedPaths}">
+          <settings-guest-os-shared-paths
+              guest-os-type="crostini" prefs="{{prefs}}">
+          </settings-guest-os-shared-paths>
         </settings-subpage>
       </template>
 

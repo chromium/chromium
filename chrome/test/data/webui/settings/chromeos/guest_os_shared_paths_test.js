@@ -26,7 +26,7 @@ class TestGuestOsBrowserProxy extends TestBrowserProxy {
 }
 
 suite('SharedPaths', function() {
-  /** @type {?SettingsPluginVmSharedPathsElement} */
+  /** @type {?SettingsGuestOsSharedPathsElement} */
   let page = null;
 
   /** @type {?TestGuestOsBrowserProxy} */
@@ -49,7 +49,8 @@ suite('SharedPaths', function() {
     guestOsBrowserProxy = new TestGuestOsBrowserProxy();
     settings.GuestOsBrowserProxyImpl.instance_ = guestOsBrowserProxy;
     PolymerTest.clearBody();
-    page = document.createElement('settings-plugin-vm-shared-paths');
+    page = document.createElement('settings-guest-os-shared-paths');
+    page.guestOsType = 'pluginVm';
     document.body.appendChild(page);
   });
 
@@ -63,9 +64,9 @@ suite('SharedPaths', function() {
     const rows = '.list-item:not([hidden])';
     assertEquals(2, page.shadowRoot.querySelectorAll(rows).length);
 
-    assertFalse(page.$.pluginVmInstructionsRemove.hidden);
-    assertFalse(page.$.pluginVmList.hidden);
-    assertTrue(page.$.pluginVmListEmpty.hidden);
+    assertFalse(page.$.guestOsInstructionsRemove.hidden);
+    assertFalse(page.$.guestOsList.hidden);
+    assertTrue(page.$.guestOsListEmpty.hidden);
     assertTrue(!!page.$$('.list-item cr-icon-button'));
 
     // Remove first shared path, still one left.
@@ -78,7 +79,7 @@ suite('SharedPaths', function() {
     }
     await setPrefs({'path2': ['PvmDefault']});
     assertEquals(1, page.shadowRoot.querySelectorAll(rows).length);
-    assertFalse(page.$.pluginVmInstructionsRemove.hidden);
+    assertFalse(page.$.guestOsInstructionsRemove.hidden);
 
     // Remove remaining shared path, none left.
     guestOsBrowserProxy.resetResolver('removeGuestOsSharedPath');
@@ -90,11 +91,11 @@ suite('SharedPaths', function() {
       assertEquals('path2', path);
     }
     await setPrefs({'ignored': ['ignore']});
-    assertTrue(page.$.pluginVmList.hidden);
+    assertTrue(page.$.guestOsList.hidden);
     // Verify remove instructions are hidden, and empty list message is shown.
-    assertTrue(page.$.pluginVmInstructionsRemove.hidden);
-    assertTrue(page.$.pluginVmList.hidden);
-    assertFalse(page.$.pluginVmListEmpty.hidden);
+    assertTrue(page.$.guestOsInstructionsRemove.hidden);
+    assertTrue(page.$.guestOsList.hidden);
+    assertFalse(page.$.guestOsListEmpty.hidden);
   });
 
   test('RemoveFailedRetry', async function() {

@@ -542,31 +542,6 @@ TEST_F(
       mocha.run();
     });
 
-// Test fixture for the Plugin VM shared paths page.
-// eslint-disable-next-line no-var
-var OSSettingsAppManagementPluginVmSharedPathsTest =
-    class extends OSSettingsAppManagementBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return super.browsePreload +
-        'app_management/plugin_vm_page/plugin_vm_shared_paths.html';
-  }
-
-  /** @override */
-  get extraLibraries() {
-    return super.extraLibraries.concat([
-      BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
-      'app_management/plugin_vm_shared_paths_test.js',
-    ]);
-  }
-};
-
-TEST_F(
-    'OSSettingsAppManagementPluginVmSharedPathsTest', 'MAYBE_AllJsTests',
-    () => {
-      mocha.run();
-    });
-
 // Test fixture for the app management managed app view.
 // eslint-disable-next-line no-var
 var OSSettingsAppManagementManagedAppTest =
@@ -716,6 +691,28 @@ TEST_F(
     'OSSettingsCrostiniPageTest', 'MAYBE_SubPageSharedUsbDevices', function() {
       mocha.grep('\\bSubPageSharedUsbDevices\\b').run();
     });
+
+// Test fixture for the Guest OS shared paths page.
+// eslint-disable-next-line no-var
+var OSSettingsGuestOsSharedPathsTest =
+    class extends OSSettingsAppManagementBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return super.browsePreload + 'guest_os/guest_os_shared_paths.html';
+  }
+
+  /** @override */
+  get extraLibraries() {
+    return super.extraLibraries.concat([
+      BROWSER_SETTINGS_PATH + '../test_browser_proxy.js',
+      'guest_os_shared_paths_test.js',
+    ]);
+  }
+};
+
+TEST_F('OSSettingsGuestOsSharedPathsTest', 'MAYBE_AllJsTests', () => {
+  mocha.run();
+});
 
 // Test fixture for the Guest OS shared USB devices page.
 // eslint-disable-next-line no-var

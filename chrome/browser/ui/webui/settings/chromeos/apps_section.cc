@@ -138,6 +138,19 @@ void AddAppManagementStrings(content::WebUIDataSource* html_source) {
 void AddGuestOsStrings(content::WebUIDataSource* html_source) {
   // These strings are used for both Crostini and Plugin VM.
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
+      {"guestOsSharedPaths", IDS_SETTINGS_GUEST_OS_SHARED_PATHS},
+      {"guestOsSharedPathsListHeading",
+       IDS_SETTINGS_GUEST_OS_SHARED_PATHS_LIST_HEADING},
+      {"guestOsSharedPathsInstructionsRemove",
+       IDS_SETTINGS_GUEST_OS_SHARED_PATHS_INSTRUCTIONS_REMOVE},
+      {"guestOsSharedPathsStopSharing",
+       IDS_SETTINGS_GUEST_OS_SHARED_PATHS_STOP_SHARING},
+      {"guestOsSharedPathsRemoveFailureDialogTitle",
+       IDS_SETTINGS_GUEST_OS_SHARED_PATHS_REMOVE_FAILURE_DIALOG_TITLE},
+      {"guestOsSharedPathsRemoveFailureTryAgain",
+       IDS_SETTINGS_GUEST_OS_SHARED_PATHS_REMOVE_FAILURE_TRY_AGAIN},
+      {"guestOsSharedPathsListEmptyMessage",
+       IDS_SETTINGS_GUEST_OS_SHARED_PATHS_LIST_EMPTY_MESSAGE},
       {"guestOsSharedUsbDevicesLabel",
        IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LABEL},
       {"guestOsSharedUsbDevicesExtraDescription",
@@ -265,12 +278,11 @@ void AppsSection::RegisterHierarchy(HierarchyGenerator* generator) const {
       IDS_SETTINGS_APP_DETAILS_TITLE, mojom::Subpage::kAppDetails,
       mojom::Subpage::kAppManagement, mojom::SearchResultIcon::kAppsGrid,
       mojom::SearchResultDefaultRank::kMedium, mojom::kAppDetailsSubpagePath);
-  generator->RegisterNestedSubpage(IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS,
-                                   mojom::Subpage::kPluginVmSharedPaths,
-                                   mojom::Subpage::kAppManagement,
-                                   mojom::SearchResultIcon::kAppsGrid,
-                                   mojom::SearchResultDefaultRank::kMedium,
-                                   mojom::kPluginVmSharedPathsSubpagePath);
+  generator->RegisterNestedSubpage(
+      IDS_SETTINGS_GUEST_OS_SHARED_PATHS, mojom::Subpage::kPluginVmSharedPaths,
+      mojom::Subpage::kAppManagement, mojom::SearchResultIcon::kAppsGrid,
+      mojom::SearchResultDefaultRank::kMedium,
+      mojom::kPluginVmSharedPathsSubpagePath);
   generator->RegisterNestedSubpage(
       IDS_SETTINGS_GUEST_OS_SHARED_USB_DEVICES_LABEL,
       mojom::Subpage::kPluginVmUsbPreferences, mojom::Subpage::kAppManagement,
@@ -329,23 +341,10 @@ void AppsSection::AddAndroidAppStrings(content::WebUIDataSource* html_source) {
 void AppsSection::AddPluginVmLoadTimeData(
     content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"pluginVmSharedPaths", IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS},
-      {"pluginVmSharedPathsListHeading",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_LIST_HEADING},
       {"pluginVmSharedPathsInstructionsAdd",
        IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_INSTRUCTIONS_ADD},
-      {"pluginVmSharedPathsInstructionsRemove",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_INSTRUCTIONS_REMOVE},
-      {"pluginVmSharedPathsRemoveSharing",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_SHARING},
       {"pluginVmSharedPathsRemoveFailureDialogMessage",
        IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_FAILURE_DIALOG_MESSAGE},
-      {"pluginVmSharedPathsRemoveFailureDialogTitle",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_FAILURE_DIALOG_TITLE},
-      {"pluginVmSharedPathsRemoveFailureTryAgain",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_REMOVE_FAILURE_TRY_AGAIN},
-      {"pluginVmSharedPathsListEmptyMessage",
-       IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_PATHS_LIST_EMPTY_MESSAGE},
       {"pluginVmSharedUsbDevicesDescription",
        IDS_SETTINGS_APPS_PLUGIN_VM_SHARED_USB_DEVICES_DESCRIPTION},
       {"pluginVmPermissionDialogCameraLabel",
