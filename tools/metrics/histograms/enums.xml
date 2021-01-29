@@ -41557,6 +41557,8 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
       label="Main Chrome Launcher Icon Shortcuts (New Tab shortcuts)"/>
   <int value="8" label="Home screen widget (eg. Search or Bookmarks)"/>
   <int value="9" label="Open In Browser CCT Menu"/>
+  <int value="10"
+      label="External Search Intent (eg. Third Party Voice Search results)"/>
 </enum>
 
 <enum name="LauncherRankingItemType">

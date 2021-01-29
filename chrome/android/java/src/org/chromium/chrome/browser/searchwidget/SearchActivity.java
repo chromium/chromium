@@ -67,6 +67,9 @@ public class SearchActivity extends AsyncInitializationActivity
     // Shared with other org.chromium.chrome.browser.searchwidget classes.
     protected static final String TAG = "searchwidget";
 
+    public static final String EXTRA_FROM_SEARCH_ACTIVITY =
+            "org.chromium.chrome.browser.searchwidget.FROM_SEARCH_ACTIVITY";
+
     /** Notified about events happening inside a SearchActivity. */
     public static class SearchActivityDelegate {
         /**
@@ -418,6 +421,7 @@ public class SearchActivity extends AsyncInitializationActivity
         if (isFromSearchWidget()) {
             intent.putExtra(SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, true);
         }
+        intent.putExtra(EXTRA_FROM_SEARCH_ACTIVITY, true);
         IntentHandler.addTrustedIntentExtras(intent);
 
         return intent;

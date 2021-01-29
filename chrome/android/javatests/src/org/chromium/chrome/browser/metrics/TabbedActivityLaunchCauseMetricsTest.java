@@ -4,10 +4,21 @@
 
 package org.chromium.chrome.browser.metrics;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressKey;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import android.app.Activity;
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.Uri;
 import android.support.test.runner.lifecycle.Stage;
+import android.view.KeyEvent;
 
 import androidx.test.filters.MediumTest;
 
@@ -17,6 +28,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.android.support.PackageManagerWrapper;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
@@ -28,13 +40,19 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.ScalableTimeout;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.LauncherShortcutActivity;
 import org.chromium.chrome.browser.bookmarkswidget.BookmarkWidgetProxy;
+import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Integration tests for TabbedActivityLaunchCauseMetrics.
@@ -139,5 +157,59 @@ public final class TabbedActivityLaunchCauseMetricsTest {
                     histogramCountForValue(LaunchCauseMetrics.LaunchCause.HOME_SCREEN_WIDGET),
                     Matchers.is(count));
         }, ScalableTimeout.scaleTimeout(5000L), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+    }
+
+    private static class TestContext extends ContextWrapper {
+        public TestContext(Context baseContext) {
+            super(baseContext);
+        }
+
+        @Override
+        public PackageManager getPackageManager() {
+            return new PackageManagerWrapper(super.getPackageManager()) {
+                @Override
+                public List<ResolveInfo> queryIntentActivities(Intent intent, int flags) {
+                    if (intent.getAction().equals(Intent.ACTION_WEB_SEARCH)) {
+                        return Collections.emptyList();
+                    }
+
+                    return TestContext.super.getPackageManager().queryIntentActivities(
+                            intent, flags);
+                }
+            };
+        }
+    }
+
+    @Test
+    @MediumTest
+    public void testExternalSearchIntentNoResolvers() throws Throwable {
+        final int count = 1
+                + histogramCountForValue(
+                        LaunchCauseMetrics.LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT);
+        final Context contextToRestore = ContextUtils.getApplicationContext();
+        ContextUtils.initApplicationContextForTests(new TestContext(contextToRestore));
+
+        Intent intent = new Intent(Intent.ACTION_SEARCH);
+        intent.setClass(ContextUtils.getApplicationContext(), ChromeLauncherActivity.class);
+        intent.putExtra(SearchManager.QUERY, "about:blank");
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        SearchActivity searchActivity = ApplicationTestUtils.waitForActivityWithClass(
+                SearchActivity.class, Stage.RESUMED, () -> contextToRestore.startActivity(intent));
+
+        onView(withId(R.id.url_bar)).perform(click());
+        ChromeTabbedActivity cta = ApplicationTestUtils.waitForActivityWithClass(
+                ChromeTabbedActivity.class, Stage.CREATED, null,
+                () -> onView(withId(R.id.url_bar)).perform(pressKey(KeyEvent.KEYCODE_ENTER)));
+
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat(
+                    histogramCountForValue(
+                            LaunchCauseMetrics.LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT),
+                    Matchers.is(count));
+        }, ScalableTimeout.scaleTimeout(5000L), CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        ApplicationTestUtils.finishActivity(cta);
+        ApplicationTestUtils.finishActivity(searchActivity);
+        ContextUtils.initApplicationContextForTests(contextToRestore);
     }
 }

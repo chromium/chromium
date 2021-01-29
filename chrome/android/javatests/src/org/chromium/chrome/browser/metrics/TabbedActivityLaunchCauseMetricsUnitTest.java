@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.metrics;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.speech.RecognizerResultsIntent;
 
 import androidx.test.filters.SmallTest;
 
@@ -107,5 +108,32 @@ public final class TabbedActivityLaunchCauseMetricsUnitTest {
         Assert.assertEquals(total,
                 RecordHistogram.getHistogramTotalCountForTesting(
                         LaunchCauseMetrics.LAUNCH_CAUSE_HISTOGRAM));
+    }
+
+    @Test
+    @SmallTest
+    public void testVoiceSearchResultsMetrics() throws Throwable {
+        int count = histogramCountForValue(
+                LaunchCauseMetrics.LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT);
+        Intent intent = new Intent(RecognizerResultsIntent.ACTION_VOICE_SEARCH_RESULTS);
+        Mockito.when(mActivity.getIntent()).thenReturn(intent);
+
+        TabbedActivityLaunchCauseMetrics metrics = new TabbedActivityLaunchCauseMetrics(mActivity);
+
+        // Tests the case where Chrome is backgrounded either by the intent picker, or by
+        // cross-channel Open In Browser.
+        metrics.onReceivedIntent();
+        metrics.recordLaunchCause();
+        ++count;
+        Assert.assertEquals(count,
+                histogramCountForValue(
+                        LaunchCauseMetrics.LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT));
+
+        // Ensures we don't record this metric when Chrome has already recorded a launch.
+        metrics.onReceivedIntent();
+        metrics.recordLaunchCause();
+        Assert.assertEquals(count,
+                histogramCountForValue(
+                        LaunchCauseMetrics.LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT));
     }
 }

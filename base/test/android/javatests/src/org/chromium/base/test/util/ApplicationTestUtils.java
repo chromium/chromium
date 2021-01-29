@@ -94,11 +94,30 @@ public class ApplicationTestUtils {
      *
      * @param activityClass The class type to wait for.
      * @param state The Activity {@link Stage} to wait for an activity of the right class type to
-     * reach.
-     * @param trigger The Runnable that will trigger the state change to wait for.
+     *         reach.
+     * @param uiThreadTrigger The Runnable that will trigger the state change to wait for. The
+     *         Runnable will be run on the UI thread
      */
     public static <T extends Activity> T waitForActivityWithClass(
-            Class<? extends Activity> activityClass, Stage stage, Runnable trigger) {
+            Class<? extends Activity> activityClass, Stage stage, Runnable uiThreadTrigger) {
+        return waitForActivityWithClass(activityClass, stage, uiThreadTrigger, null);
+    }
+
+    /**
+     * Waits for an activity of the specified class to reach the specified Activity {@link Stage},
+     * triggered by running the provided trigger.
+     *
+     * @param activityClass The class type to wait for.
+     * @param state The Activity {@link Stage} to wait for an activity of the right class type to
+     *         reach.
+     * @param uiThreadTrigger The Runnable that will trigger the state change to wait for, which
+     *         will be run on the UI thread.
+     * @param backgroundThreadTrigger The Runnable that will trigger the state change to wait for,
+     *         which will be run on the UI thread.
+     */
+    public static <T extends Activity> T waitForActivityWithClass(
+            Class<? extends Activity> activityClass, Stage stage, Runnable uiThreadTrigger,
+            Runnable backgroundThreadTrigger) {
         ThreadUtils.assertOnBackgroundThread();
         final CallbackHelper activityCallback = new CallbackHelper();
         final AtomicReference<T> activityRef = new AtomicReference<>();
@@ -113,7 +132,10 @@ public class ApplicationTestUtils {
         sMonitor.addLifecycleCallback(stateListener);
 
         try {
-            ThreadUtils.runOnUiThreadBlocking(() -> trigger.run());
+            if (uiThreadTrigger != null) {
+                ThreadUtils.runOnUiThreadBlocking(() -> uiThreadTrigger.run());
+            }
+            if (backgroundThreadTrigger != null) backgroundThreadTrigger.run();
             activityCallback.waitForCallback("No Activity reached target state.", 0);
             T createdActivity = activityRef.get();
             Assert.assertNotNull("Activity reference is null.", createdActivity);

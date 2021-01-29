@@ -57,7 +57,8 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
     @IntDef({LaunchCause.OTHER, LaunchCause.CUSTOM_TAB, LaunchCause.TWA, LaunchCause.RECENTS,
             LaunchCause.RECENTS_OR_BACK, LaunchCause.FOREGROUND_WHEN_LOCKED,
             LaunchCause.MAIN_LAUNCHER_ICON, LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT,
-            LaunchCause.HOME_SCREEN_WIDGET, LaunchCause.OPEN_IN_BROWSER_FROM_MENU})
+            LaunchCause.HOME_SCREEN_WIDGET, LaunchCause.OPEN_IN_BROWSER_FROM_MENU,
+            LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT})
     @Retention(RetentionPolicy.SOURCE)
     public @interface LaunchCause {
         int OTHER = 0;
@@ -70,8 +71,9 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
         int MAIN_LAUNCHER_ICON_SHORTCUT = 7;
         int HOME_SCREEN_WIDGET = 8;
         int OPEN_IN_BROWSER_FROM_MENU = 9;
+        int EXTERNAL_SEARCH_ACTION_INTENT = 10;
 
-        int NUM_ENTRIES = 10;
+        int NUM_ENTRIES = 11;
     }
 
     /**
@@ -257,6 +259,9 @@ public abstract class LaunchCauseMetrics implements ApplicationStatus.Applicatio
                 break;
             case LaunchCause.OPEN_IN_BROWSER_FROM_MENU:
                 launchCause = "OPEN_IN_BROWSER_FROM_MENU";
+                break;
+            case LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT:
+                launchCause = "EXTERNAL_SEARCH_ACTION_INTENT";
                 break;
         }
         Log.d(TAG, "Launch Cause: " + launchCause);

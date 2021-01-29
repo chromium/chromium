@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.metrics;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.speech.RecognizerResultsIntent;
 
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.searchwidget.SearchActivity;
 import org.chromium.chrome.browser.searchwidget.SearchWidgetProvider;
 import org.chromium.components.webapps.ShortcutSource;
 
@@ -46,8 +48,19 @@ public class TabbedActivityLaunchCauseMetrics extends LaunchCauseMetrics {
         }
 
         if (IntentUtils.safeGetBooleanExtra(
-                    launchIntent, SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false)) {
-            return LaunchCause.HOME_SCREEN_WIDGET;
+                    launchIntent, SearchActivity.EXTRA_FROM_SEARCH_ACTIVITY, false)) {
+            if (IntentUtils.safeGetBooleanExtra(
+                        launchIntent, SearchWidgetProvider.EXTRA_FROM_SEARCH_WIDGET, false)) {
+                return LaunchCause.HOME_SCREEN_WIDGET;
+            }
+            // Intent came through the Search Activity but wasn't from the Search Widget, so
+            // probably came from LaunchIntentDispatcher#processWebSearchIntent, and no other
+            // installed apps could handle web search.
+            return LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT;
+        }
+
+        if (RecognizerResultsIntent.ACTION_VOICE_SEARCH_RESULTS.equals(launchIntent.getAction())) {
+            return LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT;
         }
 
         // This is unlikely to be hit here (much more likely to see Open In Browser intents in
