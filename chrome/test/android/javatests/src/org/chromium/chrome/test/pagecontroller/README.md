@@ -153,7 +153,7 @@ If you are not too sure about the correct resource / string ids to use, see if y
  - Search the strings grd file with
    [search_strings.py](https://cs.chromium.org/chromium/src/tools/android/pagecontroller/search_strings.py).
 
-   [android_chrome_strings.grd](https://cs.chromium.org/chromium/src/chrome/android/java/strings/android_chrome_strings.grd) contains the list of strings used in Clank.
+   [android_chrome_strings.grd](https://cs.chromium.org/chromium/src/chrome/browser/ui/android/strings/android_chrome_strings.grd) contains the list of strings used in Clank.
    The entries are transformed into android strings using the name attribute by dropping the IDS_ prefix and converting the rest into lower case.  For example: IDS_MENU_BOOKMARKS -> R.string.menu_bookmarks.  There may be several string matching what's displayed but with different ids, be sure to read the "desc" field in the grd file and also the java source code for the UI to pick the right one.
 
  - The Clank java source code: [src/chrome/android/java/src/org/chromium/chrome/browser/](https://cs.chromium.org/chromium/src/chrome/android/java/src/org/chromium/chrome/browser/)

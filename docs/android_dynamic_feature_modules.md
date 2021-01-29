@@ -580,8 +580,8 @@ follows:
         lang="am"
         type="android" />
     <!-- List output file for all other supported languages. See
-         //chrome/android/java/strings/android_chrome_strings.grd for the full
-         list. -->
+         //chrome/browser/ui/android/strings/android_chrome_strings.grd for the
+         full list. -->
     ...
   </outputs>
   <translations>

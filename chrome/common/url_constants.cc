@@ -292,7 +292,7 @@ const char kEnhancedPlaybackNotificationLearnMoreURL[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     "https://support.google.com/chromebook/?p=enhanced_playback";
 #elif defined(OS_ANDROID)
-// Keep in sync with chrome/android/java/strings/android_chrome_strings.grd
+// Keep in sync with chrome/browser/ui/android/strings/android_chrome_strings.grd
     "https://support.google.com/chrome/?p=mobile_protected_content";
 #endif
 

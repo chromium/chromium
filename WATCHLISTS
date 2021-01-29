@@ -1913,8 +1913,8 @@
     'ui_strings': {
       'filepath': 'chrome/app/generated_resources.grd'\
                   '|chrome/app/google_chrome_strings.grd'\
-                  '|chrome/android/java/strings/android_chrome_strings.grd'\
                   '|chrome/app/settings_strings.grdp'\
+                  '|chrome/browser/ui/android/strings/android_chrome_strings.grd'\
                   '|ios/chrome/app/strings/ios(_.+)*_strings.grd'\
                   '|ui/strings/ui_strings.grd',
     },
