@@ -81,7 +81,10 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   void RemoveAssistantManagerObserver(AssistantManagerObserver* observer);
 
   bool IsInitialized() const;
+  // Note this is true even when the service is running (as it is still started
+  // at that point).
   bool IsStarted() const;
+  bool IsRunning() const;
 
   // Will return nullptr if the service is stopped.
   assistant_client::AssistantManager* assistant_manager();
@@ -89,8 +92,13 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
   assistant_client::AssistantManagerInternal* assistant_manager_internal();
 
  private:
+  class DeviceStateListener;
+
+  void OnStartFinished();
+
   void SetStateAndInformObservers(mojom::ServiceState new_state);
 
+  void CreateAndRegisterDeviceStateListener();
   void CreateAndRegisterChromiumApiDelegate(
       mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory);
   void CreateChromiumApiDelegate(
@@ -111,6 +119,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) ServiceController
       nullptr;
   std::unique_ptr<ChromiumApiDelegate> chromium_api_delegate_;
   std::unique_ptr<assistant::LibassistantV1Api> libassistant_v1_api_;
+  std::unique_ptr<DeviceStateListener> device_state_listener_;
 
   mojo::Receiver<mojom::ServiceController> receiver_;
   mojo::RemoteSet<mojom::StateObserver> state_observers_;

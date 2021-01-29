@@ -39,6 +39,14 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) AssistantManagerObserver
       assistant_client::AssistantManager* assistant_manager,
       assistant_client::AssistantManagerInternal* assistant_manager_internal) {}
 
+  // Called when |AssistantManager| has finished its start logic and is ready
+  // to handle queries.
+  // The pointers are guaranteed to remain valid until after
+  // OnDestroyingAssistantManager() is called.
+  virtual void OnAssistantManagerRunning(
+      assistant_client::AssistantManager* assistant_manager,
+      assistant_client::AssistantManagerInternal* assistant_manager_internal) {}
+
   // Called just before the |AssistantManager| and |AssistantManagerInternal|
   // will be destroyed. They should not be used anymore after this has been
   // called. The pointers passed in are guaranteed to be the same as passed to

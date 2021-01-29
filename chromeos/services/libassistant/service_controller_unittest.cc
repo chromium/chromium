@@ -17,6 +17,7 @@
 #include "chromeos/services/libassistant/assistant_manager_observer.h"
 #include "chromeos/services/libassistant/public/mojom/service_controller.mojom.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
+#include "libassistant/shared/public/device_state_listener.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -81,6 +82,11 @@ class AssistantManagerObserverMock : public AssistantManagerObserver {
        assistant_client::AssistantManagerInternal* assistant_manager_internal));
   MOCK_METHOD(
       void,
+      OnAssistantManagerRunning,
+      (assistant_client::AssistantManager * assistant_manager,
+       assistant_client::AssistantManagerInternal* assistant_manager_internal));
+  MOCK_METHOD(
+      void,
       OnDestroyingAssistantManager,
       (assistant_client::AssistantManager * assistant_manager,
        assistant_client::AssistantManagerInternal* assistant_manager_internal));
@@ -132,6 +138,14 @@ class AssistantServiceControllerTest : public testing::Test {
 
   void Start() {
     service_controller().Start();
+    RunUntilIdle();
+  }
+
+  void SendOnStartFinished() {
+    auto* device_state_listener =
+        delegate().assistant_manager()->device_state_listener();
+    ASSERT_NE(device_state_listener, nullptr);
+    device_state_listener->OnStartFinished();
     RunUntilIdle();
   }
 
@@ -218,6 +232,19 @@ TEST_F(AssistantServiceControllerTest,
   EXPECT_CALL(observer, OnStateChanged(ServiceState::kStopped));
 
   Stop();
+}
+
+TEST_F(AssistantServiceControllerTest,
+       StateShouldChangeToRunningAfterLibassistantSignalsItsDone) {
+  Initialize();
+  Start();
+
+  StateObserverMock observer;
+  AddStateObserver(&observer);
+
+  EXPECT_CALL(observer, OnStateChanged(ServiceState::kRunning));
+
+  SendOnStartFinished();
 }
 
 TEST_F(AssistantServiceControllerTest,
@@ -477,6 +504,73 @@ TEST_F(AssistantServiceControllerTest,
   RemoveAssistantManagerObserver(&observer);
 }
 
+TEST_F(AssistantServiceControllerTest,
+       ShouldCallOnAssistantManagerRunningWhenCallingOnStartFinished) {
+  StrictMock<AssistantManagerObserverMock> observer;
+  AddAndFireAssistantManagerObserver(&observer);
+
+  EXPECT_CALL(observer, OnAssistantManagerCreated);
+  Initialize();
+  EXPECT_CALL(observer, OnAssistantManagerStarted);
+  Start();
+
+  EXPECT_CALL(observer, OnAssistantManagerRunning)
+      .WillOnce([&controller = service_controller()](
+                    assistant_client::AssistantManager* assistant_manager,
+                    assistant_client::AssistantManagerInternal*
+                        assistant_manager_internal) {
+        EXPECT_EQ(assistant_manager, controller.assistant_manager());
+        EXPECT_EQ(assistant_manager_internal,
+                  controller.assistant_manager_internal());
+      });
+
+  SendOnStartFinished();
+
+  RemoveAssistantManagerObserver(&observer);
+}
+
+TEST_F(AssistantServiceControllerTest,
+       ShouldCallOnAssistantManagerRunningWhenAddingObserver) {
+  Initialize();
+  Start();
+  SendOnStartFinished();
+
+  StrictMock<AssistantManagerObserverMock> observer;
+
+  EXPECT_CALL(observer, OnAssistantManagerCreated)
+      .WillOnce([&controller = service_controller()](
+                    assistant_client::AssistantManager* assistant_manager,
+                    assistant_client::AssistantManagerInternal*
+                        assistant_manager_internal) {
+        EXPECT_EQ(assistant_manager, controller.assistant_manager());
+        EXPECT_EQ(assistant_manager_internal,
+                  controller.assistant_manager_internal());
+      });
+
+  EXPECT_CALL(observer, OnAssistantManagerStarted)
+      .WillOnce([&controller = service_controller()](
+                    assistant_client::AssistantManager* assistant_manager,
+                    assistant_client::AssistantManagerInternal*
+                        assistant_manager_internal) {
+        EXPECT_EQ(assistant_manager, controller.assistant_manager());
+        EXPECT_EQ(assistant_manager_internal,
+                  controller.assistant_manager_internal());
+      });
+
+  EXPECT_CALL(observer, OnAssistantManagerRunning)
+      .WillOnce([&controller = service_controller()](
+                    assistant_client::AssistantManager* assistant_manager,
+                    assistant_client::AssistantManagerInternal*
+                        assistant_manager_internal) {
+        EXPECT_EQ(assistant_manager, controller.assistant_manager());
+        EXPECT_EQ(assistant_manager_internal,
+                  controller.assistant_manager_internal());
+      });
+
+  AddAndFireAssistantManagerObserver(&observer);
+
+  RemoveAssistantManagerObserver(&observer);
+}
 TEST_F(AssistantServiceControllerTest,
        ShouldCallOnDestroyingAssistantManagerWhenCallingStop) {
   StrictMock<AssistantManagerObserverMock> observer;

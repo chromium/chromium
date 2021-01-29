@@ -14,6 +14,7 @@
 #include "chromeos/services/libassistant/chromium_api_delegate.h"
 #include "chromeos/services/libassistant/util.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
+#include "libassistant/shared/public/device_state_listener.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 
@@ -24,6 +25,14 @@ namespace {
 
 using mojom::ServiceState;
 
+// A macro which ensures we are running on the mojom thread.
+#define ENSURE_MOJOM_THREAD(method, ...)                                    \
+  if (!mojom_task_runner_->RunsTasksInCurrentSequence()) {                  \
+    mojom_task_runner_->PostTask(                                           \
+        FROM_HERE,                                                          \
+        base::BindOnce(method, weak_factory_.GetWeakPtr(), ##__VA_ARGS__)); \
+    return;                                                                 \
+  }
 std::vector<std::pair<std::string, std::string>> ToAuthTokens(
     const std::vector<mojom::AuthenticationTokenPtr>& mojo_tokens) {
   std::vector<std::pair<std::string, std::string>> result;
@@ -59,6 +68,29 @@ CreatePendingURLLoaderFactory(
 
 }  // namespace
 
+class ServiceController::DeviceStateListener
+    : public assistant_client::DeviceStateListener {
+ public:
+  explicit DeviceStateListener(ServiceController* parent)
+      : parent_(parent),
+        mojom_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+  DeviceStateListener(const DeviceStateListener&) = delete;
+  DeviceStateListener& operator=(const DeviceStateListener&) = delete;
+  ~DeviceStateListener() override = default;
+
+  // assistant_client::DeviceStateListener overrides:
+  // Called on Libassistant thread.
+  void OnStartFinished() override {
+    ENSURE_MOJOM_THREAD(&DeviceStateListener::OnStartFinished);
+    parent_->OnStartFinished();
+  }
+
+ private:
+  ServiceController* const parent_;
+  scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
+  base::WeakPtrFactory<DeviceStateListener> weak_factory_{this};
+};
+
 ServiceController::ServiceController(
     assistant::AssistantManagerServiceDelegate* delegate,
     assistant_client::PlatformApi* platform_api)
@@ -93,6 +125,7 @@ void ServiceController::Initialize(
   assistant_manager_internal_ =
       delegate_->UnwrapAssistantManagerInternal(assistant_manager_.get());
 
+  CreateAndRegisterDeviceStateListener();
   CreateAndRegisterChromiumApiDelegate(std::move(url_loader_factory));
 
   for (auto& observer : assistant_manager_observers_) {
@@ -144,6 +177,7 @@ void ServiceController::Stop() {
   assistant_manager_ = nullptr;
   assistant_manager_internal_ = nullptr;
   chromium_api_delegate_ = nullptr;
+  device_state_listener_ = nullptr;
 
   DVLOG(1) << "Stopped Libassistant service";
 }
@@ -200,8 +234,16 @@ void ServiceController::AddAndFireAssistantManagerObserver(
     observer->OnAssistantManagerCreated(assistant_manager(),
                                         assistant_manager_internal());
   }
+  // Note we do send the |OnAssistantManagerStarted| event even if the service
+  // is currently running, to ensure that an observer that only observes
+  // |OnAssistantManagerStarted| will not miss a currently running instance
+  // when it is being added.
   if (IsStarted()) {
     observer->OnAssistantManagerStarted(assistant_manager(),
+                                        assistant_manager_internal());
+  }
+  if (IsRunning()) {
+    observer->OnAssistantManagerRunning(assistant_manager(),
                                         assistant_manager_internal());
   }
 }
@@ -212,11 +254,27 @@ void ServiceController::RemoveAssistantManagerObserver(
 }
 
 bool ServiceController::IsStarted() const {
-  return state_ != ServiceState::kStopped;
+  switch (state_) {
+    case ServiceState::kStopped:
+      return false;
+    case ServiceState::kStarted:
+    case ServiceState::kRunning:
+      return true;
+  }
 }
 
 bool ServiceController::IsInitialized() const {
   return assistant_manager_ != nullptr;
+}
+
+bool ServiceController::IsRunning() const {
+  switch (state_) {
+    case ServiceState::kStopped:
+    case ServiceState::kStarted:
+      return false;
+    case ServiceState::kRunning:
+      return true;
+  }
 }
 
 assistant_client::AssistantManager* ServiceController::assistant_manager() {
@@ -228,6 +286,16 @@ ServiceController::assistant_manager_internal() {
   return assistant_manager_internal_;
 }
 
+void ServiceController::OnStartFinished() {
+  DVLOG(1) << "Libassistant start is finished";
+  SetStateAndInformObservers(mojom::ServiceState::kRunning);
+
+  for (auto& observer : assistant_manager_observers_) {
+    observer.OnAssistantManagerRunning(assistant_manager(),
+                                       assistant_manager_internal());
+  }
+}
+
 void ServiceController::SetStateAndInformObservers(
     mojom::ServiceState new_state) {
   DCHECK_NE(state_, new_state);
@@ -236,6 +304,11 @@ void ServiceController::SetStateAndInformObservers(
 
   for (auto& observer : state_observers_)
     observer->OnStateChanged(state_);
+}
+
+void ServiceController::CreateAndRegisterDeviceStateListener() {
+  device_state_listener_ = std::make_unique<DeviceStateListener>(this);
+  assistant_manager()->AddDeviceStateListener(device_state_listener_.get());
 }
 
 void ServiceController::CreateAndRegisterChromiumApiDelegate(
