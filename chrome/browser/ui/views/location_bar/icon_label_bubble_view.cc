@@ -160,6 +160,7 @@ IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
 
   auto alert_view = std::make_unique<views::AXVirtualView>();
   alert_view->GetCustomData().role = ax::mojom::Role::kAlert;
+  alert_view->GetCustomData().AddState(ax::mojom::State::kInvisible);
   alert_virtual_view_ = alert_view.get();
   GetViewAccessibility().AddVirtualChildView(std::move(alert_view));
 }
@@ -480,6 +481,8 @@ void IconLabelBubbleView::AnimateIn(base::Optional<int> string_id) {
       // which serves to announce it. This is done unconditionally here if there
       // is text because the animation is intended to draw attention to the
       // instance anyway.
+      alert_virtual_view_->GetCustomData().RemoveState(
+          ax::mojom::State::kInvisible);
       alert_virtual_view_->GetCustomData().SetName(label);
       alert_virtual_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert);
     }
@@ -491,6 +494,8 @@ void IconLabelBubbleView::AnimateIn(base::Optional<int> string_id) {
 void IconLabelBubbleView::AnimateOut() {
   if (label()->GetVisible()) {
     label()->SetVisible(false);
+    alert_virtual_view_->GetCustomData().AddState(ax::mojom::State::kInvisible);
+    alert_virtual_view_->NotifyAccessibilityEvent(ax::mojom::Event::kHide);
     HideAnimation();
   }
 }
