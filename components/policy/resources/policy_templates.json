@@ -2376,9 +2376,9 @@
       'id': 812,
       'caption': '''Allow remote access connections to this machine''',
       'tags': [],
-      'desc': '''If this policy is disabled, the remote access host service cannot be started or configured to accept incoming connections.  This policy does not affect remote support scenarios.
+      'desc': '''If this policy is Disabled, the remote access host service cannot be started or configured to accept incoming connections.  This policy does not affect remote support scenarios.
 
-          This policy has no effect if it is set to true, left empty, or is not set.''',
+          This policy has no effect if it is set to Enabled, left empty, or is not set.''',
     },
     {
       'name': 'RemoteAccessHostMaximumSessionDurationMinutes',
@@ -15061,6 +15061,10 @@
       'desc':
       '''Allows enabling or disabling a notification when disk space is low. This applies to all users on the device.
 
+      Setting policy to Enabled, an notification will be shown when remaining disk space is low.
+
+      Setting policy to Disabled or not set, there won't be any low disk space notification.
+
       This policy is ignored and the notification is always shown if the device is unmanaged or there is only one user.
 
       If there are multiple user accounts on a managed device, the notification will only be shown when this policy is enabled.''',
@@ -20856,13 +20860,9 @@
           'value': False,
           'caption': 'Do not allow in-session SAML password changes at chrome://password-change',
         },
-        {
-          'value': None,
-          'caption': 'Allow the user to decide',
-        },
       ],
       'example_value': True,
-      'default': None,
+      'default': False,
       'id': 545,
       'caption': '''Enables a page for in-session change of password for SAML users''',
       'desc': '''Enables a page at chrome://password-change that lets SAML users change their SAML passwords while in-session, which ensures that the SAML password and the device lockscreen password are kept in-sync.
@@ -20870,7 +20870,7 @@
       This policy also enables notifications that warn SAML users if their SAML passwords are soon to expire so that they can deal with this immediately by doing an in-session password change.
       But, these notifications will only be shown if password expiry information is sent to the device by the SAML identity provider during the SAML login flow.
 
-      If this policy is set, the user cannot change or override it.''',
+      Setting this policy to Disabled or not set, SAML password can't be changed at chrome://password-change and there won't be any notification when SAML passwods are soon to expire.''',
     },
     {
       'name': 'SamlLockScreenReauthenticationEnabled',
@@ -23082,7 +23082,7 @@
       'items': [
         {
           'value': True,
-          'caption': 'Allow local device discover',
+          'caption': 'Allow local device discovery',
         },
         {
           'value': False,
@@ -23096,7 +23096,10 @@
       'tags': [],
       'desc': '''This policy controls access to controllable features in the local discovery UI (<ph name="CHROME_DEVICES_LINK">chrome://devices</ph>) which shows discoverable devices near the user as well as cloud devices registered to them. On all operating systems except for <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex></ph>, the local discovery UI also allows users to add classic printers connected to their computers to <ph name="CLOUD_PRINT_NAME">Google Cloud Print</ph>.
 
-      Leaving this policy unset leaves this feature Enabled.''',
+      Setting the policy to Enabled or not set allow local device discovery.
+
+      Setting the policy to Disabled prevents local device discovery.
+      ''',
     },
     {
       'name': 'ScreenCaptureAllowed',
@@ -23472,15 +23475,16 @@ If you disable this policy, web page scrolling to specific text fragments via UR
           servers in order to generate a description. No cookies or other user
           data is sent, and Google does not save or log any image content.
 
-          If this policy is set to true, the
+          If this policy is set to Enabled, the
           <ph name="PRODUCT_NAME">Get Image Descriptions from Google</ph>
           feature will be enabled, though it will only affect users who are using a
           screen reader or other similar assistive technology.
 
-          If this policy is set to false, users will not have the option of enabling
+          If this policy is set to Disabled, users will not have the option of enabling
           the feature.
 
-          If you set this policy, users cannot change or override it.''',
+          If this policy is not set, user can choose to use this feature or not.
+          ''',
     },
     {
       'name': 'IntensiveWakeUpThrottlingEnabled',

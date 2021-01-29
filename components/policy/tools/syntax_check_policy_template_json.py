@@ -595,12 +595,12 @@ class PolicyTemplateChecker(object):
       # try and ensure the items are still described in the descriptions.
       value_to_names = {
           None: {'None', 'Unset', 'unset', 'not set', 'not configured'},
-          True: {'True', 'Enable', 'enable'},
-          False: {'False', 'Disable', 'disable'},
+          True: {'true', 'enable'},
+          False: {'false', 'disable'},
       }
       for value in required_values:
         names = value_to_names[value]
-        if not any(name in policy['desc'] for name in names):
+        if not any(name in policy['desc'].lower() for name in names):
           self._Warning(
               ('Policy %s doesn\'t seem to describe what happens when it is '
                'set to %s. If possible update the description to describe this '
