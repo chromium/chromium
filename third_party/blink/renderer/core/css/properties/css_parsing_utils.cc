@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "third_party/blink/renderer/core/css/counter_style_map.h"
 #include "third_party/blink/renderer/core/css/css_axis_value.h"
 #include "third_party/blink/renderer/core/css/css_basic_shape_values.h"
 #include "third_party/blink/renderer/core/css/css_border_image.h"
@@ -4873,6 +4874,40 @@ UnitlessQuirk UnitlessUnlessShorthand(
   return local_context.CurrentShorthand() == CSSPropertyID::kInvalid
              ? UnitlessQuirk::kAllow
              : UnitlessQuirk::kForbid;
+}
+
+bool ShouldLowerCaseCounterStyleNameOnParse(const AtomicString& name,
+                                            const CSSParserContext& context) {
+  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
+
+  if (context.Mode() == kUASheetMode) {
+    // Names in UA sheet should be already in lower case.
+    DCHECK_EQ(name, name.LowerASCII());
+    return false;
+  }
+  return CounterStyleMap::GetUACounterStyleMap()->FindCounterStyleAcrossScopes(
+      name.LowerASCII());
+}
+
+CSSCustomIdentValue* ConsumeCounterStyleName(CSSParserTokenRange& range,
+                                             const CSSParserContext& context) {
+  DCHECK(RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled());
+
+  CSSParserTokenRange original_range = range;
+
+  // <counter-style-name> is a <custom-ident> that is not an ASCII
+  // case-insensitive match for "none".
+  const CSSParserToken& name_token = range.ConsumeIncludingWhitespace();
+  if (name_token.GetType() != kIdentToken ||
+      !css_parsing_utils::IsCustomIdent<CSSValueID::kNone>(name_token.Id())) {
+    range = original_range;
+    return nullptr;
+  }
+
+  AtomicString name(name_token.Value().ToString());
+  if (ShouldLowerCaseCounterStyleNameOnParse(name, context))
+    name = name.LowerASCII();
+  return MakeGarbageCollected<CSSCustomIdentValue>(name);
 }
 
 }  // namespace css_parsing_utils

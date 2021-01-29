@@ -2984,7 +2984,6 @@ crbug.com/626703 [ Win7 ] external/wpt/css/css-fonts/variations/font-opentype-co
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/redefine-attr-mapping.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/descriptor-pad.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/dependent-builtin.html [ Failure ]
-crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/name-case-sensitivity.html [ Failure ]
 crbug.com/626703 external/wpt/css/vendor-imports/mozilla/mozilla-central-reftests/counter-styles-3/disclosure-styles.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/font-variant-05.xht [ Failure ]
 crbug.com/626703 external/wpt/css/css-fonts/font-variant-06.xht [ Failure ]

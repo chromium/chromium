@@ -2070,7 +2070,12 @@ CSSValue* ConsumeCounterContent(CSSParserTokenRange args,
       // Note: CSS3 spec doesn't allow 'none' but CSS2.1 allows it. We currently
       // allow it for backward compatibility.
       // See https://github.com/w3c/csswg-drafts/issues/5795 for details.
-      list_style = css_parsing_utils::ConsumeCustomIdent(args, context);
+      if (args.Peek().Id() == CSSValueID::kNone) {
+        list_style = MakeGarbageCollected<CSSCustomIdentValue>("none");
+        args.ConsumeIncludingWhitespace();
+      } else {
+        list_style = css_parsing_utils::ConsumeCounterStyleName(args, context);
+      }
     }
   } else {
     list_style = MakeGarbageCollected<CSSCustomIdentValue>("decimal");
@@ -4413,7 +4418,7 @@ const CSSValue* ListStyleType::ParseSingleValue(
     }
   } else {
     if (auto* counter_style_name =
-            css_parsing_utils::ConsumeCustomIdent(range, context))
+            css_parsing_utils::ConsumeCounterStyleName(range, context))
       return counter_style_name;
   }
 

@@ -14,17 +14,6 @@ namespace blink {
 
 namespace {
 
-CSSValue* ConsumeCounterStyleName(CSSParserTokenRange& range,
-                                  const CSSParserContext& context) {
-  // <counter-style-name> is a <custom-ident> that is not an ASCII
-  // case-insensitive match for "none".
-  CSSCustomIdentValue* name =
-      css_parsing_utils::ConsumeCustomIdent(range, context);
-  if (!name || EqualIgnoringASCIICase(name->Value(), "none"))
-    return nullptr;
-  return name;
-}
-
 CSSValue* ConsumeCounterStyleSymbol(CSSParserTokenRange& range,
                                     const CSSParserContext& context) {
   // <symbol> = <string> | <image> | <custom-ident>
@@ -64,7 +53,8 @@ CSSValue* ConsumeCounterStyleSystem(CSSParserTokenRange& range,
 
   if (CSSValue* ident =
           css_parsing_utils::ConsumeIdent<CSSValueID::kExtends>(range)) {
-    CSSValue* extended = ConsumeCounterStyleName(range, context);
+    CSSValue* extended =
+        css_parsing_utils::ConsumeCounterStyleName(range, context);
     if (!extended)
       return nullptr;
     return MakeGarbageCollected<CSSValuePair>(
@@ -216,7 +206,8 @@ CSSValue* ConsumeCounterStyleSpeakAs(CSSParserTokenRange& range,
           CSSValueID::kAuto, CSSValueID::kBullets, CSSValueID::kNumbers,
           CSSValueID::kWords, CSSValueID::kSpellOut>(range))
     return ident;
-  if (CSSValue* name = ConsumeCounterStyleName(range, context))
+  if (CSSValue* name =
+          css_parsing_utils::ConsumeCounterStyleName(range, context))
     return name;
   return nullptr;
 }
@@ -254,7 +245,7 @@ CSSValue* AtRuleDescriptorParser::ParseAtCounterStyleDescriptor(
       break;
     case AtRuleDescriptorID::Fallback:
       range.ConsumeWhitespace();
-      parsed_value = ConsumeCounterStyleName(range, context);
+      parsed_value = css_parsing_utils::ConsumeCounterStyleName(range, context);
       break;
     case AtRuleDescriptorID::Symbols:
       range.ConsumeWhitespace();

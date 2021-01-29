@@ -957,6 +957,10 @@ StyleRuleCounterStyle* CSSParserImpl::ConsumeCounterStyleRule(
   }
 
   AtomicString name(name_token.Value().ToString());
+  if (css_parsing_utils::ShouldLowerCaseCounterStyleNameOnParse(
+          name, *GetContext())) {
+    name = name.LowerASCII();
+  }
 
   if (observer_) {
     observer_->StartRuleHeader(StyleRule::kCounterStyle, prelude_offset_start);
