@@ -83,13 +83,12 @@ def _get_log_ids_for_operator(logs_by_operator, operator_name):
 
 def _is_log_disqualified(log):
   # Disqualified logs are denoted with state="retired"
-  assert (len(log.get("state").keys()) == 1)
+  assert (len(log.get("state")) == 1)
   log_state = list(log.get("state"))[0]
   return log_state == "retired"
 
 
 def _escape_c_string(s):
-
   def _escape_char(c):
     if 32 <= ord(c) <= 126 and c not in '\\"':
       return c
@@ -144,9 +143,8 @@ def _get_disqualified_log_definitions(logs):
 
 
 def _sorted_disqualified_logs(all_logs):
-  return sorted(
-      filter(_is_log_disqualified, all_logs),
-      key=lambda l: base64.b64decode(l["log_id"]))
+  return sorted([l for l in all_logs if _is_log_disqualified(l)],
+                key = lambda l: base64.b64decode(l["log_id"]))
 
 
 def _write_qualifying_logs_loginfo(f, qualifying_logs):
@@ -157,7 +155,7 @@ def _write_qualifying_logs_loginfo(f, qualifying_logs):
 
 
 def _is_log_once_or_currently_qualified(log):
-  assert (len(log.get("state").keys()) == 1)
+  assert (len(log.get("state")) == 1)
   return list(log.get("state"))[0] not in ("pending", "rejected")
 
 
@@ -193,7 +191,7 @@ def generate_cpp_file(input_file, f):
 
 def main():
   if len(sys.argv) != 3:
-    print("usage: %s in_loglist_json out_header" % sys.argv[0])
+    print(("usage: %s in_loglist_json out_header" % sys.argv[0]))
     return 1
   with open(sys.argv[1], "r") as infile, open(sys.argv[2], "w") as outfile:
     generate_cpp_file(infile, outfile)
