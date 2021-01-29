@@ -6799,6 +6799,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="238" label="CSDH_BAD_OWNER"/>
   <int value="239" label="SYNC_COMPOSITOR_NO_LOCAL_SURFACE_ID"/>
   <int value="240" label="WCI_INVALID_FULLSCREEN_OPTIONS"/>
+  <int value="241" label="PAYMENTS_WITHOUT_PERMISSION"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

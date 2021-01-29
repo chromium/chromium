@@ -2105,11 +2105,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const url::Origin& frame_origin,
       net::IsolationInfo::RequestType request_type) const;
 
-#if defined(OS_ANDROID)
-  void ForwardGetInterfaceToRenderFrame(const std::string& interface_name,
-                                        mojo::ScopedMessagePipeHandle pipe);
-#endif
-
   // mojom::FrameHost:
   void CreateNewWindow(mojom::CreateNewWindowParamsPtr params,
                        CreateNewWindowCallback callback) override;
@@ -3121,12 +3116,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // this RenderFrameHost. This provides access to interfaces implemented in
   // Java in the browser process to C++ code in the browser process.
   std::unique_ptr<service_manager::InterfaceProvider> java_interfaces_;
-
-  // An InterfaceRegistry that forwards interface requests from Java to the
-  // RenderFrame. This provides access to interfaces implemented in the renderer
-  // to Java code in the browser process.
-  class JavaInterfaceProvider;
-  std::unique_ptr<JavaInterfaceProvider> java_interface_registry_;
 #endif
 
   // BrowserInterfaceBroker implementation through which this

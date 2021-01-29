@@ -11,13 +11,14 @@
 #include "base/android/unguessable_token_android.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/android/content_jni_headers/RenderFrameHostImpl_jni.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-shared.h"
 #include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 #include "url/origin.h"
@@ -61,11 +62,8 @@ RenderFrameHost* RenderFrameHost::FromJavaRenderFrameHost(
 }
 
 RenderFrameHostAndroid::RenderFrameHostAndroid(
-    RenderFrameHostImpl* render_frame_host,
-    mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-        interface_provider_remote)
-    : render_frame_host_(render_frame_host),
-      interface_provider_remote_(std::move(interface_provider_remote)) {}
+    RenderFrameHostImpl* render_frame_host)
+    : render_frame_host_(render_frame_host) {}
 
 RenderFrameHostAndroid::~RenderFrameHostAndroid() {
   // Avoid unnecessarily creating the java object from the destructor.
@@ -89,7 +87,7 @@ RenderFrameHostAndroid::GetJavaObject() {
     ScopedJavaLocalRef<jobject> local_ref = Java_RenderFrameHostImpl_create(
         env, reinterpret_cast<intptr_t>(this),
         render_frame_host_->delegate()->GetJavaRenderFrameHostDelegate(),
-        is_incognito, interface_provider_remote_.PassPipe().release().value());
+        is_incognito);
     obj_ = JavaObjectWeakGlobalRef(env, local_ref);
     return local_ref;
   }
@@ -145,6 +143,27 @@ jboolean RenderFrameHostAndroid::IsRenderFrameCreated(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&) const {
   return render_frame_host_->IsRenderFrameCreated();
+}
+
+void RenderFrameHostAndroid::GetInterfaceToRendererFrame(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>&,
+    const base::android::JavaParamRef<jstring>& interface_name,
+    jint message_pipe_raw_handle) const {
+  DCHECK(render_frame_host_->IsRenderFrameCreated());
+  render_frame_host_->GetRemoteInterfaces()->GetInterfaceByName(
+      ConvertJavaStringToUTF8(env, interface_name),
+      mojo::ScopedMessagePipeHandle(
+          mojo::MessagePipeHandle(message_pipe_raw_handle)));
+}
+
+void RenderFrameHostAndroid::TerminateRendererDueToBadMessage(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>&,
+    jint reason) const {
+  DCHECK_LT(reason, bad_message::BAD_MESSAGE_MAX);
+  ReceivedBadMessage(render_frame_host_->GetProcess(),
+                     static_cast<bad_message::BadMessageReason>(reason));
 }
 
 jboolean RenderFrameHostAndroid::IsProcessBlocked(

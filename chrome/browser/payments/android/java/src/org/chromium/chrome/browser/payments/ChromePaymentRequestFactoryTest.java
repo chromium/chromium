@@ -27,9 +27,8 @@ import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.content_public.browser.FeaturePolicyFeature;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.services.service_manager.InterfaceProvider;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** A test for ChromePaymentRequestFactory. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -82,19 +81,18 @@ public class ChromePaymentRequestFactoryTest {
 
     @Test
     @Feature({"Payments"})
-    public void testDisabledPolicyCausesNullReturn() {
+    public void testDisabledPolicyCausesBadMessage() {
         setPaymentFeaturePolicy(false);
-        InterfaceProvider provider = Mockito.mock(InterfaceProvider.class);
-        Mockito.doReturn(provider).when(mRenderFrameHost).getRemoteInterfaces();
-        AtomicBoolean isConnectionError = new AtomicBoolean(false);
-        Mockito.doAnswer((args) -> {
-                   isConnectionError.set(true);
+        AtomicInteger isKilledReason = new AtomicInteger(0);
+        Mockito.doAnswer(invocation -> {
+                   isKilledReason.set((int) invocation.getArguments()[0]);
                    return null;
                })
-                .when(provider)
-                .onConnectionError(Mockito.any());
+                .when(mRenderFrameHost)
+                .terminateRendererDueToBadMessage(Mockito.anyInt());
         Assert.assertNull(createFactory(mRenderFrameHost).createImpl());
-        Assert.assertTrue(isConnectionError.get());
+        // 241 == PAYMENTS_WITHOUT_PERMISSION.
+        Assert.assertEquals(isKilledReason.get(), 241);
     }
 
     @Test

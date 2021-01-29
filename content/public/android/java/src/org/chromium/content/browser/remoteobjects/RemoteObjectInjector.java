@@ -104,7 +104,11 @@ public final class RemoteObjectInjector extends WebContentsObserver {
 
         List<RenderFrameHost> frames = webContents.getAllRenderFrameHosts();
         for (RenderFrameHost frame : frames) {
-            addInterfaceForFrame(frame, name, object, requiredAnnotation);
+            // If there's no renderer frame yet, we will add the interface when
+            // it is created.
+            if (frame.isRenderFrameCreated()) {
+                addInterfaceForFrame(frame, name, object, requiredAnnotation);
+            }
         }
     }
 
@@ -166,8 +170,8 @@ public final class RemoteObjectInjector extends WebContentsObserver {
             RemoteObjectHostImpl host = new RemoteObjectHostImpl(
                     new RemoteObjectAuditorImpl(), registry, mAllowInspection);
 
-            RemoteObjectGatewayFactory factory = frameHost.getRemoteInterfaces().getInterface(
-                    RemoteObjectGatewayFactory.MANAGER);
+            RemoteObjectGatewayFactory factory =
+                    frameHost.getInterfaceToRendererFrame(RemoteObjectGatewayFactory.MANAGER);
 
             Pair<RemoteObjectGateway.Proxy, InterfaceRequest<RemoteObjectGateway>> result =
                     RemoteObjectGateway.MANAGER.getInterfaceRequest(CoreImpl.getInstance());

@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.services.service_manager.InterfaceProvider;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -173,10 +172,9 @@ public class AppIndexingUtil {
         RenderFrameHost mainFrame = webContents.getMainFrame();
         if (mainFrame == null) return null;
 
-        InterfaceProvider interfaces = mainFrame.getRemoteInterfaces();
-        if (interfaces == null) return null;
+        if (!mainFrame.isRenderFrameCreated()) return null;
 
-        return interfaces.getInterface(DocumentMetadata.MANAGER);
+        return mainFrame.getInterfaceToRendererFrame(DocumentMetadata.MANAGER);
     }
 
     @VisibleForTesting

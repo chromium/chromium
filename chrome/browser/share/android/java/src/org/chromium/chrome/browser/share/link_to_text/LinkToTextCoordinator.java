@@ -15,7 +15,6 @@ import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.components.browser_ui.share.ShareParams;
-import org.chromium.services.service_manager.InterfaceProvider;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
@@ -87,8 +86,8 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
             return;
         }
 
-        InterfaceProvider interfaces = mTab.getWebContents().getMainFrame().getRemoteInterfaces();
-        mProducer = interfaces.getInterface(TextFragmentSelectorProducer.MANAGER);
+        mProducer = mTab.getWebContents().getMainFrame().getInterfaceToRendererFrame(
+                TextFragmentSelectorProducer.MANAGER);
         mProducer.generateSelector(new TextFragmentSelectorProducer.GenerateSelectorResponse() {
             @Override
             public void call(String selector) {
