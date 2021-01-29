@@ -305,6 +305,10 @@ const base::Feature kExoOrdinalMotion{"ExoOrdinalMotion",
 const base::Feature kExoPointerLock{"ExoPointerLock",
                                     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable or disable bubble showing when an application gains any UI lock.
+const base::Feature kExoLockNotification{"ExoLockNotification",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kDisablePeripheralDataAccessProtection{
     "DisablePeripheralDataAccessProtection", base::FEATURE_DISABLED_BY_DEFAULT};
 

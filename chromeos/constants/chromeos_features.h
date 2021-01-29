@@ -148,6 +148,8 @@ extern const base::Feature kExoOrdinalMotion;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kExoPointerLock;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
+extern const base::Feature kExoLockNotification;
+COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kFamilyLinkOnSchoolDevice;
 COMPONENT_EXPORT(CHROMEOS_CONSTANTS)
 extern const base::Feature kFilesCameraFolder;

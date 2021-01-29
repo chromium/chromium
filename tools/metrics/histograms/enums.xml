@@ -45334,6 +45334,7 @@ from previous Chrome versions.
   <int value="415395210" label="TrimOnMemoryPressure:enabled"/>
   <int value="416116189" label="DeprecateLowUsageCodecs:enabled"/>
   <int value="416691040" label="SendTabToSelfOmniboxSendingAnimation:disabled"/>
+  <int value="416760194" label="ExoLockNotification:disabled"/>
   <int value="416887895" label="enable-password-change-support"/>
   <int value="417709910"
       label="AutofillSendExperimentIdsInPaymentsRPCs:disabled"/>
@@ -46927,6 +46928,7 @@ from previous Chrome versions.
   <int value="1919917329" label="ImplicitRootScroller:disabled"/>
   <int value="1920894670"
       label="OmniboxPreserveDefaultMatchAgainstAsyncUpdate:enabled"/>
+  <int value="1921543515" label="ExoLockNotification:enabled"/>
   <int value="1923052799" label="CrostiniUseDlc:disabled"/>
   <int value="1923496816" label="AssistantIntentTranslateInfo:disabled"/>
   <int value="1923780021" label="PrivacyReorderedAndroid:enabled"/>

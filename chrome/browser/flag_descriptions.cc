@@ -4276,6 +4276,11 @@ const char kExoPointerLockDescription[] =
     "Allow Linux applications to request a pointer lock, i.e. exclusive use of "
     "the mouse pointer.";
 
+const char kExoLockNotificationName[] = "Notification bubble for UI lock";
+const char kExoLockNotificationDescription[] =
+    "Show a notification bubble once an application has switched to "
+    "non-immersive fullscreen mode or obtained pointer lock.";
+
 const char kExperimentalAccessibilityChromeVoxAnnotationsName[] =
     "Enable experimental ChromeVox annotations feature.";
 const char kExperimentalAccessibilityChromeVoxAnnotationsDescription[] =

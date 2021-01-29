@@ -2496,6 +2496,9 @@ extern const char kExoOrdinalMotionDescription[];
 extern const char kExoPointerLockName[];
 extern const char kExoPointerLockDescription[];
 
+extern const char kExoLockNotificationName[];
+extern const char kExoLockNotificationDescription[];
+
 extern const char kExperimentalAccessibilityChromeVoxAnnotationsName[];
 extern const char kExperimentalAccessibilityChromeVoxAnnotationsDescription[];
 

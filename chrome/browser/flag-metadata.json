@@ -2624,6 +2624,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "exo-lock-notification",
+    "owners": [ "cpelling@google.com" ],
+    "expiry_milestone": 95
+  },
+  {
     "name": "exo-ordinal-motion",
     "owners": [ "hollingum@google.com" ],
     "expiry_milestone": 90
