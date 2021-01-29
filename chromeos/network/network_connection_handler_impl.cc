@@ -664,14 +664,15 @@ void NetworkConnectionHandlerImpl::CheckCertificatesLoaded() {
 
   // Notify the user that the connect failed, clear the queued network, and
   // clear the connect_requested flag for the NetworkState.
+  std::string queued_connect_service_path = queued_connect_->service_path;
   NET_LOG(ERROR) << "Certificate load timeout: "
-                 << NetworkPathId(queued_connect_->service_path);
+                 << NetworkPathId(queued_connect_service_path);
   InvokeConnectErrorCallback(queued_connect_->service_path,
                              std::move(queued_connect_->error_callback),
                              kErrorCertLoadTimeout);
   queued_connect_.reset();
   network_state_handler_->SetNetworkConnectRequested(
-      queued_connect_->service_path, false);
+      queued_connect_service_path, false);
 }
 
 void NetworkConnectionHandlerImpl::ConnectToQueuedNetwork() {
