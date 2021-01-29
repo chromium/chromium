@@ -140,8 +140,10 @@ TEST_F(
     });
 
 
+// Flaky: http://crbug.com/1171750
 TEST_F(
-    'MagnifierE2ETest', 'MovesScreenMagnifierToActiveDescendant', function() {
+    'MagnifierE2ETest', 'DISABLED_MovesScreenMagnifierToActiveDescendant',
+    function() {
       const site = `
     <span tabindex="1">Top</span>
     <div id="group" role="group" style="width: 200px"
