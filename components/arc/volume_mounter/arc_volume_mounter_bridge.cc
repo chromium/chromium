@@ -231,7 +231,7 @@ void ArcVolumeMounterBridge::OnMountEvent(
       SendMountEventForRemovableMedia(event, mount_info.source_path,
                                       mount_info.mount_path, fs_uuid,
                                       device_label, device_type, visible);
-      delegate_->StopWatchingRemovableMedia(fs_uuid);
+      delegate_->StopWatchingRemovableMedia(mount_info.mount_path);
       break;
   }
 

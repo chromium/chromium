@@ -58,7 +58,7 @@ class ArcFileSystemWatcherService
                                    const std::string& mount_path,
                                    base::OnceClosure callback) override;
 
-  void StopWatchingRemovableMedia(const std::string& fs_uuid) override;
+  void StopWatchingRemovableMedia(const std::string& mount_path) override;
 
  private:
   class FileSystemWatcher;
@@ -79,7 +79,7 @@ class ArcFileSystemWatcherService
 
   std::unique_ptr<FileSystemWatcher> downloads_watcher_;
   std::unique_ptr<FileSystemWatcher> myfiles_watcher_;
-  // A map from UUID to watcher.
+  // A map from mount path to watcher.
   std::map<std::string, std::unique_ptr<FileSystemWatcher>>
       removable_media_watchers_;
 

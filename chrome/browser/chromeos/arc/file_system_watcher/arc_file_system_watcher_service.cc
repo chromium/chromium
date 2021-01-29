@@ -452,7 +452,7 @@ void ArcFileSystemWatcherService::StartWatchingRemovableMedia(
   // map assignment will remove the entry after a new entry is
   // created, possibly causing crash if there is 2 mount events without
   // unmounting events in between.
-  if (removable_media_watchers_.count(fs_uuid)) {
+  if (removable_media_watchers_.count(mount_path)) {
     return;
   }
 
@@ -460,20 +460,21 @@ void ArcFileSystemWatcherService::StartWatchingRemovableMedia(
   // file_task_runner.
   base::FilePath android_path =
       base::FilePath(kAndroidStorageDir).Append(fs_uuid);
-  removable_media_watchers_[fs_uuid] = CreateAndStartFileSystemWatcher(
+  removable_media_watchers_[mount_path] = CreateAndStartFileSystemWatcher(
       base::FilePath(mount_path), android_path, std::move(callback));
 }
 
 void ArcFileSystemWatcherService::StopWatchingRemovableMedia(
-    const std::string& fs_uuid) {
+    const std::string& mount_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!removable_media_watchers_.count(fs_uuid)) {
-    LOG(ERROR) << "Unmounting non-existing volume with UUID: " << fs_uuid;
+  if (!removable_media_watchers_.count(mount_path)) {
+    LOG(ERROR) << "Unmounting non-existing volume with mount path: "
+               << mount_path;
     return;
   }
-  file_task_runner_->DeleteSoon(FROM_HERE,
-                                removable_media_watchers_[fs_uuid].release());
-  removable_media_watchers_.erase(fs_uuid);
+  file_task_runner_->DeleteSoon(
+      FROM_HERE, removable_media_watchers_[mount_path].release());
+  removable_media_watchers_.erase(mount_path);
 }
 
 void ArcFileSystemWatcherService::TriggerSendAllMountEvents() const {
