@@ -187,6 +187,11 @@ def _GetTargetOS():
   return build_args['target_os'] if 'target_os' in build_args else ''
 
 
+def _IsAndroid():
+  """Returns true if the target_os specified in args.gn file is android"""
+  return _GetTargetOS() == 'android'
+
+
 def _IsIOS():
   """Returns true if the target_os specified in args.gn file is ios"""
   return _GetTargetOS() == 'ios'
@@ -351,6 +356,12 @@ def _GetTargetProfDataPathsByExecutingCommands(targets, commands):
       profraw_file_paths = []
       if _IsIOS():
         profraw_file_paths = [_GetProfrawDataFileByParsingOutput(output)]
+      elif _IsAndroid():
+        android_coverage_dir = os.path.join(BUILD_DIR, 'coverage')
+        for r, _, files in os.walk(android_coverage_dir):
+          for f in files:
+            if f.endswith(PROFRAW_FILE_EXTENSION):
+              profraw_file_paths.append(os.path.join(r, f))
       else:
         for file_or_dir in os.listdir(report_root_dir):
           if file_or_dir.endswith(PROFRAW_FILE_EXTENSION):
@@ -571,7 +582,6 @@ def _CreateTargetProfDataFileFromProfRawFiles(target, profraw_file_paths):
         LLVM_PROFDATA_PATH, 'merge', '-o', profdata_file_path, '-sparse=true'
     ]
     subprocess_cmd.extend(profraw_file_paths)
-
     output = subprocess.check_output(subprocess_cmd)
     logging.debug('Merge output: %s', output)
   except subprocess.CalledProcessError as error:
@@ -706,9 +716,10 @@ def _ValidateCurrentPlatformIsSupported():
   else:
     current_platform = coverage_utils.GetHostPlatform()
 
-  assert current_platform in [
-      'linux', 'mac', 'chromeos', 'ios', 'win'
-  ], ('Coverage is only supported on linux, mac, chromeos, ios and win.')
+  supported_platforms = ['android', 'chromeos', 'ios', 'linux', 'mac', 'win']
+  assert current_platform in supported_platforms, ('Coverage is only'
+                                                   'supported on %s' %
+                                                   supported_platforms)
 
 
 def _GetBuildArgs():
@@ -763,8 +774,8 @@ def _VerifyPathsAndReturnAbsolutes(paths):
 
 def _GetBinaryPathsFromTargets(targets, build_dir):
   """Return binary paths from target names."""
-  # FIXME: Derive output binary from target build definitions rather than
-  # assuming that it is always the same name.
+  # TODO(crbug.com/899974): Derive output binary from target build definitions
+  # rather than assuming that it is always the same name.
   binary_paths = []
   for target in targets:
     binary_path = os.path.join(build_dir, target)
@@ -796,6 +807,20 @@ def _GetCommandForWebTests(arguments):
   if arguments.strip():
     command_list.append(arguments)
   return ' '.join(command_list)
+
+
+def _GetBinaryPathsForAndroid(targets):
+  """Return binary paths used when running android tests."""
+  # TODO(crbug.com/899974): Implement approach that doesn't assume .so file is
+  # based on the target's name.
+  android_binaries = set()
+  for target in targets:
+    so_library_path = os.path.join(BUILD_DIR, 'lib.unstripped',
+                                   'lib%s__library.so' % target)
+    if os.path.exists(so_library_path):
+      android_binaries.add(so_library_path)
+
+  return list(android_binaries)
 
 
 def _GetBinaryPathForWebTests():
@@ -1035,7 +1060,10 @@ def Main():
         'otool')
     if os.path.exists(hermetic_otool_path):
       otool_path = hermetic_otool_path
-  if sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
+
+  if _IsAndroid():
+    binary_paths = _GetBinaryPathsForAndroid(args.targets)
+  elif sys.platform.startswith('linux') or sys.platform.startswith('darwin'):
     binary_paths.extend(
         coverage_utils.GetSharedLibraries(binary_paths, BUILD_DIR, otool_path))
 

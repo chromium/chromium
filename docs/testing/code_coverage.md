@@ -124,7 +124,8 @@ by CQ bot. Or see this
 The [coverage script] automates the process described below and provides a
 one-stop service to generate code coverage reports locally in just one command.
 
-This script is currently supported on Linux, Mac, iOS and ChromeOS platforms.
+This script is currently supported on Android, Linux, Mac, iOS and ChromeOS
+platforms.
 
 Here is an example usage:
 
@@ -185,7 +186,8 @@ hundred, resulting in the generation of a few hundred gigabytes’ raw
 profiles. To limit the number of raw profiles, `%Nm` pattern in
 `LLVM_PROFILE_FILE` environment variable is used to run tests in multi-process
 mode, where `N` is the number of raw profiles. With `N = 4`, the total size of
-the raw profiles are limited to a few gigabytes.
+the raw profiles are limited to a few gigabytes. (If working on Android, the
+.profraw files will be located in ./out/coverage/coverage by default.)
 
 ```
 $ export LLVM_PROFILE_FILE="out/report/crypto_unittests.%4m.profraw"
@@ -232,6 +234,9 @@ $ llvm-cov show -output-dir=out/report -format=html \
     -object=out/coverage/url_unittests \
     out/coverage/crypto_unittests
 ```
+
+If creating a report for Android, the -object arg would be the lib.unstripped
+file, ie out/coverage/lib.unstripped/libcrypto_unittests__library.so
 
 For more information on how to use llvm-cov, please refer to the [guide].
 
