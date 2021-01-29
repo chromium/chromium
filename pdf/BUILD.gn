@@ -272,6 +272,8 @@ if (enable_pdf) {
     sources = [
       "pdf_view_web_plugin.cc",
       "pdf_view_web_plugin.h",
+      "post_message_receiver.cc",
+      "post_message_receiver.h",
     ]
 
     configs += [ ":pdf_common_config" ]
@@ -281,9 +283,11 @@ if (enable_pdf) {
       ":ppapi_migration",
       "//base",
       "//cc/paint",
+      "//gin",
       "//ppapi/cpp:objects",  # TODO(crbug.com/1114263): PDFEngine::Client only.
       "//third_party/blink/public:blink_headers",
       "//ui/base/cursor:cursor_base",
+      "//v8",
     ]
   }
 

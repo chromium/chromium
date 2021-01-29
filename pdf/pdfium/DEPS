@@ -1,6 +1,5 @@
 include_rules = [
   "+gin/array_buffer.h",
-  "+gin/public",
   "+gin/v8_initializer.h",
   "+printing/nup_parameters.h",
   "+printing/page_setup.h",

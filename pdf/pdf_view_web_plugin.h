@@ -8,9 +8,15 @@
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "pdf/pdf_view_plugin_base.h"
+#include "pdf/post_message_receiver.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
+#include "v8/include/v8.h"
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace blink {
 class WebPluginContainer;
@@ -21,7 +27,8 @@ namespace chrome_pdf {
 // Skeleton for a `blink::WebPlugin` to replace `OutOfProcessInstance`.
 class PdfViewWebPlugin final : public PdfViewPluginBase,
                                public blink::WebPlugin,
-                               public BlinkUrlLoader::Client {
+                               public BlinkUrlLoader::Client,
+                               public PostMessageReceiver::Client {
  public:
   explicit PdfViewWebPlugin(const blink::WebPluginParams& params);
   PdfViewWebPlugin(const PdfViewWebPlugin& other) = delete;
@@ -31,6 +38,7 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   bool Initialize(blink::WebPluginContainer* container) override;
   void Destroy() override;
   blink::WebPluginContainer* Container() const override;
+  v8::Local<v8::Object> V8ScriptableObject(v8::Isolate* isolate) override;
   void UpdateAllLifecyclePhases(blink::DocumentUpdateReason reason) override;
   void Paint(cc::PaintCanvas* canvas, const gfx::Rect& rect) override;
   void UpdateGeometry(const gfx::Rect& window_rect,
@@ -119,6 +127,9 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
   std::unique_ptr<blink::WebAssociatedURLLoader> CreateAssociatedURLLoader(
       const blink::WebAssociatedURLLoaderOptions& options) override;
 
+  // PostMessageReceiver::Client:
+  void OnMessage(const base::Value& message) override;
+
  protected:
   // PdfViewPluginBase:
   base::WeakPtr<PdfViewPluginBase> GetWeakPtr() override;
@@ -137,6 +148,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
 
   blink::WebPluginParams initial_params_;
   blink::WebPluginContainer* container_ = nullptr;
+
+  v8::Persistent<v8::Object> scriptable_receiver_;
 
   base::WeakPtrFactory<PdfViewWebPlugin> weak_factory_{this};
 };

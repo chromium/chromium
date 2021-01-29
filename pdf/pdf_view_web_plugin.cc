@@ -15,13 +15,16 @@
 #include "base/location.h"
 #include "base/notreached.h"
 #include "base/thread_annotations.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "cc/paint/paint_canvas.h"
 #include "net/cookies/site_for_cookies.h"
 #include "pdf/pdf_engine.h"
 #include "pdf/pdf_init.h"
 #include "pdf/pdfium/pdfium_engine.h"
+#include "pdf/post_message_receiver.h"
 #include "pdf/ppapi_migration/graphics.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "ppapi/c/pp_errors.h"
@@ -41,6 +44,7 @@
 #include "third_party/blink/public/web/web_plugin_container.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "ui/base/cursor/cursor.h"
+#include "v8/include/v8.h"
 
 namespace chrome_pdf {
 
@@ -147,6 +151,20 @@ void PdfViewWebPlugin::Destroy() {
 
 blink::WebPluginContainer* PdfViewWebPlugin::Container() const {
   return container_;
+}
+
+v8::Local<v8::Object> PdfViewWebPlugin::V8ScriptableObject(
+    v8::Isolate* isolate) {
+  if (scriptable_receiver_.IsEmpty()) {
+    // TODO(crbug.com/1123731): Messages should not be handled on the renderer
+    // main thread.
+    scriptable_receiver_.Reset(
+        isolate,
+        PostMessageReceiver::Create(isolate, weak_factory_.GetWeakPtr(),
+                                    base::SequencedTaskRunnerHandle::Get()));
+  }
+
+  return scriptable_receiver_.Get(isolate);
 }
 
 void PdfViewWebPlugin::UpdateAllLifecyclePhases(
@@ -357,6 +375,10 @@ PdfViewWebPlugin::CreateAssociatedURLLoader(
   DCHECK(IsValid());
   return container_->GetDocument().GetFrame()->CreateAssociatedURLLoader(
       options);
+}
+
+void PdfViewWebPlugin::OnMessage(const base::Value& message) {
+  NOTIMPLEMENTED() << message;
 }
 
 base::WeakPtr<PdfViewPluginBase> PdfViewWebPlugin::GetWeakPtr() {

@@ -1,5 +1,9 @@
 include_rules = [
   "+cc/paint",
+  "+gin/handle.h",
+  "+gin/public",
+  "+gin/object_template_builder.h",
+  "+gin/wrappable.h",
   "+net",
   "+ppapi",
   "+printing/units.h",
