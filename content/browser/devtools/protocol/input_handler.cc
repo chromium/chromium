@@ -509,9 +509,6 @@ void InputHandler::SetRenderer(int process_host_id,
     return;
   ClearInputState();
 
-  WebContents* old_web_contents = WebContents::FromRenderFrameHost(host_);
-  WebContents* new_web_contents = WebContents::FromRenderFrameHost(frame_host);
-
   // When navigating, the new renderer might have a different page scale.
   // It emits a changed event iff the new page scale is not 1
   // (see crbug.com/929806)
@@ -520,13 +517,15 @@ void InputHandler::SetRenderer(int process_host_id,
   if (host_)
     page_scale_factor_ = 1.0;
 
+  WebContents* old_web_contents = WebContents::FromRenderFrameHost(host_);
   host_ = frame_host;
+  web_contents_ = WebContents::FromRenderFrameHost(host_);
 
-  if (ignore_input_events_ && old_web_contents != new_web_contents) {
+  if (ignore_input_events_ && old_web_contents != web_contents_) {
     if (old_web_contents)
       old_web_contents->SetIgnoreInputEvents(false);
-    if (new_web_contents)
-      new_web_contents->SetIgnoreInputEvents(true);
+    if (web_contents_)
+      web_contents_->SetIgnoreInputEvents(true);
   }
 }
 
@@ -540,9 +539,8 @@ void InputHandler::OnPageScaleFactorChanged(float page_scale_factor) {
 
 Response InputHandler::Disable() {
   ClearInputState();
-  WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
-  if (web_contents && ignore_input_events_)
-    web_contents->SetIgnoreInputEvents(false);
+  if (web_contents_ && ignore_input_events_)
+    web_contents_->SetIgnoreInputEvents(false);
   ignore_input_events_ = false;
   pointer_ids_.clear();
   touch_points_.clear();
@@ -1304,9 +1302,8 @@ Response InputHandler::EmulateTouchFromMouseEvent(const std::string& type,
 
 Response InputHandler::SetIgnoreInputEvents(bool ignore) {
   ignore_input_events_ = ignore;
-  WebContents* web_contents = WebContents::FromRenderFrameHost(host_);
-  if (web_contents)
-    web_contents->SetIgnoreInputEvents(ignore);
+  if (web_contents_)
+    web_contents_->SetIgnoreInputEvents(ignore);
   return Response::Success();
 }
 
