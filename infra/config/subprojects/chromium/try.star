@@ -727,6 +727,14 @@ try_.chromium_chromiumos_builder(
 
 try_.chromium_chromiumos_builder(
     name = "linux-cfm-rel",
+    tryjob = try_.job(
+        location_regexp = [
+            ".+/[+]/chromeos/components/chromebox_for_meetings/.+",
+            ".+/[+]/chromeos/dbus/chromebox_for_meetings/.+",
+            ".+/[+]/chromeos/services/chromebox_for_meetings/.+",
+            ".+/[+]/chrome/browser/chromeos/chromebox_for_meetings/.+",
+        ],
+    ),
 )
 
 try_.chromium_dawn_builder(
