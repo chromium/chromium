@@ -10,6 +10,8 @@ import android.net.Uri;
 import android.util.Log;
 import android.util.TypedValue;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -94,19 +96,40 @@ public class AndroidProtocolHandler {
                 packageName + ".R$" + assetType);
     }
 
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({FieldIdResult.GET_IDENTIFIER, FieldIdResult.REFLECTION,
+            FieldIdResult.RESOURCE_NOT_FOUND_ID_0, FieldIdResult.CLASS_NOT_FOUND_EXCEPTION,
+            FieldIdResult.NO_SUCH_FIELD_EXCEPTION, FieldIdResult.ILLEGAL_ACCESS_EXCEPTION,
+            FieldIdResult.COUNT})
+    private @interface FieldIdResult {
+        int GET_IDENTIFIER = 0;
+        int REFLECTION = 1;
+        int RESOURCE_NOT_FOUND_ID_0 = 2;
+        int CLASS_NOT_FOUND_EXCEPTION = 3;
+        int NO_SUCH_FIELD_EXCEPTION = 4;
+        int ILLEGAL_ACCESS_EXCEPTION = 5;
+        int COUNT = 6;
+    }
+
+    private static void recordFieldIdResultHistogram(@FieldIdResult int histogram) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.AndroidProtocolHandler.ResourceGetIdentifier2", histogram,
+                FieldIdResult.COUNT);
+    }
+
     private static int getFieldId(String assetType, String assetName)
             throws ClassNotFoundException, NoSuchFieldException, IllegalAccessException {
         Context appContext = ContextUtils.getApplicationContext();
         String packageName = appContext.getPackageName();
         int id = appContext.getResources().getIdentifier(assetName, assetType, packageName);
         if (id != 0) {
-            RecordHistogram.recordBooleanHistogram(
-                    "Android.WebView.AndroidProtocolHandler.ResourceGetIdentifier", true);
+            recordFieldIdResultHistogram(FieldIdResult.GET_IDENTIFIER);
             return id;
         }
-        // Resource id can't be found using Resources class so fallback to reflection.
-        // TODO(https://crbug.com/923956) remove reflection fallback if the histogram is always
-        // true.
+        // Keep trying getting resource id by reflection to make sure results make sense.
+        // TODO(https://crbug.com/923956) remove reflection if the histogram doesn't hit
+        // REFLECTION
         Class<?> clazz = null;
         try {
             clazz = getClazz(packageName, assetType);
@@ -124,10 +147,16 @@ public class AndroidProtocolHandler {
                 }
             }
         }
-        RecordHistogram.recordBooleanHistogram(
-                "Android.WebView.AndroidProtocolHandler.ResourceGetIdentifier", false);
         java.lang.reflect.Field field = clazz.getField(assetName);
         id = field.getInt(null);
+
+        // Although id shouldn't be zero if no exception is thrown but still record the case if it
+        // happens.
+        if (id == 0) {
+            recordFieldIdResultHistogram(FieldIdResult.RESOURCE_NOT_FOUND_ID_0);
+        } else {
+            recordFieldIdResultHistogram(FieldIdResult.REFLECTION);
+        }
         return id;
     }
 
@@ -171,11 +200,14 @@ public class AndroidProtocolHandler {
             }
         } catch (ClassNotFoundException e) {
             Log.e(TAG, "Unable to open resource URL: " + uri, e);
+            recordFieldIdResultHistogram(FieldIdResult.CLASS_NOT_FOUND_EXCEPTION);
             return null;
         } catch (NoSuchFieldException e) {
             Log.e(TAG, "Unable to open resource URL: " + uri, e);
+            recordFieldIdResultHistogram(FieldIdResult.NO_SUCH_FIELD_EXCEPTION);
             return null;
         } catch (IllegalAccessException e) {
+            recordFieldIdResultHistogram(FieldIdResult.ILLEGAL_ACCESS_EXCEPTION);
             Log.e(TAG, "Unable to open resource URL: " + uri, e);
             return null;
         }

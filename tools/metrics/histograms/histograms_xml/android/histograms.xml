@@ -2236,12 +2236,29 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Android.WebView.AndroidProtocolHandler.ResourceGetIdentifier"
     enum="BooleanSuccess" expires_after="2021-01-30">
+  <obsolete>
+    Removed Jan 2021 because it doesn't cover the cases, replaced with
+    ResourceGetIdentifier2.
+  </obsolete>
   <owner>hazems@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Track if looking up Android app resource id using
     android.content.res.Resources#getIdentifier succeeds in
     AndroidProtocolHandler or if it falls back to reflection look up.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.AndroidProtocolHandler.ResourceGetIdentifier2"
+    enum="AndroidWebViewAndroidProtocolHandlerResources"
+    expires_after="2021-05-30">
+  <owner>hazems@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Track if looking up Android app resource id using
+    android.content.res.Resources#getIdentifier succeeds in
+    AndroidProtocolHandler in all cases or if should still fall back to
+    reflection look up.
   </summary>
 </histogram>
 
