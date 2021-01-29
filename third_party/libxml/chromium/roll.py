@@ -34,12 +34,6 @@ import tempfile
 # 3. On Mac, install these packages with brew:
 #      autoconf automake libtool pkgconfig icu4c
 #
-#    Important! Before running roll.py, set these environmental variables so the
-#    configure script can find ICU:
-#      export LDFLAGS="-L/path/to/homebrew/opt/icu4c/lib"
-#      export CPPFLAGS="-I/path/to/homebrew/opt/icu4c/include"
-#      export PKG_CONFIG_PATH="/path/to/homebrew/opt/icu4c/lib/pkgconfig"
-#
 # Procedure:
 #
 # Warning: This process is destructive. Run it on a clean branch.
@@ -66,7 +60,7 @@ import tempfile
 #
 # 3. On Mac, in the Chromium src directory:
 #    a. git cl patch <Gerrit Issue ID>
-#    b. third_party/libxml/chromium/roll.py --mac
+#    b. third_party/libxml/chromium/roll.py --mac --icu4c_path=~/homebrew/opt/icu4c
 #    c. Make and commit any final changes to README.chromium, BUILD.gn, etc.
 #    d. git cl upload
 #    e. Complete the review as usual
@@ -78,8 +72,8 @@ PATCHES = [
     'chromium-issue-628581.patch',
     'libxml2-2.9.4-security-xpath-nodetab-uaf.patch',
     'chromium-issue-708434.patch',
-    # TODO(dcheng): Merge this back upstream.
-    'add-missing-ifdef-in-xml-reader.patch',
+    # TODO(jarhar): Merge this back upstream.
+    'add-fuzz-target.patch',
 ]
 
 
@@ -405,7 +399,7 @@ def roll_libxml_win32(src_path):
                 XML_WIN32_CONFIGURE_OPTIONS)
 
             # Add and commit the result.
-            shutil.move('VC10/config.h', '../../win32/config.h')
+            shutil.move('../config.h', '../../win32/config.h')
             git('add', '../../win32/config.h')
             shutil.move('../include/libxml/xmlversion.h',
                         '../../win32/include/libxml/xmlversion.h')
@@ -415,7 +409,12 @@ def roll_libxml_win32(src_path):
     print('Now push to Mac and run steps there.')
 
 
-def roll_libxml_mac(src_path):
+def roll_libxml_mac(src_path, icu4c_path):
+    icu4c_path = os.path.abspath(os.path.expanduser(icu4c_path))
+    os.environ["LDFLAGS"] = "-L" + os.path.join(icu4c_path, 'lib')
+    os.environ["CPPFLAGS"] = "-I" + os.path.join(icu4c_path, 'include')
+    os.environ["PKG_CONFIG_PATH"] = os.path.join(icu4c_path, 'lib/pkgconfig')
+
     full_path_to_third_party_libxml = os.path.join(
         src_path, THIRD_PARTY_LIBXML_SRC, '..')
 
@@ -459,6 +458,9 @@ def main():
         type=str,
         nargs='?',
         help='The path to the local clone of the libxml2 git repo.')
+    parser.add_argument(
+        '--icu4c_path',
+        help='The path to the homebrew installation of icu4c.')
     args = parser.parse_args()
 
     if args.linux:
@@ -471,7 +473,12 @@ def main():
     elif args.win32:
         roll_libxml_win32(src_dir)
     elif args.mac:
-        roll_libxml_mac(src_dir)
+        icu4c_path = args.icu4c_path
+        if not icu4c_path:
+            print('Specify the path to the homebrew installation of icu4c with --icu4c_path.')
+            print('  ex: roll.py --mac --icu4c_path=~/homebrew/opt/icu4c')
+            sys.exit(1)
+        roll_libxml_mac(src_dir, icu4c_path)
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 Name: libxml
 URL: http://xmlsoft.org
-Version: e4fb36841800038c289997432ca547c9bfef9db1
+Version: 0b3c64d9f2f3e9ce1a98d8f19ee7a763c87e27d5
 CPEPrefix: cpe:/a:xmlsoft:libxml2:2.9.9
 License: MIT
 License File: src/Copyright
@@ -22,8 +22,8 @@ Modifications:
 - chromium-issue-708434.patch: Guard against input counter overflow.
 - revert-non-recursive-xml-parsing.patch: Making parts of the XML parser
     non-recursive broke a few web platform tests.
-- add-missing-ifdef-in-xml-reader.patch: Bug fix forgot to guard functionality
-    with appropriate #ifdef.
+- add-fuzz-target.patch: Prevents autoreconf from failing on mac due to a
+    missing makefile for fuzz.
 - Add helper classes in the chromium/ subdirectory.
 - Delete various unused files, see chromium/roll.py
 
