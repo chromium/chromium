@@ -333,8 +333,9 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, TabManagerBasics) {
   // Select the first tab.  It should reload.
   WindowedNotificationObserver reload1(
       content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      base::Bind(&ObserveNavEntryCommitted,
-                 embedded_test_server()->GetURL("a.com", "/title1.html")));
+      base::BindRepeating(
+          &ObserveNavEntryCommitted,
+          embedded_test_server()->GetURL("a.com", "/title1.html")));
   chrome::SelectNumberedTab(browser(), 0);
   reload1.Wait();
   // Make sure the FindBarController gets the right WebContents.
@@ -348,8 +349,9 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, TabManagerBasics) {
   // Select the third tab. It should reload.
   WindowedNotificationObserver reload2(
       content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      base::Bind(&ObserveNavEntryCommitted,
-                 embedded_test_server()->GetURL("a.com", "/title3.html")));
+      base::BindRepeating(
+          &ObserveNavEntryCommitted,
+          embedded_test_server()->GetURL("a.com", "/title3.html")));
   chrome::SelectNumberedTab(browser(), 2);
   reload2.Wait();
   EXPECT_EQ(2, tsm()->active_index());
@@ -363,16 +365,18 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, TabManagerBasics) {
   EXPECT_FALSE(chrome::CanGoForward(browser()));
   WindowedNotificationObserver back1(
       content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      base::Bind(&ObserveNavEntryCommitted,
-                 embedded_test_server()->GetURL("a.com", "/title2.html")));
+      base::BindRepeating(
+          &ObserveNavEntryCommitted,
+          embedded_test_server()->GetURL("a.com", "/title2.html")));
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
   back1.Wait();
   EXPECT_TRUE(chrome::CanGoBack(browser()));
   EXPECT_TRUE(chrome::CanGoForward(browser()));
   WindowedNotificationObserver back2(
       content::NOTIFICATION_NAV_ENTRY_COMMITTED,
-      base::Bind(&ObserveNavEntryCommitted,
-                 embedded_test_server()->GetURL("a.com", "/title1.html")));
+      base::BindRepeating(
+          &ObserveNavEntryCommitted,
+          embedded_test_server()->GetURL("a.com", "/title1.html")));
   chrome::GoBack(browser(), WindowOpenDisposition::CURRENT_TAB);
   back2.Wait();
   EXPECT_FALSE(chrome::CanGoBack(browser()));

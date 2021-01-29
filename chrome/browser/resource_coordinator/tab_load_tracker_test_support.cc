@@ -102,7 +102,7 @@ class WaitForLoadingStateHelper : public TabLoadTracker::Observer {
       return;
     if (AllContentsReachedState()) {
       wait_successful_ = true;
-      run_loop_quit_closure_.Run();
+      std::move(run_loop_quit_closure_).Run();
     }
   }
 
@@ -122,7 +122,7 @@ class WaitForLoadingStateHelper : public TabLoadTracker::Observer {
       wait_successful_ = AllContentsReachedState();
 #endif  // defined(OS_ANDROID)
     }
-    run_loop_quit_closure_.Run();
+    std::move(run_loop_quit_closure_).Run();
   }
 
  private:
@@ -138,7 +138,7 @@ class WaitForLoadingStateHelper : public TabLoadTracker::Observer {
   // stops being tracked (is destroyed) before encountering the desired state.
   bool wait_successful_;
 
-  base::Closure run_loop_quit_closure_;
+  base::OnceClosure run_loop_quit_closure_;
 
   DISALLOW_COPY_AND_ASSIGN(WaitForLoadingStateHelper);
 };
