@@ -1114,7 +1114,7 @@ static AXObject* NextOnLineInternalNG(const AXObject& ax_object) {
     return nullptr;
   // Returns next object of parent, since next of |ax_object| isn't appeared on
   // line.
-  return ax_object.ParentObject()->NextOnLine();
+  return ax_object.ParentObjectIncludedInTree()->NextOnLine();
 }
 
 AXObject* AXLayoutObject::NextOnLine() const {
@@ -1230,12 +1230,11 @@ static AXObject* PreviousOnLineInlineNG(const AXObject& ax_object) {
       return result;
     }
   }
-  if (!ax_object.ParentObject())
+  if (!ax_object.ParentObjectIncludedInTree())
     return nullptr;
   // Returns previous object of parent, since next of |ax_object| isn't appeared
   // on line.
-  AXObject* included_parent = ax_object.ParentObjectIncludedInTree();
-  return included_parent ? included_parent->PreviousOnLine() : nullptr;
+  return ax_object.ParentObjectIncludedInTree()->PreviousOnLine();
 }
 
 AXObject* AXLayoutObject::PreviousOnLine() const {
