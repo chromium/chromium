@@ -720,18 +720,23 @@ void ThumbnailCache::JpegProcessingTask(
     double jpeg_aspect_ratio,
     SkBitmap bitmap,
     base::OnceCallback<void(std::vector<uint8_t>)> post_processing_task) {
-  // In portrait mode, we want to show thumbnails in squares.
-  // Therefore, the thumbnail saved in portrait mode needs to be cropped to
-  // a square, or it would be vertically center-aligned, and the top would
-  // be hidden.
-  // It's fine to horizontally center-align thumbnail saved in landscape
-  // mode.
+  // We want to show thumbnails in a specific aspect ratio. Therefore, the
+  // thumbnail saved needs to be cropped to the target aspect ratio, otherwise
+  // it would be vertically center-aligned and the top would be hidden in
+  // portrait mode, or it would be shown in the wrong aspect ratio in
+  // landscape mode.
   int scale = 2;
   double aspect_ratio = clampAspectRatio(jpeg_aspect_ratio, 0.5, 2.0);
-  SkIRect dest_subset = {
-      0, 0, bitmap.width() / scale,
-      std::min(bitmap.height() / scale,
-               (int)(bitmap.width() / scale / aspect_ratio))};
+
+  int width = std::min(bitmap.width() / scale,
+                       (int)(bitmap.height() * aspect_ratio / scale));
+  int height = std::min(bitmap.height() / scale,
+                        (int)(bitmap.width() / aspect_ratio / scale));
+  // When cropping the thumbnails, we want to keep the top center portion.
+  int begin_x = (bitmap.width() / scale - width) / 2;
+  int end_x = begin_x + width;
+  SkIRect dest_subset = {begin_x, 0, end_x, height};
+
   SkBitmap result_bitmap = skia::ImageOperations::Resize(
       bitmap, skia::ImageOperations::RESIZE_BETTER, bitmap.width() / scale,
       bitmap.height() / scale, dest_subset);
