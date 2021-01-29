@@ -71,32 +71,47 @@ TEST_F(SessionServiceLogTest, LogSessionServiceRestoreEvent) {
 
 TEST_F(SessionServiceLogTest, LogSessionServiceWriteErrorEvent) {
   const base::Time start_time = base::Time::Now();
-  LogSessionServiceWriteErrorEvent(&testing_profile_);
+  LogSessionServiceWriteErrorEvent(&testing_profile_, false);
   auto events = GetSessionServiceEvents(&testing_profile_);
   ASSERT_EQ(1u, events.size());
   auto restored_event = *events.begin();
   EXPECT_EQ(SessionServiceEventLogType::kWriteError, restored_event.type);
   EXPECT_LE(start_time, restored_event.time);
   EXPECT_EQ(1, restored_event.data.write_error.error_count);
+  EXPECT_EQ(0, restored_event.data.write_error.unrecoverable_error_count);
 }
 
-TEST_F(SessionServiceLogTest, WriteErrorEventsCoalesce) {
+TEST_F(SessionServiceLogTest, LogSessionServiceUnrecoverableWriteErrorEvent) {
   const base::Time start_time = base::Time::Now();
-  LogSessionServiceWriteErrorEvent(&testing_profile_);
-  LogSessionServiceWriteErrorEvent(&testing_profile_);
+  LogSessionServiceWriteErrorEvent(&testing_profile_, true);
   auto events = GetSessionServiceEvents(&testing_profile_);
   ASSERT_EQ(1u, events.size());
   auto restored_event = *events.begin();
   EXPECT_EQ(SessionServiceEventLogType::kWriteError, restored_event.type);
   EXPECT_LE(start_time, restored_event.time);
-  EXPECT_EQ(2, restored_event.data.write_error.error_count);
+  EXPECT_EQ(1, restored_event.data.write_error.error_count);
+  EXPECT_EQ(1, restored_event.data.write_error.unrecoverable_error_count);
+}
+
+TEST_F(SessionServiceLogTest, WriteErrorEventsCoalesce) {
+  const base::Time start_time = base::Time::Now();
+  LogSessionServiceWriteErrorEvent(&testing_profile_, false);
+  LogSessionServiceWriteErrorEvent(&testing_profile_, true);
+  LogSessionServiceWriteErrorEvent(&testing_profile_, true);
+  auto events = GetSessionServiceEvents(&testing_profile_);
+  ASSERT_EQ(1u, events.size());
+  auto restored_event = *events.begin();
+  EXPECT_EQ(SessionServiceEventLogType::kWriteError, restored_event.type);
+  EXPECT_LE(start_time, restored_event.time);
+  EXPECT_EQ(3, restored_event.data.write_error.error_count);
+  EXPECT_EQ(2, restored_event.data.write_error.unrecoverable_error_count);
 }
 
 TEST_F(SessionServiceLogTest, RemoveLastSessionServiceEventOfType) {
   LogSessionServiceExitEvent(&testing_profile_, 1, 2);
-  LogSessionServiceWriteErrorEvent(&testing_profile_);
+  LogSessionServiceWriteErrorEvent(&testing_profile_, false);
   LogSessionServiceExitEvent(&testing_profile_, 2, 3);
-  LogSessionServiceWriteErrorEvent(&testing_profile_);
+  LogSessionServiceWriteErrorEvent(&testing_profile_, false);
   RemoveLastSessionServiceEventOfType(&testing_profile_,
                                       SessionServiceEventLogType::kExit);
   auto events = GetSessionServiceEvents(&testing_profile_);

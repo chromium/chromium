@@ -29,6 +29,10 @@ SessionServiceTestHelper::SessionServiceTestHelper(SessionService* service)
 
 SessionServiceTestHelper::~SessionServiceTestHelper() {}
 
+void SessionServiceTestHelper::SaveNow() {
+  return service_->GetCommandStorageManagerForTest()->Save();
+}
+
 void SessionServiceTestHelper::PrepareTabInWindow(const SessionID& window_id,
                                                   const SessionID& tab_id,
                                                   int visual_index,
@@ -153,4 +157,12 @@ bool SessionServiceTestHelper::GetHasOpenTrackableBrowsers() {
 
 void SessionServiceTestHelper::SetIsOnlyOneTabLeft(bool is_only_one_tab_left) {
   service_->is_only_one_tab_left_for_test_ = is_only_one_tab_left;
+}
+
+bool SessionServiceTestHelper::HasPendingReset() {
+  return service_->GetCommandStorageManagerForTest()->pending_reset();
+}
+
+bool SessionServiceTestHelper::HasPendingSave() {
+  return service_->GetCommandStorageManagerForTest()->HasPendingSave();
 }

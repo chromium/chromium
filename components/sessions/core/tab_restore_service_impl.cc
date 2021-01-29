@@ -500,13 +500,7 @@ TabRestoreServiceImpl::PersistenceDelegate::PersistenceDelegate(
       tab_restore_service_helper_(nullptr),
       entries_to_write_(0),
       entries_written_(0),
-      load_state_(NOT_LOADED) {
-  // A pending_reset must be scheduled for the first write, otherwise the
-  // commands are dropped.
-  // TODO(https://crbug.com/648266): If use_marker is true, pending_reset should
-  // be the default. Make pending_reset the default and remove this.
-  command_storage_manager_->set_pending_reset(true);
-}
+      load_state_(NOT_LOADED) {}
 
 TabRestoreServiceImpl::PersistenceDelegate::~PersistenceDelegate() = default;
 

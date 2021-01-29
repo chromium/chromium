@@ -15,9 +15,9 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
-#include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -84,7 +84,8 @@ SessionService::SessionService(Profile* profile)
           std::make_unique<sessions::CommandStorageManager>(
               sessions::CommandStorageManager::kSessionRestore,
               profile->GetPath(),
-              this)) {
+              this,
+              /* use_marker */ true)) {
   // We should never be created when incognito.
   DCHECK(!profile->IsOffTheRecord());
   BrowserList::AddObserver(this);
@@ -93,6 +94,9 @@ SessionService::SessionService(Profile* profile)
 }
 
 SessionService::~SessionService() {
+  base::UmaHistogramCounts100("SessionRestore.UnrecoverableWriteErrorCount",
+                              unrecoverable_write_error_count_);
+
   // Certain code paths explicitly destroy the SessionService as part of
   // shutdown.
   if (!did_log_exit_)
@@ -140,8 +144,7 @@ void SessionService::MoveCurrentSessionToLastSession() {
   pending_window_close_ids_.clear();
 
   command_storage_manager_->MoveCurrentSessionToLastSession();
-  // TODO(https://crbug.com/1163158): this needs to call
-  // ScheduleResetCommands().
+  ScheduleResetCommands();
 }
 
 void SessionService::DeleteLastSession() {
@@ -484,14 +487,24 @@ void SessionService::OnWillSaveCommands() {
 }
 
 void SessionService::OnErrorWritingSessionCommands() {
-  // TODO(https://crbug.com/648266): implement this.
-  NOTIMPLEMENTED();
+  // TODO(sky): if `pending_window_close_ids_` is non-empty, then
+  // RebuildCommandsIfRequired() will not call ScheduleResetCommands(). This is
+  // because a rebuild can't happen (because the browsers in
+  // `pending_window_close_ids_` have been deleted). My hope is that this
+  // happens seldom enough that we don't need to deal with this case, as it will
+  // necessitate some amount of snapshotting in memory when a window is closing.
+  // The histogram should give us an idea of how often this happens in practice.
+  const bool unrecoverable_write_error = !pending_window_close_ids_.empty();
+  if (unrecoverable_write_error)
+    ++unrecoverable_write_error_count_;
+  LogSessionServiceWriteErrorEvent(profile_, unrecoverable_write_error);
+  rebuild_on_next_save_ = true;
+  RebuildCommandsIfRequired();
 }
 
 void SessionService::RebuildCommandsIfRequired() {
-  if (rebuild_on_next_save_ && pending_window_close_ids_.empty()) {
+  if (rebuild_on_next_save_ && pending_window_close_ids_.empty())
     ScheduleResetCommands();
-  }
 }
 
 void SessionService::SetTabUserAgentOverride(

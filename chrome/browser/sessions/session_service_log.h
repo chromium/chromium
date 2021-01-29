@@ -71,6 +71,9 @@ struct ExitData {
 struct WriteErrorData {
   // Number of write errors that occurred.
   int error_count;
+  // Number of write errors that were unrecoverable. See SessionService for
+  // details on this.
+  int unrecoverable_error_count;
 };
 
 union EventData {
@@ -99,7 +102,8 @@ void LogSessionServiceRestoreEvent(Profile* profile,
                                    int window_count,
                                    int tab_count,
                                    bool encountered_error_reading);
-void LogSessionServiceWriteErrorEvent(Profile* profile);
+void LogSessionServiceWriteErrorEvent(Profile* profile,
+                                      bool unrecoverable_write_error);
 void RemoveLastSessionServiceEventOfType(Profile* profile,
                                          SessionServiceEventLogType type);
 

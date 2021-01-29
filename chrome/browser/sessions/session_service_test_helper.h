@@ -42,6 +42,8 @@ class SessionServiceTestHelper {
   SessionServiceTestHelper& operator=(const SessionServiceTestHelper&) = delete;
   ~SessionServiceTestHelper();
 
+  void SaveNow();
+
   void PrepareTabInWindow(const SessionID& window_id,
                           const SessionID& tab_id,
                           int visual_index,
@@ -100,6 +102,10 @@ class SessionServiceTestHelper {
   bool GetHasOpenTrackableBrowsers();
 
   void SetIsOnlyOneTabLeft(bool is_only_one_tab_left);
+
+  bool HasPendingReset();
+
+  bool HasPendingSave();
 
  private:
   SessionService* service_;

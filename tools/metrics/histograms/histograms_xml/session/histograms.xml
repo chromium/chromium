@@ -575,6 +575,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SessionRestore.UnrecoverableWriteErrorCount"
+    units="operations" expires_after="M93">
+  <owner>sky@chromium.org</owner>
+  <owner>davidbienvenu@chromium.org</owner>
+  <summary>
+    Recorded when SessionService is shutdown (which generally corresponds to
+    when chrome is shutdown). The count is the number of times a write error
+    happened at a time when it could not immediately be handled.
+  </summary>
+</histogram>
+
 <histogram name="SessionStorageContext.CachePurgedInKB" units="KB"
     expires_after="M95">
   <owner>mek@chromium.org</owner>

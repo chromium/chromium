@@ -52,6 +52,7 @@ CommandStorageManager::CommandStorageManager(
           use_marker,
           decryption_key)),
       use_crypto_(enable_crypto),
+      pending_reset_(use_marker),
       delegate_(delegate),
       backend_task_runner_(backend_->owning_task_runner()) {}
 
@@ -125,6 +126,8 @@ void CommandStorageManager::StartSaveTimer() {
 }
 
 void CommandStorageManager::Save() {
+  weak_factory_for_timer_.InvalidateWeakPtrs();
+
   // Inform the delegate that we will save the commands now, giving it the
   // opportunity to append more commands.
   delegate_->OnWillSaveCommands();

@@ -1325,6 +1325,25 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, TwoTabsSecondSelected) {
             new_browser->tab_strip_model()->GetWebContentsAt(0)->GetURL());
 }
 
+IN_PROC_BROWSER_TEST_F(SessionRestoreTest, OnErrorWritingSessionCommands) {
+  ui_test_utils::NavigateToURL(browser(), GetUrl1());
+  ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GetUrl2(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
+  auto* session_service =
+      SessionServiceFactory::GetForProfile(browser()->profile());
+  session_service->OnErrorWritingSessionCommands();
+
+  Browser* new_browser = QuitBrowserAndRestore(browser(), 2);
+  ASSERT_EQ(1u, active_browser_list_->size());
+  ASSERT_EQ(2, new_browser->tab_strip_model()->count());
+  ASSERT_EQ(1, new_browser->tab_strip_model()->active_index());
+  ASSERT_EQ(GetUrl2(),
+            new_browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+  ASSERT_EQ(GetUrl1(),
+            new_browser->tab_strip_model()->GetWebContentsAt(0)->GetURL());
+}
+
 // Creates two tabs, closes one, quits and makes sure only one tab is restored.
 IN_PROC_BROWSER_TEST_F(SessionRestoreTest, ClosedTabStaysClosed) {
   ui_test_utils::NavigateToURL(browser(), GetUrl1());

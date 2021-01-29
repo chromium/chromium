@@ -149,7 +149,7 @@ class SESSIONS_EXPORT CommandStorageManager {
 
   // Whether the backend file should be recreated the next time we send
   // over the commands.
-  bool pending_reset_ = false;
+  bool pending_reset_;
 
   // The number of commands sent to the backend before doing a reset.
   int commands_since_reset_ = 0;

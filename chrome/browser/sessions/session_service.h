@@ -411,6 +411,8 @@ class SessionService : public sessions::CommandStorageManagerDelegate,
 
   bool did_log_exit_ = false;
 
+  int unrecoverable_write_error_count_ = 0;
+
   base::WeakPtrFactory<SessionService> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(SessionService);

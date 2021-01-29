@@ -23,6 +23,8 @@ constexpr char kRestoreEventErroredReadingKey[] = "errored_reading";
 constexpr char kExitEventWindowCountKey[] = "window_count";
 constexpr char kExitEventTabCountKey[] = "tab_count";
 constexpr char kWriteErrorEventErrorCountKey[] = "error_count";
+constexpr char kWriteErrorEventUnrecoverableErrorCountKey[] =
+    "unrecoverable_error_count";
 
 // This value is a balance between keeping too much in prefs, and the
 // ability to see the last few restarts.
@@ -56,6 +58,9 @@ base::Value SerializeEvent(const SessionServiceEvent& event) {
     case SessionServiceEventLogType::kWriteError:
       serialized_event.SetIntKey(kWriteErrorEventErrorCountKey,
                                  event.data.write_error.error_count);
+      serialized_event.SetIntKey(
+          kWriteErrorEventUnrecoverableErrorCountKey,
+          event.data.write_error.unrecoverable_error_count);
       break;
   }
   return serialized_event;
@@ -128,6 +133,15 @@ bool DeserializeEvent(const base::Value& serialized_event,
       if (!error_count)
         return false;
       event.data.write_error.error_count = *error_count;
+      event.data.write_error.unrecoverable_error_count = 0;
+      // `kWriteErrorEventErrorCountKey` was added after initial code landed,
+      // so don't fail if it isn't present.
+      auto unrecoverable_error_count = serialized_event.FindIntKey(
+          kWriteErrorEventUnrecoverableErrorCountKey);
+      if (unrecoverable_error_count) {
+        event.data.write_error.unrecoverable_error_count =
+            *unrecoverable_error_count;
+      }
       break;
     }
   }
@@ -190,11 +204,14 @@ void LogSessionServiceRestoreEvent(Profile* profile,
   LogSessionServiceEvent(profile, event);
 }
 
-void LogSessionServiceWriteErrorEvent(Profile* profile) {
+void LogSessionServiceWriteErrorEvent(Profile* profile,
+                                      bool unrecoverable_write_error) {
   SessionServiceEvent event;
   event.type = SessionServiceEventLogType::kWriteError;
   event.time = base::Time::Now();
   event.data.write_error.error_count = 1;
+  event.data.write_error.unrecoverable_error_count =
+      unrecoverable_write_error ? 1 : 0;
   LogSessionServiceEvent(profile, event);
 }
 
@@ -222,6 +239,8 @@ void LogSessionServiceEvent(Profile* profile,
       !events.empty() &&
       events.back().type == SessionServiceEventLogType::kWriteError) {
     events.back().data.write_error.error_count += 1;
+    events.back().data.write_error.unrecoverable_error_count +=
+        event.data.write_error.unrecoverable_error_count;
   } else {
     events.push_back(event);
     if (events.size() >= kMaxEventCount)
