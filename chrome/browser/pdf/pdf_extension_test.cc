@@ -1471,9 +1471,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityInIframe) {
   WebContents* guest_contents = nullptr;
   content::BrowserPluginGuestManager* guest_manager =
         contents->GetBrowserContext()->GetGuestManager();
-  guest_manager->ForEachGuest(contents,
-                              base::Bind(&RetrieveGuestContents,
-                                         &guest_contents));
+  guest_manager->ForEachGuest(
+      contents, base::BindRepeating(&RetrieveGuestContents, &guest_contents));
   ASSERT_TRUE(guest_contents);
 
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshot(guest_contents);
@@ -1493,9 +1492,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTest, PdfAccessibilityInOOPIF) {
   WebContents* guest_contents = nullptr;
   content::BrowserPluginGuestManager* guest_manager =
         contents->GetBrowserContext()->GetGuestManager();
-  guest_manager->ForEachGuest(contents,
-                              base::Bind(&RetrieveGuestContents,
-                                         &guest_contents));
+  guest_manager->ForEachGuest(
+      contents, base::BindRepeating(&RetrieveGuestContents, &guest_contents));
   ASSERT_TRUE(guest_contents);
 
   ui::AXTreeUpdate ax_tree = GetAccessibilityTreeSnapshot(guest_contents);
@@ -2477,7 +2475,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, DISABLED_MouseLeave) {
   content::BrowserPluginGuestManager* guest_manager =
       embedder_contents->GetBrowserContext()->GetGuestManager();
   ASSERT_NO_FATAL_FAILURE(guest_manager->ForEachGuest(
-      embedder_contents, base::Bind(&GetGuestCallback, &guest_contents)));
+      embedder_contents,
+      base::BindRepeating(&GetGuestCallback, &guest_contents)));
   ASSERT_NE(nullptr, guest_contents);
   content::WaitForHitTestData(guest_contents);
 
@@ -2530,7 +2529,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionHitTestTest, ContextMenuCoordinates) {
   content::BrowserPluginGuestManager* guest_manager =
       embedder_contents->GetBrowserContext()->GetGuestManager();
   ASSERT_NO_FATAL_FAILURE(guest_manager->ForEachGuest(
-      embedder_contents, base::Bind(&GetGuestCallback, &guest_contents)));
+      embedder_contents,
+      base::BindRepeating(&GetGuestCallback, &guest_contents)));
   ASSERT_NE(nullptr, guest_contents);
   content::WaitForHitTestData(guest_contents);
 
