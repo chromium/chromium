@@ -220,7 +220,7 @@ TEST_F(FeaturePolicyTest, TestSelectiveFrameInheritance) {
   // | |                 |  | +-------------+ | |
   // | +-----------------+  +-----------------+ |
   // +------------------------------------------+
-  // Feature should be only be enabled in the top-level frame, even though the
+  // Feature should be disabled in all frames, even though the
   // header indicates Origin B, there is no container policy to explicitly
   // delegate to that origin, in either frame 2 or 4.
   std::unique_ptr<FeaturePolicy> policy1 =
@@ -234,6 +234,7 @@ TEST_F(FeaturePolicyTest, TestSelectiveFrameInheritance) {
       CreateFromParentPolicy(policy1.get(), origin_c_);
   std::unique_ptr<FeaturePolicy> policy4 =
       CreateFromParentPolicy(policy3.get(), origin_b_);
+  EXPECT_FALSE(policy1->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_FALSE(policy2->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_FALSE(policy3->IsFeatureEnabled(kDefaultSelfFeature));
   EXPECT_FALSE(policy4->IsFeatureEnabled(kDefaultSelfFeature));
@@ -384,7 +385,7 @@ TEST_F(FeaturePolicyTest, TestEnableForAllOrigins) {
   // | | +-------------+ |            |
   // | +-----------------+            |
   // +--------------------------------+
-  // Feature should be enabled in top and second level; disabled in frame 3.
+  // Feature should be enabled in top level; disabled in frame 2 and 3.
   std::unique_ptr<FeaturePolicy> policy1 =
       CreateFromParentPolicy(nullptr, origin_a_);
   policy1->SetHeaderPolicy(
@@ -951,6 +952,8 @@ TEST_F(FeaturePolicyTest, TestFramePolicyModifiesHeaderPolicy) {
   }});
   EXPECT_FALSE(
       policy2->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
+  EXPECT_FALSE(
+      policy3->IsFeatureEnabledForOrigin(kDefaultSelfFeature, origin_b_));
 }
 
 TEST_F(FeaturePolicyTest, TestCombineFrameAndHeaderPolicies) {
