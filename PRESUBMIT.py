@@ -335,7 +335,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/browsing_data/',
   '^chrome/browser/captive_portal/captive_portal_browsertest.cc',
   '^chrome/browser/device_identity/chromeos/device_oauth2_token_store_chromeos.cc', # pylint: disable=line-too-long
-  '^chrome/browser/extensions/',
   '^chrome/browser/history/android/android_history_provider_service_unittest.cc', # pylint: disable=line-too-long
   '^chrome/browser/media_galleries/',
   '^chrome/browser/net/websocket_browsertest.cc',
