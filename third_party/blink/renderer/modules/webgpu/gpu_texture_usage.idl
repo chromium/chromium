@@ -12,5 +12,8 @@ typedef [EnforceRange] unsigned long GPUTextureUsageFlags;
     const unsigned long COPY_DST = 2;
     const unsigned long SAMPLED = 4;
     const unsigned long STORAGE = 8;
-    const unsigned long OUTPUT_ATTACHMENT = 16;
+    const unsigned long RENDER_ATTACHMENT = 16;
+
+    // Deprecated.
+    static readonly attribute unsigned long OUTPUT_ATTACHMENT;
 };

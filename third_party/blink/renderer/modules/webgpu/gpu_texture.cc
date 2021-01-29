@@ -8,9 +8,12 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_texture_view_descriptor.h"
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_texture_usage.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_texture_view.h"
 
 namespace blink {
+
+bool GPUTextureUsage::usedDeprecatedOutputAttachment = false;
 
 namespace {
 
@@ -20,6 +23,14 @@ WGPUTextureDescriptor AsDawnType(const GPUTextureDescriptor* webgpu_desc,
   DCHECK(webgpu_desc);
   DCHECK(label);
   DCHECK(device);
+
+  if (webgpu_desc->usage() & GPUTextureUsage::kRenderAttachment &&
+      GPUTextureUsage::usedDeprecatedOutputAttachment) {
+    GPUTextureUsage::usedDeprecatedOutputAttachment = false;
+    device->AddConsoleWarning(
+        "GPUTextureUsage.OUTPUT_ATTACHMENT has been "
+        "renamed to GPUTextureUsage.RENDER_ATTACHMENT.");
+  }
 
   WGPUTextureDescriptor dawn_desc = {};
   dawn_desc.nextInChain = nullptr;
