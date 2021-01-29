@@ -21,6 +21,8 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -60,11 +62,14 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
     // Closing the last browser window also releases a KeepAlive. Make
     // sure it's not the last one, so the message loop doesn't quit
     // unexpectedly.
-    keep_alive_.reset(new ScopedKeepAlive(KeepAliveOrigin::BROWSER,
-                                          KeepAliveRestartOption::DISABLED));
+    keep_alive_ = std::make_unique<ScopedKeepAlive>(
+        KeepAliveOrigin::BROWSER, KeepAliveRestartOption::DISABLED);
+    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        profile_, ProfileKeepAliveOrigin::kBrowserWindow);
   }
 
   void TearDownOnMainThread() override {
+    profile_keep_alive_.reset();
     // BrowserProcess::Shutdown() needs to be called in a message loop, so we
     // post a task to release the keep alive, then run the message loop.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
@@ -216,6 +221,7 @@ class ExtensionContentSettingsApiTest : public ExtensionApiTest {
  private:
   Profile* profile_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 };
 
 class ExtensionContentSettingsApiLazyTest
