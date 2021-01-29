@@ -84,20 +84,7 @@ void TabSearchPageHandler::CloseTab(int32_t tab_id) {
 
 void TabSearchPageHandler::GetProfileTabs(GetProfileTabsCallback callback) {
   TRACE_EVENT0("browser", "webui_metric:TabSearchPageHandler:GetProfileTabs");
-  auto profile_tabs = tab_search::mojom::ProfileTabs::New();
-  for (auto* browser : *BrowserList::GetInstance()) {
-    if (!ShouldTrackBrowser(browser))
-      continue;
-    TabStripModel* tab_strip_model = browser->tab_strip_model();
-    auto window_tabs = tab_search::mojom::WindowTabs::New();
-    window_tabs->active = (browser == browser_);
-    for (int i = 0; i < tab_strip_model->count(); ++i) {
-      window_tabs->tabs.push_back(
-          GetTabData(tab_strip_model, tab_strip_model->GetWebContentsAt(i), i));
-    }
-    profile_tabs->windows.push_back(std::move(window_tabs));
-  }
-
+  auto profile_tabs = CreateProfileTabs();
   // On first run record the number of windows and tabs open for the given
   // profile.
   if (!sent_initial_payload_) {
@@ -165,6 +152,23 @@ void TabSearchPageHandler::ShowUI() {
   auto embedder = webui_controller_->embedder();
   if (embedder)
     embedder->ShowUI();
+}
+
+tab_search::mojom::ProfileTabsPtr TabSearchPageHandler::CreateProfileTabs() {
+  auto profile_tabs = tab_search::mojom::ProfileTabs::New();
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if (!ShouldTrackBrowser(browser))
+      continue;
+    TabStripModel* tab_strip_model = browser->tab_strip_model();
+    auto window_tabs = tab_search::mojom::WindowTabs::New();
+    window_tabs->active = (browser == browser_);
+    for (int i = 0; i < tab_strip_model->count(); ++i) {
+      window_tabs->tabs.push_back(
+          GetTabData(tab_strip_model, tab_strip_model->GetWebContentsAt(i), i));
+    }
+    profile_tabs->windows.push_back(std::move(window_tabs));
+  }
+  return profile_tabs;
 }
 
 tab_search::mojom::TabPtr TabSearchPageHandler::GetTabData(
@@ -241,7 +245,7 @@ void TabSearchPageHandler::ScheduleDebounce() {
 }
 
 void TabSearchPageHandler::NotifyTabsChanged() {
-  page_->TabsChanged();
+  page_->TabsChanged(CreateProfileTabs());
   debounce_timer_->Stop();
 }
 

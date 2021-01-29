@@ -127,11 +127,10 @@ export class TabSearchAppElement extends PolymerElement {
       ],
     });
 
-    // TODO(tluk): The listener should provide the data needed to update the
-    // WebUI without having to make another round trip request to the Browser.
     const callbackRouter = this.apiProxy_.getCallbackRouter();
     this.listenerIds_.push(
-        callbackRouter.tabsChanged.addListener(() => this.updateTabs_()),
+        callbackRouter.tabsChanged.addListener(
+            profileTabs => this.openTabsChanged_(profileTabs.windows)),
         callbackRouter.tabUpdated.addListener(tab => this.onTabUpdated_(tab)),
         callbackRouter.tabsRemoved.addListener(
             tabIds => this.onTabsRemoved_(tabIds)));

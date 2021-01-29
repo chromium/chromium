@@ -196,8 +196,7 @@ suite('TabSearchAppTest', () => {
   test('refresh on tabs changed', async () => {
     await setupTest(sampleData());
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
-    testProxy.setProfileTabs({windows: []});
-    testProxy.getCallbackRouterRemote().tabsChanged();
+    testProxy.getCallbackRouterRemote().tabsChanged({windows: []});
     await flushTasks();
     verifyTabIds(queryRows(), []);
     assertEquals(-1, tabSearchApp.getSelectedIndex());
@@ -212,14 +211,13 @@ suite('TabSearchAppTest', () => {
     keyDownOn(searchField, 0, [], 'ArrowDown');
     assertEquals(1, tabSearchApp.getSelectedIndex());
 
-    testProxy.setProfileTabs({windows: [testData.windows[0]]});
-    testProxy.getCallbackRouterRemote().tabsChanged();
+    testProxy.getCallbackRouterRemote().tabsChanged(
+        {windows: [testData.windows[0]]});
     await flushTasks();
     assertEquals(1, tabSearchApp.getSelectedIndex());
 
-    testProxy.setProfileTabs(
+    testProxy.getCallbackRouterRemote().tabsChanged(
         {windows: [{active: true, tabs: [testData.windows[0].tabs[0]]}]});
-    testProxy.getCallbackRouterRemote().tabsChanged();
     await flushTasks();
     assertEquals(0, tabSearchApp.getSelectedIndex());
   });
@@ -237,7 +235,7 @@ suite('TabSearchAppTest', () => {
       tabId: 1,
       title: 'Example',
       url: 'https://example.com',
-      lastActiveTimeTicks: {internalValue: BigInt(1)},
+      lastActiveTimeTicks: {internalValue: BigInt(5)},
     });
     testProxy.getCallbackRouterRemote().tabUpdated(updatedTab);
     await flushTasks();

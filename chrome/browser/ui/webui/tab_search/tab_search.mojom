@@ -104,12 +104,17 @@ interface PageHandler {
 
 // WebUI-side handler for requests from the browser.
 interface Page {
-  // Callback when any tabs in the current profile are
-  // selected/inserted/moved/replaced
-  TabsChanged();
+  // Called when we require a full refresh of the JS's tab list data structures.
+  // Typically used when tabs in the current profile are deleted, inserted,
+  // moved or replaced.
+  // `profile_tabs` is a collection of all open tabs in the current profile.
+  // This is always populated with at least 1 (the currently active) tab.
+  TabsChanged(ProfileTabs profile_tabs);
 
-  // Callback when a tab is updated within the same web contents.
-  // e.g. url, title or favicon changed.
+  // Called when a tab's data has changed and we need only issue an update for
+  // that specific tab in the JS's data structures. Typically used for url,
+  // title, or favicon changes. `tab` is always populated with the latest data
+  // for the affected tab.
   TabUpdated(Tab tab);
 
   // Callback when tabs are removed.

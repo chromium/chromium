@@ -50,7 +50,7 @@ class MockPage : public tab_search::mojom::Page {
   }
   mojo::Receiver<tab_search::mojom::Page> receiver_{this};
 
-  MOCK_METHOD0(TabsChanged, void());
+  MOCK_METHOD1(TabsChanged, void(tab_search::mojom::ProfileTabsPtr));
   MOCK_METHOD1(TabUpdated, void(tab_search::mojom::TabPtr));
   MOCK_METHOD1(TabsRemoved, void(const std::vector<int32_t>& tab_ids));
 };
@@ -201,7 +201,7 @@ TEST_F(TabSearchPageHandlerTest, GetTabs) {
   AddTabWithTitle(browser1(), GURL(kTabUrl2), kTabName2);
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
 
-  EXPECT_CALL(page_, TabsChanged()).Times(1);
+  EXPECT_CALL(page_, TabsChanged(_)).Times(1);
   EXPECT_CALL(page_, TabUpdated(_)).Times(2);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(2);
   handler()->mock_debounce_timer()->Fire();
@@ -270,7 +270,7 @@ TEST_F(TabSearchPageHandlerTest, GetTabs) {
 // TabsChanged() and TabsChanged() is only called when the page handler's
 // timer fires.
 TEST_F(TabSearchPageHandlerTest, TabsChanged) {
-  EXPECT_CALL(page_, TabsChanged()).Times(3);
+  EXPECT_CALL(page_, TabsChanged(_)).Times(3);
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(3);
   FireTimer();  // Will call TabsChanged().
@@ -301,7 +301,7 @@ TEST_F(TabSearchPageHandlerTest, TabsChanged) {
 // Ensure that tab model changes in a browser with a different profile
 // will not call TabsChanged().
 TEST_F(TabSearchPageHandlerTest, TabsNotChanged) {
-  EXPECT_CALL(page_, TabsChanged()).Times(1);
+  EXPECT_CALL(page_, TabsChanged(_)).Times(1);
   EXPECT_CALL(page_, TabUpdated(_)).Times(0);
   FireTimer();  // Will call TabsChanged().
   ASSERT_FALSE(IsTimerRunning());
@@ -320,7 +320,7 @@ bool VerifyTabUpdated(const tab_search::mojom::TabPtr& tab) {
 
 // Verify tab update event is called correctly with data
 TEST_F(TabSearchPageHandlerTest, TabUpdated) {
-  EXPECT_CALL(page_, TabsChanged()).Times(1);
+  EXPECT_CALL(page_, TabsChanged(_)).Times(1);
   EXPECT_CALL(page_, TabUpdated(Truly(VerifyTabUpdated))).Times(1);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(1);
   AddTabWithTitle(browser1(), GURL(kTabUrl1), kTabName1);
@@ -339,7 +339,7 @@ TEST_F(TabSearchPageHandlerTest, CloseTab) {
 
   int tab_id = extensions::ExtensionTabUtil::GetTabId(
       browser2()->tab_strip_model()->GetWebContentsAt(0));
-  EXPECT_CALL(page_, TabsChanged()).Times(1);
+  EXPECT_CALL(page_, TabsChanged(_)).Times(1);
   EXPECT_CALL(page_, TabUpdated(_)).Times(1);
   EXPECT_CALL(page_, TabsRemoved(_)).Times(3);
   handler()->CloseTab(tab_id);

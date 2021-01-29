@@ -80,6 +80,8 @@ class TabSearchPageHandler : public tab_search::mojom::PageHandler,
     int index;
   };
 
+  tab_search::mojom::ProfileTabsPtr CreateProfileTabs();
+
   tab_search::mojom::TabPtr GetTabData(TabStripModel* tab_strip_model,
                                        content::WebContents* contents,
                                        int index);
