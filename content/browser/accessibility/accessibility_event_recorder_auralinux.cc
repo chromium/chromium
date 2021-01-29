@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_event_recorder.h"
+#include "content/browser/accessibility/accessibility_event_recorder_auralinux.h"
 
 #include <atk/atk.h>
 #include <atk/atkutil.h>
@@ -21,52 +21,6 @@
 #endif
 
 namespace content {
-
-// This class has two distinct event recording code paths. When we are
-// recording events in-process (typically this is used for
-// DumpAccessibilityEvents tests), we use ATK's global event handlers. Since
-// ATK doesn't support intercepting events from other processes, if we have a
-// non-zero PID or an accessibility application name pattern, we use AT-SPI2
-// directly to intercept events. Since AT-SPI2 should be capable of
-// intercepting events in-process as well, eventually it would be nice to
-// remove the ATK code path entirely.
-class AccessibilityEventRecorderAuraLinux : public AccessibilityEventRecorder {
- public:
-  explicit AccessibilityEventRecorderAuraLinux(
-      BrowserAccessibilityManager* manager,
-      base::ProcessId pid,
-      const AXTreeSelector& selector);
-  ~AccessibilityEventRecorderAuraLinux() override;
-
-  void ProcessATKEvent(const char* event,
-                       unsigned int n_params,
-                       const GValue* params);
-  void ProcessATSPIEvent(const AtspiEvent* event);
-
-  static gboolean OnATKEventReceived(GSignalInvocationHint* hint,
-                                     unsigned int n_params,
-                                     const GValue* params,
-                                     gpointer data);
-
- private:
-  bool ShouldUseATSPI();
-
-  std::string AtkObjectToString(AtkObject* obj, bool include_name);
-  void AddATKEventListener(const char* event_name);
-  void AddATKEventListeners();
-  void RemoveATKEventListeners();
-  bool IncludeState(AtkStateType state_type);
-
-  void AddATSPIEventListeners();
-  void RemoveATSPIEventListeners();
-
-  AtspiEventListener* atspi_event_listener_ = nullptr;
-  base::ProcessId pid_;
-  base::StringPiece application_name_match_pattern_;
-  static AccessibilityEventRecorderAuraLinux* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityEventRecorderAuraLinux);
-};
 
 // static
 AccessibilityEventRecorderAuraLinux*
