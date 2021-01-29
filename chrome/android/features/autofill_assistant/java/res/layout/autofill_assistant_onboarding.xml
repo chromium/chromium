@@ -121,6 +121,7 @@
             android:singleLine="true"
             android:gravity="center"
             android:text="@string/cancel"
+            android:contentDescription="@string/cancel"
             style="@style/TextButton" />
 
         <Space
@@ -136,6 +137,7 @@
             android:singleLine="true"
             android:gravity="center"
             android:text="@string/init_ok"
+            android:contentDescription="@string/init_ok"
             style="FilledButton.Flat" />
         </LinearLayout>
     </LinearLayout>
