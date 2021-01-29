@@ -18,7 +18,6 @@
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
-#include "content/browser/cache_storage/blob_storage_context_wrapper.h"
 #include "content/browser/cache_storage/cache_storage_context_impl.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/cache_storage/legacy/legacy_cache_storage.h"
@@ -47,8 +46,7 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
       const base::FilePath& path,
       scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
       scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
-      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-      scoped_refptr<BlobStorageContextWrapper> blob_storage_context);
+      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
 
   // Create a new manager using the underlying configuration of the given
   // manager, but with its own list of storage objects.  This is only used
@@ -92,6 +90,9 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
                        observer) override;
 
+  void SetBlobParametersForCache(
+      scoped_refptr<BlobStorageContextWrapper> blob_storage_context) override;
+
   void NotifyCacheListChanged(const url::Origin& origin);
   void NotifyCacheContentChanged(const url::Origin& origin,
                                  const std::string& name);
@@ -116,8 +117,7 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
       const base::FilePath& path,
       scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
       scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
-      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-      scoped_refptr<BlobStorageContextWrapper> blob_storage_context);
+      scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
 
   ~LegacyCacheStorageManager() override;
 

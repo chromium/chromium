@@ -10,6 +10,7 @@
 #include "base/macros.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "content/browser/blob_storage/blob_storage_context_wrapper.h"
 #include "content/browser/cache_storage/cache_storage_handle.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -58,6 +59,10 @@ class CONTENT_EXPORT CacheStorageManager
 
   virtual void AddObserver(
       mojo::PendingRemote<storage::mojom::CacheStorageObserver> observer) = 0;
+
+  // This must be called before any of the public Cache functions above.
+  virtual void SetBlobParametersForCache(
+      scoped_refptr<BlobStorageContextWrapper> blob_storage_context) = 0;
 
   static bool IsValidQuotaOrigin(const url::Origin& origin);
 

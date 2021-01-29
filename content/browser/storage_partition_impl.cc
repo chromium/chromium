@@ -1222,8 +1222,7 @@ void StoragePartitionImpl::Initialize(
 
   cache_storage_context_ = base::MakeRefCounted<CacheStorageContextImpl>();
   cache_storage_context_->Init(
-      path, browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy,
-      ChromeBlobStorageContext::GetRemoteFor(browser_context_));
+      path, browser_context_->GetSpecialStoragePolicy(), quota_manager_proxy);
   cache_storage_context_->Bind(
       cache_storage_control_.BindNewPipeAndPassReceiver());
 

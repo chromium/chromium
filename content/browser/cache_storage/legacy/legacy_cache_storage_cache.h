@@ -18,7 +18,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/optional.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
-#include "content/browser/cache_storage/blob_storage_context_wrapper.h"
 #include "content/browser/cache_storage/cache_storage_cache.h"
 #include "content/browser/cache_storage/cache_storage_handle.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"

@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_CACHE_STORAGE_BLOB_STORAGE_CONTEXT_WRAPPER_H_
-#define CONTENT_BROWSER_CACHE_STORAGE_BLOB_STORAGE_CONTEXT_WRAPPER_H_
+#ifndef CONTENT_BROWSER_BLOB_STORAGE_BLOB_STORAGE_CONTEXT_WRAPPER_H_
+#define CONTENT_BROWSER_BLOB_STORAGE_BLOB_STORAGE_CONTEXT_WRAPPER_H_
 
 #include <string>
 
 #include "base/macros.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
@@ -40,4 +41,4 @@ class CONTENT_EXPORT BlobStorageContextWrapper
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_CACHE_STORAGE_BLOB_STORAGE_CONTEXT_WRAPPER_H_
+#endif  // CONTENT_BROWSER_BLOB_STORAGE_BLOB_STORAGE_CONTEXT_WRAPPER_H_

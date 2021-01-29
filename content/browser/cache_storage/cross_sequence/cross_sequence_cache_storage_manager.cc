@@ -150,6 +150,14 @@ void CrossSequenceCacheStorageManager::AddObserver(
   inner_.Post(FROM_HERE, &Inner::AddObserver, std::move(observer));
 }
 
+void CrossSequenceCacheStorageManager::SetBlobParametersForCache(
+    scoped_refptr<BlobStorageContextWrapper> blob_storage_context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // This method is used for initialization of a real manager and should not
+  // be invoked for the cross-sequence wrapper.
+  NOTREACHED();
+}
+
 CrossSequenceCacheStorageManager::~CrossSequenceCacheStorageManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }

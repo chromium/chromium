@@ -418,8 +418,8 @@ class CacheStorageManagerTest : public testing::Test {
 
     auto legacy_manager = LegacyCacheStorageManager::Create(
         temp_dir_path, base::ThreadTaskRunnerHandle::Get(),
-        base::ThreadTaskRunnerHandle::Get(), quota_manager_proxy_,
-        blob_storage_context_);
+        base::ThreadTaskRunnerHandle::Get(), quota_manager_proxy_);
+    legacy_manager->SetBlobParametersForCache(blob_storage_context_);
 
     switch (ManagerType()) {
       case TestManager::kLegacy:
