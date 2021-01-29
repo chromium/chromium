@@ -36,6 +36,10 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   static void Create(RenderFrameHost*,
                      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
+  FederatedAuthRequestImpl(
+      RenderFrameHost*,
+      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
+
   FederatedAuthRequestImpl(const FederatedAuthRequestImpl&) = delete;
   FederatedAuthRequestImpl& operator=(const FederatedAuthRequestImpl&) = delete;
 
@@ -46,10 +50,12 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
                       const std::string& id_request,
                       RequestIdTokenCallback) override;
 
+  void SetNetworkManagerForTests(
+      std::unique_ptr<IdpNetworkRequestManager> manager);
+  void SetDialogControllerForTests(
+      std::unique_ptr<IdentityRequestDialogController> controller);
+
  private:
-  FederatedAuthRequestImpl(
-      RenderFrameHost*,
-      mojo::PendingReceiver<blink::mojom::FederatedAuthRequest>);
 
   void OnWellKnownFetched(IdpNetworkRequestManager::FetchStatus status,
                           const std::string& idp_endpoint);
@@ -66,8 +72,16 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void CompleteRequest(blink::mojom::RequestIdTokenStatus,
                        const std::string& id_token);
 
+  std::unique_ptr<IdpNetworkRequestManager> CreateNetworkManager(
+      const GURL& provider);
+  std::unique_ptr<IdentityRequestDialogController> CreateDialogController();
+
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;
   std::unique_ptr<IdentityRequestDialogController> request_dialog_controller_;
+
+  // Replacements for testing.
+  std::unique_ptr<IdpNetworkRequestManager> mock_network_manager_;
+  std::unique_ptr<IdentityRequestDialogController> mock_dialog_controller_;
 
   // Parameters of auth request.
   GURL provider_;

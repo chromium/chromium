@@ -62,15 +62,13 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
   provider_ = provider;
   id_request_ = id_request;
 
-  network_manager_ =
-      IdpNetworkRequestManager::Create(provider, render_frame_host());
+  network_manager_ = CreateNetworkManager(provider);
   if (!network_manager_) {
     CompleteRequest(RequestIdTokenStatus::kError, "");
     return;
   }
 
-  request_dialog_controller_ =
-      GetContentClient()->browser()->CreateIdentityRequestDialogController();
+  request_dialog_controller_ = CreateDialogController();
 
   // Use the web contents of the page that initiated the WebID request (i.e.
   // the Relying Party) for showing the initial permission dialog.
@@ -260,6 +258,32 @@ void FederatedAuthRequestImpl::CompleteRequest(
   idp_web_contents_.reset();
   if (callback_)
     std::move(callback_).Run(status, id_token);
+}
+
+std::unique_ptr<IdpNetworkRequestManager>
+FederatedAuthRequestImpl::CreateNetworkManager(const GURL& provider) {
+  if (mock_network_manager_)
+    return std::move(mock_network_manager_);
+
+  return IdpNetworkRequestManager::Create(provider, render_frame_host());
+}
+
+std::unique_ptr<IdentityRequestDialogController>
+FederatedAuthRequestImpl::CreateDialogController() {
+  if (mock_dialog_controller_)
+    return std::move(mock_dialog_controller_);
+
+  return GetContentClient()->browser()->CreateIdentityRequestDialogController();
+}
+
+void FederatedAuthRequestImpl::SetNetworkManagerForTests(
+    std::unique_ptr<IdpNetworkRequestManager> manager) {
+  mock_network_manager_ = std::move(manager);
+}
+
+void FederatedAuthRequestImpl::SetDialogControllerForTests(
+    std::unique_ptr<IdentityRequestDialogController> controller) {
+  mock_dialog_controller_ = std::move(controller);
 }
 
 }  // namespace content
