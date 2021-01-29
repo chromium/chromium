@@ -57,9 +57,6 @@ void SetShellClientAccessibilityId(aura::Window* window,
 const base::Optional<int32_t> GetShellClientAccessibilityId(
     aura::Window* window);
 
-// Returns true if the given key is the shell main surface key
-bool IsShellMainSurfaceKey(const void* key);
-
 // Sets the main surface to the property handler.
 void SetShellMainSurface(ui::PropertyHandler* property_handler,
                          Surface* surface);

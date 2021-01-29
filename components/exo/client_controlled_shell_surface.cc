@@ -508,13 +508,6 @@ void ClientControlledShellSurface::SetTopInset(int height) {
   pending_top_inset_height_ = height;
 }
 
-void ClientControlledShellSurface::SetResizeOutset(int outset) {
-  TRACE_EVENT1("exo", "ClientControlledShellSurface::SetResizeOutset", "outset",
-               outset);
-  // Deprecated.
-  NOTREACHED();
-}
-
 void ClientControlledShellSurface::OnWindowStateChangeEvent(
     chromeos::WindowStateType current_state,
     chromeos::WindowStateType next_state) {

@@ -168,9 +168,6 @@ class ClientControlledShellSurface : public ShellSurfaceBase,
   // Set top inset for surface.
   void SetTopInset(int height);
 
-  // Set resize outset for surface.
-  void SetResizeOutset(int outset);
-
   // Sends the request to change the zoom level to the client.
   void ChangeZoomLevel(ZoomChange change);
 

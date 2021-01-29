@@ -290,14 +290,14 @@ void remote_surface_set_rectangular_shadow_DEPRECATED(wl_client* client,
                                                       int32_t y,
                                                       int32_t width,
                                                       int32_t height) {
-  NOTIMPLEMENTED();
+  NOTREACHED();
 }
 
 void remote_surface_set_rectangular_shadow_background_opacity_DEPRECATED(
     wl_client* client,
     wl_resource* resource,
     wl_fixed_t opacity) {
-  NOTIMPLEMENTED();
+  NOTREACHED();
 }
 
 void remote_surface_set_title(wl_client* client,
@@ -391,14 +391,14 @@ void remote_surface_unset_always_on_top(wl_client* client,
   GetUserDataAs<ClientControlledShellSurface>(resource)->SetAlwaysOnTop(false);
 }
 
-void remote_surface_ack_configure(wl_client* client,
-                                  wl_resource* resource,
-                                  uint32_t serial) {
-  // DEPRECATED
+void remote_surface_ack_configure_DEPRECATED(wl_client* client,
+                                             wl_resource* resource,
+                                             uint32_t serial) {
+  NOTREACHED();
 }
 
-void remote_surface_move(wl_client* client, wl_resource* resource) {
-  // DEPRECATED
+void remote_surface_move_DEPRECATED(wl_client* client, wl_resource* resource) {
+  NOTREACHED();
 }
 
 void remote_surface_set_window_type(wl_client* client,
@@ -425,15 +425,17 @@ void remote_surface_set_window_type(wl_client* client,
   }
 }
 
-void remote_surface_resize(wl_client* client, wl_resource* resource) {
+void remote_surface_resize_DEPRECATED(wl_client* client,
+                                      wl_resource* resource) {
   // DEPRECATED
+  NOTREACHED();
 }
 
-void remote_surface_set_resize_outset(wl_client* client,
-                                      wl_resource* resource,
-                                      int32_t outset) {
-  GetUserDataAs<ClientControlledShellSurface>(resource)->SetResizeOutset(
-      outset);
+void remote_surface_set_resize_outset_DEPRECATED(wl_client* client,
+                                                 wl_resource* resource,
+                                                 int32_t outset) {
+  // DEPRECATED
+  NOTREACHED();
 }
 
 void remote_surface_start_move(wl_client* client,
@@ -661,12 +663,12 @@ const struct zcr_remote_surface_v1_interface remote_surface_implementation = {
     remote_surface_set_systemui_visibility,
     remote_surface_set_always_on_top,
     remote_surface_unset_always_on_top,
-    remote_surface_ack_configure,
-    remote_surface_move,
+    remote_surface_ack_configure_DEPRECATED,
+    remote_surface_move_DEPRECATED,
     remote_surface_set_orientation,
     remote_surface_set_window_type,
-    remote_surface_resize,
-    remote_surface_set_resize_outset,
+    remote_surface_resize_DEPRECATED,
+    remote_surface_set_resize_outset_DEPRECATED,
     remote_surface_start_move,
     remote_surface_set_can_maximize,
     remote_surface_unset_can_maximize,

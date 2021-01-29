@@ -136,10 +136,6 @@ const base::Optional<int32_t> GetShellClientAccessibilityId(
     return id;
 }
 
-bool IsShellMainSurfaceKey(const void* key) {
-  return kMainSurfaceKey == key;
-}
-
 void SetShellMainSurface(ui::PropertyHandler* property_handler,
                          Surface* surface) {
   property_handler->SetProperty(kMainSurfaceKey, surface);
