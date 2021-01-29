@@ -239,6 +239,11 @@ void HoldingSpaceTrayIcon::UpdatePreviews(
 void HoldingSpaceTrayIcon::OnShelfAlignmentChanged(
     aura::Window* root_window,
     ShelfAlignment old_alignment) {
+  // Each display has its own shelf. The shelf undergoing an alignment change
+  // may not be the `shelf_` associated with this holding space tray icon.
+  if (shelf_ != Shelf::ForWindow(root_window))
+    return;
+
   if (!removed_previews_.empty()) {
     removed_previews_.clear();
     OnOldItemsRemoved();

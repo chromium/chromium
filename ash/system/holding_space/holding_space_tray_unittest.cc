@@ -31,6 +31,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "url/gurl.h"
@@ -249,11 +250,18 @@ class HoldingSpaceTrayTest : public AshTestBase,
 
   HoldingSpaceModel* model() { return &holding_space_model_; }
 
+  Shelf* GetShelf(const display::Display& display) {
+    auto* const manager = Shell::Get()->window_tree_host_manager();
+    auto* const window = manager->GetRootWindowForDisplayId(display.id());
+    return Shelf::ForWindow(window);
+  }
+
   HoldingSpaceTray* GetTray() {
-    return Shelf::ForWindow(Shell::GetRootWindowForNewWindows())
-        ->shelf_widget()
-        ->status_area_widget()
-        ->holding_space_tray();
+    return GetTray(Shelf::ForWindow(Shell::GetRootWindowForNewWindows()));
+  }
+
+  HoldingSpaceTray* GetTray(Shelf* shelf) {
+    return shelf->shelf_widget()->status_area_widget()->holding_space_tray();
   }
 
  private:
@@ -602,6 +610,101 @@ TEST_P(HoldingSpaceTrayTest, ShelfConfigChangeWithDelayedItemRemoval) {
   TabletModeControllerTestApi().LeaveTabletMode();
   GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
   EXPECT_FALSE(test_api()->IsShowingInShelf());
+}
+
+// Tests that a shelf alignment change will behave as expected when there are
+// multiple displays (and therefore multiple shelves/trays).
+TEST_P(HoldingSpaceTrayTest, ShelfAlignmentChangeWithMultipleDisplays) {
+  // This test is only relevant when previews are enabled.
+  if (!IsPreviewsFeatureEnabled())
+    return;
+
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration_scale_mode(
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
+
+  // This test requires multiple displays. Create two.
+  UpdateDisplay("1280x768,1280x768");
+
+  MarkTimeOfFirstPin();
+  StartSession();
+
+  // Cache shelves/trays for each display.
+  Shelf* const primary_shelf = GetShelf(GetPrimaryDisplay());
+  Shelf* const secondary_shelf = GetShelf(GetSecondaryDisplay());
+  HoldingSpaceTray* const primary_tray = GetTray(primary_shelf);
+  HoldingSpaceTray* const secondary_tray = GetTray(secondary_shelf);
+
+  // Trays should not initially be visible.
+  ASSERT_FALSE(primary_tray->GetVisible());
+  ASSERT_FALSE(secondary_tray->GetVisible());
+
+  // Add a few holding space items to cause trays to show in shelves.
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_1"));
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_2"));
+  AddItem(HoldingSpaceItem::Type::kDownload, base::FilePath("/tmp/fake_3"));
+
+  // Trays should now be visible.
+  ASSERT_TRUE(primary_tray->GetVisible());
+  ASSERT_TRUE(secondary_tray->GetVisible());
+
+  // Immediately update previews for each tray.
+  primary_tray->FirePreviewsUpdateTimerIfRunningForTesting();
+  secondary_tray->FirePreviewsUpdateTimerIfRunningForTesting();
+
+  // Cache previews for each tray.
+  views::View* const primary_icon_previews_container =
+      primary_tray->GetViewByID(kHoldingSpaceTrayPreviewsIconId)->children()[0];
+  views::View* const secondary_icon_previews_container =
+      secondary_tray->GetViewByID(kHoldingSpaceTrayPreviewsIconId)
+          ->children()[0];
+  const std::vector<ui::Layer*>& primary_icon_previews =
+      primary_icon_previews_container->layer()->children();
+  const std::vector<ui::Layer*>& secondary_icon_previews =
+      secondary_icon_previews_container->layer()->children();
+
+  // Verify each tray contains three previews.
+  ASSERT_EQ(primary_icon_previews.size(), 3u);
+  ASSERT_EQ(secondary_icon_previews.size(), 3u);
+
+  // Verify initial preview transforms. Since both shelves currently are bottom
+  // aligned, previews should be positioned horizontally.
+  for (int i = 0; i < 3; ++i) {
+    const int main_axis_offset =
+        (2 - i) * kHoldingSpaceTrayIconDefaultPreviewSize / 2;
+    ASSERT_EQ(primary_icon_previews[i]->transform().To2dTranslation(),
+              gfx::Vector2d(main_axis_offset, 0));
+    ASSERT_EQ(secondary_icon_previews[i]->transform().To2dTranslation(),
+              gfx::Vector2d(main_axis_offset, 0));
+  }
+
+  // Change the secondary shelf to a vertical alignment.
+  secondary_shelf->SetAlignment(ShelfAlignment::kRight);
+
+  // Verify preview transforms. The primary shelf should still position its
+  // previews horizontally but the secondary shelf should now position its
+  // previews vertically.
+  for (int i = 0; i < 3; ++i) {
+    const int main_axis_offset =
+        (2 - i) * kHoldingSpaceTrayIconDefaultPreviewSize / 2;
+    ASSERT_EQ(primary_icon_previews[i]->transform().To2dTranslation(),
+              gfx::Vector2d(main_axis_offset, 0));
+    ASSERT_EQ(secondary_icon_previews[i]->transform().To2dTranslation(),
+              gfx::Vector2d(0, main_axis_offset));
+  }
+
+  // Change the secondary shelf back to a horizontal alignment.
+  secondary_shelf->SetAlignment(ShelfAlignment::kBottom);
+
+  // Verify preview transforms. Since both shelves are bottom aligned once
+  // again, previews should be positioned horizontally.
+  for (int i = 0; i < 3; ++i) {
+    const int main_axis_offset =
+        (2 - i) * kHoldingSpaceTrayIconDefaultPreviewSize / 2;
+    ASSERT_EQ(primary_icon_previews[i]->transform().To2dTranslation(),
+              gfx::Vector2d(main_axis_offset, 0));
+    ASSERT_EQ(secondary_icon_previews[i]->transform().To2dTranslation(),
+              gfx::Vector2d(main_axis_offset, 0));
+  }
 }
 
 // Tests how download chips are updated during item addition, removal and
