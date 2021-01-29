@@ -35,7 +35,7 @@
 #include "chromeos/dbus/util/version_loader.h"
 #include "chromeos/services/assistant/assistant_device_settings_delegate.h"
 #include "chromeos/services/assistant/libassistant_service_host_impl.h"
-#include "chromeos/services/assistant/media_session/assistant_media_session.h"
+#include "chromeos/services/assistant/media_host.h"
 #include "chromeos/services/assistant/platform_api_impl.h"
 #include "chromeos/services/assistant/proxy/conversation_controller_proxy.h"
 #include "chromeos/services/assistant/proxy/service_controller_proxy.h"
@@ -56,8 +56,6 @@
 #include "libassistant/shared/internal_api/assistant_manager_delegate.h"
 #include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "libassistant/shared/public/assistant_manager.h"
-#include "libassistant/shared/public/media_manager.h"
-#include "services/media_session/public/mojom/media_session.mojom.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -72,11 +70,7 @@
     return;                                                                 \
   }
 
-using assistant_client::ActionModule;
-using assistant_client::MediaStatus;
 using media_session::mojom::MediaSessionAction;
-using media_session::mojom::MediaSessionInfo;
-using media_session::mojom::MediaSessionInfoPtr;
 using Resolution = assistant_client::ConversationStateListener::Resolution;
 using CommunicationErrorType =
     chromeos::assistant::AssistantManagerService::CommunicationErrorType;
@@ -88,15 +82,6 @@ namespace assistant {
 namespace {
 
 static bool is_first_init = true;
-
-constexpr char kIntentActionView[] = "android.intent.action.VIEW";
-
-constexpr char kNextTrackClientOp[] = "media.NEXT";
-constexpr char kPauseTrackClientOp[] = "media.PAUSE";
-constexpr char kPlayMediaClientOp[] = "media.PLAY_MEDIA";
-constexpr char kPrevTrackClientOp[] = "media.PREVIOUS";
-constexpr char kResumeTrackClientOp[] = "media.RESUME";
-constexpr char kStopTrackClientOp[] = "media.STOP";
 
 constexpr char kAndroidSettingsAppPackage[] = "com.android.settings";
 
@@ -245,8 +230,7 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
     base::Optional<std::string> s3_server_uri_override,
     base::Optional<std::string> device_id_override,
     std::unique_ptr<LibassistantServiceHost> libassistant_service_host)
-    : media_session_(std::make_unique<AssistantMediaSession>(this)),
-      action_module_(std::make_unique<action::CrosActionModule>(
+    : action_module_(std::make_unique<action::CrosActionModule>(
           this,
           features::IsAppSupportEnabled(),
           features::IsWaitSchedulingEnabled())),
@@ -255,6 +239,8 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
       assistant_proxy_(std::make_unique<AssistantProxy>()),
       context_(context),
       delegate_(std::move(delegate)),
+      media_host_(std::make_unique<MediaHost>(AssistantClient::Get(),
+                                              &interaction_subscribers_)),
       speech_recognition_observer_(
           std::make_unique<SpeechRecognitionObserverWrapper>(
               &interaction_subscribers_)),
@@ -264,7 +250,7 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
           ShouldPutLogsInHomeDirectory())),
       weak_factory_(this) {
   platform_api_ = delegate_->CreatePlatformApi(
-      media_session_.get(),
+      &media_host_->media_session(),
       assistant_proxy_->background_thread().task_runner());
 
   if (libassistant_service_host) {
@@ -292,13 +278,6 @@ AssistantManagerServiceImpl::AssistantManagerServiceImpl(
 
   settings_delegate_ =
       std::make_unique<AssistantDeviceSettingsDelegate>(context);
-
-  mojo::Remote<media_session::mojom::MediaControllerManager>
-      media_controller_manager;
-  AssistantClient::Get()->RequestMediaControllerManager(
-      media_controller_manager.BindNewPipeAndPassReceiver());
-  media_controller_manager->CreateActiveMediaController(
-      media_controller_.BindNewPipeAndPassReceiver());
 }
 
 AssistantManagerServiceImpl::~AssistantManagerServiceImpl() {
@@ -344,7 +323,7 @@ void AssistantManagerServiceImpl::Stop() {
   if (!assistant_state()->settings_enabled().value() && assistant_manager())
     assistant_manager()->ResetAllDataAndShutdown();
 
-  media_controller_observer_receiver_.reset();
+  media_host_->Stop();
   scoped_app_list_event_subscriber_.Reset();
   service_controller().Stop();
 }
@@ -366,45 +345,6 @@ void AssistantManagerServiceImpl::EnableAmbientMode(bool enabled) {
   // Update |action_module_| accordingly, as some actions, e.g. open URL
   // in the browser, are not supported in ambient mode.
   action_module_->SetAmbientModeEnabled(enabled);
-}
-
-void AssistantManagerServiceImpl::RegisterFallbackMediaHandler() {
-  // This is a callback from LibAssistant, it is async from LibAssistant thread.
-  // It is possible that when it reaches here, the assistant_manager has
-  // been stopped.
-  if (!assistant_manager_internal())
-    return;
-
-  // Register handler for media actions.
-  assistant_manager_internal()->RegisterFallbackMediaHandler(
-      [this](std::string action_name, std::string media_action_args_proto) {
-        if (action_name == kPlayMediaClientOp) {
-          OnPlayMedia(media_action_args_proto);
-        } else {
-          OnMediaControlAction(action_name, media_action_args_proto);
-        }
-      });
-}
-
-void AssistantManagerServiceImpl::AddMediaControllerObserver() {
-  if (!features::IsMediaSessionIntegrationEnabled())
-    return;
-
-  if (media_controller_observer_receiver_.is_bound())
-    return;
-
-  media_controller_->AddObserver(
-      media_controller_observer_receiver_.BindNewPipeAndPassRemote());
-}
-
-void AssistantManagerServiceImpl::RemoveMediaControllerObserver() {
-  if (!features::IsMediaSessionIntegrationEnabled())
-    return;
-
-  if (!media_controller_observer_receiver_.is_bound())
-    return;
-
-  media_controller_observer_receiver_.reset();
 }
 
 void AssistantManagerServiceImpl::RegisterAlarmsTimersListener() {
@@ -449,6 +389,7 @@ void AssistantManagerServiceImpl::RegisterAlarmsTimersListener() {
 void AssistantManagerServiceImpl::EnableListening(bool enable) {
   if (!assistant_manager())
     return;
+  // TODO(jeroendh): add EnableListening() to ServiceController.
   assistant_manager()->EnableListening(enable);
 }
 
@@ -465,13 +406,7 @@ void AssistantManagerServiceImpl::SetArcPlayStoreEnabled(bool enable) {
 void AssistantManagerServiceImpl::SetAssistantContextEnabled(bool enable) {
   DCHECK(GetState() == State::RUNNING);
 
-  if (enable) {
-    AddMediaControllerObserver();
-  } else {
-    RemoveMediaControllerObserver();
-    ResetMediaState();
-  }
-
+  media_host_->SetRelatedInfoEnabled(enable);
   display_controller().SetRelatedInfoEnabled(enable);
 }
 
@@ -508,18 +443,12 @@ void AssistantManagerServiceImpl::SyncDeviceAppsStatus() {
 
 void AssistantManagerServiceImpl::UpdateInternalMediaPlayerStatus(
     MediaSessionAction action) {
-  if (!assistant_manager())
-    return;
-  auto* media_manager = assistant_manager()->GetMediaManager();
-  if (!media_manager)
-    return;
-
   switch (action) {
     case MediaSessionAction::kPause:
-      media_manager->Pause();
+      media_host_->PauseInternalMediaPlayer();
       break;
     case MediaSessionAction::kPlay:
-      media_manager->Resume();
+      media_host_->ResumeInternalMediaPlayer();
       break;
     case MediaSessionAction::kPreviousTrack:
     case MediaSessionAction::kNextTrack:
@@ -900,74 +829,6 @@ void AssistantManagerServiceImpl::OnVerifyAndroidApp(
       [](auto) {});
 }
 
-void AssistantManagerServiceImpl::OnOpenMediaAndroidIntent(
-    const std::string& play_media_args_proto,
-    AndroidAppInfo* app_info) {
-  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
-
-  // Handle android media playback intent.
-  app_info->action = kIntentActionView;
-  if (app_info->intent.empty()) {
-    std::string url = GetAndroidIntentUrlFromMediaArgs(play_media_args_proto);
-    if (!url.empty())
-      app_info->intent = url;
-  }
-  for (auto& it : interaction_subscribers_) {
-    bool success = it.OnOpenAppResponse(*app_info);
-    HandleLaunchMediaIntentResponse(success);
-  }
-}
-
-void AssistantManagerServiceImpl::OnPlayMedia(
-    const std::string& play_media_args_proto) {
-  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnPlayMedia,
-                     play_media_args_proto);
-
-  std::unique_ptr<AndroidAppInfo> app_info =
-      GetAppInfoFromMediaArgs(play_media_args_proto);
-  if (app_info) {
-    OnOpenMediaAndroidIntent(play_media_args_proto, app_info.get());
-  } else {
-    std::string url = GetWebUrlFromMediaArgs(play_media_args_proto);
-    // Fallack to web URL.
-    if (!url.empty())
-      OnOpenUrl(url, /*in_background=*/false);
-  }
-}
-
-void AssistantManagerServiceImpl::OnMediaControlAction(
-    const std::string& action_name,
-    const std::string& media_action_args_proto) {
-  ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnMediaControlAction,
-                     action_name, media_action_args_proto);
-
-  if (action_name == kPauseTrackClientOp) {
-    media_controller_->Suspend();
-    return;
-  }
-
-  if (action_name == kResumeTrackClientOp) {
-    media_controller_->Resume();
-    return;
-  }
-
-  if (action_name == kNextTrackClientOp) {
-    media_controller_->NextTrack();
-    return;
-  }
-
-  if (action_name == kPrevTrackClientOp) {
-    media_controller_->PreviousTrack();
-    return;
-  }
-
-  if (action_name == kStopTrackClientOp) {
-    media_controller_->Suspend();
-    return;
-  }
-  // TODO(llin): Handle media.SEEK_RELATIVE.
-}
-
 void AssistantManagerServiceImpl::OnRespondingStarted(bool is_error_response) {
   ENSURE_MAIN_THREAD(&AssistantManagerServiceImpl::OnRespondingStarted,
                      is_error_response);
@@ -1065,12 +926,6 @@ bool AssistantManagerServiceImpl::IsServiceStarted() const {
   return service_controller().IsStarted();
 }
 
-void AssistantManagerServiceImpl::HandleLaunchMediaIntentResponse(
-    bool app_opened) {
-  // TODO(llin): Handle the response.
-  NOTIMPLEMENTED();
-}
-
 // This method runs on the LibAssistant thread.
 // This method is triggered as the callback of libassistant bootup checkin.
 void AssistantManagerServiceImpl::OnStartFinished() {
@@ -1097,13 +952,9 @@ void AssistantManagerServiceImpl::OnStartFinished() {
 
   SyncDeviceAppsStatus();
 
-  RegisterFallbackMediaHandler();
-
   SetAssistantContextEnabled(assistant_state()->IsScreenContextAllowed());
 
-  auto* media_manager = assistant_manager()->GetMediaManager();
-  if (media_manager)
-    media_manager->AddListener(this);
+  media_host_->Start(assistant_manager_internal());
 
   RegisterAlarmsTimersListener();
 
@@ -1122,29 +973,6 @@ void AssistantManagerServiceImpl::OnAndroidAppListRefreshed(
     filtered_apps_info.emplace_back(ToAndroidAppInfoPtr(app_info));
   }
   display_controller().SetAndroidAppList(std::move(filtered_apps_info));
-}
-
-void AssistantManagerServiceImpl::OnPlaybackStateChange(
-    const MediaStatus& status) {
-  media_session_->NotifyMediaSessionMetadataChanged(status);
-}
-
-void AssistantManagerServiceImpl::MediaSessionInfoChanged(
-    MediaSessionInfoPtr info) {
-  media_session_info_ptr_ = std::move(info);
-  UpdateMediaState();
-}
-
-void AssistantManagerServiceImpl::MediaSessionMetadataChanged(
-    const base::Optional<media_session::MediaMetadata>& metadata) {
-  media_metadata_ = std::move(metadata);
-  UpdateMediaState();
-}
-
-void AssistantManagerServiceImpl::MediaSessionChanged(
-    const base::Optional<base::UnguessableToken>& request_id) {
-  if (request_id.has_value())
-    media_session_audio_focus_id_ = std::move(request_id.value());
 }
 
 // TODO(dmblack): Handle non-firing (e.g. paused or scheduled) timers.
@@ -1313,70 +1141,6 @@ void AssistantManagerServiceImpl::RecordQueryResponseTypeUMA() {
 void AssistantManagerServiceImpl::SendAssistantFeedback(
     const AssistantFeedback& assistant_feedback) {
   conversation_controller_proxy().SendAssistantFeedback(assistant_feedback);
-}
-
-void AssistantManagerServiceImpl::UpdateMediaState() {
-  if (media_session_info_ptr_) {
-    if (media_session_info_ptr_->is_sensitive) {
-      // Do not update media state if the session is considered to be sensitive
-      // (off the record profile).
-      return;
-    }
-
-    if (media_session_info_ptr_->state ==
-            MediaSessionInfo::SessionState::kSuspended &&
-        media_session_info_ptr_->playback_state ==
-            media_session::mojom::MediaPlaybackState::kPlaying) {
-      // It is an intermediate state caused by some providers override the
-      // playback state. We considered it as invalid and skip reporting the
-      // state.
-      return;
-    }
-  }
-
-  // MediaSession Integrated providers (include the libassistant internal
-  // media provider) will trigger media state change event. Only update the
-  // external media status if the state changes is triggered by external
-  // providers.
-  if (media_session_->internal_audio_focus_id() ==
-      media_session_audio_focus_id_) {
-    return;
-  }
-
-  MediaStatus media_status;
-
-  // Set media metadata.
-  if (media_metadata_.has_value()) {
-    media_status.metadata.title =
-        base::UTF16ToUTF8(media_metadata_.value().title);
-  }
-
-  // Set playback state.
-  media_status.playback_state = MediaStatus::IDLE;
-  if (media_session_info_ptr_ &&
-      media_session_info_ptr_->state !=
-          MediaSessionInfo::SessionState::kInactive) {
-    switch (media_session_info_ptr_->playback_state) {
-      case media_session::mojom::MediaPlaybackState::kPlaying:
-        media_status.playback_state = MediaStatus::PLAYING;
-        break;
-      case media_session::mojom::MediaPlaybackState::kPaused:
-        media_status.playback_state = MediaStatus::PAUSED;
-        break;
-    }
-  }
-
-  auto* media_manager = assistant_manager()->GetMediaManager();
-  if (media_manager)
-    media_manager->SetExternalPlaybackState(media_status);
-}
-
-void AssistantManagerServiceImpl::ResetMediaState() {
-  auto* media_manager = assistant_manager()->GetMediaManager();
-  if (media_manager) {
-    MediaStatus media_status;
-    media_manager->SetExternalPlaybackState(media_status);
-  }
 }
 
 std::string AssistantManagerServiceImpl::NewPendingInteraction(

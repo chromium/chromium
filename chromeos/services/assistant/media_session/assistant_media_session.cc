@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/services/assistant/assistant_manager_service.h"
+#include "chromeos/services/assistant/media_host.h"
 #include "chromeos/services/assistant/public/cpp/assistant_client.h"
 #include "services/media_session/public/cpp/features.h"
 
@@ -35,10 +35,8 @@ const char kAudioFocusSourceName[] = "assistant";
 
 }  // namespace
 
-AssistantMediaSession::AssistantMediaSession(
-    AssistantManagerService* assistant_manager_service)
-    : assistant_manager_service_(assistant_manager_service),
-      main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
+AssistantMediaSession::AssistantMediaSession(MediaHost* host)
+    : host_(host), main_task_runner_(base::SequencedTaskRunnerHandle::Get()) {}
 
 AssistantMediaSession::~AssistantMediaSession() {
   AbandonAudioFocusIfNeeded();
@@ -81,16 +79,14 @@ void AssistantMediaSession::Suspend(SuspendType suspend_type) {
     return;
   SetAudioFocusInfo(MediaSessionInfo::SessionState::kSuspended,
                     audio_focus_type_);
-  assistant_manager_service_->UpdateInternalMediaPlayerStatus(
-      media_session::mojom::MediaSessionAction::kPause);
+  host_->PauseInternalMediaPlayer();
 }
 
 void AssistantMediaSession::Resume(SuspendType suspend_type) {
   if (!IsSessionStateSuspended())
     return;
   SetAudioFocusInfo(MediaSessionInfo::SessionState::kActive, audio_focus_type_);
-  assistant_manager_service_->UpdateInternalMediaPlayerStatus(
-      media_session::mojom::MediaSessionAction::kPlay);
+  host_->ResumeInternalMediaPlayer();
 }
 
 void AssistantMediaSession::RequestAudioFocus(AudioFocusType audio_focus_type) {

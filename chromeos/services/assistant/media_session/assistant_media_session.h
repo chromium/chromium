@@ -24,7 +24,7 @@ struct MediaStatus;
 namespace chromeos {
 namespace assistant {
 
-class AssistantManagerService;
+class MediaHost;
 
 // MediaSession manages the media session and audio focus for Assistant.
 // MediaSession allows clients to observe its changes via MediaSessionObserver,
@@ -32,8 +32,7 @@ class AssistantManagerService;
 class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
     : public media_session::mojom::MediaSession {
  public:
-  explicit AssistantMediaSession(
-      AssistantManagerService* assistant_manager_service);
+  explicit AssistantMediaSession(MediaHost* host);
   ~AssistantMediaSession() override;
 
   // media_session.mojom.MediaSession overrides:
@@ -105,7 +104,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantMediaSession
   // The current metadata associated with the current media session.
   media_session::MediaMetadata metadata_;
 
-  AssistantManagerService* const assistant_manager_service_;
+  MediaHost* const host_;
 
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   // Binding for Mojo pointer to |this| held by AudioFocusManager.

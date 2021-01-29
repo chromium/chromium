@@ -86,9 +86,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) FakeAssistantManagerServiceImpl
   // Return the Gaia ID that was passed to |SetUser|.
   base::Optional<std::string> gaia_id() { return gaia_id_; }
 
-  // Return the current media session action.
-  const MediaSessionAction& media_session_action() { return action_; }
-
  private:
   // Send out a |AssistantStateObserver::OnStateChange(state)| event if we are
   // transitioning from a prior state to a later state.
@@ -99,7 +96,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) FakeAssistantManagerServiceImpl
   base::Optional<std::string> access_token_;
   FakeAssistantSettingsImpl assistant_settings_;
   base::ObserverList<StateObserver> state_observers_;
-  MediaSessionAction action_ = MediaSessionAction::kPause;
 
   DISALLOW_COPY_AND_ASSIGN(FakeAssistantManagerServiceImpl);
 };

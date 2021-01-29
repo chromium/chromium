@@ -79,6 +79,8 @@ component("lib") {
       "assistant_settings_impl.h",
       "libassistant_service_host_impl.cc",
       "libassistant_service_host_impl.h",
+      "media_host.cc",
+      "media_host.h",
       "media_session/assistant_media_session.cc",
       "media_session/assistant_media_session.h",
       "platform/audio_device_owner.cc",

@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "chromeos/services/assistant/fake_assistant_manager_service_impl.h"
+#include "chromeos/services/assistant/media_host.h"
 #include "chromeos/services/assistant/media_session/assistant_media_session.h"
 #include "chromeos/services/assistant/test_support/scoped_assistant_client.h"
 #include "libassistant/shared/public/platform_audio_output.h"
@@ -80,22 +81,22 @@ class FakeAudioOutputDelegate : public assistant_client::AudioOutput::Delegate {
   DISALLOW_COPY_AND_ASSIGN(FakeAudioOutputDelegate);
 };
 
-class AudioDeviceOwnerTest : public testing::Test {
+class AssistantAudioDeviceOwnerTest : public testing::Test {
  public:
-  AudioDeviceOwnerTest()
+  AssistantAudioDeviceOwnerTest()
       : task_env_(
             base::test::TaskEnvironment::MainThreadType::DEFAULT,
             base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED) {}
 
-  ~AudioDeviceOwnerTest() override { task_env_.RunUntilIdle(); }
+  ~AssistantAudioDeviceOwnerTest() override { task_env_.RunUntilIdle(); }
 
  private:
   base::test::TaskEnvironment task_env_;
 
-  DISALLOW_COPY_AND_ASSIGN(AudioDeviceOwnerTest);
+  DISALLOW_COPY_AND_ASSIGN(AssistantAudioDeviceOwnerTest);
 };
 
-TEST_F(AudioDeviceOwnerTest, BufferFilling) {
+TEST_F(AssistantAudioDeviceOwnerTest, BufferFilling) {
   FakeAudioOutputDelegate delegate;
   auto audio_bus = media::AudioBus::Create(2, 4480);
   assistant_client::OutputStreamFormat format{
@@ -107,8 +108,9 @@ TEST_F(AudioDeviceOwnerTest, BufferFilling) {
   delegate.set_num_of_bytes_to_fill(200);
   delegate.Reset();
   ScopedAssistantClient client;
-  FakeAssistantManagerServiceImpl assistant_manager_service;
-  AssistantMediaSession media_session(&assistant_manager_service);
+  MediaHost media_host(AssistantClient::Get(),
+                       /*interaction_subscribers=*/nullptr);
+  AssistantMediaSession media_session(&media_host);
 
   auto owner = std::make_unique<AudioDeviceOwner>(
       base::SequencedTaskRunnerHandle::Get(),

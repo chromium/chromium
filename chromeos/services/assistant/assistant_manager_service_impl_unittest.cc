@@ -195,11 +195,15 @@ class AssistantManagerServiceImplTest : public testing::Test {
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &url_loader_factory_);
 
+    alarm_timer_controller_ =
+        std::make_unique<NiceMock<AssistantAlarmTimerControllerMock>>();
+
     service_context_ = std::make_unique<FakeServiceContext>();
     service_context_
         ->set_main_task_runner(task_environment().GetMainThreadTaskRunner())
         .set_power_manager_client(PowerManagerClient::Get())
-        .set_assistant_state(&assistant_state_);
+        .set_assistant_state(&assistant_state_)
+        .set_assistant_alarm_timer_controller(alarm_timer_controller_.get());
 
     CreateAssistantManagerServiceImpl();
   }
@@ -253,11 +257,35 @@ class AssistantManagerServiceImplTest : public testing::Test {
     return assistant_manager_service_->action_module_for_testing();
   }
 
+  // Replace the |AssistantAlarmTimerControllerMock| with a |StrictMock|.
+  void UseStrictAlarmTimerControllerMock() {
+    // We can not have 2 instances of |AssistantAlarmTimerController| at the
+    // same time, so we must destroy the current version first.
+    alarm_timer_controller_ = nullptr;
+    alarm_timer_controller_ =
+        std::make_unique<StrictMock<AssistantAlarmTimerControllerMock>>();
+    fake_service_context()->set_assistant_alarm_timer_controller(
+        alarm_timer_controller_.get());
+  }
+
+  AssistantAlarmTimerControllerMock& alarm_timer_controller_mock() {
+    return *alarm_timer_controller_;
+  }
+
   base::test::TaskEnvironment& task_environment() { return task_environment_; }
 
   void Start() {
     assistant_manager_service()->Start(UserInfo("<user-id>", "<access-token>"),
                                        /*enable_hotword=*/false);
+  }
+
+  // Start Libassistant, and wait until it is running.
+  void StartAndWaitForRunning() {
+    Start();
+    WaitForState(AssistantManagerService::STARTED);
+
+    fake_assistant_manager()->device_state_listener()->OnStartFinished();
+    WaitForState(AssistantManagerService::RUNNING);
   }
 
   void RunUntilIdle() {
@@ -346,6 +374,7 @@ class AssistantManagerServiceImplTest : public testing::Test {
   std::unique_ptr<FakeLibassistantV1Api> libassistant_v1_api_{
       std::make_unique<FakeLibassistantV1Api>(assistant_manager_.get())};
 
+  std::unique_ptr<AssistantAlarmTimerControllerMock> alarm_timer_controller_;
   std::unique_ptr<FakeServiceContext> service_context_;
 
   network::TestURLLoaderFactory url_loader_factory_;
@@ -382,10 +411,6 @@ TEST_F(AssistantManagerServiceImplTest,
 
 TEST_F(AssistantManagerServiceImplTest,
        StateShouldBecomeRunningAfterLibassistantSignalsOnStartFinished) {
-  NiceMock<AssistantAlarmTimerControllerMock> alarm_timer_controller;
-  fake_service_context()->set_assistant_alarm_timer_controller(
-      &alarm_timer_controller);
-
   Start();
   WaitForState(AssistantManagerService::STARTED);
 
@@ -506,10 +531,10 @@ TEST_F(AssistantManagerServiceImplTest,
 
 TEST_F(AssistantManagerServiceImplTest, ShouldPauseMediaManagerOnPause) {
   StrictMock<MockMediaManager> mock;
+  EXPECT_CALL(mock, AddListener);
   fake_assistant_manager()->SetMediaManager(&mock);
 
-  Start();
-  WaitForState(AssistantManagerService::STARTED);
+  StartAndWaitForRunning();
 
   EXPECT_CALL(mock, Pause);
 
@@ -519,10 +544,10 @@ TEST_F(AssistantManagerServiceImplTest, ShouldPauseMediaManagerOnPause) {
 
 TEST_F(AssistantManagerServiceImplTest, ShouldResumeMediaManagerOnPlay) {
   StrictMock<MockMediaManager> mock;
+  EXPECT_CALL(mock, AddListener);
   fake_assistant_manager()->SetMediaManager(&mock);
 
-  Start();
-  WaitForState(AssistantManagerService::STARTED);
+  StartAndWaitForRunning();
 
   EXPECT_CALL(mock, Resume);
 
@@ -539,10 +564,10 @@ TEST_F(AssistantManagerServiceImplTest, ShouldIgnoreOtherMediaManagerActions) {
   };
 
   StrictMock<MockMediaManager> mock;
+  EXPECT_CALL(mock, AddListener);
   fake_assistant_manager()->SetMediaManager(&mock);
 
-  Start();
-  WaitForState(AssistantManagerService::STARTED);
+  StartAndWaitForRunning();
 
   for (auto action : unsupported_media_session_actions) {
     // If this is not ignored, |mock| will complain about an uninterested call.
@@ -599,10 +624,6 @@ TEST_F(AssistantManagerServiceImplTest, ShouldFireStateObserverWhenStarted) {
 
 TEST_F(AssistantManagerServiceImplTest,
        ShouldFireStateObserverWhenLibAssistantSignalsOnStartFinished) {
-  NiceMock<AssistantAlarmTimerControllerMock> alarm_timer_controller;
-  fake_service_context()->set_assistant_alarm_timer_controller(
-      &alarm_timer_controller);
-
   Start();
   WaitForState(AssistantManagerService::STARTED);
 
@@ -654,6 +675,7 @@ TEST_F(AssistantManagerServiceImplTest,
 
 TEST_F(AssistantManagerServiceImplTest,
        ShouldNotifyAlarmTimerControllerOfOnlyRingingTimersInV1) {
+  UseStrictAlarmTimerControllerMock();
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndDisableFeature(features::kAssistantTimersV2);
 
@@ -661,11 +683,7 @@ TEST_F(AssistantManagerServiceImplTest,
   WaitForState(AssistantManagerService::STARTED);
   assistant_manager_service()->OnStartFinished();
 
-  StrictMock<AssistantAlarmTimerControllerMock> alarm_timer_controller;
-  fake_service_context()->set_assistant_alarm_timer_controller(
-      &alarm_timer_controller);
-
-  EXPECT_CALL(alarm_timer_controller, OnTimerStateChanged)
+  EXPECT_CALL(alarm_timer_controller_mock(), OnTimerStateChanged)
       .WillOnce(Invoke([](auto timers) {
         ASSERT_EQ(1u, timers.size());
         EXPECT_EQ(ash::AssistantTimerState::kFired, timers[0]->state);
@@ -689,23 +707,20 @@ TEST_F(AssistantManagerServiceImplTest,
 
 TEST_F(AssistantManagerServiceImplTest,
        ShouldNotifyAlarmTimerControllerOfAnyTimersInV2) {
+  UseStrictAlarmTimerControllerMock();
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kAssistantTimersV2);
 
-  StrictMock<AssistantAlarmTimerControllerMock> alarm_timer_controller;
-  fake_service_context()->set_assistant_alarm_timer_controller(
-      &alarm_timer_controller);
-
   // We expect OnTimerStateChanged() to be invoked when starting LibAssistant.
-  EXPECT_CALL(alarm_timer_controller, OnTimerStateChanged).Times(1);
+  EXPECT_CALL(alarm_timer_controller_mock(), OnTimerStateChanged).Times(1);
 
   Start();
   WaitForState(AssistantManagerService::STARTED);
   assistant_manager_service()->OnStartFinished();
 
-  testing::Mock::VerifyAndClearExpectations(&alarm_timer_controller);
+  testing::Mock::VerifyAndClearExpectations(&alarm_timer_controller_mock());
 
-  EXPECT_CALL(alarm_timer_controller, OnTimerStateChanged)
+  EXPECT_CALL(alarm_timer_controller_mock(), OnTimerStateChanged)
       .WillOnce(Invoke([](auto timers) {
         ASSERT_EQ(3u, timers.size());
         EXPECT_EQ(ash::AssistantTimerState::kScheduled, timers[0]->state);
@@ -731,7 +746,7 @@ TEST_F(AssistantManagerServiceImplTest,
 
 TEST_F(AssistantManagerServiceImplTest,
        ShouldNotifyAlarmTimerControllerOfTimersWhenStartingLibAssistantInV2) {
-  // Enable timers V2.
+  UseStrictAlarmTimerControllerMock();
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(features::kAssistantTimersV2);
 
@@ -740,14 +755,9 @@ TEST_F(AssistantManagerServiceImplTest,
   AddTimerEvent(&events, assistant_client::Timer::State::SCHEDULED);
   fake_alarm_timer_manager()->SetAllEvents(std::move(events));
 
-  // Bind AssistantAlarmTimerController.
-  StrictMock<AssistantAlarmTimerControllerMock> alarm_timer_controller;
-  fake_service_context()->set_assistant_alarm_timer_controller(
-      &alarm_timer_controller);
-
   // Expect |timers| to be sent to AssistantAlarmTimerController.  Verify
   // AssistantAlarmTimerController is notified of the scheduled timer.
-  EXPECT_CALL(alarm_timer_controller, OnTimerStateChanged)
+  EXPECT_CALL(alarm_timer_controller_mock(), OnTimerStateChanged)
       .WillOnce(Invoke([](auto timers) {
         ASSERT_EQ(1u, timers.size());
         EXPECT_EQ(ash::AssistantTimerState::kScheduled, timers[0]->state);

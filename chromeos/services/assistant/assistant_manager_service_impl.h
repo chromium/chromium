@@ -33,12 +33,9 @@
 #include "libassistant/shared/internal_api/assistant_manager_delegate.h"
 #include "libassistant/shared/public/conversation_state_listener.h"
 #include "libassistant/shared/public/device_state_listener.h"
-#include "libassistant/shared/public/media_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
-#include "services/media_session/public/mojom/media_controller.mojom.h"
-#include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/accessibility/ax_assistant_structure.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 
@@ -60,12 +57,12 @@ class PendingSharedURLLoaderFactory;
 namespace chromeos {
 namespace assistant {
 
-class AssistantMediaSession;
 class AssistantDeviceSettingsDelegate;
 class AssistantManagerServiceDelegate;
 class AssistantProxy;
 class AudioInputHost;
 class CrosPlatformApi;
+class MediaHost;
 class ServiceContext;
 class ServiceControllerProxy;
 class SpeechRecognitionObserverWrapper;
@@ -107,8 +104,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
       public assistant_client::ConversationStateListener,
       public assistant_client::AssistantManagerDelegate,
       public assistant_client::DeviceStateListener,
-      public assistant_client::MediaManager::Listener,
-      public media_session::mojom::MediaControllerObserver,
       public AppListEventSubscriber {
  public:
   // |service| owns this class and must outlive this class.
@@ -217,23 +212,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   assistant_client::AssistantManagerInternal* assistant_manager_internal();
   void SetMicState(bool mic_open);
 
-  // assistant_client::MediaManager::Listener overrides:
-  void OnPlaybackStateChange(
-      const assistant_client::MediaStatus& status) override;
-
-  // media_session::mojom::MediaControllerObserver overrides:
-  void MediaSessionInfoChanged(
-      media_session::mojom::MediaSessionInfoPtr info) override;
-  void MediaSessionMetadataChanged(
-      const base::Optional<media_session::MediaMetadata>& metadata) override;
-  void MediaSessionActionsChanged(
-      const std::vector<media_session::mojom::MediaSessionAction>& action)
-      override {}
-  void MediaSessionChanged(
-      const base::Optional<base::UnguessableToken>& request_id) override;
-  void MediaSessionPositionChanged(
-      const base::Optional<media_session::MediaPosition>& position) override {}
-
   // Get the action module for testing.
   action::CrosActionModule* action_module_for_testing() {
     return action_module_.get();
@@ -247,21 +225,11 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void PostInitAssistant();
   bool IsServiceStarted() const;
 
-  void HandleLaunchMediaIntentResponse(bool app_opened);
-
   void OnAlarmTimerStateChanged();
   void OnModifySettingsAction(const std::string& modify_setting_args_proto);
-  void OnOpenMediaAndroidIntent(const std::string& play_media_args_proto,
-                                AndroidAppInfo* app_info);
-  void OnPlayMedia(const std::string& play_media_args_proto);
-  void OnMediaControlAction(const std::string& action_name,
-                            const std::string& media_action_args_proto);
 
   void OnDeviceAppsEnabled(bool enabled);
 
-  void RegisterFallbackMediaHandler();
-  void AddMediaControllerObserver();
-  void RemoveMediaControllerObserver();
   void RegisterAlarmsTimersListener();
 
   void FillServerExperimentIds(std::vector<std::string>* server_experiment_ids);
@@ -274,9 +242,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   // and settings modification proto along with any text/voice responses would
   // be sent back in the second round (recorded as kDeviceAction).
   void RecordQueryResponseTypeUMA();
-
-  void UpdateMediaState();
-  void ResetMediaState();
 
   std::string NewPendingInteraction(AssistantInteractionType interaction_type,
                                     AssistantQuerySource source,
@@ -309,7 +274,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   void SetStateAndInformObservers(State new_state);
 
   State state_ = State::STOPPED;
-  std::unique_ptr<AssistantMediaSession> media_session_;
   std::unique_ptr<CrosPlatformApi> platform_api_;
   std::unique_ptr<action::CrosActionModule> action_module_;
   std::unique_ptr<AssistantSettingsImpl> assistant_settings_;
@@ -318,7 +282,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   std::unique_ptr<AudioInputHost> audio_input_host_;
 
   base::ObserverList<AssistantInteractionSubscriber> interaction_subscribers_;
-  mojo::Remote<media_session::mojom::MediaController> media_controller_;
 
   // Owned by the parent |Service| which will destroy |this| before |context_|.
   ServiceContext* const context_;
@@ -326,6 +289,7 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   std::unique_ptr<AssistantManagerServiceDelegate> delegate_;
   std::unique_ptr<LibassistantServiceHost> libassistant_service_host_;
   std::unique_ptr<AssistantDeviceSettingsDelegate> settings_delegate_;
+  std::unique_ptr<MediaHost> media_host_;
   std::unique_ptr<SpeechRecognitionObserverWrapper>
       speech_recognition_observer_;
 
@@ -342,18 +306,6 @@ class COMPONENT_EXPORT(ASSISTANT_SERVICE) AssistantManagerServiceImpl
   bool receive_modify_settings_proto_response_ = false;
   bool receive_inline_response_ = false;
   std::string receive_url_response_;
-
-  mojo::Receiver<media_session::mojom::MediaControllerObserver>
-      media_controller_observer_receiver_{this};
-
-  // Info associated to the active media session.
-  media_session::mojom::MediaSessionInfoPtr media_session_info_ptr_;
-  // The metadata for the active media session. It can be null to be reset, e.g.
-  // the media that was being played has been stopped.
-  base::Optional<media_session::MediaMetadata> media_metadata_ = base::nullopt;
-
-  base::UnguessableToken media_session_audio_focus_id_ =
-      base::UnguessableToken::Null();
 
   // Configuration passed to libassistant.
   ServiceControllerProxy::BootupConfigPtr bootup_config_;
