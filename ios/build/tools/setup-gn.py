@@ -39,8 +39,12 @@ class ConfigParserWithStringInterpolation(configparser.SafeConfigParser):
         lambda kv: self._UnquoteString(self._ExpandEnvVar(kv[1])),
         configparser.ConfigParser.items(self, section))
 
-  def getstring(self, section, option):
-    return self._UnquoteString(self._ExpandEnvVar(self.get(section, option)))
+  def getstring(self, section, option, fallback=''):
+    try:
+      raw_value = self.get(section, option)
+    except configparser.NoOptionError, _:
+      return fallback
+    return self._UnquoteString(self._ExpandEnvVar(raw_value))
 
   def _UnquoteString(self, string):
     if not string or string[0] != '"' or string[-1] != '"':
