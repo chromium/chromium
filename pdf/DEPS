@@ -1,5 +1,6 @@
 include_rules = [
   "+cc/paint",
+  "+content/public/renderer/v8_value_converter.h",
   "+gin/handle.h",
   "+gin/public",
   "+gin/object_template_builder.h",

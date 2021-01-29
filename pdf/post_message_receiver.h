@@ -5,6 +5,8 @@
 #ifndef PDF_POST_MESSAGE_RECEIVER_H_
 #define PDF_POST_MESSAGE_RECEIVER_H_
 
+#include <memory>
+
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "gin/public/wrapper_info.h"
@@ -15,6 +17,10 @@ namespace base {
 class SequencedTaskRunner;
 class Value;
 }  // namespace base
+
+namespace content {
+class V8ValueConverter;
+}  // namespace content
 
 namespace gin {
 class ObjectTemplateBuilder;
@@ -57,6 +63,7 @@ class PostMessageReceiver final : public gin::Wrappable<PostMessageReceiver> {
 
  private:
   PostMessageReceiver(
+      v8::Isolate* isolate,
       base::WeakPtr<Client> client,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner);
 
@@ -65,8 +72,15 @@ class PostMessageReceiver final : public gin::Wrappable<PostMessageReceiver> {
       v8::Isolate* isolate) override;
   const char* GetTypeName() override;
 
+  // Converts `message` so it can be consumed by `client_`.
+  std::unique_ptr<base::Value> ConvertMessage(v8::Local<v8::Value> message);
+
   // Implements the `postMessage()` method called by the embedder.
   void PostMessage(v8::Local<v8::Value> message);
+
+  std::unique_ptr<content::V8ValueConverter> v8_value_converter_;
+
+  v8::Isolate* isolate_;
 
   base::WeakPtr<Client> client_;
 

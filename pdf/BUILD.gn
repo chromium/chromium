@@ -283,6 +283,7 @@ if (enable_pdf) {
       ":ppapi_migration",
       "//base",
       "//cc/paint",
+      "//content/public/renderer",
       "//gin",
       "//ppapi/cpp:objects",  # TODO(crbug.com/1114263): PDFEngine::Client only.
       "//third_party/blink/public:blink_headers",
