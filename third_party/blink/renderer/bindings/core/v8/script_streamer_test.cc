@@ -132,6 +132,9 @@ class ScriptStreamingTest : public testing::Test {
         unfreezable_task_runner_, MakeGarbageCollected<NoopLoaderFactory>(),
         MakeGarbageCollected<MockContextLifecycleNotifier>()));
 
+    EXPECT_EQ(mojo::CreateDataPipe(nullptr, producer_handle_, consumer_handle_),
+              MOJO_RESULT_OK);
+
     ResourceRequest request(url_);
     request.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
 
@@ -149,7 +152,7 @@ class ScriptStreamingTest : public testing::Test {
 
     resource_->Loader()->DidReceiveResponse(WrappedResourceResponse(response));
     resource_->Loader()->DidStartLoadingResponseBody(
-        std::move(data_pipe_.consumer_handle));
+        std::move(consumer_handle_));
   }
 
   ScriptSourceCode GetScriptSourceCode() const {
@@ -172,7 +175,7 @@ class ScriptStreamingTest : public testing::Test {
  protected:
   void AppendData(const char* data) {
     uint32_t data_len = strlen(data);
-    MojoResult result = data_pipe_.producer_handle->WriteData(
+    MojoResult result = producer_handle_->WriteData(
         data, &data_len, MOJO_WRITE_DATA_FLAG_ALL_OR_NONE);
     EXPECT_EQ(result, MOJO_RESULT_OK);
 
@@ -195,7 +198,7 @@ class ScriptStreamingTest : public testing::Test {
 
   void Finish() {
     resource_->Loader()->DidFinishLoading(base::TimeTicks(), 0, 0, 0, false);
-    data_pipe_.producer_handle.reset();
+    producer_handle_.reset();
     resource_->SetStatus(ResourceStatus::kCached);
   }
 
@@ -210,7 +213,8 @@ class ScriptStreamingTest : public testing::Test {
 
   Persistent<TestResourceClient> resource_client_;
   Persistent<ScriptResource> resource_;
-  mojo::DataPipe data_pipe_;
+  mojo::ScopedDataPipeProducerHandle producer_handle_;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle_;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder_;
 };
