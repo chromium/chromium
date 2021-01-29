@@ -19,6 +19,8 @@
 
 namespace url {
 
+void ExpectParsedUrlsEqual(const GURL& a, const GURL& b);
+
 // AbstractOriginTest below abstracts away differences between url::Origin and
 // blink::SecurityOrigin by parametrizing the tests with a class that has to
 // expose the same public members as UrlOriginTestTraits below.
@@ -123,7 +125,10 @@ class AbstractOriginTest : public testing::Test {
     return TOriginTraits::GetTupleOrPrecursorTupleIfOpaque(origin);
   }
   bool IsSameOrigin(const OriginType& a, const OriginType& b) {
-    return TOriginTraits::IsSameOrigin(a, b);
+    bool is_a_same_with_b = TOriginTraits::IsSameOrigin(a, b);
+    bool is_b_same_with_a = TOriginTraits::IsSameOrigin(b, a);
+    EXPECT_EQ(is_a_same_with_b, is_b_same_with_a);
+    return is_a_same_with_b;
   }
   std::string Serialize(const OriginType& origin) {
     return TOriginTraits::Serialize(origin);
@@ -146,22 +151,21 @@ class AbstractOriginTest : public testing::Test {
     // An origin is always same-origin with itself.
     EXPECT_SAME_ORIGIN(origin, origin);
 
+    // A copy of |origin| should be same-origin as well.
+    auto origin_copy = origin;
+    EXPECT_EQ(this->GetScheme(origin), this->GetScheme(origin_copy));
+    EXPECT_EQ(this->GetHost(origin), this->GetHost(origin_copy));
+    EXPECT_EQ(this->GetPort(origin), this->GetPort(origin_copy));
+    EXPECT_EQ(this->IsOpaque(origin), this->IsOpaque(origin_copy));
+    EXPECT_SAME_ORIGIN(origin, origin_copy);
+
     // An origin is always cross-origin from another, unique, opaque origin.
     EXPECT_CROSS_ORIGIN(origin, this->CreateUniqueOpaqueOrigin());
 
-    // Derived opaque origins.
-    auto derived_opaque = this->DeriveNewOpaqueOrigin(origin);
-    auto derived_via_data_url =
-        this->CreateWithReferenceOrigin("data:text/html,baz", origin);
-    EXPECT_TRUE(this->IsOpaque(derived_opaque));
-    EXPECT_TRUE(this->IsOpaque(derived_via_data_url));
-    EXPECT_CROSS_ORIGIN(origin, derived_opaque);
-    EXPECT_CROSS_ORIGIN(origin, derived_via_data_url);
-    EXPECT_CROSS_ORIGIN(derived_opaque, derived_via_data_url);
-    EXPECT_EQ(this->GetTupleOrPrecursorTupleIfOpaque(origin),
-              this->GetTupleOrPrecursorTupleIfOpaque(derived_opaque));
-    EXPECT_EQ(this->GetTupleOrPrecursorTupleIfOpaque(origin),
-              this->GetTupleOrPrecursorTupleIfOpaque(derived_via_data_url));
+    // An origin is always cross-origin from another tuple origin.
+    auto different_tuple_origin =
+        this->CreateOriginFromString("https://not-in-the-list.test/");
+    EXPECT_CROSS_ORIGIN(origin, different_tuple_origin);
 
     // Deriving an origin for "about:blank".
     auto about_blank_origin1 =
@@ -170,6 +174,22 @@ class AbstractOriginTest : public testing::Test {
         this->CreateWithReferenceOrigin("about:blank?bar#foo", origin);
     EXPECT_SAME_ORIGIN(origin, about_blank_origin1);
     EXPECT_SAME_ORIGIN(origin, about_blank_origin2);
+
+    // Derived opaque origins.
+    std::vector<OriginType> derived_origins = {
+        this->DeriveNewOpaqueOrigin(origin),
+        this->CreateWithReferenceOrigin("data:text/html,baz", origin),
+        this->DeriveNewOpaqueOrigin(about_blank_origin1),
+    };
+    for (size_t i = 0; i < derived_origins.size(); i++) {
+      SCOPED_TRACE(testing::Message() << "Derived origin #" << i);
+      const OriginType& derived_origin = derived_origins[i];
+      EXPECT_TRUE(this->IsOpaque(derived_origin));
+      EXPECT_SAME_ORIGIN(derived_origin, derived_origin);
+      EXPECT_CROSS_ORIGIN(origin, derived_origin);
+      EXPECT_EQ(this->GetTupleOrPrecursorTupleIfOpaque(origin),
+                this->GetTupleOrPrecursorTupleIfOpaque(derived_origin));
+    }
   }
 
   void VerifyUniqueOpaqueOriginInvariants(const OriginType& origin) {
@@ -194,8 +214,18 @@ class AbstractOriginTest : public testing::Test {
     VerifyOriginInvariants(origin);
   }
 
-  void VerifyTupleOrigin(const OriginType& origin,
-                         const SchemeHostPort& expected_tuple) {
+  void TestUniqueOpaqueOrigin(base::StringPiece test_input) {
+    auto origin = this->CreateOriginFromString(test_input);
+    this->VerifyUniqueOpaqueOriginInvariants(origin);
+
+    // Re-creating from the URL should be cross-origin.
+    auto origin_recreated_from_same_input =
+        this->CreateOriginFromString(test_input);
+    EXPECT_CROSS_ORIGIN(origin, origin_recreated_from_same_input);
+  }
+
+  void VerifyTupleOriginInvariants(const OriginType& origin,
+                                   const SchemeHostPort& expected_tuple) {
     if (this->IsOpaque(origin)) {
       ADD_FAILURE() << "Got unexpectedly opaque origin";
       return;  // Skip other test assertions.
@@ -274,8 +304,7 @@ TYPED_TEST_P(AbstractOriginTest, OpaqueOriginsFromValidUrls) {
     // technicality like having no host in a noaccess-std-with-host: scheme).
     EXPECT_TRUE(this->IsValidUrl(test_input));
 
-    auto origin = this->CreateOriginFromString(test_input);
-    this->VerifyUniqueOpaqueOriginInvariants(origin);
+    this->TestUniqueOpaqueOrigin(test_input);
   }
 }
 
@@ -311,6 +340,9 @@ TYPED_TEST_P(AbstractOriginTest, OpaqueOriginsFromInvalidUrls) {
       "http://[]/",
       "http://[2001:0db8:0000:0000:0000:0000:0000:0000:0001]/",  // 9 groups.
 
+      // Unknown scheme without a colon character (":") gives an invalid URL.
+      "unknown-scheme",
+
       // Standard schemes require a hostname (and result in an opaque origin if
       // the hostname is missing).
       "local-std-with-host:",
@@ -326,8 +358,7 @@ TYPED_TEST_P(AbstractOriginTest, OpaqueOriginsFromInvalidUrls) {
     EXPECT_FALSE(this->IsValidUrl(test_input));
 
     // Invalid URLs should always result in an opaque origin.
-    auto origin = this->CreateOriginFromString(test_input);
-    this->VerifyUniqueOpaqueOriginInvariants(origin);
+    this->TestUniqueOpaqueOrigin(test_input);
   }
 }
 
@@ -406,7 +437,7 @@ TYPED_TEST_P(AbstractOriginTest, TupleOrigins) {
     EXPECT_TRUE(this->IsValidUrl(test.input));
 
     auto origin = this->CreateOriginFromString(test.input);
-    this->VerifyTupleOrigin(origin, test.expected_tuple);
+    this->VerifyTupleOriginInvariants(origin, test.expected_tuple);
   }
 }
 
@@ -439,8 +470,7 @@ TYPED_TEST_P(AbstractOriginTest, CustomSchemes_OpaqueOrigins) {
     // technicality like having no host in a noaccess-std-with-host: scheme).
     EXPECT_TRUE(this->IsValidUrl(test_input));
 
-    auto origin = this->CreateOriginFromString(test_input);
-    this->VerifyUniqueOpaqueOriginInvariants(origin);
+    this->TestUniqueOpaqueOrigin(test_input);
   }
 }
 
@@ -480,7 +510,7 @@ TYPED_TEST_P(AbstractOriginTest, CustomSchemes_TupleOrigins) {
     EXPECT_TRUE(this->IsValidUrl(test.input));
 
     auto origin = this->CreateOriginFromString(test.input);
-    this->VerifyTupleOrigin(origin, test.expected_tuple);
+    this->VerifyTupleOriginInvariants(origin, test.expected_tuple);
   }
 }
 
