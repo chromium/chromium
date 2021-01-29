@@ -595,6 +595,8 @@ void NGTableRowPainter::PaintColumnsBackground(
   bool is_horizontal =
       IsHorizontalWritingMode(fragment_.Style().GetWritingMode());
   for (const NGLink& child : fragment_.Children()) {
+    if (!child.fragment->IsTableNGCell())
+      continue;
     wtf_size_t cell_column =
         To<NGPhysicalBoxFragment>(child.fragment)->TableCellColumnIndex();
     // if cell is in the column, generate column physical rect
