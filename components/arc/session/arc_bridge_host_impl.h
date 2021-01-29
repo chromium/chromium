@@ -85,6 +85,8 @@ class ArcBridgeHostImpl : public mojom::ArcBridgeHost {
           enterprise_reporting_remote) override;
   void OnFileSystemInstanceReady(mojo::PendingRemote<mojom::FileSystemInstance>
                                      file_system_remote) override;
+  void OnIioSensorInstanceReady(
+      mojo::PendingRemote<mojom::IioSensorInstance> iio_sensor_remote) override;
   void OnImeInstanceReady(
       mojo::PendingRemote<mojom::ImeInstance> ime_remote) override;
   void OnInputMethodManagerInstanceReady(

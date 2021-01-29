@@ -11,6 +11,7 @@
 #include "ash/public/cpp/message_center/arc_notifications_host_initializer.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
 #include "components/arc/mojom/accessibility_helper.mojom.h"
 #include "components/arc/mojom/adbd.mojom.h"
 #include "components/arc/mojom/app.mojom.h"
@@ -199,6 +200,12 @@ void ArcBridgeHostImpl::OnFileSystemInstanceReady(
 void ArcBridgeHostImpl::OnImeInstanceReady(
     mojo::PendingRemote<mojom::ImeInstance> ime_remote) {
   OnInstanceReady(arc_bridge_service_->ime(), std::move(ime_remote));
+}
+
+void ArcBridgeHostImpl::OnIioSensorInstanceReady(
+    mojo::PendingRemote<mojom::IioSensorInstance> iio_sensor_remote) {
+  OnInstanceReady(arc_bridge_service_->iio_sensor(),
+                  std::move(iio_sensor_remote));
 }
 
 void ArcBridgeHostImpl::OnInputMethodManagerInstanceReady(

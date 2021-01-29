@@ -49,6 +49,8 @@ class EnterpriseReportingHost;
 class EnterpriseReportingInstance;
 class FileSystemHost;
 class FileSystemInstance;
+class IioSensorHost;
+class IioSensorInstance;
 class ImeHost;
 class ImeInstance;
 class InputMethodManagerHost;
@@ -205,6 +207,10 @@ class ArcBridgeService {
   file_system() {
     return &file_system_;
   }
+  ConnectionHolder<mojom::IioSensorInstance, mojom::IioSensorHost>*
+  iio_sensor() {
+    return &iio_sensor_;
+  }
   ConnectionHolder<mojom::ImeInstance, mojom::ImeHost>* ime() { return &ime_; }
   ConnectionHolder<mojom::InputMethodManagerInstance,
                    mojom::InputMethodManagerHost>*
@@ -335,6 +341,7 @@ class ArcBridgeService {
       enterprise_reporting_;
   ConnectionHolder<mojom::FileSystemInstance, mojom::FileSystemHost>
       file_system_;
+  ConnectionHolder<mojom::IioSensorInstance, mojom::IioSensorHost> iio_sensor_;
   ConnectionHolder<mojom::ImeInstance, mojom::ImeHost> ime_;
   ConnectionHolder<mojom::InputMethodManagerInstance,
                    mojom::InputMethodManagerHost>

@@ -127,6 +127,9 @@ void FakeArcBridgeHost::OnEnterpriseReportingInstanceReady(
 void FakeArcBridgeHost::OnFileSystemInstanceReady(
     mojo::PendingRemote<mojom::FileSystemInstance> file_system_remote) {}
 
+void FakeArcBridgeHost::OnIioSensorInstanceReady(
+    mojo::PendingRemote<mojom::IioSensorInstance> iio_sensor_remote) {}
+
 void FakeArcBridgeHost::OnImeInstanceReady(
     mojo::PendingRemote<mojom::ImeInstance> ime_remote) {}
 

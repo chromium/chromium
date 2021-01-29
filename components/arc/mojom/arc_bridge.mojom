@@ -23,6 +23,7 @@ import "components/arc/mojom/digital_goods.mojom";
 import "components/arc/mojom/disk_quota.mojom";
 import "components/arc/mojom/enterprise_reporting.mojom";
 import "components/arc/mojom/file_system.mojom";
+import "components/arc/mojom/iio_sensor.mojom";
 import "components/arc/mojom/ime.mojom";
 import "components/arc/mojom/input_method_manager.mojom";
 import "components/arc/mojom/intent_helper.mojom";
@@ -59,9 +60,9 @@ import "components/arc/mojom/volume_mounter.mojom";
 import "components/arc/mojom/wake_lock.mojom";
 import "components/arc/mojom/wallpaper.mojom";
 
-// Next MinVersion: 54
+// Next MinVersion: 55
 // Deprecated method IDs: 101, 105, 121
-// Next method ID: 159
+// Next method ID: 160
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
   // compatibility with the ARC instance, explicitly assign each interface a
@@ -141,6 +142,10 @@ interface ArcBridgeHost {
   // Notifies Chrome that the FileSystemInstance interface is ready.
   [MinVersion=13] OnFileSystemInstanceReady@119(
       pending_remote<FileSystemInstance> instance_remote);
+
+  // Notifies Chrome that the IioSensorInstance interface is ready.
+  [MinVersion=54] OnIioSensorInstanceReady@159(
+      pending_remote<IioSensorInstance> instance_remote);
 
   // Notifies Chrome that the ImeInstance interface is ready.
   [MinVersion=3] OnImeInstanceReady@110(
