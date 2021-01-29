@@ -727,7 +727,7 @@ void AudioRendererImpl::OnWaiting(WaitingReason reason) {
 
 void AudioRendererImpl::SetVolume(float volume) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-    was_unmuted_ = was_unmuted_ || volume != 0;
+  was_unmuted_ = was_unmuted_ || volume != 0;
   if (state_ == kUninitialized || state_ == kInitializing) {
     volume_ = volume;
     return;
