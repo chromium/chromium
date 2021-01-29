@@ -120,6 +120,7 @@ public class CrashReporterTest {
         Assert.assertFalse(mCrashSidecar.exists());
     }
 
+    @MinWebLayerVersion(88) // Fix first appeared in 88.
     @Test
     @SmallTest
     public void testBogusCrashId() throws Exception {
