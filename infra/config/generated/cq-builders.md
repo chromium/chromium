@@ -384,5 +384,5 @@ as required builders.
   * [`//services/tracing/.+`](https://cs.chromium.org/chromium/src/services/tracing/)
 
 * [linux-rel-rts](https://ci.chromium.org/p/chromium/builders/try/linux-rel-rts) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux-rel-rts)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux-rel-rts))
-  * Experiment percentage: 1.0
+  * Experiment percentage: 5.0
 
