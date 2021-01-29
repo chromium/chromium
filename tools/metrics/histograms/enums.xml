@@ -80771,6 +80771,7 @@ Called by update_scheduler_enums.py.-->
   <int value="2" label="DISABLED_FOR_USER"/>
   <int value="3" label="DISABLED_BY_GROUP_POLICY"/>
   <int value="4" label="DISABLED_BY_MANIFEST"/>
+  <int value="5" label="UNKNOWN"/>
 </enum>
 
 <enum name="WindowsNotificationGetSettingStatus">

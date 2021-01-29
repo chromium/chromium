@@ -101,6 +101,7 @@ enum class GetSettingPolicy {
   DISABLED_FOR_USER = 2,
   DISABLED_BY_GROUP_POLICY = 3,
   DISABLED_BY_MANIFEST = 4,
+  UNKNOWN = 5,
   COUNT  // Must be the final value.
 };
 
@@ -166,6 +167,8 @@ void LogGetDisplayedLaunchIdStatus(GetDisplayedLaunchIdStatus status);
 void LogGetNotificationLaunchIdStatus(GetNotificationLaunchIdStatus status);
 void LogGetSettingPolicy(GetSettingPolicy policy);
 void LogGetSettingStatus(GetSettingStatus status);
+void LogGetSettingPolicyStartup(GetSettingPolicy policy);
+void LogGetSettingStatusStartup(GetSettingStatus status);
 void LogHandleEventStatus(HandleEventStatus status);
 void LogActivationStatus(ActivationStatus status);
 void LogSetReadyCallbackStatus(SetReadyCallbackStatus status);

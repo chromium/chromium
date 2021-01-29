@@ -49,6 +49,16 @@ void LogGetSettingStatus(GetSettingStatus status) {
                             GetSettingStatus::COUNT);
 }
 
+void LogGetSettingPolicyStartup(GetSettingPolicy policy) {
+  UMA_HISTOGRAM_ENUMERATION("Notifications.Windows.GetSettingPolicyStartup",
+                            policy, GetSettingPolicy::COUNT);
+}
+
+void LogGetSettingStatusStartup(GetSettingStatus status) {
+  UMA_HISTOGRAM_ENUMERATION("Notifications.Windows.GetSettingStatusStartup",
+                            status, GetSettingStatus::COUNT);
+}
+
 void LogHandleEventStatus(HandleEventStatus status) {
   UMA_HISTOGRAM_ENUMERATION("Notifications.Windows.HandleEventStatus", status,
                             HandleEventStatus::COUNT);

@@ -120,6 +120,28 @@ void ForwardNotificationOperationOnUiThread(
                      action_index, reply, by_user));
 }
 
+GetSettingPolicy ConvertSettingPolicy(
+    winui::Notifications::NotificationSetting setting) {
+  switch (setting) {
+    case winui::Notifications::NotificationSetting_Enabled:
+      return GetSettingPolicy::ENABLED;
+    case winui::Notifications::NotificationSetting_DisabledForApplication:
+      DLOG(ERROR) << "Notifications disabled for application";
+      return GetSettingPolicy::DISABLED_FOR_APPLICATION;
+    case winui::Notifications::NotificationSetting_DisabledForUser:
+      DLOG(ERROR) << "Notifications disabled for user";
+      return GetSettingPolicy::DISABLED_FOR_USER;
+    case winui::Notifications::NotificationSetting_DisabledByGroupPolicy:
+      DLOG(ERROR) << "Notifications disabled by group policy";
+      return GetSettingPolicy::DISABLED_BY_GROUP_POLICY;
+    case winui::Notifications::NotificationSetting_DisabledByManifest:
+      DLOG(ERROR) << "Notifications disabled by manifest";
+      return GetSettingPolicy::DISABLED_BY_MANIFEST;
+  }
+  DLOG(ERROR) << "Unknown Windows notification setting";
+  return GetSettingPolicy::UNKNOWN;
+}
+
 }  // namespace
 
 // static
@@ -153,11 +175,11 @@ class NotificationPlatformBridgeWinImpl
         FROM_HERE, notification_task_runner_,
         image_retainer_->GetCleanupTask());
 
-    // Populate the notifications map with the current displayed notifications.
     notification_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&NotificationPlatformBridgeWinImpl::
-                                      InitializeExpectedDisplayedNotification,
-                                  base::Unretained(this)));
+        FROM_HERE,
+        base::BindOnce(
+            &NotificationPlatformBridgeWinImpl::InitializeOnTaskRunner,
+            base::Unretained(this)));
   }
   NotificationPlatformBridgeWinImpl(const NotificationPlatformBridgeWinImpl&) =
       delete;
@@ -338,27 +360,7 @@ class NotificationPlatformBridgeWinImpl
     HRESULT hr = notifier->get_Setting(&setting);
     if (SUCCEEDED(hr)) {
       LogGetSettingStatus(GetSettingStatus::SUCCESS);
-      switch (setting) {
-        case winui::Notifications::NotificationSetting_Enabled:
-          LogGetSettingPolicy(GetSettingPolicy::ENABLED);
-          break;
-        case winui::Notifications::NotificationSetting_DisabledForApplication:
-          LogGetSettingPolicy(GetSettingPolicy::DISABLED_FOR_APPLICATION);
-          DLOG(ERROR) << "Notifications disabled for application";
-          break;
-        case winui::Notifications::NotificationSetting_DisabledForUser:
-          LogGetSettingPolicy(GetSettingPolicy::DISABLED_FOR_USER);
-          DLOG(ERROR) << "Notifications disabled for user";
-          break;
-        case winui::Notifications::NotificationSetting_DisabledByGroupPolicy:
-          LogGetSettingPolicy(GetSettingPolicy::DISABLED_BY_GROUP_POLICY);
-          DLOG(ERROR) << "Notifications disabled by group policy";
-          break;
-        case winui::Notifications::NotificationSetting_DisabledByManifest:
-          LogGetSettingPolicy(GetSettingPolicy::DISABLED_BY_MANIFEST);
-          DLOG(ERROR) << "Notifications disabled by manifest";
-          break;
-      }
+      LogGetSettingPolicy(ConvertSettingPolicy(setting));
     } else {
       LogGetSettingStatus(GetSettingStatus::UNKNOWN_FAILURE);
     }
@@ -629,6 +631,12 @@ class NotificationPlatformBridgeWinImpl
       displayed_notifications_.erase(key);
   }
 
+  void InitializeOnTaskRunner() {
+    DCHECK(notification_task_runner_->RunsTasksInCurrentSequence());
+    LogSettingPolicyAtStartup();
+    InitializeExpectedDisplayedNotification();
+  }
+
   void InitializeExpectedDisplayedNotification() {
     DCHECK(notification_task_runner_->RunsTasksInCurrentSequence());
 
@@ -649,6 +657,29 @@ class NotificationPlatformBridgeWinImpl
 
     if (!displayed_notifications_.empty())
       MaybeStartNotificationSynchronizationTimer();
+  }
+
+  void LogSettingPolicyAtStartup() {
+    DCHECK(notification_task_runner_->RunsTasksInCurrentSequence());
+
+    if (!notifier_for_testing_ && !notifier_.Get() &&
+        FAILED(InitializeToastNotifier())) {
+      // A histogram should have already been logged for this failure.
+      DLOG(ERROR) << "Unable to initialize toast notifier";
+      return;
+    }
+
+    winui::Notifications::IToastNotifier* notifier =
+        notifier_for_testing_ ? notifier_for_testing_ : notifier_.Get();
+
+    winui::Notifications::NotificationSetting setting;
+    HRESULT hr = notifier->get_Setting(&setting);
+    if (SUCCEEDED(hr)) {
+      LogGetSettingStatusStartup(GetSettingStatus::SUCCESS);
+      LogGetSettingPolicyStartup(ConvertSettingPolicy(setting));
+    } else {
+      LogGetSettingStatusStartup(GetSettingStatus::UNKNOWN_FAILURE);
+    }
   }
 
   // Test to see if the notification_helper.exe has been registered in the

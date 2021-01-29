@@ -130,6 +130,9 @@ TEST_F(NotificationPlatformBridgeWinTest, GroupAndTag) {
   base::win::ScopedHString tag(hstring_tag);
   std::string tag_data = std::string(kNotificationId) + "|" + kProfileId + "|0";
   ASSERT_EQ(base::NumberToWString(base::Hash(tag_data)), tag.Get());
+
+  // Let tasks on |notification_task_runner_| of |bridge| run before its dtor.
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(NotificationPlatformBridgeWinTest, GroupAndTagUniqueness) {
@@ -206,6 +209,9 @@ TEST_F(NotificationPlatformBridgeWinTest, GroupAndTagUniqueness) {
 
     ASSERT_EQ(tagA.Get(), tagB.Get());
   }
+
+  // Let tasks on |notification_task_runner_| of |bridge| run before its dtor.
+  task_environment_.RunUntilIdle();
 }
 
 TEST_F(NotificationPlatformBridgeWinTest, Suppress) {
@@ -262,4 +268,7 @@ TEST_F(NotificationPlatformBridgeWinTest, Suppress) {
   toast2.Reset();
 
   bridge.SetDisplayedNotificationsForTesting(nullptr);
+
+  // Let tasks on |notification_task_runner_| of |bridge| run before its dtor.
+  task_environment_.RunUntilIdle();
 }
