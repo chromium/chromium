@@ -26,8 +26,7 @@
   },
   "commands": {
     "channel": "stable",
-    "extension_types": ["extension", "platform_app"],
-    "min_manifest_version": 2
+    "extension_types": ["extension", "platform_app"]
   },
   "options_page": {
     "channel": "stable",

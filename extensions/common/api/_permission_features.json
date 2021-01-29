@@ -13,8 +13,7 @@
 {
   "alarms": {
     "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-    "min_manifest_version": 2
+    "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
   },
   "app.window.alwaysOnTop": {
     "channel": "stable",
@@ -202,13 +201,11 @@
   "declarativeNetRequest": {
     "channel": "stable",
     "extension_types": ["extension"],
-    "min_manifest_version": 2,
     "feature_flag": "DeclarativeNetRequest"
   },
   "declarativeNetRequestFeedback": {
     "channel": "stable",
     "extension_types": ["extension"],
-    "min_manifest_version": 2,
     "feature_flag": "DeclarativeNetRequest"
   },
   "declarativeWebRequest": {
@@ -556,19 +553,16 @@
   "storage": [
     {
       "channel": "stable",
-      "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
-      "min_manifest_version": 2
+      "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
     },
     {
       "channel": "stable",
       "dependencies": ["behavior:imprivata_login_screen_extension"],
-      "extension_types": ["login_screen_extension"],
-      "min_manifest_version": 2
+      "extension_types": ["login_screen_extension"]
     },
     {
       "channel": "stable",
       "extension_types": ["login_screen_extension"],
-      "min_manifest_version": 2,
       "allowlist": [
         "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519"  // Login screen APIs test extension
       ]

@@ -37,8 +37,7 @@
   },
   "activeTab": {
     "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app"],
-    "min_manifest_version": 2
+    "extension_types": ["extension", "legacy_packaged_app"]
   },
   "activityLogPrivate": {
     "channel": "stable",

@@ -19,6 +19,7 @@
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/install_warning.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -182,50 +183,73 @@ TEST_F(ManifestUnitTest, ExtensionTypes) {
   MutateManifest(&manifest, keys::kLaunchWebURL, nullptr);
 }
 
-// Verifies that the getters filter restricted keys.
-TEST_F(ManifestUnitTest, RestrictedKeys) {
-  std::unique_ptr<base::DictionaryValue> value(new base::DictionaryValue());
-  value->SetString(keys::kName, "extension");
-  value->SetString(keys::kVersion, "1");
+// Verifies that the getters filter restricted keys taking into account the
+// manifest version.
+TEST_F(ManifestUnitTest, RestrictedKeys_ManifestVersion) {
+  std::unique_ptr<base::DictionaryValue> value =
+      DictionaryBuilder()
+          .Set(keys::kName, "extension")
+          .Set(keys::kVersion, "1")
+          .Set(keys::kManifestVersion, 2)
+          .Build();
 
-  std::unique_ptr<Manifest> manifest(
-      new Manifest(Manifest::INTERNAL, std::move(value),
-                   crx_file::id_util::GenerateId("extid")));
+  auto manifest =
+      std::make_unique<Manifest>(Manifest::INTERNAL, std::move(value),
+                                 crx_file::id_util::GenerateId("extid"));
   std::string error;
   std::vector<InstallWarning> warnings;
   EXPECT_TRUE(manifest->ValidateManifest(&error, &warnings));
   EXPECT_TRUE(error.empty());
   EXPECT_TRUE(warnings.empty());
 
-  // "Commands" requires manifest version 2.
+  // "host_permissions" requires manifest version 3.
+  MutateManifest(&manifest, keys::kHostPermissions,
+                 std::make_unique<base::Value>(base::Value::Type::LIST));
   const base::Value* output = nullptr;
-  MutateManifest(&manifest, keys::kCommands,
-                 std::make_unique<base::DictionaryValue>());
-  EXPECT_FALSE(manifest->HasKey(keys::kCommands));
-  EXPECT_FALSE(manifest->Get(keys::kCommands, &output));
+  EXPECT_FALSE(manifest->HasKey(keys::kHostPermissions));
+  EXPECT_FALSE(manifest->Get(keys::kHostPermissions, &output));
 
+  // Update the extension to be manifest_version: 3; the host_permissions
+  // should then be available.
   MutateManifest(&manifest, keys::kManifestVersion,
-                 std::make_unique<base::Value>(2));
-  EXPECT_TRUE(manifest->HasKey(keys::kCommands));
-  EXPECT_TRUE(manifest->Get(keys::kCommands, &output));
+                 std::make_unique<base::Value>(3));
+  EXPECT_TRUE(manifest->HasKey(keys::kHostPermissions));
+  EXPECT_TRUE(manifest->Get(keys::kHostPermissions, &output));
+}
 
-  MutateManifest(&manifest, keys::kPageAction,
-                 std::make_unique<base::DictionaryValue>());
+// Verifies that the getters filter restricted keys taking into account the
+// item type.
+TEST_F(ManifestUnitTest, RestrictedKeys_ItemType) {
+  std::unique_ptr<base::DictionaryValue> value =
+      DictionaryBuilder()
+          .Set(keys::kName, "item")
+          .Set(keys::kVersion, "1")
+          .Set(keys::kManifestVersion, 2)
+          .Set(keys::kPageAction,
+               std::make_unique<base::Value>(base::Value::Type::DICTIONARY))
+          .Build();
+
+  auto manifest =
+      std::make_unique<Manifest>(Manifest::INTERNAL, std::move(value),
+                                 crx_file::id_util::GenerateId("extid"));
+  std::string error;
+  std::vector<InstallWarning> warnings;
+  EXPECT_TRUE(manifest->ValidateManifest(&error, &warnings));
+  EXPECT_TRUE(error.empty());
+  EXPECT_TRUE(warnings.empty());
   AssertType(manifest.get(), Manifest::TYPE_EXTENSION);
+
+  // Extensions can specify "page_action"...
+  const base::Value* output = nullptr;
   EXPECT_TRUE(manifest->HasKey(keys::kPageAction));
   EXPECT_TRUE(manifest->Get(keys::kPageAction, &output));
 
-  // Platform apps cannot have a "page_action" key.
   MutateManifest(&manifest, keys::kPlatformAppBackground,
                  std::make_unique<base::DictionaryValue>());
   AssertType(manifest.get(), Manifest::TYPE_PLATFORM_APP);
+  // ...But platform apps may not.
   EXPECT_FALSE(manifest->HasKey(keys::kPageAction));
   EXPECT_FALSE(manifest->Get(keys::kPageAction, &output));
-  MutateManifest(&manifest, keys::kPlatformAppBackground, nullptr);
-
-  // Platform apps also can't have a "Commands" key.
-  EXPECT_FALSE(manifest->HasKey(keys::kCommands));
-  EXPECT_FALSE(manifest->Get(keys::kCommands, &output));
 }
 
 }  // namespace extensions

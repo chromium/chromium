@@ -66,8 +66,7 @@
   },
   "commands": {
     "channel": "stable",
-    "extension_types": ["extension", "platform_app"],
-    "min_manifest_version": 2
+    "extension_types": ["extension", "platform_app"]
   },
   "content_scripts": {
     "channel": "stable",
@@ -217,8 +216,7 @@
       "legacy_packaged_app",
       "platform_app",
       "login_screen_extension"
-    ],
-    "min_manifest_version": 2
+    ]
   },
   "system_indicator": [
     {

@@ -24,7 +24,6 @@
   "app.content_security_policy": {
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "min_manifest_version": 2,
     "allowlist": [
       // Keep this list in sync with extensions_misc::kHangoutsExtensionIds but
       // omit the Packaged App ids.
@@ -38,8 +37,7 @@
   },
   "app.background": {
     "channel": "stable",
-    "extension_types": ["platform_app"],
-    "min_manifest_version": 2
+    "extension_types": ["platform_app"]
   },
   "background": {
     "channel": "stable",
@@ -52,13 +50,11 @@
     "channel": "stable",
     "extension_types": [
       "extension", "legacy_packaged_app", "login_screen_extension"
-    ],
-    "min_manifest_version": 2
+    ]
   },
   "background.service_worker": {
     "channel": "stable",
-    "extension_types": ["extension"],
-    "min_manifest_version": 2
+    "extension_types": ["extension"]
   },
   "bluetooth": [{
     // Note: The "bluetooth" manifest permission is used by the
@@ -122,7 +118,6 @@
   "declarative_net_request": {
     "channel": "stable",
     "extension_types": ["extension"],
-    "min_manifest_version": 2,
     "feature_flag": "DeclarativeNetRequest"
   },
   "default_locale": {
@@ -305,20 +300,17 @@
   },
   "replacement_android_app": {
     "channel": "trunk",
-    "extension_types": ["platform_app"],
-    "min_manifest_version": 2
+    "extension_types": ["platform_app"]
   },
   "replacement_web_app": {
     "channel": "stable",
-    "extension_types": ["extension", "platform_app"],
-    "min_manifest_version": 2
+    "extension_types": ["extension", "platform_app"]
   },
   "sandbox": {
     "channel": "stable",
     "extension_types": [
       "extension", "platform_app", "legacy_packaged_app"
-    ],
-    "min_manifest_version": 2
+    ]
   },
   "sockets": [
     {
@@ -376,7 +368,6 @@
   },
   "webview": {
     "channel": "stable",
-    "extension_types": ["platform_app"],
-    "min_manifest_version": 2
+    "extension_types": ["platform_app"]
   }
 }
