@@ -39,7 +39,8 @@ WebGPUTest::WebGPUTest() = default;
 WebGPUTest::~WebGPUTest() = default;
 
 bool WebGPUTest::WebGPUSupported() const {
-  // crbug.com(941685): Vulkan driver crashes on Linux FYI Release (AMD R7 240).
+  // TODO(crbug.com/1172447): Re-enable on AMD when the RX 5500 XT issues are
+  // resolved.
   // Win7 does not support WebGPU
   if (GPUTestBotConfig::CurrentConfigMatches("Linux AMD") ||
       GPUTestBotConfig::CurrentConfigMatches("Win7")) {
