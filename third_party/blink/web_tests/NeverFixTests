@@ -181,9 +181,6 @@ fast/canvas/canvas-lost-gpu-context.html [ Skip ]
 # aren't critical to run in this mode.
 virtual/threaded/printing/setPrinting.html [ Skip ]
 virtual/threaded/printing/width-overflow.html [ Skip ]
-
-# See crbug.com/522326
-external/wpt/html/obsolete/requirements-for-implementations/the-marquee-element-0/marquee-events.html [ Skip ]
 # We don't allow to access external hosts in layout tests.
 external/wpt/html/the-xhtml-syntax/parsing-xhtml-documents/support/xhtml-mathml-dtd-entity.htm [ Skip ]
 

@@ -9914,13 +9914,6 @@
       null,
       {}
      ]
-    ],
-    "single-touch-manual.html": [
-     "1b47a64c157ac64f5760ebc0ad2fd114773cdea3",
-     [
-      null,
-      {}
-     ]
     ]
    },
    "uievents": {
@@ -244090,7 +244083,7 @@
       []
      ],
      "TAOResponse.py": [
-      "908b68861ae8262a18e083b026d14591d1e0206e",
+      "c25ccc03cb36a3d24409a4b3e6364d38f3a49305",
       []
      ],
      "all_resource_types.htm": [
@@ -362846,8 +362839,8 @@
        ]
       },
       "the-marquee-element-0": {
-       "marquee-events.html": [
-        "0d20c5102f17148ff3e5d1115e9a3fcfc7770bb3",
+       "marquee-events-historical.html": [
+        "5780b90f04869ce4d14be864bda6ec93a2902ab5",
         [
          null,
          {}
@@ -376655,7 +376648,7 @@
         ]
        ],
        "tasks.window.js": [
-        "1588f2f889227f68acba9fb1f02494ba0f80a4bd",
+        "887adcb7393ee3bf3acfcba1a6a7d820f0ebb6ff",
         [
          "html/webappapis/dynamic-markup-insertion/opening-the-input-stream/tasks.window.html",
          {}
@@ -380356,6 +380349,13 @@
       {}
      ]
     ],
+    "opacity-nonzero-to-zero.html": [
+     "a5f3d213a2dd6d2f7639440dadd55dcc724f0075",
+     [
+      null,
+      {}
+     ]
+    ],
     "opacity-zero-layout-and-visible.html": [
      "af81ff2a625908a2686e6987e1a86409ff7eba07",
      [
@@ -380502,6 +380502,13 @@
       {}
      ]
     ],
+    "transform-above-perspective-dynamic.html": [
+     "fea65ca56ad6bbca11c5eece6fa7a059668ecb31",
+     [
+      null,
+      {}
+     ]
+    ],
     "transform-change.html": [
      "fd9657a71455629f856e53b8fa20aec1a3008e73",
      [
@@ -380532,6 +380539,13 @@
     ],
     "visibility-hidden.html": [
      "ec1c3316380e4b3f836015c2ed69fcceff772c50",
+     [
+      null,
+      {}
+     ]
+    ],
+    "visible-to-hidden.html": [
+     "e30231f7fe8e7af505a88d97ccad0b2e35ef3e90",
      [
       null,
       {}
@@ -405136,8 +405150,8 @@
       {}
      ]
     ],
-    "TAO-null-opaque-origin.sub.html": [
-     "0a457637c5165481bf7a3bd1cbf023e9c07be751",
+    "TAO-null-opaque-origin.html": [
+     "6548a7b9ad437407eaded2c6efc4974dec242ecd",
      [
       null,
       {}
@@ -420294,6 +420308,15 @@
          "/resources/idlharness.js"
         ]
        ]
+      }
+     ]
+    ],
+    "single-touch.html": [
+     "a067bc13801928caf1bfc873a80208db4b9b0bbd",
+     [
+      null,
+      {
+       "testdriver": true
       }
      ]
     ],
