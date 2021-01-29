@@ -20,9 +20,11 @@
 #include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -77,8 +79,8 @@ void ProfileCreationComplete(base::OnceClosure completion_callback,
 }
 
 // An observer that returns back to test code after one or more profiles was
-// deleted. It also create ScopedKeepAlive object to prevent browser shutdown
-// started in case browser has become windowless.
+// deleted. It also creates ScopedKeepAlive and ScopedProfileKeepAlive objects
+// to prevent browser shutdown started in case browser has become windowless.
 class MultipleProfileDeletionObserver
     : public ProfileAttributesStorage::Observer {
  public:
@@ -108,6 +110,11 @@ class MultipleProfileDeletionObserver
   void Wait() {
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::PROFILE_HELPER, KeepAliveRestartOption::DISABLED);
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    for (Profile* profile : profile_manager->GetLoadedProfiles()) {
+      profile_keep_alives_[profile] = std::make_unique<ScopedProfileKeepAlive>(
+          profile, ProfileKeepAliveOrigin::kBrowserWindow);
+    }
     loop_.Run();
   }
 
@@ -137,11 +144,14 @@ class MultipleProfileDeletionObserver
     EXPECT_EQ(expected_count_, profiles_data_removed_count_);
 
     keep_alive_.reset();
+    profile_keep_alives_.clear();
     loop_.Quit();
   }
 
   base::RunLoop loop_;
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
+  std::map<Profile*, std::unique_ptr<ScopedProfileKeepAlive>>
+      profile_keep_alives_;
   size_t expected_count_;
   size_t profiles_removed_count_;
   size_t profiles_data_removed_count_;
