@@ -123,6 +123,7 @@ bool TestBrowserDialog::VerifyUi() {
   // is more predictable than activated dialog.
   bool is_active = dialog_widget->IsActive();
   dialog_widget->Deactivate();
+  dialog_widget->GetFocusManager()->ClearFocus();
   base::ScopedClosureRunner unblock_close(
       base::BindOnce(&views::Widget::SetBlockCloseForTesting,
                      base::Unretained(dialog_widget), false));
