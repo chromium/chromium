@@ -16,15 +16,19 @@
   <meta name="viewport" content="width=device-width">
   <script src="/resources/testharness.js"></script>
   <script src="/resources/testharnessreport.js"></script>
+  <script src="/resources/testdriver.js"></script>
+  <script src="/resources/testdriver-actions.js"></script>
+  <script src="/resources/testdriver-vendor.js"></script>
+
   <script>
     setup({explicit_done: true});
 
     // Check a Touch object's atttributes for existence and correct type
     // TA: 1.1.2, 1.1.3
-    function check_Touch_object (t) {
+    function check_Touch_object (t, element) {
         test(function() {
            assert_equals(Object.prototype.toString.call(t), "[object Touch]", name + " attribute of type TouchList");
-        }, "touch point is a Touch object");
+        }, element + "'s touch point is a Touch object");
         [
           ["long", "identifier"],
           ["EventTarget", "target"],
@@ -41,20 +45,20 @@
             // existence check
             test(function() {
                 assert_true(name in t, name + " attribute in Touch object");
-            }, "Touch." + name + " attribute exists");
+            }, element + ".Touch." + name + " attribute exists check_Touch_object");
 
             // type check
             switch(type) {
             case "long":
                 test(function() {
                     assert_equals(typeof t[name], "number", name + " attribute of type long");
-                }, "Touch." + name + " attribute is of type number (long)");
+                }, element + ".Touch." + name + " attribute is of type number (long)");
                 break;
             case "EventTarget":
                 // An event target is some type of Element
                 test(function() {
                     assert_true(t[name] instanceof Element, "EventTarget must be an Element.");
-                }, "Touch." + name + " attribute is of type Element");
+                }, element + ".Touch." + name + " attribute is of type Element");
                 break;
             default:
                 break;
@@ -65,10 +69,10 @@
     // Check a TouchList object's attributes and methods for existence and proper type
     // Also make sure all of the members of the list are Touch objects
     // TA: 1.2.1, 1.2.2, 1.2.5
-    function check_TouchList_object (tl) {
+    function check_TouchList_object (tl, element) {
         test(function() {
            assert_equals(Object.prototype.toString.call(tl), "[object TouchList]", name + " attribute of type TouchList");
-        }, "touch list is a TouchList object");
+        }, element + "'s touch list is a TouchList object");
         [
           ["unsigned long", "length"],
           ["function", "item"],
@@ -79,19 +83,19 @@
             // existence check
             test(function() {
                 assert_true(name in tl, name + " attribute in TouchList");
-            }, "TouchList." + name + " attribute exists");
+            }, element + ".TouchList." + name + " attribute exists check_TouchList_object");
 
             // type check
             switch(type) {
             case "unsigned long":
                 test(function() {
                     assert_equals(typeof tl[name], "number", name + " attribute of type long");
-                }, "TouchList." + name + " attribute is of type number (unsigned long)");
+                }, element + ".TouchList." + name + " attribute is of type number (unsigned long)");
                 break;
             case "function":
                 test(function() {
                     assert_equals(typeof tl[name], "function", name + " attribute of type function");
-                }, "TouchList." + name + " attribute is of type function");
+                }, element + ".TouchList." + name + " attribute is of type function");
                 break;
             default:
                 break;
@@ -99,7 +103,7 @@
        });
        // Each member of tl should be a proper Touch object
        for (var i=0; i < tl.length; i++) {
-           check_Touch_object(tl.item(i));
+           check_Touch_object(tl.item(i), element + "[" + i + "]");
        }
     }
 
@@ -125,7 +129,7 @@
             // existence check
             test(function() {
                 assert_true(name in ev, name + " attribute in " + ev.type + " event");
-            }, ev.type + "." + name + " attribute exists");
+            }, ev.type + "." + name + " attribute exists check_TouchEvent");
 
             // type check
             switch(type) {
@@ -139,7 +143,7 @@
                     assert_equals(Object.prototype.toString.call(ev[name]), "[object TouchList]", name + " attribute of type TouchList");
                 }, ev.type + "." + name + " attribute is of type TouchList");
                 // Now check the validity of the TouchList
-                check_TouchList_object(ev[name]);
+                check_TouchList_object(ev[name], ev.type + "." + name);
                 break;
             default:
                 break;
@@ -181,6 +185,7 @@
       var touchend_received = false;
       var invalid_touchmove_received = false;
       var touchstart_identifier;
+      var actions_promise;
 
       on_event(target0, "touchstart", function onTouchStart(ev) {
         ev.preventDefault();
@@ -349,6 +354,15 @@
           done();
         }
       });
+
+      actions_promise = new test_driver.Actions()
+          .addPointer("touchPointer1", "touch")
+          .pointerMove(0, 0, {origin: target0, sourceName: "touchPointer1"})
+          .pointerDown({sourceName: "touchPointer1"})
+          .pointerMove(0, 10, {origin: target0, sourceName: "touchPointer1"})
+          .pointerMove(0, 0, {origin: target1, sourceName: "touchPointer1"})
+          .pointerUp({sourceName: "touchPointer1"})
+          .send();
     }
   </script>
   <style>
