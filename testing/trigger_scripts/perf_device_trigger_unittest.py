@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env vpython
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -16,7 +16,6 @@ class Args(object):
     self.dump_json = ''
     self.multiple_trigger_configs = None
     self.multiple_dimension_script_verbose = False
-    self.use_swarming_go = False
 
 
 class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
@@ -53,7 +52,8 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
     del verbose #unused
     self._swarming_runs.append(args)
 
-  def run_swarming_go(self, args, verbose):
+  def run_swarming_go(self, args, verbose, _json_path, _shard_index, _shard,
+                      _merged_json=None):
     self._triggered_with_swarming_go += 1
     self.run_swarming(args, verbose)
 
@@ -61,19 +61,15 @@ class UnitTest(unittest.TestCase):
   def setup_and_trigger(self,
                         previous_task_assignment_map,
                         alive_bots,
-                        dead_bots,
-                        use_swarming_go=False):
+                        dead_bots):
     args = Args()
     args.shards = len(previous_task_assignment_map)
     args.dump_json = 'output.json'
     args.multiple_dimension_script_verbose = True
-    args.use_swarming_go = use_swarming_go
     swarming_args = [
         'trigger',
         '--swarming',
         'http://foo_server',
-        '--auth-service-account-json',
-        '/creds/test_service_account',
         '--dimension',
         'pool',
         'chrome-perf-fyi',
@@ -114,18 +110,11 @@ class UnitTest(unittest.TestCase):
       file_index = file_index + 1
     for i in xrange(num_shards):
       task = {
-        'base_task_name': 'webgl_conformance_tests',
-        'request': {
-          'expiration_secs': 3600,
-          'properties': {
-            'execution_timeout_secs': 3600,
-          },
-        },
-        'tasks': {
-          'webgl_conformance_tests on NVIDIA GPU on Windows': {
+        'tasks': [{
+          'request': {
             'task_id': 'f%d' % i,
           },
-        },
+        }],
       }
       files['base_trigger_dimensions%d.json' % file_index] = task
       file_index = file_index + 1
@@ -173,9 +162,6 @@ class UnitTest(unittest.TestCase):
       self.assertTrue('query' in triggerer._swarming_runs[i])
       self.assertTrue(self.list_contains_sublist(
         triggerer._swarming_runs[i], ['-S', 'foo_server']))
-      self.assertTrue(self.list_contains_sublist(
-        triggerer._swarming_runs[i], ['--auth-service-account-json',
-                                      '/creds/test_service_account']))
 
   def get_triggered_shard_to_bot(self, triggerer, num_shards):
     self.assert_query_swarming_args(triggerer, num_shards)
@@ -299,15 +285,6 @@ class UnitTest(unittest.TestCase):
     # It also replaces the dead 'build6' bot.
     self.assertEquals(set(expected_task_assignment.values()),
         {'build3', 'build4', 'build5', 'build7'})
-
-  def test_use_swarming_go_to_trigger(self):
-    triggerer = self.setup_and_trigger(
-        previous_task_assignment_map={0: 'build1'},
-        alive_bots=['build1'],
-        dead_bots=[],
-        use_swarming_go=True)
-
-    self.assertEquals(triggerer._triggered_with_swarming_go, 1)
 
 
 if __name__ == '__main__':
