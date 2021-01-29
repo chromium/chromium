@@ -207,7 +207,8 @@ IN_PROC_BROWSER_TEST_F(CacheCounterTest, PrefChanged) {
 }
 
 // Tests that the counting is restarted when the time period changes.
-IN_PROC_BROWSER_TEST_F(CacheCounterTest, PeriodChanged) {
+// Disabled: https://crbug.com/1172167
+IN_PROC_BROWSER_TEST_F(CacheCounterTest, DISABLED_PeriodChanged) {
   CreateCacheEntry();
 
   Profile* profile = browser()->profile();
