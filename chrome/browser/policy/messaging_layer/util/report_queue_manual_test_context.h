@@ -9,10 +9,10 @@
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
-#include "chrome/browser/policy/messaging_layer/util/status.h"
-#include "chrome/browser/policy/messaging_layer/util/task_runner_context.h"
 #include "components/policy/core/common/cloud/dm_token.h"
-#include "components/policy/proto/record_constants.pb.h"
+#include "components/reporting/proto/record_constants.pb.h"
+#include "components/reporting/util/status.h"
+#include "components/reporting/util/task_runner_context.h"
 
 namespace reporting {
 

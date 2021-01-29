@@ -11,10 +11,10 @@
 #include "base/task/post_task.h"
 #include "base/task_runner.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
-#include "chrome/browser/policy/messaging_layer/util/status.h"
-#include "chrome/browser/policy/messaging_layer/util/statusor.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
-#include "components/policy/proto/record.pb.h"
+#include "components/reporting/proto/record.pb.h"
+#include "components/reporting/util/status.h"
+#include "components/reporting/util/statusor.h"
 
 namespace reporting {
 

@@ -133,6 +133,9 @@ test("components_unittests") {
     "//components/query_parser:unit_tests",
     "//components/rappor:unit_tests",
     "//components/reading_list/core:unit_tests",
+    "//components/reporting/encryption:unit_tests",
+    "//components/reporting/storage:unit_tests",
+    "//components/reporting/util:unit_tests",
     "//components/reputation/core:unit_tests",
     "//components/safe_search_api:unit_tests",
     "//components/scheduling_metrics:unit_tests",
@@ -289,6 +292,10 @@ test("components_unittests") {
       "//components/policy/content:unit_tests",
       "//components/previews/content:unit_tests",
       "//components/query_tiles:unit_tests",
+
+      # TODO(chromium:1169835) components/reporting/storage/resources:unit_tests
+      # can't be run on iOS until they are updated.
+      "//components/reporting/storage/resources:unit_tests",
       "//components/safe_browsing/content/password_protection:password_protection_unittest",
       "//components/safe_browsing/content/triggers:unit_tests",
       "//components/safe_browsing/content/web_ui:unit_tests",

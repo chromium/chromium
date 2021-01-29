@@ -1,0 +1,22 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.  Use
+# of this source code is governed by a BSD-style license that can
+# be found in the LICENSE file.
+
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+# Record constants for use with the reporting messaging library.
+proto_library("record_constants") {
+  sources = [ "record_constants.proto" ]
+
+  proto_out_dir = "components/reporting/proto"
+}
+
+# Record definitions for reporting.
+proto_library("record_proto") {
+  sources = [ "record.proto" ]
+
+  deps = [ ":record_constants" ]
+
+  proto_out_dir = "components/reporting/proto"
+}

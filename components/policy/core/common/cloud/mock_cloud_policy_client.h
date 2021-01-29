@@ -13,7 +13,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
-#include "components/policy/proto/record.pb.h"
+#include "components/reporting/proto/record.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace network {

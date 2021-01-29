@@ -8,8 +8,8 @@
 #include "base/callback.h"
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
-#include "chrome/browser/policy/messaging_layer/util/status.h"
-#include "components/policy/proto/record.pb.h"
+#include "components/reporting/proto/record.pb.h"
+#include "components/reporting/util/status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 

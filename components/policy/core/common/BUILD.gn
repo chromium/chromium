@@ -164,8 +164,8 @@ source_set("internal") {
     ":common_constants",
     "//components/policy:generated",
     "//components/policy/proto",
-    "//components/policy/proto:policy_record_constants",
-    "//components/policy/proto:reporting_record_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
   ]
 
   deps = [
@@ -377,8 +377,8 @@ static_library("test_support") {
     "//components/account_id",
     "//components/policy:generated",
     "//components/policy/proto",
-    "//components/policy/proto:policy_record_constants",
-    "//components/policy/proto:reporting_record_proto",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
     "//components/strings",
     "//crypto",
     "//net",

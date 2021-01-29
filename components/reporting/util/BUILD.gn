@@ -1,0 +1,92 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.  Use
+# of this source code is governed by a BSD-style license that can
+# be found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+static_library("backoff_settings") {
+  sources = [
+    "backoff_settings.cc",
+    "backoff_settings.h",
+  ]
+
+  deps = [ "//net" ]
+}
+
+source_set("shared_vector") {
+  sources = [ "shared_vector.h" ]
+  deps = [
+    ":status",
+    "//base",
+  ]
+}
+
+proto_library("status_proto") {
+  visibility = [
+    "//chrome/browser:browser",
+    "//chrome/browser:test_support",
+    "//components/reporting/*",
+  ]
+
+  sources = [ "status.proto" ]
+
+  proto_out_dir = "components/reporting/util"
+}
+
+static_library("status") {
+  sources = [
+    "status.cc",
+    "status.h",
+    "statusor.cc",
+    "statusor.h",
+  ]
+  public_deps = [ ":status_proto" ]
+  deps = [ "//base" ]
+}
+
+source_set("shared_queue") {
+  sources = [ "shared_queue.h" ]
+  deps = [
+    ":status",
+    "//base",
+  ]
+}
+
+source_set("status_macros") {
+  sources = [ "status_macros.h" ]
+
+  deps = [ ":status" ]
+}
+
+source_set("task_runner_context") {
+  sources = [ "task_runner_context.h" ]
+
+  deps = [ "//base" ]
+}
+
+# All unit tests are built as part of the //components:components_unittests
+# target.
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "shared_queue_unittest.cc",
+    "shared_vector_unittest.cc",
+    "status_macros_unittest.cc",
+    "status_unittest.cc",
+    "statusor_unittest.cc",
+  ]
+  deps = [
+    ":shared_queue",
+    ":shared_vector",
+    ":status",
+    ":status_macros",
+    ":status_proto",
+    ":task_runner_context",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

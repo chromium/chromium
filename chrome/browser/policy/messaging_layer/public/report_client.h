@@ -13,12 +13,12 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue.h"
 #include "chrome/browser/policy/messaging_layer/public/report_queue_configuration.h"
-#include "chrome/browser/policy/messaging_layer/storage/storage_module.h"
 #include "chrome/browser/policy/messaging_layer/upload/upload_client.h"
-#include "chrome/browser/policy/messaging_layer/util/shared_queue.h"
-#include "chrome/browser/policy/messaging_layer/util/statusor.h"
-#include "chrome/browser/policy/messaging_layer/util/task_runner_context.h"
-#include "components/policy/proto/record.pb.h"
+#include "components/reporting//proto/record.pb.h"
+#include "components/reporting/storage/storage_module.h"
+#include "components/reporting/util/shared_queue.h"
+#include "components/reporting/util/statusor.h"
+#include "components/reporting/util/task_runner_context.h"
 
 namespace reporting {
 

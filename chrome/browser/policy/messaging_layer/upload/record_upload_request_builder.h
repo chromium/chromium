@@ -10,7 +10,7 @@
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
-#include "components/policy/proto/record.pb.h"
+#include "components/reporting/proto/record.pb.h"
 
 namespace reporting {
 

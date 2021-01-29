@@ -298,6 +298,8 @@ source_set("chromeos") {
     "//components/quirks",
     "//components/rappor",
     "//components/renderer_context_menu",
+    "//components/reporting/util:status",
+    "//components/reporting/util:task_runner_context",
     "//components/rlz",
     "//components/safe_browsing/core:csd_proto",
     "//components/safe_browsing/core/db:metadata_proto",

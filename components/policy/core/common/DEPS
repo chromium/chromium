@@ -4,6 +4,7 @@ include_rules = [
   "+chromeos/startup",
   "+chromeos/system",
   "+components/account_id",
+  "+components/reporting",
   "-components/policy/core/browser",
   "+components/strings",
   "+extensions/buildflags",

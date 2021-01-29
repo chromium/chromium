@@ -249,6 +249,7 @@ include_rules = [
   "+components/remote_cocoa/common",
   "+components/renderer_context_menu",
   "+components/reputation",
+  "+components/reporting",
   "+components/rlz",
   "+components/safe_browsing",
   "+components/safe_search_api",

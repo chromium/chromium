@@ -54,6 +54,7 @@ source_set("internal") {
     "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",
+    "//components/reporting/proto:record_proto",
     "//components/strings",
     "//components/url_formatter",
     "//components/url_matcher",
