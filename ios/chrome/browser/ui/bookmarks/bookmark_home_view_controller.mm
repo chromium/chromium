@@ -1828,6 +1828,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
   int64_t nodeId = node->id();
   NSString* titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT);
+  // Disable the edit menu option if the node is not editable by user, or if
+  // editing bookmarks is not allowed.
+  BOOL editEnabled =
+      [self isEditBookmarksEnabled] && [self isNodeEditableByUser:node];
+
   [coordinator addItemWithTitle:titleString
                          action:^{
                            BookmarkHomeViewController* strongSelf = weakSelf;
@@ -1839,14 +1844,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                            if (nodeFromId)
                              [strongSelf editNode:nodeFromId];
                          }
-                          style:UIAlertActionStyleDefault];
-  // Disable the edit menu option if the node is not editable by user, or if
-  // editing bookmarks is not allowed.
-  if (![self isEditBookmarksEnabled] || ![self isNodeEditableByUser:node]) {
-    // TODO(crbug.com/1070830): Modify AlertCoordinator to allow disabled
-    // actions.
-    coordinator.alertController.actions[0].enabled = NO;
-  }
+                          style:UIAlertActionStyleDefault
+                        enabled:editEnabled];
 
   GURL nodeURL = node->url();
   titleString = GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB);
@@ -1907,6 +1906,11 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
   int64_t nodeId = node->id();
   NSString* titleString =
       GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER);
+  // Disable the edit and move menu options if the folder is not editable by
+  // user, or if editing bookmarks is not allowed.
+  BOOL editEnabled =
+      [self isEditBookmarksEnabled] && [self isNodeEditableByUser:node];
+
   [coordinator addItemWithTitle:titleString
                          action:^{
                            BookmarkHomeViewController* strongSelf = weakSelf;
@@ -1918,7 +1922,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                            if (nodeFromId)
                              [strongSelf editNode:nodeFromId];
                          }
-                          style:UIAlertActionStyleDefault];
+                          style:UIAlertActionStyleDefault
+                        enabled:editEnabled];
 
   titleString = GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE);
   [coordinator addItemWithTitle:titleString
@@ -1934,15 +1939,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
                              [strongSelf moveNodes:nodes];
                            }
                          }
-                          style:UIAlertActionStyleDefault];
-  // Disable the edit and move menu options if the folder is not editable by
-  // user, or if editing bookmarks is not allowed.
-  if (![self isEditBookmarksEnabled] || ![self isNodeEditableByUser:node]) {
-    // TODO(crbug.com/1070830): Modify AlertCoordinator to allow disabled
-    // actions.
-    coordinator.alertController.actions[0].enabled = NO;
-    coordinator.alertController.actions[1].enabled = NO;
-  }
+                          style:UIAlertActionStyleDefault
+                        enabled:editEnabled];
 }
 
 - (void)configureCoordinator:(AlertCoordinator*)coordinator

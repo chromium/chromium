@@ -1108,15 +1108,12 @@ const CGFloat kButtonHorizontalPadding = 30.0;
   ProceduralBlock openInNewIncognitoTabAction = ^{
     [weakSelf openURLInNewIncognitoTab:entry.URL];
   };
+  BOOL incognitoEnabled =
+      !IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs());
   [self.contextMenuCoordinator addItemWithTitle:openInNewIncognitoTabTitle
                                          action:openInNewIncognitoTabAction
-                                          style:UIAlertActionStyleDefault];
-
-  if (IsIncognitoModeDisabled(self.browser->GetBrowserState()->GetPrefs())) {
-    // Disable the "Open in New Incognito Tab" option if the incognito mode is
-    // disabled.
-    self.contextMenuCoordinator.alertController.actions[2].enabled = NO;
-  }
+                                          style:UIAlertActionStyleDefault
+                                        enabled:incognitoEnabled];
 
   // Add "Copy URL" option.
   NSString* copyURLTitle =
