@@ -2083,7 +2083,11 @@ class ComputedStyle : public ComputedStyleBase,
   bool ContainsPaint() const { return Contain() & kContainsPaint; }
   bool ContainsStyle() const { return Contain() & kContainsStyle; }
   bool ContainsLayout() const { return Contain() & kContainsLayout; }
-  bool ContainsSize() const { return Contain() & kContainsSize; }
+  bool ContainsSize() const {
+    return (Contain() & kContainsSize) == kContainsSize;
+  }
+  bool ContainsInlineSize() const { return Contain() & kContainsInlineSize; }
+  bool ContainsBlockSize() const { return Contain() & kContainsBlockSize; }
 
   // Display utility functions.
   bool IsDisplayReplacedType() const {

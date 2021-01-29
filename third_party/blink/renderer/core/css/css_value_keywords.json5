@@ -1361,6 +1361,8 @@
     "style",
     // layout
     "size",
+    "block-size",
+    "inline-size",
 
     // grid auto-repeat
     "auto-fill",

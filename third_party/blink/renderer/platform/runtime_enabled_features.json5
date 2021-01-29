@@ -488,6 +488,10 @@
       name: "CSSContainerQueries",
     },
     {
+      // Support for contain:inline-size and contain:block-size
+      name: "CSSContainSize1D",
+    },
+    {
       // The main content-visibility feature.
       // https://drafts.csswg.org/css-contain/#content-visibility
       name: "CSSContentVisibility",

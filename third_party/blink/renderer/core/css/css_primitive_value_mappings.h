@@ -1899,34 +1899,6 @@ inline cc::SnapAlignment CSSIdentifierValue::ConvertTo() const {
 }
 
 template <>
-inline CSSIdentifierValue::CSSIdentifierValue(Containment snap_type)
-    : CSSValue(kIdentifierClass) {
-  switch (snap_type) {
-    case kContainsNone:
-      value_id_ = CSSValueID::kNone;
-      break;
-    case kContainsStrict:
-      value_id_ = CSSValueID::kStrict;
-      break;
-    case kContainsContent:
-      value_id_ = CSSValueID::kContent;
-      break;
-    case kContainsPaint:
-      value_id_ = CSSValueID::kPaint;
-      break;
-    case kContainsStyle:
-      value_id_ = CSSValueID::kStyle;
-      break;
-    case kContainsLayout:
-      value_id_ = CSSValueID::kLayout;
-      break;
-    case kContainsSize:
-      value_id_ = CSSValueID::kSize;
-      break;
-  }
-}
-
-template <>
 inline Containment CSSIdentifierValue::ConvertTo() const {
   switch (GetValueID()) {
     case CSSValueID::kNone:
@@ -1943,6 +1915,10 @@ inline Containment CSSIdentifierValue::ConvertTo() const {
       return kContainsLayout;
     case CSSValueID::kSize:
       return kContainsSize;
+    case CSSValueID::kInlineSize:
+      return kContainsInlineSize;
+    case CSSValueID::kBlockSize:
+      return kContainsBlockSize;
     default:
       break;
   }

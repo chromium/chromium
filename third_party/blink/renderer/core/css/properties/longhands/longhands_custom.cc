@@ -1921,16 +1921,20 @@ const CSSValue* Contain::ParseSingleValue(CSSParserTokenRange& range,
   CSSIdentifierValue* paint = nullptr;
   while (true) {
     id = range.Peek().Id();
-    if (id == CSSValueID::kSize && !size)
+    if ((id == CSSValueID::kSize ||
+         (RuntimeEnabledFeatures::CSSContainSize1DEnabled() &&
+          (id == CSSValueID::kBlockSize || id == CSSValueID::kInlineSize))) &&
+        !size) {
       size = css_parsing_utils::ConsumeIdent(range);
-    else if (id == CSSValueID::kLayout && !layout)
+    } else if (id == CSSValueID::kLayout && !layout) {
       layout = css_parsing_utils::ConsumeIdent(range);
-    else if (id == CSSValueID::kStyle && !style)
+    } else if (id == CSSValueID::kStyle && !style) {
       style = css_parsing_utils::ConsumeIdent(range);
-    else if (id == CSSValueID::kPaint && !paint)
+    } else if (id == CSSValueID::kPaint && !paint) {
       paint = css_parsing_utils::ConsumeIdent(range);
-    else
+    } else {
       break;
+    }
   }
   if (size)
     list->Append(*size);
@@ -1960,9 +1964,15 @@ const CSSValue* Contain::CSSValueFromComputedStyleInternal(
     return CSSIdentifierValue::Create(CSSValueID::kContent);
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (style.ContainsSize())
+  if (style.ContainsSize()) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kSize));
-  if (style.Contain() & kContainsLayout)
+  } else {
+    if (style.ContainsInlineSize())
+      list->Append(*CSSIdentifierValue::Create(CSSValueID::kInlineSize));
+    else if (style.ContainsBlockSize())
+      list->Append(*CSSIdentifierValue::Create(CSSValueID::kBlockSize));
+  }
+  if (style.ContainsLayout())
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kLayout));
   if (style.ContainsStyle())
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kStyle));
