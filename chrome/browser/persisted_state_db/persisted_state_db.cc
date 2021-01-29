@@ -12,7 +12,7 @@
 #include "base/callback_helpers.h"
 #include "chrome/browser/persisted_state_db/persisted_state_db_content.pb.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
-#include "chrome/browser/tab/jni_headers/LevelDBPersistedTabDataStorage_jni.h"
+#include "chrome/browser/tab/jni_headers/LevelDBPersistedDataStorage_jni.h"
 #include "components/embedder_support/android/browser_context/browser_context_handle.h"
 
 namespace {
@@ -92,11 +92,11 @@ void PersistedStateDB::Destroy(JNIEnv* env) {
   proto_db_->Destroy();
 }
 
-static void JNI_LevelDBPersistedTabDataStorage_Init(
+static void JNI_LevelDBPersistedDataStorage_Init(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj,
     const base::android::JavaParamRef<jobject>& jprofile) {
-  Java_LevelDBPersistedTabDataStorage_setNativePtr(
+  Java_LevelDBPersistedDataStorage_setNativePtr(
       env, obj,
       reinterpret_cast<intptr_t>(new PersistedStateDB(
           browser_context::BrowserContextFromJavaHandle(jprofile))));

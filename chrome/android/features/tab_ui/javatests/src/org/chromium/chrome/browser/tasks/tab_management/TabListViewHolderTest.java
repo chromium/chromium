@@ -40,8 +40,8 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.state.LevelDBPersistedTabDataStorage;
-import org.chromium.chrome.browser.tab.state.LevelDBPersistedTabDataStorageJni;
+import org.chromium.chrome.browser.tab.state.LevelDBPersistedDataStorage;
+import org.chromium.chrome.browser.tab.state.LevelDBPersistedDataStorageJni;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
 import org.chromium.chrome.tab_ui.R;
@@ -93,7 +93,7 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
     private Profile mProfile;
 
     @Mock
-    private LevelDBPersistedTabDataStorage.Natives mLevelDBPersistedTabDataStorage;
+    private LevelDBPersistedDataStorage.Natives mLevelDBPersistedTabDataStorage;
 
     private TabListMediator.ThumbnailFetcher mMockThumbnailProvider =
             new TabListMediator.ThumbnailFetcher(new TabListMediator.ThumbnailProvider() {
@@ -206,12 +206,12 @@ public class TabListViewHolderTest extends DummyUiActivityTestCase {
             PropertyModelChangeProcessor.create(
                     mGridModel, mTabListView, TabListViewBinder::bindListTab);
         });
-        mMocker.mock(LevelDBPersistedTabDataStorageJni.TEST_HOOKS, mLevelDBPersistedTabDataStorage);
+        mMocker.mock(LevelDBPersistedDataStorageJni.TEST_HOOKS, mLevelDBPersistedTabDataStorage);
         doNothing()
                 .when(mLevelDBPersistedTabDataStorage)
-                .init(any(LevelDBPersistedTabDataStorage.class), any(BrowserContextHandle.class));
+                .init(any(LevelDBPersistedDataStorage.class), any(BrowserContextHandle.class));
         doReturn(false).when(mProfile).isOffTheRecord();
-        LevelDBPersistedTabDataStorage.setSkipNativeAssertionsForTesting(true);
+        LevelDBPersistedDataStorage.setSkipNativeAssertionsForTesting(true);
         Profile.setLastUsedProfileForTesting(mProfile);
     }
 

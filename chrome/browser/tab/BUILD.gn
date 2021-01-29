@@ -30,10 +30,12 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab/state/CriticalPersistedTabDataObserver.java",
     "java/src/org/chromium/chrome/browser/tab/state/EncryptedFilePersistedTabDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/FilePersistedTabDataStorage.java",
+    "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedTabDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedTabDataStorageFactory.java",
     "java/src/org/chromium/chrome/browser/tab/state/MockPersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/MockPersistedTabDataStorage.java",
+    "java/src/org/chromium/chrome/browser/tab/state/PersistedDataStorage.java",
     "java/src/org/chromium/chrome/browser/tab/state/PersistedTabData.java",
     "java/src/org/chromium/chrome/browser/tab/state/PersistedTabDataConfiguration.java",
     "java/src/org/chromium/chrome/browser/tab/state/PersistedTabDataFactory.java",
@@ -86,7 +88,7 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/tab/TrustedCdn.java",
     "java/src/org/chromium/chrome/browser/tab/WebContentsStateBridge.java",
-    "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedTabDataStorage.java",
+    "java/src/org/chromium/chrome/browser/tab/state/LevelDBPersistedDataStorage.java",
   ]
 }
 
