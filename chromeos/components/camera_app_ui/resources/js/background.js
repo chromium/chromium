@@ -4,7 +4,7 @@
 
 import {
   AppWindow,  // eslint-disable-line no-unused-vars
-  DEFAULT_PREVIEW_16X9_WINDOW_SIZE,
+  getDefaultWindowSize,
 } from './app_window.js';
 import {
   BackgroundOps,  // eslint-disable-line no-unused-vars
@@ -30,18 +30,6 @@ const MIN_WIDTH = 505;
  * @type {number}
  */
 const MIN_HEIGHT = 460;
-
-/**
- * Default width of inner-bounds in pixels.
- * @type {number}
- */
-const DEFAULT_WIDTH = DEFAULT_PREVIEW_16X9_WINDOW_SIZE[0];
-
-/**
- * Default height of inner-bounds in pixels.
- * @type {number}
- */
-const DEFAULT_HEIGHT = DEFAULT_PREVIEW_16X9_WINDOW_SIZE[1];
 
 /**
  * Top bar color of the window.
@@ -196,6 +184,9 @@ class CCAWindow {
         this.intent_ !== null ? `main-${this.intent_.intentId}` : 'main';
     const windowUrl = 'views/main.html' +
         (this.intent_ !== null ? this.intent_.url.search : '');
+    const isPortrait = screen.orientation.type.startsWith('portrait');
+    const {width: defaultWidth, height: defaultHeight} =
+        getDefaultWindowSize(isPortrait ? 9 / 16 : 16 / 9);
 
     chrome.app.window.create(
         windowUrl, {
@@ -203,12 +194,12 @@ class CCAWindow {
           frame: {color: TOPBAR_COLOR},
           hidden: true,  // Will be shown from main.js once loaded.
           innerBounds: {
-            width: DEFAULT_WIDTH,
-            height: DEFAULT_HEIGHT,
+            width: defaultWidth,
+            height: defaultHeight,
             minHeight: MIN_HEIGHT,
             minWidth: MIN_WIDTH,
-            left: Math.round((window.screen.availWidth - DEFAULT_WIDTH) / 2),
-            top: Math.round((window.screen.availHeight - DEFAULT_HEIGHT) / 2),
+            left: Math.round((window.screen.availWidth - defaultWidth) / 2),
+            top: Math.round((window.screen.availHeight - defaultHeight) / 2),
           },
         },
         (appWindow) => {
