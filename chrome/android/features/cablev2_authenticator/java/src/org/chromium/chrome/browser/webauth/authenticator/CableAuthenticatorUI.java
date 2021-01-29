@@ -32,6 +32,9 @@ import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.widget.Toast;
@@ -48,6 +51,10 @@ public class CableAuthenticatorUI
     // ENABLE_BLUETOOTH_REQUEST_CODE is a random int used to identify responses
     // to a request to enable Bluetooth. (Request codes can only be 16-bit.)
     private static final int ENABLE_BLUETOOTH_REQUEST_CODE = 64907;
+
+    // USB_PROMPT_TIMEOUT_SECS is the number of seconds the spinner will show
+    // for before being replaced with a prompt to connect via USB cable.
+    private static final int USB_PROMPT_TIMEOUT_SECS = 20;
 
     private static final String ACTIVITY_CLASS_NAME_EXTRA =
             "org.chromium.chrome.modules.cablev2_authenticator.ActivityClassName";
@@ -72,6 +79,7 @@ public class CableAuthenticatorUI
     private LinearLayout mUnlinkButton;
     private ImageView mHeader;
     private TextView mStatusText;
+    private View mUSBPrompt;
 
     // The following two members store a pending QR-scan result while Bluetooth
     // is enabled.
@@ -114,16 +122,20 @@ public class CableAuthenticatorUI
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         getActivity().setTitle("Security Key");
+        ViewGroup top = new LinearLayout(getContext());
+        View v = null;
 
         switch (mMode) {
             case USB:
-                return inflater.inflate(R.layout.cablev2_usb_attached, container, false);
+                v = inflater.inflate(R.layout.cablev2_usb_attached, container, false);
+                break;
 
             case FCM:
-                return inflater.inflate(R.layout.cablev2_fcm, container, false);
+                v = inflater.inflate(R.layout.cablev2_fcm, container, false);
+                break;
 
             case SERVER_LINK:
-                View v = inflater.inflate(R.layout.cablev2_serverlink, container, false);
+                v = inflater.inflate(R.layout.cablev2_serverlink, container, false);
                 mStatusText = v.findViewById(R.id.status_text);
 
                 ImageView spinner = (ImageView) v.findViewById(R.id.spinner);
@@ -142,7 +154,10 @@ public class CableAuthenticatorUI
                 spinner.setImageDrawable(anim);
                 anim.start();
 
-                return v;
+                mUSBPrompt = inflater.inflate(R.layout.cablev2_usb_prompt, container, false);
+                PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
+                        () -> { maybeShowUSBPrompt(); }, USB_PROMPT_TIMEOUT_SECS * 1000);
+                break;
 
             case QR:
                 // TODO: should check FEATURE_BLUETOOTH with
@@ -159,12 +174,27 @@ public class CableAuthenticatorUI
 
                 mUnlinkButton = v.findViewById(R.id.unlink);
                 mUnlinkButton.setOnClickListener(this);
+                break;
 
-                return v;
+            default:
+                assert false;
         }
 
-        assert false;
-        return null;
+        top.addView(v);
+        return top;
+    }
+
+    private void maybeShowUSBPrompt() {
+        ThreadUtils.assertOnUiThread();
+
+        if (mUSBPrompt == null) {
+            return;
+        }
+
+        ViewGroup top = (ViewGroup) getView();
+        top.removeAllViews();
+        top.addView(mUSBPrompt);
+        mUSBPrompt = null;
     }
 
     /**

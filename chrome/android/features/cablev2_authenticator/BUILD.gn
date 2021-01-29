@@ -72,6 +72,7 @@ android_resources("java_resources") {
     "java/res/layout/cablev2_qr_scan.xml",
     "java/res/layout/cablev2_serverlink.xml",
     "java/res/layout/cablev2_usb_attached.xml",
+    "java/res/layout/cablev2_usb_prompt.xml",
     "java/res/values/attrs.xml",
     "java/res/values/styles.xml",
   ]
