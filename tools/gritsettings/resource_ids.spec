@@ -254,7 +254,8 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [2100],
   },
-  "chrome/browser/resources/net_internals/net_internals_resources.grd": {
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/net_internals/resources.grd": {
+    "META": {"sizes": {"includes": [20]}},
     "includes": [2120],
   },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/omnibox/resources.grd": {

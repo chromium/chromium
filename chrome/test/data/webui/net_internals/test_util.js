@@ -2,99 +2,35 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-cr.define('net_internals_test', function() {
-  /**
-   * Returns the first tbody that's a descendant of |ancestorId|. If the
-   * specified node is itself a table body node, just returns that node.
-   * Returns null if no such node is found.
-   * @param {string} ancestorId ID of an HTML element with a tbody descendant.
-   * @return {node} The tbody node, or null.
-   */
-  function getTbodyDescendent(ancestorId) {
-    if ($(ancestorId).nodeName === 'TBODY') {
-      return $(ancestorId);
-    }
-    // The tbody element of the first styled table in |parentId|.
-    return document.querySelector('#' + ancestorId + ' tbody');
-  }
+import {CrosView} from 'chrome://net-internals/chromeos_view.js';
+import {DnsView} from 'chrome://net-internals/dns_view.js';
+import {DomainSecurityPolicyView} from 'chrome://net-internals/domain_security_policy_view.js';
+import {EventsView} from 'chrome://net-internals/events_view.js';
+import {MainView} from 'chrome://net-internals/main.js';
+import {ProxyView} from 'chrome://net-internals/proxy_view.js';
+import {SocketsView} from 'chrome://net-internals/sockets_view.js';
 
-  /**
-   * Finds the first tbody that's a descendant of |ancestorId|, including the
-   * |ancestorId| element itself, and returns the number of rows it has.
-   * Returns -1 if there's no such table.  Excludes hidden rows.
-   * @param {string} ancestorId ID of an HTML element with a tbody descendant.
-   * @return {number} Number of rows the style table's body has.
-   */
-  function getTbodyNumRows(ancestorId) {
-    // The tbody element of the first styled table in |parentId|.
-    var tbody = getTbodyDescendent(ancestorId);
-    if (!tbody) {
-      return -1;
-    }
-    var visibleChildren = 0;
-    for (var i = 0; i < tbody.children.length; ++i) {
-      if (nodeIsVisible(tbody.children[i])) {
-        ++visibleChildren;
-      }
-    }
-    return visibleChildren;
-  }
+import {assertEquals, assertNotEquals, assertTrue} from '../chai_assert.js';
 
-  /**
-   * Finds the first tbody that's a descendant of |ancestorId|, including the
-   * |ancestorId| element itself, and checks if it has exactly |expectedRows|
-   * rows.  Does not count hidden rows.
-   * @param {string} ancestorId ID of an HTML element with a tbody descendant.
-   * @param {number} expectedRows Expected number of rows in the table.
-   */
-  function checkTbodyRows(ancestorId, expectedRows) {
-    expectEquals(
-        expectedRows, getTbodyNumRows(ancestorId),
-        'Incorrect number of rows in ' + ancestorId);
-  }
+/**
+ * Returns the view and menu item node for the tab with given id.
+ * Asserts if the tab can't be found.
+ * @param {string}: tabId Id of the tab to lookup.
+ * @return {Object}
+ */
+function getTab(tabId) {
+  var tabSwitcher = MainView.getInstance().tabSwitcher();
+  var view = tabSwitcher.getTabView(tabId);
+  var tabLink = tabSwitcher.tabIdToLink_[tabId];
 
-  /**
-   * Finds the tbody that's a descendant of |ancestorId|, including the
-   * |ancestorId| element itself, and returns the text of the specified cell.
-   * If the cell does not exist, throws an exception.  Skips over hidden rows.
-   * @param {string} ancestorId ID of an HTML element with a tbody descendant.
-   * @param {number} row Row of the value to retrieve.
-   * @param {number} column Column of the value to retrieve.
-   */
-  function getTbodyText(ancestorId, row, column) {
-    var tbody = getTbodyDescendent(ancestorId);
-    var currentChild = tbody.children[0];
-    while (currentChild) {
-      if (nodeIsVisible(currentChild)) {
-        if (row === 0) {
-          return currentChild.children[column].innerText;
-        }
-        --row;
-      }
-      currentChild = currentChild.nextElementSibling;
-    }
-    return 'invalid row';
-  }
+  assertNotEquals(view, undefined, tabId + ' does not exist.');
+  assertNotEquals(tabLink, undefined, tabId + ' does not exist.');
 
-  /**
-   * Returns the view and menu item node for the tab with given id.
-   * Asserts if the tab can't be found.
-   * @param {string}: tabId Id of the tab to lookup.
-   * @return {Object}
-   */
-  function getTab(tabId) {
-    var tabSwitcher = MainView.getInstance().tabSwitcher();
-    var view = tabSwitcher.getTabView(tabId);
-    var tabLink = tabSwitcher.tabIdToLink_[tabId];
-
-    assertNotEquals(view, undefined, tabId + ' does not exist.');
-    assertNotEquals(tabLink, undefined, tabId + ' does not exist.');
-
-    return {
-      view: view,
-      tabLink: tabLink,
-    };
-  }
+  return {
+    view: view,
+    tabLink: tabLink,
+  };
+}
 
   /**
    * Returns true if the node is visible.
@@ -157,7 +93,7 @@ cr.define('net_internals_test', function() {
    * Switches to the specified tab.
    * @param {string}: hash Hash associated with the tab to switch to.
    */
-  function switchToView(hash) {
+  export function switchToView(hash) {
     var tabId = getTabId(hash);
 
     // Make sure the tab link is visible, as we only simulate normal usage.
@@ -183,7 +119,7 @@ cr.define('net_internals_test', function() {
     var tabSwitcher = MainView.getInstance().tabSwitcher();
     var tabIdToView = tabSwitcher.getAllTabViews();
     for (var curTabId in tabIdToView) {
-      expectEquals(
+      assertEquals(
           curTabId === tabId, tabSwitcher.getTabView(curTabId).isVisible(),
           curTabId + ': Unexpected visibility state.');
     }
@@ -197,16 +133,16 @@ cr.define('net_internals_test', function() {
    * @param {bool+}: tourTabs True if tabs expected to be visible should should
    *     each be navigated to as well.
    */
-  function checkTabLinkVisibility(tabVisibilityState, tourTabs) {
+  export function checkTabLinkVisibility(tabVisibilityState, tourTabs) {
     // The currently active tab should have a link that is visible.
-    expectTrue(tabLinkIsVisible(getActiveTabId()));
+    assertTrue(tabLinkIsVisible(getActiveTabId()));
 
     // Check visibility state of all tabs.
     var tabCount = 0;
     for (var hash in tabVisibilityState) {
       var tabId = getTabId(hash);
       assertEquals('object', typeof getTab(tabId), 'Invalid tab: ' + tabId);
-      expectEquals(
+      assertEquals(
           tabVisibilityState[hash], tabLinkIsVisible(tabId),
           tabId + ' visibility state is unexpected.');
       if (tourTabs && tabVisibilityState[hash]) {
@@ -222,47 +158,5 @@ cr.define('net_internals_test', function() {
     for (tabId in tabIdToView) {
       expectedTabCount++;
     }
-    expectEquals(tabCount, expectedTabCount);
+    assertEquals(tabCount, expectedTabCount);
   }
-
-  /**
-   * Returns true if a node does not have a 'display' property of 'none'.
-   * @param {node}: node The node to check.
-   */
-  function isDisplayed(node) {
-    var style = getComputedStyle(node);
-    return style.getPropertyValue('display') !== 'none';
-  }
-
-  /**
-   * Checks that only the given status view node is visible.
-   * @param {string}: nodeId ID of the node that should be visible.
-   */
-  function expectStatusViewNodeVisible(nodeId) {
-    var allIds = [
-      CaptureStatusView.MAIN_BOX_ID, LoadedStatusView.MAIN_BOX_ID,
-      HaltedStatusView.MAIN_BOX_ID
-    ];
-
-    for (var i = 0; i < allIds.length; ++i) {
-      var curId = allIds[i];
-      expectEquals(nodeId === curId, nodeIsVisible($(curId)));
-    }
-  }
-
-  return {
-    expectStatusViewNodeVisible: expectStatusViewNodeVisible,
-    isDisplayed: isDisplayed,
-    checkTbodyRows: checkTbodyRows,
-    getTbodyDescendent: getTbodyDescendent,
-    getTbodyNumRows: getTbodyNumRows,
-    getTbodyText: getTbodyText,
-    nodeIsVisible: nodeIsVisible,
-    tabLinkIsVisible: tabLinkIsVisible,
-    getTab: getTab,
-    getActiveTabId: getActiveTabId,
-    getTabId: getTabId,
-    switchToView: switchToView,
-    checkTabLinkVisibility: checkTabLinkVisibility,
-  };
-});

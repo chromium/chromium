@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+
 /**
  * This class provides a "bridge" for communicating between the javascript and
  * the browser.
  */
-class BrowserBridge {
+export class BrowserBridge {
   constructor() {}
 
   //--------------------------------------------------------------------------
@@ -25,7 +27,7 @@ class BrowserBridge {
   }
 
   sendHSTSQuery(domain) {
-    return cr.sendWithPromise('hstsQuery', domain);
+    return sendWithPromise('hstsQuery', domain);
   }
 
   sendHSTSAdd(domain, sts_include_subdomains) {
@@ -37,7 +39,7 @@ class BrowserBridge {
   }
 
   sendExpectCTQuery(domain) {
-    return cr.sendWithPromise('expectCTQuery', domain);
+    return sendWithPromise('expectCTQuery', domain);
   }
 
   sendExpectCTAdd(domain, report_uri, enforce) {
@@ -45,7 +47,7 @@ class BrowserBridge {
   }
 
   sendExpectCTTestReport(report_uri) {
-    return cr.sendWithPromise('expectCTTestReport', report_uri);
+    return sendWithPromise('expectCTTestReport', report_uri);
   }
 
   sendCloseIdleSockets() {
@@ -61,4 +63,4 @@ class BrowserBridge {
   }
 }
 
-cr.addSingletonGetter(BrowserBridge);
+addSingletonGetter(BrowserBridge);

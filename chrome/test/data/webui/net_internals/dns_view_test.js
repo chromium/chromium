@@ -2,12 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {DnsView} from 'chrome://net-internals/dns_view.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
+import {assertEquals} from '../chai_assert.js';
+
+import {Task, TaskQueue} from './task_queue.js';
+import {switchToView} from './test_util.js';
+
 suite('NetInternalsDnsViewTests', function() {
   /**
    * A Task that performs a DNS lookup.
-   * @extends {net_internals_test.Task}
+   * @extends {Task}
    */
-  class DnsLookupTask extends net_internals_test.Task {
+  class DnsLookupTask extends Task {
     /**
      * @param {string} hostname The host address to attempt to look up.
      * @param {bool} local True if the lookup should be strictly local.
@@ -26,9 +34,9 @@ suite('NetInternalsDnsViewTests', function() {
 
   /**
    * A Task that clears the cache by simulating a button click.
-   * @extends {net_internals_test.Task}
+   * @extends {Task}
    */
-  class ClearCacheTask extends net_internals_test.Task {
+  class ClearCacheTask extends Task {
     start() {
       $(DnsView.CLEAR_CACHE_BUTTON_ID).onclick();
       this.onTaskDone();
@@ -39,8 +47,8 @@ suite('NetInternalsDnsViewTests', function() {
    * Adds a successful lookup to the DNS cache, then clears the cache.
    */
   test('clear cache', function() {
-    net_internals_test.switchToView('dns');
-    var taskQueue = new net_internals_test.TaskQueue(true);
+    switchToView('dns');
+    var taskQueue = new TaskQueue(true);
 
     // Perform an initial local lookup to make sure somewhere.com isn't cached.
     taskQueue.addTask(new DnsLookupTask('somewhere.com', true));

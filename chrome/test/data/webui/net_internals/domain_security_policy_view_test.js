@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {DomainSecurityPolicyView} from 'chrome://net-internals/domain_security_policy_view.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
+import {assertEquals, assertLE, assertNotEquals} from '../chai_assert.js';
+
+import {Task, TaskQueue} from './task_queue.js';
+import {switchToView} from './test_util.js';
+
 window.domain_security_policy_view_test = {};
 const domain_security_policy_view_test =
     window.domain_security_policy_view_test;
@@ -38,7 +46,7 @@ suite(domain_security_policy_view_test.suiteName, function() {
    * A Task that waits for the results of a lookup query. Once the results are
    * received, checks them before completing.  Does not initiate the query.
    */
-  class CheckQueryResultTask extends net_internals_test.Task {
+  class CheckQueryResultTask extends Task {
     /**
      * @param {string} domain The domain that was looked up.
      * @param {string} inputId The ID of the input element for the lookup
@@ -319,7 +327,7 @@ suite(domain_security_policy_view_test.suiteName, function() {
   /**
    * A Task to retrieve a test report-uri.
    */
-  class GetTestReportURITask extends net_internals_test.Task {
+  class GetTestReportURITask extends Task {
     /**
      * Sets |NetInternals.callback|, and sends the request to the browser
      * process.
@@ -349,7 +357,7 @@ suite(domain_security_policy_view_test.suiteName, function() {
   /**
    * A Task to send a test Expect-CT report and wait for the result.
    */
-  class SendTestReportTask extends net_internals_test.Task {
+  class SendTestReportTask extends Task {
     /**
      * @param {getTestReportURITask} GetTestReportURITask The task that
      *     retrieved a test report-uri.
@@ -386,8 +394,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
    * Checks that querying a domain that was never added fails.
    */
   test(domain_security_policy_view_test.TestNames.QueryNotFound, function() {
-    net_internals_test.switchToView('hsts');
-    taskQueue = new net_internals_test.TaskQueue(true);
+    switchToView('hsts');
+    const taskQueue = new TaskQueue(true);
     taskQueue.addTask(
         new QueryHSTSTask('somewhere.com', false, QueryResultType.NOT_FOUND));
     return taskQueue.run();
@@ -397,8 +405,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
    * Checks that querying a domain with an invalid name returns an error.
    */
   test(domain_security_policy_view_test.TestNames.QueryError, function() {
-    net_internals_test.switchToView('hsts');
-    taskQueue = new net_internals_test.TaskQueue(true);
+    switchToView('hsts');
+    const taskQueue = new TaskQueue(true);
     taskQueue.addTask(
         new QueryHSTSTask('\u3024', false, QueryResultType.ERROR));
     return taskQueue.run();
@@ -408,8 +416,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
    * Deletes a domain that was never added.
    */
   test(domain_security_policy_view_test.TestNames.DeleteNotFound, function() {
-    net_internals_test.switchToView('hsts');
-    taskQueue = new net_internals_test.TaskQueue(true);
+    switchToView('hsts');
+    const taskQueue = new TaskQueue(true);
     taskQueue.addTask(
         new DeleteTask('somewhere.com', QueryResultType.NOT_FOUND));
     return taskQueue.run();
@@ -419,8 +427,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
    * Deletes a domain that returns an error on lookup.
    */
   test(domain_security_policy_view_test.TestNames.DeleteError, function() {
-    net_internals_test.switchToView('hsts');
-    taskQueue = new net_internals_test.TaskQueue(true);
+    switchToView('hsts');
+    const taskQueue = new TaskQueue(true);
     taskQueue.addTask(new DeleteTask('\u3024', QueryResultType.ERROR));
     taskQueue.run();
   });
@@ -429,8 +437,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
    * Adds a domain and then deletes it.
    */
   test(domain_security_policy_view_test.TestNames.AddDelete, function() {
-    net_internals_test.switchToView('hsts');
-    taskQueue = new net_internals_test.TaskQueue(true);
+    switchToView('hsts');
+    const taskQueue = new TaskQueue(true);
     taskQueue.addTask(
         new AddHSTSTask('somewhere.com', false, QueryResultType.SUCCESS));
     taskQueue.addTask(
@@ -442,8 +450,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
    * Tries to add a domain with an invalid name.
    */
   test(domain_security_policy_view_test.TestNames.AddFail, function() {
-    net_internals_test.switchToView('hsts');
-    taskQueue = new net_internals_test.TaskQueue(true);
+    switchToView('hsts');
+    const taskQueue = new TaskQueue(true);
     taskQueue.addTask(new AddHSTSTask(
         '0123456789012345678901234567890' +
             '012345678901234567890123456789012345',
@@ -456,8 +464,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
    * non-ASCII characters in it.
    */
   test(domain_security_policy_view_test.TestNames.AddError, function() {
-    net_internals_test.switchToView('hsts');
-    taskQueue = new net_internals_test.TaskQueue(true);
+    switchToView('hsts');
+    const taskQueue = new TaskQueue(true);
     taskQueue.addTask(new AddHSTSTask('\u3024', false, QueryResultType.ERROR));
     taskQueue.run();
   });
@@ -466,8 +474,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
    * Adds the same domain twice in a row, modifying some values the second time.
    */
   test(domain_security_policy_view_test.TestNames.AddOverwrite, function() {
-    net_internals_test.switchToView('hsts');
-    taskQueue = new net_internals_test.TaskQueue(true);
+    switchToView('hsts');
+    const taskQueue = new TaskQueue(true);
     taskQueue.addTask(
         new AddHSTSTask('somewhere.com', true, QueryResultType.SUCCESS));
     taskQueue.addTask(
@@ -481,8 +489,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
    * Adds two different domains and then deletes them.
    */
   test(domain_security_policy_view_test.TestNames.AddTwice, function() {
-    net_internals_test.switchToView('hsts');
-    taskQueue = new net_internals_test.TaskQueue(true);
+    switchToView('hsts');
+    const taskQueue = new TaskQueue(true);
     taskQueue.addTask(
         new AddHSTSTask('somewhere.com', false, QueryResultType.SUCCESS));
     taskQueue.addTask(new QueryHSTSTask(
@@ -506,8 +514,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
   test(
       domain_security_policy_view_test.TestNames.ExpectCTQueryNotFound,
       function() {
-        net_internals_test.switchToView('hsts');
-        taskQueue = new net_internals_test.TaskQueue(true);
+        switchToView('hsts');
+        const taskQueue = new TaskQueue(true);
         taskQueue.addTask(new QueryExpectCTTask(
             'somewhere.com', false, '', QueryResultType.NOT_FOUND));
         return taskQueue.run();
@@ -520,8 +528,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
   test(
       domain_security_policy_view_test.TestNames.ExpectCTQueryError,
       function() {
-        net_internals_test.switchToView('hsts');
-        taskQueue = new net_internals_test.TaskQueue(true);
+        switchToView('hsts');
+        const taskQueue = new TaskQueue(true);
         taskQueue.addTask(
             new QueryExpectCTTask('\u3024', false, '', QueryResultType.ERROR));
         return taskQueue.run();
@@ -532,8 +540,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
    */
   test(
       domain_security_policy_view_test.TestNames.ExpectCTAddDelete, function() {
-        net_internals_test.switchToView('hsts');
-        taskQueue = new net_internals_test.TaskQueue(true);
+        switchToView('hsts');
+        const taskQueue = new TaskQueue(true);
         taskQueue.addTask(new AddExpectCTTask(
             'somewhere.com', true, '', QueryResultType.SUCCESS));
         taskQueue.addTask(
@@ -545,8 +553,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
    * Tries to add an Expect-CT domain with an invalid name.
    */
   test(domain_security_policy_view_test.TestNames.ExpectCTAddFail, function() {
-    net_internals_test.switchToView('hsts');
-    taskQueue = new net_internals_test.TaskQueue(true);
+    switchToView('hsts');
+    const taskQueue = new TaskQueue(true);
     taskQueue.addTask(new AddExpectCTTask(
         '0123456789012345678901234567890' +
             '012345678901234567890123456789012345',
@@ -559,8 +567,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
    * to having non-ASCII characters in it.
    */
   test(domain_security_policy_view_test.TestNames.ExpectCTAddError, function() {
-    net_internals_test.switchToView('hsts');
-    taskQueue = new net_internals_test.TaskQueue(true);
+    switchToView('hsts');
+    const taskQueue = new TaskQueue(true);
     taskQueue.addTask(
         new AddExpectCTTask('\u3024', false, '', QueryResultType.ERROR));
     return taskQueue.run();
@@ -573,8 +581,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
   test(
       domain_security_policy_view_test.TestNames.ExpectCTAddOverwrite,
       function() {
-        net_internals_test.switchToView('hsts');
-        taskQueue = new net_internals_test.TaskQueue(true);
+        switchToView('hsts');
+        const taskQueue = new TaskQueue(true);
         taskQueue.addTask(new AddExpectCTTask(
             'somewhere.com', true, 'https://reporting.test/',
             QueryResultType.SUCCESS));
@@ -590,8 +598,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
    * Adds two different Expect-CT domains and then deletes them.
    */
   test(domain_security_policy_view_test.TestNames.ExpectCTAddTwice, function() {
-    net_internals_test.switchToView('hsts');
-    taskQueue = new net_internals_test.TaskQueue(true);
+    switchToView('hsts');
+    const taskQueue = new TaskQueue(true);
     taskQueue.addTask(new AddExpectCTTask(
         'somewhere.com', true, '', QueryResultType.SUCCESS));
     taskQueue.addTask(new QueryExpectCTTask(
@@ -617,8 +625,8 @@ suite(domain_security_policy_view_test.suiteName, function() {
   test(
       domain_security_policy_view_test.TestNames.ExpectCTTestReport,
       function() {
-        net_internals_test.switchToView('hsts');
-        taskQueue = new net_internals_test.TaskQueue(true);
+        switchToView('hsts');
+        const taskQueue = new TaskQueue(true);
         const getReportURITask = new GetTestReportURITask();
         taskQueue.addTask(getReportURITask);
         taskQueue.addTask(new SendTestReportTask(getReportURITask));

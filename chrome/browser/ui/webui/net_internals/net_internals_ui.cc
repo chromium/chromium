@@ -17,9 +17,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/net_export_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/net_internals_resources.h"
+#include "chrome/grit/net_internals_resources_map.h"
 #include "components/prefs/pref_member.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -41,11 +43,14 @@ namespace {
 content::WebUIDataSource* CreateNetInternalsHTMLSource() {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUINetInternalsHost);
-
+  webui::AddResourcePathsBulk(
+      source,
+      base::make_span(kNetInternalsResources, kNetInternalsResourcesSize));
   source->SetDefaultResource(IDR_NET_INTERNALS_INDEX_HTML);
-  source->AddResourcePath("index.js", IDR_NET_INTERNALS_INDEX_JS);
-  source->AddResourcePath("main.css", IDR_NET_INTERNALS_MAIN_CSS);
-  source->UseStringsJs();
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
+      "script-src chrome://resources chrome://test 'self';");
+  source->DisableTrustedTypesCSP();
   return source;
 }
 

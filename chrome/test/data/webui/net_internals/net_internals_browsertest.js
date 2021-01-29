@@ -43,10 +43,6 @@ NetInternalsBrowserTest.prototype = {
 
   /** @override */
   extraLibraries: [
-    '//ui/webui/resources/js/cr.js',
-    '//ui/webui/resources/js/promise_resolver.js',
-    'task_queue.js',
-    'test_util.js',
     '//third_party/mocha/mocha.js',
     '//chrome/test/data/webui/mocha_adapter.js',
   ],
@@ -61,9 +57,7 @@ function NetInternalsDnsViewTest() {}
 NetInternalsDnsViewTest.prototype = {
   __proto__: NetInternalsBrowserTest.prototype,
 
-  extraLibraries: NetInternalsBrowserTest.prototype.extraLibraries.concat([
-    'dns_view_test.js',
-  ]),
+  browsePreload: 'chrome://net-internals/index.html?test=dns_view_test.js',
 };
 
 TEST_F('NetInternalsDnsViewTest', 'ClearCache', function() {
@@ -79,9 +73,7 @@ function NetInternalsMainTest() {}
 NetInternalsMainTest.prototype = {
   __proto__: NetInternalsBrowserTest.prototype,
 
-  extraLibraries: NetInternalsBrowserTest.prototype.extraLibraries.concat([
-    'main_test.js',
-  ]),
+  browsePreload: 'chrome://net-internals/index.html?test=main_test.js',
 };
 
 TEST_F('NetInternalsMainTest', 'TabVisibility', function() {
@@ -92,9 +84,8 @@ function NetInternalsDomainSecurityPolicyViewTest() {}
 NetInternalsDomainSecurityPolicyViewTest.prototype = {
   __proto__: NetInternalsBrowserTest.prototype,
 
-  extraLibraries: NetInternalsBrowserTest.prototype.extraLibraries.concat([
-    'domain_security_policy_view_test.js',
-  ]),
+  browsePreload:
+      'chrome://net-internals/index.html?test=domain_security_policy_view_test.js',
 
   get suiteName() {
     return domain_security_policy_view_test.suiteName;
