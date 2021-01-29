@@ -159,6 +159,14 @@ declare_args() {
 
   # Enable DWARF v5.
   use_dwarf5 = false
+
+  # Override this to put full paths to PDBs in Windows PE files. This helps
+  # windbg and Windows Performance Analyzer with finding the PDBs in some local-
+  # build scenarios. This is never needed for bots or official builds. Because
+  # this puts the output directory in the DLLs/EXEs it breaks build determinism.
+  # Bugs have been reported to the windbg/WPA teams and this workaround will be
+  # removed when they are fixed.
+  use_full_pdb_paths = false
 }
 
 declare_args() {
@@ -2295,8 +2303,12 @@ config("win_pdbaltpath") {
   # path to it in the executable file it generates.  This flag turns that
   # absolute path into just the basename of the pdb file, which helps with
   # build reproducibility. Debuggers look for pdb files next to executables,
-  # so there's no downside to always using this.
-  ldflags = [ "/pdbaltpath:%_PDB%" ]
+  # so there's minimal downside to always using this. However, post-mortem
+  # debugging of Chromium crash dumps and ETW tracing can be complicated by this
+  # switch so an option to omit it is important.
+  if (!use_full_pdb_paths) {
+    ldflags = [ "/pdbaltpath:%_PDB%" ]
+  }
 }
 
 # Full symbols.
