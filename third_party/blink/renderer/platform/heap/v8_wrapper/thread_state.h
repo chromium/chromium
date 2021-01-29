@@ -52,6 +52,8 @@ class ThreadStateFor;
 
 class ThreadState final {
  public:
+  class NoAllocationScope;
+
   static ALWAYS_INLINE ThreadState* Current() {
     return *(thread_specific_.Get());
   }

@@ -86,8 +86,9 @@ class PLATFORM_EXPORT HeapAllocator {
   }
 
   static bool IsAllocationAllowed() {
-    // TODO(1056170): Implement.
-    return true;
+    return cppgc::subtle::DisallowGarbageCollectionScope::
+        IsGarbageCollectionAllowed(
+            ThreadState::Current()->cpp_heap().GetHeapHandle());
   }
 
   static bool IsIncrementalMarking() {
