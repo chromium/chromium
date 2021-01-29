@@ -1351,9 +1351,27 @@ public class VideoCaptureCamera2 extends VideoCapture {
 
         final int supportedHWLevel =
                 cameraCharacteristics.get(CameraCharacteristics.INFO_SUPPORTED_HARDWARE_LEVEL);
+
+        // https://crbug.com/1155568: We must explicitly check for
+        // BACKWARD_COMPATIBLE, except for LEGACY, where it's implied. See also
+        // https://developer.android.com/reference/android/hardware/camera2/CameraMetadata#INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY
+        if (supportedHWLevel == CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY) {
+            return VideoCaptureApi.ANDROID_API2_LEGACY;
+        }
+        final int[] capabilities =
+                cameraCharacteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES);
+        boolean backwardCompatible = false;
+        for (int cap : capabilities) {
+            if (cap == CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_BACKWARD_COMPATIBLE) {
+                backwardCompatible = true;
+                break;
+            }
+        }
+        if (!backwardCompatible) {
+            return VideoCaptureApi.UNKNOWN;
+        }
+
         switch (supportedHWLevel) {
-            case CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_LEGACY:
-                return VideoCaptureApi.ANDROID_API2_LEGACY;
             case CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_FULL:
                 return VideoCaptureApi.ANDROID_API2_FULL;
             case CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_LIMITED:
