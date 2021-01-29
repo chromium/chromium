@@ -450,7 +450,9 @@ void RecordReadyToCommitMetrics(
     RenderFrameHostImpl* old_rfh,
     RenderFrameHostImpl* new_rfh,
     const mojom::CommonNavigationParams& common_params,
-    base::TimeTicks ready_to_commit_time) {
+    base::TimeTicks ready_to_commit_time,
+    NavigationRequest::OriginAgentClusterEndResult
+        origin_agent_cluster_end_result) {
   bool is_main_frame = !new_rfh->GetParent();
   bool is_same_process =
       old_rfh->GetProcess()->GetID() == new_rfh->GetProcess()->GetID();
@@ -549,6 +551,12 @@ void RecordReadyToCommitMetrics(
                                       common_params.transition, kIsBackground,
                                       delta);
     }
+  }
+
+  // Navigation.OriginAgentCluster
+  {
+    UMA_HISTOGRAM_ENUMERATION("Navigation.OriginAgentCluster.Result",
+                              origin_agent_cluster_end_result);
   }
 }
 
@@ -4650,7 +4658,8 @@ void NavigationRequest::ReadyToCommitNavigation(bool is_error) {
 
     RecordReadyToCommitMetrics(frame_tree_node_->current_frame_host(),
                                render_frame_host_, *common_params_.get(),
-                               ready_to_commit_time_);
+                               ready_to_commit_time_,
+                               origin_agent_cluster_end_result_);
   }
 
   SetExpectedProcess(render_frame_host_->GetProcess());

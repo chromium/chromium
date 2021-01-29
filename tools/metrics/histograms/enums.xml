@@ -56227,6 +56227,13 @@ Called by update_net_trust_anchors.py.-->
   </int>
 </enum>
 
+<enum name="OriginAgentClusterEndResult">
+  <int value="0" label="Not requested and not origin-keyed"/>
+  <int value="1" label="Not requested but origin-keyed"/>
+  <int value="2" label="Requested but not origin-keyed"/>
+  <int value="3" label="Requested and origin-keyed"/>
+</enum>
+
 <enum name="OriginTrialEnableResult">
   <obsolete>
     Obsolete as of M54 and replaced by OriginTrialTokenStatus.
