@@ -63,7 +63,7 @@ public abstract class BaseOnboardingCoordinator {
     private WebContentsObserver mWebContentsObserver;
     private boolean mOnboardingShown;
 
-    private final Context mContext;
+    final Context mContext;
     boolean mAnimate = true;
     @Nullable
     ScrollView mView;
@@ -73,8 +73,8 @@ public abstract class BaseOnboardingCoordinator {
         mExperimentIds = experimentIds;
         mParameters = parameters;
         mContext = context;
-        mView = (ScrollView) LayoutUtils.createInflater(mContext).inflate(
-                R.layout.autofill_assistant_onboarding, /* root= */ null);
+
+        mView = createViewImpl();
     }
 
     /**
@@ -315,6 +315,7 @@ public abstract class BaseOnboardingCoordinator {
         mAnimate = false;
     }
 
+    abstract ScrollView createViewImpl();
     abstract void hide();
     abstract void initViewImpl(Callback<Integer> callback);
     abstract void showViewImpl();
