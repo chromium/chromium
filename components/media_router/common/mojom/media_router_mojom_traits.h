@@ -513,6 +513,8 @@ struct EnumTraits<media_router::mojom::MediaRouteProvider_Id,
         return media_router::mojom::MediaRouteProvider_Id::DIAL;
       case media_router::MediaRouteProviderId::ANDROID_CAF:
         return media_router::mojom::MediaRouteProvider_Id::ANDROID_CAF;
+      case media_router::MediaRouteProviderId::TEST:
+        return media_router::mojom::MediaRouteProvider_Id::TEST;
       case media_router::MediaRouteProviderId::UNKNOWN:
         break;
     }
@@ -538,6 +540,9 @@ struct EnumTraits<media_router::mojom::MediaRouteProvider_Id,
         return true;
       case media_router::mojom::MediaRouteProvider_Id::ANDROID_CAF:
         *provider_id = media_router::MediaRouteProviderId::ANDROID_CAF;
+        return true;
+      case media_router::mojom::MediaRouteProvider_Id::TEST:
+        *provider_id = media_router::MediaRouteProviderId::TEST;
         return true;
     }
     return false;

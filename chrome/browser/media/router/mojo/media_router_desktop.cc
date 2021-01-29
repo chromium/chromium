@@ -132,8 +132,6 @@ void MediaRouterDesktop::RegisterMediaRouteProvider(
   config->use_mirroring_service = true;
   std::move(callback).Run(instance_id(), std::move(config));
 
-  SyncStateToMediaRouteProvider(provider_id);
-
   if (provider_id == MediaRouteProviderId::EXTENSION) {
     RegisterExtensionMediaRouteProvider(std::move(media_route_provider_remote));
   } else {
@@ -144,6 +142,8 @@ void MediaRouterDesktop::RegisterMediaRouteProvider(
                        weak_factory_.GetWeakPtr(), provider_id));
     media_route_providers_[provider_id] = std::move(bound_remote);
   }
+
+  SyncStateToMediaRouteProvider(provider_id);
 }
 
 void MediaRouterDesktop::OnSinksReceived(

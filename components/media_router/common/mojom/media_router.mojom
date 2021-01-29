@@ -297,6 +297,7 @@ interface MediaRouteProvider {
     CAST,
     DIAL,
     ANDROID_CAF,
+    TEST,
   };
 
   // Creates a media route from |media_source| to the sink given by |sink_id|.

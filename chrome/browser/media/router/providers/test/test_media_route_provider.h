@@ -75,6 +75,7 @@ class TestMediaRouteProvider : public mojom::MediaRouteProvider {
   void ProvideSinks(
       const std::string& provider_name,
       const std::vector<media_router::MediaSinkInternal>& sinks) override;
+  void GetState(GetStateCallback callback) override;
 
  private:
   void set_close_route_error_on_send() {

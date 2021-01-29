@@ -38,8 +38,9 @@ std::string GetHistogramNameForProvider(const std::string& base_name,
       return base_name + ".WiredDisplay";
     case MediaRouteProviderId::ANDROID_CAF:
       return base_name + ".AndroidCaf";
-    // |EXTENSION| and |UNKNOWN| use the base histogram name.
+    // The rest use the base histogram name.
     case MediaRouteProviderId::EXTENSION:
+    case MediaRouteProviderId::TEST:
     case MediaRouteProviderId::UNKNOWN:
       return base_name;
   }

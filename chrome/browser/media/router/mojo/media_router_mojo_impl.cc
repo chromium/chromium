@@ -1089,6 +1089,7 @@ void MediaRouterMojoImpl::RecordPresentationRequestUrlBySink(
       }
       break;
     case MediaRouteProviderId::ANDROID_CAF:
+    case MediaRouteProviderId::TEST:
     case MediaRouteProviderId::UNKNOWN:
       break;
   }
