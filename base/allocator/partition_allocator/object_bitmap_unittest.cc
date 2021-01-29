@@ -15,6 +15,8 @@ namespace internal {
 namespace {
 
 using TestBitmap = ObjectBitmap<kSuperPageSize, kSuperPageSize, kAlignment>;
+static_assert((kSuperPageSize / (kAlignment * CHAR_BIT)) == sizeof(TestBitmap),
+              "Bitmap size must only depend on object alignment");
 
 class PageWithBitmap final {
  public:
@@ -67,7 +69,7 @@ class ObjectBitmapTest : public ::testing::Test {
            pos * kAlignment;
   }
 
-  uintptr_t LastIndex() const {
+  static constexpr uintptr_t LastIndex() {
     return TestBitmap::kMaxEntries - (sizeof(TestBitmap) / kAlignment) - 1;
   }
 

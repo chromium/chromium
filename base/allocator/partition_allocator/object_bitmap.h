@@ -29,7 +29,8 @@ namespace internal {
 // allocated inside a page (serves as the granularity in the bitmap).
 template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
 class ObjectBitmap final {
-  static constexpr size_t kBitsPerCell = sizeof(uint8_t) * CHAR_BIT;
+  using CellType = uintptr_t;
+  static constexpr size_t kBitsPerCell = sizeof(CellType) * CHAR_BIT;
   static constexpr size_t kBitmapSize =
       (PageSize + ((kBitsPerCell * ObjectAlignment) - 1)) /
       (kBitsPerCell * ObjectAlignment);
@@ -60,17 +61,17 @@ class ObjectBitmap final {
   inline void Clear();
 
  private:
-  std::atomic<uint8_t>& AsAtomicCell(size_t cell_index) {
-    return reinterpret_cast<std::atomic<uint8_t>&>(bitmap_[cell_index]);
+  std::atomic<CellType>& AsAtomicCell(size_t cell_index) {
+    return reinterpret_cast<std::atomic<CellType>&>(bitmap_[cell_index]);
   }
-  const std::atomic<uint8_t>& AsAtomicCell(size_t cell_index) const {
-    return reinterpret_cast<const std::atomic<uint8_t>&>(bitmap_[cell_index]);
+  const std::atomic<CellType>& AsAtomicCell(size_t cell_index) const {
+    return reinterpret_cast<const std::atomic<CellType>&>(bitmap_[cell_index]);
   }
 
-  inline uint8_t LoadCell(size_t cell_index) const;
-  inline std::pair<size_t, size_t> ObjectIndexAndBit(uintptr_t) const;
+  inline CellType LoadCell(size_t cell_index) const;
+  static constexpr std::pair<size_t, size_t> ObjectIndexAndBit(uintptr_t);
 
-  std::array<uint8_t, kBitmapSize> bitmap_;
+  std::array<CellType, kBitmapSize> bitmap_;
 };
 
 template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
@@ -89,7 +90,8 @@ void ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::SetBit(
   size_t cell_index, object_bit;
   std::tie(cell_index, object_bit) = ObjectIndexAndBit(address);
   auto& cell = AsAtomicCell(cell_index);
-  cell.fetch_or(1 << object_bit, std::memory_order_relaxed);
+  cell.fetch_or(static_cast<CellType>(1) << object_bit,
+                std::memory_order_relaxed);
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
@@ -98,7 +100,8 @@ void ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::ClearBit(
   size_t cell_index, object_bit;
   std::tie(cell_index, object_bit) = ObjectIndexAndBit(address);
   auto& cell = AsAtomicCell(cell_index);
-  cell.fetch_and(~(1 << object_bit), std::memory_order_relaxed);
+  cell.fetch_and(~(static_cast<CellType>(1) << object_bit),
+                 std::memory_order_relaxed);
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
@@ -106,19 +109,20 @@ bool ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::CheckBit(
     uintptr_t address) const {
   size_t cell_index, object_bit;
   std::tie(cell_index, object_bit) = ObjectIndexAndBit(address);
-  return LoadCell(cell_index) & (1 << object_bit);
+  return LoadCell(cell_index) & (static_cast<CellType>(1) << object_bit);
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
-uint8_t ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::LoadCell(
+typename ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::CellType
+ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::LoadCell(
     size_t cell_index) const {
   return AsAtomicCell(cell_index).load(std::memory_order_relaxed);
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t ObjectAlignment>
-std::pair<size_t, size_t>
+constexpr std::pair<size_t, size_t>
 ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::ObjectIndexAndBit(
-    uintptr_t address) const {
+    uintptr_t address) {
   const uintptr_t offset_in_page = address & kPageOffsetMask;
   const size_t object_number = offset_in_page / kObjectAlignment;
   const size_t cell_index = object_number / kBitsPerCell;
@@ -134,7 +138,7 @@ inline void ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::Iterate(
   // The bitmap (|this|) is allocated inside the page with |kPageAlignment|.
   const uintptr_t base = reinterpret_cast<uintptr_t>(this) & kPageBaseMask;
   for (size_t cell_index = 0; cell_index < kBitmapSize; ++cell_index) {
-    uint8_t value = LoadCell(cell_index);
+    CellType value = LoadCell(cell_index);
     while (value) {
       const int trailing_zeroes = base::bits::CountTrailingZeroBits(value);
       const size_t object_number =
@@ -143,7 +147,7 @@ inline void ObjectBitmap<PageSize, PageAlignment, ObjectAlignment>::Iterate(
           base + (kObjectAlignment * object_number);
       callback(object_address);
       // Clear current object bit in temporary value to advance iteration.
-      value &= ~(1 << trailing_zeroes);
+      value &= ~(static_cast<CellType>(1) << trailing_zeroes);
     }
   }
 }
