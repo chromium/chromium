@@ -86,6 +86,10 @@ class CableAuthenticator {
     private final CableAuthenticatorUI mUi;
     private final SingleThreadTaskRunner mTaskRunner;
 
+    // mHandle is the opaque ID returned by the native code to ensure that
+    // |stop| doesn't apply to a transaction that this instance didn't create.
+    private long mHandle;
+
     public enum Result {
         REGISTER_OK,
         REGISTER_ERROR,
@@ -109,17 +113,17 @@ class CableAuthenticator {
 
         if (accessory != null) {
             // USB mode can start immediately.
-            CableAuthenticatorJni.get().startUSB(
+            mHandle = CableAuthenticatorJni.get().startUSB(
                     this, new USBHandler(context, mTaskRunner, accessory));
         }
 
         if (isFcmNotification) {
             // The user tapped a notification that resulted from an FCM message.
-            CableAuthenticatorJni.get().onInteractionReady(this);
+            mHandle = CableAuthenticatorJni.get().onInteractionReady(this);
         }
 
         if (serverLink != null) {
-            CableAuthenticatorJni.get().startServerLink(this, serverLink);
+            mHandle = CableAuthenticatorJni.get().startServerLink(this, serverLink);
         }
 
         // Otherwise wait for a QR scan.
@@ -447,8 +451,8 @@ class CableAuthenticator {
      */
     void onQRCode(String value, boolean link) {
         assert mTaskRunner.belongsToCurrentThread();
-        CableAuthenticatorJni.get().startQR(this, getName(), value, link);
-        // TODO: show the user an error if that returned false.
+        mHandle = CableAuthenticatorJni.get().startQR(this, getName(), value, link);
+        // TODO: show the user an error if that returned zero.
         // that indicates that the QR code was invalid.
     }
 
@@ -464,7 +468,7 @@ class CableAuthenticator {
 
     void close() {
         assert mTaskRunner.belongsToCurrentThread();
-        CableAuthenticatorJni.get().stop();
+        CableAuthenticatorJni.get().stop(mHandle);
     }
 
     static String getName() {
@@ -563,24 +567,27 @@ class CableAuthenticator {
                 byte[] stateBytes);
 
         /**
-         * Called to instruct the C++ code to start a new transaction using |usbDevice|.
+         * Called to instruct the C++ code to start a new transaction using |usbDevice|. Returns an
+         * opaque value that can be passed to |stop| to cancel this transaction.
          */
-        void startUSB(CableAuthenticator cableAuthenticator, USBHandler usbDevice);
+        long startUSB(CableAuthenticator cableAuthenticator, USBHandler usbDevice);
 
         /**
          * Called to instruct the C++ code to start a new transaction based on the contents of a QR
          * code. The given name will be transmitted to the peer in order to identify this device, it
          * should be human-meaningful. The qrUrl must be a caBLE URL, i.e. starting with
-         * "fido://c1/"
+         * "fido://c1/". Returns an opaque value that can be passed to |stop| to cancel this
+         * transaction.
          */
-        boolean startQR(CableAuthenticator cableAuthenticator, String authenticatorName,
-                String qrUrl, boolean link);
+        long startQR(CableAuthenticator cableAuthenticator, String authenticatorName, String qrUrl,
+                boolean link);
 
         /**
          * Called to instruct the C++ code to start a new transaction based on the given link
-         * information which has been provided by the server.
+         * information which has been provided by the server. Returns an opaque value that can be
+         * passed to |stop| to cancel this transaction.
          */
-        boolean startServerLink(CableAuthenticator cableAuthenticator, byte[] serverLinkData);
+        long startServerLink(CableAuthenticator cableAuthenticator, byte[] serverLinkData);
 
         /**
          * unlink causes the root secret to be rotated and the FCM token to be rotated. This
@@ -593,13 +600,15 @@ class CableAuthenticator {
         /**
          * Called after the notification created by {@link showNotification} has been pressed and
          * the {@link CableAuthenticatorUI} Fragment is now in the foreground for showing UI.
+         * Returns an opaque value that can be passed to |stop| to cancel this transaction.
          */
-        void onInteractionReady(CableAuthenticator cableAuthenticator);
+        long onInteractionReady(CableAuthenticator cableAuthenticator);
 
         /**
-         * Called to alert the C++ code to stop any ongoing transactions.
+         * Called to alert the C++ code to stop any ongoing transactions. Takes an opaque handle
+         * value that was returned by one of the |start*| functions or |onInteractionReady|.
          */
-        void stop();
+        void stop(long handle);
 
         /**
          * Called when a GCM message is received. The |event| argument is a pointer to a

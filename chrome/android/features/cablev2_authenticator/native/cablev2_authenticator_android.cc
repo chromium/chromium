@@ -166,6 +166,12 @@ base::Optional<base::span<const uint8_t, N>> JavaByteArrayToFixedSpan(
 // supported.
 struct GlobalData {
   JNIEnv* env = nullptr;
+  // instance_num is incremented for each new |Transaction| created and returned
+  // to Java to serve as a "handle". This prevents commands intended for a
+  // previous transaction getting applied to a replacement. The zero value is
+  // reserved so that functions can still return that to indicate an error.
+  jlong instance_num = 1;
+
   std::array<uint8_t, device::cablev2::kRootSecretSize> root_secret;
   network::mojom::NetworkContext* network_context = nullptr;
 
@@ -604,7 +610,7 @@ static ScopedJavaLocalRef<jbyteArray> JNI_CableAuthenticator_Setup(
   return ToJavaByteArray(env, serialized_state);
 }
 
-static void JNI_CableAuthenticator_StartUSB(
+static jlong JNI_CableAuthenticator_StartUSB(
     JNIEnv* env,
     const JavaParamRef<jobject>& cable_authenticator,
     const JavaParamRef<jobject>& usb_device) {
@@ -622,9 +628,11 @@ static void JNI_CableAuthenticator_StartUSB(
           std::make_unique<AndroidPlatform>(env, cable_authenticator),
           std::unique_ptr<device::cablev2::authenticator::Transport>(
               transport.release()));
+
+  return ++global_data.instance_num;
 }
 
-static jboolean JNI_CableAuthenticator_StartQR(
+static jlong JNI_CableAuthenticator_StartQR(
     JNIEnv* env,
     const JavaParamRef<jobject>& cable_authenticator,
     const JavaParamRef<jstring>& authenticator_name,
@@ -639,7 +647,7 @@ static jboolean JNI_CableAuthenticator_StartQR(
   if (!decoded_qr) {
     FIDO_LOG(ERROR) << "Failed to decode QR: " << qr_string;
     RecordResult(CableV2MobileResult::kInvalidQR);
-    return false;
+    return 0;
   }
 
   if (!link) {
@@ -654,10 +662,10 @@ static jboolean JNI_CableAuthenticator_StartQR(
           decoded_qr->peer_identity,
           link ? global_data.registration->contact_id() : base::nullopt);
 
-  return true;
+  return ++global_data.instance_num;
 }
 
-static jboolean JNI_CableAuthenticator_StartServerLink(
+static jlong JNI_CableAuthenticator_StartServerLink(
     JNIEnv* env,
     const JavaParamRef<jobject>& cable_authenticator,
     const JavaParamRef<jbyteArray>& server_link_data_java) {
@@ -671,7 +679,7 @@ static jboolean JNI_CableAuthenticator_StartServerLink(
   if (!server_link_data) {
     FIDO_LOG(ERROR) << "Bad length server-link data length";
     RecordResult(CableV2MobileResult::kInvalidServerLink);
-    return false;
+    return 0;
   }
 
   // Sending pairing information is disabled when doing a server-linked
@@ -687,7 +695,7 @@ static jboolean JNI_CableAuthenticator_StartServerLink(
           ->subspan<device::kP256X962Length, device::cablev2::kQRSecretSize>(),
       server_link_data->subspan<0, device::kP256X962Length>(), base::nullopt);
 
-  return true;
+  return ++global_data.instance_num;
 }
 
 static ScopedJavaLocalRef<jbyteArray> JNI_CableAuthenticator_Unlink(
@@ -705,16 +713,21 @@ static ScopedJavaLocalRef<jbyteArray> JNI_CableAuthenticator_Unlink(
   return ToJavaByteArray(env, serialized_state);
 }
 
-static void JNI_CableAuthenticator_OnInteractionReady(
+static jlong JNI_CableAuthenticator_OnInteractionReady(
     JNIEnv* env,
     const JavaParamRef<jobject>& cable_authenticator) {
   GlobalData& global_data = GetGlobalData();
   std::move(global_data.interaction_ready_callback)
       .Run(ScopedJavaGlobalRef<jobject>(cable_authenticator));
+
+  return ++global_data.instance_num;
 }
 
-static void JNI_CableAuthenticator_Stop(JNIEnv* env) {
-  ResetGlobalData();
+static void JNI_CableAuthenticator_Stop(JNIEnv* env, jlong instance_num) {
+  GlobalData& global_data = GetGlobalData();
+  if (global_data.instance_num == instance_num) {
+    ResetGlobalData();
+  }
 }
 
 static void JNI_CableAuthenticator_OnCloudMessage(
