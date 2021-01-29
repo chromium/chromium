@@ -109,6 +109,7 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
   }
 
   VLOG_IF(2, !frame_hdr.show_frame) << "not displaying frame";
+  last_decoded_frame_visible_ = frame_hdr.show_frame;
 
   if (frame_hdr.show_existing_frame) {
     last_decoded_surface_ = ref_frames_[frame_hdr.frame_to_show_map_idx];
@@ -273,6 +274,14 @@ VideoDecoder::Result Vp9Decoder::DecodeNextFrame() {
 
 void Vp9Decoder::LastDecodedFrameToPNG(const std::string& path) {
   last_decoded_surface_->SaveAsPNG(path);
+}
+
+std::string Vp9Decoder::LastDecodedFrameMD5Sum() {
+  return last_decoded_surface_->GetMD5Sum();
+}
+
+bool Vp9Decoder::LastDecodedFrameVisible() {
+  return last_decoded_frame_visible_;
 }
 
 }  // namespace vaapi_test

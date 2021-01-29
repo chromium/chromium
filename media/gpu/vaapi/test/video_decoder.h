@@ -33,6 +33,13 @@ class VideoDecoder {
   // It is therefore possible that the images outputted do not exactly match
   // what is displayed by playing the video stream directly.
   virtual void LastDecodedFrameToPNG(const std::string& path) = 0;
+
+  // Computes the MD5 sum of the last decoded frame and returns a human-readable
+  // representation.
+  virtual std::string LastDecodedFrameMD5Sum() = 0;
+
+  // Returns whether the last decoded frame was visible.
+  virtual bool LastDecodedFrameVisible() = 0;
 };
 
 }  // namespace vaapi_test

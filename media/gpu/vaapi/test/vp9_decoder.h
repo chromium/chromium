@@ -28,6 +28,8 @@ class Vp9Decoder : public VideoDecoder {
   // VideoDecoder implementation.
   VideoDecoder::Result DecodeNextFrame() override;
   void LastDecodedFrameToPNG(const std::string& path) override;
+  std::string LastDecodedFrameMD5Sum() override;
+  bool LastDecodedFrameVisible() override;
 
  private:
   // Reads next frame from IVF stream and its size into |vp9_frame_header| and
@@ -52,6 +54,9 @@ class Vp9Decoder : public VideoDecoder {
   // VP9-specific data.
   const std::unique_ptr<Vp9Parser> vp9_parser_;
   std::vector<scoped_refptr<SharedVASurface>> ref_frames_;
+
+  // Whether the last decoded frame was visible.
+  bool last_decoded_frame_visible_ = false;
 };
 
 }  // namespace vaapi_test

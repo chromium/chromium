@@ -41,6 +41,7 @@ constexpr char kUsageMsg[] =
     "           --video=<video path>\n"
     "           [--frames=<number of frames to decode>]\n"
     "           [--out-prefix=<path prefix of decoded frame PNGs>]\n"
+    "           [--md5]\n"
     "           [--loop]\n"
     "           [--v=<log verbosity>]\n"
     "           [--help]\n";
@@ -63,6 +64,11 @@ constexpr char kHelpMsg[] =
     "        If specified along with --loop (see below), only saves the first\n"
     "        iteration of decoded frames.\n"
     "        If omitted, the output of this binary is error or lack thereof.\n"
+    "    --md5\n"
+    "        Optional. If specified, prints the md5 of each decoded and\n"
+    "        visible frame in I420 format to stdout.\n"
+    "        Only supported when vaDeriveImage() produces I420 and NV12 data\n"
+    "        for all frames in the video.\n"
     "    --loop\n"
     "        Optional. If specified, loops decoding until terminated\n"
     "        externally or until an error occurs, at which point the current\n"
@@ -194,6 +200,9 @@ int main(int argc, char** argv) {
       if (!output_prefix.empty() && first_loop) {
         dec->LastDecodedFrameToPNG(
             base::StringPrintf("%s_%d.png", output_prefix.c_str(), i));
+      }
+      if (cmd->HasSwitch("md5") && dec->LastDecodedFrameVisible()) {
+        std::cout << dec->LastDecodedFrameMD5Sum() << std::endl;
       }
 
       if (++i == n_frames)
