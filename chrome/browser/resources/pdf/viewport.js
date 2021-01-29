@@ -73,12 +73,8 @@ export class Viewport {
    *     plugin in the viewer.
    * @param {number} scrollbarWidth The width of scrollbars on the page
    * @param {number} defaultZoom The default zoom level.
-   * @param {number} topToolbarHeight The number of pixels that should initially
-   *     be left blank above the document for the toolbar.
    */
-  constructor(
-      scrollParent, sizer, content, scrollbarWidth, defaultZoom,
-      topToolbarHeight) {
+  constructor(scrollParent, sizer, content, scrollbarWidth, defaultZoom) {
     /** @private {!HTMLElement} */
     this.window_ = scrollParent;
 
@@ -93,9 +89,6 @@ export class Viewport {
 
     /** @private {number} */
     this.defaultZoom_ = defaultZoom;
-
-    /** @private {number} */
-    this.topToolbarHeight_ = topToolbarHeight;
 
     /** @private {function():void} */
     this.viewportChangedCallback_ = function() {};
@@ -370,8 +363,7 @@ export class Viewport {
 
     return {
       horizontal: zoomedDimensions.width > this.window_.offsetWidth,
-      vertical: zoomedDimensions.height + this.topToolbarHeight_ >
-          this.window_.offsetHeight
+      vertical: zoomedDimensions.height > this.window_.offsetHeight
     };
   }
 
@@ -392,8 +384,7 @@ export class Viewport {
     const zoomedDimensions = this.getZoomedDocumentDimensions_(this.getZoom());
     if (zoomedDimensions) {
       this.sizer_.style.width = zoomedDimensions.width + 'px';
-      this.sizer_.style.height =
-          zoomedDimensions.height + this.topToolbarHeight_ + 'px';
+      this.sizer_.style.height = zoomedDimensions.height + 'px';
     }
   }
 
@@ -456,10 +447,7 @@ export class Viewport {
 
   /** @return {!Point} The scroll position of the viewport. */
   get position() {
-    return {
-      x: this.window_.scrollLeft,
-      y: this.window_.scrollTop - this.topToolbarHeight_
-    };
+    return {x: this.window_.scrollLeft, y: this.window_.scrollTop};
   }
 
   /**
@@ -467,7 +455,7 @@ export class Viewport {
    * @param {!Point} position The position to scroll to.
    */
   set position(position) {
-    this.window_.scrollTo(position.x, position.y + this.topToolbarHeight_);
+    this.window_.scrollTo(position.x, position.y);
   }
 
   /** @return {!Size} the size of the viewport excluding scrollbars. */
@@ -676,10 +664,7 @@ export class Viewport {
    * @private
    */
   getPageAtY_(y) {
-    if (y < 0) {
-      assert(this.topToolbarHeight_ > 0);
-      return 0;
-    }
+    assert(y >= 0);
 
     // Drop decimal part of |y| otherwise it can appear as larger than the
     // bottom of the last page in the document (even without the presence of a
@@ -1214,13 +1199,6 @@ export class Viewport {
         page = this.pageDimensions_.length - 1;
       }
       const dimensions = this.pageDimensions_[page];
-      let toolbarOffset = 0;
-      // Unless we're in fit to page or fit to height mode, scroll above the
-      // page by |this.topToolbarHeight_| so that the toolbar isn't covering it
-      // initially.
-      if (!this.isPagedMode_()) {
-        toolbarOffset = this.topToolbarHeight_;
-      }
 
       // If `x` or `y` is not a valid number or specified, then that
       // coordinate of the current viewport position should be retained.
@@ -1235,7 +1213,7 @@ export class Viewport {
 
       this.position = {
         x: (dimensions.x + x) * this.getZoom(),
-        y: (dimensions.y + y) * this.getZoom() - toolbarOffset
+        y: (dimensions.y + y) * this.getZoom()
       };
       this.updateViewport_();
     });
@@ -1254,7 +1232,7 @@ export class Viewport {
         this.setZoomInternal_(Math.min(
             this.defaultZoom_,
             this.computeFittingZoom_(this.documentDimensions_, true, false)));
-        this.position = {x: 0, y: -this.topToolbarHeight_};
+        this.position = {x: 0, y: 0};
       }
       this.contentSizeChanged_();
       this.resize_();
@@ -1336,12 +1314,8 @@ export class Viewport {
   retrieveCurrentScreenCoordinates_() {
     const currentPage = this.getMostVisiblePage();
     const dimension = this.pageDimensions_[currentPage];
-    let toolbarOffset = 0;
-    if (!this.isPagedMode_()) {
-      toolbarOffset = this.topToolbarHeight_;
-    }
     const x = this.position.x / this.getZoom() - dimension.x;
-    const y = (this.position.y + toolbarOffset) / this.getZoom() - dimension.y;
+    const y = this.position.y / this.getZoom() - dimension.y;
     return {x: x, y: y};
   }
 

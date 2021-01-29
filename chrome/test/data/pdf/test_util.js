@@ -206,12 +206,10 @@ export function createBookmarksForTest() {
  *     size of the document in the viewport
  * @param {number} scrollbarWidth The width of scrollbars on the page
  * @param {number} defaultZoom The default zoom level.
- * @param {number} topToolbarHeight The number of pixels that should initially
- *     be left blank above the document for the toolbar.
  * @return {!Viewport} The viewport object with zoom values set.
  */
 export function getZoomableViewport(
-    scrollParent, sizer, scrollbarWidth, defaultZoom, topToolbarHeight) {
+    scrollParent, sizer, scrollbarWidth, defaultZoom) {
   document.body.innerHTML = '';
   const dummyContent =
       /** @type {!HTMLDivElement} */ (document.createElement('div'));
@@ -223,7 +221,7 @@ export function getZoomableViewport(
   const viewport = new Viewport(
       /** @type {!HTMLElement} */ (scrollParent),
       /** @type {!HTMLDivElement} */ (sizer), dummyContent, scrollbarWidth,
-      defaultZoom, topToolbarHeight);
+      defaultZoom);
   viewport.setZoomFactorRange([0.25, 0.4, 0.5, 1, 2]);
   return viewport;
 }

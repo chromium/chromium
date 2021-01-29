@@ -238,7 +238,7 @@ export class PDFViewerBaseElement extends PolymerElement {
 
     this.viewport_ = new Viewport(
         scrollContainer, this.getSizer(), this.getContent(),
-        getScrollbarWidth(), defaultZoom, 0);
+        getScrollbarWidth(), defaultZoom);
     this.viewport_.setViewportChangedCallback(() => this.viewportChanged_());
     this.viewport_.setBeforeZoomCallback(
         () => this.currentController.beforeZoom());

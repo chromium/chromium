@@ -85,7 +85,7 @@ async function doNavigationUrlTests(originalUrl, url, expectedResultUrl) {
   const mockWindow = new MockElement(100, 100, null);
   const mockSizer = new MockSizer();
   const mockViewportChangedCallback = new MockViewportChangedCallback();
-  const viewport = getZoomableViewport(mockWindow, mockSizer, 0, 1, 0);
+  const viewport = getZoomableViewport(mockWindow, mockSizer, 0, 1);
   viewport.setViewportChangedCallback(mockViewportChangedCallback.callback);
 
   const paramsParser = new OpenPdfParamsParser(function(name) {
@@ -117,7 +117,7 @@ const tests = [
     const mockWindow = new MockElement(100, 100, null);
     const mockSizer = new MockSizer();
     const mockCallback = new MockViewportChangedCallback();
-    const viewport = getZoomableViewport(mockWindow, mockSizer, 0, 1, 0);
+    const viewport = getZoomableViewport(mockWindow, mockSizer, 0, 1);
     viewport.setViewportChangedCallback(mockCallback.callback);
 
     const paramsParser = new OpenPdfParamsParser(function(destination) {
