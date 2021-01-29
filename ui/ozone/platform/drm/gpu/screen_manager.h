@@ -98,6 +98,9 @@ class ScreenManager {
       std::vector<std::unique_ptr<HardwareDisplayController>>;
   using WidgetToWindowMap =
       std::unordered_map<gfx::AcceleratedWidget, std::unique_ptr<DrmWindow>>;
+  using CrtcPreferredModifierMap = base::flat_map<
+      uint32_t /*crtc_is*/,
+      std::pair<bool /*modifiers_list.empty()*/, uint64_t /*picked_modifier*/>>;
 
   // Returns an iterator into |controllers_| for the controller identified by
   // (|crtc|, |connector|).
@@ -106,6 +109,16 @@ class ScreenManager {
       uint32_t crtc);
 
   bool TestModeset(const ControllerConfigsList& controllers_params);
+  bool TestAndSetPreferredModifiers(
+      const ControllerConfigsList& controllers_params);
+  bool TestAndSetLinearModifier(
+      const ControllerConfigsList& controllers_params);
+  // Setting the Preferred modifiers that passed from one of the Modeset Test
+  // functions. The preferred modifiers are used in Modeset.
+  void SetPreferredModifiers(
+      const ControllerConfigsList& controllers_params,
+      const CrtcPreferredModifierMap& crtcs_preferred_modifier);
+
   bool Modeset(const ControllerConfigsList& controllers_params);
 
   // Configures a display controller to be enabled. The display controller is

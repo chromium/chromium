@@ -14,9 +14,11 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager.h"
@@ -128,17 +130,19 @@ class HardwareDisplayController {
   // doesn't change any state.
   bool TestPageFlip(const DrmOverlayPlaneList& plane_list);
 
-  // Return the supported modifiers for |fourcc_format| for this
-  // controller.
-  std::vector<uint64_t> GetFormatModifiers(uint32_t fourcc_format) const;
+  // Return the supported modifiers for |fourcc_format| for this controller.
+  std::vector<uint64_t> GetSupportedModifiers(uint32_t fourcc_format) const;
 
   // Return the supported modifiers for |fourcc_format| for this
   // controller to be used for modeset buffers. Currently, this only exists
   // because we can't provide valid AFBC buffers during modeset.
   // See https://crbug.com/852675
   // TODO: Remove this.
-  std::vector<uint64_t> GetFormatModifiersForModesetting(
-      uint32_t fourcc_format) const;
+  std::vector<uint64_t> GetFormatModifiersForTestModeset(
+      uint32_t fourcc_format);
+
+  void UpdatePreferredModiferForFormat(gfx::BufferFormat buffer_format,
+                                       uint64_t modifier);
 
   // Moves the hardware cursor to |location|.
   void MoveCursor(const gfx::Point& location);
@@ -189,6 +193,8 @@ class HardwareDisplayController {
   void ResetCursor();
   void DisableCursor();
 
+  std::vector<uint64_t> GetFormatModifiers(uint32_t fourcc_format) const;
+
   HardwareDisplayPlaneList owned_hardware_planes_;
 
   // Stores the CRTC configuration. This is used to identify monitors and
@@ -206,6 +212,11 @@ class HardwareDisplayController {
   gfx::Point cursor_location_;
   int cursor_frontbuffer_ = 0;
   DrmDumbBuffer* current_cursor_ = nullptr;
+
+  // Maps each fourcc_format to its preferred modifier which was generated
+  // through modeset-test and updated in UpdatePreferredModifierForFormat().
+  base::flat_map<uint32_t /*fourcc_format*/, uint64_t /*preferred_modifier*/>
+      preferred_format_modifier_;
 
   base::WeakPtrFactory<HardwareDisplayController> weak_ptr_factory_{this};
 
