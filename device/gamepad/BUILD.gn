@@ -176,6 +176,17 @@ static_library("test_helpers") {
     "//device/gamepad/public/cpp:shared_with_blink",
     "//third_party/blink/public:blink_headers",
   ]
+
+  if (is_win) {
+    sources += [
+      "test_support/fake_igamepad.cc",
+      "test_support/fake_igamepad.h",
+      "test_support/fake_igamepad_statics.cc",
+      "test_support/fake_igamepad_statics.h",
+      "test_support/fake_ro_get_activation_factory.cc",
+      "test_support/fake_ro_get_activation_factory.h",
+    ]
+  }
 }
 
 if (is_android) {
