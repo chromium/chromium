@@ -11,12 +11,6 @@
 </if>
 <if expr="not chromeos">
         <template is="dom-if" if="[[captionSettingsOpensExternally_]]">
-          <cr-link-row id="captions"
-              label="$i18n{captionsPreferencesTitle}"
-              sub-label="$i18n{captionsPreferencesSubtitle}"
-              on-click="onCaptionsClick_"
-              external$="[[captionSettingsOpensExternally_]]">
-          </cr-link-row>
           <template is="dom-if" if="[[enableLiveCaption_]]">
             <settings-toggle-button
                 class="hr"
@@ -26,6 +20,12 @@
                 sub-label="[[enableLiveCaptionSubtitle_]]">
             </settings-toggle-button>
           </template>
+          <cr-link-row id="captions"
+              label="$i18n{captionsPreferencesTitle}"
+              sub-label="$i18n{captionsPreferencesSubtitle}"
+              on-click="onCaptionsClick_"
+              external$="[[captionSettingsOpensExternally_]]">
+          </cr-link-row>
         </template>
         <template is="dom-if" if="[[!captionSettingsOpensExternally_]]">
           <cr-link-row id="captions"
