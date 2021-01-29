@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <map>
+#include <numeric>
 #include <set>
 #include <string>
 #include <utility>
@@ -380,6 +381,12 @@ void RecordGuestProfileLifetime(const std::string& histogram_name,
                                  100);
 }
 #endif  // !defined(OS_ANDROID)
+
+int GetTotalRefCount(const std::map<ProfileKeepAliveOrigin, int>& keep_alives) {
+  return std::accumulate(
+      keep_alives.begin(), keep_alives.end(), 0,
+      [](int acc, const auto& pair) { return acc + pair.second; });
+}
 
 }  // namespace
 
@@ -1320,7 +1327,15 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
   DCHECK(!profile->IsOffTheRecord());
 
   ProfileInfo* info = GetProfileInfoByPath(profile->GetPath());
-  DCHECK(info);
+  if (!info) {
+    // Can be null in unit tests, when the Profile was not created via
+    // ProfileManager.
+    return;
+  }
+
+  DCHECK_NE(0, GetTotalRefCount(info->keep_alives))
+      << "AddKeepAlive() on a soon-to-be-deleted Profile is not allowed";
+
   info->keep_alives[origin]++;
 
   int& waiting_for_first_browser_window =
@@ -1329,6 +1344,9 @@ void ProfileManager::AddKeepAlive(const Profile* profile,
       waiting_for_first_browser_window != 0) {
     waiting_for_first_browser_window = 0;
   }
+
+  VLOG(1) << "AddKeepAlive(" << profile->GetDebugName() << ", " << origin
+          << "). refcount=" << GetTotalRefCount(info->keep_alives);
 }
 
 void ProfileManager::RemoveKeepAlive(const Profile* profile,
@@ -1341,16 +1359,25 @@ void ProfileManager::RemoveKeepAlive(const Profile* profile,
   DCHECK(!profile->IsOffTheRecord());
 
   ProfileInfo* info = GetProfileInfoByPath(profile->GetPath());
-  DCHECK(info);
+  if (!info) {
+    // Can be null in unit tests, when the Profile was not created via
+    // ProfileManager.
+    return;
+  }
+
   DCHECK(base::Contains(info->keep_alives, origin));
   info->keep_alives[origin]--;
   DCHECK_LE(0, info->keep_alives[origin]);
 
+  int total_refcount = GetTotalRefCount(info->keep_alives);
+  VLOG(1) << "RemoveKeepAlive(" << profile->GetDebugName() << ", " << origin
+          << "). refcount=" << total_refcount;
+
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  bool is_zero_refcount = base::ranges::all_of(
-      info->keep_alives, [](const auto& entry) { return entry.second == 0; });
-  if (is_zero_refcount)
+  if (total_refcount == 0) {
+    VLOG(1) << "Deleting profile " << profile->GetDebugName();
     RemoveProfile(profile->GetPath());
+  }
 #endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
