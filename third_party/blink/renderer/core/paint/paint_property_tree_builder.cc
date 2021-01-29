@@ -273,7 +273,7 @@ class FragmentPaintPropertyTreeBuilder {
   bool IsLayoutShiftRoot() const {
     if (!properties_)
       return false;
-    return IsA<LayoutView>(object_) || properties_->Perspective() ||
+    return IsA<LayoutView>(object_) ||
            (properties_->Transform() &&
             !properties_->Transform()->IsIdentityOr2DTranslation()) ||
            properties_->ScrollTranslation() ||
