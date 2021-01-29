@@ -617,12 +617,20 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       std::string contents;
       GenerateBackgroundPageContents(extension.get(), &head->mime_type,
                                      &head->charset, &contents);
-      uint32_t size = base::saturated_cast<uint32_t>(contents.size());
-      mojo::DataPipe pipe(size);
-      MojoResult result = pipe.producer_handle->WriteData(
-          contents.data(), &size, MOJO_WRITE_DATA_FLAG_NONE);
+
       mojo::Remote<network::mojom::URLLoaderClient> client_remote(
           std::move(client));
+
+      uint32_t size = base::saturated_cast<uint32_t>(contents.size());
+      mojo::ScopedDataPipeProducerHandle producer_handle;
+      mojo::ScopedDataPipeConsumerHandle consumer_handle;
+      if (mojo::CreateDataPipe(size, producer_handle, consumer_handle) !=
+          MOJO_RESULT_OK) {
+        client_remote->OnComplete(
+            network::URLLoaderCompletionStatus(net::ERR_FAILED));
+      }
+      MojoResult result = producer_handle->WriteData(contents.data(), &size,
+                                                     MOJO_WRITE_DATA_FLAG_NONE);
       if (result != MOJO_RESULT_OK || size < contents.size()) {
         client_remote->OnComplete(
             network::URLLoaderCompletionStatus(net::ERR_FAILED));
@@ -630,8 +638,7 @@ class ExtensionURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       }
 
       client_remote->OnReceiveResponse(std::move(head));
-      client_remote->OnStartLoadingResponseBody(
-          std::move(pipe.consumer_handle));
+      client_remote->OnStartLoadingResponseBody(std::move(consumer_handle));
       client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
       return;
     }
