@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/sync/test/integration/await_match_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/multi_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -48,6 +49,61 @@ namespace bookmarks_helper {
 MATCHER_P(HasGuid, expected_guid, "") {
   const bookmarks::BookmarkNode* actual_node = arg;
   return actual_node->guid() == expected_guid;
+}
+
+// Helping matchers to check the hierarchy of bookmarks. All matchers work with
+// either raw or smart pointer to BookmarkNode and verify its |title|. Usage
+// example:
+// EXPECT_THAT(
+//     bookmark_bar->children(), ElementsAre(
+//         IsUrlBookmarkWithTitleAndUrl("Title", GURL("http://url.com")),
+//         IsFolderWithTitle("Folder title")));
+//
+// This example checks that the bookmark bar node has two children nodes: a URL
+// and a folder. For complex hierarchy checks IsFolderWithTitleAndChildrenAre
+// might be used to verify all children of the folder:
+// EXPECT_THAT(
+//     bookmark_bar->children(), ElementsAre(
+//         IsUrlBookmarkWithTitleAndUrl("Title", GURL("http://url.com")),
+//         IsFolderWithTitleAndChildrenAre("Folder title",
+//             IsUrlBookmarkWithTitleAndUrl("Title 2", GURL("http://url2.com")),
+//             IsUrlBookmarkWithTitleAndUrl("Title 3", GURL("http://url3.com"))
+// )));
+//
+// IsFolderWithTitleAndChildren provides more general approach to verify
+// folder's children using container matchers (e.g. UnorderedElementsAre,
+// IsEmpty, SizeIs, etc):
+// EXPECT_THAT(
+//     bookmark_bar->children(), ElementsAre(
+//         IsUrlBookmarkWithTitleAndUrl("Title", GURL("http://url.com")),
+//         IsFolderWithTitleAndChildren("Folder title",
+//             AllOf(SizeIs(2), Contains(
+//                 IsUrlBookmarkWithTitleAndUrl("Title 3", "http://url.com")
+// )))));
+
+MATCHER_P(IsFolderWithTitle, title, "") {
+  *result_listener << "the actual title is " << arg->GetTitle();
+  return arg->is_folder() && base::UTF16ToUTF8(arg->GetTitle()) == title;
+}
+
+MATCHER_P2(IsUrlBookmarkWithTitleAndUrl, title, url, "") {
+  *result_listener << "the actual title is " << arg->GetTitle()
+                   << " and URL is " << arg->url();
+  return arg->is_url() && base::UTF16ToUTF8(arg->GetTitle()) == title &&
+         arg->url() == GURL(url);
+}
+
+testing::Matcher<std::unique_ptr<bookmarks::BookmarkNode>>
+IsFolderWithTitleAndChildren(
+    const std::string& title,
+    testing::Matcher<bookmarks::BookmarkNode::TreeNodes> children_matcher);
+
+template <class... Args>
+testing::Matcher<std::unique_ptr<bookmarks::BookmarkNode>>
+IsFolderWithTitleAndChildrenAre(const std::string& title,
+                                Args... children_matchers) {
+  return IsFolderWithTitleAndChildren(
+      title, testing::ElementsAre(std::move(children_matchers)...));
 }
 
 // Used to access the bookmark undo service within a particular sync profile.

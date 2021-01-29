@@ -476,6 +476,16 @@ void TriggerAllFaviconLoading(BookmarkModel* model) {
 
 }  // namespace
 
+testing::Matcher<std::unique_ptr<bookmarks::BookmarkNode>>
+IsFolderWithTitleAndChildren(
+    const std::string& title,
+    testing::Matcher<BookmarkNode::TreeNodes> children_matcher) {
+  return testing::AllOf(
+      IsFolderWithTitle(title),
+      testing::Pointee(testing::Property(&bookmarks::BookmarkNode::children,
+                                         std::move(children_matcher))));
+}
+
 BookmarkUndoService* GetBookmarkUndoService(int index) {
   return BookmarkUndoServiceFactory::GetForProfile(
       sync_datatype_helper::test()->GetProfile(index));
