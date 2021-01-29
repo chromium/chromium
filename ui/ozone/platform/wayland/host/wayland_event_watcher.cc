@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/logging.h"
 #include "base/task/current_thread.h"
 #include "ui/events/event.h"
 #include "ui/ozone/platform/wayland/common/wayland.h"
@@ -115,12 +116,23 @@ void WaylandEventWatcher::MaybePrepareReadQueue() {
 
 bool WaylandEventWatcher::CheckForErrors() {
   int err = wl_display_get_error(display_);
+
+  // TODO(crbug.com/1172305): Wayland display_error message should be printed
+  // automatically by wl_log(). However, wl_log() does not print anything. Needs
+  // investigation.
   if (err == EPROTO) {
+    uint32_t ec, id;
+    const struct wl_interface* intf;
+    ec = wl_display_get_protocol_error(display_, &intf, &id);
+    LOG(ERROR) << "Fatal Wayland protocol error " << ec << " on interface "
+               << intf->name << " (object " << id << "). Shutting down..";
+
     // This can be null in tests.
     if (!shutdown_cb_.is_null())
       std::move(shutdown_cb_).Run();
     return false;
   }
+
   return true;
 }
 
