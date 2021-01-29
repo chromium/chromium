@@ -94,16 +94,15 @@ FrameTreeNode* GetFtnForNetworkRequest(int process_id, int routing_id) {
       RenderFrameHost::GetFrameTreeNodeIdForRoutingId(process_id, routing_id));
 }
 
-std::unique_ptr<protocol::Audits::HeavyAdIssueDetails> GetHeavyAdIssueHelper(
-    RenderFrameHostImpl* frame,
-    blink::mojom::HeavyAdResolutionStatus resolution,
-    blink::mojom::HeavyAdReason reason) {
+std::unique_ptr<protocol::Audits::InspectorIssue> BuildHeavyAdIssue(
+    const blink::mojom::HeavyAdIssueDetailsPtr& issue_details) {
   protocol::String status =
-      (resolution == blink::mojom::HeavyAdResolutionStatus::kHeavyAdBlocked)
+      (issue_details->resolution ==
+       blink::mojom::HeavyAdResolutionStatus::kHeavyAdBlocked)
           ? protocol::Audits::HeavyAdResolutionStatusEnum::HeavyAdBlocked
           : protocol::Audits::HeavyAdResolutionStatusEnum::HeavyAdWarning;
   protocol::String reason_string;
-  switch (reason) {
+  switch (issue_details->reason) {
     case blink::mojom::HeavyAdReason::kNetworkTotalLimit:
       reason_string = protocol::Audits::HeavyAdReasonEnum::NetworkTotalLimit;
       break;
@@ -114,18 +113,29 @@ std::unique_ptr<protocol::Audits::HeavyAdIssueDetails> GetHeavyAdIssueHelper(
       reason_string = protocol::Audits::HeavyAdReasonEnum::CpuPeakLimit;
       break;
   }
-  return protocol::Audits::HeavyAdIssueDetails::Create()
-      .SetReason(reason_string)
-      .SetResolution(status)
-      .SetFrame(protocol::Audits::AffectedFrame::Create()
-                    .SetFrameId(frame->GetDevToolsFrameToken().ToString())
-                    .Build())
-      .Build();
+  auto heavy_ad_details =
+      protocol::Audits::HeavyAdIssueDetails::Create()
+          .SetReason(reason_string)
+          .SetResolution(status)
+          .SetFrame(protocol::Audits::AffectedFrame::Create()
+                        .SetFrameId(issue_details->frame->frame_id)
+                        .Build())
+          .Build();
+
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::Create()
+          .SetHeavyAdIssueDetails(std::move(heavy_ad_details))
+          .Build();
+  auto issue =
+      protocol::Audits::InspectorIssue::Create()
+          .SetCode(protocol::Audits::InspectorIssueCodeEnum::HeavyAdIssue)
+          .SetDetails(std::move(protocol_issue_details))
+          .Build();
+  return issue;
 }
 
-std::unique_ptr<protocol::Audits::TrustedWebActivityIssueDetails>
-BuildTWAQualityIssue(
-    blink::mojom::TrustedWebActivityIssueDetailsPtr issue_details) {
+std::unique_ptr<protocol::Audits::InspectorIssue> BuildTWAQualityIssue(
+    const blink::mojom::TrustedWebActivityIssueDetailsPtr& issue_details) {
   protocol::String type_string;
   switch (issue_details->violation_type) {
     case blink::mojom::TwaQualityEnforcementViolationType::kHttpError:
@@ -142,17 +152,28 @@ BuildTWAQualityIssue(
       break;
   }
 
-  auto twaDetails = protocol::Audits::TrustedWebActivityIssueDetails::Create()
-                        .SetUrl(issue_details->url.spec())
-                        .SetViolationType(type_string)
-                        .Build();
+  auto twa_details = protocol::Audits::TrustedWebActivityIssueDetails::Create()
+                         .SetUrl(issue_details->url.spec())
+                         .SetViolationType(type_string)
+                         .Build();
   if (issue_details->http_error_code)
-    twaDetails->SetHttpStatusCode(issue_details->http_error_code);
+    twa_details->SetHttpStatusCode(issue_details->http_error_code);
   if (issue_details->package_name)
-    twaDetails->SetPackageName(*issue_details->package_name);
+    twa_details->SetPackageName(*issue_details->package_name);
   if (issue_details->signature)
-    twaDetails->SetSignature(*issue_details->signature);
-  return twaDetails;
+    twa_details->SetSignature(*issue_details->signature);
+
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::Create()
+          .SetTwaQualityEnforcementDetails(std::move(twa_details))
+          .Build();
+  auto issue =
+      protocol::Audits::InspectorIssue::Create()
+          .SetCode(
+              protocol::Audits::InspectorIssueCodeEnum::TrustedWebActivityIssue)
+          .SetDetails(std::move(protocol_issue_details))
+          .Build();
+  return issue;
 }
 
 }  // namespace
@@ -1006,36 +1027,22 @@ void ReportBrowserInitiatedIssue(RenderFrameHostImpl* frame,
 void BuildAndReportBrowserInitiatedIssue(
     RenderFrameHostImpl* frame,
     blink::mojom::InspectorIssueInfoPtr info) {
-  // This method does not support other type for now.
-  CHECK(info &&
-        info->code ==
-            blink::mojom::InspectorIssueCode::kTrustedWebActivityIssue &&
-        info->details && info->details->twa_issue_details);
+  // This method does not support other types for now.
+  CHECK(info && info->details &&
+        (info->code == blink::mojom::InspectorIssueCode::kHeavyAdIssue &&
+             info->details->heavy_ad_issue_details ||
+         info->code ==
+                 blink::mojom::InspectorIssueCode::kTrustedWebActivityIssue &&
+             info->details->twa_issue_details));
 
-  auto issue_details = protocol::Audits::InspectorIssueDetails::Create();
-  issue_details.SetTwaQualityEnforcementDetails(
-      BuildTWAQualityIssue(std::move(info->details->twa_issue_details)));
-  auto issue =
-      protocol::Audits::InspectorIssue::Create()
-          .SetCode(
-              protocol::Audits::InspectorIssueCodeEnum::TrustedWebActivityIssue)
-          .SetDetails(issue_details.Build())
-          .Build();
-
+  std::unique_ptr<protocol::Audits::InspectorIssue> issue;
+  if (info->code ==
+      blink::mojom::InspectorIssueCode::kTrustedWebActivityIssue) {
+    issue = BuildTWAQualityIssue(info->details->twa_issue_details);
+  } else {
+    issue = BuildHeavyAdIssue(info->details->heavy_ad_issue_details);
+  }
   ReportBrowserInitiatedIssue(frame, issue.get());
-}
-
-std::unique_ptr<protocol::Audits::InspectorIssue> GetHeavyAdIssue(
-    RenderFrameHostImpl* frame,
-    blink::mojom::HeavyAdResolutionStatus resolution,
-    blink::mojom::HeavyAdReason reason) {
-  auto issue_details = protocol::Audits::InspectorIssueDetails::Create();
-  issue_details.SetHeavyAdIssueDetails(
-      GetHeavyAdIssueHelper(frame, resolution, reason));
-  return protocol::Audits::InspectorIssue::Create()
-      .SetCode(protocol::Audits::InspectorIssueCodeEnum::HeavyAdIssue)
-      .SetDetails(issue_details.Build())
-      .Build();
 }
 
 void OnQuicTransportHandshakeFailed(

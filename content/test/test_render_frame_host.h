@@ -70,8 +70,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   TestRenderWidgetHost* GetRenderWidgetHost() override;
   void AddMessageToConsole(blink::mojom::ConsoleMessageLevel level,
                            const std::string& message) override;
-  void ReportHeavyAdIssue(blink::mojom::HeavyAdResolutionStatus resolution,
-                          blink::mojom::HeavyAdReason reason) override;
+  void ReportInspectorIssue(blink::mojom::InspectorIssueInfoPtr issue) override;
   bool IsTestRenderFrameHost() const override;
 
   // Public overrides to expose RenderFrameHostImpl's mojo methods to tests.
@@ -266,7 +265,7 @@ class TestRenderFrameHost : public RenderFrameHostImpl,
   // Keeps a running vector of messages sent to AddMessageToConsole.
   std::vector<std::string> console_messages_;
 
-  // Keep a count of the heavy ad issues sent to ReportHeavyAdIssue.
+  // Keep a count of the heavy ad issues sent to ReportInspectorIssue.
   int heavy_ad_issue_network_count_ = 0;
   int heavy_ad_issue_cpu_total_count_ = 0;
   int heavy_ad_issue_cpu_peak_count_ = 0;

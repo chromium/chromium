@@ -1323,11 +1323,21 @@ void AdsPageLoadMetricsObserver::MaybeTriggerHeavyAdIntervention(
   frame_data->set_heavy_ad_action(action);
 
   // Add an inspector issue for the root of the ad subtree.
-  render_frame_host->ReportHeavyAdIssue(
+  auto issue = blink::mojom::InspectorIssueInfo::New();
+  issue->code = blink::mojom::InspectorIssueCode::kHeavyAdIssue;
+  issue->details = blink::mojom::InspectorIssueDetails::New();
+  auto heavy_ad_details = blink::mojom::HeavyAdIssueDetails::New();
+  heavy_ad_details->resolution =
       action == ad_metrics::HeavyAdAction::kUnload
           ? blink::mojom::HeavyAdResolutionStatus::kHeavyAdBlocked
-          : blink::mojom::HeavyAdResolutionStatus::kHeavyAdWarning,
-      GetHeavyAdReason(frame_data->heavy_ad_status_with_policy()));
+          : blink::mojom::HeavyAdResolutionStatus::kHeavyAdWarning;
+  heavy_ad_details->reason =
+      GetHeavyAdReason(frame_data->heavy_ad_status_with_policy());
+  heavy_ad_details->frame = blink::mojom::AffectedFrame::New();
+  heavy_ad_details->frame->frame_id =
+      render_frame_host->GetDevToolsFrameToken().ToString();
+  issue->details->heavy_ad_issue_details = std::move(heavy_ad_details);
+  render_frame_host->ReportInspectorIssue(std::move(issue));
 
   // Report to all child frames that will be unloaded. Once all reports are
   // queued, the frame will be unloaded. Because the IPC messages are ordered

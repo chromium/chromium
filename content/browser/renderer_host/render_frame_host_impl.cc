@@ -4005,16 +4005,6 @@ BrowserContext* RenderFrameHostImpl::GetBrowserContext() {
 
 // TODO(crbug.com/1091720): Would be better to do this directly in the chrome
 // layer.  See referenced bug for further details.
-void RenderFrameHostImpl::ReportHeavyAdIssue(
-    blink::mojom::HeavyAdResolutionStatus resolution,
-    blink::mojom::HeavyAdReason reason) {
-  auto issue =
-      devtools_instrumentation::GetHeavyAdIssue(this, resolution, reason);
-  devtools_instrumentation::ReportBrowserInitiatedIssue(this, issue.get());
-}
-
-// TODO(crbug.com/1091720): Would be better to do this directly in the chrome
-// layer.  See referenced bug for further details.
 void RenderFrameHostImpl::ReportInspectorIssue(
     blink::mojom::InspectorIssueInfoPtr info) {
   devtools_instrumentation::BuildAndReportBrowserInitiatedIssue(

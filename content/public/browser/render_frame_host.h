@@ -684,14 +684,6 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // same as the id for the main frame.
   virtual ukm::SourceId GetPageUkmSourceId() = 0;
 
-  // Report an inspector issue to devtools due the frame using an excessive
-  // amount of resources (cpu or network).  Invoked only for ad frames.
-  // TODO(crbug.com/1091720): This reporting should be done directly in the
-  // chrome layer in the future.
-  virtual void ReportHeavyAdIssue(
-      blink::mojom::HeavyAdResolutionStatus resolution,
-      blink::mojom::HeavyAdReason reason) = 0;
-
   // Report an inspector issue to devtools. Note that the issue is stored on the
   // browser-side, and may contain information that we don't want to share
   // with the renderer.

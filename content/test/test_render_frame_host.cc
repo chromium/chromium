@@ -110,21 +110,22 @@ void TestRenderFrameHost::AddMessageToConsole(
   RenderFrameHostImpl::AddMessageToConsole(level, message);
 }
 
-void TestRenderFrameHost::ReportHeavyAdIssue(
-    blink::mojom::HeavyAdResolutionStatus resolution,
-    blink::mojom::HeavyAdReason reason) {
-  switch (reason) {
-    case blink::mojom::HeavyAdReason::kNetworkTotalLimit:
-      heavy_ad_issue_network_count_++;
-      break;
-    case blink::mojom::HeavyAdReason::kCpuTotalLimit:
-      heavy_ad_issue_cpu_total_count_++;
-      break;
-    case blink::mojom::HeavyAdReason::kCpuPeakLimit:
-      heavy_ad_issue_cpu_peak_count_++;
-      break;
+void TestRenderFrameHost::ReportInspectorIssue(
+    blink::mojom::InspectorIssueInfoPtr issue) {
+  if (issue->code == blink::mojom::InspectorIssueCode::kHeavyAdIssue) {
+    switch (issue->details->heavy_ad_issue_details->reason) {
+      case blink::mojom::HeavyAdReason::kNetworkTotalLimit:
+        heavy_ad_issue_network_count_++;
+        break;
+      case blink::mojom::HeavyAdReason::kCpuTotalLimit:
+        heavy_ad_issue_cpu_total_count_++;
+        break;
+      case blink::mojom::HeavyAdReason::kCpuPeakLimit:
+        heavy_ad_issue_cpu_peak_count_++;
+        break;
+    }
   }
-  RenderFrameHostImpl::ReportHeavyAdIssue(resolution, reason);
+  RenderFrameHostImpl::ReportInspectorIssue(std::move(issue));
 }
 
 bool TestRenderFrameHost::IsTestRenderFrameHost() const {

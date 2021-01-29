@@ -409,8 +409,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   ukm::SourceId GetPageUkmSourceId() override;
   StoragePartition* GetStoragePartition() override;
   BrowserContext* GetBrowserContext() override;
-  void ReportHeavyAdIssue(blink::mojom::HeavyAdResolutionStatus resolution,
-                          blink::mojom::HeavyAdReason reason) override;
   void ReportInspectorIssue(blink::mojom::InspectorIssueInfoPtr info) override;
   void AsValueInto(base::trace_event::TracedValue* traced_value) override;
 

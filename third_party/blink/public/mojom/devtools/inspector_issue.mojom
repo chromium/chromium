@@ -18,6 +18,7 @@ enum InspectorIssueCode {
   kContentSecurityPolicyIssue,
   kSharedArrayBufferIssue,
   kTrustedWebActivityIssue,
+  kHeavyAdIssue,
 };
 
 // Information about a cookie that is affected by an issue.
@@ -59,6 +60,12 @@ enum HeavyAdReason {
   kNetworkTotalLimit,
   kCpuTotalLimit,
   kCpuPeakLimit,
+};
+
+struct HeavyAdIssueDetails {
+  HeavyAdResolutionStatus resolution;
+  HeavyAdReason reason;
+  AffectedFrame frame;
 };
 
 enum MixedContentResolutionStatus {
@@ -163,6 +170,7 @@ struct InspectorIssueDetails {
   ContentSecurityPolicyIssueDetails? csp_issue_details;
   SharedArrayBufferIssueDetails? sab_issue_details;
   TrustedWebActivityIssueDetails? twa_issue_details;
+  HeavyAdIssueDetails? heavy_ad_issue_details;
 };
 
 struct InspectorIssueInfo {
