@@ -681,9 +681,14 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   auto background_task_runner =
       base::ThreadPool::CreateSequencedTaskRunner(kBestEffortTaskTraits);
 
-  background_task_runner->PostDelayedTask(
-      FROM_HERE, base::BindOnce(&RecordIsPinnedToTaskbarHistogram),
-      base::TimeDelta::FromSeconds(45));
+  // The PinnedToTaskbar histogram is CPU intensive and can trigger a crashing
+  // bug in Windows or in shell extensions so just sample the data to reduce the
+  // cost.
+  if (base::RandGenerator(100) == 0) {
+    background_task_runner->PostDelayedTask(
+        FROM_HERE, base::BindOnce(&RecordIsPinnedToTaskbarHistogram),
+        base::TimeDelta::FromSeconds(45));
+  }
 #endif  // defined(OS_WIN)
 
   display_count_ = display::Screen::GetScreen()->GetNumDisplays();
