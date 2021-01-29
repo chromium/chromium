@@ -150,6 +150,7 @@ class CORE_EXPORT LayoutShiftTracker final
   void ReportShift(double score_delta, double weighted_score_delta);
   void TimerFired(TimerBase*) {}
   std::unique_ptr<TracedValue> PerFrameTraceData(double score_delta,
+                                                 double weighted_score_delta,
                                                  bool input_detected) const;
   void AttributionsToTracedValue(TracedValue&) const;
   double SubframeWeightingFactor() const;

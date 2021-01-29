@@ -526,9 +526,10 @@ void LayoutShiftTracker::ReportShift(double score_delta,
 
   SubmitPerformanceEntry(score_delta, had_recent_input);
 
-  TRACE_EVENT_INSTANT2("loading", "LayoutShift", TRACE_EVENT_SCOPE_THREAD,
-                       "data", PerFrameTraceData(score_delta, had_recent_input),
-                       "frame", ToTraceValue(&frame));
+  TRACE_EVENT_INSTANT2(
+      "loading", "LayoutShift", TRACE_EVENT_SCOPE_THREAD, "data",
+      PerFrameTraceData(score_delta, weighted_score_delta, had_recent_input),
+      "frame", ToTraceValue(&frame));
 
   if (ShouldLog(frame)) {
     VLOG(1) << "in " << (frame.IsMainFrame() ? "" : "subframe ")
@@ -615,9 +616,11 @@ void LayoutShiftTracker::NotifyFindInPageInput() {
 
 std::unique_ptr<TracedValue> LayoutShiftTracker::PerFrameTraceData(
     double score_delta,
+    double weighted_score_delta,
     bool input_detected) const {
   auto value = std::make_unique<TracedValue>();
   value->SetDouble("score", score_delta);
+  value->SetDouble("weighted_score_delta", weighted_score_delta);
   value->SetDouble("cumulative_score", score_);
   value->SetDouble("overall_max_distance", overall_max_distance_);
   value->SetDouble("frame_max_distance", frame_max_distance_);
