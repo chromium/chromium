@@ -4456,9 +4456,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     expires_after="2021-07-11">
   <owner>dschinazi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
-  <summary>
-    Net error codes when SpdySession was closed, doesn't inlcuding net::OK.
-  </summary>
+  <summary>Net error codes when SpdySession was closed.</summary>
 </histogram>
 
 <histogram name="Net.SpdySession.CreateStreamWithSocketConnected"
