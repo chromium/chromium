@@ -461,12 +461,10 @@ public class TabSwitcherCoordinator
     public boolean resetWithTabs(
             @Nullable List<PseudoTab> tabs, boolean quickMode, boolean mruMode) {
         mMediator.registerFirstMeaningfulPaintRecorder();
-        // Make sure that before resetWithListOfTabs, there are no messages in the middle of tabs in
-        // our TabListModel.
-        removeAllAppendedMessage();
         boolean showQuickly = mTabListCoordinator.resetWithListOfTabs(tabs, quickMode, mruMode);
         if (showQuickly) {
             mTabListCoordinator.removeSpecialListItem(TabProperties.UiType.NEW_TAB_TILE, 0);
+            removeAllAppendedMessage();
         }
 
         int cardsCount = tabs == null ? 0 : tabs.size();
@@ -503,7 +501,8 @@ public class TabSwitcherCoordinator
                 mMessageCardProviderCoordinator.getMessageItems();
         for (int i = 0; i < messages.size(); i++) {
             if (messages.get(i).type == MessageService.MessageType.PRICE_WELCOME) {
-                mTabListCoordinator.addSpecialListItemToEnd(
+                mTabListCoordinator.addSpecialListItem(
+                        mTabListCoordinator.getPriceWelcomeMessageInsertionIndex(),
                         TabProperties.UiType.PRICE_WELCOME, messages.get(i).model);
             } else {
                 mTabListCoordinator.addSpecialListItemToEnd(
@@ -533,7 +532,8 @@ public class TabSwitcherCoordinator
         for (int i = 0; i < messages.size(); i++) {
             if (messages.get(i).type == MessageService.MessageType.PRICE_WELCOME) {
                 mTabListCoordinator.addSpecialListItem(
-                        index + i, TabProperties.UiType.PRICE_WELCOME, messages.get(i).model);
+                        mTabListCoordinator.getPriceWelcomeMessageInsertionIndex(),
+                        TabProperties.UiType.PRICE_WELCOME, messages.get(i).model);
             } else {
                 mTabListCoordinator.addSpecialListItem(
                         index + i, TabProperties.UiType.MESSAGE, messages.get(i).model);
@@ -549,7 +549,8 @@ public class TabSwitcherCoordinator
                 mMessageCardProviderCoordinator.getNextMessageItemForType(messageType);
         if (nextMessage == null) return;
         if (messageType == MessageService.MessageType.PRICE_WELCOME) {
-            mTabListCoordinator.addSpecialListItemToEnd(
+            mTabListCoordinator.addSpecialListItem(
+                    mTabListCoordinator.getPriceWelcomeMessageInsertionIndex(),
                     TabProperties.UiType.PRICE_WELCOME, nextMessage.model);
         } else {
             mTabListCoordinator.addSpecialListItemToEnd(

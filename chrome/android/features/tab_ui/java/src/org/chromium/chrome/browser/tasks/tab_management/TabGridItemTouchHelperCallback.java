@@ -144,7 +144,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
         TabModel tabModel = mTabModelSelector.getCurrentModel();
         if (filter instanceof EmptyTabModelFilter) {
             tabModel.moveTab(currentTabId,
-                    mModel.indexFromId(currentTabId) + (distance > 0 ? distance + 1 : distance));
+                    mModel.getTabCardCountsBefore(mModel.indexFromId(currentTabId)
+                            + (distance > 0 ? distance + 1 : distance)));
         } else if (!mActionsOnAllRelatedTabs) {
             int destinationIndex = tabModel.indexOf(mTabModelSelector.getTabById(destinationTabId));
             tabModel.moveTab(currentTabId, distance > 0 ? destinationIndex + 1 : destinationIndex);
@@ -202,7 +203,8 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
                 if (selectedViewHolder != null && !mRecyclerView.isComputingLayout()
                         && shouldUpdate) {
                     View selectedItemView = selectedViewHolder.itemView;
-                    onTabMergeToGroup(mSelectedTabIndex, mHoveredTabIndex);
+                    onTabMergeToGroup(mModel.getTabCardCountsBefore(mSelectedTabIndex),
+                            mModel.getTabCardCountsBefore(mHoveredTabIndex));
                     mRecyclerView.getLayoutManager().removeView(selectedItemView);
                 }
             } else {
@@ -212,7 +214,7 @@ public class TabGridItemTouchHelperCallback extends ItemTouchHelper.SimpleCallba
             if (mHoveredTabIndex != TabModel.INVALID_TAB_INDEX && shouldUpdate) {
                 mModel.updateHoveredTabForMergeToGroup(mSelectedTabIndex > mHoveredTabIndex
                                 ? mHoveredTabIndex
-                                : mHoveredTabIndex - 1,
+                                : mModel.getTabIndexBefore(mHoveredTabIndex),
                         false);
             }
             if (mUnGroupTabIndex != TabModel.INVALID_TAB_INDEX) {

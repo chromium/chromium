@@ -71,6 +71,88 @@ class TabListModel extends ModelList {
     }
 
     /**
+     * Find the Nth TAB card in the {@link TabListModel}.
+     * @param n N of the Nth TAB card.
+     * @return The index of Nth TAB card in the {@link TabListModel}.
+     */
+    public int indexOfNthTabCard(int n) {
+        if (n < 0) return TabModel.INVALID_TAB_INDEX;
+        int tabCount = 0;
+        int lastTabIndex = TabModel.INVALID_TAB_INDEX;
+        for (int i = 0; i < size(); i++) {
+            PropertyModel model = get(i).model;
+            if (model.get(CARD_TYPE) == TAB) {
+                if (tabCount++ == n) return i;
+                lastTabIndex = i;
+            }
+        }
+        // If n >= tabCount, we return the index after the last tab. This is used when adding a new
+        // tab.
+        return lastTabIndex + 1;
+    }
+
+    /**
+     * Get the number of TAB cards before the given index in TabListModel.
+     * @param index The given index in TabListModel.
+     * @return The number of TAB cards before the given index.
+     */
+    public int getTabCardCountsBefore(int index) {
+        if (index < 0) return TabModel.INVALID_TAB_INDEX;
+        if (index > size()) index = size();
+        int tabCount = 0;
+        for (int i = 0; i < index; i++) {
+            if (get(i).model.get(CARD_TYPE) == TAB) tabCount++;
+        }
+        return tabCount;
+    }
+
+    /**
+     * Get the index of the last tab before the given index in TabListModel.
+     * @param index The given index in TabListModel.
+     * @return The index of the tab before the given index in TabListModel.
+     */
+    public int getTabIndexBefore(int index) {
+        for (int i = index - 1; i >= 0; i--) {
+            if (get(i).model.get(CARD_TYPE) == TAB) return i;
+        }
+        return TabModel.INVALID_TAB_INDEX;
+    }
+
+    /**
+     * Get the index of the first tab after the given index in TabListModel.
+     * @param index The given index in TabListModel.
+     * @return The index of the tab after the given index in TabListModel.
+     */
+    public int getTabIndexAfter(int index) {
+        for (int i = index + 1; i < size(); i++) {
+            if (get(i).model.get(CARD_TYPE) == TAB) return i;
+        }
+        return TabModel.INVALID_TAB_INDEX;
+    }
+
+    /**
+     * Get the index of currently selected tab in TabListModel.
+     * @return The index within the model.
+     */
+    public int getIndexForSelectedTab() {
+        int selectedTabCount = 0;
+        int tabCount = 0;
+        int firstSelectedTabIndex = TabModel.INVALID_TAB_INDEX;
+        for (int i = size() - 1; i >= 0; i--) {
+            PropertyModel model = get(i).model;
+            if (model.get(CARD_TYPE) != TAB) continue;
+            if (model.get(TabProperties.IS_SELECTED)) {
+                selectedTabCount++;
+                firstSelectedTabIndex = i;
+            }
+            tabCount++;
+        }
+        assert (selectedTabCount == 1 || tabCount == 0)
+            : "There should be exactly one selected tab or no tabs at all when calling this method";
+        return firstSelectedTabIndex;
+    }
+
+    /**
      * Get the index that matches a message item that has the given message type.
      * @param messageType The message type to match.
      * @return The index within the model.
