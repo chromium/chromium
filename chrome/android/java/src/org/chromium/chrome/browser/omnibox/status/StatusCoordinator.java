@@ -89,9 +89,9 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
 
         mMediator = new StatusMediator(mModel, mStatusView.getResources(), mStatusView.getContext(),
                 urlBarEditingTextStateProvider, isTablet, forceModelViewReconciliationRunnable,
-                incognitoStateProvider, locationBarDataProvider,
-                PermissionDialogController.getInstance(), searchEngineLogoUtils,
-                templateUrlServiceSupplier, profileSupplier, pageInfoIPHController);
+                locationBarDataProvider, PermissionDialogController.getInstance(),
+                searchEngineLogoUtils, templateUrlServiceSupplier, profileSupplier,
+                pageInfoIPHController);
 
         Resources res = mStatusView.getResources();
         mMediator.setUrlMinWidth(res.getDimensionPixelSize(R.dimen.location_bar_min_url_width)
@@ -176,11 +176,15 @@ public class StatusCoordinator implements View.OnClickListener, LocationBarDataP
     }
 
     // LocationBarData.Observer implementation
-    // Using the default empty onIncognitoStateChanged.
     // Using the default empty onNtpStartedLoading.
     // Using the default empty onPrimaryColorChanged.
     // Using the default empty onTitleChanged.
     // Using the default empty onUrlChanged.
+
+    @Override
+    public void onIncognitoStateChanged() {
+        mMediator.onIncognitoStateChanged();
+    }
 
     @Override
     public void onSecurityStateChanged() {

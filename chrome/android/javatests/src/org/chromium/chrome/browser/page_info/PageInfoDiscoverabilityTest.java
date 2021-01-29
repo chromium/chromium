@@ -82,7 +82,7 @@ public class PageInfoDiscoverabilityTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mMediator = new StatusMediator(mModel, mResources, mContext,
                     mUrlBarEditingTextStateProvider,
-                    /* isTablet */ false, mMockForceModelViewReconciliationRunnable, null,
+                    /* isTablet */ false, mMockForceModelViewReconciliationRunnable,
                     mLocationBarDataProvider, mPermissionDialogController, mSearchEngineLogoUtils,
                     () -> mTemplateUrlService, () -> mProfile, null);
         });

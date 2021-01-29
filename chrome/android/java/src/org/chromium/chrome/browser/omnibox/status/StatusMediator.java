@@ -29,7 +29,6 @@ import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.page_info.PageInfoIPHController;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
@@ -44,8 +43,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 /**
  * Contains the controller logic of the Status component.
  */
-public class StatusMediator implements IncognitoStateProvider.IncognitoStateObserver,
-                                       PermissionDialogController.Observer {
+public class StatusMediator implements PermissionDialogController.Observer {
     private static final int PERMISSION_ICON_DISPLAY_TIMEOUT_MS = 8500;
 
     private final PropertyModel mModel;
@@ -94,7 +92,6 @@ public class StatusMediator implements IncognitoStateProvider.IncognitoStateObse
     private float mUrlFocusPercent;
     private String mSearchEngineLogoUrl;
 
-    private boolean mIsIncognito;
     private Runnable mForceModelViewReconciliationRunnable;
 
     // Factors used to offset the animation of the status icon's alpha adjustment. The full formula
@@ -108,7 +105,6 @@ public class StatusMediator implements IncognitoStateProvider.IncognitoStateObse
     public StatusMediator(PropertyModel model, Resources resources, Context context,
             UrlBarEditingTextStateProvider urlBarEditingTextStateProvider, boolean isTablet,
             Runnable forceModelViewReconciliationRunnable,
-            IncognitoStateProvider incognitoStateProvider,
             LocationBarDataProvider locationBarDataProvider,
             PermissionDialogController permissionDialogController,
             SearchEngineLogoUtils searchEngineLogoUtils,
@@ -136,10 +132,6 @@ public class StatusMediator implements IncognitoStateProvider.IncognitoStateObse
 
         mIsTablet = isTablet;
         mForceModelViewReconciliationRunnable = forceModelViewReconciliationRunnable;
-        if (incognitoStateProvider != null) {
-            incognitoStateProvider.addIncognitoStateObserverAndTrigger(this);
-        }
-
         mPermissionDialogController = permissionDialogController;
         mPermissionDialogController.addObserver(this);
     }
@@ -302,7 +294,9 @@ public class StatusMediator implements IncognitoStateProvider.IncognitoStateObse
     // Extra logic to support extra NTP use cases which show the status icon when animating and when
     // focused, but hide it when unfocused.
     void setUrlAnimationFinished(boolean urlHasFocus) {
-        if (mIsTablet || !mSearchEngineLogoUtils.shouldShowSearchEngineLogo(mIsIncognito)) {
+        if (mIsTablet
+                || !mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                        mLocationBarDataProvider.isIncognito())) {
             return;
         }
 
@@ -328,7 +322,8 @@ public class StatusMediator implements IncognitoStateProvider.IncognitoStateObse
         // On tablets, the status icon should always be shown so the following logic doesn't apply.
         assert !mIsTablet : "This logic shouldn't be called on tablets";
 
-        if (!mSearchEngineLogoUtils.shouldShowSearchEngineLogo(mIsIncognito)) {
+        if (!mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                    mLocationBarDataProvider.isIncognito())) {
             return;
         }
 
@@ -525,12 +520,14 @@ public class StatusMediator implements IncognitoStateProvider.IncognitoStateObse
                 && mShowStatusIconWhenUrlFocused;
 
         // Show the logo unfocused if we're on the NTP.
-        if (mSearchEngineLogoUtils.shouldShowSearchEngineLogo(mIsIncognito)
+        if (mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                    mLocationBarDataProvider.isIncognito())
                 && mIsSearchEngineStateSetup
                 && (showIconWhenFocused || showIconWhenScrollingOnNTP)) {
-            getStatusIconResourceForSearchEngineIcon(mIsIncognito, (statusIconRes) -> {
-                mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIconRes);
-            });
+            getStatusIconResourceForSearchEngineIcon(
+                    mLocationBarDataProvider.isIncognito(), (statusIconRes) -> {
+                        mModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIconRes);
+                    });
             return true;
         } else {
             mShouldCancelCustomFavicon = true;
@@ -608,7 +605,8 @@ public class StatusMediator implements IncognitoStateProvider.IncognitoStateObse
     /** Return the resource id for the accessibility description or 0 if none apply. */
     private int getAccessibilityDescriptionRes() {
         if (mUrlHasFocus) {
-            if (mSearchEngineLogoUtils.shouldShowSearchEngineLogo(mIsIncognito)) {
+            if (mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                        mLocationBarDataProvider.isIncognito())) {
                 return 0;
             } else if (mShowStatusIconWhenUrlFocused) {
                 return R.string.accessibility_toolbar_btn_site_info;
@@ -651,13 +649,10 @@ public class StatusMediator implements IncognitoStateProvider.IncognitoStateObse
         return urlTextWithAutocomplete;
     }
 
-    @Override
-    public void onIncognitoStateChanged(boolean isIncognito) {
-        boolean previousIsIncognito = mIsIncognito;
-        mIsIncognito = isIncognito;
-        boolean incognitoBadgeVisible = isIncognito && !mIsTablet;
+    public void onIncognitoStateChanged() {
+        boolean incognitoBadgeVisible = mLocationBarDataProvider.isIncognito() && !mIsTablet;
         mModel.set(StatusProperties.INCOGNITO_BADGE_VISIBLE, incognitoBadgeVisible);
-        if (previousIsIncognito != isIncognito) reconcileVisualState();
+        reconcileVisualState();
     }
 
     /**
@@ -675,8 +670,9 @@ public class StatusMediator implements IncognitoStateProvider.IncognitoStateObse
         // No reconciliation is needed on tablet because the status icon is always shown.
         if (mIsTablet) return;
 
-        if (!mShowStatusIconWhenUrlFocused || mIsIncognito
-                || !mSearchEngineLogoUtils.shouldShowSearchEngineLogo(mIsIncognito)) {
+        if (!mShowStatusIconWhenUrlFocused || mLocationBarDataProvider.isIncognito()
+                || !mSearchEngineLogoUtils.shouldShowSearchEngineLogo(
+                        mLocationBarDataProvider.isIncognito())) {
             return;
         }
 
