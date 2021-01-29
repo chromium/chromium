@@ -1,35 +1,20 @@
 <!DOCTYPE html>
-<html>
-<body>
-<script src="../resources/runner.js"></script>
-<script>
 
-function checkOne(mode,wrapper) {
-    const div = document.createElement('div');
-    wrapper.appendChild(div);
-    div.innerHTML = `<div id="host"><template shadowroot="${mode}"><slot name="slot1"></slot></template><div slot="slot1"></div></div>`
-}
+<body>
+<pre id="log"></pre>
+<div id=host></div>
+
+<script src="../resources/runner.js"></script>
+<script src="../shadow_dom/resources/declarative.js"></script>  
+<script>
+const shadowHtml = getShadowMarkup(true, /*depth=*/4, /*copies=*/100);
+const host = document.getElementById('host');
 
 PerfTestRunner.measureRunsPerSecond({
-    description: "This benchmark tests declarative Shadow DOM attachment",
-
-    setup: function() {
-        const wrapper = document.createElement('div');
-        wrapper.id = 'wrapper';
-        document.body.appendChild(wrapper);
-    },
-
-    run: function() {
-        for (var i = 0; i < 1000; i++) {
-            checkOne('open',wrapper);
-            checkOne('closed',wrapper);
-        }
-    },
-
-    teardown: function() {
-        wrapper.remove();
-    }});
-
+  description: "This benchmark tests declarative Shadow DOM attachment",
+  run: function() {
+    host.replaceChildren();
+    parseAndAppend(host,shadowHtml);
+  }
+});
 </script>
-</body>
-</html>

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<body>
+<pre id="log">Measurement in progress...</pre>
+<script src="../resources/runner.js"></script>
+<script src="resources/declarative.js"></script>  
+<script>
+
+const depth = 4;
+const copies = 100;
+const iterations = 100;
+const shadowHtml = getShadowMarkup(true, depth, copies);
+const lightDomHtml = getShadowMarkup(false, depth, copies);
+
+PerfTestRunner.measureValue({
+    description: 'This benchmark tests declarative Shadow DOM attachment',
+    unit: 'percent',
+    run: function() {
+      let total_overhead = 0;
+      for (let i = 0; i < iterations; i++) {
+        const shadow_time = measureParse(shadowHtml);
+        const light_dom_time = measureParse(lightDomHtml);
+        total_overhead += shadow_time / light_dom_time;
+      }
+      // The result is the total overhead, in *percent*, *per shadow root*.
+      return 100*(total_overhead/iterations-1)/depth/copies;
+    }
+});
+</script>

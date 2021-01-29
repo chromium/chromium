@@ -380,6 +380,12 @@ if (window.testRunner) {
         start(test, zeroTimeoutScheduler, measureTimeOnce);
     }
 
+    PerfTestRunner.measureValue = function (test) {
+        PerfTestRunner.unit = test.unit;
+        PerfTestRunner.bufferedLog = true;
+        start(test, zeroTimeoutScheduler, measureTimeOnce);
+    }
+
     function zeroTimeoutScheduler(task) {
         setTimeout(task, 0);
     }
