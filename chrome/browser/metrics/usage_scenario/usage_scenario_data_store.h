@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_METRICS_USAGE_SCENARIO_USAGE_SCENARIO_DATA_STORE_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
@@ -118,6 +119,10 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
 
   const IntervalData& GetIntervalDataForTesting() { return interval_data_; }
 
+  base::WeakPtr<UsageScenarioDataStore> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
  private:
   // Information about a ukm::SourceId that has been visible during an interval
   // of time.
@@ -162,6 +167,8 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   OriginInfoMap origin_info_map_;
 
   IntervalData interval_data_;
+
+  base::WeakPtrFactory<UsageScenarioDataStore> weak_factory_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

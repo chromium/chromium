@@ -92,7 +92,7 @@ class ProcessMonitor {
   // returns nullptr.
   static ProcessMonitor* Get();
 
-  ~ProcessMonitor();
+  virtual ~ProcessMonitor();
 
   // Start the cycle of metrics gathering.
   void StartGatherCycle();
@@ -101,11 +101,16 @@ class ProcessMonitor {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+ protected:
+  ProcessMonitor();
+
+  base::ObserverList<Observer>& GetObserversForTesting() {
+    return observer_list_;
+  }
+
  private:
   using MetricsMap =
       std::map<base::ProcessHandle, std::unique_ptr<ProcessMetricsHistory>>;
-
-  ProcessMonitor();
 
   // Mark the given process as alive in the current update iteration.
   // This means adding an entry to the map of watched processes if it's not

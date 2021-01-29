@@ -11455,6 +11455,122 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PowerUsageScenariosIntervalData">
+  <owner>fdoray@chromium.org</owner>
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Metrics to measure power consumption in key usage scenarios, as well as the
+    time spent in each scenario. These metrics are reported for a fixed interval
+    of time, the duration of this interval is recorded in the
+    IntervalDurationSeconds metric.
+
+    The events aren't tied to a specific URL, a timer independant of any load
+    event runs in Chrome and report these events at regular intervals. All the
+    metrics associated to this event are for the last interval. The URL attached
+    to the event is the one that has been visible for the longest time during
+    the interval, the exact visibility duration for this URL during the interval
+    is reported in the URLVisibilityTimeSeconds metric.
+
+    e.g., at T-0 an interval ends and this event is emitted, a new interval then
+    starts. During the interval the users spends 75% of his time watching a
+    fullscreen video on https://foo.com with 10 tabs opened in background. Just
+    before the end of the interval the user closes all the tabs but one. An
+    event will be emitted for https://foo.com at T+X with the following metrics:
+    IntervalDurationSeconds: X in seconds; URLVisibilityTimeSeconds: 0.75 * X in
+    seconds; FullscreenVideoSingleMonitorSeconds: 0.75 * X in seconds;
+    MaxTabCount: 10; TabClosed: 9; ... (not all metrics are listed here because
+    it'd be too long, but in practice all the metrics are reported for each
+    interval).
+
+    This is reported on Mac and Windows. See go/chrome_power_use_per_scenario
+    for more details.
+  </summary>
+  <metric name="BatteryDischargeRate">
+    <summary>
+      Battery discharge rate per minute, with 1/10000 of full charge resolution,
+      example: - Battery capacity = 4000 mAh; - Battery charge at the beginning
+      of the interval: 3900 mAh; - Battery charge at the end of the interval:
+      3700 mAh; - Discharge proportion: (3900-3700) / 4000 = 0.05 - Reported
+      value: 500.
+    </summary>
+  </metric>
+  <metric name="CPUTimeMs">
+    <summary>
+      The CPU time spent executing code, across all Chrome processes in the
+      interval. This can exceed 100% in multi-thread processes running on
+      multi-core systems.
+    </summary>
+  </metric>
+  <metric name="EnergyImpactScore">
+    <summary>
+      Sum of the energy impact score for all Chrome processes (Mac-only).
+    </summary>
+  </metric>
+  <metric name="FullscreenVideoSingleMonitorSeconds">
+    <summary>
+      Time spent playing video in fullscreen, single-monitor. In seconds. This
+      includes video for any tabs during the interval.
+    </summary>
+  </metric>
+  <metric name="IdleWakeUps">
+    <summary>
+      Sum of idle-wakeups for all Chrome processes (Mac-only).
+    </summary>
+  </metric>
+  <metric name="IntervalDurationSeconds">
+    <summary>
+      The interval duration, in seconds.
+    </summary>
+  </metric>
+  <metric name="MaxTabCount">
+    <summary>
+      The maximum number of tabs that existed at the same time during the
+      interval.
+    </summary>
+  </metric>
+  <metric name="MaxVisibleWindowCount">
+    <summary>
+      The maximum number of windows that have been visible at the same time.
+    </summary>
+  </metric>
+  <metric name="PackageExits">
+    <summary>
+      Sum of package exits from all Chrome processes (Mac-only).
+    </summary>
+  </metric>
+  <metric name="TabClosed">
+    <summary>
+      The number of tabs that have been closed during the interval.
+    </summary>
+  </metric>
+  <metric name="TimeWithOpenWebRTCConnectionSeconds">
+    <summary>
+      The time spent with at least one opened WebRTC connection, in seconds.
+    </summary>
+  </metric>
+  <metric name="TopLevelNavigationEvents">
+    <summary>
+      Number of main frame different-document navigations.
+    </summary>
+  </metric>
+  <metric name="UptimeSeconds">
+    <summary>
+      Elapsed time since Chrome has started, in seconds.
+    </summary>
+  </metric>
+  <metric name="URLVisibilityTimeSeconds">
+    <summary>
+      The visibility time for the URL associated with this event, in seconds.
+    </summary>
+  </metric>
+  <metric name="UserInteractionCount">
+    <summary>
+      Number of user interaction (scroll, click or typing) during the interval.
+    </summary>
+  </metric>
+</event>
+
 <event name="PrefetchProxy" singular="True">
   <owner>robertogden@chromium.org</owner>
   <owner>ryansturm@chromium.org</owner>
