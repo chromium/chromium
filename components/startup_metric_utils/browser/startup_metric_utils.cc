@@ -625,6 +625,22 @@ void RecordWebFooterCreation(base::TimeTicks ticks) {
       g_application_start_ticks, ticks);
 }
 
+void RecordExternalStartupMetric(const std::string& histogram_name,
+                                 base::TimeTicks completion_ticks,
+                                 bool set_non_browser_ui_displayed) {
+  DCHECK(!g_application_start_ticks.is_null());
+
+  if (!ShouldLogStartupHistogram())
+    return;
+
+  UmaHistogramWithTraceAndTemperature(&base::UmaHistogramMediumTimes,
+                                      histogram_name, g_application_start_ticks,
+                                      completion_ticks);
+
+  if (set_non_browser_ui_displayed)
+    SetNonBrowserUIDisplayed();
+}
+
 void OnMemoryPressureBeforeFirstNonEmptyPaint(
     base::MemoryPressureListener::MemoryPressureLevel level) {
   if (level > g_max_pressure_level_before_first_non_empty_paint)

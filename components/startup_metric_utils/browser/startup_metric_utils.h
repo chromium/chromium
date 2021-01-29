@@ -93,6 +93,21 @@ base::TimeTicks MainEntryPointTicks();
 void RecordWebFooterDidFirstVisuallyNonEmptyPaint(base::TimeTicks ticks);
 void RecordWebFooterCreation(base::TimeTicks ticks);
 
+// Call this to record an arbitrary startup timing histogram with startup
+// temperature and a trace event. Records the time between `completion_ticks`
+// and the application start.
+// See the `StartupTemperature` enum for definition of the startup temperature.
+// A metric logged using this function must have an affected-histogram entry in
+// the definition of the StartupTemperature suffix in histograms.xml.
+// Set `set_non_browser_ui_displayed` to true if the recorded event blocks the
+// browser UI on user input. In this case any future startup histogram timing
+// would be skewed and will not be recorded.
+// This function must be called after RecordApplicationStartTime(), because it
+// computes time deltas based on application start time.
+void RecordExternalStartupMetric(const std::string& histogram_name,
+                                 base::TimeTicks completion_ticks,
+                                 bool set_non_browser_ui_displayed);
+
 // Records memory pressure events occurring before the first web contents had a
 // non-empty paint.
 // This should only be called from the browser UI thread.
