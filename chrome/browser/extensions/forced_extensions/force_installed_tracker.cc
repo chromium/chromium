@@ -24,6 +24,10 @@
 
 namespace extensions {
 
+namespace {
+constexpr int kHttpErrorCodeForbidden = 403;
+}  // namespace
+
 ForceInstalledTracker::ForceInstalledTracker(ExtensionRegistry* registry,
                                              Profile* profile)
     : extension_management_(
@@ -243,6 +247,18 @@ bool ForceInstalledTracker::IsMisconfiguration(
     if (extension != extensions_.end() && !extension->second.is_from_store &&
         !IsExtensionFetchedFromCache(
             installation_data.downloading_cache_status)) {
+      return true;
+    }
+  }
+
+  // When we receive 403 during update manifest fetch, it means that either
+  // update URL is wrong, or self-hosting server is misconfigured. Both cases
+  // are misconfigurations from Chrome's point view.
+  if (installation_data.failure_reason ==
+      InstallStageTracker::FailureReason::MANIFEST_FETCH_FAILED) {
+    auto extension = extensions_.find(id);
+    if (installation_data.response_code == kHttpErrorCodeForbidden &&
+        extension != extensions_.end() && !extension->second.is_from_store) {
       return true;
     }
   }

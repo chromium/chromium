@@ -46,8 +46,8 @@ namespace {
 constexpr char kExtensionId3[] = "cdefghijklmnopqrstuvwxyzabcdefgh";
 
 const int kFetchTries = 5;
-// HTTP_UNAUTHORIZED
-const int kResponseCode = 401;
+// HTTP_FORBIDDEN
+const int kHttpCodeForbidden = 403;
 
 constexpr char kLoadTimeStats[] = "Extensions.ForceInstalledLoadTime";
 constexpr char kReadyTimeStats[] = "Extensions.ForceInstalledReadyTime";
@@ -901,8 +901,8 @@ TEST_F(ForceInstalledMetricsTest, ExtensionsAreDownloading) {
 // Error Codes in case of CRX_FETCH_FAILED for CWS extensions.
 TEST_F(ForceInstalledMetricsTest, ExtensionCrxFetchFailedCWS) {
   SetupForceList(true /*is_from_store */);
-  ExtensionDownloaderDelegate::FailureData data1(net::Error::OK, kResponseCode,
-                                                 kFetchTries);
+  ExtensionDownloaderDelegate::FailureData data1(
+      net::Error::OK, kHttpCodeForbidden, kFetchTries);
   install_stage_tracker()->ReportFetchError(
       kExtensionId1, InstallStageTracker::FailureReason::CRX_FETCH_FAILED,
       data1);
@@ -917,9 +917,9 @@ TEST_F(ForceInstalledMetricsTest, ExtensionCrxFetchFailedCWS) {
   histogram_tester_.ExpectBucketCount(kNetworkErrorCodeCrxFetchFailedStats,
                                       net::Error::OK, 1);
   histogram_tester_.ExpectBucketCount(kHttpErrorCodeCrxFetchFailedStats,
-                                      kResponseCode, 1);
+                                      kHttpCodeForbidden, 1);
   histogram_tester_.ExpectBucketCount(kHttpErrorCodeCrxFetchFailedStatsCWS,
-                                      kResponseCode, 1);
+                                      kHttpCodeForbidden, 1);
   histogram_tester_.ExpectBucketCount(kNetworkErrorCodeCrxFetchFailedStats,
                                       -net::Error::ERR_INVALID_ARGUMENT, 1);
   histogram_tester_.ExpectBucketCount(kFetchRetriesCrxFetchFailedStats,
@@ -929,8 +929,8 @@ TEST_F(ForceInstalledMetricsTest, ExtensionCrxFetchFailedCWS) {
 // Error Codes in case of CRX_FETCH_FAILED for self hosted extension.
 TEST_F(ForceInstalledMetricsTest, ExtensionCrxFetchFailedSelfHosted) {
   SetupForceList(false /*is_from_store */);
-  ExtensionDownloaderDelegate::FailureData data1(net::Error::OK, kResponseCode,
-                                                 kFetchTries);
+  ExtensionDownloaderDelegate::FailureData data1(
+      net::Error::OK, kHttpCodeForbidden, kFetchTries);
   install_stage_tracker()->ReportFetchError(
       kExtensionId1, InstallStageTracker::FailureReason::CRX_FETCH_FAILED,
       data1);
@@ -945,9 +945,9 @@ TEST_F(ForceInstalledMetricsTest, ExtensionCrxFetchFailedSelfHosted) {
   histogram_tester_.ExpectBucketCount(kNetworkErrorCodeCrxFetchFailedStats,
                                       net::Error::OK, 1);
   histogram_tester_.ExpectBucketCount(kHttpErrorCodeCrxFetchFailedStats,
-                                      kResponseCode, 1);
+                                      kHttpCodeForbidden, 1);
   histogram_tester_.ExpectBucketCount(kHttpErrorCodeCrxFetchFailedStatsSH,
-                                      kResponseCode, 1);
+                                      kHttpCodeForbidden, 1);
   histogram_tester_.ExpectBucketCount(kNetworkErrorCodeCrxFetchFailedStats,
                                       -net::Error::ERR_INVALID_ARGUMENT, 1);
   histogram_tester_.ExpectBucketCount(kFetchRetriesCrxFetchFailedStats,
@@ -957,8 +957,8 @@ TEST_F(ForceInstalledMetricsTest, ExtensionCrxFetchFailedSelfHosted) {
 // Error Codes in case of MANIFEST_FETCH_FAILED for CWS extensions.
 TEST_F(ForceInstalledMetricsTest, ExtensionManifestFetchFailedCWS) {
   SetupForceList(true /*is_from_store */);
-  ExtensionDownloaderDelegate::FailureData data1(net::Error::OK, kResponseCode,
-                                                 kFetchTries);
+  ExtensionDownloaderDelegate::FailureData data1(
+      net::Error::OK, kHttpCodeForbidden, kFetchTries);
   install_stage_tracker()->ReportFetchError(
       kExtensionId1, InstallStageTracker::FailureReason::MANIFEST_FETCH_FAILED,
       data1);
@@ -973,20 +973,22 @@ TEST_F(ForceInstalledMetricsTest, ExtensionManifestFetchFailedCWS) {
   histogram_tester_.ExpectBucketCount(kNetworkErrorCodeManifestFetchFailedStats,
                                       net::Error::OK, 1);
   histogram_tester_.ExpectBucketCount(kHttpErrorCodeManifestFetchFailedStats,
-                                      kResponseCode, 1);
+                                      kHttpCodeForbidden, 1);
   histogram_tester_.ExpectBucketCount(kHttpErrorCodeManifestFetchFailedStatsCWS,
-                                      kResponseCode, 1);
+                                      kHttpCodeForbidden, 1);
   histogram_tester_.ExpectBucketCount(kNetworkErrorCodeManifestFetchFailedStats,
                                       -net::Error::ERR_INVALID_ARGUMENT, 1);
   histogram_tester_.ExpectBucketCount(kFetchRetriesManifestFetchFailedStats,
                                       kFetchTries, 2);
 }
 
-// Error Codes in case of MANIFEST_FETCH_FAILED for self hosted extensions.
+// Error Codes in case of MANIFEST_FETCH_FAILED for self hosted extensions. This
+// test verifies that failure MANIFEST_FETCH_FAILED with 403 http error code
+// (Forbidden) is considered as misconfiguration.
 TEST_F(ForceInstalledMetricsTest, ExtensionManifestFetchFailedSelfHosted) {
   SetupForceList(false /*is_from_store */);
-  ExtensionDownloaderDelegate::FailureData data1(net::Error::OK, kResponseCode,
-                                                 kFetchTries);
+  ExtensionDownloaderDelegate::FailureData data1(
+      net::Error::OK, kHttpCodeForbidden, kFetchTries);
   install_stage_tracker()->ReportFetchError(
       kExtensionId1, InstallStageTracker::FailureReason::MANIFEST_FETCH_FAILED,
       data1);
@@ -1001,9 +1003,9 @@ TEST_F(ForceInstalledMetricsTest, ExtensionManifestFetchFailedSelfHosted) {
   histogram_tester_.ExpectBucketCount(kNetworkErrorCodeManifestFetchFailedStats,
                                       net::Error::OK, 1);
   histogram_tester_.ExpectBucketCount(kHttpErrorCodeManifestFetchFailedStats,
-                                      kResponseCode, 1);
+                                      kHttpCodeForbidden, 1);
   histogram_tester_.ExpectBucketCount(kHttpErrorCodeManifestFetchFailedStatsSH,
-                                      kResponseCode, 1);
+                                      kHttpCodeForbidden, 1);
   histogram_tester_.ExpectBucketCount(kNetworkErrorCodeManifestFetchFailedStats,
                                       -net::Error::ERR_INVALID_ARGUMENT, 1);
   histogram_tester_.ExpectBucketCount(kFetchRetriesManifestFetchFailedStats,
