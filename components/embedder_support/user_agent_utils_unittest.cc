@@ -284,7 +284,13 @@ TEST(UserAgentUtilsTest, UserAgentMetadata) {
                                   content::IncludeAndroidModel::Exclude));
   // This makes sure no extra information is added to the platform version.
   EXPECT_EQ(metadata.platform_version.find(";"), std::string::npos);
+  // TODO(crbug.com/1103047): This can be removed/re-refactored once we use
+  // "macOS" by default
+#if defined(OS_MAC)
+  EXPECT_EQ(metadata.platform, "macOS");
+#else
   EXPECT_EQ(metadata.platform, version_info::GetOSType());
+#endif
   EXPECT_EQ(metadata.architecture, content::GetLowEntropyCpuArchitecture());
   EXPECT_EQ(metadata.model, content::BuildModelInfo());
 }
