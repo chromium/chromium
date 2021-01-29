@@ -2294,7 +2294,8 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   // view-source URL, we create a new SiteInstance.
   RenderViewHost* blank_rvh =
       shell()->web_contents()->GetMainFrame()->GetRenderViewHost();
-  SiteInstance* blank_site_instance = blank_rvh->GetSiteInstance();
+  SiteInstance* blank_site_instance =
+      shell()->web_contents()->GetMainFrame()->GetSiteInstance();
   EXPECT_EQ(shell()->web_contents()->GetLastCommittedURL(), GURL::EmptyGURL());
   EXPECT_EQ(blank_site_instance->GetSiteURL(), GURL::EmptyGURL());
   rvh_observers.EnsureRVHGetsDestructed(blank_rvh);
@@ -2307,7 +2308,6 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   EXPECT_NE(blank_site_instance, shell()
                                      ->web_contents()
                                      ->GetMainFrame()
-                                     ->GetRenderViewHost()
                                      ->GetSiteInstance());
   rvh_observers.EnsureRVHGetsDestructed(
       shell()->web_contents()->GetMainFrame()->GetRenderViewHost());
@@ -2319,7 +2319,6 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   SiteInstance* site_instance1 = shell()
                                      ->web_contents()
                                      ->GetMainFrame()
-                                     ->GetRenderViewHost()
                                      ->GetSiteInstance();
   rvh_observers.EnsureRVHGetsDestructed(
       shell()->web_contents()->GetMainFrame()->GetRenderViewHost());
@@ -2330,7 +2329,6 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   SiteInstance* site_instance2 = shell()
                                      ->web_contents()
                                      ->GetMainFrame()
-                                     ->GetRenderViewHost()
                                      ->GetSiteInstance();
 
   // Ensure that view-source navigations force a new SiteInstance.

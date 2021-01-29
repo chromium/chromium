@@ -2539,8 +2539,9 @@ RenderFrameHostManager::CreateSpeculativeRenderFrame(
     }
 
     if (!InitRenderView(instance, render_view_host,
-                        GetRenderFrameProxyHost(instance)))
+                        GetRenderFrameProxyHost(instance))) {
       return nullptr;
+    }
 
     // If we are reusing the RenderViewHost and it doesn't already have a
     // RenderWidgetHostView, we need to create one if this is the main frame.

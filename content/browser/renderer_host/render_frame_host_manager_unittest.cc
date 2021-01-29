@@ -872,7 +872,7 @@ TEST_P(RenderFrameHostManagerTest, Init) {
   ASSERT_TRUE(rvh);
   ASSERT_TRUE(rfh);
   EXPECT_EQ(rvh, rfh->render_view_host());
-  EXPECT_EQ(instance, rvh->GetSiteInstance());
+  EXPECT_EQ(instance, rfh->GetSiteInstance());
   EXPECT_EQ(web_contents.get(), rvh->GetDelegate());
   EXPECT_EQ(web_contents.get(), rfh->delegate());
   EXPECT_TRUE(manager->GetRenderWidgetHostView());

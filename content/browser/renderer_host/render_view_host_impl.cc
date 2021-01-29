@@ -334,7 +334,7 @@ RenderViewHostImpl::RenderViewHostImpl(
                               : blink::mojom::PageVisibilityState::kHidden);
 
   GetWidget()->set_owner_delegate(this);
-  frame_tree_->RegisterRenderViewHost(this);
+  frame_tree_->RegisterRenderViewHost(instance_.get(), this);
 }
 
 RenderViewHostImpl::~RenderViewHostImpl() {
@@ -376,15 +376,11 @@ RenderViewHostImpl::~RenderViewHostImpl() {
   // If |this| is in the BackForwardCache, then it was already removed from
   // the FrameTree at the time it entered the BackForwardCache.
   if (!is_in_back_forward_cache_)
-    frame_tree_->UnregisterRenderViewHost(this);
+    frame_tree_->UnregisterRenderViewHost(instance_.get(), this);
 }
 
 RenderViewHostDelegate* RenderViewHostImpl::GetDelegate() {
   return delegate_;
-}
-
-SiteInstanceImpl* RenderViewHostImpl::GetSiteInstance() {
-  return instance_.get();
 }
 
 bool RenderViewHostImpl::CreateRenderView(
@@ -473,10 +469,10 @@ bool RenderViewHostImpl::CreateRenderView(
   }
   params->devtools_main_frame_token = frame_tree_node->devtools_frame_token();
   // GuestViews in the same StoragePartition need to find each other's frames.
-  params->renderer_wide_named_frame_lookup = GetSiteInstance()->IsGuest();
+  params->renderer_wide_named_frame_lookup = instance_->IsGuest();
 
   bool is_portal = delegate_->IsPortal();
-  bool is_guest_view = GetSiteInstance()->IsGuest();
+  bool is_guest_view = instance_->IsGuest();
 
   // A view cannot be inside both a <portal> and inside a <webview>.
   DCHECK(!is_portal || !is_guest_view);
@@ -538,7 +534,7 @@ void RenderViewHostImpl::EnterBackForwardCache() {
     will_enter_back_forward_cache_callback_for_testing_.Run();
 
   TRACE_EVENT0("navigation", "RenderViewHostImpl::EnterBackForwardCache");
-  frame_tree_->UnregisterRenderViewHost(this);
+  frame_tree_->UnregisterRenderViewHost(instance_.get(), this);
   is_in_back_forward_cache_ = true;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
       is_in_back_forward_cache_, /*page_restore_params=*/nullptr);
@@ -555,7 +551,7 @@ void RenderViewHostImpl::LeaveBackForwardCache(
   TRACE_EVENT0("navigation", "RenderViewHostImpl::LeaveBackForwardCache");
   // At this point, the frames |this| RenderViewHostImpl belongs to are
   // guaranteed to be committed, so it should be reused going forward.
-  frame_tree_->RegisterRenderViewHost(this);
+  frame_tree_->RegisterRenderViewHost(instance_.get(), this);
   is_in_back_forward_cache_ = false;
   page_lifecycle_state_manager_->SetIsInBackForwardCache(
       is_in_back_forward_cache_, std::move(page_restore_params));
@@ -647,7 +643,7 @@ void RenderViewHostImpl::ClosePage() {
     // TODO(creis): Should this be moved to Shutdown?  It may not be called for
     // RenderViewHosts that have been swapped out.
 #if !defined(OS_ANDROID)
-    static_cast<HostZoomMapImpl*>(HostZoomMap::Get(GetSiteInstance()))
+    static_cast<HostZoomMapImpl*>(HostZoomMap::Get(instance_.get()))
         ->WillCloseRenderView(GetProcess()->GetID(), GetRoutingID());
 #endif
 

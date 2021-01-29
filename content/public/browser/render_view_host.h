@@ -25,7 +25,6 @@ class RenderFrameHost;
 class RenderProcessHost;
 class RenderViewHostDelegate;
 class RenderWidgetHost;
-class SiteInstance;
 
 // A RenderViewHost is responsible for creating and talking to a RenderView
 // object in a child process. It exposes a high level API to users, for things
@@ -85,8 +84,6 @@ class CONTENT_EXPORT RenderViewHost {
       blink::mojom::PluginActionType action) = 0;
 
   virtual RenderViewHostDelegate* GetDelegate() = 0;
-
-  virtual SiteInstance* GetSiteInstance() = 0;
 
   // Returns true if the RenderView is active and has not crashed.
   virtual bool IsRenderViewLive() = 0;

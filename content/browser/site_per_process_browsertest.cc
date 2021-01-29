@@ -5766,15 +5766,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   TestNavigationObserver navigation_observer(shell()->web_contents());
   shell()->LoadURLForFrame(a_url, std::string(),
                            ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK));
-  RenderViewHostImpl* pending_rvh =
-      root->render_manager()->speculative_frame_host()->render_view_host();
+  RenderFrameHostImpl* pending_rfh =
+      root->render_manager()->speculative_frame_host();
+  RenderViewHostImpl* pending_rvh = pending_rfh->render_view_host();
 
   // When ProactivelySwapBrowsingInstance A1 and A3 aren't using the same
   // BrowsingInstance.
   if (CanCrossSiteNavigationsProactivelySwapBrowsingInstances())
-    EXPECT_NE(site_instance, pending_rvh->GetSiteInstance());
+    EXPECT_NE(site_instance, pending_rfh->GetSiteInstance());
   else
-    EXPECT_EQ(site_instance, pending_rvh->GetSiteInstance());
+    EXPECT_EQ(site_instance, pending_rfh->GetSiteInstance());
 
   EXPECT_FALSE(rvh_routing_id == pending_rvh->GetRoutingID() &&
                rvh_process_id == pending_rvh->GetProcess()->GetID());

@@ -130,7 +130,6 @@ class CONTENT_EXPORT RenderViewHostImpl
       const gfx::Point& location,
       blink::mojom::PluginActionType action) override;
   RenderViewHostDelegate* GetDelegate() override;
-  SiteInstanceImpl* GetSiteInstance() override;
   bool IsRenderViewLive() override;
 
   void SendWebPreferencesToRenderer();

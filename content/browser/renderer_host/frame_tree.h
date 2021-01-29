@@ -250,12 +250,14 @@ class CONTENT_EXPORT FrameTree {
   // *must* be called for |rvh| when it is destroyed or put into the
   // BackForwardCache, to prevent FrameTree::CreateRenderViewHost from trying to
   // reuse it.
-  void RegisterRenderViewHost(RenderViewHostImpl* rvh);
+  void RegisterRenderViewHost(SiteInstance* site_instance,
+                              RenderViewHostImpl* rvh);
 
   // Unregisters the RenderViewHostImpl that's available for reuse for a
   // particular SiteInstance. NOTE: This method CHECK fails if it is called for
   // a |render_view_host| that is not currently set for reuse.
-  void UnregisterRenderViewHost(RenderViewHostImpl* render_view_host);
+  void UnregisterRenderViewHost(SiteInstance* site_instance,
+                                RenderViewHostImpl* render_view_host);
 
   // This is called when the frame is about to be removed and started to run
   // unload handlers.

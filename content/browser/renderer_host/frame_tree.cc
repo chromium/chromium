@@ -433,14 +433,15 @@ scoped_refptr<RenderViewHostImpl> FrameTree::GetRenderViewHost(
   return base::WrapRefCounted(it->second);
 }
 
-void FrameTree::RegisterRenderViewHost(RenderViewHostImpl* rvh) {
-  CHECK(
-      !base::Contains(render_view_host_map_, rvh->GetSiteInstance()->GetId()));
-  render_view_host_map_[rvh->GetSiteInstance()->GetId()] = rvh;
+void FrameTree::RegisterRenderViewHost(SiteInstance* site_instance,
+                                       RenderViewHostImpl* rvh) {
+  CHECK(!base::Contains(render_view_host_map_, site_instance->GetId()));
+  render_view_host_map_[site_instance->GetId()] = rvh;
 }
 
-void FrameTree::UnregisterRenderViewHost(RenderViewHostImpl* rvh) {
-  auto it = render_view_host_map_.find(rvh->GetSiteInstance()->GetId());
+void FrameTree::UnregisterRenderViewHost(SiteInstance* site_instance,
+                                         RenderViewHostImpl* rvh) {
+  auto it = render_view_host_map_.find(site_instance->GetId());
   CHECK(it != render_view_host_map_.end());
   CHECK_EQ(it->second, rvh);
   render_view_host_map_.erase(it);

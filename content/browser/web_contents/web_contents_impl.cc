@@ -1714,7 +1714,7 @@ const base::string16& WebContentsImpl::GetTitle() {
 }
 
 SiteInstanceImpl* WebContentsImpl::GetSiteInstance() {
-  return GetRenderManager()->current_host()->GetSiteInstance();
+  return GetRenderManager()->current_frame_host()->GetSiteInstance();
 }
 
 bool WebContentsImpl::IsLoading() {

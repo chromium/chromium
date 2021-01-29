@@ -668,15 +668,14 @@ void RenderFrameProxyHost::UpdateTargetURL(
 }
 
 void RenderFrameProxyHost::RouteCloseEvent() {
-  // Tell the active RenderViewHost to run unload handlers and close, as long
-  // as the request came from a RenderViewHost in the same BrowsingInstance.
-  // In most cases, we receive this from a swapped out RenderViewHost.
-  // It is possible to receive it from one that has just been swapped in,
-  // in which case we might as well deliver the message anyway.
-  RenderViewHostImpl* rvh = static_cast<RenderViewHostImpl*>(
-      frame_tree_node_->current_frame_host()->GetRenderViewHost());
-  if (GetSiteInstance()->IsRelatedSiteInstance(rvh->GetSiteInstance()))
-    rvh->ClosePage();
+  // Tell the active RenderFrameHost to run unload handlers and close, as long
+  // as the request came from a RenderFrameHost in the same BrowsingInstance.
+  // We receive this from a WebViewImpl when it receives a request to close
+  // the window containing the active RenderFrameHost.
+  RenderFrameHostImpl* rfh = frame_tree_node_->current_frame_host();
+  if (GetSiteInstance()->IsRelatedSiteInstance(rfh->GetSiteInstance())) {
+    rfh->render_view_host()->ClosePage();
+  }
 }
 
 void RenderFrameProxyHost::OpenURL(mojom::OpenURLParamsPtr params) {
