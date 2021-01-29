@@ -1279,7 +1279,6 @@
       'schema': { 'type': 'string' },
       'supported_on': ['chrome.*:58-', 'chrome_os:58-'],
       'features': {
-        'can_be_recommended': True,
         'dynamic_refresh': True,
         'per_profile': True,
       },
