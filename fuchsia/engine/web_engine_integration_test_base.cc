@@ -78,7 +78,7 @@ WebEngineIntegrationTestBase::DefaultContextParamsWithTestData() const {
 fuchsia::web::CreateContextParams
 WebEngineIntegrationTestBase::ContextParamsWithFilteredServiceDirectory() {
   filtered_service_directory_ =
-      std::make_unique<base::fuchsia::FilteredServiceDirectory>(
+      std::make_unique<base::FilteredServiceDirectory>(
           base::ComponentContextForProcess()->svc().get());
   fidl::InterfaceHandle<fuchsia::io::Directory> svc_dir;
   filtered_service_directory_->ConnectClient(svc_dir.NewRequest());

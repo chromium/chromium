@@ -165,9 +165,8 @@ SandboxPolicyFuchsia::SandboxPolicyFuchsia(SandboxType type) {
   const SandboxConfig* config = GetConfigForSandboxType(type_);
   if (config && !(config->features & kUseServiceDirectoryOverride)) {
     service_directory_task_runner_ = base::ThreadTaskRunnerHandle::Get();
-    service_directory_ =
-        std::make_unique<base::fuchsia::FilteredServiceDirectory>(
-            base::ComponentContextForProcess()->svc().get());
+    service_directory_ = std::make_unique<base::FilteredServiceDirectory>(
+        base::ComponentContextForProcess()->svc().get());
     for (const char* service_name : kDefaultServices) {
       service_directory_->AddService(service_name);
     }

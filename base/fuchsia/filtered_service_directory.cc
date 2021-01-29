@@ -11,7 +11,6 @@
 #include "base/fuchsia/fuchsia_logging.h"
 
 namespace base {
-namespace fuchsia {
 
 FilteredServiceDirectory::FilteredServiceDirectory(
     sys::ServiceDirectory* directory)
@@ -40,5 +39,4 @@ void FilteredServiceDirectory::ConnectClient(
       dir_request.TakeChannel());
 }
 
-}  // namespace fuchsia
 }  // namespace base

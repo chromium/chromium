@@ -25,9 +25,7 @@
 #include "fuchsia/runners/cast/pending_cast_component.h"
 
 namespace base {
-namespace fuchsia {
 class FilteredServiceDirectory;
-}  // namespace fuchsia
 }  // namespace base
 
 class WebContentRunner;
@@ -124,11 +122,10 @@ class CastRunner : public fuchsia::sys::Runner,
   // Holds the main fuchsia.web.Context used to host CastComponents.
   // Note that although |main_context_| is actually a WebContentRunner, that is
   // only being used to maintain the Context for the hosted components.
-  const std::unique_ptr<base::fuchsia::FilteredServiceDirectory> main_services_;
+  const std::unique_ptr<base::FilteredServiceDirectory> main_services_;
   const std::unique_ptr<WebContentRunner> main_context_;
 
-  const std::unique_ptr<base::fuchsia::FilteredServiceDirectory>
-      isolated_services_;
+  const std::unique_ptr<base::FilteredServiceDirectory> isolated_services_;
 
   // Holds fuchsia.web.Contexts used to host isolated components.
   base::flat_set<std::unique_ptr<WebContentRunner>, base::UniquePtrComparator>

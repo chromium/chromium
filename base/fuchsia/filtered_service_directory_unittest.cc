@@ -11,7 +11,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
-namespace fuchsia {
 
 class FilteredServiceDirectoryTest : public ServiceDirectoryTestBase {
  public:
@@ -85,5 +84,4 @@ TEST_F(FilteredServiceDirectoryTest, AdditionalService) {
   VerifyTestInterface(&stub, ZX_OK);
 }
 
-}  // namespace fuchsia
 }  // namespace base

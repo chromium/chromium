@@ -279,14 +279,13 @@ class DataResetComponent : public fuchsia::sys::ComponentController,
 
 CastRunner::CastRunner(bool is_headless)
     : is_headless_(is_headless),
-      main_services_(std::make_unique<base::fuchsia::FilteredServiceDirectory>(
+      main_services_(std::make_unique<base::FilteredServiceDirectory>(
           base::ComponentContextForProcess()->svc().get())),
       main_context_(std::make_unique<WebContentRunner>(
           base::BindRepeating(&CastRunner::GetMainContextParams,
                               base::Unretained(this)))),
-      isolated_services_(
-          std::make_unique<base::fuchsia::FilteredServiceDirectory>(
-              base::ComponentContextForProcess()->svc().get())) {
+      isolated_services_(std::make_unique<base::FilteredServiceDirectory>(
+          base::ComponentContextForProcess()->svc().get())) {
   // Delete persisted data staged for deletion during the previous run.
   DeleteStagedForDeletionDirectoryIfExists();
 

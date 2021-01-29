@@ -106,8 +106,7 @@ class WebEngineIntegrationTestBase : public testing::Test {
   std::unique_ptr<fidl::Binding<fuchsia::web::NavigationEventListener>>
       navigation_listener_binding_;
 
-  std::unique_ptr<base::fuchsia::FilteredServiceDirectory>
-      filtered_service_directory_;
+  std::unique_ptr<base::FilteredServiceDirectory> filtered_service_directory_;
 };
 
 #endif  // FUCHSIA_ENGINE_WEB_ENGINE_INTEGRATION_TEST_BASE_H_
