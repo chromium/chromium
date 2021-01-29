@@ -222,6 +222,9 @@ bool AwMainDelegate::BasicStartupComplete(int* exit_code) {
       // which is needed for UseSurfaceLayerForVideo feature.
       // https://crbug.com/853832
       features.EnableIfNotSet(media::kDisableSurfaceLayerForVideo);
+
+      // UseSkiaRenderer requires VizForWebView.
+      features.DisableIfNotSet(::features::kUseSkiaRenderer);
     }
 
     // WebView does not support overlay fullscreen yet for video overlays.
