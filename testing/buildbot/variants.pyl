@@ -344,13 +344,13 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--impl-version=88',
     ],
-    'identifier': 'Implementation Tests For 88.0.4324.118',
+    'identifier': 'Implementation Library Tests For 88.0.4324.141',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M88',
-          'revision': 'version:88.0.4324.118',
+          'revision': 'version:88.0.4324.141',
         }
       ],
     },
@@ -416,13 +416,13 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--impl-version=88',
     ],
-    'identifier': 'Implementation Tests For 88.0.4324.118',
+    'identifier': 'Implementation Library Tests For 88.0.4324.141',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M88',
-          'revision': 'version:88.0.4324.118',
+          'revision': 'version:88.0.4324.141',
         }
       ],
     },
@@ -488,13 +488,13 @@
       '../../weblayer/browser/android/javatests/skew/expectations.txt',
       '--client-version=88',
     ],
-    'identifier': 'Client Tests For 88.0.4324.118',
+    'identifier': 'Client Library Tests For 88.0.4324.141',
     'swarming': {
       'cipd_packages': [
         {
           'cipd_package': 'chromium/testing/weblayer-x86',
           'location': 'weblayer_instrumentation_test_M88',
-          'revision': 'version:88.0.4324.118',
+          'revision': 'version:88.0.4324.141',
         }
       ],
     },
