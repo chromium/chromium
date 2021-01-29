@@ -28,6 +28,18 @@ const base::Feature kAutofillAssistantDisableOnboardingFlow{
     "AutofillAssistantDisableOnboardingFlow",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to show the "Send feedback" chip while in an error state.
+const base::Feature kAutofillAssistantFeedbackChip{
+    "AutofillAssistantFeedbackChip", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kAutofillAssistantProactiveHelp{
+    "AutofillAssistantProactiveHelp", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Use Chrome's TabHelper system to deal with the life cycle of WebContent's
+// depending Autofill Assistant objects.
+const base::Feature kAutofillAssistantWithTabHelper{
+    "AutofillAssistantWithTabHelper", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // By default, proactive help is only offered if MSBB is turned on. This feature
 // flag allows disabling the link. Proactive help can still be offered to users
 // so long as no communication to a remote backend is required. Specifically,
@@ -42,14 +54,6 @@ const base::Feature kAutofillAssistantDisableProactiveHelpTiedToMSBB{
 const base::Feature kAutofillAssistantLoadDFMForTriggerScripts{
     "AutofillAssistantLoadDFMForTriggerScripts",
     base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kAutofillAssistantProactiveHelp{
-    "AutofillAssistantProactiveHelp", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Use Chrome's TabHelper system to deal with the life cycle of WebContent's
-// depending Autofill Assistant objects.
-const base::Feature kAutofillAssistantWithTabHelper{
-    "AutofillAssistantWithTabHelper", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace autofill_assistant

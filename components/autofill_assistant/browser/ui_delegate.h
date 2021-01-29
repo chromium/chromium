@@ -179,6 +179,7 @@ class UiDelegate {
 
   // Reports a fatal error to Autofill Assistant, which should then stop.
   virtual void OnFatalError(const std::string& error_message,
+                            bool show_feedback_chip,
                             Metrics::DropOutReason reason) = 0;
 
   // Reports that Autofill Assistant should be Stopped.

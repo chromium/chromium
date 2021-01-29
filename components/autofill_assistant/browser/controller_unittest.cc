@@ -640,7 +640,26 @@ TEST_F(ControllerTest, Autostart) {
                                    AutofillAssistantState::STOPPED));
 }
 
-TEST_F(ControllerTest, AutostartIsNotPassedToTheUi) {
+TEST_F(ControllerTest,
+       AutostartFallbackWithNoRunnableScriptsShowsFeedbackChip) {
+  SupportsScriptResponseProto script_response;
+  auto* autostart = AddRunnableScript(&script_response, "runnable");
+  autostart->mutable_presentation()->set_autostart(true);
+  RunOnce(autostart);
+  SetRepeatedScriptResponse(script_response);
+
+  Start("http://a.example.com/path");
+  ASSERT_THAT(controller_->GetUserActions(), SizeIs(1));
+  EXPECT_EQ(FEEDBACK_ACTION, controller_->GetUserActions().at(0).chip().type);
+}
+
+TEST_F(ControllerTest,
+       AutostartErrorDoesNotShowFeedbackChipWithFeatureFlagDisabled) {
+  // Disable the feedback chip feature.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(
+      features::kAutofillAssistantFeedbackChip);
+
   SupportsScriptResponseProto script_response;
   auto* autostart = AddRunnableScript(&script_response, "runnable");
   autostart->mutable_presentation()->set_autostart(true);
@@ -834,8 +853,9 @@ TEST_F(ControllerTest, StateChanges) {
                                    AutofillAssistantState::PROMPT,
                                    AutofillAssistantState::STOPPED));
 
-  // The cancel button is removed.
-  EXPECT_TRUE(controller_->GetUserActions().empty());
+  // The cancel button is removed and the feedback chip is displayed.
+  ASSERT_THAT(controller_->GetUserActions(), SizeIs(1));
+  EXPECT_EQ(FEEDBACK_ACTION, controller_->GetUserActions().at(0).chip().type);
 }
 
 TEST_F(ControllerTest, AttachUIWhenStarting) {
@@ -858,7 +878,8 @@ TEST_F(ControllerTest, AttachUIWhenContentsFocused) {
   SimulateWebContentsFocused();  // must call AttachUI
 
   EXPECT_CALL(mock_client_, AttachUI());
-  controller_->OnFatalError("test", Metrics::DropOutReason::TAB_CHANGED);
+  controller_->OnFatalError("test", /*show_feedback_chip= */ false,
+                            Metrics::DropOutReason::TAB_CHANGED);
   EXPECT_EQ(AutofillAssistantState::STOPPED, controller_->GetState());
   SimulateWebContentsFocused();  // must call AttachUI
 }
@@ -3016,4 +3037,19 @@ TEST_F(ControllerTest, Details) {
   EXPECT_THAT(controller_->GetDetails(), IsEmpty());
   EXPECT_THAT(observed_details, IsEmpty());
 }
+
+TEST_F(ControllerTest, OnScriptErrorWillAppendVanishingFeedbackChip) {
+  // A script error should show the feedback chip.
+  EXPECT_CALL(mock_observer_, OnUserActionsChanged(SizeIs(1)));
+  EXPECT_CALL(mock_client_, RecordDropOut(Metrics::DropOutReason::NAVIGATION));
+  controller_->OnScriptError("Error", Metrics::DropOutReason::NAVIGATION);
+  EXPECT_EQ(AutofillAssistantState::STOPPED, controller_->GetState());
+
+  // The chip should vanish once clicked.
+  EXPECT_CALL(mock_observer_, OnUserActionsChanged(SizeIs(0)));
+  EXPECT_CALL(mock_client_,
+              Shutdown(Metrics::DropOutReason::UI_CLOSED_UNEXPECTEDLY));
+  EXPECT_TRUE(controller_->PerformUserAction(0));
+}
+
 }  // namespace autofill_assistant

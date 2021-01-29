@@ -229,6 +229,7 @@ class Controller : public ScriptExecutorDelegate,
   void GetRestrictedArea(std::vector<RectF>* area) const override;
   void GetVisualViewport(RectF* visual_viewport) const override;
   void OnFatalError(const std::string& error_message,
+                    bool show_feedback_chip,
                     Metrics::DropOutReason reason) override;
   void OnStop(const std::string& message,
               const std::string& button_label) override;
@@ -379,7 +380,11 @@ class Controller : public ScriptExecutorDelegate,
   void ShowFirstMessageAndStart();
 
   // Clear out visible state and enter the stopped state.
-  void EnterStoppedState();
+  // If |show_feedback_chip| is true, a "Send feedback" chip will be added to
+  // the bottom sheet.
+  void EnterStoppedState(bool show_feedback_chip);
+
+  void OnFeedbackChipClicked();
 
   ElementArea* touchable_element_area();
   ScriptTracker* script_tracker();
