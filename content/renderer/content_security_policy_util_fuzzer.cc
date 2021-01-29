@@ -66,6 +66,10 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     // Not much point in going on with an empty CSP string.
     return EXIT_SUCCESS;
   }
+  if (it - data > 250) {
+    // Origins should not be too long. The fuzzer will run oom otherwise.
+    return EXIT_SUCCESS;
+  }
 
   std::string raw_url(reinterpret_cast<const char*>(data), it - 1 - data);
   std::string raw_csp(reinterpret_cast<const char*>(it), size - (it - data));
