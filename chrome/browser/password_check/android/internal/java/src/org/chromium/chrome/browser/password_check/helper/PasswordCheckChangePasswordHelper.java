@@ -33,6 +33,7 @@ public class PasswordCheckChangePasswordHelper {
     private static final String INTENT_PARAMETER = "INTENT";
     private static final String INTENT = "PASSWORD_CHANGE";
     private static final String START_IMMEDIATELY_PARAMETER = "START_IMMEDIATELY";
+    private static final String ORIGINAL_DEEPLINK_PARAMETER = "ORIGINAL_DEEPLINK";
 
     private final Context mContext;
     private final SettingsLauncher mSettingsLauncher;
@@ -80,8 +81,9 @@ public class PasswordCheckChangePasswordHelper {
      * @param credential A {@link CompromisedCredential}.
      */
     public void launchCctWithScript(CompromisedCredential credential) {
-        Intent intent = buildIntent(credential.getAssociatedUrl().getOrigin().getSpec());
-        populateAutofillAssistantExtras(intent, credential.getUsername());
+        String origin = credential.getAssociatedUrl().getOrigin().getSpec();
+        Intent intent = buildIntent(origin);
+        populateAutofillAssistantExtras(intent, origin, credential.getUsername());
         IntentUtils.safeStartActivity(mContext, intent);
     }
 
@@ -124,10 +126,12 @@ public class PasswordCheckChangePasswordHelper {
      * Populates intent extras for an Autofill Assistant script.
      *
      * @param intent   An {@link Intent} to be populated.
+     * @param origin   An origin for a password change script. One of extras to put.
      * @param username A username for a password change script. One of extras to put.
      */
-    private void populateAutofillAssistantExtras(Intent intent, String username) {
+    private void populateAutofillAssistantExtras(Intent intent, String origin, String username) {
         intent.putExtra(AUTOFILL_ASSISTANT_ENABLED_KEY, true);
+        intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + ORIGINAL_DEEPLINK_PARAMETER, origin);
         intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + PASSWORD_CHANGE_USERNAME_PARAMETER, username);
         intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + INTENT_PARAMETER, INTENT);
         intent.putExtra(AUTOFILL_ASSISTANT_PACKAGE + START_IMMEDIATELY_PARAMETER, true);
