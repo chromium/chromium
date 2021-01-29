@@ -85,7 +85,7 @@ bool PasswordProtectionServiceBase::CanGetReputationOfURL(const GURL& url) {
 }
 
 #if defined(ON_FOCUS_PING_ENABLED)
-void PasswordProtectionServiceBase::MaybeStartPasswordFieldOnFocusRequest(
+void PasswordProtectionService::MaybeStartPasswordFieldOnFocusRequest(
     WebContents* web_contents,
     const GURL& main_frame_url,
     const GURL& password_form_action,
@@ -112,7 +112,7 @@ void PasswordProtectionServiceBase::MaybeStartPasswordFieldOnFocusRequest(
 }
 #endif
 
-void PasswordProtectionServiceBase::MaybeStartProtectedPasswordEntryRequest(
+void PasswordProtectionService::MaybeStartProtectedPasswordEntryRequest(
     WebContents* web_contents,
     const GURL& main_frame_url,
     const std::string& username,
@@ -194,7 +194,7 @@ void PasswordProtectionServiceBase::CacheVerdict(
     const LoginReputationClientResponse& verdict,
     const base::Time& receive_time) {}
 
-void PasswordProtectionServiceBase::StartRequest(
+void PasswordProtectionService::StartRequest(
     WebContents* web_contents,
     const GURL& main_frame_url,
     const GURL& password_form_action,
@@ -527,7 +527,7 @@ bool PasswordProtectionServiceBase::IsSupportedPasswordTypeForModalWarning(
 }
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
-void PasswordProtectionServiceBase::GetPhishingDetector(
+void PasswordProtectionService::GetPhishingDetector(
     service_manager::InterfaceProvider* provider,
     mojo::Remote<mojom::PhishingDetector>* phishing_detector) {
   provider->GetInterface(phishing_detector->BindNewPipeAndPassReceiver());

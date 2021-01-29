@@ -105,8 +105,10 @@ void PasswordProtectionRequestContent::HandleDeferredNavigations() {
 void PasswordProtectionRequestContent::MaybeLogPasswordReuseLookupEvent(
     RequestOutcome outcome,
     const LoginReputationClientResponse* response) {
-  password_protection_service()->MaybeLogPasswordReuseLookupEvent(
-      web_contents_, outcome, password_type(), response);
+  PasswordProtectionService* service =
+      static_cast<PasswordProtectionService*>(password_protection_service());
+  service->MaybeLogPasswordReuseLookupEvent(web_contents_, outcome,
+                                            password_type(), response);
 }
 
 void PasswordProtectionRequestContent::MaybeAddPingToWebUI() {
@@ -124,8 +126,9 @@ void PasswordProtectionRequestContent::MaybeAddResponseToWebUI(
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 void PasswordProtectionRequestContent::GetDomFeatures() {
   content::RenderFrameHost* rfh = web_contents_->GetMainFrame();
-  password_protection_service()->GetPhishingDetector(rfh->GetRemoteInterfaces(),
-                                                     &phishing_detector_);
+  PasswordProtectionService* service =
+      static_cast<PasswordProtectionService*>(password_protection_service());
+  service->GetPhishingDetector(rfh->GetRemoteInterfaces(), &phishing_detector_);
   dom_features_collection_complete_ = false;
   phishing_detector_->StartPhishingDetection(
       main_frame_url(),
@@ -260,8 +263,10 @@ void PasswordProtectionRequestContent::OnVisualFeatureCollectionDone(
 
 #if defined(OS_ANDROID)
 void PasswordProtectionRequestContent::SetReferringAppInfo() {
+  PasswordProtectionService* service =
+      static_cast<PasswordProtectionService*>(password_protection_service());
   LoginReputationClientRequest::ReferringAppInfo referring_app_info =
-      password_protection_service()->GetReferringAppInfo(web_contents_);
+      service->GetReferringAppInfo(web_contents_);
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordProtection.RequestReferringAppSource",
       referring_app_info.referring_app_source(),

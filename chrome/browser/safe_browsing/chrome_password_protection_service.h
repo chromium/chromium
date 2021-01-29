@@ -114,7 +114,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService {
                         const std::string& verdict_token,
                         ReusedPasswordAccountType password_type) override;
 
-  void ShowInterstitial(content::WebContents* web_contens,
+  void ShowInterstitial(content::WebContents* web_contents,
                         ReusedPasswordAccountType password_type) override;
 
   // Called when user interacts with password protection UIs.
