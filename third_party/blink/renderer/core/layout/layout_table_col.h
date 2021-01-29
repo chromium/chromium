@@ -130,7 +130,7 @@ class LayoutTableCol final : public LayoutTableBoxComponent {
 template <>
 struct DowncastTraits<LayoutTableCol> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsLayoutTableCol();
+    return object.IsLayoutTableCol() && !object.IsLayoutNGObject();
   }
 };
 
