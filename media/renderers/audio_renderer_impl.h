@@ -298,6 +298,9 @@ class MEDIA_EXPORT AudioRendererImpl
   // Cached volume provided by SetVolume().
   float volume_;
 
+  // A flag indicating whether the audio stream was ever unmuted.
+  bool was_unmuted_ = false;
+
   // After Initialize() has completed, all variables below must be accessed
   // under |lock_|. ------------------------------------------------------------
   base::Lock lock_;
