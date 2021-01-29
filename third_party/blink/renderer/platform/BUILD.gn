@@ -419,6 +419,7 @@ component("platform") {
     "bindings/dom_wrapper_world.h",
     "bindings/enumeration_base.h",
     "bindings/exception_code.h",
+    "bindings/exception_context.h",
     "bindings/exception_messages.cc",
     "bindings/exception_messages.h",
     "bindings/exception_state.cc",
