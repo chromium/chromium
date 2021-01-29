@@ -35,6 +35,7 @@
 #include "components/sync/base/legacy_directory_deletion.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/base/sync_base_switches.h"
+#include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/data_type_manager_impl.h"
 #include "components/sync/driver/glue/sync_engine_impl.h"
 #include "components/sync/driver/model_type_controller.h"
@@ -414,14 +415,15 @@ std::unique_ptr<syncer::SyncEngine>
 ProfileSyncComponentsFactoryImpl::CreateSyncEngine(
     const std::string& name,
     invalidation::InvalidationService* invalidator,
-    syncer::SyncInvalidationsService* sync_invalidation_service,
-    const base::WeakPtr<syncer::SyncTransportDataPrefs>& prefs) {
+    syncer::SyncInvalidationsService* sync_invalidation_service) {
   return std::make_unique<syncer::SyncEngineImpl>(
       name, invalidator, sync_invalidation_service,
       std::make_unique<browser_sync::ActiveDevicesProviderImpl>(
           sync_client_->GetDeviceInfoSyncService()->GetDeviceInfoTracker(),
           base::DefaultClock::GetInstance()),
-      prefs, sync_client_->GetModelTypeStoreService()->GetSyncDataPath(),
+      std::make_unique<syncer::SyncTransportDataPrefs>(
+          sync_client_->GetPrefService()),
+      sync_client_->GetModelTypeStoreService()->GetSyncDataPath(),
       engines_and_directory_deletion_thread_);
 }
 

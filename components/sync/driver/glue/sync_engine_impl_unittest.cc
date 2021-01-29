@@ -60,9 +60,8 @@ class TestSyncEngineHost : public SyncEngineHostStub {
 
   void OnEngineInitialized(const WeakHandle<JsBackend>&,
                            const WeakHandle<DataTypeDebugInfoListener>&,
-                           const std::string&,
-                           const std::string&,
-                           bool success) override {
+                           bool success,
+                           bool is_first_time_sync_configure) override {
     EXPECT_EQ(expect_success_, success);
     std::move(quit_closure_).Run();
   }
@@ -191,7 +190,6 @@ class SyncEngineImplTest : public testing::Test {
 
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
 
-    prefs_ = std::make_unique<SyncTransportDataPrefs>(&pref_service_);
     ON_CALL(invalidator_, UpdateInterestedTopics)
         .WillByDefault(testing::Return(true));
     auto sync_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
@@ -200,7 +198,7 @@ class SyncEngineImplTest : public testing::Test {
     backend_ = std::make_unique<SyncEngineImpl>(
         "dummyDebugName", &invalidator_, GetSyncInvalidationsService(),
         std::make_unique<NiceMock<MockActiveDevicesProvider>>(),
-        prefs_->AsWeakPtr(),
+        std::make_unique<SyncTransportDataPrefs>(&pref_service_),
         temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir)),
         sync_task_runner);
 
@@ -225,7 +223,6 @@ class SyncEngineImplTest : public testing::Test {
       backend_->Shutdown(STOP_SYNC);
     }
     backend_.reset();
-    prefs_.reset();
     // Pump messages posted by the sync thread.
     base::RunLoop().RunUntilIdle();
   }
@@ -239,7 +236,6 @@ class SyncEngineImplTest : public testing::Test {
     params.http_factory_getter = base::BindOnce(&CreateHttpBridgeFactory);
     params.authenticated_account_id = CoreAccountId("account_id");
     params.sync_manager_factory = std::move(fake_manager_factory_);
-    params.invalidation_versions = prefs_->GetInvalidationVersions();
 
     backend_->Initialize(std::move(params));
 
@@ -304,7 +300,6 @@ class SyncEngineImplTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   TestingPrefServiceSimple pref_service_;
   TestSyncEngineHost host_;
-  std::unique_ptr<SyncTransportDataPrefs> prefs_;
   std::unique_ptr<SyncEngineImpl> backend_;
   std::unique_ptr<FakeSyncManagerFactory> fake_manager_factory_;
   FakeSyncManager* fake_manager_ = nullptr;

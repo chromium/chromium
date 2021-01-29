@@ -61,7 +61,7 @@ class SyncEngineImpl : public SyncEngine,
                  invalidation::InvalidationService* invalidator,
                  SyncInvalidationsService* sync_invalidations_service,
                  std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
-                 const base::WeakPtr<SyncTransportDataPrefs>& prefs,
+                 std::unique_ptr<SyncTransportDataPrefs> prefs,
                  const base::FilePath& sync_data_folder,
                  scoped_refptr<base::SequencedTaskRunner> sync_task_runner);
   ~SyncEngineImpl() override;
@@ -72,10 +72,14 @@ class SyncEngineImpl : public SyncEngine,
   void TriggerRefresh(const ModelTypeSet& types) override;
   void UpdateCredentials(const SyncCredentials& credentials) override;
   void InvalidateCredentials() override;
+  std::string GetCacheGuid() const override;
+  std::string GetBirthday() const override;
   void StartConfiguration() override;
   void StartSyncingWithServer() override;
   void SetEncryptionPassphrase(const std::string& passphrase) override;
   void SetDecryptionPassphrase(const std::string& passphrase) override;
+  void SetEncryptionBootstrapToken(const std::string& token) override;
+  void SetKeystoreEncryptionBootstrapToken(const std::string& token) override;
   void AddTrustedVaultDecryptionKeys(
       const std::vector<std::vector<uint8_t>>& keys,
       base::OnceClosure done_cb) override;
@@ -169,11 +173,16 @@ class SyncEngineImpl : public SyncEngine,
   // the same |active_devices|.
   void OnActiveDevicesChanged();
 
+  // Sets the last synced time to the current time.
+  void UpdateLastSyncedTime();
+
   // The task runner where all the sync engine operations happen.
   scoped_refptr<base::SequencedTaskRunner> sync_task_runner_;
 
   // Name used for debugging (set from profile_->GetDebugName()).
   const std::string name_;
+
+  const std::unique_ptr<SyncTransportDataPrefs> prefs_;
 
   // Our backend, which communicates directly to the syncapi. Use refptr instead
   // of WeakHandle because |backend_| is created on UI loop but released on
@@ -185,8 +194,6 @@ class SyncEngineImpl : public SyncEngine,
   std::unique_ptr<ModelTypeConnector> model_type_connector_;
 
   bool initialized_ = false;
-
-  const base::WeakPtr<SyncTransportDataPrefs> prefs_;
 
   // The host which we serve (and are owned by). Set in Initialize() and nulled
   // out in StopSyncingForShutdown().

@@ -81,6 +81,15 @@ class SyncInvalidationAdapter : public InvalidationInterface {
 
 }  // namespace
 
+SyncEngineBackend::RestoredLocalTransportData::RestoredLocalTransportData() =
+    default;
+
+SyncEngineBackend::RestoredLocalTransportData::RestoredLocalTransportData(
+    RestoredLocalTransportData&&) = default;
+
+SyncEngineBackend::RestoredLocalTransportData::~RestoredLocalTransportData() =
+    default;
+
 SyncEngineBackend::SyncEngineBackend(const std::string& name,
                                      const base::FilePath& sync_data_folder,
                                      const base::WeakPtr<SyncEngineImpl>& host)
@@ -236,7 +245,9 @@ void SyncEngineBackend::DoOnIncomingInvalidation(
              last_invalidation_versions_);
 }
 
-void SyncEngineBackend::DoInitialize(SyncEngine::InitParams params) {
+void SyncEngineBackend::DoInitialize(
+    SyncEngine::InitParams params,
+    RestoredLocalTransportData restored_local_transport_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Make sure that the directory exists before initializing the backend.
@@ -246,7 +257,8 @@ void SyncEngineBackend::DoInitialize(SyncEngine::InitParams params) {
   }
 
   // Load the previously persisted set of invalidation versions into memory.
-  last_invalidation_versions_ = params.invalidation_versions;
+  last_invalidation_versions_ =
+      restored_local_transport_data.invalidation_versions;
 
   authenticated_account_id_ = params.authenticated_account_id;
 
@@ -259,8 +271,8 @@ void SyncEngineBackend::DoInitialize(SyncEngine::InitParams params) {
       std::make_unique<NigoriStorageImpl>(
           sync_data_folder_.Append(kNigoriStorageFilename), &encryptor_),
       &encryptor_, base::BindRepeating(&Nigori::GenerateScryptSalt),
-      params.restored_key_for_bootstrapping,
-      params.restored_keystore_key_for_bootstrapping);
+      restored_local_transport_data.encryption_bootstrap_token,
+      restored_local_transport_data.keystore_encryption_bootstrap_token);
 
   sync_manager_ = params.sync_manager_factory->CreateSyncManager(name_);
   sync_manager_->AddObserver(this);
@@ -278,10 +290,10 @@ void SyncEngineBackend::DoInitialize(SyncEngine::InitParams params) {
   args.engine_components_factory = std::move(params.engine_components_factory);
   args.encryption_handler = sync_encryption_handler_.get();
   args.cancelation_signal = &stop_syncing_signal_;
-  args.poll_interval = params.poll_interval;
-  args.cache_guid = params.cache_guid;
-  args.birthday = params.birthday;
-  args.bag_of_chips = params.bag_of_chips;
+  args.poll_interval = restored_local_transport_data.poll_interval;
+  args.cache_guid = restored_local_transport_data.cache_guid;
+  args.birthday = restored_local_transport_data.birthday;
+  args.bag_of_chips = restored_local_transport_data.bag_of_chips;
   args.sync_status_observers.push_back(this);
   sync_manager_->Init(&args);
 }

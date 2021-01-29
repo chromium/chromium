@@ -167,6 +167,7 @@ class ProfileSyncServiceTest : public ::testing::Test {
     transport_data_prefs.SetCacheGuid(kTestCacheGuid);
     transport_data_prefs.SetBirthday(FakeSyncEngine::kTestBirthday);
     transport_data_prefs.SetLastSyncedTime(base::Time::Now());
+    component_factory()->set_first_time_sync_configure_done(true);
     sync_prefs.SetSyncRequested(true);
     sync_prefs.SetSelectedTypes(
         /*keep_everything_synced=*/true,

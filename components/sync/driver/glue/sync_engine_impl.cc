@@ -28,6 +28,7 @@
 #include "components/sync/engine/engine_components_factory_impl.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/engine/net/http_bridge.h"
+#include "components/sync/engine/polling_constants.h"
 #include "components/sync/engine/sync_engine_host.h"
 #include "components/sync/engine/sync_string_conversions.h"
 #include "components/sync/invalidations/fcm_handler.h"
@@ -36,17 +37,39 @@
 
 namespace syncer {
 
+namespace {
+
+// Reads from prefs into a struct, to be posted across sequences.
+SyncEngineBackend::RestoredLocalTransportData
+RestoreLocalTransportDataFromPrefs(const SyncTransportDataPrefs& prefs) {
+  SyncEngineBackend::RestoredLocalTransportData result;
+  result.encryption_bootstrap_token = prefs.GetEncryptionBootstrapToken();
+  result.keystore_encryption_bootstrap_token =
+      prefs.GetKeystoreEncryptionBootstrapToken();
+  result.cache_guid = prefs.GetCacheGuid();
+  result.birthday = prefs.GetBirthday();
+  result.bag_of_chips = prefs.GetBagOfChips();
+  result.invalidation_versions = prefs.GetInvalidationVersions();
+  result.poll_interval = prefs.GetPollInterval();
+  if (result.poll_interval.is_zero()) {
+    result.poll_interval = kDefaultPollInterval;
+  }
+  return result;
+}
+
+}  // namespace
+
 SyncEngineImpl::SyncEngineImpl(
     const std::string& name,
     invalidation::InvalidationService* invalidator,
     SyncInvalidationsService* sync_invalidations_service,
     std::unique_ptr<ActiveDevicesProvider> active_devices_provider,
-    const base::WeakPtr<SyncTransportDataPrefs>& prefs,
+    std::unique_ptr<SyncTransportDataPrefs> prefs,
     const base::FilePath& sync_data_folder,
     scoped_refptr<base::SequencedTaskRunner> sync_task_runner)
     : sync_task_runner_(std::move(sync_task_runner)),
       name_(name),
-      prefs_(prefs),
+      prefs_(std::move(prefs)),
       invalidator_(invalidator),
       sync_invalidations_service_(sync_invalidations_service),
 #if defined(OS_ANDROID)
@@ -55,6 +78,7 @@ SyncEngineImpl::SyncEngineImpl(
       sessions_invalidation_enabled_(true),
 #endif
       active_devices_provider_(std::move(active_devices_provider)) {
+  DCHECK(prefs_);
   backend_ = base::MakeRefCounted<SyncEngineBackend>(
       name_, sync_data_folder, weak_ptr_factory_.GetWeakPtr());
 }
@@ -70,7 +94,8 @@ void SyncEngineImpl::Initialize(InitParams params) {
 
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoInitialize, backend_,
-                                std::move(params)));
+                                std::move(params),
+                                RestoreLocalTransportDataFromPrefs(*prefs_)));
 
   // If the new invalidations system (SyncInvalidationsService) is fully
   // enabled, then the SyncService doesn't need to communicate with the old
@@ -112,6 +137,14 @@ void SyncEngineImpl::InvalidateCredentials() {
       base::BindOnce(&SyncEngineBackend::DoInvalidateCredentials, backend_));
 }
 
+std::string SyncEngineImpl::GetCacheGuid() const {
+  return prefs_->GetCacheGuid();
+}
+
+std::string SyncEngineImpl::GetBirthday() const {
+  return prefs_->GetBirthday();
+}
+
 void SyncEngineImpl::StartConfiguration() {
   sync_task_runner_->PostTask(
       FROM_HERE,
@@ -144,6 +177,17 @@ void SyncEngineImpl::SetDecryptionPassphrase(const std::string& passphrase) {
   sync_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&SyncEngineBackend::DoSetDecryptionPassphrase,
                                 backend_, passphrase));
+}
+
+void SyncEngineImpl::SetEncryptionBootstrapToken(const std::string& token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  prefs_->SetEncryptionBootstrapToken(token);
+}
+
+void SyncEngineImpl::SetKeystoreEncryptionBootstrapToken(
+    const std::string& token) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  prefs_->SetKeystoreEncryptionBootstrapToken(token);
 }
 
 void SyncEngineImpl::AddTrustedVaultDecryptionKeys(
@@ -309,16 +353,29 @@ void SyncEngineImpl::HandleInitializationSuccessOnFrontendLoop(
   // Initialize active devices count.
   OnActiveDevicesChanged();
 
-  host_->OnEngineInitialized(js_backend, debug_info_listener, birthday,
-                             bag_of_chips, /*success=*/true);
+  // Save initialization data to preferences.
+  prefs_->SetBirthday(birthday);
+  prefs_->SetBagOfChips(bag_of_chips);
+
+  // The very first time the backend initializes is effectively the first time
+  // we can say we successfully "synced".  This gets determined based on whether
+  // there used to be local transport metadata or not.
+  bool is_first_time_sync_configure = false;
+
+  if (prefs_->GetLastSyncedTime().is_null()) {
+    is_first_time_sync_configure = true;
+    UpdateLastSyncedTime();
+  }
+
+  host_->OnEngineInitialized(js_backend, debug_info_listener, /*success=*/true,
+                             is_first_time_sync_configure);
 }
 
 void SyncEngineImpl::HandleInitializationFailureOnFrontendLoop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  host_->OnEngineInitialized(WeakHandle<JsBackend>(),
-                             WeakHandle<DataTypeDebugInfoListener>(),
-                             /*birthday=*/"", /*bag_of_chips=*/"",
-                             /*success=*/false);
+  host_->OnEngineInitialized(
+      WeakHandle<JsBackend>(), WeakHandle<DataTypeDebugInfoListener>(),
+      /*success=*/false, /*is_first_time_sync_configure=*/false);
 }
 
 void SyncEngineImpl::HandleSyncCycleCompletedOnFrontendLoop(
@@ -327,9 +384,19 @@ void SyncEngineImpl::HandleSyncCycleCompletedOnFrontendLoop(
 
   // Process any changes to the datatypes we're syncing.
   // TODO(sync): add support for removing types.
-  if (IsInitialized()) {
-    host_->OnSyncCycleCompleted(snapshot);
+  if (!IsInitialized()) {
+    return;
   }
+
+  UpdateLastSyncedTime();
+  if (!snapshot.poll_finish_time().is_null()) {
+    prefs_->SetLastPollTime(snapshot.poll_finish_time());
+  }
+  DCHECK(!snapshot.poll_interval().is_zero());
+  prefs_->SetPollInterval(snapshot.poll_interval());
+  prefs_->SetBagOfChips(snapshot.bag_of_chips());
+
+  host_->OnSyncCycleCompleted(snapshot);
 }
 
 void SyncEngineImpl::HandleActionableErrorEventOnFrontendLoop(
@@ -473,6 +540,10 @@ void SyncEngineImpl::OnActiveDevicesChanged() {
                      active_devices_provider_
                          ->CollectFCMRegistrationTokensForInvalidations(
                              local_cache_guid)));
+}
+
+void SyncEngineImpl::UpdateLastSyncedTime() {
+  prefs_->SetLastSyncedTime(base::Time::Now());
 }
 
 }  // namespace syncer

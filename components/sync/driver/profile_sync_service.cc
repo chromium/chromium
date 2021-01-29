@@ -41,7 +41,6 @@
 #include "components/sync/engine/engine_components_factory_impl.h"
 #include "components/sync/engine/net/http_bridge.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
-#include "components/sync/engine/polling_constants.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
@@ -223,7 +222,6 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
                               base::Unretained(this)),
           base::BindRepeating(&ProfileSyncService::ReconfigureDueToPassphrase,
                               base::Unretained(this)),
-          &sync_transport_data_prefs_,
           sync_client_->GetTrustedVaultClient()),
       network_time_update_callback_(
           std::move(init_params.network_time_update_callback)),
@@ -543,8 +541,8 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
 
   engine_ = sync_client_->GetSyncApiComponentFactory()->CreateSyncEngine(
       debug_identifier_, sync_client_->GetInvalidationService(),
-      sync_client_->GetSyncInvalidationsService(),
-      sync_transport_data_prefs_.AsWeakPtr());
+      sync_client_->GetSyncInvalidationsService());
+  DCHECK(engine_);
 
   // Clear any old errors the first time sync starts.
   if (!user_settings_->IsFirstSetupComplete()) {
@@ -559,6 +557,8 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
     sync_transport_data_prefs_.SetGaiaId(authenticated_account_info.gaia);
   }
 
+  // TODO(crbug.com/938894): Move this logic to SyncEngineImpl, possibly Init().
+  // The caveat is that observers need to be notified in certain cases.
   if (!IsLocalSyncTransportDataValid(sync_transport_data_prefs_,
                                      authenticated_account_info)) {
     // Either the local data is uninitialized or corrupt, so let's throw
@@ -594,22 +594,9 @@ void ProfileSyncService::StartUpSlowEngineComponents() {
     params.local_sync_backend_folder =
         sync_client_->GetLocalSyncBackendFolder();
   }
-  params.restored_key_for_bootstrapping =
-      sync_transport_data_prefs_.GetEncryptionBootstrapToken();
-  params.restored_keystore_key_for_bootstrapping =
-      sync_transport_data_prefs_.GetKeystoreEncryptionBootstrapToken();
-  params.cache_guid = sync_transport_data_prefs_.GetCacheGuid();
-  params.birthday = sync_transport_data_prefs_.GetBirthday();
-  params.bag_of_chips = sync_transport_data_prefs_.GetBagOfChips();
   params.engine_components_factory =
       std::make_unique<EngineComponentsFactoryImpl>(
           EngineSwitchesFromCommandLine());
-  params.invalidation_versions =
-      sync_transport_data_prefs_.GetInvalidationVersions();
-  params.poll_interval = sync_transport_data_prefs_.GetPollInterval();
-  if (params.poll_interval.is_zero()) {
-    params.poll_interval = kDefaultPollInterval;
-  }
 
   if (!IsLocalSyncEnabled()) {
     auth_manager_->ConnectionOpened();
@@ -826,10 +813,6 @@ SyncService::TransportState ProfileSyncService::GetTransportState() const {
   return TransportState::ACTIVE;
 }
 
-void ProfileSyncService::UpdateLastSyncedTime() {
-  sync_transport_data_prefs_.SetLastSyncedTime(base::Time::Now());
-}
-
 void ProfileSyncService::NotifyObservers() {
   for (auto& observer : observers_) {
     observer.OnStateChanged(this);
@@ -895,9 +878,8 @@ void ProfileSyncService::UpdateEngineInitUMA(bool success) const {
 void ProfileSyncService::OnEngineInitialized(
     const WeakHandle<JsBackend>& js_backend,
     const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
-    const std::string& birthday,
-    const std::string& bag_of_chips,
-    bool success) {
+    bool success,
+    bool is_first_time_sync_configure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // TODO(treib): Based on some crash reports, it seems like the user could have
@@ -906,10 +888,8 @@ void ProfileSyncService::OnEngineInitialized(
   DCHECK(IsEngineAllowedToRun());
 
   // The very first time the backend initializes is effectively the first time
-  // we can say we successfully "synced".  LastSyncedTime will only be null in
-  // this case, because the pref wasn't restored on StartUp.
-  is_first_time_sync_configure_ =
-      sync_transport_data_prefs_.GetLastSyncedTime().is_null();
+  // we can say we successfully "synced".
+  is_first_time_sync_configure_ = is_first_time_sync_configure;
 
   UpdateEngineInitUMA(success);
 
@@ -923,16 +903,8 @@ void ProfileSyncService::OnEngineInitialized(
 
   sync_js_controller_.AttachJsBackend(js_backend);
 
-  // Save initialization data to preferences.
-  sync_transport_data_prefs_.SetBirthday(birthday);
-  sync_transport_data_prefs_.SetBagOfChips(bag_of_chips);
-
   if (!protocol_event_observers_.empty()) {
     engine_->RequestBufferedProtocolEventsAndEnableForwarding();
-  }
-
-  if (is_first_time_sync_configure_) {
-    UpdateLastSyncedTime();
   }
 
   data_type_manager_ =
@@ -975,14 +947,6 @@ void ProfileSyncService::OnSyncCycleCompleted(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   last_snapshot_ = snapshot;
-
-  UpdateLastSyncedTime();
-  if (!snapshot.poll_finish_time().is_null())
-    sync_transport_data_prefs_.SetLastPollTime(snapshot.poll_finish_time());
-  DCHECK(!snapshot.poll_interval().is_zero());
-  sync_transport_data_prefs_.SetPollInterval(snapshot.poll_interval());
-
-  sync_transport_data_prefs_.SetBagOfChips(snapshot.bag_of_chips());
 
   DVLOG(2) << "Notifying observers sync cycle completed";
   NotifySyncCycleCompleted();
@@ -1279,10 +1243,14 @@ void ProfileSyncService::SetSyncRequestedAndIgnoreNotification(
 }
 
 void ProfileSyncService::ConfigureDataTypeManager(ConfigureReason reason) {
+  DCHECK(engine_);
+  DCHECK(engine_->IsInitialized());
+  DCHECK(!engine_->GetCacheGuid().empty());
+
   ConfigureContext configure_context;
   configure_context.authenticated_account_id =
       GetAuthenticatedAccountInfo().account_id;
-  configure_context.cache_guid = sync_transport_data_prefs_.GetCacheGuid();
+  configure_context.cache_guid = engine_->GetCacheGuid();
   configure_context.sync_mode = SyncMode::kFull;
   configure_context.reason = reason;
   configure_context.configuration_start_time = base::Time::Now();
@@ -1932,8 +1900,8 @@ void ProfileSyncService::RemoveClientFromServer() const {
   if (!engine_ || !engine_->IsInitialized()) {
     return;
   }
-  const std::string cache_guid = sync_transport_data_prefs_.GetCacheGuid();
-  const std::string birthday = sync_transport_data_prefs_.GetBirthday();
+  const std::string cache_guid = engine_->GetCacheGuid();
+  const std::string birthday = engine_->GetBirthday();
   DCHECK(!cache_guid.empty());
   const std::string& access_token = auth_manager_->access_token();
   if (!access_token.empty() && !birthday.empty()) {

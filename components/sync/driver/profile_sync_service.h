@@ -161,9 +161,8 @@ class ProfileSyncService : public SyncService,
   void OnEngineInitialized(
       const WeakHandle<JsBackend>& js_backend,
       const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
-      const std::string& birthday,
-      const std::string& bag_of_chips,
-      bool success) override;
+      bool success,
+      bool is_first_time_sync_configure) override;
   void OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) override;
   void OnProtocolEvent(const ProtocolEvent& event) override;
   void OnConnectionStatusChange(ConnectionStatus status) override;
@@ -329,9 +328,6 @@ class ProfileSyncService : public SyncService,
   // Called when configuration is complete.
   void StartSyncingWithServer();
 
-  // Sets the last synced time to the current time.
-  void UpdateLastSyncedTime();
-
   // Notify all observers that a change has occurred.
   void NotifyObservers();
 
@@ -377,6 +373,8 @@ class ProfileSyncService : public SyncService,
 
   // The class that handles getting, setting, and persisting sync preferences.
   SyncPrefs sync_prefs_;
+  // TODO(crbug.com/938894): Remove this member and interact with SyncEngine
+  // instead.
   SyncTransportDataPrefs sync_transport_data_prefs_;
 
   // Encapsulates user signin - used to set/get the user's authenticated

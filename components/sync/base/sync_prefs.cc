@@ -48,8 +48,6 @@ const char kSyncSuppressStart[] = "sync.suppress_start";
 
 }  // namespace
 
-CryptoSyncPrefs::~CryptoSyncPrefs() {}
-
 SyncTransportDataPrefs::SyncTransportDataPrefs(PrefService* pref_service)
     : pref_service_(pref_service) {}
 

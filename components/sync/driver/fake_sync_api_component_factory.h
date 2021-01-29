@@ -34,6 +34,12 @@ class FakeSyncApiComponentFactory : public SyncApiComponentFactory {
   }
   FakeSyncEngine* last_created_engine() { return last_created_engine_.get(); }
 
+  // Determines whether future initialization of FakeSyncEngine will report
+  // being an initial sync.
+  void set_first_time_sync_configure_done(bool done) {
+    is_first_time_sync_configure_done_ = done;
+  }
+
   // SyncApiComponentFactory overrides.
   std::unique_ptr<DataTypeManager> CreateDataTypeManager(
       const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
@@ -44,14 +50,14 @@ class FakeSyncApiComponentFactory : public SyncApiComponentFactory {
   std::unique_ptr<SyncEngine> CreateSyncEngine(
       const std::string& name,
       invalidation::InvalidationService* invalidator,
-      syncer::SyncInvalidationsService* sync_invalidations_service,
-      const base::WeakPtr<SyncTransportDataPrefs>& sync_prefs) override;
+      syncer::SyncInvalidationsService* sync_invalidations_service) override;
   void DeleteLegacyDirectoryFilesAndNigoriStorage() override;
 
  private:
   base::WeakPtr<DataTypeManagerImpl> last_created_data_type_manager_;
   base::WeakPtr<FakeSyncEngine> last_created_engine_;
   bool allow_fake_engine_init_completion_ = true;
+  bool is_first_time_sync_configure_done_ = false;
 };
 
 }  // namespace syncer

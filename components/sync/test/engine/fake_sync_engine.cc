@@ -14,8 +14,10 @@ namespace syncer {
 
 constexpr char FakeSyncEngine::kTestBirthday[];
 
-FakeSyncEngine::FakeSyncEngine(bool allow_init_completion)
-    : allow_init_completion_(allow_init_completion) {}
+FakeSyncEngine::FakeSyncEngine(bool allow_init_completion,
+                               bool is_first_time_sync_configure)
+    : allow_init_completion_(allow_init_completion),
+      is_first_time_sync_configure_(is_first_time_sync_configure) {}
 
 FakeSyncEngine::~FakeSyncEngine() = default;
 
@@ -26,9 +28,8 @@ void FakeSyncEngine::TriggerInitializationCompletion(bool success) {
   initialized_ = success;
 
   host_->OnEngineInitialized(WeakHandle<JsBackend>(),
-                             WeakHandle<DataTypeDebugInfoListener>(),
-                             kTestBirthday,
-                             /*bag_of_chips=*/"", success);
+                             WeakHandle<DataTypeDebugInfoListener>(), success,
+                             is_first_time_sync_configure_);
 }
 
 void FakeSyncEngine::Initialize(InitParams params) {
@@ -56,6 +57,14 @@ void FakeSyncEngine::InvalidateCredentials() {
   authenticated_account_id_ = CoreAccountId();
 }
 
+std::string FakeSyncEngine::GetCacheGuid() const {
+  return "fake_engine_cache_guid";
+}
+
+std::string FakeSyncEngine::GetBirthday() const {
+  return kTestBirthday;
+}
+
 void FakeSyncEngine::StartConfiguration() {}
 
 void FakeSyncEngine::StartSyncingWithServer() {}
@@ -63,6 +72,11 @@ void FakeSyncEngine::StartSyncingWithServer() {}
 void FakeSyncEngine::SetEncryptionPassphrase(const std::string& passphrase) {}
 
 void FakeSyncEngine::SetDecryptionPassphrase(const std::string& passphrase) {}
+
+void FakeSyncEngine::SetEncryptionBootstrapToken(const std::string& token) {}
+
+void FakeSyncEngine::SetKeystoreEncryptionBootstrapToken(
+    const std::string& token) {}
 
 void FakeSyncEngine::AddTrustedVaultDecryptionKeys(
     const std::vector<std::vector<uint8_t>>& keys,

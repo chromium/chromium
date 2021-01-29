@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -40,22 +39,6 @@ class SyncPrefObserver {
   virtual ~SyncPrefObserver();
 };
 
-// Use this for crypto/passphrase-related parts of sync prefs.
-class CryptoSyncPrefs {
- public:
-  virtual ~CryptoSyncPrefs();
-
-  // Use this encryption bootstrap token if we're using an explicit passphrase.
-  virtual std::string GetEncryptionBootstrapToken() const = 0;
-  virtual void SetEncryptionBootstrapToken(const std::string& token) = 0;
-
-  // Use this keystore bootstrap token if we're not using an explicit
-  // passphrase.
-  virtual std::string GetKeystoreEncryptionBootstrapToken() const = 0;
-  virtual void SetKeystoreEncryptionBootstrapToken(
-      const std::string& token) = 0;
-};
-
 // Thin wrapper for "bookkeeping" sync preferences, such as the last synced
 // time, whether the last shutdown was clean, etc. Does *NOT* include sync
 // preferences which are directly user-controlled, such as the set of selected
@@ -65,15 +48,13 @@ class CryptoSyncPrefs {
 // invoked first.
 // TODO(crbug.com/938894): Move to dedicated file, possibly next to
 // SyncEngineImpl and introduce a separate pref registration function.
-class SyncTransportDataPrefs
-    : public base::SupportsWeakPtr<SyncTransportDataPrefs>,
-      public CryptoSyncPrefs {
+class SyncTransportDataPrefs {
  public:
   // |pref_service| must not be null and must outlive this object.
   explicit SyncTransportDataPrefs(PrefService* pref_service);
   SyncTransportDataPrefs(const SyncTransportDataPrefs&) = delete;
   SyncTransportDataPrefs& operator=(const SyncTransportDataPrefs&) = delete;
-  ~SyncTransportDataPrefs() override;
+  ~SyncTransportDataPrefs();
 
   // Clears all preferences in this class, which excludes the encryption
   // bootstrap token (non-keystore counterpart).
@@ -106,14 +87,14 @@ class SyncTransportDataPrefs
   // Hence, it gets treated as user-controlled similarly to sync datatype
   // selection settings (i.e. doesn't get cleared in
   // ClearAllExceptEncryptionBootstrapToken()).
-  std::string GetEncryptionBootstrapToken() const override;
-  void SetEncryptionBootstrapToken(const std::string& token) override;
+  std::string GetEncryptionBootstrapToken() const;
+  void SetEncryptionBootstrapToken(const std::string& token);
   void ClearEncryptionBootstrapToken();
 
   // Use this keystore bootstrap token if we're not using an explicit
   // passphrase.
-  std::string GetKeystoreEncryptionBootstrapToken() const override;
-  void SetKeystoreEncryptionBootstrapToken(const std::string& token) override;
+  std::string GetKeystoreEncryptionBootstrapToken() const;
+  void SetKeystoreEncryptionBootstrapToken(const std::string& token);
 
   // Get/set for the last known sync invalidation versions.
   std::map<ModelType, int64_t> GetInvalidationVersions() const;

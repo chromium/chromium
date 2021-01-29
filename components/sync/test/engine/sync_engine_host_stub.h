@@ -20,9 +20,8 @@ class SyncEngineHostStub : public SyncEngineHost {
   void OnEngineInitialized(
       const WeakHandle<JsBackend>& js_backend,
       const WeakHandle<DataTypeDebugInfoListener>& debug_info_listener,
-      const std::string& birthday,
-      const std::string& bag_of_chips,
-      bool success) override;
+      bool success,
+      bool is_first_time_sync_configure) override;
   void OnSyncCycleCompleted(const SyncCycleSnapshot& snapshot) override;
   void OnProtocolEvent(const ProtocolEvent& event) override;
   void OnConnectionStatusChange(ConnectionStatus status) override;

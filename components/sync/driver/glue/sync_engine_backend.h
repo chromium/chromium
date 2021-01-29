@@ -41,6 +41,28 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
       base::OnceCallback<void(const ModelType,
                               std::unique_ptr<base::ListValue>)>;
 
+  // Struct that allows passing back data upon init, for data previously
+  // produced by SyncEngineBackend (which doesn't itself have the ability to
+  // persist data).
+  struct RestoredLocalTransportData {
+    RestoredLocalTransportData();
+    RestoredLocalTransportData(RestoredLocalTransportData&&);
+    RestoredLocalTransportData(const RestoredLocalTransportData&) = delete;
+    ~RestoredLocalTransportData();
+
+    std::string encryption_bootstrap_token;
+    std::string keystore_encryption_bootstrap_token;
+    std::map<ModelType, int64_t> invalidation_versions;
+
+    // Initial authoritative values (usually read from prefs).
+    std::string cache_guid;
+    std::string birthday;
+    std::string bag_of_chips;
+
+    // Define the polling interval. Must not be zero.
+    base::TimeDelta poll_interval;
+  };
+
   SyncEngineBackend(const std::string& name,
                     const base::FilePath& sync_data_folder,
                     const base::WeakPtr<SyncEngineImpl>& host);
@@ -76,7 +98,8 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   //
   // Called to perform initialization of the syncapi on behalf of
   // SyncEngine::Initialize.
-  void DoInitialize(SyncEngine::InitParams params);
+  void DoInitialize(SyncEngine::InitParams params,
+                    RestoredLocalTransportData restored_transport_data);
 
   // Called to perform credential update on behalf of
   // SyncEngine::UpdateCredentials.

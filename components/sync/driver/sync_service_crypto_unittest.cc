@@ -54,25 +54,6 @@ CoreAccountInfo MakeAccountInfoWithGaia(const std::string& gaia) {
   return result;
 }
 
-class MockCryptoSyncPrefs : public CryptoSyncPrefs {
- public:
-  MockCryptoSyncPrefs() = default;
-  ~MockCryptoSyncPrefs() override = default;
-  MOCK_METHOD(std::string, GetEncryptionBootstrapToken, (), (const override));
-  MOCK_METHOD(void,
-              SetEncryptionBootstrapToken,
-              (const std::string&),
-              (override));
-  MOCK_METHOD(std::string,
-              GetKeystoreEncryptionBootstrapToken,
-              (),
-              (const override));
-  MOCK_METHOD(void,
-              SetKeystoreEncryptionBootstrapToken,
-              (const std::string&),
-              (override));
-};
-
 // Object representing a server that contains the authoritative trusted vault
 // keys, and TestTrustedVaultClient reads from.
 class TestTrustedVaultServer {
@@ -296,7 +277,6 @@ class SyncServiceCryptoTest : public testing::Test {
         crypto_(notify_observers_cb_.Get(),
                 /*notify_required_user_action_changed=*/base::DoNothing(),
                 reconfigure_cb_.Get(),
-                &prefs_,
                 &trusted_vault_client_) {
     trusted_vault_server_.StoreKeysOnServer(kSyncingAccount.gaia,
                                             kInitialTrustedVaultKeys);
@@ -321,7 +301,6 @@ class SyncServiceCryptoTest : public testing::Test {
   testing::NiceMock<
       base::MockCallback<base::RepeatingCallback<void(ConfigureReason)>>>
       reconfigure_cb_;
-  testing::NiceMock<MockCryptoSyncPrefs> prefs_;
   TestTrustedVaultServer trusted_vault_server_;
   TestTrustedVaultClient trusted_vault_client_;
   testing::NiceMock<MockSyncEngine> engine_;

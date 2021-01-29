@@ -30,7 +30,7 @@ class FakeSyncEngine : public SyncEngine,
  public:
   static constexpr char kTestBirthday[] = "1";
 
-  explicit FakeSyncEngine(bool allow_init_completion);
+  FakeSyncEngine(bool allow_init_completion, bool is_first_time_sync_configure);
   ~FakeSyncEngine() override;
 
   CoreAccountId authenticated_account_id() const {
@@ -52,6 +52,10 @@ class FakeSyncEngine : public SyncEngine,
 
   void InvalidateCredentials() override;
 
+  std::string GetCacheGuid() const override;
+
+  std::string GetBirthday() const override;
+
   void StartConfiguration() override;
 
   void StartSyncingWithServer() override;
@@ -59,6 +63,10 @@ class FakeSyncEngine : public SyncEngine,
   void SetEncryptionPassphrase(const std::string& passphrase) override;
 
   void SetDecryptionPassphrase(const std::string& passphrase) override;
+
+  void SetEncryptionBootstrapToken(const std::string& token) override;
+
+  void SetKeystoreEncryptionBootstrapToken(const std::string& token) override;
 
   void AddTrustedVaultDecryptionKeys(
       const std::vector<std::vector<uint8_t>>& keys,
@@ -92,6 +100,7 @@ class FakeSyncEngine : public SyncEngine,
 
  private:
   const bool allow_init_completion_;
+  const bool is_first_time_sync_configure_;
   SyncEngineHost* host_ = nullptr;
   bool initialized_ = false;
   const SyncStatus default_sync_status_;

@@ -46,10 +46,10 @@ FakeSyncApiComponentFactory::CreateDataTypeManager(
 std::unique_ptr<SyncEngine> FakeSyncApiComponentFactory::CreateSyncEngine(
     const std::string& name,
     invalidation::InvalidationService* invalidator,
-    syncer::SyncInvalidationsService* sync_invalidations_service,
-    const base::WeakPtr<SyncTransportDataPrefs>& sync_prefs) {
-  auto engine =
-      std::make_unique<FakeSyncEngine>(allow_fake_engine_init_completion_);
+    syncer::SyncInvalidationsService* sync_invalidations_service) {
+  auto engine = std::make_unique<FakeSyncEngine>(
+      allow_fake_engine_init_completion_,
+      /*is_first_time_sync_configure=*/!is_first_time_sync_configure_done_);
   last_created_engine_ = engine->AsWeakPtr();
   return engine;
 }
