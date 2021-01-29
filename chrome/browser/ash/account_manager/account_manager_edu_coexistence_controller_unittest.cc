@@ -26,9 +26,11 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+namespace edu_coexistence = ::chromeos::edu_coexistence;
 
 constexpr char kValidToken[] = "valid-token";
 
@@ -242,4 +244,4 @@ TEST_F(AccountManagerEducoexistenceControllerTest,
             "7");
 }
 
-}  // namespace chromeos
+}  // namespace ash

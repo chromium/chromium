@@ -13,7 +13,7 @@
 #include "chromeos/components/account_manager/account_manager_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-namespace chromeos {
+namespace ash {
 
 // static
 AccountManagerPolicyController*
@@ -63,4 +63,4 @@ KeyedService* AccountManagerPolicyControllerFactory::BuildServiceInstanceFor(
   return service;
 }
 
-}  // namespace chromeos
+}  // namespace ash

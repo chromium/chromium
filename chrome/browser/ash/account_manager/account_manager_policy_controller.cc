@@ -14,10 +14,11 @@
 #include "chrome/browser/chromeos/child_accounts/secondary_account_consent_logger.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/supervised_user/supervised_user_features.h"
+#include "chromeos/components/account_manager/account_manager.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 
 AccountManagerPolicyController::AccountManagerPolicyController(
     Profile* profile,
@@ -34,7 +35,7 @@ AccountManagerPolicyController::~AccountManagerPolicyController() {
 void AccountManagerPolicyController::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!chromeos::IsAccountManagerAvailable(profile_))
+  if (!IsAccountManagerAvailable(profile_))
     return;
 
   pref_change_registrar_.Init(profile_->GetPrefs());
@@ -46,8 +47,8 @@ void AccountManagerPolicyController::Start() {
   // Take any necessary initial action based on the current state of the pref.
   OnSecondaryAccountsSigninAllowedPrefChanged();
 
-  chromeos::ChildAccountTypeChangedUserData* user_data =
-      chromeos::ChildAccountTypeChangedUserData::GetForProfile(profile_);
+  ChildAccountTypeChangedUserData* user_data =
+      ChildAccountTypeChangedUserData::GetForProfile(profile_);
   child_account_type_changed_subscription_ =
       user_data->RegisterCallback(base::BindRepeating(
           &AccountManagerPolicyController::OnChildAccountTypeChanged,
@@ -174,4 +175,4 @@ void AccountManagerPolicyController::Shutdown() {
   edu_coexistence_consent_invalidation_controller_.reset();
 }
 
-}  // namespace chromeos
+}  // namespace ash

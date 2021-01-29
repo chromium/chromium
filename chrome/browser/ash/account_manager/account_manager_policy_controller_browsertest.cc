@@ -22,8 +22,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 constexpr char kFakePrimaryUsername[] = "test-primary@example.com";
 constexpr char kFakeSecondaryUsername[] = "test-secondary@example.com";
@@ -133,8 +132,7 @@ IN_PROC_BROWSER_TEST_F(AccountManagerPolicyControllerTest,
   // (|true|).
   profile()->GetPrefs()->SetBoolean(
       chromeos::prefs::kSecondaryGoogleAccountSigninAllowed, true);
-  chromeos::ChildAccountTypeChangedUserData::GetForProfile(profile())->SetValue(
-      false);
+  ChildAccountTypeChangedUserData::GetForProfile(profile())->SetValue(false);
 
   // All accounts must be intact.
   accounts = GetAccountManagerAccounts();
@@ -181,8 +179,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_GT(initial_num_accounts, 1UL);
 
   // Disallow secondary account sign-ins.
-  chromeos::ChildAccountTypeChangedUserData::GetForProfile(profile())->SetValue(
-      true);
+  ChildAccountTypeChangedUserData::GetForProfile(profile())->SetValue(true);
 
   // Secondary Accounts must be removed.
   accounts = GetAccountManagerAccounts();
@@ -202,4 +199,4 @@ IN_PROC_BROWSER_TEST_F(
             accounts[0].key.id);
 }
 
-}  // namespace chromeos
+}  // namespace ash

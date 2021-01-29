@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
 
-namespace chromeos {
+namespace ash {
 
 // Used in histograms.
 constexpr char kMigrationStepResultMetricName[] =
@@ -130,4 +130,4 @@ void AccountMigrationRunner::FinishWithFailure() {
                                            failed_step_id /* failed_step */});
 }
 
-}  // namespace chromeos
+}  // namespace ash

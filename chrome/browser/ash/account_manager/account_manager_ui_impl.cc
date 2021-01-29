@@ -5,7 +5,9 @@
 #include "chrome/browser/ash/account_manager/account_manager_ui_impl.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 
-namespace chromeos {
+namespace ash {
+
+using ::chromeos::InlineLoginDialogChromeOS;
 
 AccountManagerUIImpl::AccountManagerUIImpl() = default;
 AccountManagerUIImpl::~AccountManagerUIImpl() = default;
@@ -25,4 +27,4 @@ bool AccountManagerUIImpl::IsDialogShown() {
   return InlineLoginDialogChromeOS::IsShown();
 }
 
-}  // namespace chromeos
+}  // namespace ash

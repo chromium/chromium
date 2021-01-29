@@ -18,7 +18,7 @@
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace chromeos {
+namespace ash {
 
 bool IsAccountManagerAvailable(const Profile* const profile) {
   // Signin Profile does not have any accounts associated with it,
@@ -63,4 +63,4 @@ void InitializeAccountManager(const base::FilePath& cryptohome_root_dir,
       std::move(initialization_callback));
 }
 
-}  // namespace chromeos
+}  // namespace ash

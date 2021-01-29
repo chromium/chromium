@@ -10,7 +10,7 @@
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 
 bool IsAccountManagerAvailable(const Profile* const profile);
 
@@ -21,6 +21,6 @@ bool IsAccountManagerAvailable(const Profile* const profile);
 void InitializeAccountManager(const base::FilePath& cryptohome_root_dir,
                               base::OnceClosure initialization_callback);
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MANAGER_UTIL_H_

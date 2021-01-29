@@ -6,7 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 const void* const kChildAccountTypeChangedUserDataUserKey =
@@ -47,4 +47,5 @@ ChildAccountTypeChangedUserData::RegisterCallback(
     const base::RepeatingCallback<void(bool)>& cb) {
   return callback_list_.Add(cb);
 }
-}  // namespace chromeos
+
+}  // namespace ash

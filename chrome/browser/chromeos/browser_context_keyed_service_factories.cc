@@ -53,6 +53,8 @@
 
 namespace chromeos {
 
+using ::ash::AccountManagerMigratorFactory;
+
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   AccountManagerMigratorFactory::GetInstance();
   android_sms::AndroidSmsServiceFactory::GetInstance();

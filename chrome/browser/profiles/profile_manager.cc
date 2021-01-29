@@ -1114,11 +1114,11 @@ void ProfileManager::InitProfileUserPrefs(Profile* profile) {
       }
       profile->GetPrefs()->SetInteger(arc::prefs::kArcSupervisionTransition,
                                       static_cast<int>(supervisionTransition));
-      chromeos::ChildAccountTypeChangedUserData::GetForProfile(profile)
-          ->SetValue(true);
+      ash::ChildAccountTypeChangedUserData::GetForProfile(profile)->SetValue(
+          true);
     } else {
-      chromeos::ChildAccountTypeChangedUserData::GetForProfile(profile)
-          ->SetValue(false);
+      ash::ChildAccountTypeChangedUserData::GetForProfile(profile)->SetValue(
+          false);
     }
 
     if (user_is_child) {
@@ -1475,8 +1475,7 @@ void ProfileManager::DoFinalInitForServices(Profile* profile,
   AccessibilityLabelsServiceFactory::GetForProfile(profile)->Init();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::AccountManagerPolicyControllerFactory::GetForBrowserContext(
-      profile);
+  ash::AccountManagerPolicyControllerFactory::GetForBrowserContext(profile);
 #endif
 
   // Creates the LiteVideo Keyed Service and begins loading the

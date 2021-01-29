@@ -159,11 +159,12 @@
 #include "ui/base/ime/chromeos/input_method_util.h"
 #include "url/gurl.h"
 
-using signin::ConsentLevel;
-
 namespace chromeos {
 
 namespace {
+
+using ::ash::AccountManagerMigratorFactory;
+using ::signin::ConsentLevel;
 
 // Time to wait for child policy refresh. If that time is exceeded session
 // should start with cached policy.
@@ -1142,7 +1143,7 @@ void UserSessionManager::InitializeAccountManager() {
       ProfileHelper::GetProfilePathByUserIdHash(user_context_.GetUserIDHash());
 
   if (ProfileHelper::IsRegularProfilePath(profile_path)) {
-    chromeos::InitializeAccountManager(
+    ash::InitializeAccountManager(
         profile_path,
         base::BindOnce(&UserSessionManager::PrepareProfile, AsWeakPtr(),
                        profile_path) /* initialization_callback */);
@@ -2051,8 +2052,7 @@ void UserSessionManager::CheckEolInfo(Profile* profile) {
 
 void UserSessionManager::StartAccountManagerMigration(Profile* profile) {
   // `migrator` is nullptr for incognito profiles.
-  auto* migrator =
-      chromeos::AccountManagerMigratorFactory::GetForBrowserContext(profile);
+  auto* migrator = AccountManagerMigratorFactory::GetForBrowserContext(profile);
   if (migrator)
     migrator->Start();
 }

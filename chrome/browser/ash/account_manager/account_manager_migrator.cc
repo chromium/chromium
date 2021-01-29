@@ -47,7 +47,7 @@
 #include "components/webdata/common/web_data_service_consumer.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -497,7 +497,7 @@ AccountManagerMigrator::~AccountManagerMigrator() = default;
 void AccountManagerMigrator::Start() {
   DVLOG(1) << "AccountManagerMigrator::Start";
 
-  if (!chromeos::IsAccountManagerAvailable(profile_))
+  if (!IsAccountManagerAvailable(profile_))
     return;
 
   if (migration_runner_ && (migration_runner_->GetStatus() ==
@@ -676,4 +676,4 @@ KeyedService* AccountManagerMigratorFactory::BuildServiceInstanceFor(
   return new AccountManagerMigrator(Profile::FromBrowserContext(context));
 }
 
-}  // namespace chromeos
+}  // namespace ash

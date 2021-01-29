@@ -12,6 +12,8 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
+// TODO(https://crbug.com/1164001): move to forward declaration when migrated to
+// ash/components/.
 #include "chromeos/components/account_manager/account_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
@@ -21,9 +23,7 @@
 
 class Profile;
 
-namespace chromeos {
-
-class AccountManager;
+namespace ash {
 class EduCoexistenceConsentInvalidationController;
 
 class AccountManagerPolicyController : public KeyedService {
@@ -33,7 +33,7 @@ class AccountManagerPolicyController : public KeyedService {
                                  const AccountId& device_account_id);
   ~AccountManagerPolicyController() override;
 
-  // Starts applying the behaviour required by |chromeos::AccountManager|
+  // Starts applying the behaviour required by |AccountManager|
   // specific prefs and policies.
   void Start();
 
@@ -84,6 +84,6 @@ class AccountManagerPolicyController : public KeyedService {
   DISALLOW_COPY_AND_ASSIGN(AccountManagerPolicyController);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MANAGER_POLICY_CONTROLLER_H_

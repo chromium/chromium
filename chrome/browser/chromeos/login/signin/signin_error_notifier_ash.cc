@@ -168,7 +168,7 @@ void SigninErrorNotifier::OnErrorChanged() {
 
   const AccountId account_id =
       multi_user_util::GetAccountIdFromProfile(profile_);
-  if (!chromeos::IsAccountManagerAvailable(profile_)) {
+  if (!ash::IsAccountManagerAvailable(profile_)) {
     // If this flag is disabled, Chrome OS does not have a concept of Secondary
     // Accounts. Preserve existing behavior.
     RecordReauthReason(account_id, chromeos::ReauthReason::SYNC_FAILED);

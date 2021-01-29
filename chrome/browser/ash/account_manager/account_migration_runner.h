@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 
-namespace chromeos {
+namespace ash {
 
 // A utility class to run account migrations for |chromeos::AccountManager|. It
 // enables the specification of a series of async migration |Step|s in a
@@ -146,6 +146,6 @@ class AccountMigrationRunner {
   DISALLOW_COPY_AND_ASSIGN(AccountMigrationRunner);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MIGRATION_RUNNER_H_

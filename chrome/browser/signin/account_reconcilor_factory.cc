@@ -120,7 +120,7 @@ class ChromeOSAccountReconcilorDelegate
  public:
   ChromeOSAccountReconcilorDelegate(
       signin::IdentityManager* identity_manager,
-      chromeos::AccountManagerMigrator* account_migrator)
+      ash::AccountManagerMigrator* account_migrator)
       : signin::MirrorAccountReconcilorDelegate(identity_manager),
         account_migrator_(account_migrator) {}
   ~ChromeOSAccountReconcilorDelegate() override = default;
@@ -132,14 +132,14 @@ class ChromeOSAccountReconcilorDelegate
       return false;
     }
 
-    const chromeos::AccountMigrationRunner::Status status =
+    const ash::AccountMigrationRunner::Status status =
         account_migrator_->GetStatus();
-    return status != chromeos::AccountMigrationRunner::Status::kNotStarted &&
-           status != chromeos::AccountMigrationRunner::Status::kRunning;
+    return status != ash::AccountMigrationRunner::Status::kNotStarted &&
+           status != ash::AccountMigrationRunner::Status::kRunning;
   }
 
   // A non-owning pointer.
-  const chromeos::AccountManagerMigrator* const account_migrator_;
+  const ash::AccountManagerMigrator* const account_migrator_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeOSAccountReconcilorDelegate);
 };
@@ -211,7 +211,7 @@ AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
       // TODO(https://crbug.com/993317): Remove the check for
       // |IsAccountManagerAvailable| after fixing https://crbug.com/1008349 and
       // https://crbug.com/993317.
-      if (chromeos::IsAccountManagerAvailable(profile) &&
+      if (ash::IsAccountManagerAvailable(profile) &&
           chromeos::InstallAttributes::Get()->IsActiveDirectoryManaged()) {
         return std::make_unique<
             signin::ActiveDirectoryAccountReconcilorDelegate>();
@@ -229,8 +229,7 @@ AccountReconcilorFactory::CreateAccountReconcilorDelegate(Profile* profile) {
       // users have been migrated to Account Manager.
       return std::make_unique<ChromeOSAccountReconcilorDelegate>(
           IdentityManagerFactory::GetForProfile(profile),
-          chromeos::AccountManagerMigratorFactory::GetForBrowserContext(
-              profile));
+          ash::AccountManagerMigratorFactory::GetForBrowserContext(profile));
 #endif
       return std::make_unique<signin::MirrorAccountReconcilorDelegate>(
           IdentityManagerFactory::GetForProfile(profile));

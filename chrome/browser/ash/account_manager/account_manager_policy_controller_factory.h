@@ -15,8 +15,7 @@ template <typename T>
 class NoDestructor;
 }  // namespace base
 
-namespace chromeos {
-
+namespace ash {
 class AccountManagerPolicyController;
 
 class AccountManagerPolicyControllerFactory
@@ -42,6 +41,6 @@ class AccountManagerPolicyControllerFactory
   DISALLOW_COPY_AND_ASSIGN(AccountManagerPolicyControllerFactory);
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MANAGER_POLICY_CONTROLLER_FACTORY_H_

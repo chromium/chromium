@@ -11,7 +11,8 @@
 #include "base/supports_user_data.h"
 
 class Profile;
-namespace chromeos {
+
+namespace ash {
 
 class ChildAccountTypeChangedUserData : public base::SupportsUserData::Data {
  public:
@@ -36,6 +37,7 @@ class ChildAccountTypeChangedUserData : public base::SupportsUserData::Data {
   bool value_ = false;
   base::CallbackList<void(bool)> callback_list_;
 };
-}  // namespace chromeos
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ACCOUNT_MANAGER_CHILD_ACCOUNT_TYPE_CHANGED_USER_DATA_H_

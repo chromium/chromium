@@ -712,7 +712,7 @@ void PrintPreviewHandler::HandleSignin(const base::ListValue* /*args*/) {
   DCHECK(profile);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::IsAccountManagerAvailable(profile)) {
+  if (ash::IsAccountManagerAvailable(profile)) {
     // Chrome OS Account Manager is enabled on this Profile and hence, all
     // account management flows will go through native UIs and not through a
     // tabbed browser window.

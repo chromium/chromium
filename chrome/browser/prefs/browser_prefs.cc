@@ -1044,7 +1044,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::RegisterSamlProfilePrefs(registry);
   chromeos::ScreenTimeController::RegisterProfilePrefs(registry);
   SecondaryAccountConsentLogger::RegisterPrefs(registry);
-  chromeos::EduCoexistenceConsentInvalidationController::RegisterProfilePrefs(
+  ash::EduCoexistenceConsentInvalidationController::RegisterProfilePrefs(
       registry);
   SigninErrorNotifier::RegisterPrefs(registry);
   chromeos::ServicesCustomizationDocument::RegisterProfilePrefs(registry);

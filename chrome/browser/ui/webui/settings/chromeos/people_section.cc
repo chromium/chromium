@@ -60,6 +60,8 @@ namespace chromeos {
 namespace settings {
 namespace {
 
+using ::ash::IsAccountManagerAvailable;
+
 const std::vector<SearchConcept>& GetPeopleSearchConcepts() {
   static const base::NoDestructor<std::vector<SearchConcept>> tags([] {
     std::vector<SearchConcept> all_tags({

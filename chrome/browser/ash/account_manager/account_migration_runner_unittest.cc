@@ -15,7 +15,7 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -196,4 +196,4 @@ TEST_F(AccountMigrationRunnerTest, FailsIfIntermediateStepFails) {
   EXPECT_EQ(2, num_steps_executed_);
 }
 
-}  // namespace chromeos
+}  // namespace ash

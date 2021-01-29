@@ -17,6 +17,10 @@
 
 class GURL;
 
+namespace ash {
+class AccountManagerUIImpl;
+}
+
 namespace chromeos {
 
 // Extends from |SystemWebDialogDelegate| to create an always-on-top but movable
@@ -99,7 +103,7 @@ class InlineLoginDialogChromeOS : public SystemWebDialogDelegate,
  private:
   // `Show` method can be called directly only by `AccountManagerUIImpl` class.
   // To show the dialog, use `AccountManagerFacade`.
-  friend class AccountManagerUIImpl;
+  friend class ash::AccountManagerUIImpl;
 
   // Displays the dialog. |close_dialog_closure| will be called when the dialog
   // is closed.

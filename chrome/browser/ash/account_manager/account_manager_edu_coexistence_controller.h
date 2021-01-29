@@ -10,16 +10,17 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
+// TODO(https://crbug.com/1164001): move to forward declaration when migrated to
+// ash/components/.
+#include "chromeos/components/account_manager/account_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/prefs/pref_change_registrar.h"
 
-class Profile;
 class PrefRegistrySimple;
+class Profile;
 
-namespace chromeos {
-
-class AccountManager;
+namespace ash {
 
 // Listens to changes to chromeos::prefs::kEduCoexistenceToSVersion policy
 // preference and invalidates secondary edu accounts with outdated terms of
@@ -66,6 +67,6 @@ class EduCoexistenceConsentInvalidationController {
       weak_factory_{this};
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MANAGER_EDU_COEXISTENCE_CONTROLLER_H_

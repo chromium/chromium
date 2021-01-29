@@ -64,4 +64,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerFactory {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after moved to ash/.
+namespace ash {
+using ::chromeos::AccountManagerFactory;
+}
+
 #endif  // CHROMEOS_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_FACTORY_H_

@@ -532,14 +532,14 @@ ProfileImpl::ProfileImpl(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (is_regular_profile) {
-    // |chromeos::InitializeAccountManager| is called during a User's session
+    // |ash::InitializeAccountManager| is called during a User's session
     // initialization but some tests do not properly login to a User Session.
-    // This invocation of |chromeos::InitializeAccountManager| is used only
-    // during tests.
-    // Note: |chromeos::InitializeAccountManager| is idempotent and safe to call
+    // This invocation of |ash::InitializeAccountManager| is used only during
+    // tests.
+    // Note: |ash::InitializeAccountManager| is idempotent and safe to call
     // multiple times.
     // TODO(https://crbug.com/982233): Remove this call.
-    chromeos::InitializeAccountManager(
+    ash::InitializeAccountManager(
         path_, base::DoNothing() /* initialization_callback */);
 
     chromeos::AccountManager* account_manager =

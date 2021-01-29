@@ -8,7 +8,7 @@
 #include "base/callback_forward.h"
 #include "chromeos/components/account_manager/account_manager_ui.h"
 
-namespace chromeos {
+namespace ash {
 
 class AccountManagerUIImpl : public AccountManagerUI {
  public:
@@ -25,6 +25,6 @@ class AccountManagerUIImpl : public AccountManagerUI {
   bool IsDialogShown() override;
 };
 
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MANAGER_UI_IMPL_H_

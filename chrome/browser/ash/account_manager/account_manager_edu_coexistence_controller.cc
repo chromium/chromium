@@ -17,7 +17,9 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
+
+namespace edu_coexistence = ::chromeos::edu_coexistence;
 
 void EduCoexistenceConsentInvalidationController::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
@@ -45,7 +47,7 @@ EduCoexistenceConsentInvalidationController::
       device_account_id_(device_account_id) {
   DCHECK(profile_);
   DCHECK(profile_->IsChild());
-  DCHECK(chromeos::IsAccountManagerAvailable(profile_));
+  DCHECK(IsAccountManagerAvailable(profile_));
 }
 
 EduCoexistenceConsentInvalidationController::
@@ -158,4 +160,4 @@ void EduCoexistenceConsentInvalidationController::InvalidateEduAccounts(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash
