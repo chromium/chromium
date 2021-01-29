@@ -155,6 +155,16 @@ class PdfViewPluginBase : public PDFEngine::Client,
   bool first_paint() const { return first_paint_; }
   void set_first_paint(bool first_paint) { first_paint_ = first_paint; }
 
+  bool needs_reraster() const { return needs_reraster_; }
+  void set_needs_reraster(bool needs_reraster) {
+    needs_reraster_ = needs_reraster;
+  }
+
+  bool received_viewport_message() const { return received_viewport_message_; }
+  void set_received_viewport_message(bool received) {
+    received_viewport_message_ = received;
+  }
+
  private:
   std::unique_ptr<PDFiumEngine> engine_;
   PaintManager paint_manager_{this};
@@ -204,6 +214,13 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Whether OnPaint() is in progress or not.
   bool in_paint_ = false;
+
+  // True if we request a new bitmap rendering.
+  bool needs_reraster_ = true;
+
+  // Whether the plugin has received a viewport changed message. Nothing should
+  // be painted until this is received.
+  bool received_viewport_message_ = false;
 };
 
 }  // namespace chrome_pdf

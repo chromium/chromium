@@ -1188,7 +1188,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
         PaintReadyRect(rect, pepper_image_data_, /*flush_now=*/true));
   }
 
-  if (!received_viewport_message_ || !needs_reraster_)
+  if (!received_viewport_message() || !needs_reraster())
     return;
 
   engine()->PrePaint();
@@ -1973,7 +1973,7 @@ void OutOfProcessInstance::HandleViewportMessage(
     NOTREACHED();
     return;
   }
-  received_viewport_message_ = true;
+  set_received_viewport_message(true);
   stop_scrolling_ = false;
   PinchPhase pinch_phase =
       static_cast<PinchPhase>(dict.Get(pp::Var(kJSPinchPhase)).AsInt());
@@ -1986,7 +1986,7 @@ void OutOfProcessInstance::HandleViewportMessage(
   if (pinch_phase == PINCH_START) {
     scroll_position_at_last_raster_ = scroll_position;
     last_bitmap_smaller_ = false;
-    needs_reraster_ = false;
+    set_needs_reraster(false);
     return;
   }
 
@@ -2048,7 +2048,7 @@ void OutOfProcessInstance::HandleViewportMessage(
     paint_manager().SetTransform(zoom_ratio, PointFromPPPoint(pinch_center),
                                  pinch_vector + paint_offset + scroll_delta,
                                  true);
-    needs_reraster_ = false;
+    set_needs_reraster(false);
     return;
   }
 
@@ -2059,7 +2059,7 @@ void OutOfProcessInstance::HandleViewportMessage(
     // in the new position.
     paint_manager().ClearTransform();
     last_bitmap_smaller_ = false;
-    needs_reraster_ = true;
+    set_needs_reraster(true);
 
     // If we're rerastering due to zooming out, we need to update
     // |scroll_position_at_last_raster_|, in case the user continues the

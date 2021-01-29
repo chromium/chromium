@@ -351,8 +351,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
     PINCH_END = 4
   };
 
-  // True if we request a new bitmap rendering.
-  bool needs_reraster_ = true;
   // The scroll position for the last raster, before any transformations are
   // applied.
   gfx::PointF scroll_position_at_last_raster_;
@@ -445,10 +443,6 @@ class OutOfProcessInstance : public PdfViewPluginBase,
 
   // The tickmarks.
   std::vector<pp::Rect> tickmarks_;
-
-  // Whether the plugin has received a viewport changed message. Nothing should
-  // be painted until this is received.
-  bool received_viewport_message_ = false;
 
   // If true, this means we told the RenderView that we're starting a network
   // request so that it can start the throbber. We will tell it again once the
