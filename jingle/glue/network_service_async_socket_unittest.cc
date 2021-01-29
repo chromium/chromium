@@ -152,16 +152,21 @@ class MockProxyResolvingSocket : public network::mojom::ProxyResolvingSocket {
   void Connect(mojo::PendingRemote<network::mojom::SocketObserver> observer,
                network::mojom::ProxyResolvingSocketFactory::
                    CreateProxyResolvingSocketCallback callback) {
-    mojo::DataPipe send_pipe;
-    mojo::DataPipe receive_pipe;
+    mojo::ScopedDataPipeProducerHandle send_producer_handle;
+    ASSERT_EQ(
+        mojo::CreateDataPipe(nullptr, send_producer_handle, send_pipe_handle_),
+        MOJO_RESULT_OK);
+
+    mojo::ScopedDataPipeConsumerHandle receive_consumer_handle;
+    ASSERT_EQ(mojo::CreateDataPipe(nullptr, receive_pipe_handle_,
+                                   receive_consumer_handle),
+              MOJO_RESULT_OK);
 
     observer_.Bind(std::move(observer));
-    receive_pipe_handle_ = std::move(receive_pipe.producer_handle);
-    send_pipe_handle_ = std::move(send_pipe.consumer_handle);
 
     std::move(callback).Run(net::OK, base::nullopt, base::nullopt,
-                            std::move(receive_pipe.consumer_handle),
-                            std::move(send_pipe.producer_handle));
+                            std::move(receive_consumer_handle),
+                            std::move(send_producer_handle));
   }
 
   void RunEvents(std::vector<Event>&& events);
