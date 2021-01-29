@@ -341,9 +341,7 @@ DocumentLoader::DocumentLoader(
       data_buffer_(SharedBuffer::Create()),
       devtools_navigation_token_(params_->devtools_navigation_token),
       had_sticky_activation_(params_->is_user_activated),
-      had_transient_activation_(
-          LocalFrame::HasTransientUserActivation(frame_) ||
-          params_->had_transient_activation),
+      had_transient_activation_(params_->had_transient_activation),
       is_browser_initiated_(params_->is_browser_initiated),
       was_discarded_(params_->was_discarded),
       loading_srcdoc_(url_.IsAboutSrcdocURL()),
