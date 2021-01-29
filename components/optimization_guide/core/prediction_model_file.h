@@ -8,12 +8,10 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/optional.h"
+#include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {
-
-namespace proto {
-class PredictionModel;
-}  // namespace proto
 
 // Encapsulates information about a file containing a prediction model.
 class PredictionModelFile {
@@ -31,11 +29,17 @@ class PredictionModelFile {
   // Returns the file path where the model file is stored.
   base::FilePath GetModelFilePath() const;
 
+  // Returns the metadata that the server provided specific to this model, if
+  // applicable.
+  base::Optional<proto::Any> GetModelMetadata() const;
+
  private:
   PredictionModelFile(const base::FilePath& model_file_path,
-                      const int64_t version);
+                      const int64_t version,
+                      const base::Optional<proto::Any>& model_metadata);
   base::FilePath model_file_path_;
   int64_t version_;
+  base::Optional<proto::Any> model_metadata_;
 };
 
 }  // namespace optimization_guide

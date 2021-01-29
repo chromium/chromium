@@ -202,7 +202,7 @@ void OptimizationGuideKeyedService::OnNavigationStartOrRedirect(
     navigation_data->set_registered_optimization_types(
         hints_manager_->registered_optimization_types());
     navigation_data->set_registered_optimization_targets(
-        prediction_manager_->registered_optimization_targets());
+        prediction_manager_->GetRegisteredOptimizationTargets());
   }
 }
 
@@ -216,7 +216,16 @@ void OptimizationGuideKeyedService::OnNavigationFinish(
 void OptimizationGuideKeyedService::RegisterOptimizationTargets(
     const std::vector<optimization_guide::proto::OptimizationTarget>&
         optimization_targets) {
-  prediction_manager_->RegisterOptimizationTargets(optimization_targets);
+  std::vector<std::pair<optimization_guide::proto::OptimizationTarget,
+                        base::Optional<optimization_guide::proto::Any>>>
+      optimization_targets_and_metadata;
+  for (optimization_guide::proto::OptimizationTarget optimization_target :
+       optimization_targets) {
+    optimization_targets_and_metadata.emplace_back(
+        std::make_pair(optimization_target, base::nullopt));
+  }
+  prediction_manager_->RegisterOptimizationTargets(
+      optimization_targets_and_metadata);
 }
 
 void OptimizationGuideKeyedService::ShouldTargetNavigationAsync(
@@ -237,9 +246,10 @@ void OptimizationGuideKeyedService::ShouldTargetNavigationAsync(
 
 void OptimizationGuideKeyedService::AddObserverForOptimizationTargetModel(
     optimization_guide::proto::OptimizationTarget optimization_target,
+    const base::Optional<optimization_guide::proto::Any>& model_metadata,
     optimization_guide::OptimizationTargetModelObserver* observer) {
-    prediction_manager_->AddObserverForOptimizationTargetModel(
-        optimization_target, observer);
+  prediction_manager_->AddObserverForOptimizationTargetModel(
+      optimization_target, model_metadata, observer);
 }
 
 void OptimizationGuideKeyedService::RemoveObserverForOptimizationTargetModel(
@@ -317,7 +327,8 @@ void OptimizationGuideKeyedService::OverrideTargetDecisionForTesting(
 
 void OptimizationGuideKeyedService::OverrideTargetModelFileForTesting(
     optimization_guide::proto::OptimizationTarget optimization_target,
+    const base::Optional<optimization_guide::proto::Any>& model_metadata,
     const base::FilePath& file_path) {
-    prediction_manager_->OverrideTargetModelFileForTesting(optimization_target,
-                                                           file_path);
+  prediction_manager_->OverrideTargetModelFileForTesting(
+      optimization_target, model_metadata, file_path);
 }

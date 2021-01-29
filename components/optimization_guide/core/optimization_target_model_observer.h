@@ -7,6 +7,7 @@
 
 #include "base/files/file_path.h"
 #include "base/observer_list_types.h"
+#include "base/optional.h"
 #include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {
@@ -17,12 +18,15 @@ class OptimizationTargetModelObserver : public base::CheckedObserver {
  public:
   // Invoked when a model for |optimization_target| has been updated. It is
   // guaranteed that this method will only be invoked for targets that |this|
-  // is added as an observer for.
+  // is added as an observer for. |model_metadata| will contain metadata that
+  // the server has attached to this model, if applicable.
   //
   // When this observer is first added, it will call this function with the
   // file path it already has on device, if applicable.
-  virtual void OnModelFileUpdated(proto::OptimizationTarget optimization_target,
-                                  const base::FilePath& file_path) = 0;
+  virtual void OnModelFileUpdated(
+      proto::OptimizationTarget optimization_target,
+      const base::Optional<proto::Any>& model_metadata,
+      const base::FilePath& file_path) = 0;
 };
 
 }  // namespace optimization_guide

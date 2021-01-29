@@ -6,13 +6,16 @@
 
 #include "base/memory/ptr_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
-#include "components/optimization_guide/proto/models.pb.h"
 
 namespace optimization_guide {
 
-PredictionModelFile::PredictionModelFile(const base::FilePath& model_file_path,
-                                         const int64_t version)
-    : model_file_path_(model_file_path), version_(version) {}
+PredictionModelFile::PredictionModelFile(
+    const base::FilePath& model_file_path,
+    const int64_t version,
+    const base::Optional<proto::Any>& model_metadata)
+    : model_file_path_(model_file_path),
+      version_(version),
+      model_metadata_(model_metadata) {}
 
 PredictionModelFile::~PredictionModelFile() = default;
 
@@ -26,9 +29,13 @@ std::unique_ptr<PredictionModelFile> PredictionModelFile::Create(
   if (!model.model_info().has_version())
     return nullptr;
 
+  base::Optional<proto::Any> model_metadata;
+  if (model.model_info().has_model_metadata())
+    model_metadata = model.model_info().model_metadata();
+
   // Private ctor, so we can't use std::make_unique.
-  return base::WrapUnique(
-      new PredictionModelFile(*model_file_path, model.model_info().version()));
+  return base::WrapUnique(new PredictionModelFile(
+      *model_file_path, model.model_info().version(), model_metadata));
 }
 
 base::FilePath PredictionModelFile::GetModelFilePath() const {
@@ -37,6 +44,10 @@ base::FilePath PredictionModelFile::GetModelFilePath() const {
 
 int64_t PredictionModelFile::GetVersion() const {
   return version_;
+}
+
+base::Optional<proto::Any> PredictionModelFile::GetModelMetadata() const {
+  return model_metadata_;
 }
 
 }  // namespace optimization_guide

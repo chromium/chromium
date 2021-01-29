@@ -67,6 +67,7 @@ class OptimizationGuideKeyedService
       override;
   void AddObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget optimization_target,
+      const base::Optional<optimization_guide::proto::Any>& model_metadata,
       optimization_guide::OptimizationTargetModelObserver* observer) override;
   void RemoveObserverForOptimizationTargetModel(
       optimization_guide::proto::OptimizationTarget optimization_target,
@@ -103,6 +104,7 @@ class OptimizationGuideKeyedService
   // testing purposes only.
   void OverrideTargetModelFileForTesting(
       optimization_guide::proto::OptimizationTarget optimization_target,
+      const base::Optional<optimization_guide::proto::Any>& model_metadata,
       const base::FilePath& file_path);
 
  private:

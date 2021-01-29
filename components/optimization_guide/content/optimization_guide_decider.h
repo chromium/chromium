@@ -75,6 +75,7 @@ class OptimizationGuideDecider {
   // Machine Learning Service for inference.
   virtual void AddObserverForOptimizationTargetModel(
       proto::OptimizationTarget optimization_target,
+      const base::Optional<proto::Any>& model_metadata,
       OptimizationTargetModelObserver* observer) = 0;
 
   // Removes an observer for updates to the model for |optimization_target|.

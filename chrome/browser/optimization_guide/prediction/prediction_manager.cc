@@ -283,21 +283,27 @@ void PredictionManager::UpdateFCPSessionStatistics(base::TimeDelta fcp) {
 }
 
 void PredictionManager::RegisterOptimizationTargets(
-    const std::vector<proto::OptimizationTarget>& optimization_targets) {
+    const std::vector<
+        std::pair<proto::OptimizationTarget, base::Optional<proto::Any>>>&
+        optimization_targets_and_metadata) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (optimization_targets.empty())
+  if (optimization_targets_and_metadata.empty())
     return;
 
   base::flat_set<proto::OptimizationTarget> new_optimization_targets;
-  for (const auto& optimization_target : optimization_targets) {
+  for (const auto& optimization_target_and_metadata :
+       optimization_targets_and_metadata) {
+    proto::OptimizationTarget optimization_target =
+        optimization_target_and_metadata.first;
     if (optimization_target == proto::OPTIMIZATION_TARGET_UNKNOWN)
       continue;
-    if (registered_optimization_targets_.find(optimization_target) !=
-        registered_optimization_targets_.end()) {
+    if (registered_optimization_targets_and_metadata_.contains(
+            optimization_target)) {
       continue;
     }
-    registered_optimization_targets_.insert(optimization_target);
+    registered_optimization_targets_and_metadata_.emplace(
+        optimization_target_and_metadata);
     new_optimization_targets.insert(optimization_target);
   }
 
@@ -308,7 +314,7 @@ void PredictionManager::RegisterOptimizationTargets(
   // Only proceed if there are newly registered targets to load/fetch models and
   // features for. Otherwise, the registered targets will have models loaded
   // when the store was initialized.
-  if (new_optimization_targets.size() == 0)
+  if (new_optimization_targets.empty())
     return;
 
   // If no fetch is scheduled, maybe schedule one.
@@ -327,7 +333,11 @@ void PredictionManager::RegisterOptimizationTargets(
 
 void PredictionManager::AddObserverForOptimizationTargetModel(
     proto::OptimizationTarget optimization_target,
+    const base::Optional<proto::Any>& model_metadata,
     OptimizationTargetModelObserver* observer) {
+  // TODO(crbug/1171871): Probably do not allow for multiple observers to be
+  // registered for the same optimization target.
+
   registered_observers_for_optimization_targets_[optimization_target]
       .AddObserver(observer);
 
@@ -336,10 +346,11 @@ void PredictionManager::AddObserverForOptimizationTargetModel(
       optimization_target_prediction_model_file_map_.find(optimization_target);
   if (model_file_it != optimization_target_prediction_model_file_map_.end()) {
     observer->OnModelFileUpdated(optimization_target,
+                                 model_file_it->second->GetModelMetadata(),
                                  model_file_it->second->GetModelFilePath());
   }
 
-  RegisterOptimizationTargets({optimization_target});
+  RegisterOptimizationTargets({{optimization_target, model_metadata}});
 }
 
 void PredictionManager::RemoveObserverForOptimizationTargetModel(
@@ -448,7 +459,7 @@ base::flat_map<std::string, float> PredictionManager::BuildFeatureMap(
     const base::flat_map<proto::ClientModelFeature, float>&
         override_client_model_feature_values) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (model_features.size() == 0)
+  if (model_features.empty())
     return {};
 
   const base::flat_map<std::string, float>* host_model_features = nullptr;
@@ -503,8 +514,10 @@ OptimizationTargetDecision PredictionManager::ShouldTargetNavigation(
       return *optimization_target_decision;
     }
   }
-  if (!registered_optimization_targets_.contains(optimization_target))
+  if (!registered_optimization_targets_and_metadata_.contains(
+          optimization_target)) {
     return OptimizationTargetDecision::kUnknown;
+  }
 
   ScopedPredictionManagerModelStatusRecorder model_status_recorder(
       optimization_target);
@@ -569,6 +582,16 @@ void PredictionManager::OnEffectiveConnectionTypeChanged(
   current_effective_connection_type_ = effective_connection_type;
 }
 
+base::flat_set<proto::OptimizationTarget>
+PredictionManager::GetRegisteredOptimizationTargets() const {
+  base::flat_set<proto::OptimizationTarget> optimization_targets;
+  for (const auto& optimization_target_and_metadata :
+       registered_optimization_targets_and_metadata_) {
+    optimization_targets.insert(optimization_target_and_metadata.first);
+  }
+  return optimization_targets;
+}
+
 PredictionModel* PredictionManager::GetPredictionModelForTesting(
     proto::OptimizationTarget optimization_target) const {
   auto it = optimization_target_prediction_model_map_.find(optimization_target);
@@ -616,7 +639,7 @@ void PredictionManager::FetchModelsAndHostModelFeatures() {
 
   // Models and host model features should not be fetched if there are no
   // optimization targets registered.
-  if (registered_optimization_targets_.size() == 0)
+  if (registered_optimization_targets_and_metadata_.empty())
     return;
 
   // Cancel all pending downloads since the server will probably give us new
@@ -676,12 +699,17 @@ void PredictionManager::FetchModelsAndHostModelFeatures() {
     base_model_info.add_supported_model_types(proto::MODEL_TYPE_TFLITE_2_3_0);
 
   // For now, we will fetch for all registered optimization targets.
-  for (const auto& optimization_target : registered_optimization_targets_) {
+  for (const auto& optimization_target_and_metadata :
+       registered_optimization_targets_and_metadata_) {
     proto::ModelInfo model_info(base_model_info);
-    model_info.set_optimization_target(optimization_target);
+    model_info.set_optimization_target(optimization_target_and_metadata.first);
+    if (optimization_target_and_metadata.second.has_value()) {
+      *model_info.mutable_model_metadata() =
+          *optimization_target_and_metadata.second;
+    }
 
-    auto it =
-        optimization_target_prediction_model_map_.find(optimization_target);
+    auto it = optimization_target_prediction_model_map_.find(
+        optimization_target_and_metadata.first);
     if (it != optimization_target_prediction_model_map_.end())
       model_info.set_version(it->second.get()->GetVersion());
 
@@ -802,7 +830,7 @@ void PredictionManager::OnModelReady(const proto::PredictionModel& model) {
       base::BindOnce(&PredictionManager::OnPredictionModelsStored,
                      ui_weak_ptr_factory_.GetWeakPtr()));
 
-  if (registered_optimization_targets_.contains(
+  if (registered_optimization_targets_and_metadata_.contains(
           model.model_info().optimization_target())) {
     OnLoadPredictionModel(std::make_unique<proto::PredictionModel>(model));
   }
@@ -810,6 +838,7 @@ void PredictionManager::OnModelReady(const proto::PredictionModel& model) {
 
 void PredictionManager::NotifyObserversOfNewModelPath(
     proto::OptimizationTarget optimization_target,
+    const base::Optional<proto::Any>& model_metadata,
     const base::FilePath& file_path) const {
   auto observers_it =
       registered_observers_for_optimization_targets_.find(optimization_target);
@@ -817,7 +846,7 @@ void PredictionManager::NotifyObserversOfNewModelPath(
     return;
 
   for (auto& observer : observers_it->second)
-    observer.OnModelFileUpdated(optimization_target, file_path);
+    observer.OnModelFileUpdated(optimization_target, model_metadata, file_path);
 }
 
 void PredictionManager::OnPredictionModelsStored() {
@@ -850,7 +879,7 @@ void PredictionManager::OnStoreInitialized() {
   store_is_ready_ = true;
 
   // Only load host model features if there are optimization targets registered.
-  if (registered_optimization_targets_.empty())
+  if (registered_optimization_targets_and_metadata_.empty())
     return;
 
   // The store is ready so start loading host model features and the models for
@@ -890,7 +919,7 @@ void PredictionManager::OnLoadHostModelFeatures(
 
   // Load the prediction models for all the registered optimization targets now
   // that it is not blocked by loading the host model features.
-  LoadPredictionModels(registered_optimization_targets_);
+  LoadPredictionModels(GetRegisteredOptimizationTargets());
 }
 
 void PredictionManager::LoadPredictionModels(
@@ -958,7 +987,7 @@ bool PredictionManager::ProcessAndStoreLoadedModel(
     return false;
   if (!model.has_model())
     return false;
-  if (!registered_optimization_targets_.contains(
+  if (!registered_optimization_targets_and_metadata_.contains(
           model.model_info().optimization_target())) {
     return false;
   }
@@ -1035,6 +1064,7 @@ void PredictionManager::StoreLoadedPredictionModelFile(
       FROM_HERE,
       base::BindOnce(&PredictionManager::NotifyObserversOfNewModelPath,
                      ui_weak_ptr_factory_.GetWeakPtr(), optimization_target,
+                     prediction_model_file->GetModelMetadata(),
                      prediction_model_file->GetModelFilePath()));
 
   optimization_target_prediction_model_file_map_.insert_or_assign(
@@ -1090,7 +1120,7 @@ bool PredictionManager::ProcessAndStoreHostModelFeatures(
         break;
     }
   }
-  if (model_features_for_host.size() == 0)
+  if (model_features_for_host.empty())
     return false;
   host_model_features_cache_.Put(host_model_features.host(),
                                  model_features_for_host);
@@ -1211,12 +1241,17 @@ void PredictionManager::OverrideTargetDecisionForTesting(
 
 void PredictionManager::OverrideTargetModelFileForTesting(
     proto::OptimizationTarget optimization_target,
+    const base::Optional<proto::Any>& model_metadata,
     const base::FilePath& file_path) {
   proto::PredictionModel prediction_model;
   prediction_model.mutable_model_info()->set_version(1);
   prediction_model.mutable_model_info()->set_optimization_target(
       optimization_target);
   SetFilePathInPredictionModel(file_path, &prediction_model);
+  if (model_metadata.has_value()) {
+    *prediction_model.mutable_model_info()->mutable_model_metadata() =
+        *model_metadata;
+  }
   std::unique_ptr<PredictionModelFile> prediction_model_file =
       PredictionModelFile::Create(prediction_model);
   DCHECK(prediction_model_file);
@@ -1224,7 +1259,7 @@ void PredictionManager::OverrideTargetModelFileForTesting(
   optimization_target_prediction_model_file_map_.insert_or_assign(
       optimization_target, std::move(prediction_model_file));
 
-  NotifyObserversOfNewModelPath(optimization_target, file_path);
+  NotifyObserversOfNewModelPath(optimization_target, model_metadata, file_path);
 }
 
 }  // namespace optimization_guide
