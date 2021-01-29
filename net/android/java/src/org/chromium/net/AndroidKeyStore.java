@@ -77,9 +77,6 @@ public class AndroidKeyStore {
      * @param algorithm The signature algorithm to use.
      * @param message The message to sign.
      * @return signature as a byte buffer.
-     *
-     * Note: NONEwithRSA is not implemented in Android < 4.2. See
-     * getOpenSSLHandleForPrivateKey() below for a work-around.
      */
     @CalledByNative
     private static byte[] signWithPrivateKey(
@@ -114,9 +111,6 @@ public class AndroidKeyStore {
      * @param algorithm The cipher to use.
      * @param input The input to encrypt.
      * @return ciphertext as a byte buffer.
-     *
-     * Note: NONEwithRSA is not implemented in Android < 4.2. See
-     * getOpenSSLHandleForPrivateKey() below for a work-around.
      */
     @CalledByNative
     private static byte[] encryptWithPrivateKey(
