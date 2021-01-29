@@ -2013,7 +2013,7 @@ void ProfileSyncService::OnRequiredUserActionChanged() {
 }
 
 void ProfileSyncService::ClearLocalTransportDataAndNotify() {
-  sync_transport_data_prefs_.ClearAll();
+  sync_transport_data_prefs_.ClearAllExceptEncryptionBootstrapToken();
   sync_client_->OnLocalSyncTransportDataCleared();
 }
 

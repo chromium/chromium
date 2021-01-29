@@ -75,8 +75,9 @@ class SyncTransportDataPrefs
   SyncTransportDataPrefs& operator=(const SyncTransportDataPrefs&) = delete;
   ~SyncTransportDataPrefs() override;
 
-  // Clears all preferences in this class, which excludes
-  void ClearAll();
+  // Clears all preferences in this class, which excludes the encryption
+  // bootstrap token (non-keystore counterpart).
+  void ClearAllExceptEncryptionBootstrapToken();
 
   void SetGaiaId(const std::string& gaia_id);
   std::string GetGaiaId() const;
@@ -104,7 +105,7 @@ class SyncTransportDataPrefs
   // (usually custom passphrase) and represents a user-entered passphrase.
   // Hence, it gets treated as user-controlled similarly to sync datatype
   // selection settings (i.e. doesn't get cleared in
-  // ClearLocalSyncTransportData()).
+  // ClearAllExceptEncryptionBootstrapToken()).
   std::string GetEncryptionBootstrapToken() const override;
   void SetEncryptionBootstrapToken(const std::string& token) override;
   void ClearEncryptionBootstrapToken();

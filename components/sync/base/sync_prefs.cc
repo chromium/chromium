@@ -147,7 +147,7 @@ void SyncPrefs::RemoveSyncPrefObserver(SyncPrefObserver* sync_pref_observer) {
   sync_pref_observers_.RemoveObserver(sync_pref_observer);
 }
 
-void SyncTransportDataPrefs::ClearAll() {
+void SyncTransportDataPrefs::ClearAllExceptEncryptionBootstrapToken() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   pref_service_->ClearPref(prefs::kSyncLastSyncedTime);
