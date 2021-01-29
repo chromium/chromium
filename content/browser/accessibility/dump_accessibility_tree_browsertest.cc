@@ -1072,7 +1072,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwns) {
 }
 
 // Flaky on CrOS MSAN: https://crbug.com/1167331
-#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
 #define MAYBE_AccessibilityAriaOwnsCrash DISABLED_AccessibilityAriaOwnsCrash
 #else
 #define MAYBE_AccessibilityAriaOwnsCrash AccessibilityAriaOwnsCrash

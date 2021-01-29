@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/system_media_controls/system_media_controls.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/active_media_session_controller.h"
@@ -222,7 +223,10 @@ void MediaKeysListenerManagerImpl::StartListeningForMediaKeysIfNecessary() {
   if (system_media_controls_ || media_keys_listener_)
     return;
 
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_WIN) || \
+    defined(OS_MAC)
   system_media_controls_ = system_media_controls::SystemMediaControls::Create(
       media::AudioManager::GetGlobalAppName());
 #endif

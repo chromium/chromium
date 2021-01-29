@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
@@ -361,7 +362,9 @@ IN_PROC_BROWSER_TEST_F(ManifestBrowserTest, FileHandlerManifest) {
 // rules and requesting the manifest should return an empty manifest (unless the
 // response contains CORS headers).
 // Flaky on linux: crbug.com/1122546
-#if defined(OS_LINUX)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CorsManifest DISABLED_CorsManifest
 #else
 #define MAYBE_CorsManifest CorsManifest

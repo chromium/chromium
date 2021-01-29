@@ -8551,7 +8551,9 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 // Tests that pagehide handlers of the old RFH are run for bfcached pages even
 // if the page is already hidden (and visibilitychange won't run).
 // Disabled on Linux and Win because of flakiness, see crbug.com/1170802.
-#if defined(OS_LINUX) || defined(OS_WIN)
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_WIN)
 #define MAYBE_PagehideRunsWhenPageIsHidden DISABLED_PagehideRunsWhenPageIsHidden
 #else
 #define MAYBE_PagehideRunsWhenPageIsHidden PagehideRunsWhenPageIsHidden
