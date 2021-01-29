@@ -6333,6 +6333,14 @@ others/histograms.xml -->
   <int value="1" label="ReloadAfterHistoryNavigation"/>
 </enum>
 
+<enum name="BackForwardCacheRendererEvictionReason">
+  <int value="0" label="JavaScript"/>
+  <int value="1" label="NetworkRequestDatapipeDrained"/>
+  <int value="2" label="NetworkRequestRedirected"/>
+  <int value="3" label="NetworkRequestTimeout"/>
+  <int value="4" label="NetworkExceedsBufferLimit"/>
+</enum>
+
 <enum name="BackForwardCacheSameSiteNavigationDidSwap">
   <int value="0" label="Did not swap BrowsingInstances"/>
   <int value="1" label="Swapped BrowsingInstances"/>

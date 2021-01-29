@@ -138,6 +138,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="BackForwardCache.Eviction.Renderer"
+    enum="BackForwardCacheRendererEvictionReason" expires_after="2021-10-01">
+  <owner>rakina@chromium.org</owner>
+  <owner>bfcache-dev@chromium.org</owner>
+  <summary>
+    Records the reason of renderer-initiated back-forward cache eviction.
+    Emitted when renderer evicts the page from back-forward cache.
+  </summary>
+</histogram>
+
 <histogram name="BackForwardCache.Eviction.TimeUntilProcessKilled" units="ms"
     expires_after="2021-10-01">
   <owner>hajimehoshi@chromium.org</owner>
