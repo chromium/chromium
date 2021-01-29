@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/strings/string16.h"
+#include "chrome/browser/chromeos/child_accounts/family_features.h"
 #include "chrome/browser/chromeos/login/oobe_screen.h"
 #include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
@@ -68,13 +69,23 @@ void ParentalHandoffScreen::OnViewDestroyed(ParentalHandoffScreenView* view) {
 }
 
 bool ParentalHandoffScreen::MaybeSkip(WizardContext* context) {
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  if (profile->IsChild() && supervised_users::IsEduCoexistenceFlowV2Enabled()) {
-    return false;
+  if (!IsFamilyLinkOobeHandoffEnabled()) {
+    exit_callback_.Run(Result::SKIPPED);
+    return true;
   }
 
-  exit_callback_.Run(Result::SKIPPED);
-  return true;
+  if (!supervised_users::IsEduCoexistenceFlowV2Enabled()) {
+    exit_callback_.Run(Result::SKIPPED);
+    return true;
+  }
+
+  const Profile* profile = ProfileManager::GetActiveUserProfile();
+  if (!profile->IsChild()) {
+    exit_callback_.Run(Result::SKIPPED);
+    return true;
+  }
+
+  return false;
 }
 
 void ParentalHandoffScreen::ShowImpl() {

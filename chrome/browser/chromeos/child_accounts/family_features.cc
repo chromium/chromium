@@ -12,4 +12,11 @@ const base::Feature kFamilyUserMetricsProvider{
 const base::Feature kFamilyLinkUserMetricsProvider{
     "FamilyLinkUserMetricsProvider", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kFamilyLinkOobeHandoff{"FamilyLinkOobeHandoff",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool IsFamilyLinkOobeHandoffEnabled() {
+  return base::FeatureList::IsEnabled(kFamilyLinkOobeHandoff);
+}
+
 }  // namespace chromeos
