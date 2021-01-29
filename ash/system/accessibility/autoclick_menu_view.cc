@@ -81,7 +81,7 @@ AutoclickMenuView::AutoclickMenuView(AutoclickEventType type,
                     views::Builder<FloatingMenuButton>()
                         .CopyAddressTo(&drag_button_)
                         .SetID(static_cast<int>(ButtonId::kDragAndDrop))
-                        .SetVectorIcon(kAutoclickLeftClickIcon)
+                        .SetVectorIcon(kAutoclickDragIcon)
                         .SetTooltipText(l10n_util::GetStringUTF16(
                             IDS_ASH_AUTOCLICK_OPTION_DRAG_AND_DROP))
                         .SetCallback(base::BindRepeating(
@@ -91,7 +91,7 @@ AutoclickMenuView::AutoclickMenuView(AutoclickEventType type,
                     views::Builder<FloatingMenuButton>()
                         .CopyAddressTo(&scroll_button_)
                         .SetID(static_cast<int>(ButtonId::kScroll))
-                        .SetVectorIcon(kAutoclickLeftClickIcon)
+                        .SetVectorIcon(kAutoclickScrollIcon)
                         .SetTooltipText(l10n_util::GetStringUTF16(
                             IDS_ASH_AUTOCLICK_OPTION_SCROLL))
                         .SetCallback(base::BindRepeating(
@@ -101,7 +101,7 @@ AutoclickMenuView::AutoclickMenuView(AutoclickEventType type,
                     views::Builder<FloatingMenuButton>()
                         .CopyAddressTo(&pause_button_)
                         .SetID(static_cast<int>(ButtonId::kPause))
-                        .SetVectorIcon(kAutoclickLeftClickIcon)
+                        .SetVectorIcon(kAutoclickPauseIcon)
                         .SetTooltipText(l10n_util::GetStringUTF16(
                             IDS_ASH_AUTOCLICK_OPTION_NO_ACTION))
                         .SetCallback(base::BindRepeating(
