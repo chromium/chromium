@@ -3168,10 +3168,13 @@ void AXNodeObject::AddInlineTextBoxChildren(bool force) {
 }
 
 void AXNodeObject::AddValidationMessageChild() {
-  if (IsWebArea()) {
-    AddChildAndCheckIncluded(
-        AXObjectCache().ValidationMessageObjectIfInvalid());
-  }
+  DCHECK(IsWebArea()) << "Validation message must be child of root";
+  // First child requirement enables easy checking to see if a children changed
+  // event is needed in AXObjectCacheImpl::ValidationMessageObjectIfInvalid().
+  DCHECK_EQ(children_.size(), 0U)
+      << "Validation message must be the first child";
+  AddChildAndCheckIncluded(AXObjectCache().ValidationMessageObjectIfInvalid(
+      /* suppress children changed, already processing that */ false));
 }
 
 void AXNodeObject::AddImageMapChildren() {
@@ -3277,6 +3280,12 @@ void AXNodeObject::AddChildren() {
     return;
   }
 
+  // If validation message exists, always make it the first child of the root,
+  // to enable easy checking of whether it's a known child of the root.
+  if (IsWebArea())
+    AddValidationMessageChild();
+  CHECK_ATTACHED();
+
   if (IsHtmlTable())
     AddTableChildren();
   else if (ShouldUseLayoutObjectTraversalForChildren())
@@ -3289,9 +3298,6 @@ void AXNodeObject::AddChildren() {
   CHECK_ATTACHED();
 
   AddImageMapChildren();
-  CHECK_ATTACHED();
-
-  AddValidationMessageChild();
   CHECK_ATTACHED();
 
   AddAccessibleNodeChildren();
@@ -3896,7 +3902,7 @@ AXObject* AXNodeObject::ErrorMessage() const {
   if (this != AXObjectCache().FocusedObject())
     return nullptr;
 
-  return AXObjectCache().ValidationMessageObjectIfInvalid();
+  return AXObjectCache().ValidationMessageObjectIfInvalid(true);
 }
 
 // According to the standard, the figcaption should only be the first or

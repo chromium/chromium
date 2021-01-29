@@ -282,8 +282,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   // granted, it only applies to the next event received.
   void RequestAOMEventListenerPermission();
 
-  // For built-in HTML form validation messages.
-  AXObject* ValidationMessageObjectIfInvalid();
+  // For built-in HTML form validation messages. Set notify_children_changed to
+  // true if not already processing changed children.
+  AXObject* ValidationMessageObjectIfInvalid(bool notify_children_changed);
 
   WebAXAutofillState GetAutofillState(AXID id) const;
   void SetAutofillState(AXID id, WebAXAutofillState state);

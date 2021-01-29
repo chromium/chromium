@@ -2133,22 +2133,25 @@ AXObject* AXObjectCacheImpl::GetOrCreateValidationMessageObject() {
   if (validation_message_axid_) {
     message_ax_object = ObjectFromAXID(validation_message_axid_);
   }
-  if (!message_ax_object) {
+  if (message_ax_object) {
+    DCHECK(!message_ax_object->IsDetached());
+    message_ax_object->SetParent(Root());  // Reattach to parent (root).
+  } else {
     message_ax_object = MakeGarbageCollected<AXValidationMessage>(*this);
     DCHECK(message_ax_object);
     // Cache the validation message container for reuse.
     validation_message_axid_ = AssociateAXID(message_ax_object);
-    message_ax_object->Init(Root());
     // Validation message alert object is a child of the document, as not all
     // form controls can have a child. Also, there are form controls such as
     // listbox that technically can have children, but they are probably not
     // expected to have alerts within AT client code.
-    ChildrenChanged(document_);
+    message_ax_object->Init(Root());
   }
   return message_ax_object;
 }
 
-AXObject* AXObjectCacheImpl::ValidationMessageObjectIfInvalid() {
+AXObject* AXObjectCacheImpl::ValidationMessageObjectIfInvalid(
+    bool notify_children_changed) {
   Element* focused_element = document_->FocusedElement();
   if (focused_element) {
     ListedElement* form_control = ListedElement::From(*focused_element);
@@ -2169,8 +2172,14 @@ AXObject* AXObjectCacheImpl::ValidationMessageObjectIfInvalid() {
                   AOMRelationProperty::kErrorMessage);
           if (!override_native_validation_message) {
             AXObject* message = GetOrCreateValidationMessageObject();
-            if (message && !was_validation_message_already_created)
+            DCHECK(message);
+            DCHECK(!message->IsDetached());
+            if (notify_children_changed &&
+                Root()->FirstChildIncludingIgnored() != message) {
+              // Only notify children changed if not already processing new root
+              // children, and the root doesn't already have this child.
               ChildrenChanged(document_);
+            }
             return message;
           }
         }
@@ -2217,7 +2226,8 @@ void AXObjectCacheImpl::HandleValidationMessageVisibilityChangedWithCleanLayout(
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  AXObject* message_ax_object = ValidationMessageObjectIfInvalid();
+  AXObject* message_ax_object = ValidationMessageObjectIfInvalid(
+      /* Fire children changed on root if it gains message child */ true);
   if (message_ax_object)
     MarkAXObjectDirty(message_ax_object, false);  // May be invisible now.
 
