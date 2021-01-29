@@ -307,6 +307,8 @@ static_library("test_support_engine") {
   sources = [
     "engine_impl/cycle/mock_debug_info_getter.cc",
     "engine_impl/cycle/mock_debug_info_getter.h",
+    "test/engine/fake_cryptographer.cc",
+    "test/engine/fake_cryptographer.h",
     "test/engine/fake_model_type_connector.cc",
     "test/engine/fake_model_type_connector.h",
     "test/engine/fake_model_type_processor.cc",

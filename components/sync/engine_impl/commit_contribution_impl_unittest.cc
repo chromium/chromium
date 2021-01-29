@@ -15,7 +15,8 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/nigori/cryptographer_impl.h"
+#include "components/sync/nigori/cryptographer.h"
+#include "components/sync/test/engine/fake_cryptographer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -165,8 +166,8 @@ TEST(CommitContributionImplTest,
                      &request_data->specifics_hash);
   request_data->entity = std::move(data);
 
-  std::unique_ptr<CryptographerImpl> cryptographer =
-      CryptographerImpl::FromSingleKeyForTesting("dummy");
+  std::unique_ptr<FakeCryptographer> cryptographer =
+      FakeCryptographer::FromSingleDefaultKey("dummy");
 
   CommitRequestDataList requests_data;
   requests_data.push_back(std::move(request_data));
@@ -227,8 +228,8 @@ TEST(CommitContributionImplTest,
                      &request_data->specifics_hash);
   request_data->entity = std::move(data);
 
-  std::unique_ptr<CryptographerImpl> cryptographer =
-      CryptographerImpl::FromSingleKeyForTesting("dummy");
+  std::unique_ptr<FakeCryptographer> cryptographer =
+      FakeCryptographer::FromSingleDefaultKey("dummy");
 
   CommitRequestDataList requests_data;
   requests_data.push_back(std::move(request_data));
@@ -268,8 +269,7 @@ TEST(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
   CommitRequestDataList requests_data;
   requests_data.push_back(std::move(request_data));
 
-  std::unique_ptr<CryptographerImpl> cryptographer =
-      CryptographerImpl::CreateEmpty();
+  FakeCryptographer cryptographer;
 
   FailedCommitResponseDataList actual_error_response_list;
 
@@ -286,8 +286,8 @@ TEST(CommitContributionImplTest, ShouldPropagateFailedItemsOnCommitResponse) {
   CommitContributionImpl contribution(
       PASSWORDS, sync_pb::DataTypeContext(), std::move(requests_data),
       std::move(on_commit_response_callback),
-      /*on_full_commit_failure_callback=*/base::NullCallback(),
-      cryptographer.get(), PassphraseType::kCustomPassphrase,
+      /*on_full_commit_failure_callback=*/base::NullCallback(), &cryptographer,
+      PassphraseType::kCustomPassphrase,
       /*only_commit_specifics=*/false);
 
   sync_pb::ClientToServerMessage msg;

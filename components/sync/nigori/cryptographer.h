@@ -26,8 +26,10 @@ class Cryptographer {
   // available and there are no pending keys.
   virtual bool CanEncrypt() const = 0;
 
-  // Returns whether this cryptographer can decrypt |encrypted| using any of
-  // the known keys.
+  // Returns whether this cryptographer *should be* able to decrypt |encrypted|,
+  // i.e. whether the key_name field in |encrypted| matches one of the known
+  // keys. Calling DecryptToString() can still fail if the blob field is
+  // corrupted.
   virtual bool CanDecrypt(const sync_pb::EncryptedData& encrypted) const = 0;
 
   // Returns a name that uniquely identifies the key used for encryption.

@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -24,9 +25,7 @@
 #include "components/sync/engine_impl/commit_contribution.h"
 #include "components/sync/engine_impl/cycle/entity_change_metric_recording.h"
 #include "components/sync/engine_impl/cycle/status_controller.h"
-#include "components/sync/nigori/cryptographer_impl.h"
-#include "components/sync/nigori/nigori.h"
-#include "components/sync/nigori/nigori_test_utils.h"
+#include "components/sync/test/engine/fake_cryptographer.h"
 #include "components/sync/test/engine/mock_model_type_processor.h"
 #include "components/sync/test/engine/mock_nudge_handler.h"
 #include "components/sync/test/engine/single_type_mock_server.h"
@@ -43,6 +42,7 @@ namespace syncer {
 
 namespace {
 
+const char kEncryptionKeyNamePrefix[] = "key";
 const char kTag1[] = "tag1";
 const char kTag2[] = "tag2";
 const char kTag3[] = "tag3";
@@ -58,38 +58,18 @@ EntitySpecifics GenerateSpecifics(const std::string& tag,
   return specifics;
 }
 
-// Returns the name for the given Nigori.
-//
-// Uses some 'white-box' knowledge to mimic the names that a real sync client
-// would generate. It's probably not necessary to do so, but it can't hurt.
-std::string GetNigoriName(const Nigori& nigori) {
-  std::string name;
-  if (!nigori.Permute(Nigori::Password, kNigoriKeyName, &name)) {
-    NOTREACHED();
-    return std::string();
-  }
-  return name;
+std::string GetNthKeyName(int n) {
+  return kEncryptionKeyNamePrefix + base::NumberToString(n);
 }
 
-// Returns a KeyParamsForTesting for the cryptographer. Each input 'n' value
-// results in a different set of parameters.
-KeyParamsForTesting GetNthKeyParams(int n) {
-  return {KeyDerivationParams::CreateForPbkdf2(),
-          base::StringPrintf("pw%02d", n)};
-}
-
-sync_pb::EntitySpecifics EncryptPasswordSpecifics(
-    const KeyParamsForTesting& key_params,
+sync_pb::EntitySpecifics EncryptPasswordSpecificsWithNthKey(
+    int n,
     const sync_pb::PasswordSpecificsData& unencrypted_password) {
-  std::unique_ptr<Nigori> nigori = Nigori::CreateByDerivation(
-      key_params.derivation_params, key_params.password);
-  std::string encrypted_blob;
-  nigori->Encrypt(unencrypted_password.SerializeAsString(), &encrypted_blob);
   sync_pb::EntitySpecifics encrypted_specifics;
-  encrypted_specifics.mutable_password()->mutable_encrypted()->set_key_name(
-      GetNigoriName(*nigori));
-  encrypted_specifics.mutable_password()->mutable_encrypted()->set_blob(
-      encrypted_blob);
+  FakeCryptographer::FromSingleDefaultKey(GetNthKeyName(n))
+      ->EncryptString(
+          unencrypted_password.SerializeAsString(),
+          encrypted_specifics.mutable_password()->mutable_encrypted());
   return encrypted_specifics;
 }
 
@@ -208,7 +188,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
   void InitializeCryptographer() {
     if (!cryptographer_) {
-      cryptographer_ = CryptographerImpl::CreateEmpty();
+      cryptographer_ = std::make_unique<FakeCryptographer>();
     }
   }
 
@@ -234,9 +214,8 @@ class ModelTypeWorkerTest : public ::testing::Test {
 
     std::string last_key_name;
     for (int i = 1; i <= foreign_encryption_key_index_; ++i) {
-      const KeyParamsForTesting key_params = GetNthKeyParams(i);
-      last_key_name = cryptographer_->EmplaceKey(key_params.password,
-                                                 key_params.derivation_params);
+      last_key_name = GetNthKeyName(i);
+      cryptographer_->AddEncryptionKey(last_key_name);
     }
     cryptographer_->SelectDefaultEncryptionKey(last_key_name);
 
@@ -248,23 +227,16 @@ class ModelTypeWorkerTest : public ::testing::Test {
   }
 
   // Modifies the input/output parameter |specifics| by encrypting it with
-  // a Nigori initialized with the specified |params|.
-  void EncryptUpdate(const KeyParamsForTesting& params,
-                     EntitySpecifics* specifics) {
-    std::unique_ptr<Nigori> nigori =
-        Nigori::CreateByDerivation(params.derivation_params, params.password);
-
+  // the n-th encryption key.
+  void EncryptUpdateWithNthKey(int n, EntitySpecifics* specifics) {
     EntitySpecifics original_specifics = *specifics;
     std::string plaintext;
     original_specifics.SerializeToString(&plaintext);
 
-    std::string encrypted;
-    nigori->Encrypt(plaintext, &encrypted);
-
     specifics->Clear();
     AddDefaultFieldValue(model_type_, specifics);
-    specifics->mutable_encrypted()->set_key_name(GetNigoriName(*nigori));
-    specifics->mutable_encrypted()->set_blob(encrypted);
+    FakeCryptographer::FromSingleDefaultKey(GetNthKeyName(n))
+        ->EncryptString(plaintext, specifics->mutable_encrypted());
   }
 
   // Use the Nth nigori instance to encrypt incoming updates.
@@ -311,8 +283,8 @@ class ModelTypeWorkerTest : public ::testing::Test {
         version_offset, GenerateTagHash(tag), GenerateSpecifics(tag, value));
 
     if (update_encryption_filter_index_ != 0) {
-      EncryptUpdate(GetNthKeyParams(update_encryption_filter_index_),
-                    entity.mutable_specifics());
+      EncryptUpdateWithNthKey(update_encryption_filter_index_,
+                              entity.mutable_specifics());
     }
 
     worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
@@ -331,10 +303,10 @@ class ModelTypeWorkerTest : public ::testing::Test {
         version_offset, GenerateTagHash(tag2), GenerateSpecifics(tag2, value2));
 
     if (update_encryption_filter_index_ != 0) {
-      EncryptUpdate(GetNthKeyParams(update_encryption_filter_index_),
-                    entity1.mutable_specifics());
-      EncryptUpdate(GetNthKeyParams(update_encryption_filter_index_),
-                    entity2.mutable_specifics());
+      EncryptUpdateWithNthKey(update_encryption_filter_index_,
+                              entity1.mutable_specifics());
+      EncryptUpdateWithNthKey(update_encryption_filter_index_,
+                              entity2.mutable_specifics());
     }
 
     worker()->ProcessGetUpdatesResponse(
@@ -355,8 +327,8 @@ class ModelTypeWorkerTest : public ::testing::Test {
         server()->TombstoneFromServer(version_offset, GenerateTagHash(tag));
 
     if (update_encryption_filter_index_ != 0) {
-      EncryptUpdate(GetNthKeyParams(update_encryption_filter_index_),
-                    entity.mutable_specifics());
+      EncryptUpdateWithNthKey(update_encryption_filter_index_,
+                              entity.mutable_specifics());
     }
 
     worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
@@ -454,7 +426,7 @@ class ModelTypeWorkerTest : public ::testing::Test {
   const ModelType model_type_;
 
   // The cryptographer itself. Null if we're not encrypting the type.
-  std::unique_ptr<CryptographerImpl> cryptographer_;
+  std::unique_ptr<FakeCryptographer> cryptographer_;
 
   // The number of the most recent foreign encryption key known to our
   // cryptographer. Note that not all of these will be decryptable.
@@ -1307,7 +1279,7 @@ TEST_F(ModelTypeWorkerTest, ReceiveCorruptEncryption) {
 
   // Encrypt it.
   *entity.mutable_specifics() = GenerateSpecifics(kTag1, kValue1);
-  EncryptUpdate(GetNthKeyParams(1), entity.mutable_specifics());
+  EncryptUpdateWithNthKey(1, entity.mutable_specifics());
 
   // Replace a few bytes to corrupt it.
   entity.mutable_specifics()->mutable_encrypted()->mutable_blob()->replace(
@@ -1921,7 +1893,7 @@ TEST_F(ModelTypeWorkerPasswordsTest, ReceiveDecryptablePasswordEntities) {
   sync_pb::PasswordSpecificsData unencrypted_password;
   unencrypted_password.set_password_value(kPassword);
   sync_pb::EntitySpecifics encrypted_specifics =
-      EncryptPasswordSpecifics(GetNthKeyParams(1), unencrypted_password);
+      EncryptPasswordSpecificsWithNthKey(1, unencrypted_password);
 
   // Receive an encrypted password, encrypted with a key that is already known.
   SyncEntity entity = server()->UpdateFromServer(
@@ -1953,7 +1925,7 @@ TEST_F(ModelTypeWorkerPasswordsTest,
   sync_pb::PasswordSpecificsData unencrypted_password;
   unencrypted_password.set_password_value(kPassword);
   sync_pb::EntitySpecifics encrypted_specifics =
-      EncryptPasswordSpecifics(GetNthKeyParams(2), unencrypted_password);
+      EncryptPasswordSpecificsWithNthKey(2, unencrypted_password);
 
   SyncEntity entity = server()->UpdateFromServer(
       /*version_offset=*/10, kHash1, encrypted_specifics);
@@ -1991,7 +1963,7 @@ TEST_F(ModelTypeWorkerPasswordsTest, ReceiveUndecryptablePasswordEntries) {
   sync_pb::PasswordSpecificsData unencrypted_password;
   unencrypted_password.set_password_value(kPassword);
   sync_pb::EntitySpecifics encrypted_specifics =
-      EncryptPasswordSpecifics(GetNthKeyParams(1), unencrypted_password);
+      EncryptPasswordSpecificsWithNthKey(1, unencrypted_password);
 
   // Receive an encrypted update with that new key, which we can't access.
   SyncEntity entity = server()->UpdateFromServer(
@@ -2028,7 +2000,7 @@ TEST_F(ModelTypeWorkerPasswordsTest, ReceiveCorruptedPasswordEntities) {
   sync_pb::PasswordSpecificsData unencrypted_password;
   unencrypted_password.set_password_value(kPassword);
   sync_pb::EntitySpecifics encrypted_specifics =
-      EncryptPasswordSpecifics(GetNthKeyParams(1), unencrypted_password);
+      EncryptPasswordSpecificsWithNthKey(1, unencrypted_password);
   // Manipulate the blob to be corrupted.
   encrypted_specifics.mutable_password()->mutable_encrypted()->set_blob(
       "corrupted blob");
@@ -2083,7 +2055,7 @@ TEST_F(ModelTypeWorkerBookmarksTest, CanDecryptUpdateWithMissingBookmarkGUID) {
       UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
 
   // Encrypt it.
-  EncryptUpdate(GetNthKeyParams(1), entity.mutable_specifics());
+  EncryptUpdateWithNthKey(1, entity.mutable_specifics());
   EXPECT_EQ(0U, processor()->GetNumUpdateResponses());
 
   DecryptPendingKey();
@@ -2134,7 +2106,7 @@ TEST_F(ModelTypeWorkerBookmarksTest,
       UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
 
   // Encrypt it.
-  EncryptUpdate(GetNthKeyParams(1), entity.mutable_specifics());
+  EncryptUpdateWithNthKey(1, entity.mutable_specifics());
   EXPECT_EQ(0U, processor()->GetNumUpdateResponses());
 
   DecryptPendingKey();
@@ -2181,7 +2153,7 @@ TEST_F(ModelTypeWorkerBookmarksTest,
       UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
 
   // Encrypt it.
-  EncryptUpdate(GetNthKeyParams(1), entity.mutable_specifics());
+  EncryptUpdateWithNthKey(1, entity.mutable_specifics());
   EXPECT_EQ(0U, processor()->GetNumUpdateResponses());
 
   worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
@@ -2223,7 +2195,7 @@ TEST_F(ModelTypeWorkerBookmarksTest,
       UniquePosition::InitialPosition(UniquePosition::RandomSuffix()).ToProto();
 
   // Encrypt it.
-  EncryptUpdate(GetNthKeyParams(1), entity.mutable_specifics());
+  EncryptUpdateWithNthKey(1, entity.mutable_specifics());
   EXPECT_EQ(0U, processor()->GetNumUpdateResponses());
 
   worker()->ProcessGetUpdatesResponse(server()->GetProgress(),
