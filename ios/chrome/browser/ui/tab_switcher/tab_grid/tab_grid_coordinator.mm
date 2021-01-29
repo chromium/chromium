@@ -243,6 +243,11 @@
                    completion:(ProceduralBlock)completion {
   DCHECK(viewController || (IsThumbStripEnabled() && self.bvcContainer));
 
+  if (shouldCloseTabGrid) {
+    // Record when the tab switcher is dismissed.
+    base::RecordAction(base::UserMetricsAction("MobileTabGridExited"));
+  }
+
   // If thumb strip is enabled, this will always be true except during initial
   // setup before the BVC container has been created.
   if (IsThumbStripEnabled() && self.bvcContainer) {
@@ -254,9 +259,6 @@
       [self.baseViewController contentWillDisappearAnimated:YES];
       [self.thumbStripCoordinator.panHandler setState:ViewRevealState::Hidden
                                              animated:YES];
-
-      // Record when the tab switcher is dismissed.
-      base::RecordAction(base::UserMetricsAction("MobileTabGridExited"));
     }
     if (completion) {
       completion();
