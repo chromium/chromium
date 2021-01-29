@@ -13,7 +13,7 @@
     { "site_name": "apple" },
     { "site_name": "autoanything" },
     { "site_name": "avon" },
-    { "site_name": "barnes_and_noble", "disabled":true, "bug_number":984664 },
+    { "site_name": "barnes_and_noble" },
     { "site_name": "bath_and_body_works" },
     { "site_name": "beachbody" },
     { "site_name": "bed_bath_beyond" },
