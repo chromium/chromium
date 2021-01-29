@@ -58,8 +58,6 @@ class LayoutListItem final : public LayoutBlockFlow {
 
   void UpdateMarkerTextIfNeeded();
 
-  void UpdateCounterStyle();
-
  private:
   bool IsOfType(LayoutObjectType type) const override {
     NOT_DESTROYED();
@@ -83,8 +81,6 @@ class LayoutListItem final : public LayoutBlockFlow {
   void ComputeVisualOverflow(bool recompute_floats) final;
 
   void AddLayoutOverflowFromChildren() override;
-
-  void WillBeDestroyed() override;
 
   void AlignMarkerInBlockDirection();
 

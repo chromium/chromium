@@ -43,8 +43,6 @@
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
 #include "third_party/blink/renderer/core/layout/layout_geometry_map.h"
-#include "third_party/blink/renderer/core/layout/layout_list_item.h"
-#include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/view_fragmentation_context.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
@@ -958,25 +956,19 @@ CompositingReasons LayoutView::AdditionalCompositingReasons() const {
   return CompositingReason::kNone;
 }
 
-void LayoutView::UpdateMarkersAndCountersAfterStyleChange() {
+void LayoutView::UpdateCounters() {
   NOT_DESTROYED();
-  if (!needs_marker_counter_update_)
+  if (!needs_counter_update_)
     return;
 
-  needs_marker_counter_update_ = false;
-  if (!HasLayoutCounters() && !HasLayoutListItems())
+  needs_counter_update_ = false;
+  if (!HasLayoutCounters())
     return;
 
   for (LayoutObject* layout_object = this; layout_object;
        layout_object = layout_object->NextInPreOrder()) {
-    if (auto* list_item = DynamicTo<LayoutListItem>(layout_object)) {
-      list_item->UpdateCounterStyle();
-    } else if (auto* ng_list_item =
-                   DynamicTo<LayoutNGListItem>(layout_object)) {
-      ng_list_item->UpdateCounterStyle();
-    } else if (auto* counter = DynamicTo<LayoutCounter>(layout_object)) {
+    if (auto* counter = DynamicTo<LayoutCounter>(layout_object))
       counter->UpdateCounter();
-    }
   }
 }
 

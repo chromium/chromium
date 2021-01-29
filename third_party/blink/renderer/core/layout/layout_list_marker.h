@@ -117,7 +117,6 @@ class CORE_EXPORT LayoutListMarker final : public LayoutBox {
 
   void UpdateMarkerImageIfNeeded(StyleImage* image);
   void ListStyleTypeChanged();
-  void CounterStyleChanged();
 
   String text_;
   Persistent<StyleImage> image_;

@@ -82,21 +82,12 @@ CounterStyleMap::CounterStyleMap(Document* document, TreeScope* tree_scope)
 }
 
 void CounterStyleMap::AddCounterStyles(const RuleSet& rule_set) {
-  if (!rule_set.CounterStyleRules().size())
-    return;
-
   for (StyleRuleCounterStyle* rule : rule_set.CounterStyleRules()) {
     CounterStyle* counter_style = CounterStyle::Create(*rule);
     if (!counter_style)
       continue;
-    AtomicString name = rule->GetName();
-    if (CounterStyle* replaced = counter_styles_.at(name))
-      replaced->SetIsDirty();
     counter_styles_.Set(rule->GetName(), counter_style);
   }
-
-  if (owner_document_)
-    owner_document_->GetStyleEngine().MarkCounterStylesNeedUpdate();
 }
 
 CounterStyleMap* CounterStyleMap::GetAncestorMap() const {
@@ -273,15 +264,9 @@ void CounterStyleMap::ResolveAllReferences(
 }
 
 void CounterStyleMap::Dispose() {
-  if (!counter_styles_.size())
-    return;
-
   for (CounterStyle* counter_style : counter_styles_.Values())
     counter_style->SetIsDirty();
   counter_styles_.clear();
-
-  if (owner_document_)
-    owner_document_->GetStyleEngine().MarkCounterStylesNeedUpdate();
 }
 
 void CounterStyleMap::Trace(Visitor* visitor) const {

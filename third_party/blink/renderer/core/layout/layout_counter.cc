@@ -674,7 +674,7 @@ void LayoutCounter::DestroyCounterNodes(LayoutObject& owner) {
   maps.erase(maps_iterator);
   owner.SetHasCounterNodeMap(false);
   if (owner.View())
-    owner.View()->SetNeedsMarkerOrCounterUpdate();
+    owner.View()->SetNeedsCounterUpdate();
 }
 
 void LayoutCounter::DestroyCounterNode(LayoutObject& owner,

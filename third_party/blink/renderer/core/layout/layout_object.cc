@@ -3027,7 +3027,7 @@ void LayoutObject::CheckCounterChanges(const ComputedStyle* old_style,
       return;
   }
   LayoutCounter::LayoutObjectStyleChanged(*this, old_style, *new_style);
-  View()->SetNeedsMarkerOrCounterUpdate();
+  View()->SetNeedsCounterUpdate();
 }
 
 PhysicalRect LayoutObject::ViewRect() const {

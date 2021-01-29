@@ -377,8 +377,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void MarkFontsNeedUpdate();
   void InvalidateStyleAndLayoutForFontUpdates();
 
-  void MarkCounterStylesNeedUpdate();
-
   StyleRuleKeyframes* KeyframeStylesForAnimation(
       const AtomicString& animation_name);
   StyleRuleScrollTimeline* FindScrollTimelineRule(const AtomicString& name);
@@ -601,7 +599,6 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   bool in_dom_removal_{false};
   bool viewport_style_dirty_{false};
   bool fonts_need_update_{false};
-  bool counter_styles_need_update_{false};
 
   // Set to true if we allow marking style dirty from style recalc. Ideally, we
   // should get rid of this, but we keep track of where we allow it with

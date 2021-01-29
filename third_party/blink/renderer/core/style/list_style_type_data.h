@@ -11,8 +11,6 @@
 
 namespace blink {
 
-class CounterStyle;
-class Document;
 class TreeScope;
 
 class ListStyleTypeData final : public GarbageCollected<ListStyleTypeData> {
@@ -57,10 +55,6 @@ class ListStyleTypeData final : public GarbageCollected<ListStyleTypeData> {
 
   const TreeScope* GetTreeScope() const { return tree_scope_; }
 
-  // TODO(crbug.com/687225): Try not to pass a Document, which is cumbersome.
-  bool IsCounterStyleReferenceValid(Document&) const;
-  const CounterStyle& GetCounterStyle(Document&) const;
-
   EListStyleType ToDeprecatedListStyleTypeEnum() const;
 
  private:
@@ -69,10 +63,6 @@ class ListStyleTypeData final : public GarbageCollected<ListStyleTypeData> {
 
   // The tree scope for looking up the custom counter style name
   Member<const TreeScope> tree_scope_;
-
-  // The CounterStyle that we are using. The reference is updated on demand.
-  // Note: this is NOT part of the computed value of 'list-style-type'.
-  mutable Member<const CounterStyle> counter_style_;
 };
 
 }  // namespace blink

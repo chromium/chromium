@@ -542,17 +542,11 @@ void StyleEngine::UpdateActiveStyleSheets() {
   }
 
   if (RuntimeEnabledFeatures::CSSAtRuleCounterStyleEnabled()) {
-    // TODO(crbug.com/687225): We initialize the predefined counter styles here.
-    // Moving the initialization to other places causes test failures, which
-    // needs investigation and fixing.
-    CounterStyleMap::GetUACounterStyleMap();
-
-    if (counter_styles_need_update_) {
-      CounterStyleMap::MarkAllDirtyCounterStyles(GetDocument(),
-                                                 active_tree_scopes_);
-      CounterStyleMap::ResolveAllReferences(GetDocument(), active_tree_scopes_);
-      counter_styles_need_update_ = false;
-    }
+    // TODO(crbug.com/687225): Add a flag to indicate whether counter styles
+    // need updates, so that we don't update them every time.
+    CounterStyleMap::MarkAllDirtyCounterStyles(GetDocument(),
+                                               active_tree_scopes_);
+    CounterStyleMap::ResolveAllReferences(GetDocument(), active_tree_scopes_);
   }
 
   probe::ActiveStyleSheetsUpdated(document_);
@@ -864,7 +858,6 @@ void StyleEngine::InvalidateStyleAndLayoutForFontUpdates() {
     root->MarkSubtreeNeedsStyleRecalcForFontUpdates();
   }
 
-  // TODO(xiaochengh): Move layout invalidation after style update.
   if (LayoutView* layout_view = GetDocument().GetLayoutView()) {
     TRACE_EVENT0("blink", "LayoutObject::InvalidateSubtreeForFontUpdates");
     layout_view->InvalidateSubtreeLayoutForFontUpdates();
@@ -873,13 +866,6 @@ void StyleEngine::InvalidateStyleAndLayoutForFontUpdates() {
 
 void StyleEngine::MarkFontsNeedUpdate() {
   fonts_need_update_ = true;
-  GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
-}
-
-void StyleEngine::MarkCounterStylesNeedUpdate() {
-  counter_styles_need_update_ = true;
-  if (LayoutView* layout_view = GetDocument().GetLayoutView())
-    layout_view->SetNeedsMarkerOrCounterUpdate();
   GetDocument().ScheduleLayoutTreeUpdateIfNeeded();
 }
 
@@ -1586,7 +1572,7 @@ void StyleEngine::ApplyUserRuleSetChanges(
         EnsureUserCounterStyleMap().AddCounterStyles(*it->second);
     }
 
-    MarkCounterStylesNeedUpdate();
+    // TODO(crbug.com/687225): Trigger style/Layout invalidations.
   }
 
   if (changed_rule_flags & (kPropertyRules | kScrollTimelineRules)) {
@@ -1652,8 +1638,7 @@ void StyleEngine::ApplyRuleSetChanges(
   if (changed_rule_flags & kKeyframesRules)
     ScopedStyleResolver::KeyframesRulesAdded(tree_scope);
 
-  if (changed_rule_flags & kCounterStyleRules)
-    MarkCounterStylesNeedUpdate();
+  // TODO(crbug.com/687725): Style/layout invalidation for counter style rules.
 
   if ((changed_rule_flags & kPropertyRules) || rebuild_at_property_registry) {
     // @property rules are (for now) ignored in shadow trees, per spec.

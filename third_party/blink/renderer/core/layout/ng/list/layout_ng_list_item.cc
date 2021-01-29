@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 
-#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/list_marker.h"
 
 namespace blink {
@@ -15,14 +14,6 @@ LayoutNGListItem::LayoutNGListItem(Element* element)
 
   SetConsumesSubtreeChangeNotification();
   RegisterSubtreeChangeListenerOnDescendants(true);
-  View()->AddLayoutListItem();
-}
-
-void LayoutNGListItem::WillBeDestroyed() {
-  NOT_DESTROYED();
-  if (View())
-    View()->RemoveLayoutListItem();
-  LayoutNGBlockFlow::WillBeDestroyed();
 }
 
 bool LayoutNGListItem::IsOfType(LayoutObjectType type) const {
@@ -62,21 +53,6 @@ void LayoutNGListItem::StyleDidChange(StyleDifference diff,
          *old_list_style_type != *new_list_style_type))
       list_marker->ListStyleTypeChanged(*marker);
   }
-}
-
-void LayoutNGListItem::UpdateCounterStyle() {
-  if (!StyleRef().GetListStyleType() ||
-      StyleRef().GetListStyleType()->IsCounterStyleReferenceValid(
-          GetDocument())) {
-    return;
-  }
-
-  LayoutObject* marker = Marker();
-  ListMarker* list_marker = ListMarker::Get(marker);
-  if (!list_marker)
-    return;
-
-  list_marker->CounterStyleChanged(*marker);
 }
 
 void LayoutNGListItem::OrdinalValueChanged() {

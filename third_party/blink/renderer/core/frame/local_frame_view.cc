@@ -579,6 +579,12 @@ void LocalFrameView::AdjustViewSizeAndLayout() {
   }
 }
 
+void LocalFrameView::UpdateCountersAfterStyleChange() {
+  auto* layout_view = GetLayoutView();
+  DCHECK(layout_view);
+  layout_view->UpdateCounters();
+}
+
 void LocalFrameView::CountObjectsNeedingLayout(unsigned& needs_layout_objects,
                                                unsigned& total_objects,
                                                bool& is_subtree) {

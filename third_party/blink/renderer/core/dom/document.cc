@@ -2461,7 +2461,7 @@ void Document::UpdateStyle() {
 
   PropagateStyleToViewport();
 
-  GetLayoutView()->UpdateMarkersAndCountersAfterStyleChange();
+  View()->UpdateCountersAfterStyleChange();
   GetLayoutView()->RecalcLayoutOverflow();
 
   DCHECK(!NeedsStyleRecalc());

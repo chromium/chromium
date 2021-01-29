@@ -255,6 +255,8 @@ class CORE_EXPORT LocalFrameView final
   bool GetIntrinsicSizingInfo(IntrinsicSizingInfo&) const override;
   bool HasIntrinsicSizingInfo() const override;
 
+  void UpdateCountersAfterStyleChange();
+
   void Dispose() override;
   void PropagateFrameRects() override;
   void InvalidateAllCustomScrollbarsOnActiveChanged();
