@@ -98,7 +98,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   using Widgets = std::set<Widget*>;
   using ShapeRects = std::vector<gfx::Rect>;
   using PaintAsActiveCallbackList = base::RepeatingClosureList;
-  using Predicate = base::RepeatingCallback<bool(Widget*)>;
 
   enum class FrameType {
     kDefault,      // Use whatever the default would be.

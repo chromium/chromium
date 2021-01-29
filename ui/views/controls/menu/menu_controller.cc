@@ -75,7 +75,7 @@ namespace views {
 
 namespace {
 
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
 bool AcceleratorShouldCancelMenu(const ui::Accelerator& accelerator) {
   // Since AcceleratorShouldCancelMenu() is called quite early in key
   // event handling, it is actually invoked for modifier keys themselves
@@ -340,31 +340,6 @@ static void RepostEventImpl(const ui::LocatedEvent* event,
 }
 #endif  // defined(OS_WIN)
 
-#if defined(OS_MAC)
-// Note: this just checks whether |widget| is *a* menu widget, not whether
-// it belongs to |weak_controller|. The only reason |weak_controller| is passed
-// in is so that we can guarantee that window activations are handled if they
-// come after the controller has been torn down.
-bool IsMenuWidget(base::WeakPtr<MenuController> weak_controller,
-                  Widget* widget) {
-  MenuController* controller = weak_controller.get();
-  if (!controller || !widget)
-    return false;
-  // TODO(ellyjones): It's surprising that a MenuController has no notion of
-  // which Widgets correspond to the menus it is currently showing. Perhaps
-  // refactor it so that it does?
-  if (strcmp(widget->GetRootView()->GetClassName(), "MenuHostRootView"))
-    return false;
-
-  return true;
-}
-
-bool IsNotMenuWidget(base::WeakPtr<MenuController> weak_controller,
-                     Widget* widget) {
-  return !IsMenuWidget(weak_controller, widget);
-}
-#endif
-
 }  // namespace
 
 // MenuScrollTask --------------------------------------------------------------
@@ -542,11 +517,9 @@ void MenuController::Run(Widget* parent,
     menu_pre_target_handler_ = MenuPreTargetHandler::Create(this, owner_);
   }
 
-#if defined(OS_MAC)
-  menu_cocoa_watcher_ = std::make_unique<MenuCocoaWatcherMac>(
-      base::BindRepeating(&IsNotMenuWidget, this->AsWeakPtr()),
-      base::BindOnce(&MenuController::Cancel, this->AsWeakPtr(),
-                     ExitType::kAll));
+#if defined(OS_APPLE)
+  menu_cocoa_watcher_ = std::make_unique<MenuCocoaWatcherMac>(base::BindOnce(
+      &MenuController::Cancel, this->AsWeakPtr(), ExitType::kAll));
 #endif
 
   // Reset current state.
@@ -576,7 +549,7 @@ void MenuController::Run(Widget* parent,
 }
 
 void MenuController::Cancel(ExitType type) {
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   menu_closure_animation_.reset();
 #endif
 
@@ -912,12 +885,12 @@ bool MenuController::OnMouseWheel(SubmenuView* source,
 void MenuController::OnGestureEvent(SubmenuView* source,
                                     ui::GestureEvent* event) {
   if (owner_ && send_gesture_events_to_owner()) {
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
     NOTIMPLEMENTED();
-#else   // !defined(OS_MAC)
+#else   // !defined(OS_APPLE)
     event->ConvertLocationToTarget(source->GetWidget()->GetNativeWindow(),
                                    owner()->GetNativeWindow());
-#endif  // defined(OS_MAC)
+#endif  // defined(OS_APPLE)
     owner()->OnGestureEvent(event);
     // Reset |send_gesture_events_to_owner_| when the first gesture ends.
     if (event->type() == ui::ET_GESTURE_END)
@@ -1222,7 +1195,7 @@ ui::PostDispatchAction MenuController::OnWillDispatchKeyEvent(
   base::WeakPtr<MenuController> this_ref = AsWeakPtr();
   if (event->type() == ui::ET_KEY_PRESSED) {
     bool key_handled = false;
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
     // Special handling for Option-Up and Option-Down, which should behave like
     // Home and End respectively in menus.
     if ((event->flags() & ui::EF_ALT_DOWN)) {
@@ -1269,7 +1242,7 @@ ui::PostDispatchAction MenuController::OnWillDispatchKeyEvent(
 
   ui::Accelerator accelerator(*event);
 
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   if (AcceleratorShouldCancelMenu(accelerator)) {
     Cancel(ExitType::kAll);
     return ui::POST_DISPATCH_PERFORM_DEFAULT;
@@ -1335,7 +1308,7 @@ void MenuController::TurnOffMenuSelectionHoldForTest() {
 }
 
 void MenuController::OnMenuItemDestroying(MenuItemView* menu_item) {
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   if (menu_closure_animation_ && menu_closure_animation_->item() == menu_item)
     menu_closure_animation_.reset();
 #endif
@@ -1580,7 +1553,7 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
       break;
 
 // On Mac, treat space the same as return.
-#if !defined(OS_MAC)
+#if !defined(OS_APPLE)
     case ui::VKEY_SPACE:
       SendAcceleratorToHotTrackedView(event.flags());
       break;
@@ -1592,7 +1565,7 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
       // Fallthrough to accept or dismiss combobox menus on F4, like windows.
       FALLTHROUGH;
     case ui::VKEY_RETURN:
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
     case ui::VKEY_SPACE:
 #endif
       // An odd special case: if a prefix selection is in flight, space should
@@ -1636,7 +1609,7 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
       CloseSubmenu();
       break;
 
-#if !defined(OS_MAC)
+#if !defined(OS_APPLE)
     case ui::VKEY_APPS: {
       Button* hot_view = GetFirstHotTrackedView(pending_state_.item);
       if (hot_view) {
@@ -1744,7 +1717,7 @@ void MenuController::UpdateInitialLocation(const gfx::Rect& bounds,
 }
 
 void MenuController::Accept(MenuItemView* item, int event_flags) {
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   menu_closure_animation_ = std::make_unique<MenuClosureAnimationMac>(
       item, item->GetParentMenuItem()->GetSubmenu(),
       base::BindOnce(&MenuController::ReallyAccept, base::Unretained(this),
@@ -1758,7 +1731,7 @@ void MenuController::Accept(MenuItemView* item, int event_flags) {
 void MenuController::ReallyAccept(MenuItemView* item, int event_flags) {
   DCHECK(!for_drop_);
   result_ = item;
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   // Reset the closure animation since it's now finished - this also unblocks
   // input events for the menu.
   menu_closure_animation_.reset();
@@ -2930,7 +2903,7 @@ void MenuController::RepostEventAndCancel(SubmenuView* source,
     if (last_part.type != MenuPart::Type::kNone)
       exit_type = ExitType::kOutermost;
   }
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   // When doing a menu closure animation, target the deepest submenu - that way
   // MenuClosureAnimationMac will fade out all the menus in sync, rather than
   // the shallowest menu only.
@@ -3264,7 +3237,7 @@ void MenuController::UnregisterAlertedItem(MenuItemView* item) {
 }
 
 bool MenuController::CanProcessInputEvents() const {
-#if defined(OS_MAC)
+#if defined(OS_APPLE)
   return !menu_closure_animation_;
 #else
   return true;
