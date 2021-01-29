@@ -40,6 +40,8 @@ void SafeBrowsingMetricsCollector::LogMetricsAndScheduleNextLogging() {
                                 GetSafeBrowsingState(*pref_service_));
   base::UmaHistogramBoolean("SafeBrowsing.Pref.Daily.Extended",
                             IsExtendedReportingEnabled(*pref_service_));
+  base::UmaHistogramBoolean("SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
+                            IsSafeBrowsingPolicyManaged(*pref_service_));
   pref_service_->SetInt64(
       prefs::kSafeBrowsingMetricsLastLogTime,
       base::Time::Now().ToDeltaSinceWindowsEpoch().InSeconds());

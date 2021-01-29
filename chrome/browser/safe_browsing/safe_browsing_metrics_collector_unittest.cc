@@ -44,9 +44,9 @@ class SafeBrowsingMetricsCollectorTest : public ::testing::Test {
     pref_service_.registry()->RegisterInt64Pref(
         prefs::kSafeBrowsingMetricsLastLogTime, 0);
     pref_service_.registry()->RegisterBooleanPref(prefs::kSafeBrowsingEnabled,
-                                                  true),
-        pref_service_.registry()->RegisterBooleanPref(
-            prefs::kSafeBrowsingEnhanced, false);
+                                                  true);
+    pref_service_.registry()->RegisterBooleanPref(prefs::kSafeBrowsingEnhanced,
+                                                  false);
     pref_service_.registry()->RegisterBooleanPref(
         prefs::kSafeBrowsingScoutReportingEnabled, false);
   }
@@ -65,24 +65,59 @@ TEST_F(SafeBrowsingMetricsCollectorTest,
                                /* sample */ 1, /* expected_count */ 1);
   histograms.ExpectBucketCount("SafeBrowsing.Pref.Daily.Extended",
                                /* sample */ 1, /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
+      /* sample */ 0, /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
+      /* sample */ 1, /* expected_count */ 0);
   task_environment_->FastForwardBy(base::TimeDelta::FromHours(23));
   // Shouldn't log new data before the scheduled time.
   histograms.ExpectBucketCount("SafeBrowsing.Pref.Daily.SafeBrowsingState",
                                /* sample */ 1, /* expected_count */ 1);
   histograms.ExpectBucketCount("SafeBrowsing.Pref.Daily.Extended",
                                /* sample */ 1, /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
+      /* sample */ 0, /* expected_count */ 1);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
+      /* sample */ 1, /* expected_count */ 0);
   task_environment_->FastForwardBy(base::TimeDelta::FromHours(1));
   // Should log when the scheduled time arrives.
   histograms.ExpectBucketCount("SafeBrowsing.Pref.Daily.SafeBrowsingState",
                                /* sample */ 1, /* expected_count */ 2);
   histograms.ExpectBucketCount("SafeBrowsing.Pref.Daily.Extended",
                                /* sample */ 1, /* expected_count */ 2);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
+      /* sample */ 0, /* expected_count */ 2);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
+      /* sample */ 1, /* expected_count */ 0);
   task_environment_->FastForwardBy(base::TimeDelta::FromHours(24));
   // Should log when the scheduled time arrives.
   histograms.ExpectBucketCount("SafeBrowsing.Pref.Daily.SafeBrowsingState",
                                /* sample */ 1, /* expected_count */ 3);
   histograms.ExpectBucketCount("SafeBrowsing.Pref.Daily.Extended",
                                /* sample */ 1, /* expected_count */ 3);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
+      /* sample */ 0, /* expected_count */ 3);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
+      /* sample */ 1, /* expected_count */ 0);
+
+  // Should now detect SafeBrowsing as Managed.
+  pref_service_.SetManagedPref(prefs::kSafeBrowsingEnabled,
+                               std::make_unique<base::Value>(true));
+  task_environment_->FastForwardBy(base::TimeDelta::FromHours(24));
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
+      /* sample */ 0, /* expected_count */ 3);
+  histograms.ExpectBucketCount(
+      "SafeBrowsing.Pref.Daily.SafeBrowsingModeManaged",
+      /* sample */ 1, /* expected_count */ 1);
 }
 
 TEST_F(SafeBrowsingMetricsCollectorTest,

@@ -8389,6 +8389,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Main frame"/>
 </enum>
 
+<enum name="BooleanManagedPref">
+  <int value="0" label="Unmanaged Pref"/>
+  <int value="1" label="Managed Pref"/>
+</enum>
+
 <enum name="BooleanMarkedForReload">
   <int value="0" label="Not marked for reload"/>
   <int value="1" label="Marked for reload"/>
