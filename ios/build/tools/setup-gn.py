@@ -27,6 +27,16 @@ except ImportError:
 SUPPORTED_TARGETS = ('iphoneos', 'iphonesimulator', 'maccatalyst')
 SUPPORTED_CONFIGS = ('Debug', 'Release', 'Profile', 'Official', 'Coverage')
 
+# Pattern matching lines from ~/.lldbinit that must not be copied to the
+# generated .lldbinit file. They match what the user were told to add to
+# their global ~/.lldbinit file before setup-gn.py was updated to generate
+# a project specific file and thus must not be copied as they would cause
+# the settings to be overwritten.
+LLDBINIT_SKIP_PATTERNS = (
+    re.compile('^script sys.path\\[:0\\] = \\[\'.*/src/tools/lldb\'\\]$'),
+    re.compile('^script import lldbinit$'),
+    re.compile('^settings append target.source-map .* /google/src/.*$'),
+)
 
 class ConfigParserWithStringInterpolation(configparser.SafeConfigParser):
 
@@ -252,8 +262,8 @@ def GenerateXcodeProject(gn_path, root_dir, out_dir, settings):
   '''Convert GN generated Xcode project into multi-configuration Xcode
   project.'''
 
-  temp_path = tempfile.mkdtemp(prefix=os.path.abspath(
-      os.path.join(out_dir, '_temp')))
+  prefix = os.path.abspath(os.path.join(out_dir, '_temp'))
+  temp_path = tempfile.mkdtemp(prefix=prefix)
   try:
     generator = GnGenerator(settings, 'Debug', 'iphonesimulator')
     generator.Generate(gn_path, root_dir, temp_path)
@@ -266,8 +276,11 @@ def GenerateXcodeProject(gn_path, root_dir, out_dir, settings):
     if os.path.exists(temp_path):
       shutil.rmtree(temp_path)
 
-  # Generate an .lldbinit file for the project that load the script that fixes
-  # the mapping of source files (see docs/ios/build_instructions.md#debugging).
+def CreateLLDBInitFile(root_dir, out_dir, settings):
+  '''
+  Generate an .lldbinit file for the project that load the script that fixes
+  the mapping of source files (see docs/ios/build_instructions.md#debugging).
+  '''
   with open(os.path.join(out_dir, 'build', '.lldbinit'), 'w') as lldbinit:
     lldb_script_dir = os.path.join(os.path.abspath(root_dir), 'tools', 'lldb')
     lldbinit.write('script sys.path[:0] = [\'%s\']\n' % lldb_script_dir)
@@ -284,6 +297,14 @@ def GenerateXcodeProject(gn_path, root_dir, out_dir, settings):
             shortname,
             '/google/src/cloud/%s/%s/google3/%s' % (
                 username, workspace_name, shortname)))
+
+    global_lldbinit_path = os.path.join(os.environ['HOME'], '.lldbinit')
+    if os.path.isfile(global_lldbinit_path):
+      with open(global_lldbinit_path) as global_lldbinit:
+        for line in global_lldbinit:
+          if any(pattern.match(line) for pattern in LLDBINIT_SKIP_PATTERNS):
+            continue
+          lldbinit.write(line)
 
 
 def GenerateGnBuildRules(gn_path, root_dir, out_dir, settings):
@@ -355,6 +376,7 @@ def Main(args):
 
   GenerateXcodeProject(gn_path, args.root, out_dir, settings)
   GenerateGnBuildRules(gn_path, args.root, out_dir, settings)
+  CreateLLDBInitFile(args.root, out_dir, settings)
 
 
 if __name__ == '__main__':
