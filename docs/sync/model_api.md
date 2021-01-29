@@ -81,7 +81,7 @@ to add one (e.g. a GUID, though be wary as they have the potential to conflict).
 While the hash gets written to disk as part of the metadata, the tag itself is
 never persisted locally.
 
-[EntityData]: https://cs.chromium.org/chromium/src/components/sync/model/entity_data.h
+[EntityData]: https://cs.chromium.org/chromium/src/components/sync/engine/entity_data.h
 
 ## Storage
 

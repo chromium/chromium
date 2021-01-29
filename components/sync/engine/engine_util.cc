@@ -11,7 +11,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
-#include "components/sync/nigori/cryptographer.h"
+#include "components/sync/engine/nigori/cryptographer.h"
 #include "components/sync/protocol/password_specifics.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 

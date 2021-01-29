@@ -11,7 +11,7 @@
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/passphrase_enums.h"
-#include "components/sync/nigori/nigori.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {

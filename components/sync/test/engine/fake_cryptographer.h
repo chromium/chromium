@@ -9,7 +9,7 @@
 #include <set>
 #include <string>
 
-#include "components/sync/nigori/cryptographer.h"
+#include "components/sync/engine/nigori/cryptographer.h"
 
 namespace syncer {
 

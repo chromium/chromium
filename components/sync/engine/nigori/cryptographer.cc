@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/nigori/cryptographer.h"
+#include "components/sync/engine/nigori/cryptographer.h"
 
 #include "base/check.h"
 #include "base/logging.h"

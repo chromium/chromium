@@ -21,12 +21,12 @@
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/engine/commit_and_get_updates_types.h"
 #include "components/sync/engine/commit_queue.h"
+#include "components/sync/engine/nigori/cryptographer.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine_impl/cancelation_signal.h"
 #include "components/sync/engine_impl/commit_contributor.h"
 #include "components/sync/engine_impl/nudge_handler.h"
 #include "components/sync/engine_impl/update_handler.h"
-#include "components/sync/nigori/cryptographer.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 

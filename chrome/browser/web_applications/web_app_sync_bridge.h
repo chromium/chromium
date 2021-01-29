@@ -14,8 +14,8 @@
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/sync/engine/entity_data.h"
 #include "components/sync/model/entity_change.h"
-#include "components/sync/model/entity_data.h"
 #include "components/sync/model/model_type_sync_bridge.h"
 
 class Profile;

@@ -15,7 +15,7 @@
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
-#include "components/sync/nigori/cryptographer.h"
+#include "components/sync/engine/nigori/cryptographer.h"
 #include "components/sync/test/engine/fake_cryptographer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

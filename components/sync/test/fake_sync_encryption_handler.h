@@ -12,8 +12,8 @@
 #include "base/compiler_specific.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "components/sync/engine/nigori/keystore_keys_handler.h"
 #include "components/sync/engine/sync_encryption_handler.h"
-#include "components/sync/nigori/keystore_keys_handler.h"
 
 namespace syncer {
 

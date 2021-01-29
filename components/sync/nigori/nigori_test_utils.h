@@ -9,7 +9,7 @@
 #include <string>
 #include <vector>
 
-#include "components/sync/nigori/nigori.h"
+#include "components/sync/engine/nigori/nigori.h"
 
 namespace sync_pb {
 

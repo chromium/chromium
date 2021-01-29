@@ -13,7 +13,7 @@
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model/entity_data.h"
+#include "components/sync/engine/entity_data.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 

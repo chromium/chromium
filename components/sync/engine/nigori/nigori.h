@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_NIGORI_NIGORI_H_
-#define COMPONENTS_SYNC_NIGORI_NIGORI_H_
+#ifndef COMPONENTS_SYNC_ENGINE_NIGORI_NIGORI_H_
+#define COMPONENTS_SYNC_ENGINE_NIGORI_NIGORI_H_
 
 #include <stddef.h>
 
@@ -12,6 +12,13 @@
 
 #include "base/time/tick_clock.h"
 #include "components/sync/base/passphrase_enums.h"
+
+// TODO(crbug.com/947443): Move this file to components/sync/nigori/. It lives
+// in engine/nigori/ now because some engine code requires KeyDerivationParams
+// to implement SyncEncryptionHandler::OnPassphraseRequired(). None of the
+// implementations actually uses the parameter though, which means we can
+// probably split the interface and depend on KeyDerivationParams only outside
+// of the engine.
 
 namespace crypto {
 class SymmetricKey;
@@ -155,4 +162,4 @@ class Nigori {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_NIGORI_NIGORI_H_
+#endif  // COMPONENTS_SYNC_ENGINE_NIGORI_NIGORI_H_

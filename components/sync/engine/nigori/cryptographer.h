@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_NIGORI_CRYPTOGRAPHER_H_
-#define COMPONENTS_SYNC_NIGORI_CRYPTOGRAPHER_H_
+#ifndef COMPONENTS_SYNC_ENGINE_NIGORI_CRYPTOGRAPHER_H_
+#define COMPONENTS_SYNC_ENGINE_NIGORI_CRYPTOGRAPHER_H_
 
 #include <memory>
 #include <string>
@@ -63,4 +63,4 @@ class Cryptographer {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_NIGORI_CRYPTOGRAPHER_H_
+#endif  // COMPONENTS_SYNC_ENGINE_NIGORI_CRYPTOGRAPHER_H_

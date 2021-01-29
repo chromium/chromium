@@ -21,6 +21,9 @@
 #include "components/sync/engine/engine_components_factory.h"
 #include "components/sync/engine/engine_util.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
+#include "components/sync/engine/nigori/cryptographer.h"
+#include "components/sync/engine/nigori/keystore_keys_handler.h"
+#include "components/sync/engine/nigori/nigori.h"
 #include "components/sync/engine/polling_constants.h"
 #include "components/sync/engine_impl/cancelation_signal.h"
 #include "components/sync/engine_impl/loopback_server/loopback_connection_manager.h"
@@ -28,9 +31,6 @@
 #include "components/sync/engine_impl/net/sync_server_connection_manager.h"
 #include "components/sync/engine_impl/net/url_translator.h"
 #include "components/sync/engine_impl/sync_scheduler.h"
-#include "components/sync/nigori/cryptographer.h"
-#include "components/sync/nigori/keystore_keys_handler.h"
-#include "components/sync/nigori/nigori.h"
 #include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {

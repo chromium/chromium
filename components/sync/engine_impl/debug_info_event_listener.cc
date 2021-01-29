@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 #include "base/logging.h"
-#include "components/sync/nigori/cryptographer.h"
+#include "components/sync/engine/nigori/cryptographer.h"
 
 namespace syncer {
 

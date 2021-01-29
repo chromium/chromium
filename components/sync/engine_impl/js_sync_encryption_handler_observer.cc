@@ -12,10 +12,10 @@
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
+#include "components/sync/engine/nigori/cryptographer.h"
 #include "components/sync/engine/sync_string_conversions.h"
 #include "components/sync/js/js_event_details.h"
 #include "components/sync/js/js_event_handler.h"
-#include "components/sync/nigori/cryptographer.h"
 
 namespace syncer {
 

@@ -5,7 +5,7 @@
 #include "components/sync_sessions/test_matchers.h"
 
 #include "components/sessions/core/session_id.h"
-#include "components/sync/model/entity_data.h"
+#include "components/sync/engine/entity_data.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync_sessions/synced_session.h"
 
