@@ -93,11 +93,12 @@ public class PasswordStoreBridge {
 
     /**
      * Returns the list of credentials stored in the database.
-     *
-     * @param credentials array to be populated.
      */
-    public void getAllCredentials(PasswordStoreCredential[] credentials) {
+    public PasswordStoreCredential[] getAllCredentials() {
+        PasswordStoreCredential[] credentials =
+                new PasswordStoreCredential[getPasswordStoreCredentialsCount()];
         PasswordStoreBridgeJni.get().getAllCredentials(mNativePasswordStoreBridge, credentials);
+        return credentials;
     }
 
     /**

@@ -54,4 +54,11 @@ public class PasswordStoreCredential {
         return mUrl.equals(that.mUrl) && mUsername.equals(that.mUsername)
                 && mPassword.equals(that.mPassword);
     }
+
+    @Override
+    public String toString() {
+        return "PasswordStoreCredential{"
+                + "url='" + mUrl + ", username='" + mUsername + '\'' + '\'' + ", password='"
+                + mPassword + '}';
+    }
 }
