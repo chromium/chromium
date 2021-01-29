@@ -116,15 +116,19 @@ void ExpandedStateNewDeskButton::Layout() {
       /*compact=*/false);
   new_desk_button_->SetBoundsRect(new_desk_button_bounds);
 
-  const gfx::Size label_size =
-      bar_view_->mini_views()[0]->desk_name_view()->GetPreferredSize();
+  const gfx::Size label_size = label_->GetPreferredSize();
+  // Set the label to have the same height as the DeskNameView to keep them at
+  // the same horizotal level. Note, don't get the label's width from
+  // DeskNameView since desk's name is changeable, but this label here is not.
+  const int label_height =
+      bar_view_->mini_views()[0]->desk_name_view()->GetPreferredSize().height();
   label_->SetBoundsRect(gfx::Rect(
       gfx::Point(
           (new_desk_button_bounds.width() - label_size.width()) / 2,
           new_desk_button_bounds.bottom() -
               bar_view_->mini_views()[0]->GetPreviewBorderInsets().bottom() +
               kNewDeskButtonAndNameSpacing),
-      label_size));
+      gfx::Size(label_size.width(), label_height)));
 }
 
 void ExpandedStateNewDeskButton::UpdateButtonState() {
