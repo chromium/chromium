@@ -15,7 +15,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface AppMetricsAppStateAgent () <AppStateObserver, SceneStateObserver>
+@interface AppMetricsAppStateAgent () <SceneStateObserver>
 
 // Observed app state.
 @property(nonatomic, weak) AppState* appState;

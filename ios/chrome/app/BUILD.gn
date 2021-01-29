@@ -35,6 +35,7 @@ source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
+    "app_metrics_app_state_agent_unittest.mm",
     "chrome_overlay_window_testing.h",
     "deferred_initialization_runner_unittest.mm",
     "main_application_delegate_unittest.mm",
@@ -43,6 +44,7 @@ source_set("unit_tests") {
   deps = [
     ":app",
     ":app_internal",
+    ":app_metrics_app_state_agent",
     "//base",
     "//base/test:test_support",
     "//components/metrics",
@@ -52,6 +54,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/application_delegate:url_opener_params",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/metrics:metrics",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/main:scene",
     "//ios/chrome/common/app_group",
