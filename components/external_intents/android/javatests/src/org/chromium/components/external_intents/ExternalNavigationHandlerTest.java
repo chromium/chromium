@@ -1934,6 +1934,24 @@ public class ExternalNavigationHandlerTest {
                         .size());
     }
 
+    @Test
+    @SmallTest
+    public void testExceptions() {
+        // Test that we don't crash under various bad intent URIs.
+        String numberFormatException = "intent://foo#Intent;scheme=https;i.FOO=0.1;end";
+        String uriSyntaxException = "intent://foo#Intent;scheme=https;invalid=asdf;end";
+        String indexOutOfBoundsException = "intent://foo#Intent;scheme=https;c.%;end";
+
+        checkUrl(numberFormatException).expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+        checkUrl(uriSyntaxException).expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+        checkUrl(indexOutOfBoundsException)
+                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
+
+        Assert.assertFalse(mUrlHandler.canExternalAppHandleUrl(numberFormatException));
+        Assert.assertFalse(mUrlHandler.canExternalAppHandleUrl(uriSyntaxException));
+        Assert.assertFalse(mUrlHandler.canExternalAppHandleUrl(indexOutOfBoundsException));
+    }
+
     private static List<ResolveInfo> makeResolveInfos(ResolveInfo... infos) {
         return Arrays.asList(infos);
     }

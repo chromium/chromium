@@ -62,7 +62,6 @@ import org.chromium.url.URI;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -221,7 +220,7 @@ public class ExternalNavigationHandler {
 
         int NUM_ENTRIES = 3;
     }
-  
+
     /**
      * Packages information about the result of a check of whether we should override URL loading.
      */
@@ -1450,7 +1449,7 @@ public class ExternalNavigationHandler {
         Intent intent;
         try {
             intent = Intent.parseUri(url, Intent.URI_INTENT_SCHEME);
-        } catch (URISyntaxException ex) {
+        } catch (Exception ex) {
             // Ignore the error.
             Log.w(TAG, "Bad URI %s", url, ex);
             return false;
