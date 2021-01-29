@@ -165,7 +165,6 @@ public class GrandfatheredChromePreferenceKeys {
                 ChromePreferenceKeys.SNAPSHOT_DATABASE_REMOVED,
                 ChromePreferenceKeys.SURVEY_DATE_LAST_ROLLED,
                 ChromePreferenceKeys.SURVEY_INFO_BAR_DISPLAYED,
-                ChromePreferenceKeys.SYNC_SESSIONS_UUID,
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF,
                 ChromePreferenceKeys.TABMODEL_ACTIVE_TAB_ID,
                 ChromePreferenceKeys.TABMODEL_HAS_COMPUTED_MAX_ID,

@@ -32,12 +32,13 @@ std::string SessionSyncPrefs::GetLegacySyncSessionsGUID() const {
   return pref_service_->GetString(kLegacySyncSessionsGUID);
 }
 
-void SessionSyncPrefs::SetLegacySyncSessionsGUID(const std::string& guid) {
-  pref_service_->SetString(kLegacySyncSessionsGUID, guid);
-}
-
 void SessionSyncPrefs::ClearLegacySyncSessionsGUID() {
   pref_service_->ClearPref(kLegacySyncSessionsGUID);
+}
+
+void SessionSyncPrefs::SetLegacySyncSessionsGUIDForTesting(
+    const std::string& guid) {
+  pref_service_->SetString(kLegacySyncSessionsGUID, guid);
 }
 
 }  // namespace sync_sessions

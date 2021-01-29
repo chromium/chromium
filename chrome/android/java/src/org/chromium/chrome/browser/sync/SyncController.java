@@ -7,14 +7,10 @@ package org.chromium.chrome.browser.sync;
 import android.annotation.SuppressLint;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.uid.UniqueIdentificationGenerator;
-import org.chromium.chrome.browser.uid.UniqueIdentificationGeneratorFactory;
 import org.chromium.components.sync.StopSource;
 
 /**
@@ -38,16 +34,6 @@ public class SyncController
         implements ProfileSyncService.SyncStateChangedListener, AndroidSyncSettings.Delegate {
     private static final String TAG = "SyncController";
 
-    /**
-     * An identifier for the generator in UniqueIdentificationGeneratorFactory to be used to
-     * generate the sync sessions ID. The generator is registered in the Application's onCreate
-     * method.
-     */
-    public static final String GENERATOR_ID = "SYNC";
-
-    @VisibleForTesting
-    public static final String SESSION_TAG_PREFIX = "session_sync";
-
     @SuppressLint("StaticFieldLeak")
     private static SyncController sInstance;
     private static boolean sInitialized;
@@ -58,8 +44,6 @@ public class SyncController
         AndroidSyncSettings.get().setDelegate(this);
         mProfileSyncService = ProfileSyncService.get();
         mProfileSyncService.addSyncStateChangedListener(this);
-
-        setSessionsId();
 
         updateSyncStateFromAndroid();
     }
@@ -151,21 +135,6 @@ public class SyncController
     @Override
     public void androidSyncSettingsChanged() {
         updateSyncStateFromAndroid();
-    }
-
-    /**
-     * Set the sessions ID using the generator that was registered for GENERATOR_ID.
-     */
-    private void setSessionsId() {
-        UniqueIdentificationGenerator generator =
-                UniqueIdentificationGeneratorFactory.getInstance(GENERATOR_ID);
-        String uniqueTag = generator.getUniqueId(null);
-        if (uniqueTag.isEmpty()) {
-            Log.e(TAG, "Unable to get unique tag for sync. "
-                    + "This may lead to unexpected tab sync behavior.");
-            return;
-        }
-        mProfileSyncService.setSessionsId(SESSION_TAG_PREFIX + uniqueTag);
     }
 
     /**

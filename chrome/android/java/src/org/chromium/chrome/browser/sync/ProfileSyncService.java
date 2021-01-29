@@ -552,15 +552,6 @@ public class ProfileSyncService {
     }
 
     /**
-     * Sets the the machine tag used by session sync.
-     */
-    public void setSessionsId(String sessionTag) {
-        ThreadUtils.assertOnUiThread();
-        ProfileSyncServiceJni.get().setSyncSessionsId(
-                mNativeProfileSyncServiceAndroid, ProfileSyncService.this, sessionTag);
-    }
-
-    /**
      * Records TrustedVaultKeyRetrievalTrigger histogram.
      */
     public void recordKeyRetrievalTrigger(@KeyRetrievalTriggerForUMA int keyRetrievalTrigger) {
@@ -669,8 +660,6 @@ public class ProfileSyncService {
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         void setSyncAllowedByPlatform(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller, boolean allowed);
-        void setSyncSessionsId(
-                long nativeProfileSyncServiceAndroid, ProfileSyncService caller, String tag);
         int getAuthError(long nativeProfileSyncServiceAndroid, ProfileSyncService caller);
         boolean requiresClientUpgrade(
                 long nativeProfileSyncServiceAndroid, ProfileSyncService caller);

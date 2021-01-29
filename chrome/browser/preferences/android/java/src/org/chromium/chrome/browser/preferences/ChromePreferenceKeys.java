@@ -724,8 +724,6 @@ public final class ChromePreferenceKeys {
      */
     public static final String SURVEY_INFO_BAR_DISPLAYED = "chrome_home_survey_info_bar_displayed";
 
-    public static final String SYNC_SESSIONS_UUID = "chromium.sync.sessions.id";
-
     public static final String TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF =
             "ChromeTabbedActivity.BackgroundTimeMs";
 

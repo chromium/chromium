@@ -51,11 +51,6 @@ class SessionSyncService : public KeyedService {
   virtual void ProxyTabsStateChanged(
       syncer::DataTypeController::State state) = 0;
 
-  // Used on Android only, to override the session tag. This call may be ignored
-  // depending on feature toggles.
-  // TODO(crbug.com/1159455): Delete code when the feature toggle gets deleted.
-  virtual void SetSyncSessionsGUID(const std::string& guid) = 0;
-
  private:
   DISALLOW_COPY_AND_ASSIGN(SessionSyncService);
 };
