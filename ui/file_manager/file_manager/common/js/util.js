@@ -53,40 +53,43 @@ util.iconSetToCSSBackgroundImageValue = iconSet => {
 };
 
 /**
- * @param {string} name File error name.
+ * @param {?string|undefined} name File error name.
  * @return {string} Translated file error string.
  */
 util.getFileErrorString = name => {
-  let candidateMessageFragment;
+  let errorString;
+
   switch (name) {
     case 'NotFoundError':
-      candidateMessageFragment = 'NOT_FOUND';
+      errorString = 'FILE_ERROR_NOT_FOUND';
       break;
     case 'SecurityError':
-      candidateMessageFragment = 'SECURITY';
+      errorString = 'FILE_ERROR_SECURITY';
       break;
     case 'NotReadableError':
-      candidateMessageFragment = 'NOT_READABLE';
+      errorString = 'FILE_ERROR_NOT_READABLE';
       break;
     case 'NoModificationAllowedError':
-      candidateMessageFragment = 'NO_MODIFICATION_ALLOWED';
+      errorString = 'FILE_ERROR_NO_MODIFICATION_ALLOWED';
       break;
     case 'InvalidStateError':
-      candidateMessageFragment = 'INVALID_STATE';
+      errorString = 'FILE_ERROR_INVALID_STATE';
       break;
     case 'InvalidModificationError':
-      candidateMessageFragment = 'INVALID_MODIFICATION';
+      errorString = 'FILE_ERROR_INVALID_MODIFICATION';
       break;
     case 'PathExistsError':
-      candidateMessageFragment = 'PATH_EXISTS';
+      errorString = 'FILE_ERROR_PATH_EXISTS';
       break;
     case 'QuotaExceededError':
-      candidateMessageFragment = 'QUOTA_EXCEEDED';
+      errorString = 'FILE_ERROR_QUOTA_EXCEEDED';
+      break;
+    default:
+      errorString = 'FILE_ERROR_GENERIC';
       break;
   }
 
-  return loadTimeData.getString('FILE_ERROR_' + candidateMessageFragment) ||
-      loadTimeData.getString('FILE_ERROR_GENERIC');
+  return loadTimeData.getString(errorString);
 };
 
 /**
