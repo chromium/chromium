@@ -557,6 +557,15 @@ void CrosUsbDetector::OnDeviceChecked(
   new_device.sharable_with_crostini =
       has_supported_interface || new_device.allowed_interfaces_mask != 0;
 
+  // Storage devices already plugged in at log-in time will already be mounted.
+  for (const auto& iter : disks::DiskMountManager::GetInstance()->disks()) {
+    if (iter.second->bus_number() == device_info->bus_number &&
+        iter.second->device_number() == device_info->port_number &&
+        iter.second->is_mounted()) {
+      new_device.mount_points.insert(iter.second->mount_path());
+    }
+  }
+
   usb_devices_.push_back(new_device);
   available_device_info_.emplace(device_info->guid, device_info.Clone());
   SignalUsbDeviceObservers();

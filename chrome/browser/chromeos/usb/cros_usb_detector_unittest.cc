@@ -250,6 +250,8 @@ class CrosUsbDetectorTest : public BrowserWithTestWindowTest {
       const std::string& name,
       chromeos::disks::DiskMountManager::MountEvent event,
       chromeos::MountError mount_error = chromeos::MOUNT_ERROR_NONE) {
+    // In theory we should also clear the mounted flag from the disk, but we
+    // don't rely on that.
     chromeos::disks::DiskMountManager::MountPointInfo info(
         "/dev/" + name, "/mount/" + name, chromeos::MOUNT_TYPE_DEVICE,
         chromeos::disks::MOUNT_CONDITION_NONE);
@@ -1090,14 +1092,23 @@ TEST_F(CrosUsbDetectorTest, ReassignPromptForStorageDevice) {
   ConnectToDeviceManager();
   base::RunLoop().RunUntilIdle();
 
+  // Disks mounted before the usb device is detected by the CrosUsbDetector
+  // require a prompt.
+  AddDisk("disk_early", 1, 5, true);
+
   device_manager_.CreateAndAddDevice(
       0x0200, 0xff, 0xff, 0xff, 0x0100, 1, 2, /*bus_number=*/1,
       /*port_number=*/5, kManufacturerName, kProductName_1, "5");
   base::RunLoop().RunUntilIdle();
 
   auto device_info = GetSingleDeviceInfo();
+  EXPECT_TRUE(cros_usb_detector_->SharingRequiresReassignPrompt(device_info));
+
+  NotifyMountEvent("disk_early", chromeos::disks::DiskMountManager::UNMOUNTING);
+  device_info = GetSingleDeviceInfo();
   EXPECT_FALSE(cros_usb_detector_->SharingRequiresReassignPrompt(device_info));
 
+  // A disk which fails to mount shouldn't cause the prompt to be shown.
   AddDisk("disk_error", 1, 5, /*mounted=*/false);
   NotifyMountEvent("disk_error", chromeos::disks::DiskMountManager::MOUNTING,
                    chromeos::MOUNT_ERROR_INTERNAL);
@@ -1107,9 +1118,4 @@ TEST_F(CrosUsbDetectorTest, ReassignPromptForStorageDevice) {
   AddDisk("disk_success", 1, 5, true);
   device_info = GetSingleDeviceInfo();
   EXPECT_TRUE(cros_usb_detector_->SharingRequiresReassignPrompt(device_info));
-
-  NotifyMountEvent("disk_success",
-                   chromeos::disks::DiskMountManager::UNMOUNTING);
-  device_info = GetSingleDeviceInfo();
-  EXPECT_FALSE(cros_usb_detector_->SharingRequiresReassignPrompt(device_info));
 }
