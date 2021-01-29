@@ -1552,16 +1552,14 @@ bool LayoutBox::HasScrollbarGutters(ScrollbarOrientation orientation) const {
 
 NGPhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
     ShouldClampToContentBox clamp_to_content_box,
-    OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior,
-    ShouldIncludeScrollbarGutter include_scrollbar_gutter) const {
+    OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
   NOT_DESTROYED();
   NGPhysicalBoxStrut scrollbars;
   PaintLayerScrollableArea* scrollable_area = GetScrollableArea();
   if (!scrollable_area)
     return scrollbars;
 
-  if (include_scrollbar_gutter == kIncludeScrollbarGutter &&
-      HasScrollbarGutters(kVerticalScrollbar)) {
+  if (HasScrollbarGutters(kVerticalScrollbar)) {
     LayoutUnit gutter_size =
         LayoutUnit(scrollable_area->HypotheticalScrollbarThickness(
             kVerticalScrollbar, /* should_include_overlay_thickness */ true));
@@ -1582,8 +1580,7 @@ NGPhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
         overlay_scrollbar_clip_behavior));
   }
 
-  if (include_scrollbar_gutter == kIncludeScrollbarGutter &&
-      HasScrollbarGutters(kHorizontalScrollbar)) {
+  if (HasScrollbarGutters(kHorizontalScrollbar)) {
     LayoutUnit gutter_size =
         LayoutUnit(scrollable_area->HypotheticalScrollbarThickness(
             kHorizontalScrollbar, /* should_include_overlay_thickness */ true));
@@ -2824,13 +2821,8 @@ PhysicalRect LayoutBox::OverflowClipRect(
     }
   }
 
-  if (IsScrollContainer()) {
-    // The additional gutters created by scrollbar-gutter don't occlude the
-    // content underneath, so they should not be clipped out here.
-    // See https://crbug.com/710214
-    ExcludeScrollbars(clip_rect, overlay_scrollbar_clip_behavior,
-                      kExcludeScrollbarGutter);
-  }
+  if (IsScrollContainer())
+    ExcludeScrollbars(clip_rect, overlay_scrollbar_clip_behavior);
 
   auto* input = DynamicTo<HTMLInputElement>(GetNode());
   if (UNLIKELY(input)) {
@@ -2863,15 +2855,13 @@ bool LayoutBox::HasControlClip() const {
 
 void LayoutBox::ExcludeScrollbars(
     PhysicalRect& rect,
-    OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior,
-    ShouldIncludeScrollbarGutter include_scrollbar_gutter) const {
+    OverlayScrollbarClipBehavior overlay_scrollbar_clip_behavior) const {
   NOT_DESTROYED();
   if (CanSkipComputeScrollbars())
     return;
 
   NGPhysicalBoxStrut scrollbars = ComputeScrollbarsInternal(
-      kDoNotClampToContentBox, overlay_scrollbar_clip_behavior,
-      include_scrollbar_gutter);
+      kDoNotClampToContentBox, overlay_scrollbar_clip_behavior);
   rect.offset.top += scrollbars.top;
   rect.offset.left += scrollbars.left;
   rect.size.width -= scrollbars.HorizontalSum();
