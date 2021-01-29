@@ -176,8 +176,9 @@ def GetCommitDescription(commit):
   """Get the output of `git describe`.
 
   Needs to be called from inside the git repository dir."""
+  git_exe = 'git.bat' if sys.platform.startswith('win') else 'git'
   return subprocess.check_output(
-      ['git', 'describe', '--long', '--abbrev=8', commit]).rstrip()
+      [git_exe, 'describe', '--long', '--abbrev=8', commit]).rstrip()
 
 
 def DeleteChromeToolsShim():
