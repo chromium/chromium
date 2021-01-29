@@ -3310,7 +3310,9 @@ int AXObject::ChildCountIncludingIgnored() const {
 
 AXObject* AXObject::ChildAtIncludingIgnored(int index) const {
   DCHECK_GE(index, 0);
-  DCHECK_LT(index, ChildCountIncludingIgnored());
+  DCHECK_LE(index, ChildCountIncludingIgnored());
+  if (index >= ChildCountIncludingIgnored())
+    return nullptr;
   return ChildrenIncludingIgnored()[index];
 }
 
