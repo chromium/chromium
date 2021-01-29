@@ -19,13 +19,13 @@ alignas(ThreadState) uint8_t
     ThreadState::main_thread_state_storage_[sizeof(ThreadState)];
 
 // static
-ThreadState* ThreadState::AttachMainThread(v8::CppHeap& cpp_heap) {
-  return new (main_thread_state_storage_) ThreadState(cpp_heap);
+ThreadState* ThreadState::AttachMainThread() {
+  return new (main_thread_state_storage_) ThreadState();
 }
 
 // static
-ThreadState* ThreadState::AttachCurrentThread(v8::CppHeap& cpp_heap) {
-  return new ThreadState(cpp_heap);
+ThreadState* ThreadState::AttachCurrentThread() {
+  return new ThreadState();
 }
 
 // static
@@ -35,10 +35,7 @@ void ThreadState::DetachCurrentThread() {
   delete state;
 }
 
-ThreadState::ThreadState(v8::CppHeap& cpp_heap)
-    : allocation_handle_(cpp_heap.GetAllocationHandle()),
-      cpp_heap_(cpp_heap),
-      thread_id_(CurrentThread()) {}
+ThreadState::ThreadState() : thread_id_(CurrentThread()) {}
 
 ThreadState::~ThreadState() {
   DCHECK(!IsMainThread());
@@ -46,7 +43,7 @@ ThreadState::~ThreadState() {
 }
 
 void ThreadState::RunTerminationGC() {
-  cpp_heap_.Terminate();
+  cpp_heap_->Terminate();
 }
 
 void ThreadState::NotifyGarbageCollection() {

@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
+#include "v8-profiler.h"
 #include "v8/include/cppgc/prefinalizer.h"
 #include "v8/include/v8-cppgc.h"
 #include "v8/include/v8.h"
@@ -23,6 +24,10 @@ class CppHeap;
 namespace cppgc {
 class AllocationHandle;
 }  // namespace cppgc
+
+namespace v8 {
+class EmbedderGraph;
+}  // namespace v8
 
 namespace blink {
 
@@ -51,6 +56,10 @@ struct ThreadingTrait {
 template <ThreadAffinity>
 class ThreadStateFor;
 class ThreadState;
+
+using V8BuildEmbedderGraphCallback = void (*)(v8::Isolate*,
+                                              v8::EmbedderGraph*,
+                                              void*);
 
 // Used to observe garbage collection events. The observer is imprecise wrt. to
 // garbage collection internals, i.e., it is not guaranteed that a garbage
@@ -83,21 +92,28 @@ class ThreadState final {
   }
 
   // Attaches a ThreadState to the main-thread.
-  static ThreadState* AttachMainThread(v8::CppHeap&);
+  static ThreadState* AttachMainThread();
   // Attaches a ThreadState to the currently running thread. Must not be the
   // main thread and must be called after AttachMainThread().
-  static ThreadState* AttachCurrentThread(v8::CppHeap&);
+  static ThreadState* AttachCurrentThread();
   static void DetachCurrentThread();
 
+  void AttachToIsolate(v8::Isolate* isolate, V8BuildEmbedderGraphCallback) {
+    isolate_ = isolate;
+    cpp_heap_ = isolate->GetCppHeap();
+    allocation_handle_ = &cpp_heap_->GetAllocationHandle();
+  }
+
+  void DetachFromIsolate() {
+    // No-op for the library implementation.
+    // TODO(1056170): Remove when removing Oilpan from Blink.
+  }
+
   ALWAYS_INLINE cppgc::AllocationHandle& allocation_handle() const {
-    return allocation_handle_;
+    return *allocation_handle_;
   }
-  ALWAYS_INLINE v8::CppHeap& cpp_heap() const { return cpp_heap_; }
-  ALWAYS_INLINE v8::Isolate* GetIsolate() const {
-    // TODO(1056170): Refer to cpp_heap_ once getter for v8::Isolate is
-    // implemented.
-    return nullptr;
-  }
+  ALWAYS_INLINE v8::CppHeap& cpp_heap() const { return *cpp_heap_; }
+  ALWAYS_INLINE v8::Isolate* GetIsolate() const { return isolate_; }
 
   // Forced garbage collection for testing:
   //
@@ -106,11 +122,6 @@ class ThreadState final {
       BlinkGC::StackState stack_state =
           BlinkGC::StackState::kNoHeapPointersOnStack) {
     // TODO(1056170): Implement.
-  }
-
-  void DetachFromIsolate() {
-    // No-op for the library implementation.
-    // TODO(1056170): Remove when removing Oilpan from Blink.
   }
 
   void RunTerminationGC();
@@ -140,8 +151,9 @@ class ThreadState final {
 
   // Handle is the most frequently accessed field as it is required for
   // MakeGarbageCollected().
-  cppgc::AllocationHandle& allocation_handle_;
-  v8::CppHeap& cpp_heap_;
+  cppgc::AllocationHandle* allocation_handle_ = nullptr;
+  v8::CppHeap* cpp_heap_ = nullptr;
+  v8::Isolate* isolate_ = nullptr;
   base::PlatformThreadId thread_id_;
   size_t gc_age_ = 0;
   WTF::HashSet<BlinkGCObserver*> observers_;
