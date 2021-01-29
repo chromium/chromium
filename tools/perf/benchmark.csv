@@ -61,17 +61,17 @@ speedometer2,hablich@chromium.org,Blink,,
 speedometer2-future,hablich@chromium.org,Blink,,
 speedometer2-pcscan,tmrts@chromium.org,Blink,,
 startup.mobile,"pasko@chromium.org, lizeb@chromium.org",Speed>Metrics>SystemHealthRegressions,,
-system_health.common_desktop,"charliea@chromium.org, sullivan@chromium.org, tdresser@chromium.org, chrome-speed-metrics-dev@chromium.org",Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,tabs_switching,wasm,webgl"
+system_health.common_desktop,"charliea@chromium.org, sullivan@chromium.org, tdresser@chromium.org, chrome-speed-metrics-dev@chromium.org",Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,tabs_switching,wasm,webgl"
 system_health.common_mobile,"charliea@chromium.org, sullivan@chromium.org, tdresser@chromium.org, chrome-speed-metrics-dev@chromium.org",Speed>Metrics>SystemHealthRegressions,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
-system_health.memory_desktop,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,tabs_switching,wasm,webgl"
+system_health.memory_desktop,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,2021,accessibility,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,scroll,tabs_switching,wasm,webgl"
 system_health.memory_mobile,"pasko@chromium.org, lizeb@chromium.org",,https://bit.ly/system-health-benchmarks,"2016,2018,2019,2020,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 system_health.weblayer_startup,"cduvall@chromium.org, weblayer-team@chromium.org",Internals>WebLayer,https://bit.ly/36XBtpn,2016
 system_health.webview_startup,"oksamyt@chromium.org, torne@chromium.org, changwan@chromium.org",Mobile>WebView>Perf,,2016
 tab_switching.typical_25,vovoy@chromium.org,OS>Performance,,"2016,tabs_switching"
 tracing.tracing_with_background_memory_infra,ssid@chromium.org,,,
 tracing_perftests,"eseckler@chromium.org, oysteine@chromium.org",Speed>Tracing,,
-v8.browsing_desktop,"mythria@chromium.org, tmrts@chromium.org, almuthanna@chromium.org",Blink>JavaScript,,"2016,2018,2019,2020,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,wasm,webgl"
-v8.browsing_desktop-future,"mythria@chromium.org, tmrts@chromium.org, almuthanna@chromium.org",Blink>JavaScript,,"2016,2018,2019,2020,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,wasm,webgl"
+v8.browsing_desktop,"mythria@chromium.org, tmrts@chromium.org, almuthanna@chromium.org",Blink>JavaScript,,"2016,2018,2019,2020,2021,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,wasm,webgl"
+v8.browsing_desktop-future,"mythria@chromium.org, tmrts@chromium.org, almuthanna@chromium.org",Blink>JavaScript,,"2016,2018,2019,2020,2021,health_check,images,infinite_scroll,international,javascript_heavy,keyboard_input,wasm,webgl"
 v8.browsing_mobile,"mythria@chromium.org, tmrts@chromium.org",Blink>JavaScript,,"2018,2019,2020,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 v8.browsing_mobile-future,"mythria@chromium.org, tmrts@chromium.org",Blink>JavaScript,,"2018,2019,2020,emerging_market,health_check,images,infinite_scroll,international,javascript_heavy"
 v8.runtime_stats.top_25,"mythria@chromium.org, ulan@chromium.org",Blink>JavaScript,,"cold,hot,warm"

@@ -90,6 +90,7 @@ class V8DesktopBrowsingBenchmark(
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs(
       '--enable-blink-features=BlinkRuntimeCallStats')
+    options.AppendExtraBrowserArgs(['--disable-popup-blocking'])
 
   @classmethod
   def Name(cls):

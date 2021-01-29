@@ -13,8 +13,8 @@ from page_sets.system_health import platforms
 from page_sets.system_health import story_tags
 from page_sets.system_health import system_health_story
 
+from page_sets.login_helpers import autocad_login
 from page_sets.login_helpers import facebook_login
-from page_sets.login_helpers import google_login
 from page_sets.login_helpers import pinterest_login
 from page_sets.login_helpers import tumblr_login
 
@@ -593,6 +593,50 @@ class YouTubeDesktopStory2019(_MediaBrowsingStory):
   ITEM_SELECTOR_INDEX = 3
   PLATFORM_SPECIFIC = True
   TAGS = [story_tags.JAVASCRIPT_HEAVY, story_tags.YEAR_2019]
+
+
+class AutoCADDesktopStory2021(_MediaBrowsingStory):
+  """AutoCAD desktop story,
+  TODO: add a description here.
+  """
+  NAME = 'browse:tools:autocad:2021'
+  URL = 'https://web.autocad.com'
+  SUPPORTED_PLATFORMS = platforms.DESKTOP_ONLY
+  TAGS = [
+      story_tags.YEAR_2021, story_tags.WEBASSEMBLY, story_tags.WEBGL,
+      story_tags.KEYBOARD_INPUT
+  ]
+
+  def __init__(self, story_set, take_memory_measurement):
+    super(AutoCADDesktopStory2021, self).__init__(story_set,
+                                                  take_memory_measurement)
+
+  def _Login(self, action_runner):
+    autocad_login.LoginWithDesktopSite(action_runner, 'autocad')
+
+  def _DidLoadDocument(self, action_runner):
+    action_runner.WaitForElement(text="Sign in")
+    action_runner.ClickElement(text="Sign in")
+    # Now we are done with the login.
+    action_runner.WaitForElement(text="OK")
+    action_runner.ClickElement(text="OK")
+
+    action_runner.WaitForElement(text="Samples")
+    action_runner.ClickElement(text="Samples")
+
+    action_runner.WaitForElement(text="Dog House Plan Sample.dwg")
+    action_runner.ClickElement(text="Dog House Plan Sample.dwg")
+
+    # We cannot wait for an element, because the result of the loading
+    # action is just a drawing on the canvas.
+    action_runner.Wait(10)
+    action_runner.EnterText('MEASURE')
+    action_runner.PressKey('Return')
+    action_runner.Wait(1)
+    action_runner.EnterText('-3,1')
+    action_runner.PressKey('Return')
+
+    action_runner.Wait(5)
 
 
 class EarthDesktopStory2020(_MediaBrowsingStory):
@@ -1274,7 +1318,6 @@ class _GmailBrowsingStory(system_health_story.SystemHealthStory):
         performance_mark_and_measure=self.PERFOMANCE_MARK_AND_MEASURE)
 
   def _Login(self, action_runner):
-    google_login.NewLoginGoogleAccount(action_runner, 'googletest')
 
     # Navigating to http://mail.google.com immediately leads to an infinite
     # redirection loop due to a bug in WPR (see
