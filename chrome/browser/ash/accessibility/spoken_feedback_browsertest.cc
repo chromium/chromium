@@ -1142,7 +1142,8 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, HardwareKeysGetRewritten) {
 }
 
 // Tests basic behavior of the tutorial when signed in.
-IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, Tutorial) {
+// TODO(akihiroota): fix flakiness: http://crbug.com/1172390
+IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, DISABLED_Tutorial) {
   EnableChromeVox();
   sm_.Call([this]() {
     ui_test_utils::NavigateToURL(
@@ -1221,7 +1222,9 @@ IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest, SpokenFeedbackInOobe) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest, SpokenFeedbackTutorialInOobe) {
+// TODO(akihiroota): fix flakiness: http://crbug.com/1172390
+IN_PROC_BROWSER_TEST_F(OobeSpokenFeedbackTest,
+                       DISABLED_SpokenFeedbackTutorialInOobe) {
   ui_controls::EnableUIControls();
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
