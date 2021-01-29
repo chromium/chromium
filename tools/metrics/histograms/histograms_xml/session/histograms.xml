@@ -135,26 +135,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     when Chrome leaves the screen. This is generally straightforward. Chrome
     leaves the screen when the screen goes blank or shows the lock screen, when
     Chrome clicks a link that opens in another app, or when the user switches to
-    the app switcher. Note that, unlike on desktop, even if Chrome is playing
-    media in the background, the session is still terminated when Chrome leaves
-    the screen.
-
-    iOS continued: These are some edge cases to be aware of: (i) OS overlays.
-    These can appear, for examples, when a link is clicked that could go to a
-    non-Google app that has not yet been set to default and the OS asks whether
-    to open the link in the app by default, or when a user has set the OS to
-    block certain sites or types of sites by default and require authentication
-    to access them. This authentication prompt is an OS overlay. At the time of
-    writing this description, we're not sure if displaying an overlay will end
-    the session. (ii) full-screen media playing. Because media is played through
-    iOS's technology stack, if the user takes media that's playing within Chrome
-    and displayed it full-screen, the session ends because no part of Chrome is
-    on the screen anymore. (iii) multi-window support. Not yet launched as of
-    M-85. Sessions end and immediately restart when a user switches from a
-    single-window to a multi-window view and vice versa, and also ends when
-    resizing the Chrome window. The end is because Chrome is considered no
-    longer active during the time the OS animates the windows to change their
-    sizes.
+    another app in the app switcher. Note that, unlike on desktop, even if
+    Chrome is playing media in the background or in picture-in-picture mode, the
+    session is still terminated when Chrome leaves the screen. Also note that if
+    Chrome starts in Safe Mode, the session will only start when the user quits
+    Safe Mode. When multiple windows are used, the session is considered ongoing
+    as long as there is at least one foreground Chrome window. This was revised
+    in M-89 to support multiple windows. In M-87 and M-88, nothing was logged
+    due to a bug. Before M-86, a similar metric was recorded, with some
+    differences in edge cases. See the old histogram description for more
+    details.
 
     This histogram is of special interest to the chrome-analysis-team@. Do not
     change its semantics or retire it without talking to them first.
