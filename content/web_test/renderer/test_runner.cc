@@ -537,7 +537,6 @@ gin::ObjectTemplateBuilder TestRunnerBindings::GetObjectTemplateBuilder(
       .SetMethod("dumpBackForwardList",
                  &TestRunnerBindings::DumpBackForwardList)
       .SetMethod("dumpChildFrames", &TestRunnerBindings::DumpChildFrames)
-      .SetMethod("dumpCreateView", &TestRunnerBindings::DumpCreateView)
       .SetMethod("dumpDatabaseCallbacks", &TestRunnerBindings::NotImplemented)
       .SetMethod("dumpDragImage", &TestRunnerBindings::DumpDragImage)
       .SetMethod("dumpEditingCallbacks",
@@ -1457,12 +1456,6 @@ void TestRunnerBindings::DumpTitleChanges() {
   if (invalid_)
     return;
   runner_->DumpTitleChanges();
-}
-
-void TestRunnerBindings::DumpCreateView() {
-  if (invalid_)
-    return;
-  runner_->DumpCreateView();
 }
 
 void TestRunnerBindings::SetCanOpenWindows() {
@@ -2481,10 +2474,6 @@ bool TestRunner::ShouldDumpIconChanges() const {
   return web_test_runtime_flags_.dump_icon_changes();
 }
 
-bool TestRunner::ShouldDumpCreateView() const {
-  return web_test_runtime_flags_.dump_create_view();
-}
-
 blink::WebContentSettingsClient* TestRunner::GetWebContentSettings() {
   return &test_content_settings_client_;
 }
@@ -2971,11 +2960,6 @@ void TestRunner::DumpUserGestureInFrameLoadCallbacks() {
 
 void TestRunner::DumpTitleChanges() {
   web_test_runtime_flags_.set_dump_title_changes(true);
-  OnWebTestRuntimeFlagsChanged();
-}
-
-void TestRunner::DumpCreateView() {
-  web_test_runtime_flags_.set_dump_create_view(true);
   OnWebTestRuntimeFlagsChanged();
 }
 

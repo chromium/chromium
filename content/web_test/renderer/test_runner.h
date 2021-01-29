@@ -23,11 +23,11 @@
 #include "content/web_test/common/web_test.mojom.h"
 #include "content/web_test/common/web_test_bluetooth_fake_adapter_setter.mojom.h"
 #include "content/web_test/common/web_test_constants.h"
+#include "content/web_test/common/web_test_runtime_flags.h"
 #include "content/web_test/renderer/fake_screen_orientation_impl.h"
 #include "content/web_test/renderer/gamepad_controller.h"
 #include "content/web_test/renderer/layout_dump.h"
 #include "content/web_test/renderer/web_test_content_settings_client.h"
-#include "content/web_test/renderer/web_test_runtime_flags.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -187,7 +187,6 @@ class TestRunner {
   bool ShouldDumpUserGestureInFrameLoadCallbacks() const;
   bool ShouldDumpTitleChanges() const;
   bool ShouldDumpIconChanges() const;
-  bool ShouldDumpCreateView() const;
   bool CanOpenWindows() const;
   bool ShouldWaitUntilExternalURLLoad() const;
   const std::set<std::string>* HttpHeadersToClear() const;
@@ -441,11 +440,6 @@ class TestRunner {
   void DumpUserGestureInFrameLoadCallbacks();
 
   void DumpTitleChanges();
-
-  // This function sets a flag that tells the test runner to dump all calls to
-  // WebViewClient::createView().
-  // It takes no arguments, and ignores any that may be present.
-  void DumpCreateView();
 
   // This function sets a flag that tells the test runner to dump the MIME type
   // for each resource that was loaded. It takes no arguments, and ignores any

@@ -76,6 +76,25 @@ const char* WebNavigationPolicyToString(
   }
 }
 
+const char* WindowOpenDispositionToString(WindowOpenDisposition disposition) {
+  switch (disposition) {
+    case WindowOpenDisposition::SAVE_TO_DISK:
+      return kPolicyDownload;
+    case WindowOpenDisposition::CURRENT_TAB:
+      return kPolicyCurrentTab;
+    case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+      return kPolicyNewBackgroundTab;
+    case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+      return kPolicyNewForegroundTab;
+    case WindowOpenDisposition::NEW_WINDOW:
+      return kPolicyNewWindow;
+    case WindowOpenDisposition::NEW_POPUP:
+      return kPolicyNewPopup;
+    default:
+      return kIllegalString;
+  }
+}
+
 blink::WebString V8StringToWebString(v8::Isolate* isolate,
                                      v8::Local<v8::String> v8_str) {
   int length = v8_str->Utf8Length(isolate) + 1;

@@ -49,6 +49,7 @@
 #include "content/web_test/browser/web_test_storage_access_manager.h"
 #include "content/web_test/browser/web_test_tts_platform.h"
 #include "content/web_test/common/web_test_bluetooth_fake_adapter_setter.mojom.h"
+#include "content/web_test/common/web_test_string_util.h"
 #include "content/web_test/common/web_test_switches.h"
 #include "device/bluetooth/public/mojom/test/fake_bluetooth.mojom.h"
 #include "device/bluetooth/test/fake_bluetooth.h"
@@ -446,6 +447,19 @@ bool WebTestContentBrowserClient::CanCreateWindow(
     bool opener_suppressed,
     bool* no_javascript_access) {
   *no_javascript_access = false;
+
+  WebTestControlHost* control_host = WebTestControlHost::Get();
+  bool dump_navigation_policy =
+      control_host->web_test_runtime_flags().dump_navigation_policy();
+
+  if (dump_navigation_policy) {
+    static_cast<mojom::WebTestControlHost*>(control_host)
+        ->PrintMessage(
+            "Default policy for createView for '" +
+            web_test_string_util::URLDescription(target_url) + "' is '" +
+            web_test_string_util::WindowOpenDispositionToString(disposition) +
+            "'\n");
+  }
   return !block_popups_ || user_gesture;
 }
 

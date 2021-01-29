@@ -19,23 +19,14 @@ namespace content {
 
 namespace {
 bool DumpJavascriptDialog() {
-  base::Optional<bool> result =
-      WebTestControlHost::Get()
-          ->accumulated_web_test_runtime_flags_changes()
-          .FindBoolPath("dump_javascript_dialogs");
-  if (!result.has_value())
-    return true;
-  return result.value();
+  WebTestControlHost* control_host = WebTestControlHost::Get();
+  return control_host->web_test_runtime_flags().dump_javascript_dialogs();
 }
 
 bool ShouldStayOnPageAfterHandlingBeforeUnload() {
-  base::Optional<bool> result =
-      WebTestControlHost::Get()
-          ->accumulated_web_test_runtime_flags_changes()
-          .FindBoolPath("stay_on_page_after_handling_before_unload");
-  if (!result.has_value())
-    return false;
-  return result.value();
+  WebTestControlHost* control_host = WebTestControlHost::Get();
+  return control_host->web_test_runtime_flags()
+      .stay_on_page_after_handling_before_unload();
 }
 
 }  // namespace

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/web_test/renderer/web_test_runtime_flags.h"
+#include "content/web_test/common/web_test_runtime_flags.h"
 
 namespace content {
 
@@ -53,7 +53,6 @@ void WebTestRuntimeFlags::Reset() {
 
   set_have_loading_frame(false);
 
-  set_dump_create_view(false);
   set_dump_javascript_dialogs(true);
 
   set_has_custom_text_output(false);

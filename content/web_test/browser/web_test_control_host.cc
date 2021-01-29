@@ -177,25 +177,23 @@ std::string DumpHistoryForWebContents(WebContents* web_contents) {
 }
 
 std::vector<std::string> DumpTitleWasSet(WebContents* web_contents) {
-  base::Optional<bool> load = WebTestControlHost::Get()
-                                  ->accumulated_web_test_runtime_flags_changes()
-                                  .FindBoolPath("dump_frame_load_callbacks");
+  WebTestControlHost* control_host = WebTestControlHost::Get();
+  bool load =
+      control_host->web_test_runtime_flags().dump_frame_load_callbacks();
 
-  base::Optional<bool> title_changed =
-      WebTestControlHost::Get()
-          ->accumulated_web_test_runtime_flags_changes()
-          .FindBoolPath("dump_title_changes");
+  bool title_changed =
+      control_host->web_test_runtime_flags().dump_title_changes();
 
   std::vector<std::string> logs;
 
-  if (load.has_value() && load.value()) {
+  if (load) {
     // TitleWasSet is only available on top-level frames.
     std::string log = "main frame";
     logs.emplace_back(
         log + " - TitleWasSet: " + base::UTF16ToUTF8(web_contents->GetTitle()));
   }
 
-  if (title_changed.has_value() && title_changed.value()) {
+  if (title_changed) {
     logs.emplace_back("TITLE CHANGED: '" +
                       base::UTF16ToUTF8(web_contents->GetTitle()) + "'");
   }
@@ -204,12 +202,11 @@ std::vector<std::string> DumpTitleWasSet(WebContents* web_contents) {
 
 std::string DumpFailLoad(WebContents* web_contents,
                          RenderFrameHost* render_frame_host) {
-  base::Optional<bool> result =
-      WebTestControlHost::Get()
-          ->accumulated_web_test_runtime_flags_changes()
-          .FindBoolPath("dump_frame_load_callbacks");
+  WebTestControlHost* control_host = WebTestControlHost::Get();
+  bool result =
+      control_host->web_test_runtime_flags().dump_frame_load_callbacks();
 
-  if (!result.has_value())
+  if (!result)
     return std::string();
 
   std::string log = (web_contents->GetMainFrame() == render_frame_host)
@@ -554,6 +551,7 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
   printer_->reset();
 
   accumulated_web_test_runtime_flags_changes_.Clear();
+  web_test_runtime_flags_.Reset();
   main_window_render_view_hosts_.clear();
   main_window_render_process_hosts_.clear();
   all_observed_render_process_hosts_.clear();
@@ -1070,10 +1068,7 @@ void WebTestControlHost::WebContentsDestroyed() {
 void WebTestControlHost::DidUpdateFaviconURL(
     RenderFrameHost* render_frame_host,
     const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
-  bool should_dump_icon_changes = false;
-  accumulated_web_test_runtime_flags_changes_.GetBoolean(
-      "dump_icon_changes", &should_dump_icon_changes);
-  if (should_dump_icon_changes) {
+  if (web_test_runtime_flags_.dump_icon_changes()) {
     std::string log = IsMainWindow(web_contents()) ? "main frame " : "frame ";
     printer_->AddMessageRaw(log + "- didChangeIcons\n");
   }
@@ -1249,6 +1244,7 @@ void WebTestControlHost::OnTestFinished() {
   devtools_bindings_.reset();
   devtools_protocol_test_bindings_.reset();
   accumulated_web_test_runtime_flags_changes_.Clear();
+  web_test_runtime_flags_.Reset();
   work_queue_states_.Clear();
 
   ShellBrowserContext* browser_context =
@@ -1675,6 +1671,8 @@ void WebTestControlHost::WebTestRuntimeFlagsChanged(
   // Stash the accumulated changes for future, not-yet-created renderers.
   accumulated_web_test_runtime_flags_changes_.MergeDictionary(
       &changed_web_test_runtime_flags);
+  web_test_runtime_flags_.tracked_dictionary().ApplyUntrackedChanges(
+      accumulated_web_test_runtime_flags_changes_);
 
   // Propagate the changes to all the tracked renderer processes.
   for (RenderProcessHost* process : all_observed_render_process_hosts_) {

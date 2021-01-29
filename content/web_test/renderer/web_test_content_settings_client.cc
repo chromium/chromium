@@ -5,9 +5,9 @@
 #include "content/web_test/renderer/web_test_content_settings_client.h"
 
 #include "content/public/common/origin_util.h"
+#include "content/web_test/common/web_test_runtime_flags.h"
 #include "content/web_test/common/web_test_string_util.h"
 #include "content/web_test/renderer/test_runner.h"
-#include "content/web_test/renderer/web_test_runtime_flags.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/platform.h"

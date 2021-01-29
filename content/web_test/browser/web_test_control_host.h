@@ -33,6 +33,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/web_test/browser/leak_detector.h"
 #include "content/web_test/common/web_test.mojom.h"
+#include "content/web_test/common/web_test_runtime_flags.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
@@ -173,9 +174,8 @@ class WebTestControlHost : public WebContentsObserver,
   // GpuDataManagerObserver implementation.
   void OnGpuProcessCrashed(base::TerminationStatus exit_code) override;
 
-  const base::DictionaryValue& accumulated_web_test_runtime_flags_changes()
-      const {
-    return accumulated_web_test_runtime_flags_changes_;
+  const WebTestRuntimeFlags& web_test_runtime_flags() const {
+    return web_test_runtime_flags_;
   }
 
  private:
@@ -359,6 +359,9 @@ class WebTestControlHost : public WebContentsObserver,
   // since PrepareForWebTest (i.e. changes that need to be sent to a fresh
   // renderer created while test is in progress).
   base::DictionaryValue accumulated_web_test_runtime_flags_changes_;
+
+  // A snasphot of the current runtime flags.
+  WebTestRuntimeFlags web_test_runtime_flags_;
 
   // Work items to be processed in the TestRunner on the renderer process
   // that hosts the main window's main frame.

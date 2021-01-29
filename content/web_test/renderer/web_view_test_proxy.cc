@@ -35,33 +35,6 @@ WebViewTestProxy::~WebViewTestProxy() {
   test_runner_->RemoveRenderView(this);
 }
 
-blink::WebView* WebViewTestProxy::CreateView(
-    blink::WebLocalFrame* creator,
-    const blink::WebURLRequest& request,
-    const blink::WebWindowFeatures& features,
-    const blink::WebString& frame_name,
-    blink::WebNavigationPolicy policy,
-    network::mojom::WebSandboxFlags sandbox_flags,
-    const blink::SessionStorageNamespaceId& session_storage_namespace_id,
-    bool& consumed_user_gesture,
-    const base::Optional<blink::WebImpression>& impression) {
-  if (test_runner_->ShouldDumpNavigationPolicy()) {
-    test_runner_->PrintMessage(
-        "Default policy for createView for '" +
-        web_test_string_util::URLDescription(request.Url()) + "' is '" +
-        web_test_string_util::WebNavigationPolicyToString(policy) + "'\n");
-  }
-
-  if (test_runner_->ShouldDumpCreateView()) {
-    test_runner_->PrintMessage(
-        std::string("createView(") +
-        web_test_string_util::URLDescription(request.Url()) + ")\n");
-  }
-  return RenderViewImpl::CreateView(
-      creator, request, features, frame_name, policy, sandbox_flags,
-      session_storage_namespace_id, consumed_user_gesture, impression);
-}
-
 void WebViewTestProxy::PrintPage(blink::WebLocalFrame* frame) {
   // This is using the main frame for the size, but maybe it should be using the
   // frame's size.

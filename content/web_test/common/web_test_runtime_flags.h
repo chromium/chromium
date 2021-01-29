@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_WEB_TEST_RENDERER_WEB_TEST_RUNTIME_FLAGS_H_
-#define CONTENT_WEB_TEST_RENDERER_WEB_TEST_RUNTIME_FLAGS_H_
+#ifndef CONTENT_WEB_TEST_COMMON_WEB_TEST_RUNTIME_FLAGS_H_
+#define CONTENT_WEB_TEST_COMMON_WEB_TEST_RUNTIME_FLAGS_H_
 
 #include <string>
 
 #include "base/check.h"
 #include "base/macros.h"
 #include "base/values.h"
-#include "content/web_test/renderer/tracked_dictionary.h"
+#include "content/web_test/common/tracked_dictionary.h"
 
 namespace content {
 
@@ -150,10 +150,6 @@ class WebTestRuntimeFlags {
   // frames. Only one can do it at a time.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(have_loading_frame)
 
-  // If true, output a descriptive line each time WebViewClient::createView
-  // is invoked.
-  DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(dump_create_view)
-
   // If true, content_shell will output text for alert(), confirm(), prompt(),
   // etc.
   DEFINE_BOOL_WEB_TEST_RUNTIME_FLAG(dump_javascript_dialogs)
@@ -178,4 +174,4 @@ class WebTestRuntimeFlags {
 
 }  // namespace content
 
-#endif  // CONTENT_WEB_TEST_RENDERER_WEB_TEST_RUNTIME_FLAGS_H_
+#endif  // CONTENT_WEB_TEST_COMMON_WEB_TEST_RUNTIME_FLAGS_H_
