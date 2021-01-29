@@ -948,8 +948,8 @@ Your Google account may have other forms of browsing history like searches and a
       </message>
 
       <!-- Safety check -->
-      <message name="IDS_PREFS_SAFETY_CHECK" desc="Title of the Safety check element in settings, allowing the user to check multiple areas of browser safety. The NEW label is displayed when the number of times the user ran the check is less than 3. [CHAR-LIMIT=32]">
-        Safety check <ph name="BEGIN_NEW">&lt;new&gt;</ph>New<ph name="END_NEW">&lt;/new&gt;</ph>
+      <message name="IDS_PREFS_SAFETY_CHECK" desc="Title of the Safety check element in settings, allowing the user to check multiple areas of browser safety. [CHAR-LIMIT=32]">
+        Safety check
       </message>
       <message name="IDS_SAFETY_CHECK_DESCRIPTION" desc="Introduces the safety check categories to the user. Followed by several items, such as 'Safe Browsing', 'Updates', 'Passwords'.">
         Chrome can help keep you safe from data breaches, unsafe websites, and more

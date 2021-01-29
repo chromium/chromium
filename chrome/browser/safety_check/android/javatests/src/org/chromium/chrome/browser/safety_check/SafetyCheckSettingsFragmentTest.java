@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.safety_check;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
@@ -31,8 +29,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
-import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
-import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
@@ -85,32 +81,6 @@ public class SafetyCheckSettingsFragmentTest {
         })
                 .when(mPasswordCheck)
                 .addObserver(any(SafetyCheckMediator.class), eq(true));
-    }
-
-    @Test
-    @SmallTest
-    public void testGetSafetyCheckSettingsElementTitleNew() {
-        SharedPreferencesManager preferenceManager = SharedPreferencesManager.getInstance();
-        // The "NEW" label should still be shown after one run.
-        preferenceManager.writeInt(ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_RUN_COUNTER, 1);
-        String title = SafetyCheckSettingsFragment
-                               .getSafetyCheckSettingsElementTitle(
-                                       InstrumentationRegistry.getTargetContext())
-                               .toString();
-        assertTrue(title.contains("New"));
-    }
-
-    @Test
-    @SmallTest
-    public void testGetSafetyCheckSettingsElementTitleNoNew() {
-        SharedPreferencesManager preferenceManager = SharedPreferencesManager.getInstance();
-        // The "NEW" label disappears after 3 runs.
-        preferenceManager.writeInt(ChromePreferenceKeys.SETTINGS_SAFETY_CHECK_RUN_COUNTER, 3);
-        String title = SafetyCheckSettingsFragment
-                               .getSafetyCheckSettingsElementTitle(
-                                       InstrumentationRegistry.getTargetContext())
-                               .toString();
-        assertFalse(title.contains("New"));
     }
 
     @Test
