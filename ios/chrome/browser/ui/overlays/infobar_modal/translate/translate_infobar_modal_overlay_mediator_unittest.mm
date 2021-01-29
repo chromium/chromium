@@ -99,7 +99,7 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, SetUpConsumer) {
   EXPECT_TRUE(consumer.enableTranslateActionButton);
   EXPECT_FALSE(consumer.updateLanguageBeforeTranslate);
   EXPECT_FALSE(consumer.displayShowOriginalButton);
-  EXPECT_TRUE(consumer.shouldAlwaysTranslate);
+  EXPECT_FALSE(consumer.shouldAlwaysTranslate);
   EXPECT_TRUE(consumer.shouldDisplayNeverTranslateLanguageButton);
   EXPECT_TRUE(consumer.isTranslatableLanguage);
   EXPECT_TRUE(consumer.shouldDisplayNeverTranslateSiteButton);

@@ -377,7 +377,8 @@ using translate_infobar_overlays::TranslateModalRequestConfig;
     kEnableTranslateButtonPrefKey : @(translateButtonEnabled),
     kUpdateLanguageBeforeTranslatePrefKey : @(updateLanguageBeforeTranslate),
     kEnableAndDisplayShowOriginalButtonPrefKey : @(currentStepAfterTranslate),
-    kShouldAlwaysTranslatePrefKey : @(self.config->is_translatable_language()),
+    kShouldAlwaysTranslatePrefKey :
+        @(self.config->is_always_translate_enabled()),
     kDisplayNeverTranslateLanguagePrefKey : @(currentStepBeforeTranslate),
     kDisplayNeverTranslateSiteButtonPrefKey : @(currentStepBeforeTranslate),
     kIsTranslatableLanguagePrefKey : @(self.config->is_translatable_language()),
