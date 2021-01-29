@@ -597,6 +597,7 @@
     <activity  # DIFF-ANCHOR: a1fac31f
         android:exported="true"
         android:label="@string/cablev2_activity_title"
+        android:launchMode="singleTop"
         android:name="org.chromium.chrome.browser.webauth.authenticator.CableAuthenticatorActivity"
         android:permission="com.google.android.gms.auth.cryptauth.permission.CABLEV2_SERVER_LINK"
         android:theme="@style/Theme.Chromium.Activity.Fullscreen">

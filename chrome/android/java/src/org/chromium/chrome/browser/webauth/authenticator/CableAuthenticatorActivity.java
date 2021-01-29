@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.webauth.authenticator;
 
-import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -46,7 +45,6 @@ public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
             "org.chromium.chrome.browser.webauth.authenticator.ServerLink";
 
     @Override
-    @SuppressLint("SetTextI18n") // TODO(BUG=1002262): translate
     protected void onCreate(Bundle savedInstanceState) {
         setTitle("Phone as a Security Key");
 
@@ -62,7 +60,13 @@ public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
             return;
         }
 
-        final Intent intent = getIntent();
+        onNewIntent(getIntent());
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+
         Bundle arguments;
         if (intent.getAction() != null && intent.getAction().equals(USB_ACCESSORY_ATTACHED)) {
             // This can be triggered by an implicit intent if a desktop

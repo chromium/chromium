@@ -849,7 +849,8 @@ by a child template that "extends" this file.
             android:theme="@style/Theme.Chromium.Activity.Fullscreen"
             android:label="@string/cablev2_activity_title"
             android:permission="com.google.android.gms.auth.cryptauth.permission.CABLEV2_SERVER_LINK"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTop">
             <!-- This activity can be started by GMSCore, and is thus exported
             with a permission set, or can be started by the Android system in
             the case that a USB device is attached. -->
