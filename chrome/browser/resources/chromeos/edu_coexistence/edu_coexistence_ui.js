@@ -6,6 +6,7 @@ import './edu_coexistence_css.js';
 import './edu_coexistence_template.js';
 import './edu_coexistence_button.js';
 import './gaia_action_buttons.js';
+import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
