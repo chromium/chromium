@@ -199,7 +199,7 @@ TEST_F(WebRunnerSmokeTest, RemoveSelfFromStoryOnFrameClose) {
 
   MockModuleContext module_context;
   EXPECT_CALL(module_context, RemoveSelfFromStory);
-  base::fuchsia::ScopedServiceBinding<fuchsia::modular::ModuleContext> binding(
+  base::ScopedServiceBinding<fuchsia::modular::ModuleContext> binding(
       &outgoing_directory_, &module_context);
   launch_info.additional_services->names.emplace_back(
       fuchsia::modular::ModuleContext::Name_);

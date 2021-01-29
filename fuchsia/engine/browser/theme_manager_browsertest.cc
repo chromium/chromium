@@ -120,8 +120,7 @@ class ThemeManagerTest : public cr_fuchsia::WebEngineBrowserTest,
   void NotImplemented_(const std::string&) final {}
 
   base::Optional<base::TestComponentContextForProcess> component_context_;
-  base::Optional<
-      base::fuchsia::ScopedServiceBinding<fuchsia::settings::Display>>
+  base::Optional<base::ScopedServiceBinding<fuchsia::settings::Display>>
       display_binding_;
   cr_fuchsia::TestNavigationListener navigation_listener_;
   fuchsia::web::NavigationControllerPtr controller_;

@@ -99,10 +99,10 @@ class LegacyMetricsClientTest : public testing::Test {
     GetLegacyMetricsDeltas();
   }
 
-  std::unique_ptr<base::fuchsia::ScopedSingleClientServiceBinding<
+  std::unique_ptr<base::ScopedSingleClientServiceBinding<
       fuchsia::legacymetrics::MetricsRecorder>>
   MakeServiceBinding() {
-    return std::make_unique<base::fuchsia::ScopedSingleClientServiceBinding<
+    return std::make_unique<base::ScopedSingleClientServiceBinding<
         fuchsia::legacymetrics::MetricsRecorder>>(
         test_context_.additional_services(), &test_recorder_);
   }
@@ -136,7 +136,7 @@ class LegacyMetricsClientTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   base::TestComponentContextForProcess test_context_;
   TestMetricsRecorder test_recorder_;
-  std::unique_ptr<base::fuchsia::ScopedSingleClientServiceBinding<
+  std::unique_ptr<base::ScopedSingleClientServiceBinding<
       fuchsia::legacymetrics::MetricsRecorder>>
       service_binding_;
   LegacyMetricsClient client_;

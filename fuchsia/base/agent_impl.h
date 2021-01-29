@@ -126,7 +126,7 @@ class AgentImpl : public ::fuchsia::modular::Agent {
   const CreateComponentStateCallback create_component_state_callback_;
 
   // Binds this Agent implementation into the |outgoing_directory|.
-  base::fuchsia::ScopedServiceBinding<::fuchsia::modular::Agent> agent_binding_;
+  base::ScopedServiceBinding<::fuchsia::modular::Agent> agent_binding_;
 
   // Owns the ComponentState instances for each connected component.
   base::flat_map<std::string, std::unique_ptr<ComponentStateBase>>

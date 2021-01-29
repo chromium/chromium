@@ -111,8 +111,7 @@ class FakeAdmin
     ADD_FAILURE() << "NotImplemented_: " << name;
   }
 
-  base::fuchsia::ScopedServiceBinding<
-      fuchsia::hardware::power::statecontrol::Admin>
+  base::ScopedServiceBinding<fuchsia::hardware::power::statecontrol::Admin>
       binding_;
   StateControlRebootReason last_reboot_reason_;
 };
@@ -135,7 +134,7 @@ class FakeLastRebootInfoProvider
     ADD_FAILURE() << "NotImplemented_: " << name;
   }
 
-  base::fuchsia::ScopedServiceBinding<fuchsia::feedback::LastRebootInfoProvider>
+  base::ScopedServiceBinding<fuchsia::feedback::LastRebootInfoProvider>
       binding_;
   fuchsia::feedback::LastReboot last_reboot_;
 };

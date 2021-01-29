@@ -43,8 +43,7 @@ class FakeComponentContext
   void NotImplemented_(const std::string& name) override;
 
  private:
-  base::fuchsia::ScopedServiceBinding<fuchsia::modular::ComponentContext>
-      binding_;
+  base::ScopedServiceBinding<fuchsia::modular::ComponentContext> binding_;
   const std::string component_url_;
   sys::OutgoingDirectory* const outgoing_directory_;
   fuchsia::sys::ServiceProviderPtr agent_services_;

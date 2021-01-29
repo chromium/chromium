@@ -205,17 +205,16 @@ class FakeComponentState : public cr_fuchsia::AgentImpl::ComponentStateBase {
   }
 
  protected:
-  const base::fuchsia::ScopedServiceBinding<
-      chromium::cast::ApplicationConfigManager>
+  const base::ScopedServiceBinding<chromium::cast::ApplicationConfigManager>
       app_config_binding_;
-  const base::fuchsia::ScopedServiceBinding<chromium::cast::ApiBindings>
+  const base::ScopedServiceBinding<chromium::cast::ApiBindings>
       bindings_manager_binding_;
-  base::Optional<base::fuchsia::ScopedServiceBinding<
+  base::Optional<base::ScopedServiceBinding<
       chromium::cast::UrlRequestRewriteRulesProvider>>
       url_request_rules_provider_binding_;
 
   FakeApplicationContext application_context_;
-  const base::fuchsia::ScopedServiceBinding<chromium::cast::ApplicationContext>
+  const base::ScopedServiceBinding<chromium::cast::ApplicationContext>
       context_binding_;
   base::OnceClosure on_delete_;
 };
@@ -563,7 +562,7 @@ class CastRunnerIntegrationTest : public testing::Test {
 
   // Incoming service directory, ComponentContext and per-component state.
   sys::OutgoingDirectory component_services_;
-  base::fuchsia::ScopedServiceBinding<chromium::cast::ApplicationConfigManager>
+  base::ScopedServiceBinding<chromium::cast::ApplicationConfigManager>
       app_config_manager_binding_;
   std::unique_ptr<cr_fuchsia::FakeComponentContext> component_context_;
   fuchsia::sys::ComponentControllerPtr component_controller_;

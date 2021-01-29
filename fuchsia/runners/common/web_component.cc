@@ -93,7 +93,7 @@ void WebComponent::StartComponent() {
     // Publish outgoing services and start serving component's outgoing
     // directory.
     view_provider_binding_ = std::make_unique<
-        base::fuchsia::ScopedServiceBinding<fuchsia::ui::app::ViewProvider>>(
+        base::ScopedServiceBinding<fuchsia::ui::app::ViewProvider>>(
         startup_context()->component_context()->outgoing().get(), this);
     lifecycle_ = std::make_unique<cr_fuchsia::LifecycleImpl>(
         startup_context()->component_context()->outgoing().get(),

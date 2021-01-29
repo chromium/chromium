@@ -94,7 +94,7 @@ TEST_F(SystemMemoryPressureEvaluatorFuchsiaDeathTest, ProviderUnavailable) {
 }
 
 TEST_F(SystemMemoryPressureEvaluatorFuchsiaTest, Basic) {
-  base::fuchsia::ScopedServiceBinding<::fuchsia::memorypressure::Provider>
+  base::ScopedServiceBinding<::fuchsia::memorypressure::Provider>
       publish_provider(test_context_.additional_services(), this);
 
   auto voter = std::make_unique<MockMemoryPressureVoter>();

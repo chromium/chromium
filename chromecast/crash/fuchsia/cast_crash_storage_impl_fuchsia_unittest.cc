@@ -32,9 +32,9 @@ class MockComponentDataRegister
     outgoing_directory_->GetOrCreateDirectory("svc")->Serve(
         fuchsia::io::OPEN_RIGHT_READABLE | fuchsia::io::OPEN_RIGHT_WRITABLE,
         channel.TakeChannel());
-    binding_ = std::make_unique<base::fuchsia::ScopedServiceBinding<
-        fuchsia::feedback::ComponentDataRegister>>(outgoing_directory_.get(),
-                                                   this);
+    binding_ = std::make_unique<
+        base::ScopedServiceBinding<fuchsia::feedback::ComponentDataRegister>>(
+        outgoing_directory_.get(), this);
   }
 
   fuchsia::feedback::ComponentData GetLatest() {
@@ -51,8 +51,8 @@ class MockComponentDataRegister
 
  private:
   std::unique_ptr<sys::OutgoingDirectory> outgoing_directory_;
-  std::unique_ptr<base::fuchsia::ScopedServiceBinding<
-      fuchsia::feedback::ComponentDataRegister>>
+  std::unique_ptr<
+      base::ScopedServiceBinding<fuchsia::feedback::ComponentDataRegister>>
       binding_;
 
   fuchsia::feedback::ComponentData component_data_;

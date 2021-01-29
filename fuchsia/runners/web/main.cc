@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
       base::BindRepeating(&GetContextParams);
 
   WebContentRunner runner(std::move(get_context_params_callback));
-  base::fuchsia::ScopedServiceBinding<fuchsia::sys::Runner> binding(
+  base::ScopedServiceBinding<fuchsia::sys::Runner> binding(
       base::ComponentContextForProcess()->outgoing().get(), &runner);
 
   base::ComponentContextForProcess()->outgoing()->ServeFromStartupInfo();

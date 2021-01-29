@@ -27,8 +27,8 @@ int main(int argc, char** argv) {
   sys::OutgoingDirectory* outgoing_directory =
       base::ComponentContextForProcess()->outgoing().get();
   HttpServiceImpl http_service;
-  base::fuchsia::ScopedServiceBinding<::fuchsia::net::oldhttp::HttpService>
-      binding(outgoing_directory, &http_service);
+  base::ScopedServiceBinding<::fuchsia::net::oldhttp::HttpService> binding(
+      outgoing_directory, &http_service);
 
   base::RunLoop run_loop;
 

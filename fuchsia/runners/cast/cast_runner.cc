@@ -215,8 +215,7 @@ class FrameHostComponent : public fuchsia::sys::ComponentController {
   }
 
   const std::unique_ptr<base::StartupContext> startup_context_;
-  const base::fuchsia::ScopedServiceBinding<fuchsia::web::FrameHost>
-      frame_host_binding_;
+  const base::ScopedServiceBinding<fuchsia::web::FrameHost> frame_host_binding_;
   fidl::Binding<fuchsia::sys::ComponentController> binding_{this};
 
   base::WeakPtrFactory<const sys::ServiceDirectory> weak_incoming_services_;
@@ -271,7 +270,7 @@ class DataResetComponent : public fuchsia::sys::ComponentController,
 
   base::OnceCallback<bool()> delete_persistent_data_;
   std::unique_ptr<base::StartupContext> startup_context_;
-  const base::fuchsia::ScopedServiceBinding<chromium::cast::DataReset>
+  const base::ScopedServiceBinding<chromium::cast::DataReset>
       data_reset_handler_binding_;
   fidl::Binding<fuchsia::sys::ComponentController> binding_{this};
 };
