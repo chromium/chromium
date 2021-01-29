@@ -22,6 +22,7 @@ import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -32,9 +33,9 @@ import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.components.offline_items_collection.OfflineItemProgressUnit;
 import org.chromium.components.offline_items_collection.PendingState;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,6 +48,7 @@ import java.util.UUID;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Features.DisableFeatures({ChromeFeatureList.DOWNLOAD_NOTIFICATION_BADGE,
         ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER})
+@Batch(Batch.UNIT_TESTS)
 public class DownloadNotificationServiceTest {
     private static final ContentId ID1 =
             LegacyHelpers.buildLegacyContentId(false, UUID.randomUUID().toString());
