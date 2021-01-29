@@ -123,24 +123,14 @@ void CourierRenderer::Initialize(MediaResource* media_resource,
   ::media::DemuxerStream* video_demuxer_stream =
       media_resource_->GetFirstStream(DemuxerStream::VIDEO);
 
-  // Create audio mojo data pipe handles if audio is available.
-  std::unique_ptr<mojo::DataPipe> audio_data_pipe;
-  if (audio_demuxer_stream) {
-    audio_data_pipe = base::WrapUnique(DemuxerStreamAdapter::CreateDataPipe());
-  }
-
-  // Create video mojo data pipe handles if video is available.
-  std::unique_ptr<mojo::DataPipe> video_data_pipe;
-  if (video_demuxer_stream) {
-    video_data_pipe = base::WrapUnique(DemuxerStreamAdapter::CreateDataPipe());
-  }
-
   // Establish remoting data pipe connection using main thread.
+  uint32_t data_pipe_capacity =
+      DemuxerStreamAdapter::kMojoDataPipeCapacityInBytes;
   main_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
-          &RendererController::StartDataPipe, controller_,
-          std::move(audio_data_pipe), std::move(video_data_pipe),
+          &RendererController::StartDataPipe, controller_, data_pipe_capacity,
+          audio_demuxer_stream, video_demuxer_stream,
           base::BindOnce(&CourierRenderer::OnDataPipeCreatedOnMainThread,
                          media_task_runner_, weak_factory_.GetWeakPtr(),
                          rpc_broker_)));

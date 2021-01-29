@@ -80,8 +80,13 @@ class RendererController final : public mojom::RemotingSource,
       mojo::PendingRemote<mojom::RemotingDataStreamSender> video,
       mojo::ScopedDataPipeProducerHandle audio_handle,
       mojo::ScopedDataPipeProducerHandle video_handle)>;
-  void StartDataPipe(std::unique_ptr<mojo::DataPipe> audio_data_pipe,
-                     std::unique_ptr<mojo::DataPipe> video_data_pipe,
+  // Creates up to two data pipes with a byte capacity of |data_pipe_capacity|:
+  // one for audio if |audio| is true and one for |video| if video is true. The
+  // controller then starts processing the consumer ends of the data pipes,
+  // with the producer ends supplied to the |done_callback|.
+  void StartDataPipe(uint32_t data_pipe_capacity,
+                     bool audio,
+                     bool video,
                      DataPipeStartCallback done_callback);
 
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING_RPC)

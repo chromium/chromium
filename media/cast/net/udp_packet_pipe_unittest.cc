@@ -26,11 +26,13 @@ constexpr uint32_t kDefaultDataPipeCapacityBytes = 10;
 class UdpPacketPipeTest : public ::testing::Test {
  public:
   UdpPacketPipeTest() {
-    mojo::DataPipe data_pipe(kDefaultDataPipeCapacityBytes);
-    writer_ = std::make_unique<UdpPacketPipeWriter>(
-        std::move(data_pipe.producer_handle));
-    reader_ = std::make_unique<UdpPacketPipeReader>(
-        std::move(data_pipe.consumer_handle));
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    CHECK_EQ(mojo::CreateDataPipe(kDefaultDataPipeCapacityBytes,
+                                  producer_handle, consumer_handle),
+             MOJO_RESULT_OK);
+    writer_ = std::make_unique<UdpPacketPipeWriter>(std::move(producer_handle));
+    reader_ = std::make_unique<UdpPacketPipeReader>(std::move(consumer_handle));
   }
 
   ~UdpPacketPipeTest() override = default;

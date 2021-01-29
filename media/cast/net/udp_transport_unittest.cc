@@ -139,9 +139,12 @@ TEST_F(UdpTransportImplTest, UdpTransportSendAndReceive) {
   recv_transport_->StartReceiving(
       packet_receiver_on_receiver.packet_receiver());
 
-  mojo::DataPipe data_pipe(5);
-  send_transport_->StartSending(std::move(data_pipe.consumer_handle));
-  UdpPacketPipeWriter writer(std::move(data_pipe.producer_handle));
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(mojo::CreateDataPipe(5, producer_handle, consumer_handle),
+            MOJO_RESULT_OK);
+  send_transport_->StartSending(std::move(consumer_handle));
+  UdpPacketPipeWriter writer(std::move(producer_handle));
   base::MockCallback<base::OnceClosure> done_callback;
   EXPECT_CALL(done_callback, Run()).Times(1);
   writer.Write(new base::RefCountedData<Packet>(packet), done_callback.Get());
