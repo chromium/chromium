@@ -250,7 +250,7 @@ void DeepScanningRequest::PrepareRequest(
 
   if (base::FeatureList::IsEnabled(kSafeBrowsingEnterpriseCsd) &&
       trigger_ == DeepScanTrigger::TRIGGER_POLICY) {
-    download_request_maker_ = std::make_unique<DownloadRequestMaker>(
+    download_request_maker_ = DownloadRequestMaker::CreateFromDownloadItem(
         new BinaryFeatureExtractor(), item_);
     download_request_maker_->Start(
         base::BindOnce(&DeepScanningRequest::OnDownloadRequestReady,

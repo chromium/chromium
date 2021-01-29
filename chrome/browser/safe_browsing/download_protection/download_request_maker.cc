@@ -17,7 +17,6 @@
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/common/utils.h"
 #include "components/safe_browsing/core/proto/csd.pb.h"
 #include "content/public/browser/browser_context.h"
@@ -45,78 +44,97 @@ DownloadRequestMaker::TabUrls TabUrlsFromWebContents(
 
 }  // namespace
 
-DownloadRequestMaker::DownloadRequestMaker(
+// static
+std::unique_ptr<DownloadRequestMaker>
+DownloadRequestMaker::CreateFromDownloadItem(
     scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
-    download::DownloadItem* item)
-    : browser_context_(content::DownloadItemUtils::GetBrowserContext(item)),
-      request_(std::make_unique<ClientDownloadRequest>()),
-      binary_feature_extractor_(binary_feature_extractor),
-      tab_urls_({item->GetTabUrl(), item->GetTabReferrerUrl()}),
-      target_file_path_(item->GetTargetFilePath()),
-      full_path_(item->GetFullPath()) {
-  request_->set_url(ShortURLForReporting(item->GetURL()));
-  request_->mutable_digests()->set_sha256(item->GetHash());
-  request_->set_length(item->GetReceivedBytes());
+    download::DownloadItem* item) {
+  std::vector<ClientDownloadRequest::Resource> resources;
   for (size_t i = 0; i < item->GetUrlChain().size(); ++i) {
-    ClientDownloadRequest::Resource* resource = request_->add_resources();
-    resource->set_url(ShortURLForReporting(item->GetUrlChain()[i]));
+    ClientDownloadRequest::Resource resource;
+    resource.set_url(ShortURLForReporting(item->GetUrlChain()[i]));
     if (i == item->GetUrlChain().size() - 1) {
       // The last URL in the chain is the download URL.
-      resource->set_type(ClientDownloadRequest::DOWNLOAD_URL);
-      resource->set_referrer(ShortURLForReporting(item->GetReferrerUrl()));
-      DVLOG(2) << "dl url " << resource->url();
+      resource.set_type(ClientDownloadRequest::DOWNLOAD_URL);
+      resource.set_referrer(ShortURLForReporting(item->GetReferrerUrl()));
+      DVLOG(2) << "dl url " << resource.url();
       if (!item->GetRemoteAddress().empty()) {
-        resource->set_remote_ip(item->GetRemoteAddress());
-        DVLOG(2) << "  dl url remote addr: " << resource->remote_ip();
+        resource.set_remote_ip(item->GetRemoteAddress());
+        DVLOG(2) << "  dl url remote addr: " << resource.remote_ip();
       }
-      DVLOG(2) << "dl referrer " << resource->referrer();
+      DVLOG(2) << "dl referrer " << resource.referrer();
     } else {
-      DVLOG(2) << "dl redirect " << i << " " << resource->url();
-      resource->set_type(ClientDownloadRequest::DOWNLOAD_REDIRECT);
+      DVLOG(2) << "dl redirect " << i << " " << resource.url();
+      resource.set_type(ClientDownloadRequest::DOWNLOAD_REDIRECT);
     }
+
+    resources.push_back(std::move(resource));
   }
 
-  request_->set_user_initiated(item->HasUserGesture());
+  return std::make_unique<DownloadRequestMaker>(
+      binary_feature_extractor,
+      content::DownloadItemUtils::GetBrowserContext(item),
+      TabUrls{item->GetTabUrl(), item->GetTabReferrerUrl()},
+      item->GetTargetFilePath(), item->GetFullPath(), item->GetURL(),
+      item->GetHash(), item->GetReceivedBytes(), resources,
+      item->HasUserGesture(),
+      static_cast<ReferrerChainData*>(
+          item->GetUserData(ReferrerChainData::kDownloadReferrerChainDataKey)));
+}
 
-  auto* referrer_chain_data = static_cast<ReferrerChainData*>(
-      item->GetUserData(ReferrerChainData::kDownloadReferrerChainDataKey));
-  if (referrer_chain_data &&
-      !referrer_chain_data->GetReferrerChain()->empty()) {
-    request_->mutable_referrer_chain()->Swap(
-        referrer_chain_data->GetReferrerChain());
-    request_->mutable_referrer_chain_options()
-        ->set_recent_navigations_to_collect(
-            referrer_chain_data->recent_navigations_to_collect());
-  }
+// static
+std::unique_ptr<DownloadRequestMaker>
+DownloadRequestMaker::CreateFromFileSystemAccess(
+    scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
+    DownloadProtectionService* service,
+    const content::FileSystemAccessWriteItem& item) {
+  ClientDownloadRequest::Resource resource;
+  resource.set_url(
+      ShortURLForReporting(GetFileSystemAccessDownloadUrl(item.frame_url)));
+  resource.set_type(ClientDownloadRequest::DOWNLOAD_URL);
+  if (item.frame_url.is_valid())
+    resource.set_referrer(ShortURLForReporting(item.frame_url));
+
+  std::unique_ptr<ReferrerChainData> referrer_chain_data;
+  if (service)
+    service->IdentifyReferrerChain(item);
+
+  return std::make_unique<DownloadRequestMaker>(
+      binary_feature_extractor, item.browser_context,
+      TabUrlsFromWebContents(item.web_contents), item.target_file_path,
+      item.full_path, GetFileSystemAccessDownloadUrl(item.frame_url),
+      item.sha256_hash, item.size,
+      std::vector<ClientDownloadRequest::Resource>{resource},
+      item.has_user_gesture, referrer_chain_data.get());
 }
 
 DownloadRequestMaker::DownloadRequestMaker(
     scoped_refptr<BinaryFeatureExtractor> binary_feature_extractor,
-    DownloadProtectionService* service,
-    const content::FileSystemAccessWriteItem& item)
-    : browser_context_(item.browser_context),
+    content::BrowserContext* browser_context,
+    TabUrls tab_urls,
+    base::FilePath target_file_path,
+    base::FilePath full_path,
+    GURL source_url,
+    std::string sha256_hash,
+    int64_t length,
+    const std::vector<ClientDownloadRequest::Resource>& resources,
+    bool is_user_initiated,
+    ReferrerChainData* referrer_chain_data)
+    : browser_context_(browser_context),
       request_(std::make_unique<ClientDownloadRequest>()),
       binary_feature_extractor_(binary_feature_extractor),
-      tab_urls_(TabUrlsFromWebContents(item.web_contents)),
-      target_file_path_(item.target_file_path),
-      full_path_(item.full_path) {
-  request_->set_url(
-      ShortURLForReporting(GetFileSystemAccessDownloadUrl(item.frame_url)));
-  request_->mutable_digests()->set_sha256(item.sha256_hash);
-  request_->set_length(item.size);
-  {
-    ClientDownloadRequest::Resource* resource = request_->add_resources();
-    resource->set_url(
-        ShortURLForReporting(GetFileSystemAccessDownloadUrl(item.frame_url)));
-    resource->set_type(ClientDownloadRequest::DOWNLOAD_URL);
-    if (item.frame_url.is_valid())
-      resource->set_referrer(ShortURLForReporting(item.frame_url));
+      tab_urls_(tab_urls),
+      target_file_path_(target_file_path),
+      full_path_(full_path) {
+  request_->set_url(ShortURLForReporting(source_url));
+  request_->mutable_digests()->set_sha256(sha256_hash);
+  request_->set_length(length);
+  for (const ClientDownloadRequest::Resource& resource : resources) {
+    *request_->add_resources() = resource;
   }
 
-  request_->set_user_initiated(item.has_user_gesture);
+  request_->set_user_initiated(is_user_initiated);
 
-  std::unique_ptr<ReferrerChainData> referrer_chain_data =
-      service->IdentifyReferrerChain(item);
   if (referrer_chain_data &&
       !referrer_chain_data->GetReferrerChain()->empty()) {
     request_->mutable_referrer_chain()->Swap(
@@ -200,6 +218,11 @@ void DownloadRequestMaker::GetTabRedirects() {
   }
 
   Profile* profile = Profile::FromBrowserContext(browser_context_);
+  if (!profile) {
+    OnGotTabRedirects({});
+    return;
+  }
+
   history::HistoryService* history = HistoryServiceFactory::GetForProfile(
       profile, ServiceAccessType::EXPLICIT_ACCESS);
   if (!history) {

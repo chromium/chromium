@@ -40,9 +40,10 @@ CheckFileSystemAccessWriteRequest::CheckFileSystemAccessWriteRequest(
           std::move(callback),
           service,
           std::move(database_manager),
-          std::make_unique<DownloadRequestMaker>(binary_feature_extractor,
-                                                 service,
-                                                 *item)),
+          DownloadRequestMaker::CreateFromFileSystemAccess(
+              binary_feature_extractor,
+              service,
+              *item)),
       item_(std::move(item)),
       referrer_chain_data_(service->IdentifyReferrerChain(*item_)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

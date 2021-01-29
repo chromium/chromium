@@ -115,8 +115,8 @@ CheckClientDownloadRequest::CheckClientDownloadRequest(
           callback,
           service,
           std::move(database_manager),
-          std::make_unique<DownloadRequestMaker>(binary_feature_extractor,
-                                                 item)),
+          DownloadRequestMaker::CreateFromDownloadItem(binary_feature_extractor,
+                                                       item)),
       item_(item),
       callback_(callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
