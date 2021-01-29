@@ -167,7 +167,7 @@ js_library("family_link_notice") {
 js_library("fingerprint_setup") {
   deps = [
     "components:oobe_dialog_host_behavior",
-    "components/oobe_dialog:oobe_dialog",
+    "components/oobe_adaptive_dialog:oobe_adaptive_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
     "//ui/webui/resources/cr_elements/cr_fingerprint:cr_fingerprint_progress_arc",
     "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie",
@@ -244,7 +244,7 @@ js_library("oobe_adb_sideloading_screen") {
     "components:login_screen_behavior",
     "components:multi_step_behavior",
     "components:oobe_dialog_host_behavior",
-    "components/oobe_dialog:oobe_dialog",
+    "components/oobe_adaptive_dialog:oobe_adaptive_dialog",
     "components/oobe_i18n_behavior:oobe_i18n_behavior",
   ]
 }
