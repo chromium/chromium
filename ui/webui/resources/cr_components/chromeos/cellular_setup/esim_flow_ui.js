@@ -295,6 +295,12 @@ cr.define('cellular_setup', function() {
 
     /** @private */
     onActivationCodeUpdated_(event) {
+      // initializePageState_() may cause this observer to fire and update the
+      // buttonState when we're not on the activation code page. Check we're on
+      // the activation code page before proceeding.
+      if (this.state_ !== ESimUiState.ACTIVATION_CODE_ENTRY) {
+        return;
+      }
       this.set(
           'buttonState.forward',
           event.detail.activationCode ? cellularSetup.ButtonState.ENABLED :
@@ -310,6 +316,12 @@ cr.define('cellular_setup', function() {
 
     /** @private */
     onConfirmationCodeUpdated_() {
+      // initializePageState_() may cause this observer to fire and update the
+      // buttonState when we're not on the confirmation code page. Check we're
+      // on the confirmation code page before proceeding.
+      if (this.state_ !== ESimUiState.CONFIRMATION_CODE_ENTRY) {
+        return;
+      }
       this.set(
           'buttonState.forward',
           this.confirmationCode_ ? cellularSetup.ButtonState.ENABLED :
@@ -350,6 +362,9 @@ cr.define('cellular_setup', function() {
                     this.activationCode_, this.confirmationCode_)
                 .then(this.handleProfileInstallResponse_.bind(this));
           }
+          break;
+        case ESimUiState.SETUP_FINISH:
+          this.fire('exit-cellular-setup');
           break;
         default:
           assertNotReached();

@@ -72,6 +72,22 @@ suite('CrComponentsEsimFlowUiTest', function() {
     return confirmationCodeInput;
   }
 
+  async function assertFinalPageAndPressDoneButton(shouldBeShowingError) {
+    assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
+    assertEquals(!!finalPage.$$('.error'), shouldBeShowingError);
+    assertEquals(
+        cellularSetup.ButtonState.ENABLED, eSimPage.buttonState.forward);
+    assertEquals(eSimPage.forwardButtonLabel, 'Done');
+    let exitCellularSetupEventFired = false;
+    eSimPage.addEventListener('exit-cellular-setup', () => {
+      exitCellularSetupEventFired = true;
+    });
+    eSimPage.navigateForward();
+
+    await flushAsync();
+    assertTrue(exitCellularSetupEventFired);
+  }
+
   suite('No eSIM profiles flow', function() {
     let euicc;
 
@@ -120,7 +136,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       await flushAsync();
 
       // Should go to final page.
-      assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
+      await assertFinalPageAndPressDoneButton(false);
     });
 
     test('Valid confirmation code', async function() {
@@ -143,7 +159,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       await flushAsync();
 
       // Should go to final page.
-      assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
+      await assertFinalPageAndPressDoneButton(false);
     });
 
     test('Invalid confirmation code', async function() {
@@ -220,8 +236,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       await flushAsync();
 
       // Should go directly to final page.
-      assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
-      assertFalse(!!finalPage.$$('.error'));
+      await assertFinalPageAndPressDoneButton(false);
     });
 
     test('Unsuccessful install', async function() {
@@ -235,8 +250,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       await flushAsync();
 
       // Should go directly to final page.
-      assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
-      assertTrue(!!finalPage.$$('.error'));
+      await assertFinalPageAndPressDoneButton(true);
     });
 
     test('Valid confirmation code', async function() {
@@ -261,7 +275,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       await flushAsync();
 
       // Should go to final page.
-      assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
+      await assertFinalPageAndPressDoneButton(false);
     });
 
     test('Invalid confirmation code', async function() {
@@ -359,7 +373,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       await flushAsync();
 
       // Should now be at the final page.
-      assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
+      await assertFinalPageAndPressDoneButton(false);
     });
 
     test(
@@ -425,8 +439,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       await flushAsync();
 
       // Should now be at the final page.
-      assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
-      assertFalse(!!finalPage.$$('.error'));
+      await assertFinalPageAndPressDoneButton(false);
     });
 
     test('Select profile with valid confirmation code flow', async function() {
@@ -456,7 +469,7 @@ suite('CrComponentsEsimFlowUiTest', function() {
       await flushAsync();
 
       // Should go to final page.
-      assertSelectedPage(cellular_setup.ESimPageName.FINAL, finalPage);
+      await assertFinalPageAndPressDoneButton(false);
     });
 
     test(

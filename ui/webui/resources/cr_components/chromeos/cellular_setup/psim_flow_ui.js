@@ -186,10 +186,21 @@ cr.define('cellularSetup', function() {
     },
 
     navigateForward() {
-      // Navigate forward is only called by clicking forward button
-      // from the provisioning page.
-      assert(this.selectedPSimPageName_ === PSimPageName.PROVISIONING);
-      this.state_ = PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH;
+      switch (this.state_) {
+        case PSimUIState.WAITING_FOR_PORTAL_TO_LOAD:
+        case PSimUIState.TIMEOUT_PORTAL_LOAD:
+        case PSimUIState.WAITING_FOR_USER_PAYMENT:
+        case PSimUIState.ACTIVATION_SUCCESS:
+          this.state_ = PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH;
+          break;
+        case PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH:
+        case PSimUIState.TIMEOUT_FINISH_ACTIVATION:
+          this.fire('exit-cellular-setup');
+          break;
+        default:
+          assertNotReached();
+          break;
+      }
     },
 
     /**

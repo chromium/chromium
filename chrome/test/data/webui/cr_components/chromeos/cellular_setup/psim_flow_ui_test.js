@@ -10,6 +10,7 @@
 // #import {setCellularSetupRemoteForTesting} from 'chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js';
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // #import {assertTrue} from '../../../chai_assert.js';
+// #import {ButtonState} from 'chrome://resources/cr_components/chromeos/cellular_setup/cellular_types.m.js';
 // #import {FakeCellularSetupDelegate} from './fake_cellular_setup_delegate.m.js';
 // #import {FakeCarrierPortalHandlerRemote, FakeCellularSetupRemote} from './fake_cellular_setup_remote.m.js';
 // clang-format on
@@ -26,7 +27,7 @@ suite('CrComponentsPsimFlowUiTest', function() {
   /** @type {?chromeos.cellularSetup.mojom.ActivationDelegateReceiver} */
   let cellularActivationDelegate = null;
 
-  function flushAsync() {
+  async function flushAsync() {
     Polymer.dom.flush();
     // Use setTimeout to wait for the next macrotask.
     return new Promise(resolve => setTimeout(resolve));
@@ -53,13 +54,25 @@ suite('CrComponentsPsimFlowUiTest', function() {
     assertTrue(!!ironPage);
   });
 
-  test('forward navigation test', function() {
+  test('forward navigation and finish cellular setup test', async function() {
     pSimPage.state_ = cellularSetup.PSimUIState.WAITING_FOR_PORTAL_TO_LOAD;
     Polymer.dom.flush();
     pSimPage.navigateForward();
     assertTrue(
         pSimPage.state_ ===
         cellularSetup.PSimUIState.WAITING_FOR_ACTIVATION_TO_FINISH);
+
+    assertEquals(
+        cellularSetup.ButtonState.ENABLED, pSimPage.buttonState.forward);
+    assertEquals(pSimPage.forwardButtonLabel, 'Done');
+    let exitCellularSetupEventFired = false;
+    pSimPage.addEventListener('exit-cellular-setup', () => {
+      exitCellularSetupEventFired = true;
+    });
+    pSimPage.navigateForward();
+
+    await flushAsync();
+    assertTrue(exitCellularSetupEventFired);
   });
 
   test('Carrier title on provisioning page', async () => {
