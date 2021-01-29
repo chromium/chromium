@@ -34,6 +34,10 @@ LayoutSVGResourceClipper* ResolveElementReference(
     const LayoutObject& object,
     const ReferenceClipPathOperation& reference_clip_path_operation) {
   SVGResourceClient* client = GetResourceClient(object);
+  // We may not have a resource client for some non-rendered elements (like
+  // filter primitives) that we visit during paint property tree construction.
+  if (!client)
+    return nullptr;
   LayoutSVGResourceClipper* resource_clipper =
       GetSVGResourceAsType(*client, reference_clip_path_operation);
   if (resource_clipper) {
