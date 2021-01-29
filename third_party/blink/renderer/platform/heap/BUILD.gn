@@ -100,6 +100,7 @@ blink_platform_sources("heap") {
   if (enable_blink_heap_use_v8_oilpan) {
     sources += [
       "v8_wrapper/blink_gc.h",
+      "v8_wrapper/blink_gc_memory_dump_provider.cc",
       "v8_wrapper/blink_gc_memory_dump_provider.h",
       "v8_wrapper/collection_support/heap_hash_table_backing.h",
       "v8_wrapper/collection_support/heap_vector_backing.h",
