@@ -16,6 +16,7 @@
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -123,10 +124,13 @@ constexpr char kTestCookieHost[] = "host1.com";
 constexpr char kClientCert1Name[] = "client_1";
 constexpr char kClientCert2Name[] = "client_2";
 
-constexpr std::initializer_list<base::StringPiece> kPrimaryButton = {
-    "gaia-signin", "primary-action-button"};
-constexpr std::initializer_list<base::StringPiece> kSecondaryButton = {
-    "gaia-signin", "secondary-action-button"};
+constexpr test::UIPath kPrimaryButton = {"gaia-signin", "signin-frame-dialog",
+                                         "primary-action-button"};
+constexpr test::UIPath kSecondaryButton = {"gaia-signin", "signin-frame-dialog",
+                                           "secondary-action-button"};
+constexpr test::UIPath kBackButton = {"gaia-signin", "signin-frame-dialog",
+                                      "signin-back-button"};
+constexpr char kSigninWebview[] = "$('gaia-signin').getSigninFrame_()";
 
 void InjectCookieDoneCallback(base::OnceClosure done_closure,
                               net::CookieAccessResult result) {
@@ -292,18 +296,16 @@ class WebviewLoginTest : public OobeBaseTest {
  protected:
   void ExpectIdentifierPage() {
     // First page: back button, #identifier input field.
-    test::OobeJS().ExpectVisiblePath({"gaia-signin", "signin-back-button"});
+    test::OobeJS().ExpectVisiblePath(kBackButton);
     test::OobeJS().ExpectTrue(
-        test::GetOobeElementPath({"gaia-signin", "signin-frame"}) +
-        ".src.indexOf('#identifier') != -1");
+        base::StrCat({kSigninWebview, ".src.indexOf('#identifier') != -1"}));
   }
 
   void ExpectPasswordPage() {
     // Second page: back button, #challengepassword input field.
-    test::OobeJS().ExpectVisiblePath({"gaia-signin", "signin-back-button"});
-    test::OobeJS().ExpectTrue(
-        test::GetOobeElementPath({"gaia-signin", "signin-frame"}) +
-        ".src.indexOf('#challengepassword') != -1");
+    test::OobeJS().ExpectVisiblePath(kBackButton);
+    test::OobeJS().ExpectTrue(base::StrCat(
+        {kSigninWebview, ".src.indexOf('#challengepassword') != -1"}));
   }
 
   bool WebViewVisited(content::BrowserContext* browser_context,
@@ -445,7 +447,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, BackButton) {
 
   // Click back to identifier page.
   back_button_waiter = CreateGaiaPageEventWaiter("backButton");
-  test::OobeJS().ClickOnPath({"gaia-signin", "signin-back-button"});
+  test::OobeJS().ClickOnPath(kBackButton);
   back_button_waiter->Wait();
   ExpectIdentifierPage();
 
@@ -544,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithChildSigninEnabled,
   // TODO(https://crbug.com/1121910) Fix this so back button brings back to
   // user creation screen.
   auto back_button_waiter = CreateGaiaPageEventWaiter("backButton");
-  test::OobeJS().ClickOnPath({"gaia-signin", "signin-back-button"});
+  test::OobeJS().ClickOnPath(kBackButton);
   back_button_waiter->Wait();
   ExpectIdentifierPage();
 }
@@ -660,8 +662,8 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, StoragePartitionHandling) {
   content::WebContents* web_contents = GetLoginUI()->GetWebContents();
   content::BrowserContext* browser_context = web_contents->GetBrowserContext();
 
-  std::string signin_frame_partition_name_1 = test::OobeJS().GetString(
-      test::GetOobeElementPath({"gaia-signin", "signin-frame"}) + ".partition");
+  std::string signin_frame_partition_name_1 =
+      test::OobeJS().GetString(base::StrCat({kSigninWebview, ".partition"}));
   content::StoragePartition* signin_frame_partition_1 =
       login::GetSigninPartition();
 
@@ -678,14 +680,14 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTest, StoragePartitionHandling) {
 
   // Press the back button at a sign-in screen without pre-existing users to
   // start a new sign-in attempt.
-  test::OobeJS().ClickOnPath({"gaia-signin", "signin-back-button"});
+  test::OobeJS().ClickOnPath(kBackButton);
   WaitForGaiaPageBackButtonUpdate();
   // Expect that we got back to the identifier page, as there are no known users
   // so the sign-in screen will not display user pods.
   ExpectIdentifierPage();
 
-  std::string signin_frame_partition_name_2 = test::OobeJS().GetString(
-      test::GetOobeElementPath({"gaia-signin", "signin-frame"}) + ".partition");
+  std::string signin_frame_partition_name_2 =
+      test::OobeJS().GetString(base::StrCat({kSigninWebview, ".partition"}));
   content::StoragePartition* signin_frame_partition_2 =
       login::GetSigninPartition();
 
@@ -912,7 +914,7 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
   // Requests `http_server_`'s client-cert test page in the webview specified by
   // the given `webview_path`. Returns the content of the client-cert test page.
   std::string RequestClientCertTestPageInFrame(
-      std::initializer_list<base::StringPiece> webview_path) {
+      const std::string& webview_path) {
     const GURL url = https_server_->GetURL("client-cert");
     content::TestNavigationObserver navigation_observer(url);
     navigation_observer.WatchExistingWebContents();
@@ -921,20 +923,19 @@ class WebviewClientCertsLoginTestBase : public WebviewLoginTest {
     // TODO(https://crbug.com/1092562): Remove the logs if flakiness is gone.
     // If you see this after April 2019, please ping the owner of the above bug.
     test::OobeJS().Evaluate(base::StringPrintf(
-        "%s.src='%s'", test::GetOobeElementPath(webview_path).c_str(),
-        url.spec().c_str()));
+        "%s.src='%s'", webview_path.c_str(), url.spec().c_str()));
     navigation_observer.Wait();
     LOG(INFO) << "Navigation done.";
 
     const std::string https_reply_content =
-        test::GetWebViewContents(webview_path);
+        test::GetWebViewContentsById(webview_path);
     // TODO(https://crbug.com/1092562): Remove this is if flakiness does not
     // reproduce.
     // If you see this after October 2020, please ping the above bug.
     if (https_reply_content.empty()) {
       base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1000));
       const std::string https_reply_content_after_sleep =
-          test::GetWebViewContents(webview_path);
+          test::GetWebViewContentsById(webview_path);
       if (!https_reply_content_after_sleep.empty())
         LOG(INFO) << "Magic - textContent appeared after sleep.";
     }
@@ -1044,7 +1045,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
   WaitForGaiaPageLoadAndPropertyUpdate();
 
   const std::string https_reply_content =
-      RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
+      RequestClientCertTestPageInFrame(kSigninWebview);
   EXPECT_EQ("got client cert with fingerprint: " +
                 GetCertSha1Fingerprint(kClientCert1Name),
             https_reply_content);
@@ -1068,7 +1069,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
   WaitForGaiaPageLoadAndPropertyUpdate();
 
   const std::string https_reply_content =
-      RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
+      RequestClientCertTestPageInFrame(kSigninWebview);
   EXPECT_EQ("got client cert with fingerprint: " +
                 GetCertSha1Fingerprint(kClientCert1Name),
             https_reply_content);
@@ -1086,7 +1087,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
   WaitForGaiaPageLoadAndPropertyUpdate();
 
   const std::string https_reply_content =
-      RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
+      RequestClientCertTestPageInFrame(kSigninWebview);
 
   EXPECT_EQ("got no client cert", https_reply_content);
 }
@@ -1111,7 +1112,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest, SigninFrameAuthorityGiven) {
   WaitForGaiaPageLoadAndPropertyUpdate();
 
   const std::string https_reply_content =
-      RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
+      RequestClientCertTestPageInFrame(kSigninWebview);
   EXPECT_EQ("got client cert with fingerprint: " +
                 GetCertSha1Fingerprint(kClientCert1Name),
             https_reply_content);
@@ -1138,7 +1139,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
   WaitForGaiaPageLoadAndPropertyUpdate();
 
   const std::string https_reply_content =
-      RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
+      RequestClientCertTestPageInFrame(kSigninWebview);
   EXPECT_EQ("got no client cert", https_reply_content);
 }
 
@@ -1165,7 +1166,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
   WaitForGaiaPageLoadAndPropertyUpdate();
 
   const std::string https_reply_content =
-      RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
+      RequestClientCertTestPageInFrame(kSigninWebview);
   EXPECT_EQ("got no client cert", https_reply_content);
 }
 
@@ -1196,7 +1197,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
   WaitForGaiaPageLoadAndPropertyUpdate();
 
   const std::string https_reply_content =
-      RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
+      RequestClientCertTestPageInFrame(kSigninWebview);
   EXPECT_EQ("got client cert with fingerprint: " +
                 GetCertSha1Fingerprint(kClientCert1Name),
             https_reply_content);
@@ -1222,7 +1223,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsLoginTest,
 
   // Use `watch_new_webcontents` because the EULA webview has not navigated yet.
   const std::string https_reply_content =
-      RequestClientCertTestPageInFrame({"cros-eula-frame"});
+      RequestClientCertTestPageInFrame("$('cros-eula-frame')");
   EXPECT_EQ("got no client cert", https_reply_content);
 }
 
@@ -1356,7 +1357,7 @@ IN_PROC_BROWSER_TEST_F(WebviewClientCertsTokenLoadingLoginTest,
   TpmManagerClient::Get()->GetTestInterface()->EmitOwnershipTakenSignal();
 
   const std::string https_reply_content =
-      RequestClientCertTestPageInFrame({"gaia-signin", gaia_frame_parent_});
+      RequestClientCertTestPageInFrame(kSigninWebview);
   EXPECT_EQ("got client cert with fingerprint: " +
                 GetCertSha1Fingerprint(kClientCert1Name),
             https_reply_content);
@@ -1519,7 +1520,7 @@ IN_PROC_BROWSER_TEST_F(WebviewProxyAuthLoginTest, DISABLED_ProxyAuthTransfer) {
   // start a new sign-in attempt.
   // This will re-load gaia, rotating the StoragePartition. The new
   // StoragePartition must also have the proxy auth details.
-  test::OobeJS().ClickOnPath({"gaia-signin", "signin-back-button"});
+  test::OobeJS().ClickOnPath(kBackButton);
   WaitForGaiaPageBackButtonUpdate();
   // Expect that we got back to the identifier page, as there are no known users
   // so the sign-in screen will not display user pods.
@@ -1539,7 +1540,7 @@ IN_PROC_BROWSER_TEST_F(WebviewLoginTestWithChildSigninDisabled,
       net::HTTP_NOT_FOUND);
 
   // Click back to reload (unreachable) identifier page.
-  test::OobeJS().ClickOnPath({"gaia-signin", "signin-back-button"});
+  test::OobeJS().ClickOnPath(kBackButton);
   OobeScreenWaiter(ErrorScreenView::kScreenId).Wait();
 }
 

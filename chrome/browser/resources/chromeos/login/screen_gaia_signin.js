@@ -80,7 +80,6 @@ Polymer({
     screenMode_: {
       type: Number,
       value: AuthMode.DEFAULT,
-      observer: 'screenModeChanged_',
     },
 
     /**
@@ -162,42 +161,6 @@ Polymer({
     },
 
     /**
-     * Controls label on the primary action button.
-     * @private
-     */
-    primaryActionButtonLabel_: {
-      type: String,
-      value: null,
-    },
-
-    /**
-     * Controls availability of the primary action button.
-     * @private
-     */
-    primaryActionButtonEnabled_: {
-      type: Boolean,
-      value: true,
-    },
-
-    /**
-     * Controls label on the secondary action button.
-     * @private
-     */
-    secondaryActionButtonLabel_: {
-      type: String,
-      value: null,
-    },
-
-    /**
-     * Controls availability of the secondary action button.
-     * @private
-     */
-    secondaryActionButtonEnabled_: {
-      type: Boolean,
-      value: true,
-    },
-
-    /**
      * Whether the SAML 3rd-party page is visible.
      * @private
      */
@@ -207,19 +170,64 @@ Polymer({
     },
 
     /**
-     * Whether a pop-up overlay should be shown. This overlay is necessary
-     * when GAIA shows an overlay within their iframe. It covers the parts
-     * of the screen that would otherwise not show an overlay.
+     * Bound to gaia-dialog::videoEnabled.
+     * @private
      */
-    isPopUpOverlayVisible_: {
+    videoEnabled_: {
       type: Boolean,
-      computed: 'showOverlay_(navigationEnabled_, isSamlSsoVisible_)'
+      observer: 'onVideoEnabledChange_',
+    },
+
+    /**
+     * Bound to gaia-dialog::authFlow.
+     * @private
+     */
+    authFlow: {
+      type: Number,
+      observer: 'onAuthFlowChange_',
+    },
+
+    /**
+     * @private
+     */
+    navigationButtonsHidden_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * Bound to gaia-dialog::canGoBack.
+     * @private
+     */
+    canGaiaGoBack_: {
+      type: Boolean,
+    },
+
+    /*
+     * Updates whether the Guest and Apps button is allowed to be shown.
+     * (Note that the C++ side contains additional logic that decides whether
+     * the Guest button should be shown.)
+     * @private
+     */
+    isFirstSigninStep_: {
+      type: Boolean,
+      computed: 'isFirstSigninStep(uiStep, canGaiaGoBack_, isSaml_)',
+      observer: 'onIsFirstSigninStepChanged'
+    },
+
+    /*
+     * Whether the screen is shown.
+     * @private
+     */
+    isShown_: {
+      type: Boolean,
+      value: false,
     }
   },
 
   observers: [
-    'refreshDialogStep_(screenMode_, pinDialogParameters_, isLoadingUiShown_,' +
-        'isAllowlistErrorShown_)',
+    'refreshDialogStep_(isShown_, screenMode_, pinDialogParameters_,' +
+        'isLoadingUiShown_, isAllowlistErrorShown_)',
   ],
 
   /**
@@ -274,24 +282,11 @@ Polymer({
   authCompleted_: false,
 
   /**
-   * Value contained in the last received 'backButton' event.
-   * @type {boolean}
-   * @private
-   */
-  lastBackMessageValue_: false,
-
-  /**
    * SAML password confirmation attempt count.
    * @type {number}
    * @private
    */
   samlPasswordConfirmAttempt_: 0,
-
-  /**
-   * The UI component that hosts IdP pages.
-   * @type {!cr.login.Authenticator|undefined}
-   */
-  authenticator_: undefined,
 
   /**
    * Whether the result was reported to the handler for the most recent PIN
@@ -301,52 +296,20 @@ Polymer({
    */
   pinDialogResultReported_: false,
 
-  /**
-   * Emulate click on the primary action button when it is visible and enabled.
-   * @type {boolean}
-   * @private
-   */
-  clickPrimaryActionButtonForTesting_: false,
-
   defaultUIStep() {
     return DialogMode.GAIA;
   },
 
   UI_STEPS: DialogMode,
 
+  get authenticator_() {
+    return this.$['signin-frame-dialog'].getAuthenticator();
+  },
+
   /** @override */
   ready() {
-    this.authenticator_ = new cr.login.Authenticator(this.getSigninFrame_());
-
-    const that = this;
-    const $that = this.$;
-    [this.authenticator_].forEach(
-        function(frame) {
-          // Ignore events from currently inactive frame.
-          const frameFilter = function(callback) {
-            return function(e) {
-              let currentFrame = null;
-              switch (that.screenMode_) {
-                case AuthMode.DEFAULT:
-                case AuthMode.SAML_INTERSTITIAL:
-                  currentFrame = that.authenticator_;
-                  break;
-              }
-              if (frame === currentFrame)
-                callback.call(that, e);
-            };
-          };
-
-          frame.addEventListener(
-              'authCompleted', frameFilter(that.onAuthCompletedMessage_));
-          frame.addEventListener('backButton', frameFilter(that.onBackButton_));
-          frame.addEventListener(
-              'dialogShown', frameFilter(that.onDialogShown_));
-          frame.addEventListener(
-              'dialogHidden', frameFilter(that.onDialogHidden_));
-          frame.addEventListener(
-              'menuItemClicked', frameFilter(that.onMenuItemClicked_));
-        });
+    this.authenticator_.addEventListener(
+        'authCompleted', this.onAuthCompletedMessage_.bind(this));
 
     this.authenticator_.confirmPasswordCallback =
         this.onAuthConfirmPassword_.bind(this);
@@ -362,33 +325,6 @@ Polymer({
         this.recordSAMLProvider_.bind(this);
     this.authenticator_.getIsSamlUserPasswordlessCallback =
         this.getIsSamlUserPasswordless_.bind(this);
-
-    /**
-     * Event listeners for the events triggered by the authenticator.
-     */
-    const authenticatorEventListeners = {
-      'authDomainChange': this.onAuthDomainChange_,
-      'authFlowChange': this.onAuthFlowChange_,
-      'exit': this.onExitMessage_,
-      'identifierEntered': this.onIdentifierEnteredMessage_,
-      'loadAbort': this.onLoadAbortMessage_,
-      'ready': this.onAuthReady_,
-      'removeUserByEmail': this.onRemoveUserByEmailMessage_,
-      'setPrimaryActionEnabled': this.onSetPrimaryActionEnabled_,
-      'setPrimaryActionLabel': this.onSetPrimaryActionLabel_,
-      'setSecondaryActionEnabled': this.onSetSecondaryActionEnabled_,
-      'setSecondaryActionLabel': this.onSetSecondaryActionLabel_,
-      'setAllActionsEnabled': this.onSetAllActionsEnabled_,
-      'showView': (e) => {
-        // Redirect to onShowView_() with dropping the |e| argument.
-        this.onShowView_();
-      },
-      'videoEnabledChange': this.onVideoEnabledChange_,
-    };
-    for (eventName in authenticatorEventListeners) {
-      this.authenticator_.addEventListener(
-          eventName, authenticatorEventListeners[eventName].bind(this));
-    }
 
     this.$['gaia-allowlist-error'].addEventListener('buttonclick', function() {
       this.showAllowlistCheckFailedError(false);
@@ -415,62 +351,33 @@ Polymer({
   },
 
   /**
-   * Returns true if the screen is at the beginning of flow (i.e. the email
-   * page).
-   * @type {boolean}
-   * @private
-   */
-  isAtTheBeginning_() {
-    return !this.canGoBack_() && !this.isSaml_ &&
-        !this.isAllowlistErrorShown_ && !this.authCompleted_;
-  },
-
-  /**
    * Updates whether the Guest and Apps button is allowed to be shown. (Note
    * that the C++ side contains additional logic that decides whether the
    * Guest button should be shown.)
    * @private
    */
-  updateButtonsVisibilityAtFirstSigingStep_() {
-    let isFristSigninStep = !this.isClosable_() && this.isAtTheBeginning_();
-    chrome.send('setIsFirstSigninStep', [isFristSigninStep]);
+  isFirstSigninStep(uiStep, canGaiaGoBack, isSaml) {
+    return !this.isClosable_() &&
+        (uiStep == DialogMode.GAIA || uiStep == DialogMode.GAIA_LOADING) &&
+        !canGaiaGoBack && !isSaml;
   },
 
-  /**
-   * Handles clicks on "PrimaryAction" button.
-   */
-  onPrimaryActionButtonClicked_() {
-    this.authenticator_.sendMessageToWebview('primaryActionHit');
-  },
-
-  /**
-   * Handles clicks on "SecondaryAction" button.
-   */
-  onSecondaryActionButtonClicked_() {
-    this.authenticator_.sendMessageToWebview('secondaryActionHit');
-  },
-
-  /**
-   * Returns whether it's possible to rewind the sign-in frame one step back (as
-   * opposed to cancelling the sign-in flow).
-   * @type {boolean}
-   * @private
-   */
-  canGoBack_() {
-    return this.lastBackMessageValue_ && !this.isAllowlistErrorShown_ &&
-        !this.authCompleted_ && !this.isSaml_;
+  onIsFirstSigninStepChanged(isFirstSigninStep) {
+    chrome.send('setIsFirstSigninStep', [isFirstSigninStep]);
   },
 
   /**
    * Handles clicks on "Back" button.
    * @private
    */
-  onBackButtonClicked_() {
-    if (!this.canGoBack_()) {
+  onBackButtonCancel_() {
+    if (!this.authCompleted_) {
       this.cancel(true /* isBackClicked */);
-    } else {
-      this.getActiveFrame_().back();
     }
+  },
+
+  onInterstitialBackButtonClicked_() {
+    this.cancel(true /* isBackClicked */);
   },
 
   /**
@@ -487,21 +394,6 @@ Polymer({
     this.authenticatorParams_.doSamlRedirect = doSamlRedirect;
     this.authenticator_.load(
         cr.login.Authenticator.AuthMode.DEFAULT, this.authenticatorParams_);
-  },
-
-  /**
-   * Observer that is called when the |screenMode_| property gets changed.
-   * @param {number} newValue
-   * @param {number} oldValue
-   * @private
-   */
-  screenModeChanged_(newValue, oldValue) {
-    if (oldValue === undefined) {
-      // Ignore the first call, triggered by the assignment of the initial
-      // value.
-      return;
-    }
-    this.updateButtonsVisibilityAtFirstSigingStep_();
   },
 
   /**
@@ -596,11 +488,8 @@ Polymer({
     // Re-enable navigation in case it was disabled before refresh.
     this.navigationEnabled_ = true;
 
-    this.lastBackMessageValue_ = false;
-    this.updateButtonsVisibilityAtFirstSigingStep_();
+    this.isShown_ = true;
 
-    cr.ui.login.invokePolymerMethod(
-        this.$['signin-frame-dialog'], 'onBeforeShow');
     cr.ui.login.invokePolymerMethod(this.$.pinDialog, 'onBeforeShow');
   },
 
@@ -609,12 +498,7 @@ Polymer({
    * @private
    */
   getSigninFrame_() {
-    // Note: Can't use |this.$|, since it returns cached references to elements
-    // originally present in DOM, while the signin-frame is dynamically
-    // recreated (see Authenticator.setWebviewPartition()).
-    const signinFrame = this.shadowRoot.getElementById('signin-frame');
-    assert(signinFrame);
-    return signinFrame;
+    return this.$['signin-frame-dialog'].getFrame();
   },
 
   /** @private */
@@ -643,6 +527,7 @@ Polymer({
    */
   onBeforeHide() {
     chrome.send('loginUIStateChanged', ['gaia-signin', false]);
+    this.isShown_ = false;
   },
 
   /**
@@ -661,8 +546,7 @@ Polymer({
 
     this.screenMode_ = data.screenMode;
     this.authCompleted_ = false;
-    this.lastBackMessageValue_ = false;
-    this.setBackNavigationVisibility_(true);
+    this.navigationButtonsHidden_ = false;
 
     // Reset SAML
     this.isSaml_ = false;
@@ -697,7 +581,6 @@ Polymer({
         this.loadingFrameContents_ = false;
         break;
     }
-    this.updateButtonsVisibilityAtFirstSigingStep_();
     chrome.send('authExtensionLoaded');
   },
 
@@ -707,24 +590,6 @@ Polymer({
    */
   isSamlForTesting() {
     return this.isSaml_;
-  },
-
-  /**
-   * Helper function to update the title bar.
-   * @private
-   */
-  updateSamlNotice_() {
-    if (this.authenticator_.videoEnabled) {
-      this.$['saml-notice-message'].textContent = loadTimeData.getStringF(
-          'samlNoticeWithVideo', this.authenticator_.authDomain);
-      this.$['saml-notice-recording-indicator'].hidden = false;
-      this.$['saml-notice-container'].style.justifyContent = 'flex-start';
-    } else {
-      this.$['saml-notice-message'].textContent =
-          loadTimeData.getStringF('samlNotice', this.authenticator_.authDomain);
-      this.$['saml-notice-recording-indicator'].hidden = true;
-      this.$['saml-notice-container'].style.justifyContent = 'center';
-    }
   },
 
   /**
@@ -739,20 +604,10 @@ Polymer({
   },
 
   /**
-   * Invoked when the authDomain property is changed on the authenticator.
-   * @private
-   */
-  onAuthDomainChange_() {
-    this.updateSamlNotice_();
-  },
-
-  /**
-   * Invoked when the videoEnabled property is changed on the authenticator.
    * @private
    */
   onVideoEnabledChange_() {
-    this.updateSamlNotice_();
-    if (this.authenticator_.videoEnabled && this.videoTimer_ === undefined) {
+    if (this.videoEnabled_ && this.videoTimer_ === undefined) {
       this.videoTimer_ =
           setTimeout(this.cancel.bind(this), VIDEO_LOGIN_TIMEOUT);
     } else {
@@ -765,8 +620,7 @@ Polymer({
    * @private
    */
   onAuthFlowChange_() {
-    this.isSaml_ =
-        this.authenticator_.authFlow == cr.login.Authenticator.AuthFlow.SAML;
+    this.isSaml_ = this.authFlow == cr.login.Authenticator.AuthFlow.SAML;
   },
 
   /**
@@ -789,8 +643,6 @@ Polymer({
       if (Oobe.getInstance().currentScreen.id == 'gaia-signin') {
         Oobe.getInstance().updateScreenSize(this);
       }
-
-      this.updateButtonsVisibilityAtFirstSigingStep_();
     }
   },
 
@@ -810,30 +662,10 @@ Polymer({
   },
 
   /**
-   * Invoked when a frame emits 'dialogShown' event.
    * @private
    */
-  onDialogShown_() {
-    this.navigationEnabled_ = false;
-  },
-
-  /**
-   * Invoked when a frame emits 'dialogHidden' event.
-   * @private
-   */
-  onDialogHidden_() {
-    this.navigationEnabled_ = true;
-  },
-
-  /**
-   * Invoked when user activates menu item.
-   * @param {!CustomEvent} e
-   * @private
-   */
-  onMenuItemClicked_(e) {
-    if (e.detail == 'ee') {
-      this.userActed('startEnrollment');
-    }
+  onStartEnrollment_() {
+    this.userActed('startEnrollment');
   },
 
   /**
@@ -848,59 +680,6 @@ Polymer({
   getIsSamlUserPasswordless_(email, gaiaId, callback) {
     cr.sendWithPromise('getIsSamlUserPasswordless', email, gaiaId)
         .then(callback);
-  },
-
-  /**
-   * Invoked when a frame emits 'backButton' event.
-   * @param {!CustomEvent<boolean>} e
-   * @private
-   */
-  onBackButton_(e) {
-    this.getActiveFrame_().focus();
-    this.lastBackMessageValue_ = !!e.detail;
-    this.updateButtonsVisibilityAtFirstSigingStep_();
-  },
-  /**
-   * Invoked when the auth host emits 'setPrimaryActionEnabled'  event
-   * @private
-   */
-  onSetPrimaryActionEnabled_(e) {
-    this.primaryActionButtonEnabled_ = e.detail;
-    this.maybeClickPrimaryActionButtonForTesting_();
-  },
-
-  /**
-   * Invoked when the auth host emits 'setSecondaryActionEnabled'  event
-   * @private
-   */
-  onSetSecondaryActionEnabled_(e) {
-    this.secondaryActionButtonEnabled_ = e.detail;
-  },
-
-  /**
-   * Invoked when the auth host emits 'setPrimaryActionLabel' event
-   * @private
-   */
-  onSetPrimaryActionLabel_(e) {
-    this.primaryActionButtonLabel_ = e.detail;
-    this.maybeClickPrimaryActionButtonForTesting_();
-  },
-
-  /**
-   * Invoked when the auth host emits 'setSecondaryActionLabel' event
-   * @private
-   */
-  onSetSecondaryActionLabel_(e) {
-    this.secondaryActionButtonLabel_ = e.detail;
-  },
-
-  /**
-   * Invoked when the auth host emits 'setAllActionsEnabled' event
-   * @private
-   */
-  onSetAllActionsEnabled_(e) {
-    this.onSetPrimaryActionEnabled_(e);
-    this.onSetSecondaryActionEnabled_(e);
   },
 
   /**
@@ -1072,16 +851,15 @@ Polymer({
       ]);
     }
 
-    // Hide the back button and the border line as they are not useful when
-    // the loading screen is shown.
-    this.setBackNavigationVisibility_(false);
+    // Hide the navigation buttons as they are not useful when the loading
+    // screen is shown.
+    this.navigationButtonsHidden_ = true;
 
     // Clear any error messages that were shown before login.
     Oobe.clearErrors();
 
     this.clearVideoTimer_();
     this.authCompleted_ = true;
-    this.updateButtonsVisibilityAtFirstSigingStep_();
   },
 
   /**
@@ -1156,9 +934,7 @@ Polymer({
     this.authenticator_.reload();
     this.loadingFrameContents_ = true;
     this.startLoadingTimer_();
-    this.lastBackMessageValue_ = false;
     this.authCompleted_ = false;
-    this.updateButtonsVisibilityAtFirstSigingStep_();
   },
 
   /**
@@ -1258,23 +1034,6 @@ Polymer({
       this.$['gaia-allowlist-error'].submitButton.focus();
     else
       Oobe.showSigninUI();
-
-    this.updateButtonsVisibilityAtFirstSigingStep_();
-  },
-
-  /**
-   * Show/Hide back navigation during post-authentication.
-   * @param {boolean} visible Show/hide back navigation.
-   * @private
-   */
-  setBackNavigationVisibility_(visible) {
-    this.$['signin-back-button'].hidden = !visible;
-    this.$['signin-frame-dialog'].setAttribute('hide-shadow', !visible);
-    if (!visible) {
-      // Also hide the primary and secondary action buttons
-      this.primaryActionButtonLabel_ = null;
-      this.secondaryActionButtonLabel_ = null;
-    }
   },
 
   /**
@@ -1358,13 +1117,17 @@ Polymer({
 
   /**
    * Updates current UI step based on internal state.
+   * @param {boolean} isScreenShown
    * @param {number} mode
    * @param {OobeTypes.SecurityTokenPinDialogParameter} pinParams
    * @param {boolean} isLoading
    * @param {boolean} isAllowlistError
    * @private
    */
-  refreshDialogStep_(mode, pinParams, isLoading, isAllowlistError) {
+  refreshDialogStep_(
+      isScreenShown, mode, pinParams, isLoading, isAllowlistError) {
+    if (!isScreenShown)
+      return;
     if (pinParams !== null) {
       this.setUIStep(DialogMode.PIN_DIALOG);
       return;
@@ -1436,31 +1199,8 @@ Polymer({
     return !value;
   },
 
-  /**
-   * Whether popup overlay should be open.
-   * @param {boolean} navigationEnabled
-   * @param {boolean} isSamlSsoVisible
-   * @return {boolean}
-   */
-  showOverlay_(navigationEnabled, isSamlSsoVisible) {
-    return !navigationEnabled || isSamlSsoVisible;
-  },
-
   clickPrimaryButtonForTesting() {
-    this.clickPrimaryActionButtonForTesting_ = true;
-    this.maybeClickPrimaryActionButtonForTesting_();
-  },
-
-  maybeClickPrimaryActionButtonForTesting_() {
-    if (!this.clickPrimaryActionButtonForTesting_)
-      return;
-
-    const button = this.$['primary-action-button'];
-    if (button.hidden || button.disabled)
-      return;
-
-    this.clickPrimaryActionButtonForTesting_ = false;
-    button.click();
+    this.$['signin-frame-dialog'].clickPrimaryButtonForTesting();
   },
 
   /**

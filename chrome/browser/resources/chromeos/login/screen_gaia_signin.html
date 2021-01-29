@@ -2,7 +2,6 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
 
@@ -15,61 +14,24 @@
 <dom-module id="gaia-signin-element">
   <template>
     <style include="oobe-dialog-host"></style>
-    <link rel="stylesheet" href="oobe_popup_overlay.css">
     <link rel="stylesheet" href="screen_gaia_signin.css">
-    <!-- As this dialog have pre-loading logic that require access to elements,
-         dialog is marked as no-lazy. -->
-    <oobe-dialog id="signin-frame-dialog" class="gaia-dialog" role="dialog"
-        has-buttons="[[!isSamlSsoVisible_]]"
-        no-header no-footer-padding no-lazy
-        for-step="online-gaia, gaia-loading">
-      <div slot="footer" class="flex layout vertical">
-        <div id="signin-frame-container" transparent$="[[isLoadingUiShown_]]"
-            animated-transparency$="[[!usedSaml_]]"
-            hideshadows$="[[isPopUpOverlayVisible_]]"
-            class="flex layout vertical">
-          <div id="saml-notice-container"
-               class="layout horizontal center"
-               hidden="[[!isSamlSsoVisible_]]">
-            <div class="flex layout horizontal center-justified">
-              <span id="saml-notice-recording-indicator"
-                  hidden="[[!videoEnabled_]]">
-                <img src="chrome://theme/IDR_TAB_RECORDING_INDICATOR">
-              </span>
-              <span id="saml-notice-message"></span>
-            </div>
-            <cr-icon-button id="saml-close-button" iron-icon="cr:close"
-                on-click="cancel">
-            </cr-icon-button>
-          </div>
-          <webview id="signin-frame" class="flex"
-              name="signin-frame"></webview>
-        </div>
-      </div>
-      <div slot="back-navigation">
-        <oobe-back-button id="signin-back-button"
-            disabled="[[!navigationEnabled_]]"
-            on-click="onBackButtonClicked_">
-        </oobe-back-button>
-      </div>
-      <div slot="bottom-buttons">
-        <oobe-text-button id="secondary-action-button"
-            label-for-aria="[[secondaryActionButtonLabel_]]"
-            on-click="onSecondaryActionButtonClicked_"
-            hidden="[[!secondaryActionButtonLabel_]]"
-            disabled="[[!secondaryActionButtonEnabled_]]">
-          <div slot="text">[[secondaryActionButtonLabel_]]</div>
-        </oobe-text-button>
-        <oobe-text-button id="primary-action-button"
-            label-for-aria="[[primaryActionButtonLabel_]]"
-            on-click="onPrimaryActionButtonClicked_"
-            hidden="[[!primaryActionButtonLabel_]]"
-            disabled="[[!primaryActionButtonEnabled_]]"
-            inverse>
-            <div slot="text">[[primaryActionButtonLabel_]]</div>
-        </oobe-text-button>
-      </div>
-    </oobe-dialog>
+    <gaia-dialog id="signin-frame-dialog"
+        transparent$="[[isLoadingUiShown_]]" class="flex gaia-dialog"
+        for-step="online-gaia, gaia-loading"
+        is-saml-sso-visible="[[isSamlSsoVisible_]]"
+        video-enabled="{{videoEnabled_}}"
+        auth-flow="{{authFlow}}"
+        navigation-enabled="{{navigationEnabled_}}"
+        navigation-hidden="[[navigationButtonsHidden_]]"
+        can-go-back="{{canGaiaGoBack_}}"
+        on-backcancel="onBackButtonCancel_"
+        on-closesaml="cancel"
+        on-identifierentered="onIdentifierEnteredMessage_"
+        on-webviewerror="onLoadAbortMessage_"
+        on-ready="onAuthReady_"
+        on-showview="onShowView_"
+        on-startenrollment="onStartEnrollment_">
+    </gaia-dialog>
     <security-token-pin id="pinDialog" parameters="[[pinDialogParameters_]]"
         for-step="pin" on-cancel="onPinDialogCanceled_"
         on-completed="onPinDialogCompleted_">
@@ -92,7 +54,7 @@
       </div>
       <div slot="back-navigation">
         <oobe-back-button id="interstitial-back"
-            on-click="onBackButtonClicked_"></oobe-back-button>
+            on-click="onInterstitialBackButtonClicked_"></oobe-back-button>
       </div>
       <div slot="bottom-buttons">
         <oobe-next-button on-click="onSamlInterstitialNext_"
@@ -108,8 +70,5 @@
         button-label="[[i18nDynamic(locale, 'tryAgainButton')]]"
         link-label="[[i18nDynamic(locale, 'learnMoreButton')]]">
     </notification-card>
-    <div class="popup-overlay"
-        hidden="[[!isPopUpOverlayVisible_]]">
-    </div>
   </template>
 </dom-module>

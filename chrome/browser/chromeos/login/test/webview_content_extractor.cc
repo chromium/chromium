@@ -85,7 +85,10 @@ content::WebContents* FindContents(std::string element_id) {
 
 std::string GetWebViewContents(
     std::initializer_list<base::StringPiece> element_ids) {
-  std::string element_id = test::GetOobeElementPath(element_ids);
+  return GetWebViewContentsById(test::GetOobeElementPath(element_ids));
+}
+
+std::string GetWebViewContentsById(const std::string& element_id) {
   // Wait the contents to load.
   WebContentsLoadFinishedWaiter(FindContents(element_id)).Wait();
 

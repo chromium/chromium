@@ -146,6 +146,14 @@ const test::UIPath kPasswordInput = {"saml-confirm-password", "passwordInput"};
 const test::UIPath kPasswordConfirmInput = {"saml-confirm-password",
                                             "confirmPasswordInput"};
 const test::UIPath kPasswordSubmit = {"saml-confirm-password", "next"};
+const test::UIPath kSamlNoticeMessage = {"gaia-signin", "signin-frame-dialog",
+                                         "saml-notice-message"};
+const test::UIPath kSamlNoticeContainer = {"gaia-signin", "signin-frame-dialog",
+                                           "saml-notice-container"};
+constexpr test::UIPath kBackButton = {"gaia-signin", "signin-frame-dialog",
+                                      "signin-back-button"};
+constexpr test::UIPath kSamlCloseButton = {"gaia-signin", "signin-frame-dialog",
+                                           "saml-close-button"};
 
 constexpr char kGAIASIDCookieName[] = "SID";
 constexpr char kGAIALSIDCookieName[] = "LSID";
@@ -742,22 +750,19 @@ IN_PROC_BROWSER_TEST_F(SamlTest, SamlUI) {
       saml_test_users::kFirstUserCorpExampleComEmail);
 
   // Saml flow UI expectations.
-  test::OobeJS().ExpectVisiblePath({"gaia-signin", "saml-notice-container"});
-  test::OobeJS().ExpectVisiblePath({"gaia-signin", "signin-back-button"});
+  test::OobeJS().ExpectVisiblePath(kSamlNoticeContainer);
+  test::OobeJS().ExpectVisiblePath(kBackButton);
   std::string js = "$SamlNoticeMessagePath.textContent.indexOf('$Host') > -1";
   base::ReplaceSubstringsAfterOffset(
       &js, 0, "$SamlNoticeMessagePath",
-      test::GetOobeElementPath({"gaia-signin", "saml-notice-message"}));
+      test::GetOobeElementPath(kSamlNoticeMessage));
   base::ReplaceSubstringsAfterOffset(&js, 0, "$Host", kIdPHost);
   test::OobeJS().ExpectTrue(js);
 
-  content::DOMMessageQueue message_queue;  // Observe before 'back'.
+  content::DOMMessageQueue message_queue;  // Observe before 'close'.
   SetupAuthFlowChangeListener();
-  // Click on 'back'.
-  content::ExecuteScriptAsync(
-      GetLoginUI()->GetWebContents(),
-      test::GetOobeElementPath({"gaia-signin", "signin-back-button"}) +
-          ".fire('click');");
+  // Click on 'close'.
+  test::OobeJS().ClickOnPath(kSamlCloseButton);
 
   // Auth flow should change back to Gaia.
   std::string message;
@@ -766,7 +771,7 @@ IN_PROC_BROWSER_TEST_F(SamlTest, SamlUI) {
   } while (message != "\"GaiaLoaded\"");
 
   // Saml flow is gone.
-  test::OobeJS().ExpectHiddenPath({"gaia-signin", "saml-notice-container"});
+  test::OobeJS().ExpectHiddenPath(kSamlNoticeContainer);
 }
 
 // The SAML IdP requires HTTP Protocol-level authentication (Basic in this
@@ -1151,14 +1156,14 @@ IN_PROC_BROWSER_TEST_F(SamlTest, NoticeUpdatedOnRedirect) {
       "}";
   base::ReplaceSubstringsAfterOffset(
       &js, 0, "$SamlNoticeMessagePath",
-      test::GetOobeElementPath({"gaia-signin", "saml-notice-message"}));
+      test::GetOobeElementPath(kSamlNoticeMessage));
   base::ReplaceSubstringsAfterOffset(&js, 0, "$Host", kAdditionalIdPHost);
   bool dummy;
   EXPECT_TRUE(content::ExecuteScriptAndExtractBool(
       GetLoginUI()->GetWebContents(), js, &dummy));
 
   // Verify that the notice is visible.
-  test::OobeJS().ExpectVisiblePath({"gaia-signin", "saml-notice-container"});
+  test::OobeJS().ExpectVisiblePath(kSamlNoticeContainer);
 }
 
 // Verifies that when GAIA attempts to redirect to a SAML IdP served over http,
@@ -1695,8 +1700,8 @@ IN_PROC_BROWSER_TEST_F(SAMLPolicyTest, SAMLInterstitialChangeAccount) {
   test::OobeJS()
       .CreateVisibilityWaiter(false, {"gaia-signin", "gaia-loading"})
       ->Wait();
-  test::OobeJS().ExpectHasNoAttribute(
-      "transparent", {"gaia-signin", "signin-frame-container"});
+  test::OobeJS().ExpectHasNoAttribute("transparent",
+                                      {"gaia-signin", "signin-frame-dialog"});
   test::OobeJS().ExpectHiddenPath({"gaia-signin", "saml-interstitial"});
 }
 

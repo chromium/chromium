@@ -249,7 +249,8 @@ IN_PROC_BROWSER_TEST_F(UserCreationScreenEnrolledTest,
   EXPECT_TRUE(ash::LoginScreenTestApi::ClickAddUserButton());
   EXPECT_TRUE(ash::LoginScreenTestApi::IsOobeDialogVisible());
   OobeScreenWaiter(GaiaView::kScreenId).Wait();
-  test::OobeJS().ClickOnPath({"gaia-signin", "signin-back-button"});
+  test::OobeJS().ClickOnPath(
+      {"gaia-signin", "signin-frame-dialog", "signin-back-button"});
   EXPECT_FALSE(ash::LoginScreenTestApi::IsOobeDialogVisible());
 }
 

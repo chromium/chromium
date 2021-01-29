@@ -14,6 +14,9 @@ namespace test {
 std::string GetWebViewContents(
     std::initializer_list<base::StringPiece> element_ids);
 
+// Returns the contents of the <webview> identified by `element_id`.
+std::string GetWebViewContentsById(const std::string& element_id);
+
 }  // namespace test
 }  // namespace chromeos
 
