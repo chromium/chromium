@@ -55,9 +55,9 @@ java_library("components_signin_junit_tests") {
   bypass_platform_checks = true
   testonly = true
   sources = [
-    "junit/src/org/chromium/components/signin/test/AccountManagerFacadeRobolectricTest.java",
-    "junit/src/org/chromium/components/signin/test/ObservableValueTest.java",
-    "junit/src/org/chromium/components/signin/test/PatternMatcherTest.java",
+    "junit/src/org/chromium/components/signin/AccountManagerFacadeImplTest.java",
+    "junit/src/org/chromium/components/signin/ObservableValueTest.java",
+    "junit/src/org/chromium/components/signin/PatternMatcherTest.java",
   ]
   deps = [
     ":java",

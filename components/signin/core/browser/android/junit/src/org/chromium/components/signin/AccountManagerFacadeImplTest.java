@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.components.signin.test;
+package org.chromium.components.signin;
 
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -33,12 +33,6 @@ import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.components.signin.AccountManagerDelegateException;
-import org.chromium.components.signin.AccountManagerFacade;
-import org.chromium.components.signin.AccountManagerFacadeImpl;
-import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.ChildAccountStatus;
 import org.chromium.components.signin.test.util.AccountHolder;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 import org.chromium.testing.local.CustomShadowUserManager;
@@ -53,7 +47,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {CustomShadowAsyncTask.class, CustomShadowUserManager.class})
-public class AccountManagerFacadeRobolectricTest {
+public class AccountManagerFacadeImplTest {
+    private static final String TEST_TOKEN_SCOPE = "test-token-scope";
+
     private CustomShadowUserManager mShadowUserManager;
     private FakeAccountManagerDelegate mDelegate;
     private AccountManagerFacade mFacade;
@@ -249,6 +245,21 @@ public class AccountManagerFacadeRobolectricTest {
         assertChildAccountStatus(ucaAccount, ChildAccountStatus.REGULAR_CHILD);
         assertChildAccountStatus(usmAccount, ChildAccountStatus.USM_CHILD);
         assertChildAccountStatus(bothAccount, ChildAccountStatus.REGULAR_CHILD);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAndInvalidateAccessToken() throws AuthException {
+        final Account account = addTestAccount("test@gmail.com");
+        final AccessTokenData originalToken = mFacade.getAccessToken(account, TEST_TOKEN_SCOPE);
+        Assert.assertEquals("The same token should be returned before invalidating the token.",
+                mFacade.getAccessToken(account, TEST_TOKEN_SCOPE).getToken(),
+                originalToken.getToken());
+        mFacade.invalidateAccessToken(originalToken.getToken());
+        final AccessTokenData newToken = mFacade.getAccessToken(account, TEST_TOKEN_SCOPE);
+        Assert.assertNotEquals(
+                "A different token should be returned since the original token is invalidated.",
+                newToken.getToken(), originalToken.getToken());
     }
 
     @Test(expected = IllegalStateException.class)

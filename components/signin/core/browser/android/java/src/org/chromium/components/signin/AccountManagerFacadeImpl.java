@@ -201,7 +201,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     public AccessTokenData getAccessToken(Account account, String scope) throws AuthException {
         assert account != null;
         assert scope != null;
-        // TODO(bsazonov): Rename delegate's getAuthToken to getAccessToken.
         return mDelegate.getAuthToken(account, scope);
     }
 
@@ -213,7 +212,6 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     @Override
     public void invalidateAccessToken(String accessToken) throws AuthException {
         assert accessToken != null;
-        // TODO(bsazonov): Rename delegate's invalidateAuthToken to invalidateAccessToken.
         mDelegate.invalidateAuthToken(accessToken);
     }
 
