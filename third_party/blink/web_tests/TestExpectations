@@ -5734,3 +5734,6 @@ crbug.com/1170062 [ mac ] external/wpt/html/canvas/element/manual/shadows/canvas
 crbug.com/1171331 [ Mac ] tables/mozilla_expected_failures/bugs/bug89315.html [ Failure Pass ]
 
 crbug.com/1168785 [ Mac ] virtual/threaded-prefer-compositing/fast/scrolling/autoscroll-latch-clicked-node-if-parent-unscrollable.html [ Timeout ]
+
+# Sheriff 2021-01-29
+crbug.com/1172437 [ Win10 ] svg/hixie/perf/004.xml [ Timeout Pass ]
