@@ -80,9 +80,6 @@ void SubresourceFilterClientImpl::CreateThrottleManagerWithClientForWebContents(
 
 void SubresourceFilterClientImpl::ShowNotification() {
 #if defined(OS_ANDROID)
-  // TODO(crbug.com/1116095): Move ChromeSubresourceFilterClient::ShowUI()'s
-  // interaction with metrics and content settings into code that's shared by
-  // WebLayer.
   subresource_filter::AdsBlockedInfobarDelegate::Create(
       InfoBarService::FromWebContents(web_contents_));
 #endif

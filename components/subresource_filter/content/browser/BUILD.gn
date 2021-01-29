@@ -52,6 +52,7 @@ static_library("browser") {
   ]
   deps = [
     "//base",
+    "//components/content_settings/browser",
     "//components/content_settings/core/browser",
     "//components/content_settings/core/common",
     "//components/keyed_service/core",
@@ -88,12 +89,19 @@ static_library("test_support") {
     "subresource_filter_observer_test_utils.h",
     "test_ruleset_publisher.cc",
     "test_ruleset_publisher.h",
+    "test_subresource_filter_client.cc",
+    "test_subresource_filter_client.h",
   ]
   deps = [
     ":browser",
     "//base/test:test_support",
+    "//components/content_settings/browser",
+    "//components/content_settings/browser:test_support",
+    "//components/content_settings/core/browser",
+    "//components/safe_browsing/core/db:database_manager",
     "//components/subresource_filter/core/common",
     "//components/subresource_filter/core/common:test_support",
+    "//components/sync_preferences:test_support",
     "//content/public/browser",
     "//content/test:test_support",
     "//net",

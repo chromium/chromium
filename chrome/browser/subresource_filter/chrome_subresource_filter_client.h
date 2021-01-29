@@ -6,10 +6,8 @@
 #define CHROME_BROWSER_SUBRESOURCE_FILTER_CHROME_SUBRESOURCE_FILTER_CLIENT_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/macros.h"
-#include "components/content_settings/core/common/content_settings.h"
 #include "components/subresource_filter/content/browser/subresource_filter_client.h"
 
 namespace content {
@@ -18,7 +16,6 @@ class WebContents;
 
 namespace subresource_filter {
 class ContentSubresourceFilterThrottleManager;
-class SubresourceFilterProfileContext;
 }  // namespace subresource_filter
 
 // Chrome implementation of SubresourceFilterClient. Instances are associated
@@ -53,10 +50,6 @@ class ChromeSubresourceFilterClient
 
   std::unique_ptr<subresource_filter::ContentSubresourceFilterThrottleManager>
       throttle_manager_;
-
-  // Owned by the profile.
-  subresource_filter::SubresourceFilterProfileContext* profile_context_ =
-      nullptr;
 
   std::unique_ptr<subresource_filter::ProfileInteractionManager>
       profile_interaction_manager_;

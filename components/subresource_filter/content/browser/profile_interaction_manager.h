@@ -17,6 +17,7 @@ class WebContents;
 
 namespace subresource_filter {
 
+class SubresourceFilterClient;
 class SubresourceFilterProfileContext;
 
 // Class that manages interaction between interaction between the
@@ -45,6 +46,12 @@ class ProfileInteractionManager
   // Invoked when an ads violation is triggered.
   void OnAdsViolationTriggered(content::RenderFrameHost* rfh,
                                mojom::AdsViolation triggered_violation);
+
+  // Invoked when a notification should potentially be shown to the user that
+  // ads are being blocked on this page. Will make the final determination as to
+  // whether the notification should be shown and call out to |client| to show
+  // the notification if so.
+  void MaybeShowNotification(SubresourceFilterClient* client);
 
   // SubresourceFilterSafeBrowsingActivationThrottle::Delegate:
   mojom::ActivationLevel OnPageActivationComputed(

@@ -595,7 +595,12 @@ void ContentSubresourceFilterThrottleManager::MaybeShowNotification() {
           mojom::ActivationLevel::kEnabled) {
     return;
   }
-  client_->ShowNotification();
+
+  if (auto* profile_interaction_manager =
+          client_->GetProfileInteractionManager()) {
+    profile_interaction_manager->MaybeShowNotification(client_.get());
+  }
+
   current_committed_load_has_notified_disallowed_load_ = true;
 }
 

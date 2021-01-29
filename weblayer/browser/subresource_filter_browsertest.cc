@@ -49,6 +49,7 @@ const char kAdsInterventionRecordedHistogram[] =
 const char kTimeSinceAdsInterventionTriggeredHistogram[] =
     "SubresourceFilter.PageLoad."
     "TimeSinceLastActiveAdsIntervention";
+const char kSubresourceFilterActionsHistogram[] = "SubresourceFilter.Actions2";
 
 // Returns whether a script resource that sets document.scriptExecuted to true
 // on load was loaded.
@@ -835,6 +836,89 @@ IN_PROC_BROWSER_TEST_F(
       entries.front(),
       ukm::builders::AdsIntervention_LastIntervention::kInterventionStatusName,
       static_cast<int>(AdsInterventionStatus::kWouldBlock));
+}
+
+// Test the "smart" UI, aka the logic to hide the UI on subsequent same-domain
+// navigations, until a certain time threshold has been reached. This is an
+// android-only feature.
+// Flaky on Windows. See https://crbug.com/1152429
+#if defined(OS_WIN)
+#define MAYBE_DoNotShowUIUntilThresholdReached \
+  DISABLED_DoNotShowUIUntilThresholdReached
+#else
+#define MAYBE_DoNotShowUIUntilThresholdReached DoNotShowUIUntilThresholdReached
+#endif
+IN_PROC_BROWSER_TEST_F(SubresourceFilterBrowserTest,
+                       MAYBE_DoNotShowUIUntilThresholdReached) {
+  auto* web_contents = static_cast<TabImpl*>(shell()->tab())->web_contents();
+  auto* settings_manager =
+      SubresourceFilterProfileContextFactory::GetForBrowserContext(
+          web_contents->GetBrowserContext())
+          ->settings_manager();
+  settings_manager->set_should_use_smart_ui_for_testing(true);
+  ASSERT_NO_FATAL_FAILURE(
+      SetRulesetToDisallowURLsWithPathSuffix("included_script.js"));
+  GURL a_url(embedded_test_server()->GetURL(
+      "a.com", "/frame_with_included_script.html"));
+  GURL b_url(embedded_test_server()->GetURL(
+      "b.com", "/frame_with_included_script.html"));
+  // Test utils only support one blocklisted site at a time.
+  // TODO(csharrison): Add support for more than one URL.
+  ActivateSubresourceFilterInWebContentsForURL(web_contents, a_url);
+
+  auto test_clock = std::make_unique<base::SimpleTestClock>();
+  base::SimpleTestClock* raw_clock = test_clock.get();
+  settings_manager->set_clock_for_testing(std::move(test_clock));
+
+  base::HistogramTester histogram_tester;
+
+  // First load should trigger the UI.
+  NavigateAndWaitForCompletion(a_url, shell());
+  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+
+  histogram_tester.ExpectBucketCount(
+      kSubresourceFilterActionsHistogram,
+      subresource_filter::SubresourceFilterAction::kUIShown, 1);
+  histogram_tester.ExpectBucketCount(
+      kSubresourceFilterActionsHistogram,
+      subresource_filter::SubresourceFilterAction::kUISuppressed, 0);
+
+  // Second load should not trigger the UI, but should still filter content.
+  NavigateAndWaitForCompletion(a_url, shell());
+  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+
+  histogram_tester.ExpectBucketCount(
+      kSubresourceFilterActionsHistogram,
+      subresource_filter::SubresourceFilterAction::kUIShown, 1);
+  histogram_tester.ExpectBucketCount(
+      kSubresourceFilterActionsHistogram,
+      subresource_filter::SubresourceFilterAction::kUISuppressed, 1);
+
+  ActivateSubresourceFilterInWebContentsForURL(web_contents, b_url);
+
+  // Load to another domain should trigger the UI.
+  NavigateAndWaitForCompletion(b_url, shell());
+  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+
+  histogram_tester.ExpectBucketCount(
+      kSubresourceFilterActionsHistogram,
+      subresource_filter::SubresourceFilterAction::kUIShown, 2);
+
+  ActivateSubresourceFilterInWebContentsForURL(web_contents, a_url);
+
+  // Fast forward the clock, and a_url should trigger the UI again.
+  raw_clock->Advance(
+      subresource_filter::SubresourceFilterContentSettingsManager::
+          kDelayBeforeShowingInfobarAgain);
+  NavigateAndWaitForCompletion(a_url, shell());
+  EXPECT_FALSE(WasParsedScriptElementLoaded(web_contents->GetMainFrame()));
+
+  histogram_tester.ExpectBucketCount(
+      kSubresourceFilterActionsHistogram,
+      subresource_filter::SubresourceFilterAction::kUIShown, 3);
+  histogram_tester.ExpectBucketCount(
+      kSubresourceFilterActionsHistogram,
+      subresource_filter::SubresourceFilterAction::kUISuppressed, 1);
 }
 
 }  // namespace weblayer

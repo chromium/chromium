@@ -21,12 +21,10 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/safe_browsing/core/db/database_manager.h"
-#include "components/safe_browsing/core/db/test_database_manager.h"
 #include "components/subresource_filter/content/browser/async_document_subresource_filter.h"
 #include "components/subresource_filter/content/browser/subframe_navigation_test_utils.h"
-#include "components/subresource_filter/content/browser/subresource_filter_client.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
+#include "components/subresource_filter/content/browser/test_subresource_filter_client.h"
 #include "components/subresource_filter/content/mojom/subresource_filter_agent.mojom.h"
 #include "components/subresource_filter/core/browser/subresource_filter_features.h"
 #include "components/subresource_filter/core/common/common_features.h"
@@ -106,17 +104,6 @@ class FakeSubresourceFilterAgent : public mojom::SubresourceFilterAgent {
   mojo::AssociatedReceiver<mojom::SubresourceFilterAgent> receiver_{this};
 };
 
-// Overrides the TestSafeBrowsingDatabaseManager methods that are
-// expected to be called to eliminate error logs.
-class CustomTestSafeBrowsingDatabaseManager
-    : public safe_browsing::TestSafeBrowsingDatabaseManager {
- public:
-  bool IsSupported() const override { return false; }
-
- private:
-  ~CustomTestSafeBrowsingDatabaseManager() override = default;
-};
-
 // Simple throttle that sends page-level activation to the manager for a
 // specific set of URLs.
 class MockPageStateActivationThrottle : public content::NavigationThrottle {
@@ -175,36 +162,6 @@ class MockPageStateActivationThrottle : public content::NavigationThrottle {
   DISALLOW_COPY_AND_ASSIGN(MockPageStateActivationThrottle);
 };
 
-class TestSubresourceFilterClient : public SubresourceFilterClient {
- public:
-  TestSubresourceFilterClient() = default;
-  ~TestSubresourceFilterClient() override = default;
-
-  // SubresourceFilterClient:
-  void ShowNotification() override { ++disallowed_notification_count_; }
-  const scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager>
-  GetSafeBrowsingDatabaseManager() override {
-    return database_manager_;
-  }
-  subresource_filter::ProfileInteractionManager* GetProfileInteractionManager()
-      override {
-    return nullptr;
-  }
-
-  void CreateSafeBrowsingDatabaseManager() {
-    database_manager_ =
-        base::MakeRefCounted<CustomTestSafeBrowsingDatabaseManager>();
-  }
-
-  int disallowed_notification_count() const {
-    return disallowed_notification_count_;
-  }
-
- private:
-  scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager_;
-  int disallowed_notification_count_ = 0;
-};
-
 class ContentSubresourceFilterThrottleManagerTest
     : public content::RenderViewHostTestHarness,
       public content::WebContentsObserver,
@@ -241,8 +198,12 @@ class ContentSubresourceFilterThrottleManagerTest
                                              base::DoNothing());
 
     auto subresource_filter_client =
-        std::make_unique<TestSubresourceFilterClient>();
+        std::make_unique<TestSubresourceFilterClient>(web_contents);
     client_ = subresource_filter_client.get();
+
+    // Turn off smart UI to make it easier to reason about expectations on
+    // ShowNotification() being invoked.
+    client_->SetShouldUseSmartUI(false);
     throttle_manager_ =
         std::make_unique<ContentSubresourceFilterThrottleManager>(
             std::move(subresource_filter_client), dealer_handle_.get(),
@@ -848,7 +809,8 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
     // CreateForWebContents() should not do anything if the subresource filter
     // feature is not enabled.
     ContentSubresourceFilterThrottleManager::CreateForWebContents(
-        web_contents.get(), std::make_unique<TestSubresourceFilterClient>(),
+        web_contents.get(),
+        std::make_unique<TestSubresourceFilterClient>(web_contents.get()),
         dealer_handle());
     EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromWebContents(
                   web_contents.get()),
@@ -858,7 +820,8 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
   // If the subresource filter feature is enabled (as it is by default),
   // CreateForWebContents() should create and attach an instance.
   ContentSubresourceFilterThrottleManager::CreateForWebContents(
-      web_contents.get(), std::make_unique<TestSubresourceFilterClient>(),
+      web_contents.get(),
+      std::make_unique<TestSubresourceFilterClient>(web_contents.get()),
       dealer_handle());
   auto* throttle_manager =
       ContentSubresourceFilterThrottleManager::FromWebContents(
@@ -867,7 +830,8 @@ TEST_F(ContentSubresourceFilterThrottleManagerTest, CreateForWebContents) {
 
   // A second call should not attach a different instance.
   ContentSubresourceFilterThrottleManager::CreateForWebContents(
-      web_contents.get(), std::make_unique<TestSubresourceFilterClient>(),
+      web_contents.get(),
+      std::make_unique<TestSubresourceFilterClient>(web_contents.get()),
       dealer_handle());
   EXPECT_EQ(ContentSubresourceFilterThrottleManager::FromWebContents(
                 web_contents.get()),
