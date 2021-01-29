@@ -141,15 +141,6 @@ template <typename STRING_TYPE> class BasicStringPiece {
       : ptr_(str.data()), length_(str.size()) {}
   constexpr BasicStringPiece(const value_type* offset, size_type len)
       : ptr_(offset), length_(len) {}
-  BasicStringPiece(const typename STRING_TYPE::const_iterator& begin,
-                   const typename STRING_TYPE::const_iterator& end) {
-    DCHECK(begin <= end) << "StringPiece iterators swapped or invalid.";
-    length_ = static_cast<size_t>(std::distance(begin, end));
-
-    // The length test before assignment is to avoid dereferencing an iterator
-    // that may point to the end() of a string.
-    ptr_ = length_ > 0 ? &*begin : nullptr;
-  }
 
   // data() may return a pointer to a buffer with embedded NULs, and the
   // returned buffer may or may not be null terminated.  Therefore it is

@@ -649,10 +649,11 @@ bool TemplateURLRef::ParseParameter(size_t start,
     length--;
   }
 
-  const base::StringPiece parameter(original_url.begin() + start + 1,
-                                    original_url.begin() + start + 1 + length);
-  const base::StringPiece full_parameter(original_url.begin() + start,
-                                         original_url.begin() + end + 1);
+  const auto parameter =
+      base::MakeStringPiece(original_url.begin() + start + 1,
+                            original_url.begin() + start + 1 + length);
+  const auto full_parameter = base::MakeStringPiece(
+      original_url.begin() + start, original_url.begin() + end + 1);
   // Remove the parameter from the string.  For parameters who replacement is
   // constant and already known, just replace them directly.  For other cases,
   // like parameters whose values may change over time, use |replacements|.

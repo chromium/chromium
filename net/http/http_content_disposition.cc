@@ -344,7 +344,7 @@ HttpContentDisposition::~HttpContentDisposition() = default;
 std::string::const_iterator HttpContentDisposition::ConsumeDispositionType(
     std::string::const_iterator begin, std::string::const_iterator end) {
   DCHECK(type_ == INLINE);
-  base::StringPiece header(begin, end);
+  auto header = base::MakeStringPiece(begin, end);
   size_t delimiter = header.find(';');
   base::StringPiece type = header.substr(0, delimiter);
   type = HttpUtil::TrimLWS(type);

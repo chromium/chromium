@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/http/http_byte_range.h"
@@ -292,7 +293,7 @@ class NET_EXPORT HttpUtil {
       return std::string(name_begin_, name_end_);
     }
     base::StringPiece name_piece() const {
-      return base::StringPiece(name_begin_, name_end_);
+      return base::MakeStringPiece(name_begin_, name_end_);
     }
 
     std::string::const_iterator values_begin() const {
@@ -305,7 +306,7 @@ class NET_EXPORT HttpUtil {
       return std::string(values_begin_, values_end_);
     }
     base::StringPiece values_piece() const {
-      return base::StringPiece(values_begin_, values_end_);
+      return base::MakeStringPiece(values_begin_, values_end_);
     }
 
    private:
@@ -349,7 +350,7 @@ class NET_EXPORT HttpUtil {
       return std::string(value_begin_, value_end_);
     }
     base::StringPiece value_piece() const {
-      return base::StringPiece(value_begin_, value_end_);
+      return base::MakeStringPiece(value_begin_, value_end_);
     }
 
    private:
@@ -409,7 +410,7 @@ class NET_EXPORT HttpUtil {
     std::string::const_iterator name_end() const { return name_end_; }
     std::string name() const { return std::string(name_begin_, name_end_); }
     base::StringPiece name_piece() const {
-      return base::StringPiece(name_begin_, name_end_);
+      return base::MakeStringPiece(name_begin_, name_end_);
     }
 
     // The value of the current name-value pair.
@@ -425,7 +426,7 @@ class NET_EXPORT HttpUtil {
     }
     base::StringPiece value_piece() const {
       return value_is_quoted_ ? unquoted_value_
-                              : base::StringPiece(value_begin_, value_end_);
+                              : base::MakeStringPiece(value_begin_, value_end_);
     }
 
     bool value_is_quoted() const { return value_is_quoted_; }

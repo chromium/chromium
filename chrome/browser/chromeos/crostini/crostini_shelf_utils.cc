@@ -170,7 +170,7 @@ std::string GetCrostiniShelfAppId(const Profile* profile,
     return kCrostiniShelfIdPrefix + *window_app_id;
   }
 
-  base::StringPiece suffix(
+  auto suffix = base::MakeStringPiece(
       window_app_id->begin() + strlen(kCrostiniWindowAppIdPrefix),
       window_app_id->end());
 

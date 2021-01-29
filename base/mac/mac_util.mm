@@ -24,6 +24,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "build/build_config.h"
 
@@ -446,10 +447,10 @@ bool ParseModelIdentifier(const std::string& ident,
     return false;
   int32_t major_tmp, minor_tmp;
   std::string::const_iterator begin = ident.begin();
-  if (!StringToInt(
-          StringPiece(begin + number_loc, begin + comma_loc), &major_tmp) ||
-      !StringToInt(
-          StringPiece(begin + comma_loc + 1, ident.end()), &minor_tmp))
+  if (!StringToInt(MakeStringPiece(begin + number_loc, begin + comma_loc),
+                   &major_tmp) ||
+      !StringToInt(MakeStringPiece(begin + comma_loc + 1, ident.end()),
+                   &minor_tmp))
     return false;
   *type = ident.substr(0, number_loc);
   *major = major_tmp;

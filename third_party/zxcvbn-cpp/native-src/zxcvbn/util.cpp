@@ -18,7 +18,7 @@ namespace util {
 
 bool utf8_valid(std::string::const_iterator start,
                 std::string::const_iterator end) {
-  return base::IsStringUTF8(base::StringPiece(start, end));
+  return base::IsStringUTF8(base::MakeStringPiece(start, end));
 }
 
 bool utf8_valid(const std::string & str) {

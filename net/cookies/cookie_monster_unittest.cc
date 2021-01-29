@@ -474,7 +474,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
       int rep = 1;
       if (!token.empty()) {
         bool result = base::StringToInt(
-            base::StringPiece(token.begin(), token.end() - 2), &rep);
+            base::MakeStringPiece(token.begin(), token.end() - 2), &rep);
         DCHECK(result);
       }
       for (; rep > 0; --rep, ++next_cookie_id) {
@@ -501,7 +501,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
       // Assuming *it is "a#=b", so extract and parse "#" portion.
       int id = -1;
       bool result = base::StringToInt(
-          base::StringPiece(token.begin() + 1, token.end() - 2), &id);
+          base::MakeStringPiece(token.begin() + 1, token.end() - 2), &id);
       DCHECK(result);
       DCHECK_GE(id, 0);
       DCHECK_LT(id, num_cookies);

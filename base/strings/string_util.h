@@ -84,6 +84,31 @@ BASE_EXPORT size_t wcslcpy(wchar_t* dst, const wchar_t* src, size_t dst_size);
 // This function is intended to be called from base::vswprintf.
 BASE_EXPORT bool IsWprintfFormatPortable(const wchar_t* format);
 
+// Simplified implementation of C++20's std::basic_string_view(It, End).
+// Reference: https://wg21.link/string.view.cons
+template <typename StringT, typename Iter>
+constexpr BasicStringPiece<StringT> MakeBasicStringPiece(Iter begin, Iter end) {
+  DCHECK_GE(end - begin, 0);
+  return {base::to_address(begin), end - begin};
+}
+
+// Explicit instantiations of MakeBasicStringPiece for the BasicStringPiece
+// aliases defined in base/strings/string_piece_forward.h
+template <typename Iter>
+constexpr StringPiece MakeStringPiece(Iter begin, Iter end) {
+  return MakeBasicStringPiece<std::string>(begin, end);
+}
+
+template <typename Iter>
+constexpr StringPiece16 MakeStringPiece16(Iter begin, Iter end) {
+  return MakeBasicStringPiece<string16>(begin, end);
+}
+
+template <typename Iter>
+constexpr WStringPiece MakeWStringPiece(Iter begin, Iter end) {
+  return MakeBasicStringPiece<std::wstring>(begin, end);
+}
+
 // ASCII-specific tolower.  The standard library's tolower is locale sensitive,
 // so we don't want to use it here.
 template <typename CharT,

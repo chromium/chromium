@@ -43,7 +43,7 @@ bool DataURL::Parse(const GURL& url,
     return false;
 
   std::vector<base::StringPiece> meta_data =
-      base::SplitStringPiece(base::StringPiece(begin, comma), ";",
+      base::SplitStringPiece(base::MakeStringPiece(begin, comma), ";",
                              base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
   // These are moved to |mime_type| and |charset| on success.
@@ -104,7 +104,7 @@ bool DataURL::Parse(const GURL& url,
     // spaces itself, anyways. Should we just trim leading spaces instead?
     // Allowing random intermediary spaces seems unnecessary.
 
-    base::StringPiece raw_body(comma + 1, end);
+    auto raw_body = base::MakeStringPiece(comma + 1, end);
 
     // For base64, we may have url-escaped whitespace which is not part
     // of the data, and should be stripped. Otherwise, the escaped whitespace

@@ -673,10 +673,7 @@ TYPED_TEST(CommonStringPieceTest, CheckConstructors) {
           nullptr,
           static_cast<typename BasicStringPiece<TypeParam>::size_type>(0)));
   ASSERT_EQ(empty, BasicStringPiece<TypeParam>());
-  ASSERT_EQ(str, BasicStringPiece<TypeParam>(str.begin(), str.end()));
-  ASSERT_EQ(empty, BasicStringPiece<TypeParam>(str.begin(), str.begin()));
   ASSERT_EQ(empty, BasicStringPiece<TypeParam>(empty));
-  ASSERT_EQ(empty, BasicStringPiece<TypeParam>(empty.begin(), empty.end()));
 }
 
 TEST(StringPieceTest, ConstexprCtor) {

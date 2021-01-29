@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "base/values.h"
 #include "net/base/net_errors.h"
 #include "net/base/parse_number.h"
@@ -121,7 +122,7 @@ FtpCtrlResponseBuffer::ParsedLine FtpCtrlResponseBuffer::ParseLine(
   ParsedLine result;
 
   if (line.length() >= 3) {
-    if (ParseInt32(base::StringPiece(line.begin(), line.begin() + 3),
+    if (ParseInt32(base::MakeStringPiece(line.begin(), line.begin() + 3),
                    ParseIntFormat::NON_NEGATIVE, &result.status_code)) {
       result.has_status_code =
           (100 <= result.status_code && result.status_code <= 599);

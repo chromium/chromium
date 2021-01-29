@@ -35,7 +35,7 @@ std::unique_ptr<base::Value> Deserialize(const std::string& safe_json_response,
   }
   int error_code = 0;
   return JSONStringValueDeserializer(
-             base::BasicStringPiece<std::string>(
+             base::MakeStringPiece(
                  safe_json_response.begin() + base::size(kPrefix),
                  safe_json_response.end()))
       .Deserialize(&error_code, error_message);

@@ -69,8 +69,8 @@ uint32_t GetReasonsForUncacheability(const WebURLResponse& response) {
   if (cache_control_header.substr(0, kMaxAgePrefixLen) == kMaxAgePrefix) {
     int64_t max_age_seconds;
     base::StringToInt64(
-        base::StringPiece(cache_control_header.begin() + kMaxAgePrefixLen,
-                          cache_control_header.end()),
+        base::MakeStringPiece(cache_control_header.begin() + kMaxAgePrefixLen,
+                              cache_control_header.end()),
         &max_age_seconds);
     if (TimeDelta::FromSeconds(max_age_seconds) < kMinimumAgeForUsefulness)
       reasons |= kShortMaxAge;
@@ -105,8 +105,8 @@ base::TimeDelta GetCacheValidUntil(const WebURLResponse& response) {
   if (cache_control_header.substr(0, kMaxAgePrefixLen) == kMaxAgePrefix) {
     int64_t max_age_seconds;
     base::StringToInt64(
-        base::StringPiece(cache_control_header.begin() + kMaxAgePrefixLen,
-                          cache_control_header.end()),
+        base::MakeStringPiece(cache_control_header.begin() + kMaxAgePrefixLen,
+                              cache_control_header.end()),
         &max_age_seconds);
 
     ret = std::min(ret, TimeDelta::FromSeconds(max_age_seconds));

@@ -1310,6 +1310,47 @@ TEST(StringUtilTest, WprintfFormatPortabilityTest) {
     EXPECT_EQ(i.portable, IsWprintfFormatPortable(i.input));
 }
 
+TEST(StringUtilTest, MakeBasicStringPieceTest) {
+  constexpr char kFoo[] = "Foo";
+  static_assert(MakeStringPiece(kFoo, kFoo + 3) == kFoo, "");
+  static_assert(MakeStringPiece(kFoo, kFoo + 3).data() == kFoo, "");
+  static_assert(MakeStringPiece(kFoo, kFoo + 3).size() == 3, "");
+  static_assert(MakeStringPiece(kFoo + 3, kFoo + 3).empty(), "");
+  static_assert(MakeStringPiece(kFoo + 4, kFoo + 4).empty(), "");
+
+  std::string foo = kFoo;
+  EXPECT_EQ(MakeStringPiece(foo.begin(), foo.end()), foo);
+  EXPECT_EQ(MakeStringPiece(foo.begin(), foo.end()).data(), foo.data());
+  EXPECT_EQ(MakeStringPiece(foo.begin(), foo.end()).size(), foo.size());
+  EXPECT_TRUE(MakeStringPiece(foo.end(), foo.end()).empty());
+
+  constexpr char16 kBar[] = STRING16_LITERAL("Bar");
+  static_assert(MakeStringPiece16(kBar, kBar + 3) == kBar, "");
+  static_assert(MakeStringPiece16(kBar, kBar + 3).data() == kBar, "");
+  static_assert(MakeStringPiece16(kBar, kBar + 3).size() == 3, "");
+  static_assert(MakeStringPiece16(kBar + 3, kBar + 3).empty(), "");
+  static_assert(MakeStringPiece16(kBar + 4, kBar + 4).empty(), "");
+
+  string16 bar = kBar;
+  EXPECT_EQ(MakeStringPiece16(bar.begin(), bar.end()), bar);
+  EXPECT_EQ(MakeStringPiece16(bar.begin(), bar.end()).data(), bar.data());
+  EXPECT_EQ(MakeStringPiece16(bar.begin(), bar.end()).size(), bar.size());
+  EXPECT_TRUE(MakeStringPiece16(bar.end(), bar.end()).empty());
+
+  constexpr wchar_t kBaz[] = L"Baz";
+  static_assert(MakeWStringPiece(kBaz, kBaz + 3) == kBaz, "");
+  static_assert(MakeWStringPiece(kBaz, kBaz + 3).data() == kBaz, "");
+  static_assert(MakeWStringPiece(kBaz, kBaz + 3).size() == 3, "");
+  static_assert(MakeWStringPiece(kBaz + 3, kBaz + 3).empty(), "");
+  static_assert(MakeWStringPiece(kBaz + 4, kBaz + 4).empty(), "");
+
+  std::wstring baz = kBaz;
+  EXPECT_EQ(MakeWStringPiece(baz.begin(), baz.end()), baz);
+  EXPECT_EQ(MakeWStringPiece(baz.begin(), baz.end()).data(), baz.data());
+  EXPECT_EQ(MakeWStringPiece(baz.begin(), baz.end()).size(), baz.size());
+  EXPECT_TRUE(MakeWStringPiece(baz.end(), baz.end()).empty());
+}
+
 TEST(StringUtilTest, RemoveChars) {
   const char kRemoveChars[] = "-/+*";
   std::string input = "A-+bc/d!*";

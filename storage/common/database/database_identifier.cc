@@ -141,8 +141,8 @@ DatabaseIdentifier DatabaseIdentifier::Parse(const std::string& identifier) {
   if (SchemeIsUnique(scheme))
     return DatabaseIdentifier();
 
-  base::StringPiece port_str(identifier.begin() + last_underscore + 1,
-                             identifier.end());
+  auto port_str = base::MakeStringPiece(
+      identifier.begin() + last_underscore + 1, identifier.end());
   int port = 0;
   if (!base::StringToInt(port_str, &port) || port < 0 || port >= 1 << 16)
     return DatabaseIdentifier();

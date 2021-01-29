@@ -284,9 +284,9 @@ bool ProtocolParserJSON::DoParse(const std::string& response_json,
     ParseError("Missing secure JSON prefix.");
     return false;
   }
-  const auto doc = base::JSONReader::Read(
-      {response_json.begin() + std::char_traits<char>::length(kJSONPrefix),
-       response_json.end()});
+  const auto doc = base::JSONReader::Read(base::MakeStringPiece(
+      response_json.begin() + std::char_traits<char>::length(kJSONPrefix),
+      response_json.end()));
   if (!doc) {
     ParseError("JSON read error.");
     return false;

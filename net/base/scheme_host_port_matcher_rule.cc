@@ -76,8 +76,9 @@ SchemeHostPortMatcherRule::FromUntrimmedRawString(
   std::string::size_type pos_colon = raw.rfind(':');
   port = -1;
   if (pos_colon != std::string::npos) {
-    if (!ParseInt32(base::StringPiece(raw.begin() + pos_colon + 1, raw.end()),
-                    ParseIntFormat::NON_NEGATIVE, &port) ||
+    if (!ParseInt32(
+            base::MakeStringPiece(raw.begin() + pos_colon + 1, raw.end()),
+            ParseIntFormat::NON_NEGATIVE, &port) ||
         port > 0xFFFF) {
       return nullptr;  // Port was invalid.
     }

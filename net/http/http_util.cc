@@ -135,8 +135,9 @@ void HttpUtil::ParseContentType(const std::string& content_type_str,
     if (offset == std::string::npos || content_type_str[offset] == ';')
       continue;
 
-    base::StringPiece param_name(content_type_str.begin() + param_name_start,
-                                 content_type_str.begin() + offset);
+    auto param_name =
+        base::MakeStringPiece(content_type_str.begin() + param_name_start,
+                              content_type_str.begin() + offset);
 
     // Now parse the value.
     DCHECK_EQ('=', content_type_str[offset]);
@@ -232,11 +233,11 @@ void HttpUtil::ParseContentType(const std::string& content_type_str,
   // It is common that mime_type is empty.
   bool eq = !mime_type->empty() &&
             base::LowerCaseEqualsASCII(
-                base::StringPiece(begin + type_val, begin + type_end),
+                base::MakeStringPiece(begin + type_val, begin + type_end),
                 mime_type->data());
   if (!eq) {
     *mime_type = base::ToLowerASCII(
-        base::StringPiece(begin + type_val, begin + type_end));
+        base::MakeStringPiece(begin + type_val, begin + type_end));
   }
   if ((!eq && *had_charset) || type_has_charset) {
     *had_charset = true;
@@ -848,7 +849,7 @@ bool HttpUtil::HasStrongValidators(HttpVersion version,
     std::string::const_iterator i = etag_header.begin();
     std::string::const_iterator j = etag_header.begin() + slash;
     TrimLWS(&i, &j);
-    if (!base::LowerCaseEqualsASCII(base::StringPiece(i, j), "w"))
+    if (!base::LowerCaseEqualsASCII(base::MakeStringPiece(i, j), "w"))
       return true;
   }
 
@@ -949,7 +950,7 @@ bool HttpUtil::HeadersIterator::GetNext() {
 
     TrimLWS(&name_begin_, &name_end_);
     DCHECK(name_begin_ < name_end_);
-    if (!IsToken(base::StringPiece(name_begin_, name_end_)))
+    if (!IsToken(base::MakeStringPiece(name_begin_, name_end_)))
       continue;  // skip malformed header
 
     values_begin_ = colon + 1;
@@ -967,8 +968,8 @@ bool HttpUtil::HeadersIterator::AdvanceTo(const char* name) {
       << "the header name must be in all lower case";
 
   while (GetNext()) {
-    if (base::LowerCaseEqualsASCII(base::StringPiece(name_begin_, name_end_),
-                                   name)) {
+    if (base::LowerCaseEqualsASCII(
+            base::MakeStringPiece(name_begin_, name_end_), name)) {
       return true;
     }
   }
@@ -1090,8 +1091,9 @@ bool HttpUtil::NameValuePairsIterator::GetNext() {
     value_is_quoted_ = true;
 
     if (strict_quotes_) {
-      if (!HttpUtil::StrictUnquote(base::StringPiece(value_begin_, value_end_),
-                                   &unquoted_value_))
+      if (!HttpUtil::StrictUnquote(
+              base::MakeStringPiece(value_begin_, value_end_),
+              &unquoted_value_))
         return valid_ = false;
       return true;
     }
@@ -1108,7 +1110,7 @@ bool HttpUtil::NameValuePairsIterator::GetNext() {
     } else {
       // Do not store iterators into this. See declaration of unquoted_value_.
       unquoted_value_ =
-          HttpUtil::Unquote(base::StringPiece(value_begin_, value_end_));
+          HttpUtil::Unquote(base::MakeStringPiece(value_begin_, value_end_));
     }
   }
 

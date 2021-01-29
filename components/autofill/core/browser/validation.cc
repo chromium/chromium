@@ -204,9 +204,9 @@ bool IsSSN(const base::string16& text) {
     return false;
 
   int area;
-  if (!base::StringToInt(
-          base::StringPiece16(number_string.begin(), number_string.begin() + 3),
-          &area)) {
+  if (!base::StringToInt(base::MakeStringPiece16(number_string.begin(),
+                                                 number_string.begin() + 3),
+                         &area)) {
     return false;
   }
   if (area < 1 || area == 666 || area >= 900) {
@@ -214,16 +214,16 @@ bool IsSSN(const base::string16& text) {
   }
 
   int group;
-  if (!base::StringToInt(base::StringPiece16(number_string.begin() + 3,
-                                             number_string.begin() + 5),
+  if (!base::StringToInt(base::MakeStringPiece16(number_string.begin() + 3,
+                                                 number_string.begin() + 5),
                          &group) ||
       group == 0) {
     return false;
   }
 
   int serial;
-  if (!base::StringToInt(base::StringPiece16(number_string.begin() + 5,
-                                             number_string.begin() + 9),
+  if (!base::StringToInt(base::MakeStringPiece16(number_string.begin() + 5,
+                                                 number_string.begin() + 9),
                          &serial) ||
       serial == 0) {
     return false;

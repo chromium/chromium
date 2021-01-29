@@ -678,9 +678,8 @@ bool IsDefaultAvatarIconUrl(const std::string& url, size_t* icon_index) {
     return false;
 
   int int_value = -1;
-  if (base::StringToInt(base::StringPiece(url.begin() +
-                                          strlen(kDefaultUrlPrefix),
-                                          url.end()),
+  if (base::StringToInt(base::MakeStringPiece(
+                            url.begin() + strlen(kDefaultUrlPrefix), url.end()),
                         &int_value)) {
     if (int_value < 0 ||
         int_value >= static_cast<int>(kDefaultAvatarIconsCount))

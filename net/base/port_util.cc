@@ -168,8 +168,8 @@ void SetExplicitlyAllowedPorts(const std::string& allowed_ports) {
     if (i == size || allowed_ports[i] == kComma) {
       if (i > last) {
         int port;
-        base::StringToInt(base::StringPiece(allowed_ports.begin() + last,
-                                            allowed_ports.begin() + i),
+        base::StringToInt(base::MakeStringPiece(allowed_ports.begin() + last,
+                                                allowed_ports.begin() + i),
                           &port);
         ports.insert(port);
       }
