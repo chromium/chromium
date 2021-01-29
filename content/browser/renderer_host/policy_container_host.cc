@@ -79,16 +79,10 @@ PolicyContainerHost::CreatePolicyContainerForBlink() {
   // handler, since the mojo disconnect notification is not guaranteed to be
   // received before we try to create a new remote.
   policy_container_host_receiver_.reset();
-  mojo::PendingRemote<
-      blink::mojom::PolicyContainerHostKeepAliveHandle>* keep_alive_remote =
-      new mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>;
-  IssueKeepAliveHandle(keep_alive_remote->InitWithNewPipeAndPassReceiver());
-  mojo::PendingAssociatedRemote<blink::mojom::PolicyContainerHost> remote =
-      policy_container_host_receiver_.BindNewEndpointAndPassRemote();
-  policy_container_host_receiver_.set_disconnect_handler(base::BindOnce(
-      &mojo::PendingRemote<
-          blink::mojom::PolicyContainerHostKeepAliveHandle>::reset,
-      base::Owned(keep_alive_remote)));
+  mojo::PendingAssociatedRemote<blink::mojom::PolicyContainerHost> remote;
+  Bind(blink::mojom::PolicyContainerBindParams::New(
+      remote.InitWithNewEndpointAndPassReceiver()));
+
   return blink::mojom::PolicyContainer::New(
       blink::mojom::PolicyContainerDocumentPolicies::New(
           document_policies_.referrer_policy,
@@ -102,16 +96,14 @@ scoped_refptr<PolicyContainerHost> PolicyContainerHost::Clone() const {
 
 void PolicyContainerHost::Bind(
     blink::mojom::PolicyContainerBindParamsPtr bind_params) {
-  DCHECK(keep_alive_handles_receiver_set_.empty());
   policy_container_host_receiver_.Bind(std::move(bind_params->receiver));
-  mojo::PendingRemote<
-      blink::mojom::PolicyContainerHostKeepAliveHandle>* keep_alive_remote =
-      new mojo::PendingRemote<blink::mojom::PolicyContainerHostKeepAliveHandle>;
-  IssueKeepAliveHandle(keep_alive_remote->InitWithNewPipeAndPassReceiver());
+
+  // Keep the PolicyContainerHost alive, as long as its PolicyContainer (owning
+  // the mojo remote) in the renderer process alive.
+  scoped_refptr<PolicyContainerHost> copy = this;
   policy_container_host_receiver_.set_disconnect_handler(base::BindOnce(
-      &mojo::PendingRemote<
-          blink::mojom::PolicyContainerHostKeepAliveHandle>::reset,
-      base::Owned(keep_alive_remote)));
+      base::DoNothing::Once<scoped_refptr<PolicyContainerHost>>(),
+      std::move(copy)));
 }
 
 void PolicyContainerHost::IssueKeepAliveHandle(
