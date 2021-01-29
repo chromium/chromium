@@ -23,12 +23,11 @@ class AnimationWorkletMessagingProxy final
     : public ThreadedWorkletMessagingProxy {
  public:
   explicit AnimationWorkletMessagingProxy(ExecutionContext*);
+  ~AnimationWorkletMessagingProxy() override;
 
   void Trace(Visitor*) const override;
 
  private:
-  ~AnimationWorkletMessagingProxy() override;
-
   std::unique_ptr<WorkerThread> CreateWorkerThread() override;
 };
 
