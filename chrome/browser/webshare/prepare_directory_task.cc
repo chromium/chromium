@@ -76,12 +76,13 @@ base::File::Error PrepareDirectoryTask::PrepareDirectory(
   if (base::CreateDirectoryAndGetError(directory, &result)) {
     // Delete any old files in |directory|.
     const base::Time cutoff_time = base::Time::Now() - kSharedFileLifetime;
-    base::FileEnumerator enumerator(directory, /*recursive=*/false,
-                                    base::FileEnumerator::FILES);
+    base::FileEnumerator enumerator(
+        directory, /*recursive=*/false,
+        base::FileEnumerator::DIRECTORIES | base::FileEnumerator::FILES);
     for (base::FilePath name = enumerator.Next(); !name.empty();
          name = enumerator.Next()) {
       if (enumerator.GetInfo().GetLastModifiedTime() <= cutoff_time) {
-        base::DeleteFile(name);
+        base::DeletePathRecursively(name);
       }
     }
 
@@ -89,10 +90,15 @@ base::File::Error PrepareDirectoryTask::PrepareDirectory(
     if (base::SysInfo::AmountOfFreeDiskSpace(directory) <
         static_cast<int64_t>(cryptohome::kMinFreeSpaceInBytes +
                              required_space)) {
+#elif defined(OS_MAC)
+    if (base::SysInfo::AmountOfFreeDiskSpace(directory) <
+        static_cast<int64_t>(required_space)) {
+#else
+    if (false) {
+#endif
       result = base::File::FILE_ERROR_NO_SPACE;
       VLOG(1) << "Insufficient space for sharing files";
     }
-#endif
   } else {
     DCHECK(result != base::File::FILE_OK);
     VLOG(1) << "Could not create directory for shared files";

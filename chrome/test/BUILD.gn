@@ -1834,7 +1834,7 @@ if (!is_android) {
       ]
     }
 
-    if (is_win || is_chromeos_ash) {
+    if (is_win || is_chromeos_ash || is_mac) {
       sources += [ "../browser/webshare/share_service_browsertest.cc" ]
     }
 
@@ -4284,7 +4284,7 @@ test("unit_tests") {
     ]
   }
 
-  if (is_win || is_chromeos_ash) {
+  if (is_win || is_chromeos_ash || is_mac) {
     deps += [ "//chrome/browser/webshare:unit_tests" ]
   }
 

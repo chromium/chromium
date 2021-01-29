@@ -15,6 +15,10 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
+#if defined(OS_MAC)
+#include "chrome/browser/webshare/mac/sharing_service_operation.h"
+#endif
+
 #if defined(OS_WIN)
 #include "chrome/browser/webshare/win/share_operation.h"
 #endif
@@ -175,6 +179,24 @@ void ShareServiceImpl::Share(const std::string& title,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   sharesheet_client_.Share(title, text, share_url, std::move(files),
                            std::move(callback));
+#elif defined(OS_MAC)
+  auto sharing_service_operation =
+      std::make_unique<webshare::SharingServiceOperation>(
+          title, text, share_url, std::move(files), web_contents);
+
+  // grab a safe reference to |sharing_service_operation| before calling move on
+  // it.
+  webshare::SharingServiceOperation* sharing_service_operation_ptr =
+      sharing_service_operation.get();
+
+  // Wrap the |callback| in a binding that owns the |sharing_service_operation|
+  // so its lifetime can be preserved till its done.
+  sharing_service_operation_ptr->Share(base::BindOnce(
+      [](std::unique_ptr<webshare::SharingServiceOperation>
+             sharing_service_operation,
+         ShareCallback callback,
+         blink::mojom::ShareError result) { std::move(callback).Run(result); },
+      std::move(sharing_service_operation), std::move(callback)));
 #elif defined(OS_WIN)
   auto share_operation = std::make_unique<webshare::ShareOperation>(
       title, text, share_url, std::move(files), web_contents);

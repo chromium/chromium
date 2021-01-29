@@ -5159,11 +5159,19 @@ static_library("browser") {
     ]
   }
 
-  if (is_win || is_chromeos_ash) {
+  if (is_win || is_chromeos_ash || is_mac) {
     sources += [
       "webshare/share_service_impl.cc",
       "webshare/share_service_impl.h",
     ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "webshare/mac/sharing_service_operation.h",
+      "webshare/mac/sharing_service_operation.mm",
+    ]
+    deps += [ "//chrome/browser/webshare:storage" ]
   }
 
   if (is_win || is_mac || (is_linux || is_chromeos_lacros)) {

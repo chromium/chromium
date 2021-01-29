@@ -21,6 +21,10 @@
 #if defined(OS_WIN)
 #include "chrome/browser/webshare/win/scoped_share_operation_fake_components.h"
 #endif
+#if defined(OS_MAC)
+#include "chrome/browser/webshare/mac/sharing_service_operation.h"
+#include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
+#endif
 
 class ShareServiceBrowserTest : public InProcessBrowserTest {
  public:
@@ -40,6 +44,10 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
 
     ASSERT_NO_FATAL_FAILURE(scoped_fake_components_.SetUp());
 #endif
+#if defined(OS_MAC)
+    webshare::SharingServiceOperation::SetSharePickerCallbackForTesting(
+        base::BindRepeating(&ShareServiceBrowserTest::AcceptShareRequest));
+#endif
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -50,6 +58,17 @@ class ShareServiceBrowserTest : public InProcessBrowserTest {
                                  const std::string& title,
                                  sharesheet::CloseCallback close_callback) {
     std::move(close_callback).Run(sharesheet::SharesheetResult::kSuccess);
+  }
+#endif
+
+#if defined(OS_MAC)
+  static void AcceptShareRequest(
+      content::WebContents* web_contents,
+      const std::vector<base::FilePath>& file_paths,
+      const std::string& text,
+      const std::string& title,
+      blink::mojom::ShareService::ShareCallback close_callback) {
+    std::move(close_callback).Run(blink::mojom::ShareError::OK);
   }
 #endif
 

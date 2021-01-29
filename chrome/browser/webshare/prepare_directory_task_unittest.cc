@@ -43,9 +43,27 @@ TEST(PrepareDirectoryTask, DeleteOldFiles) {
   const base::FilePath second_file = temp_dir.GetPath().Append("second.txt");
   const base::FilePath third_file = temp_dir.GetPath().Append("third.txt");
 
+  // adding files in a sub directory
+  const base::FilePath first_subdir_path = temp_dir.GetPath().Append("share-1");
+  const base::FilePath fourth_file = first_subdir_path.Append("fourth.txt");
+
+  const base::FilePath second_subdir_path =
+      temp_dir.GetPath().Append("share-2");
+  const base::FilePath fifth_file = second_subdir_path.Append("fifth.txt");
+
   CreateDummyFile(first_file, ancient_file_time);
   CreateDummyFile(second_file, recent_file_time);
   CreateDummyFile(third_file, ancient_file_time);
+
+  base::CreateDirectory(first_subdir_path);
+  CreateDummyFile(fourth_file, ancient_file_time);
+  EXPECT_TRUE(
+      base::TouchFile(first_subdir_path, ancient_file_time, ancient_file_time));
+
+  base::CreateDirectory(second_subdir_path);
+  CreateDummyFile(fifth_file, recent_file_time);
+  EXPECT_TRUE(
+      base::TouchFile(second_subdir_path, recent_file_time, recent_file_time));
 
   base::RunLoop run_loop;
 
@@ -62,6 +80,8 @@ TEST(PrepareDirectoryTask, DeleteOldFiles) {
   EXPECT_FALSE(base::PathExists(first_file));
   EXPECT_TRUE(base::PathExists(second_file));
   EXPECT_FALSE(base::PathExists(third_file));
+  EXPECT_FALSE(base::PathExists(fourth_file));
+  EXPECT_TRUE(base::PathExists(fifth_file));
 }
 
 }  // namespace webshare
