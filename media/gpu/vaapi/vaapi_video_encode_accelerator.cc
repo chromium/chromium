@@ -829,12 +829,11 @@ void VaapiVideoEncodeAccelerator::EncodePendingInputs() {
 
     input_queue_.pop();
 
-    if (job) {
-      if (!encoder_->PrepareEncodeJob(job.get())) {
-        NOTIFY_ERROR(kPlatformFailureError, "Failed preparing an encode job.");
-        return;
-      }
+    if (job && !encoder_->PrepareEncodeJob(job.get())) {
+      NOTIFY_ERROR(kPlatformFailureError, "Failed preparing an encode job.");
+      return;
     }
+
     TRACE_EVENT0("media,gpu", "VAVEA::FromExecuteToReturn");
     if (job) {
       TRACE_EVENT0("media,gpu", "VAVEA::Execute");
