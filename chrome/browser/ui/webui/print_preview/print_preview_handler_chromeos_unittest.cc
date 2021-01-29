@@ -140,12 +140,12 @@ class PrintPreviewHandlerChromeOSTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
-  std::unique_ptr<content::TestWebUI> web_ui_;
-  std::unique_ptr<content::WebContents> preview_web_contents_;
-  PrintPreviewHandlerChromeOS* handler_;
   base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<TestPrintServersManager> print_servers_manager_;
+  std::unique_ptr<content::WebContents> preview_web_contents_;
+  std::unique_ptr<content::TestWebUI> web_ui_;
+  PrintPreviewHandlerChromeOS* handler_;
 
   DISALLOW_COPY_AND_ASSIGN(PrintPreviewHandlerChromeOSTest);
 };
