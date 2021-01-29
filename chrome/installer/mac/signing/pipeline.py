@@ -434,6 +434,12 @@ def _package_dmg(paths, dist, config):
     ]
     # yapf: enable
 
+    if dist.inflation_kilobytes:
+        pkg_dmg += [
+            '--copy',
+            '{}/inflation.bin:/.background/inflation.bin'.format(packaging_dir)
+        ]
+
     if config.is_chrome_branded():
         # yapf: disable
         pkg_dmg += [
@@ -527,6 +533,8 @@ def _intermediate_work_dir_name(dist):
         customizations.append(dist.creator_code)
     if dist.branding_code and _include_branding_code_in_app(dist):
         customizations.append(dist.branding_code)
+    if dist.inflation_kilobytes:
+        customizations.append(str(dist.inflation_kilobytes))
 
     return '-'.join(customizations)
 
@@ -627,6 +635,14 @@ def sign_all(orig_paths,
                     os.path.join(
                         notary_paths.work,
                         _intermediate_work_dir_name(dist_config.distribution)))
+
+                if dist.inflation_kilobytes:
+                    inflation_path = os.path.join(
+                        paths.packaging_dir(config), 'inflation.bin')
+                    commands.run_command([
+                        'dd', 'if=/dev/urandom', 'of=' + inflation_path,
+                        'bs=1000', 'count={}'.format(dist.inflation_kilobytes)
+                    ])
 
                 if dist.package_as_dmg:
                     dmg_path = _package_and_sign_dmg(paths, dist_config)
