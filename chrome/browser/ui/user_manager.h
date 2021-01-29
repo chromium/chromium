@@ -97,22 +97,15 @@ class UserManagerProfileDialog {
   class BaseDialogDelegate : public content::WebContentsDelegate {
    public:
     BaseDialogDelegate();
+    BaseDialogDelegate(const BaseDialogDelegate&) = delete;
+    BaseDialogDelegate& operator=(const BaseDialogDelegate&) = delete;
 
     // content::WebContentsDelegate:
     bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
                            const content::ContextMenuParams& params) override;
 
-    // content::WebContentsDelegate:
-    void LoadingStateChanged(content::WebContents* source,
-                             bool to_different_document) override;
-
    protected:
     virtual void CloseDialog() = 0;
-
-    // WebContents of the embedded WebView.
-    content::WebContents* guest_web_contents_;
-
-    DISALLOW_COPY_AND_ASSIGN(BaseDialogDelegate);
   };
 };
 

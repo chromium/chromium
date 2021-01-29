@@ -12,7 +12,6 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "components/constrained_window/constrained_window_views_client.h"
-#include "components/guest_view/browser/guest_view_base.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
@@ -165,10 +164,7 @@ void UpdateWidgetModalDialogPosition(views::Widget* widget,
 
 content::WebContents* GetTopLevelWebContents(
     content::WebContents* initiator_web_contents) {
-  // TODO(mcnee): Investigate why |WebContents::GetResponsibleWebContents| may
-  // return the wrong contents here.
-  return guest_view::GuestViewBase::GetTopLevelWebContents(
-      initiator_web_contents);
+  return initiator_web_contents->GetResponsibleWebContents();
 }
 
 views::Widget* ShowWebModalDialogViews(
