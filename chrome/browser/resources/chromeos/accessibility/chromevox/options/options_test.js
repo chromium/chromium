@@ -69,16 +69,10 @@ TEST_F('ChromeVoxOptionsTest', 'NumberReadingStyleSelect', function() {
   });
 });
 
-// TODO(crbug.com/1128926): Test times out flakily in MSAN builds.
-TEST_F_WITH_PREAMBLE(
-    `
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_PunctuationEchoSelect DISABLED_PunctuationEchoSelect
-#else
-#define MAYBE_PunctuationEchoSelect PunctuationEchoSelect
-#endif
-`,
-    'ChromeVoxOptionsTest', 'MAYBE_PunctuationEchoSelect', function() {
+// TODO(crbug.com/1128926, crbug.com/1172387):
+// Test times out flakily.
+TEST_F(
+    'ChromeVoxOptionsTest', 'DISABLED_PunctuationEchoSelect', function() {
       this.runOnOptionsPage((mockFeedback, evt) => {
         const PUNCTUATION_ECHO_NONE = '0';
         const PUNCTUATION_ECHO_SOME = '1';
@@ -123,7 +117,9 @@ TEST_F_WITH_PREAMBLE(
       });
     });
 
-TEST_F('ChromeVoxOptionsTest', 'SmartStickyMode', function() {
+// TODO(crbug.com/1128926, crbug.com/1172387):
+// Test times out flakily.
+TEST_F('ChromeVoxOptionsTest', 'DISABLED_SmartStickyMode', function() {
   this.runOnOptionsPage((mockFeedback, evt) => {
     const smartStickyModeCheckbox = evt.target.find({
       role: chrome.automation.RoleType.CHECK_BOX,
@@ -150,16 +146,11 @@ TEST_F('ChromeVoxOptionsTest', 'SmartStickyMode', function() {
         .replay();
   });
 });
-// TODO(crbug.com/1169396): Test times out or crashes flakily in MSAN builds.
-TEST_F_WITH_PREAMBLE(
-    `
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_UsePitchChanges DISABLED_UsePitchChanges
-#else
-#define MAYBE_UsePitchChanges UsePitchChanges
-#endif
-`,
-    'ChromeVoxOptionsTest', 'MAYBE_UsePitchChanges', function() {
+
+// TODO(crbug.com/1169396, crbug.com/1172387):
+// Test times out or crashes flakily.
+TEST_F(
+    'ChromeVoxOptionsTest', 'DISABLED_UsePitchChanges', function() {
       this.runOnOptionsPage((mockFeedback, evt) => {
         const pitchChangesCheckbox = evt.target.find({
           role: chrome.automation.RoleType.CHECK_BOX,

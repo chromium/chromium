@@ -89,7 +89,9 @@ ChromeVoxLearnModeTest = class extends ChromeVoxNextE2ETest {
   }
 };
 
-TEST_F('ChromeVoxLearnModeTest', 'KeyboardInput', function() {
+// TODO(crbug.com/1128926, crbug.com/1172387):
+// Test times out flakily.
+TEST_F('ChromeVoxLearnModeTest', 'DISABLED_KeyboardInput', function() {
   this.runOnLearnModePage((mockFeedback, evt) => {
     // Press Search+Right.
     mockFeedback.call(doKeyDown({keyCode: KeyCode.SEARCH, metaKey: true}))
