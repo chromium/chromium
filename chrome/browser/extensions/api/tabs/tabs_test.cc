@@ -346,7 +346,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindows) {
   CloseAppWindow(app_window);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, GetAllWindowsAllTypes) {
+// Timeouts on multiple bots. MSan, Linux Dbg.
+// https://crbug.com/1172186
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, DISABLED_GetAllWindowsAllTypes) {
   const size_t NUM_WINDOWS = 5;
   std::set<int> window_ids;
   std::set<int> result_ids;
