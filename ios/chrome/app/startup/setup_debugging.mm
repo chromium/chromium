@@ -74,7 +74,8 @@ void SwizzleUIImageImageNamed() {
     Class aClass = objc_getClass("UIImage");
     UIImage* image = imp(aClass, @selector(imageNamed:), imageName);
 
-    if (![exceptions containsObject:imageName]) {
+    if (![exceptions containsObject:imageName] &&
+        ![imageName containsString:@".FAUXBUNDLEID."]) {
       DCHECK(image) << "Missing image: " << base::SysNSStringToUTF8(imageName);
     }
     return image;
