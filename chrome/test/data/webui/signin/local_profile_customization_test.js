@@ -27,9 +27,11 @@ suite('LocalProfileCustomizationTest', function() {
     document.body.innerHTML = '';
     customizeProfileElement = /** @type {!LocalProfileCustomizationElement} */ (
         document.createElement('local-profile-customization'));
+    customizeProfileElement.profileThemeInfo = browserProxy.profileThemeInfo;
     document.body.appendChild(customizeProfileElement);
+    await browserProxy.whenCalled('getProfileThemeInfo');
+    browserProxy.resetResolver('getProfileThemeInfo');
     await waitBeforeNextRender(customizeProfileElement);
-    await setProfileTheme(browserProxy.profileThemeInfo);
   }
 
   setup(function() {
