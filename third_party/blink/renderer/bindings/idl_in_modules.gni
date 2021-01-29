@@ -395,6 +395,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/mediastream/navigator_media_stream.idl",
           "//third_party/blink/renderer/modules/mediastream/navigator_user_media.idl",
           "//third_party/blink/renderer/modules/mediastream/overconstrained_error.idl",
+          "//third_party/blink/renderer/modules/modalclosewatcher/modal_close_watcher.idl",
           "//third_party/blink/renderer/modules/native_io/native_io_file.idl",
           "//third_party/blink/renderer/modules/native_io/native_io_file_manager.idl",
           "//third_party/blink/renderer/modules/native_io/native_io_file_sync.idl",

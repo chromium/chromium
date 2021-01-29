@@ -5295,6 +5295,15 @@ interface MimeTypeArray
     method constructor
     method item
     method namedItem
+interface ModalCloseWatcher
+    attribute @@toStringTag
+    getter onbeforeclose
+    getter onclose
+    method constructor
+    method destroy
+    method signalClosed
+    setter onbeforeclose
+    setter onclose
 interface Mojo
     static method bindInterface
     static method createDataPipe

@@ -34,6 +34,7 @@
     "MediaDevices",
     "MediaStream",
     "MediaStreamTrack",
+    "ModalCloseWatcher",
     "RTCDTMFSender",
     "RTCDataChannel",
     "RTCDtlsTransport",

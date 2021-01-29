@@ -1315,6 +1315,10 @@
       name: "MobileLayoutTheme",
     },
     {
+      name: "ModalCloseWatcher",
+      status: "test",
+    },
+    {
       name: "ModuleServiceWorker",
       status: "test",
     },
