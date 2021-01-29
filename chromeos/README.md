@@ -44,7 +44,7 @@ There are two exceptions:
 
 - //chromeos/components contains C++ components that were not considered
   sufficiently general to live in top-level //components. For example,
-  //chromeos/components/account_manager manages the user's GAIA accounts, but
+  //ash/components/account_manager manages the user's GAIA accounts, but
   is used as the backend for UI that only exists on Chrome OS devices.
 
 Note, //chromeos does not contain any user-facing UI code, and hence it has

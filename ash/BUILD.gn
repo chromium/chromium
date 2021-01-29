@@ -2426,6 +2426,7 @@ test("ash_unittests") {
     "//ash/assistant/ui:constants",
     "//ash/assistant/ui/test_support",
     "//ash/assistant/util",
+    "//ash/components:unit_tests",
     "//ash/keyboard/ui",
     "//ash/keyboard/ui:test_support",
     "//ash/public/cpp",

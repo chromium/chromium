@@ -7,11 +7,11 @@
 
 #include <string>
 
+#include "ash/components/account_manager/account_manager.h"
 #include "base/macros.h"
 #include "base/optional.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/browser/ui/webui/signin/inline_login_handler_modal_delegate.h"
-#include "chromeos/components/account_manager/account_manager.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/account_manager/account_manager.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence_login_handler_chromeos.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/components/account_manager/account_manager.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"

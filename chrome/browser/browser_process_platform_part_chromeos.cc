@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/account_manager/account_manager_factory.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/memory/singleton.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/chromeos/system/timezone_util.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 #include "chrome/common/chrome_switches.h"
-#include "chromeos/components/account_manager/account_manager_factory.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/geolocation/simple_geolocation_provider.h"
 #include "chromeos/timezone/timezone_resolver.h"

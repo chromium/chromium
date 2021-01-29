@@ -8,13 +8,13 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/account_manager/account_manager.h"
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/chromeos/login/signin/token_handle_util.h"
-#include "chromeos/components/account_manager/account_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/keyed_service/core/keyed_service.h"

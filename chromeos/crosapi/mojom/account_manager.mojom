@@ -6,7 +6,7 @@ module crosapi.mojom;
 
 // Types of accounts which can be stored in Account Manager.
 // This must be kept in sync with
-// //chromeos/components/account_manager/tokens.proto
+// //ash/components/account_manager/tokens.proto
 [Stable, Extensible]
 enum AccountType {
   kUnspecified = 0,

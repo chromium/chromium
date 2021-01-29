@@ -6,13 +6,13 @@
 
 #include <algorithm>
 
+#include "ash/components/account_manager/account_manager.h"
 #include "base/logging.h"
 #include "base/optional.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/chromeos/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence_login_handler_chromeos.h"
-#include "chromeos/components/account_manager/account_manager.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

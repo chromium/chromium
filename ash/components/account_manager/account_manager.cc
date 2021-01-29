@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/account_manager/account_manager.h"
+#include "ash/components/account_manager/account_manager.h"
 
 #include <algorithm>
 #include <utility>
 
+#include "ash/components/account_manager/tokens.pb.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
@@ -23,7 +24,6 @@
 #include "base/task/thread_pool.h"
 #include "base/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chromeos/components/account_manager/tokens.pb.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"

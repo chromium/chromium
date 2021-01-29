@@ -43,11 +43,6 @@ include_rules = [
   "+ui",
   "-ash/host",
 
-  # Ash components are mini-apps and in general ash should not depend on them.
-  # If ash needs to launch a mini-app it can add a deps exception just for the
-  # header required to launch the app.
-  "-ash/components",
-
   # Ash sits above content. Exceptions live in //ash/content.
   "-content",
 

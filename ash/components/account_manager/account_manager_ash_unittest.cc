@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/account_manager/account_manager_ash.h"
+#include "ash/components/account_manager/account_manager_ash.h"
 
 #include <cstddef>
 #include <memory>
 #include <type_traits>
 #include <utility>
 
+#include "ash/components/account_manager/account_manager.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "chromeos/components/account_manager/account_manager.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account_manager_util.h"

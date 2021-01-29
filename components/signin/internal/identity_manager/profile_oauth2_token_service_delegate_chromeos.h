@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/account_manager/account_manager.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "chromeos/components/account_manager/account_manager.h"
 #include "components/account_manager_core/account.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "services/network/public/cpp/network_connection_tracker.h"

@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/components/account_manager/account_manager_factory.h"
+#include "ash/components/account_manager/account_manager_factory.h"
 
 #include <string>
 #include <utility>
 
+#include "ash/components/account_manager/account_manager.h"
 #include "base/macros.h"
-#include "chromeos/components/account_manager/account_manager.h"
 
 namespace chromeos {
 

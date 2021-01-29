@@ -13,7 +13,7 @@
 namespace account_manager {
 
 // Type of an account, based on the authentication backend of the account.
-// Loosely based on //chromeos/components/account_manager/tokens.proto
+// Loosely based on //ash/components/account_manager/tokens.proto
 enum class AccountType : int {
   // Gaia account (aka Google account) - including enterprise and consumer
   // accounts.

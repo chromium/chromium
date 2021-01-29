@@ -9,12 +9,12 @@
 #include <string>
 #include <vector>
 
+// TODO(https://crbug.com/1164001): move to forward declaration when migrated to
+// ash/components/.
+#include "ash/components/account_manager/account_manager.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
-// TODO(https://crbug.com/1164001): move to forward declaration when migrated to
-// ash/components/.
-#include "chromeos/components/account_manager/account_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"

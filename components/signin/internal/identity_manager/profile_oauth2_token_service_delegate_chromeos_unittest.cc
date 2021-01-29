@@ -9,13 +9,13 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/account_manager/account_manager.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
-#include "chromeos/components/account_manager/account_manager.h"
 #include "components/account_manager_core/account.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"

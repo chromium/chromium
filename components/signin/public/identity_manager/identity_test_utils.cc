@@ -24,7 +24,7 @@
 #include "google_apis/gaia/gaia_constants.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/components/account_manager/account_manager.h"
+#include "ash/components/account_manager/account_manager.h"
 #include "components/account_manager_core/account.h"
 #endif
 

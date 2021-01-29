@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/logging.h"
@@ -37,7 +38,6 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/theme_resources.h"
-#include "chromeos/components/account_manager/account_manager_factory.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"

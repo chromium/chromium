@@ -4507,6 +4507,7 @@ static_library("browser") {
     ]
     deps += [
       "//ash",
+      "//ash/components/account_manager",
       "//ash/public/cpp",
       "//ash/public/cpp/external_arc",
       "//chrome/browser/chromeos",
@@ -4524,7 +4525,6 @@ static_library("browser") {
       "//chrome/browser/ui/webui/nearby_share:mojom",
       "//chrome/browser/ui/webui/nearby_share/public/mojom",
       "//chrome/browser/webshare:storage",
-      "//chromeos/components/account_manager",
       "//chromeos/components/cdm_factory_daemon:cdm_factory_daemon_browser",
       "//chromeos/components/quick_answers",
       "//chromeos/components/sync_wifi",

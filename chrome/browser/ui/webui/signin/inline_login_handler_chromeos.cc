@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/account_manager/account_manager_factory.h"
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/macros.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/ui/webui/signin/inline_login_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_helper_chromeos.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/components/account_manager/account_manager_factory.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_pref_names.h"
 #include "chromeos/dbus/util/version_loader.h"

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/components/account_manager/account_manager_factory.h"
 #include "ash/public/cpp/toast_data.h"
 #include "ash/public/cpp/toast_manager.h"
 #include "base/bind.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/signin/public/identity_manager/consent_level.h"
 #include "components/user_manager/user.h"

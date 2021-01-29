@@ -8,11 +8,11 @@
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/memory/weak_ptr.h"
 // TODO(https://crbug.com/1164001): move to forward declaration when migrated to
 // ash/components/.
-#include "chromeos/components/account_manager/account_manager.h"
+#include "ash/components/account_manager/account_manager.h"
+#include "base/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/account.h"
 #include "components/prefs/pref_change_registrar.h"

@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_ASH_H_
-#define CHROMEOS_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_ASH_H_
+#ifndef ASH_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_ASH_H_
+#define ASH_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_ASH_H_
 
+#include "ash/components/account_manager/account_manager.h"
 #include "base/optional.h"
-#include "chromeos/components/account_manager/account_manager.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -54,4 +54,4 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER) AccountManagerAsh
 
 }  // namespace crosapi
 
-#endif  // CHROMEOS_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_ASH_H_
+#endif  // ASH_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_ASH_H_

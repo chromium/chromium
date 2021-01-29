@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MANAGER_UI_IMPL_H_
 #define CHROME_BROWSER_ASH_ACCOUNT_MANAGER_ACCOUNT_MANAGER_UI_IMPL_H_
 
+#include "ash/components/account_manager/account_manager_ui.h"
 #include "base/callback_forward.h"
-#include "chromeos/components/account_manager/account_manager_ui.h"
 
 namespace ash {
 
