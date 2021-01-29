@@ -10,6 +10,7 @@ import org.gradle.api.artifacts.ResolvedDependency
 import org.gradle.api.artifacts.ResolvedModuleVersion
 import org.gradle.api.artifacts.component.ComponentIdentifier
 import org.gradle.api.artifacts.result.ResolvedArtifactResult
+import org.gradle.api.logging.Logger
 import org.gradle.maven.MavenModule
 import org.gradle.maven.MavenPomArtifact
 
@@ -313,29 +314,37 @@ class ChromiumDepGraph {
             licenseName: "MIT"),
     ]
 
-    Project project
+    Project[] projects
+    Logger logger
     boolean skipLicenses
 
     void collectDependencies() {
-        def compileConfig = project.configurations.getByName('compile').resolvedConfiguration
-        def compileListenableFutureConfig = project.configurations.getByName(
-            'compileListenableFuture').resolvedConfiguration
-        def buildCompileConfig = project.configurations.getByName('buildCompile').resolvedConfiguration
-        def testCompileConfig = project.configurations.getByName('testCompile').resolvedConfiguration
-        def androidTestCompileConfig = project.configurations.getByName(
-            'androidTestCompile').resolvedConfiguration
-        List<String> topLevelIds = []
         Set<ResolvedConfiguration> deps = []
-        deps += compileConfig.firstLevelModuleDependencies
-        deps += compileListenableFutureConfig.firstLevelModuleDependencies
-        deps += buildCompileConfig.firstLevelModuleDependencies
-        deps += testCompileConfig.firstLevelModuleDependencies
-        deps += androidTestCompileConfig.firstLevelModuleDependencies
-
-        compileListenableFutureConfig.firstLevelModuleDependencies.each { dependency ->
-            lowerVersionOverride.add(makeModuleId(dependency.module))
+        Set<ResolvedDependency> firstLevelModuleDependencies = []
+        Map<String, List<ResolvedArtifact>> resolvedArtifacts = new HashMap<>()
+        String[] configNames = [
+            'compile',
+            'compileListenableFuture',
+            'buildCompile',
+            'testCompile',
+            'androidTestCompile'
+        ]
+        for (Project project : projects) {
+            for (String configName : configNames) {
+                def config = project.configurations.getByName(configName).resolvedConfiguration
+                deps += config.firstLevelModuleDependencies
+                if (!resolvedArtifacts.containsKey(configName)) {
+                  resolvedArtifacts[configName] = []
+                }
+                resolvedArtifacts[configName].addAll(config.resolvedArtifacts)
+          }
         }
 
+        resolvedArtifacts['compileListenableFuture'].each { artifact ->
+            lowerVersionOverride.add(makeModuleId(artifact))
+        }
+
+        List<String> topLevelIds = []
         deps.each { dependency ->
             topLevelIds.add(makeModuleId(dependency.module))
             collectDependenciesInternal(dependency)
@@ -343,29 +352,29 @@ class ChromiumDepGraph {
 
         topLevelIds.each { id -> dependencies.get(id).visible = true }
 
-        testCompileConfig.resolvedArtifacts.each { artifact ->
+        resolvedArtifacts['testCompile'].each { artifact ->
             def id = makeModuleId(artifact)
             def dep = dependencies.get(id)
             assert dep != null : "No dependency collected for artifact ${artifact.name}"
             dep.testOnly = true
         }
 
-        androidTestCompileConfig.resolvedArtifacts.each { artifact ->
+        resolvedArtifacts['androidTestCompile'].each { artifact ->
             def dep = dependencies.get(makeModuleId(artifact))
             assert dep != null : "No dependency collected for artifact ${artifact.name}"
             dep.supportsAndroid = true
             dep.testOnly = true
         }
 
-        buildCompileConfig.resolvedArtifacts.each { artifact ->
+        resolvedArtifacts['buildCompile'].each { artifact ->
             def id = makeModuleId(artifact)
             def dep = dependencies.get(id)
             assert dep != null : "No dependency collected for artifact ${artifact.name}"
             dep.testOnly = false
         }
 
-        def compileResolvedArtifacts = compileConfig.resolvedArtifacts
-        compileResolvedArtifacts += compileListenableFutureConfig.resolvedArtifacts
+        def compileResolvedArtifacts = resolvedArtifacts['compile']
+        compileResolvedArtifacts += resolvedArtifacts['compileListenableFuture']
         compileResolvedArtifacts.each { artifact ->
             def id = makeModuleId(artifact)
             def dep = dependencies.get(id)
@@ -381,19 +390,24 @@ class ChromiumDepGraph {
                 if (dep != null) {
                     dep.isShipped = fallbackProperties.isShipped
                 } else {
-                    project.logger.warn("PROPERTY_OVERRIDES has stale dep: " + id)
+                    logger.warn("PROPERTY_OVERRIDES has stale dep: " + id)
                 }
             }
         }
     }
 
     private ResolvedArtifactResult getPomFromArtifact(ComponentIdentifier componentId) {
-        def component = project.dependencies.createArtifactResolutionQuery()
-                .forComponents(componentId)
-                .withArtifacts(MavenModule, MavenPomArtifact)
-                .execute()
-                .resolvedComponents[0]
-        return component.getArtifacts(MavenPomArtifact)[0]
+        for (Project project : projects) {
+          def component = project.dependencies.createArtifactResolutionQuery()
+                  .forComponents(componentId)
+                  .withArtifacts(MavenModule, MavenPomArtifact)
+                  .execute()
+                  .resolvedComponents[0]
+          if (component != null) {
+            return component.getArtifacts(MavenPomArtifact)[0]
+          }
+       }
+       return null
     }
 
     private void collectDependenciesInternal(ResolvedDependency dependency) {
@@ -504,7 +518,7 @@ class ChromiumDepGraph {
 
     private customizeDep(DependencyDescription dep) {
         if (dep.id?.startsWith("com_google_android_")) {
-            project.logger.debug("Using Android license for ${dep.id}")
+            logger.debug("Using Android license for ${dep.id}")
             dep.licenseUrl = ""
             // This should match fetch_all._ANDROID_SDK_LICENSE_PATH.
             dep.licensePath = "licenses/Android_SDK_License-December_9_2016.txt"
@@ -514,7 +528,7 @@ class ChromiumDepGraph {
         } else if (dep.id?.startsWith("com_google_firebase_")) {
             // Use proper Android license file.
             if (dep.licenseUrl?.equals("https://developer.android.com/studio/terms.html")) {
-                project.logger.debug("Using Android license for ${dep.id}")
+                logger.debug("Using Android license for ${dep.id}")
                 dep.licenseUrl = ""
                 dep.licensePath = "licenses/Android_SDK_License-December_9_2016.txt"
             }
@@ -523,7 +537,7 @@ class ChromiumDepGraph {
                 dep.url = "https://firebase.google.com"
             }
         } else if (dep.licenseUrl?.equals("http://openjdk.java.net/legal/gplv2+ce.html")) {
-            project.logger.debug("Detected GPL v2 /w classpath license for ${dep.id}")
+            logger.debug("Detected GPL v2 /w classpath license for ${dep.id}")
             // This avoids using html in a LICENSE file.
             dep.licenseUrl = ""
             dep.licenseName = "GPL v2 with the classpath exception"
@@ -532,7 +546,7 @@ class ChromiumDepGraph {
 
         def fallbackProperties = PROPERTY_OVERRIDES.get(dep.id)
         if (fallbackProperties != null) {
-            project.logger.debug("Using fallback properties for ${dep.id}")
+            logger.debug("Using fallback properties for ${dep.id}")
             if (fallbackProperties.description != null) {
               dep.description = fallbackProperties.description
             }

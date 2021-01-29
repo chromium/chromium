@@ -1,0 +1,10 @@
+.gradle/
+.idea/
+.settings/
+local.properties
+
+# Following will be fetched via CIPD.
+/BUILD.gn
+/additional_readme_paths.json
+/build.gradle
+/libs/

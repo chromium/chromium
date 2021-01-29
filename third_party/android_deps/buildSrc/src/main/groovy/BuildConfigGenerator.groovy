@@ -4,6 +4,7 @@
 
 import groovy.json.JsonOutput
 import org.gradle.api.DefaultTask
+import org.gradle.api.Project
 import org.gradle.api.tasks.TaskAction
 
 import java.util.regex.Pattern
@@ -47,6 +48,11 @@ class BuildConfigGenerator extends DefaultTask {
         'org_hamcrest_hamcrest_integration': '//third_party/hamcrest:hamcrest_integration_java',
         'org_hamcrest_hamcrest_library': '//third_party/hamcrest:hamcrest_library_java',
     ]
+
+    // Prefixes of autorolled libraries in //third_party/android_deps_autorolled.
+    public static final def AUTOROLLED_LIB_PREFIXES = [ ]
+
+    public static final def AUTOROLLED_REPO_PATH = 'third_party/android_deps_autorolled'
 
     /**
      * Directory where the artifacts will be downloaded and where files will be generated.
@@ -96,7 +102,11 @@ class BuildConfigGenerator extends DefaultTask {
         skipLicenses = skipLicenses || project.hasProperty("skipLicenses")
         useDedicatedAndroidxDir |= project.hasProperty("useDedicatedAndroidxDir")
 
-        def graph = new ChromiumDepGraph(project: project, skipLicenses: skipLicenses)
+        def subprojects = new HashSet<Project>()
+        subprojects.add(project)
+        subprojects.addAll(project.subprojects)
+        def graph = new ChromiumDepGraph(projects: subprojects, logger: project.logger,
+            skipLicenses: skipLicenses)
         def normalisedRepoPath = normalisePath(repositoryPath)
 
         // 1. Parse the dependency data
@@ -107,10 +117,7 @@ class BuildConfigGenerator extends DefaultTask {
         def downloadExecutor = Executors.newCachedThreadPool()
         def downloadTasks = []
         graph.dependencies.values().each { dependency ->
-            if (excludeDependency(dependency)) {
-                return
-            }
-            if (useDedicatedAndroidxDir && dependency.id.startsWith("androidx_")) {
+            if (excludeDependency(dependency) || computeJavaGroupForwardingTarget(dependency) != null) {
                 return
             }
             logger.debug "Processing ${dependency.name}: \n${jsonDump(dependency)}"
@@ -190,11 +197,12 @@ class BuildConfigGenerator extends DefaultTask {
             }
 
             def targetName = translateTargetName(dependency.id) + "_java"
-            if (useDedicatedAndroidxDir && targetName.startsWith("androidx_")) {
+            def javaGroupTarget = computeJavaGroupForwardingTarget(dependency)
+            if (javaGroupTarget != null) {
                 assert dependency.extension == 'jar' || dependency.extension == 'aar'
                 sb.append("""
                 java_group("${targetName}") {
-                  deps = [ \"//third_party/androidx:${targetName}\" ]
+                  deps = [ \"${javaGroupTarget}\" ]
                 """.stripIndent())
                 if (dependency.testOnly) sb.append("  testonly = true\n")
                 sb.append("}\n\n")
@@ -592,10 +600,8 @@ class BuildConfigGenerator extends DefaultTask {
         }
 
         depGraph.dependencies.values().sort(dependencyComparator).each { dependency ->
-            if (excludeDependency(dependency)) {
-                return
-            }
-            if (useDedicatedAndroidxDir && dependency.id.startsWith("androidx_")) {
+            if (excludeDependency(dependency) ||
+                    computeJavaGroupForwardingTarget(dependency) != null) {
                 return
             }
             def depPath = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.id}"
@@ -634,9 +640,41 @@ class BuildConfigGenerator extends DefaultTask {
     }
 
     public boolean excludeDependency(ChromiumDepGraph.DependencyDescription dependency) {
-        def onlyAndroidx = (repositoryPath == "third_party/androidx")
-        return dependency.exclude || EXISTING_LIBS.get(dependency.id) != null ||
-                (onlyAndroidx && !dependency.id.startsWith("androidx_"))
+        if (dependency.exclude || EXISTING_LIBS.get(dependency.id) != null) {
+          return true
+        }
+        if (repositoryPath == "third_party/androidx") {
+          return !dependency.id.startsWith("androidx_")
+        }
+        if (repositoryPath == AUTOROLLED_REPO_PATH) {
+          def targetName = translateTargetName(dependency.id) + "_java"
+          return !isTargetAutorolled(targetName)
+        }
+        return false
+    }
+
+    /**
+     * If |dependency| should be a java_group(), returns target to forward to. Returns null
+     * otherwise.
+     */
+    public String computeJavaGroupForwardingTarget(ChromiumDepGraph.DependencyDescription dependency) {
+        def targetName = translateTargetName(dependency.id) + "_java"
+        if (useDedicatedAndroidxDir && targetName.startsWith("androidx_")) {
+            return "//third_party/androidx:${targetName}"
+        }
+        if (repositoryPath != AUTOROLLED_REPO_PATH && isTargetAutorolled(targetName)) {
+           return "//${AUTOROLLED_REPO_PATH}:${targetName}"
+        }
+        return null
+    }
+
+    private boolean isTargetAutorolled(targetName) {
+        for (autorolledLibPrefix in AUTOROLLED_LIB_PREFIXES) {
+            if (targetName.startsWith(autorolledLibPrefix)) {
+                return true
+            }
+        }
+        return false
     }
 
     private String normalisePath(String pathRelativeToChromiumRoot) {
