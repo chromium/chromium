@@ -148,10 +148,10 @@ void LoggedInSpokenFeedbackTest::EnableChromeVox() {
   // Test setup.
   // Enable ChromeVox, disable earcons and wait for key mappings to be fetched.
   ASSERT_FALSE(AccessibilityManager::Get()->IsSpokenFeedbackEnabled());
-  // TODO(accessibility): fix console error/warnings and insantiate
-  // |console_observer_| here.
 
-  // Load ChromeVox and block until it's fully loaded.
+  error_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
+      browser()->profile(), extension_misc::kChromeVoxExtensionId);
+
   AccessibilityManager::Get()->EnableSpokenFeedback(true);
   base::RunLoop loop;
   ExtensionLoadWaiterOneShot waiter;

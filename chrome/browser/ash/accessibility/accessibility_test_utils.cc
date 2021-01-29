@@ -31,8 +31,8 @@ void ExtensionConsoleErrorObserver::OnErrorAdded(
     const extensions::ExtensionError* error) {
   // Add a non-fatal failure to the test. Thus the test can continue
   // executing in case the warning/error is helpful in debugging.
-  ADD_FAILURE() << "Found extension console warning or error with message: "
-                << error->message();
+  ADD_FAILURE() << "Found extension console warning or error with message:\n"
+                << error->message() << " at " << error->source();
   errors_.push_back(error->message());
 }
 

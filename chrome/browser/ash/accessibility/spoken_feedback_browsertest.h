@@ -52,7 +52,7 @@ class LoggedInSpokenFeedbackTest : public InProcessBrowserTest {
  private:
   StubBrailleController braille_controller_;
   ui::ScopedAnimationDurationScaleMode animation_mode_;
-  std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
+  std::unique_ptr<ExtensionConsoleErrorObserver> error_observer_;
 
   DISALLOW_COPY_AND_ASSIGN(LoggedInSpokenFeedbackTest);
 };

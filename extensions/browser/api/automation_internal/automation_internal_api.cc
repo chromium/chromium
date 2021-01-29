@@ -554,9 +554,16 @@ AutomationInternalPerformActionFunction::Run() {
   using api::automation_internal::PerformAction::Params;
   std::unique_ptr<Params> params(Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params.get());
+
+  ui::AXTreeID ax_tree_id = ui::AXTreeID::FromString(params->args.tree_id);
+
+  // Ensure we didn't get an unknown tree id.
+  if (ax_tree_id == ui::AXTreeIDUnknown())
+    return RespondNow(Error("Unable to perform action on unknown tree."));
+
   ui::AXTreeIDRegistry* registry = ui::AXTreeIDRegistry::GetInstance();
-  ui::AXActionHandlerBase* action_handler = registry->GetActionHandler(
-      ui::AXTreeID::FromString(params->args.tree_id));
+  ui::AXActionHandlerBase* action_handler =
+      registry->GetActionHandler(ax_tree_id);
   if (action_handler) {
     // Handle an AXActionHandler with a rfh first. Some actions require a rfh ->
     // web contents and this api requires web contents to perform a permissions
@@ -602,7 +609,11 @@ AutomationInternalPerformActionFunction::Run() {
     action_handler->PerformAction(data);
     return result;
   }
-  return RespondNow(Error("Unable to perform action on unknown tree."));
+
+  // We default to no error here because it's possible the tree was destroyed
+  // prior to the extension receiving the tree update of its destruction. It's
+  // safe to simply drop the request.
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction
