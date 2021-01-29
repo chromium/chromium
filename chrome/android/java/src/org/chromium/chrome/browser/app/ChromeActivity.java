@@ -431,6 +431,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         this::getCurrentTabCreator, this::isCustomTab,
                         getStatusBarColorController(), ScreenOrientationProvider.getInstance(),
                         this::getNotificationManagerProxy, getTabContentManagerSupplier(),
+                        this::getActivityTabStartupMetricsTracker,
                         /* CompositorViewHolder.Initializer */ this)
                 : overridenCommonsFactory.create(this, mRootUiCoordinator::getBottomSheetController,
                         mTabModelSelectorSupplier, getBrowserControlsManager(),
@@ -441,6 +442,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                         this, this::getCurrentTabCreator, this::isCustomTab,
                         getStatusBarColorController(), ScreenOrientationProvider.getInstance(),
                         this::getNotificationManagerProxy, getTabContentManagerSupplier(),
+                        this::getActivityTabStartupMetricsTracker,
                         /* CompositorViewHolder.Initializer */ this);
 
         return createComponent(commonsModule);
