@@ -11,9 +11,11 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/weak_ptr.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/sync_engine.h"
 #include "components/sync/engine/sync_status.h"
+#include "google_apis/gaia/core_account_id.h"
 
 namespace syncer {
 
@@ -23,12 +25,21 @@ namespace syncer {
 // get through initialization. It often returns null pointers or nonsense
 // values; it is not intended to be used in tests that depend on SyncEngine
 // behavior.
-class FakeSyncEngine : public SyncEngine {
+class FakeSyncEngine : public SyncEngine,
+                       public base::SupportsWeakPtr<FakeSyncEngine> {
  public:
   static constexpr char kTestBirthday[] = "1";
 
-  FakeSyncEngine();
+  explicit FakeSyncEngine(bool allow_init_completion);
   ~FakeSyncEngine() override;
+
+  CoreAccountId authenticated_account_id() const {
+    return authenticated_account_id_;
+  }
+
+  // Manual completion of Initialize(), required if auto-completion was disabled
+  // in the constructor.
+  void TriggerInitializationCompletion(bool success);
 
   // Immediately calls params.host->OnEngineInitialized.
   void Initialize(InitParams params) override;
@@ -78,12 +89,13 @@ class FakeSyncEngine : public SyncEngine {
                           base::OnceClosure callback) override;
   void SetInvalidationsForSessionsEnabled(bool enabled) override;
   void GetNigoriNodeForDebugging(AllNodesCallback callback) override;
-  void set_fail_initial_download(bool should_fail);
 
  private:
-  bool fail_initial_download_ = false;
+  const bool allow_init_completion_;
+  SyncEngineHost* host_ = nullptr;
   bool initialized_ = false;
   const SyncStatus default_sync_status_;
+  CoreAccountId authenticated_account_id_;
 };
 
 }  // namespace syncer

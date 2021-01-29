@@ -60,6 +60,9 @@ class DataTypeManagerImpl : public DataTypeManager,
                                 const SyncError& error) override;
 
   bool needs_reconfigure_for_test() const { return needs_reconfigure_; }
+  ConfigureReason last_configure_reason_for_test() {
+    return last_requested_context_.reason;
+  }
 
  private:
   enum DataTypeConfigState {

@@ -14,16 +14,32 @@ namespace syncer {
 
 constexpr char FakeSyncEngine::kTestBirthday[];
 
-FakeSyncEngine::FakeSyncEngine() = default;
+FakeSyncEngine::FakeSyncEngine(bool allow_init_completion)
+    : allow_init_completion_(allow_init_completion) {}
+
 FakeSyncEngine::~FakeSyncEngine() = default;
 
-void FakeSyncEngine::Initialize(InitParams params) {
-  bool success = !fail_initial_download_;
+void FakeSyncEngine::TriggerInitializationCompletion(bool success) {
+  DCHECK(host_) << "Initialize() not called.";
+  DCHECK(!initialized_);
+
   initialized_ = success;
-  params.host->OnEngineInitialized(WeakHandle<JsBackend>(),
-                                   WeakHandle<DataTypeDebugInfoListener>(),
-                                   kTestBirthday,
-                                   /*bag_of_chips=*/"", success);
+
+  host_->OnEngineInitialized(WeakHandle<JsBackend>(),
+                             WeakHandle<DataTypeDebugInfoListener>(),
+                             kTestBirthday,
+                             /*bag_of_chips=*/"", success);
+}
+
+void FakeSyncEngine::Initialize(InitParams params) {
+  DCHECK(params.host);
+
+  authenticated_account_id_ = params.authenticated_account_id;
+  host_ = params.host;
+
+  if (allow_init_completion_) {
+    TriggerInitializationCompletion(/*success=*/true);
+  }
 }
 
 bool FakeSyncEngine::IsInitialized() const {
@@ -32,9 +48,13 @@ bool FakeSyncEngine::IsInitialized() const {
 
 void FakeSyncEngine::TriggerRefresh(const ModelTypeSet& types) {}
 
-void FakeSyncEngine::UpdateCredentials(const SyncCredentials& credentials) {}
+void FakeSyncEngine::UpdateCredentials(const SyncCredentials& credentials) {
+  authenticated_account_id_ = credentials.account_id;
+}
 
-void FakeSyncEngine::InvalidateCredentials() {}
+void FakeSyncEngine::InvalidateCredentials() {
+  authenticated_account_id_ = CoreAccountId();
+}
 
 void FakeSyncEngine::StartConfiguration() {}
 
@@ -54,7 +74,11 @@ void FakeSyncEngine::StopSyncingForShutdown() {}
 
 void FakeSyncEngine::Shutdown(ShutdownReason reason) {}
 
-void FakeSyncEngine::ConfigureDataTypes(ConfigureParams params) {}
+void FakeSyncEngine::ConfigureDataTypes(ConfigureParams params) {
+  std::move(params.ready_task)
+      .Run(/*succeeded_configuration_types=*/params.enabled_types,
+           /*failed_configuration_types=*/ModelTypeSet());
+}
 
 void FakeSyncEngine::ActivateDataType(
     ModelType type,
@@ -76,10 +100,6 @@ void FakeSyncEngine::HasUnsyncedItemsForTest(
 void FakeSyncEngine::RequestBufferedProtocolEventsAndEnableForwarding() {}
 
 void FakeSyncEngine::DisableProtocolEventForwarding() {}
-
-void FakeSyncEngine::set_fail_initial_download(bool should_fail) {
-  fail_initial_download_ = should_fail;
-}
 
 void FakeSyncEngine::OnCookieJarChanged(bool account_mismatch,
                                         base::OnceClosure callback) {
