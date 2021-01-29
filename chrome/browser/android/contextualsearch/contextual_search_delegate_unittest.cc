@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -297,7 +296,7 @@ class ContextualSearchDelegateTest : public testing::Test {
       test_shared_url_loader_factory_;
 
   // Will be owned by the delegate.
-  CheckedPtr<ContextualSearchContext> test_context_;
+  ContextualSearchContext* test_context_;
 
   DISALLOW_COPY_AND_ASSIGN(ContextualSearchDelegateTest);
 };

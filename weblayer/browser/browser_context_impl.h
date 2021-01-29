@@ -6,7 +6,6 @@
 #define WEBLAYER_BROWSER_BROWSER_CONTEXT_IMPL_H_
 
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -80,7 +79,7 @@ class BrowserContextImpl : public content::BrowserContext {
   // Registers the preferences that WebLayer accesses.
   void RegisterPrefs(user_prefs::PrefRegistrySyncable* pref_registry);
 
-  const CheckedPtr<ProfileImpl> profile_impl_;
+  ProfileImpl* const profile_impl_;
   base::FilePath path_;
   // ResourceContext needs to be deleted on the IO thread in general (and in
   // particular due to the destruction of the safebrowsing mojo interface

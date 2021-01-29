@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
@@ -180,10 +179,10 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
   // Determine the offscreen status of a particular element given its bounds..
   AXOffscreenResult DetermineOffscreenResult(gfx::RectF bounds) const;
 
-  CheckedPtr<AXTree> tree_;
-  CheckedPtr<AXNode> node_;
+  AXTree* tree_;
+  AXNode* node_;
   ui::AXUniqueId unique_id_;
-  CheckedPtr<AXPlatformNode> platform_node_;
+  AXPlatformNode* platform_node_;
   gfx::AcceleratedWidget native_event_target_;
   bool minimized_ = false;
 };

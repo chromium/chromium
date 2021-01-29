@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_piece.h"
 
 class PrefService;
@@ -59,7 +58,7 @@ class LanguagePrefs {
 
   size_t NumFluentLanguages() const;
 
-  CheckedPtr<PrefService> prefs_;  // Weak.
+  PrefService* prefs_;  // Weak.
 
   DISALLOW_COPY_AND_ASSIGN(LanguagePrefs);
 };

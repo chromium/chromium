@@ -6,7 +6,6 @@
 #define UI_VIEWS_CONTROLS_SCROLLBAR_OVERLAY_SCROLL_BAR_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/views/controls/scrollbar/base_scroll_bar_thumb.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
@@ -45,7 +44,7 @@ class VIEWS_EXPORT OverlayScrollBar : public ScrollBar {
     void OnStateChanged() override;
 
    private:
-    CheckedPtr<OverlayScrollBar> scroll_bar_;
+    OverlayScrollBar* scroll_bar_;
 
     DISALLOW_COPY_AND_ASSIGN(Thumb);
   };

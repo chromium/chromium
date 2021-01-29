@@ -78,7 +78,6 @@
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
@@ -489,7 +488,7 @@ class BASE_EXPORT ScaledLinearHistogram {
   // Pointer to the underlying histogram. Ownership of it remains with
   // the statistics-recorder. This is typed as HistogramBase because it may be a
   // DummyHistogram if expired.
-  const CheckedPtr<HistogramBase> histogram_;
+  HistogramBase* const histogram_;
 
   // The scale factor of the sample counts.
   const int32_t scale_;

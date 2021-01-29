@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/ui/views/payments/editor_view_controller.h"
 #include "chrome/browser/ui/views/payments/validation_delegate.h"
@@ -60,7 +59,7 @@ class ContactInfoEditorViewController : public EditorViewController {
   base::string16 GetValueForType(const autofill::AutofillProfile& profile,
                                  autofill::ServerFieldType type);
 
-  CheckedPtr<autofill::AutofillProfile> profile_to_edit_;
+  autofill::AutofillProfile* profile_to_edit_;
 
   // Called when |profile_to_edit_| was successfully edited.
   base::OnceClosure on_edited_;
@@ -93,7 +92,7 @@ class ContactInfoEditorViewController : public EditorViewController {
 
     EditorField field_;
     // Outlives this class. Never null.
-    CheckedPtr<ContactInfoEditorViewController> controller_;
+    ContactInfoEditorViewController* controller_;
     const std::string& locale_;
   };
 };

@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/stl_util.h"
@@ -48,7 +47,7 @@ class TestFileSelectListener : public content::FileSelectListener {
   }
   void FileSelectionCanceled() override {}
 
-  CheckedPtr<std::vector<blink::mojom::FileChooserFileInfoPtr>> files_;
+  std::vector<blink::mojom::FileChooserFileInfoPtr>* files_;
 };
 
 // Fill in the arguments to be passed to the ContentAnalysisCompletionCallback()

@@ -17,7 +17,6 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/pickle.h"
 #include "base/stl_util.h"
@@ -159,8 +158,8 @@ class DatabaseCheckHelper {
   bool ScanDirectory();
   bool ScanHierarchy();
 
-  CheckedPtr<SandboxDirectoryDatabase> dir_db_;
-  CheckedPtr<leveldb::DB> db_;
+  SandboxDirectoryDatabase* dir_db_;
+  leveldb::DB* db_;
   base::FilePath path_;
 
   std::set<base::FilePath> files_in_db_;

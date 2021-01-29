@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -92,7 +91,7 @@ class PreviewsUIServiceTest : public testing::Test {
   network::TestNetworkQualityTracker test_network_quality_tracker_;
 
  private:
-  CheckedPtr<TestPreviewsDeciderImpl> previews_decider_impl_;
+  TestPreviewsDeciderImpl* previews_decider_impl_;
   std::unique_ptr<TestPreviewsUIService> ui_service_;
 };
 

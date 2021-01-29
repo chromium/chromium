@@ -12,7 +12,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -141,7 +140,7 @@ class FakeSyncEngineCollectCredentials : public FakeSyncEngine {
   }
 
  private:
-  CheckedPtr<CoreAccountId> init_account_id_;
+  CoreAccountId* init_account_id_;
   base::RepeatingClosure invalidate_credentials_callback_;
 };
 
@@ -325,7 +324,7 @@ class ProfileSyncServiceTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
   ProfileSyncServiceBundle profile_sync_service_bundle_;
   std::unique_ptr<ProfileSyncService> service_;
-  CheckedPtr<SyncClientMock> sync_client_;  // Owned by |service_|.
+  SyncClientMock* sync_client_;  // Owned by |service_|.
 };
 
 class ProfileSyncServiceTestWithSyncInvalidationsServiceCreated

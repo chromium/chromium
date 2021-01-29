@@ -7,7 +7,6 @@
 #include <type_traits>
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/message_loop/message_pump_type.h"
@@ -215,7 +214,7 @@ class TimerSlackTestDelegate : public MessagePump::Delegate {
     QUIT,
   };
 
-  const CheckedPtr<MessagePump> message_pump_;
+  MessagePump* const message_pump_;
   std::atomic<Action> action_;
 };
 

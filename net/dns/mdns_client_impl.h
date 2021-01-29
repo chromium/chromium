@@ -17,7 +17,6 @@
 #include "base/containers/queue.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/observer_list.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
@@ -47,7 +46,7 @@ class MDnsSocketFactoryImpl : public MDnsSocketFactory {
       std::vector<std::unique_ptr<DatagramServerSocket>>* sockets) override;
 
  private:
-  const CheckedPtr<NetLog> net_log_;
+  NetLog* const net_log_;
 
   DISALLOW_COPY_AND_ASSIGN(MDnsSocketFactoryImpl);
 };
@@ -89,7 +88,7 @@ class NET_EXPORT_PRIVATE MDnsConnection {
     void SendDone(int rv);
 
     std::unique_ptr<DatagramServerSocket> socket_;
-    CheckedPtr<MDnsConnection> connection_;
+    MDnsConnection* connection_;
     IPEndPoint recv_addr_;
     DnsResponse response_;
     IPEndPoint multicast_addr_;
@@ -110,7 +109,7 @@ class NET_EXPORT_PRIVATE MDnsConnection {
   // Only socket handlers which successfully bound and started are kept.
   std::vector<std::unique_ptr<SocketHandler>> socket_handlers_;
 
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   base::WeakPtrFactory<MDnsConnection> weak_ptr_factory_{this};
 
@@ -195,8 +194,8 @@ class NET_EXPORT_PRIVATE MDnsClientImpl : public MDnsClient {
 
     MDnsCache cache_;
 
-    CheckedPtr<base::Clock> clock_;
-    CheckedPtr<base::OneShotTimer> cleanup_timer_;
+    base::Clock* clock_;
+    base::OneShotTimer* cleanup_timer_;
     base::Time scheduled_cleanup_;
 
     std::unique_ptr<MDnsConnection> connection_;
@@ -231,7 +230,7 @@ class NET_EXPORT_PRIVATE MDnsClientImpl : public MDnsClient {
   Core* core() { return core_.get(); }
 
  private:
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
   std::unique_ptr<base::OneShotTimer> cleanup_timer_;
 
   std::unique_ptr<Core> core_;
@@ -275,9 +274,9 @@ class MDnsListenerImpl : public MDnsListener,
 
   uint16_t rrtype_;
   std::string name_;
-  CheckedPtr<base::Clock> clock_;
-  CheckedPtr<MDnsClientImpl> client_;
-  CheckedPtr<MDnsListener::Delegate> delegate_;
+  base::Clock* clock_;
+  MDnsClientImpl* client_;
+  MDnsListener::Delegate* delegate_;
 
   base::Time last_update_;
   uint32_t ttl_;
@@ -343,7 +342,7 @@ class MDnsTransactionImpl : public base::SupportsWeakPtr<MDnsTransactionImpl>,
   std::unique_ptr<MDnsListener> listener_;
   base::CancelableOnceCallback<void()> timeout_;
 
-  CheckedPtr<MDnsClientImpl> client_;
+  MDnsClientImpl* client_;
 
   bool started_;
   int flags_;

@@ -6,7 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_CREDENTIAL_MANAGER_PENDING_PREVENT_SILENT_ACCESS_TASK_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 
@@ -45,7 +44,7 @@ class CredentialManagerPendingPreventSilentAccessTask
       std::vector<std::unique_ptr<PasswordForm>> results) override;
 
  private:
-  const CheckedPtr<CredentialManagerPendingPreventSilentAccessTaskDelegate>
+  CredentialManagerPendingPreventSilentAccessTaskDelegate* const
       delegate_;  // Weak.
 
   // Number of password store requests to be resolved.

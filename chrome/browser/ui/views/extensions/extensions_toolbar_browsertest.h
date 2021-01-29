@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "extensions/common/extension.h"
@@ -77,7 +76,7 @@ class ExtensionsToolbarBrowserTest : public DialogBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  CheckedPtr<Browser> incognito_browser_ = nullptr;
+  Browser* incognito_browser_ = nullptr;
   std::vector<scoped_refptr<const extensions::Extension>> extensions_;
 };
 

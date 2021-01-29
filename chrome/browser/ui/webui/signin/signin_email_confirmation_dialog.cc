@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -59,8 +58,7 @@ class SigninEmailConfirmationDialog::DialogWebContentsObserver
     signin_email_confirmation_dialog_->CloseDialog();
   }
 
-  const CheckedPtr<SigninEmailConfirmationDialog>
-      signin_email_confirmation_dialog_;
+  SigninEmailConfirmationDialog* const signin_email_confirmation_dialog_;
 
   DISALLOW_COPY_AND_ASSIGN(DialogWebContentsObserver);
 };

@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/time/time.h"
@@ -344,11 +343,11 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   }
 
  private:
-  CheckedPtr<TouchSelectionControllerImpl> controller_;
+  TouchSelectionControllerImpl* controller_;
 
   // In local coordinates
   gfx::SelectionBound selection_bound_;
-  CheckedPtr<gfx::Image> image_;
+  gfx::Image* image_;
 
   // If true, this is a handle corresponding to the single cursor, otherwise it
   // is a handle corresponding to one of the two selection bounds.
@@ -366,7 +365,7 @@ class TouchSelectionControllerImpl::EditingHandleView : public View {
   bool draw_invisible_;
 
   // Owning widget.
-  CheckedPtr<Widget> widget_ = nullptr;
+  Widget* widget_ = nullptr;
 };
 
 TouchSelectionControllerImpl::TouchSelectionControllerImpl(

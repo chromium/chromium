@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/notifications/scheduler/internal/notification_entry.h"
@@ -145,13 +144,13 @@ class NotificationSchedulerTest : public testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  CheckedPtr<NotificationSchedulerClientRegistrar> registrar_;
-  CheckedPtr<test::MockImpressionHistoryTracker> impression_tracker_;
-  CheckedPtr<test::MockScheduledNotificationManager> notification_manager_;
-  CheckedPtr<test::MockNotificationSchedulerClient> client_;
-  CheckedPtr<test::MockBackgroundTaskCoordinator> task_coordinator_;
-  CheckedPtr<test::MockDisplayAgent> display_agent_;
-  CheckedPtr<test::MockDisplayDecider> display_decider_;
+  NotificationSchedulerClientRegistrar* registrar_;
+  test::MockImpressionHistoryTracker* impression_tracker_;
+  test::MockScheduledNotificationManager* notification_manager_;
+  test::MockNotificationSchedulerClient* client_;
+  test::MockBackgroundTaskCoordinator* task_coordinator_;
+  test::MockDisplayAgent* display_agent_;
+  test::MockDisplayDecider* display_decider_;
 
   std::unique_ptr<NotificationScheduler> notification_scheduler_;
 };

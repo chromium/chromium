@@ -9,7 +9,6 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
@@ -64,8 +63,8 @@ class GamesServiceImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  CheckedPtr<test::MockCatalogStore> mock_catalog_store_;
-  CheckedPtr<test::MockHighlightedGamesStore> mock_highlighted_games_store_;
+  test::MockCatalogStore* mock_catalog_store_;
+  test::MockHighlightedGamesStore* mock_highlighted_games_store_;
   std::unique_ptr<TestingPrefServiceSimple> test_pref_service_;
   std::unique_ptr<GamesServiceImpl> games_service_;
   base::FilePath fake_install_dir_ =

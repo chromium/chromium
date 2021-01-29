@@ -6,7 +6,6 @@
 #define CHROME_INSTALLER_UTIL_HTML_DIALOG_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 
 // This is the interface for creating HTML-based Dialogs *before* Chrome has
@@ -92,7 +91,7 @@ class EulaHTMLDialog {
     void OnBeforeDisplay(void* window) override;
   };
 
-  CheckedPtr<HTMLDialog> dialog_;
+  HTMLDialog* dialog_;
   DISALLOW_COPY_AND_ASSIGN(EulaHTMLDialog);
 };
 

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/supports_user_data.h"
 #include "net/base/net_export.h"
 #include "net/cert/internal/cert_errors.h"
@@ -214,7 +213,7 @@ class NET_EXPORT CertPathBuilder {
   Result out_result_;
 
   std::unique_ptr<CertPathIter> cert_path_iter_;
-  CheckedPtr<CertPathBuilderDelegate> delegate_;
+  CertPathBuilderDelegate* delegate_;
   const der::GeneralizedTime time_;
   const KeyPurpose key_purpose_;
   const InitialExplicitPolicy initial_explicit_policy_;

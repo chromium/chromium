@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -29,12 +28,12 @@ class UpiVpaSaveManager {
  private:
   void OnUserDecidedOnLocalSave(const std::string& upi_id, bool accepted);
 
-  CheckedPtr<AutofillClient> client_;
+  AutofillClient* client_;
 
   // The personal data manager, used to save and load personal data to/from the
   // web database. This is overridden by the AutofillManagerTest.
   // Weak reference. May be nullptr, which indicates OTR.
-  CheckedPtr<PersonalDataManager> personal_data_manager_;
+  PersonalDataManager* personal_data_manager_;
 
   base::WeakPtrFactory<UpiVpaSaveManager> weak_ptr_factory_{this};
 };

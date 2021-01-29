@@ -19,7 +19,6 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/timezone.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
@@ -251,7 +250,7 @@ class PersonalDatabaseHelper
   // to either profile_database_, or account_database_.
   scoped_refptr<AutofillWebDataService> server_database_;
 
-  CheckedPtr<PersonalDataManager> personal_data_manager_;
+  PersonalDataManager* personal_data_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(PersonalDatabaseHelper);
 };

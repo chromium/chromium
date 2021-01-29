@@ -6,7 +6,6 @@
 #define GPU_COMMAND_BUFFER_CLIENT_GLES2_TRACE_IMPLEMENTATION_H_
 
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "gles2_impl_export.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 
@@ -31,7 +30,7 @@ class GLES2_IMPL_EXPORT GLES2TraceImplementation : public GLES2Interface {
   #include "gpu/command_buffer/client/gles2_trace_implementation_autogen.h"
 
  private:
-  CheckedPtr<GLES2Interface> gl_;
+  GLES2Interface* gl_;
 };
 
 }  // namespace gles2

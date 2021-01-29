@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/updater/app/app_install.h"
 
 #include <memory>
@@ -160,7 +159,7 @@ class InstallProgressObserverIPC : public InstallProgressObserver {
   THREAD_CHECKER(thread_checker_);
 
   // This member is not owned by this class.
-  CheckedPtr<ui::ProgressWnd> progress_wnd_ = nullptr;
+  ui::ProgressWnd* progress_wnd_ = nullptr;
 
   // The thread id of the thread which owns the |ProgressWnd|.
   int window_thread_id_ = 0;

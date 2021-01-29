@@ -7,7 +7,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/devtools/devtools_contents_resizing_strategy.h"
 #include "ui/views/layout/layout_manager.h"
 
@@ -27,10 +26,10 @@ class ContentsLayoutManager : public views::LayoutManager {
   void Installed(views::View* host) override;
 
  private:
-  CheckedPtr<views::View> devtools_view_;
-  CheckedPtr<views::View> contents_view_;
+  views::View* devtools_view_;
+  views::View* contents_view_;
 
-  CheckedPtr<views::View> host_;
+  views::View* host_;
 
   DevToolsContentsResizingStrategy strategy_;
 

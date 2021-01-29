@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_sync.h"
@@ -76,7 +75,7 @@ class PasswordSyncBridge : public syncer::ModelTypeSyncBridge {
   std::set<int> GetUnsyncedPasswordsStorageKeys();
 
   // Password store responsible for persistence.
-  const CheckedPtr<PasswordStoreSync> password_store_sync_;
+  PasswordStoreSync* const password_store_sync_;
 
   base::RepeatingClosure sync_enabled_or_disabled_cb_;
 

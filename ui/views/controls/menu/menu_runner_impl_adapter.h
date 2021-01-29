@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/controls/menu/menu_runner_impl_interface.h"
 #include "ui/views/views_export.h"
 
@@ -43,7 +42,7 @@ class VIEWS_EXPORT MenuRunnerImplAdapter : public MenuRunnerImplInterface {
   ~MenuRunnerImplAdapter() override;
 
   std::unique_ptr<MenuModelAdapter> menu_model_adapter_;
-  CheckedPtr<MenuRunnerImpl> impl_;
+  MenuRunnerImpl* impl_;
 
   DISALLOW_COPY_AND_ASSIGN(MenuRunnerImplAdapter);
 };

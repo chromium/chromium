@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/bubble/webui_bubble_manager.h"
 
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/views/bubble/webui_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -32,7 +31,7 @@ class TestWebUIBubbleManager : public WebUIBubbleManagerBase {
     return std::make_unique<WebUIBubbleView>(browser_context_);
   }
 
-  CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* browser_context_;
 };
 
 }  // namespace

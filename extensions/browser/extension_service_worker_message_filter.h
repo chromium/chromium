@@ -9,7 +9,6 @@
 #include <unordered_set>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "content/public/browser/browser_message_filter.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/common/activation_sequence.h"
@@ -71,12 +70,12 @@ class ExtensionServiceWorkerMessageFilter
 
   void DidFailDecrementInflightEvent();
 
-  const CheckedPtr<content::BrowserContext> browser_context_;
+  content::BrowserContext* const browser_context_;
 
   const int render_process_id_;
 
   // Owned by the StoragePartition of our profile.
-  CheckedPtr<content::ServiceWorkerContext> service_worker_context_;
+  content::ServiceWorkerContext* service_worker_context_;
 
   std::unique_ptr<ExtensionFunctionDispatcher,
                   content::BrowserThread::DeleteOnUIThread>

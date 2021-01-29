@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/string16.h"
 #include "ui/gfx/geometry/size.h"
@@ -111,7 +110,7 @@ class SystemWebDialogDelegate : public ui::WebDialogDelegate {
  private:
   GURL gurl_;
   base::string16 title_;
-  CheckedPtr<content::WebUI> webui_ = nullptr;
+  content::WebUI* webui_ = nullptr;
   ui::ModalType modal_type_;
   gfx::NativeWindow dialog_window_ = nullptr;
 

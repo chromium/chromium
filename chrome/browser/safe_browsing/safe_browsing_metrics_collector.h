@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_METRICS_COLLECTOR_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -30,7 +29,7 @@ class SafeBrowsingMetricsCollector : public KeyedService {
   void LogMetricsAndScheduleNextLogging();
   void ScheduleNextLoggingAfterInterval(base::TimeDelta interval);
 
-  CheckedPtr<PrefService> pref_service_;
+  PrefService* pref_service_;
   base::OneShotTimer metrics_collector_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingMetricsCollector);

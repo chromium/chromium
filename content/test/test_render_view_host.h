@@ -12,7 +12,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/host_frame_sink_client.h"
@@ -240,7 +239,7 @@ class TestRenderViewHost
       const base::FilePath* file_path_for_history_item);
 
   // See set_delete_counter() above. May be NULL.
-  CheckedPtr<int> delete_counter_;
+  int* delete_counter_;
 
   // See opener_frame_route_id() above.
   base::Optional<base::UnguessableToken> opener_frame_token_;

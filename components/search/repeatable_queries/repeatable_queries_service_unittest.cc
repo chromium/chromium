@@ -10,7 +10,6 @@
 
 #include "base/cancelable_callback.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -108,7 +107,7 @@ std::string BadServerResponse2() {
 
 // Used to populate the URLDatabase.
 struct TestURLData {
-  CheckedPtr<const TemplateURL> search_provider;
+  const TemplateURL* search_provider;
   std::string search_terms;
   int age_in_seconds;
   int visit_count = 1;

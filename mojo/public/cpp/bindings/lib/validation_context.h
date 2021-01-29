@@ -12,7 +12,6 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 
 static const int kMaxRecursionDepth = 100;
@@ -138,7 +137,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
     ~ScopedDepthTracker() { --ctx_->stack_depth_; }
 
    private:
-    CheckedPtr<ValidationContext> ctx_;
+    ValidationContext* ctx_;
 
     DISALLOW_COPY_AND_ASSIGN(ScopedDepthTracker);
   };
@@ -157,7 +156,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) ValidationContext {
     return end > begin && begin >= data_begin_ && end <= data_end_;
   }
 
-  const CheckedPtr<Message> message_;
+  Message* const message_;
   const char* const description_;
   const ValidatorType validator_type_;
 

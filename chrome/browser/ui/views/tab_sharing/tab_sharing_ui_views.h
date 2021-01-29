@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -89,9 +88,9 @@ class TabSharingUIViews : public TabSharingUI,
   std::map<content::WebContents*, infobars::InfoBar*> infobars_;
   content::DesktopMediaID shared_tab_media_id_;
   const base::string16 app_name_;
-  CheckedPtr<content::WebContents> shared_tab_;
+  content::WebContents* shared_tab_;
   base::string16 shared_tab_name_;
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   std::unique_ptr<content::MediaStreamUI> tab_capture_indicator_ui_;
 
   content::MediaStreamUI::SourceCallback source_callback_;

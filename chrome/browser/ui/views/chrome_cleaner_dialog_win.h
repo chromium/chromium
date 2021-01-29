@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -68,15 +67,13 @@ class ChromeCleanerDialog
   void DetailsButtonPressed();
   void LogsPermissionCheckboxPressed();
 
-  CheckedPtr<Browser> browser_ = nullptr;
+  Browser* browser_ = nullptr;
   // The pointer will be set to nullptr once the controller has been notified of
   // user interaction since the controller can delete itself after that point.
-  CheckedPtr<safe_browsing::ChromeCleanerDialogController> dialog_controller_ =
-      nullptr;
-  CheckedPtr<safe_browsing::ChromeCleanerController> cleaner_controller_ =
-      nullptr;
-  CheckedPtr<views::LabelButton> details_button_ = nullptr;
-  CheckedPtr<views::Checkbox> logs_permission_checkbox_ = nullptr;
+  safe_browsing::ChromeCleanerDialogController* dialog_controller_ = nullptr;
+  safe_browsing::ChromeCleanerController* cleaner_controller_ = nullptr;
+  views::LabelButton* details_button_ = nullptr;
+  views::Checkbox* logs_permission_checkbox_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeCleanerDialog);
 };

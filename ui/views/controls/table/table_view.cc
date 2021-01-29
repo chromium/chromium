@@ -15,7 +15,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/i18n/rtl.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/ranges.h"
 #include "base/optional.h"
@@ -124,7 +123,7 @@ struct TableView::GroupSortHelper {
     return table->CompareRows(range1, range2) < 0;
   }
 
-  CheckedPtr<TableView> table;
+  TableView* table;
   std::map<int, int> model_index_to_range_start;
 };
 

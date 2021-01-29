@@ -7,7 +7,6 @@
 
 #include "base/callback_forward.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -111,7 +110,7 @@ class UserManagerProfileDialog {
     virtual void CloseDialog() = 0;
 
     // WebContents of the embedded WebView.
-    CheckedPtr<content::WebContents> guest_web_contents_;
+    content::WebContents* guest_web_contents_;
 
     DISALLOW_COPY_AND_ASSIGN(BaseDialogDelegate);
   };

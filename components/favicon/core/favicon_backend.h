@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/favicon/core/favicon_types.h"
 #include "components/favicon_base/favicon_types.h"
@@ -211,7 +210,7 @@ class FaviconBackend {
                                  favicon_base::FaviconID icon_id);
 
   std::unique_ptr<FaviconDatabase> db_;
-  CheckedPtr<FaviconBackendDelegate> delegate_;
+  FaviconBackendDelegate* delegate_;
 };
 
 }  // namespace favicon

@@ -4,7 +4,6 @@
 
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -69,7 +68,7 @@ class TestNtpThemeObserver : public InstantServiceObserver {
 
   bool hasThemeInstalled(const NtpTheme& theme) { return theme.theme_id != ""; }
 
-  const CheckedPtr<InstantService> service_;
+  InstantService* const service_;
 
   NtpTheme theme_;
 

@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
@@ -72,7 +71,7 @@ class AndroidHistoryProviderServiceTest : public testing::Test {
   TestingProfileManager profile_manager_;
   std::unique_ptr<AndroidHistoryProviderService> service_;
   base::CancelableTaskTracker cancelable_tracker_;
-  CheckedPtr<TestingProfile> testing_profile_;
+  TestingProfile* testing_profile_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AndroidHistoryProviderServiceTest);
@@ -137,7 +136,7 @@ class CallbackHelper : public base::RefCountedThreadSafe<CallbackHelper> {
   }
 
   bool success_;
-  CheckedPtr<AndroidStatement> statement_;
+  AndroidStatement* statement_;
   int cursor_position_;
   int count_;
   base::Closure quit_when_idle_closure_;

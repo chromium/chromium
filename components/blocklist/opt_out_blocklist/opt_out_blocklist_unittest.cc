@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/stl_util.h"
@@ -284,7 +283,7 @@ class OptOutBlocklistTest : public testing::Test {
   TestOptOutBlocklistDelegate blocklist_delegate_;
 
   base::SimpleTestClock test_clock_;
-  CheckedPtr<TestOptOutStore> opt_out_store_;
+  TestOptOutStore* opt_out_store_;
   base::Time start_;
 
   std::unique_ptr<TestOptOutBlocklist> block_list_;

@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "cc/animation/animation_target.h"
 #include "cc/animation/transform_operations.h"
 #include "chrome/browser/vr/animation.h"
@@ -662,7 +661,7 @@ class VR_UI_EXPORT UiElement : public cc::AnimationTarget {
   gfx::Transform world_space_transform_;
   bool world_space_transform_dirty_ = false;
 
-  CheckedPtr<UiElement> parent_ = nullptr;
+  UiElement* parent_ = nullptr;
   std::vector<std::unique_ptr<UiElement>> children_;
 
   // This is true if a descendant has been added and the total list has not yet
@@ -673,7 +672,7 @@ class VR_UI_EXPORT UiElement : public cc::AnimationTarget {
 
   UpdatePhase update_phase_ = kClean;
 
-  CheckedPtr<AudioDelegate> audio_delegate_ = nullptr;
+  AudioDelegate* audio_delegate_ = nullptr;
   Sounds sounds_;
 
   // Indicates that this element may be resized by parent layout elements.

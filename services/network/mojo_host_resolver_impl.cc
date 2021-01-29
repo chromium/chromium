@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
@@ -46,7 +45,7 @@ class MojoHostResolverImpl::Job {
   // Mojo disconnect handler.
   void OnMojoDisconnect();
 
-  CheckedPtr<MojoHostResolverImpl> resolver_service_;
+  MojoHostResolverImpl* resolver_service_;
   // This Job's iterator in |resolver_service_|, so the Job may be removed on
   // completion.
   std::list<Job>::iterator iter_;

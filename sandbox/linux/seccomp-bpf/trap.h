@@ -11,7 +11,6 @@
 #include <map>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "sandbox/linux/bpf_dsl/trap_registry.h"
 #include "sandbox/linux/system_headers/linux_signal.h"
 #include "sandbox/sandbox_export.h"
@@ -72,7 +71,7 @@ class SANDBOX_EXPORT Trap : public bpf_dsl::TrapRegistry {
   static Trap* global_trap_;
 
   TrapIds trap_ids_;            // Maps from TrapKeys to numeric ids
-  CheckedPtr<TrapKey> trap_array_;  // Array of TrapKeys indexed by ids
+  TrapKey* trap_array_;         // Array of TrapKeys indexed by ids
   size_t trap_array_size_;      // Currently used size of array
   size_t trap_array_capacity_;  // Currently allocated capacity of array
   bool has_unsafe_traps_;       // Whether unsafe traps have been enabled

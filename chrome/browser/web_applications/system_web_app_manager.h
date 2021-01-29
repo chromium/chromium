@@ -13,7 +13,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/web_applications/components/pending_app_manager.h"
@@ -257,7 +256,7 @@ class SystemWebAppManager {
   void RecordSystemWebAppInstallDuration(
       const base::TimeDelta& time_duration) const;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   std::unique_ptr<base::OneShotEvent> on_apps_synchronized_;
 
@@ -269,18 +268,18 @@ class SystemWebAppManager {
 
   base::flat_map<SystemAppType, SystemAppInfo> system_app_infos_;
 
-  const CheckedPtr<PrefService> pref_service_;
+  PrefService* const pref_service_;
 
   // Used to install, uninstall, and update apps. Should outlive this class.
-  CheckedPtr<PendingAppManager> pending_app_manager_ = nullptr;
+  PendingAppManager* pending_app_manager_ = nullptr;
 
-  CheckedPtr<AppRegistrar> registrar_ = nullptr;
+  AppRegistrar* registrar_ = nullptr;
 
-  CheckedPtr<AppRegistryController> registry_controller_ = nullptr;
+  AppRegistryController* registry_controller_ = nullptr;
 
-  CheckedPtr<WebAppUiManager> ui_manager_ = nullptr;
+  WebAppUiManager* ui_manager_ = nullptr;
 
-  CheckedPtr<OsIntegrationManager> os_integration_manager_ = nullptr;
+  OsIntegrationManager* os_integration_manager_ = nullptr;
 
   PrefChangeRegistrar local_state_pref_change_registrar_;
 

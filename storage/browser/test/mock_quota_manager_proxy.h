@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -90,7 +89,7 @@ class MockQuotaManagerProxy : public QuotaManagerProxy {
   ~MockQuotaManagerProxy() override;
 
  private:
-  const CheckedPtr<MockQuotaManager> mock_quota_manager_;
+  MockQuotaManager* const mock_quota_manager_;
 
   int storage_accessed_count_;
   int storage_modified_count_;

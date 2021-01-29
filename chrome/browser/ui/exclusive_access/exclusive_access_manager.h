@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/keyboard_lock_controller.h"
@@ -76,7 +75,7 @@ class ExclusiveAccessManager {
   void RecordBubbleReshownUMA(ExclusiveAccessBubbleType type);
 
  private:
-  const CheckedPtr<ExclusiveAccessContext> exclusive_access_context_;
+  ExclusiveAccessContext* const exclusive_access_context_;
   FullscreenController fullscreen_controller_;
   KeyboardLockController keyboard_lock_controller_;
   MouseLockController mouse_lock_controller_;

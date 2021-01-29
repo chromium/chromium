@@ -7,7 +7,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -42,7 +41,7 @@ class TestBackingClient : public OutputDeviceBacking::Client {
   void ReleaseCanvas() override { release_canvas_called_ = true; }
 
  private:
-  const CheckedPtr<OutputDeviceBacking> backing_;
+  OutputDeviceBacking* const backing_;
   gfx::Size viewport_size_;
   bool release_canvas_called_ = false;
 

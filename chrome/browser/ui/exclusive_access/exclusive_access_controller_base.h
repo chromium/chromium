@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_EXCLUSIVE_ACCESS_EXCLUSIVE_ACCESS_CONTROLLER_BASE_H_
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "content/public/browser/notification_observer.h"
@@ -80,11 +79,11 @@ class ExclusiveAccessControllerBase : public content::NotificationObserver {
  private:
   void UpdateNotificationRegistrations();
 
-  const CheckedPtr<ExclusiveAccessManager> manager_;
+  ExclusiveAccessManager* const manager_;
 
   content::NotificationRegistrar registrar_;
 
-  CheckedPtr<content::WebContents> tab_with_exclusive_access_ = nullptr;
+  content::WebContents* tab_with_exclusive_access_ = nullptr;
 
   // The number of bubble re-shows for the current session (reset upon exiting).
   int bubble_reshow_count_ = 0;

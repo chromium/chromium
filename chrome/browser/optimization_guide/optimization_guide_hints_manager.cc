@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
@@ -230,7 +229,7 @@ class ScopedHintsManagerRaceNavigationHintsFetchAttemptRecorder {
 
  private:
   optimization_guide::RaceNavigationFetchAttemptStatus race_attempt_status_;
-  CheckedPtr<OptimizationGuideNavigationData> navigation_data_;
+  OptimizationGuideNavigationData* navigation_data_;
 };
 
 // Returns true if the optimization type should be ignored when is newly

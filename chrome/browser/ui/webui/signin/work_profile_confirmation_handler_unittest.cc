@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -161,7 +160,7 @@ class WorkProfileConfirmationHandlerTest : public BrowserWithTestWindowTest {
  private:
   std::unique_ptr<content::TestWebUI> web_ui_;
   std::unique_ptr<WorkProfileConfirmationUI> work_profile_confirmation_ui_;
-  CheckedPtr<TestingWorkProfileConfirmationHandler> handler_;  // Not owned.
+  TestingWorkProfileConfirmationHandler* handler_;  // Not owned.
   base::UserActionTester user_action_tester_;
   std::unordered_map<std::string, int> string_to_grd_id_map_;
   base::HistogramTester histogram_tester_;

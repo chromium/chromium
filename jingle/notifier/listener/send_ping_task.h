@@ -10,7 +10,6 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "third_party/libjingle_xmpp/xmpp/xmpptask.h"
 
 namespace jingle_xmpp {
@@ -43,7 +42,7 @@ class SendPingTask : public jingle_xmpp::XmppTask {
   FRIEND_TEST_ALL_PREFIXES(SendPingTaskTest, MakePingStanza);
 
   std::string ping_task_id_;
-  CheckedPtr<Delegate> delegate_;
+  Delegate* delegate_;
 
   DISALLOW_COPY_AND_ASSIGN(SendPingTask);
 };

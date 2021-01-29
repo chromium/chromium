@@ -17,7 +17,6 @@
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
@@ -253,8 +252,8 @@ class BookmarkModelTest : public testing::Test,
     }
 
    private:
-    CheckedPtr<const BookmarkNode> node1_;
-    CheckedPtr<const BookmarkNode> node2_;
+    const BookmarkNode* node1_;
+    const BookmarkNode* node2_;
     size_t index1_;
     size_t index2_;
   };

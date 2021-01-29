@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "components/messages/android/message_wrapper.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
@@ -52,7 +51,7 @@ class SavePasswordMessageDelegate {
   void RecordMessageShownMetrics();
   void RecordDismissalReasonMetrics();
 
-  CheckedPtr<content::WebContents> web_contents_ = nullptr;
+  content::WebContents* web_contents_ = nullptr;
   std::unique_ptr<messages::MessageWrapper> message_;
   // The PasswordFormManager managing the form we're asking the user about,
   // and should update as per their decision.

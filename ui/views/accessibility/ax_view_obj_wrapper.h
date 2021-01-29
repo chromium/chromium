@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/checked_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/views/accessibility/ax_aura_obj_wrapper.h"
 #include "ui/views/view.h"
@@ -43,7 +42,7 @@ class AXViewObjWrapper : public AXAuraObjWrapper, public ViewObserver {
   void OnViewIsDeleting(View* observed_view) override;
 
  private:
-  CheckedPtr<View> view_;
+  View* view_;
 
   base::ScopedObservation<View, ViewObserver> observation_{this};
 };

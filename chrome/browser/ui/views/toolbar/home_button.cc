@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/views/toolbar/home_button.h"
 
 #include "base/bind.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -56,7 +55,7 @@ class HomePageUndoBubble : public views::BubbleDialogDelegateView {
 
   static HomePageUndoBubble* home_page_undo_bubble_;
 
-  CheckedPtr<Browser> browser_;
+  Browser* browser_;
   bool undo_value_is_ntp_;
   GURL undo_url_;
 };

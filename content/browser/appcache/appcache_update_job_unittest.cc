@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
@@ -527,7 +526,7 @@ class MockFrontend : public blink::mojom::AppCacheFrontend {
 
   // Add ability for frontend to add master entries to an inprogress update.
   blink::mojom::AppCacheEventID start_update_trigger_;
-  CheckedPtr<AppCacheUpdateJob> update_;
+  AppCacheUpdateJob* update_;
   std::vector<AppCacheHost*> update_hosts_;
 };
 
@@ -5338,8 +5337,8 @@ class AppCacheUpdateJobTest : public testing::Test,
   base::Time expect_full_update_time_newer_than_;
   base::Time expect_full_update_time_equal_to_;
   base::Time expect_token_expires_;
-  CheckedPtr<AppCache> expect_old_cache_;
-  CheckedPtr<AppCache> expect_newest_cache_;
+  AppCache* expect_old_cache_;
+  AppCache* expect_newest_cache_;
   bool expect_non_null_update_time_;
   std::vector<std::unique_ptr<MockFrontend>>
       frontends_;  // to check expected events

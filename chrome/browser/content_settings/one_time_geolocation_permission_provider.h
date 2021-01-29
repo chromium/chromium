@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/memory/checked_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/permissions/last_tab_standing_tracker_observer.h"
 #include "components/content_settings/core/browser/user_modifiable_provider.h"
@@ -65,7 +64,7 @@ class OneTimeGeolocationPermissionProvider
 
  private:
   PatternToGrantTimeMap grants_with_open_tabs_;
-  CheckedPtr<LastTabStandingTracker> last_tab_standing_tracker_ = nullptr;
+  LastTabStandingTracker* last_tab_standing_tracker_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_CONTENT_SETTINGS_ONE_TIME_GEOLOCATION_PERMISSION_PROVIDER_H_

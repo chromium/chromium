@@ -4,7 +4,6 @@
 
 #include "chrome/browser/signin/chrome_signin_url_loader_throttle.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/signin/chrome_signin_helper.h"
 #include "chrome/browser/signin/header_modification_delegate.h"
@@ -50,7 +49,7 @@ class URLLoaderThrottle::ThrottleRequestAdapter : public ChromeRequestAdapter {
   }
 
  private:
-  const CheckedPtr<URLLoaderThrottle> throttle_;
+  URLLoaderThrottle* const throttle_;
 
   DISALLOW_COPY_AND_ASSIGN(ThrottleRequestAdapter);
 };
@@ -96,8 +95,8 @@ class URLLoaderThrottle::ThrottleResponseAdapter : public ResponseAdapter {
   }
 
  private:
-  const CheckedPtr<URLLoaderThrottle> throttle_;
-  CheckedPtr<net::HttpResponseHeaders> headers_;
+  URLLoaderThrottle* const throttle_;
+  net::HttpResponseHeaders* headers_;
 
   DISALLOW_COPY_AND_ASSIGN(ThrottleResponseAdapter);
 };

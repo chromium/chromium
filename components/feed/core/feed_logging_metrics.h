@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/feed/core/feed_scheduler_host.h"
 #include "url/gurl.h"
@@ -121,9 +120,9 @@ class FeedLoggingMetrics {
   const HistoryURLCheckCallback history_url_check_callback_;
 
   // Used to access current time, injected for testing.
-  CheckedPtr<base::Clock> clock_;
+  base::Clock* clock_;
 
-  CheckedPtr<FeedSchedulerHost> scheduler_host_;
+  FeedSchedulerHost* scheduler_host_;
 
   base::WeakPtrFactory<FeedLoggingMetrics> weak_ptr_factory_{this};
 

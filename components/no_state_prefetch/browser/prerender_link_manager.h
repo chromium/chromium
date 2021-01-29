@@ -13,7 +13,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -93,7 +92,7 @@ class PrerenderLinkManager : public KeyedService,
     // If non-null, this link prerender was launched by an unswapped prerender,
     // |deferred_launcher|. When |deferred_launcher| is swapped in, the field is
     // set to null.
-    CheckedPtr<const NoStatePrefetchContents> deferred_launcher;
+    const NoStatePrefetchContents* deferred_launcher;
 
     // Initially null, |handle| is set once we start this prerender. It is owned
     // by this struct, and must be deleted before destructing this struct.
@@ -140,7 +139,7 @@ class PrerenderLinkManager : public KeyedService,
 
   bool has_shutdown_;
 
-  const CheckedPtr<NoStatePrefetchManager> manager_;
+  NoStatePrefetchManager* const manager_;
 
   // All prerenders known to this PrerenderLinkManager. Insertions are always
   // made at the back, so the oldest prerender is at the front, and the youngest

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/memory/checked_ptr.h"
 #include "base/optional.h"
 #include "content/public/browser/browser_context.h"
 #include "headless/public/headless_export.h"
@@ -123,7 +122,7 @@ class HEADLESS_EXPORT HeadlessBrowserContext::Builder {
     DISALLOW_COPY_AND_ASSIGN(MojoBindings);
   };
 
-  CheckedPtr<HeadlessBrowserImpl> browser_;
+  HeadlessBrowserImpl* browser_;
   std::unique_ptr<HeadlessBrowserContextOptions> options_;
 
   std::list<MojoBindings> mojo_bindings_;

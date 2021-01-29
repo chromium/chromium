@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/memory/checked_ptr.h"
 #include "build/build_config.h"
 #include "components/background_sync/background_sync_delegate.h"
 #include "components/site_engagement/content/site_engagement_observer.h"
@@ -59,11 +58,11 @@ class BackgroundSyncDelegateImpl
       site_engagement::EngagementType engagement_type) override;
 
  private:
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
   bool off_the_record_;
-  CheckedPtr<ukm::UkmBackgroundRecorderService> ukm_background_service_;
+  ukm::UkmBackgroundRecorderService* ukm_background_service_;
   // Same lifetime as |profile_|.
-  CheckedPtr<site_engagement::SiteEngagementService> site_engagement_service_;
+  site_engagement::SiteEngagementService* site_engagement_service_;
   std::set<url::Origin> suspended_periodic_sync_origins_;
 };
 

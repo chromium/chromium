@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/autofill/address_profiles/save_address_profile_view.h"
 
-#include "base/memory/checked_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -38,7 +37,7 @@ class SaveAddressProfileViewTest : public ChromeViewsTestBase {
   content::RenderViewHostTestEnabler test_render_host_factories_;
   std::unique_ptr<content::WebContents> test_web_contents_;
   std::unique_ptr<views::Widget> anchor_widget_;
-  CheckedPtr<SaveAddressProfileView> view_;
+  SaveAddressProfileView* view_;
 };
 
 SaveAddressProfileViewTest::SaveAddressProfileViewTest() {

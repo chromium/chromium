@@ -5,7 +5,6 @@
 #ifndef UI_VIEWS_LAYOUT_BOX_LAYOUT_VIEW_H_
 #define UI_VIEWS_LAYOUT_BOX_LAYOUT_VIEW_H_
 
-#include "base/memory/checked_ptr.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
@@ -52,7 +51,7 @@ class VIEWS_EXPORT BoxLayoutView : public View {
   void ClearFlexForView(const View* view);
 
  private:
-  const CheckedPtr<BoxLayout> layout_;
+  BoxLayout* const layout_;
 
   // TODO(tluk): Merge these with the values in BoxLayout after transition to
   // layout views is complete.

@@ -17,7 +17,6 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observer.h"
 #include "base/sequence_checker.h"
@@ -101,8 +100,8 @@ class WebTestResultPrinter {
   bool capture_text_only_;
   bool encode_binary_data_;
 
-  CheckedPtr<std::ostream> output_;
-  CheckedPtr<std::ostream> error_;
+  std::ostream* output_;
+  std::ostream* error_;
 
   DISALLOW_COPY_AND_ASSIGN(WebTestResultPrinter);
 };
@@ -190,7 +189,7 @@ class WebTestControlHost : public WebContentsObserver,
     Node(Node&& other);
     Node& operator=(Node&& other);
 
-    CheckedPtr<RenderFrameHost> render_frame_host = nullptr;
+    RenderFrameHost* render_frame_host = nullptr;
     GlobalFrameRoutingId render_frame_host_id;
     std::vector<Node*> children;
   };

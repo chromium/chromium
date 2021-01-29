@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -41,7 +40,7 @@ class ChooserDialogView : public views::DialogDelegateView,
   }
 
  private:
-  CheckedPtr<DeviceChooserContentView> device_chooser_content_view_;
+  DeviceChooserContentView* device_chooser_content_view_;
 
   DISALLOW_COPY_AND_ASSIGN(ChooserDialogView);
 };

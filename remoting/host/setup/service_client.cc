@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "remoting/base/directory_service_client.h"
 #include "remoting/base/passthrough_oauth_token_getter.h"
 #include "remoting/base/protobuf_http_status.h"
@@ -55,7 +54,7 @@ class ServiceClient::Core
 
   void NotifyError(const ProtobufHttpStatus& status);
 
-  CheckedPtr<ServiceClient::Delegate> delegate_ = nullptr;
+  ServiceClient::Delegate* delegate_ = nullptr;
   PendingRequestType pending_request_type_ = PENDING_REQUEST_NONE;
   PassthroughOAuthTokenGetter token_getter_;
   DirectoryServiceClient directory_service_client_;

@@ -11,7 +11,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/time_formatting.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string16.h"
 #include "base/strings/string_util.h"
@@ -145,7 +144,7 @@ class BookmarksObserver : public BookmarksExportObserver {
   }
 
  private:
-  CheckedPtr<base::RunLoop> loop_;
+  base::RunLoop* loop_;
 
   DISALLOW_COPY_AND_ASSIGN(BookmarksObserver);
 };

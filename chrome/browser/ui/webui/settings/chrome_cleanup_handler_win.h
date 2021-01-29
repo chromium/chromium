@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_controller_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_scanner_results_win.h"
@@ -96,9 +95,9 @@ class ChromeCleanupHandler
   void GetPluralString(int id, const base::ListValue* args);
 
   // Raw pointer to a singleton. Must outlive this object.
-  CheckedPtr<safe_browsing::ChromeCleanerController> controller_;
+  safe_browsing::ChromeCleanerController* controller_;
 
-  CheckedPtr<Profile> profile_;
+  Profile* profile_;
 
   DISALLOW_COPY_AND_ASSIGN(ChromeCleanupHandler);
 };

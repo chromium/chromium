@@ -21,7 +21,6 @@
 #include "base/bind.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
-#include "base/memory/checked_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_math.h"
@@ -218,7 +217,7 @@ class RasterImplementation::TransferCacheSerializeHelperImpl final
     return bytes_to_write;
   }
 
-  const CheckedPtr<RasterImplementation> ri_;
+  RasterImplementation* const ri_;
   uint32_t end_offset_of_last_inlined_entry_ = 0u;
 
   DISALLOW_COPY_AND_ASSIGN(TransferCacheSerializeHelperImpl);
@@ -330,16 +329,16 @@ class RasterImplementation::PaintOpSerializer {
   bool valid() const { return !!buffer_; }
 
  private:
-  const CheckedPtr<RasterImplementation> ri_;
-  CheckedPtr<char> buffer_;
-  const CheckedPtr<cc::DecodeStashingImageProvider> stashing_image_provider_;
-  const CheckedPtr<TransferCacheSerializeHelperImpl> transfer_cache_helper_;
-  CheckedPtr<ClientFontManager> font_manager_;
+  RasterImplementation* const ri_;
+  char* buffer_;
+  cc::DecodeStashingImageProvider* const stashing_image_provider_;
+  TransferCacheSerializeHelperImpl* const transfer_cache_helper_;
+  ClientFontManager* font_manager_;
 
   uint32_t written_bytes_ = 0;
   uint32_t free_bytes_ = 0;
 
-  CheckedPtr<size_t> max_op_size_hint_;
+  size_t* max_op_size_hint_;
 
   DISALLOW_COPY_AND_ASSIGN(PaintOpSerializer);
 };

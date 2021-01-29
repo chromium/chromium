@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/string16.h"
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
@@ -173,11 +172,11 @@ class MediaGalleriesPermissionController
   Profile* GetProfile();
 
   // The web contents from which the request originated.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   // This is just a reference, but it's assumed that it won't become invalid
   // while the dialog is showing.
-  CheckedPtr<const extensions::Extension> extension_;
+  const extensions::Extension* extension_;
 
   // Mapping between pref ids and dialog ids.
   DialogIdMap id_map_;
@@ -204,7 +203,7 @@ class MediaGalleriesPermissionController
 
   // The model that tracks galleries and extensions' permissions.
   // This is the authoritative source for gallery information.
-  CheckedPtr<MediaGalleriesPreferences> preferences_;
+  MediaGalleriesPreferences* preferences_;
 
   // The view that's showing.
   std::unique_ptr<MediaGalleriesDialog> dialog_;

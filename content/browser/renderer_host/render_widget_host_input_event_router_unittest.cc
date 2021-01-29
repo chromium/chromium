@@ -5,7 +5,6 @@
 #include "content/browser/renderer_host/render_widget_host_input_event_router.h"
 #include <memory>
 
-#include "base/memory/checked_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -67,8 +66,8 @@ class MockFrameConnector : public CrossProcessFrameConnector {
   }
 
  private:
-  CheckedPtr<RenderWidgetHostViewBase> parent_view_;
-  CheckedPtr<RenderWidgetHostViewBase> root_view_;
+  RenderWidgetHostViewBase* parent_view_;
+  RenderWidgetHostViewBase* root_view_;
 
   DISALLOW_COPY_AND_ASSIGN(MockFrameConnector);
 };
@@ -127,7 +126,7 @@ class StubHitTestQuery : public viz::HitTestQuery {
   }
 
  private:
-  CheckedPtr<const RenderWidgetHostViewBase> hittest_result_;
+  const RenderWidgetHostViewBase* hittest_result_;
   const bool query_renderer_;
 };
 

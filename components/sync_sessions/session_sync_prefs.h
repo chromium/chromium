@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 
 class PrefService;
 class PrefRegistrySimple;
@@ -28,7 +27,7 @@ class SessionSyncPrefs {
   void ClearLegacySyncSessionsGUID();
 
  private:
-  const CheckedPtr<PrefService> pref_service_;
+  PrefService* const pref_service_;
 
   DISALLOW_COPY_AND_ASSIGN(SessionSyncPrefs);
 };

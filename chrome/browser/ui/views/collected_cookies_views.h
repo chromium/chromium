@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane_listener.h"
@@ -87,36 +86,34 @@ class CollectedCookiesViews
   void AddContentException(views::TreeView* tree_view, ContentSetting setting);
 
   // The web contents.
-  CheckedPtr<content::WebContents> web_contents_;
+  content::WebContents* web_contents_;
 
   // Assorted views.
-  CheckedPtr<views::Label> allowed_label_ = nullptr;
-  CheckedPtr<views::Label> blocked_label_ = nullptr;
+  views::Label* allowed_label_ = nullptr;
+  views::Label* blocked_label_ = nullptr;
 
-  CheckedPtr<views::TreeView> allowed_cookies_tree_ = nullptr;
-  CheckedPtr<views::TreeView> blocked_cookies_tree_ = nullptr;
+  views::TreeView* allowed_cookies_tree_ = nullptr;
+  views::TreeView* blocked_cookies_tree_ = nullptr;
 
-  CheckedPtr<views::LabelButton> block_allowed_button_ = nullptr;
-  CheckedPtr<views::LabelButton> delete_allowed_button_ = nullptr;
-  CheckedPtr<views::LabelButton> allow_blocked_button_ = nullptr;
-  CheckedPtr<views::LabelButton> for_session_blocked_button_ = nullptr;
+  views::LabelButton* block_allowed_button_ = nullptr;
+  views::LabelButton* delete_allowed_button_ = nullptr;
+  views::LabelButton* allow_blocked_button_ = nullptr;
+  views::LabelButton* for_session_blocked_button_ = nullptr;
 
   std::unique_ptr<CookiesTreeModel> allowed_cookies_tree_model_;
   std::unique_ptr<CookiesTreeModel> blocked_cookies_tree_model_;
 
-  CheckedPtr<CookiesTreeViewDrawingProvider> allowed_cookies_drawing_provider_ =
-      nullptr;
-  CheckedPtr<CookiesTreeViewDrawingProvider> blocked_cookies_drawing_provider_ =
-      nullptr;
+  CookiesTreeViewDrawingProvider* allowed_cookies_drawing_provider_ = nullptr;
+  CookiesTreeViewDrawingProvider* blocked_cookies_drawing_provider_ = nullptr;
 
-  CheckedPtr<CookieInfoView> cookie_info_view_ = nullptr;
+  CookieInfoView* cookie_info_view_ = nullptr;
 
-  CheckedPtr<InfobarView> infobar_ = nullptr;
+  InfobarView* infobar_ = nullptr;
 
   // Weak pointers to the allowed and blocked panes so that they can be
   // shown/hidden as needed.
-  CheckedPtr<views::View> allowed_buttons_pane_ = nullptr;
-  CheckedPtr<views::View> blocked_buttons_pane_ = nullptr;
+  views::View* allowed_buttons_pane_ = nullptr;
+  views::View* blocked_buttons_pane_ = nullptr;
 
   bool status_changed_ = false;
 

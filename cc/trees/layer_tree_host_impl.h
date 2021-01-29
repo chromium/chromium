@@ -18,7 +18,6 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/mru_cache.h"
-#include "base/memory/checked_ptr.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/optional.h"
@@ -227,7 +226,7 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
     base::Optional<uint32_t> deadline_in_frames;
     bool use_default_lower_bound_deadline = false;
     viz::CompositorRenderPassList render_passes;
-    CheckedPtr<const RenderSurfaceList> render_surface_list = nullptr;
+    const RenderSurfaceList* render_surface_list = nullptr;
     LayerImplList will_draw_layers;
     bool has_no_damage = false;
     bool may_contain_video = false;

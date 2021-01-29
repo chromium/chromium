@@ -5,7 +5,6 @@
 #include <string>
 
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -141,7 +140,7 @@ class ExtensionInstalledBubbleView : public BubbleSyncPromoDelegate,
 
   void LinkClicked();
 
-  const CheckedPtr<Browser> browser_;
+  Browser* const browser_;
   const std::unique_ptr<ExtensionInstalledBubbleModel> model_;
 
   DISALLOW_COPY_AND_ASSIGN(ExtensionInstalledBubbleView);

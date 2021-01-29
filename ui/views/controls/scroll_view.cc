@@ -10,7 +10,6 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
-#include "base/memory/checked_ptr.h"
 #include "base/numerics/ranges.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -174,7 +173,7 @@ class ScrollView::Viewport : public View {
     return parent() && scroll_view_->contents_viewport_ == this;
   }
 
-  CheckedPtr<ScrollView> scroll_view_;
+  ScrollView* scroll_view_;
 
   DISALLOW_COPY_AND_ASSIGN(Viewport);
 };
