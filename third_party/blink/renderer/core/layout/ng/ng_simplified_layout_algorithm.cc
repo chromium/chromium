@@ -156,7 +156,11 @@ NGSimplifiedLayoutAlgorithm::NGSimplifiedLayoutAlgorithm(
   } else {
     LayoutUnit old_block_size =
         NGFragment(writing_direction_, physical_fragment).BlockSize();
-    DCHECK_EQ(old_block_size, new_block_size);
+#if DCHECK_IS_ON()
+    // Tables don't respect the typical block-sizing rules.
+    if (!physical_fragment.IsTableNG())
+      DCHECK_EQ(old_block_size, new_block_size);
+#endif
     container_builder_.SetFragmentBlockSize(old_block_size);
   }
 
