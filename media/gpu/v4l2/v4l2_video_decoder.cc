@@ -120,7 +120,8 @@ V4L2VideoDecoder::~V4L2VideoDecoder() {
 void V4L2VideoDecoder::Initialize(const VideoDecoderConfig& config,
                                   CdmContext* cdm_context,
                                   InitCB init_cb,
-                                  const OutputCB& output_cb) {
+                                  const OutputCB& output_cb,
+                                  const WaitingCB& /*waiting_cb*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DCHECK(config.IsValidConfig());
   DCHECK(state_ == State::kUninitialized || state_ == State::kDecoding);

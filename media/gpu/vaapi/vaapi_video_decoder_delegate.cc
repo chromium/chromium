@@ -40,7 +40,8 @@ VaapiVideoDecoderDelegate::VaapiVideoDecoderDelegate(
           std::move(on_protected_session_update_cb)),
       encryption_scheme_(encryption_scheme),
       protected_session_state_(ProtectedSessionState::kNotCreated),
-      scaled_surface_id_(VA_INVALID_ID) {
+      scaled_surface_id_(VA_INVALID_ID),
+      performing_recovery_(false) {
   DCHECK(vaapi_wrapper_);
   DCHECK(vaapi_dec_);
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -65,6 +66,15 @@ void VaapiVideoDecoderDelegate::set_vaapi_wrapper(
 }
 
 void VaapiVideoDecoderDelegate::OnVAContextDestructionSoon() {}
+
+bool VaapiVideoDecoderDelegate::HasInitiatedProtectedRecovery() {
+  if (protected_session_state_ != ProtectedSessionState::kNeedsRecovery)
+    return false;
+
+  performing_recovery_ = true;
+  protected_session_state_ = ProtectedSessionState::kNotCreated;
+  return true;
+}
 
 bool VaapiVideoDecoderDelegate::SetDecryptConfig(
     std::unique_ptr<DecryptConfig> decrypt_config) {
@@ -213,6 +223,24 @@ VaapiVideoDecoderDelegate::SetupDecryptDecode(
   protected_session_state_ = ProtectedSessionState::kFailed;
 #endif
   return protected_session_state_;
+}
+
+bool VaapiVideoDecoderDelegate::NeedsProtectedSessionRecovery() {
+  if (!IsEncryptedSession() || !vaapi_wrapper_->IsProtectedSessionDead() ||
+      performing_recovery_) {
+    return false;
+  }
+
+  VLOG(2) << "Protected session loss detected, initiating recovery";
+  protected_session_state_ = ProtectedSessionState::kNeedsRecovery;
+  hw_key_data_map_.clear();
+  hw_identifier_.clear();
+  vaapi_wrapper_->DestroyProtectedSession();
+  return true;
+}
+
+void VaapiVideoDecoderDelegate::ProtectedDecodedSucceeded() {
+  performing_recovery_ = false;
 }
 
 bool VaapiVideoDecoderDelegate::FillDecodeScalingIfNeeded(

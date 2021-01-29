@@ -10,3 +10,4 @@ VAStatus vaDestroyProtectedSession(VADisplay dpy, VAProtectedSessionID protected
 VAStatus vaAttachProtectedSession(VADisplay dpy, VAContextID reserved, VAProtectedSessionID protected_session);
 VAStatus vaDetachProtectedSession(VADisplay dpy, VAContextID reserved);
 VAStatus vaProtectedSessionHwUpdate(VADisplay dpy, VAProtectedSessionID protected_session, VABufferID buf_id);
+VAStatus vaProtectedSessionExecute(VADisplay dpy, VAProtectedSessionID protected_session, VABufferID buf_id);

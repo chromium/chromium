@@ -477,6 +477,12 @@ DecodeStatus H265VaapiVideoDecoderDelegate::SubmitDecode(
       vaapi_pic->GetVADecodeSurfaceID());
   ref_pic_list_pocs_.clear();
   encryption_segment_info_.clear();
+  if (!success && NeedsProtectedSessionRecovery())
+    return DecodeStatus::kTryAgain;
+
+  if (success && IsEncryptedSession())
+    ProtectedDecodedSucceeded();
+
   return success ? DecodeStatus::kOk : DecodeStatus::kFail;
 }
 
