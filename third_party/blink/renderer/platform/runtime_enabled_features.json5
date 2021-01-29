@@ -1418,7 +1418,7 @@
     },
     {
       name: "OriginIsolationHeader",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "OriginPolicy",

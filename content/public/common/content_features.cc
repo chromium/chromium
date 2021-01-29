@@ -467,7 +467,7 @@ const base::Feature kNotificationTriggers{"NotificationTriggers",
 // The name is "OriginIsolationHeader" because that was the old name when the
 // feature was under development.
 const base::Feature kOriginIsolationHeader{"OriginIsolationHeader",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Origin Policy. See https://crbug.com/751996
 const base::Feature kOriginPolicy{"OriginPolicy",

@@ -9790,6 +9790,7 @@ namespace CSS
     getter onwheel
     getter opener
     getter origin
+    getter originAgentCluster
     getter outerHeight
     getter outerWidth
     getter pageXOffset
