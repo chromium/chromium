@@ -5,6 +5,7 @@
 #ifndef NET_COOKIES_COOKIE_ACCESS_DELEGATE_H_
 #define NET_COOKIES_COOKIE_ACCESS_DELEGATE_H_
 
+#include "base/containers/flat_map.h"
 #include "net/base/net_export.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
@@ -47,6 +48,10 @@ class NET_EXPORT CookieAccessDelegate {
   // Returns whether `site` belongs to a non-singleton First-Party Set.
   virtual bool IsInNontrivialFirstPartySet(
       const net::SchemefulSite& site) const = 0;
+
+  // Returns the First-Party Sets.
+  virtual base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
+  RetrieveFirstPartySets() const = 0;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CookieAccessDelegate);

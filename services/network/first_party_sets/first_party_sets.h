@@ -55,6 +55,10 @@ class FirstPartySets {
 
   int64_t size() const { return sets_.size(); }
 
+  // Returns a mapping from owner to set members. For convenience of iteration,
+  // the members of the set includes the owner.
+  base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>> Sets() const;
+
  private:
   // We must ensure there's no intersection between the manually-specified set
   // and the sets that came from Component Updater. (When reconciling the

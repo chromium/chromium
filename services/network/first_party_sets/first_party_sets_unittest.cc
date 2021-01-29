@@ -28,6 +28,10 @@ MATCHER_P(SerializesTo, want, "") {
   return testing::ExplainMatchResult(testing::Eq(want), got, result_listener);
 }
 
+TEST(FirstPartySets, Sets_IsEmpty) {
+  EXPECT_THAT(FirstPartySets().Sets(), IsEmpty());
+}
+
 TEST(FirstPartySets, ParsesJSON) {
   EXPECT_THAT(FirstPartySets().ParseAndSet("[]"), Pointee(IsEmpty()));
 }
@@ -715,6 +719,19 @@ TEST_F(FirstPartySetsTest, IsInNontrivialFirstPartySet) {
 
   EXPECT_FALSE(sets().IsInNontrivialFirstPartySet(
       net::SchemefulSite(GURL("https://nonmember.test"))));
+}
+
+TEST_F(FirstPartySetsTest, Sets_NonEmpty) {
+  EXPECT_THAT(
+      sets().Sets(),
+      UnorderedElementsAre(
+          Pair(SerializesTo("https://example.test"),
+               UnorderedElementsAre(SerializesTo("https://example.test"),
+                                    SerializesTo("https://member1.test"),
+                                    SerializesTo("https://member3.test"))),
+          Pair(SerializesTo("https://foo.test"),
+               UnorderedElementsAre(SerializesTo("https://foo.test"),
+                                    SerializesTo("https://member2.test")))));
 }
 
 }  // namespace network

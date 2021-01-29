@@ -4600,4 +4600,69 @@ TEST_F(CookieMonsterTest, CookiePortReadDiffersFromSetHistogram) {
                                CookieMonster::CookieSentToSamePort::kYes, 2);
 }
 
+class FirstPartySetEnabledCookieMonsterTest : public CookieMonsterTest {
+ public:
+  FirstPartySetEnabledCookieMonsterTest()
+      : cm_(nullptr /* store */, nullptr /* netlog */) {
+    std::unique_ptr<TestCookieAccessDelegate> access_delegate =
+        std::make_unique<TestCookieAccessDelegate>();
+    access_delegate_ = access_delegate.get();
+    cm_.SetCookieAccessDelegate(std::move(access_delegate));
+
+    feature_list_.InitAndEnableFeature(features::kFirstPartySets);
+  }
+
+  ~FirstPartySetEnabledCookieMonsterTest() override = default;
+
+  CookieMonster* cm() { return &cm_; }
+
+ protected:
+  // The FeatureList must be before the CookieMonster because the CookieMonster
+  // destructor expects the state of the features to be the same as when it's in
+  // use.
+  base::test::ScopedFeatureList feature_list_;
+  CookieMonster cm_;
+  TestCookieAccessDelegate* access_delegate_;
+};
+
+TEST_F(FirstPartySetEnabledCookieMonsterTest, RecordsPeriodicFPSSizes) {
+  access_delegate_->SetFirstPartySets({
+      {
+          SchemefulSite(GURL("https://owner1.test")),
+          {
+              SchemefulSite(GURL("https://owner1.test")),
+              SchemefulSite(GURL("https://member1.test")),
+              SchemefulSite(GURL("https://member2.test")),
+          },
+      },
+      {
+          SchemefulSite(GURL("https://owner2.test")),
+          {
+              SchemefulSite(GURL("https://owner2.test")),
+              SchemefulSite(GURL("https://member3.test")),
+              SchemefulSite(GURL("https://member4.test")),
+          },
+      },
+  });
+
+  ASSERT_TRUE(SetCookie(cm(), GURL("https://owner1.test"), kValidCookieLine));
+  ASSERT_TRUE(SetCookie(cm(), GURL("https://member1.test"), kValidCookieLine));
+  ASSERT_TRUE(SetCookie(cm(), GURL("https://member2.test"), kValidCookieLine));
+  ASSERT_TRUE(SetCookie(cm(), GURL("https://owner2.test"), kValidCookieLine));
+  ASSERT_TRUE(SetCookie(cm(), GURL("https://member3.test"), kValidCookieLine));
+  // No cookie set for member4.test.
+  ASSERT_TRUE(
+      SetCookie(cm(), GURL("https://unrelated1.test"), kValidCookieLine));
+  ASSERT_TRUE(
+      SetCookie(cm(), GURL("https://unrelated2.test"), kValidCookieLine));
+  ASSERT_TRUE(
+      SetCookie(cm(), GURL("https://unrelated3.test"), kValidCookieLine));
+
+  base::HistogramTester histogram_tester;
+  EXPECT_TRUE(cm()->DoRecordPeriodicStatsForTesting());
+  EXPECT_THAT(histogram_tester.GetAllSamples("Cookie.PerFirstPartySetCount"),
+              testing::ElementsAre(base::Bucket(2 /* min */, 1 /* samples */),
+                                   base::Bucket(3 /* min */, 1 /* samples */)));
+}
+
 }  // namespace net

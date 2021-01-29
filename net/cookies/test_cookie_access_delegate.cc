@@ -4,6 +4,7 @@
 
 #include "net/cookies/test_cookie_access_delegate.h"
 
+#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_util.h"
 
 namespace net {
@@ -44,6 +45,11 @@ bool TestCookieAccessDelegate::IsInNontrivialFirstPartySet(
   return false;
 }
 
+base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>
+TestCookieAccessDelegate::RetrieveFirstPartySets() const {
+  return first_party_sets_;
+}
+
 void TestCookieAccessDelegate::SetExpectationForCookieDomain(
     const std::string& cookie_domain,
     CookieAccessSemantics access_semantics) {
@@ -61,6 +67,12 @@ std::string TestCookieAccessDelegate::GetKeyForDomainValue(
     const std::string& domain) const {
   DCHECK(!domain.empty());
   return cookie_util::CookieDomainAsHost(domain);
+}
+
+void TestCookieAccessDelegate::SetFirstPartySets(
+    const base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>&
+        sets) {
+  first_party_sets_ = sets;
 }
 
 }  // namespace net

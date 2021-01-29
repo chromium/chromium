@@ -100,7 +100,7 @@ class NET_EXPORT SchemefulSite {
   bool opaque() const { return site_as_origin_.opaque(); }
 
   bool has_registrable_domain_or_host() const {
-    return !site_as_origin_.host().empty();
+    return !registrable_domain_or_host().empty();
   }
 
   // Testing only function which allows tests to access the underlying
@@ -132,6 +132,9 @@ class NET_EXPORT SchemefulSite {
   // in this case, and unfriend IsolationInfo.
   friend class IsolationInfo;
 
+  // Needed because cookies do not account for scheme.
+  friend class CookieMonster;
+
   FRIEND_TEST_ALL_PREFIXES(SchemefulSiteTest, OpaqueSerialization);
 
   struct ObtainASiteResult {
@@ -158,6 +161,15 @@ class NET_EXPORT SchemefulSite {
   // for legacy same-site cookie logic that does not check schemes. Private to
   // restrict usage.
   bool SchemelesslyEqual(const SchemefulSite& other) const;
+
+  // Returns the host of the underlying `origin`, which will usually be the
+  // registrable domain. This is private because if it were public, it would
+  // trivially allow circumvention of the "Schemeful"-ness of this class.
+  // However, the CookieMonster currently needs access to this, since it ignores
+  // the schemes of domains.
+  std::string registrable_domain_or_host() const {
+    return site_as_origin_.host();
+  }
 
   // Origin which stores the result of running the steps documented at
   // https://html.spec.whatwg.org/multipage/origin.html#obtain-a-site.

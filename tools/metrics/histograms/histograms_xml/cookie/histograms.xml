@@ -238,6 +238,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cookie.PerFirstPartySetCount" units="cookies"
+    expires_after="2022-01-05">
+  <owner>cfredric@chromium.org</owner>
+  <owner>chlily@chromium.org</owner>
+  <summary>
+    This histogram records, for each (nontrivial) First-Party Set, the number of
+    cookies in the cookie store that belong to a member or owner of that set.
+    Recorded every 10 minutes of active browsing time.
+  </summary>
+</histogram>
+
 <histogram name="Cookie.Port.OmniboxURLNavigation.Localhost"
     enum="InterestingCookiePorts" expires_after="2021-11-04">
   <owner>bingler@chromium.org</owner>
