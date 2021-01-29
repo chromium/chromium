@@ -7,10 +7,13 @@
 #include "ash/public/cpp/ash_pref_names.h"
 #include "ash/public/cpp/network_config_service.h"
 #include "ash/public/cpp/notification_utils.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/model/system_tray_model.h"
 #include "base/timer/timer.h"
+#include "components/onc/onc_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -38,7 +41,8 @@ bool DoesCellularDeviceExist(
 }
 
 void OnCellularSetupNotificationClicked() {
-  // TODO(crbug.com/1093185) Handle the notification being clicked.
+  Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(
+      ::onc::network_type::kCellular);
 }
 
 // Returns the value of kCanCellularSetupNotificationBeShown for the last active

@@ -383,6 +383,10 @@ void SystemTrayClient::ShowNetworkConfigure(const std::string& network_id) {
 
 void SystemTrayClient::ShowNetworkCreate(const std::string& type) {
   if (type == ::onc::network_type::kCellular) {
+    if (chromeos::features::IsCellularActivationUiEnabled()) {
+      ShowSettingsCellularSetup(/*show_psim_flow=*/false);
+      return;
+    }
     const chromeos::NetworkState* cellular =
         chromeos::NetworkHandler::Get()
             ->network_state_handler()
@@ -395,11 +399,12 @@ void SystemTrayClient::ShowNetworkCreate(const std::string& type) {
   chromeos::InternetConfigDialog::ShowDialogForNetworkType(type);
 }
 
-void SystemTrayClient::ShowSettingsCellularSetupPsimFlow() {
+void SystemTrayClient::ShowSettingsCellularSetup(bool show_psim_flow) {
   // TODO(crbug.com/1093185) Add metrics action recorder
   std::string page = chromeos::settings::mojom::kCellularNetworksSubpagePath;
   page += "&showCellularSetup=true";
-  page += "&showPsimFlow=true";
+  if (show_psim_flow)
+    page += "&showPsimFlow=true";
   ShowSettingsSubPageForActiveUser(page);
 }
 
@@ -458,7 +463,7 @@ void SystemTrayClient::ShowNetworkSettingsHelper(const std::string& network_id,
     // should open cellular setup dialogs' psim flow if the device has
     // |kUpdatedCellularActivationUi| feature enabled and is a non-activated
     // cellular network
-    ShowSettingsCellularSetupPsimFlow();
+    ShowSettingsCellularSetup(/*show_psim_flow=*/true);
     return;
   }
 

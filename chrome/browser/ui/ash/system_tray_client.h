@@ -75,7 +75,7 @@ class SystemTrayClient : public ash::SystemTrayClient,
   void ShowEnterpriseInfo() override;
   void ShowNetworkConfigure(const std::string& network_id) override;
   void ShowNetworkCreate(const std::string& type) override;
-  void ShowSettingsCellularSetupPsimFlow() override;
+  void ShowSettingsCellularSetup(bool show_psim_flow) override;
   void ShowThirdPartyVpnCreate(const std::string& extension_id) override;
   void ShowArcVpnCreate(const std::string& app_id) override;
   void ShowNetworkSettings(const std::string& network_id) override;

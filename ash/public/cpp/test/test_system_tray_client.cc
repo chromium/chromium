@@ -63,7 +63,7 @@ void TestSystemTrayClient::ShowNetworkConfigure(const std::string& network_id) {
 
 void TestSystemTrayClient::ShowNetworkCreate(const std::string& type) {}
 
-void TestSystemTrayClient::ShowSettingsCellularSetupPsimFlow() {}
+void TestSystemTrayClient::ShowSettingsCellularSetup(bool show_psim_flow) {}
 
 void TestSystemTrayClient::ShowThirdPartyVpnCreate(
     const std::string& extension_id) {}

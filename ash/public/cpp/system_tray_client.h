@@ -93,8 +93,10 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // (see onc_spec.md). TODO(stevenjb): Use NetworkType from onc.mojo (TBD).
   virtual void ShowNetworkCreate(const std::string& type) = 0;
 
-  // Opens the physical SIM cellular setup flow in OS Settings.
-  virtual void ShowSettingsCellularSetupPsimFlow() = 0;
+  // Opens the cellular setup flow in OS Settings. |show_psim_flow| indicates
+  // if we should navigate to the physical SIM setup flow or to the page that
+  // allows the user to select which flow they wish to enter (pSIM or eSIM).
+  virtual void ShowSettingsCellularSetup(bool show_psim_flow) = 0;
 
   // Shows the "add network" UI to create a third-party extension-backed VPN
   // connection (e.g. Cisco AnyConnect).

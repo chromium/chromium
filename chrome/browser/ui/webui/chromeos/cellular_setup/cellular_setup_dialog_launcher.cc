@@ -14,7 +14,7 @@ namespace cellular_setup {
 
 void OpenCellularSetupDialog(const std::string& cellular_network_guid) {
   if (chromeos::features::IsCellularActivationUiEnabled())
-    SystemTrayClient::Get()->ShowSettingsCellularSetupPsimFlow();
+    SystemTrayClient::Get()->ShowSettingsCellularSetup(/*show_psim_flow=*/true);
   else
     MobileSetupDialog::ShowByNetworkId(cellular_network_guid);
 }
