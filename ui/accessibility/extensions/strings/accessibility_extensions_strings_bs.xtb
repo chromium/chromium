@@ -18,7 +18,7 @@
 <translation id="2648340354586434750">Držite pritisnuto &lt;span class='key'&gt;Opcija&lt;/span&gt; da se pomjerate riječ po riječ.</translation>
 <translation id="2795227192542594043">Ova ekstenzija vam daje pokretni kursor u web stranici, što omogućuje da odaberete tekst putem tastature.</translation>
 <translation id="2808027189040546825">1. korak: Odaberite red s najslabije vidljivim zvijezdama:</translation>
-<translation id="2965611304828530558">&lt;p&gt;Kada dođete do nekog linka ili kontrole, taj element se automatski fokusira.   Pritisnite tipku &lt;span class='key'&gt;Enter&lt;/span&gt; da biste kliknuli na link ili dugme. &lt;/p&gt; &lt;p&gt;   Kada fokusirana kontrola (poput tekstualnog okvira ili okvira s listom) obuhvata   tipke sa strelicama, pritisnite tipku &lt;span class='key'&gt;Esc&lt;/span&gt;, a zatim   strelicu ulijevo ili udesno da nastavite pregledanje znakom za umetanje. &lt;/p&gt; &lt;p&gt;   Možete pritisnuti i tipku &lt;span class='key'&gt;Tab&lt;/span&gt; da se pomjerite na   sljedeću kontrolu koja se može fokusirati. &lt;/p&gt;</translation>
+<translation id="2965611304828530558">&lt;p&gt;Kada dođete do nekog linka ili kontrole, taj element se automatski fokusira.   Pritisnite tipku &lt;span class='key'&gt;Enter&lt;/span&gt; da biste kliknuli na link ili dugme. &lt;/p&gt; &lt;p&gt;   Kada fokusirana kontrola (poput okvira za tekst ili okvira s listom) obuhvata   tipke sa strelicama, pritisnite tipku &lt;span class='key'&gt;Esc&lt;/span&gt;, a zatim   strelicu ulijevo ili udesno da nastavite pregledanje znakom za umetanje. &lt;/p&gt; &lt;p&gt;   Možete pritisnuti i tipku &lt;span class='key'&gt;Tab&lt;/span&gt; da se pomjerite na   sljedeću kontrolu koja se može fokusirati. &lt;/p&gt;</translation>
 <translation id="3252573918265662711">Podešavanje</translation>
 <translation id="3410969471888629217">Zaboravi prilagodbe web lokacije</translation>
 <translation id="3435896845095436175">Omogući</translation>
@@ -61,7 +61,7 @@
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="786423340267544509">Dodaj okvir elementima s atributima aria-describedat ili longdesc.</translation>
 <translation id="7942349550061667556">Crvena</translation>
-<translation id="8260673944985561857">Opcije pregledanja znakom za umetanje</translation>
+<translation id="8260673944985561857">Opcije navigacije kursorom</translation>
 <translation id="8321034316479930120">Pravila za animaciju</translation>
 <translation id="8480209185614411573">Visoki kontrast</translation>
 <translation id="8609925175482059018">Pritisnite &lt;span class='key'&gt;F7&lt;/span&gt; da uključite pregledanje znakom za umetanje. Pritisnite ponovo da ga isključite.</translation>
