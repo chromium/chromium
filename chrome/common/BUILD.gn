@@ -607,10 +607,6 @@ static_library("constants") {
     "//third_party/widevine/cdm:buildflags",
   ]
 
-  if (enable_extensions) {
-    public_deps += [ "//components/services/app_service/public/mojom" ]
-  }
-
   if (is_android) {
     sources += [ "chrome_paths_android.cc" ]
 
