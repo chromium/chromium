@@ -3979,8 +3979,8 @@
 
   {
     "name": "percent-based-scrolling",
-    "owners": [ "dlibby@microsoft.com", "sarsha@microsoft.com" ],
-    "expiry_milestone": 89
+    "owners": [ "arakeri@microsoft.com", "gerchiko@microsoft.com" ],
+    "expiry_milestone": 100
   },
   {
     "name": "permission-chip",
