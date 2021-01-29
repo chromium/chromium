@@ -508,7 +508,7 @@ void OpaqueBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
                 button->GetClassName());
       views::FrameCaptionButton* frame_caption_button =
           static_cast<views::FrameCaptionButton*>(button);
-      frame_caption_button->SetPaintAsActive(active);
+      frame_caption_button->set_paint_as_active(active);
       frame_caption_button->SetBackgroundColor(frame_color);
     }
   }
@@ -541,7 +541,7 @@ views::Button* OpaqueBrowserFrameView::CreateFrameCaptionButton(
     const gfx::VectorIcon& icon_image) {
   views::FrameCaptionButton* button = new views::FrameCaptionButton(
       views::Button::PressedCallback(), icon_type, ht_component);
-  button->SetImage(button->GetIcon(), views::FrameCaptionButton::ANIMATE_NO,
+  button->SetImage(button->icon(), views::FrameCaptionButton::ANIMATE_NO,
                    icon_image);
   return button;
 }

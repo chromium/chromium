@@ -178,7 +178,7 @@ TEST_F(NonClientFrameViewAshTest, ActiveStateOfButtonMatchesWidget) {
   EXPECT_TRUE(widget->IsActive());
   // The paint state doesn't change till the next paint.
   ui::DrawWaiterForTest::WaitForCommit(widget->GetLayer()->GetCompositor());
-  EXPECT_TRUE(test_api.size_button()->GetPaintAsActive());
+  EXPECT_TRUE(test_api.size_button()->paint_as_active());
 
   // Activate a different widget so the original one loses activation.
   std::unique_ptr<views::Widget> widget2 =
@@ -187,7 +187,7 @@ TEST_F(NonClientFrameViewAshTest, ActiveStateOfButtonMatchesWidget) {
   ui::DrawWaiterForTest::WaitForCommit(widget->GetLayer()->GetCompositor());
 
   EXPECT_FALSE(widget->IsActive());
-  EXPECT_FALSE(test_api.size_button()->GetPaintAsActive());
+  EXPECT_FALSE(test_api.size_button()->paint_as_active());
 }
 
 // Verify that NonClientFrameViewAsh returns the correct minimum and maximum
