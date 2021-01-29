@@ -2003,13 +2003,15 @@ class MockURLLoader : public network::mojom::URLLoader {
           upload_data_pipe_.reset();
           weak_factory_for_data_pipe_callbacks_.InvalidateWeakPtrs();
           read_run_loop_ = std::make_unique<base::RunLoop>();
-          mojo::DataPipe data_pipe;
+          mojo::ScopedDataPipeProducerHandle producer_handle;
+          ASSERT_EQ(
+              mojo::CreateDataPipe(nullptr, producer_handle, upload_data_pipe_),
+              MOJO_RESULT_OK);
           data_pipe_getter_->Read(
-              std::move(data_pipe.producer_handle),
+              std::move(producer_handle),
               base::BindOnce(
                   &MockURLLoader::OnReadComplete,
                   weak_factory_for_data_pipe_callbacks_.GetWeakPtr()));
-          upload_data_pipe_ = std::move(data_pipe.consumer_handle);
           // Continue instead of break, to avoid spinning the message loop -
           // only wait for the response if next step indicates to do so.
           continue;
@@ -2113,10 +2115,10 @@ class MockURLLoader : public network::mojom::URLLoader {
           break;
         }
         case TestLoaderEvent::kBodyBufferReceived: {
-          mojo::DataPipe data_pipe(1024);
-          body_stream_ = std::move(data_pipe.producer_handle);
-          client_->OnStartLoadingResponseBody(
-              std::move(data_pipe.consumer_handle));
+          mojo::ScopedDataPipeConsumerHandle consumer_handle;
+          ASSERT_EQ(mojo::CreateDataPipe(1024, body_stream_, consumer_handle),
+                    MOJO_RESULT_OK);
+          client_->OnStartLoadingResponseBody(std::move(consumer_handle));
           break;
         }
         case TestLoaderEvent::kBodyDataRead: {

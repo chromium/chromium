@@ -266,12 +266,16 @@ void TestURLLoaderFactory::SimulateResponse(
   }
 
   if (status.error_code == net::OK) {
-    mojo::DataPipe data_pipe(content.size());
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    CHECK_EQ(
+        mojo::CreateDataPipe(content.size(), producer_handle, consumer_handle),
+        MOJO_RESULT_OK);
     uint32_t bytes_written = content.size();
-    CHECK_EQ(MOJO_RESULT_OK, data_pipe.producer_handle->WriteData(
-                                 content.data(), &bytes_written,
-                                 MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
-    client->OnStartLoadingResponseBody(std::move(data_pipe.consumer_handle));
+    CHECK_EQ(MOJO_RESULT_OK,
+             producer_handle->WriteData(content.data(), &bytes_written,
+                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+    client->OnStartLoadingResponseBody(std::move(consumer_handle));
   }
   client->OnComplete(status);
 }

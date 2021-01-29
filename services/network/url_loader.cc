@@ -2057,10 +2057,13 @@ URLLoader::BlockResponseForCorbResult URLLoader::BlockResponseForCorb() {
   url_loader_client_->OnReceiveResponse(response_->Clone());
 
   // Send empty body to the real URLLoaderClient.
-  mojo::DataPipe empty_data_pipe(kBlockedBodyAllocationSize);
-  empty_data_pipe.producer_handle.reset();
-  url_loader_client_->OnStartLoadingResponseBody(
-      std::move(empty_data_pipe.consumer_handle));
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  CHECK_EQ(mojo::CreateDataPipe(kBlockedBodyAllocationSize, producer_handle,
+                                consumer_handle),
+           MOJO_RESULT_OK);
+  producer_handle.reset();
+  url_loader_client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 
   // Tell the real URLLoaderClient that the response has been completed.
   bool should_report_corb_blocking =
