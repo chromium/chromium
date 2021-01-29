@@ -24,7 +24,6 @@ class FakePlatformApi : public CrosPlatformApi {
 
   // CrosPlatformApi implementation:
   assistant_client::AudioOutputProvider& GetAudioOutputProvider() override;
-  assistant_client::AuthProvider& GetAuthProvider() override;
   assistant_client::FileProvider& GetFileProvider() override;
   assistant_client::NetworkProvider& GetNetworkProvider() override;
   assistant_client::SystemProvider& GetSystemProvider() override;

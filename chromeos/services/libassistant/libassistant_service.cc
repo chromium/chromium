@@ -14,6 +14,7 @@
 #include "chromeos/services/libassistant/conversation_controller.h"
 #include "chromeos/services/libassistant/conversation_state_listener_impl.h"
 #include "chromeos/services/libassistant/display_controller.h"
+#include "chromeos/services/libassistant/fake_auth_provider.h"
 #include "chromeos/services/libassistant/platform_api.h"
 #include "chromeos/services/libassistant/service_controller.h"
 
@@ -26,6 +27,7 @@ LibassistantService::LibassistantService(
     assistant::AssistantManagerServiceDelegate* delegate)
     : receiver_(this, std::move(receiver)),
       platform_api_(std::make_unique<PlatformApi>()),
+      fake_auth_provider_(std::make_unique<FakeAuthProvider>()),
       service_controller_(
           std::make_unique<ServiceController>(delegate, platform_api_.get())),
       audio_input_controller_(std::make_unique<AudioInputController>()),
@@ -47,7 +49,7 @@ LibassistantService::LibassistantService(
         ->SetAudioInputProvider(
             &audio_input_controller_->audio_input_provider())
         .SetAudioOutputProvider(&platform_api->GetAudioOutputProvider())
-        .SetAuthProvider(&platform_api->GetAuthProvider())
+        .SetAuthProvider(fake_auth_provider_.get())
         .SetFileProvider(&platform_api->GetFileProvider())
         .SetNetworkProvider(&platform_api->GetNetworkProvider())
         .SetSystemProvider(&platform_api->GetSystemProvider());

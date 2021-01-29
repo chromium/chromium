@@ -54,6 +54,8 @@ source_set("internal") {
     "display_connection_impl.h",
     "display_controller.cc",
     "display_controller.h",
+    "fake_auth_provider.cc",
+    "fake_auth_provider.h",
     "platform_api.cc",
     "platform_api.h",
     "service_controller.cc",

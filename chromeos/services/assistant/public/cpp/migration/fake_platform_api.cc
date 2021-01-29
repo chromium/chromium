@@ -77,11 +77,6 @@ FakePlatformApi::GetAudioOutputProvider() {
   return *audio_output_provider_.get();
 }
 
-assistant_client::AuthProvider& FakePlatformApi::GetAuthProvider() {
-  NOTIMPLEMENTED();
-  abort();
-}
-
 assistant_client::FileProvider& FakePlatformApi::GetFileProvider() {
   NOTIMPLEMENTED();
   abort();

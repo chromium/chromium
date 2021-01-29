@@ -34,6 +34,7 @@ class AudioInputController;
 class ConversationController;
 class ConversationStateListenerImpl;
 class DisplayController;
+class FakeAuthProvider;
 class PlatformApi;
 class ServiceController;
 
@@ -76,6 +77,7 @@ class COMPONENT_EXPORT(LIBASSISTANT_SERVICE) LibassistantService
       speech_recognition_observers_;
 
   std::unique_ptr<PlatformApi> platform_api_;
+  std::unique_ptr<FakeAuthProvider> fake_auth_provider_;
   std::unique_ptr<ServiceController> service_controller_;
   std::unique_ptr<AudioInputController> audio_input_controller_;
   std::unique_ptr<ConversationController> conversation_controller_;

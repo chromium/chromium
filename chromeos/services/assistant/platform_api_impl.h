@@ -39,46 +39,12 @@ class PlatformApiImpl : public CrosPlatformApi {
   ~PlatformApiImpl() override;
 
   assistant_client::AudioOutputProvider& GetAudioOutputProvider() override;
-  assistant_client::AuthProvider& GetAuthProvider() override;
   assistant_client::FileProvider& GetFileProvider() override;
   assistant_client::NetworkProvider& GetNetworkProvider() override;
   assistant_client::SystemProvider& GetSystemProvider() override;
 
  private:
-  // ChromeOS does not use auth manager, so we don't yet need to implement a
-  // real auth provider.
-  class FakeAuthProvider : public assistant_client::AuthProvider {
-   public:
-    FakeAuthProvider() = default;
-    ~FakeAuthProvider() override = default;
-
-    // assistant_client::AuthProvider overrides
-    std::string GetAuthClientId() override;
-    std::vector<std::string> GetClientCertificateChain() override;
-
-    void CreateCredentialAttestationJwt(
-        const std::string& authorization_code,
-        const std::vector<std::pair<std::string, std::string>>& claims,
-        CredentialCallback attestation_callback) override;
-
-    void CreateRefreshAssertionJwt(
-        const std::string& key_identifier,
-        const std::vector<std::pair<std::string, std::string>>& claims,
-        AssertionCallback assertion_callback) override;
-
-    void CreateDeviceAttestationJwt(
-        const std::vector<std::pair<std::string, std::string>>& claims,
-        AssertionCallback attestation_callback) override;
-
-    std::string GetAttestationCertFingerprint() override;
-
-    void RemoveCredentialKey(const std::string& key_identifier) override;
-
-    void Reset() override;
-  };
-
   AudioOutputProviderImpl audio_output_provider_;
-  FakeAuthProvider auth_provider_;
   FileProviderImpl file_provider_;
   NetworkProviderImpl network_provider_;
   std::unique_ptr<SystemProviderImpl> system_provider_;

@@ -9,7 +9,6 @@
 
 namespace assistant_client {
 class AudioOutputProvider;
-class AuthProvider;
 class FileProvider;
 class NetworkProvider;
 class SystemProvider;
@@ -29,9 +28,6 @@ class CrosPlatformApi {
 
   // Returns the platform's audio output provider.
   virtual assistant_client::AudioOutputProvider& GetAudioOutputProvider() = 0;
-
-  // Returns the platform's authentication provider.
-  virtual assistant_client::AuthProvider& GetAuthProvider() = 0;
 
   // Returns the file provider to be used by libassistant.
   virtual assistant_client::FileProvider& GetFileProvider() = 0;
