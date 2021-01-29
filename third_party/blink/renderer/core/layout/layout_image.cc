@@ -155,24 +155,17 @@ void LayoutImage::UpdateIntrinsicSizeIfNeeded(const LayoutSize& new_size) {
 
 bool LayoutImage::NeedsLayoutOnIntrinsicSizeChange() const {
   NOT_DESTROYED();
-  // If the actual area occupied by the image has changed and it is not
-  // constrained by style then a layout is required.
-  bool image_size_is_constrained =
-      StyleRef().LogicalWidth().IsSpecified() &&
-      StyleRef().LogicalHeight().IsSpecified() &&
-      !HasAutoHeightOrContainingBlockWithAutoHeight(
-          kDontRegisterPercentageDescendant);
-  if (!image_size_is_constrained)
-    return true;
   // Flex layout algorithm uses the intrinsic image width/height even if
   // width/height are specified.
   if (IsFlexItemIncludingNG())
     return true;
-  // FIXME: We only need to recompute the containing block's preferred size if
-  // the containing block's size depends on the image's size (i.e., the
-  // container uses shrink-to-fit sizing). There's no easy way to detect that
-  // shrink-to-fit is needed, always force a layout.
-  return HasRelativeLogicalWidth();
+
+  const auto& style = StyleRef();
+  bool is_fixed_sized =
+      style.LogicalWidth().IsFixed() && style.LogicalHeight().IsFixed() &&
+      (style.LogicalMinWidth().IsFixed() || style.LogicalMinWidth().IsAuto()) &&
+      (style.LogicalMaxWidth().IsFixed() || style.LogicalMaxWidth().IsNone());
+  return !is_fixed_sized;
 }
 
 void LayoutImage::InvalidatePaintAndMarkForLayoutIfNeeded(
