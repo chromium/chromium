@@ -206,6 +206,11 @@ class CORE_EXPORT NGPhysicalBoxFragment final
     return is_inline_formatting_context_;
   }
 
+  // The |LayoutBox| whose |PhysicalFragments()| contains |this|. This is
+  // different from |GetLayoutObject()| if |this.IsColumnBox()|.
+  const LayoutBox* OwnerLayoutBox() const;
+  LayoutBox* MutableOwnerLayoutBox() const;
+
   PhysicalRect ScrollableOverflow(TextHeightType height_type) const;
   PhysicalRect ScrollableOverflowFromChildren(TextHeightType height_type) const;
 

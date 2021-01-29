@@ -30,8 +30,11 @@ NGSimplifiedOOFLayoutAlgorithm::NGSimplifiedOOFLayoutAlgorithm(
   if (is_new_fragment) {
     children_ = {};
     iterator_ = children_.end();
+    container_builder_.SetIsFirstForNode(false);
     return;
   }
+
+  container_builder_.SetIsFirstForNode(fragment.IsFirstForNode());
 
   // We need the previous physical container size to calculate the position of
   // any child fragments.

@@ -1766,4 +1766,16 @@ void NGBlockNode::AddColumnResult(
   GetFlowThread(To<LayoutBlockFlow>(box_))->AddLayoutResult(result, index);
 }
 
+void NGBlockNode::AddColumnResult(
+    scoped_refptr<const NGLayoutResult> result) const {
+  GetFlowThread(To<LayoutBlockFlow>(box_))->AddLayoutResult(std::move(result));
+}
+
+void NGBlockNode::ReplaceColumnResult(
+    scoped_refptr<const NGLayoutResult> result,
+    const NGPhysicalBoxFragment& old_fragment) const {
+  GetFlowThread(To<LayoutBlockFlow>(box_))
+      ->ReplaceLayoutResult(std::move(result), old_fragment);
+}
+
 }  // namespace blink

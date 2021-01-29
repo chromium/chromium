@@ -176,6 +176,11 @@ class CORE_EXPORT NGBlockNode : public NGLayoutInputNode {
   // somewhere.
   void AddColumnResult(scoped_refptr<const NGLayoutResult>,
                        const NGBlockBreakToken* incoming_break_token) const;
+  // Add a column layout result to this node.
+  void AddColumnResult(scoped_refptr<const NGLayoutResult>) const;
+  // Replace an existing column layout result with a new one.
+  void ReplaceColumnResult(scoped_refptr<const NGLayoutResult>,
+                           const NGPhysicalBoxFragment& old_fragment) const;
 
   static bool CanUseNewLayout(const LayoutBox&);
   bool CanUseNewLayout() const;

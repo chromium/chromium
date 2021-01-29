@@ -1183,8 +1183,11 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Store one layout result (with its physical fragment) at the specified
   // index, and delete all entries following it.
   void AddLayoutResult(scoped_refptr<const NGLayoutResult>, wtf_size_t index);
+  void AddLayoutResult(scoped_refptr<const NGLayoutResult>);
   void ReplaceLayoutResult(scoped_refptr<const NGLayoutResult>,
                            wtf_size_t index);
+  void ReplaceLayoutResult(scoped_refptr<const NGLayoutResult>,
+                           const NGPhysicalBoxFragment& old_fragment);
 
   void ShrinkLayoutResults(wtf_size_t results_to_keep);
   void ClearLayoutResults();
@@ -1221,6 +1224,9 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     bool IsEmpty() const { return layout_results_.IsEmpty(); }
 
     bool HasFragmentItems() const;
+
+    wtf_size_t IndexOf(const NGPhysicalBoxFragment& fragment) const;
+    bool Contains(const NGPhysicalBoxFragment& fragment) const;
 
     class CORE_EXPORT Iterator : public std::iterator<std::forward_iterator_tag,
                                                       NGPhysicalBoxFragment> {

@@ -737,6 +737,13 @@ void PrePaintTreeWalk::WalkNGChildren(const LayoutObject* parent,
         containing_block_context = &context.current;
         containing_block_context->paint_offset += offset;
       }
+
+      // Check |box_fragment| and |LayoutBox| who produced it are in sync.
+      DCHECK(box_fragment->OwnerLayoutBox());
+      DCHECK_EQ(box_fragment->IsFirstForNode(),
+                box_fragment ==
+                    box_fragment->OwnerLayoutBox()->GetPhysicalFragment(0));
+
       WalkChildren(/* parent */ nullptr, iterator);
       if (containing_block_context)
         containing_block_context->paint_offset -= offset;

@@ -375,6 +375,22 @@ NGPhysicalBoxFragment::CloneAsHiddenForPaint() const {
   return builder.ToBoxFragment();
 }
 
+const LayoutBox* NGPhysicalBoxFragment::OwnerLayoutBox() const {
+  const LayoutBox* owner_box =
+      DynamicTo<LayoutBox>(GetSelfOrContainerLayoutObject());
+  DCHECK(owner_box);
+  if (UNLIKELY(IsColumnBox())) {
+    owner_box = To<LayoutBox>(owner_box->SlowFirstChild());
+    DCHECK(owner_box && owner_box->IsLayoutFlowThread());
+  }
+  DCHECK(owner_box->PhysicalFragments().Contains(*this));
+  return owner_box;
+}
+
+LayoutBox* NGPhysicalBoxFragment::MutableOwnerLayoutBox() const {
+  return const_cast<LayoutBox*>(OwnerLayoutBox());
+}
+
 const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
   const auto* layout_object = GetSelfOrContainerLayoutObject();
   if (UNLIKELY(!layout_object)) {

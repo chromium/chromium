@@ -336,9 +336,12 @@ void CheckDidAddFragment(const LayoutBox& box,
   if (new_fragment.HasItems())
     DCHECK(box.ChildrenInline());
 
+  wtf_size_t index = 0;
   for (const NGPhysicalBoxFragment& fragment : box.PhysicalFragments()) {
+    DCHECK_EQ(fragment.IsFirstForNode(), index == 0);
     if (const NGFragmentItems* fragment_items = fragment.Items())
       fragment_items->CheckAllItemsAreValid();
+    ++index;
   }
 }
 #else
@@ -3160,6 +3163,22 @@ bool LayoutBox::NGPhysicalFragmentList::HasFragmentItems() const {
   return false;
 }
 
+wtf_size_t LayoutBox::NGPhysicalFragmentList::IndexOf(
+    const NGPhysicalBoxFragment& fragment) const {
+  wtf_size_t index = 0;
+  for (const scoped_refptr<const NGLayoutResult>& result : layout_results_) {
+    if (&result->PhysicalFragment() == &fragment)
+      return index;
+    ++index;
+  }
+  return kNotFound;
+}
+
+bool LayoutBox::NGPhysicalFragmentList::Contains(
+    const NGPhysicalBoxFragment& fragment) const {
+  return IndexOf(fragment) != kNotFound;
+}
+
 void LayoutBox::SetCachedLayoutResult(
     scoped_refptr<const NGLayoutResult> result) {
   NOT_DESTROYED();
@@ -3198,7 +3217,11 @@ void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result,
     return;
   }
 
-  DCHECK_EQ(index, layout_results_.size());
+  DCHECK(index == layout_results_.size() || index == kNotFound);
+  AddLayoutResult(std::move(result));
+}
+
+void LayoutBox::AddLayoutResult(scoped_refptr<const NGLayoutResult> result) {
   const auto& fragment = To<NGPhysicalBoxFragment>(result->PhysicalFragment());
   layout_results_.push_back(std::move(result));
   CheckDidAddFragment(*this, fragment);
@@ -3242,6 +3265,21 @@ void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
   // inline formatting context, we have some finalization to do.
   if (got_new_fragment && !fragment.BreakToken() && HasFragmentItems())
     NGFragmentItems::FinalizeAfterLayout(layout_results_);
+}
+
+void LayoutBox::ReplaceLayoutResult(scoped_refptr<const NGLayoutResult> result,
+                                    const NGPhysicalBoxFragment& old_fragment) {
+  DCHECK_EQ(this, old_fragment.OwnerLayoutBox());
+  DCHECK_EQ(result->PhysicalFragment().GetSelfOrContainerLayoutObject(),
+            old_fragment.GetSelfOrContainerLayoutObject());
+  // TODO(kojii): |IndexOf| is O(n). Consider if we can avoid this.
+  const wtf_size_t index = PhysicalFragments().IndexOf(old_fragment);
+  if (index != kNotFound) {
+    ReplaceLayoutResult(std::move(result), index);
+    return;
+  }
+  NOTREACHED();
+  AddLayoutResult(std::move(result));
 }
 
 void LayoutBox::ClearLayoutResults() {

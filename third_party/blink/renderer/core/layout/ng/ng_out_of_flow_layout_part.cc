@@ -1225,11 +1225,14 @@ void NGOutOfFlowLayoutPart::AddOOFResultsToFragmentainer(
       offset = fragmentainer.offset;
       offset.inline_offset += column_inline_progression_;
     }
-    container_builder_->AddChild(algorithm.Layout()->PhysicalFragment(),
-                                 offset);
+    scoped_refptr<const NGLayoutResult> new_result = algorithm.Layout();
+    node.AddColumnResult(new_result);
+    container_builder_->AddChild(new_result->PhysicalFragment(), offset);
   } else {
-    container_builder_->ReplaceChild(
-        index, algorithm.Layout()->PhysicalFragment(), fragmentainer.offset);
+    scoped_refptr<const NGLayoutResult> new_result = algorithm.Layout();
+    node.ReplaceColumnResult(new_result, fragment);
+    container_builder_->ReplaceChild(index, new_result->PhysicalFragment(),
+                                     fragmentainer.offset);
   }
 }
 
