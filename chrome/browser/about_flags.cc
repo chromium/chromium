@@ -5291,11 +5291,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAppServiceExternalProtocolDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kAppServiceExternalProtocol)},
 
-    {"app-service-intent-handling",
-     flag_descriptions::kAppServiceIntentHandlingName,
-     flag_descriptions::kAppServiceIntentHandlingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kAppServiceIntentHandling)},
-
     {"full-restore", flag_descriptions::kFullRestoreName,
      flag_descriptions::kFullRestoreDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFullRestore)},

@@ -3756,10 +3756,6 @@ const char kAppServiceExternalProtocolName[] = "App Service External Protocol";
 const char kAppServiceExternalProtocolDescription[] =
     "Use the App Service to provide data for external protocol dialog.";
 
-const char kAppServiceIntentHandlingName[] = "App Service Intent Handling";
-const char kAppServiceIntentHandlingDescription[] =
-    "Use the App Service to provide data for intent handling.";
-
 const char kAppServiceAdaptiveIconName[] = "App Service Adaptive Icons";
 const char kAppServiceAdaptiveIconDescription[] =
     "Provide adaptive icons through the App Service";

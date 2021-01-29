@@ -11,10 +11,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/intent_helper/page_transition_util.h"
-#include "chrome/browser/chromeos/apps/intent_helper/chromeos_apps_navigation_throttle.h"
 #include "chrome/browser/chromeos/apps/metrics/intent_handling_metrics.h"
 #include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
-#include "chrome/browser/chromeos/arc/intent_helper/arc_intent_picker_app_fetcher.h"
 #include "chrome/browser/chromeos/external_protocol_dialog.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_metrics.h"
 #include "chrome/browser/sharing/click_to_call/click_to_call_ui_controller.h"
@@ -452,6 +450,16 @@ void OnIntentPickerDialogDeactivated(
     OpenUrlInChrome(render_process_host_id, routing_id, url_to_open_in_chrome);
 }
 
+size_t GetAppIndex(
+    const std::vector<mojom::IntentHandlerInfoPtr>& app_candidates,
+    const std::string& selected_app_package) {
+  for (size_t i = 0; i < app_candidates.size(); ++i) {
+    if (app_candidates[i]->package_name == selected_app_package)
+      return i;
+  }
+  return app_candidates.size();
+}
+
 // Called when the dialog is closed. Note that once we show the UI, we should
 // never show the Chrome OS' fallback dialog.
 void OnIntentPickerClosed(
@@ -491,8 +499,7 @@ void OnIntentPickerClosed(
 
   // If the user selected an app to continue the navigation, confirm that the
   // |package_name| matches a valid option and return the index.
-  const size_t selected_app_index =
-      ArcIntentPickerAppFetcher::GetAppIndex(handlers, selected_app_package);
+  const size_t selected_app_index = GetAppIndex(handlers, selected_app_package);
 
   // Make sure that the instance at least supports HandleUrl.
   auto* arc_service_manager = ArcServiceManager::Get();

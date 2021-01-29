@@ -65,8 +65,6 @@ const base::Feature kAppServiceAdaptiveIcon{"AppServiceAdaptiveIcon",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kAppServiceExternalProtocol{
     "AppServiceExternalProtocol", base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kAppServiceIntentHandling{"AppServiceIntentHandling",
-                                              base::FEATURE_ENABLED_BY_DEFAULT};
 #endif  // !defined(OS_ANDROID)
 
 #if defined(OS_MAC)

@@ -2173,9 +2173,6 @@ extern const char kAppServiceAdaptiveIconDescription[];
 extern const char kAppServiceExternalProtocolName[];
 extern const char kAppServiceExternalProtocolDescription[];
 
-extern const char kAppServiceIntentHandlingName[];
-extern const char kAppServiceIntentHandlingDescription[];
-
 extern const char kArcCustomTabsExperimentName[];
 extern const char kArcCustomTabsExperimentDescription[];
 

@@ -43019,7 +43019,6 @@ from previous Chrome versions.
   <int value="-1835905702" label="FilesZipNoNaCl:enabled"/>
   <int value="-1835608319" label="EnableHeuristicPalmDetectionFilter:disabled"/>
   <int value="-1834841895" label="CrostiniWebUIUpgrader:enabled"/>
-  <int value="-1834536026" label="AppServiceIntentHandling:enabled"/>
   <int value="-1834151268" label="OmniboxDynamicMaxAutocomplete:disabled"/>
   <int value="-1833149810" label="enable-accessibility-tab-switcher"/>
   <int value="-1832575380" label="show-saved-copy"/>
@@ -45176,7 +45175,6 @@ from previous Chrome versions.
   <int value="161409456" label="AutofillUseMobileLabelDisambiguation:disabled"/>
   <int value="161694478" label="OmniboxNewAnswerLayout:enabled"/>
   <int value="168429629" label="ContentIndexingNTP:enabled"/>
-  <int value="168627257" label="AppServiceIntentHandling:disabled"/>
   <int value="168887810" label="ReadLaterReminderNotification:disabled"/>
   <int value="173288154" label="PrintPdfAsImage:enabled"/>
   <int value="173339199" label="SmsReceiverCrossDevice:disabled"/>

@@ -1005,9 +1005,6 @@ void ArcApps::OnIntentFiltersUpdated(
 }
 
 void ArcApps::OnPreferredAppsChanged() {
-  if (!base::FeatureList::IsEnabled(features::kAppServiceIntentHandling)) {
-    return;
-  }
   mojo::Remote<apps::mojom::AppService>& app_service =
       apps::AppServiceProxyFactory::GetForProfile(profile_)->AppService();
   if (!app_service.is_bound()) {

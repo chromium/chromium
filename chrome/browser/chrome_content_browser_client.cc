@@ -527,7 +527,6 @@
 // single navigation throttle to display the intent picker on all platforms.
 #if !defined(OS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/chromeos/apps/intent_helper/chromeos_apps_navigation_throttle.h"
 #include "chrome/browser/chromeos/apps/intent_helper/common_apps_navigation_throttle.h"
 #else
 #include "chrome/browser/apps/intent_helper/apps_navigation_throttle.h"
@@ -4013,9 +4012,7 @@ ChromeContentBrowserClient::CreateThrottlesForNavigation(
 #if !defined(OS_ANDROID)
   auto url_to_apps_throttle =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      base::FeatureList::IsEnabled(features::kAppServiceIntentHandling)
-          ? apps::CommonAppsNavigationThrottle::MaybeCreate(handle)
-          : chromeos::ChromeOsAppsNavigationThrottle::MaybeCreate(handle);
+      apps::CommonAppsNavigationThrottle::MaybeCreate(handle);
 #else
       apps::AppsNavigationThrottle::MaybeCreate(handle);
 #endif

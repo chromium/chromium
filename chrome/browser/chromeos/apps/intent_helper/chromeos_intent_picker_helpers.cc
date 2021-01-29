@@ -17,7 +17,6 @@
 #include "chrome/browser/apps/intent_helper/intent_picker_auto_display_service.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_constants.h"
 #include "chrome/browser/apps/intent_helper/intent_picker_internal.h"
-#include "chrome/browser/chromeos/apps/intent_helper/chromeos_apps_navigation_throttle.h"
 #include "chrome/browser/chromeos/apps/metrics/intent_handling_metrics.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
@@ -216,11 +215,6 @@ void OnAppIconsLoaded(content::WebContents* web_contents,
 
 void MaybeShowIntentPickerChromeOs(
     content::NavigationHandle* navigation_handle) {
-  if (!base::FeatureList::IsEnabled(features::kAppServiceIntentHandling)) {
-    // If the flag is off, everything is handled in
-    // ChromeOsAppsNavigationThrottle.
-    return;
-  }
 
   content::WebContents* web_contents = navigation_handle->GetWebContents();
   Profile* profile =
@@ -256,21 +250,13 @@ void MaybeShowIntentPickerChromeOs(
 
 void ShowIntentPickerBubbleChromeOs(content::WebContents* web_contents,
                                     const GURL& url) {
-  if (base::FeatureList::IsEnabled(features::kAppServiceIntentHandling)) {
-    std::vector<IntentPickerAppInfo> apps =
-        FindAppsForUrl(web_contents, url, {});
-    if (apps.empty()) {
-      return;
-    }
-    IntentPickerTabHelper::LoadAppIcons(
-        web_contents, std::move(apps),
-        base::BindOnce(&OnAppIconsLoaded, web_contents, nullptr, url));
-  } else {
-    // This code will be deprecated in M89, so instead of refactoring, just
-    // simply call the existing method.
-    chromeos::ChromeOsAppsNavigationThrottle::ShowIntentPickerBubble(
-        web_contents, nullptr, url);
-  }
+  std::vector<IntentPickerAppInfo> apps = FindAppsForUrl(web_contents, url, {});
+  if (apps.empty())
+    return;
+  IntentPickerTabHelper::LoadAppIcons(
+      web_contents, std::move(apps),
+      base::BindOnce(&OnAppIconsLoaded, web_contents,
+                     /*ui_auto_display_service=*/nullptr, url));
 }
 
 bool ContainsOnlyPwasAndMacApps(const std::vector<IntentPickerAppInfo>& apps) {

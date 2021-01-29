@@ -65,8 +65,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAppServiceAdaptiveIcon;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::Feature kAppServiceExternalProtocol;
-COMPONENT_EXPORT(CHROME_FEATURES)
-extern const base::Feature kAppServiceIntentHandling;
 #endif  // !defined(OS_ANDROID)
 
 #if defined(OS_MAC)
