@@ -782,58 +782,6 @@ TEST_F(PlatformNotificationContextTest, SynchronizeNotifications) {
   EXPECT_FALSE(success());
 }
 
-TEST_F(PlatformNotificationContextTest, DeleteOldNotifications) {
-  base::HistogramTester histogram_tester;
-  NotificationBrowserClient notification_browser_client(browser_context());
-  SetBrowserClientForTesting(&notification_browser_client);
-  scoped_refptr<PlatformNotificationContextImpl> context =
-      CreatePlatformNotificationContext();
-  PlatformNotificationService* service =
-      notification_browser_client.GetPlatformNotificationService(
-          browser_context());
-
-  // Let PlatformNotificationContext synchronize displayed notifications.
-  base::RunLoop().RunUntilIdle();
-
-  // Write a notification to the database.
-  GURL origin("https://example.com");
-  NotificationDatabaseData data;
-  data.service_worker_registration_id = kFakeServiceWorkerRegistrationId;
-  WriteNotificationDataSync(context.get(), origin, data);
-
-  // Let some time pass but not enough to delete the notification yet.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(5));
-  context->TriggerNotifications();
-  // Allow for closing notifications on the UI thread.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, GetDisplayedNotificationsSync(service).size());
-  ASSERT_EQ(1u, GetStoredNotificationsSync(context.get(), origin).size());
-
-  // Add another notification now to verify it won't get cleaned up too early.
-  NotificationDatabaseData data_2;
-  data_2.service_worker_registration_id = kFakeServiceWorkerRegistrationId;
-  std::string notification_id =
-      WriteNotificationDataSync(context.get(), origin, data_2);
-  EXPECT_EQ(2u, GetDisplayedNotificationsSync(service).size());
-  ASSERT_EQ(2u, GetStoredNotificationsSync(context.get(), origin).size());
-
-  // Let some more time pass so the first notification is not considered new
-  // anymore and should get closed while the second one should stay.
-  task_environment_.FastForwardBy(base::TimeDelta::FromDays(2));
-  context->TriggerNotifications();
-  // Allow for closing notifications on the UI thread.
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(1u, GetDisplayedNotificationsSync(service).size());
-  std::vector<NotificationDatabaseData> notification_database_datas =
-      GetStoredNotificationsSync(context.get(), origin);
-  ASSERT_EQ(1u, notification_database_datas.size());
-  EXPECT_EQ(notification_id, notification_database_datas[0].notification_id);
-
-  histogram_tester.ExpectBucketCount(
-      "Notifications.Database.ExpiredNotificationCount",
-      /*sample=*/1, /*expected_count=*/1);
-}
-
 TEST_F(PlatformNotificationContextTest, WriteDisplaysNotification) {
   NotificationBrowserClient notification_browser_client(browser_context());
   SetBrowserClientForTesting(&notification_browser_client);

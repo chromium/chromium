@@ -263,18 +263,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Notifications.Database.ExpiredNotificationCount"
-    units="notifications" expires_after="M94">
-  <owner>knollr@chromium.org</owner>
-  <owner>peter@chromium.org</owner>
-  <summary>
-    Records the number of expired notifications that were stored in the database
-    and therefore got removed and closed on the system. Logged once at startup
-    and every time we synchronize notifications after that (e.g. to schedule the
-    next notification trigger event).
-  </summary>
-</histogram>
-
 <histogram name="Notifications.Database.OldestNotificationTimeInMinutes"
     units="minutes" expires_after="2021-06-20">
   <owner>knollr@chromium.org</owner>

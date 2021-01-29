@@ -182,12 +182,10 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
                               bool initialized);
 
   // Checks if the given notification is still valid, otherwise deletes it from
-  // the database. Fills |close_notification_ids| with notification ids that
-  // should be closed by the platform.
+  // the database.
   void DoHandleSyncNotification(
       bool supports_synchronization,
       const std::set<std::string>& displayed_notifications,
-      std::set<std::string>* close_notification_ids,
       const NotificationDatabaseData& data);
 
   // Tries to get a list of displayed notification ids if the platform supports
