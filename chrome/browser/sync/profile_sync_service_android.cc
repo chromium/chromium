@@ -415,6 +415,17 @@ void ProfileSyncServiceAndroid::SetPassphrasePrompted(
   sync_service_->SetPassphrasePrompted(prompted);
 }
 
+void ProfileSyncServiceAndroid::SetSyncSessionsId(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj,
+    const JavaParamRef<jstring>& tag) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK(profile_);
+  std::string machine_tag = ConvertJavaStringToUTF8(env, tag);
+  SessionSyncServiceFactory::GetForProfile(profile_)->SetSyncSessionsGUID(
+      machine_tag);
+}
+
 jboolean ProfileSyncServiceAndroid::HasKeepEverythingSynced(
     JNIEnv* env,
     const JavaParamRef<jobject>&) {
