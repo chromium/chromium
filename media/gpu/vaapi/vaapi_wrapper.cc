@@ -6,6 +6,7 @@
 
 #include <dlfcn.h>
 #include <string.h>
+#include <sys/types.h>
 #include <unistd.h>
 #include <va/va.h>
 #include <va/va_drm.h>
@@ -2030,13 +2031,27 @@ scoped_refptr<VASurface> VaapiWrapper::CreateVASurfaceForPixmap(
   }
   va_attrib_extbuf.num_planes = num_planes;
 
-  if (pixmap->GetDmaBufFd(0) < 0) {
+  const int dma_buf_fd = pixmap->GetDmaBufFd(0);
+  if (dma_buf_fd < 0) {
     LOG(ERROR) << "Failed to get dmabuf from an Ozone NativePixmap";
     return nullptr;
   }
+  const off_t data_size = lseek(dma_buf_fd, /*offset=*/0, SEEK_END);
+  if (data_size == static_cast<off_t>(-1)) {
+    PLOG(ERROR) << "Failed to get the size of the dma-buf";
+    return nullptr;
+  }
+  if (lseek(dma_buf_fd, /*offset=*/0, SEEK_SET) == static_cast<off_t>(-1)) {
+    PLOG(ERROR) << "Failed to reset the file offset of the dma-buf";
+    return nullptr;
+  }
+  // If the data size doesn't fit in a uint32_t, we probably have bigger
+  // problems.
+  va_attrib_extbuf.data_size = base::checked_cast<uint32_t>(data_size);
+
   // We only have to pass the first file descriptor to a driver. A VA-API driver
   // shall create a VASurface from the single fd correctly.
-  uintptr_t fd = base::checked_cast<uintptr_t>(pixmap->GetDmaBufFd(0));
+  uintptr_t fd = base::checked_cast<uintptr_t>(dma_buf_fd);
   va_attrib_extbuf.buffers = &fd;
   va_attrib_extbuf.num_buffers = 1u;
 
