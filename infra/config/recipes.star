@@ -94,6 +94,11 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:chromium_rts/create_model",
+    use_bbagent = True,
+)
+
+build_recipe(
     name = "recipe:chromium_trybot",
 )
 

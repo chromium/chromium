@@ -50,6 +50,10 @@ luci.bucket(
             roles = acl.BUILDBUCKET_OWNER,
             groups = "google/luci-task-force@google.com",
         ),
+        acl.entry(
+            roles = acl.SCHEDULER_TRIGGERER,
+            groups = "project-chromium-scheduler-triggerers",
+        ),
     ],
 )
 
@@ -5687,4 +5691,16 @@ ci.win_builder(
     execution_timeout = 6 * time.hour,
     goma_jobs = goma.jobs.J150,
     main_console_view = "main",
+)
+
+ci.cipd_builder(
+    name = "rts-model-packager",
+    console_view_entry = consoles.console_view_entry(
+        category = "rts",
+        short_name = "create-model",
+    ),
+    executable = "recipe:chromium_rts/create_model",
+    schedule = "0 10 * * *",  # at 2 AM PST, once a day.
+    triggered_by = [],
+    execution_timeout = time.hour,
 )
