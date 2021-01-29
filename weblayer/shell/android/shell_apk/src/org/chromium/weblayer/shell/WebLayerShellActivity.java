@@ -47,7 +47,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
-import org.chromium.base.CommandLine;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.compat.ApiHelperForR;
 import org.chromium.weblayer.Browser;
@@ -92,6 +91,7 @@ public class WebLayerShellActivity extends AppCompatActivity {
     }
 
     private static final String NON_INCOGNITO_PROFILE_NAME = "DefaultProfile";
+    private static final String EXTRA_START_IN_INCOGNITO = "EXTRA_START_IN_INCOGNITO";
 
     private static class ContextMenuCreator
             implements View.OnCreateContextMenuListener, MenuItem.OnMenuItemClickListener {
@@ -263,6 +263,8 @@ public class WebLayerShellActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         mSetDarkMode = AppCompatDelegate.getDefaultNightMode() == AppCompatDelegate.MODE_NIGHT_YES;
+        mInIncognitoMode = getIntent().getBooleanExtra(EXTRA_START_IN_INCOGNITO, false);
+
         setContentView(R.layout.main);
         TextView versionText = (TextView) findViewById(R.id.version_text);
         versionText.setText(getString(
@@ -307,6 +309,8 @@ public class WebLayerShellActivity extends AppCompatActivity {
         popup.getMenu()
                 .findItem(R.id.translate_menu_id)
                 .setVisible(mBrowser.getActiveTab().canTranslate());
+        popup.getMenu().findItem(R.id.enable_incognito_menu_id).setVisible(!mInIncognitoMode);
+        popup.getMenu().findItem(R.id.disable_incognito_menu_id).setVisible(mInIncognitoMode);
         boolean isDesktopUserAgent = mBrowser.getActiveTab().isDesktopUserAgentEnabled();
         popup.getMenu().findItem(R.id.desktop_site_menu_id).setVisible(!isDesktopUserAgent);
         popup.getMenu().findItem(R.id.no_desktop_site_menu_id).setVisible(isDesktopUserAgent);
@@ -355,6 +359,14 @@ public class WebLayerShellActivity extends AppCompatActivity {
                                          Toast.LENGTH_SHORT)
                                     .show();
                         });
+            }
+
+            if (item.getItemId() == R.id.enable_incognito_menu_id) {
+                restartShell(true);
+            }
+
+            if (item.getItemId() == R.id.disable_incognito_menu_id) {
+                restartShell(false);
             }
 
             if (item.getItemId() == R.id.desktop_site_menu_id) {
@@ -719,11 +731,6 @@ public class WebLayerShellActivity extends AppCompatActivity {
             }
         }
 
-        if (CommandLine.isInitialized()
-                && CommandLine.getInstance().hasSwitch("start-in-incognito")) {
-            mInIncognitoMode = true;
-        }
-
         String profileName = mInIncognitoMode ? null : NON_INCOGNITO_PROFILE_NAME;
 
         Fragment fragment = WebLayer.createBrowserFragment(profileName);
@@ -803,6 +810,18 @@ public class WebLayerShellActivity extends AppCompatActivity {
             }
         }
         super.onBackPressed();
+    }
+
+    @SuppressWarnings("checkstyle:SystemExitCheck") // Allowed since this shouldn't be a crash.
+    private void restartShell(boolean enableIncognito) {
+        finish();
+
+        Intent intent = new Intent();
+        intent.setClassName(getPackageName(), getClass().getName());
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(EXTRA_START_IN_INCOGNITO, enableIncognito);
+        startActivity(intent);
+        System.exit(0);
     }
 
     private void updateFavicon(@NonNull Tab tab) {
