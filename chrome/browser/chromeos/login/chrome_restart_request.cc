@@ -30,6 +30,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
@@ -210,6 +211,9 @@ void DeriveCommandLine(const GURL& start_url,
     chromeos::switches::kEnterpriseEnableForcedReEnrollment,
     chromeos::switches::kFormFactor,
     chromeos::switches::kHasChromeOSKeyboard,
+    chromeos::switches::kLacrosChromeAdditionalArgs,
+    chromeos::switches::kLacrosChromeAdditionalEnv,
+    chromeos::switches::kLacrosChromePath,
     chromeos::switches::kLoginProfile,
     chromeos::switches::kNaturalScrollDefault,
     chromeos::switches::kRlzPingDelay,
@@ -236,6 +240,7 @@ void DeriveCommandLine(const GURL& start_url,
 void DeriveEnabledFeatures(base::CommandLine* out_command_line) {
   static const base::Feature* kForwardEnabledFeatures[] = {
       &ash::features::kAutoNightLight,
+      &chromeos::features::kLacrosSupport,
   };
 
   std::vector<std::string> enabled_features;
