@@ -7,7 +7,9 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/favicon/large_icon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -438,21 +440,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest, NavigateThenCloseTab) {
   EXPECT_TRUE(
       IsHistoryURLSyncedChecker(kURL3, GetFakeServer(), GetSyncService(0))
           .Wait());
-}
-
-IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTest,
-                       ShouldDeleteLastClosedTab) {
-  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
-  ASSERT_TRUE(CheckInitialState(0));
-
-  ASSERT_TRUE(OpenTab(0, GURL(kURL1)));
-  ASSERT_TRUE(OpenTab(0, GURL(kURL2)));
-  WaitForHierarchyOnServer(SessionsHierarchy({{kURL1, kURL2}}));
-
-  CloseTab(/*index=*/0, /*tab_index=*/0);
-  WaitForHierarchyOnServer(SessionsHierarchy({{kURL2}}));
-  CloseTab(/*index=*/0, /*tab_index=*/0);
-  WaitForHierarchyOnServer(SessionsHierarchy());
 }
 
 class SingleClientSessionsWithDeferRecyclingSyncTest
@@ -975,5 +962,73 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsSyncTestWithFaviconTestServer,
                                                 /*should_be_available=*/false)
                   .Wait());
 }
+
+class SingleClientSessionsWithoutDestroyProfileSyncTest
+    : public SingleClientSessionsSyncTest {
+ public:
+  SingleClientSessionsWithoutDestroyProfileSyncTest() {
+    features_.InitAndDisableFeature(features::kDestroyProfileOnBrowserClose);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientSessionsWithoutDestroyProfileSyncTest,
+                       ShouldDeleteLastClosedTab) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(CheckInitialState(0));
+
+  ASSERT_TRUE(OpenTab(0, GURL(kURL1)));
+  ASSERT_TRUE(OpenTab(0, GURL(kURL2)));
+  WaitForHierarchyOnServer(SessionsHierarchy({{kURL1, kURL2}}));
+
+  CloseTab(/*browser_index=*/0, /*tab_index=*/0);
+  WaitForHierarchyOnServer(SessionsHierarchy({{kURL2}}));
+  CloseTab(/*browser_index=*/0, /*tab_index=*/0);
+  WaitForHierarchyOnServer(SessionsHierarchy());
+}
+
+#if !defined(OS_CHROMEOS)
+class SingleClientSessionsWithDestroyProfileSyncTest
+    : public SingleClientSessionsSyncTest {
+ public:
+  SingleClientSessionsWithDestroyProfileSyncTest() {
+    features_.InitAndEnableFeature(features::kDestroyProfileOnBrowserClose);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(SingleClientSessionsWithDestroyProfileSyncTest,
+                       ShouldNotDeleteLastClosedTab) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+  ASSERT_TRUE(CheckInitialState(0));
+
+  ASSERT_TRUE(OpenTab(0, GURL(kURL1)));
+  ASSERT_TRUE(OpenTab(0, GURL(kURL2)));
+  WaitForHierarchyOnServer(SessionsHierarchy({{kURL1, kURL2}}));
+
+  CloseTab(/*browser_index=*/0, /*tab_index=*/0);
+  WaitForHierarchyOnServer(SessionsHierarchy({{kURL2}}));
+
+  CloseTab(/*browser_index=*/0, /*tab_index=*/0);
+
+  // TODO(crbug.com/1039234): When DestroyProfileOnBrowserClose is enabled, the
+  // last CloseTab() triggers Profile deletion (and SyncService deletion).
+  // This means the last tab close never gets synced. We should fix this
+  // regression eventually. Once that's done, merge this test with the
+  // WithoutDestroyProfile version.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
+  run_loop.Run();
+
+  // Even after several seconds, state didn't change on the server.
+  fake_server::FakeServerVerifier verifier(GetFakeServer());
+  EXPECT_TRUE(verifier.VerifySessions(SessionsHierarchy({{kURL2}})));
+}
+#endif  // !defined(OS_CHROMEOS)
 
 }  // namespace

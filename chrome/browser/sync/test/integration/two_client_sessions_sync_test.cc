@@ -7,7 +7,10 @@
 #include "base/guid.h"
 #include "base/macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_timeouts.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_features.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/passwords_helper.h"
@@ -15,12 +18,15 @@
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
+#include "components/sync/test/fake_server/fake_server_verifier.h"
+#include "components/sync/test/fake_server/sessions_hierarchy.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
+using fake_server::SessionsHierarchy;
 using sessions_helper::CheckInitialState;
 using sessions_helper::CloseTab;
 using sessions_helper::DeleteForeignSession;
@@ -218,7 +224,19 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest,
   EXPECT_THAT(GetFakeServer()->GetCommittedHistoryURLs(), IsEmpty());
 }
 
-IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, ShouldSyncAllClosedTabs) {
+class TwoClientSessionsWithoutDestroyProfileSyncTest
+    : public TwoClientSessionsSyncTest {
+ public:
+  TwoClientSessionsWithoutDestroyProfileSyncTest() {
+    features_.InitAndDisableFeature(features::kDestroyProfileOnBrowserClose);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(TwoClientSessionsWithoutDestroyProfileSyncTest,
+                       ShouldSyncAllClosedTabs) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
   ASSERT_TRUE(CheckInitialState(0));
@@ -230,13 +248,65 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsSyncTest, ShouldSyncAllClosedTabs) {
       WaitForForeignSessionsToSync(/*local_index=*/0, /*non_local_index=*/1));
 
   // Close all tabs and wait for syncing.
-  CloseTab(/*index=*/0, /*tab_index=*/0);
+  CloseTab(/*browser_index=*/0, /*tab_index=*/0);
   ASSERT_TRUE(
       WaitForForeignSessionsToSync(/*local_index=*/0, /*non_local_index=*/1));
 
-  CloseTab(/*index=*/0, /*tab_index=*/0);
+  CloseTab(/*browser_index=*/0, /*tab_index=*/0);
   EXPECT_TRUE(
       WaitForForeignSessionsToSync(/*local_index=*/0, /*non_local_index=*/1));
 }
+
+#if !defined(OS_CHROMEOS)
+class TwoClientSessionsWithDestroyProfileSyncTest
+    : public TwoClientSessionsSyncTest {
+ public:
+  TwoClientSessionsWithDestroyProfileSyncTest() {
+    features_.InitAndEnableFeature(features::kDestroyProfileOnBrowserClose);
+  }
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+IN_PROC_BROWSER_TEST_F(TwoClientSessionsWithDestroyProfileSyncTest,
+                       ShouldNotSyncLastClosedTab) {
+  ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
+
+  ASSERT_TRUE(CheckInitialState(0));
+  ASSERT_TRUE(CheckInitialState(1));
+
+  ASSERT_TRUE(OpenMultipleTabs(0, {GURL(kURL1), GURL(kURL2)}));
+
+  ASSERT_TRUE(
+      WaitForForeignSessionsToSync(/*local_index=*/0, /*non_local_index=*/1));
+
+  // Close all tabs and wait for syncing.
+  CloseTab(/*browser_index=*/0, /*tab_index=*/0);
+  ASSERT_TRUE(
+      WaitForForeignSessionsToSync(/*local_index=*/0, /*non_local_index=*/1));
+
+  ScopedWindowMap local_map_before_closing;
+  ASSERT_TRUE(GetLocalWindows(/*browser_index=*/0, &local_map_before_closing));
+
+  CloseTab(/*browser_index=*/0, /*tab_index=*/0);
+
+  // TODO(crbug.com/1039234): When DestroyProfileOnBrowserClose is enabled, the
+  // last CloseTab() triggers Profile deletion (and SyncService deletion).
+  // This means the last tab close never gets synced. We should fix this
+  // regression eventually. Once that's done, merge this test with the
+  // WithoutDestroyProfile version.
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
+  run_loop.Run();
+
+  SyncedSessionVector sessions;
+  ASSERT_TRUE(GetSessionData(/*browser_index=*/1, &sessions));
+  ASSERT_EQ(1u, sessions.size());
+  ASSERT_TRUE(
+      WindowsMatch(local_map_before_closing, sessions.front()->windows));
+}
+#endif  // !defined(OS_CHROMEOS)
 
 }  // namespace
