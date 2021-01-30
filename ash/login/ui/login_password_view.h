@@ -57,6 +57,27 @@ class ASH_EXPORT LoginPasswordView : public views::View,
                                      public views::TextfieldController,
                                      public ImeControllerImpl::Observer {
  public:
+  // The login password row contains the password textfield and different
+  // buttons and indicators (easy unlock, display password, caps lock enabled).
+  class LoginPasswordRow : public views::View {
+   public:
+    LoginPasswordRow();
+    ~LoginPasswordRow() override = default;
+    LoginPasswordRow(const LoginPasswordRow&) = delete;
+    LoginPasswordRow& operator=(const LoginPasswordRow&) = delete;
+
+    void SetHighlight(bool enabled);
+
+    bool get_highlight_for_testing() { return is_highlighted_; }
+
+    // views::View:
+    void OnPaint(gfx::Canvas* canvas) override;
+
+   private:
+    bool is_highlighted_ = false;
+    views::FocusRing* focus_ring_;
+  };
+
   // TestApi is used for tests to get internal implementation details.
   class ASH_EXPORT TestApi {
    public:
@@ -70,7 +91,12 @@ class ASH_EXPORT LoginPasswordView : public views::View,
     views::ToggleImageButton* display_password_button() const;
     views::View* easy_unlock_icon() const;
     views::View* capslock_icon() const;
+    LoginPasswordRow* password_row() const;
     void set_immediately_hover_easy_unlock_icon();
+
+    bool is_capslock_highlight_for_testing() {
+      return view_->is_capslock_higlight_for_testing_;
+    }
 
    private:
     LoginPasswordView* view_;
@@ -163,7 +189,6 @@ class ASH_EXPORT LoginPasswordView : public views::View,
  private:
   class EasyUnlockIcon;
   class DisplayPasswordButton;
-  class LoginPasswordRow;
   class LoginTextfield;
   class AlternateIconsView;
   friend class TestApi;
@@ -174,7 +199,10 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   // Highlight or remove highlight from password row.
   void SetPasswordRowHighlighted(bool highlight);
 
-  // Remove hightlight from caps lock and password row, when textfield looses
+  // Add highlight to caps lock and password row, when textfield gets focus.
+  void AddHighlightToCapsLockAndRow();
+
+  // Remove highlight from caps lock and password row, when textfield looses
   // focus.
   void RemoveHighlightFromCapsLockAndRow();
 
@@ -214,6 +242,8 @@ class ASH_EXPORT LoginPasswordView : public views::View,
   bool should_show_capslock_ = false;
   EasyUnlockIcon* easy_unlock_icon_ = nullptr;
   bool should_show_easy_unlock_ = false;
+
+  bool is_capslock_higlight_for_testing_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(LoginPasswordView);
 };
