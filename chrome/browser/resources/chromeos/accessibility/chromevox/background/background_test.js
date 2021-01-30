@@ -150,9 +150,9 @@ SYNC_TEST_F('ChromeVoxBackgroundTest', 'ClassicNamespaces', function() {
   assertEquals('function', typeof (ChromeVoxBackground));
 });
 
-/** Tests that ChromeVox next is in this context. */
+/** Tests that ChromeVox's background object is not available globally. */
 SYNC_TEST_F('ChromeVoxBackgroundTest', 'NextNamespaces', function() {
-  assertEquals('function', typeof (Background));
+  assertEquals(undefined, window.Background);
 });
 
 /** Tests consistency of navigating forward and backward. */
@@ -473,14 +473,18 @@ TEST_F('ChromeVoxBackgroundTest', 'EarconsForControls', function() {
       }.bind(this));
 });
 
-SYNC_TEST_F('ChromeVoxBackgroundTest', 'GlobsToRegExp', function() {
-  assertEquals('/^()$/', Background.globsToRegExp_([]).toString());
-  assertEquals(
-      '/^(http:\\/\\/host\\/path\\+here)$/',
-      Background.globsToRegExp_(['http://host/path+here']).toString());
-  assertEquals(
-      '/^(url1.*|u.l2|.*url3)$/',
-      Background.globsToRegExp_(['url1*', 'u?l2', '*url3']).toString());
+TEST_F('ChromeVoxBackgroundTest', 'GlobsToRegExp', function() {
+  this.newCallback(async () => {
+    const module = await import('./background.js');
+    const Background = module.Background;
+    assertEquals('/^()$/', Background.globsToRegExp_([]).toString());
+    assertEquals(
+        '/^(http:\\/\\/host\\/path\\+here)$/',
+        Background.globsToRegExp_(['http://host/path+here']).toString());
+    assertEquals(
+        '/^(url1.*|u.l2|.*url3)$/',
+        Background.globsToRegExp_(['url1*', 'u?l2', '*url3']).toString());
+  })();
 });
 
 TEST_F('ChromeVoxBackgroundTest', 'ShouldNotFocusIframe', function() {

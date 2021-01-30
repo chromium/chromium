@@ -7,44 +7,6 @@
  * background page.
  */
 
-goog.provide('Background');
-
-goog.require('AutomationPredicate');
-goog.require('AutomationUtil');
-goog.require('BackgroundKeyboardHandler');
-goog.require('BrailleCommandData');
-goog.require('BrailleCommandHandler');
-goog.require('BrailleKeyCommand');
-goog.require('ChromeVoxBackground');
-goog.require('ChromeVoxEditableTextBase');
-goog.require('ChromeVoxState');
-goog.require('CommandHandler');
-goog.require('DesktopAutomationHandler');
-goog.require('DownloadHandler');
-goog.require('ExtensionBridge');
-goog.require('FindHandler');
-goog.require('FocusAutomationHandler');
-goog.require('GestureCommandHandler');
-goog.require('InstanceChecker');
-goog.require('LiveRegions');
-goog.require('LocaleOutputHelper');
-goog.require('MathHandler');
-goog.require('MediaAutomationHandler');
-goog.require('NavBraille');
-goog.require('NextEarcons');
-goog.require('NodeIdentifier');
-goog.require('Notifications');
-goog.require('Output');
-goog.require('Output.EventType');
-goog.require('PanelCommand');
-goog.require('PhoneticData');
-goog.require('RangeAutomationHandler');
-goog.require('UserAnnotationHandler');
-goog.require('constants');
-goog.require('cursors.Cursor');
-
-
-goog.scope(function() {
 const AutomationNode = chrome.automation.AutomationNode;
 const Dir = constants.Dir;
 const EventType = chrome.automation.EventType;
@@ -54,7 +16,7 @@ const StateType = chrome.automation.StateType;
 /**
  * ChromeVox2 background page.
  */
-Background = class extends ChromeVoxState {
+export class Background extends ChromeVoxState {
   constructor() {
     super();
 
@@ -267,6 +229,12 @@ Background = class extends ChromeVoxState {
   }
 
   /**
+   * Navigate to the given range - it both sets the range and outputs it.
+   * @param {!cursors.Range} range The new range.
+   * @param {boolean=} opt_focus Focus the range; defaults to true.
+   * @param {Object=} opt_speechProps Speech properties.
+   * @param {boolean=} opt_shouldSetSelection If true, does set
+   *     the selection.
    * @override
    */
   navigateToRange(range, opt_focus, opt_speechProps, opt_shouldSetSelection) {
@@ -550,9 +518,7 @@ Background = class extends ChromeVoxState {
             .join('|') +
         ')$');
   }
-};
+}
 
 InstanceChecker.closeExtraInstances();
 new Background();
-
-});  // goog.scope

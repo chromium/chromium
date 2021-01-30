@@ -16,6 +16,8 @@ closure_library_dir =
 
 # List of all modules that are included in one or more of the production
 # chromevox scripts.
+#
+# These files all use older Closure provide/require support for dependency management and will be transitioned to ES6 modules (see below).
 chromevox_modules = [
   "../common/automation_predicate.js",
   "../common/automation_util.js",
@@ -121,7 +123,13 @@ chromevox_modules = [
   "third_party/tamachiyomi/ja_phonetic_data.js",
 ]
 
-# Closure library modules neede by chromevox.
+# ES6 modules.
+chromevox_es6_modules = [
+  "background/background.js",
+  "background/es6_loader.js",
+]
+
+# Closure library modules needed by chromevox.
 relative_closure_library_modules = [
   "i18n/pluralrules.js",
   "i18n/ordinalrules.js",
@@ -208,6 +216,7 @@ run_jsbundler("chromevox_copied_files") {
     "panel/panel.css",
     "panel/panel.html",
   ]
+  sources += chromevox_es6_modules
   rewrite_rules = [
     rebase_path(".", root_build_dir) + ":",
     rebase_path(closure_library_dir, root_build_dir) + ":closure",
@@ -510,7 +519,10 @@ copy("i_tutorial") {
 
 # Closure type check compilation and associated js libraries.
 js_type_check("closure_compile") {
-  deps = [ ":chromevox_library" ]
+  deps = [
+    ":chromevox_es6_library",
+    ":chromevox_library",
+  ]
 }
 
 js_library("chromevox_library") {
@@ -531,4 +543,8 @@ js_library("chromevox_library") {
     "$externs_path/settings_private.js",
     "$externs_path/virtual_keyboard_private.js",
   ]
+}
+
+js_library("chromevox_es6_library") {
+  sources = chromevox_es6_modules
 }
