@@ -50,6 +50,42 @@ namespace internal {
 
 namespace {
 
+// Similar to std::bitset, but doesn't perform out-of-bounds checks.
+template <size_t Size>
+class SimpleBitset final {
+ public:
+  SimpleBitset() { memset(bitset_.data(), 0, bitset_.size()); }
+
+  ALWAYS_INLINE void Set(size_t position) {
+    const auto ib = GetIndexAndBit(position);
+    PA_DCHECK(!Test(position));
+    bitset_[ib.index] |= (1 << ib.bit);
+  }
+
+  ALWAYS_INLINE bool Test(size_t position) const {
+    const auto ib = GetIndexAndBit(position);
+    return bitset_[ib.index] & (1 << ib.bit);
+  }
+
+ private:
+  struct IndexAndBit {
+    size_t index;
+    size_t bit;
+  };
+
+  ALWAYS_INLINE static constexpr IndexAndBit GetIndexAndBit(size_t position) {
+    PA_DCHECK(kBitmapSize > (position / kCellSize));
+    static_assert(
+        base::bits::IsPowerOfTwo(kCellSize),
+        "Cell size must be power of two for the compiler to optimize division");
+    return {position / kCellSize, position % kCellSize};
+  }
+
+  static constexpr size_t kCellSize = sizeof(uint8_t) * CHAR_BIT;
+  static constexpr size_t kBitmapSize = Size / kCellSize;
+  std::array<uint8_t, kBitmapSize> bitset_;
+};
+
 ThreadSafePartitionRoot& PCScanMetadataAllocator() {
   static base::NoDestructor<ThreadSafePartitionRoot> allocator{
       PartitionOptions{PartitionOptions::Alignment::kRegular,
@@ -178,7 +214,7 @@ class PCScan<thread_safe>::PCScanTask final {
         PA_DCHECK(!(super_page_base % kSuperPageAlignment));
         PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(
             reinterpret_cast<char*>(super_page_base)));
-        bitset_.set((super_page_base - normal_bucket_pool_base_) >>
+        bitset_.Set((super_page_base - normal_bucket_pool_base_) >>
                     kSuperPageShift);
       }
     }
@@ -188,7 +224,7 @@ class PCScan<thread_safe>::PCScanTask final {
       PA_DCHECK(IsManagedByPartitionAllocNormalBuckets(
           reinterpret_cast<char*>(maybe_ptr)));
 #endif
-      return bitset_.test(static_cast<size_t>(
+      return bitset_.Test(static_cast<size_t>(
           (maybe_ptr - normal_bucket_pool_base_) >> kSuperPageShift));
     }
 
@@ -196,7 +232,7 @@ class PCScan<thread_safe>::PCScanTask final {
     static constexpr size_t kBitmapSize =
         AddressPoolManager::kNormalBucketMaxSize >> kSuperPageShift;
 
-    std::bitset<kBitmapSize> bitset_;
+    SimpleBitset<kBitmapSize> bitset_;
     const uintptr_t normal_bucket_pool_base_ =
 #if defined(PA_HAS_64_BITS_POINTERS)
         PartitionAddressSpace::NormalBucketPoolBase();
