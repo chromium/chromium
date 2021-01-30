@@ -1,3 +1,6 @@
+<!--
+@WAIT-FOR:Done
+-->
 <html>
 <head>
 <style>
@@ -15,6 +18,7 @@
 <script>
 function runTest() {
   window.location.href += "#target";
+  document.title = 'Done';
 }
 window.onload = () => requestAnimationFrame(() => requestAnimationFrame(runTest));
 </script>

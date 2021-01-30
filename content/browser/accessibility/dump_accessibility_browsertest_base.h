@@ -145,6 +145,10 @@ class DumpAccessibilityTestBase : public ContentBrowserTest,
   BrowserAccessibility* FindNodeInSubtree(BrowserAccessibility& node,
                                           const std::string& name);
 
+  std::vector<std::string> CollectAllFrameUrls(
+      WebContentsImpl* web_contents,
+      const std::vector<std::string>& skip_urls);
+
   void WaitForAXTreeLoaded(WebContentsImpl* web_contents,
                            const std::vector<std::string>& no_load_expected,
                            const std::vector<std::string>& wait_for);

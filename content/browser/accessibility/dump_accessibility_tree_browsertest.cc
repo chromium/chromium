@@ -151,12 +151,24 @@ class DumpAccessibilityTreeTest : public DumpAccessibilityTestBase {
   }
 
   std::vector<std::string> Dump(std::vector<std::string>& unused) override {
+    WebContentsImpl* web_contents =
+        static_cast<WebContentsImpl*>(shell()->web_contents());
+
+    // To make sure we've handled all accessibility events, add a sentinel by
+    // calling SignalEndOfTest and waiting for a kEndOfTest event in response.
+    AccessibilityNotificationWaiter waiter(web_contents, ui::kAXModeComplete,
+                                           ax::mojom::Event::kEndOfTest);
+    BrowserAccessibilityManager* manager =
+        web_contents->GetRootBrowserAccessibilityManager();
+    manager->SignalEndOfTest();
+    waiter.WaitForNotification();
+
     std::unique_ptr<AXTreeFormatter> formatter(CreateFormatter());
     formatter->SetPropertyFilters(property_filters_,
                                   AXTreeFormatter::kFiltersDefaultSet);
     formatter->SetNodeFilters(node_filters_);
     std::string actual_contents =
-        formatter->Format(GetRootAccessibilityNode(shell()->web_contents()));
+        formatter->Format(GetRootAccessibilityNode(web_contents));
     return base::SplitString(actual_contents, "\n", base::KEEP_WHITESPACE,
                              base::SPLIT_WANT_NONEMPTY);
   }
@@ -757,24 +769,20 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-hidden-descendants.html"));
 }
 
-// TODO(crbug.com/1169854): Flaky
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityAriaHiddenSingleDescendant) {
+                       AccessibilityAriaHiddenSingleDescendant) {
   RunAriaTest(FILE_PATH_LITERAL("aria-hidden-single-descendant.html"));
 }
 
-// TODO(crbug.com/1169854): Flaky
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityTreeTest,
-    DISABLED_AccessibilityAriaHiddenSingleDescendantDisplayNone) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityAriaHiddenSingleDescendantDisplayNone) {
   RunAriaTest(
       FILE_PATH_LITERAL("aria-hidden-single-descendant-display-none.html"));
 }
 
-// TODO(crbug.com/1169854): Flaky
 IN_PROC_BROWSER_TEST_P(
     DumpAccessibilityTreeTest,
-    DISABLED_AccessibilityAriaHiddenSingleDescendantVisibilityHidden) {
+    AccessibilityAriaHiddenSingleDescendantVisibilityHidden) {
   RunAriaTest(FILE_PATH_LITERAL(
       "aria-hidden-single-descendant-visibility-hidden.html"));
 }
@@ -1078,14 +1086,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwns) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns.html"));
 }
 
-// Flaky on CrOS MSAN: https://crbug.com/1167331
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(MEMORY_SANITIZER)
-#define MAYBE_AccessibilityAriaOwnsCrash DISABLED_AccessibilityAriaOwnsCrash
-#else
-#define MAYBE_AccessibilityAriaOwnsCrash AccessibilityAriaOwnsCrash
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityAriaOwnsCrash) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaOwnsCrash) {
   RunAriaTest(FILE_PATH_LITERAL("aria-owns-crash.html"));
 }
 

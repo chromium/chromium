@@ -1,4 +1,4 @@
-rootWebArea
+rootWebArea name='Done'
 ++genericContainer ignored
 ++++genericContainer ignored
 ++++++genericContainer ignored

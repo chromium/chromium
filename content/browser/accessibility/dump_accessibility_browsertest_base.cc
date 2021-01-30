@@ -358,13 +358,12 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
     OnDiffFailed();
 }
 
-void DumpAccessibilityTestBase::WaitForAXTreeLoaded(
+std::vector<std::string> DumpAccessibilityTestBase::CollectAllFrameUrls(
     WebContentsImpl* web_contents,
-    const std::vector<std::string>& no_load_expected,
-    const std::vector<std::string>& wait_for) {
+    const std::vector<std::string>& skip_urls) {
+  std::vector<std::string> all_frame_urls;
   // Get the url of every frame in the frame tree.
   FrameTree* frame_tree = web_contents->GetFrameTree();
-  std::vector<std::string> all_frame_urls;
   for (FrameTreeNode* node : frame_tree->Nodes()) {
     // Ignore about:blank urls because of the case where a parent frame A
     // has a child iframe B and it writes to the document using
@@ -380,7 +379,7 @@ void DumpAccessibilityTestBase::WaitForAXTreeLoaded(
 
     // sometimes we expect a url to never load, in these cases, don't wait.
     bool skip_url = false;
-    for (std::string no_load_url : no_load_expected) {
+    for (std::string no_load_url : skip_urls) {
       if (url.find(no_load_url) != std::string::npos) {
         skip_url = true;
         break;
@@ -392,7 +391,13 @@ void DumpAccessibilityTestBase::WaitForAXTreeLoaded(
       all_frame_urls.push_back(url);
     }
   }
+  return all_frame_urls;
+}
 
+void DumpAccessibilityTestBase::WaitForAXTreeLoaded(
+    WebContentsImpl* web_contents,
+    const std::vector<std::string>& no_load_expected,
+    const std::vector<std::string>& wait_for) {
   // Wait for the accessibility tree to fully load for all frames,
   // by searching for the WEB_AREA node in the accessibility tree
   // with the url of each frame in our frame tree. Note that this
@@ -415,6 +420,10 @@ void DumpAccessibilityTestBase::WaitForAXTreeLoaded(
 
       // Check to see if all frames have loaded.
       bool all_frames_loaded = true;
+      // A test may change the url for a frame, for example by setting
+      // window.location.href, so collect the current list of urls.
+      const std::vector<std::string> all_frame_urls =
+          CollectAllFrameUrls(web_contents, no_load_expected);
       for (const auto& url : all_frame_urls) {
         if (!AccessibilityTreeContainsLoadedDocWithUrl(accessibility_root,
                                                        url)) {

@@ -13,15 +13,13 @@
   </div>
   <div role="group" id="test-status" aria-label="running"></div>
   <script>
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       document.querySelectorAll('.test-case[aria-hidden]').forEach((element) => {
         let hidden = element.getAttribute('aria-hidden') == 'true';
         element.setAttribute('aria-hidden', !hidden);
       });
-    }, 500);
-    setTimeout(() => {
       document.getElementById('test-status').setAttribute('aria-label', 'Done');
-    }, 1000);
+    });
   </script>
 </body>
 </html>
