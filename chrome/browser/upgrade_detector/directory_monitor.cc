@@ -28,8 +28,6 @@
 
 namespace {
 
-// Temporarily disabled for macOS due to https://crbug.com/1156603.
-#if !defined(OS_MAC)
 base::FilePath GetDefaultMonitorLocation() {
 #if defined(OS_MAC)
   return base::mac::OuterBundlePath();
@@ -37,7 +35,6 @@ base::FilePath GetDefaultMonitorLocation() {
   return base::PathService::CheckedGet(base::DIR_EXE);
 #endif
 }
-#endif  // !defined(OS_MAC)
 
 }  // namespace
 
@@ -84,10 +81,5 @@ void DirectoryMonitor::Start(Callback on_change_callback) {
 
 // static
 std::unique_ptr<InstalledVersionMonitor> InstalledVersionMonitor::Create() {
-#if defined(OS_MAC)
-  // Temporarily disabled for macOS due to https://crbug.com/1156603.
-  return nullptr;
-#else
   return std::make_unique<DirectoryMonitor>(GetDefaultMonitorLocation());
-#endif
 }

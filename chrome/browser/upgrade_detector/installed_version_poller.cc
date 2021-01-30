@@ -149,11 +149,8 @@ void InstalledVersionPoller::StartMonitor(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!monitor_);
   monitor_ = std::move(monitor);
-  if (monitor_) {
-    monitor_->Start(
-        base::BindRepeating(&InstalledVersionPoller::OnMonitorResult,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
+  monitor_->Start(base::BindRepeating(&InstalledVersionPoller::OnMonitorResult,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 void InstalledVersionPoller::OnMonitorResult(bool error) {
