@@ -325,7 +325,6 @@ source_set("browser") {
     "accessibility/accessibility_event_recorder.h",
     "accessibility/accessibility_tree_formatter_blink.cc",
     "accessibility/accessibility_tree_formatter_blink.h",
-    "accessibility/accessibility_tree_formatter_stub.cc",
     "accessibility/browser_accessibility.cc",
     "accessibility/browser_accessibility.h",
     "accessibility/browser_accessibility_manager.cc",

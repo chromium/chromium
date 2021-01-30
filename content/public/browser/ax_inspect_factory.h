@@ -19,12 +19,6 @@ class CONTENT_EXPORT AXInspectFactory {
   // running on, since each platform has its own specific accessibility tree.
   // For example, this would be MSAA/IAccessible2 tree on Windows, AT-SPI tree
   // on Linux or NSAccessibility tree on macOS.
-  // TODO(crbug.com/1133330): CreateDefaultFormatter method for each platform
-  // are implemented in conrresponding AccessibilityTreeFormatter, for example,
-  // macOS version is implemented in
-  // content/browser/accessibility/accessibility_tree_formatter_mac.h file.
-  // All implementation should be moved into ax_inspect_factory.cc eventually
-  // when tree formatters are moved under ui/accessibility/platform umbrella.
   static std::unique_ptr<ui::AXTreeFormatter> CreatePlatformFormatter();
 
   // Creates the internal accessibility tree formatter, AKA the Blink tree
