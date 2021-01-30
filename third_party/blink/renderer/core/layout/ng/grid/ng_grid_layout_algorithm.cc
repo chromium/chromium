@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_child_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_layout_part.h"
@@ -444,7 +445,7 @@ void NGGridLayoutAlgorithm::ConstructAndAppendGridItems(
   NGGridChildIterator iterator(Node());
   for (NGBlockNode child = iterator.NextChild(); child;
        child = iterator.NextChild()) {
-    GridItemData grid_item = MeasureGridItem(child);
+    GridItemData grid_item(MeasureGridItem(child));
     // If |out_of_flow_items| is provided, store out-of-flow items separately,
     // as they do not contribute to track sizing or auto-placement.
     if (grid_item.item_type == ItemType::kInGridFlow)
@@ -714,6 +715,10 @@ NGGridLayoutAlgorithm::GridItemData NGGridLayoutAlgorithm::MeasureGridItem(
 
   grid_item.item_type = node.IsOutOfFlowPositioned() ? ItemType::kOutOfFlow
                                                      : ItemType::kInGridFlow;
+
+  grid_item.has_baseline_alignment =
+      (item_style.ResolvedAlignSelf(normal_behaviour, &container_style)
+           .GetPosition() == ItemPosition::kBaseline);
 
   return grid_item;
 }
@@ -1623,7 +1628,7 @@ LayoutUnit AlignmentOffset(LayoutUnit container_size,
     case AxisEdge::kEnd:
       return container_size - margin_end - size;
     case AxisEdge::kBaseline:
-      // TODO(ikilpatrick): Implement baseline alignment.
+      // TODO(kschmi): Implement baseline alignment.
       return margin_start;
   }
   NOTREACHED();
@@ -1678,6 +1683,20 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
     LayoutUnit block_size,
     LayoutUnit column_gutter_size,
     LayoutUnit row_gutter_size) {
+  // |grid_items| is in DOM order to ensure proper painting order, but
+  // determining the grid's baseline is prioritized based on grid order. The
+  // baseline of the grid is determined by the first grid item with baseline
+  // alignment in the first row. If no items have baseline alignment, fall back
+  // to the first item in row-major order.
+  struct PositionAndBaseline {
+    PositionAndBaseline(const GridArea& resolved_position, LayoutUnit baseline)
+        : resolved_position(resolved_position), baseline(baseline) {}
+    GridArea resolved_position;
+    LayoutUnit baseline;
+  };
+  base::Optional<PositionAndBaseline> alignment_baseline;
+  base::Optional<PositionAndBaseline> fallback_baseline;
+
   for (const GridItemData& grid_item : grid_items) {
     DCHECK(grid_item.column_set_indices.has_value());
     DCHECK(grid_item.row_set_indices.has_value());
@@ -1703,11 +1722,12 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
 
     scoped_refptr<const NGLayoutResult> result =
         grid_item.node.Layout(builder.ToConstraintSpace());
-    const auto& physical_fragment = result->PhysicalFragment();
+    const auto& physical_fragment =
+        To<NGPhysicalBoxFragment>(result->PhysicalFragment());
 
     // Apply the grid-item's alignment (if any).
-    NGFragment fragment(ConstraintSpace().GetWritingDirection(),
-                        physical_fragment);
+    NGBoxFragment fragment(ConstraintSpace().GetWritingDirection(),
+                           physical_fragment);
     offset +=
         LogicalOffset(AlignmentOffset(size.inline_size, fragment.InlineSize(),
                                       grid_item.margins.inline_start,
@@ -1719,6 +1739,39 @@ void NGGridLayoutAlgorithm::PlaceGridItems(
                                       grid_item.block_axis_alignment));
 
     container_builder_.AddChild(physical_fragment, offset);
+
+    // Compares GridArea objects in row-major grid order for baseline
+    // precedence. Returns 'true' if |a| < |b| and 'false' otherwise.
+    auto IsBeforeInGridOrder = [&](const GridArea& a,
+                                   const GridArea& b) -> bool {
+      return (a.rows < b.rows) || (a.rows == b.rows && (a.columns < b.columns));
+    };
+
+    LayoutUnit baseline = fragment.BaselineOrSynthesize() + offset.block_offset;
+    if (grid_item.has_baseline_alignment) {
+      if (!alignment_baseline ||
+          IsBeforeInGridOrder(grid_item.resolved_position,
+                              alignment_baseline->resolved_position)) {
+        alignment_baseline.emplace(grid_item.resolved_position, baseline);
+      }
+    } else if (!fallback_baseline ||
+               IsBeforeInGridOrder(grid_item.resolved_position,
+                                   fallback_baseline->resolved_position)) {
+      fallback_baseline.emplace(grid_item.resolved_position, baseline);
+    }
+  }
+
+  // Propagate the baseline from the appropriate child.
+  // TODO(kschmi): Synthesize baseline from alignment context if no grid items.
+  if (!grid_items.IsEmpty()) {
+    if (alignment_baseline &&
+        (!fallback_baseline || alignment_baseline->resolved_position.rows <=
+                                   fallback_baseline->resolved_position.rows)) {
+      container_builder_.SetBaseline(alignment_baseline->baseline);
+    } else {
+      DCHECK(fallback_baseline);
+      container_builder_.SetBaseline(fallback_baseline->baseline);
+    }
   }
 }
 
