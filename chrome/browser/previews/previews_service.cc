@@ -180,8 +180,9 @@ void PreviewsService::Initialize(
       std::make_unique<blocklist::OptOutStoreSQL>(
           ui_task_runner, background_task_runner,
           profile_path.Append(chrome::kPreviewsOptOutDBFilename)),
-      std::move(previews_opt_guide), base::Bind(&IsPreviewsTypeEnabled),
-      GetAllowedPreviews(), g_browser_process->network_quality_tracker());
+      std::move(previews_opt_guide),
+      base::BindRepeating(&IsPreviewsTypeEnabled), GetAllowedPreviews(),
+      g_browser_process->network_quality_tracker());
 }
 
 void PreviewsService::Shutdown() {

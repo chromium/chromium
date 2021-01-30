@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -109,7 +110,7 @@ class LazyLoadBrowserTest : public InProcessBrowserTest {
     cross_origin_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
     ASSERT_TRUE(cross_origin_server_.Start());
 
-    embedded_test_server()->RegisterRequestHandler(base::Bind(
+    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
         [](uint16_t cross_origin_port,
            const net::test_server::HttpRequest& request)
             -> std::unique_ptr<net::test_server::HttpResponse> {

@@ -343,7 +343,6 @@ _NOT_CONVERTED_TO_MODERN_BIND_AND_CALLBACK = '|'.join((
   '^chrome/browser/payments/payment_manifest_parser_browsertest.cc',
   '^chrome/browser/plugins/',
   '^chrome/browser/portal/portal_browsertest.cc',
-  '^chrome/browser/previews/',
   '^chrome/browser/profiling_host/profiling_process_host.cc',
   '^chrome/browser/recovery/recovery_install_global_error.cc',
   '^chrome/browser/resources/chromeos/accessibility/',
