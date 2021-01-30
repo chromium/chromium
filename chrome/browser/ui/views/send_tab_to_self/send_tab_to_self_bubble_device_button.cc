@@ -18,6 +18,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/color_tracking_icon_view.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 
 namespace send_tab_to_self {
 
@@ -70,5 +71,8 @@ SendTabToSelfBubbleDeviceButton::SendTabToSelfBubbleDeviceButton(
 }
 
 SendTabToSelfBubbleDeviceButton::~SendTabToSelfBubbleDeviceButton() = default;
+
+BEGIN_METADATA(SendTabToSelfBubbleDeviceButton, HoverButton)
+END_METADATA
 
 }  // namespace send_tab_to_self

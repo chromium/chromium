@@ -47,6 +47,7 @@
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
+#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/view_class_properties.h"
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -308,6 +309,7 @@ class AvatarImageView : public views::ImageView {
 
 class SyncButton : public HoverButton {
  public:
+  METADATA_HEADER(SyncButton);
   SyncButton(PressedCallback callback,
              ProfileMenuViewBase* root_view,
              const base::string16& clickable_text)
@@ -323,6 +325,9 @@ class SyncButton : public HoverButton {
  private:
   const ProfileMenuViewBase* root_view_;
 };
+
+BEGIN_METADATA(SyncButton, HoverButton)
+END_METADATA
 
 class SyncImageView : public views::ImageView {
  public:
