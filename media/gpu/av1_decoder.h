@@ -119,6 +119,12 @@ class MEDIA_GPU_EXPORT AV1Decoder : public AcceleratedVideoDecoder {
       const libgav1::Vector<libgav1::TileBuffer>& tile_buffers);
   void UpdateReferenceFrames(scoped_refptr<AV1Picture> pic);
   void ClearReferenceFrames();
+  // Checks that |ref_frames_| is consistent with libgav1's reference frame
+  // state (returns false if not) and cleans old reference frames from
+  // |ref_frames_| as needed. Also asserts that all reference frames needed by
+  // |current_frame_header_| are in |ref_frames_|. This method should be called
+  // prior to using |ref_frames_| (which includes calling
+  // |accelerator_|->SubmitDecode());
   bool CheckAndCleanUpReferenceFrames();
   void ClearCurrentFrame();
   DecodeResult DecodeInternal();

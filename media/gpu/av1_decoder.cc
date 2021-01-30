@@ -290,8 +290,8 @@ AcceleratedVideoDecoder::DecodeResult AV1Decoder::DecodeInternal() {
       DCHECK_LE(0u, frame_to_show);
       DCHECK_LT(frame_to_show, ref_frames_.size());
       if (!CheckAndCleanUpReferenceFrames()) {
-        DLOG(ERROR) << "The states of reference frames are different between"
-                    << "|ref_frames_| and |state_->reference_frame|";
+        DLOG(ERROR) << "The states of reference frames are different between "
+                    << "|ref_frames_| and |state_|";
         return kDecodeError;
       }
 
@@ -415,13 +415,37 @@ void AV1Decoder::ClearReferenceFrames() {
 bool AV1Decoder::CheckAndCleanUpReferenceFrames() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(state_);
-  const auto& reference_valid = state_->reference_valid;
+  DCHECK(current_frame_header_);
   for (size_t i = 0; i < libgav1::kNumReferenceFrameTypes; ++i) {
-    if (reference_valid[i] && !ref_frames_[i])
+    if (state_->reference_valid[i] &&
+        (!state_->reference_frame[i] || !ref_frames_[i])) {
       return false;
-    if (!reference_valid[i] && ref_frames_[i])
+    }
+    if (!state_->reference_valid[i] && ref_frames_[i])
       ref_frames_[i].reset();
   }
+
+  // If we get here, we know |ref_frames_| includes all and only those frames
+  // that can be currently used as reference frames. Now we'll assert that for
+  // non-intra frames, all the necessary reference frames are in |ref_frames_|.
+  // For intra frames, we don't need this assertion because they shouldn't
+  // depend on reference frames.
+  if (!libgav1::IsIntraFrame(current_frame_header_->frame_type)) {
+    for (size_t i = 0; i < libgav1::kNumInterReferenceFrameTypes; ++i) {
+      const auto ref_frame_index =
+          current_frame_header_->reference_frame_index[i];
+
+      // Unless an error occurred in libgav1, |ref_frame_index| should be valid,
+      // and since CheckAndCleanUpReferenceFrames() only gets called if parsing
+      // succeeded, we can assert that validity.
+      CHECK_GE(ref_frame_index, 0);
+      CHECK_LT(ref_frame_index, libgav1::kNumReferenceFrameTypes);
+      CHECK(ref_frames_[ref_frame_index]);
+    }
+  }
+
+  // If we get here, we know that all the reference frames needed by the current
+  // frame are in |ref_frames_|.
   return true;
 }
 
@@ -434,8 +458,8 @@ bool AV1Decoder::DecodeAndOutputPicture(
   DCHECK(stream_);
   DCHECK_GT(stream_size_, 0u);
   if (!CheckAndCleanUpReferenceFrames()) {
-    DLOG(ERROR) << "The states of reference frames are different between"
-                << "|ref_frames_| and |state_->reference_frame|";
+    DLOG(ERROR) << "The states of reference frames are different between "
+                << "|ref_frames_| and |state_|";
     return false;
   }
   if (!accelerator_->SubmitDecode(*pic, *current_sequence_header_, ref_frames_,
