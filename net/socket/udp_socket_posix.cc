@@ -10,6 +10,7 @@
 #include <netdb.h>
 #include <netinet/in.h>
 #include <sys/ioctl.h>
+#include <sys/socket.h>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -292,6 +293,13 @@ void UDPSocketPosix::Close() {
   // crbug.com/906005.
   CHECK_EQ(socket_hash_, GetSocketFDHash(socket_));
 #if defined(OS_MAC)
+  // Attempt to clear errors on the socket so that they are not returned by
+  // close(). See https://crbug.com/1151048.
+  // TODO(ricea): Remove this if it doesn't work, or when the OS bug is fixed.
+  int value = 0;
+  socklen_t value_len = sizeof(value);
+  HANDLE_EINTR(getsockopt(socket_, SOL_SOCKET, SO_ERROR, &value, &value_len));
+
   PCHECK(IGNORE_EINTR(guarded_close_np(socket_, &kSocketFdGuard)) == 0);
 #else
   PCHECK(IGNORE_EINTR(close(socket_)) == 0);
