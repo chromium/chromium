@@ -47,6 +47,15 @@ required:
 $ gclient sync -D --force --reset
 ```
 
+Note that if you are attempting to build an old revision that is on a branch,
+you will need to use:
+
+```shell
+$ gclient sync -D --force --reset --with_branch_heads
+```
+
+instead.
+
 **Warning: `gclient sync` may overwrite the URL of your `origin` remote** if it
 encounters problems. You'll notice this when Git starts thinking everything is
 "untracked" or "deleted". If this happens, fix and fetch the remote before
