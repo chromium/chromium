@@ -24,6 +24,7 @@ class Value;
 
 namespace chrome_pdf {
 
+class Image;
 class PDFiumEngine;
 class UrlLoader;
 
@@ -100,6 +101,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Updates the available area and the background parts, notifies the PDF
   // engine, and updates the accessibility information.
   virtual void OnGeometryChanged(double old_zoom, float old_device_scale) = 0;
+
+  // Returns the plugin-specific image data buffer.
+  virtual Image GetPluginImageData() const;
 
   // A helper of OnGeometryChanged() which updates the available area and
   // the background parts, and notifies the PDF engine of geometry changes.

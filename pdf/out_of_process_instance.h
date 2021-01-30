@@ -189,6 +189,7 @@ class OutOfProcessInstance : public PdfViewPluginBase,
                std::vector<PaintReadyRect>* ready,
                std::vector<gfx::Rect>* pending) override;
   void OnGeometryChanged(double old_zoom, float old_device_scale) override;
+  Image GetPluginImageData() const override;
 
  private:
   // Message handlers.

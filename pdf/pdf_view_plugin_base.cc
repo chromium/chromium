@@ -20,6 +20,7 @@
 #include "base/optional.h"
 #include "base/values.h"
 #include "pdf/pdfium/pdfium_engine.h"
+#include "pdf/ppapi_migration/image.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -105,6 +106,10 @@ void PdfViewPluginBase::InvalidateAfterPaintDone(
   for (const gfx::Rect& rect : deferred_invalidates_)
     Invalidate(rect);
   deferred_invalidates_.clear();
+}
+
+Image PdfViewPluginBase::GetPluginImageData() const {
+  return Image(image_data_);
 }
 
 void PdfViewPluginBase::RecalculateAreas(double old_zoom,

@@ -1181,7 +1181,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
     mutable_image_data().eraseColor(GetBackgroundColor());
     gfx::Rect rect(gfx::SkISizeToSize(image_data().dimensions()));
     ready->push_back(
-        PaintReadyRect(rect, Image(pepper_image_data_), /*flush_now=*/true));
+        PaintReadyRect(rect, GetPluginImageData(), /*flush_now=*/true));
   }
 
   if (!received_viewport_message() || !needs_reraster())
@@ -1205,7 +1205,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
       engine()->Paint(pdf_rect, mutable_image_data(), pdf_ready, pdf_pending);
       for (auto& ready_rect : pdf_ready) {
         ready_rect.Offset(available_area().OffsetFromOrigin());
-        ready->push_back(PaintReadyRect(ready_rect, Image(pepper_image_data_)));
+        ready->push_back(PaintReadyRect(ready_rect, GetPluginImageData()));
       }
       for (auto& pending_rect : pdf_pending) {
         pending_rect.Offset(available_area().OffsetFromOrigin());
@@ -1220,7 +1220,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
     if (rect.y() < first_page_ypos) {
       gfx::Rect region = gfx::IntersectRects(
           rect, gfx::Rect(gfx::Size(plugin_size().width(), first_page_ypos)));
-      ready->push_back(PaintReadyRect(region, Image(pepper_image_data_)));
+      ready->push_back(PaintReadyRect(region, GetPluginImageData()));
       mutable_image_data().erase(GetBackgroundColor(),
                                  gfx::RectToSkIRect(region));
     }
@@ -1231,8 +1231,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
       if (!intersection.IsEmpty()) {
         mutable_image_data().erase(background_part.color,
                                    gfx::RectToSkIRect(intersection));
-        ready->push_back(
-            PaintReadyRect(intersection, Image(pepper_image_data_)));
+        ready->push_back(PaintReadyRect(intersection, GetPluginImageData()));
       }
     }
   }
@@ -2184,6 +2183,10 @@ void OutOfProcessInstance::OnGeometryChanged(double old_zoom,
 
   if (accessibility_state_ == ACCESSIBILITY_STATE_LOADED)
     SendAccessibilityViewportInfo();
+}
+
+Image OutOfProcessInstance::GetPluginImageData() const {
+  return Image(pepper_image_data_);
 }
 
 base::WeakPtr<PdfViewPluginBase> OutOfProcessInstance::GetWeakPtr() {
