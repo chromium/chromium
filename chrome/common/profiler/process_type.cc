@@ -4,9 +4,11 @@
 
 #include "chrome/common/profiler/process_type.h"
 
+#include "base/command_line.h"
+#include "components/metrics/call_stack_profile_params.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
-#include "sandbox/policy/sandbox.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "extensions/common/switches.h"
@@ -42,9 +44,9 @@ metrics::CallStackProfileParams::Process GetProfileParamsProcess(
     return metrics::CallStackProfileParams::GPU_PROCESS;
 
   if (process_type == switches::kUtilityProcess) {
-    auto sandbox_type =
-        sandbox::policy::SandboxTypeFromCommandLine(command_line);
-    if (sandbox_type == sandbox::policy::SandboxType::kNetwork)
+    auto utility_sub_type =
+        command_line.GetSwitchValueASCII(switches::kUtilitySubType);
+    if (utility_sub_type == network::mojom::NetworkService::Name_)
       return metrics::CallStackProfileParams::NETWORK_SERVICE_PROCESS;
     return metrics::CallStackProfileParams::UTILITY_PROCESS;
   }

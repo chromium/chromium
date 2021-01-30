@@ -5,10 +5,10 @@
 #include "chrome/common/profiler/process_type.h"
 
 #include "base/command_line.h"
-#include "chrome/common/chrome_switches.h"
+#include "components/metrics/call_stack_profile_params.h"
 #include "content/public/common/content_switches.h"
 #include "extensions/buildflags/buildflags.h"
-#include "sandbox/policy/switches.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -61,9 +61,8 @@ TEST_F(ThreadProfilerProcessTypeTest, GetProfileParamsProcess_Gpu) {
 TEST_F(ThreadProfilerProcessTypeTest, GetProfileParamsProcess_NetworkService) {
   command_line().AppendSwitchASCII(switches::kProcessType,
                                    switches::kUtilityProcess);
-  command_line().AppendSwitchASCII(
-      sandbox::policy::switches::kServiceSandboxType,
-      sandbox::policy::switches::kNetworkSandbox);
+  command_line().AppendSwitchASCII(switches::kUtilitySubType,
+                                   network::mojom::NetworkService::Name_);
   EXPECT_EQ(metrics::CallStackProfileParams::NETWORK_SERVICE_PROCESS,
             GetProfileParamsProcess(command_line()));
 }
