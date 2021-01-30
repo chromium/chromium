@@ -90,7 +90,7 @@ class _Group:
 
 
 # List of disjoint build artifact groups for size tracking. This list should be
-# synched with chromeos-amd64-generic-lacros-rel builder contents (specified in
+# synched with lacros-amd64-generic-rel builder contents (specified in
 # //infra/config/subprojects/chromium/ci.star) and
 # chromeos-amd64-generic-lacros-internal builder (specified in src-internal).
 _TRACKED_GROUPS = [

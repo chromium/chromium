@@ -1626,6 +1626,11 @@
         },
         'os_type': 'chromeos',
       },
+      'lacros-amd64-generic-rel': {
+        'additional_compile_targets': [
+          'chrome',
+        ],
+      },
       'linux-cfm-rel': {
         'test_suites': {
           'gtest_tests': 'linux_cfm_gtests',
@@ -2659,11 +2664,6 @@
         'mixins': [
           'enable_resultdb',
           'walleye',
-        ],
-      },
-      'chromeos-amd64-generic-lacros-rel': {
-        'additional_compile_targets': [
-          'chrome',
         ],
       },
       'fuchsia-fyi-arm64-dbg': {

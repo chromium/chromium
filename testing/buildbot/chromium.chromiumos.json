@@ -1255,6 +1255,11 @@
       }
     ]
   },
+  "lacros-amd64-generic-rel": {
+    "additional_compile_targets": [
+      "chrome"
+    ]
+  },
   "linux-cfm-rel": {
     "gtest_tests": [
       {

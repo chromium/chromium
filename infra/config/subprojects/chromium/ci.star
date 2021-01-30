@@ -1656,6 +1656,43 @@ ci.chromiumos_builder(
 )
 
 ci.chromiumos_builder(
+    name = "lacros-amd64-generic-rel",
+    console_view_entry = consoles.console_view_entry(
+        category = "lacros|x64",
+        short_name = "rel",
+    ),
+    cq_mirrors_console_view = "mirrors",
+    main_console_view = "main",
+    properties = {
+        # The format of these properties is defined at archive/properties.proto
+        "$build/archive": {
+            "archive_datas": [
+                # The list of files and dirs should be synched with
+                # _TRACKED_ITEMS in //build/lacros/lacros_resource_sizes.py.
+                {
+                    "files": [
+                        "chrome",
+                        "chrome_100_percent.pak",
+                        "chrome_200_percent.pak",
+                        "crashpad_handler",
+                        "headless_lib.pak",
+                        "icudtl.dat",
+                        "nacl_helper",
+                        "nacl_irt_x86_64.nexe",
+                        "resources.pak",
+                        "snapshot_blob.bin",
+                    ],
+                    "dirs": ["locales", "swiftshader"],
+                    "gcs_bucket": "chromium-lacros-fishfood",
+                    "gcs_path": "x86_64/{%position%}/lacros.zip",
+                    "archive_type": "ARCHIVE_TYPE_ZIP",
+                },
+            ],
+        },
+    },
+)
+
+ci.chromiumos_builder(
     name = "linux-chromeos-dbg",
     branch_selector = branches.STANDARD_MILESTONE,
     console_view_entry = consoles.console_view_entry(
@@ -2819,40 +2856,6 @@ ci.fyi_builder(
         short_name = "64rel",
     ),
     notifies = ["chrome-memory-safety"],
-)
-
-ci.fyi_builder(
-    name = "chromeos-amd64-generic-lacros-rel",
-    console_view_entry = consoles.console_view_entry(
-        category = "chromeos",
-    ),
-    properties = {
-        # The format of these properties is defined at archive/properties.proto
-        "$build/archive": {
-            "archive_datas": [
-                # The list of files and dirs should be synched with
-                # _TRACKED_ITEMS in //build/lacros/lacros_resource_sizes.py.
-                {
-                    "files": [
-                        "chrome",
-                        "chrome_100_percent.pak",
-                        "chrome_200_percent.pak",
-                        "crashpad_handler",
-                        "headless_lib.pak",
-                        "icudtl.dat",
-                        "nacl_helper",
-                        "nacl_irt_x86_64.nexe",
-                        "resources.pak",
-                        "snapshot_blob.bin",
-                    ],
-                    "dirs": ["locales", "swiftshader"],
-                    "gcs_bucket": "chromium-lacros-fishfood",
-                    "gcs_path": "x86_64/{%position%}/lacros.zip",
-                    "archive_type": "ARCHIVE_TYPE_ZIP",
-                },
-            ],
-        },
-    },
 )
 
 ci.fyi_builder(
