@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/power_monitor/power_monitor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -76,6 +77,18 @@ TabStatsTracker* g_tab_stats_tracker_instance = nullptr;
 // |kTabUsageReportingIntervals|).
 bool IsValidInterval(base::TimeDelta interval) {
   return base::Contains(kTabUsageReportingIntervals, interval);
+}
+
+void UmaHistogramCounts10000WithBatteryStateVariant(const char* histogram_name,
+                                                    size_t value) {
+  DCHECK(base::PowerMonitor::IsInitialized());
+
+  base::UmaHistogramCounts10000(histogram_name, value);
+
+  const char* suffix =
+      base::PowerMonitor::IsOnBatteryPower() ? ".OnBattery" : ".PluggedIn";
+
+  base::UmaHistogramCounts10000(base::StrCat({histogram_name, suffix}), value);
 }
 
 }  // namespace
@@ -406,7 +419,8 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportTabCountOnResume(
   // background with no visible window.
   if (IsChromeBackgroundedWithoutWindows())
     return;
-  UMA_HISTOGRAM_COUNTS_10000(kNumberOfTabsOnResumeHistogramName, tab_count);
+  UmaHistogramCounts10000WithBatteryStateVariant(
+      kNumberOfTabsOnResumeHistogramName, tab_count);
 }
 
 void TabStatsTracker::UmaStatsReportingDelegate::ReportDailyMetrics(
@@ -416,12 +430,12 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportDailyMetrics(
   // been reported.
   if (tab_stats.total_tab_count_max == 0)
     return;
-  UMA_HISTOGRAM_COUNTS_10000(kMaxTabsInADayHistogramName,
-                             tab_stats.total_tab_count_max);
-  UMA_HISTOGRAM_COUNTS_10000(kMaxTabsPerWindowInADayHistogramName,
-                             tab_stats.max_tab_per_window);
-  UMA_HISTOGRAM_COUNTS_10000(kMaxWindowsInADayHistogramName,
-                             tab_stats.window_count_max);
+  UmaHistogramCounts10000WithBatteryStateVariant(kMaxTabsInADayHistogramName,
+                                                 tab_stats.total_tab_count_max);
+  UmaHistogramCounts10000WithBatteryStateVariant(
+      kMaxTabsPerWindowInADayHistogramName, tab_stats.max_tab_per_window);
+  UmaHistogramCounts10000WithBatteryStateVariant(kMaxWindowsInADayHistogramName,
+                                                 tab_stats.window_count_max);
 }
 
 void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
@@ -431,8 +445,10 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
   if (IsChromeBackgroundedWithoutWindows())
     return;
 
-  UMA_HISTOGRAM_COUNTS_10000(kTabCountHistogramName, tab_stats.total_tab_count);
-  UMA_HISTOGRAM_COUNTS_10000(kWindowCountHistogramName, tab_stats.window_count);
+  UmaHistogramCounts10000WithBatteryStateVariant(kTabCountHistogramName,
+                                                 tab_stats.total_tab_count);
+  UmaHistogramCounts10000WithBatteryStateVariant(kWindowCountHistogramName,
+                                                 tab_stats.window_count);
 
   // Record the width of all open browser windows with tabs.
   for (Browser* browser : *BrowserList::GetInstance()) {

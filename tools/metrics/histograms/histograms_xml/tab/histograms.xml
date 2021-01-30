@@ -21,6 +21,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="BatteryState">
+  <variant name="" summary="On battery or plugged-in"/>
+  <variant name=".OnBattery"/>
+  <variant name=".PluggedIn"/>
+</variants>
+
 <variants name="TabCreatedReason">
   <variant name=".FromExternalApp"
       summary="This bucket is for any tabs that are created because of custom
@@ -1328,7 +1334,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </details>
 </histogram>
 
-<histogram name="Tabs.MaxTabsInADay" units="tabs" expires_after="never">
+<histogram name="Tabs.MaxTabsInADay{BatteryState}" units="tabs"
+    expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
   <owner>sebmarchand@chromium.org</owner>
@@ -1341,9 +1348,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     represents the previous day's observations (which can be from a different
     build).
   </summary>
+  <token key="BatteryState" variants="BatteryState"/>
 </histogram>
 
-<histogram name="Tabs.MaxTabsPerWindowInADay" units="tabs"
+<histogram name="Tabs.MaxTabsPerWindowInADay{BatteryState}" units="tabs"
     expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
@@ -1357,9 +1365,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     represents the previous day's observations (which can be from a different
     build).
   </summary>
+  <token key="BatteryState" variants="BatteryState"/>
 </histogram>
 
-<histogram name="Tabs.MaxWindowsInADay" units="tabs" expires_after="never">
+<histogram name="Tabs.MaxWindowsInADay{BatteryState}" units="tabs"
+    expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
   <owner>sebmarchand@chromium.org</owner>
@@ -1372,6 +1382,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     represents the previous day's observations (which can be from a different
     build).
   </summary>
+  <token key="BatteryState" variants="BatteryState"/>
 </histogram>
 
 <histogram name="Tabs.NTPCountAtResume" units="tabs" expires_after="M95">
@@ -1388,7 +1399,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>[iOS] The number of NTP tabs open at cold launch.</summary>
 </histogram>
 
-<histogram name="Tabs.NumberOfTabsOnResume" units="tabs" expires_after="never">
+<histogram name="Tabs.NumberOfTabsOnResume{BatteryState}" units="tabs"
+    expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
   <owner>sebmarchand@chromium.org</owner>
@@ -1397,6 +1409,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     The number of tabs total at resume from sleep/hibernate. This is being
     logged on all desktop platforms.
   </summary>
+  <token key="BatteryState" variants="BatteryState"/>
 </histogram>
 
 <histogram name="Tabs.PersistedTabData.Deserialize.Critical"
@@ -1852,17 +1865,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram name="Tabs.TabCount" units="tabs" expires_after="never">
-<!-- expires-never: https://crbug.com/966137 -->
-
-  <owner>sebmarchand@chromium.org</owner>
-  <owner>catan-team@chromium.org</owner>
-  <summary>
-    Counts the number of tabs across all windows, reported every 5 minutes.
-    Desktop only.
-  </summary>
-</histogram>
-
 <histogram name="Tabs.TabCountActiveWindow" units="tabs" expires_after="never">
 <!-- expires-never: usage drives tab optimization and analysis. -->
 
@@ -1967,6 +1969,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     This value will be recorded multiple times per load if more than one window
     is open.
   </details>
+</histogram>
+
+<histogram name="Tabs.TabCount{BatteryState}" units="tabs"
+    expires_after="never">
+<!-- expires-never: https://crbug.com/966137 -->
+
+  <owner>sebmarchand@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Counts the number of tabs across all windows, reported every 5 minutes.
+    Desktop only.
+  </summary>
+  <token key="BatteryState" variants="BatteryState"/>
 </histogram>
 
 <histogram name="Tabs.TabOffsetOfSwitch{TabOffsetOfSwitchComponentList}"
@@ -2531,7 +2546,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram name="Tabs.WindowCount" units="tabs" expires_after="never">
+<histogram name="Tabs.WindowCount{BatteryState}" units="tabs"
+    expires_after="never">
 <!-- expires-never: https://crbug.com/966137 -->
 
   <owner>sebmarchand@chromium.org</owner>
@@ -2539,6 +2555,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Counts the number of Chrome windows, reported every 5 minutes. Desktop only.
   </summary>
+  <token key="BatteryState" variants="BatteryState"/>
 </histogram>
 
 <histogram name="Tabs.WindowWidth" units="DIPs" expires_after="2021-06-20">

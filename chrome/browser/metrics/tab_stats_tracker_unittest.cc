@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/power_monitor_test_base.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -22,6 +23,13 @@ namespace metrics {
 namespace {
 
 using TabsStats = TabStatsDataStore::TabsStats;
+
+std::string GetHistogramNameWithBatteryStateSuffix(const char* histogram_name) {
+  const char* suffix =
+      base::PowerMonitor::IsOnBatteryPower() ? ".OnBattery" : ".PluggedIn";
+
+  return base::StrCat({histogram_name, suffix});
+}
 
 class TestTabStatsTracker : public TabStatsTracker {
  public:
@@ -194,6 +202,8 @@ TEST_F(TabStatsTrackerTest, OnResume) {
   std::vector<base::Bucket> count_buckets;
   count_buckets.emplace_back(base::Bucket(expected_tab_count, 1));
 
+  EXPECT_FALSE(power_monitor_source_->IsOnBatteryPower());
+
   // Generates a resume event that should end up calling the
   // |ReportTabCountOnResume| method of the reporting delegate.
   power_monitor_source_->GenerateSuspendEvent();
@@ -203,15 +213,25 @@ TEST_F(TabStatsTrackerTest, OnResume) {
   histogram_tester_.ExpectTotalCount(
       UmaStatsReportingDelegate::kNumberOfTabsOnResumeHistogramName,
       count_buckets.size());
+  histogram_tester_.ExpectTotalCount(
+      GetHistogramNameWithBatteryStateSuffix(
+          UmaStatsReportingDelegate::kNumberOfTabsOnResumeHistogramName),
+      count_buckets.size());
   EXPECT_EQ(histogram_tester_.GetAllSamples(
                 UmaStatsReportingDelegate::kNumberOfTabsOnResumeHistogramName),
             count_buckets);
+  EXPECT_EQ(
+      histogram_tester_.GetAllSamples(GetHistogramNameWithBatteryStateSuffix(
+          UmaStatsReportingDelegate::kNumberOfTabsOnResumeHistogramName)),
+      count_buckets);
 
   // Removes some tabs and update the expectations.
   expected_tab_count = tab_stats_tracker_->RemoveTabs(5);
   count_buckets.emplace_back(base::Bucket(expected_tab_count, 1));
   std::sort(count_buckets.begin(), count_buckets.end(), CompareHistogramBucket);
 
+  power_monitor_source_->GeneratePowerStateEvent(true);
+  EXPECT_TRUE(power_monitor_source_->IsOnBatteryPower());
   // Generates another resume event.
   power_monitor_source_->GenerateSuspendEvent();
   power_monitor_source_->GenerateResumeEvent();
@@ -220,9 +240,17 @@ TEST_F(TabStatsTrackerTest, OnResume) {
   histogram_tester_.ExpectTotalCount(
       UmaStatsReportingDelegate::kNumberOfTabsOnResumeHistogramName,
       count_buckets.size());
+  histogram_tester_.ExpectTotalCount(
+      GetHistogramNameWithBatteryStateSuffix(
+          UmaStatsReportingDelegate::kNumberOfTabsOnResumeHistogramName),
+      1);
   EXPECT_EQ(histogram_tester_.GetAllSamples(
                 UmaStatsReportingDelegate::kNumberOfTabsOnResumeHistogramName),
             count_buckets);
+  histogram_tester_.ExpectUniqueSample(
+      GetHistogramNameWithBatteryStateSuffix(
+          UmaStatsReportingDelegate::kNumberOfTabsOnResumeHistogramName),
+      expected_tab_count, 1);
 }
 
 TEST_F(TabStatsTrackerTest, StatsGetReportedDaily) {
@@ -242,6 +270,7 @@ TEST_F(TabStatsTrackerTest, StatsGetReportedDaily) {
 
   TabsStats stats = tab_stats_tracker_->data_store()->tab_stats();
 
+  EXPECT_FALSE(power_monitor_source_->IsOnBatteryPower());
   // Trigger the daily event.
   tab_stats_tracker_->TriggerDailyEvent();
 
@@ -250,10 +279,22 @@ TEST_F(TabStatsTrackerTest, StatsGetReportedDaily) {
       UmaStatsReportingDelegate::kMaxTabsInADayHistogramName,
       stats.total_tab_count_max, 1);
   histogram_tester_.ExpectUniqueSample(
+      GetHistogramNameWithBatteryStateSuffix(
+          UmaStatsReportingDelegate::kMaxTabsInADayHistogramName),
+      stats.total_tab_count_max, 1);
+  histogram_tester_.ExpectUniqueSample(
       UmaStatsReportingDelegate::kMaxTabsPerWindowInADayHistogramName,
       stats.max_tab_per_window, 1);
   histogram_tester_.ExpectUniqueSample(
+      GetHistogramNameWithBatteryStateSuffix(
+          UmaStatsReportingDelegate::kMaxTabsPerWindowInADayHistogramName),
+      stats.max_tab_per_window, 1);
+  histogram_tester_.ExpectUniqueSample(
       UmaStatsReportingDelegate::kMaxWindowsInADayHistogramName,
+      stats.window_count_max, 1);
+  histogram_tester_.ExpectUniqueSample(
+      GetHistogramNameWithBatteryStateSuffix(
+          UmaStatsReportingDelegate::kMaxWindowsInADayHistogramName),
       stats.window_count_max, 1);
 
   // Manually call the function to update the maximum number of tabs in a single
@@ -276,6 +317,9 @@ TEST_F(TabStatsTrackerTest, StatsGetReportedDaily) {
   EXPECT_EQ(expected_window_count, static_cast<size_t>(pref_service_.GetInteger(
                                        prefs::kTabStatsWindowCountMax)));
 
+  power_monitor_source_->GeneratePowerStateEvent(true);
+  EXPECT_TRUE(power_monitor_source_->IsOnBatteryPower());
+
   // Trigger the daily event.
   tab_stats_tracker_->TriggerDailyEvent();
 
@@ -284,10 +328,22 @@ TEST_F(TabStatsTrackerTest, StatsGetReportedDaily) {
       UmaStatsReportingDelegate::kMaxTabsInADayHistogramName,
       stats.total_tab_count_max, 1);
   histogram_tester_.ExpectBucketCount(
+      GetHistogramNameWithBatteryStateSuffix(
+          UmaStatsReportingDelegate::kMaxTabsInADayHistogramName),
+      stats.total_tab_count_max, 1);
+  histogram_tester_.ExpectBucketCount(
       UmaStatsReportingDelegate::kMaxTabsPerWindowInADayHistogramName,
       stats.max_tab_per_window, 1);
   histogram_tester_.ExpectBucketCount(
+      GetHistogramNameWithBatteryStateSuffix(
+          UmaStatsReportingDelegate::kMaxTabsPerWindowInADayHistogramName),
+      stats.max_tab_per_window, 1);
+  histogram_tester_.ExpectBucketCount(
       UmaStatsReportingDelegate::kMaxWindowsInADayHistogramName,
+      stats.window_count_max, 1);
+  histogram_tester_.ExpectBucketCount(
+      GetHistogramNameWithBatteryStateSuffix(
+          UmaStatsReportingDelegate::kMaxWindowsInADayHistogramName),
       stats.window_count_max, 1);
 }
 
