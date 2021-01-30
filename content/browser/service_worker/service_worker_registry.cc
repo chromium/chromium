@@ -687,11 +687,13 @@ void ServiceWorkerRegistry::StoreUserData(
   }
 
   uint64_t call_id = GetNextCallId();
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), blink::ServiceWorkerStatusCode::kErrorFailed);
   auto call = std::make_unique<InflightCallStoreUserData>(
       registration_id, origin, std::move(user_data),
       base::BindRepeating(&ServiceWorkerRegistry::DidStoreUserData,
-                          weak_factory_.GetWeakPtr(), base::Passed(&callback),
-                          call_id, origin));
+                          weak_factory_.GetWeakPtr(),
+                          base::Passed(&wrapped_callback), call_id, origin));
   StartRemoteCall(call_id, std::move(call));
 }
 
@@ -699,10 +701,13 @@ void ServiceWorkerRegistry::ClearUserData(int64_t registration_id,
                                           const std::vector<std::string>& keys,
                                           StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), blink::ServiceWorkerStatusCode::kErrorFailed);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::ClearUserData,
       base::BindRepeating(&ServiceWorkerRegistry::DidClearUserData,
-                          weak_factory_.GetWeakPtr(), base::Passed(&callback)),
+                          weak_factory_.GetWeakPtr(),
+                          base::Passed(&wrapped_callback)),
       static_cast<const int64_t>(registration_id), keys);
 }
 
@@ -711,10 +716,13 @@ void ServiceWorkerRegistry::ClearUserDataByKeyPrefixes(
     const std::vector<std::string>& key_prefixes,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), blink::ServiceWorkerStatusCode::kErrorFailed);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::ClearUserDataByKeyPrefixes,
       base::BindRepeating(&ServiceWorkerRegistry::DidClearUserData,
-                          weak_factory_.GetWeakPtr(), base::Passed(&callback)),
+                          weak_factory_.GetWeakPtr(),
+                          base::Passed(&wrapped_callback)),
       static_cast<const int64_t>(registration_id), key_prefixes);
 }
 
@@ -722,11 +730,14 @@ void ServiceWorkerRegistry::ClearUserDataForAllRegistrationsByKeyPrefix(
     const std::string& key_prefix,
     StatusCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), blink::ServiceWorkerStatusCode::kErrorFailed);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::
           ClearUserDataForAllRegistrationsByKeyPrefix,
       base::BindRepeating(&ServiceWorkerRegistry::DidClearUserData,
-                          weak_factory_.GetWeakPtr(), base::Passed(&callback)),
+                          weak_factory_.GetWeakPtr(),
+                          base::Passed(&wrapped_callback)),
       key_prefix);
 }
 
@@ -734,12 +745,15 @@ void ServiceWorkerRegistry::GetUserDataForAllRegistrations(
     const std::string& key,
     GetUserDataForAllRegistrationsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), std::vector<std::pair<int64_t, std::string>>(),
+      blink::ServiceWorkerStatusCode::kErrorFailed);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::
           GetUserDataForAllRegistrations,
       base::BindRepeating(
           &ServiceWorkerRegistry::DidGetUserDataForAllRegistrations,
-          weak_factory_.GetWeakPtr(), base::Passed(&callback)),
+          weak_factory_.GetWeakPtr(), base::Passed(&wrapped_callback)),
       key);
 }
 
@@ -747,12 +761,15 @@ void ServiceWorkerRegistry::GetUserDataForAllRegistrationsByKeyPrefix(
     const std::string& key_prefix,
     GetUserDataForAllRegistrationsCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto wrapped_callback = mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+      std::move(callback), std::vector<std::pair<int64_t, std::string>>(),
+      blink::ServiceWorkerStatusCode::kErrorFailed);
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::
           GetUserDataForAllRegistrationsByKeyPrefix,
       base::BindRepeating(
           &ServiceWorkerRegistry::DidGetUserDataForAllRegistrations,
-          weak_factory_.GetWeakPtr(), base::Passed(&callback)),
+          weak_factory_.GetWeakPtr(), base::Passed(&wrapped_callback)),
       key_prefix);
 }
 

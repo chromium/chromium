@@ -1869,6 +1869,91 @@ TEST_F(ServiceWorkerRegistryTest, DestroyRegistryDuringInflightCall) {
   }
 }
 
+TEST_F(ServiceWorkerRegistryTest,
+       DestroyRegistryDuringInflightCall_StoreUserData) {
+  base::RunLoop loop;
+  registry()->StoreUserData(
+      /*registration_id=*/1, url::Origin::Create(GURL("https://example.com/")),
+      {{"key", "value"}},
+      base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
+        EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kErrorFailed);
+        loop.Quit();
+      }));
+  SimulateRestart();
+  loop.Run();
+}
+
+TEST_F(ServiceWorkerRegistryTest,
+       DestroyRegistryDuringInflightCall_ClearUserData) {
+  base::RunLoop loop;
+  registry()->ClearUserData(
+      /*registration_id=*/1, {{"key"}},
+      base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
+        EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kErrorFailed);
+        loop.Quit();
+      }));
+  SimulateRestart();
+  loop.Run();
+}
+
+TEST_F(ServiceWorkerRegistryTest,
+       DestroyRegistryDuringInflightCall_ClearUserDataByKeyPrefixes) {
+  base::RunLoop loop;
+  registry()->ClearUserDataByKeyPrefixes(
+      /*registration_id=*/1, {{"prefix"}},
+      base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
+        EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kErrorFailed);
+        loop.Quit();
+      }));
+  SimulateRestart();
+  loop.Run();
+}
+
+TEST_F(
+    ServiceWorkerRegistryTest,
+    DestroyRegistryDuringInflightCall_ClearUserDataForAllRegistrationsByKeyPrefix) {
+  base::RunLoop loop;
+  registry()->ClearUserDataForAllRegistrationsByKeyPrefix(
+      "prefix",
+      base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status) {
+        EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kErrorFailed);
+        loop.Quit();
+      }));
+  SimulateRestart();
+  loop.Run();
+}
+
+TEST_F(ServiceWorkerRegistryTest,
+       DestroyRegistryDuringInflightCall_GetUserDataForAllRegistrations) {
+  base::RunLoop loop;
+  registry()->GetUserDataForAllRegistrations(
+      "key",
+      base::BindLambdaForTesting(
+          [&](const std::vector<std::pair<int64_t, std::string>>& user_data,
+              blink::ServiceWorkerStatusCode status) {
+            EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kErrorFailed);
+            loop.Quit();
+          }));
+  SimulateRestart();
+  loop.Run();
+}
+
+TEST_F(
+    ServiceWorkerRegistryTest,
+    DestroyRegistryDuringInflightCall_GetUserDataForAllRegistrationsByKeyPrefix) {
+  base::RunLoop loop;
+  registry()->GetUserDataForAllRegistrationsByKeyPrefix(
+      "prefix",
+      base::BindLambdaForTesting(
+          [&](const std::vector<std::pair<int64_t, std::string>>& user_data,
+              blink::ServiceWorkerStatusCode status) {
+            EXPECT_EQ(status, blink::ServiceWorkerStatusCode::kErrorFailed);
+            loop.Quit();
+          }));
+  SimulateRestart();
+  loop.Run();
+}
+
 class ServiceWorkerRegistryOriginTrialsTest : public ServiceWorkerRegistryTest {
  public:
   ServiceWorkerRegistryOriginTrialsTest() {
