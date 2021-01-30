@@ -514,7 +514,7 @@ class ExtensionCSPEnforcer : public CSPEnforcer {
                        int options)
       : CSPEnforcer(std::move(manifest_key),
                     true,
-                    base::Bind(&GetSecureDirectiveValues, options)) {
+                    base::BindRepeating(&GetSecureDirectiveValues, options)) {
     secure_directives_.emplace_back(new DirectiveStatus({kScriptSrc}));
     if (!allow_insecure_object_src)
       secure_directives_.emplace_back(new DirectiveStatus({kObjectSrc}));
@@ -537,7 +537,7 @@ class AppSandboxPageCSPEnforcer : public CSPEnforcer {
   AppSandboxPageCSPEnforcer(std::string manifest_key)
       : CSPEnforcer(std::move(manifest_key),
                     false,
-                    base::Bind(&GetAppSandboxSecureDirectiveValues)) {
+                    base::BindRepeating(&GetAppSandboxSecureDirectiveValues)) {
     secure_directives_.emplace_back(
         new DirectiveStatus({kChildSrc, kFrameSrc}));
     secure_directives_.emplace_back(new DirectiveStatus({kScriptSrc}));
