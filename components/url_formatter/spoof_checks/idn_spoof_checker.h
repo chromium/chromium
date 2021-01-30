@@ -204,7 +204,6 @@ class IDNSpoofChecker {
   icu::UnicodeSet combining_diacritics_exceptions_;
   icu::UnicodeSet digits_;
   icu::UnicodeSet digit_lookalikes_;
-  icu::UnicodeSet lgc_letters_n_ascii_;
   icu::UnicodeSet icelandic_characters_;
 
   std::unique_ptr<SkeletonGenerator> skeleton_generator_;

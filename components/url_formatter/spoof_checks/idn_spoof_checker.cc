@@ -332,20 +332,6 @@ IDNSpoofChecker::IDNSpoofChecker() {
   digit_lookalikes_.freeze();
 
   DCHECK(U_SUCCESS(status));
-  // This set is used to determine whether or not to apply a slow
-  // transliteration to remove diacritics to a given hostname before the
-  // confusable skeleton calculation for comparison with top domain names. If
-  // it has any character outside the set, the expensive step will be skipped
-  // because it cannot match any of top domain names.
-  // The last ([\u0300-\u0339] is a shorthand for "[:Identifier_Status=Allowed:]
-  // & [:Script_Extensions=Inherited:] - [\\u200C\\u200D]". The latter is a
-  // subset of the former but it does not matter because hostnames with
-  // characters outside the latter set would be rejected in an earlier step.
-  lgc_letters_n_ascii_ = icu::UnicodeSet(
-      UNICODE_STRING_SIMPLE("[[:Latin:][:Greek:][:Cyrillic:][0-9\\u002e_"
-                            "\\u002d][\\u0300-\\u0339]]"),
-      status);
-  lgc_letters_n_ascii_.freeze();
 
   // Latin small letter thorn ("þ", U+00FE) can be used to spoof both b and p.
   // It's used in modern Icelandic orthography, so allow it for the Icelandic
@@ -454,8 +440,9 @@ IDNSpoofChecker::Result IDNSpoofChecker::SafeToDisplayAsUnicode(
   // label is made of Latin. Checking with lgc_letters set here should be fine
   // because script mixing of LGC is already rejected.
   if (non_ascii_latin_letters_.containsSome(label_string) &&
-      !lgc_letters_n_ascii_.containsAll(label_string))
+      !skeleton_generator_->ShouldRemoveDiacriticsFromLabel(label_string)) {
     return Result::kNonAsciiLatinCharMixedWithNonLatin;
+  }
 
   icu::RegexMatcher* dangerous_pattern =
       reinterpret_cast<icu::RegexMatcher*>(DangerousPatternTLS().Get());
