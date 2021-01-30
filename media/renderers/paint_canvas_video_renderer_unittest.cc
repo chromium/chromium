@@ -1337,16 +1337,7 @@ INSTANTIATE_TEST_SUITE_P(OopRasterMode,
                          PaintCanvasVideoRendererWithGLTest,
                          testing::Bool());
 
-// Deterministic failure on Android, ChromeOS and Linux
-// (https://crbug.com/1170392).
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_LINUX)
-#define MAYBE_CopyVideoFrameYUVDataToGLTexture \
-  DISABLED_CopyVideoFrameYUVDataToGLTexture
-#else
-#define MAYBE_CopyVideoFrameYUVDataToGLTexture CopyVideoFrameYUVDataToGLTexture
-#endif
-TEST_P(PaintCanvasVideoRendererWithGLTest,
-       MAYBE_CopyVideoFrameYUVDataToGLTexture) {
+TEST_P(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
   auto* destination_gl = destination_context_->ContextGL();
   DCHECK(destination_gl);
   GLenum target = GL_TEXTURE_2D;
@@ -1377,17 +1368,8 @@ TEST_P(PaintCanvasVideoRendererWithGLTest,
   destination_gl->DeleteTextures(1, &texture);
 }
 
-// Deterministic failure on Android, ChromeOS and Linux
-// (https://crbug.com/1170392).
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_LINUX)
-#define MAYBE_CopyVideoFrameYUVDataToGLTexture_FlipY \
-  DISABLED_CopyVideoFrameYUVDataToGLTexture_FlipY
-#else
-#define MAYBE_CopyVideoFrameYUVDataToGLTexture_FlipY \
-  CopyVideoFrameYUVDataToGLTexture_FlipY
-#endif
 TEST_P(PaintCanvasVideoRendererWithGLTest,
-       MAYBE_CopyVideoFrameYUVDataToGLTexture_FlipY) {
+       CopyVideoFrameYUVDataToGLTexture_FlipY) {
   auto* destination_gl = destination_context_->ContextGL();
   DCHECK(destination_gl);
   GLenum target = GL_TEXTURE_2D;
