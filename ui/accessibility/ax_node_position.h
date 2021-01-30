@@ -45,16 +45,16 @@ class AX_EXPORT AXNodePosition : public AXPosition<AXNodePosition, AXNode> {
  protected:
   void AnchorChild(int child_index,
                    AXTreeID* tree_id,
-                   AXNode::AXID* child_id) const override;
+                   AXNodeID* child_id) const override;
   int AnchorChildCount() const override;
   int AnchorUnignoredChildCount() const override;
   int AnchorIndexInParent() const override;
   int AnchorSiblingCount() const override;
   base::stack<AXNode*> GetAncestorAnchors() const override;
   AXNode* GetLowestUnignoredAncestor() const override;
-  void AnchorParent(AXTreeID* tree_id, AXNode::AXID* parent_id) const override;
-  AXNode* GetNodeInTree(AXTreeID tree_id, AXNode::AXID node_id) const override;
-  AXNode::AXID GetAnchorID(AXNode* node) const override;
+  void AnchorParent(AXTreeID* tree_id, AXNodeID* parent_id) const override;
+  AXNode* GetNodeInTree(AXTreeID tree_id, AXNodeID node_id) const override;
+  AXNodeID GetAnchorID(AXNode* node) const override;
   AXTreeID GetTreeID(AXNode* node) const override;
 
   bool IsEmbeddedObjectInParent() const override;
@@ -64,8 +64,8 @@ class AX_EXPORT AXNodePosition : public AXPosition<AXNodePosition, AXNode> {
   AXNodeTextStyles GetTextStyles() const override;
   std::vector<int32_t> GetWordStartOffsets() const override;
   std::vector<int32_t> GetWordEndOffsets() const override;
-  AXNode::AXID GetNextOnLineID(AXNode::AXID node_id) const override;
-  AXNode::AXID GetPreviousOnLineID(AXNode::AXID node_id) const override;
+  AXNodeID GetNextOnLineID(AXNodeID node_id) const override;
+  AXNodeID GetPreviousOnLineID(AXNodeID node_id) const override;
 
  private:
   // Returns the parent node of the provided child. Returns the parent
@@ -74,7 +74,7 @@ class AX_EXPORT AXNodePosition : public AXPosition<AXNodePosition, AXNode> {
   static AXNode* GetParent(AXNode* child,
                            AXTreeID child_tree_id,
                            AXTreeID* parent_tree_id,
-                           AXNode::AXID* parent_id);
+                           AXNodeID* parent_id);
 };
 
 }  // namespace ui

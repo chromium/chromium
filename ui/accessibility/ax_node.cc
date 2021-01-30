@@ -25,7 +25,6 @@
 namespace ui {
 
 // Definition of static class members.
-constexpr AXNode::AXID AXNode::kInvalidAXID;
 constexpr base::char16 AXNode::kEmbeddedCharacter[];
 constexpr int AXNode::kEmbeddedCharacterLength;
 
@@ -762,16 +761,15 @@ AXNode* AXNode::GetTableCellFromCoords(int row_index, int col_index) const {
       table_info->cell_ids[size_t{row_index}][size_t{col_index}]);
 }
 
-std::vector<AXNode::AXID> AXNode::GetTableColHeaderNodeIds() const {
+std::vector<AXNodeID> AXNode::GetTableColHeaderNodeIds() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return std::vector<AXNode::AXID>();
+    return std::vector<AXNodeID>();
 
-  std::vector<AXNode::AXID> col_header_ids;
+  std::vector<AXNodeID> col_header_ids;
   // Flatten and add column header ids of each column to |col_header_ids|.
-  for (std::vector<AXNode::AXID> col_headers_at_index :
-       table_info->col_headers) {
+  for (std::vector<AXNodeID> col_headers_at_index : table_info->col_headers) {
     col_header_ids.insert(col_header_ids.end(), col_headers_at_index.begin(),
                           col_headers_at_index.end());
   }
@@ -779,39 +777,37 @@ std::vector<AXNode::AXID> AXNode::GetTableColHeaderNodeIds() const {
   return col_header_ids;
 }
 
-std::vector<AXNode::AXID> AXNode::GetTableColHeaderNodeIds(
-    int col_index) const {
+std::vector<AXNodeID> AXNode::GetTableColHeaderNodeIds(int col_index) const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return std::vector<AXNode::AXID>();
+    return std::vector<AXNodeID>();
 
   if (col_index < 0 || size_t{col_index} >= table_info->col_count)
-    return std::vector<AXNode::AXID>();
+    return std::vector<AXNodeID>();
 
-  return std::vector<AXNode::AXID>(table_info->col_headers[size_t{col_index}]);
+  return std::vector<AXNodeID>(table_info->col_headers[size_t{col_index}]);
 }
 
-std::vector<AXNode::AXID> AXNode::GetTableRowHeaderNodeIds(
-    int row_index) const {
+std::vector<AXNodeID> AXNode::GetTableRowHeaderNodeIds(int row_index) const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return std::vector<AXNode::AXID>();
+    return std::vector<AXNodeID>();
 
   if (row_index < 0 || size_t{row_index} >= table_info->row_count)
-    return std::vector<AXNode::AXID>();
+    return std::vector<AXNodeID>();
 
-  return std::vector<AXNode::AXID>(table_info->row_headers[size_t{row_index}]);
+  return std::vector<AXNodeID>(table_info->row_headers[size_t{row_index}]);
 }
 
-std::vector<AXNode::AXID> AXNode::GetTableUniqueCellIds() const {
+std::vector<AXNodeID> AXNode::GetTableUniqueCellIds() const {
   DCHECK(!tree_->GetTreeUpdateInProgressState());
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
-    return std::vector<AXNode::AXID>();
+    return std::vector<AXNodeID>();
 
-  return std::vector<AXNode::AXID>(table_info->unique_cell_ids);
+  return std::vector<AXNodeID>(table_info->unique_cell_ids);
 }
 
 const std::vector<AXNode*>* AXNode::GetExtraMacNodes() const {
@@ -846,8 +842,8 @@ base::Optional<int> AXNode::GetTableRowRowIndex() const {
   return int{iter->second};
 }
 
-std::vector<AXNode::AXID> AXNode::GetTableRowNodeIds() const {
-  std::vector<AXNode::AXID> row_node_ids;
+std::vector<AXNodeID> AXNode::GetTableRowNodeIds() const {
+  std::vector<AXNodeID> row_node_ids;
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return row_node_ids;
@@ -983,15 +979,15 @@ base::Optional<int> AXNode::GetTableCellAriaRowIndex() const {
   return int{table_info->cell_data_vector[*index].aria_row_index};
 }
 
-std::vector<AXNode::AXID> AXNode::GetTableCellColHeaderNodeIds() const {
+std::vector<AXNodeID> AXNode::GetTableCellColHeaderNodeIds() const {
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info || table_info->col_count <= 0)
-    return std::vector<AXNode::AXID>();
+    return std::vector<AXNodeID>();
 
   // If this node is not a cell, then return the headers for the first column.
   int col_index = GetTableCellColIndex().value_or(0);
 
-  return std::vector<AXNode::AXID>(table_info->col_headers[col_index]);
+  return std::vector<AXNodeID>(table_info->col_headers[col_index]);
 }
 
 void AXNode::GetTableCellColHeaders(std::vector<AXNode*>* col_headers) const {
@@ -1001,15 +997,15 @@ void AXNode::GetTableCellColHeaders(std::vector<AXNode*>* col_headers) const {
   IdVectorToNodeVector(col_header_ids, col_headers);
 }
 
-std::vector<AXNode::AXID> AXNode::GetTableCellRowHeaderNodeIds() const {
+std::vector<AXNodeID> AXNode::GetTableCellRowHeaderNodeIds() const {
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info || table_info->row_count <= 0)
-    return std::vector<AXNode::AXID>();
+    return std::vector<AXNodeID>();
 
   // If this node is not a cell, then return the headers for the first row.
   int row_index = GetTableCellRowIndex().value_or(0);
 
-  return std::vector<AXNode::AXID>(table_info->row_headers[row_index]);
+  return std::vector<AXNodeID>(table_info->row_headers[row_index]);
 }
 
 void AXNode::GetTableCellRowHeaders(std::vector<AXNode*>* row_headers) const {

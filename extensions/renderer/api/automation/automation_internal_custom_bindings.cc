@@ -1665,8 +1665,7 @@ void AutomationInternalCustomBindings::AddRoutes() {
               GetAutomationAXTreeWrapperFromTreeID(
                   accessibility_focused_tree_id_);
           if (previous_tree_wrapper) {
-            previous_tree_wrapper->SetAccessibilityFocus(
-                ui::AXNode::kInvalidAXID);
+            previous_tree_wrapper->SetAccessibilityFocus(ui::kInvalidAXNodeID);
           }
         }
         accessibility_focused_tree_id_ = tree_id;

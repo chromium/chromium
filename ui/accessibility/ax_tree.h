@@ -231,7 +231,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   AXTableInfo* GetTableInfo(const AXNode* table_node) const override;
 
   AXNode* CreateNode(AXNode* parent,
-                     AXNode::AXID id,
+                     AXNodeID id,
                      size_t index_in_parent,
                      AXTreeUpdateState* update_state);
 
@@ -273,7 +273,7 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
   // We are passing the node id instead of ax node is because by the time this
   // function is called, the ax node in the tree will already have been
   // destroyed.
-  void NotifyNodeHasBeenDeleted(AXNode::AXID node_id);
+  void NotifyNodeHasBeenDeleted(AXNodeID node_id);
 
   // Notify the delegate that |node| has been created or reparented.
   void NotifyNodeHasBeenReparentedOrCreated(
@@ -299,12 +299,12 @@ class AX_EXPORT AXTree : public AXNode::OwnerTree {
 
   // Modifies |update_state| so that it knows what subtree and nodes are
   // going to be destroyed for the subtree rooted at |node|.
-  void MarkSubtreeForDestruction(AXNode::AXID node_id,
+  void MarkSubtreeForDestruction(AXNodeID node_id,
                                  AXTreeUpdateState* update_state);
 
   // Modifies |update_state| so that it knows what nodes are
   // going to be destroyed for the subtree rooted at |node|.
-  void MarkNodesForDestructionRecursive(AXNode::AXID node_id,
+  void MarkNodesForDestructionRecursive(AXNodeID node_id,
                                         AXTreeUpdateState* update_state);
 
   // Validates that destroying the subtree rooted at |node| has required

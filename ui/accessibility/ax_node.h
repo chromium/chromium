@@ -28,13 +28,6 @@ struct AXTreeData;
 // One node in an AXTree.
 class AX_EXPORT AXNode final {
  public:
-  // Defines the type used for AXNode IDs.
-  using AXID = int32_t;
-
-  // If a node is not yet or no longer valid, its ID should have a value of
-  // kInvalidAXID.
-  static constexpr AXID kInvalidAXID = 0;
-
   // Replacement character used to represent an embedded (or, additionally for
   // text navigation, an empty) object. Encoded in UTF16 format. Part of the
   // Unicode Standard.
@@ -61,10 +54,10 @@ class AX_EXPORT AXNode final {
    public:
     struct Selection {
       bool is_backward;
-      AXID anchor_object_id;
+      AXNodeID anchor_object_id;
       int anchor_offset;
       ax::mojom::TextAffinity anchor_affinity;
-      AXID focus_object_id;
+      AXNodeID focus_object_id;
       int focus_offset;
       ax::mojom::TextAffinity focus_affinity;
     };
@@ -122,7 +115,7 @@ class AX_EXPORT AXNode final {
 
   // Accessors.
   OwnerTree* tree() const { return tree_; }
-  AXID id() const { return data_.id; }
+  AXNodeID id() const { return data_.id; }
   AXNode* parent() const { return parent_; }
   const AXNodeData& data() const { return data_; }
   const std::vector<AXNode*>& children() const { return children_; }
@@ -397,12 +390,12 @@ class AX_EXPORT AXNode final {
   AXNode* GetTableCellFromIndex(int index) const;
   AXNode* GetTableCellFromCoords(int row_index, int col_index) const;
   // Get all the column header node ids of the table.
-  std::vector<AXNode::AXID> GetTableColHeaderNodeIds() const;
+  std::vector<AXNodeID> GetTableColHeaderNodeIds() const;
   // Get the column header node ids associated with |col_index|.
-  std::vector<AXNode::AXID> GetTableColHeaderNodeIds(int col_index) const;
+  std::vector<AXNodeID> GetTableColHeaderNodeIds(int col_index) const;
   // Get the row header node ids associated with |row_index|.
-  std::vector<AXNode::AXID> GetTableRowHeaderNodeIds(int row_index) const;
-  std::vector<AXNode::AXID> GetTableUniqueCellIds() const;
+  std::vector<AXNodeID> GetTableRowHeaderNodeIds(int row_index) const;
+  std::vector<AXNodeID> GetTableUniqueCellIds() const;
   // Extra computed nodes for the accessibility tree for macOS:
   // one column node for each table column, followed by one
   // table header container node, or nullptr if not applicable.
@@ -412,7 +405,7 @@ class AX_EXPORT AXNode final {
   bool IsTableRow() const;
   base::Optional<int> GetTableRowRowIndex() const;
   // Get the node ids that represent rows in a table.
-  std::vector<AXNode::AXID> GetTableRowNodeIds() const;
+  std::vector<AXNodeID> GetTableRowNodeIds() const;
 
 #if defined(OS_APPLE)
   // Table column-like nodes. These nodes are only present on macOS.
@@ -429,8 +422,8 @@ class AX_EXPORT AXNode final {
   base::Optional<int> GetTableCellRowSpan() const;
   base::Optional<int> GetTableCellAriaColIndex() const;
   base::Optional<int> GetTableCellAriaRowIndex() const;
-  std::vector<AXNode::AXID> GetTableCellColHeaderNodeIds() const;
-  std::vector<AXNode::AXID> GetTableCellRowHeaderNodeIds() const;
+  std::vector<AXNodeID> GetTableCellColHeaderNodeIds() const;
+  std::vector<AXNodeID> GetTableCellRowHeaderNodeIds() const;
   void GetTableCellColHeaders(std::vector<AXNode*>* col_headers) const;
   void GetTableCellRowHeaders(std::vector<AXNode*>* row_headers) const;
 

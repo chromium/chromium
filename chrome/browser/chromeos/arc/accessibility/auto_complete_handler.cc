@@ -33,7 +33,7 @@ bool IsAutoComplete(arc::mojom::AccessibilityNodeInfoData* node) {
 
 int32_t GetAnchorId(arc::mojom::AccessibilityWindowInfoData* window) {
   if (!window)
-    return ui::AXNode::kInvalidAXID;
+    return ui::kInvalidAXNodeID;
 
   int32_t id;
   if (arc::GetProperty(
@@ -41,7 +41,7 @@ int32_t GetAnchorId(arc::mojom::AccessibilityWindowInfoData* window) {
           arc::mojom::AccessibilityWindowIntProperty::ANCHOR_NODE_ID, &id)) {
     return id;
   }
-  return ui::AXNode::kInvalidAXID;
+  return ui::kInvalidAXNodeID;
 }
 
 }  // namespace

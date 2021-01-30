@@ -289,7 +289,7 @@ AXPlatformNode* AXPlatformNodeWinTest::AXPlatformNodeFromNode(AXNode* node) {
 }
 
 template <typename T>
-ComPtr<T> AXPlatformNodeWinTest::QueryInterfaceFromNodeId(AXNode::AXID id) {
+ComPtr<T> AXPlatformNodeWinTest::QueryInterfaceFromNodeId(AXNodeID id) {
   return QueryInterfaceFromNode<T>(GetNodeFromTree(id));
 }
 
@@ -325,7 +325,7 @@ AXPlatformNodeWinTest::GetIRawElementProviderSimpleFromChildIndex(
 Microsoft::WRL::ComPtr<IRawElementProviderSimple>
 AXPlatformNodeWinTest::GetIRawElementProviderSimpleFromTree(
     const ui::AXTreeID tree_id,
-    const AXNode::AXID node_id) {
+    const AXNodeID node_id) {
   return QueryInterfaceFromNode<IRawElementProviderSimple>(
       GetNodeFromTree(tree_id, node_id));
 }
@@ -453,7 +453,7 @@ AXPlatformNodeWinTest::GetFragmentRoot() {
 }
 
 AXPlatformNodeWinTest::PatternSet
-AXPlatformNodeWinTest::GetSupportedPatternsFromNodeId(AXNode::AXID id) {
+AXPlatformNodeWinTest::GetSupportedPatternsFromNodeId(AXNodeID id) {
   ComPtr<IRawElementProviderSimple> raw_element_provider_simple =
       QueryInterfaceFromNodeId<IRawElementProviderSimple>(id);
   PatternSet supported_patterns;
@@ -1853,7 +1853,7 @@ TEST_F(AXPlatformNodeWinTest, IAccessible2GetNRelations) {
   root.id = 1;
   root.role = ax::mojom::Role::kRootWebArea;
 
-  std::vector<AXNode::AXID> describedby_ids = {1, 2, 3};
+  std::vector<AXNodeID> describedby_ids = {1, 2, 3};
   root.AddIntListAttribute(ax::mojom::IntListAttribute::kDescribedbyIds,
                            describedby_ids);
 
@@ -2063,7 +2063,7 @@ TEST_F(AXPlatformNodeWinTest, DISABLED_TestRelationTargetsOfType) {
   AXNodeData child2;
   child2.id = 3;
   child2.role = ax::mojom::Role::kStaticText;
-  std::vector<AXNode::AXID> labelledby_ids = {1, 4};
+  std::vector<AXNodeID> labelledby_ids = {1, 4};
   child2.AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
                              labelledby_ids);
 
@@ -4151,7 +4151,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetControllerForPropertyId) {
   tab.id = 2;
   tab.role = ax::mojom::Role::kTab;
   tab.SetName("tab");
-  std::vector<AXNode::AXID> controller_ids = {3, 4};
+  std::vector<AXNodeID> controller_ids = {3, 4};
   tab.AddIntListAttribute(ax::mojom::IntListAttribute::kControlsIds,
                           controller_ids);
 
@@ -4191,7 +4191,7 @@ TEST_F(AXPlatformNodeWinTest, UIAGetControllerForPropertyId) {
 
 TEST_F(AXPlatformNodeWinTest, UIAGetDescribedByPropertyId) {
   AXNodeData root;
-  std::vector<AXNode::AXID> describedby_ids = {2, 3, 4};
+  std::vector<AXNodeID> describedby_ids = {2, 3, 4};
   root.AddIntListAttribute(ax::mojom::IntListAttribute::kDescribedbyIds,
                            describedby_ids);
   root.id = 1;
@@ -4292,7 +4292,7 @@ TEST_F(AXPlatformNodeWinTest, UIAItemStatusPropertyId) {
 
 TEST_F(AXPlatformNodeWinTest, UIAGetFlowsToPropertyId) {
   AXNodeData root;
-  std::vector<AXNode::AXID> flowto_ids = {2, 3, 4};
+  std::vector<AXNodeID> flowto_ids = {2, 3, 4};
   root.AddIntListAttribute(ax::mojom::IntListAttribute::kFlowtoIds, flowto_ids);
   root.id = 1;
   root.role = ax::mojom::Role::kMarquee;
@@ -5228,25 +5228,25 @@ TEST_F(AXPlatformNodeWinTest, ComputeUIAControlType) {
   root.role = ax::mojom::Role::kRootWebArea;
 
   AXNodeData child1;
-  AXNode::AXID child1_id = 2;
+  AXNodeID child1_id = 2;
   child1.id = child1_id;
   child1.role = ax::mojom::Role::kTable;
   root.child_ids.push_back(child1_id);
 
   AXNodeData child2;
-  AXNode::AXID child2_id = 3;
+  AXNodeID child2_id = 3;
   child2.id = child2_id;
   child2.role = ax::mojom::Role::kLayoutTable;
   root.child_ids.push_back(child2_id);
 
   AXNodeData child3;
-  AXNode::AXID child3_id = 4;
+  AXNodeID child3_id = 4;
   child3.id = child3_id;
   child3.role = ax::mojom::Role::kTextField;
   root.child_ids.push_back(child3_id);
 
   AXNodeData child4;
-  AXNode::AXID child4_id = 5;
+  AXNodeID child4_id = 5;
   child4.id = child4_id;
   child4.role = ax::mojom::Role::kSearchBox;
   root.child_ids.push_back(child4_id);
@@ -5605,26 +5605,26 @@ TEST_F(AXPlatformNodeWinTest, UIAErrorHandling) {
 }
 
 TEST_F(AXPlatformNodeWinTest, GetPatternProviderSupportedPatterns) {
-  constexpr AXNode::AXID root_id = 1;
-  constexpr AXNode::AXID text_field_with_combo_box_id = 2;
-  constexpr AXNode::AXID meter_id = 3;
-  constexpr AXNode::AXID group_with_scroll_id = 4;
-  constexpr AXNode::AXID checkbox_id = 5;
-  constexpr AXNode::AXID link_id = 6;
-  constexpr AXNode::AXID table_without_header_id = 7;
-  constexpr AXNode::AXID table_without_header_cell_id = 8;
-  constexpr AXNode::AXID table_with_header_id = 9;
-  constexpr AXNode::AXID table_with_header_row_1_id = 10;
-  constexpr AXNode::AXID table_with_header_column_header_id = 11;
-  constexpr AXNode::AXID table_with_header_row_2_id = 12;
-  constexpr AXNode::AXID table_with_header_cell_id = 13;
-  constexpr AXNode::AXID grid_without_header_id = 14;
-  constexpr AXNode::AXID grid_without_header_cell_id = 15;
-  constexpr AXNode::AXID grid_with_header_id = 16;
-  constexpr AXNode::AXID grid_with_header_row_1_id = 17;
-  constexpr AXNode::AXID grid_with_header_column_header_id = 18;
-  constexpr AXNode::AXID grid_with_header_row_2_id = 19;
-  constexpr AXNode::AXID grid_with_header_cell_id = 20;
+  constexpr AXNodeID root_id = 1;
+  constexpr AXNodeID text_field_with_combo_box_id = 2;
+  constexpr AXNodeID meter_id = 3;
+  constexpr AXNodeID group_with_scroll_id = 4;
+  constexpr AXNodeID checkbox_id = 5;
+  constexpr AXNodeID link_id = 6;
+  constexpr AXNodeID table_without_header_id = 7;
+  constexpr AXNodeID table_without_header_cell_id = 8;
+  constexpr AXNodeID table_with_header_id = 9;
+  constexpr AXNodeID table_with_header_row_1_id = 10;
+  constexpr AXNodeID table_with_header_column_header_id = 11;
+  constexpr AXNodeID table_with_header_row_2_id = 12;
+  constexpr AXNodeID table_with_header_cell_id = 13;
+  constexpr AXNodeID grid_without_header_id = 14;
+  constexpr AXNodeID grid_without_header_cell_id = 15;
+  constexpr AXNodeID grid_with_header_id = 16;
+  constexpr AXNodeID grid_with_header_row_1_id = 17;
+  constexpr AXNodeID grid_with_header_column_header_id = 18;
+  constexpr AXNodeID grid_with_header_row_2_id = 19;
+  constexpr AXNodeID grid_with_header_cell_id = 20;
 
   AXTreeUpdate update;
   update.tree_data.tree_id = ui::AXTreeID::CreateNewAXTreeID();

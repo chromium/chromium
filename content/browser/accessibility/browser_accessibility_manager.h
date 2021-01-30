@@ -455,8 +455,8 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
 
   // AXTreeManager overrides.
   ui::AXNode* GetNodeFromTree(ui::AXTreeID tree_id,
-                              ui::AXNode::AXID node_id) const override;
-  ui::AXNode* GetNodeFromTree(ui::AXNode::AXID node_id) const override;
+                              ui::AXNodeID node_id) const override;
+  ui::AXNode* GetNodeFromTree(ui::AXNodeID node_id) const override;
   void AddObserver(ui::AXTreeObserver* observer) override;
   void RemoveObserver(ui::AXTreeObserver* observer) override;
   AXTreeID GetTreeID() const override;

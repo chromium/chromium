@@ -233,11 +233,10 @@ int32_t AXAuraObjCache::GetIDInternal(
     AuraView* aura_view,
     const std::map<AuraView*, int32_t>& aura_view_to_id_map) const {
   if (!aura_view)
-    return ui::AXNode::kInvalidAXID;
+    return ui::kInvalidAXNodeID;
 
   auto it = aura_view_to_id_map.find(aura_view);
-  return it != aura_view_to_id_map.end() ? it->second
-                                         : ui::AXNode::kInvalidAXID;
+  return it != aura_view_to_id_map.end() ? it->second : ui::kInvalidAXNodeID;
 }
 
 template <typename AuraView>
@@ -245,7 +244,7 @@ void AXAuraObjCache::RemoveInternal(
     AuraView* aura_view,
     std::map<AuraView*, int32_t>* aura_view_to_id_map) {
   int32_t id = GetID(aura_view);
-  if (id == ui::AXNode::kInvalidAXID)
+  if (id == ui::kInvalidAXNodeID)
     return;
   aura_view_to_id_map->erase(aura_view);
   cache_.erase(id);

@@ -1446,7 +1446,7 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 
   // Ensure that this page has an implicit root scroller that's something
   // other than the root of the accessibility tree.
-  ui::AXNode::AXID root_scroller_id = manager->GetTreeData().root_scroller_id;
+  ui::AXNodeID root_scroller_id = manager->GetTreeData().root_scroller_id;
   BrowserAccessibility* root_scroller = manager->GetFromID(root_scroller_id);
   ASSERT_TRUE(root_scroller);
   EXPECT_NE(root_scroller_id, manager->GetRoot()->GetId());

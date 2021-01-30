@@ -553,7 +553,7 @@ void AXTreeSourceArc::Reset() {
 
 int32_t AXTreeSourceArc::GetId(AccessibilityInfoDataWrapper* info_data) const {
   if (!info_data)
-    return ui::AXNode::kInvalidAXID;
+    return ui::kInvalidAXNodeID;
   return info_data->GetId();
 }
 

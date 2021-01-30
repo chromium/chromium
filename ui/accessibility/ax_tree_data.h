@@ -54,8 +54,8 @@ struct AX_EXPORT AXTreeData {
   std::string url;
 
   // The node with keyboard focus within this tree, if any, or
-  // AXNode::kInvalidAXID if no node in this tree has focus.
-  AXNode::AXID focus_id = AXNode::kInvalidAXID;
+  // kInvalidAXNodeID if no node in this tree has focus.
+  AXNodeID focus_id = kInvalidAXNodeID;
 
   // The current text selection within this tree, if any, expressed as the
   // node ID and character offset of the anchor (selection start) and focus
@@ -64,17 +64,17 @@ struct AX_EXPORT AXTreeData {
   // line, otherwise it's on the second line.
   // Most use cases will want to use ui::OwnerTree::GetUnignoredSelection.
   bool sel_is_backward = false;
-  AXNode::AXID sel_anchor_object_id = AXNode::kInvalidAXID;
+  AXNodeID sel_anchor_object_id = kInvalidAXNodeID;
   int32_t sel_anchor_offset = -1;
   ax::mojom::TextAffinity sel_anchor_affinity;
-  AXNode::AXID sel_focus_object_id = AXNode::kInvalidAXID;
+  AXNodeID sel_focus_object_id = kInvalidAXNodeID;
   int32_t sel_focus_offset = -1;
   ax::mojom::TextAffinity sel_focus_affinity;
 
   // The node that's used as the root scroller. On some platforms
   // like Android we need to ignore accessibility scroll offsets for
   // that node and get them from the viewport instead.
-  AXNode::AXID root_scroller_id = AXNode::kInvalidAXID;
+  AXNodeID root_scroller_id = kInvalidAXNodeID;
 };
 
 AX_EXPORT bool operator==(const AXTreeData& lhs, const AXTreeData& rhs);

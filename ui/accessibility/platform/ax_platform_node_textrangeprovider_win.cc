@@ -61,7 +61,7 @@ class AXRangePhysicalPixelRectDelegate : public AXRangeRectDelegate {
 
   gfx::Rect GetInnerTextRangeBoundsRect(
       AXTreeID tree_id,
-      AXNode::AXID node_id,
+      AXNodeID node_id,
       int start_offset,
       int end_offset,
       AXOffscreenResult* offscreen_result) override {
@@ -73,7 +73,7 @@ class AXRangePhysicalPixelRectDelegate : public AXRangeRectDelegate {
   }
 
   gfx::Rect GetBoundsRect(AXTreeID tree_id,
-                          AXNode::AXID node_id,
+                          AXNodeID node_id,
                           AXOffscreenResult* offscreen_result) override {
     AXPlatformNodeDelegate* delegate = host_->GetDelegate(tree_id, node_id);
     DCHECK(delegate);
@@ -461,7 +461,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::FindText(
         common_anchor, ax::mojom::MoveDirection::kForward);
     DCHECK(!end_ancestor_position->IsNullPosition());
     AXTreeID tree_id = start_ancestor_position->tree_id();
-    AXNode::AXID anchor_id = start_ancestor_position->anchor_id();
+    AXNodeID anchor_id = start_ancestor_position->anchor_id();
     const int start_offset =
         start_ancestor_position->text_offset() + find_start;
     const int end_offset = start_offset + find_length - appended_newlines_count;
@@ -981,7 +981,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::GetChildren(SAFEARRAY** children) {
   if (!common_anchor)
     return UIA_E_ELEMENTNOTAVAILABLE;
   const AXTreeID tree_id = common_anchor->tree()->GetAXTreeID();
-  const AXNode::AXID node_id = common_anchor->id();
+  const AXNodeID node_id = common_anchor->id();
   AXPlatformNodeDelegate* delegate = GetDelegate(tree_id, node_id);
   DCHECK(delegate);
   while (delegate->GetData().IsIgnored()) {
@@ -1076,7 +1076,7 @@ AXPlatformNodeDelegate* AXPlatformNodeTextRangeProviderWin::GetDelegate(
 
 AXPlatformNodeDelegate* AXPlatformNodeTextRangeProviderWin::GetDelegate(
     const AXTreeID tree_id,
-    const AXNode::AXID node_id) const {
+    const AXNodeID node_id) const {
   AXPlatformNode* platform_node =
       owner_->GetDelegate()->GetFromTreeIDAndNodeID(tree_id, node_id);
   if (!platform_node)
@@ -1377,7 +1377,7 @@ AXPlatformNodeTextRangeProviderWin::GetLowestAccessibleCommonPlatformNode()
     return nullptr;
 
   const AXTreeID tree_id = common_anchor->tree()->GetAXTreeID();
-  const AXNode::AXID node_id = common_anchor->id();
+  const AXNodeID node_id = common_anchor->id();
   AXPlatformNodeWin* platform_node =
       static_cast<AXPlatformNodeWin*>(AXPlatformNode::FromNativeViewAccessible(
           GetDelegate(tree_id, node_id)->GetNativeViewAccessible()));

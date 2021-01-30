@@ -65,12 +65,12 @@ void TestAXTreeManager::SetTree(std::unique_ptr<AXTree> tree) {
 }
 
 AXNode* TestAXTreeManager::GetNodeFromTree(const AXTreeID tree_id,
-                                           const AXNode::AXID node_id) const {
+                                           const AXNodeID node_id) const {
   return (tree_ && GetTreeID() == tree_id) ? tree_->GetFromId(node_id)
                                            : nullptr;
 }
 
-AXNode* TestAXTreeManager::GetNodeFromTree(const AXNode::AXID node_id) const {
+AXNode* TestAXTreeManager::GetNodeFromTree(const AXNodeID node_id) const {
   return tree_ ? tree_->GetFromId(node_id) : nullptr;
 }
 

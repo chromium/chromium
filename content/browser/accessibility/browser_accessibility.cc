@@ -1117,8 +1117,7 @@ gfx::Rect BrowserAccessibility::RelativeToAbsoluteBounds(
     if (!manager->UseRootScrollOffsetsWhenComputingBounds()) {
       // Get the node that's the "root scroller", which isn't necessarily
       // the root of the tree.
-      ui::AXNode::AXID root_scroller_id =
-          manager->GetTreeData().root_scroller_id;
+      ui::AXNodeID root_scroller_id = manager->GetTreeData().root_scroller_id;
       BrowserAccessibility* root_scroller =
           manager->GetFromID(root_scroller_id);
       if (root_scroller) {
@@ -1190,7 +1189,7 @@ bool BrowserAccessibility::IsWebContent() const {
 bool BrowserAccessibility::HasVisibleCaretOrSelection() const {
   ui::AXTree::Selection unignored_selection =
       manager()->ax_tree()->GetUnignoredSelection();
-  ui::AXNode::AXID focus_id = unignored_selection.focus_object_id;
+  ui::AXNodeID focus_id = unignored_selection.focus_object_id;
   const BrowserAccessibility* focus_object = manager()->GetFromID(focus_id);
   // Since "AXTree::GetUnignoredSelection" always ensures that the focus of the
   // selection is an unignored object, i.e. it is visible to platform APIs, we
@@ -1706,22 +1705,20 @@ base::Optional<bool> BrowserAccessibility::GetTableHasColumnOrRowHeaderNode()
   return node()->GetTableHasColumnOrRowHeaderNode();
 }
 
-std::vector<ui::AXNode::AXID> BrowserAccessibility::GetColHeaderNodeIds()
-    const {
+std::vector<ui::AXNodeID> BrowserAccessibility::GetColHeaderNodeIds() const {
   return node()->GetTableColHeaderNodeIds();
 }
 
-std::vector<ui::AXNode::AXID> BrowserAccessibility::GetColHeaderNodeIds(
+std::vector<ui::AXNodeID> BrowserAccessibility::GetColHeaderNodeIds(
     int col_index) const {
   return node()->GetTableColHeaderNodeIds(col_index);
 }
 
-std::vector<ui::AXNode::AXID> BrowserAccessibility::GetRowHeaderNodeIds()
-    const {
+std::vector<ui::AXNodeID> BrowserAccessibility::GetRowHeaderNodeIds() const {
   return node()->GetTableCellRowHeaderNodeIds();
 }
 
-std::vector<ui::AXNode::AXID> BrowserAccessibility::GetRowHeaderNodeIds(
+std::vector<ui::AXNodeID> BrowserAccessibility::GetRowHeaderNodeIds(
     int row_index) const {
   return node()->GetTableRowHeaderNodeIds(row_index);
 }

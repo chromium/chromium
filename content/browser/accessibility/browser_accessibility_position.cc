@@ -57,16 +57,15 @@ bool BrowserAccessibilityPosition::IsInWhiteSpace() const {
          base::ContainsOnlyChars(GetText(), base::kWhitespaceUTF16);
 }
 
-void BrowserAccessibilityPosition::AnchorChild(
-    int child_index,
-    AXTreeID* tree_id,
-    ui::AXNode::AXID* child_id) const {
+void BrowserAccessibilityPosition::AnchorChild(int child_index,
+                                               AXTreeID* tree_id,
+                                               ui::AXNodeID* child_id) const {
   DCHECK(tree_id);
   DCHECK(child_id);
 
   if (!GetAnchor() || child_index < 0 || child_index >= AnchorChildCount()) {
     *tree_id = ui::AXTreeIDUnknown();
-    *child_id = ui::AXNode::kInvalidAXID;
+    *child_id = ui::kInvalidAXNodeID;
     return;
   }
 
@@ -130,15 +129,14 @@ BrowserAccessibility* BrowserAccessibilityPosition::GetLowestUnignoredAncestor()
   return GetAnchor()->PlatformGetParent();
 }
 
-void BrowserAccessibilityPosition::AnchorParent(
-    AXTreeID* tree_id,
-    ui::AXNode::AXID* parent_id) const {
+void BrowserAccessibilityPosition::AnchorParent(AXTreeID* tree_id,
+                                                ui::AXNodeID* parent_id) const {
   DCHECK(tree_id);
   DCHECK(parent_id);
 
   if (!GetAnchor() || !GetAnchor()->PlatformGetParent()) {
     *tree_id = ui::AXTreeIDUnknown();
-    *parent_id = ui::AXNode::kInvalidAXID;
+    *parent_id = ui::kInvalidAXNodeID;
     return;
   }
 
@@ -149,8 +147,8 @@ void BrowserAccessibilityPosition::AnchorParent(
 
 BrowserAccessibility* BrowserAccessibilityPosition::GetNodeInTree(
     AXTreeID tree_id,
-    ui::AXNode::AXID node_id) const {
-  if (tree_id == ui::AXTreeIDUnknown() || node_id == ui::AXNode::kInvalidAXID) {
+    ui::AXNodeID node_id) const {
+  if (tree_id == ui::AXTreeIDUnknown() || node_id == ui::kInvalidAXNodeID) {
     return nullptr;
   }
 
@@ -234,31 +232,31 @@ std::vector<int32_t> BrowserAccessibilityPosition::GetWordEndOffsets() const {
       ax::mojom::IntListAttribute::kWordEnds);
 }
 
-ui::AXNode::AXID BrowserAccessibilityPosition::GetNextOnLineID(
-    ui::AXNode::AXID node_id) const {
+ui::AXNodeID BrowserAccessibilityPosition::GetNextOnLineID(
+    ui::AXNodeID node_id) const {
   if (IsNullPosition())
-    return ui::AXNode::kInvalidAXID;
+    return ui::kInvalidAXNodeID;
   BrowserAccessibility* node = GetNodeInTree(tree_id(), node_id);
   int next_on_line_id;
   if (!node || !node->GetIntAttribute(ax::mojom::IntAttribute::kNextOnLineId,
                                       &next_on_line_id)) {
-    return ui::AXNode::kInvalidAXID;
+    return ui::kInvalidAXNodeID;
   }
-  return static_cast<ui::AXNode::AXID>(next_on_line_id);
+  return static_cast<ui::AXNodeID>(next_on_line_id);
 }
 
-ui::AXNode::AXID BrowserAccessibilityPosition::GetPreviousOnLineID(
-    ui::AXNode::AXID node_id) const {
+ui::AXNodeID BrowserAccessibilityPosition::GetPreviousOnLineID(
+    ui::AXNodeID node_id) const {
   if (IsNullPosition())
-    return ui::AXNode::kInvalidAXID;
+    return ui::kInvalidAXNodeID;
   BrowserAccessibility* node = GetNodeInTree(tree_id(), node_id);
   int previous_on_line_id;
   if (!node ||
       !node->GetIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId,
                              &previous_on_line_id)) {
-    return ui::AXNode::kInvalidAXID;
+    return ui::kInvalidAXNodeID;
   }
-  return static_cast<ui::AXNode::AXID>(previous_on_line_id);
+  return static_cast<ui::AXNodeID>(previous_on_line_id);
 }
 
 }  // namespace content

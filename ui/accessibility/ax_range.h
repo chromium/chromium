@@ -33,12 +33,12 @@ class AXRangeRectDelegate {
  public:
   virtual gfx::Rect GetInnerTextRangeBoundsRect(
       AXTreeID tree_id,
-      AXNode::AXID node_id,
+      AXNodeID node_id,
       int start_offset,
       int end_offset,
       AXOffscreenResult* offscreen_result) = 0;
   virtual gfx::Rect GetBoundsRect(AXTreeID tree_id,
-                                  AXNode::AXID node_id,
+                                  AXNodeID node_id,
                                   AXOffscreenResult* offscreen_result) = 0;
 };
 

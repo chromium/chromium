@@ -53,8 +53,7 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
 
   // When a hit test is called on |src_node_id|, return |dst_node_id| as
   // the result.
-  static void SetHitTestResult(AXNode::AXID src_node_id,
-                               AXNode::AXID dst_node_id);
+  static void SetHitTestResult(AXNodeID src_node_id, AXNodeID dst_node_id);
 
   ~TestAXNodeWrapper() override;
 

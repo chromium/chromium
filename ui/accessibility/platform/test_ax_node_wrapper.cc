@@ -21,7 +21,7 @@ namespace ui {
 namespace {
 
 // A global map from AXNodes to TestAXNodeWrappers.
-std::map<AXNode::AXID, TestAXNodeWrapper*> g_node_id_to_wrapper_map;
+std::map<AXNodeID, TestAXNodeWrapper*> g_node_id_to_wrapper_map;
 
 // A global coordinate offset.
 gfx::Vector2d g_offset;
@@ -48,7 +48,7 @@ bool g_is_web_content = false;
 
 // A map of hit test results - a map from source node ID to destination node
 // ID.
-std::map<AXNode::AXID, AXNode::AXID> g_hit_test_result;
+std::map<AXNodeID, AXNodeID> g_hit_test_result;
 
 // A simple implementation of AXTreeObserver to catch when AXNodes are
 // deleted so we can delete their wrappers.
@@ -115,8 +115,8 @@ void TestAXNodeWrapper::SetGlobalIsWebContent(bool is_web_content) {
 }
 
 // static
-void TestAXNodeWrapper::SetHitTestResult(AXNode::AXID src_node_id,
-                                         AXNode::AXID dst_node_id) {
+void TestAXNodeWrapper::SetHitTestResult(AXNodeID src_node_id,
+                                         AXNodeID dst_node_id) {
   g_hit_test_result[src_node_id] = dst_node_id;
 }
 
@@ -464,20 +464,20 @@ base::Optional<bool> TestAXNodeWrapper::GetTableHasColumnOrRowHeaderNode()
   return node_->GetTableHasColumnOrRowHeaderNode();
 }
 
-std::vector<AXNode::AXID> TestAXNodeWrapper::GetColHeaderNodeIds() const {
+std::vector<AXNodeID> TestAXNodeWrapper::GetColHeaderNodeIds() const {
   return node_->GetTableColHeaderNodeIds();
 }
 
-std::vector<AXNode::AXID> TestAXNodeWrapper::GetColHeaderNodeIds(
+std::vector<AXNodeID> TestAXNodeWrapper::GetColHeaderNodeIds(
     int col_index) const {
   return node_->GetTableColHeaderNodeIds(col_index);
 }
 
-std::vector<AXNode::AXID> TestAXNodeWrapper::GetRowHeaderNodeIds() const {
+std::vector<AXNodeID> TestAXNodeWrapper::GetRowHeaderNodeIds() const {
   return node_->GetTableCellRowHeaderNodeIds();
 }
 
-std::vector<AXNode::AXID> TestAXNodeWrapper::GetRowHeaderNodeIds(
+std::vector<AXNodeID> TestAXNodeWrapper::GetRowHeaderNodeIds(
     int row_index) const {
   return node_->GetTableRowHeaderNodeIds(row_index);
 }

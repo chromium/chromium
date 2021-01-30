@@ -85,8 +85,8 @@ TEST_F(AXAuraObjCacheTest, TestViewRemoval) {
   // from the cache, but leave the widget.
   widget->GetRootView()->RemoveChildView(parent);
   ASSERT_GT(cache.GetID(widget.get()), 0);
-  ASSERT_EQ(ui::AXNode::kInvalidAXID, cache.GetID(parent));
-  ASSERT_EQ(ui::AXNode::kInvalidAXID, cache.GetID(child));
+  ASSERT_EQ(ui::kInvalidAXNodeID, cache.GetID(parent));
+  ASSERT_EQ(ui::kInvalidAXNodeID, cache.GetID(child));
 
   // Explicitly delete |parent| to prevent a memory leak, since calling
   // RemoveChildView() doesn't delete it.

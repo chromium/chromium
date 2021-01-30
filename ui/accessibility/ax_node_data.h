@@ -23,6 +23,13 @@
 
 namespace ui {
 
+// Defines the type used for AXNode IDs.
+using AXNodeID = int32_t;
+
+// If a node is not yet or no longer valid, its ID should have a value of
+// kInvalidAXID.
+static constexpr AXNodeID kInvalidAXNodeID = 0;
+
 // Return true if |attr| should be interpreted as the id of another node
 // in the same tree.
 AX_BASE_EXPORT bool IsNodeIdIntAttribute(ax::mojom::IntAttribute attr);

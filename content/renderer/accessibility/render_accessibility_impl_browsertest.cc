@@ -751,7 +751,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForFixedNodeAfterScroll) {
 
   int scroll_offset_y = 50;
 
-  ui::AXNode::AXID expected_id = ui::AXNode::kInvalidAXID;
+  ui::AXNodeID expected_id = ui::kInvalidAXNodeID;
   ui::AXRelativeBounds expected_bounds;
 
   // Prepare the expected information from the tree.
@@ -770,7 +770,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForFixedNodeAfterScroll) {
       }
     }
 
-    if (expected_id != ui::AXNode::kInvalidAXID)
+    if (expected_id != ui::kInvalidAXNodeID)
       break;
   }
 
@@ -821,7 +821,7 @@ TEST_F(RenderAccessibilityImplTest, TestBoundsForMultipleFixedNodeAfterScroll) {
 
   int scroll_offset_y = 50;
 
-  std::map<ui::AXNode::AXID, ui::AXRelativeBounds> expected;
+  std::map<ui::AXNodeID, ui::AXRelativeBounds> expected;
 
   // Prepare the expected information from the tree.
   const std::vector<ui::AXTreeUpdate>& updates = GetHandledAccUpdates();
@@ -913,7 +913,7 @@ TEST_F(RenderAccessibilityImplTest, TestFocusConsistency) {
   // The pattern up DOM/style updates above result in multiple AXTreeUpdates
   // sent over mojo. Search the updates to ensure that the button
   const std::vector<ui::AXTreeUpdate>& updates = GetHandledAccUpdates();
-  ui::AXNode::AXID focused_node = ui::AXNode::kInvalidAXID;
+  ui::AXNodeID focused_node = ui::kInvalidAXNodeID;
   bool found_button_update = false;
   for (const auto& update : updates) {
     if (update.has_tree_data)
@@ -932,7 +932,7 @@ TEST_F(RenderAccessibilityImplTest, TestFocusConsistency) {
 
 class MockPluginAccessibilityTreeSource : public content::PluginAXTreeSource {
  public:
-  MockPluginAccessibilityTreeSource(ui::AXNode::AXID root_node_id) {
+  MockPluginAccessibilityTreeSource(ui::AXNodeID root_node_id) {
     ax_tree_ = std::make_unique<ui::AXTree>();
     root_node_ =
         std::make_unique<ui::AXNode>(ax_tree_.get(), nullptr, root_node_id, 0);
@@ -940,7 +940,7 @@ class MockPluginAccessibilityTreeSource : public content::PluginAXTreeSource {
   ~MockPluginAccessibilityTreeSource() override {}
   bool GetTreeData(ui::AXTreeData* data) const override { return true; }
   ui::AXNode* GetRoot() const override { return root_node_.get(); }
-  ui::AXNode* GetFromId(ui::AXNode::AXID id) const override {
+  ui::AXNode* GetFromId(ui::AXNodeID id) const override {
     return (root_node_->data().id == id) ? root_node_.get() : nullptr;
   }
   int32_t GetId(const ui::AXNode* node) const override {
@@ -1004,7 +1004,7 @@ TEST_F(RenderAccessibilityImplTest, TestAXActionTargetFromNodeId) {
   EXPECT_EQ(ui::AXActionTarget::Type::kBlink, body_action_target->GetType());
 
   // An AxID for a Plugin node should produce a Plugin action target.
-  ui::AXNode::AXID root_node_id = GetRenderAccessibilityImpl()->GenerateAXID();
+  ui::AXNodeID root_node_id = GetRenderAccessibilityImpl()->GenerateAXID();
   MockPluginAccessibilityTreeSource pdf_acc_tree(root_node_id);
   GetRenderAccessibilityImpl()->SetPluginTreeSource(&pdf_acc_tree);
 

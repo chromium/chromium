@@ -186,14 +186,14 @@ class AXPosition {
 
   static AXPositionInstance CreateNullPosition() {
     AXPositionInstance new_position(new AXPositionType());
-    new_position->Initialize(
-        AXPositionKind::NULL_POSITION, AXTreeIDUnknown(), AXNode::kInvalidAXID,
-        INVALID_INDEX, INVALID_OFFSET, ax::mojom::TextAffinity::kDownstream);
+    new_position->Initialize(AXPositionKind::NULL_POSITION, AXTreeIDUnknown(),
+                             kInvalidAXNodeID, INVALID_INDEX, INVALID_OFFSET,
+                             ax::mojom::TextAffinity::kDownstream);
     return new_position;
   }
 
   static AXPositionInstance CreateTreePosition(AXTreeID tree_id,
-                                               AXNode::AXID anchor_id,
+                                               AXNodeID anchor_id,
                                                int child_index) {
     AXPositionInstance new_position(new AXPositionType());
     new_position->Initialize(AXPositionKind::TREE_POSITION, tree_id, anchor_id,
@@ -204,7 +204,7 @@ class AXPosition {
 
   static AXPositionInstance CreateTextPosition(
       AXTreeID tree_id,
-      AXNode::AXID anchor_id,
+      AXNodeID anchor_id,
       int text_offset,
       ax::mojom::TextAffinity affinity) {
     AXPositionInstance new_position(new AXPositionType());
@@ -253,7 +253,7 @@ class AXPosition {
   // API that works with positions as opaque objects.
   struct SerializedPosition {
     AXPositionKind kind;
-    AXNode::AXID anchor_id;
+    AXNodeID anchor_id;
     int child_index;
     int text_offset;
     ax::mojom::TextAffinity affinity;
@@ -343,10 +343,10 @@ class AXPosition {
   }
 
   AXTreeID tree_id() const { return tree_id_; }
-  AXNode::AXID anchor_id() const { return anchor_id_; }
+  AXNodeID anchor_id() const { return anchor_id_; }
 
   AXNodeType* GetAnchor() const {
-    if (tree_id_ == AXTreeIDUnknown() || anchor_id_ == AXNode::kInvalidAXID)
+    if (tree_id_ == AXTreeIDUnknown() || anchor_id_ == kInvalidAXNodeID)
       return nullptr;
     return GetNodeInTree(tree_id_, anchor_id_);
   }
@@ -448,7 +448,7 @@ class AXPosition {
     switch (kind_) {
       case AXPositionKind::NULL_POSITION:
         return tree_id_ == AXTreeIDUnknown() &&
-               anchor_id_ == AXNode::kInvalidAXID &&
+               anchor_id_ == kInvalidAXNodeID &&
                child_index_ == INVALID_INDEX &&
                text_offset_ == INVALID_OFFSET &&
                affinity_ == ax::mojom::TextAffinity::kDownstream;
@@ -568,13 +568,12 @@ class AXPosition {
         if (text_position->AtEndOfAnchor() &&
             !text_position->AtEndOfTextSpan() &&
             text_position->IsInWhiteSpace() &&
-            GetNextOnLineID(text_position->anchor_id_) ==
-                AXNode::kInvalidAXID) {
+            GetNextOnLineID(text_position->anchor_id_) == kInvalidAXNodeID) {
           return true;
         }
 
         return GetPreviousOnLineID(text_position->anchor_id_) ==
-                   AXNode::kInvalidAXID &&
+                   kInvalidAXNodeID &&
                text_position->AtStartOfAnchor();
     }
   }
@@ -631,12 +630,11 @@ class AXPosition {
         // in most but not all cases, the parent of an inline text box is a
         // static text object, whose end signifies the end of the text span. One
         // exception is line breaks.
-        if (GetNextOnLineID(text_position->anchor_id_) ==
-            AXNode::kInvalidAXID) {
+        if (GetNextOnLineID(text_position->anchor_id_) == kInvalidAXNodeID) {
           return (!text_position->AtEndOfTextSpan() &&
                   text_position->IsInWhiteSpace() &&
                   GetPreviousOnLineID(text_position->anchor_id_) !=
-                      AXNode::kInvalidAXID)
+                      kInvalidAXNodeID)
                      ? text_position->AtStartOfAnchor()
                      : text_position->AtEndOfAnchor();
         }
@@ -1961,10 +1959,10 @@ class AXPosition {
       return CreateNullPosition();
 
     AXTreeID tree_id = AXTreeIDUnknown();
-    AXNode::AXID child_id = AXNode::kInvalidAXID;
+    AXNodeID child_id = kInvalidAXNodeID;
     AnchorChild(child_index, &tree_id, &child_id);
     DCHECK_NE(tree_id, AXTreeIDUnknown());
-    DCHECK_NE(child_id, AXNode::kInvalidAXID);
+    DCHECK_NE(child_id, kInvalidAXNodeID);
     switch (kind_) {
       case AXPositionKind::NULL_POSITION:
         NOTREACHED();
@@ -2016,9 +2014,9 @@ class AXPosition {
       return CreateNullPosition();
 
     AXTreeID tree_id = AXTreeIDUnknown();
-    AXNode::AXID parent_id = AXNode::kInvalidAXID;
+    AXNodeID parent_id = kInvalidAXNodeID;
     AnchorParent(&tree_id, &parent_id);
-    if (tree_id == AXTreeIDUnknown() || parent_id == AXNode::kInvalidAXID)
+    if (tree_id == AXTreeIDUnknown() || parent_id == kInvalidAXNodeID)
       return CreateNullPosition();
 
     switch (kind_) {
@@ -3696,7 +3694,7 @@ class AXPosition {
   AXPosition()
       : kind_(AXPositionKind::NULL_POSITION),
         tree_id_(AXTreeIDUnknown()),
-        anchor_id_(AXNode::kInvalidAXID),
+        anchor_id_(kInvalidAXNodeID),
         child_index_(INVALID_INDEX),
         text_offset_(INVALID_OFFSET),
         affinity_(ax::mojom::TextAffinity::kDownstream) {}
@@ -3777,7 +3775,7 @@ class AXPosition {
       // Reset to the null position.
       kind_ = AXPositionKind::NULL_POSITION;
       tree_id_ = AXTreeIDUnknown();
-      anchor_id_ = AXNode::kInvalidAXID;
+      anchor_id_ = kInvalidAXNodeID;
       child_index_ = INVALID_INDEX;
       text_offset_ = INVALID_OFFSET;
       affinity_ = ax::mojom::TextAffinity::kDownstream;
@@ -4573,7 +4571,7 @@ class AXPosition {
 
   AXPositionKind kind_;
   AXTreeID tree_id_;
-  AXNode::AXID anchor_id_;
+  AXNodeID anchor_id_;
 
   // For text positions, |child_index_| is initially set to |-1| and only
   // computed on demand. The same with tree positions and |text_offset_|.

@@ -73,7 +73,7 @@ void AutomationApiHelper::OnQuerySelector(int request_id,
   // Returns first match that has an attached, unignored node, otherwise null.
   blink::WebVector<blink::WebElement> all_matches =
       start_node.QuerySelectorAll(web_selector);
-  int result_acc_obj_id = ui::AXNode::kInvalidAXID;
+  int result_acc_obj_id = ui::kInvalidAXNodeID;
   for (const blink::WebElement& match : all_matches) {
     auto result_acc_obj = blink::WebAXObject::FromWebNode(match);
     if (!result_acc_obj.IsDetached() &&

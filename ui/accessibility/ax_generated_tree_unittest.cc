@@ -345,7 +345,7 @@ TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
         EXPECT_EQ(TreeToString(fat_tree), TreeToString(fat_tree1));
 
         // Capture the events generated.
-        std::map<AXNode::AXID, std::set<AXEventGenerator::Event>> actual_events;
+        std::map<AXNodeID, std::set<AXEventGenerator::Event>> actual_events;
         for (const AXEventGenerator::TargetedEvent& event : event_generator) {
           if (event.node->IsIgnored() ||
               event.event_params.event ==
@@ -370,14 +370,13 @@ TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
 
         EXPECT_EQ(TreeToString(skinny_tree), TreeToString(skinny_tree1));
 
-        std::map<AXNode::AXID, std::set<AXEventGenerator::Event>>
-            expected_events;
+        std::map<AXNodeID, std::set<AXEventGenerator::Event>> expected_events;
         for (const AXEventGenerator::TargetedEvent& event :
              skinny_event_generator)
           expected_events[event.node->id()].insert(event.event_params.event);
 
         for (auto& entry : expected_events) {
-          AXNode::AXID node_id = entry.first;
+          AXNodeID node_id = entry.first;
           for (auto& event_type : entry.second) {
             EXPECT_TRUE(actual_events[node_id].find(event_type) !=
                         actual_events[node_id].end())
@@ -386,7 +385,7 @@ TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
         }
 
         for (auto& entry : actual_events) {
-          AXNode::AXID node_id = entry.first;
+          AXNodeID node_id = entry.first;
           for (auto& event_type : entry.second) {
             EXPECT_TRUE(expected_events[node_id].find(event_type) !=
                         expected_events[node_id].end())
@@ -400,7 +399,7 @@ TEST(AXGeneratedTreeTest, GeneratedTreesWithIgnoredNodes) {
         // correctly.
         AXTreeUpdate skinny_tree_serialized = SerializeEntireTree(skinny_tree);
         for (size_t i = 0; i < skinny_tree_serialized.nodes.size(); i++) {
-          AXNode::AXID id = skinny_tree_serialized.nodes[i].id;
+          AXNodeID id = skinny_tree_serialized.nodes[i].id;
 
           AXNode* skinny_tree_node = skinny_tree.GetFromId(id);
           AXNode* fat_tree_node = fat_tree.GetFromId(id);

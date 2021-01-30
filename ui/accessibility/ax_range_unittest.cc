@@ -28,22 +28,22 @@ using TestPositionRange = AXRange<AXPosition<AXNodePosition, AXNode>>;
 
 namespace {
 
-constexpr AXNode::AXID ROOT_ID = 1;
-constexpr AXNode::AXID DIV1_ID = 2;
-constexpr AXNode::AXID BUTTON_ID = 3;
-constexpr AXNode::AXID DIV2_ID = 4;
-constexpr AXNode::AXID CHECK_BOX1_ID = 5;
-constexpr AXNode::AXID CHECK_BOX2_ID = 6;
-constexpr AXNode::AXID TEXT_FIELD_ID = 7;
-constexpr AXNode::AXID STATIC_TEXT1_ID = 8;
-constexpr AXNode::AXID INLINE_BOX1_ID = 9;
-constexpr AXNode::AXID LINE_BREAK1_ID = 10;
-constexpr AXNode::AXID STATIC_TEXT2_ID = 11;
-constexpr AXNode::AXID INLINE_BOX2_ID = 12;
-constexpr AXNode::AXID LINE_BREAK2_ID = 13;
-constexpr AXNode::AXID PARAGRAPH_ID = 14;
-constexpr AXNode::AXID STATIC_TEXT3_ID = 15;
-constexpr AXNode::AXID INLINE_BOX3_ID = 16;
+constexpr AXNodeID ROOT_ID = 1;
+constexpr AXNodeID DIV1_ID = 2;
+constexpr AXNodeID BUTTON_ID = 3;
+constexpr AXNodeID DIV2_ID = 4;
+constexpr AXNodeID CHECK_BOX1_ID = 5;
+constexpr AXNodeID CHECK_BOX2_ID = 6;
+constexpr AXNodeID TEXT_FIELD_ID = 7;
+constexpr AXNodeID STATIC_TEXT1_ID = 8;
+constexpr AXNodeID INLINE_BOX1_ID = 9;
+constexpr AXNodeID LINE_BREAK1_ID = 10;
+constexpr AXNodeID STATIC_TEXT2_ID = 11;
+constexpr AXNodeID INLINE_BOX2_ID = 12;
+constexpr AXNodeID LINE_BREAK2_ID = 13;
+constexpr AXNodeID PARAGRAPH_ID = 14;
+constexpr AXNodeID STATIC_TEXT3_ID = 15;
+constexpr AXNodeID INLINE_BOX3_ID = 16;
 
 class TestAXRangeScreenRectDelegate : public AXRangeRectDelegate {
  public:
@@ -57,7 +57,7 @@ class TestAXRangeScreenRectDelegate : public AXRangeRectDelegate {
 
   gfx::Rect GetInnerTextRangeBoundsRect(
       AXTreeID tree_id,
-      AXNode::AXID node_id,
+      AXNodeID node_id,
       int start_offset,
       int end_offset,
       AXOffscreenResult* offscreen_result) override {
@@ -76,7 +76,7 @@ class TestAXRangeScreenRectDelegate : public AXRangeRectDelegate {
   }
 
   gfx::Rect GetBoundsRect(AXTreeID tree_id,
-                          AXNode::AXID node_id,
+                          AXNodeID node_id,
                           AXOffscreenResult* offscreen_result) override {
     if (tree_manager_->GetTreeID() != tree_id)
       return gfx::Rect();

@@ -21,7 +21,7 @@ namespace ui {
 namespace {
 
 // A global map from AXNodes to TestAXNodeHelpers.
-std::map<AXNode::AXID, TestAXNodeHelper*> g_node_id_to_helper_map;
+std::map<AXNodeID, TestAXNodeHelper*> g_node_id_to_helper_map;
 
 // A simple implementation of AXTreeObserver to catch when AXNodes are
 // deleted so we can delete their helpers.

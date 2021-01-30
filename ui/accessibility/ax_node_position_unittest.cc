@@ -33,15 +33,15 @@ using TestPositionRange = AXRange<AXPosition<AXNodePosition, AXNode>>;
 
 namespace {
 
-constexpr AXNode::AXID ROOT_ID = 1;
-constexpr AXNode::AXID BUTTON_ID = 2;
-constexpr AXNode::AXID CHECK_BOX_ID = 3;
-constexpr AXNode::AXID TEXT_FIELD_ID = 4;
-constexpr AXNode::AXID STATIC_TEXT1_ID = 5;
-constexpr AXNode::AXID INLINE_BOX1_ID = 6;
-constexpr AXNode::AXID LINE_BREAK_ID = 7;
-constexpr AXNode::AXID STATIC_TEXT2_ID = 8;
-constexpr AXNode::AXID INLINE_BOX2_ID = 9;
+constexpr AXNodeID ROOT_ID = 1;
+constexpr AXNodeID BUTTON_ID = 2;
+constexpr AXNodeID CHECK_BOX_ID = 3;
+constexpr AXNodeID TEXT_FIELD_ID = 4;
+constexpr AXNodeID STATIC_TEXT1_ID = 5;
+constexpr AXNodeID INLINE_BOX1_ID = 6;
+constexpr AXNodeID LINE_BREAK_ID = 7;
+constexpr AXNodeID STATIC_TEXT2_ID = 8;
+constexpr AXNodeID INLINE_BOX2_ID = 9;
 
 // A group of basic and extended characters.
 constexpr const wchar_t* kGraphemeClusters[] = {
@@ -101,7 +101,7 @@ class AXPositionTest : public testing::Test, public TestAXTreeManager {
       std::vector<int>* text_offsets) const;
 
   void AssertTextLengthEquals(const AXTree* tree,
-                              AXNode::AXID node_id,
+                              AXNodeID node_id,
                               int expected_text_length) const;
 
   // Creates a new AXTree from a vector of nodes.
@@ -236,7 +236,7 @@ struct TextNavigationTestParam {
   base::RepeatingCallback<TestPositionType(const TestPositionType&)> TestMethod;
 
   // The node at which the test should start.
-  AXNode::AXID start_node_id;
+  AXNodeID start_node_id;
 
   // The text offset at which the test should start.
   int start_offset;
@@ -661,7 +661,7 @@ std::unique_ptr<AXTree> AXPositionTest::CreateMultilingualDocument(
 }
 
 void AXPositionTest::AssertTextLengthEquals(const AXTree* tree,
-                                            AXNode::AXID node_id,
+                                            AXNodeID node_id,
                                             int expected_text_length) const {
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
       tree->data().tree_id, node_id, 0 /* text_offset */,
@@ -3970,15 +3970,15 @@ TEST_F(AXPositionTest, CreatePositionAtTextBoundaryContentStartEndIsIgnored) {
   //   | +-inline_box_data_3
   //   +-static_text_data_4
   //     +-inline_box_data_4 IGNORED
-  constexpr AXNode::AXID ROOT_ID = 1;
-  constexpr AXNode::AXID STATIC_TEXT1_ID = 2;
-  constexpr AXNode::AXID STATIC_TEXT2_ID = 3;
-  constexpr AXNode::AXID STATIC_TEXT3_ID = 4;
-  constexpr AXNode::AXID STATIC_TEXT4_ID = 5;
-  constexpr AXNode::AXID INLINE_BOX1_ID = 6;
-  constexpr AXNode::AXID INLINE_BOX2_ID = 7;
-  constexpr AXNode::AXID INLINE_BOX3_ID = 8;
-  constexpr AXNode::AXID INLINE_BOX4_ID = 9;
+  constexpr AXNodeID ROOT_ID = 1;
+  constexpr AXNodeID STATIC_TEXT1_ID = 2;
+  constexpr AXNodeID STATIC_TEXT2_ID = 3;
+  constexpr AXNodeID STATIC_TEXT3_ID = 4;
+  constexpr AXNodeID STATIC_TEXT4_ID = 5;
+  constexpr AXNodeID INLINE_BOX1_ID = 6;
+  constexpr AXNodeID INLINE_BOX2_ID = 7;
+  constexpr AXNodeID INLINE_BOX3_ID = 8;
+  constexpr AXNodeID INLINE_BOX4_ID = 9;
 
   AXNodeData root_data;
   root_data.id = ROOT_ID;

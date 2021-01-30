@@ -216,10 +216,10 @@ class AXPlatformNodeTextRangeProviderTest : public ui::AXPlatformNodeWinTest {
       ComPtr<AXPlatformNodeTextRangeProviderWin>& text_range_provider_win,
       AXPlatformNodeWin* owner,
       AXTreeID tree_id,
-      AXNode::AXID start_anchor_id,
+      AXNodeID start_anchor_id,
       int start_offset,
       ax::mojom::TextAffinity start_affinity,
-      AXNode::AXID end_anchor_id,
+      AXNodeID end_anchor_id,
       int end_offset,
       ax::mojom::TextAffinity end_affinity) {
     AXNodePosition::AXPositionInstance range_start =

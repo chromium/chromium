@@ -90,7 +90,7 @@ class AXPlatformNodeWinTest : public AXPlatformNodeTest {
 
   AXPlatformNode* AXPlatformNodeFromNode(AXNode* node);
   template <typename T>
-  Microsoft::WRL::ComPtr<T> QueryInterfaceFromNodeId(AXNode::AXID id);
+  Microsoft::WRL::ComPtr<T> QueryInterfaceFromNodeId(AXNodeID id);
   template <typename T>
   Microsoft::WRL::ComPtr<T> QueryInterfaceFromNode(AXNode* node);
   Microsoft::WRL::ComPtr<IRawElementProviderSimple>
@@ -99,7 +99,7 @@ class AXPlatformNodeWinTest : public AXPlatformNodeTest {
   GetIRawElementProviderSimpleFromChildIndex(int child_index);
   Microsoft::WRL::ComPtr<IRawElementProviderSimple>
   GetIRawElementProviderSimpleFromTree(const ui::AXTreeID tree_id,
-                                       const AXNode::AXID node_id);
+                                       const AXNodeID node_id);
   Microsoft::WRL::ComPtr<IRawElementProviderFragment>
   GetRootIRawElementProviderFragment();
   Microsoft::WRL::ComPtr<IRawElementProviderFragment>
@@ -124,7 +124,7 @@ class AXPlatformNodeWinTest : public AXPlatformNodeTest {
   Microsoft::WRL::ComPtr<IRawElementProviderFragmentRoot> GetFragmentRoot();
 
   using PatternSet = std::unordered_set<LONG>;
-  PatternSet GetSupportedPatternsFromNodeId(AXNode::AXID id);
+  PatternSet GetSupportedPatternsFromNodeId(AXNodeID id);
 
   std::unique_ptr<AXFragmentRootWin> ax_fragment_root_;
 

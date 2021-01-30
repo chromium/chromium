@@ -98,19 +98,19 @@ void TestTableAPIs(const ui::AXNode* node) {
   // crash. Normally |ids| is an out argument only, but
   // there's no reason we shouldn't be able to pass a vector
   // that was previously used by another call.
-  std::vector<ui::AXNode::AXID> ids;
+  std::vector<ui::AXNodeID> ids;
   for (int i = 0; i < 3; i++) {
-    std::vector<ui::AXNode::AXID> col_header_node_ids =
+    std::vector<ui::AXNodeID> col_header_node_ids =
         node->GetTableColHeaderNodeIds(i);
     ids.insert(ids.end(), col_header_node_ids.begin(),
                col_header_node_ids.end());
 
-    std::vector<ui::AXNode::AXID> row_header_node_ids =
+    std::vector<ui::AXNodeID> row_header_node_ids =
         node->GetTableRowHeaderNodeIds(i);
     ids.insert(ids.end(), row_header_node_ids.begin(),
                row_header_node_ids.end());
   }
-  std::vector<ui::AXNode::AXID> unique_cell_ids = node->GetTableUniqueCellIds();
+  std::vector<ui::AXNodeID> unique_cell_ids = node->GetTableUniqueCellIds();
   ids.insert(ids.end(), unique_cell_ids.begin(), unique_cell_ids.end());
 
   ignore_result(node->IsTableRow());
@@ -127,11 +127,11 @@ void TestTableAPIs(const ui::AXNode* node) {
   ignore_result(node->GetTableCellRowSpan());
   ignore_result(node->GetTableCellAriaColIndex());
   ignore_result(node->GetTableCellAriaRowIndex());
-  std::vector<ui::AXNode::AXID> cell_col_header_node_ids =
+  std::vector<ui::AXNodeID> cell_col_header_node_ids =
       node->GetTableCellColHeaderNodeIds();
   ids.insert(ids.end(), cell_col_header_node_ids.begin(),
              cell_col_header_node_ids.end());
-  std::vector<ui::AXNode::AXID> cell_row_header_node_ids =
+  std::vector<ui::AXNodeID> cell_row_header_node_ids =
       node->GetTableCellRowHeaderNodeIds();
   ids.insert(ids.end(), cell_row_header_node_ids.begin(),
              cell_row_header_node_ids.end());

@@ -68,7 +68,7 @@ void AXPositionPerfTest::SetUp() {
   constexpr int kStaticTextNodesStartIndex =
       kGroupNodesStartIndex + kNumberOfGroups;
 
-  AXNode::AXID current_id = 0;
+  AXNodeID current_id = 0;
   std::vector<AXNodeData> nodes;
   nodes.resize(1 + kNumberOfGroups + kNumberOfStaticTextNodes);
 

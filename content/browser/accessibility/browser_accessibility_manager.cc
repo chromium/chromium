@@ -615,7 +615,7 @@ BrowserAccessibility* BrowserAccessibilityManager::GetActiveDescendant(
   if (!node)
     return nullptr;
 
-  ui::AXNode::AXID active_descendant_id;
+  ui::AXNodeID active_descendant_id;
   BrowserAccessibility* active_descendant = nullptr;
   if (node->GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
                             &active_descendant_id)) {
@@ -702,7 +702,7 @@ BrowserAccessibility* BrowserAccessibilityManager::GetFocus() const {
 
 BrowserAccessibility*
 BrowserAccessibilityManager::GetFocusFromThisOrDescendantFrame() const {
-  ui::AXNode::AXID focus_id = GetTreeData().focus_id;
+  ui::AXNodeID focus_id = GetTreeData().focus_id;
   BrowserAccessibility* obj = GetFromID(focus_id);
   // If nothing is focused, then the top document has the focus.
   if (!obj)
@@ -1355,7 +1355,7 @@ void BrowserAccessibilityManager::OnNodeCreated(ui::AXTree* tree,
 
 void BrowserAccessibilityManager::OnNodeDeleted(ui::AXTree* tree,
                                                 int32_t node_id) {
-  DCHECK_NE(node_id, ui::AXNode::kInvalidAXID);
+  DCHECK_NE(node_id, ui::kInvalidAXNodeID);
   if (BrowserAccessibility* wrapper = GetFromID(node_id)) {
     id_wrapper_map_.erase(node_id);
     delete wrapper;
@@ -1426,13 +1426,13 @@ void BrowserAccessibilityManager::OnAtomicUpdateFinished(
 
 ui::AXNode* BrowserAccessibilityManager::GetNodeFromTree(
     const ui::AXTreeID tree_id,
-    const ui::AXNode::AXID node_id) const {
+    const ui::AXNodeID node_id) const {
   auto* manager = BrowserAccessibilityManager::FromID(tree_id);
   return manager ? manager->GetNodeFromTree(node_id) : nullptr;
 }
 
 ui::AXNode* BrowserAccessibilityManager::GetNodeFromTree(
-    const ui::AXNode::AXID node_id) const {
+    const ui::AXNodeID node_id) const {
   BrowserAccessibility* wrapper = GetFromID(node_id);
   return wrapper ? wrapper->node() : nullptr;
 }

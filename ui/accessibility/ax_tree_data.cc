@@ -47,10 +47,10 @@ std::string AXTreeData::ToString() const {
   if (!title.empty())
     result += " title=" + title;
 
-  if (focus_id != AXNode::kInvalidAXID)
+  if (focus_id != kInvalidAXNodeID)
     result += " focus_id=" + base::NumberToString(focus_id);
 
-  if (sel_anchor_object_id != AXNode::kInvalidAXID) {
+  if (sel_anchor_object_id != kInvalidAXNodeID) {
     result +=
         (sel_is_backward ? " sel_is_backward=true" : " sel_is_backward=false");
     result +=
@@ -59,7 +59,7 @@ std::string AXTreeData::ToString() const {
     result += " sel_anchor_affinity=";
     result += ui::ToString(sel_anchor_affinity);
   }
-  if (sel_focus_object_id != AXNode::kInvalidAXID) {
+  if (sel_focus_object_id != kInvalidAXNodeID) {
     result +=
         " sel_focus_object_id=" + base::NumberToString(sel_focus_object_id);
     result += " sel_focus_offset=" + base::NumberToString(sel_focus_offset);

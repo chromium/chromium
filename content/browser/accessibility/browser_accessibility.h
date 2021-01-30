@@ -264,7 +264,7 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   InternalChildIterator InternalChildrenBegin() const;
   InternalChildIterator InternalChildrenEnd() const;
 
-  ui::AXNode::AXID GetId() const;
+  ui::AXNodeID GetId() const;
   gfx::RectF GetLocation() const;
   ax::mojom::Role GetRole() const;
   int32_t GetState() const;
@@ -464,12 +464,10 @@ class CONTENT_EXPORT BrowserAccessibility : public ui::AXPlatformNodeDelegate {
   base::Optional<int> GetTableAriaRowCount() const override;
   base::Optional<int> GetTableCellCount() const override;
   base::Optional<bool> GetTableHasColumnOrRowHeaderNode() const override;
-  std::vector<ui::AXNode::AXID> GetColHeaderNodeIds() const override;
-  std::vector<ui::AXNode::AXID> GetColHeaderNodeIds(
-      int col_index) const override;
-  std::vector<ui::AXNode::AXID> GetRowHeaderNodeIds() const override;
-  std::vector<ui::AXNode::AXID> GetRowHeaderNodeIds(
-      int row_index) const override;
+  std::vector<ui::AXNodeID> GetColHeaderNodeIds() const override;
+  std::vector<ui::AXNodeID> GetColHeaderNodeIds(int col_index) const override;
+  std::vector<ui::AXNodeID> GetRowHeaderNodeIds() const override;
+  std::vector<ui::AXNodeID> GetRowHeaderNodeIds(int row_index) const override;
   ui::AXPlatformNode* GetTableCaption() const override;
 
   bool IsTableRow() const override;
