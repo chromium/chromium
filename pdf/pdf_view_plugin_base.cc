@@ -53,6 +53,8 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
   using MessageHandler = void (PdfViewPluginBase::*)(const base::Value&);
   static constexpr auto kMessageHandlers =
       base::MakeFixedFlatMap<base::StringPiece, MessageHandler>({
+          {"displayAnnotations",
+           &PdfViewPluginBase::HandleDisplayAnnotationsMessage},
           {"setReadOnly", &PdfViewPluginBase::HandleSetReadOnlyMessage},
           {"setTwoUpView", &PdfViewPluginBase::HandleSetTwoUpViewMessage},
       });
@@ -186,6 +188,11 @@ void PdfViewPluginBase::SetZoom(double scale) {
   double old_zoom = zoom_;
   zoom_ = scale;
   OnGeometryChanged(old_zoom, device_scale_);
+}
+
+void PdfViewPluginBase::HandleDisplayAnnotationsMessage(
+    const base::Value& message) {
+  engine()->DisplayAnnotations(message.FindBoolKey("display").value());
 }
 
 void PdfViewPluginBase::HandleSetReadOnlyMessage(const base::Value& message) {

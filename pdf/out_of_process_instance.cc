@@ -211,9 +211,6 @@ constexpr char kJSEmailBody[] = "body";
 // Rotation (Page -> Plugin)
 constexpr char kJSRotateClockwiseType[] = "rotateClockwise";
 constexpr char kJSRotateCounterclockwiseType[] = "rotateCounterclockwise";
-// Display annotations (Page -> Plugin)
-constexpr char kJSDisplayAnnotationsType[] = "displayAnnotations";
-constexpr char kJSDisplayAnnotations[] = "display";
 // Select all text in the document (Page -> Plugin)
 constexpr char kJSSelectAllType[] = "selectAll";
 // Get the selected text in the document (Page -> Plugin)
@@ -721,8 +718,6 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
     RotateClockwise();
   } else if (type == kJSRotateCounterclockwiseType) {
     RotateCounterclockwise();
-  } else if (type == kJSDisplayAnnotationsType) {
-    HandleDisplayAnnotations(dict);
   } else if (type == kJSSelectAllType) {
     engine()->SelectAll();
   } else if (type == kJSBackgroundColorChangedType) {
@@ -1687,17 +1682,6 @@ void OutOfProcessInstance::HandleBackgroundColorChangedMessage(
                             &background_color)) {
     SetBackgroundColor(background_color);
   }
-}
-
-void OutOfProcessInstance::HandleDisplayAnnotations(
-    const pp::VarDictionary& dict) {
-  if (!dict.Get(pp::Var(kJSDisplayAnnotations)).is_bool()) {
-    NOTREACHED();
-    return;
-  }
-
-  engine()->DisplayAnnotations(
-      dict.Get(pp::Var(kJSDisplayAnnotations)).AsBool());
 }
 
 void OutOfProcessInstance::HandleGetNamedDestinationMessage(
