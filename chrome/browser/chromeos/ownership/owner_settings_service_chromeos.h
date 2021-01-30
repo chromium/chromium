@@ -33,7 +33,7 @@ class OwnerKeyUtil;
 
 namespace chromeos {
 
-enum FeatureFlagsMigrationStatus {
+enum class FeatureFlagsMigrationStatus {
   kNoFeatureFlags,
   kAlreadyMigrated,
   kMigrationPerformed,
