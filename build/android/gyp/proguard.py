@@ -22,7 +22,7 @@ from util import diff_utils
 
 _API_LEVEL_VERSION_CODE = [
     (21, 'L'),
-    (22, 'LolliopoMR1'),
+    (22, 'LollipopMR1'),
     (23, 'M'),
     (24, 'N'),
     (25, 'NMR1'),
