@@ -186,6 +186,7 @@
 <translation id="5832805196449965646">व्यक्ती जोडा</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>
 <translation id="5916084858004523819">प्रतिबंधित</translation>
+<translation id="5921506667911082617">{COUNT,plural, =1{तुमची फाइल यशस्वीरीत्या स्कॅन करण्यात आली आहे आणि <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> वर सेव्ह केली आहे.}other{तुमच्या फाइल यशस्वीरीत्या स्कॅन करण्यात आल्या आहेत आणि <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> वर सेव्ह केल्या आहेत.}}</translation>
 <translation id="5931523347251946569">फाइल सापडली नाही</translation>
 <translation id="5982592372228113572">(<ph name="BOARD_NAME" />, <ph name="MILESTONE_VERSION" /> आवृत्ती)</translation>
 <translation id="6040143037577758943">बंद करा</translation>

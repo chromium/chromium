@@ -17,6 +17,7 @@
 <translation id="137466361146087520">Google Chrome बीटा</translation>
 <translation id="1399397803214730675">या कॉंप्युटरत आधीपासून Google Chrome ची अगदी अलिकडील आवृत्ती आहे. सॉफ्टवेअर काम करत नसल्यास, कृपया Google Chrome अनइंस्टॉल करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
+<translation id="147727933880789532">Chrome हे एक्स्टेंशन बंद करण्याची शिफारस करते कारण ते सध्या वर्धित सुरक्षित ब्राउझिंग मानकांची पूर्तता करत नाही.</translation>
 <translation id="1553358976309200471">Chrome अपडेट करा</translation>
 <translation id="1587223624401073077">Google Chrome तुमचा कॅमेरा वापरत आहे.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> धोकादायक आहे, त्यामुळे Chrom ने ते अवरोधित केले आहे.</translation>
@@ -35,12 +36,14 @@
 <translation id="174539241580958092">साइन इन करण्यात एरर आल्यामुळे Google Chrome तुमचा डेटा सिंक करू शकले नाही.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">तुम्ही तुमच्या <ph name="TARGET_DEVICE_NAME" /> वर Chrome मध्ये साइन इन केले असल्याची खात्री करा आणि त्यानंतर पुन्हा पाठवून पाहा.</translation>
+<translation id="1807517590912578995">Chrome प्रोफाइल स्वतंत्र ठेवायची आहे का?</translation>
 <translation id="1812689907177901597">हे बंद करून, तुम्ही Chrome वर साइन इन न करता Gmail सारख्या Google साइटवर साइन इन करू शकता</translation>
 <translation id="1860536484129686729">या साइटसाठी Chrome ला तुमचा कॅमेरा ॲक्सेस करण्याची परवानगी हवी आहे</translation>
 <translation id="1873233029667955273">Google Chrome तुमचा डीफॉल्ट ब्राउझर नाही</translation>
 <translation id="1874309113135274312">Google Chrome बीटा (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome कालबाह्य आहे</translation>
 <translation id="1919130412786645364">Chrome मध्ये साइन इन करण्यासाठी अनुमती द्या</translation>
+<translation id="2018528049276128029">प्रत्येक प्रोफाइलमध्ये तिची स्वतःची Chrome माहिती असते जसे की, बुकमार्क, इतिहास, पासवर्ड आणि आणखी बरेच काही</translation>
 <translation id="2063848847527508675">अपडेट लागू करण्यासाठी Chrome OS रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="2094919256425865063">तरीही Chrome बंद करायचे?</translation>
 <translation id="2120620239521071941">हे या डिव्‍हाइस मधून <ph name="ITEMS_COUNT" /> आयटम हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी Chrome मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
@@ -54,9 +57,11 @@
 <translation id="234869673307233423">Chrome तुमचे पासवर्ड तपासू शकत नाही. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="235650106824528204">या प्रोफाइलच्या वापरादरम्यान जनरेट केला गेलेला कोणताही Chrome डेटा (जसे की बुकमार्क, इतिहास, पासवर्ड आणि इतर सेटिंग्जची निर्मिती) कार्य प्रोफाइल अ‍ॅडमिनिस्ट्रेटरला हटवता येतो. <ph name="LEARN_MORE" /></translation>
 <translation id="2429317896000329049">आपल्या डोमेनसाठी सिंक उपलब्ध नसल्यामुळे Google Chrome तुमचा डेटा संकालित करू शकले नाही.</translation>
+<translation id="245659736593643560">Chrome OS हे <ph name="BEGIN_LINK_LINUX_OSS" />Linux डेव्हलपमेंट पद्धत (बीटा)<ph name="END_LINK_LINUX_OSS" /> सारख्या अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
 <translation id="2467438592969358367">Google Chrome ला तुमचे पासवर्ड निर्यात करायचे आहेत. हे करू देण्यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
 <translation id="2485422356828889247">अनइंस्टॉल करा</translation>
 <translation id="2534507159460261402">Google Pay (Chrome वर कॉपी केले)</translation>
+<translation id="2574930892358684005"><ph name="EXISTING_USER" /> यांनी आधीपासून या Chrome प्रोफाइलमध्ये साइन इन केलेले आहे. तुमचे ब्राउझिंग स्वतंत्र ठेवण्यासाठी, Chrome तुमच्याकरिता तुमची स्वतःची प्रोफाइल तयार करू शकते.</translation>
 <translation id="2580411288591421699">सध्या चालत असलेली Google Chrome ची समान आवृत्ती इंस्टॉल करू शकत नाही. कृपया Google Chrome बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="2586406160782125153">हे या डिव्‍हाइस मधून तुमचा ब्राउझिंग डेटा हटवेल. नंतर तुमचा डेटा पुनर्प्राप्त करण्‍यासाठी, Chrome मध्ये <ph name="USER_EMAIL" /> म्हणून साइन इन करा.</translation>
 <translation id="2588634262982826227">Chrome OS प्रत्येक वेळी न विचारता रीबूट झाल्यानंतर तुमची अ‍ॅप्स आणि पेज नेहमी रिस्टोअर करू शकते.</translation>
@@ -71,6 +76,7 @@
 <translation id="2799223571221894425">पुन्हा लाँच करा</translation>
 <translation id="2847461019998147611">Google Chrome या भाषेत डिस्प्ले करा</translation>
 <translation id="2857540653560290388">Chrome लाँच करत आहे...</translation>
+<translation id="2857972467023607093">हे खाते वापरून तयार केलेली Chrome प्रोफाइल आधीपासून अस्तित्वात आहे</translation>
 <translation id="2871893339301912279">तुम्ही Chrome मध्‍ये साइन इन केले आहे!</translation>
 <translation id="2885378588091291677">टास्क मॅनेजर</translation>
 <translation id="2888126860611144412">Chrome बद्दल</translation>
@@ -140,6 +146,7 @@
 <translation id="4600710005438004015">Chrome नवीनतम आवृत्तीवर अपडेट होऊ शकले नाही, त्यामुळे तुम्ही नवीन वैशिष्ट्ये आणि सुरक्षितता निराकरणे गमावत आहात.</translation>
 <translation id="4631713731678262610">Chrome मेनूमध्‍ये लपवा</translation>
 <translation id="4633000520311261472">Chrome ला अधिक सुरक्षित करण्यासाठी, आम्ही <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> मध्ये सूचीबद्ध नसलेले काही विस्तार अक्षम केले आणि ते कदाचित आपल्या माहिती शिवाय जोडले गेले असावेत.</translation>
+<translation id="4666328473657283332">तुमच्या सर्व डिव्हाइसवर तुमचा Chrome आशय अ‍ॅक्सेस करण्यासाठी, साइन इन करा जेणेकरून, तुम्ही सिंक सुरू शकता.</translation>
 <translation id="4728575227883772061">नमूद न केलेल्या एररमुळे स्थापना अयशस्वी. जर Google Chrome सध्या सुरू असेल तर, कृपया त्यास बंद करा आणि पुन्हा प्रयत्न करा.</translation>
 <translation id="4750550185319565338"><ph name="PLUGIN_NAME" /> सुरू करण्‍यासाठी Chrome रीस्टार्ट करा</translation>
 <translation id="4754614261631455953">Google Chrome कॅनरी (mDNS-मध्ये)</translation>
@@ -158,6 +165,7 @@
 <translation id="5170938038195470297">तुमचे प्रोफाइल वापरले जाणे शक्य नाही कारण ते Google Chrome च्या नवीनतम आवृत्तीमधील आहे.
 काही वैशिष्‍ट्ये अनुपलब्ध असू शकतात. कृपया एक भिन्न प्रोफाइल डिरेक्टरी नमूद करा किंवा Google Chrome ची नवीनतम आवृत्ती वापरा.</translation>
 <translation id="5193136243808726294">Google Chrome OS हे पृष्ठ उघडू शकत नाही.</translation>
+<translation id="521447420733633466">तुम्ही डिव्हाइस शेअर केल्यास, मित्रमैत्रिणी आणि कुटुंब स्वतंत्रपणे ब्राउझ करू शकतात आणि त्यांना हवे तसे Chrome सेट करू शकतात</translation>
 <translation id="5251420635869119124">अतिथी कोणतीही गोष्ट मागे न सोडता Chrome वापरू शकतात.</translation>
 <translation id="532046782124376502">चेतावणी: Google Chrome हे एक्स्टेंशनना तुमचा ब्राउझिंग इतिहास रेकॉर्ड करून ठेवण्यापासून रोखू शकत नाही. हे एक्स्टेंशन बंद करण्यासाठी गुप्त मोडमधील या पर्यायाची निवड रद्द करा.</translation>
 <translation id="5386244825306882791">तुम्ही Chrome सुरू करता किंवा ओम्निबॉक्समधून शोध घेता तेव्हा कोणते पृष्ठ दर्शविले जाते हे देखील हे नियंत्रित करते.</translation>
@@ -195,12 +203,14 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6291549208091401781">तुमच्या कॉंप्युटरवरील सर्व वापरकर्त्यांसाठी Google Chrome आधीच इंस्टॉल केला आहे.</translation>
 <translation id="6338556085225130112">Google Chrome अपडेट होत आहे</translation>
 <translation id="6368958679917195344"> Chrome OS अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> द्वारे शक्य झाले आहे.</translation>
+<translation id="6418662306461808273">सध्याच्या Chrome प्रोफाइलवर स्विच करायचे आहे का?</translation>
 <translation id="6515495397637126556"><ph name="PAGE_TITLE" /> - Google Chrome डेव्हलपर</translation>
 <translation id="6566149418543181476">Google Chrome अपडेट करीत आहे (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS सिस्टम</translation>
 <translation id="6650333065969705433">संरक्षित मीडिया प्ले करण्यासाठी Rosetta सुरू करण्यासाठी, तुम्ही Chrome रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="6676384891291319759">इंटरनेट ॲक्सेस करा</translation>
 <translation id="6679975945624592337">Google Chrome बॅकग्राउंडमध्ये सुरू द्या</translation>
+<translation id="6739177684496155661">नवीन Chrome प्रोफाइलमध्ये सुरू ठेवायचे आहे का?</translation>
 <translation id="6750954913813541382">शब्दलेखनाच्या चुकांमध्ये सुधारणा करण्यासाठी, तुम्ही ब्राउझरमध्ये टाइप करता तो मजकूर Chrome Google ला पाठवते</translation>
 <translation id="6755885556185485672">Chrome OS योग्य प्रकारे बंद झाली नव्हती.</translation>
 <translation id="677276454032249905">तरीही Chrome बंद करायचे?</translation>
@@ -218,6 +228,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7242029209006116544">तुम्ही एका व्यवस्थापित खात्यासह साइन इन करत आहात आणि तुमच्या Google Chrome प्रोफाइलवर त्याच्या ॲडमिनिस्ट्रेटरला नियंत्रण देत आहात. तुमचा Chrome डेटा, जसे की तुमचे अ‍ॅप्स, बुकमार्क, इतिहास, पासवर्ड आणि अन्य सेटिंग्ज <ph name="USER_NAME" /> वर कायमच्या बद्ध होतील. तुम्ही Google खाती डॅशबोर्डद्वारे हा डेटा हटवण्यात सक्षम व्हाल, परंतु तुम्ही दुसर्‍या खात्यासह हा डेटा संबद्ध करण्यात सक्षम असणार नाही. तुम्ही तुमचा विद्यमान Chrome डेटा वेगळा ठेवण्यासाठी एक नवीन प्रोफाइल वैकल्पिकपणे तयार करू शकता. <ph name="LEARN_MORE" /></translation>
 <translation id="7295052994004373688">ही भाषा Google Chrome UI दाखवण्यासाठी वापरली जाते</translation>
 <translation id="7296210096911315575">महत्त्वाचा वापर आणि सुरक्षा माहिती</translation>
+<translation id="7303916856901595720">खाते नवीन Chrome प्रोफाइलवर हलवायचे आहे का?</translation>
 <translation id="7308322188646931570">फाइल डाउनलोड करण्यासाठी Chrome ला स्टोरेजचा ॲक्सेस हवा आहे</translation>
 <translation id="7339898014177206373">नवीन विंडो</translation>
 <translation id="7398801000654795464">तुम्ही <ph name="USER_EMAIL_ADDRESS" /> या रुपात Chrome मध्ये साइन इन केले होते. कृपया पुन्हा साइन इन करण्यासाठी समान खाते वापरा.</translation>
@@ -246,6 +257,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7930071585467473040">Google Chrome पासवर्ड कॉपी करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="7962410387636238736">Windows XP आणि Windows Vista ला आता सपोर्ट नसल्याने या कॉंप्युटरला यापुढे Google Chrome अपडेट मिळणार नाहीत</translation>
 <translation id="8008534537613507642">Chrome पुनर्स्थापित करा</translation>
+<translation id="8009904340233602924">खात्याशिवाय Chrome वापरा</translation>
 <translation id="8013993649590906847">इमेजचे उपयोगी वर्णन नसल्यास, Chrome तुमच्यासाठी ते देण्याचा प्रयत्न करेल. वर्णने तयार करण्यासाठी, इमेज Google ला पाठवल्या जातात.</translation>
 <translation id="8129812357326543296">&amp;Google Chrome विषयी</translation>
 <translation id="8255190535488645436">Google Chrome तुमचा कॅमेरा आणि मायक्रोफोन वापरत आहे.</translation>
@@ -285,6 +297,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="911206726377975832">तुमचा ब्राउझिंग डेटा देखील हटवायचा?</translation>
 <translation id="9138603949443464873">तुम्ही केलेले बदल लागू करण्यासाठी, Chrome रीलाँच करा</translation>
 <translation id="919706545465235479">सिंक सुरू करण्यासाठी अपडेट करा</translation>
+<translation id="940313311831216333">तुमचा Chrome आशय तुमच्या सर्व डिव्हाइसवर अ‍ॅक्सेस करण्यासाठी साइन इन करा, त्यानंतर सिंक सुरू करा.</translation>
 <translation id="94743460404517794">तुमच्याकडे एकाहून अधिक Google खाती असल्यास, तुम्ही ती तुमच्या <ph name="DEVICE_TYPE" /> वर जोडू शकता. तुमची खाती Chrome ब्राउझर आणि Play Store मध्ये तसेच, Gmail, Drive आणि YouTube यांसारख्या सेवांमध्ये उपलब्ध असतील. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="989369509083708165">Google Chrome तुमचा डीफॉल्ट ब्राउझर आहे</translation>
 </translationbundle>
