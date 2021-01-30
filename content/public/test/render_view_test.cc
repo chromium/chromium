@@ -29,7 +29,6 @@
 #include "content/public/test/fake_render_widget_host.h"
 #include "content/public/test/frame_load_waiter.h"
 #include "content/public/test/policy_container_utils.h"
-#include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/mock_agent_scheduling_group.h"
 #include "content/renderer/render_process.h"
 #include "content/renderer/render_thread_impl.h"

@@ -10,7 +10,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/renderer/url_loader_throttle_provider.h"
 #include "content/public/renderer/websocket_handshake_throttle_provider.h"
-#include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -62,19 +61,15 @@ void ServiceWorkerFetchContextImpl::SetTerminateSyncLoadEvent(
 
 void ServiceWorkerFetchContextImpl::InitializeOnWorkerThread(
     blink::AcceptLanguagesWatcher* watcher) {
-  resource_dispatcher_ = std::make_unique<ResourceDispatcher>();
-  resource_dispatcher_->SetCorsExemptHeaderList(cors_exempt_header_list_);
-  resource_dispatcher_->set_terminate_sync_load_event(
-      terminate_sync_load_event_);
   preference_watcher_receiver_.Bind(
       std::move(preference_watcher_pending_receiver_));
   subresource_loader_updater_.Bind(
       std::move(pending_subresource_loader_updater_));
 
   web_url_loader_factory_ = std::make_unique<WebURLLoaderFactoryImpl>(
-      resource_dispatcher_->GetWeakPtr(),
       network::SharedURLLoaderFactory::Create(
-          std::move(pending_url_loader_factory_)));
+          std::move(pending_url_loader_factory_)),
+      cors_exempt_header_list_, terminate_sync_load_event_);
 
   internet_disconnected_web_url_loader_factory_ =
       std::make_unique<blink::InternetDisconnectedWebURLLoaderFactory>();
@@ -82,9 +77,9 @@ void ServiceWorkerFetchContextImpl::InitializeOnWorkerThread(
   if (pending_script_loader_factory_) {
     web_script_loader_factory_ =
         std::make_unique<content::WebURLLoaderFactoryImpl>(
-            resource_dispatcher_->GetWeakPtr(),
             network::SharedURLLoaderFactory::Create(
-                std::move(pending_script_loader_factory_)));
+                std::move(pending_script_loader_factory_)),
+            cors_exempt_header_list_, terminate_sync_load_event_);
   }
 
   accept_languages_watcher_ = watcher;
@@ -102,9 +97,9 @@ ServiceWorkerFetchContextImpl::WrapURLLoaderFactory(
     blink::CrossVariantMojoRemote<network::mojom::URLLoaderFactoryInterfaceBase>
         url_loader_factory) {
   return std::make_unique<WebURLLoaderFactoryImpl>(
-      resource_dispatcher_->GetWeakPtr(),
       base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(
-          std::move(url_loader_factory)));
+          std::move(url_loader_factory)),
+      cors_exempt_header_list_, terminate_sync_load_event_);
 }
 
 blink::WebURLLoaderFactory*
@@ -187,9 +182,9 @@ void ServiceWorkerFetchContextImpl::UpdateSubresourceLoaderFactories(
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories) {
   web_url_loader_factory_ = std::make_unique<WebURLLoaderFactoryImpl>(
-      resource_dispatcher_->GetWeakPtr(),
       network::SharedURLLoaderFactory::Create(
-          std::move(subresource_loader_factories)));
+          std::move(subresource_loader_factories)),
+      cors_exempt_header_list_, terminate_sync_load_event_);
 }
 
 void ServiceWorkerFetchContextImpl::NotifyUpdate(

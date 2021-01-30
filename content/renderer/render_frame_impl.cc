@@ -95,7 +95,6 @@
 #include "content/renderer/gpu_benchmarking_extension.h"
 #include "content/renderer/internal_document_state_data.h"
 #include "content/renderer/loader/navigation_body_loader.h"
-#include "content/renderer/loader/resource_dispatcher.h"
 #include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/loader/web_worker_fetch_context_impl.h"
 #include "content/renderer/media/media_permission_dispatcher.h"
@@ -175,6 +174,7 @@
 #include "third_party/blink/public/platform/web_http_body.h"
 #include "third_party/blink/public/platform/web_media_player.h"
 #include "third_party/blink/public/platform/web_media_player_source.h"
+#include "third_party/blink/public/platform/web_resource_request_sender.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
@@ -1302,7 +1302,8 @@ class RenderFrameImpl::FrameURLLoaderFactory
     DCHECK(frame_);
 
     return std::make_unique<WebURLLoaderImpl>(
-        RenderThreadImpl::current()->resource_dispatcher(),
+        RenderThreadImpl::current()->cors_exempt_header_list(),
+        /*terminate_sync_load_event=*/nullptr,
         std::move(freezable_task_runner_handle),
         std::move(unfreezable_task_runner_handle),
         frame_->GetLoaderFactoryBundle(), std::move(keep_alive_handle));
@@ -2980,7 +2981,7 @@ void RenderFrameImpl::CommitNavigation(
   DCHECK(common_params->url.SchemeIs(url::kJavaScriptScheme) ||
          common_params->url.IsAboutSrcdoc() || subresource_loader_factories);
 
-  int request_id = ResourceDispatcher::MakeRequestID();
+  int request_id = blink::WebResourceRequestSender::MakeRequestID();
   std::unique_ptr<DocumentState> document_state = BuildDocumentStateFromParams(
       *common_params, *commit_params, std::move(commit_callback),
       std::move(navigation_client_impl_), request_id,
@@ -3389,7 +3390,8 @@ void RenderFrameImpl::CommitFailedNavigation(
   // |was_initiated_in_this_frame| is false.
   std::unique_ptr<DocumentState> document_state = BuildDocumentStateFromParams(
       *common_params, *commit_params, std::move(callback),
-      std::move(navigation_client_impl_), ResourceDispatcher::MakeRequestID(),
+      std::move(navigation_client_impl_),
+      blink::WebResourceRequestSender::MakeRequestID(),
       false /* was_initiated_in_this_frame */);
 
   DCHECK(!pending_loader_factories_);
@@ -3706,9 +3708,7 @@ RenderFrameImpl::CreateWorkerFetchContext() {
           std::move(watcher_receiver), GetLoaderFactoryBundle()->Clone(),
           GetLoaderFactoryBundle()->CloneWithoutAppCacheFactory(),
           /*pending_subresource_loader_updater=*/mojo::NullReceiver(),
-          RenderThreadImpl::current()
-              ->resource_dispatcher()
-              ->cors_exempt_header_list(),
+          RenderThreadImpl::current()->cors_exempt_header_list(),
           std::move(pending_resource_load_info_notifier));
 
   worker_fetch_context->set_ancestor_frame_id(routing_id_);

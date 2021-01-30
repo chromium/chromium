@@ -6,6 +6,8 @@
 #define CONTENT_RENDERER_LOADER_WEB_URL_LOADER_IMPL_H_
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -23,20 +25,20 @@
 
 namespace blink {
 class ResourceLoadInfoNotifierWrapper;
+class WebResourceRequestSender;
 class WebURLRequestExtraData;
 }  // namespace blink
 
 namespace content {
-
-class ResourceDispatcher;
 
 // Default implementation of WebURLLoaderFactory.
 class CONTENT_EXPORT WebURLLoaderFactoryImpl
     : public blink::WebURLLoaderFactory {
  public:
   WebURLLoaderFactoryImpl(
-      base::WeakPtr<ResourceDispatcher> resource_dispatcher,
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+      const std::vector<std::string>& cors_exempt_header_list,
+      base::WaitableEvent* terminate_sync_load_event);
   ~WebURLLoaderFactoryImpl() override;
 
   std::unique_ptr<blink::WebURLLoader> CreateURLLoader(
@@ -49,8 +51,9 @@ class CONTENT_EXPORT WebURLLoaderFactoryImpl
           keep_alive_handle) override;
 
  private:
-  base::WeakPtr<ResourceDispatcher> resource_dispatcher_;
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
+  const std::vector<std::string> cors_exempt_header_list_;
+  base::WaitableEvent* terminate_sync_load_event_ = nullptr;
   DISALLOW_COPY_AND_ASSIGN(WebURLLoaderFactoryImpl);
 };
 
@@ -59,7 +62,8 @@ class CONTENT_EXPORT WebURLLoaderImpl : public blink::WebURLLoader {
   // When non-null |keep_alive_handle| is specified, this loader prolongs
   // this render process's lifetime.
   WebURLLoaderImpl(
-      ResourceDispatcher* resource_dispatcher,
+      const std::vector<std::string>& cors_exempt_header_list,
+      base::WaitableEvent* terminate_sync_load_event,
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
           freezable_task_runner_handle,
       std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
@@ -107,6 +111,9 @@ class CONTENT_EXPORT WebURLLoaderImpl : public blink::WebURLLoader {
                          int intra_priority_value) override;
   scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunnerForBodyLoader()
       override;
+
+  void SetResourceRequestSenderForTesting(
+      std::unique_ptr<blink::WebResourceRequestSender> resource_request_sender);
 
  private:
   class Context;

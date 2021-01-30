@@ -1,11 +1,9 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// See http://dev.chromium.org/developers/design-documents/multi-process-resource-loading
-
-#ifndef CONTENT_RENDERER_LOADER_RESOURCE_DISPATCHER_H_
-#define CONTENT_RENDERER_LOADER_RESOURCE_DISPATCHER_H_
+#ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_RESOURCE_REQUEST_SENDER_H_
+#define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_RESOURCE_REQUEST_SENDER_H_
 
 #include <stdint.h>
 
@@ -18,7 +16,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
@@ -31,24 +28,17 @@
 #include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom-forward.h"
-#include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-forward.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom.h"
+#include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_mojo_url_loader_client_observer.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/platform/web_url_request.h"
+#include "third_party/blink/public/platform/web_vector.h"
 #include "url/gurl.h"
 
 namespace base {
 class WaitableEvent;
-}
-
-namespace blink {
-class WebMojoURLLoaderClient;
-class WebRequestPeer;
-class ResourceLoadInfoNotifierWrapper;
-class ThrottlingURLLoader;
-struct SyncLoadResponse;
 }
 
 namespace net {
@@ -60,17 +50,22 @@ struct ResourceRequest;
 struct URLLoaderCompletionStatus;
 namespace mojom {
 class URLLoaderFactory;
-}
-}
+}  // namespace mojom
+}  // namespace network
 
-namespace content {
-class ResourceDispatcherDelegate;
+namespace blink {
+class ResourceLoadInfoNotifierWrapper;
+class ThrottlingURLLoader;
+class WebMojoURLLoaderClient;
+class WebRequestPeer;
+class WebResourceRequestSenderDelegate;
+struct SyncLoadResponse;
 
-// This class serves as a communication interface to the ResourceDispatcherHost
-// in the browser process. It can be used from any child process.
-// Virtual methods are for tests.
-class CONTENT_EXPORT ResourceDispatcher
-    : public blink::WebMojoURLLoaderClientObserver {
+// This class creates a PendingRequestInfo object and handles sending a resource
+// request asynchronously or synchronously, and it's owned by
+// WebURLLoaderImpl::Context or SyncLoadContext.
+class BLINK_PLATFORM_EXPORT WebResourceRequestSender
+    : public WebMojoURLLoaderClientObserver {
  public:
   // Generates ids for requests initiated by child processes unique to the
   // particular process, counted up from 0 (browser initiated requests count
@@ -81,8 +76,10 @@ class CONTENT_EXPORT ResourceDispatcher
   // CORS preflight requests.
   static int MakeRequestID();
 
-  ResourceDispatcher();
-  ~ResourceDispatcher() override;
+  WebResourceRequestSender();
+  WebResourceRequestSender(const WebResourceRequestSender&) = delete;
+  WebResourceRequestSender& operator=(const WebResourceRequestSender&) = delete;
+  ~WebResourceRequestSender() override;
 
   // Call this method to load the resource synchronously (i.e., in one shot).
   // This is an alternative to the StartAsync method. Be warned that this method
@@ -98,18 +95,20 @@ class CONTENT_EXPORT ResourceDispatcher
   // is interpreted as no-timeout.
   // If |download_to_blob_registry| is not null, it is used to redirect the
   // download to a blob.
-  virtual void StartSync(
+  virtual void SendSync(
       std::unique_ptr<network::ResourceRequest> request,
       int routing_id,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
-      blink::SyncLoadResponse* response,
+      SyncLoadResponse* response,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
+      std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
       base::TimeDelta timeout,
-      mojo::PendingRemote<blink::mojom::BlobRegistry> download_to_blob_registry,
-      std::unique_ptr<blink::WebRequestPeer> peer,
-      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+      const std::vector<std::string>& cors_exempt_header_list,
+      base::WaitableEvent* terminate_sync_load_event,
+      mojo::PendingRemote<mojom::BlobRegistry> download_to_blob_registry,
+      scoped_refptr<WebRequestPeer> peer,
+      std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper);
 
   // Call this method to initiate the request. If this method succeeds, then
@@ -121,90 +120,50 @@ class CONTENT_EXPORT ResourceDispatcher
   //
   // You need to pass a non-null |loading_task_runner| to specify task queue to
   // execute loading tasks on.
-  virtual int StartAsync(
+  virtual int SendAsync(
       std::unique_ptr<network::ResourceRequest> request,
       int routing_id,
       scoped_refptr<base::SingleThreadTaskRunner> loading_task_runner,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       uint32_t loader_options,
-      std::unique_ptr<blink::WebRequestPeer> peer,
+      const std::vector<std::string>& cors_exempt_header_list,
+      scoped_refptr<WebRequestPeer> peer,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles,
-      std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+      std::vector<std::unique_ptr<URLLoaderThrottle>> throttles,
+      std::unique_ptr<ResourceLoadInfoNotifierWrapper>
           resource_load_info_notifier_wrapper);
 
-  // Removes a request from the |pending_requests_| list, returning true if the
-  // request was found and removed.
-  virtual bool RemovePendingRequest(
-      int request_id,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
-
-  // Cancels a request in the |pending_requests_| list.  The request will be
-  // removed from the dispatcher as well.
-  virtual void Cancel(int request_id,
-                      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  // Cancels the current request and `request_info_` will be released.
+  virtual void Cancel(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   // Toggles the is_deferred attribute for the specified request.
-  virtual void SetDefersLoading(int request_id,
-                                blink::WebURLLoader::DeferType value);
+  virtual void SetDefersLoading(WebURLLoader::DeferType value);
 
   // Indicates the priority of the specified request changed.
-  void DidChangePriority(int request_id,
-                         net::RequestPriority new_priority,
+  void DidChangePriority(net::RequestPriority new_priority,
                          int intra_priority_value);
 
-  // This does not take ownership of the delegate. It is expected that the
-  // delegate have a longer lifetime than the ResourceDispatcher.
-  void set_delegate(ResourceDispatcherDelegate* delegate) {
-    delegate_ = delegate;
-  }
-
-  base::WeakPtr<ResourceDispatcher> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
-  void EvictFromBackForwardCache(blink::mojom::RendererEvictionReason reason,
-                                 int request_id) override;
-  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes,
-                                            int request_id) override;
-  bool CanContinueBufferingWhileInBackForwardCache(int request_id) override;
-
-  // Sets the CORS exempt header list for sanity checking.
-  void SetCorsExemptHeaderList(const std::vector<std::string>& list);
-
-  std::vector<std::string> cors_exempt_header_list() const {
-    return cors_exempt_header_list_;
-  }
-
-  // This is used only when |this| is created for a worker thread.
-  // Sets |terminate_sync_load_event_| which will be signaled from the main
-  // thread when the worker thread is being terminated so that the sync requests
-  // requested on the worker thread can be aborted.
-  void set_terminate_sync_load_event(
-      base::WaitableEvent* terminate_sync_load_event) {
-    terminate_sync_load_event_ = terminate_sync_load_event;
-  }
+  void DeletePendingRequest(
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
  private:
   friend class URLLoaderClientImpl;
   friend class URLResponseBodyConsumer;
-  friend class ResourceDispatcherTest;
 
   struct PendingRequestInfo {
-    PendingRequestInfo(std::unique_ptr<blink::WebRequestPeer> peer,
+    PendingRequestInfo(scoped_refptr<WebRequestPeer> peer,
                        network::mojom::RequestDestination request_destination,
                        int render_frame_id,
                        const GURL& request_url,
-                       std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+                       std::unique_ptr<ResourceLoadInfoNotifierWrapper>
                            resource_load_info_notifier_wrapper);
 
     ~PendingRequestInfo();
 
-    std::unique_ptr<blink::WebRequestPeer> peer;
+    scoped_refptr<WebRequestPeer> peer;
     network::mojom::RequestDestination request_destination;
     int render_frame_id;
-    blink::WebURLLoader::DeferType is_deferred =
-        blink::WebURLLoader::DeferType::kNotDeferred;
+    WebURLLoader::DeferType is_deferred = WebURLLoader::DeferType::kNotDeferred;
     // Original requested url.
     GURL url;
     // The url, method and referrer of the latest response even in case of
@@ -221,69 +180,54 @@ class CONTENT_EXPORT ResourceDispatcher
     // it's not completed. Used both to distinguish completion from
     // cancellation, and to log histograms.
     int net_error = net::ERR_IO_PENDING;
-    blink::PreviewsState previews_state =
-        blink::PreviewsTypes::PREVIEWS_UNSPECIFIED;
+    PreviewsState previews_state = PreviewsTypes::PREVIEWS_UNSPECIFIED;
 
     // For mojo loading.
-    std::unique_ptr<blink::ThrottlingURLLoader> url_loader;
-    std::unique_ptr<blink::WebMojoURLLoaderClient> url_loader_client;
+    std::unique_ptr<ThrottlingURLLoader> url_loader;
+    std::unique_ptr<WebMojoURLLoaderClient> url_loader_client;
 
     // The Client Hints headers that need to be removed from a redirect.
-    std::vector<std::string> removed_headers;
+    WebVector<WebString> removed_headers;
 
     // Used to notify the loading stats.
-    std::unique_ptr<blink::ResourceLoadInfoNotifierWrapper>
+    std::unique_ptr<ResourceLoadInfoNotifierWrapper>
         resource_load_info_notifier_wrapper;
   };
-  using PendingRequestMap = std::map<int, std::unique_ptr<PendingRequestInfo>>;
-
-  // Helper to lookup the info based on the request_id.
-  // May return NULL if the request as been canceled from the client side.
-  PendingRequestInfo* GetPendingRequestInfo(int request_id);
 
   // Follows redirect, if any, for the given request.
   void FollowPendingRedirect(PendingRequestInfo* request_info);
 
-  // Implements blink::WebMojoURLLoaderClientObserver.
-  void OnTransferSizeUpdated(int request_id,
-                             int32_t transfer_size_diff) override;
-  void OnUploadProgress(int request_id,
-                        int64_t position,
-                        int64_t size) override;
-  void OnReceivedResponse(int request_id,
-                          network::mojom::URLResponseHeadPtr) override;
-  void OnReceivedCachedMetadata(int request_id,
-                                mojo_base::BigBuffer data) override;
+  // Implements WebMojoURLLoaderClientObserver.
+  void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
+  void OnUploadProgress(int64_t position, int64_t size) override;
+  void OnReceivedResponse(network::mojom::URLResponseHeadPtr) override;
+  void OnReceivedCachedMetadata(mojo_base::BigBuffer data) override;
   void OnReceivedRedirect(
-      int request_id,
       const net::RedirectInfo& redirect_info,
       network::mojom::URLResponseHeadPtr head,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner) override;
   void OnStartLoadingResponseBody(
-      int request_id,
       mojo::ScopedDataPipeConsumerHandle body) override;
   void OnRequestComplete(
-      int request_id,
       const network::URLLoaderCompletionStatus& status) override;
+  void EvictFromBackForwardCache(mojom::RendererEvictionReason reason) override;
+  void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
+  bool CanContinueBufferingWhileInBackForwardCache() override;
 
   void ToLocalURLResponseHead(
       const PendingRequestInfo& request_info,
       network::mojom::URLResponseHead& response_head) const;
 
-  // All pending requests issued to the host
-  PendingRequestMap pending_requests_;
+  // `delegate_` is expected to live longer than `this`.
+  WebResourceRequestSenderDelegate* delegate_;
 
-  ResourceDispatcherDelegate* delegate_;
+  // The instance is created on StartAsync() or StartSync(), and it's deleted
+  // when the response has finished, or when the request is canceled.
+  std::unique_ptr<PendingRequestInfo> request_info_;
 
-  base::WaitableEvent* terminate_sync_load_event_ = nullptr;
-
-  std::vector<std::string> cors_exempt_header_list_;
-
-  base::WeakPtrFactory<ResourceDispatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceDispatcher);
+  base::WeakPtrFactory<WebResourceRequestSender> weak_factory_{this};
 };
 
-}  // namespace content
+}  // namespace blink
 
-#endif  // CONTENT_RENDERER_LOADER_RESOURCE_DISPATCHER_H_
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_RESOURCE_REQUEST_SENDER_H_
