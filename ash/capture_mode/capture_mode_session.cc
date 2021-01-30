@@ -962,7 +962,7 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   }
 
   const bool is_event_on_settings_menu =
-      IsEventOnSettingsWidget(screen_location);
+      IsEventInSettingsMenuBounds(screen_location);
 
   // Hide the settings menu if the user presses anywhere outside of the menu.
   // Skip if the event is on the settings button, since the button will handle
@@ -979,10 +979,11 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
     return;
   }
 
-  const bool is_event_on_capture_bar_or_menu =
+  const bool is_event_on_capture_bar =
       capture_mode_bar_widget_->GetWindowBoundsInScreen().Contains(
-          screen_location) ||
-      is_event_on_settings_menu;
+          screen_location);
+  const bool is_event_on_capture_bar_or_menu =
+      is_event_on_capture_bar || is_event_on_settings_menu;
 
   const CaptureModeSource capture_source = controller_->source();
   const bool is_capture_fullscreen =
@@ -1031,7 +1032,10 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
   DCHECK(cursor_setter_);
   // Allow events that are located on the capture mode bar or settings menu to
   // pass through so we can click the buttons.
-  if (!is_event_on_capture_bar_or_menu) {
+  if (!is_event_on_capture_bar &&
+      !(capture_mode_settings_widget_ &&
+        capture_mode_settings_widget_->GetWindowBoundsInScreen().Contains(
+            screen_location))) {
     event->SetHandled();
     event->StopPropagation();
   }
@@ -1070,7 +1074,10 @@ void CaptureModeSession::OnLocatedEvent(ui::LocatedEvent* event,
                              region_intersects_capture_bar);
       break;
     case ui::ET_MOUSE_MOVED:
-      if (!capture_mode_settings_widget_ && region_intersects_capture_bar) {
+      if (region_intersects_capture_bar) {
+        if (capture_mode_settings_widget_ && !is_event_on_capture_bar_or_menu)
+          SetSettingsMenuShown(/*shown=*/false);
+
         UpdateCaptureBarWidgetOpacity(
             is_event_on_capture_bar_or_menu ? 1.f : kCaptureBarOverlapOpacity,
             /*on_release=*/false);
@@ -1599,7 +1606,7 @@ void CaptureModeSession::UpdateCursor(const gfx::Point& location_in_screen,
   const bool is_event_on_capture_bar_or_menu =
       capture_mode_bar_widget_->GetWindowBoundsInScreen().Contains(
           location_in_screen) ||
-      IsEventOnSettingsWidget(location_in_screen);
+      IsEventInSettingsMenuBounds(location_in_screen);
   if (is_event_on_capture_bar_or_menu) {
     cursor_setter_->UpdateCursor(ui::mojom::CursorType::kPointer);
     return;
@@ -1799,11 +1806,17 @@ void CaptureModeSession::UpdateRegionVertically(bool up, bool is_shift_down) {
                       /*by_user=*/true);
 }
 
-bool CaptureModeSession::IsEventOnSettingsWidget(
+bool CaptureModeSession::IsEventInSettingsMenuBounds(
     const gfx::Point& location_in_screen) {
-  return capture_mode_settings_widget_ &&
-         capture_mode_settings_widget_->GetWindowBoundsInScreen().Contains(
-             location_in_screen);
+  if (!capture_mode_settings_widget_)
+    return false;
+
+  gfx::Rect settings_menu_bounds(
+      capture_mode_settings_widget_->GetWindowBoundsInScreen());
+  settings_menu_bounds.Inset(
+      0, 0, 0, -capture_mode::kSpaceBetweenCaptureBarAndSettingsMenu);
+
+  return settings_menu_bounds.Contains(location_in_screen);
 }
 
 }  // namespace ash

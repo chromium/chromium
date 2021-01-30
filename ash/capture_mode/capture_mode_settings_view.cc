@@ -30,9 +30,6 @@ constexpr gfx::Insets kSettingsPadding{/*vertical=*/16, /*horizontal=*/16};
 
 constexpr gfx::RoundedCornersF kBorderRadius{10.f};
 
-// Distance between bottom of the settings menu to the top of the capture bar.
-constexpr int kDistanceFromCaptureBarTop = 8;
-
 }  // namespace
 
 CaptureModeSettingsView::CaptureModeSettingsView()
@@ -71,7 +68,8 @@ gfx::Rect CaptureModeSettingsView::GetBounds(
       capture_mode_bar_view->settings_button()->GetBoundsInScreen().right() -
           kSettingsSize.width(),
       capture_mode_bar_view->GetBoundsInScreen().y() -
-          kDistanceFromCaptureBarTop - kSettingsSize.height(),
+          capture_mode::kSpaceBetweenCaptureBarAndSettingsMenu -
+          kSettingsSize.height(),
       kSettingsSize.width(), kSettingsSize.height());
 }
 
