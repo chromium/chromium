@@ -455,7 +455,7 @@ component("base") {
   if (!is_ios) {
     # iOS does not use Chromium-specific code for event handling.
     public_deps += [
-      "//ui/base/dragdrop/file_info",
+      "//ui/base/clipboard:file_info",
       "//ui/events:events_base",
       "//ui/events/platform",
     ]
@@ -603,7 +603,7 @@ component("data_exchange") {
   deps = [
     "//base",
     "//ui/base/clipboard:clipboard_types",
-    "//ui/base/dragdrop/file_info",
+    "//ui/base/clipboard:file_info",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//url",

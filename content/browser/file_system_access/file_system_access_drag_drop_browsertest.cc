@@ -15,7 +15,7 @@
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "ui/base/dragdrop/file_info/file_info.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace content {

@@ -13,7 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
-#include "ui/base/dragdrop/file_info/file_info.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider.h"
 #include "ui/events/platform/platform_event_source.h"

@@ -21,7 +21,7 @@
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_drag_drop_token.mojom.h"
 #include "third_party/blink/public/mojom/page/drag.mojom.h"
 #include "ui/base/clipboard/clipboard_constants.h"
-#include "ui/base/dragdrop/file_info/file_info.h"
+#include "ui/base/clipboard/file_info.h"
 #include "url/gurl.h"
 
 namespace content {

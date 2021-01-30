@@ -12,7 +12,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/clipboard/clipboard_constants.h"
-#include "ui/base/dragdrop/file_info/file_info.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
 #include "ui/ozone/public/platform_clipboard.h"

@@ -21,7 +21,7 @@
 #include "content/common/content_export.h"
 #include "ipc/ipc_message.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
-#include "ui/base/dragdrop/file_info/file_info.h"
+#include "ui/base/clipboard/file_info.h"
 #include "url/gurl.h"
 
 namespace content {

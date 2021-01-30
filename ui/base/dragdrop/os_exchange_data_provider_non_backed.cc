@@ -13,8 +13,8 @@
 #include "build/chromeos_buildflags.h"
 #include "net/base/filename_util.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/base/dragdrop/file_info/file_info.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "url/gurl.h"
 

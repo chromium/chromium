@@ -54,6 +54,19 @@ component("clipboard_types") {
   }
 }
 
+component("file_info") {
+  output_name = "ui_base_file_info"
+
+  sources = [
+    "file_info.cc",
+    "file_info.h",
+  ]
+
+  defines = [ "IS_UI_BASE_FILE_INFO_IMPL" ]
+
+  deps = [ "//base" ]
+}
+
 component("clipboard") {
   output_name = "ui_base_clipboard"
 
