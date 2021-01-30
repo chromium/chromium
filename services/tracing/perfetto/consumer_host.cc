@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/wait.h"
 #include "services/tracing/perfetto/perfetto_service.h"
+#include "services/tracing/perfetto/privacy_filtering_check.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_session.h"
 #include "services/tracing/public/cpp/trace_event_args_allowlist.h"
 #include "third_party/perfetto/include/perfetto/ext/trace_processor/export_json.h"
@@ -519,6 +520,7 @@ void ConsumerHost::TracingSession::OnTraceData(
     max_size += packet.size();
   }
 
+  // If |trace_processor_| was initialized, then export trace as JSON.
   if (trace_processor_) {
     // Copy packets into a trace file chunk.
     size_t position = 0;
@@ -563,6 +565,11 @@ void ConsumerHost::TracingSession::OnTraceData(
       chunk->append(static_cast<const char*>(slice.start), slice.size);
     }
   }
+
+  if (privacy_filtering_enabled_) {
+    tracing::PrivacyFilteringCheck::RemoveBlockedFields(*chunk);
+  }
+
   read_buffers_stream_writer_.AsyncCall(&StreamWriter::WriteToStream)
       .WithArgs(std::move(chunk), has_more);
   if (!has_more) {

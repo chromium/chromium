@@ -217,6 +217,7 @@ void PrivacyFilteringCheck::CheckProtoForUnexpectedFields(
       stats_.has_interned_categories |= interned_data.has_event_categories();
       stats_.has_interned_source_locations |=
           interned_data.has_source_locations();
+      stats_.has_interned_log_messages |= interned_data.has_log_message_body();
     }
   }
 }

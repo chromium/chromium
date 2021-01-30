@@ -28,6 +28,7 @@ source_set("lib") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   public_deps = [
+    ":privacy_check",
     "//base",
     "//mojo/public/cpp/bindings",
     "//services/tracing/public/cpp",

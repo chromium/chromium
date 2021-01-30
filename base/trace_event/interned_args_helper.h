@@ -69,7 +69,7 @@ struct BASE_EXPORT InternedSourceLocation
                   const TraceSourceLocation& location);
 };
 
-struct InternedLogMessage
+struct BASE_EXPORT InternedLogMessage
     : public perfetto::TrackEventInternedDataIndex<
           InternedLogMessage,
           perfetto::protos::pbzero::InternedData::kLogMessageBodyFieldNumber,

@@ -402,8 +402,10 @@ std::unique_ptr<BackgroundTracingConfig> CreatePreemptiveConfig() {
   base::DictionaryValue dict;
 
   dict.SetString("mode", "PREEMPTIVE_TRACING_MODE");
-  dict.SetString("custom_categories",
-                 tracing::TraceStartupConfig::kDefaultStartupCategories);
+  dict.SetString(
+      "custom_categories",
+      base::StrCat(
+          {tracing::TraceStartupConfig::kDefaultStartupCategories, ",log"}));
 
   std::unique_ptr<base::ListValue> rules_list(new base::ListValue());
   {
@@ -1806,6 +1808,10 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ProtoTraceReceived) {
 
   background_tracing_helper.WaitForTracingEnabled();
 
+  // Add track event with blocked args.
+  TRACE_LOG_MESSAGE("test_file.cc",
+                    base::StringPiece("My Password is xyzpasswow"), 100);
+
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
 
   TestTriggerHelper trigger_helper;
@@ -1832,6 +1838,7 @@ IN_PROC_BROWSER_TEST_F(ProtoBackgroundTracingTest, ProtoTraceReceived) {
   EXPECT_TRUE(checker.stats().has_interned_names);
   EXPECT_TRUE(checker.stats().has_interned_categories);
   EXPECT_TRUE(checker.stats().has_interned_source_locations);
+  EXPECT_FALSE(checker.stats().has_interned_log_messages);
 }
 
 #if defined(OS_POSIX)
