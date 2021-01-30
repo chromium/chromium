@@ -44,6 +44,7 @@
 #include "pdf/ppapi_migration/bitmap.h"
 #include "pdf/ppapi_migration/geometry_conversions.h"
 #include "pdf/ppapi_migration/graphics.h"
+#include "pdf/ppapi_migration/image.h"
 #include "pdf/ppapi_migration/input_event_conversions.h"
 #include "pdf/ppapi_migration/url_loader.h"
 #include "pdf/ppapi_migration/value_conversions.h"
@@ -1180,7 +1181,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
     mutable_image_data().eraseColor(GetBackgroundColor());
     gfx::Rect rect(gfx::SkISizeToSize(image_data().dimensions()));
     ready->push_back(
-        PaintReadyRect(rect, pepper_image_data_, /*flush_now=*/true));
+        PaintReadyRect(rect, Image(pepper_image_data_), /*flush_now=*/true));
   }
 
   if (!received_viewport_message() || !needs_reraster())
@@ -1204,7 +1205,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
       engine()->Paint(pdf_rect, mutable_image_data(), pdf_ready, pdf_pending);
       for (auto& ready_rect : pdf_ready) {
         ready_rect.Offset(available_area().OffsetFromOrigin());
-        ready->push_back(PaintReadyRect(ready_rect, pepper_image_data_));
+        ready->push_back(PaintReadyRect(ready_rect, Image(pepper_image_data_)));
       }
       for (auto& pending_rect : pdf_pending) {
         pending_rect.Offset(available_area().OffsetFromOrigin());
@@ -1219,7 +1220,7 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
     if (rect.y() < first_page_ypos) {
       gfx::Rect region = gfx::IntersectRects(
           rect, gfx::Rect(gfx::Size(plugin_size().width(), first_page_ypos)));
-      ready->push_back(PaintReadyRect(region, pepper_image_data_));
+      ready->push_back(PaintReadyRect(region, Image(pepper_image_data_)));
       mutable_image_data().erase(GetBackgroundColor(),
                                  gfx::RectToSkIRect(region));
     }
@@ -1230,7 +1231,8 @@ void OutOfProcessInstance::DoPaint(const std::vector<gfx::Rect>& paint_rects,
       if (!intersection.IsEmpty()) {
         mutable_image_data().erase(background_part.color,
                                    gfx::RectToSkIRect(intersection));
-        ready->push_back(PaintReadyRect(intersection, pepper_image_data_));
+        ready->push_back(
+            PaintReadyRect(intersection, Image(pepper_image_data_)));
       }
     }
   }

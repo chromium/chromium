@@ -8,13 +8,6 @@
 #include "pdf/ppapi_migration/image.h"
 #include "ui/gfx/geometry/rect.h"
 
-class SkBitmap;
-
-namespace pp {
-class ImageData;
-class Rect;
-}  // namespace pp
-
 namespace chrome_pdf {
 
 // Stores information about a rectangle that has finished painting. The
@@ -23,10 +16,7 @@ namespace chrome_pdf {
 class PaintReadyRect {
  public:
   PaintReadyRect(const gfx::Rect& rect,
-                 const pp::ImageData& image_data,
-                 bool flush_now = false);
-  PaintReadyRect(const gfx::Rect& rect,
-                 const SkBitmap& bitmap,
+                 const Image& image,
                  bool flush_now = false);
 
   PaintReadyRect(const PaintReadyRect& other);

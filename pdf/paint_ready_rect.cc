@@ -4,20 +4,15 @@
 
 #include "pdf/paint_ready_rect.h"
 
-#include "ppapi/cpp/image_data.h"
-#include "ppapi/cpp/rect.h"
+#include "pdf/ppapi_migration/image.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace chrome_pdf {
 
 PaintReadyRect::PaintReadyRect(const gfx::Rect& rect,
-                               const pp::ImageData& image_data,
+                               const Image& image,
                                bool flush_now)
-    : rect_(rect), image_(image_data), flush_now_(flush_now) {}
-
-PaintReadyRect::PaintReadyRect(const gfx::Rect& rect,
-                               const SkBitmap& bitmap,
-                               bool flush_now)
-    : rect_(rect), image_(bitmap), flush_now_(flush_now) {}
+    : rect_(rect), image_(image), flush_now_(flush_now) {}
 
 PaintReadyRect::PaintReadyRect(const PaintReadyRect& other) = default;
 
