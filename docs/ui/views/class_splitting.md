@@ -107,7 +107,7 @@ class MyDialog {
   std::unique_ptr<View> MakeContentsView();
   std::unique_ptr<DialogDelegate> MakeDialogDelegate();
 
-  base::CallbackList::Subscription model_subscription_;
+  base::CallbackListSubscription model_subscription_;
 
   std::unique_ptr<DialogDelegate> delegate_;
 
@@ -283,5 +283,5 @@ subclass.
    Note that instances of `MyDialog` are not owned by anyone now, which is bad.
    If the class still needs to exist at all, give it ownership semantics;
    otherwise, it may be possible to refactor the `MyDialog` class away entirely
-   into a single function that creates the `DialogDelegate` and `View` members, 
+   into a single function that creates the `DialogDelegate` and `View` members,
    sets up the `Widget`, and returns.
