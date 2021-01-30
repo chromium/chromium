@@ -4,6 +4,7 @@
 
 import("//build/config/features.gni")
 import("//build/config/sanitizers/sanitizers.gni")
+import("//ui/gl/features.gni")
 
 # Be very specific here so that our static initializer count does not vary
 # between bots. This target will cause release bots to fail if the count
@@ -13,9 +14,15 @@ if (current_toolchain == default_toolchain &&
     (!is_debug && !using_sanitizer && proprietary_codecs)) {
   # Define expectations only for target_cpu covered by trybots.
   # Currently static_initializers come from:
+  # * base_logging.cc
   # * iostream.cpp
-  # * token.cc
   if (target_cpu == "arm" || target_cpu == "arm64") {
     expected_static_initializer_count = 2
+    # TODO(https://crbug.com/1172451): remove global variables from ANGLE:
+    # * SPVRemapper.cpp
+    # * doc.cpp
+    if (use_static_angle) {
+      expected_static_initializer_count += 2
+    }
   }
 }
