@@ -327,8 +327,9 @@ class COLOR_SPACE_EXPORT ColorSpace {
   // CreatePiecewiseHDR for parameter meanings.
   bool GetPiecewiseHDRParams(float* sdr_point, float* hdr_level) const;
 
-  // For most formats, this is the RGB to YUV matrix.
-  void GetTransferMatrix(SkMatrix44* matrix) const;
+  // Returns the transfer matrix for |bit_depth|. For most formats, this is the
+  // RGB to YUV matrix.
+  void GetTransferMatrix(int bit_depth, SkMatrix44* matrix) const;
 
   // Returns the range adjust matrix that converts from |range_| to full range
   // for |bit_depth|.

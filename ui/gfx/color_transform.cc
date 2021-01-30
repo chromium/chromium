@@ -143,9 +143,9 @@ float ToLinear(ColorSpace::TransferID id, float v) {
   return 0;
 }
 
-Transform GetTransferMatrix(const gfx::ColorSpace& color_space) {
+Transform GetTransferMatrix(const gfx::ColorSpace& color_space, int bit_depth) {
   SkMatrix44 transfer_matrix;
-  color_space.GetTransferMatrix(&transfer_matrix);
+  color_space.GetTransferMatrix(bit_depth, &transfer_matrix);
   return Transform(transfer_matrix);
 }
 
@@ -953,8 +953,8 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
     // BT2020 CL is a special case.
     steps_.push_back(std::make_unique<ColorTransformFromBT2020CL>());
   } else {
-    steps_.push_back(
-        std::make_unique<ColorTransformMatrix>(Invert(GetTransferMatrix(src))));
+    steps_.push_back(std::make_unique<ColorTransformMatrix>(
+        Invert(GetTransferMatrix(src, src_bit_depth))));
   }
 
   if (src_matrix_is_identity_or_ycgco)
@@ -992,8 +992,8 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
 
   if (src.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
     // BT2020 CL is a special case.
-    steps_.push_back(
-        std::make_unique<ColorTransformMatrix>(Invert(GetTransferMatrix(src))));
+    steps_.push_back(std::make_unique<ColorTransformMatrix>(
+        Invert(GetTransferMatrix(src, src_bit_depth))));
   }
   steps_.push_back(
       std::make_unique<ColorTransformMatrix>(GetPrimaryTransform(src)));
@@ -1002,8 +1002,8 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
       std::make_unique<ColorTransformMatrix>(Invert(GetPrimaryTransform(dst))));
   if (dst.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
     // BT2020 CL is a special case.
-    steps_.push_back(
-        std::make_unique<ColorTransformMatrix>(GetTransferMatrix(dst)));
+    steps_.push_back(std::make_unique<ColorTransformMatrix>(
+        GetTransferMatrix(dst, dst_bit_depth)));
   }
 
   skcms_TransferFunction dst_from_linear_fn;
@@ -1045,8 +1045,8 @@ void ColorTransformInternal::AppendColorSpaceToColorSpaceTransform(
   if (dst.GetMatrixID() == ColorSpace::MatrixID::BT2020_CL) {
     NOTREACHED();
   } else {
-    steps_.push_back(
-        std::make_unique<ColorTransformMatrix>(GetTransferMatrix(dst)));
+    steps_.push_back(std::make_unique<ColorTransformMatrix>(
+        GetTransferMatrix(dst, dst_bit_depth)));
   }
 
   if (!dst_matrix_is_identity_or_ycgco)

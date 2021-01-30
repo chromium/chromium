@@ -1087,7 +1087,18 @@ bool ColorSpace::GetPiecewiseHDRParams(float* sdr_joint,
   return true;
 }
 
-void ColorSpace::GetTransferMatrix(SkMatrix44* matrix) const {
+void ColorSpace::GetTransferMatrix(int bit_depth, SkMatrix44* matrix) const {
+  DCHECK_GE(bit_depth, 8);
+  // If chroma samples are real numbers in the range of −0.5 to 0.5, an offset
+  // of 0.5 is added to get real numbers in the range of 0 to 1. When
+  // represented as an unsigned |bit_depth|-bit integer, this 0.5 offset is
+  // approximated by 1 << (bit_depth - 1). chroma_0_5 is this approximate value
+  // converted to a real number in the range of 0 to 1.
+  //
+  // TODO(wtc): For now chroma_0_5 is only used for YCgCo. It should also be
+  // used for YUV.
+  const float chroma_0_5 =
+      static_cast<float>(1 << (bit_depth - 1)) / ((1 << bit_depth) - 1);
   float Kr = 0;
   float Kb = 0;
   switch (matrix_) {
@@ -1118,12 +1129,10 @@ void ColorSpace::GetTransferMatrix(SkMatrix44* matrix) const {
       break;
 
     case ColorSpace::MatrixID::YCOCG: {
-      float data[16] = {
-           0.25f, 0.5f,  0.25f, 0.0f,  // Y
-          -0.25f, 0.5f, -0.25f, 0.5f,  // Cg
-            0.5f, 0.0f,  -0.5f, 0.5f,  // Co
-            0.0f, 0.0f,   0.0f, 1.0f
-      };
+      float data[16] = {0.25f,  0.5f, 0.25f,  0.0f,        // Y
+                        -0.25f, 0.5f, -0.25f, chroma_0_5,  // Cg
+                        0.5f,   0.0f, -0.5f,  chroma_0_5,  // Co
+                        0.0f,   0.0f, 0.0f,   1.0f};
       matrix->setRowMajorf(data);
       return;
     }
