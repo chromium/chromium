@@ -171,9 +171,6 @@ GURL PingManager::SafeBrowsingHitUrl(
     case safe_browsing::ThreatSource::REMOTE:
       threat_source = "rem";
       break;
-    case safe_browsing::ThreatSource::LOCAL_PVER3:
-      threat_source = "l3";
-      break;
     case safe_browsing::ThreatSource::LOCAL_PVER4:
       threat_source = "l4";
       break;

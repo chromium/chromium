@@ -298,7 +298,7 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   }
 
   safe_browsing::ThreatSource GetThreatSource() const override {
-    return safe_browsing::ThreatSource::LOCAL_PVER3;
+    return safe_browsing::ThreatSource::LOCAL_PVER4;
   }
 
  private:
@@ -2759,7 +2759,7 @@ class SafeBrowsingBlockingPageIDNTest
     resource.web_contents_getter = security_interstitials::GetWebContentsGetter(
         contents->GetMainFrame()->GetProcess()->GetID(),
         contents->GetMainFrame()->GetRoutingID());
-    resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER3;
+    resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
 
     return SafeBrowsingBlockingPage::CreateBlockingPage(
         sb_service->ui_manager().get(), contents,

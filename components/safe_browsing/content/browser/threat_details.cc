@@ -181,8 +181,6 @@ using CSBRR = safe_browsing::ClientSafeBrowsingReportRequest;
 CSBRR::SafeBrowsingUrlApiType GetUrlApiTypeForThreatSource(
     safe_browsing::ThreatSource source) {
   switch (source) {
-    case safe_browsing::ThreatSource::LOCAL_PVER3:
-      return CSBRR::PVER3_NATIVE;
     case safe_browsing::ThreatSource::LOCAL_PVER4:
       return CSBRR::PVER4_NATIVE;
     case safe_browsing::ThreatSource::REMOTE:

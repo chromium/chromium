@@ -1341,7 +1341,8 @@ message ClientSafeBrowsingReportRequest {
   enum SafeBrowsingUrlApiType {
     SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED = 0;
     // Native implementation of Safe Browsing API v3 protocol.
-    PVER3_NATIVE = 1;
+    // Deprecated as of 2021-1. V3 protocol is not used anymore.
+    PVER3_NATIVE = 1 [deprecated = true];
     // Native implementation of Safe Browsing API v4 protocol.
     PVER4_NATIVE = 2;
     // Android SafetyNet API.

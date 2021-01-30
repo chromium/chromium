@@ -183,9 +183,6 @@ std::string BaseBlockingPage::GetExtraMetricsSuffix(
     const UnsafeResourceList& unsafe_resources) {
   switch (unsafe_resources[0].threat_source) {
     case safe_browsing::ThreatSource::REMOTE:
-    case safe_browsing::ThreatSource::LOCAL_PVER3:
-      // REMOTE and LOCAL_PVER3 can be distinguished in the logs
-      // by platform type: Remote is mobile, local_pver3 is desktop.
       return "from_device";
     case safe_browsing::ThreatSource::LOCAL_PVER4:
       return "from_device_v4";

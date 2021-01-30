@@ -565,7 +565,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails) {
       ->NavigateAndCommit(GURL(kLandingURL));
 
   UnsafeResource resource;
-  InitResource(SB_THREAT_TYPE_URL_UNWANTED, ThreatSource::LOCAL_PVER3,
+  InitResource(SB_THREAT_TYPE_URL_UNWANTED, ThreatSource::LOCAL_PVER4,
                true /* is_subresource */, GURL(kThreatURL), &resource);
 
   auto report = std::make_unique<ThreatDetailsWrap>(
@@ -599,7 +599,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails) {
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_UNWANTED);
   expected.mutable_client_properties()->set_url_api_type(
-      ClientSafeBrowsingReportRequest::PVER3_NATIVE);
+      ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
@@ -1731,7 +1731,7 @@ TEST_F(ThreatDetailsTest, HTTPCacheNoEntries) {
 
   UnsafeResource resource;
   InitResource(SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE,
-               ThreatSource::LOCAL_PVER3, true /* is_subresource */,
+               ThreatSource::LOCAL_PVER4, true /* is_subresource */,
                GURL(kThreatURL), &resource);
 
   auto report = std::make_unique<ThreatDetailsWrap>(
@@ -1764,7 +1764,7 @@ TEST_F(ThreatDetailsTest, HTTPCacheNoEntries) {
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_CLIENT_SIDE_MALWARE);
   expected.mutable_client_properties()->set_url_api_type(
-      ClientSafeBrowsingReportRequest::PVER3_NATIVE);
+      ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
@@ -1799,7 +1799,7 @@ TEST_F(ThreatDetailsTest, HistoryServiceUrls) {
       ->NavigateAndCommit(GURL(kLandingURL));
 
   UnsafeResource resource;
-  InitResource(SB_THREAT_TYPE_URL_MALWARE, ThreatSource::LOCAL_PVER3,
+  InitResource(SB_THREAT_TYPE_URL_MALWARE, ThreatSource::LOCAL_PVER4,
                true /* is_subresource */, GURL(kThreatURL), &resource);
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
@@ -1822,7 +1822,7 @@ TEST_F(ThreatDetailsTest, HistoryServiceUrls) {
   ClientSafeBrowsingReportRequest expected;
   expected.set_type(ClientSafeBrowsingReportRequest::URL_MALWARE);
   expected.mutable_client_properties()->set_url_api_type(
-      ClientSafeBrowsingReportRequest::PVER3_NATIVE);
+      ClientSafeBrowsingReportRequest::PVER4_NATIVE);
   expected.set_url(kThreatURL);
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
