@@ -1199,6 +1199,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1148544")
     public void testCreateNewTab() throws Exception {
         launchIntentThatOpensPopup(null);
     }
@@ -1872,6 +1873,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
+    @DisabledTest(message = "https://crbug.com/1148544")
     public void testHiddenTabAndChangingFragmentDontWait() throws Exception {
         startHiddenTabAndChangeFragment(true, false);
     }
@@ -2370,6 +2372,7 @@ public class CustomTabActivityTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.OMNIBOX_HIDE_VISITS_FROM_CCT})
+    @DisabledTest(message = "https://crbug.com/1148544")
     public void testOmniboxHideVisitsFromCctTransitionAppliesToPopups() throws Exception {
         Bundle extras = new Bundle();
         extras.putBoolean(
@@ -2792,6 +2795,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1148544")
     public void closeButton_navigatesToLandingPage() throws TimeoutException {
         Context context = InstrumentationRegistry.getInstrumentation()
                 .getTargetContext()
@@ -2820,6 +2824,7 @@ public class CustomTabActivityTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1148544")
     public void closeButton_closesActivityIfNoLandingPage() throws TimeoutException {
         Context context = InstrumentationRegistry.getInstrumentation()
                 .getTargetContext()
