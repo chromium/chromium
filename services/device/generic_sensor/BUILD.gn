@@ -5,6 +5,10 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 
+if (is_chromeos) {
+  import("//chromeos/components/sensors/buildflags.gni")
+}
+
 if (is_android) {
   import("//build/config/android/rules.gni")  # For generate_jni().
 }
@@ -83,33 +87,11 @@ source_set("generic_sensor") {
     ]
   }
 
-  if (is_linux || is_chromeos_lacros) {
-    sources += [
-      "linux/sensor_data_linux.cc",
-      "linux/sensor_data_linux.h",
-      "platform_sensor_linux.cc",
-      "platform_sensor_linux.h",
-      "platform_sensor_reader_linux.cc",
-      "platform_sensor_reader_linux.h",
-    ]
-    if (use_udev) {
-      deps += [
-        "//device/base",
-        "//device/udev_linux",
-      ]
-
-      sources += [
-        "linux/sensor_device_manager.cc",
-        "linux/sensor_device_manager.h",
-        "platform_sensor_provider_linux.cc",
-        "platform_sensor_provider_linux.h",
-        "platform_sensor_provider_linux_base.cc",
-        "platform_sensor_provider_linux_base.h",
-      ]
-    }
+  if (is_chromeos) {
+    deps += [ "//chromeos/components/sensors:buildflags" ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos && use_iioservice) {
     deps += [
       "//chromeos/components/sensors",
       "//chromeos/components/sensors/mojom",
@@ -122,6 +104,26 @@ source_set("generic_sensor") {
       "platform_sensor_provider_chromeos.h",
       "platform_sensor_provider_linux_base.cc",
       "platform_sensor_provider_linux_base.h",
+    ]
+  } else if ((is_linux || is_chromeos) && use_udev) {
+    deps += [
+      "//device/base",
+      "//device/udev_linux",
+    ]
+
+    sources += [
+      "linux/sensor_data_linux.cc",
+      "linux/sensor_data_linux.h",
+      "linux/sensor_device_manager.cc",
+      "linux/sensor_device_manager.h",
+      "platform_sensor_linux.cc",
+      "platform_sensor_linux.h",
+      "platform_sensor_provider_linux.cc",
+      "platform_sensor_provider_linux.h",
+      "platform_sensor_provider_linux_base.cc",
+      "platform_sensor_provider_linux_base.h",
+      "platform_sensor_reader_linux.cc",
+      "platform_sensor_reader_linux.h",
     ]
   }
 

@@ -7,6 +7,10 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//testing/test.gni")
 
+if (is_chromeos) {
+  import("//chromeos/components/sensors/buildflags.gni")
+}
+
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
@@ -197,7 +201,16 @@ source_set("tests") {
     ]
   }
 
-  if ((is_linux || is_chromeos_lacros) && use_udev) {
+  if (is_chromeos && use_iioservice) {
+    sources += [
+      "generic_sensor/platform_sensor_chromeos_unittest.cc",
+      "generic_sensor/platform_sensor_provider_chromeos_unittest.cc",
+    ]
+    deps += [
+      "//chromeos/components/sensors:sensors",
+      "//chromeos/components/sensors:test_support",
+    ]
+  } else if ((is_linux || is_chromeos) && use_udev) {
     sources +=
         [ "generic_sensor/platform_sensor_and_provider_unittest_linux.cc" ]
   }
@@ -213,13 +226,9 @@ source_set("tests") {
   if (is_chromeos_ash) {
     sources += [
       "fingerprint/fingerprint_chromeos_unittest.cc",
-      "generic_sensor/platform_sensor_chromeos_unittest.cc",
-      "generic_sensor/platform_sensor_provider_chromeos_unittest.cc",
       "usb/usb_service_linux_unittest.cc",
     ]
     deps += [
-      "//chromeos/components/sensors:sensors",
-      "//chromeos/components/sensors:test_support",
       "//chromeos/dbus:test_support",
       "//chromeos/dbus/biod:test_support",
       "//chromeos/dbus/permission_broker",
