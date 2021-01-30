@@ -18340,6 +18340,9 @@ metrics consent we also won't be able to send UMA metrics. -->
 </enum>
 
 <enum name="DNS.UdpIdMismatchStatus">
+  <obsolete>
+    Metrics removed from code 2021-01.
+  </obsolete>
   <int value="0" label="Successfully parsed response with matching ID"/>
   <int value="1"
       label="ID mismatch with the response ID recognized as a
