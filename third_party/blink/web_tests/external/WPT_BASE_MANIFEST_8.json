@@ -406183,6 +406183,20 @@
       {}
      ]
     ],
+    "isExtended.tentative.https.window.js": [
+     "3c814ae3d91d519500f7b44ab8fe4faa8a861d88",
+     [
+      "screen_enumeration/isExtended.tentative.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window"
+        ]
+       ]
+      }
+     ]
+    ],
     "isMultiScreen.tentative.https.window.js": [
      "ac32dd05169e0a9cebeab0ff05a32fe36167362e",
      [
