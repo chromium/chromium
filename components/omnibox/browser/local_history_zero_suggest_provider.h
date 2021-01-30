@@ -17,6 +17,9 @@ namespace history {
 class QueryResults;
 }  // namespace history
 
+extern const int kLocalHistoryZPSAuthenticatedRelevance;
+extern const int kLocalHistoryZPSUnauthenticatedRelevance;
+
 // Autocomplete provider for on-focus zero-prefix query suggestions from local
 // history when Google is the default search engine.
 class LocalHistoryZeroSuggestProvider : public AutocompleteProvider {

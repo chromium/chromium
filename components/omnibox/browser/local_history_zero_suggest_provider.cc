@@ -39,10 +39,16 @@
 
 using metrics::OmniboxEventProto;
 
-namespace {
+// Default relevance for the LocalHistoryZeroSuggestProvider query suggestions
+// for authenticated and unauthenticated scenarios respectively. These values
+// are chosen to place local history zero-prefix suggestions below server
+// provided zps when the user is signed in (e.g., pSuggest) and above server
+// provided zps when the user is signed out (e.g., trending).
+// Server provided relevance for zps is expected to range from 550-1400.
+const int kLocalHistoryZPSAuthenticatedRelevance = 500;
+const int kLocalHistoryZPSUnauthenticatedRelevance = 1450;
 
-// Default relevance for the LocalHistoryZeroSuggestProvider query suggestions.
-const int kLocalHistoryZeroSuggestRelevance = 500;
+namespace {
 
 // Extracts the search terms from |url|. Collapses whitespaces, converts them to
 // lowercase and returns them. |template_url_service| must not be null.
@@ -232,7 +238,9 @@ void LocalHistoryZeroSuggestProvider::QueryURLDatabase(
   };
   std::sort(results.begin(), results.end(), CompareByFrecency);
 
-  int relevance = kLocalHistoryZeroSuggestRelevance;
+  int relevance = client_->IsAuthenticated()
+                      ? kLocalHistoryZPSAuthenticatedRelevance
+                      : kLocalHistoryZPSUnauthenticatedRelevance;
   for (const auto& result : results) {
     SearchSuggestionParser::SuggestResult suggestion(
         /*suggestion=*/result.normalized_term,

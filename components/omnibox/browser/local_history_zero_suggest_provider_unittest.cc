@@ -230,7 +230,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Input) {
       "Omnibox.LocalHistoryZeroSuggest.SearchTermsExtractionTime", 0);
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"hello world", 500}});
+  ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
 
   // Following histograms should be logged when zero-prefix suggestions are
   // allowed and the keyword search terms database is queried.
@@ -261,7 +261,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Incognito) {
   ExpectMatches({});
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"hello world", 500}});
+  ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
 }
 
 // Tests that suggestions are returned regardless of the authentication state
@@ -284,10 +284,17 @@ TEST_F(LocalHistoryZeroSuggestProviderTest,
   scoped_feature_list_->InitAndEnableFeature(
       omnibox::kOmniboxLocalZeroSuggestForAuthenticatedUsers);
 
-  EXPECT_CALL(*client_.get(), IsAuthenticated()).Times(0);
+  EXPECT_CALL(*client_.get(), IsAuthenticated())
+      .WillOnce(testing::Return(true));
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"hello world", 500}});
+  ExpectMatches({{"hello world", kLocalHistoryZPSAuthenticatedRelevance}});
+
+  EXPECT_CALL(*client_.get(), IsAuthenticated())
+      .WillOnce(testing::Return(false));
+
+  StartProviderAndWaitUntilDone();
+  ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
 }
 
 // Tests that suggestions are returned for signed-out users only when
@@ -311,15 +318,17 @@ TEST_F(LocalHistoryZeroSuggestProviderTest,
       omnibox::kOmniboxLocalZeroSuggestForAuthenticatedUsers);
 
   EXPECT_CALL(*client_.get(), IsAuthenticated())
-      .Times(2)
-      .WillOnce(testing::Return(true))
-      .WillOnce(testing::Return(false));
+      .WillOnce(testing::Return(true));
 
   StartProviderAndWaitUntilDone();
   ExpectMatches({});
 
+  EXPECT_CALL(*client_.get(), IsAuthenticated())
+      .Times(2)
+      .WillRepeatedly(testing::Return(false));
+
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"hello world", 500}});
+  ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
 }
 
 // Tests that suggestions are returned only if FeatureFlags is configured
@@ -340,7 +349,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, MAYBE_FeatureFlags) {
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   StartProviderAndWaitUntilDone();
 #if !defined(OS_IOS)  // Enabled by default on Desktop and Android NTP.
-  ExpectMatches({{"hello world", 500}});
+  ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
 #else
   ExpectMatches({});
 #endif
@@ -351,14 +360,14 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, MAYBE_FeatureFlags) {
   scoped_feature_list_->InitAndEnableFeature(
       omnibox::kReactiveZeroSuggestionsOnNTPRealbox);
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"hello world", 500}});
+  ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
 
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   scoped_feature_list_->InitAndEnableFeature(
       omnibox::kReactiveZeroSuggestionsOnNTPOmnibox);
   StartProviderAndWaitUntilDone();
 #if !defined(OS_IOS)  // Enabled by default on Desktop and Android NTP.
-  ExpectMatches({{"hello world", 500}});
+  ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
 #else
   ExpectMatches({});
 #endif
@@ -367,7 +376,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, MAYBE_FeatureFlags) {
       /*text=*/"", OmniboxFocusType::ON_FOCUS,
       /*page_classification=*/
       metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
-  ExpectMatches({{"hello world", 500}});
+  ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
 }
 
 // Tests that search terms are extracted from the default search provider's
@@ -382,7 +391,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, DefaultSearchProvider) {
   });
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"hello world", 500}});
+  ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
 
   template_url_service->SetUserSelectedDefaultSearchProvider(
       other_search_provider);
@@ -411,7 +420,9 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Normalization) {
   });
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"سلام دنیا", 500}, {"hello world", 499}});
+  ExpectMatches(
+      {{"سلام دنیا", kLocalHistoryZPSUnauthenticatedRelevance},
+       {"hello world", kLocalHistoryZPSUnauthenticatedRelevance - 1}});
 }
 
 // Tests that the suggestions are ranked correctly.
@@ -436,7 +447,9 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Ranking) {
 
   // More recent searches are ranked higher when searches are just as frequent.
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"more recent search", 500}, {"less recent search", 499}});
+  ExpectMatches(
+      {{"more recent search", kLocalHistoryZPSUnauthenticatedRelevance},
+       {"less recent search", kLocalHistoryZPSUnauthenticatedRelevance - 1}});
 
   // More frequent searches are ranked higher when searches are nearly as old.
   LoadURLs({
@@ -446,7 +459,9 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Ranking) {
   });
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"less recent search", 500}, {"more recent search", 499}});
+  ExpectMatches(
+      {{"less recent search", kLocalHistoryZPSUnauthenticatedRelevance},
+       {"more recent search", kLocalHistoryZPSUnauthenticatedRelevance - 1}});
 }
 
 // Tests that suggestions are created from fresh search histories only.
@@ -462,7 +477,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Freshness) {
   // With the new age threshold, one of the two searches qualifies as a
   // suggestion. With the old threshold, neither would have.
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"fresh search", 500}});
+  ExpectMatches({{"fresh search", kLocalHistoryZPSUnauthenticatedRelevance}});
 }
 
 // Tests that the provider supports deletion of matches.
@@ -485,7 +500,9 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
   });
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"hello world", 500}, {"not to be deleted", 499}});
+  ExpectMatches(
+      {{"hello world", kLocalHistoryZPSUnauthenticatedRelevance},
+       {"not to be deleted", kLocalHistoryZPSUnauthenticatedRelevance - 1}});
 
   // The keyword search terms database should be queried for the search terms
   // submitted to the default search provider only; which are 2 unique
@@ -505,10 +522,12 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
   // Make sure the deletion takes effect immediately in the provider before the
   // history service asynchronously performs the deletion or even before the
   // provider is started again.
-  ExpectMatches({{"not to be deleted", 499}});
+  ExpectMatches(
+      {{"not to be deleted", kLocalHistoryZPSUnauthenticatedRelevance - 1}});
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"not to be deleted", 500}});
+  ExpectMatches(
+      {{"not to be deleted", kLocalHistoryZPSUnauthenticatedRelevance}});
 
   // Wait until the history service performs the deletion.
   WaitForHistoryService();
@@ -519,7 +538,8 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
       "Omnibox.LocalHistoryZeroSuggest.AsyncDeleteTime", 1);
 
   StartProviderAndWaitUntilDone();
-  ExpectMatches({{"not to be deleted", 500}});
+  ExpectMatches(
+      {{"not to be deleted", kLocalHistoryZPSUnauthenticatedRelevance}});
 
   // Make sure all the search terms for the default search provider that would
   // produce the deleted match are deleted.

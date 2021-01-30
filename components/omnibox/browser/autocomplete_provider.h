@@ -38,12 +38,26 @@ typedef std::vector<metrics::OmniboxEventProto_ProviderInfo> ProvidersInfo;
 // below may have some utility, nothing compares with first-hand
 // investigation and experience.
 //
-// ZERO SUGGEST (empty) input type:
+// ZERO SUGGEST (empty input type) on NTP:
 // --------------------------------------------------------------------|-----
-// Clipboard URL                                                       |  800
-// Zero Suggest (most visited, Android only)                           |  600--
-// Zero Suggest (default, may be overridden by server)                 |  100
-// Local History Zero Suggest                                          |  500--
+// Query Tiles (Android only)                                          |  1599
+// Clipboard (Mobile only)                                             |  1501
+// Remote Zero Suggest (relevance expected to be overridden by server) |  100
+// Local History Zero Suggest (signed-out users)                       |  1450--
+// Local History Zero Suggest (signed-in users)                        |  500--
+//
+// ZERO SUGGEST (empty input type) on SERP:
+// --------------------------------------------------------------------|-----
+// Verbatim Match (Mobile only)                                        |  1600
+// Clipboard (Mobile only)                                             |  1501
+//
+// ZERO SUGGEST (empty input type) on OTHER (e.g., contextual web):
+// --------------------------------------------------------------------|-----
+// Verbatim Match (Mobile only)                                        |  1600
+// Clipboard (Mobile only)                                             |  1501
+// Most Visited Carousel (Android only)                                |  1500
+// Most Visited Sites (Mobile only)                                    |  600--
+// Remote Zero Suggest (relevance expected to be overridden by server) |  100
 //
 // UNKNOWN input type:
 // --------------------------------------------------------------------|-----
