@@ -16,15 +16,18 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -36,15 +39,19 @@ import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelper;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.metrics.LaunchCauseMetrics;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateFileManager;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
@@ -53,6 +60,8 @@ import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.TabModelMetaDa
 import org.chromium.chrome.browser.tabmodel.TestTabModelDirectory.TabStateInfo;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.test.ChromeBrowserTestRule;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreator;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
@@ -65,9 +74,14 @@ import java.util.concurrent.Callable;
 /** Tests for the TabPersistentStore. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@CommandLineFlags.
+Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 public class TabPersistentStoreTest {
     @Rule
     public final ChromeBrowserTestRule mBrowserTestRule = new ChromeBrowserTestRule();
+
+    @Rule
+    public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     private ChromeActivity mChromeActivity;
 
@@ -353,6 +367,36 @@ public class TabPersistentStoreTest {
             int tabId = info.contents[i].tabId;
             Assert.assertNotNull(regularCreator.created.get(tabId));
         }
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    @Feature("TabPersistentStore")
+    @DisableFeatures({ChromeFeatureList.CRITICAL_PERSISTED_TAB_DATA + "<Study"})
+    public void testCleanup() throws Exception {
+        MockTabModelSelector mockSelector = new MockTabModelSelector(1, 1, null);
+        Tab regularTab = mockSelector.getModel(false).getTabAt(0);
+        Tab incognitoTab = mockSelector.getModel(true).getTabAt(0);
+        enableTabSaving(regularTab);
+        enableTabSaving(incognitoTab);
+        CriticalPersistedTabData.from(regularTab).save();
+        CriticalPersistedTabData.from(incognitoTab).save();
+        Assert.assertNotNull(CriticalPersistedTabData.restore(regularTab.getId(), false));
+        Assert.assertNotNull(CriticalPersistedTabData.restore(incognitoTab.getId(), true));
+        MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
+        TabPersistencePolicy persistencePolicy =
+                new TabbedModeTabPersistencePolicy(/* selectorIndex = */ 0, false);
+        final TabPersistentStore store =
+                buildTabPersistentStore(persistencePolicy, mockSelector, mockManager);
+        Assert.assertNull(CriticalPersistedTabData.restore(regularTab.getId(), false));
+        Assert.assertNull(CriticalPersistedTabData.restore(incognitoTab.getId(), true));
+    }
+
+    private void enableTabSaving(Tab tab) {
+        tab.setIsTabSaveEnabled(true);
+        ((TabImpl) tab).registerTabSaving();
+        CriticalPersistedTabData.from(tab).setShouldSaveForTesting(true);
     }
 
     @Test

@@ -235,6 +235,20 @@ public class TabPersistentStore extends TabPersister {
                 mPrefetchTabListToMergeTasks.add(Pair.create(task, mergedFileName));
             }
         }
+        cleanupCriticalPersistedTabData();
+    }
+
+    private void cleanupCriticalPersistedTabData() {
+        if (isCriticalPersistedTabDataEnabled()) {
+            return;
+        }
+        for (boolean isIncognito : new boolean[] {false, true}) {
+            int numTabs = mTabModelSelector.getModel(isIncognito).getCount();
+            for (int i = 0; i < numTabs; i++) {
+                CriticalPersistedTabData.from(mTabModelSelector.getModel(isIncognito).getTabAt(i))
+                        .delete();
+            }
+        }
     }
 
     @Override
