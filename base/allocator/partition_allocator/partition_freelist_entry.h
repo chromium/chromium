@@ -14,9 +14,10 @@
 #include "base/sys_byteorder.h"
 #include "build/build_config.h"
 
-// DCHECK_IS_ON() only on Windows, as it causes issues on some tests.
+// Enablie free list hardening.  On Windows and Mac do it only when
+// DCHECK_IS_ON(), as it causes issues on some tests (Windows) or Canary (Mac).
 // TODO(lizeb): Enable in as many configurations as possible.
-#if DCHECK_IS_ON() || !defined(OS_WIN)
+#if DCHECK_IS_ON() || (!defined(OS_WIN) && !defined(OS_MAC))
 #define PA_HAS_FREELIST_HARDENING
 #endif
 
