@@ -55,6 +55,7 @@ source_set("video") {
   public_deps = [ "//gpu/command_buffer/client:gles2_interface" ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/common",
     "//media/base",
