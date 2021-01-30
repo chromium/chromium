@@ -392,7 +392,8 @@ void NewTabPageUI::BindInterface(
 
 void NewTabPageUI::BindInterface(
     mojo::PendingReceiver<drive::mojom::DriveHandler> pending_receiver) {
-  drive_handler_ = std::make_unique<DriveHandler>(std::move(pending_receiver));
+  drive_handler_ =
+      std::make_unique<DriveHandler>(std::move(pending_receiver), profile_);
 }
 
 #if !defined(OFFICIAL_BUILD)

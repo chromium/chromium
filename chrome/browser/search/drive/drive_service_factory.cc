@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/search/drive/drive_service_factory.h"
+
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -35,6 +36,7 @@ KeyedService* DriveServiceFactory::BuildServiceInstanceFor(
   auto url_loader_factory =
       content::BrowserContext::GetDefaultStoragePartition(context)
           ->GetURLLoaderFactoryForBrowserProcess();
-  return new DriveService(IdentityManagerFactory::GetForProfile(
-      Profile::FromBrowserContext(context)));
+  return new DriveService(url_loader_factory,
+                          IdentityManagerFactory::GetForProfile(
+                              Profile::FromBrowserContext(context)));
 }

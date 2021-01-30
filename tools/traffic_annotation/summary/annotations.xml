@@ -103,6 +103,7 @@ Refer to README.md for content description and update process.
  <item id="downloads_api_run_async" added_in_milestone="62" hash_code="121068967" type="0" content_hash_code="9280914" os_list="linux,windows" file_path="chrome/browser/extensions/api/downloads/downloads_api.cc"/>
  <item id="downloads_dom_handler" added_in_milestone="73" hash_code="95951029" type="0" content_hash_code="137150731" os_list="linux,windows" file_path="chrome/browser/ui/webui/downloads/downloads_dom_handler.cc"/>
  <item id="drag_download_file" added_in_milestone="62" hash_code="95910019" type="0" content_hash_code="126492858" os_list="linux,windows" file_path="content/browser/download/drag_download_file.cc"/>
+ <item id="drive_service" added_in_milestone="90" hash_code="56074781" type="0" content_hash_code="94248995" os_list="linux,windows" file_path="chrome/browser/search/drive/drive_service.cc"/>
  <item id="enterprise_safe_browsing_realtime_url_lookup" added_in_milestone="86" hash_code="22262963" type="0" content_hash_code="14052810" os_list="linux,windows" file_path="chrome/browser/safe_browsing/chrome_enterprise_url_lookup_service.cc"/>
  <item id="expect_ct_reporter" added_in_milestone="69" hash_code="57276415" type="0" deprecated="2018-06-20" content_hash_code="130492494" file_path="services/network/expect_ct_reporter.cc"/>
  <item id="extension_blacklist" added_in_milestone="62" hash_code="59592717" type="0" content_hash_code="116742516" os_list="linux,windows" file_path="chrome/browser/extensions/blocklist_state_fetcher.cc"/>

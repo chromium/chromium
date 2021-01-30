@@ -24,12 +24,16 @@ class PrimaryAccountAccessTokenFetcher;
 class DriveService : public KeyedService {
  public:
   DriveService(const DriveService&) = delete;
-  explicit DriveService(signin::IdentityManager* identity_manager);
+  DriveService(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      signin::IdentityManager* identity_manager);
   ~DriveService() override;
 
-  using SuggestionsCallback = base::OnceCallback<void(std::string)>;
+  using SuggestionsCallback = base::OnceCallback<void(const std::string&)>;
   // Retrieves Google Drive document suggestions from ItemSuggest API.
   void GetDriveSuggestions(SuggestionsCallback callback);
+  void OnSuggestionsReceived(SuggestionsCallback callback,
+                             const std::unique_ptr<std::string> json_response);
 
  private:
   // TODO(crbug/1164012): Use token to create request
@@ -41,6 +45,8 @@ class DriveService : public KeyedService {
   // Used for fetching OAuth2 access tokens. Only non-null when a token
   // is made available, or a token is being fetched.
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher> token_fetcher_;
+  std::unique_ptr<network::SimpleURLLoader> url_loader_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   signin::IdentityManager* identity_manager_;
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<DriveService> weak_factory_{this};

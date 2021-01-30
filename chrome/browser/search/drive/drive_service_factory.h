@@ -24,7 +24,7 @@ class DriveServiceFactory : BrowserContextKeyedServiceFactory {
 
   // Uses BrowserContextKeyedServiceFactory to build a DriveService.
   KeyedService* BuildServiceInstanceFor(
-      content::BrowserContext* profile) const override;
+      content::BrowserContext* context) const override;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_DRIVE_DRIVE_SERVICE_FACTORY_H_

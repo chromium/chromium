@@ -3,14 +3,18 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/search/drive/drive_handler.h"
-#include "base/strings/string_number_conversions.h"
+
+#include "chrome/browser/search/drive/drive_service.h"
+#include "chrome/browser/search/drive/drive_service_factory.h"
 
 DriveHandler::DriveHandler(
-    mojo::PendingReceiver<drive::mojom::DriveHandler> handler)
-    : handler_(this, std::move(handler)) {}
+    mojo::PendingReceiver<drive::mojom::DriveHandler> handler,
+    Profile* profile)
+    : handler_(this, std::move(handler)), profile_(profile) {}
 
 DriveHandler::~DriveHandler() = default;
 
 void DriveHandler::GetTestString(GetTestStringCallback callback) {
-  std::move(callback).Run("This is the return from the Drive Handler");
+  DriveServiceFactory::GetForProfile(profile_)->GetDriveSuggestions(
+      std::move(callback));
 }
