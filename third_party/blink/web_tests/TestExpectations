@@ -5705,7 +5705,7 @@ crbug.com/893869 css3/masking/mask-repeat-space-padding.html [ Failure Pass ]
 crbug.com/1155125 [ Linux ] http/tests/history/replacestate-post-to-get-2.html [ Pass Timeout ]
 
 # V8 roll
-crbug.com/961059 fast/workers/worker-shared-asm-buffer.html [ Pass Failure ]
+crbug.com/961059 fast/workers/worker-shared-asm-buffer.html [ Skip ]
 
 # DevTools roll
 crbug.com/1134103 http/tests/devtools/unit/view-location.js [ Skip ]
