@@ -13,13 +13,14 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
-#include "chrome/browser/ui/autofill/payments/local_card_migration_bubble.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/test/test_autofill_bubble_handler.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/test_autofill_clock.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -46,20 +47,12 @@ class TestLocalCardMigrationBubbleControllerImpl
       content::WebContents* web_contents)
       : LocalCardMigrationBubbleControllerImpl(web_contents) {}
 
-  void set_elapsed(base::TimeDelta elapsed) { elapsed_ = elapsed; }
-
   void SimulateNavigation() {
     content::RenderFrameHost* rfh = web_contents()->GetMainFrame();
     content::MockNavigationHandle navigation_handle(GURL(), rfh);
     navigation_handle.set_has_committed(true);
     DidFinishNavigation(&navigation_handle);
   }
-
- protected:
-  base::TimeDelta Elapsed() const override { return elapsed_; }
-
- private:
-  base::TimeDelta elapsed_;
 };
 
 }  // namespace
@@ -97,6 +90,8 @@ class LocalCardMigrationBubbleControllerImplTest
         TestLocalCardMigrationBubbleControllerImpl::FromWebContents(
             browser()->tab_strip_model()->GetActiveWebContents()));
   }
+
+  TestAutofillClock test_clock_;
 
  private:
   static void LocalCardMigrationCallback() {}
@@ -210,14 +205,14 @@ TEST_F(LocalCardMigrationBubbleControllerImplTestWithoutStickyBubble,
   base::HistogramTester histogram_tester;
   // The bubble should still stick around for up to kSurviveNavigationSeconds
   // (5) seconds regardless of navigation.
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(3));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(3));
   controller()->SimulateNavigation();
 
   histogram_tester.ExpectTotalCount(
       "Autofill.LocalCardMigrationBubbleUserInteraction.FirstShow", 0);
 
   // Wait 3 more seconds (6 total); bubble should go away on next navigation.
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(6));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(6));
   controller()->SimulateNavigation();
 
   histogram_tester.ExpectUniqueSample(
@@ -235,14 +230,14 @@ TEST_F(LocalCardMigrationBubbleControllerImplTestWithoutStickyBubble,
   base::HistogramTester histogram_tester;
   // The bubble should still stick around for up to kSurviveNavigationSeconds
   // (5) seconds regardless of navigation.
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(3));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(3));
   controller()->SimulateNavigation();
 
   histogram_tester.ExpectTotalCount(
       "Autofill.LocalCardMigrationBubbleUserInteraction.Reshows", 0);
 
   // Wait 3 more seconds (6 total); bubble should go away on next navigation.
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(6));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(6));
   controller()->SimulateNavigation();
 
   histogram_tester.ExpectUniqueSample(
@@ -259,7 +254,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTestWithoutStickyBubble,
   base::HistogramTester histogram_tester;
   CloseBubble();
   // Fake-navigate after bubble has been visible for a long time.
-  controller()->set_elapsed(base::TimeDelta::FromMinutes(1));
+  test_clock_.Advance(base::TimeDelta::FromMinutes(1));
   controller()->SimulateNavigation();
 
   histogram_tester.ExpectUniqueSample(
@@ -277,7 +272,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTestWithoutStickyBubble,
   base::HistogramTester histogram_tester;
   CloseBubble();
   // Fake-navigate after bubble has been visible for a long time.
-  controller()->set_elapsed(base::TimeDelta::FromMinutes(1));
+  test_clock_.Advance(base::TimeDelta::FromMinutes(1));
   controller()->SimulateNavigation();
 
   histogram_tester.ExpectUniqueSample(
@@ -322,7 +317,7 @@ TEST_F(LocalCardMigrationBubbleControllerImplTestWithStickyPaymentsBubble,
        StickyBubble_ShouldNotDismissUponNavigation) {
   ShowBubble();
   base::HistogramTester histogram_tester;
-  controller()->set_elapsed(base::TimeDelta::FromSeconds(10));
+  test_clock_.Advance(base::TimeDelta::FromSeconds(10));
   controller()->SimulateNavigation();
 
   histogram_tester.ExpectTotalCount(

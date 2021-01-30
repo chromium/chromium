@@ -3424,7 +3424,9 @@ static_library("ui") {
     sources += [
       "autofill/address_profiles/save_address_profile_bubble_controller.cc",
       "autofill/address_profiles/save_address_profile_bubble_controller.h",
-      "autofill/payments/local_card_migration_bubble.h",
+      "autofill/autofill_bubble_base.h",
+      "autofill/autofill_bubble_controller_base.cc",
+      "autofill/autofill_bubble_controller_base.h",
       "autofill/payments/local_card_migration_bubble_controller_impl.cc",
       "autofill/payments/local_card_migration_bubble_controller_impl.h",
       "autofill/payments/local_card_migration_controller_observer.h",
@@ -3438,7 +3440,6 @@ static_library("ui") {
       "autofill/payments/save_card_bubble_controller.h",
       "autofill/payments/save_card_bubble_controller_impl.cc",
       "autofill/payments/save_card_bubble_controller_impl.h",
-      "autofill/payments/save_card_bubble_view.h",
       "autofill/payments/save_card_ui.h",
       "autofill/payments/save_payment_icon_controller.cc",
       "autofill/payments/save_payment_icon_controller.h",

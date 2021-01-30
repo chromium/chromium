@@ -709,7 +709,7 @@ class SaveCardBubbleViewsFullFormBrowserTest
         SaveCardBubbleController::Get(GetActiveWebContents());
     if (!save_card_bubble_controller)
       return nullptr;
-    SaveCardBubbleView* save_card_bubble_view =
+    AutofillBubbleBase* save_card_bubble_view =
         save_card_bubble_controller->GetSaveCardBubbleView();
     if (!save_card_bubble_view)
       return nullptr;

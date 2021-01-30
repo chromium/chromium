@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/autofill/payments/manage_migration_ui_controller.h"
 
-#include "chrome/browser/ui/autofill/payments/local_card_migration_bubble.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/local_card_migration_dialog.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 
@@ -103,7 +103,7 @@ bool ManageMigrationUiController::IsIconVisible() const {
   return flow_step_ != LocalCardMigrationFlowStep::NOT_SHOWN;
 }
 
-LocalCardMigrationBubble* ManageMigrationUiController::GetBubbleView() const {
+AutofillBubbleBase* ManageMigrationUiController::GetBubbleView() const {
   if (!bubble_controller_)
     return nullptr;
 

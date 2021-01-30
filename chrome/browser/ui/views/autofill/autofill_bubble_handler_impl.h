@@ -20,9 +20,8 @@ class WebContents;
 }
 
 namespace autofill {
-class LocalCardMigrationBubble;
+class AutofillBubbleBase;
 class LocalCardMigrationBubbleController;
-class SaveCardBubbleView;
 class SaveCardBubbleController;
 class SaveUPIBubble;
 
@@ -35,11 +34,11 @@ class AutofillBubbleHandlerImpl : public AutofillBubbleHandler,
   ~AutofillBubbleHandlerImpl() override;
 
   // AutofillBubbleHandler:
-  SaveCardBubbleView* ShowSaveCreditCardBubble(
+  AutofillBubbleBase* ShowSaveCreditCardBubble(
       content::WebContents* web_contents,
       SaveCardBubbleController* controller,
       bool is_user_gesture) override;
-  LocalCardMigrationBubble* ShowLocalCardMigrationBubble(
+  AutofillBubbleBase* ShowLocalCardMigrationBubble(
       content::WebContents* web_contents,
       LocalCardMigrationBubbleController* controller,
       bool is_user_gesture) override;

@@ -74,7 +74,7 @@ class ManageMigrationUiController
 
   bool IsIconVisible() const;
 
-  LocalCardMigrationBubble* GetBubbleView() const;
+  AutofillBubbleBase* GetBubbleView() const;
 
   LocalCardMigrationDialog* GetDialogView() const;
 

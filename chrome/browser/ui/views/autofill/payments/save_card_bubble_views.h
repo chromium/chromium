@@ -7,8 +7,8 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
-#include "chrome/browser/ui/autofill/payments/save_card_bubble_view.h"
 #include "chrome/browser/ui/sync/bubble_sync_promo_delegate.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
@@ -25,7 +25,7 @@ namespace autofill {
 // Autofill has not previously saved. The base view establishes the button
 // handlers, the calculated size, the Super G logo, testing methods, and the
 // window title (controller eventually handles the title for each sub-class).
-class SaveCardBubbleViews : public SaveCardBubbleView,
+class SaveCardBubbleViews : public AutofillBubbleBase,
                             public LocationBarBubbleDelegateView {
  public:
   // Bubble will be anchored to |anchor_view|.
@@ -35,7 +35,7 @@ class SaveCardBubbleViews : public SaveCardBubbleView,
 
   void Show(DisplayReason reason);
 
-  // SaveCardBubbleView:
+  // AutofillBubbleBase:
   void Hide() override;
 
   // LocationBarBubbleDelegateView:

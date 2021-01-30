@@ -10,7 +10,7 @@
 
 namespace autofill {
 
-class SaveCardBubbleView;
+class AutofillBubbleBase;
 
 // The controller for SavePaymentIconView.
 class SavePaymentIconController {
@@ -47,7 +47,7 @@ class SavePaymentIconController {
 
   // Returns the currently active save card bubble view. Can be nullptr if no
   // bubble is visible.
-  virtual SaveCardBubbleView* GetSaveBubbleView() const = 0;
+  virtual AutofillBubbleBase* GetSaveBubbleView() const = 0;
 
   // Returns the tooltip message for the save payment icon.
   virtual base::string16 GetSavePaymentIconTooltipText() const = 0;

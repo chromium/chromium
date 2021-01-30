@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
@@ -28,9 +29,9 @@ enum class BubbleType;
 // Implementation of per-tab class to control the save credit card bubble and
 // Omnibox icon.
 class SaveCardBubbleControllerImpl
-    : public SaveCardBubbleController,
+    : public AutofillBubbleControllerBase,
+      public SaveCardBubbleController,
       public SavePaymentIconController,
-      public content::WebContentsObserver,
       public content::WebContentsUserData<SaveCardBubbleControllerImpl> {
  public:
   // An observer class used by browsertests that gets notified whenever
@@ -95,8 +96,6 @@ class SaveCardBubbleControllerImpl
   // save card failure bubble.
   void ShowBubbleForSaveCardFailureForTesting();
 
-  void HideBubble();
-
   void ReshowBubble();
 
   // SaveCardBubbleController:
@@ -107,7 +106,7 @@ class SaveCardBubbleControllerImpl
   const AccountInfo& GetAccountInfo() const override;
   Profile* GetProfile() const override;
   const CreditCard& GetCard() const override;
-  SaveCardBubbleView* GetSaveCardBubbleView() const override;
+  AutofillBubbleBase* GetSaveCardBubbleView() const override;
   bool ShouldRequestNameFromUser() const override;
   bool ShouldRequestExpirationDateFromUser() const override;
 
@@ -129,7 +128,7 @@ class SaveCardBubbleControllerImpl
   bool ShouldShowSaveFailureBadge() const override;
   void OnAnimationEnded() override;
   bool IsIconVisible() const override;
-  SaveCardBubbleView* GetSaveBubbleView() const override;
+  AutofillBubbleBase* GetSaveBubbleView() const override;
 
  protected:
   explicit SaveCardBubbleControllerImpl(content::WebContents* web_contents);
@@ -137,11 +136,10 @@ class SaveCardBubbleControllerImpl
   // Opens the Payments settings page.
   virtual void ShowPaymentsSettingsPage();
 
-  // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
-  void OnVisibilityChanged(content::Visibility visibility) override;
-  void WebContentsDestroyed() override;
+  // AutofillBubbleControllerBase::
+  bool HandleDidFinishRelevantNavigation() override;
+  PageActionIconType GetPageActionIconType() override;
+  void DoShowBubble() override;
 
   // Gets the security level of the page.
   virtual security_state::SecurityLevel GetSecurityLevel() const;
@@ -172,9 +170,6 @@ class SaveCardBubbleControllerImpl
 
   // Is true only if the [Card saved] label animation should be shown.
   bool should_show_card_saved_label_animation_ = false;
-
-  // Weak reference. Will be nullptr if no bubble is currently shown.
-  SaveCardBubbleView* save_card_bubble_view_ = nullptr;
 
   // The type of bubble that is either currently being shown or would
   // be shown when the save card icon is clicked.
@@ -221,10 +216,6 @@ class SaveCardBubbleControllerImpl
 
   // If no legal message should be shown then this variable is an empty vector.
   LegalMessageLines legal_message_lines_;
-
-  // The time at which the bubble was shown. If it has been visible for less
-  // time than some reasonable limit, don't close the bubble upon navigation.
-  base::Time bubble_shown_timestamp_;
 
   // The security level for the current context.
   security_state::SecurityLevel security_level_;

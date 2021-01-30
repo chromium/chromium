@@ -7,8 +7,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/autofill/payments/local_card_migration_bubble.h"
-#include "chrome/browser/ui/autofill/payments/save_card_bubble_view.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/autofill/payments/save_upi_bubble.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -49,7 +48,7 @@ AutofillBubbleHandlerImpl::~AutofillBubbleHandlerImpl() = default;
 
 // TODO(crbug.com/1061633): Clean up this two functions and add helper for
 // shared code.
-SaveCardBubbleView* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
     content::WebContents* web_contents,
     SaveCardBubbleController* controller,
     bool is_user_gesture) {
@@ -90,8 +89,7 @@ SaveCardBubbleView* AutofillBubbleHandlerImpl::ShowSaveCreditCardBubble(
   return bubble;
 }
 
-LocalCardMigrationBubble*
-AutofillBubbleHandlerImpl::ShowLocalCardMigrationBubble(
+AutofillBubbleBase* AutofillBubbleHandlerImpl::ShowLocalCardMigrationBubble(
     content::WebContents* web_contents,
     LocalCardMigrationBubbleController* controller,
     bool is_user_gesture) {

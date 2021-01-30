@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_LOCAL_CARD_MIGRATION_BUBBLE_VIEWS_H_
 
 #include "base/macros.h"
-#include "chrome/browser/ui/autofill/payments/local_card_migration_bubble.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "components/autofill/core/browser/ui/payments/local_card_migration_bubble_controller.h"
 #include "components/autofill/core/browser/ui/payments/payments_bubble_closed_reasons.h"
@@ -19,7 +19,7 @@ namespace autofill {
 
 // Class responsible for showing the local card migration bubble which is
 // the entry point of the entire migration flow.
-class LocalCardMigrationBubbleViews : public LocalCardMigrationBubble,
+class LocalCardMigrationBubbleViews : public AutofillBubbleBase,
                                       public LocationBarBubbleDelegateView {
  public:
   // The |controller| is lazily initialized in ChromeAutofillClient and there
@@ -31,7 +31,7 @@ class LocalCardMigrationBubbleViews : public LocalCardMigrationBubble,
 
   void Show(DisplayReason reason);
 
-  // LocalCardMigrationBubble:
+  // AutofillBubbleBase:
   void Hide() override;
 
   // LocationBarBubbleDelegateView:

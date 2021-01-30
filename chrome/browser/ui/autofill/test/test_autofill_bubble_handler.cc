@@ -10,23 +10,21 @@ TestAutofillBubbleHandler::TestAutofillBubbleHandler() = default;
 
 TestAutofillBubbleHandler::~TestAutofillBubbleHandler() = default;
 
-SaveCardBubbleView* TestAutofillBubbleHandler::ShowSaveCreditCardBubble(
+AutofillBubbleBase* TestAutofillBubbleHandler::ShowSaveCreditCardBubble(
     content::WebContents* web_contents,
     SaveCardBubbleController* controller,
     bool is_user_gesture) {
   if (!save_card_bubble_view_)
-    save_card_bubble_view_ = std::make_unique<TestSaveCardBubbleView>();
+    save_card_bubble_view_ = std::make_unique<TestAutofillBubble>();
   return save_card_bubble_view_.get();
 }
 
-LocalCardMigrationBubble*
-TestAutofillBubbleHandler::ShowLocalCardMigrationBubble(
+AutofillBubbleBase* TestAutofillBubbleHandler::ShowLocalCardMigrationBubble(
     content::WebContents* web_contents,
     LocalCardMigrationBubbleController* controller,
     bool is_user_gesture) {
   if (!local_card_migration_bubble_view_) {
-    local_card_migration_bubble_view_ =
-        std::make_unique<TestLocalCardMigrationBubbleView>();
+    local_card_migration_bubble_view_ = std::make_unique<TestAutofillBubble>();
   }
   return local_card_migration_bubble_view_.get();
 }

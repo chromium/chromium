@@ -15,9 +15,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/autofill/autofill_bubble_handler.h"
 #include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
-#include "chrome/browser/ui/autofill/payments/save_card_bubble_view.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -50,7 +50,7 @@ namespace autofill {
 
 SaveCardBubbleControllerImpl::SaveCardBubbleControllerImpl(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
+    : AutofillBubbleControllerBase(web_contents),
       pref_service_(
           user_prefs::UserPrefs::Get(web_contents->GetBrowserContext())) {
   security_level_ =
@@ -61,10 +61,7 @@ SaveCardBubbleControllerImpl::SaveCardBubbleControllerImpl(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()));
 }
 
-SaveCardBubbleControllerImpl::~SaveCardBubbleControllerImpl() {
-  if (save_card_bubble_view_)
-    save_card_bubble_view_->Hide();
-}
+SaveCardBubbleControllerImpl::~SaveCardBubbleControllerImpl() = default;
 
 // static
 SaveCardBubbleController* SaveCardBubbleController::GetOrCreate(
@@ -90,7 +87,7 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
     AutofillClient::SaveCreditCardOptions options,
     AutofillClient::LocalSaveCardPromptCallback save_card_prompt_callback) {
   // Don't show the bubble if it's already visible.
-  if (save_card_bubble_view_)
+  if (bubble_view())
     return;
 
   is_upload_save_ = false;
@@ -121,7 +118,7 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
     AutofillClient::SaveCreditCardOptions options,
     AutofillClient::UploadSaveCardPromptCallback save_card_prompt_callback) {
   // Don't show the bubble if it's already visible.
-  if (save_card_bubble_view_)
+  if (bubble_view())
     return;
 
   // Fetch the logged-in user's AccountInfo if it has not yet been done.
@@ -163,7 +160,7 @@ void SaveCardBubbleControllerImpl::ShowBubbleForManageCardsForTesting(
 
 void SaveCardBubbleControllerImpl::UpdateIconForSaveCardSuccess() {
   current_bubble_type_ = BubbleType::INACTIVE;
-  UpdateSaveCardIcon();
+  UpdatePageActionIcon();
 }
 
 void SaveCardBubbleControllerImpl::UpdateIconForSaveCardFailure() {
@@ -176,16 +173,9 @@ void SaveCardBubbleControllerImpl::ShowBubbleForSaveCardFailureForTesting() {
   ShowBubble();
 }
 
-void SaveCardBubbleControllerImpl::HideBubble() {
-  if (save_card_bubble_view_) {
-    save_card_bubble_view_->Hide();
-    save_card_bubble_view_ = nullptr;
-  }
-}
-
 void SaveCardBubbleControllerImpl::ReshowBubble() {
   // Don't show the bubble if it's already visible.
-  if (save_card_bubble_view_)
+  if (bubble_view())
     return;
 
   is_reshow_ = true;
@@ -288,9 +278,9 @@ const CreditCard& SaveCardBubbleControllerImpl::GetCard() const {
   return card_;
 }
 
-SaveCardBubbleView* SaveCardBubbleControllerImpl::GetSaveCardBubbleView()
+AutofillBubbleBase* SaveCardBubbleControllerImpl::GetSaveCardBubbleView()
     const {
-  return save_card_bubble_view_;
+  return bubble_view();
 }
 
 bool SaveCardBubbleControllerImpl::ShouldRequestNameFromUser() const {
@@ -303,7 +293,7 @@ bool SaveCardBubbleControllerImpl::ShouldRequestExpirationDateFromUser() const {
 
 void SaveCardBubbleControllerImpl::OnSaveButton(
     const AutofillClient::UserProvidedCardDetails& user_provided_card_details) {
-  save_card_bubble_view_ = nullptr;
+  set_bubble_view(nullptr);
 
   switch (current_bubble_type_) {
     case BubbleType::UPLOAD_SAVE: {
@@ -329,7 +319,7 @@ void SaveCardBubbleControllerImpl::OnSaveButton(
     case BubbleType::LOCAL_SAVE:
       DCHECK(!local_save_card_prompt_callback_.is_null());
       // Show an animated card saved confirmation message next time
-      // UpdateSaveCardIcon() is called.
+      // UpdatePageActionIcon() is called.
       should_show_card_saved_label_animation_ = true;
       std::move(local_save_card_prompt_callback_).Run(AutofillClient::ACCEPTED);
       break;
@@ -426,7 +416,7 @@ void SaveCardBubbleControllerImpl::ShowPaymentsSettingsPage() {
 
 void SaveCardBubbleControllerImpl::OnBubbleClosed(
     PaymentsBubbleClosedReason closed_reason) {
-  save_card_bubble_view_ = nullptr;
+  set_bubble_view(nullptr);
 
   // Log save card prompt result according to the closed reason.
   if (base::FeatureList::IsEnabled(
@@ -503,7 +493,7 @@ void SaveCardBubbleControllerImpl::OnBubbleClosed(
     current_bubble_type_ = BubbleType::INACTIVE;
   }
 
-  UpdateSaveCardIcon();
+  UpdatePageActionIcon();
 }
 
 const LegalMessageLines& SaveCardBubbleControllerImpl::GetLegalMessageLines()
@@ -560,7 +550,7 @@ bool SaveCardBubbleControllerImpl::ShouldShowSaveFailureBadge() const {
 }
 
 void SaveCardBubbleControllerImpl::OnAnimationEnded() {
-  // Do not repeat the animation next time UpdateSaveCardIcon() is called,
+  // Do not repeat the animation next time UpdatePageActionIcon() is called,
   // unless explicitly set somewhere else.
   should_show_card_saved_label_animation_ = false;
 }
@@ -570,43 +560,20 @@ bool SaveCardBubbleControllerImpl::IsIconVisible() const {
   return current_bubble_type_ != BubbleType::INACTIVE;
 }
 
-SaveCardBubbleView* SaveCardBubbleControllerImpl::GetSaveBubbleView() const {
+AutofillBubbleBase* SaveCardBubbleControllerImpl::GetSaveBubbleView() const {
   return GetSaveCardBubbleView();
 }
 
-void SaveCardBubbleControllerImpl::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillEnableStickyPaymentsBubble)) {
-    return;
-  }
-
-  if (!navigation_handle->IsInMainFrame() || !navigation_handle->HasCommitted())
-    return;
-
+bool SaveCardBubbleControllerImpl::HandleDidFinishRelevantNavigation() {
   // Nothing to do if there's no bubble available.
   if (current_bubble_type_ == BubbleType::INACTIVE)
-    return;
-
-  // Don't react to same-document (fragment) navigations.
-  if (navigation_handle->IsSameDocument())
-    return;
-
-  // Don't do anything if a navigation occurs before a user could reasonably
-  // interact with the bubble.
-  const base::TimeDelta elapsed_time =
-      AutofillClock::Now() - bubble_shown_timestamp_;
-  if (elapsed_time < kCardBubbleSurviveNavigationTime)
-    return;
-
-  bool bubble_was_visible = save_card_bubble_view_;
+    return false;
 
   if (current_bubble_type_ == BubbleType::LOCAL_SAVE ||
       current_bubble_type_ == BubbleType::UPLOAD_SAVE) {
     AutofillMetrics::LogSaveCardPromptMetric(
-        bubble_was_visible
-            ? AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING
-            : AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN,
+        bubble_view() ? AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_SHOWING
+                      : AutofillMetrics::SAVE_CARD_PROMPT_END_NAVIGATION_HIDDEN,
         is_upload_save_, is_reshow_, options_,
         pref_service_->GetInteger(
             prefs::kAutofillAcceptSaveCreditCardPromptState),
@@ -624,66 +591,19 @@ void SaveCardBubbleControllerImpl::DidFinishNavigation(
 
   // Otherwise, get rid of the bubble and icon.
   current_bubble_type_ = BubbleType::INACTIVE;
-
-  if (bubble_was_visible) {
-    save_card_bubble_view_->Hide();
-  } else {
-    UpdateSaveCardIcon();
-  }
+  return true;
 }
 
-void SaveCardBubbleControllerImpl::OnVisibilityChanged(
-    content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN)
-    HideBubble();
+PageActionIconType SaveCardBubbleControllerImpl::GetPageActionIconType() {
+  return PageActionIconType::kSaveCard;
 }
 
-void SaveCardBubbleControllerImpl::WebContentsDestroyed() {
-  HideBubble();
-}
-
-void SaveCardBubbleControllerImpl::FetchAccountInfo() {
-  Profile* profile = GetProfile();
-  if (!profile)
-    return;
-  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
-  if (!identity_manager)
-    return;
-  auto* personal_data_manager =
-      PersonalDataManagerFactory::GetForProfile(profile);
-  if (!personal_data_manager)
-    return;
-  base::Optional<AccountInfo> account_info =
-      identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
-          personal_data_manager->GetAccountInfoForPaymentsServer());
-  account_info_ = account_info.value_or(AccountInfo{});
-}
-
-void SaveCardBubbleControllerImpl::ShowBubble() {
-  DCHECK(current_bubble_type_ != BubbleType::INACTIVE);
-  // Upload save callback should not be null for UPLOAD_SAVE state.
-  DCHECK(!(upload_save_card_prompt_callback_.is_null() &&
-           current_bubble_type_ == BubbleType::UPLOAD_SAVE));
-  // Local save callback should not be null for LOCAL_SAVE state.
-  DCHECK(!(local_save_card_prompt_callback_.is_null() &&
-           current_bubble_type_ == BubbleType::LOCAL_SAVE));
-  DCHECK(!save_card_bubble_view_);
-
-  // Need to create location bar icon before bubble, otherwise bubble will be
-  // unanchored.
-  UpdateSaveCardIcon();
-
+void SaveCardBubbleControllerImpl::DoShowBubble() {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  save_card_bubble_view_ =
+  set_bubble_view(
       browser->window()->GetAutofillBubbleHandler()->ShowSaveCreditCardBubble(
-          web_contents(), this, is_reshow_);
-  DCHECK(save_card_bubble_view_);
-
-  // Update icon after creating |save_card_bubble_view_| so that icon will show
-  // its "toggled on" state.
-  UpdateSaveCardIcon();
-
-  bubble_shown_timestamp_ = AutofillClock::Now();
+          web_contents(), this, is_reshow_));
+  DCHECK(bubble_view());
 
   switch (current_bubble_type_) {
     case BubbleType::UPLOAD_SAVE:
@@ -722,6 +642,35 @@ void SaveCardBubbleControllerImpl::ShowBubble() {
   }
 }
 
+void SaveCardBubbleControllerImpl::FetchAccountInfo() {
+  Profile* profile = GetProfile();
+  if (!profile)
+    return;
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager)
+    return;
+  auto* personal_data_manager =
+      PersonalDataManagerFactory::GetForProfile(profile);
+  if (!personal_data_manager)
+    return;
+  base::Optional<AccountInfo> account_info =
+      identity_manager->FindExtendedAccountInfoForAccountWithRefreshToken(
+          personal_data_manager->GetAccountInfoForPaymentsServer());
+  account_info_ = account_info.value_or(AccountInfo{});
+}
+
+void SaveCardBubbleControllerImpl::ShowBubble() {
+  DCHECK(current_bubble_type_ != BubbleType::INACTIVE);
+  // Upload save callback should not be null for UPLOAD_SAVE state.
+  DCHECK(!(upload_save_card_prompt_callback_.is_null() &&
+           current_bubble_type_ == BubbleType::UPLOAD_SAVE));
+  // Local save callback should not be null for LOCAL_SAVE state.
+  DCHECK(!(local_save_card_prompt_callback_.is_null() &&
+           current_bubble_type_ == BubbleType::LOCAL_SAVE));
+  DCHECK(!bubble_view());
+  Show();
+}
+
 void SaveCardBubbleControllerImpl::ShowIconOnly() {
   DCHECK(current_bubble_type_ != BubbleType::INACTIVE);
   // Upload save callback should not be null for UPLOAD_SAVE state.
@@ -730,13 +679,13 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
   // Local save callback should not be null for LOCAL_SAVE state.
   DCHECK(!(local_save_card_prompt_callback_.is_null() &&
            current_bubble_type_ == BubbleType::LOCAL_SAVE));
-  DCHECK(!save_card_bubble_view_);
+  DCHECK(!bubble_view());
 
   // Show the icon only. The bubble can still be displayed if the user
   // explicitly clicks the icon.
-  UpdateSaveCardIcon();
+  UpdatePageActionIcon();
 
-  bubble_shown_timestamp_ = AutofillClock::Now();
+  SetShownTimestampToNow();
 
   switch (current_bubble_type_) {
     case BubbleType::UPLOAD_SAVE:
@@ -769,12 +718,6 @@ void SaveCardBubbleControllerImpl::ShowIconOnly() {
 
   if (observer_for_testing_)
     observer_for_testing_->OnIconShown();
-}
-
-void SaveCardBubbleControllerImpl::UpdateSaveCardIcon() {
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  if (browser)
-    browser->window()->UpdatePageActionIcon(PageActionIconType::kSaveCard);
 }
 
 void SaveCardBubbleControllerImpl::OpenUrl(const GURL& url) {
