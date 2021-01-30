@@ -258,18 +258,6 @@ def _load_library_perf_tests(estimated_runtime=3):
   return ExecutableConfig('load_library_perf_tests',
                           estimated_runtime=estimated_runtime)
 
-
-def _media_perftests(estimated_runtime=16):
-  return ExecutableConfig(
-      'media_perftests',
-      flags=[
-          '--single-process-tests',
-          '--test-launcher-retry-limit=0',
-          '--isolated-script-test-filter=*::-*_unoptimized::*_unaligned::'
-          '*unoptimized_aligned',
-      ],
-      estimated_runtime=estimated_runtime)
-
 def _performance_browser_tests(estimated_runtime=67):
   return ExecutableConfig(
       'performance_browser_tests',
@@ -308,7 +296,6 @@ _LINUX_EXECUTABLE_CONFIGS = frozenset([
     # TODO(crbug.com/811766): Add views_perftests.
     _base_perftests(200),
     _load_library_perf_tests(),
-    _media_perftests(),
     _performance_browser_tests(165),
     _tracing_perftests(5),
 ])
@@ -319,7 +306,6 @@ _MAC_HIGH_END_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 _MAC_HIGH_END_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(300),
     _dawn_perf_tests(330),
-    _media_perftests(),
     _performance_browser_tests(190),
     _views_perftests(),
 ])
@@ -338,7 +324,6 @@ _MAC_ARM_DTK_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
 _MAC_ARM_DTK_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(300),
     _dawn_perf_tests(330),
-    _media_perftests(),
     _performance_browser_tests(190),
     _views_perftests(),
 ])
@@ -356,7 +341,6 @@ _WIN_10_EXECUTABLE_CONFIGS = frozenset([
     _base_perftests(200),
     _components_perftests(125),
     _dawn_perf_tests(600),
-    _media_perftests(),
     _views_perftests(),
 ])
 _WIN_10_LOW_END_BENCHMARK_CONFIGS = PerfSuite(
@@ -408,7 +392,6 @@ _ANDROID_PIXEL2_BENCHMARK_CONFIGS = _OFFICIAL_EXCEPT_DISPLAY_LOCKING.Remove(
     ['system_health.weblayer_startup'])
 _ANDROID_PIXEL2_EXECUTABLE_CONFIGS = frozenset([
     _components_perftests(60),
-    _media_perftests(75),
 ])
 _ANDROID_PIXEL2_WEBVIEW_BENCHMARK_CONFIGS = PerfSuite(
     OFFICIAL_BENCHMARK_CONFIGS).Remove([

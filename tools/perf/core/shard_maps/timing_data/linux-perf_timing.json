@@ -4292,10 +4292,6 @@
         "name": "tracing_perftests/_gtest_"
     },
     {
-        "duration": "16.0",
-        "name": "media_perftests/_gtest_"
-    },
-    {
         "duration": "165.0",
         "name": "performance_browser_tests/_gtest_"
     }

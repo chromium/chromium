@@ -4546,9 +4546,5 @@
     {
         "duration": "60.0",
         "name": "components_perftests/_gtest_"
-    },
-    {
-        "duration": "75.0",
-        "name": "media_perftests/_gtest_"
     }
 ]

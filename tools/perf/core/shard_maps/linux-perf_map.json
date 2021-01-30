@@ -141,16 +141,7 @@
                 "abridged": false
             }
         },
-        "executables": {
-            "media_perftests": {
-                "path": "media_perftests",
-                "arguments": [
-                    "--single-process-tests",
-                    "--test-launcher-retry-limit=0",
-                    "--isolated-script-test-filter=*::-*_unoptimized::*_unaligned::*unoptimized_aligned"
-                ]
-            }
-        }
+        "executables": {}
     },
     "8": {
         "benchmarks": {
