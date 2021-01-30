@@ -867,4 +867,43 @@ Status ConvertAndScaleFrame(const VideoFrame& src_frame,
       .WithData("dst", dst_frame.AsHumanReadableString());
 }
 
+scoped_refptr<VideoFrame> CreateFromSkImage(sk_sp<SkImage> sk_image,
+                                            const gfx::Size& coded_size,
+                                            const gfx::Rect& visible_rect,
+                                            const gfx::Size& natural_size,
+                                            base::TimeDelta timestamp) {
+  DCHECK(!sk_image->isTextureBacked());
+
+  // TODO(crbug.com/1073995): Add F16 support.
+  auto sk_color_type = sk_image->colorType();
+  if (sk_color_type != kRGBA_8888_SkColorType &&
+      sk_color_type != kBGRA_8888_SkColorType) {
+    return nullptr;
+  }
+
+  SkPixmap pm;
+  const bool peek_result = sk_image->peekPixels(&pm);
+  DCHECK(peek_result);
+
+  const auto format =
+      sk_image->isOpaque()
+          ? (sk_color_type == kRGBA_8888_SkColorType ? PIXEL_FORMAT_XBGR
+                                                     : PIXEL_FORMAT_XRGB)
+          : (sk_color_type == kRGBA_8888_SkColorType ? PIXEL_FORMAT_ABGR
+                                                     : PIXEL_FORMAT_ARGB);
+
+  auto frame = VideoFrame::WrapExternalData(
+      format, coded_size, visible_rect, natural_size,
+      // TODO(crbug.com/1161304): We should be able to wrap readonly memory in
+      // a VideoFrame instead of using writable_addr() here.
+      reinterpret_cast<uint8_t*>(pm.writable_addr()), pm.computeByteSize(),
+      timestamp);
+  if (!frame)
+    return nullptr;
+
+  frame->AddDestructionObserver(base::BindOnce(
+      base::DoNothing::Once<sk_sp<SkImage>>(), std::move(sk_image)));
+  return frame;
+}
+
 }  // namespace media

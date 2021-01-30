@@ -11,6 +11,9 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_logger.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
+#include "third_party/skia/include/core/SkRefCnt.h"
+
+class SkImage;
 
 namespace blink {
 
@@ -28,8 +31,11 @@ class MODULES_EXPORT VideoFrameHandle
     : public WTF::ThreadSafeRefCounted<VideoFrameHandle> {
  public:
   VideoFrameHandle(scoped_refptr<media::VideoFrame>, ExecutionContext*);
-
   VideoFrameHandle(scoped_refptr<media::VideoFrame>,
+                   sk_sp<SkImage> sk_image,
+                   ExecutionContext*);
+  VideoFrameHandle(scoped_refptr<media::VideoFrame>,
+                   sk_sp<SkImage> sk_image,
                    scoped_refptr<VideoFrameLogger::VideoFrameCloseAuditor>);
 
   // Returns a copy of |frame_|, which should be re-used throughout the scope
@@ -37,15 +43,23 @@ class MODULES_EXPORT VideoFrameHandle
   // the frame could be destroyed between calls.
   scoped_refptr<media::VideoFrame> frame();
 
+  // Returns a copy of |sk_image_| which may be nullptr if this isn't an SkImage
+  // backed VideoFrame.
+  sk_sp<SkImage> sk_image();
+
   // Releases the underlying media::VideoFrame reference, affecting all
   // blink::VideoFrames and blink::Planes that hold a reference to |this|.
   void Invalidate();
+
+  // Clones this VideoFrameHandle into a new VideoFrameHandle object.
+  scoped_refptr<VideoFrameHandle> Clone();
 
  private:
   friend class WTF::ThreadSafeRefCounted<VideoFrameHandle>;
   ~VideoFrameHandle();
 
   WTF::Mutex mutex_;
+  sk_sp<SkImage> sk_image_;
   scoped_refptr<media::VideoFrame> frame_;
   scoped_refptr<VideoFrameLogger::VideoFrameCloseAuditor> close_auditor_;
 };

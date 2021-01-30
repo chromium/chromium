@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_handle.h"
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/skia/include/core/SkImage.h"
 
 namespace blink {
 
@@ -19,10 +20,20 @@ VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
   DCHECK(close_auditor_);
 }
 
+VideoFrameHandle::VideoFrameHandle(scoped_refptr<media::VideoFrame> frame,
+                                   sk_sp<SkImage> sk_image,
+                                   ExecutionContext* context)
+    : VideoFrameHandle(std::move(frame), context) {
+  sk_image_ = std::move(sk_image);
+}
+
 VideoFrameHandle::VideoFrameHandle(
     scoped_refptr<media::VideoFrame> frame,
+    sk_sp<SkImage> sk_image,
     scoped_refptr<VideoFrameLogger::VideoFrameCloseAuditor> close_auditor)
-    : frame_(std::move(frame)), close_auditor_(std::move(close_auditor)) {
+    : sk_image_(std::move(sk_image)),
+      frame_(std::move(frame)),
+      close_auditor_(std::move(close_auditor)) {
   DCHECK(frame_);
   DCHECK(close_auditor_);
 }
@@ -40,10 +51,23 @@ scoped_refptr<media::VideoFrame> VideoFrameHandle::frame() {
   return frame_;
 }
 
+sk_sp<SkImage> VideoFrameHandle::sk_image() {
+  WTF::MutexLocker locker(mutex_);
+  return sk_image_;
+}
+
 void VideoFrameHandle::Invalidate() {
   WTF::MutexLocker locker(mutex_);
   frame_.reset();
+  sk_image_.reset();
   close_auditor_.reset();
+}
+
+scoped_refptr<VideoFrameHandle> VideoFrameHandle::Clone() {
+  WTF::MutexLocker locker(mutex_);
+  return frame_ ? base::MakeRefCounted<VideoFrameHandle>(frame_, sk_image_,
+                                                         close_auditor_)
+                : nullptr;
 }
 
 }  // namespace blink

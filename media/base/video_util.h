@@ -12,6 +12,7 @@
 #include "base/memory/ref_counted.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
+#include "third_party/skia/include/core/SkImage.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -195,6 +196,17 @@ MEDIA_EXPORT Status ConvertAndScaleFrame(const VideoFrame& src_frame,
                                          VideoFrame& dst_frame,
                                          std::vector<uint8_t>& tmp_buf)
     WARN_UNUSED_RESULT;
+
+// Backs a VideoFrame with a SkImage. The created frame takes a ref on the
+// provided SkImage to make this operation zero copy. Only works with CPU
+// backed images.
+MEDIA_EXPORT scoped_refptr<VideoFrame> CreateFromSkImage(
+    sk_sp<SkImage> sk_image,
+    const gfx::Size& coded_size,
+    const gfx::Rect& visible_rect,
+    const gfx::Size& natural_size,
+    base::TimeDelta timestamp);
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_VIDEO_UTIL_H_

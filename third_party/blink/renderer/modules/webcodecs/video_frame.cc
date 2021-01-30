@@ -15,6 +15,7 @@
 #include "media/base/video_frame.h"
 #include "media/base/video_frame_metadata.h"
 #include "media/base/video_frame_pool.h"
+#include "media/base/video_util.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/renderers/paint_canvas_video_renderer.h"
 #include "media/renderers/video_frame_yuv_converter.h"
@@ -51,20 +52,6 @@ bool IsValidSkColorSpace(sk_sp<SkColorSpace> sk_color_space) {
   for (auto& valid_sk_color_space : valid_sk_color_spaces) {
     if (SkColorSpace::Equals(sk_color_space.get(),
                              valid_sk_color_space.get())) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool IsValidSkColorType(SkColorType sk_color_type) {
-  SkColorType valid_sk_color_types[] = {
-      kBGRA_8888_SkColorType, kRGBA_8888_SkColorType,
-      // TODO(jie.a.chen@intel.com): Add F16 support.
-      // kRGBA_F16_SkColorType
-  };
-  for (auto& valid_sk_color_type : valid_sk_color_types) {
-    if (sk_color_type == valid_sk_color_type) {
       return true;
     }
   }
@@ -249,7 +236,6 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     return nullptr;
   }
 
-  const bool is_texture = paint_image.IsTextureBacked();
   const auto sk_image = paint_image.GetSkImage();
 
   scoped_refptr<media::VideoFrame> frame;
@@ -257,7 +243,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   // Now only SkImage_Gpu implemented the readbackYUV420 method, so for
   // non-texture image, still use libyuv do the csc until SkImage_Base
   // implement asyncRescaleAndReadPixelsYUV420.
-  if (is_texture) {
+  if (sk_image->isTextureBacked()) {
     YUVReadbackContext result;
     result.coded_size = coded_size;
     result.visible_rect = visible_rect;
@@ -283,49 +269,22 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     }
 
     frame = std::move(result.frame);
-  } else {
-    DCHECK(!sk_image->isTextureBacked());
-
-    auto sk_color_type = sk_image_info.colorType();
-    if (!IsValidSkColorType(sk_color_type)) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Invalid pixel format");
-      return nullptr;
-    }
-
-    DCHECK(sk_color_type == kRGBA_8888_SkColorType ||
-           sk_color_type == kBGRA_8888_SkColorType);
-
-    SkPixmap pm;
-    const bool peek_result = sk_image->peekPixels(&pm);
-    DCHECK(peek_result);
-
-    const auto format = sk_image->isOpaque()
-                            ? (sk_color_type == kRGBA_8888_SkColorType
-                                   ? media::PIXEL_FORMAT_XBGR
-                                   : media::PIXEL_FORMAT_XRGB)
-                            : (sk_color_type == kRGBA_8888_SkColorType
-                                   ? media::PIXEL_FORMAT_ABGR
-                                   : media::PIXEL_FORMAT_ARGB);
-
-    frame = media::VideoFrame::WrapExternalData(
-        format, coded_size, visible_rect, natural_size,
-        // TODO(crbug.com/1161304): We should be able to wrap readonly memory in
-        // a VideoFrame instead of using writable_addr() here.
-        reinterpret_cast<uint8_t*>(pm.writable_addr()), pm.computeByteSize(),
-        timestamp);
-    if (!frame) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                        "Failed to create video frame");
-      return nullptr;
-    }
-    frame->set_color_space(gfx::ColorSpace(*sk_color_space));
-    frame->AddDestructionObserver(ConvertToBaseOnceCallback(CrossThreadBindOnce(
-        base::DoNothing::Once<sk_sp<SkImage>>(), std::move(sk_image))));
+    return MakeGarbageCollected<VideoFrame>(
+        std::move(frame), ExecutionContext::From(script_state));
   }
-  auto* result = MakeGarbageCollected<VideoFrame>(
-      std::move(frame), ExecutionContext::From(script_state));
-  return result;
+
+  frame = media::CreateFromSkImage(sk_image, coded_size, visible_rect,
+                                   natural_size, timestamp);
+  if (!frame) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
+                                      "Failed to create video frame");
+    return nullptr;
+  }
+  frame->set_color_space(gfx::ColorSpace(*sk_color_space));
+  return MakeGarbageCollected<VideoFrame>(
+      base::MakeRefCounted<VideoFrameHandle>(
+          std::move(frame), std::move(sk_image),
+          ExecutionContext::From(script_state)));
 }
 
 // static
@@ -666,13 +625,9 @@ VideoFrame* VideoFrame::clone(ScriptState* script_state,
 }
 
 VideoFrame* VideoFrame::CloneFromNative(ExecutionContext* context) {
-  auto frame = handle_->frame();
-
-  // The handle was already invalidated.
-  if (!frame)
-    return nullptr;
-
-  return MakeGarbageCollected<VideoFrame>(std::move(frame), context);
+  // The returned handle will be nullptr if it was already invalidated.
+  auto handle = handle_->Clone();
+  return handle ? MakeGarbageCollected<VideoFrame>(std::move(handle)) : nullptr;
 }
 
 scoped_refptr<VideoFrameHandle> VideoFrame::handle() {
@@ -708,8 +663,15 @@ ScriptPromise VideoFrame::CreateImageBitmap(ScriptState* script_state,
                                             base::Optional<IntRect> crop_rect,
                                             const ImageBitmapOptions* options,
                                             ExceptionState& exception_state) {
-  auto local_frame = frame();
+  if (auto sk_img = handle_->sk_image()) {
+    auto* image_bitmap = MakeGarbageCollected<ImageBitmap>(
+        UnacceleratedStaticBitmapImage::Create(std::move(sk_img)), crop_rect,
+        options);
+    return ImageBitmapSource::FulfillImageBitmap(script_state, image_bitmap,
+                                                 exception_state);
+  }
 
+  auto local_frame = frame();
   if (!local_frame) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
