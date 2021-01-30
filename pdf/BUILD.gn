@@ -252,7 +252,6 @@ if (enable_pdf) {
 
     deps = [
       ":accessibility_structs",
-      ":features",
       ":internal",
       ":ppapi_migration",
       "//base",

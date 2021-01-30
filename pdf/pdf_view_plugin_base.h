@@ -178,6 +178,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
  private:
   // Message handlers.
+  void HandleSetReadOnlyMessage(const base::Value& message);
   void HandleSetTwoUpViewMessage(const base::Value& message);
 
   std::unique_ptr<PDFiumEngine> engine_;

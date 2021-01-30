@@ -16,7 +16,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/feature_list.h"
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/time_formatting.h"
 #include "base/location.h"
@@ -39,7 +38,6 @@
 #include "pdf/document_attachment_info.h"
 #include "pdf/document_layout.h"
 #include "pdf/document_metadata.h"
-#include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/ppapi_migration/bitmap.h"
 #include "pdf/ppapi_migration/geometry_conversions.h"
@@ -255,10 +253,6 @@ constexpr char kJSGetThumbnailReplyType[] = "getThumbnailReply";
 constexpr char kJSGetThumbnailImageData[] = "imageData";
 constexpr char kJSGetThumbnailWidth[] = "width";
 constexpr char kJSGetThumbnailHeight[] = "height";
-
-// Set read only to disable interaction with content (Page -> Plugin)
-constexpr char kJSSetReadOnlyType[] = "setReadOnly";
-constexpr char kJSEnableReadOnly[] = "enableReadOnly";
 
 constexpr base::TimeDelta kFindResultCooldown =
     base::TimeDelta::FromMilliseconds(100);
@@ -727,8 +721,6 @@ void OutOfProcessInstance::HandleMessage(const pp::Var& message) {
     RotateClockwise();
   } else if (type == kJSRotateCounterclockwiseType) {
     RotateCounterclockwise();
-  } else if (type == kJSSetReadOnlyType) {
-    HandleSetReadOnlyMessage(dict);
   } else if (type == kJSDisplayAnnotationsType) {
     HandleDisplayAnnotations(dict);
   } else if (type == kJSSelectAllType) {
@@ -1910,17 +1902,6 @@ void OutOfProcessInstance::HandleSaveMessage(const pp::VarDictionary& dict) {
       SaveToBuffer(dict.Get(pp::Var(kJSToken)).AsString());
       break;
   }
-}
-
-void OutOfProcessInstance::HandleSetReadOnlyMessage(
-    const pp::VarDictionary& dict) {
-  if (!base::FeatureList::IsEnabled(features::kPdfViewerPresentationMode) ||
-      !dict.Get(pp::Var(kJSEnableReadOnly)).is_bool()) {
-    NOTREACHED();
-    return;
-  }
-
-  engine()->SetReadOnly(dict.Get(pp::Var(kJSEnableReadOnly)).AsBool());
 }
 
 void OutOfProcessInstance::HandleUpdateScrollMessage(

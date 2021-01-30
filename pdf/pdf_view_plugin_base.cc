@@ -15,10 +15,12 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/optional.h"
 #include "base/values.h"
+#include "pdf/pdf_features.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/ppapi_migration/image.h"
 #include "pdf/ppapi_migration/url_loader.h"
@@ -51,6 +53,7 @@ void PdfViewPluginBase::HandleMessage(const base::Value& message) {
   using MessageHandler = void (PdfViewPluginBase::*)(const base::Value&);
   static constexpr auto kMessageHandlers =
       base::MakeFixedFlatMap<base::StringPiece, MessageHandler>({
+          {"setReadOnly", &PdfViewPluginBase::HandleSetReadOnlyMessage},
           {"setTwoUpView", &PdfViewPluginBase::HandleSetTwoUpViewMessage},
       });
 
@@ -183,6 +186,11 @@ void PdfViewPluginBase::SetZoom(double scale) {
   double old_zoom = zoom_;
   zoom_ = scale;
   OnGeometryChanged(old_zoom, device_scale_);
+}
+
+void PdfViewPluginBase::HandleSetReadOnlyMessage(const base::Value& message) {
+  DCHECK(base::FeatureList::IsEnabled(features::kPdfViewerPresentationMode));
+  engine()->SetReadOnly(message.FindBoolKey("enableReadOnly").value());
 }
 
 void PdfViewPluginBase::HandleSetTwoUpViewMessage(const base::Value& message) {
