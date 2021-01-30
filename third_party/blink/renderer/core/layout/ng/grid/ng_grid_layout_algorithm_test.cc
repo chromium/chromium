@@ -47,8 +47,11 @@ class NGGridLayoutAlgorithmTest
     algorithm.ConstructAndAppendGridItems(&grid_items_, &out_of_flow_items_);
 
     NGGridPlacement grid_placement(
-        algorithm.Style(), algorithm.ComputeAutomaticRepetitions(kForColumns),
-        algorithm.ComputeAutomaticRepetitions(kForRows));
+        algorithm.Style(),
+        algorithm.ComputeAutomaticRepetitions(kForColumns,
+                                              LengthResolvePhase::kLayout),
+        algorithm.ComputeAutomaticRepetitions(kForRows,
+                                              LengthResolvePhase::kLayout));
 
     algorithm.BuildAlgorithmTrackCollections(
         &grid_items_, &algorithm_column_track_collection_,
@@ -461,6 +464,8 @@ TEST_F(NGGridLayoutAlgorithmTest, NGGridLayoutAlgorithmRangesWithAutoRepeater) {
   EXPECT_RANGE(4u, 1u, column_iterator);
   EXPECT_TRUE(column_iterator.MoveToNextRange());
   EXPECT_RANGE(5u, 1u, column_iterator);
+  EXPECT_TRUE(column_iterator.MoveToNextRange());
+  EXPECT_RANGE(6u, 1u, column_iterator);
   EXPECT_FALSE(column_iterator.MoveToNextRange());
 }
 

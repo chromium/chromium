@@ -750,6 +750,10 @@ inline int FloorToInt(LayoutUnit value) {
   return value.Floor();
 }
 
+inline int CeilToInt(LayoutUnit value) {
+  return value.Ceil();
+}
+
 inline LayoutUnit AbsoluteValue(const LayoutUnit& value) {
   return value.Abs();
 }

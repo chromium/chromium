@@ -32,9 +32,10 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::Layout() {
 
   NGGridLayoutAlgorithmTrackCollection algorithm_column_track_collection;
   NGGridLayoutAlgorithmTrackCollection algorithm_row_track_collection;
-  NGGridPlacement grid_placement(Style(),
-                                 ComputeAutomaticRepetitions(kForColumns),
-                                 ComputeAutomaticRepetitions(kForRows));
+  NGGridPlacement grid_placement(
+      Style(),
+      ComputeAutomaticRepetitions(kForColumns, LengthResolvePhase::kLayout),
+      ComputeAutomaticRepetitions(kForRows, LengthResolvePhase::kLayout));
 
   BuildAlgorithmTrackCollections(
       &grid_items, &algorithm_column_track_collection,
@@ -83,9 +84,10 @@ MinMaxSizesResult NGGridLayoutAlgorithm::ComputeMinMaxSizes(
 
   NGGridLayoutAlgorithmTrackCollection algorithm_column_track_collection;
   NGGridLayoutAlgorithmTrackCollection algorithm_row_track_collection;
-  NGGridPlacement grid_placement(Style(),
-                                 ComputeAutomaticRepetitions(kForColumns),
-                                 ComputeAutomaticRepetitions(kForRows));
+  NGGridPlacement grid_placement(
+      Style(),
+      ComputeAutomaticRepetitions(kForColumns, LengthResolvePhase::kIntrinsic),
+      ComputeAutomaticRepetitions(kForRows, LengthResolvePhase::kIntrinsic));
 
   BuildAlgorithmTrackCollections(
       &grid_items, &algorithm_column_track_collection,
@@ -452,12 +454,134 @@ void NGGridLayoutAlgorithm::ConstructAndAppendGridItems(
   }
 }
 
+// https://drafts.csswg.org/css-grid-2/#auto-repeat
 wtf_size_t NGGridLayoutAlgorithm::ComputeAutomaticRepetitions(
-    GridTrackSizingDirection track_direction) const {
-  // TODO(kschmi): Auto track repeat count should be based on the number of
-  // children, rather than specified auto-column/track. Temporarily assign them
-  // to zero here to avoid DCHECK's until we implement this logic.
-  return 0;
+    GridTrackSizingDirection track_direction,
+    LengthResolvePhase phase) const {
+  const NGGridTrackList& track_list =
+      (track_direction == kForColumns)
+          ? Style().GridTemplateColumns().NGTrackList()
+          : Style().GridTemplateRows().NGTrackList();
+  if (!track_list.HasAutoRepeater())
+    return 0;
+
+  enum AutoResolveType {
+    // If the grid container has a definite size or max size in the relevant
+    // axis, then the number of repetitions is the largest possible positive
+    // integer that does not cause the grid to overflow.
+    kMaxLessThan,
+    // Otherwise, if the grid container has a definite min size in the relevant
+    // axis, the number of repetitions is the smallest possible positive integer
+    // that fulfills that minimum requirement.
+    kMinGreaterThan
+  };
+  AutoResolveType auto_resolve_type = kMaxLessThan;
+
+  LayoutUnit available_size = (track_direction == kForColumns)
+                                  ? ChildAvailableSize().inline_size
+                                  : ChildAvailableSize().block_size;
+  // Handle the case for |kMinGreaterThan|.
+  if (available_size == kIndefiniteSize) {
+    auto_resolve_type = kMinGreaterThan;
+    if (track_direction == kForColumns) {
+      const Length& min_length = Style().LogicalMinWidth();
+
+      // A style of "min-width: min-content" isn't resolvable in the intrinsic
+      // phase as it'd be a circular definition.
+      if (min_length.IsAuto() || InlineLengthUnresolvable(min_length, phase) ||
+          (phase == LengthResolvePhase::kIntrinsic &&
+           min_length.IsContentOrIntrinsic())) {
+        return 1;
+      }
+      available_size = ResolveMinInlineLength(
+          ConstraintSpace(), Style(), container_builder_.BorderPadding(),
+          base::Optional<MinMaxSizes>(), min_length, phase);
+    } else {
+      const Length& min_length = Style().LogicalMinHeight();
+
+      if (BlockLengthUnresolvable(ConstraintSpace(), min_length, phase))
+        return 1;
+
+      available_size = ResolveMinBlockLength(ConstraintSpace(), Style(),
+                                             container_builder_.BorderPadding(),
+                                             min_length, phase);
+    }
+  }
+
+  const LayoutUnit grid_gap = GridGap(track_direction, available_size);
+
+  LayoutUnit auto_repeater_size;
+  LayoutUnit non_auto_specified_size;
+  for (wtf_size_t repeater_index = 0;
+       repeater_index < track_list.RepeaterCount(); ++repeater_index) {
+    const wtf_size_t repeater_track_count =
+        track_list.RepeatSize(repeater_index);
+    LayoutUnit repeater_size;
+    for (wtf_size_t track_index = 0; track_index < repeater_track_count;
+         ++track_index) {
+      const GridTrackSize& track_size =
+          track_list.RepeatTrackSize(repeater_index, track_index);
+      base::Optional<LayoutUnit> fixed_min_track_breadth;
+      base::Optional<LayoutUnit> fixed_max_track_breadth;
+      if (track_size.HasFixedMaxTrackBreadth()) {
+        fixed_max_track_breadth = MinimumValueForLength(
+            track_size.MaxTrackBreadth().length(), available_size);
+      }
+      if (track_size.HasFixedMinTrackBreadth()) {
+        fixed_min_track_breadth = MinimumValueForLength(
+            track_size.MinTrackBreadth().length(), available_size);
+      }
+      LayoutUnit track_contribution;
+      if (fixed_max_track_breadth && fixed_min_track_breadth) {
+        track_contribution =
+            std::max(*fixed_max_track_breadth, *fixed_min_track_breadth);
+      } else if (fixed_max_track_breadth) {
+        track_contribution = *fixed_max_track_breadth;
+      } else if (fixed_min_track_breadth) {
+        track_contribution = *fixed_min_track_breadth;
+      }
+
+      // For the purpose of finding the number of auto-repeated tracks in a
+      // standalone axis, the UA must floor the track size to a UA-specified
+      // value to avoid division by zero. It is suggested that this floor be
+      // 1px.
+      if (track_list.RepeatType(repeater_index) !=
+          NGGridTrackRepeater::kNoAutoRepeat)
+        track_contribution = std::max(LayoutUnit(1), track_contribution);
+
+      repeater_size += track_contribution + grid_gap;
+    }
+    if (track_list.RepeatType(repeater_index) ==
+        NGGridTrackRepeater::kNoAutoRepeat) {
+      non_auto_specified_size +=
+          repeater_size * track_list.RepeatCount(repeater_index, 0);
+    } else {
+      DCHECK_EQ(0, auto_repeater_size);
+      auto_repeater_size = repeater_size;
+    }
+  }
+
+  // Add one |grid_gap| back into the available space to account for the extra
+  // one added to the end.
+
+  // If the extra grid gap was added to the end to the non_auto_specified_size,
+  // adding it to the available size here will cancel it out. If it was added to
+  // the auto_repeater_size, expanding the the extra gap to the remaining space
+  // will account for it as well.
+  const LayoutUnit remaining_space =
+      available_size + grid_gap - non_auto_specified_size;
+
+  DCHECK_GT(auto_repeater_size, 0);
+  // If any amount of repetitions would cause us to overflow, repeat once.
+  if (remaining_space < 0 || auto_repeater_size > remaining_space)
+    return 1u;
+
+  // Return the smallest amount that is larger than the remaining space.
+  if (auto_resolve_type == kMinGreaterThan)
+    return CeilToInt(remaining_space / auto_repeater_size);
+
+  // Return the largest amount that is smaller than the remaining space.
+  return std::max(1, FloorToInt(remaining_space / auto_repeater_size));
 }
 
 namespace {
