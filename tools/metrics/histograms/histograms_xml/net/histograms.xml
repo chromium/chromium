@@ -637,7 +637,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Net.DNS.DnsTransaction.SecureNotValidated.FailureError"
-    enum="NetErrorCodes" expires_after="2021-01-31">
+    enum="NetErrorCodes" expires_after="2021-07-31">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
@@ -652,7 +652,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Net.DNS.DnsTransaction.SecureNotValidated.FailureTime" units="ms"
-    expires_after="2021-01-31">
+    expires_after="2021-07-31">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 
@@ -667,7 +667,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true"
     name="Net.DNS.DnsTransaction.SecureNotValidated.SuccessTime" units="ms"
-    expires_after="2021-01-31">
+    expires_after="2021-07-31">
 <!-- Name completed by histogram_suffixes
    name="DohProviderId" -->
 

@@ -235,6 +235,9 @@ class NET_EXPORT_PRIVATE ResolveContext : public base::CheckedObserver {
   std::string GetDohProviderIdForUma(size_t server_index,
                                      bool is_doh_server,
                                      const DnsSession* session);
+  bool GetProviderUseExtraLogging(size_t server_index,
+                                  bool is_doh_server,
+                                  const DnsSession* session);
 
   void NotifyDohStatusObserversOfSessionChanged();
   void NotifyDohStatusObserversOfUnavailable(bool network_change);
