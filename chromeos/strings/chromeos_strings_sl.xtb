@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Tiskalni posli</translation>
 <translation id="3527036260304016759">Napaka – neznana napaka</translation>
 <translation id="357889014807611375">Wi‑Fi z omejeno količino prenosa</translation>
+<translation id="3595596368722241419">Baterija je polna</translation>
 <translation id="360565022852130722">Omrežje Wi-Fi je zavarovano s šibkim protokolom WEP 802.1x</translation>
 <translation id="3712633734921637892">Hitrost CPE-ja je trenutno omejena zaradi ohranjanja energije baterije ali znižanja temperature.</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (število mnenj: <ph name="AGGREGATED_COUNT" />)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Ločljivost</translation>
 <translation id="3941014780699102620">Ni bilo mogoče razrešiti gostitelja</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="397105322502079400">Izračunavanje …</translation>
 <translation id="39823212440917567">Odstranjena bodo tiskalna opravila, starejša od toliko dni: <ph name="NUMBER_OF_DAYS" /></translation>
 <translation id="4003384961948020559">Napaka – izhodni pladenj je poln</translation>
 <translation id="4034824040120875894">Tiskalnik</translation>
@@ -263,6 +265,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="6977381486153291903">Različica vdelane programske opreme</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja to napravo in ima dostop do vse dejavnosti uporabnika, vključno z obiskanimi spletnimi mesti, gesli in e-pošto.</translation>
 <translation id="7040230719604914234">Operater</translation>
+<translation id="7059230779847288458">Polnjenje; do napolnjenosti še <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">USTAVLJENO</translation>
 <translation id="7143207342074048698">Povezovanje</translation>
 <translation id="714876143603641390">Povezava z omrežjem LAN</translation>
@@ -281,6 +284,7 @@ Poskusite vprašati tako, da se dotaknete mikrofona.</translation>
 <translation id="7502658306369382406">Naslov IPv6</translation>
 <translation id="7561454561030345039">To dejanje upravlja skrbnik</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Še <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Preberite več v centru za pomoč</translation>
 <translation id="7648838807254605802">Velika zakasnitev HTTPS</translation>
 <translation id="7658239707568436148">Prekliči</translation>

@@ -19,6 +19,8 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1399397803214730675">Ovaj računar već ima noviju verziju Google Chrome pregledača. Ako softver ne funkcioniše, deinstalirajte Google Chrome i pokušajte ponovo.</translation>
 <translation id="1434626383986940139">Chrome Canary aplikacije</translation>
 <translation id="147727933880789532">Chrome preporučuje da onemogućite ovaj dodatak jer trenutno ne zadovoljava standarde poboljšanog bezbednog pregledanja.</translation>
+<translation id="1516530951338665275">Google Chrome zahteva pristup Bluetooth-u radi nastavljanja sa 
+ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Ažuriraj Chrome</translation>
 <translation id="1587223624401073077">Google Chrome koristi kameru.</translation>
 <translation id="1587325591171447154">Datoteka <ph name="FILE_NAME" /> je opasna, pa ju je Chrome blokirao.</translation>
@@ -209,6 +211,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6566149418543181476">Ažuriranje Google Chrome-a (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Sistem Chrome OS</translation>
 <translation id="6650333065969705433">Da biste koristili aplikaciju Rosetta za puštanje zaštićenog medijskog sadržaja, morate da restartujete Chrome.</translation>
+<translation id="6668872995670558829">Obavezan je Chrome profil</translation>
 <translation id="6676384891291319759">Pristupite Internetu</translation>
 <translation id="6679975945624592337">Neka Google Chrome radi u pozadini</translation>
 <translation id="6739177684496155661">Želite da nastavite na novom Chrome profilu?</translation>
@@ -227,6 +230,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Novo ažuriranje za Chrome je dostupno i primeniće se čim ga ponovo pokrenete.}=1{Novo ažuriranje za Chrome je dostupno i primeniće se čim ga ponovo pokrenete. Prozor bez arhiviranja se neće ponovo otvoriti.}one{Novo ažuriranje za Chrome je dostupno i primeniće se čim ga ponovo pokrenete. # prozor bez arhiviranja se neće ponovo otvoriti.}few{Novo ažuriranje za Chrome je dostupno i primeniće se čim ga ponovo pokrenete. # prozora bez arhiviranja se neće ponovo otvoriti.}other{Novo ažuriranje za Chrome je dostupno i primeniće se čim ga ponovo pokrenete. # prozora bez arhiviranja se neće ponovo otvoriti.}}</translation>
 <translation id="7155997830309522122">Ako je tako, izmenite sačuvanu lozinku u Chrome-u tako da se podudara sa novom lozinkom.</translation>
 <translation id="7242029209006116544">Prijavljujete se pomoću naloga kojim se upravlja i dajete njegovom administratoru kontrolu nad Google Chrome profilom. Chrome podaci, kao što su aplikacije, obeleživači, istorija, lozinke i druga podešavanja, biće trajno povezani sa nalogom <ph name="USER_NAME" />. Moći ćete da izbrišete te podatke preko Kontrolne table Google naloga, ali nećete moći da ih povežete sa nekim drugim nalogom. Možete opcionalno da napravite novi profil da bi postojeći Chrome podaci ostali odvojeni. <ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351">Ovim nalogom upravlja <ph name="MANAGEMENT_DOMAIN" />. Administrator zahteva Chrome profil radi pristupa. Ovaj profil je trenutno odvojen od svih ličnih profila. Administrator može da ukloni sve podatke Chrome-a koji se generišu tokom korišćenja ovog profila (poput pravljenja obeleživača, istorije, lozinki i drugih podešavanja). <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">Ovaj jezik se koristi za prikazivanje korisničkog interfejsa Google Chrome-a</translation>
 <translation id="7296210096911315575">Važne informacije o upotrebi i bezbednosti</translation>
 <translation id="7303916856901595720">Želite da premestite nalog na nov Chrome profil?</translation>
@@ -234,6 +238,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7398801000654795464">Bili ste prijavljeni u Chrome kao <ph name="USER_EMAIL_ADDRESS" />. Koristite isti nalog da biste se ponovo prijavili.</translation>
 <translation id="7408085963519505752">Chrome OS uslovi</translation>
+<translation id="7416131756095014387">Ovim nalogom se upravlja. Administrator zahteva Chrome profil radi pristupa. Ovaj profil je trenutno odvojen od svih ličnih profila. Administrator može da ukloni sve podatke Chrome-a koji se generišu tokom korišćenja ovog profila (poput pravljenja obeleživača, istorije, lozinki i drugih podešavanja). <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">Chrome OS ne može da sinhronizuje podatke jer Sinhronizacija nije dostupna za domen.</translation>
 <translation id="7486227612705979895">Chrome će pristupati Disku da bi prikazivao predloge na traci za adresu</translation>
 <translation id="7535429826459677826">Programerska verzija Google Chrome-a</translation>

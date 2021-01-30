@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Sarcini de printare</translation>
 <translation id="3527036260304016759">Nereușită – Eroare necunoscută</translation>
 <translation id="357889014807611375">Wi-Fi contorizat</translation>
+<translation id="3595596368722241419">Baterie încărcată</translation>
 <translation id="360565022852130722">Rețeaua Wi-Fi este securizată cu protocolul slab WEP 802.1x</translation>
 <translation id="3712633734921637892">Viteza CPU este limitată pentru a conserva bateria sau a reduce temperatura</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recenzii)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Rezoluție</translation>
 <translation id="3941014780699102620">Nu s-a putut rezolva gazda</translation>
 <translation id="3942420633017001071">Diagnosticare</translation>
+<translation id="397105322502079400">Se calculează...</translation>
 <translation id="39823212440917567">Sarcinile de printare mai vechi de <ph name="NUMBER_OF_DAYS" /> zile vor fi eliminate</translation>
 <translation id="4003384961948020559">Nereușită – Tavă de ieșire plină</translation>
 <translation id="4034824040120875894">Imprimantă</translation>
@@ -263,6 +265,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="6977381486153291903">Versiune firmware</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestionează acest dispozitiv și are acces la toată activitatea utilizatorului, inclusiv la paginile web accesate, parole și e-mail.</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7059230779847288458">Se încarcă, <ph name="TIME_VALUE" /> până la încărcarea completă</translation>
 <translation id="708426984172631313">OPRIT</translation>
 <translation id="7143207342074048698">Se conectează</translation>
 <translation id="714876143603641390">Conectivitatea prin LAN</translation>
@@ -281,6 +284,7 @@ Atinge microfonul și întreabă orice dorești.</translation>
 <translation id="7502658306369382406">Adresă IPv6</translation>
 <translation id="7561454561030345039">Această setare este gestionată de administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Timp rămas: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Află mai multe din Centrul de ajutor</translation>
 <translation id="7648838807254605802">Latență mare a solicitărilor HTTPS</translation>
 <translation id="7658239707568436148">Anulează</translation>

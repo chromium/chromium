@@ -327,6 +327,7 @@
 <translation id="1367951781824006909">एउटा फाइल रोज्नुहोस्</translation>
 <translation id="1369149969991017342">स्विचमार्फत पहुँच राख्नुहोस् (केवल एक वा दुई स्विचहरू प्रयोग गरी कम्प्युटर नियन्त्रण गर्नुहोस्)</translation>
 <translation id="1372841398847029212">आफ्नो खातासँग सिंक गर्नुहोस्</translation>
+<translation id="1373176046406139583">तपाईंको यन्त्रको पहुँचसम्बन्धी सेटिङमा गई तपाईंको स्क्रिन अनलक हुँदा तपाईंसँग कसले सेयर गर्न सक्छन् भन्ने कुरा तोक्न सकिन्छ। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">नेटवर्क "<ph name="NETWORK_NAME" />" का लागि चाहिने प्रमाणपत्र की त स्थापना गरिएको छैन वा उप्रान्त मान्य छैन । कृपया नयाँ प्रमाणपत्र प्राप्त गरी पुनः जडान प्रयास गर्नुहोस्।</translation>
 <translation id="1375321115329958930">सुरक्षित गरिएका पासवर्डहरू</translation>
 <translation id="137651782282853227">सुरक्षित गरिएका पासवर्डहरू यहाँ देखापर्ने छन्</translation>
@@ -1087,7 +1088,6 @@
 <translation id="2204034823255629767">तपाईंले टाइप गर्नुहुने कुनैपनि कुरालाई पढ्नुहोस् र परिवर्तन गर्नुहोस्</translation>
 <translation id="220858061631308971">कृपया "<ph name="DEVICE_NAME" />" मा यो पिन कोड प्रविष्टि गर्नुहोस्:</translation>
 <translation id="2212565012507486665">कुकीहरूलाई अनुमति दिनुहोस्</translation>
-<translation id="2213140827792212876">आदान प्रदानसम्बन्धी आइकन हटाउनुहोस्</translation>
 <translation id="2214018885812055163">आदान प्रदान गरिएका फोल्डरहरू</translation>
 <translation id="2214884991347062907">गलत पासवर्ड, फेरि प्रयास गर्नुहोस्</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;१ पङ्क्ति देखाइएको छैन&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> पङ्क्तिहरू देखाइएका छैनन्&gt;}}</translation>
@@ -2424,7 +2424,6 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">तपाईं र Google</translation>
 <translation id="3722108462506185496">भर्चुअल मेसिन सेवा सुरु गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
-<translation id="3726137731714254362">फोल्डरहरूलाई यहाँबाट हटाउनुले ती फोल्डरहरू आदान प्रदान गर्न रोक्ने छ तर ती फोल्डरभित्र रहेका फाइलहरू भने मेटाउने छैन।</translation>
 <translation id="3727148787322499904">यो सेटिङ परिवर्तन गर्नुले आदान प्रदान गरिएका सबै नेटवर्कहरूमा असर पार्नेछ</translation>
 <translation id="3727187387656390258">पपअप निरीक्षण गर्नुहोस्</translation>
 <translation id="372722114124766626">एक पटक मात्र</translation>
@@ -2561,7 +2560,6 @@
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: सिंक गर्ने कार्य पज गरियो</translation>
 <translation id="3861638017150647085">युजरनेम "<ph name="USERNAME" />" उपलब्ध छैन</translation>
 <translation id="3861977424605124250">ब्राउजर खोल्दा देखाइयोस्</translation>
-<translation id="3862693525629180217">अन्तर्निर्मित सेन्सरद्वारा पुष्टि गर्नुहोस्</translation>
 <translation id="3862788408946266506">'Kiosk_only" नामक म्यानिफेस्ट विशेषता भएको एप अनिवार्य रूपमा ChromeOS को किओस्क मोडमा स्थापना गर्नु पर्छ</translation>
 <translation id="3865414814144988605">रिजोलुसन</translation>
 <translation id="3866249974567520381">विवरण</translation>
@@ -3440,6 +3438,7 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> हर्ज - इन्टरलेस गरिएको</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, जोड्नुहोस्</translation>
 <translation id="49027928311173603">सर्भरबाट डाउनलोड गरिएको नीति अवैध छ: <ph name="VALIDATION_ERROR" /></translation>
+<translation id="4904061654709986277">प्रोफाइल हाल्नुहोस्</translation>
 <translation id="4906490889887219338">नेटवर्कको फाइल आदान प्रदान गर्ने कार्य सेटअप वा व्यवस्थापन गर्नुहोस्। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> मध्ये <ph name="NETWORK_INDEX" /> औँ नेटवर्क, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, फोनको ब्याट्रीको स्तर <ph name="BATTERY_STATUS" />%, विवरणहरू</translation>
 <translation id="4907161631261076876">यो फाइल सामान्यत: डाउनलोड गरिँदैन र यो खतरनाक हुन सक्छ।</translation>
@@ -3562,6 +3561,7 @@
 <translation id="5068918910148307423">हालसालै बन्द गरिएका साइटहरूलाई डेटा पठाउने र प्राप्त गर्ने कार्य सम्पन्न गर्न अनुमति नदिनुहोस्</translation>
 <translation id="5068919226082848014">पिजा</translation>
 <translation id="5070773577685395116">सूचना प्राप्त गर्नुभएन?</translation>
+<translation id="5071892329440114717">मानक सुरक्षासम्बन्धी विवरण देखाइयोस्</translation>
 <translation id="5072052264945641674">कर्सरको आकार समायोजन गर्नुहोस्</translation>
 <translation id="5072836811783999860">व्यवस्थित बुकमार्कहरू देखाउनुहोस्</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" />, र थप # वटा}}</translation>
@@ -4358,7 +4358,6 @@
 <translation id="6003143259071779217">मोबाइल नेटवर्कको eSIM प्रोफाइल हटाउनुहोस्</translation>
 <translation id="6006484371116297560">क्लासिक</translation>
 <translation id="6007240208646052708">तपाईंको भाषामा आवाजमार्फत खोजी गर्ने सुविधा उपलब्ध छैन।</translation>
-<translation id="6009781704028455063">अन्तर्निर्मित सेन्सर</translation>
 <translation id="6011074160056912900">इथरनेट नेटवर्क</translation>
 <translation id="6011193465932186973">फिंगरप्रिन्ट</translation>
 <translation id="6011449291337289699">साइट सम्बन्धी डेटा खाली गर्नुहोस्</translation>
@@ -4712,6 +4711,7 @@
 <translation id="6412673304250309937">Chrome मा भण्डारण गरिएका असुरक्षित साइटको सूची जाँच गरी URL हरू सुरक्षित छन् वा छैनन् भन्ने कुरा यकिन गर्छ। कुनै साइटले तपाईंको पासवर्ड चोरी गर्न खोज्दा वा तपाईंले कुनै हानिकारक फाइल डाउनलोड गर्दा Chrome ले पृष्ठका केही सामग्रीसहित URL हरूलाई सुरक्षित ब्राउजिङमा पठाउन पनि सक्छ।</translation>
 <translation id="6412931879992742813">नयाँ गुप्त विण्डो</translation>
 <translation id="641469293210305670">अद्यावधिक र एपहरू स्थापना गर्नुहोस्</translation>
+<translation id="6414878884710400018">'सिस्टमसम्बन्धी प्राथमिकताहरू' खोल्नुहोस्</translation>
 <translation id="6414888972213066896">तपाईंले यो साइटमा जानु ठिक हुन्छ वा हुँदैन भनेर आफ्नो अभिभावकलाई सोध्नुभएको थियो</translation>
 <translation id="6415900369006735853">आफ्नो फोनमार्फत इन्टरनेटमा जोडिनुहोस्</translation>
 <translation id="6416743254476733475">आफ्नो कम्प्युटरमा अनुमति दिनुहोस् वा रोक लगाउनुहोस्।</translation>
@@ -4758,6 +4758,7 @@
 <translation id="6460601847208524483">अर्को फेला पार्नुहोस्</translation>
 <translation id="6461170143930046705">नेटवर्कहरू खोज्दै...</translation>
 <translation id="6463795194797719782">&amp;सम्पादन</translation>
+<translation id="6464825623202322042">यो यन्त्र</translation>
 <translation id="6465841119675156448">इन्टरनेट प्रयोग नगरिकन</translation>
 <translation id="6466988389784393586">सबै बुकमार्कहरू &amp;खोल्नुहोस्</translation>
 <translation id="6467304607960172345">पूर्ण स्क्रिनका भिडियोहरूलाई अप्टिमाइज गर्नुहोस्</translation>
@@ -4778,6 +4779,7 @@
 <translation id="648927581764831596">कुनै पनि उपलब्ध छैन</translation>
 <translation id="6490471652906364588">USB-C यन्त्र (दायाँ पोर्ट)</translation>
 <translation id="6491376743066338510">अनुमति दिन सकिएन</translation>
+<translation id="6494327278868541139">परिष्कृत सुरक्षासम्बन्धी विवरण देखाइयोस्</translation>
 <translation id="6494445798847293442">प्रमाणीकरण अधिकारी होइन</translation>
 <translation id="6494974875566443634">व्यक्तिगत सेटिङ</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /> <ph name="SECURITY_STATUS" /> <ph name="CONNECTION_STATUS" /> मध्ये नेटवर्क <ph name="NETWORK_INDEX" />, सिग्नलको क्षमता <ph name="SIGNAL_STRENGTH" />%, तपाईंका प्रशासकले व्यवस्थित गर्नुभएको छ, विवरणहरू</translation>
@@ -5063,7 +5065,6 @@
 <translation id="683373380308365518">कुनै स्मार्ट तथा सुरक्षित ब्राउजरमा बदल्नुहोस्</translation>
 <translation id="6835762382653651563">कृपया तपाईँको <ph name="DEVICE_TYPE" /> अद्यावधिक गर्न इन्टरनेटमा जडान गर्नुहोस्।</translation>
 <translation id="6838034009068684089">कुनै साइटले मेरा स्क्रिनहरूमा विन्डो राख्न र त्यहाँ भएका विन्डो खोल्न खोज्दा त्यसो गर्न दिने कि नदिने भनी सोधियोस् (सिफारिस गरिएको)</translation>
-<translation id="6838694093138907871">कोड अवैध छ, कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6838860780238890144">{COUNT,plural, =1{फोन नम्बर}other{# वटा फोन नम्बर}}</translation>
 <translation id="6839225236531462745">प्रमाणपत्र मेटाइमा त्रुटी</translation>
 <translation id="6839916869147598086">साइन इन परिवर्तन गरिएको छ</translation>
@@ -5314,6 +5315,7 @@
 <translation id="7108933416628942903">अब लक गर्नुहोस्</translation>
 <translation id="7109543803214225826">सर्टकट हटाइयो</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{समूहमा ट्याब थप्नुहोस्}other{समूहमा ट्याबहरू थप्नुहोस्}}</translation>
+<translation id="7111822978084196600">यो विन्डोको नाम राख्नुहोस्</translation>
 <translation id="7113502843173351041">आफ्नो इमेल ठेगाना थाहा पाउनुहोस्</translation>
 <translation id="7114054701490058191">पासवर्ड मेल खाँदैन</translation>
 <translation id="7114648273807173152">आफ्नो Google खातामा साइन इन गर्नका निम्ति Smart Lock को प्रयोग गर्न सेटिङहरू &gt; जोडिएका यन्त्रहरू &gt; तपाईंको फोन &gt; Smart Lock मा जानुहोस्।</translation>
@@ -5575,6 +5577,7 @@
 <translation id="7421925624202799674">पृष्ठ स्रोत &amp;हेर्नुहोस्</translation>
 <translation id="7422192691352527311">प्राथमिकताहरू...</translation>
 <translation id="7423098979219808738">पहिले सोध्नुहोस्</translation>
+<translation id="7423425410216218516">पहुँचसम्बन्धी सेटिङ <ph name="MINUTES" /> मिनेटसम्म अन हुन्छ</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> हटाउनुहोस्</translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> चलाउन अनुमति दिनु पर्ने हुन्छ</translation>
 <translation id="7427348830195639090">पृष्ठभूमि पाना: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -6959,6 +6962,7 @@
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - क्र्याश भएको छ</translation>
 <translation id="8981825781894055334">प्रिन्टरको कागज सकिनै लागेको छ</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> ले <ph name="FILENAME" /> सम्पादन गर्न सक्छ</translation>
+<translation id="8984694057134206124">तपाईंको यन्त्र <ph name="MINUTES" /> मिनेटसम्म सबै जनाले देख्नु हुने छ। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> दिन अघि सक्रिय</translation>
 <translation id="8986362086234534611">बिर्सनुहोस्</translation>
 <translation id="8986494364107987395">Google लाई स्वचालित रूपमा उपयोगको तथ्याङ्कहरू र क्र्यास रिपोर्ट पठाउनुहोस्</translation>
@@ -7132,7 +7136,6 @@
 <translation id="917350715406657904">तपाईं आफ्ना अभिभावकले <ph name="APP_NAME" /> मा निर्धारण गर्नुभएको समयको सीमामा पुग्नुभयो। तपाईं भोलि यसलाई <ph name="TIME_LIMIT" /> प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="9173787391779732995">साइटहरू फोटो देखाउन सक्छन् (सिफारिस गरिएको)</translation>
 <translation id="9173995187295789444">ब्लुटुथ यन्त्रहरू छन् कि भनी जाँच गर्दै...</translation>
-<translation id="9174052566244514547">तपाईंका एड्मिनले एपहरू अपडेट गर्ने प्रयोजनका लागि तपाईंको यन्त्र रिस्टार्ट गर्न अनुरोध गर्नुभएको छ। यो कार्य पूरा हुन निकै बेर लाग्न सक्छ</translation>
 <translation id="9174401638287877180">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। निदान, यन्त्र र एपको प्रयोगसम्बन्धी डेटा स्वतः Google लाई पठाएर आफ्ना बच्चाको Android सम्बन्धी अनुभवमा सुधार ल्याउन मद्दत गर्नुहोस्। यस्तो डेटा तपाईंका बच्चाको पहिचान गर्ने प्रयोजनका लागि प्रयोग गरिने छैन र यसले प्रणाली तथा एपको स्थिरता र अन्य कुराहरूमा सुधार ल्याउन मद्दत गर्ने छ। केही समग्र डेटाले Google का एप तथा Android का विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छन्। तपाईंका बच्चाका खातामा वेब तथा एपसम्बन्धी अतिरिक्त गतिविधिको सेटिङ सक्रिय गरिएको छ भने यो डेटा उनको Google खातामा सुरक्षित गरिन सक्छ।</translation>
 <translation id="917510707618656279">कुनै साइटले ब्लुटुथ यन्त्रहरूमाथि पहुँच राख्न खोज्दा मलाई जानकारी दिनुहोस्</translation>
 <translation id="9176476835295860688">प्रयोग तथा निदानसम्बन्धी डेटा पठाउनुहोस्। यो यन्त्रले हाल निदान, यन्त्र र एपको उपयोगसम्बन्धी डेटा स्वतः Google मा पठाइरहेको छ। यसले प्रणाली तथा एपको स्थिरता र थप कुराहरू सुधार गर्न मद्दत गर्ने छ। केही एकीकृत डेटाले Google का एप तथा Android का विकासकर्ता जस्ता साझेदारहरूलाई पनि मद्दत गर्ने छ। मालिकले यो <ph name="BEGIN_LINK1" />सेटिङ<ph name="END_LINK1" /> लागू गर्नुभएको हो। तपाईंको खातामा वेब तथा एपसम्बन्धी अतिरिक्त क्रियाकलापको सेटिङ सक्रिय गरिएको छ भने यो डेटा तपाईंको Google खातामा सुरक्षित गरिन सक्छ। <ph name="BEGIN_LINK2" />थप जान्नुहोस्<ph name="END_LINK2" /></translation>

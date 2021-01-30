@@ -17,6 +17,8 @@
 <translation id="1399397803214730675">Este equipo ya cuenta con una versión más reciente de Google Chrome. Si el software no funciona, desinstala Google Chrome y descárgalo nuevamente.</translation>
 <translation id="1434626383986940139">Aplicaciones de Chrome Canary</translation>
 <translation id="147727933880789532">Chrome te recomienda inhabilitar esta extensión porque actualmente no cumple con los estándares de la Navegación segura mejorada.</translation>
+<translation id="1516530951338665275">Google Chrome necesita acceso a la conexión Bluetooth para continuar con la 
+ vinculación. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1587223624401073077">Google Chrome está usando tu cámara.</translation>
 <translation id="1587325591171447154">Chrome bloqueó <ph name="FILE_NAME" /> porque es un archivo peligroso.</translation>
@@ -201,6 +203,7 @@
 <translation id="6566149418543181476">Actualizando Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Sistema de Chrome OS</translation>
 <translation id="6650333065969705433">Si quieres usar Rosetta para reproducir contenido multimedia protegido, deberás reiniciar Chrome.</translation>
+<translation id="6668872995670558829">Se requiere un perfil de Chrome</translation>
 <translation id="6676384891291319759">Acceder a Internet</translation>
 <translation id="6679975945624592337">Permitir que Google Chrome se ejecute en segundo plano</translation>
 <translation id="6739177684496155661">¿Deseas continuar en un nuevo perfil de Chrome?</translation>
@@ -219,6 +222,7 @@
 <translation id="7140653346177713799">{COUNT,plural, =0{Hay una nueva actualización disponible para Chrome que se aplicará cuando lo reinicies.}=1{Hay una nueva actualización disponible para Chrome que se aplicará cuando lo reinicies. No se volverá a abrir la ventana de incógnito.}other{Hay una nueva actualización disponible para Chrome que se aplicará cuando lo reinicies. No se volverán a abrir las # ventanas de incógnito.}}</translation>
 <translation id="7155997830309522122">En ese caso, edita la contraseña guardada en Chrome para que coincida con la nueva.</translation>
 <translation id="7242029209006116544">Estás por acceder con una cuenta administrada, lo que significa que proporcionarás al administrador el control sobre tu perfil de Google Chrome. Tus datos de Google Chrome, como las aplicaciones, los favoritos, el historial, las contraseñas y otros parámetros de configuración quedarán vinculados a <ph name="USER_NAME" /> de forma permanente. Podrás eliminar estos datos a través del Panel de control de Cuentas de Google, pero no podrás asociarlos a otra cuenta. También puedes crear un perfil para mantener separados tus datos de Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351"><ph name="MANAGEMENT_DOMAIN" /> administra esta cuenta. Tu administrador requiere que tengas un perfil de Chrome para acceder. Este perfil es totalmente independiente de los perfiles personales. Tu administrador puede quitar cualquier dato de Chrome que se genere durante el uso de este perfil (como la creación de favoritos, un historial, contraseñas y otras opciones de configuración). <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">Este idioma se usa para mostrar la IU de Google Chrome</translation>
 <translation id="7296210096911315575">Información importante sobre el uso y la seguridad</translation>
 <translation id="7303916856901595720">¿Deseas mover la cuenta a un nuevo perfil de Chrome?</translation>
@@ -226,6 +230,7 @@
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7398801000654795464">Accediste a Google Chrome con <ph name="USER_EMAIL_ADDRESS" />. Usa la misma cuenta para volver a acceder.</translation>
 <translation id="7408085963519505752">Condiciones del Sistema operativo Chrome</translation>
+<translation id="7416131756095014387">Esta cuenta está administrada. Tu administrador requiere que tengas un perfil de Chrome para acceder. Este perfil es totalmente independiente de los perfiles personales. Tu administrador puede quitar cualquier dato de Chrome que se genere durante el uso de este perfil (como la creación de favoritos, un historial, contraseñas y otras opciones de configuración). <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">El Sistema operativo Chrome no pudo sincronizar los datos porque la sincronización no está disponible para el dominio.</translation>
 <translation id="7486227612705979895">Chrome accederá a tus datos de Drive para hacer sugerencias en la barra de direcciones</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

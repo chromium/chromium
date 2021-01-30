@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Задания за отпечатване</translation>
 <translation id="3527036260304016759">Неуспешно – неизвестна грешка</translation>
 <translation id="357889014807611375">Wi-Fi мрежа с отчитане</translation>
+<translation id="3595596368722241419">Батерията е заредена</translation>
 <translation id="360565022852130722">Wi-Fi мрежата е защитена със слабия протокол WEP 802.1x</translation>
 <translation id="3712633734921637892">Понастоящем скоростта на процесора е ограничена с цел запазване на батерията или понижаване на температурата</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> отзива)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Разделителна способност</translation>
 <translation id="3941014780699102620">Името на хоста не бе преобразувано</translation>
 <translation id="3942420633017001071">Диагностика</translation>
+<translation id="397105322502079400">Изчислява се...</translation>
 <translation id="39823212440917567">Заданията за отпечатване, по-стари от <ph name="NUMBER_OF_DAYS" /> дни, ще бъдат премахнати</translation>
 <translation id="4003384961948020559">Неуспешно – изходният контейнер е пълен</translation>
 <translation id="4034824040120875894">Принтер</translation>
@@ -263,6 +265,7 @@
 <translation id="6977381486153291903">Версия на фърмуера</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управлява това устройство и има достъп до цялата потребителска активност, включително посетените уеб страници, паролите и имейлите.</translation>
 <translation id="7040230719604914234">Оператор</translation>
+<translation id="7059230779847288458">Зарежда се: <ph name="TIME_VALUE" /> до пълно зареждане</translation>
 <translation id="708426984172631313">СПРЯН</translation>
 <translation id="7143207342074048698">Свързва се</translation>
 <translation id="714876143603641390">Връзка с LAN</translation>
@@ -281,6 +284,7 @@
 <translation id="7502658306369382406">IPv6 адрес</translation>
 <translation id="7561454561030345039">Това действие се управлява от администратора ви</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Оставащо време: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Научете повече в Помощния център</translation>
 <translation id="7648838807254605802">Голямо забавяне на HTTPS</translation>
 <translation id="7658239707568436148">Отказ</translation>

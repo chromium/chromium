@@ -743,7 +743,6 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />zresetuj synchronizację<ph 
 <translation id="6232535412751077445">Włączenie opcji „Bez śledzenia” oznacza, że podczas przeglądania będzie wysyłane żądanie. Jego wynik zależy od tego, czy strona na nie odpowie oraz jak zostanie ono zinterpretowane.
 
 Na przykład niektóre strony mogą na nie zareagować, wyświetlając reklamy bez związku ze stronami odwiedzonymi przez Ciebie wcześniej. Wiele stron będzie nadal gromadzić dane przeglądania i używać ich na przykład do poprawy bezpieczeństwa, pokazywania treści, reklam i rekomendacji oraz do generowania statystyk.</translation>
-<translation id="6243852395147506234">Dostępne offline</translation>
 <translation id="624789221780392884">Aktualizacja jest gotowa</translation>
 <translation id="6255999984061454636">Polecane treści</translation>
 <translation id="6266591733731644292">Piaskownica prywatności nie została jeszcze udostępniona do powszechnego użytku. W tym okresie próbnym:\n<ph name="BEGIN_LIST_ITEM1" />Programiści mogą wypróbować możliwość dostosowywania tworzonych stron i aplikacji do potrzeb użytkowników bez uzyskiwania dostępu do informacji, które pozwalają zidentyfikować konkretne osoby.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Użytkownicy mogą zrezygnować z okresu próbnego za pomocą elementów sterujących na tej stronie.<ph name="END_LIST_ITEM2" /></translation>
@@ -892,7 +891,6 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="718926126787620637">Lista folderów zakładek otwarta na całą wysokość</translation>
 <translation id="7189372733857464326">Czekam na zakończenie aktualizacji Usług Google Play</translation>
 <translation id="7191430249889272776">Karta otwarta w tle.</translation>
-<translation id="720894724577012575">Kategorie: <ph name="COMMA_SEPERATED_CATEGORY_LIST" /></translation>
 <translation id="7233236755231902816">Aby wyświetlać strony internetowe w swoim języku, pobierz najnowszą wersję Chrome</translation>
 <translation id="7248069434667874558">Sprawdź, czy <ph name="TARGET_DEVICE_NAME" /> ma włączoną synchronizację w Chrome</translation>
 <translation id="7274013316676448362">Zablokowana witryna</translation>
@@ -1008,7 +1006,6 @@ Dane sesji incognito zostaną usunięte z Chrome dopiero po <ph name="BEGIN_BOL
 <translation id="7971136598759319605">Aktywność 1 dzień temu</translation>
 <translation id="7975379999046275268">Wyświetl podgląd strony <ph name="BEGIN_NEW" />Nowość<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Ładuj wstępnie strony, by przyspieszyć przeglądanie i wyszukiwanie</translation>
-<translation id="7986497153528221272">Aby wyświetlić hasła, najpierw ustaw blokadę ekranu na urządzeniu</translation>
 <translation id="7998918019931843664">Otwórz ponownie zamkniętą kartę</translation>
 <translation id="8004582292198964060">Przeglądarka</translation>
 <translation id="8013372441983637696">Usuń też swoje dane Chrome z tego urządzenia</translation>

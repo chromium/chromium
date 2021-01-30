@@ -23,6 +23,7 @@
 <translation id="169515659049020177">Shift</translation>
 <translation id="1732295673545939435"><ph name="MODIFIER1" /><ph name="SEPARATOR1" /><ph name="MODIFIER2" /><ph name="SEPARATOR2" /><ph name="KEY" /></translation>
 <translation id="1733525068429116555">अ‍ॅड्रेस बारमधील तुमच्या इनपुटमध्ये www. आणि .com जोडा, त्यानंतर पेज उघडा</translation>
+<translation id="1768987374400973299">स्क्रीनशॉट घ्या/रेकॉर्डिंग करा</translation>
 <translation id="1872219238824176091">सध्याचा डेस्क काढून टाका</translation>
 <translation id="1920446759863417809"><ph name="SHIFT1" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, त्यानंतर <ph name="SHIFT2" /><ph name="SEPARATOR3" /><ph name="TAB" /> किंवा <ph name="LEFT" /></translation>
 <translation id="1996162290124031907">पुढील टॅबवर जा</translation>
@@ -110,6 +111,7 @@
 <translation id="4801989101741319327">पुढील शब्दाच्या शेवटी हलवा</translation>
 <translation id="4866066940972151697">उजवीकडील डेस्क सुरू करा</translation>
 <translation id="4916163929714267752">लिंक एका नवीन विंडोमध्ये उघडा</translation>
+<translation id="492453977506755176">कॅप्चर मोड की</translation>
 <translation id="5030659775136592441">बुकमार्क व्यवस्थापक दाखवा</translation>
 <translation id="5034421018520995080">पेजच्या सर्वात वर जा</translation>
 <translation id="5042305953558921026">पूर्वावलोकन मोड की</translation>
@@ -132,6 +134,7 @@
 <translation id="5899919361772749550">डेव्हलपर टूल कन्सोल दाखवा किंवा लपवा</translation>
 <translation id="5919628958418675842">गोपनीयता स्क्रीन सुरू किंवा बंद करा</translation>
 <translation id="5921745308587794300">विंडो फिरवा</translation>
+<translation id="5926306472221400972">फुलस्क्रीनचा स्क्रीनशॉट घ्या</translation>
 <translation id="6022924867608035986">शोध बॉक्स मजकूर साफ करा</translation>
 <translation id="6045998054441862242">उच्च तीव्रता मोड सुरू करा</translation>
 <translation id="6052614013050385269">एखाद्या लिंकवर राइट क्लिक करा</translation>
@@ -149,6 +152,7 @@
 <translation id="6445033640292336367">टॅबला त्याच्या मूळ स्थितीत परत न्या</translation>
 <translation id="6474744297082284761">झूम आउट करा (डॉक केलेले असताना किंवा क्षेत्रे मॅग्निफायर सुरू केलेले असताना)</translation>
 <translation id="649811797655257835">फाइल निवडा, त्यानंतर <ph name="SPACE" /> दाबा</translation>
+<translation id="6551886416582667425">आंशिक स्क्रीनशॉट घ्या/रेकॉर्डिंग करा</translation>
 <translation id="6556040137485212400">सर्वाधिक काळासाठी न वापरली गेलेली विंडो उघडा</translation>
 <translation id="666343722268997814">हायलाइट केलेल्या आयटमसाठी राइट क्लिक मेनू उघडा</translation>
 <translation id="6671538777808758331">तुमच्या शोधाला साजेशा पुढील जुळणीवर जा</translation>
@@ -175,6 +179,7 @@
 <translation id="7611271430932669992">फोकस पॉपअप आणि संवाद वर हलवा</translation>
 <translation id="7635348532214572995">अ‍ॅप आयकन अ‍ॅप ग्रिडभोवती हलवा</translation>
 <translation id="766326951329901120">आशय एक साधा मजकूर म्हणून क्लिपबोर्डवरून पेस्ट करा</translation>
+<translation id="7673453620027697230">विंडोचा स्क्रीनशॉट घ्या/रेकॉर्डिंग करा</translation>
 <translation id="7703010453515335249">डावा कंस</translation>
 <translation id="7724603315864178912">कट करा</translation>
 <translation id="7730490981846175479"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, त्यानंतर <ph name="SPACE" /> किंवा <ph name="ENTER" /></translation>

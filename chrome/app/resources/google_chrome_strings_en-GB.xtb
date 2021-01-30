@@ -19,6 +19,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1399397803214730675">This computer already has a more recent version of Google Chrome. If the software is not working, please uninstall Google Chrome and try again.</translation>
 <translation id="1434626383986940139">Chrome Canary Apps</translation>
 <translation id="147727933880789532">Chrome recommends disabling this extension because it does not currently meet Enhanced Safe Browsing standards.</translation>
+<translation id="1516530951338665275">Google Chrome needs Bluetooth access to continue pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Update Chrome</translation>
 <translation id="1587223624401073077">Google Chrome is using your camera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> is dangerous, so Chrome has blocked it.</translation>
@@ -209,6 +210,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6566149418543181476">Updating Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS system</translation>
 <translation id="6650333065969705433">To use Rosetta to play protected media, you must restart Chrome.</translation>
+<translation id="6668872995670558829">Chrome profile required</translation>
 <translation id="6676384891291319759">Access the Internet</translation>
 <translation id="6679975945624592337">Let Google Chrome Run in the Background</translation>
 <translation id="6739177684496155661">Continue in a new Chrome profile?</translation>
@@ -227,6 +229,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{A new update for Chrome is available and will be applied as soon as you relaunch.}=1{A new update for Chrome is available and will be applied as soon as you relaunch. Your Incognito window won't reopen.}other{A new update for Chrome is available and will be applied as soon as you relaunch. Your # Incognito windows won't reopen.}}</translation>
 <translation id="7155997830309522122">If so, please edit your saved password in Chrome so that it matches your new password.</translation>
 <translation id="7242029209006116544">You are signing in with a managed account and giving its administrator control over your Google Chrome profile. Your Chrome data, such as your apps, bookmarks, history, passwords and other settings will become permanently tied to <ph name="USER_NAME" />. You will be able to delete this data via the Google Accounts Dashboard, but you will not be able to associate this data with another account. You can optionally create a new profile to keep your existing Chrome data separate. <ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351">This account is managed by <ph name="MANAGEMENT_DOMAIN" />. Your administrator requires a Chrome profile for access. This profile is completely separate from any personal profile. Chrome data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by your admin. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">This language is used to display the Google Chrome UI</translation>
 <translation id="7296210096911315575">Important use and safety information</translation>
 <translation id="7303916856901595720">Move account to a new Chrome profile?</translation>
@@ -234,6 +237,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7339898014177206373">New window</translation>
 <translation id="7398801000654795464">You were signed in to Chrome as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
 <translation id="7408085963519505752">Chrome OS terms</translation>
+<translation id="7416131756095014387">This account is managed. Your administrator requires a Chrome profile for access. This profile is completely separate from any personal profile. Chrome data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by your admin. <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">Chrome OS could not sync your data because Sync is not available for your domain.</translation>
 <translation id="7486227612705979895">Chrome will access your Drive to make suggestions in the address bar</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

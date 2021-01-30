@@ -125,6 +125,7 @@
 <translation id="4994636714258228724">‏افرودن خودتان به Chromium</translation>
 <translation id="5224391634244552924">‏گذرواژه ذخیره‌شده‌ای وجود ندارد. Chromium زمانی می‌تواند گذرواژه‌هایتان را بررسی کند که آن‌ها را ذخیره کرده باشید.</translation>
 <translation id="5277894862589591112">‏برای اعمال تغییراتتان، Chromium را راه‌اندازی مجدد کنید</translation>
+<translation id="5357324149468831780">‏این حساب مدیریت شده است. سرپرستتان باید برای دسترسی، نمایه Chromium داشته باشد. این نمایه کاملاً مجزا از نمایه شخصی است. سرپرستتان می‌تواند داده‌های Chromium را که درطول استفاده از این نمایه ایجاد شده است (مثل ایجاد نشانک‌ها، سابقه، گذرواژه‌ها، و دیگر تنظیمات) بردارد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">‏شما با حساب مدیریت‌شده وارد سیستم می‌شوید و به سرپرست آن اجازه کنترل بر نمایه Chromium خود را می‌دهید. داده‌های Chromium شما شامل برنامه‌ها، نشانک‌ها، سابقه، گذرواژه‌ها و سایر تنظیمات برای همیشه به <ph name="USER_NAME" /> مرتبط خواهد شد. می‌توانید این داده‌ها را از طریق داشبورد حساب‌های Google حذف کنید اما نمی‌توانید این داده‌ها را به حساب دیگری مرتبط سازید. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">‏درحال به‌روزرسانی Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">‏مجاز کردن ورود به سیستم Chromium</translation>
@@ -139,6 +140,7 @@
 <translation id="5623402015214259806">{0,plural, =0{‏به‌روزرسانی Chromium دردسترس است}=1{‏به‌روزرسانی Chromium دردسترس است}one{‏به‌روزرسانی Chromium از # روز پیش دردسترس است}other{‏به‌روزرسانی Chromium از # روز پیش دردسترس است}}</translation>
 <translation id="5631814766731275228">‏نام و تصویر Chromium</translation>
 <translation id="5634636535844844681">‏Chromium به Windows 7 یا بالاتر نیاز دارد.</translation>
+<translation id="5642268154044585431">‏نمایه Chromium لازم است</translation>
 <translation id="5653831366781983928">‏لطفاً اکنون Chromium را بازراه‌اندازی کنید</translation>
 <translation id="5698481217667032250">‏نمایش Chromium به این زبان</translation>
 <translation id="5736967399513123100">‏برای اینکه Chromium بتواند رسانه محافظت‌شده پخش کند، باید Rosetta را نصب کنید. می‌خواهید آن را اکنون نصب کنید؟</translation>
@@ -169,6 +171,7 @@
 <translation id="6309712487085796862">‏Chromium درحال استفاده از دوربین شما است.</translation>
 <translation id="6333502561965082103">‏عملیات دیگری در Chromium درحال انجام است. لطفاً بعداً دوباره امتحان کنید.</translation>
 <translation id="6334986366598267305">‏اکنون استفاده از Chromium با حساب Google شما و در رایانه‌های مشترک آسان‌تر شده است.</translation>
+<translation id="6345021408165055322">‏<ph name="MANAGEMENT_DOMAIN" /> این حساب را مدیریت می‌کند. سرپرستتان باید برای دسترسی، نمایه Chromium داشته باشد. این نمایه کاملاً مجزا از نمایه شخصی است. سرپرستتان می‌تواند داده‌های Chromium را که درطول استفاده از این نمایه ایجاد شده است (مثل ایجاد نشانک‌ها، سابقه، گذرواژه‌ها، و دیگر تنظیمات) بردارد. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">‏آیا مطمئن هستید که می‌خواهید Chromium را حذف نصب کنید؟</translation>
 <translation id="6403826409255603130">‏Chromium یک مرورگر وب است که صفحات وب و برنامه‌ها را با سرعت بسیار زیاد اجرا می‌کند. این مرورگر خیلی سریع، پایدار و دارای کاربرد آسان است. با محافظت در مقابل بدافزار و رمزگیری طراحی شده در داخل Chromium، با امنیت بیشتری وب را مرور کنید.</translation>
 <translation id="6434250628340475518">‏سیستم سیستم‌عامل Chromium</translation>
@@ -193,6 +196,8 @@
 <translation id="6863361426438995919">‏Google Pay (در Chromium کپی شد)</translation>
 <translation id="6893813176749746474">‏Chromium به‌روز شده است اما حداقل ۳۰ روز از آن استفاده نکرده‌اید.</translation>
 <translation id="6897548120660295439">‏Rosetta به Chromium امکان می‌دهد رسانه محافظت‌شده را در این صفحه پخش کند.</translation>
+<translation id="691026815377248078">‏Chromium باید برای ادامه مرتبط‌سازی به بلوتوث
+دسترسی داشته باشد. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">‏باز کردن پیوند در پنجره &amp;ناشناس Chromium</translation>
 <translation id="6978145336957848883">‏گذرواژه‌های ضعیف را می‌توان به‌راحتی حدس زد. به Chromium اجازه دهید <ph name="BEGIN_LINK" />گذرواژه‌هایی قوی برایتان ایجاد کند و آن‌ها را به‌خاطر بسپارد<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">‏Chromium برای این سایت به مجوز دسترسی به میکروفون نیاز دارد</translation>

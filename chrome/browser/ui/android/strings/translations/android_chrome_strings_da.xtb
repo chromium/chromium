@@ -432,6 +432,7 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="4095146165863963773">Vil du slette appdata?</translation>
 <translation id="4095189195365058471">Læs senere <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Vær med til at gøre Chrome bedre ved at sende brugsstatistik og nedbrudsrapporter til Google.</translation>
+<translation id="4108314971463891922">Følg</translation>
 <translation id="4108998448622696017">Registrerer og advarer dig om skadelige hændelser, når de opstår.</translation>
 <translation id="4116038641877404294">Download sider for at bruge dem, når du er offline</translation>
 <translation id="4135200667068010335">Lukket liste over enheder, der skal deles en fane med.</translation>
@@ -643,6 +644,7 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5606787249466187650">Gå til Privacy Sandbox</translation>
 <translation id="5620163320393916465">Der er ingen gemte adgangskoder</translation>
 <translation id="5620928963363755975">Find dine filer og sider i Downloads via knappen Flere valgmuligheder</translation>
+<translation id="562289928968387744">Administrer reaktioner</translation>
 <translation id="5626134646977739690">Navn:</translation>
 <translation id="5639724618331995626">Tillad alle websites</translation>
 <translation id="5648166631817621825">De seneste syv dage</translation>
@@ -743,7 +745,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="6232535412751077445">Aktivering af "Do Not Track" betyder, at en anmodning medtages i din browsertrafik. Effekten afhænger af, om et website reagerer på anmodningen, og hvordan anmodningen fortolkes.
 
 Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, som ikke er baseret på andre websites, du har besøgt. Mange websites vil fortsat indsamle og bruge browserdata til f.eks. at forbedre sikkerheden, til at levere indhold, annoncer og anbefalinger og til at generere rapporteringsstatistik.</translation>
-<translation id="6243852395147506234">Klar til offlinebrug</translation>
 <translation id="624789221780392884">Opdateringen er klar</translation>
 <translation id="6255999984061454636">Indholdsforslag</translation>
 <translation id="6266591733731644292">Privacy Sandbox er endnu ikke udgivet bredt. Under denne prøveperiode:\n<ph name="BEGIN_LIST_ITEM1" />Website- og appudviklere kan prøve muligheden for at udvikle relevante oplevelser uden adgang til oplysninger, der identificerer dig entydigt<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Brugere kan fravælge prøveperioden ved hjælp af styringselementerne på denne side.<ph name="END_LIST_ITEM2" /></translation>
@@ -892,7 +893,6 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="718926126787620637">Listen over bogmærkemapper er åbnet i fuld højde</translation>
 <translation id="7189372733857464326">Venter på, at Google Play-tjenester er opdateret</translation>
 <translation id="7191430249889272776">Fanen blev åbnet i baggrunden.</translation>
-<translation id="720894724577012575">Kategorier: <ph name="COMMA_SEPERATED_CATEGORY_LIST" />.</translation>
 <translation id="7233236755231902816">Hent den nyeste version af Chrome for at bruge browseren på dit eget sprog</translation>
 <translation id="7248069434667874558">Sørg for, at synkronisering er aktiveret i Chrome på <ph name="TARGET_DEVICE_NAME" /></translation>
 <translation id="7274013316676448362">Blokeret website</translation>
@@ -1008,7 +1008,6 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="7971136598759319605">Aktiv for 1 dag siden</translation>
 <translation id="7975379999046275268">Se forhåndsvisning af siden <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Forudindlæs sider, så du kan browse og søge hurtigere</translation>
-<translation id="7986497153528221272">Hvis du vil se adgangskoder, skal du først konfigurere en skærmlås på din enhed</translation>
 <translation id="7998918019931843664">Åbn lukket fane igen</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8013372441983637696">Ryd også dine Chrome-data fra enheden</translation>
@@ -1100,7 +1099,7 @@ Data fra din inkognitosession ryddes først fra Chrome, når du <ph name="BEGIN_
 <translation id="8583805026567836021">Kontodataene ryddes</translation>
 <translation id="8587585930972369234">Hold nede for at søge</translation>
 <translation id="860043288473659153">Kortholderens navn</translation>
-<translation id="860282621117673749">Underretninger om prisovervågning</translation>
+<translation id="860282621117673749">Underretninger om prisfald</translation>
 <translation id="8616006591992756292">Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">Vil du åbne den foreslåede webadresse, som er angivet i det downloadede indhold?</translation>
 <translation id="8636825310635137004">Aktivér synkronisering for at få adgang til dine faner på dine andre enheder.</translation>

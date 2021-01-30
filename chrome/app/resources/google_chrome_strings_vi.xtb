@@ -17,6 +17,8 @@
 <translation id="1399397803214730675">Máy tính này đã có phiên bản Google Chrome mới hơn. Nếu phần mềm hiện không hoạt động, vui lòng gỡ cài đặt Google Chrome và thử lại.</translation>
 <translation id="1434626383986940139">Ứng dụng Chrome Canary</translation>
 <translation id="147727933880789532">Chrome khuyên bạn nên tắt tiện ích này vì tiện ích hiện không đáp ứng các tiêu chuẩn Duyệt web an toàn có tăng cường bảo vệ.</translation>
+<translation id="1516530951338665275">Google Chrome cần có quyền truy cập Bluetooth để tiếp tục 
+ ghép nối. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Cập nhật Chrome</translation>
 <translation id="1587223624401073077">Google Chrome đang sử dụng máy ảnh của bạn.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> nguy hiểm, do đó Chrome đã chặn tệp.</translation>
@@ -205,6 +207,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6566149418543181476">Đang cập nhật Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Hệ thống Chrome OS</translation>
 <translation id="6650333065969705433">Nếu muốn dùng Rosetta để phát nội dung nghe nhìn được bảo vệ, bạn phải khởi động lại Chrome.</translation>
+<translation id="6668872995670558829">Cần có hồ sơ trên Chrome</translation>
 <translation id="6676384891291319759">Truy cập Internet</translation>
 <translation id="6679975945624592337">Cho phép Google Chrome chạy trong nền</translation>
 <translation id="6739177684496155661">Tiếp tục đăng nhập vào hồ sơ mới trên Chrome?</translation>
@@ -223,6 +226,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7140653346177713799">{COUNT,plural, =0{Đã có bản cập nhật Chrome mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chrome.}=1{Đã có bản cập nhật Chrome mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chrome. Cửa sổ ẩn danh của bạn sẽ không mở lại.}other{Đã có bản cập nhật Chrome mới và bản cập nhật này sẽ áp dụng ngay khi bạn chạy lại Chrome. # cửa sổ ẩn danh của bạn sẽ không mở lại.}}</translation>
 <translation id="7155997830309522122">Nếu vậy, vui lòng chỉnh sửa mật khẩu đã lưu trong Chrome để khớp với mật khẩu mới.</translation>
 <translation id="7242029209006116544">Bạn đang đăng nhập bằng tài khoản được quản lý và cấp cho quản trị viên của tài khoản quyền kiểm soát cấu hình trên Google Chrome của bạn. Dữ liệu Chrome của bạn, chẳng hạn như ứng dụng, dấu trang, lịch sử, mật khẩu và các cài đặt khác sẽ vĩnh viễn được liên kết với <ph name="USER_NAME" />. Bạn có thể xóa dữ liệu này thông qua Trang tổng quan của tài khoản Google nhưng không thể liên kết dữ liệu này với tài khoản khác. Bạn có thể tùy chọn tạo một cấu hình mới để giữ cho dữ liệu Chrome hiện có của bạn riêng biệt. <ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351">Tài khoản này do <ph name="MANAGEMENT_DOMAIN" /> quản lý. Quản trị viên yêu cầu bạn phải có hồ sơ trên Chrome thì mới truy cập được. Hồ sơ này hoàn toàn riêng biệt với mọi hồ sơ cá nhân. Quản trị viên có thể xóa dữ liệu trên Chrome được tạo trong quá trình sử dụng hồ sơ này (chẳng hạn như hoạt động tạo dấu trang, các trang web đã truy cập, mật khẩu và các chế độ cài đặt khác). <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">Ngôn ngữ này dùng để hiển thị giao diện người dùng của Google Chrome</translation>
 <translation id="7296210096911315575">Thông tin quan trọng về sử dụng và an toàn</translation>
 <translation id="7303916856901595720">Chuyển tài khoản sang hồ sơ mới trên Chrome?</translation>
@@ -230,6 +234,7 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="7339898014177206373">Cửa sổ mới</translation>
 <translation id="7398801000654795464">Bạn đã đăng nhập vào Chrome là <ph name="USER_EMAIL_ADDRESS" />. Vui lòng sử dụng cùng tài khoản để đăng nhập lại.</translation>
 <translation id="7408085963519505752">Điều khoản của Chrome OS</translation>
+<translation id="7416131756095014387">Tài khoản này được quản lý. Quản trị viên yêu cầu bạn phải có hồ sơ trên Chrome thì mới truy cập được. Hồ sơ này hoàn toàn riêng biệt với mọi hồ sơ cá nhân. Quản trị viên có thể xóa dữ liệu trên Chrome được tạo trong quá trình sử dụng hồ sơ này (chẳng hạn như hoạt động tạo dấu trang, các trang web đã truy cập, mật khẩu và các chế độ cài đặt khác). <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">Chrome OS không thể đồng bộ hóa dữ liệu của bạn vì Đồng bộ hóa không khả dụng với miền của bạn.</translation>
 <translation id="7486227612705979895">Chrome sẽ truy cập vào Drive của bạn để đưa ra đề xuất trên thanh địa chỉ</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

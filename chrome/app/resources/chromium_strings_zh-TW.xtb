@@ -126,6 +126,7 @@
 <translation id="4994636714258228724">新增為 Chromium 使用者</translation>
 <translation id="5224391634244552924">未儲存任何密碼。你必須先儲存密碼，才能使用 Chromium 的密碼檢查功能。</translation>
 <translation id="5277894862589591112">如要套用變更，請重新啟動 Chromium</translation>
+<translation id="5357324149468831780">這是受管理的帳戶。管理員要求必須透過 Chromium 設定檔存取。這個設定檔和個人設定檔各自獨立。凡是在使用這個設定檔期間產生的 Chromium 資料 (例如建立的書籤、歷史記錄、密碼和其他設定)，管理員都能加以移除。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">你已登入管理化環境下的帳戶，並將管理控制權授予你的 Chromium 設定檔。你的 Chromium 資料 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。你可以透過 Google 帳戶資訊主頁刪除這些資料，但你無法將這些資料與其他帳戶建立關聯。<ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">正在更新 Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">允許登入 Chromium</translation>
@@ -140,6 +141,7 @@
 <translation id="5623402015214259806">{0,plural, =0{有可用的 Chromium 更新}=1{有可用的 Chromium 更新}other{Chromium 更新已發布 # 天}}</translation>
 <translation id="5631814766731275228">Chromium 名稱和相片</translation>
 <translation id="5634636535844844681">Chromium 僅支援 Windows 7 以上版本的作業系統。</translation>
+<translation id="5642268154044585431">需要 Chromium 設定檔</translation>
 <translation id="5653831366781983928">請立即重新啟動 Chromium</translation>
 <translation id="5698481217667032250">將 Chromium 的介面文字設為這種語言</translation>
 <translation id="5736967399513123100">如果要讓 Chromium 播放設有保護的媒體，必須安裝 Rosetta。要立即安裝 Rosetta 嗎？</translation>
@@ -170,6 +172,7 @@
 <translation id="6309712487085796862">Chromium 正在使用你的攝影機。</translation>
 <translation id="6333502561965082103">Chromium 正在執行另一項作業，請稍後再試。</translation>
 <translation id="6334986366598267305">無論是登入 Google 帳戶使用 Chromium，還是以 Google 帳戶使用共用電腦，現在都變得更容易了。</translation>
+<translation id="6345021408165055322">這個帳戶是由 <ph name="MANAGEMENT_DOMAIN" /> 管理。管理員要求必須透過 Chromium 設定檔存取。這個設定檔和個人設定檔各自獨立。凡是在使用這個設定檔期間產生的 Chromium 資料 (例如建立的書籤、歷史記錄、密碼和其他設定)，管理員都能加以移除。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">你確定要解除安裝 Chromium 嗎？</translation>
 <translation id="6403826409255603130">Chromium 網路瀏覽器開啟網頁和執行應用程式的速度十分迅速。除了迅速、穩定且易於使用之外，Chromium 的內建惡意軟體與網路釣魚防護功能，可讓你安心悠遊網路。</translation>
 <translation id="6434250628340475518">Chromium 作業系統</translation>
@@ -194,6 +197,7 @@
 <translation id="6863361426438995919">Google Pay (已複製到 Chromium)</translation>
 <translation id="6893813176749746474">Chromium 已更新，但你至少超過 30 天沒有使用 Chromium 了。</translation>
 <translation id="6897548120660295439">Rosetta 可讓 Chromium 播放這個頁面中設有保護的媒體。</translation>
+<translation id="691026815377248078">Chromium 需要藍牙存取權才能繼續配對。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">在 Chromium 無痕式視窗中開啟連結(&amp;G)</translation>
 <translation id="6978145336957848883">低強度密碼很容易讓有心人士猜中，請讓 Chromium <ph name="BEGIN_LINK" />為你建立一組高強度密碼，並儲存在 Chromium 中<ph name="END_LINK" />。</translation>
 <translation id="6990124437352146030">Chromium 需要相關權限，才能讓這個網站使用你的麥克風</translation>

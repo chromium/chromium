@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">የህትመት ስራዎች</translation>
 <translation id="3527036260304016759">አልተሳካም - ያልታወቀ ስህተት</translation>
 <translation id="357889014807611375">የተመጠነ Wi-Fi</translation>
+<translation id="3595596368722241419">ባትሪ ሙሉ ነው</translation>
 <translation id="360565022852130722">የWiFi አውታረ መረብ ደህንነት በደካማ ፕሮቶኮል WEP 802.1x የተጠበቀ ነው</translation>
 <translation id="3712633734921637892">የሲፒዩ ፍጥነት በአሁኑ ጊዜ ባትሪውን ለማቆየት ወይም የሙቀት መጠንን ለመቀነስ የተወሰነ ነው</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ግምገማዎች)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">የምስል ጥራት</translation>
 <translation id="3941014780699102620">ለአስተናጋጅ መፍትሔ መስጠት አልተሳካም</translation>
 <translation id="3942420633017001071">ምርመራ</translation>
+<translation id="397105322502079400">በማስላት ላይ...</translation>
 <translation id="39823212440917567">ከ<ph name="NUMBER_OF_DAYS" /> ቀኖች በላይ ዕድሜ ያላቸው የህትመት ሥራዎች ይወገዳሉ</translation>
 <translation id="4003384961948020559">አልተሳካም - ውፅዓት ሞልቷል</translation>
 <translation id="4034824040120875894">አታሚ</translation>
@@ -263,6 +265,7 @@
 <translation id="6977381486153291903">የጽኑ ትዕዛዝ ክለሳ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ይህን መሣሪያ የሚያስተዳድር ሲሆን የተጎበኙ ድረ-ገጾች፣ የይለፍ ቃላት እና ኢሜይል ጨምሮ የሁሉም የተጠቃሚ እንቅስቃሴ መዳረሻ አለው።</translation>
 <translation id="7040230719604914234">ከዋኝ</translation>
+<translation id="7059230779847288458">በመሙላት ላይ፣ ሙሉ እስኪሆን ድረስ <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">ቆሟል</translation>
 <translation id="7143207342074048698">በመያያዝ ላይ</translation>
 <translation id="714876143603641390">የላን ተገናኝነት</translation>
@@ -281,6 +284,7 @@
 <translation id="7502658306369382406">የIPv6 አድራሻ</translation>
 <translation id="7561454561030345039">ይህ ቅንብር በአስተዳዳሪዎ የሚቀናበር ነው።</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> ቀርቷል</translation>
 <translation id="7620771111601174153">በእገዛ ማዕከል ውስጥ የበለጠ ይረዱ</translation>
 <translation id="7648838807254605802">ከፍተኛ የHTTPS የስርዓተ ምላሽ ጊዜ</translation>
 <translation id="7658239707568436148">ይቅር</translation>

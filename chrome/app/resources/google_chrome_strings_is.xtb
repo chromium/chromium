@@ -19,6 +19,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1399397803214730675">Þessi tölva er þegar búin nýrri útgáfu af Google Chrome. Ef hugbúnaðurinn virkar ekki skaltu fjarlægja Google Chrome og reyna aftur.</translation>
 <translation id="1434626383986940139">Chrome Canary forrit</translation>
 <translation id="147727933880789532">Chrome mælir með því að slökkva á þessari viðbót vegna þess að hún uppfyllir ekki kröfur um „Enn öruggari vefskoðun“ eins og er.</translation>
+<translation id="1516530951338665275">Google Chrome þarf Bluetooth-aðgang til að halda pörun áfram. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Uppfæra Chrome</translation>
 <translation id="1587223624401073077">Google Chrome er að nota myndavélina þína.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> er skaðleg skrá og Chrome útilokaði hana.</translation>
@@ -209,6 +210,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6566149418543181476">Uppfærir Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS kerfi</translation>
 <translation id="6650333065969705433">Þú þarft að endurræsa Chrome til að nota Rosetta til að spila varið efni.</translation>
+<translation id="6668872995670558829">Chrome prófíls krafist</translation>
 <translation id="6676384891291319759">Aðgangur að internetinu</translation>
 <translation id="6679975945624592337">Leyfa Google Chrome að keyra í bakgrunni</translation>
 <translation id="6739177684496155661">Halda áfram á nýjum Chrome prófíl?</translation>
@@ -227,6 +229,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Ný uppfærsla fyrir Chrome er í boði og hún verður sett upp þegar þú endurræsir.}=1{Ný uppfærsla fyrir Chrome er í boði og hún verður sett upp þegar þú endurræsir. Huliðsglugginn enduropnast ekki.}one{Ný uppfærsla fyrir Chrome er í boði og hún verður sett upp þegar þú endurræsir. # huliðsgluggi enduropnast ekki.}other{Ný uppfærsla fyrir Chrome er í boði og hún verður sett upp þegar þú endurræsir. # huliðsgluggar enduropnast ekki.}}</translation>
 <translation id="7155997830309522122">Ef svo er skaltu breyta vistaða aðgangsorðinu í Chrome í nýja aðgangsorðið.</translation>
 <translation id="7242029209006116544">Þú ert að skrá þig inn á stýrðan reikning og gefur stjórnanda hans stjórn yfir Google Chrome prófílnum þínum. Gögnin þín í Chrome, s.s. forrit, bókamerki, ferill, aðgangsorð og aðrar stillingar, verða tengd varanlega við <ph name="USER_NAME" />. Þú getur eytt þessum gögnum á stjórnborði Google reikninga en getur ekki tengt þau öðrum reikningi. Einnig getur þú búið til nýjan prófíl til að halda eldri gögnum þínum á Chrome aðskildum. <ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351">Umsjón með þessum reikningi er í höndum <ph name="MANAGEMENT_DOMAIN" />. Stjórnandinn gerir kröfu um Chrome prófíl til að veita aðgang. Þessi prófíll er algjörlega aðskilinn öllum einkaprófílum. Stjórnandinn getur fjarlægt Chrome gögn sem verða til við notkun þessa prófíls (þ.m.t. bókamerki, feril, aðgangsorð og aðrar stillingar). <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">Þetta tungumál er notað til að birta notendaviðmót Google Chrome</translation>
 <translation id="7296210096911315575">Mikilvægar notkunar- og öryggisupplýsingar</translation>
 <translation id="7303916856901595720">Flytja reikning á nýjan Chrome prófíl?</translation>
@@ -234,6 +237,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7339898014177206373">Nýr gluggi</translation>
 <translation id="7398801000654795464">Þú varst skráð(ur) inn á Chrome sem <ph name="USER_EMAIL_ADDRESS" />. Notaðu sama reikning til að skrá þig inn aftur.</translation>
 <translation id="7408085963519505752">Skilmálar Chrome OS</translation>
+<translation id="7416131756095014387">Stjórnandi hefur umsjón með þessum reikningi. Stjórnandinn gerir kröfu um Chrome prófíl til að veita aðgang. Þessi prófíll er algjörlega aðskilinn öllum einkaprófílum. Stjórnandinn getur fjarlægt Chrome gögn sem verða til við notkun þessa prófíls (þ.m.t. bókamerki, feril, aðgangsorð og aðrar stillingar). <ph name="BEGIN_LINK" />Frekari upplýsingar<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">Chrome OS gat ekki samstillt gögnin þín vegna þess að samstilling er ekki í boði fyrir lénið þitt.</translation>
 <translation id="7486227612705979895">Chrome mun fá aðgang að svæðinu þínu á Drive til þess að bjóða upp á tillögur í veffangastikunni</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

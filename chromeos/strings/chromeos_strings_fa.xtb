@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">کارهای چاپ</translation>
 <translation id="3527036260304016759">انجام نشد - خطای نامشخص</translation>
 <translation id="357889014807611375">‏Wi-Fi کنتوردار</translation>
+<translation id="3595596368722241419">باتری پر است</translation>
 <translation id="360565022852130722">‏شبکه Wi-Fi با پروتکل ضعیف WEP 802.1x ایمن شده است</translation>
 <translation id="3712633734921637892">‏درحال‌حاضر سرعت CPU برای حفظ شارژ باتری یا کاهش دما محدود شده است</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> مرور)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">وضوح</translation>
 <translation id="3941014780699102620">حل کردن میزبان انجام نشد</translation>
 <translation id="3942420633017001071">تشخیص خطا</translation>
+<translation id="397105322502079400">در حال محاسبه…</translation>
 <translation id="39823212440917567">کارهای چاپ قدیمی‌تر از <ph name="NUMBER_OF_DAYS" /> روز برداشته می‌شوند</translation>
 <translation id="4003384961948020559">انجام نشد - خروجی پُر است</translation>
 <translation id="4034824040120875894">چاپگر</translation>
@@ -263,6 +265,7 @@
 <translation id="6977381486153291903">بازبینی سفت‌افزار</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و به همه فعالیت‌های کاربر، ازجمله صفحه‌های وب بازدیدشده، گذرواژه‌ها، و ایمیل دسترسی دارد.</translation>
 <translation id="7040230719604914234">اپراتور</translation>
+<translation id="7059230779847288458">درحال شارژ، <ph name="TIME_VALUE" /> تا شارژ کامل</translation>
 <translation id="708426984172631313">متوقف شده است</translation>
 <translation id="7143207342074048698">در حال اتصال</translation>
 <translation id="714876143603641390">‏اتصال LAN</translation>
@@ -281,6 +284,7 @@
 <translation id="7502658306369382406">‏نشانی IPv6</translation>
 <translation id="7561454561030345039">سرپرست شما این اقدام را مدیریت می‌کند</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> باقی مانده است</translation>
 <translation id="7620771111601174153">اطلاعات بیشتر در «مرکز راهنمایی»</translation>
 <translation id="7648838807254605802">‏تأخیر بالا در HTTPS</translation>
 <translation id="7658239707568436148">لغو</translation>

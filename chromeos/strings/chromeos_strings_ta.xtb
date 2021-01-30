@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">அச்சுப் பணிகள்</translation>
 <translation id="3527036260304016759">அறியப்படாத பிழை காரணமாக அச்சிட முடியவில்லை</translation>
 <translation id="357889014807611375">கட்டண வைஃபை</translation>
+<translation id="3595596368722241419">பேட்டரி நிரம்பியது</translation>
 <translation id="360565022852130722">WEP 802.1x என்னும் வலுவற்ற நெறிமுறை மூலம் WiFi நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="3712633734921637892">பேட்டரியைச் சேமிக்க/வெப்பநிலையைக் குறைக்க CPU வேகம் தற்சமயம் கட்டுப்படுத்தப்பட்டுள்ளது</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> மதிப்புரைகள்)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">தெளிவு</translation>
 <translation id="3941014780699102620">ஹோஸ்ட்டைச் சரிசெய்ய முடியவில்லை</translation>
 <translation id="3942420633017001071">கண்டறிதல்</translation>
+<translation id="397105322502079400">கணக்கிடுகிறது...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> நாட்களுக்கும் மேலாக இருக்கும் பிரிண்ட்டிங் பணிகள் அகற்றப்படும்</translation>
 <translation id="4003384961948020559">பிரிண்ட் வெளியே வரும் டிரே நிரம்பி விட்டதால் அச்சிட முடியவில்லை</translation>
 <translation id="4034824040120875894">பிரிண்டர்</translation>
@@ -263,6 +265,7 @@
 <translation id="6977381486153291903">நிலைபொருள் பதிப்பு</translation>
 <translation id="7028979494427204405">இந்தச் சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. பார்வையிட்ட இணையப்பக்கங்கள், கடவுச்சொற்கள், மின்னஞ்சல் உட்பட பயனரின் செயல்பாடு அனைத்திற்குமான அணுகலும் இதற்கு உள்ளது.</translation>
 <translation id="7040230719604914234">ஆபரேட்டர்</translation>
+<translation id="7059230779847288458">சார்ஜ் ஆகிறது, முழுமையாகச் சார்ஜ் ஏற்றப்பட <ph name="TIME_VALUE" /> ஆகும்</translation>
 <translation id="708426984172631313">நிறுத்தப்பட்டது</translation>
 <translation id="7143207342074048698">இணைத்தல்</translation>
 <translation id="714876143603641390">LAN இணைப்புநிலை</translation>
@@ -281,6 +284,7 @@
 <translation id="7502658306369382406">IPv6 முகவரி</translation>
 <translation id="7561454561030345039">இந்தச் செயல் உங்கள் நிர்வாகியால் நிர்வகிக்கப்படுகிறது</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> மீதமுள்ளது</translation>
 <translation id="7620771111601174153">உதவி மையத்தில் மேலும் அறிக</translation>
 <translation id="7648838807254605802">HTTPS கோரிக்கைகள் அதிக நேரம் எடுக்கின்றன</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>

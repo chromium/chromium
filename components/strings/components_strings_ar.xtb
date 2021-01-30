@@ -932,7 +932,7 @@
 <translation id="4579056131138995126">شخصي (مغلف)</translation>
 <translation id="4582204425268416675">إزالة البطاقة</translation>
 <translation id="4587425331216688090">‏هل تريد إزالة العنوان من Chrome؟</translation>
-<translation id="459089498662672729">لصق المحتوى من <ph name="ORIGIN_NAME" /> إلى هذا المكان هو إجراء لا تسمح به سياسة المشرف.</translation>
+<translation id="459089498662672729">لصق المحتوى من <ph name="ORIGIN_NAME" /> إلى هذا المكان هو إجراء لا تنصح به سياسة المشرف.</translation>
 <translation id="4592951414987517459">يتم ترميز اتصالك بالنطاق <ph name="DOMAIN" /> باستخدام مجموعة ترميز حديثة.</translation>
 <translation id="4594403342090139922">تراجع عن الحذ&amp;ف</translation>
 <translation id="4597348597567598915">الحجم 8</translation>
@@ -1812,7 +1812,6 @@
 <translation id="8074253406171541171">‏10x13 (مغلف)</translation>
 <translation id="8078141288243656252">لا يمكن إضافة تعليق توضيحي عند تدوير المستند</translation>
 <translation id="8079031581361219619">هل تريد تحديث الموقع؟</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8086971161893892807">مسودّة</translation>
 <translation id="8088680233425245692">تعذّر عرض المقالة.</translation>
 <translation id="808894953321890993">تغيير كلمة المرور</translation>

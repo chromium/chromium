@@ -19,6 +19,8 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="1399397803214730675">Este ordenador tiene instalada una versión más reciente de Google Chrome. Si el software no funciona, desinstala Google Chrome y vuelve a intentarlo.</translation>
 <translation id="1434626383986940139">Aplicaciones de Chrome Canary</translation>
 <translation id="147727933880789532">Chrome recomienda inhabilitar esta extensión porque actualmente no cumple con los estándares de Navegación segura mejorada.</translation>
+<translation id="1516530951338665275">Google Chrome necesita acceso al Bluetooth para continuar 
+ con la vinculación. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1587223624401073077">Google Chrome está utilizando la cámara.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> es peligroso, por lo que Chrome lo ha bloqueado.</translation>
@@ -209,6 +211,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6566149418543181476">Actualizando Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Sistema Chrome OS</translation>
 <translation id="6650333065969705433">Si quieres utilizar Rosetta para reproducir contenido multimedia protegido, debes reiniciar Chrome.</translation>
+<translation id="6668872995670558829">Se necesita un perfil de Chrome</translation>
 <translation id="6676384891291319759">Accede a Internet.</translation>
 <translation id="6679975945624592337">Permitir que Google Chrome se ejecute en segundo plano</translation>
 <translation id="6739177684496155661">¿Continuar en un nuevo perfil de Chrome?</translation>
@@ -227,6 +230,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Hay una nueva actualización de Chrome disponible que se aplicará cuando reinicies el dispositivo.}=1{Hay una nueva actualización de Chrome disponible que se aplicará cuando reinicies el dispositivo. La ventana de incógnito no se volverá a abrir.}other{Hay una nueva actualización de Chrome disponible que se aplicará cuando reinicies el dispositivo. Las # ventanas de incógnito no se volverán a abrir.}}</translation>
 <translation id="7155997830309522122">Si es así, edita la contraseña guardada en Chrome para que coincida con la nueva.</translation>
 <translation id="7242029209006116544">Vas a iniciar sesión con una cuenta gestionada, lo que significa que proporcionarás a su administrador control sobre tu perfil de Google Chrome. Tus datos de Chrome como, por ejemplo, tus aplicaciones, tus marcadores, tu historial, tus contraseñas y otras opciones se vincularán de forma permanente a la cuenta <ph name="USER_NAME" />. Podrás eliminar estos datos a través del Panel de control de cuentas de Google, pero no podrás asociar estos datos a otra cuenta. De forma opcional, puedes crear un nuevo perfil para mantener separados tus datos de Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351">Esta cuenta la gestiona <ph name="MANAGEMENT_DOMAIN" />. Tu administrador requiere un perfil de Chrome para acceder. Este perfil es completamente independiente de cualquier perfil personal. Tu administrador puede quitar los datos de Chrome generados durante el uso de este perfil, como los marcadores, el historial, las contraseñas y otros ajustes. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">La UI de Google Chrome se muestra en este idioma</translation>
 <translation id="7296210096911315575">Información importante sobre el uso y la seguridad</translation>
 <translation id="7303916856901595720">¿Mover cuenta a un nuevo perfil de Chrome?</translation>
@@ -234,6 +238,7 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="7339898014177206373">Nueva ventana</translation>
 <translation id="7398801000654795464">Habías iniciado sesión en Chrome como <ph name="USER_EMAIL_ADDRESS" />. Utiliza la misma cuenta para volver a iniciar sesión.</translation>
 <translation id="7408085963519505752">Condiciones de Chrome OS</translation>
+<translation id="7416131756095014387">Esta cuenta está gestionada. Tu administrador requiere un perfil de Chrome para acceder. Este perfil es completamente independiente de cualquier perfil personal. Tu administrador puede quitar los datos de Chrome generados durante el uso de este perfil, como los marcadores, el historial, las contraseñas y otros ajustes. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">Chrome OS no ha podido sincronizar los datos porque la función de sincronización no está disponible para tu dominio.</translation>
 <translation id="7486227612705979895">Chrome accederá a tu Drive para mostrarte sugerencias en la barra de direcciones</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

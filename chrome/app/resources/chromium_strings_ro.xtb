@@ -126,6 +126,7 @@
 <translation id="4994636714258228724">Adăugați-vă la Chromium</translation>
 <translation id="5224391634244552924">Nu există parole salvate. Chromium îți poate verifica parolele dacă le salvezi.</translation>
 <translation id="5277894862589591112">Pentru a aplica modificările, relansează Chromium</translation>
+<translation id="5357324149468831780">Acest cont este gestionat. Administratorul solicită un profil Chromium pentru acces. Acest profil este complet separat de profilul personal. Datele Chromium generate în timpul folosirii acestui profil (precum marcajele create, istoricul, parolele și alte setări) pot fi eliminate de administrator. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">Vă conectați cu un cont gestionat și îi permiteți administratorului acestuia controlul asupra profilului dvs. Chromium. Datele Chromium, cum ar fi aplicațiile, marcajele, istoricul, parolele și alte setări vor fi asociate definitiv cu <ph name="USER_NAME" />. Veți putea să ștergeți aceste date prin intermediul Tabloului de bord pentru Conturi Google, însă nu veți putea să asociați aceste date cu alt cont. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium se actualizează (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Permite conectarea la Chromium</translation>
@@ -140,6 +141,7 @@
 <translation id="5623402015214259806">{0,plural, =0{Este disponibilă o actualizare Chromium}=1{Este disponibilă o actualizare Chromium}few{O actualizare Chromium este disponibilă de # zile}other{O actualizare Chromium este disponibilă de # de zile}}</translation>
 <translation id="5631814766731275228">Numele și imaginea profilului Chromium</translation>
 <translation id="5634636535844844681">Chromium necesită Windows 7 sau o versiune ulterioară.</translation>
+<translation id="5642268154044585431">Este necesar un profil Chromium</translation>
 <translation id="5653831366781983928">Repornește Chromium acum</translation>
 <translation id="5698481217667032250">Afișează Chromium în această limbă</translation>
 <translation id="5736967399513123100">Ca să poți reda conținut media protejat în Chromium, trebuie să instalezi Rosetta. Vrei să instalezi acum?</translation>
@@ -170,6 +172,7 @@
 <translation id="6309712487085796862">Chromium utilizează camera foto.</translation>
 <translation id="6333502561965082103">O altă operație din Chromium este în curs de desfășurare. Încearcă din nou mai târziu.</translation>
 <translation id="6334986366598267305">Acum este mai ușor să folosiți Chromium cu Contul Google și pe computerele utilizate în comun.</translation>
+<translation id="6345021408165055322">Acest cont este gestionat de <ph name="MANAGEMENT_DOMAIN" />. Administratorul solicită un profil Chromium pentru acces. Acest profil este complet separat de profilul personal. Datele Chromium generate în timpul folosirii acestui profil (precum marcajele create, istoricul, parolele și alte setări) pot fi eliminate de administrator. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">Sigur doriți să dezinstalați Chromium?</translation>
 <translation id="6403826409255603130">Chromium este un browser web care rulează pagini web și aplicații cu viteza fulgerului. Este rapid, stabil și ușor de utilizat. Navigați pe web în condiții de mai multă siguranță, beneficiind de o protecție sporită, încorporată în Chromium, împotriva programelor malware și a tentativelor de phishing.</translation>
 <translation id="6434250628340475518">Sistemul de operare Chromium</translation>
@@ -194,6 +197,7 @@ Este posibil ca unele funcții să nu fie disponibile. Specificați un director 
 <translation id="6863361426438995919">Google Pay (copiat în Chromium)</translation>
 <translation id="6893813176749746474">Chromium a fost actualizat, dar nu l-ați utilizat de cel puțin 30 de zile.</translation>
 <translation id="6897548120660295439">Rosetta face posibilă redarea conținutului media protejat din această pagină în Chromium.</translation>
+<translation id="691026815377248078">Chromium are nevoie de acces la Bluetooth pentru a continua conectarea. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Deschide linkul într-o fereastră Chromium inco&amp;gnito</translation>
 <translation id="6978145336957848883">Parolele slabe sunt ușor de ghicit. Permite browserului Chromium <ph name="BEGIN_LINK" />să creeze și să memoreze parole puternice pentru tine<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium are nevoie de permisiune ca să acceseze microfonul pentru acest site</translation>

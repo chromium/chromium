@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Trabajos de impresión</translation>
 <translation id="3527036260304016759">Error: Problema desconocido</translation>
 <translation id="357889014807611375">Wi-Fi de uso medido</translation>
+<translation id="3595596368722241419">Batería completa</translation>
 <translation id="360565022852130722">la red Wi-Fi está protegida con el protocolo WEP 802.1x (poco seguro)</translation>
 <translation id="3712633734921637892">La velocidad de la CPU actualmente está limitada para preservar la batería o reducir la temperatura</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> opiniones)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Resolución</translation>
 <translation id="3941014780699102620">no se pudo resolver el host</translation>
 <translation id="3942420633017001071">Diagnóstico</translation>
+<translation id="397105322502079400">Calculando...</translation>
 <translation id="39823212440917567">Se quitarán los trabajos de impresión que tengan más de <ph name="NUMBER_OF_DAYS" /> días</translation>
 <translation id="4003384961948020559">Error: La bandeja de salida está llena</translation>
 <translation id="4034824040120875894">Impresora</translation>
@@ -263,6 +265,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="6977381486153291903">Revisión de firmware</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administra este dispositivo y tiene acceso a toda la actividad del usuario, incluso las páginas web que visitó, su correo electrónico y sus contraseñas.</translation>
 <translation id="7040230719604914234">Operador</translation>
+<translation id="7059230779847288458">Cargando, <ph name="TIME_VALUE" /> para completar la carga</translation>
 <translation id="708426984172631313">DETENIDA</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="714876143603641390">Conectividad LAN</translation>
@@ -281,6 +284,7 @@ Intenta presionar el micrófono para hacerme una pregunta.</translation>
 <translation id="7502658306369382406">Dirección IPv6</translation>
 <translation id="7561454561030345039">El administrador controla esta acción</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Tiempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Más información en el Centro de ayuda</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
 <translation id="7658239707568436148">Cancelar</translation>

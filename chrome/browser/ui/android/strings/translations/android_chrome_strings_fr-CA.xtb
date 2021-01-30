@@ -432,6 +432,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="4095146165863963773">Supprimer les données de l'application?</translation>
 <translation id="4095189195365058471">Lire plus tard <ph name="BEGIN_NEW" />Nouveauté<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Envoyez des statistiques d'utilisation et des rapports d'erreur pour améliorer Chrome.</translation>
+<translation id="4108314971463891922">Suivre</translation>
 <translation id="4108998448622696017">Il détecte les événements dangereux et vous en informe lorsqu'ils surviennent.</translation>
 <translation id="4116038641877404294">Téléchargez des pages pour les utiliser hors connexion</translation>
 <translation id="4135200667068010335">La liste d'appareils avec lesquels partager un onglet est fermée.</translation>
@@ -643,6 +644,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5606787249466187650">Explorer le bac à sable de confidentialité</translation>
 <translation id="5620163320393916465">Aucun mot de passe enregistré</translation>
 <translation id="5620928963363755975">Trouvez vos fichiers et vos pages dans Téléchargements à partir du bouton Plus d'options</translation>
+<translation id="562289928968387744">Gérer les réactions</translation>
 <translation id="5626134646977739690">Nom :</translation>
 <translation id="5639724618331995626">Autoriser tous les sites</translation>
 <translation id="5648166631817621825">Sept derniers jours</translation>
@@ -743,7 +745,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="6232535412751077445">Si vous activez la fonction « Ne pas faire le suivi », une demande sera incluse dans le trafic lié à votre navigation. Les résultats obtenus dépendent de la réponse du site (s'il répond ou non) et de la manière dont il interprète la demande.
 
 Par exemple, certains sites Web peuvent répondre à cette demande en diffusant des annonces qui ne sont pas déterminées en fonction des autres sites Web que vous avez consultés. Toutefois, nombre d'entre eux recueillent et utilisent vos données de navigation afin, par exemple, d'améliorer la sécurité du contenu, les annonces et des recommandations, ou encore pour générer des rapports statistiques.</translation>
-<translation id="6243852395147506234">Prêt pour le mode hors ligne</translation>
 <translation id="624789221780392884">Une mise à jour est prête à être installée</translation>
 <translation id="6255999984061454636">Suggestions de contenu</translation>
 <translation id="6266591733731644292">Le bac à sable de confidentialité n'est pas encore offert à grande échelle. Pendant cette période :\n<ph name="BEGIN_LIST_ITEM1" />les concepteurs de sites Web et d'applications peuvent essayer la fonctionnalité permettant de créer des expériences pertinentes ne nécessitant pas d'accéder aux données personnelles des utilisateurs;<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />les utilisateurs peuvent refuser de participer à cet essai à l'aide des paramètres de cette page.<ph name="END_LIST_ITEM2" /></translation>
@@ -892,7 +893,6 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="718926126787620637">Liste des dossiers de favoris ouverte à pleine hauteur</translation>
 <translation id="7189372733857464326">Attente de la fin de la mise à jour des services Google Play en cours…</translation>
 <translation id="7191430249889272776">Onglet ouvert en arrière-plan.</translation>
-<translation id="720894724577012575">Catégories : <ph name="COMMA_SEPERATED_CATEGORY_LIST" />.</translation>
 <translation id="7233236755231902816">Pour afficher le Web dans votre propre langue, procurez-vous la dernière version de Chrome</translation>
 <translation id="7248069434667874558">Assurez-vous que la synchronisation dans Chrome est activée sur <ph name="TARGET_DEVICE_NAME" />.</translation>
 <translation id="7274013316676448362">Site bloqué</translation>
@@ -1008,7 +1008,6 @@ Les données de votre session de navigation privée ne seront effacées de Chrom
 <translation id="7971136598759319605">Actif il y a 1 jour</translation>
 <translation id="7975379999046275268">Prévisualiser la page <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Précharger les pages pour une navigation et une recherche plus rapides</translation>
-<translation id="7986497153528221272">Pour afficher les mots de passe, configurez d'abord un verrouillage d'écran sur votre appareil</translation>
 <translation id="7998918019931843664">Rouvrir l'onglet fermé</translation>
 <translation id="8004582292198964060">Navigateur</translation>
 <translation id="8013372441983637696">Aussi effacer vos données de Chrome de cet appareil</translation>

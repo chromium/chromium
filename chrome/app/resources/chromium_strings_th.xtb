@@ -126,6 +126,7 @@
 <translation id="4994636714258228724">เพิ่มตัวคุณเองใน Chromium</translation>
 <translation id="5224391634244552924">ไม่มีรหัสผ่านที่บันทึกไว้ Chromium จะตรวจสอบรหัสผ่านได้เมื่อคุณบันทึกรหัสผ่านไว้</translation>
 <translation id="5277894862589591112">เปิด Chromium ขึ้นมาใหม่เพื่อให้การเปลี่ยนแปลงมีผล</translation>
+<translation id="5357324149468831780">บัญชีนี้มีการจัดการ ผู้ดูแลระบบต้องการโปรไฟล์ Chromium เพื่อเข้าถึง โปรไฟล์นี้แยกออกจากโปรไฟล์ส่วนตัวโดยสิ้นเชิง ผู้ดูแลระบบนำข้อมูล Chromium ที่สร้างขึ้นในช่วงที่มีการใช้โปรไฟล์นี้ออกได้ (เช่น การสร้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ) <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">คุณกำลังลงชื่อเข้าใช้ด้วยบัญชีที่จัดการ และให้การควบคุมระดับผู้ดูแลระบบของบัญชีดังกล่าวเหนือโปรไฟล์ Chromium ของคุณ ข้อมูล Chromium เช่น แอป บุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ จะเชื่อมโยงอย่างถาวรกับ <ph name="USER_NAME" /> คุณจะสามารถลบข้อมูลนี้ผ่านทางแผงควบคุมบัญชี Google แต่คุณจะไม่สามารถเชื่อมโยงข้อมูลนี้กับบัญชีอื่น <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">กำลังอัปเดต Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">อนุญาตให้ลงชื่อเข้าใช้ Chromium</translation>
@@ -140,6 +141,7 @@
 <translation id="5623402015214259806">{0,plural, =0{มีอัปเดต Chromium พร้อมให้ใช้งาน}=1{มีอัปเดต Chromium พร้อมให้ใช้งาน}other{อัปเดต Chromium พร้อมให้ใช้งานมาแล้ว # วัน}}</translation>
 <translation id="5631814766731275228">ชื่อและภาพโปรไฟล์ Chromium</translation>
 <translation id="5634636535844844681">Chromium ต้องใช้ Windows 7 ขึ้นไป</translation>
+<translation id="5642268154044585431">ต้องมีโปรไฟล์ Chromium</translation>
 <translation id="5653831366781983928">โปรดรีสตาร์ท Chromium ตอนนี้เลย</translation>
 <translation id="5698481217667032250">แสดง Chromium ในภาษานี้</translation>
 <translation id="5736967399513123100">คุณต้องติดตั้ง Rosetta เพื่อให้ Chromium เล่นสื่อที่มีการป้องกันได้ ต้องการติดตั้งตอนนี้เลยไหม</translation>
@@ -170,6 +172,7 @@
 <translation id="6309712487085796862">Chromium ใช้กล้องของคุณอยู่</translation>
 <translation id="6333502561965082103">Chromium กำลังดำเนินการอย่างอื่นอยู่ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="6334986366598267305">ตอนนี้การใช้ Chromium กับบัญชี Google ของคุณและบนคอมพิวเตอร์ที่ใช้ร่วมกันทำได้ง่ายกว่าเดิม</translation>
+<translation id="6345021408165055322">บัญชีนี้จัดการโดย <ph name="MANAGEMENT_DOMAIN" /> ผู้ดูแลระบบต้องการโปรไฟล์ Chromium เพื่อเข้าถึง โปรไฟล์นี้แยกออกจากโปรไฟล์ส่วนตัวโดยสิ้นเชิง ผู้ดูแลระบบนำข้อมูล Chromium ที่สร้างขึ้นในช่วงที่มีการใช้โปรไฟล์นี้ออกได้ (เช่น การสร้างบุ๊กมาร์ก ประวัติการเข้าชม รหัสผ่าน และการตั้งค่าอื่นๆ) <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">คุณแน่ใจหรือไม่ว่าต้องการถอนการติดตั้ง Chromium</translation>
 <translation id="6403826409255603130">Chromium เป็นเว็บเบราว์เซอร์ที่เรียกใช้หน้าเว็บและแอปพลิเคชันด้วยความเร็วสูง มีความรวดเร็ว เสถียร และง่ายในการใช้งาน เรียกดูเว็บได้อย่างปลอดภัยมากขึ้นด้วยการป้องกันมัลแวร์และฟิชชิงที่สร้างอยู่ภายใน Chromium</translation>
 <translation id="6434250628340475518">ระบบ Chromium OS</translation>
@@ -194,6 +197,7 @@
 <translation id="6863361426438995919">Google Pay (คัดลอกไปยัง Chromium)</translation>
 <translation id="6893813176749746474">Chromium ได้รับการอัปเดตแล้ว แต่คุณไม่ได้ใช้งานมาไม่ต่ำกว่า 30 วันแล้ว</translation>
 <translation id="6897548120660295439">Rosetta ช่วยให้ Chromium เล่นสื่อที่มีการป้องกันในหน้านี้ได้</translation>
+<translation id="691026815377248078">Chromium ต้องการสิทธิ์เข้าถึงบลูทูธเพื่อจับคู่ต่อ <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">เปิดลิงก์ในหน้าต่างที่ไม่ระบุตัวตนของ Chromium</translation>
 <translation id="6978145336957848883">รหัสผ่านที่ไม่รัดกุมนั้นคาดเดาได้ง่าย ให้ Chromium <ph name="BEGIN_LINK" />สร้างและจดจำรหัสผ่านที่รัดกุมให้คุณ<ph name="END_LINK" /></translation>
 <translation id="6990124437352146030">Chromium ต้องการสิทธิ์เข้าถึงไมโครโฟนของคุณสำหรับเว็บไซต์นี้</translation>

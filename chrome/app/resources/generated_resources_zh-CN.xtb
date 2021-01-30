@@ -1088,7 +1088,6 @@
 <translation id="2204034823255629767">读取和更改您输入的任何内容</translation>
 <translation id="220858061631308971">请在“<ph name="DEVICE_NAME" />”上输入此 PIN 码：</translation>
 <translation id="2212565012507486665">允许使用 Cookie</translation>
-<translation id="2213140827792212876">停止共享</translation>
 <translation id="2214018885812055163">共享的文件夹</translation>
 <translation id="2214884991347062907">密码不正确，请重试</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;有 1 行代码未显示出来&gt;}other{&lt;有 <ph name="NUMBER_OF_LINES" /> 行代码未显示出来&gt;}}</translation>
@@ -2423,7 +2422,6 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">您与 Google</translation>
 <translation id="3722108462506185496">启动虚拟机服务时出错。请重试。</translation>
-<translation id="3726137731714254362">从此处移除文件夹会停止共享但不会删除相应文件。</translation>
 <translation id="3727148787322499904">更改此设置将会影响所有共享网络</translation>
 <translation id="3727187387656390258">审查弹出内容</translation>
 <translation id="372722114124766626">仅一次</translation>
@@ -2560,7 +2558,6 @@
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />：已暂停同步</translation>
 <translation id="3861638017150647085">用户名“<ph name="USERNAME" />”不可用</translation>
 <translation id="3861977424605124250">在 Chrome 启动时显示</translation>
-<translation id="3862693525629180217">通过内置传感器进行验证</translation>
 <translation id="3862788408946266506">具有“kiosk_only”这项清单属性的应用必须在 Chrome 操作系统自助服务终端模式下进行安装</translation>
 <translation id="3865414814144988605">分辨率</translation>
 <translation id="3866249974567520381">说明</translation>
@@ -4359,7 +4356,6 @@
 <translation id="6003143259071779217">移除 eSIM 卡移动网络</translation>
 <translation id="6006484371116297560">经典</translation>
 <translation id="6007240208646052708">不支持使用您所用的语言执行语音搜索。</translation>
-<translation id="6009781704028455063">内置传感器</translation>
 <translation id="6011074160056912900">以太网</translation>
 <translation id="6011193465932186973">指纹</translation>
 <translation id="6011449291337289699">清除网站数据</translation>
@@ -4759,6 +4755,7 @@
 <translation id="6460601847208524483">查找下一个</translation>
 <translation id="6461170143930046705">正在搜索网络…</translation>
 <translation id="6463795194797719782">修改(&amp;E)</translation>
+<translation id="6464825623202322042">此设备</translation>
 <translation id="6465841119675156448">不使用互联网</translation>
 <translation id="6466988389784393586">打开所有书签(&amp;O)</translation>
 <translation id="6467304607960172345">优化全屏视频</translation>
@@ -5064,7 +5061,6 @@
 <translation id="683373380308365518">改用智能且安全的浏览器</translation>
 <translation id="6835762382653651563">请连接到互联网，以便更新您的<ph name="DEVICE_TYPE" />。</translation>
 <translation id="6838034009068684089">在网站想在您的屏幕上打开和放置窗口时询问您（推荐）</translation>
-<translation id="6838694093138907871">激活码无效，请重试。</translation>
 <translation id="6838860780238890144">{COUNT,plural, =1{电话号码}other{# 个电话号码}}</translation>
 <translation id="6839225236531462745">证书删除错误</translation>
 <translation id="6839916869147598086">登录发生变化</translation>
@@ -7133,7 +7129,6 @@
 <translation id="917350715406657904">您已达到您家长为“<ph name="APP_NAME" />”设定的使用时限。明天可以使用 <ph name="TIME_LIMIT" />。</translation>
 <translation id="9173787391779732995">网站可以显示图片（推荐）</translation>
 <translation id="9173995187295789444">正在扫描蓝牙设备…</translation>
-<translation id="9174052566244514547">您的管理员请求重启您的设备以更新应用。这可能需要几分钟才能完成</translation>
 <translation id="9174401638287877180">发送使用情况数据和诊断数据。自动向 Google 发送诊断数据、设备数据和应用使用情况数据，帮助改善您孩子的 Android 使用体验。我们会使用这些数据提高系统和应用的稳定性，并改进其他方面，但不会利用数据辨识您孩子的身份。部分汇总数据还会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。如果您已为孩子开启“其他网络与应用活动记录”设置，这些数据可能会被保存到其 Google 帐号中。</translation>
 <translation id="917510707618656279">在网站想访问蓝牙设备时询问您</translation>
 <translation id="9176476835295860688">发送使用情况数据和诊断数据。目前，此设备会自动向 Google 发送诊断数据、设备数据和应用使用情况数据。这些数据会被用来帮助提高系统和应用的稳定性以及实现其他方面的改进。部分汇总数据也会对 Google 应用和合作伙伴（例如 Android 开发者）有所帮助。这项<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />是由此设备的所有者强制指定的。如果您已开启“其他网络与应用活动记录”设置，这些数据可能会被保存到您的 Google 帐号中。<ph name="BEGIN_LINK2" />了解详情<ph name="END_LINK2" /></translation>

@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Tâches d'impression</translation>
 <translation id="3527036260304016759">Échec : erreur inconnue</translation>
 <translation id="357889014807611375">réseau Wi-Fi mesuré</translation>
+<translation id="3595596368722241419">Batterie entièrement chargée</translation>
 <translation id="360565022852130722">Le réseau Wi-Fi est sécurisé par un protocole faible : WEP 802.1x</translation>
 <translation id="3712633734921637892">La vitesse du processeur est actuellement limitée afin d'économiser la pile ou de faire baisser la température</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> avis)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Résolution</translation>
 <translation id="3941014780699102620">Impossible de résoudre l'hôte</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
+<translation id="397105322502079400">Calcul en cours...</translation>
 <translation id="39823212440917567">Les tâches d'impression datant de plus de <ph name="NUMBER_OF_DAYS" /> jours seront supprimées</translation>
 <translation id="4003384961948020559">Échec : bac de sortie plein</translation>
 <translation id="4034824040120875894">Imprimante</translation>
@@ -263,6 +265,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="6977381486153291903">Version du micrologiciel</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités, y compris les pages Web que vous visitez, vos mots de passe et vos courriels.</translation>
 <translation id="7040230719604914234">Opérateur</translation>
+<translation id="7059230779847288458">En recharge : <ph name="TIME_VALUE" /> avant que la pile soit rechargée</translation>
 <translation id="708426984172631313">ARRÊTÉ</translation>
 <translation id="7143207342074048698">Connexion…</translation>
 <translation id="714876143603641390">Connectivité LAN</translation>
@@ -281,6 +284,7 @@ Essayez de toucher le micro pour me demander ce que vous souhaitez.</translation
 <translation id="7502658306369382406">Adresse IPv6</translation>
 <translation id="7561454561030345039">C'est votre administrateur qui gère cette action</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Il reste <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">En savoir plus dans le centre d'aide</translation>
 <translation id="7648838807254605802">Latence HTTPS élevée</translation>
 <translation id="7658239707568436148">Annuler</translation>

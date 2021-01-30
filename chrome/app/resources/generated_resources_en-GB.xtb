@@ -329,6 +329,7 @@
 <translation id="1367951781824006909">Choose a file</translation>
 <translation id="1369149969991017342">Switch Access (control the computer with just one or two switches)</translation>
 <translation id="1372841398847029212">Sync to your account</translation>
+<translation id="1373176046406139583">Your device visibility controls who can share with you while your screen is unlocked. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">The certificate required by network "<ph name="NETWORK_NAME" />" is either not installed or is no longer valid.  Please get a new certificate and try connecting again.</translation>
 <translation id="1375321115329958930">Saved Passwords</translation>
 <translation id="137651782282853227">Saved addresses will appear here</translation>
@@ -1091,7 +1092,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2204034823255629767">Read and change anything that you type</translation>
 <translation id="220858061631308971">Please enter this PIN code on "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">Allow cookies</translation>
-<translation id="2213140827792212876">Remove sharing</translation>
 <translation id="2214018885812055163">Shared folders</translation>
 <translation id="2214884991347062907">Wrong password. Try again</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 line not shown&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> lines not shown&gt;}}</translation>
@@ -2427,7 +2427,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">You and Google</translation>
 <translation id="3722108462506185496">Error starting the virtual machine service. Please try again.</translation>
-<translation id="3726137731714254362">Removing folders from here will stop sharing but will not delete files.</translation>
 <translation id="3727148787322499904">Changing this setting will affect all shared networks</translation>
 <translation id="3727187387656390258">Inspect pop-up</translation>
 <translation id="372722114124766626">Just Once</translation>
@@ -2564,7 +2563,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Sync paused</translation>
 <translation id="3861638017150647085">Username '<ph name="USERNAME" />' is not available</translation>
 <translation id="3861977424605124250">Show on startup</translation>
-<translation id="3862693525629180217">Verify via built-in sensor</translation>
 <translation id="3862788408946266506">App with 'kiosk_only' manifest attribute must be installed in Chrome OS kiosk mode</translation>
 <translation id="3865414814144988605">Resolution</translation>
 <translation id="3866249974567520381">Description</translation>
@@ -3444,6 +3442,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – interlaced</translation>
 <translation id="4902546322522096650">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, connect</translation>
 <translation id="49027928311173603">The policy downloaded from the server is invalid: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4904061654709986277">Add profile</translation>
 <translation id="4906490889887219338">Set up or manage network file shares. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, phone battery <ph name="BATTERY_STATUS" />%, details</translation>
 <translation id="4907161631261076876">This file is not commonly downloaded and may be dangerous.</translation>
@@ -3566,6 +3565,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="5068918910148307423">Do not allow recently closed sites to finish sending and receiving data</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5070773577685395116">Didn't get it?</translation>
+<translation id="5071892329440114717">Show standard protection details</translation>
 <translation id="5072052264945641674">Adjust cursor size</translation>
 <translation id="5072836811783999860">Show managed bookmarks</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> and # more}}</translation>
@@ -4364,7 +4364,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6003143259071779217">Remove eSIM mobile network</translation>
 <translation id="6006484371116297560">Classic</translation>
 <translation id="6007240208646052708">Voice search in your language is not available.</translation>
-<translation id="6009781704028455063">Built-in sensor</translation>
 <translation id="6011074160056912900">Ethernet network</translation>
 <translation id="6011193465932186973">Fingerprint</translation>
 <translation id="6011449291337289699">Clear site data</translation>
@@ -4718,6 +4717,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
 <translation id="6412931879992742813">New incognito window</translation>
 <translation id="641469293210305670">Install updates and apps</translation>
+<translation id="6414878884710400018">Open system preferences</translation>
 <translation id="6414888972213066896">You asked your parent if it's OK to visit this site</translation>
 <translation id="6415900369006735853">Connect to the Internet through your phone</translation>
 <translation id="6416743254476733475">Allow or block on your computer.</translation>
@@ -4764,6 +4764,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="6460601847208524483">Find Next</translation>
 <translation id="6461170143930046705">Searching for networks...</translation>
 <translation id="6463795194797719782">&amp;Edit</translation>
+<translation id="6464825623202322042">This device</translation>
 <translation id="6465841119675156448">Without Internet</translation>
 <translation id="6466988389784393586">&amp;Open All Bookmarks</translation>
 <translation id="6467304607960172345">Optimise full-screen videos</translation>
@@ -4784,6 +4785,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="648927581764831596">None available</translation>
 <translation id="6490471652906364588">USB-C device (right port)</translation>
 <translation id="6491376743066338510">Authorisation failed</translation>
+<translation id="6494327278868541139">Show enhanced protection details</translation>
 <translation id="6494445798847293442">Not a Certification Authority</translation>
 <translation id="6494974875566443634">Customisation</translation>
 <translation id="6495925982925244349">Network <ph name="NETWORK_INDEX" /> of <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signal strength <ph name="SIGNAL_STRENGTH" />%, managed by your administrator, details</translation>
@@ -5069,7 +5071,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="683373380308365518">Switch to a smart and secure browser</translation>
 <translation id="6835762382653651563">Please connect to the Internet to update your <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Ask when a site wants to open and place windows on your screens (recommended)</translation>
-<translation id="6838694093138907871">Invalid code. Please try again.</translation>
 <translation id="6838860780238890144">{COUNT,plural, =1{phone number}other{# phone numbers}}</translation>
 <translation id="6839225236531462745">Certificate Deletion Error</translation>
 <translation id="6839916869147598086">Sign-in has changed</translation>
@@ -5320,6 +5321,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7108933416628942903">Lock now</translation>
 <translation id="7109543803214225826">Shortcut removed</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Add tab to group}other{Add tabs to group}}</translation>
+<translation id="7111822978084196600">Name this window</translation>
 <translation id="7113502843173351041">Know your email address</translation>
 <translation id="7114054701490058191">Passwords don't match</translation>
 <translation id="7114648273807173152">To use Smart Lock to sign in to your Google Account, go to Settings &gt; Connected devices &gt; Your phone &gt; Smart Lock.</translation>
@@ -5581,6 +5583,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="7421925624202799674">&amp;View Page Source</translation>
 <translation id="7422192691352527311">Preferences...</translation>
 <translation id="7423098979219808738">Ask first</translation>
+<translation id="7423425410216218516">Visibility is on for <ph name="MINUTES" /> minutes</translation>
 <translation id="7423513079490750513">Remove <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> needs permission to run</translation>
 <translation id="7427348830195639090">Background Page: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -6966,6 +6969,7 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – Crashed</translation>
 <translation id="8981825781894055334">Low on paper</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> can edit <ph name="FILENAME" /></translation>
+<translation id="8984694057134206124">You will be visible to everyone for <ph name="MINUTES" /> minutes. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="8985264973231822211">Active <ph name="DEVICE_LAST_ACTIVATED_TIME" /> day ago</translation>
 <translation id="8986362086234534611">Forget</translation>
 <translation id="8986494364107987395">Automatically send usage statistics and crash reports to Google</translation>
@@ -7139,7 +7143,6 @@ Press an assigned switch to remove assignment.</translation>
 <translation id="917350715406657904">You reached the time limit that your parent set for <ph name="APP_NAME" />. You can use it for <ph name="TIME_LIMIT" /> tomorrow.</translation>
 <translation id="9173787391779732995">Sites can show images (recommended)</translation>
 <translation id="9173995187295789444">Scanning for Bluetooth devices...</translation>
-<translation id="9174052566244514547">Your administrator requested that you restart your device to update apps. This may take several minutes to complete</translation>
 <translation id="9174401638287877180">Send usage and diagnostic data. Help improve your child's Android experience by automatically sending diagnostic, device and app usage data to Google. This won't be used to identify your child, and will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. If additional Web &amp; App Activity setting is turned on for your child, this data may be saved to their Google Account.</translation>
 <translation id="917510707618656279">Ask when a site wants to access HID devices</translation>
 <translation id="9176476835295860688">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This <ph name="BEGIN_LINK1" />setting<ph name="END_LINK1" /> is enforced by the owner. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account. <ph name="BEGIN_LINK2" />Find out more<ph name="END_LINK2" /></translation>

@@ -2067,7 +2067,7 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="377044054160169374">Thực thi can thiệp trải nghiệm lạm dụng</translation>
 <translation id="3778689139323007309">Thực hiện quá trình kiểm tra trạng thái thu hồi đối của các chứng chỉ máy chủ đã xác thực thành công, được ký theo chứng chỉ CA đã cài đặt trên máy</translation>
 <translation id="3780152581321609624">Bao gồm cổng không chuẩn trong  Kerberos SPN</translation>
-<translation id="378495749480642482">Định cấu hình liệu các trang web mà người dùng chuyển đến có được phép tạo các phiên Thực tế tăng cường sống động bằng cách sử dụng <ph name="WEBXR_API_NAME" /> không.
+<translation id="378495749480642482">Định cấu hình liệu các trang web mà người dùng chuyển đến có được phép tạo các phiên Thực tế tăng cường sống động bằng cách sử dụng <ph name="WEBXR_API_NAME" /> hay không.
 
       Khi bạn đặt thành bật hoặc không đặt chính sách này, <ph name="WEBXR_API_NAME" /> sẽ chấp nhận <ph name="WEBXR_AR_SESSION_ENUM_VALUE" /> trong quá trình tạo phiên, qua đó cho phép người dùng tham gia các trải nghiệm Thực tế tăng cường.
 
@@ -2500,6 +2500,9 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
       Nếu bạn không đặt chính sách này, chế độ sạc pin nâng cao sẽ tắt liên tục.
 
       Các giá trị hợp lệ dành cho trường <ph name="MINUTE_FIELD_NAME" /> trong <ph name="CHARGE_START_TIME_FIELD_NAME" /> và <ph name="CHARGE_END_TIME_FIELD_NAME" /> là 0, 15, 30, 45.</translation>
+<translation id="4450222911834151460">Nếu bạn đặt chính sách này, tất cả loại dữ liệu đã chỉ định sẽ bị loại trừ khỏi cả quá trình đồng bộ hóa của Google Sync lẫn quá trình đồng bộ hóa cấu hình chuyển vùng. Điều này có thể giúp giảm kích thước của cấu hình chuyển vùng hoặc giới hạn loại dữ liệu đã tải lên các máy chủ Google Sync.
+
+      Chính sách này hiện áp dụng cho các loại dữ liệu sau: "bookmarks", "readingList", "preferences", "passwords", "autofill", "themes", "typedUrls", "extensions", "apps", "tabs", "wifiConfigurations". Tên của các loại dữ liệu đó phân biệt chữ hoa chữ thường!</translation>
 <translation id="445270821089253489">Kiểm soát loại thông tin thiết bị và người dùng được báo cáo.</translation>
 <translation id="4453913621209182880">Chỉ cho phép in có đồ họa nền</translation>
 <translation id="4454820008017317557">Hiển thị biểu tượng thanh công cụ của <ph name="PRODUCT_NAME" /></translation>
@@ -4557,9 +4560,6 @@ Nếu đặt thành False, thì <ph name="PRODUCT_NAME" /> sẽ không sử dụ
 <translation id="7302043767260300182">Độ trễ khóa màn hình khi chạy trên nguồn AC</translation>
 <translation id="731208205557053914">Báo cáo thông tin về VPD</translation>
 <translation id="7313672174502374994">Hàm băm SHA-256 của hình nền.</translation>
-<translation id="7319863628760093590">Nếu bạn không đặt hoặc đặt chính sách này thành Bật, thì người dùng sẽ nhận được các thử thách xác thực <ph name="BASIC_AUTH" /> qua HTTP không an toàn.
-
-      Nếu bạn đặt chính sách này thành Tắt, thì các yêu cầu HTTP không an toàn sẽ không được phép dùng lược đồ xác thực <ph name="BASIC_AUTH" />; chỉ HTTP an toàn mới được phép.</translation>
 <translation id="7322825363493984512">Mật khẩu để xác thực các dịch vụ hệ thống dành cho proxy web từ xa.</translation>
 <translation id="7323896582714668701">Tham số dòng lệnh bổ sung cho <ph name="PRODUCT_NAME" /></translation>
 <translation id="7326394567531622570">Tương tự như Wipe (giá trị 2) nhưng cố gắng giữ lại mã đăng nhập để người dùng không phải đăng nhập lại.</translation>

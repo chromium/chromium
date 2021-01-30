@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Տպման աշխատանքներ</translation>
 <translation id="3527036260304016759">Չհաջողվեց տպել – Անհայտ սխալ</translation>
 <translation id="357889014807611375">սահմանափակ Wi-Fi</translation>
+<translation id="3595596368722241419">Մարտկոցը լրիվ լիցքավորված է</translation>
 <translation id="360565022852130722">Wi-Fi ցանցը պաշտպանված է WEP 802.1x թույլ հաղորդակարգով</translation>
 <translation id="3712633734921637892">CPU-ի արագությունն այս պահին սահմանափակված է, որպեսզի նվազեցվի մարտկոցի օգտագործման մակարդակը կամ սարքի ջերմաստիճանը</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> կարծիք)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Լուծաչափ</translation>
 <translation id="3941014780699102620">Չհաջողվեց ճանաչել խնամորդը</translation>
 <translation id="3942420633017001071">Դիագնոստիկա</translation>
+<translation id="397105322502079400">Հաշվարկում…</translation>
 <translation id="39823212440917567">Տպման առաջադրանքները, որոնք <ph name="NUMBER_OF_DAYS" /> օրից հին են, կհեռացվեն</translation>
 <translation id="4003384961948020559">Չհաջողվեց տպել – Ելքը լցված է</translation>
 <translation id="4034824040120875894">Տպիչ</translation>
@@ -263,6 +265,7 @@
 <translation id="6977381486153291903">Ներկառուցված ծրագրակազմի տարբերակը</translation>
 <translation id="7028979494427204405">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինիս տեսանելի են օգտատիրոջ բոլոր գործողությունները, այդ թվում՝ այցելած կայքերը, գաղտնաբառերը և նամակները:</translation>
 <translation id="7040230719604914234">Օպերատոր</translation>
+<translation id="7059230779847288458">Լիցքավորում, մնացել է <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">ԴԱԴԱՐԵՑՎԱԾ Է</translation>
 <translation id="7143207342074048698">Միացում</translation>
 <translation id="714876143603641390">LAN-ի կապ</translation>
@@ -281,6 +284,7 @@
 <translation id="7502658306369382406">IPv6 հասցե</translation>
 <translation id="7561454561030345039">Այս գործողությունը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Մնացել է <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Մանրամասն Օգնության կենտրոնի մասին</translation>
 <translation id="7648838807254605802">HTTPS-ի բարձր հապաղում</translation>
 <translation id="7658239707568436148">Չեղարկել</translation>

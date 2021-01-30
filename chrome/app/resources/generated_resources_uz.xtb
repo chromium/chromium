@@ -1090,7 +1090,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2204034823255629767">Kiritilayotgan matnni ko‘rish va o‘zagartirish</translation>
 <translation id="220858061631308971">“<ph name="DEVICE_NAME" />” qurilmasi PIN-kodini kiriting:</translation>
 <translation id="2212565012507486665">Cookie fayllariga ruxsat berish</translation>
-<translation id="2213140827792212876">Ulashuvni bekor qilish</translation>
 <translation id="2214018885812055163">Umumiy jildlar</translation>
 <translation id="2214884991347062907">Parol xato. Qaytadan urining.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 qator kod berkitilgan&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> qator kod berkitilgan&gt;}}</translation>
@@ -2426,7 +2425,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="372062398998492895">CUPS printerlar</translation>
 <translation id="3721119614952978349">Siz va Google</translation>
 <translation id="3722108462506185496">Virtual mashina xizmati ishga tushmadi. Qaytadan urining.</translation>
-<translation id="3726137731714254362">Jildlar olib tashlansa, ulashuvi toʻxtatiladi, lekin fayllari tozalanmaydi.</translation>
 <translation id="3727148787322499904">Bu parametrni o‘zgartirish barcha umumiy tarmoqlarga ta’sir qiladi</translation>
 <translation id="3727187387656390258">Qalqon chiquvchi oynani tekshirish</translation>
 <translation id="372722114124766626">Bir marta</translation>
@@ -2563,7 +2561,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sinxronizatsiya to‘xtatilgan</translation>
 <translation id="3861638017150647085">“<ph name="USERNAME" />” nomi band</translation>
 <translation id="3861977424605124250">Boshlanishida koʻrsatilsin</translation>
-<translation id="3862693525629180217">Ichki o‘rnatilgan sensor orqali tasdiqlash</translation>
 <translation id="3862788408946266506">Manifest faylida “kiosk_only” atributi mavjud ilovalarni Chrome OS‘da faqatgina kiosk rejimida o‘rnatish mumkin</translation>
 <translation id="3865414814144988605">Piksellar sig‘imi</translation>
 <translation id="3866249974567520381">Tavsif</translation>
@@ -4364,7 +4361,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6003143259071779217">eSIM mobil tarmoqni olib tashlash</translation>
 <translation id="6006484371116297560">Klassik</translation>
 <translation id="6007240208646052708">Ovozli qidiruv hozircha sizning tilingizda ishlamaydi.</translation>
-<translation id="6009781704028455063">Ichki o‘rnatilgan sensor</translation>
 <translation id="6011074160056912900">Ethernet tarmoq</translation>
 <translation id="6011193465932186973">Barmoq izi</translation>
 <translation id="6011449291337289699">Sayt ma’lumotlarini tozalash</translation>
@@ -4765,6 +4761,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6460601847208524483">Keyingisini topish</translation>
 <translation id="6461170143930046705">Tarmoqlar qidirilmoqda...</translation>
 <translation id="6463795194797719782">&amp;O‘zgartirish...</translation>
+<translation id="6464825623202322042">Shu qurilma</translation>
 <translation id="6465841119675156448">Internetsiz</translation>
 <translation id="6466988389784393586">Barcha xatcho‘plarni ochish</translation>
 <translation id="6467304607960172345">Butun ekranga uzatilayotgan video optimizatsiyasi</translation>
@@ -5071,7 +5068,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="683373380308365518">Qulay va xavfsiz brauzerdan foydalaning</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" /> qurilmasini yangilash uchun Internetga ulaning.</translation>
 <translation id="6838034009068684089">Saytlar ekranlarda oynalar ochish va joylashtirishdan oldin ruxsat olsin (tavsiya etiladi)</translation>
-<translation id="6838694093138907871">Kod xato kiritildi, qaytadan urining.</translation>
 <translation id="6838860780238890144">{COUNT,plural, =1{telefon raqami}other{# ta telefon raqami}}</translation>
 <translation id="6839225236531462745">Sertifikatni o‘chirishda xatolik</translation>
 <translation id="6839916869147598086">Hisobga kirish usuli oʻzgardi</translation>
@@ -7142,7 +7138,6 @@ Tayinlovni bekor qilish uchun belgilangan tugmani bosing.</translation>
 <translation id="917350715406657904">Ota-onangiz <ph name="APP_NAME" /> uchun belgilagan foydalanish vaqti tugadi. Ertaga yana <ph name="TIME_LIMIT" /> ishlata olasiz.</translation>
 <translation id="9173787391779732995">Saytlar rasmlarni chiqarishi mumkin (tavsiya etiladi)</translation>
 <translation id="9173995187295789444">Bluetooth qurilmalar qidirilmoqda...</translation>
-<translation id="9174052566244514547">Ilovalarni yangilash uchun Administrator qurilmani oʻchirib yoqish talabini yubordi. Bunga bir necha daqiqa ketishi mumkin</translation>
 <translation id="9174401638287877180">Foydalanish statistikasi va diagnostika axborotini yuborish. Diagnostika hamda qurilma va ilovadan foydalanish statistikasini Google kompaniyasiga avtomatik yuborish orqali Androidni yaxshilashga yordam bering. Ushbu axborotdan farzandingiz shaxsini aniqlash uchun foydalanilmaydi. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi. Agar farzandingiz uchun Veb va ilovalardagi kengaytirilgan faoliyat tarixi yoqilgan boʻlsa, bu maʼlumotlar uning Google hisobiga saqlanadi.</translation>
 <translation id="917510707618656279">Sayt Bluetooth qurilmalardan foydalanish oldidan ruxsat olsin</translation>
 <translation id="9176476835295860688">Foydalanish va diagnostika axborotini yuborish. Bu qurilma hozirda qurilma va ilovalardan foydalanish haqidagi hamda diagnostika axborotini avtomatik tarzda Google kompaniyasiga yubormoqda. Ular tizim va ilovalar barqarorligi kabilarni yaxshilash uchun ishlatiladi. Ayrim toʻplangan maʼlumotlar Android dasturchilar kabi hamkorlarimizga ham oʻz ilovalari va mahsulotlarini yanada yaxshilashga yordam beradi. Bu <ph name="BEGIN_LINK1" />parametr<ph name="END_LINK1" /> qurilma egasi tomonidan oʻrnatilgan. Agar Kengaytirilgan veb-qidiruv va ilovalar tarixi yoqilgan boʻlsa, bu maʼlumotlar Google hisobingizda saqlanadi. <ph name="BEGIN_LINK2" />Batafsil<ph name="END_LINK2" /></translation>

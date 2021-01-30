@@ -2445,6 +2445,9 @@
       如果不設定這項政策，系統會將進階充電模式保持關閉。
 
       在 <ph name="CHARGE_START_TIME_FIELD_NAME" /> 和 <ph name="CHARGE_END_TIME_FIELD_NAME" /> 的 <ph name="MINUTE_FIELD_NAME" /> 欄位中，有效值為 0、15、30、45。</translation>
+<translation id="4450222911834151460">如果設定了這項政策，系統會將所有指定的資料類型從同步處理作業 (包含 Google Sync 和漫遊設定檔的同步處理作業) 中排除。這有助於縮減漫遊設定檔的大小，或限制上傳到 Google Sync 伺服器的資料類型。
+
+      這項政策目前涵蓋的資料類型為：「bookmarks」、「readingList」、「preferences」、「passwords」、「autofill」、「themes」、「typedUrls」、「extensions」、「apps」、「tabs」、「wifiConfigurations」。這些名稱有大小寫之分。</translation>
 <translation id="445270821089253489">控管 Chrome 回報的使用者與裝置資訊類型。</translation>
 <translation id="4453913621209182880">只允許使用背景圖形列印</translation>
 <translation id="4454820008017317557">顯示 <ph name="PRODUCT_NAME" /> 工具列圖示</translation>
@@ -4483,9 +4486,6 @@
 <translation id="7302043767260300182">在 AC 供電環境下執行時的螢幕鎖定延遲時間</translation>
 <translation id="731208205557053914">回報 VPD 資訊</translation>
 <translation id="7313672174502374994">桌布圖片的 SHA-256 雜湊值。</translation>
-<translation id="7319863628760093590">如果將這項政策設為啟用或不設定，將可透過不安全的 HTTP 連線接收<ph name="BASIC_AUTH" />驗證要求。
-
-      如果將這項政策設為停用，則會禁止不安全的 HTTP 要求使用<ph name="BASIC_AUTH" />驗證機制，只能採用安全的 HTTPS。</translation>
 <translation id="7322825363493984512">用於向遠端網路 Proxy 驗證系統服務的密碼。</translation>
 <translation id="7323896582714668701"><ph name="PRODUCT_NAME" /> 額外命令列參數</translation>
 <translation id="7326394567531622570">與 Wipe (值 2) 類似，但會嘗試保留登入憑證，因此使用者不必重新登入。</translation>

@@ -126,6 +126,7 @@
 <translation id="4994636714258228724">Tilføj dig selv i Chromium</translation>
 <translation id="5224391634244552924">Der er ingen gemte adgangskoder. Chromium kan tjekke dine adgangskoder, når du gemmer dem.</translation>
 <translation id="5277894862589591112">Åbn Chromium igen for at anvende ændringerne</translation>
+<translation id="5357324149468831780">Denne konto administreres. Din administrator kræver, at du opretter en Chromium-profil for at få adgang. Denne profil er totalt adskilt fra en personlig profil. Chromium-data, der genereres ved brug af denne profil (f.eks. oprettelse af bogmærker, historik, adgangskoder og andre indstillinger) kan fjernes af din administrator. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">Du er ved at logge ind med en managerstyret konto og giver dens administrator kontrol over din profil i Chromium. Dine Chromium-data, f.eks. dine apps, bogmærker, historikdata, adgangskoder og andre indstillinger, knyttes permanent til <ph name="USER_NAME" />. Du kan slette disse data via kontrolpanelet for Google Konti, men du kan ikke knytte disse data til en anden konto. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Opdaterer Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Tillad login via Chromium</translation>
@@ -140,6 +141,7 @@
 <translation id="5623402015214259806">{0,plural, =0{Der er en tilgængelig Chromium-opdatering}=1{Der er en tilgængelig Chromium-opdatering}one{En Chromium-opdatering har været tilgængelig i # dag}other{En Chromium-opdatering har været tilgængelig i # dage}}</translation>
 <translation id="5631814766731275228">Chromium-navn og -billede</translation>
 <translation id="5634636535844844681">Chromium kræver Windows 7 eller nyere.</translation>
+<translation id="5642268154044585431">Der kræves en Chromium-profil</translation>
 <translation id="5653831366781983928">Genstart Chromium nu</translation>
 <translation id="5698481217667032250">Vis Chromium på dette sprog</translation>
 <translation id="5736967399513123100">Hvis du vil afspille beskyttede medier i Chromium, skal du installere Rosetta. Vil du installere softwaren nu?</translation>
@@ -170,6 +172,7 @@
 <translation id="6309712487085796862">Chromium bruger dit kamera.</translation>
 <translation id="6333502561965082103">En anden handling i Chromium er i gang. Prøv igen senere.</translation>
 <translation id="6334986366598267305">Det er nu blevet nemmere at bruge Chromium med din Google-konto og på delte computere.</translation>
+<translation id="6345021408165055322">Denne konto administreres af <ph name="MANAGEMENT_DOMAIN" />. Din administrator kræver, at du opretter en Chromium-profil for at få adgang. Denne profil er totalt adskilt fra en personlig profil. Chromium-data, der genereres ved brug af denne profil (f.eks. oprettelse af bogmærker, historik, adgangskoder og andre indstillinger) kan fjernes af din administrator. <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">Er du sikker på, at du vil afinstallere Chromium?</translation>
 <translation id="6403826409255603130">Chromium er en webbrowser, der kører websider og apps med lynets hast. Den er hurtig, stabil og brugervenlig. Beskyttelse mod malware og phishing er indbygget i Chromium, så du kan søge mere sikkert på internettet.</translation>
 <translation id="6434250628340475518">Chromium OS-system</translation>
@@ -194,6 +197,8 @@ Visse funktioner kan være utilgængelige. Angiv en anden profilmappe, eller bru
 <translation id="6863361426438995919">Google Pay (kopieret til Chromium)</translation>
 <translation id="6893813176749746474">Chromium er blevet opdateret, men du har ikke brugt den i 30 dage.</translation>
 <translation id="6897548120660295439">Når du har installeret Rosetta, kan Chromium afspille de beskyttede medier på denne side.</translation>
+<translation id="691026815377248078">Chromium skal have adgang til Bluetooth for at fortsætte 
+ parringen. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Åbn linket i et Chromium-inko&amp;gnitovindue</translation>
 <translation id="6978145336957848883">Svage adgangskoder er nemme at gætte. Få Chromium <ph name="BEGIN_LINK" />til at oprette og huske stærke adgangskoder for dig<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium skal have tilladelse til at bruge din mikrofon på dette website</translation>

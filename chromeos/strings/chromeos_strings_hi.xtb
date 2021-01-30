@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">प्रिंट जॉब</translation>
 <translation id="3527036260304016759">प्रिंट नहीं हो पाया - अज्ञात गड़बड़ी</translation>
 <translation id="357889014807611375">सीमित डेटा वाला वाई-फ़ाई</translation>
+<translation id="3595596368722241419">बैटरी पूरी हो गई</translation>
 <translation id="360565022852130722">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP 802.1x से सुरक्षित है</translation>
 <translation id="3712633734921637892">फ़िलहाल, सीपीयू की रफ़्तार को बैटरी की परफ़ॉर्मेंस बेहतर करने या तापमान कम करने तक सीमित रखा गया है</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> समीक्षाएं)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">रिज़ॉल्यूशन</translation>
 <translation id="3941014780699102620">होस्ट से जुड़ी समस्याओं को हल नहीं किया जा सका</translation>
 <translation id="3942420633017001071">निदान</translation>
+<translation id="397105322502079400">गणना की जा रही है...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> से ज़्यादा पुरानी, प्रिंट की गई फ़ाइलों को हटा दिया जाएगा</translation>
 <translation id="4003384961948020559">प्रिंट नहीं हो पाया - प्रिंटर आउटपुट फ़ुल है</translation>
 <translation id="4034824040120875894">प्रिंटर</translation>
@@ -263,6 +265,7 @@
 <translation id="6977381486153291903">फ़र्मवेयर पुनरीक्षण</translation>
 <translation id="7028979494427204405">इस डिवाइस को <ph name="MANAGER" /> प्रबंधित करता है और इसके पास उपयोगकर्ता की सभी गतिविधियों का ऐक्सेस है. इन गतिविधियों में उपयोगकर्ता के पासवर्ड, ईमेल, और उन पेजों की जानकारी होती है जिन पर वह जाता है.</translation>
 <translation id="7040230719604914234">ऑपरेटर</translation>
+<translation id="7059230779847288458">चार्ज हो रहा है, पूरा चार्ज होने में <ph name="TIME_VALUE" /> लगेंगे</translation>
 <translation id="708426984172631313">रोका गया</translation>
 <translation id="7143207342074048698">कनेक्‍टिंग</translation>
 <translation id="714876143603641390">LAN कनेक्टिविटी</translation>
@@ -281,6 +284,7 @@
 <translation id="7502658306369382406">IPv6 पता</translation>
 <translation id="7561454561030345039">इस कार्रवाई को आपका एडमिन प्रबंधित करता है</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> बाकी हैं</translation>
 <translation id="7620771111601174153">इसके बारे में ज़्यादा जानने के लिए सहायता केंद्र पर जाएं</translation>
 <translation id="7648838807254605802">एचटीटीपीएस अनुरोधों में इंतज़ार का समय ज़्यादा है</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>

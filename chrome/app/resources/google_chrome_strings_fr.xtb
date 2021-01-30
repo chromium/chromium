@@ -18,6 +18,8 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="1399397803214730675">Une version plus récente de Google Chrome est déjà installée sur cet ordinateur. Si celle-ci ne fonctionne pas, désinstallez Google Chrome, puis réessayez.</translation>
 <translation id="1434626383986940139">Applications Chrome Canary</translation>
 <translation id="147727933880789532">Chrome recommande de désactiver cette extension, car elle ne respecte pas les normes de navigation sécurisée avec protection renforcée à l'heure actuelle.</translation>
+<translation id="1516530951338665275">Google Chrome a besoin d'accéder au Bluetooth pour continuer 
+ l'association. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Mettre à jour Chrome</translation>
 <translation id="1587223624401073077">Votre webcam est en cours d'utilisation dans Google Chrome.</translation>
 <translation id="1587325591171447154">Chrome a bloqué <ph name="FILE_NAME" />, car ce fichier est dangereux.</translation>
@@ -207,6 +209,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6566149418543181476">Mise à jour de Google Chrome (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="6568793831116033768">Système Chrome OS</translation>
 <translation id="6650333065969705433">Pour utiliser Rosetta pour lire des contenus multimédias protégés, vous devez redémarrer Chrome.</translation>
+<translation id="6668872995670558829">Profil Chrome requis</translation>
 <translation id="6676384891291319759">Accéder à Internet</translation>
 <translation id="6679975945624592337">Laisser Google Chrome s'exécuter en arrière-plan</translation>
 <translation id="6739177684496155661">Continuer avec un nouveau profil Chrome ?</translation>
@@ -225,6 +228,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Une nouvelle mise à jour de Chrome est disponible. Elle sera installée dès que vous relancerez le navigateur.}=1{Une nouvelle mise à jour de Chrome est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que la fenêtre de navigation privée ne sera pas rouverte.}one{Une nouvelle mise à jour de Chrome est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que la fenêtre de navigation privée (#) ne sera pas rouverte.}other{Une nouvelle mise à jour de Chrome est disponible. Elle sera installée dès que vous relancerez le navigateur. Sachez que les # fenêtres de navigation privée ne seront pas rouvertes.}}</translation>
 <translation id="7155997830309522122">Si oui, veuillez modifier votre mot de passe enregistré dans Chrome pour qu'il corresponde à votre nouveau mot de passe.</translation>
 <translation id="7242029209006116544">Vous vous connectez avec un compte géré et donnez le contrôle de votre profil Google Chrome à son administrateur. Vos données Chrome, telles que les applications, les favoris, l'historique, les mots de passe et les autres paramètres, vont être définitivement associées à <ph name="USER_NAME" />. Vous pouvez supprimer ces données via le tableau de bord des comptes Google, mais vous ne pouvez pas les associer à un autre compte. Vous pouvez éventuellement créer un nouveau profil pour maintenir vos données Chrome séparées. <ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351">Ce compte est géré par <ph name="MANAGEMENT_DOMAIN" />. Votre administrateur exige que vous disposiez d'un profil Chrome pour y accéder. Ce profil est complètement séparé de votre profil personnel. Les données Chrome générées quand vous utilisez ce profil (comme la création de favoris, l'historique, les mots de passe et autres paramètres) peuvent être supprimées par votre administrateur. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">Cette langue est utilisée pour l'UI de Google Chrome</translation>
 <translation id="7296210096911315575">Informations importantes concernant l'utilisation et la sécurité</translation>
 <translation id="7303916856901595720">Associer le compte à un nouveau profil Chrome ?</translation>
@@ -232,6 +236,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7339898014177206373">Nouvelle fenêtre</translation>
 <translation id="7398801000654795464">Vous étiez connecté à Google Chrome en tant que <ph name="USER_EMAIL_ADDRESS" />. Veuillez utiliser le même compte pour vous reconnecter.</translation>
 <translation id="7408085963519505752">Conditions d'utilisation de Chrome OS</translation>
+<translation id="7416131756095014387">Ce compte est géré. Votre administrateur exige que vous disposiez d'un profil Chrome pour y accéder. Ce profil est complètement séparé de votre profil personnel. Les données Chrome générées quand vous utilisez ce profil (comme la création de favoris, l'historique, les mots de passe et autres paramètres) peuvent être supprimées par votre administrateur. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">Impossible de synchroniser vos données dans Chrome OS, car la synchronisation n'est pas disponible pour votre domaine.</translation>
 <translation id="7486227612705979895">Chromium va accéder à votre Drive pour proposer des suggestions dans la barre d'adresse</translation>
 <translation id="7535429826459677826">Google Chrome pour les développeurs</translation>

@@ -19,6 +19,8 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1399397803214730675">Hierdie rekenaar het reeds 'n meer onlangse weergawe van Google Chrome. As die sagteware nie werk nie, deïnstalleer Google Chrome en probeer weer.</translation>
 <translation id="1434626383986940139">Chrome Kanarie-programme</translation>
 <translation id="147727933880789532">Chrome beveel aan dat hierdie uitbreiding gedeaktiveer word omdat dit nie aan Verbeterde Veiligblaai-standaarde voldoen nie.</translation>
+<translation id="1516530951338665275">Google Chrome het Bluetooth-toegang nodig om voort te gaan met 
+ saambinding. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Dateer Chrome op</translation>
 <translation id="1587223624401073077">Google Chrome gebruik tans jou kamera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> is gevaarlik en daarom het Chrome dit geblokkeer.</translation>
@@ -209,6 +211,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="6566149418543181476">Dateer Google Chrome tans op (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS-stelsel</translation>
 <translation id="6650333065969705433">Om Rosetta te gebruik om beskermde media te speel, moet jy Chrome herbegin.</translation>
+<translation id="6668872995670558829">Chrome-profiel word vereis</translation>
 <translation id="6676384891291319759">Gaan by die internet in</translation>
 <translation id="6679975945624592337">Laat Google Chrome in die agtergrond loop</translation>
 <translation id="6739177684496155661">Gaan voort in 'n nuwe Chrome-profiel?</translation>
@@ -227,6 +230,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{'n Nuwe opdatering vir Chrome is beskikbaar en sal toegepas word sodra jy herbegin.}=1{'n Nuwe opdatering vir Chrome is beskikbaar en sal toegepas word sodra jy herbegin. Jou incognitovenster sal nie weer oopgemaak word nie.}other{'n Nuwe opdatering vir Chrome is beskikbaar en sal toegepas word sodra jy herbegin. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="7155997830309522122">Indien wel moet jy asseblief jou gestoorde wagwoord in Chrome wysig sodat dit met jou nuwe wagwoord ooreenstem.</translation>
 <translation id="7242029209006116544">Jy meld tans aan met 'n bestuurde rekening en gee sy administrateur beheer oor jou Google Chrome-profiel. Jou Chrome-data, soos jou programme, boekmerke, geskiedenis, wagwoorde en ander instellings sal permanent aan <ph name="USER_NAME" /> gekoppel word. Jy sal hierdie data via die Google-rekeningekontroleskerm kan uitvee, maar jy sal hierdie data nie met 'n ander rekening kan assosieer nie. Jou ander opsie is om 'n nuwe profiel te skep om jou Chrome-data apart te hou. <ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351">Hierdie rekening word bestuur deur <ph name="MANAGEMENT_DOMAIN" />. Jou administrateur vereis 'n Chrome-profiel vir toegang. Hierdie profiel is heeltemal apart van enige persoonlike profiel. Chrome-data wat tydens die gebruik van hierdie profiel gegenereer word (soos die skepping van boekmerke, geskiedenis, wagwoorde, en ander instellings) kan deur jou admin verwyder word. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">Hierdie taal word gebruik om die Google Chrome UI te wys</translation>
 <translation id="7296210096911315575">Belangrike gebruik- en veiligheidinligting</translation>
 <translation id="7303916856901595720">Skuif rekening na 'n nuwe Chrome-profiel?</translation>
@@ -234,6 +238,7 @@ Google Chrome kan nie jou instellings terugstel nie.</translation>
 <translation id="7339898014177206373">Nuwe venster</translation>
 <translation id="7398801000654795464">Jy was as <ph name="USER_EMAIL_ADDRESS" /> by Chrome aangemeld. Gebruik asseblief dieselfde rekening om weer aan te meld.</translation>
 <translation id="7408085963519505752">Chrome-bedryfstelsel se bepalings</translation>
+<translation id="7416131756095014387">Hierdie rekening word bestuur. Jou administrateur vereis 'n Chrome-profiel vir toegang. Hierdie profiel is heeltemal apart van enige persoonlike profiel. Chrome-data wat tydens die gebruik van hierdie profiel gegenereer word (soos die skepping van boekmerke, geskiedenis, wagwoorde, en ander instellings) kan deur jou admin verwyder word. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">Chrome-bedryfstelsel kon nie jou data sinkroniseer nie, omdat sinkronisering nie vir jou domein beskikbaar is nie.</translation>
 <translation id="7486227612705979895">Chrome sal by jou Drive ingaan om voorstelle in die adresbalk te maak</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

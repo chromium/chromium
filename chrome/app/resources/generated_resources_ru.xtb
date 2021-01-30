@@ -332,6 +332,7 @@
 <translation id="1367951781824006909">Выберите файл</translation>
 <translation id="1369149969991017342">Включить функцию Switch Access (позволяет управлять компьютером с помощью переключателей)</translation>
 <translation id="1372841398847029212">Синхронизировать с моим аккаунтом</translation>
+<translation id="1373176046406139583">В настройках доступа можно указать, кому вы разрешаете отправлять вам файлы и ссылки, когда ваше устройство разблокировано. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Сертификат, запрашиваемый сетью <ph name="NETWORK_NAME" />, не установлен или уже не действителен. Получите новый и попробуйте подключиться еще раз.</translation>
 <translation id="1375321115329958930">Сохраненные пароли</translation>
 <translation id="137651782282853227">Здесь появятся сохраненные адреса</translation>
@@ -1093,7 +1094,6 @@
 <translation id="2204034823255629767">Просмотр и изменение вводимого текста</translation>
 <translation id="220858061631308971">Введите PIN-код для устройства "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">Разрешить файлы cookie</translation>
-<translation id="2213140827792212876">Закрыть доступ</translation>
 <translation id="2214018885812055163">Общие папки</translation>
 <translation id="2214884991347062907">Неверный пароль. Повторите попытку.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 строка скрыта&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> строка скрыта&gt;}few{&lt;<ph name="NUMBER_OF_LINES" /> строки скрыто&gt;}many{&lt;<ph name="NUMBER_OF_LINES" /> строк скрыто&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> строки скрыто&gt;}}</translation>
@@ -2428,7 +2428,6 @@
 <translation id="372062398998492895">Принтеры CUPS</translation>
 <translation id="3721119614952978349">Я и Google</translation>
 <translation id="3722108462506185496">Не удалось запустить сервис виртуальной машины. Повторите попытку.</translation>
-<translation id="3726137731714254362">Удаление папок из этого списка повлечет только прекращение доступа к ним, но не удаление самих файлов.</translation>
 <translation id="3727148787322499904">Изменение этого параметра повлияет на все общие сети</translation>
 <translation id="3727187387656390258">Просмотреть всплывающее окно</translation>
 <translation id="372722114124766626">Один раз</translation>
@@ -2565,7 +2564,6 @@
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: синхронизация приостановлена</translation>
 <translation id="3861638017150647085">Имя пользователя "<ph name="USERNAME" />" недоступно.</translation>
 <translation id="3861977424605124250">Показывать при запуске</translation>
-<translation id="3862693525629180217">Подтвердить с помощью встроенного датчика</translation>
 <translation id="3862788408946266506">Приложения, у которых в манифесте есть атрибут kiosk_only, можно устанавливать только в режиме киоска</translation>
 <translation id="3865414814144988605">Разрешение</translation>
 <translation id="3866249974567520381">Описание</translation>
@@ -3445,6 +3443,7 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц – чересстрочная развертка</translation>
 <translation id="4902546322522096650">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, подключение</translation>
 <translation id="49027928311173603">Скачанная с сервера политика недействительна: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4904061654709986277">Добавить профиль</translation>
 <translation id="4906490889887219338">Настройте общие папки сети. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="PHONE_NAME" />", оператор – <ph name="PROVIDER_NAME" />, статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, заряд батареи – <ph name="BATTERY_STATUS" /> %, подробная информация</translation>
 <translation id="4907161631261076876">Этот файл скачивают редко. Возможно, он вредоносный.</translation>
@@ -3567,6 +3566,7 @@
 <translation id="5068918910148307423">Не разрешать недавно закрытым сайтам завершать отправку и получение данных</translation>
 <translation id="5068919226082848014">Пицца</translation>
 <translation id="5070773577685395116">Уведомление не пришло?</translation>
+<translation id="5071892329440114717">Открыть описание стандартной защиты</translation>
 <translation id="5072052264945641674">Настроить размер указателя</translation>
 <translation id="5072836811783999860">Показать управляемые закладки</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}one{<ph name="FILE1" />, <ph name="FILE2" /> и ещё # файл}few{<ph name="FILE1" />, <ph name="FILE2" /> и ещё # файла}many{<ph name="FILE1" />, <ph name="FILE2" /> и ещё # файлов}other{<ph name="FILE1" />, <ph name="FILE2" /> и ещё # файла}}</translation>
@@ -4365,7 +4365,6 @@
 <translation id="6003143259071779217">Удалить мобильную сеть eSIM</translation>
 <translation id="6006484371116297560">Классическая</translation>
 <translation id="6007240208646052708">Голосовой поиск на вашем языке недоступен.</translation>
-<translation id="6009781704028455063">Встроенный датчик</translation>
 <translation id="6011074160056912900">Сеть Ethernet</translation>
 <translation id="6011193465932186973">Отпечатки пальцев</translation>
 <translation id="6011449291337289699">Удаление данных сайтов</translation>
@@ -4719,6 +4718,7 @@
 <translation id="6412673304250309937">Сверяет URL со списком небезопасных сайтов в Chrome. Кроме того, если вы скачаете вредоносный файл или сайт попытается похитить ваш пароль, Chrome может отправить URL с образцами контента на проверку с помощью Безопасного просмотра.</translation>
 <translation id="6412931879992742813">Новое окно в режиме инкогнито</translation>
 <translation id="641469293210305670">Установка обновлений и приложений</translation>
+<translation id="6414878884710400018">Открыть системные настройки</translation>
 <translation id="6414888972213066896">Запрос на просмотр сайта отправлен вашему родителю</translation>
 <translation id="6415900369006735853">Подключайтесь к Интернету через телефон.</translation>
 <translation id="6416743254476733475">Разрешите или заблокируйте на компьютере.</translation>
@@ -4765,6 +4765,7 @@
 <translation id="6460601847208524483">Найти след.</translation>
 <translation id="6461170143930046705">Поиск сетей…</translation>
 <translation id="6463795194797719782">&amp;Изменить</translation>
+<translation id="6464825623202322042">На этом устройстве</translation>
 <translation id="6465841119675156448">Без подключения к Интернету</translation>
 <translation id="6466988389784393586">&amp;Открыть все закладки</translation>
 <translation id="6467304607960172345">Оптимизация полноэкранного видео</translation>
@@ -4785,6 +4786,7 @@
 <translation id="648927581764831596">Отсутствуют</translation>
 <translation id="6490471652906364588">Устройство USB-C (порт справа)</translation>
 <translation id="6491376743066338510">Не удалось выполнить авторизацию</translation>
+<translation id="6494327278868541139">Открыть описание улучшенной защиты</translation>
 <translation id="6494445798847293442">Не является центром сертификации</translation>
 <translation id="6494974875566443634">Персонализация</translation>
 <translation id="6495925982925244349">Сеть <ph name="NETWORK_INDEX" /> из <ph name="NETWORK_COUNT" />, название – "<ph name="NETWORK_NAME" />", статус защиты – "<ph name="SECURITY_STATUS" />", статус подключения – "<ph name="CONNECTION_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" /> %, под управлением администратора, подробная информация</translation>
@@ -5070,7 +5072,6 @@
 <translation id="683373380308365518">Перейдите на умный и безопасный браузер</translation>
 <translation id="6835762382653651563">Чтобы обновить устройство <ph name="DEVICE_TYPE" />, требуется подключение к Интернету.</translation>
 <translation id="6838034009068684089">Запрашивать разрешение на открытие и размещение сайтами окон на экранах (рекомендуется)</translation>
-<translation id="6838694093138907871">Неверный код. Повторите попытку.</translation>
 <translation id="6838860780238890144">{COUNT,plural, =1{номер телефона}one{# номер телефона}few{# номера телефонов}many{# номеров телефонов}other{# номера телефона}}</translation>
 <translation id="6839225236531462745">Ошибка при удалении сертификата</translation>
 <translation id="6839916869147598086">Изменения, связанные с аккаунтами</translation>
@@ -5321,6 +5322,7 @@
 <translation id="7108933416628942903">Заблокировать</translation>
 <translation id="7109543803214225826">Ярлык удален</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Добавить вкладку в группу}one{Добавить вкладки в группу}few{Добавить вкладки в группу}many{Добавить вкладки в группу}other{Добавить вкладки в группу}}</translation>
+<translation id="7111822978084196600">Добавьте название окна</translation>
 <translation id="7113502843173351041">Доступ к вашему адресу электронной почты</translation>
 <translation id="7114054701490058191">Пароли не совпадают</translation>
 <translation id="7114648273807173152">Чтобы использовать Smart Lock для входа в аккаунт Google, нажмите "Настройки &gt; Подключенные устройства &gt; Телефон &gt; Smart Lock".</translation>
@@ -5582,6 +5584,7 @@
 <translation id="7421925624202799674">Просмотр кода страницы</translation>
 <translation id="7422192691352527311">Настройки...</translation>
 <translation id="7423098979219808738">Сначала спрашивать</translation>
+<translation id="7423425410216218516">Доступ открыт на <ph name="MINUTES" /> мин.</translation>
 <translation id="7423513079490750513">Удалить "<ph name="INPUT_METHOD_NAME" />"</translation>
 <translation id="7423807071740419372">Необходимо разрешение для запуска <ph name="APP_NAME" /></translation>
 <translation id="7427348830195639090">Фоновая страница: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -6969,6 +6972,7 @@
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" />: произошел сбой</translation>
 <translation id="8981825781894055334">Заканчивается бумага.</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> может изменять файл "<ph name="FILENAME" />".</translation>
+<translation id="8984694057134206124">Ваше устройство будет видно всем пользователям поблизости в течение <ph name="MINUTES" /> мин. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="8985264973231822211">Последние действия: <ph name="DEVICE_LAST_ACTIVATED_TIME" /> дн. назад</translation>
 <translation id="8986362086234534611">Удалить</translation>
 <translation id="8986494364107987395">Автоматически отправлять в Google статистику использования и отчеты о сбоях</translation>
@@ -7142,7 +7146,6 @@
 <translation id="917350715406657904">Время, установленное родителями для приложения "<ph name="APP_NAME" />", истекло. Лимит на завтра: <ph name="TIME_LIMIT" />.</translation>
 <translation id="9173787391779732995">Разрешить сайтам показывать изображения (рекомендуется)</translation>
 <translation id="9173995187295789444">Поиск устройств Bluetooth…</translation>
-<translation id="9174052566244514547">Администратор запросил перезапуск вашего устройства, чтобы обновить приложения. Это может занять несколько минут.</translation>
 <translation id="9174401638287877180">Отправка данных об использовании и диагностике. Помогите сделать Android ещё лучше – разрешите автоматически отправлять в Google диагностическую информацию, данные об использовании приложений и самого устройства. Эти данные не будут использоваться для того, чтобы установить личность ребенка. Они помогут нам повысить стабильность приложений и внести другие улучшения. Некоторые агрегированные данные пригодятся партнерам Google, например разработчикам Android. Если у ребенка включена запись дополнительной истории приложений и веб-поиска, эта информация может сохраняться в его аккаунте.</translation>
 <translation id="917510707618656279">Запрашивать разрешение на доступ сайтов к Bluetooth-устройствам</translation>
 <translation id="9176476835295860688">Отправка данных о работе устройства. Сейчас это устройство автоматически отправляет в Google диагностическую информацию, сведения об использовании приложений и самого устройства. Эти данные нужны нам, чтобы в будущем повысить стабильность приложений и внести другие улучшения. Некоторые данные в обобщенном виде пригодятся партнерам Google, например разработчикам Android. Эта <ph name="BEGIN_LINK1" />настройка<ph name="END_LINK1" /> принудительно применяется владельцем. Если запись дополнительной истории приложений и веб-поиска включена, эта информация может сохраняться в вашем аккаунте. <ph name="BEGIN_LINK2" />Подробнее…<ph name="END_LINK2" /></translation>

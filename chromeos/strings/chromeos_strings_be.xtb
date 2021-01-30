@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Заданні друку</translation>
 <translation id="3527036260304016759">Збой: невядомая памылка</translation>
 <translation id="357889014807611375">Wi-Fi з улікам трафіка</translation>
+<translation id="3595596368722241419">Акумулятар поўнасцю зараджаны</translation>
 <translation id="360565022852130722">Сетка Wi-Fi абаронена слабым пратаколам WEP 802.1x</translation>
 <translation id="3712633734921637892">Хуткасць ЦП зараз абмежавана для захавання зараду акумулятара або зніжэння тэмпературы</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (водгукаў: <ph name="AGGREGATED_COUNT" />)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Раздзяляльнасць</translation>
 <translation id="3941014780699102620">Не ўдалося супаставіць хост</translation>
 <translation id="3942420633017001071">Дыягностыка</translation>
+<translation id="397105322502079400">Ідзе разлік...</translation>
 <translation id="39823212440917567">Заданні друку, старэйшыя за <ph name="NUMBER_OF_DAYS" /> сут, будуць выдалены</translation>
 <translation id="4003384961948020559">Збой: выхадны латок запоўнены</translation>
 <translation id="4034824040120875894">Прынтар</translation>
@@ -263,6 +265,7 @@
 <translation id="6977381486153291903">Версія ўбудаванага ПЗ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> кіруе гэтай прыладай і мае доступ да ўсіх дзеянняў карыстальніка, у тым ліку да гісторыі наведаных вэб-старонак, да пароляў і электроннай пошты.</translation>
 <translation id="7040230719604914234">Аператар</translation>
+<translation id="7059230779847288458">Ідзе зарадка, <ph name="TIME_VALUE" /> да поўнай зарадкі</translation>
 <translation id="708426984172631313">СПЫНЕНА</translation>
 <translation id="7143207342074048698">Падключэнне</translation>
 <translation id="714876143603641390">Магчымасць падключэння LAN</translation>
@@ -281,6 +284,7 @@
 <translation id="7502658306369382406">Адрас IPv6</translation>
 <translation id="7561454561030345039">Гэтым дзеяннем кіруе адміністратар</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Застаецца <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Атрымаць больш інфармацыі ў Даведачным цэнтры</translation>
 <translation id="7648838807254605802">Вялікая затрымка HTTPS</translation>
 <translation id="7658239707568436148">Скасаваць</translation>

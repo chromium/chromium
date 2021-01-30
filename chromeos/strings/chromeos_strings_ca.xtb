@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Tasques d'impressió</translation>
 <translation id="3527036260304016759">Error: error desconegut</translation>
 <translation id="357889014807611375">Wi‑Fi d'ús mesurat</translation>
+<translation id="3595596368722241419">Bateria carregada.</translation>
 <translation id="360565022852130722">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP 802.1x</translation>
 <translation id="3712633734921637892">En aquests moments la velocitat de la CPU està limitada per estalviar bateria o reduir la temperatura</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ressenyes)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Resolució</translation>
 <translation id="3941014780699102620">No s'ha pogut resoldre l'amfitrió</translation>
 <translation id="3942420633017001071">Diagnòstic</translation>
+<translation id="397105322502079400">S’està calculant...</translation>
 <translation id="39823212440917567">Se suprimiran les tasques d'impressió amb una antiguitat superior a <ph name="NUMBER_OF_DAYS" /> dies</translation>
 <translation id="4003384961948020559">Error: safata de sortida plena</translation>
 <translation id="4034824040120875894">Impressora</translation>
@@ -263,6 +265,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6977381486153291903">Revisió de microprogramari</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona aquest dispositiu i té accés a tota l'activitat dels usuaris, com ara les pàgines web visitades, les contrasenyes i el correu electrònic.</translation>
 <translation id="7040230719604914234">Operador</translation>
+<translation id="7059230779847288458">S'està carregant. <ph name="TIME_VALUE" /> per completar la càrrega.</translation>
 <translation id="708426984172631313">ATURAT</translation>
 <translation id="7143207342074048698">Connectant</translation>
 <translation id="714876143603641390">Connectivitat de la LAN</translation>
@@ -281,6 +284,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7502658306369382406">Adreça IPv6</translation>
 <translation id="7561454561030345039">El teu administrador gestiona aquesta acció</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Temps restant: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Més informació al Centre d'ajuda</translation>
 <translation id="7648838807254605802">La latència d'HTTPS és alta</translation>
 <translation id="7658239707568436148">Cancel·la</translation>

@@ -330,6 +330,7 @@
 <translation id="1367951781824006909">कोई फ़ाइल चुनें</translation>
 <translation id="1369149969991017342">ऐक्सेस करने का तरीका बदलें (बस एक या दो स्विच से कंप्यूटर नियंत्रित करें)</translation>
 <translation id="1372841398847029212">अपने खाते से सिंक करें</translation>
+<translation id="1373176046406139583">'किसको दिखाई दे' सेटिंग में जाकर, आप यह तय कर सकते हैं कि डिवाइस की स्क्रीन अनलॉक होने पर, कौन आपके साथ फ़ाइलें शेयर कर सकता है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">नेटवर्क "<ph name="NETWORK_NAME" />" के लिए ज़रूरी प्रमाणपत्र या तो इंस्टॉल नहीं है या अब मान्य नहीं है.  कृपया नया प्रमाणपत्र पाएं और फिर से कनेक्ट करने की कोशिश करें.</translation>
 <translation id="1375321115329958930">सेव किए गए पासवर्ड</translation>
 <translation id="137651782282853227">सहेजे गए पते यहां दिखाई देंगे</translation>
@@ -1092,7 +1093,6 @@
 <translation id="2204034823255629767">आप जो कुछ भी लिखते हैं उसे पढ़ें और बदलें</translation>
 <translation id="220858061631308971">कृपया इस पिन कोड को "<ph name="DEVICE_NAME" />" पर दर्ज करें:</translation>
 <translation id="2212565012507486665">कुकी की अनुमति दें</translation>
-<translation id="2213140827792212876">शेयर की गई फ़ाइलें हटाएं</translation>
 <translation id="2214018885812055163">शेयर किया गया फ़ोल्डर</translation>
 <translation id="2214884991347062907">पासवर्ड गलत है. फिर से कोशिश करें</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 पंक्ति नहीं दिखाई गई है&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> पंक्तियां नहीं दिखाई गई हैं&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> पंक्तियां नहीं दिखाई गई हैं&gt;}}</translation>
@@ -2428,7 +2428,6 @@
 <translation id="372062398998492895">CUPS प्रिंटर</translation>
 <translation id="3721119614952978349">आप और Google</translation>
 <translation id="3722108462506185496">वर्चुअल मशीन सेवा शुरू करने में गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
-<translation id="3726137731714254362">यहां से फ़ोल्डर हटाने से फ़ाइलों को शेयर करना बंद हो जाएगा लेकिन उन्हें मिटाया नहीं जाएगा.</translation>
 <translation id="3727148787322499904">यह सेटिंग बदलने से सभी शेयर नेटवर्क प्रभावित होंगे</translation>
 <translation id="3727187387656390258">पॉपअप का निरीक्षण करें</translation>
 <translation id="372722114124766626">बस एक बार</translation>
@@ -2565,7 +2564,6 @@
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: सिंक करना रोका गया</translation>
 <translation id="3861638017150647085">उपयोगकर्ता नाम "<ph name="USERNAME" />" उपलब्ध नहीं है</translation>
 <translation id="3861977424605124250">शुरुआती पेज पर दिखाएं</translation>
-<translation id="3862693525629180217">पहले से मौजूद सेंसर के ज़रिए पुष्टि करें</translation>
 <translation id="3862788408946266506">'kiosk_only' मेनिफ़ेस्‍ट विशेषता वाला ऐप्लिकेशन Chrome OS कियोस्‍क मोड में इंस्‍टॉल किया जाना चाहिए</translation>
 <translation id="3865414814144988605">रिज़ॉल्यूशन</translation>
 <translation id="3866249974567520381">वर्णन</translation>
@@ -3444,6 +3442,7 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> हर्ट्ज़ - साथ में स्कैन किया गया</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करें</translation>
 <translation id="49027928311173603">सर्वर से डाउनलोड की गई नीति अमान्य है: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4904061654709986277">प्रोफ़ाइल को जोड़ें</translation>
 <translation id="4906490889887219338">नेटवर्क फ़ाइल शेयर सेट अप या प्रबंधित करें. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, फ़ोन की बैटरी <ph name="BATTERY_STATUS" />%, जानकारी</translation>
 <translation id="4907161631261076876">यह फ़ाइल आमतौर पर डाउनलोड नहीं की जाती है और यह खतरनाक हो सकती है.</translation>
@@ -3566,6 +3565,7 @@
 <translation id="5068918910148307423">हाल ही में बंद की गई साइट को डेटा भेजने और पाने की प्रकिया को पूरा करने की अनुमति न दें</translation>
 <translation id="5068919226082848014">पिज़्ज़ा</translation>
 <translation id="5070773577685395116">क्या आपको सूचना नहीं मिली?</translation>
+<translation id="5071892329440114717">स्टैंडर्ड सुरक्षा की जानकारी देखें</translation>
 <translation id="5072052264945641674">कर्सर का आकार एडजस्ट करें</translation>
 <translation id="5072836811783999860">प्रबंधित बुकमार्क दिखाएं</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}one{<ph name="FILE1" />, <ph name="FILE2" />, और # दूसरी फ़ाइल}other{<ph name="FILE1" />, <ph name="FILE2" />, और # दूसरी फ़ाइल}}</translation>
@@ -4364,7 +4364,6 @@
 <translation id="6003143259071779217">eSIM मोबाइल नेटवर्क हटाएं</translation>
 <translation id="6006484371116297560">क्लासिक</translation>
 <translation id="6007240208646052708">आपकी भाषा में बोलकर खोजने की सुविधा उपलब्ध नहीं है.</translation>
-<translation id="6009781704028455063">पहले से मौजूद सेंसर</translation>
 <translation id="6011074160056912900">ईथरनेट नेटवर्क</translation>
 <translation id="6011193465932186973">फ़िंगरप्रिंट</translation>
 <translation id="6011449291337289699">साइट डेटा साफ़ करें</translation>
@@ -4718,6 +4717,7 @@
 <translation id="6412673304250309937">Chrome में पहले से सेव असुरक्षित साइटों के साथ यूआरएल की जांच करता है. अगर कोई साइट आपका पासवर्ड चुराने की कोशिश करती है या आप कोई नुकसान पहुंचाने वाली फ़ाइल डाउनलोड करते हैं, तो Chrome सुरक्षित ब्राउज़िंग की सेवा को उनका यूआरएल भेजता है. यूआरएल के साथ इनमें उन पेज की कुछ सामग्री भी शामिल होती है.</translation>
 <translation id="6412931879992742813">नई गुप्त विंडो</translation>
 <translation id="641469293210305670">अपडेट और ऐप्लिकेशन इंस्टॉल करें</translation>
+<translation id="6414878884710400018">सिस्टम की प्राथमिकताएं खोलें</translation>
 <translation id="6414888972213066896">आपने अपने अभिभावक से पूछा है कि इस साइट पर जाना ठीक है या नहीं</translation>
 <translation id="6415900369006735853">अपने फ़ोन पर इंटरनेट चालू करें</translation>
 <translation id="6416743254476733475">अपने कंप्यूटर पर अनुमति दें या ब्लॉक करें.</translation>
@@ -4764,6 +4764,7 @@
 <translation id="6460601847208524483">अगला ढूंढें</translation>
 <translation id="6461170143930046705">नेटवर्क खोज रहा है...</translation>
 <translation id="6463795194797719782">&amp;संपादित करें</translation>
+<translation id="6464825623202322042">इस डिवाइस पर</translation>
 <translation id="6465841119675156448">बिना इंटरनेट के</translation>
 <translation id="6466988389784393586">सभी बुकमार्क &amp;खोलें</translation>
 <translation id="6467304607960172345">फ़ुलस्क्रीन वीडियो ऑप्टिमाइज़ करें</translation>
@@ -4784,6 +4785,7 @@
 <translation id="648927581764831596">कोई भी उपलब्ध नहीं</translation>
 <translation id="6490471652906364588">USB-C डिवाइस (दायां पोर्ट)</translation>
 <translation id="6491376743066338510">अनुमति नहीं दी जा सकी</translation>
+<translation id="6494327278868541139">बेहतर सुरक्षा की जानकारी देखें</translation>
 <translation id="6494445798847293442">यह प्रमाणन प्राधिकरण नहीं हैै</translation>
 <translation id="6494974875566443634">पसंद के मुताबिक सेटिंग</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, आपका एडमिन प्रबंधित करता है, जानकारी</translation>
@@ -5069,7 +5071,6 @@
 <translation id="683373380308365518">किसी स्मार्ट और सुरक्षित ब्राउज़र पर जाएं</translation>
 <translation id="6835762382653651563">अपने <ph name="DEVICE_TYPE" /> को अपडेट करने के लिए कृपया इंटरनेट से कनेक्ट करें.</translation>
 <translation id="6838034009068684089">जब कोई साइट, विंडो को खोलकर आपकी स्क्रीन पर लगाना चाहे, तो इसके लिए पूछें (सुझाया गया)</translation>
-<translation id="6838694093138907871">कोड गलत है, कृपया फिर से कोशिश करें.</translation>
 <translation id="6838860780238890144">{COUNT,plural, =1{फ़ोन नंबर}one{# फ़ोन नंबर}other{# फ़ोन नंबर}}</translation>
 <translation id="6839225236531462745">प्रमाणपत्र हटाने की गड़बड़ी</translation>
 <translation id="6839916869147598086">साइन इन बदल गया है</translation>
@@ -5320,6 +5321,7 @@
 <translation id="7108933416628942903">अभी लॉक करें</translation>
 <translation id="7109543803214225826">शॉर्टकट हटाया गया</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{टैब को ग्रुप में शामिल करें}one{टैब को ग्रुप में शामिल करें}other{टैब को ग्रुप में शामिल करें}}</translation>
+<translation id="7111822978084196600">इस विंडो को कोई नाम दें</translation>
 <translation id="7113502843173351041">अपना ईमेल पता जानें</translation>
 <translation id="7114054701490058191">पासवर्ड मेल नहीं खाते</translation>
 <translation id="7114648273807173152">Smart Lock का इस्तेमाल करके अपने Google खाते में साइन इन करने के लिए, सेटिंग &gt; कनेक्ट किए हुए डिवाइस &gt; आपका फ़ोन &gt; Smart Lock पर जाएं.</translation>
@@ -5581,6 +5583,7 @@
 <translation id="7421925624202799674">पेज का स्रोत &amp;देखें</translation>
 <translation id="7422192691352527311">प्राथमिकताएं...</translation>
 <translation id="7423098979219808738">पहले पूछें</translation>
+<translation id="7423425410216218516">'किसको दिखाई दे' सेटिंग <ph name="MINUTES" /> मिनट तक चालू है</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> हटाएं</translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> को चलाने के लिए अनुमति चाहिए</translation>
 <translation id="7427348830195639090">पेजभूमि पेज: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -6966,6 +6969,7 @@
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - क्रैश हो गया है</translation>
 <translation id="8981825781894055334">प्रिंटर में पेपर कम हैं</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" />, <ph name="FILENAME" /> में बदलाव कर सकती है</translation>
+<translation id="8984694057134206124">आप <ph name="MINUTES" /> मिनट तक हर किसी को दिखेंगे. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" /> दिन पहले चालू था</translation>
 <translation id="8986362086234534611">भूल जाएं</translation>
 <translation id="8986494364107987395">इस्तेमाल के आंकड़े और खराबी रिपोर्ट अपने आप Google को भेजें</translation>
@@ -7139,7 +7143,6 @@
 <translation id="917350715406657904">आप उस समयसीमा तक पहुंच गए हैं जो आपके माता-पिता ने <ph name="APP_NAME" /> के लिए तय की थी. आप इसे कल <ph name="TIME_LIMIT" /> के लिए इस्तेमाल कर सकते हैं.</translation>
 <translation id="9173787391779732995">साइटें इमेज दिखा सकती हैं (हम इस सेटिंग को चालू रखने का सुझाव देते हैं)</translation>
 <translation id="9173995187295789444">ब्लूटूथ डिवाइस के लिए स्कैन किया जा रहा है...</translation>
-<translation id="9174052566244514547">ऐप्लिकेशन अपडेट करने के लिए, एडमिन ने आपके डिवाइस को रीस्टार्ट करने का अनुरोध किया है. इस प्रोसेस को पूरा होने में कुछ समय लग सकता है</translation>
 <translation id="9174401638287877180">इस्तेमाल और गड़बड़ी की जानकारी से जुड़ा डेटा भेजें. Google को गड़बड़ी, डिवाइस, और ऐप्लिकेशन के इस्तेमाल से जुड़ा डेटा अपने-आप भेजकर, अपने बच्चे के Android अनुभव को बेहतर बनाने में मदद करें. इसका इस्तेमाल आपके बच्चे की पहचान करने के लिए नहीं किया जाएगा. यह सिस्टम और ऐप्लिकेशन की स्थिरता बढ़ाने और दूसरे सुधार करने में मदद करेगा. इकट्ठा किया गया कुछ डेटा, Google ऐप्लिकेशन और पार्टनर की भी मदद करेगा. जैसे, Android डेवलपर. अगर आपके बच्चे के लिए 'अन्य वेब और ऐप्लिकेशन गतिविधि' सेटिंग चालू है, तो यह डेटा उसके Google खाते में सेव किया जा सकता है.</translation>
 <translation id="917510707618656279">जब कोई साइट ब्लूटूथ डिवाइस ऐक्सेस करना चाहे, तो इसके लिए पूछें</translation>
 <translation id="9176476835295860688">इस्तेमाल और निदान से जुड़ा डेटा भेजें. यह डिवाइस फ़िलहाल Google को निदान, डिवाइस, और ऐप्लिकेशन के इस्तेमाल से जुड़ा डेटा अपने आप भेज रहा है. यह सिस्टम और ऐप्लिकेशन की स्थिरता और दूसरे सुधारों में मदद करेगा. कुछ एग्रीगेट डेटा Google ऐप्लिकेशन और पार्टनर, जैसे कि Android डेवलपरों की भी मदद करेगा. यह <ph name="BEGIN_LINK1" />सेटिंग<ph name="END_LINK1" /> डिवाइस के मालिक ने लागू की है. अगर आपकी दूसरी 'वेब और ऐप्लिकेशन गतिविधि' सेटिंग चालू है, तो यह डेटा आपके Google खाते में सेव किया जा सकता है. <ph name="BEGIN_LINK2" />ज़्यादा जानें<ph name="END_LINK2" /></translation>

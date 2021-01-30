@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Utskriftsjobb</translation>
 <translation id="3527036260304016759">Misslyckades – okänt fel</translation>
 <translation id="357889014807611375">Wi-Fi med datapriser</translation>
+<translation id="3595596368722241419">Batteriet är fulladdat</translation>
 <translation id="360565022852130722">Wi-Fi-nätverket använder det svaga säkerhetsprotokollet WEP 802.1x</translation>
 <translation id="3712633734921637892">CPU-hastigheten begränsas för närvarande för att spara på batteriet eller sänka temperaturen</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioner)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Upplösning</translation>
 <translation id="3941014780699102620">DNS-matchningen misslyckades för värden</translation>
 <translation id="3942420633017001071">Diagnostik</translation>
+<translation id="397105322502079400">Beräknar ...</translation>
 <translation id="39823212440917567">Utskriftsjobb som är äldre än <ph name="NUMBER_OF_DAYS" /> dagar tas bort</translation>
 <translation id="4003384961948020559">Misslyckades – utmatningsfacket är fullt</translation>
 <translation id="4034824040120875894">Skrivare</translation>
@@ -263,6 +265,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="6977381486153291903">Revision av firmware</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hanterar den här enheten och har tillgång till all användaraktivitet, inklusive besökta webbsidor, lösenord och e-post.</translation>
 <translation id="7040230719604914234">Operatör</translation>
+<translation id="7059230779847288458">Laddas – fulladdat om <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">HAR STOPPATS</translation>
 <translation id="7143207342074048698">Ansluter</translation>
 <translation id="714876143603641390">LAN-anslutningar</translation>
@@ -281,6 +284,7 @@ Tryck på mikrofonen och fråga om något.</translation>
 <translation id="7502658306369382406">IPv6-adress</translation>
 <translation id="7561454561030345039">Den här åtgärden hanteras av administratören</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> återstår</translation>
 <translation id="7620771111601174153">Läs mer i hjälpcentret</translation>
 <translation id="7648838807254605802">Hög HTTPS-fördröjning</translation>
 <translation id="7658239707568436148">Avbryt</translation>

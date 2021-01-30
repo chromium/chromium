@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Processi di stampa</translation>
 <translation id="3527036260304016759">Operazione non riuscita - Errore sconosciuto</translation>
 <translation id="357889014807611375">Wi-Fi a consumo</translation>
+<translation id="3595596368722241419">Batteria carica</translation>
 <translation id="360565022852130722">la rete Wi-Fi è protetta con un protocollo WEP 802.1x inefficace</translation>
 <translation id="3712633734921637892">Al momento la velocità della CPU è limitata per risparmiare batteria o ridurre la temperatura</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioni)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Risoluzione</translation>
 <translation id="3941014780699102620">impossibile risolvere l'host</translation>
 <translation id="3942420633017001071">Diagnostica</translation>
+<translation id="397105322502079400">Calcolo in corso...</translation>
 <translation id="39823212440917567">I processi di stampa risalenti a oltre <ph name="NUMBER_OF_DAYS" /> giorni fa verranno rimossi</translation>
 <translation id="4003384961948020559">Operazione non riuscita - Vassoio di uscita pieno</translation>
 <translation id="4034824040120875894">Stampante</translation>
@@ -263,6 +265,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6977381486153291903">Revisione firmware</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestisce questo dispositivo e ha accesso a tutta l'attività utente, tra cui le pagine web visitate, le password e le email.</translation>
 <translation id="7040230719604914234">Operatore</translation>
+<translation id="7059230779847288458">In carica, <ph name="TIME_VALUE" /> al completamento della ricarica</translation>
 <translation id="708426984172631313">INTERROTTO</translation>
 <translation id="7143207342074048698">Connessione</translation>
 <translation id="714876143603641390">Connettività LAN</translation>
@@ -281,6 +284,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7502658306369382406">Indirizzo IPv6</translation>
 <translation id="7561454561030345039">Questa azione è gestita dall'amministratore</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Tempo rimanente: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Scopri di più nel Centro assistenza</translation>
 <translation id="7648838807254605802">Latenza HTTPS elevata</translation>
 <translation id="7658239707568436148">Annulla</translation>

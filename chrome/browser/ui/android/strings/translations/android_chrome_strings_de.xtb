@@ -743,7 +743,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="6232535412751077445">Wenn Sie das Kästchen „Do Not Track“ anklicken, wird mit Ihren Browserzugriffen eine Anforderung gesendet. Wie sich diese Anforderung auswirkt, hängt davon ab, ob eine Website darauf reagiert und wie die Anforderung interpretiert wird.
 
 Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht darauf basiert, welche Websites Sie zuvor besucht haben. Viele Websites erfassen weiterhin Ihre Browserdaten und verwenden sie, um beispielsweise die Sicherheit zu verbessern oder Inhalte, Werbeanzeigen und Empfehlungen bereitzustellen und Statistiken für Berichte zu erstellen.</translation>
-<translation id="6243852395147506234">Bereit für den Offlinezugriff</translation>
 <translation id="624789221780392884">Update bereit</translation>
 <translation id="6255999984061454636">Inhaltsvorschläge</translation>
 <translation id="6266591733731644292">Die Privacy Sandbox wurde noch nicht flächendeckend eingeführt. Während der Testphase gilt:\n<ph name="BEGIN_LIST_ITEM1" />Website- und App-Entwickler können die Möglichkeit zum Erzeugen für Sie relevanter Erlebnisse ausprobieren, ohne auf eindeutig identifizierbare Informationen über Sie zuzugreifen.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Nutzer können den Testmodus mit den Steuerelementen auf dieser Seite deaktivieren.<ph name="END_LIST_ITEM2" /></translation>
@@ -892,7 +891,6 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="718926126787620637">Liste der Lesezeichenordner ist vollständig geöffnet</translation>
 <translation id="7189372733857464326">Warten auf Abschluss der Google Play-Dienste-Aktualisierung</translation>
 <translation id="7191430249889272776">Tab im Hintergrund geöffnet</translation>
-<translation id="720894724577012575">Kategorien: <ph name="COMMA_SEPERATED_CATEGORY_LIST" />.</translation>
 <translation id="7233236755231902816">Das Web in Ihrer Sprache – mit der aktuellen Version von Chrome</translation>
 <translation id="7248069434667874558">Prüfen Sie, ob auf <ph name="TARGET_DEVICE_NAME" /> die Synchronisierung in Chrome aktiviert ist</translation>
 <translation id="7274013316676448362">Blockierte Website</translation>
@@ -1008,7 +1006,6 @@ Daten aus Ihrer Inkognitositzung werden erst aus Chrome gelöscht, wenn Sie <ph 
 <translation id="7971136598759319605">Vor 1 Tag aktiv</translation>
 <translation id="7975379999046275268">Seitenvorschau <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Seiten vorab laden, um das Surfen und die Suche zu beschleunigen</translation>
-<translation id="7986497153528221272">Wenn Sie Passwörter ansehen möchten, richten Sie zuerst eine Displaysperre auf Ihrem Gerät ein</translation>
 <translation id="7998918019931843664">Geschlossenen Tab wieder öffnen</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8013372441983637696">Meine Chrome-Daten auch von diesem Gerät löschen</translation>

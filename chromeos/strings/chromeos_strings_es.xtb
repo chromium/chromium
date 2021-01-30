@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Trabajos de impresión</translation>
 <translation id="3527036260304016759">No se ha podido imprimir - Error desconocido</translation>
 <translation id="357889014807611375">Wi‑Fi de uso medido</translation>
+<translation id="3595596368722241419">Batería al máximo</translation>
 <translation id="360565022852130722">La red Wi-Fi está protegida con un protocolo poco seguro WEP 802.1x</translation>
 <translation id="3712633734921637892">Actualmente, la velocidad de la CPU está limitada para ahorrar batería o reducir la temperatura</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reseñas)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Resolución</translation>
 <translation id="3941014780699102620">No se ha podido resolver el host</translation>
 <translation id="3942420633017001071">Diagnósticos</translation>
+<translation id="397105322502079400">Calculando...</translation>
 <translation id="39823212440917567">Los trabajos de impresión con más de <ph name="NUMBER_OF_DAYS" /> días de antigüedad se eliminarán</translation>
 <translation id="4003384961948020559">No se ha podido imprimir - Salida llena</translation>
 <translation id="4034824040120875894">Impresora</translation>
@@ -262,6 +264,7 @@
 <translation id="6977381486153291903">Revisión del firmware</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona este dispositivo y tiene acceso a toda la actividad del usuario, incluidas las páginas web visitadas, las contraseñas y el correo electrónico.</translation>
 <translation id="7040230719604914234">Operador</translation>
+<translation id="7059230779847288458">Cargando (<ph name="TIME_VALUE" /> para completar la carga)</translation>
 <translation id="708426984172631313">DETENIDA</translation>
 <translation id="7143207342074048698">Conectando</translation>
 <translation id="714876143603641390">Conectividad LAN</translation>
@@ -280,6 +283,7 @@
 <translation id="7502658306369382406">Dirección IPv6</translation>
 <translation id="7561454561030345039">Esta acción la gestiona tu administrador</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Tiempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Más información en el Centro de Ayuda</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
 <translation id="7658239707568436148">Cancelar</translation>

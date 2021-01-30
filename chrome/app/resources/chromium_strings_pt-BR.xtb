@@ -124,6 +124,7 @@
 <translation id="4994636714258228724">Cadastrar-se no Chromium</translation>
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="5277894862589591112">Para que as alterações sejam aplicadas, reinicie o Chromium</translation>
+<translation id="5357324149468831780">Esta conta é gerenciada. Seu administrador exige um perfil do Chromium para permitir o acesso. Esse perfil é totalmente separado de qualquer perfil pessoal. Os dados do Chromium que são gerados quando esse perfil está sendo usado (como a criação de favoritos, o histórico, as senhas e outras configurações) podem ser removidos pelo administrador. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">Você está fazendo login com uma conta gerenciada e concedendo ao administrador da conta o controle sobre seu perfil do Chromium. Seus dados do Chromium, como aplicativos, favoritos, histórico, senhas e outras configurações serão permanentemente vinculados a <ph name="USER_NAME" />. Você pode excluir esses dados pelo painel das Contas do Google, mas não pode associá-los a outra conta. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Atualizando o Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Permitir login no Chromium</translation>
@@ -138,6 +139,7 @@
 <translation id="5623402015214259806">{0,plural, =0{Uma atualização do Chromium está disponível}=1{Uma atualização do Chromium está disponível}one{Uma atualização do Chromium está disponível há # dia}other{Uma atualização do Chromium está disponível há # dias}}</translation>
 <translation id="5631814766731275228">Nome e foto do Chromium</translation>
 <translation id="5634636535844844681">O Chromium requer o Windows 7 ou versão superior.</translation>
+<translation id="5642268154044585431">Perfil do Chromium necessário</translation>
 <translation id="5653831366781983928">Reinicie o Chromium agora</translation>
 <translation id="5698481217667032250">Exibir Chromium neste idioma</translation>
 <translation id="5736967399513123100">Para permitir que o Chromium reproduza mídia protegida, instale o Rosetta. Quer instalar agora?</translation>
@@ -168,6 +170,7 @@
 <translation id="6309712487085796862">O Chromium está usando sua câmera.</translation>
 <translation id="6333502561965082103">Outra operação está em progresso no Chromium. Tente novamente mais tarde.</translation>
 <translation id="6334986366598267305">Agora ficou mais fácil usar o Chromium com sua Conta do Google e em computadores compartilhados.</translation>
+<translation id="6345021408165055322">Esta conta é gerenciada por <ph name="MANAGEMENT_DOMAIN" />. Seu administrador exige um perfil do Chromium para permitir o acesso. Esse perfil é totalmente separado de qualquer perfil pessoal. Os dados do Chromium que são gerados quando esse perfil está sendo usado (como a criação de favoritos, o histórico, as senhas e outras configurações) podem ser removidos pelo administrador. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">Você quer mesmo desinstalar o Chromium?</translation>
 <translation id="6403826409255603130">O Chromium é um navegador que executa páginas e aplicativos da web com alta velocidade. É rápido, estável e fácil de usar. Navegue na web com mais segurança com a proteção contra malware e phishing incorporada ao Chromium.</translation>
 <translation id="6434250628340475518">Sistema Chromium OS</translation>
@@ -190,6 +193,8 @@
 <translation id="6863361426438995919">Google Pay (copiado para o Chromium)</translation>
 <translation id="6893813176749746474">O Chromium foi atualizado, mas não é utilizado há pelo menos 30 dias.</translation>
 <translation id="6897548120660295439">O Rosetta permite que o Chromium reproduza a mídia protegida nesta página.</translation>
+<translation id="691026815377248078">O Chromium precisa acessar o Bluetooth para continuar o 
+ pareamento. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Abrir link na janela &amp;sem rastros do Chromium</translation>
 <translation id="6978145336957848883">Senhas fracas são fáceis de adivinhar. Deixe o Chromium <ph name="BEGIN_LINK" />criar e guardar senhas fortes para você<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">O Chromium precisa de permissão para este site acessar seu microfone</translation>

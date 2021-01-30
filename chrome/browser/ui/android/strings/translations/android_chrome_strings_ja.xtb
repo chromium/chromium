@@ -432,6 +432,7 @@
 <translation id="4095146165863963773">アプリデータを削除しますか？</translation>
 <translation id="4095189195365058471">後で読む <ph name="BEGIN_NEW" />新機能<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">使用統計情報と障害レポートを Google に送信して、Chrome の品質向上にご協力ください。</translation>
+<translation id="4108314971463891922">フォロー</translation>
 <translation id="4108998448622696017">危険なイベントの発生を検出して警告します。</translation>
 <translation id="4116038641877404294">ページをダウンロードするとオフラインで使用できるようになります</translation>
 <translation id="4135200667068010335">タブを共有するデバイスのリストが閉じられました。</translation>
@@ -643,6 +644,7 @@
 <translation id="5606787249466187650">プライバシー サンドボックスを見る</translation>
 <translation id="5620163320393916465">保存されているパスワードはありません</translation>
 <translation id="5620928963363755975">[その他のオプション] から [ダウンロード] を開いて自分のファイルやページを探すことができます</translation>
+<translation id="562289928968387744">リアクションを管理</translation>
 <translation id="5626134646977739690">名前:</translation>
 <translation id="5639724618331995626">すべてのサイトを許可</translation>
 <translation id="5648166631817621825">過去 7 日間</translation>
@@ -743,7 +745,6 @@
 <translation id="6232535412751077445">「トラッキング拒否」を有効にすると、リクエストが閲覧トラフィックに含まれるようになります。ウェブサイトがリクエストに応答するかどうか、またリクエストがどのように解釈されるかによって、この影響は異なります。
 
 たとえば一部のウェブサイトでは、このリクエストに対して、ユーザーが過去にアクセスしたウェブサイトとは関係のない広告が表示されます。トラッキングを拒否しても、実際のところ多くのウェブサイトではユーザーの閲覧データが収集され利用されています。その用途としては、セキュリティの強化や、コンテンツ、サービス、広告、おすすめの表示、レポート統計情報の作成などが挙げられます。</translation>
-<translation id="6243852395147506234">オフラインで利用できます</translation>
 <translation id="624789221780392884">アップデート準備完了</translation>
 <translation id="6255999984061454636">おすすめのコンテンツ</translation>
 <translation id="6266591733731644292">プライバシー サンドボックスは、現時点では限定リリースとなっています。試用期間中にできること:\n<ph name="BEGIN_LIST_ITEM1" />ウェブサイトやアプリのデベロッパーは、ユーザー個人を一意に特定できるような情報を使用せずに関連性の高いユーザー エクスペリエンスを提供するための機能を試すことができます。<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />ユーザーはこのページの設定で、この試用版を無効にするよう選択できます。<ph name="END_LIST_ITEM2" /></translation>
@@ -892,7 +893,6 @@
 <translation id="718926126787620637">ブックマーク フォルダのリストが画面全体に表示されています</translation>
 <translation id="7189372733857464326">Google Play 開発者サービスの更新完了を待機しています</translation>
 <translation id="7191430249889272776">バックグラウンドでタブを開きました。</translation>
-<translation id="720894724577012575">カテゴリ: <ph name="COMMA_SEPERATED_CATEGORY_LIST" /></translation>
 <translation id="7233236755231902816">お使いの言語でウェブを表示するには、Chrome の最新バージョンを入手してください</translation>
 <translation id="7248069434667874558">Chrome で <ph name="TARGET_DEVICE_NAME" /> の同期がオンになっていることを確認してください</translation>
 <translation id="7274013316676448362">ブロック中のサイト</translation>
@@ -1008,7 +1008,6 @@
 <translation id="7971136598759319605">最終同期: 1 日前</translation>
 <translation id="7975379999046275268">ページをプレビュー <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">ページをプリロードして、閲覧と検索をすばやく行えるようにする</translation>
-<translation id="7986497153528221272">パスワードを表示するには、まずデバイスで画面ロックを設定してください</translation>
 <translation id="7998918019931843664">閉じたタブを開く</translation>
 <translation id="8004582292198964060">ブラウザ</translation>
 <translation id="8013372441983637696">Chrome データもこのデバイスから削除する</translation>

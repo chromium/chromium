@@ -432,6 +432,7 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="4095146165863963773">Vee programdata uit?</translation>
 <translation id="4095189195365058471">Lees later <ph name="BEGIN_NEW" />Nuut<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Help om Chrome te verbeter deur gebruikstatistiek en omvalverslae na Google te stuur.</translation>
+<translation id="4108314971463891922">Volg</translation>
 <translation id="4108998448622696017">Bespeur en waarsku jou oor gevaarlike gevalle wanneer hulle plaasvind.</translation>
 <translation id="4116038641877404294">Laai bladsye af om hulle vanlyn te gebruik</translation>
 <translation id="4135200667068010335">Lys toestelle om 'n oortjie mee te deel, is toegemaak.</translation>
@@ -643,6 +644,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="5606787249466187650">Verken die privaatheidsandput</translation>
 <translation id="5620163320393916465">Geen gestoorde wagwoorde nie</translation>
 <translation id="5620928963363755975">Kry jou lêers en bladsye in Aflaaie vanaf die Meer Opsies-knoppie</translation>
+<translation id="562289928968387744">Bestuur reaksies</translation>
 <translation id="5626134646977739690">Naam:</translation>
 <translation id="5639724618331995626">Laat alle werwe toe</translation>
 <translation id="5648166631817621825">Afgelope 7 dae</translation>
@@ -743,7 +745,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="6232535412751077445">As “Moenie naspoor nie” geaktiveer word, beteken dit dat 'n versoek by jou blaaiverkeer ingesluit sal word. Enige uitwerking sal afhang van of 'n webwerf op die versoek reageer en hoe die versoek geïnterpreteer word.
 
 Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advertensies te wys wat nie gegrond is op ander webwerwe wat jy besoek het nie. Baie webwerwe sal steeds jou blaaidata insamel en gebruik – byvoorbeeld om sekuriteit te verbeter, om inhoud, advertensies en aanbevelings te verskaf en om verslagdoeningstatistiek te genereer.</translation>
-<translation id="6243852395147506234">Gereed vir vanlyn</translation>
 <translation id="624789221780392884">Opdatering gereed</translation>
 <translation id="6255999984061454636">Inhoudvoorstelle</translation>
 <translation id="6266591733731644292">Privaatheidsandput is nog nie algemeen vrygestel nie. Gedurende hierdie proeftydperk:\n<ph name="BEGIN_LIST_ITEM1" />Kan webwerf- en programontwikkelaars die vermoë toets om relevante ervarings te skep sonder om toegang tot uniek identifiseerbare inligting oor jou te kry<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Kan gebruikers die kontroles op hierdie bladsy gebruik om van die proeflopie te onttrek.<ph name="END_LIST_ITEM2" /></translation>
@@ -892,7 +893,6 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="718926126787620637">Lys boekmerkvouers wat teen volle hoogte oopgemaak is</translation>
 <translation id="7189372733857464326">Wag tans dat Google Play Dienste klaar opdateer</translation>
 <translation id="7191430249889272776">Oortjie is op die agtergrond oopgemaak.</translation>
-<translation id="720894724577012575">Kategorieë: <ph name="COMMA_SEPERATED_CATEGORY_LIST" />.</translation>
 <translation id="7233236755231902816">Kry die jongste weergawe van Chrome om die web in jou taal te sien.</translation>
 <translation id="7248069434667874558">Maak seker dat sinkronisering in Chrome op <ph name="TARGET_DEVICE_NAME" /> aangeskakel is.</translation>
 <translation id="7274013316676448362">Geblokkeerde werf</translation>
@@ -1008,7 +1008,6 @@ Data van jou Incognito-sessie af sal slegs in Chrome uitgevee word wanneer jy <p
 <translation id="7971136598759319605">1 dag gelede aktief</translation>
 <translation id="7975379999046275268">Voorbeskou bladsy <ph name="BEGIN_NEW" />Nuwe<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Laai bladsye vooraf om vinniger te blaai en te soek</translation>
-<translation id="7986497153528221272">Stel eers 'n skermslot op jou toestel om wagwoorde te bekyk</translation>
 <translation id="7998918019931843664">Heropen toegemaakte oortjie</translation>
 <translation id="8004582292198964060">Blaaier</translation>
 <translation id="8013372441983637696">Vee ook jou Chrome-data op hierdie toestel uit</translation>

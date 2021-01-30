@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Tulostustyöt</translation>
 <translation id="3527036260304016759">Epäonnistui – Tuntematon virhe</translation>
 <translation id="357889014807611375">maksullinen Wi-Fi</translation>
+<translation id="3595596368722241419">Akku täynnä</translation>
 <translation id="360565022852130722">Wi-Fi-verkko on suojattu heikolla WEP 802.1x -protokollalla</translation>
 <translation id="3712633734921637892">CPU-nopeutta rajoitetaan nyt akun säästämiseksi tai lämpötilan laskemiseksi</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> arvostelua)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Resoluutio</translation>
 <translation id="3941014780699102620">Isännän selvittäminen epäonnistui</translation>
 <translation id="3942420633017001071">Diagnostiikka</translation>
+<translation id="397105322502079400">Lasketaan...</translation>
 <translation id="39823212440917567">Yli <ph name="NUMBER_OF_DAYS" /> päivää vanhat tulostustyöt poistetaan</translation>
 <translation id="4003384961948020559">Epäonnistui – Syöte täynnä</translation>
 <translation id="4034824040120875894">Tulostin</translation>
@@ -263,6 +265,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="6977381486153291903">Laiteohjelmiston versio</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ylläpitää tätä laitetta ja pääsee näkemään kaiken käyttäjätoiminnan, esim. avatut verkkosivustot, salasanat ja sähköpostit.</translation>
 <translation id="7040230719604914234">Operaattori</translation>
+<translation id="7059230779847288458">Ladataan, täynnä <ph name="TIME_VALUE" /> päästä</translation>
 <translation id="708426984172631313">LOPETETTU</translation>
 <translation id="7143207342074048698">Yhdistetään</translation>
 <translation id="714876143603641390">LAN-yhteys</translation>
@@ -281,6 +284,7 @@ Napauta mikrofonia, niin voit kysyä mitä haluat.</translation>
 <translation id="7502658306369382406">IPv6-osoite</translation>
 <translation id="7561454561030345039">Järjestelmänvalvojasi ylläpitää tätä toimintoa</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> jäljellä</translation>
 <translation id="7620771111601174153">Lue lisää ohjekeskuksesta</translation>
 <translation id="7648838807254605802">Suuri HTTPS-viive</translation>
 <translation id="7658239707568436148">Peruuta</translation>

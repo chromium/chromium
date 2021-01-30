@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Printimet</translation>
 <translation id="3527036260304016759">Dështoi - Gabim i panjohur</translation>
 <translation id="357889014807611375">Wi-Fi me matje</translation>
+<translation id="3595596368722241419">Bateria është plot</translation>
 <translation id="360565022852130722">Rrjeti Wi-Fi është i siguruar me protokollin e dobët WEP 802.1x</translation>
 <translation id="3712633734921637892">Shpejtësia e CPU-së aktualisht është e kufizuar për të kursyer baterinë ose për të reduktuar temperaturën</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> komente)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Rezolucioni</translation>
 <translation id="3941014780699102620">Zgjidhja e pritësit dështoi</translation>
 <translation id="3942420633017001071">Diagnostikimi</translation>
+<translation id="397105322502079400">Po llogarit...</translation>
 <translation id="39823212440917567">Printimet më të vjetra se <ph name="NUMBER_OF_DAYS" /> ditë do të hiqen</translation>
 <translation id="4003384961948020559">Dështoi - Dalja është plot</translation>
 <translation id="4034824040120875894">Printeri</translation>
@@ -262,6 +264,7 @@
 <translation id="6977381486153291903">Rishikimi i firmuerit</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> menaxhon këtë pajisje dhe ka qasje te i gjithë aktiviteti i përdoruesit, duke përfshirë faqet e uebit të vizituara, fjalëkalimet dhe email-i.</translation>
 <translation id="7040230719604914234">Operatori</translation>
+<translation id="7059230779847288458">Po karikohet, <ph name="TIME_VALUE" /> derisa të mbushet</translation>
 <translation id="708426984172631313">NDALOI</translation>
 <translation id="7143207342074048698">Po lidhet</translation>
 <translation id="714876143603641390">Lidhshmëria e LAN-it</translation>
@@ -280,6 +283,7 @@
 <translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7561454561030345039">Ky veprim menaxhohet nga administratori yt</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> të mbetura</translation>
 <translation id="7620771111601174153">Mëso më shumë në "Qendrën e ndihmës"</translation>
 <translation id="7648838807254605802">Vonesë e lartë në HTTPS</translation>
 <translation id="7658239707568436148">Anulo</translation>

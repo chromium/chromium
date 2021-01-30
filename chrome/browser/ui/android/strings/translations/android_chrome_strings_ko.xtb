@@ -432,6 +432,7 @@
 <translation id="4095146165863963773">앱 데이터를 삭제하시겠습니까?</translation>
 <translation id="4095189195365058471">나중에 읽기 <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">사용 통계와 비정상 종료 보고서를 Google로 전송하여 Chrome을 개선하는 데 동참하세요.</translation>
+<translation id="4108314971463891922">팔로우</translation>
 <translation id="4108998448622696017">위험한 이벤트가 발생하면 이를 감지하여 알립니다.</translation>
 <translation id="4116038641877404294">페이지를 다운로드하여 오프라인에서 사용하세요.</translation>
 <translation id="4135200667068010335">탭을 공유할 기기 목록이 닫혔습니다.</translation>
@@ -643,6 +644,7 @@
 <translation id="5606787249466187650">개인정보 보호 샌드박스 살펴보기</translation>
 <translation id="5620163320393916465">저장된 비밀번호 없음</translation>
 <translation id="5620928963363755975">옵션 더보기 버튼을 눌러 다운로드에서 파일 및 페이지를 찾아보세요.</translation>
+<translation id="562289928968387744">반응 관리</translation>
 <translation id="5626134646977739690">이름:</translation>
 <translation id="5639724618331995626">모든 사이트 허용</translation>
 <translation id="5648166631817621825">지난 7일</translation>
@@ -743,7 +745,6 @@
 <translation id="6232535412751077445">‘추적 안함’을 사용하도록 설정하면 요청이 사용자의 인터넷 사용 트래픽에 포함됩니다. 웹사이트가 요청에 응답하는지 여부와 요청이 해석되는 방법에 따라 결과가 결정됩니다.
 
 예를 들어 어떤 웹사이트는 사용자가 방문한 다른 웹사이트를 기반으로 하지 않는 광고를 표시하여 이 요청에 응답할 수 있습니다. 그러나 대부분의 웹사이트에서는 보안을 개선하거나 웹사이트에 콘텐츠, 광고, 권장사항 등을 제공하거나 보고서 통계를 생성하기 위해 사용자의 인터넷 사용 기록을 계속 수집하고 사용합니다.</translation>
-<translation id="6243852395147506234">오프라인 사용 가능</translation>
 <translation id="624789221780392884">업데이트 준비 완료</translation>
 <translation id="6255999984061454636">콘텐츠 추천</translation>
 <translation id="6266591733731644292">개인정보 보호 샌드박스는 아직 일반 공개되지 않았습니다. 체험 기간 중:\n<ph name="BEGIN_LIST_ITEM1" />웹사이트 및 앱 개발자가 개인 식별이 가능한 정보에 액세스하지 않고도 관련성 높은 환경을 구축하려고 할 수 있습니다.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />사용자는 이 페이지의 컨트롤을 사용하여 무료 체험을 중단할 수 있습니다.<ph name="END_LIST_ITEM2" /></translation>
@@ -892,7 +893,6 @@
 <translation id="718926126787620637">북마크 폴더 목록이 전체 높이로 열림</translation>
 <translation id="7189372733857464326">Google Play 서비스 업데이트 완료 대기 중</translation>
 <translation id="7191430249889272776">탭이 백그라운드에 열림</translation>
-<translation id="720894724577012575">카테고리: <ph name="COMMA_SEPERATED_CATEGORY_LIST" />.</translation>
 <translation id="7233236755231902816">내가 사용하는 언어로 웹을 보려면 최신 버전의 Chrome을 사용하세요.</translation>
 <translation id="7248069434667874558"><ph name="TARGET_DEVICE_NAME" />에서 Chrome 동기화가 사용 설정되어 있는지 확인하세요.</translation>
 <translation id="7274013316676448362">차단된 사이트</translation>
@@ -1008,7 +1008,6 @@
 <translation id="7971136598759319605">1일 전 동기화됨</translation>
 <translation id="7975379999046275268">페이지 미리보기 표시 <ph name="BEGIN_NEW" />새로운 기능<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">더 빠른 인터넷 사용과 검색을 위해 페이지 미리 로드</translation>
-<translation id="7986497153528221272">비밀번호를 보려면 먼저 기기에 화면 잠금을 설정하세요.</translation>
 <translation id="7998918019931843664">닫은 탭 다시 열기</translation>
 <translation id="8004582292198964060">브라우저</translation>
 <translation id="8013372441983637696">이 기기에서 내 Chrome 데이터 삭제</translation>

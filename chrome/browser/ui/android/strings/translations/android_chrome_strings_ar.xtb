@@ -432,6 +432,7 @@
 <translation id="4095146165863963773">هل ترغب في حذف بيانات التطبيق؟</translation>
 <translation id="4095189195365058471">القراءة لاحقًا <ph name="BEGIN_NEW" />جديد<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">‏يمكنك المساعدة في تحسين Chrome عن طريق إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google.</translation>
+<translation id="4108314971463891922">متابعة</translation>
 <translation id="4108998448622696017">اكتشاف الأحداث الخطيرة عند حدوثها والتحذير منها</translation>
 <translation id="4116038641877404294">تنزيل الصفحات لاستخدامها بلا اتصال بالإنترنت</translation>
 <translation id="4135200667068010335">قائمة الأجهزة التي يمكن مشاركة علامة تبويب معها مغلقة.</translation>
@@ -643,6 +644,7 @@
 <translation id="5606787249466187650">‏الانتقال إلى صفحة Privacy Sandbox</translation>
 <translation id="5620163320393916465">ما مِن كلمات مرور محفوظة.</translation>
 <translation id="5620928963363755975">العثور على الملفات والصفحات في "المحتوى الذي تم تنزيله" من الزر "مزيد من الخيارات"</translation>
+<translation id="562289928968387744">إدارة التفاعلات</translation>
 <translation id="5626134646977739690">الاسم:</translation>
 <translation id="5639724618331995626">السماح بجميع المواقع</translation>
 <translation id="5648166631817621825">آخر 7 أيام</translation>
@@ -743,7 +745,6 @@
 <translation id="6232535412751077445">إن تفعيل ميزة "عدم التعقب" يعني أنه سيتم تضمين طلب في حركة بيانات التصفّح. ويعتمد أي تأثير يحدث على ما إذا كان الموقع الإلكتروني سيستجيب للطلب، وعلى كيفية تفسير الطلب.
 
 على سبيل المثال، قد تستجيب بعض المواقع الإلكترونية لهذا الطلب عبر عرض إعلانات لا تستند إلى المواقع الإلكترونية الأخرى التي زرتها، بينما ستظل العديد من المواقع الإلكترونية تجمع بيانات تصفّحك وتستخدمها - مثلاً لتحسين الأمان وتقديم محتوى وخدمات وإعلانات واقتراحات وإعداد تقارير بالإحصاءات.</translation>
-<translation id="6243852395147506234">جاهز للاستخدام بلا إنترنت</translation>
 <translation id="624789221780392884">التحديث جاهز</translation>
 <translation id="6255999984061454636">اقتراحات المحتوى</translation>
 <translation id="6266591733731644292">‏لم يتم حتى الآن إتاحة ميزة Privacy Sandbox على نطاق واسع. وخلال هذه الفترة التجريبية:\n<ph name="BEGIN_LIST_ITEM1" />يمكن للمواقع الإلكترونية ومطوّري التطبيقات تجربة إمكانية إنشاء تجارب ذات صلة بدون الوصول إلى معلومات تحديد الهوية الشخصية.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />بإمكان المستخدمين إلغاء اشتراك الفترة التجريبية باستخدام عناصر التحكّم المتوفّرة في هذه الصفحة.<ph name="END_LIST_ITEM2" /></translation>
@@ -892,7 +893,6 @@
 <translation id="718926126787620637">تم فتح قائمة مجلدات الإشارات المرجعية بطول الشاشة.</translation>
 <translation id="7189372733857464326">‏انتظار انتهاء تحديث خدمات Google Play</translation>
 <translation id="7191430249889272776">تم فتح علامة التبويب في الخلفية.</translation>
-<translation id="720894724577012575">الفئات: <ph name="COMMA_SEPERATED_CATEGORY_LIST" /></translation>
 <translation id="7233236755231902816">‏للاطّلاع على الويب بلغتك، يمكنك الحصول على أحدث إصدار من Chrome.</translation>
 <translation id="7248069434667874558">‏يُرجى التأكّد من تفعيل مزامنة <ph name="TARGET_DEVICE_NAME" /> في Chrome.</translation>
 <translation id="7274013316676448362">الموقع المحظور</translation>
@@ -1008,7 +1008,6 @@
 <translation id="7971136598759319605">نشط قبل يوم واحد</translation>
 <translation id="7975379999046275268">معاينة صفحة <ph name="BEGIN_NEW" />ميزة جديدة<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">التحميل المُسبق للصفحات للحصول على أداء أسرع أثناء التصفّح والبحث</translation>
-<translation id="7986497153528221272">للاطّلاع على كلمات المرور، يجب أولاً إعداد قفل الشاشة على جهازك.</translation>
 <translation id="7998918019931843664">إعادة فتح علامة التبويب المغلقة</translation>
 <translation id="8004582292198964060">المتصفّح</translation>
 <translation id="8013372441983637696">‏محو بيانات Chrome من هذا الجهاز أيضًا</translation>
@@ -1100,7 +1099,7 @@
 <translation id="8583805026567836021">محو بيانات الحساب</translation>
 <translation id="8587585930972369234">النقر مع الاستمرار للبحث</translation>
 <translation id="860043288473659153">اسم حامل البطاقة</translation>
-<translation id="860282621117673749">تنبيهات انخفاض الأسعار</translation>
+<translation id="860282621117673749">إشعارات بانخفاض الأسعار</translation>
 <translation id="8616006591992756292">‏قد يتضمّن حسابك على Google نماذج أخرى من سجلّ التصفّح في <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" />.</translation>
 <translation id="8617240290563765734">‏هل تريد فتح عنوان URL المقترح والمحدد في المحتوى الذي تم تنزيله؟</translation>
 <translation id="8636825310635137004">للحصول على علامات التبويب من أجهزتك الأخرى، فعِّل المزامنة.</translation>

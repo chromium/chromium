@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">ပရင့်ထုတ်ရန် ဖိုင်များ</translation>
 <translation id="3527036260304016759">မအောင်မြင်ပါ - အမည်မသိ အမှား</translation>
 <translation id="357889014807611375">အခမဲ့မဟုတ်သော Wi-Fi</translation>
+<translation id="3595596368722241419">ဘက်ထရီ အားပြည့်နေ</translation>
 <translation id="360565022852130722">WiFi ကွန်ရက်ကို အားနည်းသောပရိုတိုကော WEP 802.1x ဖြင့် လုံခြုံအောင်ထားသည်</translation>
 <translation id="3712633734921637892">ဘက်ထရီချွေတာရန် (သို့) အပူချိန်လျှော့ချရန် CPU မြန်နှုန်းကို လောလောဆယ် ကန့်သတ်ထားသည်</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (သုံးသပ်ချက် <ph name="AGGREGATED_COUNT" /> ခု)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">ပုံရိပ်ပြတ်သားကိန်း</translation>
 <translation id="3941014780699102620">ဆာဗာပင်ရင်းကို မဖြေရှင်းနိုင်ပါ</translation>
 <translation id="3942420633017001071">အမှားရှာဖွေမှုများ</translation>
+<translation id="397105322502079400">တွက်ချက်နေ...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> ရက်အထက် ပရင့်ထုတ်ရန်ဖိုင်များကို ဖယ်ရှားပါမည်</translation>
 <translation id="4003384961948020559">မအောင်မြင်ပါ - စာရွက်ထုတ်သည့်နေရာ ပြည့်နေသည်</translation>
 <translation id="4034824040120875894">ပုံနှိပ်စက်</translation>
@@ -262,6 +264,7 @@
 <translation id="6977381486153291903">ဖာမ်းဝဲ ပြန်လည်စိစစ်ခြင်း</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> က ဤကိရိယာကို စီမံခန့်ခွဲပြီး ဝင်ကြည့်ထားသည့် ဝဘ်စာမျက်နှာများ၊ စကားဝှက်များနှင့် အီးမေးလ်အပါအဝင် အသုံးပြုသူ၏ လုပ်ဆောင်ချက်အားလုံးကို အသုံးပြုခွင့်ရှိပါသည်။</translation>
 <translation id="7040230719604914234">မိုဘိုင်းဝန်ဆောင်မှုပေးသူ</translation>
+<translation id="7059230779847288458">အားသွင်းနေသည် (အားပြည့်ရန် <ph name="TIME_VALUE" /> ကျန်သည်)</translation>
 <translation id="708426984172631313">ရပ်ထားသည်</translation>
 <translation id="7143207342074048698">ချိတ်ဆက်နေသည်</translation>
 <translation id="714876143603641390">Lan ချိတ်ဆက်မှု</translation>
@@ -280,6 +283,7 @@
 <translation id="7502658306369382406">IPv6 လိပ်စာ</translation>
 <translation id="7561454561030345039">ဤလုပ်ဆောင်ချက်ကို သင့်စီမံခန့်ခွဲသူက စီမံသည်</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> ကျန်သည်</translation>
 <translation id="7620771111601174153">'ကူညီရေးဌာန' တွင် ပိုမိုလေ့လာရန်</translation>
 <translation id="7648838807254605802">HTTPS တုံ့ပြန်ချိန် မြင့်သည်</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>

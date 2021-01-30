@@ -330,6 +330,7 @@
 <translation id="1367951781824006909">Escolher um arquivo</translation>
 <translation id="1369149969991017342">Acesso com interruptor (controlar o computador com apenas um ou dois interruptores)</translation>
 <translation id="1372841398847029212">Sincronizar com sua conta</translation>
+<translation id="1373176046406139583">A visibilidade do dispositivo controla quem pode compartilhar itens com você enquanto sua tela está desbloqueada. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">O certificado exigido pela rede "<ph name="NETWORK_NAME" />" não está instalado ou não é mais válido. Obtenha um novo certificado e tente se conectar novamente.</translation>
 <translation id="1375321115329958930">Senhas salvas</translation>
 <translation id="137651782282853227">Os endereços salvos são exibidos aqui</translation>
@@ -1091,7 +1092,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2204034823255629767">Ler e alterar tudo o que você digitar</translation>
 <translation id="220858061631308971">Digite este código PIN em "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">Permitir cookies</translation>
-<translation id="2213140827792212876">Remover compartilhamento</translation>
 <translation id="2214018885812055163">Pastas compartilhadas</translation>
 <translation id="2214884991347062907">Senha incorreta. Tente novamente</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 linha não mostrada&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> linha não mostrada&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> linhas não mostradas&gt;}}</translation>
@@ -2427,7 +2427,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Você e o Google</translation>
 <translation id="3722108462506185496">Erro ao iniciar o serviço da máquina virtual. Tente novamente.</translation>
-<translation id="3726137731714254362">A remoção de pastas deste local interromperá o compartilhamento, mas não excluirá os arquivos.</translation>
 <translation id="3727148787322499904">A alteração dessa configuração afetará todas as redes compartilhadas</translation>
 <translation id="3727187387656390258">Inspecionar pop-up</translation>
 <translation id="372722114124766626">Apenas uma vez</translation>
@@ -2564,7 +2563,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: sincronização pausada</translation>
 <translation id="3861638017150647085">O nome de usuário "<ph name="USERNAME" />" não está disponível</translation>
 <translation id="3861977424605124250">Exibir na inicialização</translation>
-<translation id="3862693525629180217">Verificar pelo sensor integrado</translation>
 <translation id="3862788408946266506">O app com o atributo de manifesto "kiosk_only" precisa ser instalado no modo quiosque do Chrome OS</translation>
 <translation id="3865414814144988605">Resolução</translation>
 <translation id="3866249974567520381">Descrição</translation>
@@ -3444,6 +3442,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz (entrelaçado)</translation>
 <translation id="4902546322522096650">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, conectada</translation>
 <translation id="49027928311173603">A política baixada do servidor é inválida: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4904061654709986277">Adicionar perfil</translation>
 <translation id="4906490889887219338">Configurar ou gerenciar compartilhamentos de arquivos em rede. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, bateria do smartphone em <ph name="BATTERY_STATUS" />%, detalhes</translation>
 <translation id="4907161631261076876">Esse arquivo não é transferido com frequência e pode ser perigoso.</translation>
@@ -3566,6 +3565,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="5068918910148307423">Não permitir que sites fechados recentemente concluam o envio e o recebimento de dados</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5070773577685395116">Não recebeu?</translation>
+<translation id="5071892329440114717">Mostrar detalhes da proteção padrão</translation>
 <translation id="5072052264945641674">Ajustar tamanho do cursor</translation>
 <translation id="5072836811783999860">Mostrar favoritos gerenciados</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}one{<ph name="FILE1" />, <ph name="FILE2" /> e mais #}other{<ph name="FILE1" />, <ph name="FILE2" /> e mais #}}</translation>
@@ -4365,7 +4365,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6003143259071779217">Remover rede celular do eSIM</translation>
 <translation id="6006484371116297560">Clássico</translation>
 <translation id="6007240208646052708">A pesquisa por voz no seu idioma não está disponível.</translation>
-<translation id="6009781704028455063">Sensor integrado</translation>
 <translation id="6011074160056912900">Rede Ethernet</translation>
 <translation id="6011193465932186973">Impressão digital</translation>
 <translation id="6011449291337289699">Limpar dados de sites</translation>
@@ -4719,6 +4718,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6412673304250309937">Verifica se os URLs estão em uma lista de sites não seguros armazenada no Chrome. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chrome também poderá enviar URLs, incluindo partes do conteúdo da página, para o "Navegação segura".</translation>
 <translation id="6412931879992742813">Nova janela anônima</translation>
 <translation id="641469293210305670">Instalar atualizações e apps</translation>
+<translation id="6414878884710400018">Abrir preferências do sistema</translation>
 <translation id="6414888972213066896">Você perguntou ao seu responsável se pode visitar este site</translation>
 <translation id="6415900369006735853">Conecte-se à internet pelo smartphone</translation>
 <translation id="6416743254476733475">Permita ou bloqueie no seu computador.</translation>
@@ -4765,6 +4765,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6460601847208524483">Localizar próximo</translation>
 <translation id="6461170143930046705">Procurando redes…</translation>
 <translation id="6463795194797719782">&amp;Editar</translation>
+<translation id="6464825623202322042">Este dispositivo</translation>
 <translation id="6465841119675156448">Sem Internet</translation>
 <translation id="6466988389784393586">&amp;Abrir todos os favoritos</translation>
 <translation id="6467304607960172345">Otimizar vídeos em tela cheia</translation>
@@ -4785,6 +4786,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="648927581764831596">Nenhum disponível</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (porta da direita)</translation>
 <translation id="6491376743066338510">Falha na autorização</translation>
+<translation id="6494327278868541139">Mostrar detalhes da proteção reforçada</translation>
 <translation id="6494445798847293442">Não é uma Autoridade de certificação</translation>
 <translation id="6494974875566443634">Personalização</translation>
 <translation id="6495925982925244349">Rede <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensidade do sinal em <ph name="SIGNAL_STRENGTH" />%, gerenciada pelo seu administrador, detalhes</translation>
@@ -5070,7 +5072,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="683373380308365518">Mudar para um navegador inteligente e seguro</translation>
 <translation id="6835762382653651563">Conecte-se à Internet para atualizar seu <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Perguntar quando um site quiser abrir e posicionar janelas nas suas telas (recomendado)</translation>
-<translation id="6838694093138907871">Código inválido, tente novamente.</translation>
 <translation id="6838860780238890144">{COUNT,plural, =1{Número de telefone}one{# número de telefone}other{# números de telefone}}</translation>
 <translation id="6839225236531462745">Erro de exclusão do certificado</translation>
 <translation id="6839916869147598086">O login mudou</translation>
@@ -5321,6 +5322,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7108933416628942903">Bloquear agora</translation>
 <translation id="7109543803214225826">Atalho removido</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Adicionar guia ao grupo}one{Adicionar guia ao grupo}other{Adicionar guias ao grupo}}</translation>
+<translation id="7111822978084196600">Dê um nome à janela</translation>
 <translation id="7113502843173351041">Saiba seu endereço de e-mail</translation>
 <translation id="7114054701490058191">As senhas não correspondem</translation>
 <translation id="7114648273807173152">Para usar o Smart Lock para fazer login na sua Conta do Google, acesse "Config." &gt; "Dispositivos conectados" &gt; "Seu smartphone" &gt; "Smart Lock".</translation>
@@ -5582,6 +5584,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="7421925624202799674">&amp;Exibir código fonte da página</translation>
 <translation id="7422192691352527311">Preferências...</translation>
 <translation id="7423098979219808738">Perguntar primeiro</translation>
+<translation id="7423425410216218516">A visibilidade está ativada por <ph name="MINUTES" /> minutos</translation>
 <translation id="7423513079490750513">Remover <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372">O app <ph name="APP_NAME" /> precisa de permissão para ser executado</translation>
 <translation id="7427348830195639090">Página de plano de fundo: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -6968,6 +6971,7 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - Falhou</translation>
 <translation id="8981825781894055334">Pouco papel</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> pode editar <ph name="FILENAME" /></translation>
+<translation id="8984694057134206124">Você ficará visível para todos por <ph name="MINUTES" /> minutos. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8985264973231822211">Ativado há <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dia</translation>
 <translation id="8986362086234534611">Esquecer</translation>
 <translation id="8986494364107987395">Envia estatísticas de uso e relatórios de erros ao Google automaticamente</translation>
@@ -7141,7 +7145,6 @@ Pressione um interruptor atribuído para remover a atribuição.</translation>
 <translation id="917350715406657904">Você atingiu o limite de tempo que seu pai/mãe definiu para o app <ph name="APP_NAME" />. Você poderá usá-lo amanhã por <ph name="TIME_LIMIT" />.</translation>
 <translation id="9173787391779732995">Os sites podem exibir imagens (recomendado)</translation>
 <translation id="9173995187295789444">Procurando dispositivos Bluetooth…</translation>
-<translation id="9174052566244514547">Seu administrador solicitou a reinicialização do dispositivo para atualizar os apps. Isso pode levar vários minutos</translation>
 <translation id="9174401638287877180">Envie dados de uso e diagnóstico. Ajude a melhorar a experiência da criança com o Android enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles não serão usados para identificar a criança e ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e nossos parceiros, como os desenvolvedores Android. Se a configuração "Atividade na Web e de apps adicional" estiver ativada para a criança, esses dados poderão ser salvos na Conta do Google dela.</translation>
 <translation id="917510707618656279">Perguntar quando um site quiser acessar dispositivos Bluetooth</translation>
 <translation id="9176476835295860688">Envie dados de uso e diagnóstico. No momento, este dispositivo está enviando automaticamente ao Google dados de diagnóstico, de uso de apps e do dispositivo. Eles ajudarão a melhorar o sistema, a estabilidade de apps e muito mais. Alguns dados agregados também ajudarão os apps do Google e os nossos parceiros, como os desenvolvedores Android. Essa <ph name="BEGIN_LINK1" />configuração<ph name="END_LINK1" /> é aplicada pelo proprietário. Se a configuração "Atividade na Web e de apps adicional" estiver ativada, esses dados poderão ser salvos na sua Conta do Google. <ph name="BEGIN_LINK2" />Saiba mais<ph name="END_LINK2" /></translation>

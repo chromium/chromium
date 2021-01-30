@@ -329,6 +329,7 @@
 <translation id="1367951781824006909">Välj fil</translation>
 <translation id="1369149969991017342">Brytarstyrning (styr datorn med bara en eller två brytare)</translation>
 <translation id="1372841398847029212">Synkronisera till ditt konto</translation>
+<translation id="1373176046406139583">Synlighetsinställningarna på enheten styr vem som kan dela filer med dig när skärmen är upplåst. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Det certifikat som krävs av nätverket <ph name="NETWORK_NAME" /> är inte installerat eller inte längre giltigt. Hämta ett nytt certifikat och försök ansluta igen.</translation>
 <translation id="1375321115329958930">Sparade lösenord</translation>
 <translation id="137651782282853227">Sparade adresser visas här</translation>
@@ -1091,7 +1092,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2204034823255629767">Läsa och ändra allt som du skriver</translation>
 <translation id="220858061631308971">Ange den här pinkoden på <ph name="DEVICE_NAME" />:</translation>
 <translation id="2212565012507486665">Tillåt cookies</translation>
-<translation id="2213140827792212876">Ta bort delning</translation>
 <translation id="2214018885812055163">Delade mappar</translation>
 <translation id="2214884991347062907">Fel lösenord. Försök igen.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 rad visas inte&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> rader visas inte&gt;}}</translation>
@@ -2427,7 +2427,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Du och Google</translation>
 <translation id="3722108462506185496">Det gick inte att starta den virtuella maskinen. Försök igen.</translation>
-<translation id="3726137731714254362">Om mappar tas bort härifrån avbryts delningen, men inga filer tas bort.</translation>
 <translation id="3727148787322499904">Om du ändrar denna inställning påverkas alla delade nätverk</translation>
 <translation id="3727187387656390258">Kontrollera popup</translation>
 <translation id="372722114124766626">Bara den här gången</translation>
@@ -2564,7 +2563,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Synkroniseringen har pausats</translation>
 <translation id="3861638017150647085">Användarnamnet <ph name="USERNAME" /> är inte tillgängligt</translation>
 <translation id="3861977424605124250">Visa vid start</translation>
-<translation id="3862693525629180217">Verifiera via inbyggd sensor</translation>
 <translation id="3862788408946266506">En app med manifestattributet kiosk_only måste installeras i kioskläget i Chrome OS</translation>
 <translation id="3865414814144988605">Upplösning</translation>
 <translation id="3866249974567520381">Beskrivning</translation>
@@ -3444,6 +3442,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – med flätning</translation>
 <translation id="4902546322522096650">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, anslut</translation>
 <translation id="49027928311173603">Policyn som laddades ned från servern är ogiltig: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4904061654709986277">Lägg till profil</translation>
 <translation id="4906490889887219338">Konfigurera eller hantera filresurser i nätverk. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, telefonens batterinivå <ph name="BATTERY_STATUS" /> %, information</translation>
 <translation id="4907161631261076876">Den här filen brukar inte laddas ned. Den kan vara skadlig.</translation>
@@ -3566,6 +3565,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="5068918910148307423">Tillåt inte att webbplatser som nyligen har stängts får slutföra överföringen av data som skickas och tas emot</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5070773577685395116">Fick du den inte?</translation>
+<translation id="5071892329440114717">Visa detaljer om standardskydd</translation>
 <translation id="5072052264945641674">Ändra markörstorlek</translation>
 <translation id="5072836811783999860">Visa hanterade bokmärken</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> och # till}}</translation>
@@ -4364,7 +4364,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6003143259071779217">Ta bort eSIM-mobilnätverket</translation>
 <translation id="6006484371116297560">Klassiskt</translation>
 <translation id="6007240208646052708">Röstsökning är inte tillgängligt på ditt språk.</translation>
-<translation id="6009781704028455063">Inbyggd sensor</translation>
 <translation id="6011074160056912900">Ethernet-nätverk</translation>
 <translation id="6011193465932186973">Fingeravtryck</translation>
 <translation id="6011449291337289699">Rensa webbplatsdata</translation>
@@ -4718,6 +4717,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6412673304250309937">Kontrollera webbadresser mot en lista över osäkra webbplatser i Chrome. Om du utsätts för försök att kapa ditt lösenord på en webbplats eller om du laddar ned en skadlig fil kan webbadresserna skickas från Chrome till Säker webbsökning tillsammans med delar av sidinnehållet.</translation>
 <translation id="6412931879992742813">Nytt inkognitofönster</translation>
 <translation id="641469293210305670">Installera uppdateringar och appar</translation>
+<translation id="6414878884710400018">Öppna Systeminställningar</translation>
 <translation id="6414888972213066896">Du har frågat en förälder om lov att besöka den här webbplatsen.</translation>
 <translation id="6415900369006735853">Anslut till internet via mobilen</translation>
 <translation id="6416743254476733475">Tillåt eller blockera på datorn.</translation>
@@ -4764,6 +4764,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="6460601847208524483">Sök nästa</translation>
 <translation id="6461170143930046705">Söker efter nätverk …</translation>
 <translation id="6463795194797719782">&amp;Redigera</translation>
+<translation id="6464825623202322042">Den här enheten</translation>
 <translation id="6465841119675156448">Utan internet</translation>
 <translation id="6466988389784393586">&amp;Öppna alla bokmärken</translation>
 <translation id="6467304607960172345">Optimera videor i helskärmsläge</translation>
@@ -4784,6 +4785,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="648927581764831596">Inte tillgängligt</translation>
 <translation id="6490471652906364588">USB-C-enhet (höger port)</translation>
 <translation id="6491376743066338510">Auktoriseringen misslyckades</translation>
+<translation id="6494327278868541139">Visa detaljer om förbättrat skydd</translation>
 <translation id="6494445798847293442">Inte från certifikatutfärdare</translation>
 <translation id="6494974875566443634">Anpassning</translation>
 <translation id="6495925982925244349">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, hanteras av administratören, information</translation>
@@ -5069,7 +5071,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="683373380308365518">Byt till en smart och säker webbläsare</translation>
 <translation id="6835762382653651563">Anslut till internet om du vill uppdatera din <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Fråga när en webbplats vill öppna fönster och placera ut dem på skärmen (rekommenderas)</translation>
-<translation id="6838694093138907871">Ogiltig kod. Försök igen.</translation>
 <translation id="6838860780238890144">{COUNT,plural, =1{telefonnummer}other{# telefonnummer}}</translation>
 <translation id="6839225236531462745">Fel vid borttagning av certifikat</translation>
 <translation id="6839916869147598086">Inloggning fungerar annorlunda</translation>
@@ -5320,6 +5321,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7108933416628942903">Lås nu</translation>
 <translation id="7109543803214225826">Genvägen har tagits bort</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Lägg till fliken i gruppen}other{Lägg till flikarna i gruppen}}</translation>
+<translation id="7111822978084196600">Namnge fönstret</translation>
 <translation id="7113502843173351041">Känn till din e-postadress</translation>
 <translation id="7114054701490058191">Lösenorden matchar inte</translation>
 <translation id="7114648273807173152">Öppna Inställningar &gt; Anslutna enheter &gt; Din mobil &gt; Smart Lock om du vill kunna logga in på Google-kontot med Smart Lock.</translation>
@@ -5581,6 +5583,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="7421925624202799674">Visa &amp;sidkälla</translation>
 <translation id="7422192691352527311">Inställningar...</translation>
 <translation id="7423098979219808738">Fråga först</translation>
+<translation id="7423425410216218516">Synlighet är aktiverat i <ph name="MINUTES" /> minuter</translation>
 <translation id="7423513079490750513">Ta bort <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372">Behörighet krävs för att köra <ph name="APP_NAME" /></translation>
 <translation id="7427348830195639090">Bakgrundssida: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -6966,6 +6969,7 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – kraschat</translation>
 <translation id="8981825781894055334">Papperet börjar ta slut</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> har redigeringsbehörighet till <ph name="FILENAME" /></translation>
+<translation id="8984694057134206124">Du blir synlig för alla i <ph name="MINUTES" /> minuter. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="8985264973231822211">Aktiv för <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dag sedan</translation>
 <translation id="8986362086234534611">Glöm</translation>
 <translation id="8986494364107987395">Skicka användningsstatistik och kraschrapporter till Google automatiskt</translation>
@@ -7139,7 +7143,6 @@ Tryck på en tilldelad brytare för att ta bort tilldelningen.</translation>
 <translation id="917350715406657904">Du har nått gränsen som din förälder har ställt in för <ph name="APP_NAME" />. Du kan använda den i <ph name="TIME_LIMIT" /> i morgon.</translation>
 <translation id="9173787391779732995">Webbplatser får visa bilder (rekommenderas)</translation>
 <translation id="9173995187295789444">Söker efter Bluetooth-enheter …</translation>
-<translation id="9174052566244514547">Administratören har begärt att få starta om enheten för att uppdatera appar. Det här kan ta flera minuter</translation>
 <translation id="9174401638287877180">Skicka diagnostik- och användningsdata. Hjälp till att göra Android bättre för ditt barn genom att skicka diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera och inte till att identifiera ditt barn. Viss samlad data används även till att förbättra appar från Google och Googles partner, till exempel Android-utvecklare. Om ytterligare webb- och appaktivitet har aktiverats för ditt barn kan denna data sparas i Google-kontot.</translation>
 <translation id="917510707618656279">Fråga när en webbplats vill få åtkomst till Bluetooth-enheter</translation>
 <translation id="9176476835295860688">Skicka diagnostik- och användningsdata. Den här enheten skickar för närvarande diagnostikdata, enhetsdata och data om appanvändning till Google automatiskt. Denna data används till att förbättra systemets och apparnas stabilitet med mera. Viss samlad data används även till att förbättra appar från Google och partner, till exempel Android-utvecklare. Ägaren har gjort denna <ph name="BEGIN_LINK1" />inställning<ph name="END_LINK1" /> obligatorisk. Om ytterligare webb- och appaktivitet har aktiverats kan denna data sparas i Google-kontot. <ph name="BEGIN_LINK2" />Läs mer<ph name="END_LINK2" /></translation>

@@ -17,6 +17,7 @@
 <translation id="1399397803214730675">這台電腦已安裝較新的 Google Chrome 版本，如果軟體無法順利運作，請解除安裝 Google Chrome，然後再試一次。</translation>
 <translation id="1434626383986940139">Chrome Canary 應用程式</translation>
 <translation id="147727933880789532">Chrome 建議停用這項擴充功能，因為擴充功能目前不符合安全瀏覽強化防護功能標準。</translation>
+<translation id="1516530951338665275">Google Chrome 需要藍牙存取權才能繼續配對。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
 <translation id="1587223624401073077">Google Chrome 正在使用你的攝影機。</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> 並不安全，因此遭到 Chrome 封鎖。</translation>
@@ -203,6 +204,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6566149418543181476">正在更新 Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome 作業系統</translation>
 <translation id="6650333065969705433">如要使用 Rosetta 播放設有保護的媒體，必須重新啟動 Chrome。</translation>
+<translation id="6668872995670558829">需要 Chrome 設定檔</translation>
 <translation id="6676384891291319759">連線到網際網路</translation>
 <translation id="6679975945624592337">讓 Google Chrome 在背景執行</translation>
 <translation id="6739177684496155661">要繼續使用新的 Chrome 設定檔嗎？</translation>
@@ -221,6 +223,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome 有可用的更新，重新啟動後即可套用。}=1{Chrome 有可用的更新，重新啟動後即可套用。你的無痕式視窗不會重新開啟。}other{Chrome 有可用的更新，重新啟動後即可套用。你的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="7155997830309522122">如果是的話，請編輯你儲存在 Chrome 中的密碼，使其與新密碼相符。</translation>
 <translation id="7242029209006116544">你已登入管理化環境下的帳戶，並將管理控制權授予你的 Chrome 設定檔。你的 Chrome 資料 (例如應用程式、書籤、記錄、密碼和其他設定) 均將永久與 <ph name="USER_NAME" /> 建立關聯。你可以透過 Google 帳戶資訊主頁刪除這些資料，但你無法將這些資料與其他帳戶建立關聯。如要另行保留現有的 Chromium 資料，你可以選擇建立新的設定檔。<ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351">這個帳戶是由 <ph name="MANAGEMENT_DOMAIN" /> 管理。管理員要求必須透過 Chrome 設定檔存取。這個設定檔和個人設定檔各自獨立。凡是在使用這個設定檔期間產生的 Chrome 資料 (例如建立的書籤、歷史記錄、密碼和其他設定)，管理員都能加以移除。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">這是 Google Chrome UI 的顯示語言</translation>
 <translation id="7296210096911315575">重要的使用與安全資訊</translation>
 <translation id="7303916856901595720">要將帳戶移至新的 Chrome 設定檔嗎？</translation>
@@ -228,6 +231,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7339898014177206373">新視窗</translation>
 <translation id="7398801000654795464">你使用了 <ph name="USER_EMAIL_ADDRESS" /> 的身分登入 Chrome，請使用相同帳戶重新登入。</translation>
 <translation id="7408085963519505752">Chrome 作業系統條款</translation>
+<translation id="7416131756095014387">這是受管理的帳戶。管理員要求必須透過 Chrome 設定檔存取。這個設定檔和個人設定檔各自獨立。凡是在使用這個設定檔期間產生的 Chrome 資料 (例如建立的書籤、歷史記錄、密碼和其他設定)，管理員都能加以移除。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">你的網域無法使用「同步功能」，因此 Chrome 作業系統無法同步處理你的資料。</translation>
 <translation id="7486227612705979895">Chrome 將存取你的雲端硬碟，並在網址列提供建議</translation>
 <translation id="7535429826459677826">Google Chrome 開發人員版</translation>

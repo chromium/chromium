@@ -329,6 +329,7 @@
 <translation id="1367951781824006909">파일 선택</translation>
 <translation id="1369149969991017342">스위치 제어(스위치 1~2개로 컴퓨터 제어)</translation>
 <translation id="1372841398847029212">내 계정에 동기화</translation>
+<translation id="1373176046406139583">화면이 잠금 해제되어 있을 때 나와 파일을 공유할 수 있는 사람은 기기 공개 범위에 따라 다릅니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">네트워크 '<ph name="NETWORK_NAME" />'에 필요한 인증서가 설치되지 않았거나 더 이상 유효하지 않습니다. 새로운 인증서를 받아 다시 연결하세요.</translation>
 <translation id="1375321115329958930">저장된 비밀번호</translation>
 <translation id="137651782282853227">저장한 주소가 여기 표시됩니다.</translation>
@@ -1091,7 +1092,6 @@
 <translation id="2204034823255629767">입력한 항목 조회 및 변경</translation>
 <translation id="220858061631308971">'<ph name="DEVICE_NAME" />'의 PIN 코드를 입력하세요:</translation>
 <translation id="2212565012507486665">쿠키 허용</translation>
-<translation id="2213140827792212876">공유 폴더 삭제</translation>
 <translation id="2214018885812055163">공유 폴더</translation>
 <translation id="2214884991347062907">잘못된 비밀번호입니다. 다시 시도하세요.</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1줄이 표시되지 않음&gt;}other{&lt;<ph name="NUMBER_OF_LINES" />줄이 표시되지 않음&gt;}}</translation>
@@ -2427,7 +2427,6 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">나와 Google의 관계</translation>
 <translation id="3722108462506185496">가상 머신 서비스를 시작하지 못했습니다. 다시 시도해 주세요.</translation>
-<translation id="3726137731714254362">여기에서 폴더를 삭제하면 공유가 중지되지만 파일이 삭제되지는 않습니다.</translation>
 <translation id="3727148787322499904">이 설정을 변경하면 모든 공유 네트워크에 영향을 줍니다.</translation>
 <translation id="3727187387656390258">팝업 검사</translation>
 <translation id="372722114124766626">한 번만</translation>
@@ -2564,7 +2563,6 @@
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: 동기화 중지됨</translation>
 <translation id="3861638017150647085">사용자 이름 ‘<ph name="USERNAME" />’은(는) 사용할 수 없습니다.</translation>
 <translation id="3861977424605124250">시작 시 표시</translation>
-<translation id="3862693525629180217">내장 센서를 통해 인증</translation>
 <translation id="3862788408946266506">'kiosk_only' 매니페스트 속성을 사용하는 앱은 Chrome OS 키오스크 모드에 설치해야 합니다</translation>
 <translation id="3865414814144988605">해상도</translation>
 <translation id="3866249974567520381">설명</translation>
@@ -3442,6 +3440,7 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" />Hz - 인터레이스됨</translation>
 <translation id="4902546322522096650">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 연결</translation>
 <translation id="49027928311173603">서버에서 다운로드한 정책이 잘못됨: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4904061654709986277">프로필 추가</translation>
 <translation id="4906490889887219338">네트워크 파일 공유를 설정하거나 관리합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">네트워크 <ph name="NETWORK_COUNT" />개 중 <ph name="NETWORK_INDEX" />번째, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 휴대전화 배터리 <ph name="BATTERY_STATUS" />%, 세부정보</translation>
 <translation id="4907161631261076876">이 파일은 위험할 수 있기 때문에 일반적으로 다운로드하지 않습니다.</translation>
@@ -3564,6 +3563,7 @@
 <translation id="5068918910148307423">최근에 닫은 사이트에서 데이터 전송 및 수신을 완료하는 것을 허용하지 않음</translation>
 <translation id="5068919226082848014">피자</translation>
 <translation id="5070773577685395116">알림을 받지 못하셨습니까?</translation>
+<translation id="5071892329440114717">표준 보호 세부정보 표시</translation>
 <translation id="5072052264945641674">커서 크기 조정</translation>
 <translation id="5072836811783999860">관리 북마크 표시</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> 외 #개}}</translation>
@@ -4362,7 +4362,6 @@
 <translation id="6003143259071779217">eSIM 셀룰러 네트워크 삭제</translation>
 <translation id="6006484371116297560">기본</translation>
 <translation id="6007240208646052708">사용자의 언어로 음성 검색을 이용할 수 없습니다.</translation>
-<translation id="6009781704028455063">내장 센서</translation>
 <translation id="6011074160056912900">이더넷 네트워크</translation>
 <translation id="6011193465932186973">지문</translation>
 <translation id="6011449291337289699">사이트 데이터 삭제</translation>
@@ -4716,6 +4715,7 @@
 <translation id="6412673304250309937">Chrome에 저장된 안전하지 않은 사이트 목록을 사용하여 URL을 검사합니다. 사이트에서 사용자의 비밀번호를 도용하려고 하거나 사용자가 유해한 파일을 다운로드하는 경우, Chrome에서 페이지 콘텐츠 일부를 비롯한 URL을 세이프 브라우징 서비스에 보낼 수 있습니다.</translation>
 <translation id="6412931879992742813">새 시크릿 창</translation>
 <translation id="641469293210305670">업데이트 및 앱 설치</translation>
+<translation id="6414878884710400018">시스템 환경설정 열기</translation>
 <translation id="6414888972213066896">이 사이트를 방문해도 괜찮은지 부모님께 문의했습니다.</translation>
 <translation id="6415900369006735853">휴대전화를 통해 인터넷에 연결합니다.</translation>
 <translation id="6416743254476733475">컴퓨터에서 권한을 허용하거나 차단하세요.</translation>
@@ -4762,6 +4762,7 @@
 <translation id="6460601847208524483">다음 찾기</translation>
 <translation id="6461170143930046705">네트워크 검색 중...</translation>
 <translation id="6463795194797719782">편집(&amp;E)</translation>
+<translation id="6464825623202322042">이 기기</translation>
 <translation id="6465841119675156448">인터넷 사용 안함</translation>
 <translation id="6466988389784393586">모든 북마크 열기(&amp;O)</translation>
 <translation id="6467304607960172345">전체 화면 동영상 최적화</translation>
@@ -4782,6 +4783,7 @@
 <translation id="648927581764831596">사용할 수 없음</translation>
 <translation id="6490471652906364588">USB-C 기기(오른쪽 포트)</translation>
 <translation id="6491376743066338510">승인에 실패했습니다.</translation>
+<translation id="6494327278868541139">향상된 보안 세부정보 표시</translation>
 <translation id="6494445798847293442">인증 기관이 아닙니다.</translation>
 <translation id="6494974875566443634">맞춤설정</translation>
 <translation id="6495925982925244349">네트워크 <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, 신호 강도 <ph name="SIGNAL_STRENGTH" />%, 관리자가 관리함, 세부정보</translation>
@@ -5067,7 +5069,6 @@
 <translation id="683373380308365518">편리하고 안전한 브라우저로 전환</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />을(를) 업데이트하려면 인터넷에 연결하세요.</translation>
 <translation id="6838034009068684089">사이트에서 창을 열 때 확인하고 화면에 창 배치(권장)</translation>
-<translation id="6838694093138907871">잘못된 코드입니다. 다시 시도해 보세요.</translation>
 <translation id="6838860780238890144">{COUNT,plural, =1{전화번호}other{전화번호 #개}}</translation>
 <translation id="6839225236531462745">인증서 삭제 오류</translation>
 <translation id="6839916869147598086">로그인 변경됨</translation>
@@ -5318,6 +5319,7 @@
 <translation id="7108933416628942903">지금 잠그기</translation>
 <translation id="7109543803214225826">바로가기 삭제됨</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{그룹에 탭 추가}other{그룹에 탭 추가}}</translation>
+<translation id="7111822978084196600">창 이름 지정</translation>
 <translation id="7113502843173351041">이메일 주소 조회</translation>
 <translation id="7114054701490058191">비밀번호가 일치하지 않습니다.</translation>
 <translation id="7114648273807173152">Smart Lock을 사용해 Google 계정에 로그인하려면 설정 &gt; 연결된 기기 &gt; 휴대전화 &gt; Smart Lock으로 이동하세요.</translation>
@@ -5579,6 +5581,7 @@
 <translation id="7421925624202799674">페이지 소스 보기(&amp;V)</translation>
 <translation id="7422192691352527311">환경설정...</translation>
 <translation id="7423098979219808738">우선 확인</translation>
+<translation id="7423425410216218516"><ph name="MINUTES" />분 동안 공개됨</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> 삭제</translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" />에 실행 권한 필요</translation>
 <translation id="7427348830195639090">백그라운드 페이지: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -6964,6 +6967,7 @@
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - 비정상 종료됨</translation>
 <translation id="8981825781894055334">용지 부족</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" />에서 <ph name="FILENAME" />을(를) 수정할 수 있습니다.</translation>
+<translation id="8984694057134206124"><ph name="MINUTES" />분 동안 모든 사용자에게 공개됩니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="8985264973231822211"><ph name="DEVICE_LAST_ACTIVATED_TIME" />일 전에 사용</translation>
 <translation id="8986362086234534611">저장 안함</translation>
 <translation id="8986494364107987395">사용 통계 및 비정상 종료 보고서를 Google에 자동으로 전송합니다.</translation>
@@ -7137,7 +7141,6 @@
 <translation id="917350715406657904">부모님이 설정한 <ph name="APP_NAME" /> 사용 제한 시간에 도달했습니다. 내일 <ph name="TIME_LIMIT" /> 동안 다시 사용할 수 있습니다.</translation>
 <translation id="9173787391779732995">사이트에서 이미지를 표시할 수 있음(권장)</translation>
 <translation id="9173995187295789444">블루투스 기기 검색 중...</translation>
-<translation id="9174052566244514547">관리자가 앱 업데이트를 위해 기기 재시작을 요청했습니다. 재시작을 완료하는 데 몇 분 정도 걸릴 수 있습니다.</translation>
 <translation id="9174401638287877180">사용 및 진단 데이터를 보냅니다. 진단, 기기, 앱 사용 데이터를 Google에 자동으로 보내 자녀의 Android 사용 환경 개선에 참여합니다. 데이터는 자녀를 식별하는 용도로 사용되지 않으며, 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 자녀의 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 자녀의 Google 계정에 저장될 수 있습니다.</translation>
 <translation id="917510707618656279">사이트에서 블루투스 기기에 액세스하려고 할 때 확인</translation>
 <translation id="9176476835295860688">사용 및 진단 데이터를 보냅니다. 이 기기는 현재 진단, 기기 및 앱 사용 데이터를 Google에 자동으로 보내고 있습니다. 이 데이터는 시스템 및 앱 안정성 등을 개선하는 데 활용됩니다. 일부 수집 데이터는 Google 앱과 파트너(Android 개발자 등)에게도 도움을 줍니다. 이 <ph name="BEGIN_LINK1" />설정<ph name="END_LINK1" />은 소유자가 지정합니다. 추가 웹 및 앱 활동이 사용 설정되어 있다면 이 데이터가 Google 계정에 저장될 수 있습니다. <ph name="BEGIN_LINK2" />자세히 알아보기<ph name="END_LINK2" /></translation>

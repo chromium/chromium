@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Zadaci štampanja</translation>
 <translation id="3527036260304016759">Nije uspjelo – nepoznata greška</translation>
 <translation id="357889014807611375">WiFi mreža s naplatom</translation>
+<translation id="3595596368722241419">Baterija je puna</translation>
 <translation id="360565022852130722">WiFi mreža je zaštićena slabim protokolom WEP 802.1x</translation>
 <translation id="3712633734921637892">Brzina CPU-a je trenutno ograničena zbog uštede baterije ili smanjenja temperature</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (broj recenzija: <ph name="AGGREGATED_COUNT" />)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Rezolucija</translation>
 <translation id="3941014780699102620">Rješavanje hosta nije uspjelo</translation>
 <translation id="3942420633017001071">Dijagnostika</translation>
+<translation id="397105322502079400">Računanje…</translation>
 <translation id="39823212440917567">Zadaci za štampanje stariji od <ph name="NUMBER_OF_DAYS" /> dana će se ukloniti</translation>
 <translation id="4003384961948020559">Nije uspjelo – izlaz je pun</translation>
 <translation id="4034824040120875894">Štampač</translation>
@@ -263,6 +265,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="6977381486153291903">Revizija firmvera</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posjećene web stranice, lozinke i e-poštu.</translation>
 <translation id="7040230719604914234">Operater</translation>
+<translation id="7059230779847288458">Punjenje – <ph name="TIME_VALUE" /> do potpune napunjenosti</translation>
 <translation id="708426984172631313">ZAUSTAVLJENO</translation>
 <translation id="7143207342074048698">Povezivanje</translation>
 <translation id="714876143603641390">Povezivost LAN-a</translation>
@@ -281,6 +284,7 @@ Pokušajte dodirnuti mikrofon da me nešto pitate.</translation>
 <translation id="7502658306369382406">IPv6 adresa</translation>
 <translation id="7561454561030345039">Ovom radnjom upravlja vaš administrator</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Još <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Saznajte više u Centru za pomoć</translation>
 <translation id="7648838807254605802">Visoka HTTPs latentnost</translation>
 <translation id="7658239707568436148">Otkaži</translation>

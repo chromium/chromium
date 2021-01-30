@@ -432,6 +432,7 @@ Mantén premida calquera palabra para buscala. Se queres refinar a busca, selecc
 <translation id="4095146165863963773">Queres eliminar os datos da aplicación?</translation>
 <translation id="4095189195365058471">Ler máis tarde <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Axúdanos a mellorar Chrome enviando estatísticas de uso e informes de erros a Google.</translation>
+<translation id="4108314971463891922">Seguir</translation>
 <translation id="4108998448622696017">Móstrache unha advertencia cando detecta eventos perigosos.</translation>
 <translation id="4116038641877404294">Descarga as páxinas para velas cando non teñas conexión</translation>
 <translation id="4135200667068010335">A lista de dispositivos cos que compartir unha pestana está pechada.</translation>
@@ -643,6 +644,7 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="5606787249466187650">Explora o illamento de procesos de privacidade</translation>
 <translation id="5620163320393916465">Non hai contrasinais gardados</translation>
 <translation id="5620928963363755975">A través do botón Máis opcións, atopa os ficheiros e as páxinas que descargaches na sección Descargas</translation>
+<translation id="562289928968387744">Xestionar reaccións</translation>
 <translation id="5626134646977739690">Nome:</translation>
 <translation id="5639724618331995626">Permitir todos os sitios</translation>
 <translation id="5648166631817621825">Últimos 7 días</translation>
@@ -743,7 +745,6 @@ Para cambiar esta opción de configuración, deberás <ph name="BEGIN_LINK" />re
 <translation id="6232535412751077445">Se activas a opción Do Not Track, incluirase unha solicitude no teu tráfico de navegación. O efecto producido depende de se o sitio web responde á solicitude e da interpretación desta.
 
 Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche anuncios que non estean baseados noutros sitios web que visitases. Moitos sitios web seguirán recompilando e utilizando os teus datos de navegación para, por exemplo, mellorar a seguranza, fornecer contido, anuncios e recomendacións e para crear estatísticas de informes.</translation>
-<translation id="6243852395147506234">Todo listo para usar o modo sen conexión</translation>
 <translation id="624789221780392884">Actualización lista</translation>
 <translation id="6255999984061454636">Suxestións de contido</translation>
 <translation id="6266591733731644292">O illamento de procesos de privacidade aínda está en fase de proba. Durante este período de proba:\n<ph name="BEGIN_LIST_ITEM1" />Os programadores de aplicacións e sitios web poden probar a crear experiencias relevantes sen acceder a información que te identifique de maneira única.<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Os usuarios poden darse de baixa da proba cos controis desta páxina.<ph name="END_LIST_ITEM2" /></translation>
@@ -892,7 +893,6 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="718926126787620637">A lista de cartafoles de marcadores está aberta completamente</translation>
 <translation id="7189372733857464326">Esperando a que os servizos de Google Play rematen de actualizarse</translation>
 <translation id="7191430249889272776">Abriuse a pestana en segundo plano.</translation>
-<translation id="720894724577012575">Categorías: <ph name="COMMA_SEPERATED_CATEGORY_LIST" />.</translation>
 <translation id="7233236755231902816">Para ver a Web no teu idioma, descarga a última versión de Chrome</translation>
 <translation id="7248069434667874558">Asegúrate de que a sincronización de Chrome do dispositivo <ph name="TARGET_DEVICE_NAME" /> estea activada</translation>
 <translation id="7274013316676448362">Bloqueouse o sitio</translation>
@@ -1008,7 +1008,6 @@ Os datos da túa sesión só se borrarán de Chrome ao <ph name="BEGIN_BOLD2" />
 <translation id="7971136598759319605">Dispositivo activo hai 1 día</translation>
 <translation id="7975379999046275268">Vista previa: páxina <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Cargar previamente as páxinas para que a navegación e as buscas sexan máis rápidas</translation>
-<translation id="7986497153528221272">Para poder ver os contrasinais, define un bloqueo de pantalla no teu dispositivo</translation>
 <translation id="7998918019931843664">Abre de novo a pestana pechada</translation>
 <translation id="8004582292198964060">Navegador</translation>
 <translation id="8013372441983637696">Borrar tamén deste dispositivo os teus datos de Chrome</translation>

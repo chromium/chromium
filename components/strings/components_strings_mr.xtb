@@ -80,6 +80,7 @@
     &lt;li&gt;वेबसाइटच्या मालकाशी संपर्क साधा.&lt;/li&gt;
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">तुमच्या संस्थेद्वारे व्यवस्थापित केल्या न जाणाऱ्या साइटवर तुम्ही तुमचा पासवर्ड एंटर केला आहे. तुमचे खाते संरक्षित करण्यासाठी इतर अ‍ॅप्स आणि साइटवर तुमच्या पासवर्डचा पुन्हा वापर करू नका.</translation>
+<translation id="1259144770381827039">तपशील पाहा.</translation>
 <translation id="1263231323834454256">वाचन सूची</translation>
 <translation id="1267173982554786072"><ph name="BEGIN_BOLD" />
         या डिव्हाइसवर न राहणाऱ्या अ‍ॅक्टिव्हिटी:
@@ -328,6 +329,7 @@
 <translation id="2164510882479075877"><ph name="HOST_NAME" /> मध्ये टायपो आहे का ते तपासा.</translation>
 <translation id="2166049586286450108">पूर्ण ॲडमिन ॲक्सेस</translation>
 <translation id="2166378884831602661">ही साइट सुरक्षित कनेक्शन प्रदान करू शकत नाही</translation>
+<translation id="2168151236314517198">अ‍ॅडमिनिस्ट्रेटर धोरणाद्वारे हा आशय प्रिंट करणे ब्लॉक केले आहे</translation>
 <translation id="2169984857010174799">Kaku2 (Envelope)</translation>
 <translation id="2181821976797666341">धोरणे</translation>
 <translation id="2183608646556468874">फोन नंबर</translation>
@@ -1369,6 +1371,7 @@
 <translation id="6290238015253830360">तुम्ही सुचविलेले लेख येथे दिसतील</translation>
 <translation id="6293309776179964942">JIS B5</translation>
 <translation id="6302269476990306341">Chrome मधील Google असिस्टंट थांबत आहे</translation>
+<translation id="6304463939629872728">यासह चेक आउट करा</translation>
 <translation id="6305205051461490394"><ph name="URL" /> आवाक्याबाहेर आहे.</translation>
 <translation id="6312113039770857350">वेबपेज उपलब्ध नाही</translation>
 <translation id="6321917430147971392">आपल्या DNS सेटिंग्ज तपासा</translation>
@@ -1398,6 +1401,7 @@
 <translation id="6406765186087300643">C0 (Envelope)</translation>
 <translation id="6409754798200046165">तुम्ही आताच एका फसव्या साइटवर तुमचा पासवर्ड एंटर केला आहे. Chrome तुमचा पासवर्ड आता बदलण्याची शिफारस करते.</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> साठी कालबाह्यता तारीख आणि CVC प्रविष्‍ट करा</translation>
+<translation id="6410774864568266108">तुमची Google Pay ऑफर विसरू नका</translation>
 <translation id="6415778972515849510">तुमच्या Google खात्याचे संरक्षण करण्यात आणि तुमचा पासवर्ड बदलण्यात Chromium तुम्हाला मदत करू शकते.</translation>
 <translation id="6423385022588644828">यापुढे टच आयडी वापरून तुमच्या कार्डांची जलद खात्री करा</translation>
 <translation id="6425092077175753609">आशय</translation>
@@ -1808,7 +1812,6 @@
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
 <translation id="8078141288243656252">फिरवल्यावर भाष्य करू शकत नाही</translation>
 <translation id="8079031581361219619">साइट रीलोड करायची?</translation>
-<translation id="808089508890593134">Google</translation>
 <translation id="8086971161893892807">मसुदा</translation>
 <translation id="8088680233425245692">लेख पाहण्यात अयशस्वी.</translation>
 <translation id="808894953321890993">पासवर्ड बदला</translation>

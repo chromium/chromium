@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Mga Pag-print</translation>
 <translation id="3527036260304016759">Hindi na-print - Hindi kilalang error</translation>
 <translation id="357889014807611375">nakametrong Wi-Fi</translation>
+<translation id="3595596368722241419">Puno na ang baterya</translation>
 <translation id="360565022852130722">Naka-secure ang WiFi network gamit ang mahinang protocol na WEP 802.1x</translation>
 <translation id="3712633734921637892">Kasalukuyang limitado ang bilis ng CPU para mapahaba ang baterya o mapababa ang temperatura</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> (na) review)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Resolution</translation>
 <translation id="3941014780699102620">Hindi nalutas ang host</translation>
 <translation id="3942420633017001071">Diagnostics</translation>
+<translation id="397105322502079400">Kinakalkula...</translation>
 <translation id="39823212440917567">Aalisin ang mga pag-print na lampas <ph name="NUMBER_OF_DAYS" /> (na) araw na</translation>
 <translation id="4003384961948020559">Hindi na-print - Puno ang output</translation>
 <translation id="4034824040120875894">Printer</translation>
@@ -263,6 +265,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="6977381486153291903">Rebisyon ng firmware</translation>
 <translation id="7028979494427204405">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at mayroon itong access sa lahat ng aktibidad ng user, kabilang ang mga webpage na binisita, mga password, at email.</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7059230779847288458">Nagcha-charge, <ph name="TIME_VALUE" /> hanggang sa mapuno</translation>
 <translation id="708426984172631313">INIHINTO</translation>
 <translation id="7143207342074048698">Kumokonekta</translation>
 <translation id="714876143603641390">Pagkakonekta sa Lan</translation>
@@ -281,6 +284,7 @@ Subukang i-tap ang mikropono para humiling sa akin ng kahit ano.</translation>
 <translation id="7502658306369382406">IPv6 address</translation>
 <translation id="7561454561030345039">Pinapamahalaan ng iyong administrator ang pagkilos na ito.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> pa</translation>
 <translation id="7620771111601174153">Matuto pa sa Help Center</translation>
 <translation id="7648838807254605802">Mataas na latency ng HTTPS</translation>
 <translation id="7658239707568436148">Kanselahin</translation>

@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Pekerjaan Cetak</translation>
 <translation id="3527036260304016759">Gagal - Error tidak diketahui</translation>
 <translation id="357889014807611375">Wi-Fi berbayar</translation>
+<translation id="3595596368722241419">Baterai penuh</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
 <translation id="3712633734921637892">Kecepatan CPU saat ini dibatasi untuk menghemat baterai atau menurunkan suhu</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Resolusi</translation>
 <translation id="3941014780699102620">Gagal me-resolve host</translation>
 <translation id="3942420633017001071">Diagnosis</translation>
+<translation id="397105322502079400">Menghitung...</translation>
 <translation id="39823212440917567">Tugas pencetakan yang sudah lebih dari <ph name="NUMBER_OF_DAYS" /> hari akan dihapus</translation>
 <translation id="4003384961948020559">Gagal - Baki hasil cetak penuh</translation>
 <translation id="4034824040120875894">Printer</translation>
@@ -263,6 +265,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6977381486153291903">Revisi firmware</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> akan mengelola perangkat ini dan memiliki akses ke semua aktivitas pengguna, termasuk halaman yang dikunjungi, sandi, dan email.</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7059230779847288458">Mengisi daya, <ph name="TIME_VALUE" /> sampai penuh</translation>
 <translation id="708426984172631313">DIHENTIKAN</translation>
 <translation id="7143207342074048698">Menghubungkan</translation>
 <translation id="714876143603641390">Konektivitas LAN</translation>
@@ -281,6 +284,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7502658306369382406">Alamat IPv6</translation>
 <translation id="7561454561030345039">Tindakan ini dikelola oleh administrator Anda</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> lagi</translation>
 <translation id="7620771111601174153">Pelajari lebih lanjut di Pusat Bantuan</translation>
 <translation id="7648838807254605802">Latensi HTTPS tinggi</translation>
 <translation id="7658239707568436148">Batal</translation>

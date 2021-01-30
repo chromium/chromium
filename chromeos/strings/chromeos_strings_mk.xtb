@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Налози за печатење</translation>
 <translation id="3527036260304016759">Неуспешно - непозната грешка</translation>
 <translation id="357889014807611375">Wi-Fi со ограничен интернет</translation>
+<translation id="3595596368722241419">Батеријата е полна</translation>
 <translation id="360565022852130722">Wi-Fi мрежата е обезбедена со слаб протокол WEP 802.1x</translation>
 <translation id="3712633734921637892">Брзината на CPU во моментов е ограничена за да се зачува батеријата или да се намали температурата</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> рецензии)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Резолуција</translation>
 <translation id="3941014780699102620">Неуспешно отворање на хостот</translation>
 <translation id="3942420633017001071">Дијагностика</translation>
+<translation id="397105322502079400">Се пресметува…</translation>
 <translation id="39823212440917567">Задачите за печатење постари од <ph name="NUMBER_OF_DAYS" /> дена ќе се отстранат</translation>
 <translation id="4003384961948020559">Неуспешно - излезната фиока е полна</translation>
 <translation id="4034824040120875894">Печатач</translation>
@@ -263,6 +265,7 @@
 <translation id="6977381486153291903">Ревизија на фирмвер</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управува со уредов и има пристап до целата активност на корисникот, вклучувајќи ги и посетените веб-страници, лозинките и е-поштата.</translation>
 <translation id="7040230719604914234">Оператор</translation>
+<translation id="7059230779847288458">Се полни, <ph name="TIME_VALUE" /> до полна</translation>
 <translation id="708426984172631313">СОПРЕНО</translation>
 <translation id="7143207342074048698">Се поврзува</translation>
 <translation id="714876143603641390">LAN-поврзливост</translation>
@@ -281,6 +284,7 @@
 <translation id="7502658306369382406">IPv6-адреса</translation>
 <translation id="7561454561030345039">Администраторот управува со дејствово</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Уште <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Дознајте повеќе во „Центарот за помош“</translation>
 <translation id="7648838807254605802">Висока латенција на HTTPS</translation>
 <translation id="7658239707568436148">Откажи</translation>

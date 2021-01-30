@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">ວຽກການພິມ</translation>
 <translation id="3527036260304016759">ບໍ່ສຳເລັດ, ບໍ່ຮູ້ຈັກຂໍ້ຜິດພາດ</translation>
 <translation id="357889014807611375">Wi-Fi ທີ່ວັດແທກການໃຊ້ອິນເຕີເນັດ</translation>
+<translation id="3595596368722241419">ແບັດເຕີຣີເຕັມ</translation>
 <translation id="360565022852130722">ເຄືອຂ່າຍ WiFi ມີການຮັກສາຄວາມປອດໄພດ້ວຍໂປຣໂຕຄໍ WEP 802.1x ທີ່ບໍ່ຮັດກຸມ</translation>
 <translation id="3712633734921637892">ມີການຈຳກັດຄວາມໄວ CPU ໄວ້ເພື່ອປະຢັດແບັດເຕີຣີ ຫຼື ຫຼຸດອຸນຫະພູມລົງ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ຄຳຕິຊົມ)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">ຄວາມລະອຽດ</translation>
 <translation id="3941014780699102620">ແກ້ໄຂບັນຫາໂຮສບໍ່ສຳເລັດ</translation>
 <translation id="3942420633017001071">ການກວດວິເຄາະບັນຫາ</translation>
+<translation id="397105322502079400">ກໍາລັງຄິດ​ໄລ່...</translation>
 <translation id="39823212440917567">ວຽກພິມທີ່ເກົ່າກວ່າ <ph name="NUMBER_OF_DAYS" /> ມື້ຈະຖືກລຶບອອກ</translation>
 <translation id="4003384961948020559">ບໍ່ສຳເລັດ, ເອົ້າພຸດເຕັມ</translation>
 <translation id="4034824040120875894">ເຄື່ອງພິມ</translation>
@@ -263,6 +265,8 @@
 <translation id="6977381486153291903">ການດັດແກ້ເຟີມແວ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ຈັດການອຸປະກອນນີ້ ແລະ ເຂົ້າເຖິງການເຄື່ອນໄຫວຜູ້ໃຊ້ທັງໝົດ, ຮວມທັງໜ້າເວັບທີ່ເຂົ້າເບິ່ງ, ລະຫັດຜ່ານ ແລະ ອີເມວ.</translation>
 <translation id="7040230719604914234">ຜູ້ໃຫ້ບໍລິການ</translation>
+<translation id="7059230779847288458">ກໍາລັງສາກ
+<ph name="TIME_VALUE" />: ຈົນເຕັມ</translation>
 <translation id="708426984172631313">ຢຸດແລ້ວ</translation>
 <translation id="7143207342074048698">ກຳ​ລັງ​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="714876143603641390">ການເຊື່ອມຕໍ່ LAN</translation>
@@ -281,6 +285,7 @@
 <translation id="7502658306369382406">ທີ່ຢູ່ IPv6</translation>
 <translation id="7561454561030345039">ການດຳເນີນການນີ້ຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">ຍັງເຫຼືອ <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">ສຶກສາເພີ່ມເຕີມໃນສູນຊ່ວຍເຫຼືອ</translation>
 <translation id="7648838807254605802">ເວລາແຝງ HTTPS ສູງ</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>

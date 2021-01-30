@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">印刷ジョブ</translation>
 <translation id="3527036260304016759">失敗 - 不明なエラー</translation>
 <translation id="357889014807611375">従量制 Wi-Fi</translation>
+<translation id="3595596368722241419">バッテリー残量: フル</translation>
 <translation id="360565022852130722">安全性の低いプロトコル WEP 802.1x が Wi-Fi で使用されています</translation>
 <translation id="3712633734921637892">電池の節約または温度を下げるため、CPU 速度は現在制限されています</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 件のレビュー）</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">解像度</translation>
 <translation id="3941014780699102620">ホストを解決できませんでした</translation>
 <translation id="3942420633017001071">診断</translation>
+<translation id="397105322502079400">計算しています...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> 日より前の印刷ジョブは削除されます</translation>
 <translation id="4003384961948020559">失敗 - 出力がいっぱいです</translation>
 <translation id="4034824040120875894">プリンタ</translation>
@@ -263,6 +265,7 @@
 <translation id="6977381486153291903">ファームウェア リビジョン</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> はこのデバイスを管理しており、閲覧したウェブページ、パスワード、メールなど、すべてのユーザー アクティビティにアクセスできます。</translation>
 <translation id="7040230719604914234">携帯通信会社</translation>
+<translation id="7059230779847288458">充電中、フル充電まで <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">停止中</translation>
 <translation id="7143207342074048698">接続中</translation>
 <translation id="714876143603641390">LAN 接続</translation>
@@ -281,6 +284,7 @@
 <translation id="7502658306369382406">IPv6 アドレス</translation>
 <translation id="7561454561030345039">この操作は管理者によって管理されています</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">あと <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">詳しくはヘルプセンターをご覧ください</translation>
 <translation id="7648838807254605802">HTTPS レイテンシが高くなっています</translation>
 <translation id="7658239707568436148">キャンセル</translation>

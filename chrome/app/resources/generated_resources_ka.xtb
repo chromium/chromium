@@ -329,6 +329,7 @@
 <translation id="1367951781824006909">აირჩიეთ ფაილი</translation>
 <translation id="1369149969991017342">გადამრთველებით წვდომა (მართეთ კომპიუტერი მხოლოდ რამდენიმე გადამრთველის მეშვეობით)</translation>
 <translation id="1372841398847029212">თქვენს ანგარიშთან სინქრონიზაცია</translation>
+<translation id="1373176046406139583">თქვენი მოწყობილობის ხილვადობა განსაზღვრავს, თუ ვის შეუძლია თქვენთვის გაზიარება, როცა თქვენი ეკრანი განბლოკილია. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">„<ph name="NETWORK_NAME" />“ ქსელის მიერ მოთხოვნილი სერთიფიკატი ან არ არის დაყენებული ან აღარ მოქმედებს. გთხოვთ, მიიღოთ ახალი სერტიფიკატი და ხელახლა სცადოთ დაკავშირება.</translation>
 <translation id="1375321115329958930">შენახული პაროლები</translation>
 <translation id="137651782282853227">შენახული მისამართები აქ გამოჩნდება</translation>
@@ -1091,7 +1092,6 @@
 <translation id="2204034823255629767">თქვენს მიერ ნებისმიერი აკრეფილი ტექსტის წაკითხვა და შეცვლა</translation>
 <translation id="220858061631308971">გთხოვთ შეიყვანეთ ეს PIN კოდი „<ph name="DEVICE_NAME" />“-ზე:</translation>
 <translation id="2212565012507486665">ქუქი-ჩანაწერების დაშვება</translation>
-<translation id="2213140827792212876">გაზიარების გაუქმება</translation>
 <translation id="2214018885812055163">გაზიარებული საქაღალდეები</translation>
 <translation id="2214884991347062907">პაროლი არასწორია. ცადეთ ხელახლა</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 ხაზი არ არის ნაჩვენები&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> ხაზი არ არის ნაჩვენები&gt;}}</translation>
@@ -2426,7 +2426,6 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">თქვენ და Google</translation>
 <translation id="3722108462506185496">ვირტუალური მოწყობილობის სერვისის გაშვება ვერ მოხერხდა. გთხოვთ, ცადოთ ხელახლა.</translation>
-<translation id="3726137731714254362">საქაღალდეების აქედან ამოშლა გამოიწვევს გაზიარების შეწყვეტას, თუმცა არ წაშლის ფაილებს.</translation>
 <translation id="3727148787322499904">ამ პარამეტრის შეცვლა ყველა გაზიარებულ ქსელზე აისახება</translation>
 <translation id="3727187387656390258">კონტექსტური ფანჯრის შემოწმება</translation>
 <translation id="372722114124766626">მხოლოდ ერთხელ</translation>
@@ -2563,7 +2562,6 @@
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: სინქრონიზაცია დაპაუზებულია</translation>
 <translation id="3861638017150647085">მომხმარებლის სახელი „<ph name="USERNAME" />“ მიუწვდომელია</translation>
 <translation id="3861977424605124250">გაშვებისას ჩვენება</translation>
-<translation id="3862693525629180217">ჩაშენებული სენსორის მეშვეობით დადასტურება</translation>
 <translation id="3862788408946266506">აპი, რომლის მანიფესტის ატრიბუტიცაა „kiosk_only“, უნდა დაინსტალირდეს Chrome OS-ის კიოსკის რეჟიმში</translation>
 <translation id="3865414814144988605">გარჩევადობა</translation>
 <translation id="3866249974567520381">აღწერა</translation>
@@ -3443,6 +3441,7 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> ჰც — ინტერლეისით</translation>
 <translation id="4902546322522096650">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, დაკავშირება</translation>
 <translation id="49027928311173603">სერვერზე გადმოწერილი პოლიტიკა არასწორია: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4904061654709986277">პროფილის დამატება</translation>
 <translation id="4906490889887219338">ქსელში ფაილების გაზიარების დაყენება ან მართვა. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">ქსელი <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />-დან, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, ტელეფონის ბატარეა: <ph name="BATTERY_STATUS" />%, დეტალები</translation>
 <translation id="4907161631261076876">ამ ფაილის ჩამოტვირთვა ხშირად არ ხორციელდება ხოლმე და ის შეიძლება სახიფათო იყოს.</translation>
@@ -3565,6 +3564,7 @@
 <translation id="5068918910148307423">არ დაიშვას ახლახან დახურული საიტებისთვის მონაცემების გაგზავნისა და მიღების დასრულება</translation>
 <translation id="5068919226082848014">პიცა</translation>
 <translation id="5070773577685395116">არ მიგიღიათ?</translation>
+<translation id="5071892329440114717">სტანდარტული დაცვის დეტალების ჩვენება</translation>
 <translation id="5072052264945641674">კურსორის ზომის დარეგულირება</translation>
 <translation id="5072836811783999860">მართული სანიშნეების ჩვენება</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> და # სხვა}}</translation>
@@ -4362,7 +4362,6 @@
 <translation id="6003143259071779217">eSIM ფიჭური ქსელის ამოშლა</translation>
 <translation id="6006484371116297560">კლასიკური</translation>
 <translation id="6007240208646052708">ხმოვანი ძიება თქვენს ენაზე მიუწვდომელია.</translation>
-<translation id="6009781704028455063">ჩაშენებული სენსორი</translation>
 <translation id="6011074160056912900">Ethernet ქსელი</translation>
 <translation id="6011193465932186973">თითის ანაბეჭდი</translation>
 <translation id="6011449291337289699">საიტის მონაცემების გასუფთავება</translation>
@@ -4716,6 +4715,7 @@
 <translation id="6412673304250309937">შეამოწმებს URL-ების თანხვედრას Chrome-ში შენახულ არაუსაფრთხო საიტების სიასთან. საიტის მიერ პაროლის მოპარვის მცდელობის ან თქვენ მიერ საზიანო ფაილის ჩამოტვირთვის შემთხვევაში Chrome-ის მიერ Safe Browsing-ს გაეგზავნება URL-ები და შესაბამისი გვერდის კონტენტის გარკვეული ნაწილი.</translation>
 <translation id="6412931879992742813">ახალი ინკოგნიტო ფანჯარა</translation>
 <translation id="641469293210305670">განახლებებისა და აპების ინსტალაცია</translation>
+<translation id="6414878884710400018">სისტემის პარამეტრების გახსნა</translation>
 <translation id="6414888972213066896">ამ საიტზე წვდომის მოთხოვნა გაეგზავნა თქვენს მშობელს</translation>
 <translation id="6415900369006735853">დაუკავშირდით ინტერნეტს თქვენი ტელეფონის მეშვეობით</translation>
 <translation id="6416743254476733475">დაშვება ან დაბლოკვა თქვენს კომპიუტერზე.</translation>
@@ -4762,6 +4762,7 @@
 <translation id="6460601847208524483">შემდეგის ძებნა</translation>
 <translation id="6461170143930046705">მიმდინარეობს ქსელების ძიება…</translation>
 <translation id="6463795194797719782">&amp;რედაქტირება</translation>
+<translation id="6464825623202322042">ეს მოწყობილობა</translation>
 <translation id="6465841119675156448">ინტერნეტის გარეშე</translation>
 <translation id="6466988389784393586">ყველა სანიშნის &amp;გახსნა</translation>
 <translation id="6467304607960172345">ვიდეოების ოპტიმიზაცია სრულეკრანიან რეჟიმში</translation>
@@ -4782,6 +4783,7 @@
 <translation id="648927581764831596">არ არის ხელმისაწვდომი</translation>
 <translation id="6490471652906364588">USB-C მოწყობილობა (მარჯვენა პორტი)</translation>
 <translation id="6491376743066338510">ავტორიზაცია ვერ განხორციელდა</translation>
+<translation id="6494327278868541139">გაძლიერებული დაცვის დეტალების ჩვენება</translation>
 <translation id="6494445798847293442">არ წამოადგენს სერტიფიცირების ცენტრს</translation>
 <translation id="6494974875566443634">მორგება</translation>
 <translation id="6495925982925244349">ქსელი <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />-დან, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, სიგნალის სიძლიერე: <ph name="SIGNAL_STRENGTH" />%, მართავს თქვენი ადმინისტრატორი, დეტალები</translation>
@@ -5067,7 +5069,6 @@
 <translation id="683373380308365518">გადადით გონიერ და უსაფრთხო ბრაუზერზე</translation>
 <translation id="6835762382653651563"><ph name="DEVICE_TYPE" />-ის განსაახლებლად, გთხოვთ, დაუკავშირდეთ ინტერნეტს.</translation>
 <translation id="6838034009068684089">შეკითხვა საიტის მიერ თქვენს ეკრანებზე ფანჯრების გახსნისა და განლაგების მოთხოვნისას (რეკომენდებული)</translation>
-<translation id="6838694093138907871">კოდი არასწორია. ცადეთ ხელახლა.</translation>
 <translation id="6838860780238890144">{COUNT,plural, =1{ტელეფონის ნომერი}other{# ტელეფონის ნომერი}}</translation>
 <translation id="6839225236531462745">სერტიფიკატის წაშლის შეცდომა</translation>
 <translation id="6839916869147598086">სისტემაში შესვლა შეიცვალა</translation>
@@ -5318,6 +5319,7 @@
 <translation id="7108933416628942903">ახლავე ჩაკეტვა</translation>
 <translation id="7109543803214225826">მალსახმობი ამოშლილია</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{ჩანართის დამატება ჯგუფში}other{ჩანართების დამატება ჯგუფში}}</translation>
+<translation id="7111822978084196600">დაარქვით სახელი ამ ფანჯარას</translation>
 <translation id="7113502843173351041">ეცოდინება თქვენი ელფოსტის მისამართი</translation>
 <translation id="7114054701490058191">პაროლები არ ემთხვევა</translation>
 <translation id="7114648273807173152">თქვენს Google ანგარიშში Smart Lock-ის მეშვეობით შესასვლელად გადადით აქ: პარამეტრები &gt; დაკავშირებული მოწყობილობები &gt; თქვენი ტელეფონი &gt; Smart Lock.</translation>
@@ -5579,6 +5581,7 @@
 <translation id="7421925624202799674">გვერდის წყაროს &amp;ნახვა</translation>
 <translation id="7422192691352527311">პარამეტრები…</translation>
 <translation id="7423098979219808738">წინასწარი შეკითხვა</translation>
+<translation id="7423425410216218516">ხილვადობა ჩართულია <ph name="MINUTES" /> წუთით</translation>
 <translation id="7423513079490750513">წაიშალოს <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" />-ის გასაშვებად საჭიროა ნებართვა</translation>
 <translation id="7427348830195639090">ფონის გვერდი: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -6962,6 +6965,7 @@
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> — ავარიულად გაითიშა</translation>
 <translation id="8981825781894055334">ქაღალდი იწურება</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" />-ს შეუძლია „<ph name="FILENAME" />“-ის რედაქტირება</translation>
+<translation id="8984694057134206124"><ph name="MINUTES" /> წუთის განმავლობაში ყველასთვის ხილული იქნებით. <ph name="LINK_BEGIN" />შეიტყვეთ მეტი<ph name="LINK_END" /></translation>
 <translation id="8985264973231822211">აქტიური იყო <ph name="DEVICE_LAST_ACTIVATED_TIME" /> დღის წინ</translation>
 <translation id="8986362086234534611">დავიწყება</translation>
 <translation id="8986494364107987395">გამოყენების სტატისტიკისა და შეცდომების შესახებ მოხსენებების ავტომატური გაგზავნა Google-ში</translation>
@@ -7135,7 +7139,6 @@
 <translation id="917350715406657904">მიღწეულია მშობლის მიერ <ph name="APP_NAME" />-ზე დაწესებული დროის ლიმიტი. ხვალ შეგიძლიათ <ph name="TIME_LIMIT" /> გამოიყენოთ ის.</translation>
 <translation id="9173787391779732995">საიტებს შეუძლია სურათების ჩვენება (რეკომენდებული)</translation>
 <translation id="9173995187295789444">მიმდინარეობს Bluetooth მოწყობილობების სკანირება...</translation>
-<translation id="9174052566244514547">თქვენმა ადმინისტრატორმა მოითხოვა თქვენი მოწყობილობის გადატვირთვა აპების გასაახლებლად. დასრულებას, შესაძლოა, რამდენიმე წუთი დასჭირდეს.</translation>
 <translation id="9174401638287877180">გამოყენებისა და დიაგნოსტიკის მონაცემების გაგზავნა. ხელი შეუწყვეთ Android-ის გაუმჯობესებას თქვენი შვილისთვის, დიაგნოსტიკისა და მოწყობილობის/აპების გამოყენების მონაცემების ავტომატურად გაგზავნით Google-ში. აღნიშნული მონაცემები არ იქნება გამოყენებული თქვენი შვილის ვინაობის დასადგენად, არამედ დაგვეხმარება სისტემის/აპების სტაბილურობისა და სხვა ფუნქციების გაუმჯობესებაში. გარდა ამისა, გაერთიანებული მონაცემების ნაწილი ხელს შეუწყობს Google აპებსა და პარტნიორებს, მაგალითად, Android-ის დეველოპერებს. თუ თქვენი შვილისთვის ჩართულია ვებსა და აპებში დამატებითი აქტივობის პარამეტრი, აღნიშნული მონაცემები შესაძლოა შეინახოს მის Google ანგარიშში.</translation>
 <translation id="917510707618656279">საიტების მიერ Bluetooth მოწყობილობებზე წვდომის მოთხოვნა</translation>
 <translation id="9176476835295860688">გამოყენებისა და დიაგნოსტიკის მონაცემების გაგზავნა. ეს მოწყობილობა ამჟამად ავტომატურად უგზავნის Google-ს დიაგნოსტიკისა და მოწყობილობის/აპების გამოყენების მონაცემებს. აღნიშნული მონაცემები დაგვეხმარება სისტემის/აპების სტაბილურობისა და სხვა ფუნქციების გაუმჯობესებაში. გარდა ამისა, გაერთიანებული მონაცემების ნაწილი ხელს შეუწყობს Google აპებსა და პარტნიორებს, მაგალითად, Android-ის დეველოპერებს. ეს <ph name="BEGIN_LINK1" />პარამეტრი<ph name="END_LINK1" /> არის იძულებით გააქტიურებული მფლობელის მიერ. თუ ჩართული გაქვთ ვებსა და აპებში დამატებითი აქტივობის პარამეტრი, აღნიშნული მონაცემები შესაძლოა შეინახოს თქვენს Google ანგარიშში. <ph name="BEGIN_LINK2" />შეიტყვეთ მეტი<ph name="END_LINK2" /></translation>

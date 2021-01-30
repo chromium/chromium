@@ -126,6 +126,7 @@
 <translation id="4994636714258228724">Chromium に自分を追加</translation>
 <translation id="5224391634244552924">保存されているパスワードがありません。パスワードを保存すると、Chromium で確認できるようになります。</translation>
 <translation id="5277894862589591112">変更を適用するには Chromium を再起動してください</translation>
+<translation id="5357324149468831780">このアカウントは管理対象です。管理者が、Chromium プロフィールを使ってアクセスするよう求めています。このプロフィールは個人用プロフィールとは別に管理されます。このプロフィールの使用中に生成された Chromium データ（ブックマーク、履歴、パスワード、他の設定など）は、管理者によって削除される場合があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">現在、管理対象アカウントでログインしており、あなたの Chromium プロフィールを管理者が制御できる状態になっています。あなたの Chromium データ（アプリ、ブックマーク、履歴、パスワードなどの設定）は永続的に <ph name="USER_NAME" /> に関連付けられます。このデータは Google アカウントのダッシュボードを介して削除できますが、このデータを別のアカウントに関連付けることはできなくなります。<ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium を更新しています（<ph name="PROGRESS_PERCENT" />）</translation>
 <translation id="538767207339317086">Chromium へのログインを許可する</translation>
@@ -140,6 +141,7 @@
 <translation id="5623402015214259806">{0,plural, =0{Chromium のアップデートが利用可能です}=1{Chromium のアップデートが利用可能です}other{Chromium のアップデートが利用可能になってから # 日経過しています}}</translation>
 <translation id="5631814766731275228">Chromium の名前と画像</translation>
 <translation id="5634636535844844681">Chromium のご利用には Windows 7 以上が必要です。</translation>
+<translation id="5642268154044585431">Chromium プロフィールが必要です</translation>
 <translation id="5653831366781983928">今すぐ Chromium を再起動してください</translation>
 <translation id="5698481217667032250">Chromium をこの言語で表示</translation>
 <translation id="5736967399513123100">保護されたメディアを Chromium で再生できるようにするには、Rosetta をインストールする必要があります。今すぐインストールしますか？</translation>
@@ -170,6 +172,7 @@
 <translation id="6309712487085796862">Chromium がカメラを使用しています。</translation>
 <translation id="6333502561965082103">Chromium で別の処理が行われています。しばらくしてからもう一度お試しください。</translation>
 <translation id="6334986366598267305">共有パソコンの Chromium で Google アカウントが簡単に使用できるようになりました。</translation>
+<translation id="6345021408165055322">このアカウントは <ph name="MANAGEMENT_DOMAIN" /> によって管理されています。管理者が、Chromium プロフィールを使ってアクセスするよう求めています。このプロフィールは個人用プロフィールとは別に管理されます。このプロフィールの使用中に生成された Chromium データ（ブックマーク、履歴、パスワード、他の設定など）は、管理者によって削除される場合があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">Chromium をアンインストールしてもよろしいですか？</translation>
 <translation id="6403826409255603130">Chromium は、ウェブページやアプリケーションを高速に実行できるスピードと、高い安定性を兼ね備えた非常に使いやすいウェブブラウザです。不正なソフトウェアやフィッシングに対する保護機能が組み込まれており、ウェブを安全にブラウジングできます。</translation>
 <translation id="6434250628340475518">Chromium OS システム</translation>
@@ -194,6 +197,7 @@
 <translation id="6863361426438995919">Google Pay（Chromium にコピー）</translation>
 <translation id="6893813176749746474">Chromium が更新されましたが、30 日以上使用されていません。</translation>
 <translation id="6897548120660295439">Rosetta をインストールすると、このページ上の保護されたメディアを Chromium で再生できるようになります。</translation>
+<translation id="691026815377248078">Chromium でペアリングを続行するには、Bluetooth へのアクセスが必要です。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Chromium のシークレット ウインドウでリンクを開く(&amp;G)</translation>
 <translation id="6978145336957848883">脆弱なパスワードは簡単に推測されてしまいます。Chromium で<ph name="BEGIN_LINK" />安全性の高いパスワードを自動生成して保存する<ph name="END_LINK" />ことができます。</translation>
 <translation id="6990124437352146030">このサイトを利用するには、Chromium でマイクの使用を許可する必要があります</translation>

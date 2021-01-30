@@ -19,6 +19,7 @@
 <translation id="1399397803214730675">Este ordenador ten instalada unha versión máis recente de Google Chrome. Se o software non funciona, desinstala Google Chrome e téntao de novo.</translation>
 <translation id="1434626383986940139">Aplicacións de valores controlados de Chrome</translation>
 <translation id="147727933880789532">Chrome recomenda desactivar esta extensión, xa que nestes momentos non cumpre os requisitos da función Navegación segura mellorada.</translation>
+<translation id="1516530951338665275">Google Chrome precisa acceso mediante Bluetooth para continuar coa vinculación. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Actualizar Chrome</translation>
 <translation id="1587223624401073077">Google Chrome utiliza a túa cámara.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> é perigoso, así que Chrome bloqueouno.</translation>
@@ -209,6 +210,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="6566149418543181476">Actualizando Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Sistema Chrome OS</translation>
 <translation id="6650333065969705433">Se queres usar Rosetta para reproducir contido multimedia protexido, debes reiniciar Chrome.</translation>
+<translation id="6668872995670558829">Necesítase un perfil de Chrome</translation>
 <translation id="6676384891291319759">Accede a Internet</translation>
 <translation id="6679975945624592337">Permitir que Google Chrome se execute en segundo plano</translation>
 <translation id="6739177684496155661">Queres continuar nun perfil de Chrome novo?</translation>
@@ -227,6 +229,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Hai dispoñible unha actualización nova para Chrome e aplicarase en canto o reinicies.}=1{Hai dispoñible unha actualización nova para Chrome e aplicarase en canto o reinicies. A ventá do modo de incógnito non se volverá abrir.}other{Hai dispoñible unha actualización nova para Chrome e aplicarase en canto o reinicies. As # ventás do modo de incógnito non se volverán abrir.}}</translation>
 <translation id="7155997830309522122">Se o fixeches, substitúe o contrasinal gardado en Chrome polo novo.</translation>
 <translation id="7242029209006116544">Vas iniciar sesión cunha conta administrada, o que significa que concederás ao seu administrador control sobre o teu perfil de Google Chrome. Os teus datos de Chrome como, por exemplo, as aplicacións, os marcadores, o historial, os contrasinais e outras opcións ligaranse de forma permanente a <ph name="USER_NAME" />. Poderás eliminar estes datos a través do Panel de control de contas de Google, pero non poderás asocialos a outra conta. De maneira opcional, podes crear un novo perfil para manter separados os teus datos de Chrome. <ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351">Esta conta está xestionada por <ph name="MANAGEMENT_DOMAIN" />. O teu administrador require un perfil de Chrome para o acceso. Este perfil é totalmente independente de calquera perfil persoal. O administrador pode quitar os datos de Chrome que se xeren durante o uso deste perfil (por exemplo, os marcadores, o historial, os contrasinais e outras opcións de configuración). <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">Este é o idioma no que se mostra a IU de Google Chrome</translation>
 <translation id="7296210096911315575">Información importante sobre o uso e a seguranza</translation>
 <translation id="7303916856901595720">Queres pasar esta conta a un perfil de Chrome novo?</translation>
@@ -234,6 +237,7 @@ Google Chrome non pode recuperar a túa configuración.</translation>
 <translation id="7339898014177206373">Nova ventá</translation>
 <translation id="7398801000654795464">Iniciaches sesión en Chrome como <ph name="USER_EMAIL_ADDRESS" />. Utiliza a mesma conta para iniciar sesión de novo.</translation>
 <translation id="7408085963519505752">Condicións de Chrome OS</translation>
+<translation id="7416131756095014387">Esta conta está xestionada. O teu administrador require un perfil de Chrome para o acceso. Este perfil é totalmente independente de calquera perfil persoal. O administrador pode quitar os datos de Chrome que se xeren durante o uso deste perfil (por exemplo, os marcadores, o historial, os contrasinais e outras opcións de configuración). <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">Chrome OS non puido sincronizar os teus datos porque a función de sincronización non está dispoñible para o teu dominio.</translation>
 <translation id="7486227612705979895">Chrome accederá a Drive para facer suxestións na barra de enderezos</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

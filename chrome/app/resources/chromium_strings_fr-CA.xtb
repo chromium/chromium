@@ -128,6 +128,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4994636714258228724">Ajouter un utilisateur à Chromium</translation>
 <translation id="5224391634244552924">Aucun mot de passe enregistré. Chromium ne peut vérifier vos mots de passe que si vous les enregistrez.</translation>
 <translation id="5277894862589591112">Pour appliquer vos modifications, relancez Chromium</translation>
+<translation id="5357324149468831780">Ce compte est géré. Votre administrateur exige que vous ayez un profil Chromium pour y accéder. Il s'agit d'un profil entièrement distinct de tout profil personnel. Les données Chromium qui sont générées durant l'utilisation de ce profil (comme la création de favoris, l'historique, les mots de passe et d'autres paramètres) peuvent être retirées par votre administrateur. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">Vous vous connectez avec un compte géré et rendez son administrateur maître de votre profil Chromium. Vos données de Chromium, comme vos applications, vos favoris, votre historique, vos mots de passe et vos autres paramètres, vont être associées de manière permanente à <ph name="USER_NAME" />. Vous pourrez supprimer ces données à l'aide du tableau de bord des comptes Google, mais vous ne pourrez pas les associer à un autre compte. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Mise à jour de Chromium en cours (<ph name="PROGRESS_PERCENT" />)…</translation>
 <translation id="538767207339317086">Autoriser la connexion à Chromium</translation>
@@ -142,6 +143,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="5623402015214259806">{0,plural, =0{Une mise à jour de Chromium est proposée}=1{Une mise à jour de Chromium est proposée}one{Une mise à jour de Chromium est proposée depuis # jour}other{Une mise à jour de Chromium est proposée depuis # jours}}</translation>
 <translation id="5631814766731275228">Nom et image Chromium</translation>
 <translation id="5634636535844844681">Chromium requiert Windows 7 ou une version ultérieure.</translation>
+<translation id="5642268154044585431">Un profil Chromium est requis</translation>
 <translation id="5653831366781983928">Veuillez redémarrer Chromium maintenant</translation>
 <translation id="5698481217667032250">Afficher Chromium dans cette langue</translation>
 <translation id="5736967399513123100">Pour permettre à Chromium de faire jouer les fichiers multimédias protégés, vous devez installer Rosetta. Souhaitez-vous l'installer maintenant?</translation>
@@ -172,6 +174,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="6309712487085796862">Chromium utilise votre caméra.</translation>
 <translation id="6333502561965082103">Une autre opération est en cours sur Chromium. Veuillez réessayer plus tard.</translation>
 <translation id="6334986366598267305">Il est maintenant plus facile d'utiliser Chromium avec votre compte Google et sur des ordinateurs partagés.</translation>
+<translation id="6345021408165055322">Ce compte est géré par <ph name="MANAGEMENT_DOMAIN" />. Votre administrateur exige que vous ayez un profil Chromium pour y accéder. Il s'agit d'un profil entièrement distinct de tout profil personnel. Les données Chromium qui sont générées durant l'utilisation de ce profil (comme la création de favoris, l'historique, les mots de passe et d'autres paramètres) peuvent être retirées par votre administrateur. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">Voulez-vous vraiment désinstaller Chromium?</translation>
 <translation id="6403826409255603130">Chromium est un navigateur Web qui exécute les pages Web et les applications à une vitesse fulgurante. Il est rapide, stable et simple d'utilisation. Naviguez sur Internet en toute sécurité, en bénéficiant de la protection offerte par Chromium contre les logiciels malveillants et l'hameçonnage.</translation>
 <translation id="6434250628340475518">Système Chromium OS</translation>
@@ -196,6 +199,7 @@ Certaines fonctionnalités seront peut-être inaccessibles. Veuillez spécifier 
 <translation id="6863361426438995919">Google Pay (copiée dans Chromium)</translation>
 <translation id="6893813176749746474">Chrome a été mis à jour, mais vous ne l'avez pas utilisé depuis au moins 30 jours.</translation>
 <translation id="6897548120660295439">Rosetta permet à Chromium de faire jouer les fichiers multimédias protégés sur cette page.</translation>
+<translation id="691026815377248078">Chromium nécessite l'accès au Bluetooth pour continuer l'association. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Ouvrir le lien dans une fenêtre de navi&amp;gation privée Chromium</translation>
 <translation id="6978145336957848883">Les mots de passe faibles sont faciles à deviner. Vous pouvez laisser Chromium <ph name="BEGIN_LINK" />créer et mémoriser des mots de passe forts pour vous<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium a besoin de votre autorisation pour accéder à votre micro pour ce site</translation>

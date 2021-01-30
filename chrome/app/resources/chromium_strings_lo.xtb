@@ -128,6 +128,7 @@
 <translation id="4994636714258228724">ເພີ່ມທ່ານເອງໃສ່ Chromium</translation>
 <translation id="5224391634244552924">ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້. Chromium ສາມາດກວດເບິ່ງລະຫັດຜ່ານຂອງທ່ານເມື່ອທ່ານບັນທຶກພວກມັນໄວ້.</translation>
 <translation id="5277894862589591112">ເພື່ອນຳໃຊ້ການປ່ຽນແປງຂອງທ່ານ, ກະລຸນາເປີດ Chromium ຄືນໃໝ່</translation>
+<translation id="5357324149468831780">ບັນຊີນີ້ມີການຈັດການ. ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານກຳນົດໃຫ້ມີໂປຣໄຟລ໌ Chromium ສຳລັບການເຂົ້າເຖິງ. ໂປຣໄຟລ໌ນີ້ແຍກອອກຈາກໂປຣໄຟລ໌ສ່ວນຕົວຢ່າງສົມບູນ. ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດລຶບຂໍ້ມູນ Chromium ໃດໆກໍຕາມທີ່ສ້າງຂຶ້ນໃນລະຫວ່າງການນຳໃຊ້ໂປຣໄຟລ໌ນີ້ (ເຊັ່ນ: ການສ້າງບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນໆ) ອອກໄດ້. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">ທ່ານກໍາລັງລົງຊື່ເຂົ້າ​ໃຊ້ດ້ວຍບັນຊີຄຸ້ມຄອງ ແລະໃຫ້ຜູ້ຄວບຄຸມຂອງມັນຄວບຄຸມໂປຣໄຟລ໌ Chromium ຂອງທ່ານ. ຂໍ້ມູນ Chromium ຂອງທ່ານ, ເຊັ່ນ: ແອັບ, ບຸກມາກສ໌, ປະຫວັດ, ລະຫັດຜ່ານ, ແລະການຕັ້ງຄ່າອື່ນໆຂອງທ່ານຈະຖືກຜູກ​ມັດ​ກັບ <ph name="USER_NAME" /> ຢ່າງຖາວອນ. ທ່ານຈະສາມາດລຶບຂໍ້ມູນນີ້ໄດ້ຜ່ານ Google Accounts Dashboard, ແຕ່ທ່ານຈະບໍ່ສາມາດເອົາຂໍ້ມູນນີ້ເຂົ້າຮ່ວມກັບບັນຊີອື່ນໄດ້. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">ກຳລັງອັບເດດ Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">ອະນຸຍາດການເຂົ້າສູ່ລະບົບ Chromium</translation>
@@ -142,6 +143,7 @@
 <translation id="5623402015214259806">{0,plural, =0{ມີການອັບເດດ Chromium}=1{ມີການອັບເດດ Chromium}other{ມີການອັບເດດ Chromium ເປັນເວລາ # ມື້ແລ້ວ}}</translation>
 <translation id="5631814766731275228">ຊື່ ແລະ ຮູບໃນ Chromium</translation>
 <translation id="5634636535844844681">Chromium ຕ້ອງໃຊ້ Windows 7 ຫຼື ສູງກວ່າ.</translation>
+<translation id="5642268154044585431">ຈຳເປັນຕ້ອງມີໂປຣໄຟລ໌ Chromium</translation>
 <translation id="5653831366781983928">ກະລຸນາປິດເປີດ Chromium ຄືນໃໝ່ຕອນນີ້</translation>
 <translation id="5698481217667032250">ສະ​ແດງ Chromium ເປັນພາສານີ້</translation>
 <translation id="5736967399513123100">ເພື່ອໃຫ້ Chromium ສາມາດຫຼິ້ນມີເດຍທີ່ມີການປ້ອງກັນໄດ້, ທ່ານຈຳເປັນຕ້ອງຕິດຕັ້ງ Rosetta. ທ່ານຕ້ອງການຕິດຕັ້ງມັນຕອນນີ້ບໍ?</translation>
@@ -172,6 +174,7 @@
 <translation id="6309712487085796862">Chromium ກໍາລັງໃຊ້​ກ້ອງ​ຖ່າຍ​ຮູບຂອງ​ທ່ານ​.</translation>
 <translation id="6333502561965082103">ການດຳເນີນການອື່ນໃນ Chromium ພວມດຳເນີນຢູ່. ກະລຸນາລອງອີກຄັ້ງໃນພາຍຫຼັງ.</translation>
 <translation id="6334986366598267305">ດຽວນີ້ມັນງ່າຍທີ່ຈະໃຊ້ Chromium ກັບບັນຊີ Google ຂອງທ່ານ ແລະຢູ່ໃນຄອມພິວເຕີທີ່ແຊຣ໌ແລ້ວ.</translation>
+<translation id="6345021408165055322">ບັນຊີນີ້ຈັດການໂດຍ <ph name="MANAGEMENT_DOMAIN" />. ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານກຳນົດໃຫ້ມີໂປຣໄຟລ໌ Chromium ສຳລັບການເຂົ້າເຖິງ. ໂປຣໄຟລ໌ນີ້ແຍກອອກຈາກໂປຣໄຟລ໌ສ່ວນຕົວຢ່າງສົມບູນ. ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສາມາດລຶບຂໍ້ມູນ Chromium ໃດໆກໍຕາມທີ່ສ້າງຂຶ້ນໃນລະຫວ່າງການນຳໃຊ້ໂປຣໄຟລ໌ນີ້ (ເຊັ່ນ: ການສ້າງບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນໆ) ອອກໄດ້. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">ທ່ານແນ່ໃຈບໍວ່າ ທ່ານຕ້ອງການຖອນຕິດຕັ້ງ Chromium?</translation>
 <translation id="6403826409255603130">Chromium ແມ່ນບຣາວເຊີເວັບທີ່ແລ່ນໜ້າເວັບ ແລະແອັບພລິເຄຊັນດ້ວຍຄວາມໄວແບບສາຍຟ້າແມັບ. ມັນໄວ, ໝັ້ນຄົງ, ແລະໃຊ້ງ່າຍ. ທ່ອງເວັບໄດ້ປອດໄພກ່ວາດ້ວຍການປົກປ້ອງມາລແວ ແລະພິຊຊິງທີ່ສ້າງຢູ່ໃນຕົວ Chromium.</translation>
 <translation id="6434250628340475518">ລະບົບປະຕິບັດການຂອງ Chromium</translation>
@@ -196,6 +199,8 @@
 <translation id="6863361426438995919">Google Pay (ສຳເນົາໄວ້ໃນ Chromium ແລ້ວ)</translation>
 <translation id="6893813176749746474">ອັບເດດ Chromium ແລ້ວ, ແຕ່ທ່ານບໍ່ໄດ້ໃຊ້ມັນເປັນເວລາຢ່າງໜ້ອຍ 30 ວັນແລ້ວ​.</translation>
 <translation id="6897548120660295439">Rosetta ເຮັດໃຫ້ Chromium ສາມາດຫຼິ້ນມີເດຍທີ່ມີການປ້ອງກັນໃນໜ້ານີ້ໄດ້.</translation>
+<translation id="691026815377248078">Chromium ຕ້ອງການສິດເຂົ້າເຖິງ Bluetooth ເພື່ອສືບຕໍ່ 
+ ການຈັບຄູ່. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">ເປີດລິ້ງໃນໜ້າຈໍທີ່ບໍ່ເຜີຍຕົວຕົນຂອງ Chromium</translation>
 <translation id="6978145336957848883">ລະຫັດຜ່ານງ່າຍແມ່ນລະຫັດຜ່ານທີ່ເດົາໄດ້ງ່າຍ. ອະນຸຍາດໃຫ້ Chromium <ph name="BEGIN_LINK" />ສ້າງ ແລະ ຈື່ລະຫັດຜ່ານຍາກສຳລັບທ່ານ<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium ຕ້ອງການການອະນຸຍາດເພື່ອເຂົ້າເຖິງໄມໂຄຣໂຟນຂອງທ່ານສຳລັບເວັບໄຊນີ້</translation>

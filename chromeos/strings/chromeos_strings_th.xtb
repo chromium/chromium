@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">งานพิมพ์</translation>
 <translation id="3527036260304016759">ไม่สำเร็จ - ข้อผิดพลาดที่ไม่รู้จัก</translation>
 <translation id="357889014807611375">Wi-Fi ที่มีการวัดปริมาณอินเทอร์เน็ต</translation>
+<translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
 <translation id="360565022852130722">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP 802.1x ที่ไม่รัดกุม</translation>
 <translation id="3712633734921637892">จำกัดความเร็ว CPU อยู่ในขณะนี้เพื่อประหยัดแบตเตอรี่หรือลดอุณหภูมิ</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> รีวิว)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">ความละเอียด</translation>
 <translation id="3941014780699102620">แก้ไขโฮสต์ไม่สำเร็จ</translation>
 <translation id="3942420633017001071">การวินิจฉัย</translation>
+<translation id="397105322502079400">กำลังคำนวณ...</translation>
 <translation id="39823212440917567">ระบบจะนำงานพิมพ์ที่เก่ากว่า <ph name="NUMBER_OF_DAYS" /> วันออก</translation>
 <translation id="4003384961948020559">ไม่สำเร็จ - ถาดกระดาษขาออกเต็ม</translation>
 <translation id="4034824040120875894">เครื่องพิมพ์</translation>
@@ -263,6 +265,7 @@
 <translation id="6977381486153291903">การแก้ไขเฟิร์มแวร์</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และมีสิทธิ์เข้าถึงกิจกรรมทั้งหมดของผู้ใช้ ซึ่งรวมถึงหน้าเว็บที่เข้าชม รหัสผ่าน และอีเมล</translation>
 <translation id="7040230719604914234">โอเปอเรเตอร์</translation>
+<translation id="7059230779847288458">กำลังชาร์จ อีก <ph name="TIME_VALUE" />จะเต็ม</translation>
 <translation id="708426984172631313">หยุดแล้ว</translation>
 <translation id="7143207342074048698">กำลังเชื่อมต่อ</translation>
 <translation id="714876143603641390">การเชื่อมต่อ LAN</translation>
@@ -281,6 +284,7 @@
 <translation id="7502658306369382406">ที่อยู่ IPv6</translation>
 <translation id="7561454561030345039">การดำเนินการนี้จัดการโดยผู้ดูแลระบบ</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">เหลือ <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">ดูข้อมูลเพิ่มเติมในศูนย์ช่วยเหลือ</translation>
 <translation id="7648838807254605802">เวลาในการตอบสนองของ HTTPS สูง</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>

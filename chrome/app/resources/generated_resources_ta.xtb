@@ -329,6 +329,7 @@
 <translation id="1367951781824006909">கோப்பைத் தேர்வுசெய்க</translation>
 <translation id="1369149969991017342">ஸ்விட்ச் அணுகல் (ஒன்று அல்லது இரண்டு ஸ்விட்ச்கள் மூலம் கம்ப்யூட்டரைக் கட்டுப்படுத்துதல்)</translation>
 <translation id="1372841398847029212">எனது கணக்குடன் ஒத்திசை</translation>
+<translation id="1373176046406139583">உங்கள் சாதனத்தின் திரை அன்லாக் செய்யப்பட்டிருக்கும்போது யாரெல்லாம் உங்களுடன் பகிர முடியும் என்பது உங்கள் சாதனத்தின் தெரிவுநிலையைப் பொறுத்ததாகும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">"<ph name="NETWORK_NAME" />" நெட்வொர்க்குக்குத் தேவைப்படும் சான்றிதழானது நிறுவப்படாமலோ இனி செல்லுபடியாகாத நிலையிலோ உள்ளது. புதிய சான்றிதழைப் பெற்று, மீண்டும் இணைக்க முயலவும்.</translation>
 <translation id="1375321115329958930">சேமிக்கப்பட்ட கடவுச்சொற்கள்</translation>
 <translation id="137651782282853227">சேமித்த முகவரிகள் இங்கே தோன்றும்</translation>
@@ -1091,7 +1092,6 @@
 <translation id="2204034823255629767">நீங்கள் உள்ளிடும் எதையும் படிக்கலாம் மற்றும் மாற்றலாம்</translation>
 <translation id="220858061631308971">"<ph name="DEVICE_NAME" />" இல் இந்த PIN குறியீட்டை உள்ளிடுக:</translation>
 <translation id="2212565012507486665">குக்கீகளை அனுமதி</translation>
-<translation id="2213140827792212876">பகிர்வை அகற்றும்</translation>
 <translation id="2214018885812055163">பகிர்ந்த கோப்புறைகள்</translation>
 <translation id="2214884991347062907">தவறான கடவுச்சொல், மீண்டும் முயலவும்</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 வரி காட்டப்படவில்லை&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> வரிகள் காட்டப்படவில்லை&gt;}}</translation>
@@ -2427,7 +2427,6 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">நீங்களும் Googleளும்</translation>
 <translation id="3722108462506185496">விர்ச்சுவல் மெஷின் சேவையைத் தொடங்கும்போது பிழை ஏற்பட்டது. பிறகு முயலவும்.</translation>
-<translation id="3726137731714254362">இங்கிருந்து கோப்புறைகளை அகற்றினால் பகிர்வு நிறுத்தப்படும், எனினும் கோப்புகள் நீக்கப்படாது.</translation>
 <translation id="3727148787322499904">இந்த அமைப்பை மாற்றினால், பகிர்ந்த எல்லா நெட்வொர்க்குகளும் பாதிக்கப்படும்</translation>
 <translation id="3727187387656390258">பாப்அப் கண்காணிப்பு</translation>
 <translation id="372722114124766626">இப்போது மட்டும்</translation>
@@ -2564,7 +2563,6 @@
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: ஒத்திசைவு இடைநிறுத்தப்பட்டுள்ளது</translation>
 <translation id="3861638017150647085">"<ph name="USERNAME" />" என்ற பயனர்பெயரைப் பயன்படுத்த முடியாது</translation>
 <translation id="3861977424605124250">தொடங்கும்போது காட்டு</translation>
-<translation id="3862693525629180217">உள்ளமைந்த சென்சார் வழியாகச் சரிபார்</translation>
 <translation id="3862788408946266506">'kiosk_only' மெனிஃபெஸ்ட் பண்புக்கூறைக் கொண்ட ஆப்ஸை Chrome OS கியோஸ்க் பயன்முறையிலேயே நிறுவ வேண்டும்</translation>
 <translation id="3865414814144988605">தெளிவு</translation>
 <translation id="3866249974567520381">விவரம்</translation>
@@ -3444,6 +3442,7 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - பிணைக்கப்பட்டுள்ளது</translation>
 <translation id="4902546322522096650">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, இணை</translation>
 <translation id="49027928311173603">சேவையகத்திலிருந்து பதிவிறக்கிய கொள்கை தவறானது: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4904061654709986277">சுயவிவரத்தைச் சேர்</translation>
 <translation id="4906490889887219338">நெட்வொர்க் கோப்புப் பகிர்வுகளை அமைத்தல் அல்லது நிர்வகித்தல். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">நெட்வொர்க்: <ph name="NETWORK_INDEX" /> / <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, மொபைல் பேட்டரி <ph name="BATTERY_STATUS" />%, விவரங்கள்</translation>
 <translation id="4907161631261076876">பொதுவாக இந்தக் கோப்புப் பதிவிறக்கப்படுவதில்லை, மேலும் ஆபத்தானதாக இருக்கக்கூடும்.</translation>
@@ -3566,6 +3565,7 @@
 <translation id="5068918910148307423">தரவை அனுப்புவதையும் பெறுவதையும் முடிக்க சமீபத்தில் மூடப்பட்ட தளங்களை அனுமதிக்காதே</translation>
 <translation id="5068919226082848014">பீட்சா</translation>
 <translation id="5070773577685395116">அறிவிப்பைப் பெறவில்லையா?</translation>
+<translation id="5071892329440114717">நிலையான பாதுகாப்பு விவரங்களைக் காட்டு</translation>
 <translation id="5072052264945641674">கர்சரின் அளவை மாற்று</translation>
 <translation id="5072836811783999860">நிர்வகிக்கப்பட்ட புக்மார்க்குகளைக் காட்டு</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" />, மேலும் #}}</translation>
@@ -4365,7 +4365,6 @@
 <translation id="6003143259071779217">eSIM மொபைல் நெட்வொர்க்கை அகற்றுதல்</translation>
 <translation id="6006484371116297560">கிளாசிக்</translation>
 <translation id="6007240208646052708">உங்கள் மொழியில் குரல் தேடல் இல்லை.</translation>
-<translation id="6009781704028455063">உள்ளமைந்த சென்சார்</translation>
 <translation id="6011074160056912900">ஈத்தர்நெட் நெட்வொர்க்</translation>
 <translation id="6011193465932186973">கைரேகை</translation>
 <translation id="6011449291337289699">தளத் தரவை அழி</translation>
@@ -4719,6 +4718,7 @@
 <translation id="6412673304250309937">Chromeமில் சேமிக்கப்பட்டுள்ள பாதுகாப்பில்லாத தளங்களின் பட்டியலைப் பயன்படுத்தி URLகளைச் சரிபார்க்கும். தளம் உங்கள் கடவுச்சொல்லைத் திருட முயன்றலோ தீங்குவிளைவிக்கும் கோப்பை நீங்கள் பதிவிறக்கினாலோ Chromeமானது பக்க உள்ளடக்கத்தின் சிறிய பகுதிகள் உட்பட URLகளையும் பாதுகாப்பு உலாவலுக்கு அனுப்பக்கூடும்.</translation>
 <translation id="6412931879992742813">புதிய மறைநிலைச் சாளரம்</translation>
 <translation id="641469293210305670">புதுப்பிப்புகளையும் ஆப்ஸையும் நிறுவுதல்</translation>
+<translation id="6414878884710400018">சிஸ்டம் விருப்பத்தேர்வுகளைத் திற</translation>
 <translation id="6414888972213066896">இந்தத் தளத்தைப் பார்வையிடலாமா என, நீங்கள் பெற்றோரிடம் கேட்டுள்ளீர்கள்</translation>
 <translation id="6415900369006735853">உங்கள் ஃபோனைப் பயன்படுத்தி இணையத்துடன் இணைக்கலாம்</translation>
 <translation id="6416743254476733475">உங்கள் கம்ப்யூட்டரில் அனுமதிக்கவும் அல்லது தடுக்கவும்.</translation>
@@ -4765,6 +4765,7 @@
 <translation id="6460601847208524483">அடுத்ததைக் கண்டுபிடி</translation>
 <translation id="6461170143930046705">நெட்வொர்க்குகளைத் தேடுகிறது...</translation>
 <translation id="6463795194797719782">&amp;திருத்து</translation>
+<translation id="6464825623202322042">இந்தச் சாதனத்தில்</translation>
 <translation id="6465841119675156448">இணைய இணைப்பு இல்லாமல்</translation>
 <translation id="6466988389784393586">புக்மார்க்ஸ் அனைத்தையும் &amp;திற</translation>
 <translation id="6467304607960172345">முழுத்திரை வீடியோக்களை மேம்படுத்து</translation>
@@ -4785,6 +4786,7 @@
 <translation id="648927581764831596">எதுவும் இல்லை</translation>
 <translation id="6490471652906364588">USB-C சாதனம் (வலது போர்ட்)</translation>
 <translation id="6491376743066338510">அங்கீகரிக்க முடியவில்லை</translation>
+<translation id="6494327278868541139">மேம்பட்ட பாதுகாப்பு விவரங்களைக் காட்டு</translation>
 <translation id="6494445798847293442">சான்றளிக்கும் அங்கீகாரம் அல்ல</translation>
 <translation id="6494974875566443634">பிரத்தியேகமாக்குதல்</translation>
 <translation id="6495925982925244349">நெட்வொர்க்: <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, சிக்னல் வலிமை: <ph name="SIGNAL_STRENGTH" />%, உங்கள் நிர்வாகி நிர்வகிக்கிறார், விவரங்கள்</translation>
@@ -5070,7 +5072,6 @@
 <translation id="683373380308365518">ஸ்மார்ட்டான, பாதுகாப்பான உலாவிக்கு மாறவும்</translation>
 <translation id="6835762382653651563">உங்கள் <ph name="DEVICE_TYPE" />ஐப் புதுப்பிக்க இணையத்துடன் இணையவும்.</translation>
 <translation id="6838034009068684089">எனது திரைகளில் சாளரங்களைத் திறந்து வைக்க ஒரு தளம் விரும்பும்போது அனுமதி கேள் (பரிந்துரைக்கப்படுகிறது)</translation>
-<translation id="6838694093138907871">தவறான குறியீடு, மீண்டும் முயலவும்.</translation>
 <translation id="6838860780238890144">{COUNT,plural, =1{ஃபோன் எண்}other{# ஃபோன் எண்கள்}}</translation>
 <translation id="6839225236531462745">சான்றிதழ் நீக்குதல் பிழை</translation>
 <translation id="6839916869147598086">உள்நுழையும் முறை மாறியுள்ளது</translation>
@@ -5321,6 +5322,7 @@
 <translation id="7108933416628942903">இப்போதே பூட்டு</translation>
 <translation id="7109543803214225826">ஷார்ட்கட் அகற்றப்பட்டது</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{குழுவில் தாவலைச் சேர்}other{குழுவில் தாவல்களைச் சேர்}}</translation>
+<translation id="7111822978084196600">இந்தச் சாளரத்திற்குப் பெயரிடுங்கள்</translation>
 <translation id="7113502843173351041">உங்கள் மின்னஞ்சல் முகவரியை அணுகுதல்</translation>
 <translation id="7114054701490058191">கடவுச்சொற்கள் பொருந்தவில்லை</translation>
 <translation id="7114648273807173152">உங்கள் Google கணக்கில் உள்நுழைவதற்கு Smart Lockகைப் பயன்படுத்த, ‘அமைப்புகள்’ &gt; ’இணைக்கப்பட்டுள்ள சாதனங்கள்’ &gt; ’உங்கள் ஃபோன்’ &gt; 'Smart Lock' என்பதற்குச் செல்லவும்.</translation>
@@ -5582,6 +5584,7 @@
 <translation id="7421925624202799674">&amp;பக்கத்தின் ஆதாரத்தைக் காண்க</translation>
 <translation id="7422192691352527311">விருப்பத்தேர்வுகள்...</translation>
 <translation id="7423098979219808738">முதலில் கேள்</translation>
+<translation id="7423425410216218516"><ph name="MINUTES" /> நிமிடங்களுக்குச் சாதனம் காட்டப்படும்</translation>
 <translation id="7423513079490750513"><ph name="INPUT_METHOD_NAME" /> ஐ அகற்றும்</translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> ஆப்ஸை இயக்க அனுமதி தேவை</translation>
 <translation id="7427348830195639090">பின்புல பக்கம்: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -6967,6 +6970,7 @@
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> - சிதைந்துவிட்டது</translation>
 <translation id="8981825781894055334">காகிதம் குறைவாக உள்ளது</translation>
 <translation id="8983632908660087688"><ph name="FILENAME" /> கோப்பை <ph name="ORIGIN" /> தளத்தால் திருத்த முடியும்</translation>
+<translation id="8984694057134206124">அருகிலுள்ள அனைவருக்கும் <ph name="MINUTES" /> நிமிடங்களுக்கு உங்கள் சாதனம் காட்டப்படும். <ph name="LINK_BEGIN" />மேலும் அறிக<ph name="LINK_END" /></translation>
 <translation id="8985264973231822211">கடைசியாக <ph name="DEVICE_LAST_ACTIVATED_TIME" /> நாளுக்கு முன் பயன்படுத்தியுள்ளார்</translation>
 <translation id="8986362086234534611">மற</translation>
 <translation id="8986494364107987395">பயன்பாட்டுப் புள்ளிவிவரங்களையும் சிதைவு அறிக்கைகளையும் தானாகவே Google க்கு அனுப்பு</translation>
@@ -7140,7 +7144,6 @@
 <translation id="917350715406657904"><ph name="APP_NAME" /> ஐப் பயன்படுத்த உங்கள் பெற்றோர் அமைத்த நேர வரம்பை அடைந்துவிட்டீர்கள். நாளை <ph name="TIME_LIMIT" /> பயன்படுத்திக் கொள்ளலாம்.</translation>
 <translation id="9173787391779732995">படங்களைக் காட்ட தளங்களை அனுமதி (பரிந்துரைக்கப்படுவது)</translation>
 <translation id="9173995187295789444">புளூடூத் சாதனங்களை ஸ்கேன் செய்கிறது...</translation>
-<translation id="9174052566244514547">ஆப்ஸைப் புதுப்பிக்க, சாதனத்தை மீண்டும் தொடங்குமாறு நிர்வாகி கோரியுள்ளார். இது நிறைவடைய சில நிமிடங்கள் ஆகலாம்</translation>
 <translation id="9174401638287877180">உபயோகம் மற்றும் பிழை கண்டறிதல் தரவை அனுப்பவும். பிழை கண்டறிதல் தரவு, சாதனம் மற்றும் ஆப்ஸ் உபயோகத் தரவு போன்றவற்றை Googleளுக்குத் தானாக அனுப்புவதன் மூலம் உங்கள் பிள்ளையின் Android அனுபவத்தை மேம்படுத்த உதவவும். இது உங்கள் பிள்ளையை அடையாளம் கண்டறிய பயன்படுத்தப்படாது, இது சிஸ்டம் மற்றும் ஆப்ஸின் நிலைத்தன்மையை மேம்படுத்தவும் பிற மேம்பாடுகளைச் செய்யவும் உதவும். ஒருங்கிணைக்கப்பட்ட சில தரவு, Google ஆப்ஸுக்கும் Android டெவெலப்பர்கள் போன்ற கூட்டாளர்களுக்கும் உதவும். உங்கள் பிள்ளையின் கணக்கில் கூடுதல் ’இணையம் &amp; ஆப்ஸ் செயல்பாடு’ அமைப்பு இயக்கப்பட்டிருந்தால், இந்தத் தரவு அவரது Google கணக்கில் சேமிக்கப்படக்கூடும்.</translation>
 <translation id="917510707618656279">புளூடூத் சாதனங்களை ஒரு தளம் அணுக விரும்பும்போது அனுமதி கேள்</translation>
 <translation id="9176476835295860688">உபயோகம் &amp; கண்டறிதல் தரவை அனுப்புக. கண்டறிதல் தரவு, சாதனம் மற்றும் ஆப்ஸ் உபயோகத் தரவு போன்றவற்றை இந்தச் சாதனம் தற்போது Googleளுக்குத் தானாக அனுப்புகிறது. இது சிஸ்டம் மற்றும் ஆப்ஸின் நிலைத்தன்மையை மேம்படுத்தவும் பிற மேம்பாடுகளைச் செய்யவும் உதவும். ஒருங்கிணைக்கப்பட்ட சில தரவுகள், Google ஆப்ஸ் மற்றும் Android டெவெலப்பர்கள் போன்ற கூட்டாளர்களுக்கும் உதவும். உரிமையாளர் இந்த <ph name="BEGIN_LINK1" />அமைப்பைச்<ph name="END_LINK1" /> செயல்படுத்தியுள்ளார். கூடுதல் ’இணையம் &amp; ஆப்ஸ் செயல்பாடு’ அமைப்பு இயக்கப்பட்டிருந்தால், இந்தத் தரவு உங்கள் Google கணக்கில் சேமிக்கப்படலாம். <ph name="BEGIN_LINK2" />மேலும் அறிக<ph name="END_LINK2" /></translation>

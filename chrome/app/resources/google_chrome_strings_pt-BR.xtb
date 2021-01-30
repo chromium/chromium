@@ -17,6 +17,8 @@
 <translation id="1399397803214730675">Este computador já tem uma versão mais recente do Google Chrome. Caso o software não esteja funcionando, desinstale-o e tente novamente.</translation>
 <translation id="1434626383986940139">Aplicativos Canary do Google Chrome</translation>
 <translation id="147727933880789532">O Chrome recomenda desativar essa extensão porque ela não atende aos padrões do Navegação segura com maior proteção.</translation>
+<translation id="1516530951338665275">O Google Chrome precisa acessar o Bluetooth para continuar o 
+ pareamento. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Atualizar o Google Chrome</translation>
 <translation id="1587223624401073077">O Google Chrome está usando sua câmera.</translation>
 <translation id="1587325591171447154">O arquivo <ph name="FILE_NAME" /> é perigoso. Por isso ele foi bloqueado pelo Chrome.</translation>
@@ -200,6 +202,7 @@
 <translation id="6566149418543181476">Atualizando o Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Sistema Chrome OS</translation>
 <translation id="6650333065969705433">Para usar o Rosetta para reproduzir mídia protegida, reinicie o Chrome.</translation>
+<translation id="6668872995670558829">Perfil do Chrome necessário</translation>
 <translation id="6676384891291319759">Acessar a internet</translation>
 <translation id="6679975945624592337">Permitir a execução do Google Chrome em segundo plano</translation>
 <translation id="6739177684496155661">Continuar em um novo perfil do Chrome?</translation>
@@ -218,6 +221,7 @@
 <translation id="7140653346177713799">{COUNT,plural, =0{Uma nova atualização está disponível para o Chrome e será feita assim que você reiniciá-lo.}=1{Uma nova atualização está disponível para o Chrome e será feita assim que você reiniciá-lo. Sua janela anônima não será aberta novamente.}one{Uma nova atualização está disponível para o Chrome e será feita assim que você reiniciá-lo. Sua janela anônima não será aberta novamente.}other{Uma nova atualização está disponível para o Chrome e será feita assim que você reiniciá-lo. Suas # janelas anônimas não serão abertas novamente.}}</translation>
 <translation id="7155997830309522122">Se tiver mudado, edite a senha salva no Chrome para que ela seja igual à nova senha.</translation>
 <translation id="7242029209006116544">Você está fazendo login com uma conta gerenciada e concedendo ao administrador da conta o controle sobre seu perfil do Google Chrome. Seus dados do Google Chrome, como aplicativos, favoritos, histórico, senhas e outras configurações serão permanentemente vinculados a <ph name="USER_NAME" />. Você pode excluir esses dados pelo painel das Contas do Google, mas não pode associá-los a outra conta. Você tem a opção de criar um novo perfil para manter seus dados existentes do Google Chrome separados. <ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351">Esta conta é gerenciada por <ph name="MANAGEMENT_DOMAIN" />. Seu administrador exige um perfil do Chrome para permitir o acesso. Esse perfil é totalmente separado de qualquer perfil pessoal. Os dados do Chrome que são gerados quando esse perfil está sendo usado (como a criação de favoritos, o histórico, as senhas e outras configurações) podem ser removidos pelo administrador. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">Esse idioma é usado para exibir a IU do Google Chrome</translation>
 <translation id="7296210096911315575">Informações importantes sobre uso e segurança</translation>
 <translation id="7303916856901595720">Mover a conta para um novo perfil do Chrome?</translation>
@@ -225,6 +229,7 @@
 <translation id="7339898014177206373">Nova janela</translation>
 <translation id="7398801000654795464">Você estava conectado ao Google Chrome como <ph name="USER_EMAIL_ADDRESS" />. Use a mesma conta para fazer login novamente.</translation>
 <translation id="7408085963519505752">Termos do Chrome OS</translation>
+<translation id="7416131756095014387">Esta conta é gerenciada. Seu administrador exige um perfil do Chrome para permitir o acesso. Esse perfil é totalmente separado de qualquer perfil pessoal. Os dados do Chrome que são gerados quando esse perfil está sendo usado (como a criação de favoritos, o histórico, as senhas e outras configurações) podem ser removidos pelo administrador. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">O Chrome OS não pôde sincronizar seus dados porque a sincronização não está disponível para seu domínio.</translation>
 <translation id="7486227612705979895">O Chrome acessará seu Drive para fazer sugestões na barra de endereço</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

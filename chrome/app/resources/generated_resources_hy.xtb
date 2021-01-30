@@ -331,6 +331,7 @@
 <translation id="1367951781824006909">Ընտրել ֆայլ</translation>
 <translation id="1369149969991017342">Միացնել Switch Access-ը (թույլ է տալիս կառավարել համակարգիչը մեկ կամ երկու փոխանջատիչով)</translation>
 <translation id="1372841398847029212">Համաժամացնել ձեր հաշվի հետ</translation>
+<translation id="1373176046406139583">Տեսանելիության կարգավորումների միջոցով դուք կարող եք նշել, թե ում եք թույլատրում կիսվել ձեզ հետ տվյալներով, երբ ձեր սարքն ապակողպված է։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">«<ph name="NETWORK_NAME" />» ցանցի պահանջած վկայագիրը կամ տեղադրված չէ, կամ այլևս վավեր չէ: Ստացեք նոր վկայագիր և կրկին փորձեք կապակցել:</translation>
 <translation id="1375321115329958930">Պահված գաղտնաբառեր</translation>
 <translation id="137651782282853227">Պահված հասցեները կցուցադրվեն այստեղ</translation>
@@ -1093,7 +1094,6 @@
 <translation id="2204034823255629767">Կարդալ և փոխել այն ամենն, ինչ դուք մուտքագրում եք</translation>
 <translation id="220858061631308971">Մուտքագրեք այս PIN կոդը «<ph name="DEVICE_NAME" />»-ում՝</translation>
 <translation id="2212565012507486665">Թույլատրել քուքիները</translation>
-<translation id="2213140827792212876">Հեռացնել ընդհանուր հասանելիությունը</translation>
 <translation id="2214018885812055163">Ընդհանուր պանակներ</translation>
 <translation id="2214884991347062907">Գաղտնաբառը սխալ է։ Նորից փորձեք:</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 տող ցուցադրված չէ&gt;}one{&lt;<ph name="NUMBER_OF_LINES" /> տող ցուցադրված չէ&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> տող ցուցադրված չէ&gt;}}</translation>
@@ -2429,7 +2429,6 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Դուք և Google-ը</translation>
 <translation id="3722108462506185496">Չհաջողվեց մեկնարկել վիրտուալ մեքենայի ծառայությունը: Նորից փորձեք:</translation>
-<translation id="3726137731714254362">Եթե պանակները հեռացնեք այստեղից, կհեռացվի միայն դրանց հասանելիությունը։ Ֆայլերը չեն հեռացվի։</translation>
 <translation id="3727148787322499904">Եթե փոխեք այս կարգավորումը, այն կազդի բոլոր ընդհանուր ցանցերի վրա</translation>
 <translation id="3727187387656390258">Հետազոտել ելնող պատուհանը</translation>
 <translation id="372722114124766626">Միայն այս անգամ</translation>
@@ -2566,7 +2565,6 @@
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />․ համաժամացումը դադարեցված է</translation>
 <translation id="3861638017150647085">«<ph name="USERNAME" />» օգտանունը հասանելի չէ</translation>
 <translation id="3861977424605124250">Ցույց տալ գործարկման ժամանակ</translation>
-<translation id="3862693525629180217">Հաստատել ներկառուցված սկաների միջոցով</translation>
 <translation id="3862788408946266506">«Kiosk_only» մանիֆեստի հատկանիշով հավելվածը պետք է տեղադրվի Chrome OS-ի կրպակի ռեժիմում</translation>
 <translation id="3865414814144988605">Լուծաչափ</translation>
 <translation id="3866249974567520381">Նկարագրություն</translation>
@@ -3447,6 +3445,7 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Հց, միահյուսված</translation>
 <translation id="4902546322522096650">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կապակցում</translation>
 <translation id="49027928311173603">Սերվերից ներբեռնված քաղաքականությունն անվավեր է՝ <ph name="VALIDATION_ERROR" />:</translation>
+<translation id="4904061654709986277">Ավելացնել պրոֆիլ</translation>
 <translation id="4906490889887219338">Կարգավորել կամ կառավարել ցանցային պահեստը <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" />%, մանրամասներ</translation>
 <translation id="4907161631261076876">Այս ֆայլը ոչ սովորական կերպով է ներբեռնվել և կարող է վտանգավոր լինել:</translation>
@@ -3569,6 +3568,7 @@
 <translation id="5068918910148307423">Թույլ չտալ վերջերս փակված կայքերին ավարտել տվյալների ուղարկումն ու ստացումը</translation>
 <translation id="5068919226082848014">Պիցցա</translation>
 <translation id="5070773577685395116">Չե՞ք ստացել ծանուցում։</translation>
+<translation id="5071892329440114717">Ցույց տալ սովորական պաշտպանության մանրամասն նկարագրությունը</translation>
 <translation id="5072052264945641674">Կարգավորել նշորդի չափը</translation>
 <translation id="5072836811783999860">Ցուցադրել կառավարվող էջանիշները</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}one{<ph name="FILE1" />, <ph name="FILE2" /> ու ևս # ֆայլ}other{<ph name="FILE1" />, <ph name="FILE2" /> ու ևս # ֆայլ}}</translation>
@@ -4368,7 +4368,6 @@
 <translation id="6003143259071779217">Հեռացնել eSIM-ի բջջային ցանցը</translation>
 <translation id="6006484371116297560">Դասական</translation>
 <translation id="6007240208646052708">Ձայնային որոնումը ձեր լեզվով հասանելի չէ:</translation>
-<translation id="6009781704028455063">Ներկառուցված տվիչ</translation>
 <translation id="6011074160056912900">Ethernet ցանց</translation>
 <translation id="6011193465932186973">Մատնահետք</translation>
 <translation id="6011449291337289699">Մաքրել կայքի տվյալները</translation>
@@ -4722,6 +4721,7 @@
 <translation id="6412673304250309937">Ստուգում է URL-ները Chrome-ում պահված վտանգավոր կայքերի ցանկի միջոցով։ Եթե կայքը փորձում է գողանալ ձեր գաղտնաբառը, կամ երբ վնասակար ֆայլ եք ներբեռնում, Chrome-ը կարող է ուղարկել URL-ն ու էջի բովանդակությունը՝ անվտանգ դիտարկման միջոցով ստուգելու համար։</translation>
 <translation id="6412931879992742813">Նոր ինկոգնիտո պատուհան</translation>
 <translation id="641469293210305670">Թարմացումների և հավելվածների տեղադրում</translation>
+<translation id="6414878884710400018">Բացել համակարգի կարգավորումները</translation>
 <translation id="6414888972213066896">Դուք այս կայք այցելելու թույլտվության հարցում եք ուղարկել ձեր ծնողին</translation>
 <translation id="6415900369006735853">Միացեք համացանցին հեռախոսի միջոցով։</translation>
 <translation id="6416743254476733475">Թույլատրեք կամ արգելափակեք ձեր համակարգչում։</translation>
@@ -4768,6 +4768,7 @@
 <translation id="6460601847208524483">Find Next</translation>
 <translation id="6461170143930046705">Ցանցերի որոնում...</translation>
 <translation id="6463795194797719782">&amp;Փոփոխել</translation>
+<translation id="6464825623202322042">Այս սարքը</translation>
 <translation id="6465841119675156448">Առանց ինտերնետի</translation>
 <translation id="6466988389784393586">&amp;Բացել բոլոր էջանիշները</translation>
 <translation id="6467304607960172345">Լիաէկրան տեսանյութերի օպտիմալացում</translation>
@@ -4788,6 +4789,7 @@
 <translation id="648927581764831596">Ոչ մեկը մատչելի չէ</translation>
 <translation id="6490471652906364588">USB-C սարք (աջ միացք)</translation>
 <translation id="6491376743066338510">Լիազորումը ձախողվեց</translation>
+<translation id="6494327278868541139">Ցույց տալ լրացուցիչ պաշտպանության մանրամասն նկարագրությունը</translation>
 <translation id="6494445798847293442">Հավաստագրման կենտրոն չէ</translation>
 <translation id="6494974875566443634">Անհատականացում</translation>
 <translation id="6495925982925244349">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>
@@ -5073,7 +5075,6 @@
 <translation id="683373380308365518">Ընտրեք խելացի ու անվտանգ դիտարկիչ</translation>
 <translation id="6835762382653651563">Ձեր <ph name="DEVICE_TYPE" /> սարքը թարմացնելու համար կապակցվեք համացանցին:</translation>
 <translation id="6838034009068684089">Հարցնել, երբ կայքն ուզում է բացել և տեղակայել պատուհաններ ձեր էկրաններին (խորհուրդ է տրվում)</translation>
-<translation id="6838694093138907871">Կոդն անվավեր է։ Նորից փորձեք։</translation>
 <translation id="6838860780238890144">{COUNT,plural, =1{հեռախոսահամար}one{# հեռախոսահամար}other{# հեռախոսահամար}}</translation>
 <translation id="6839225236531462745">Վկայագիրը ջնջելիս սխալ առաջացավ</translation>
 <translation id="6839916869147598086">Մուտքի էջը փոխվել է</translation>
@@ -5324,6 +5325,7 @@
 <translation id="7108933416628942903">Կողպել հիմա</translation>
 <translation id="7109543803214225826">Դյուրանցումը հեռացվեց</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Ավելացնել ներդիր խմբում}one{Ավելացնել ներդիրներ խմբում}other{Ավելացնել ներդիրներ խմբում}}</translation>
+<translation id="7111822978084196600">Անվանեք այս պատուհանը</translation>
 <translation id="7113502843173351041">Տեսնել ձեր էլ․ հասցեն</translation>
 <translation id="7114054701490058191">Գաղտնաբառերը չեն համընկնում</translation>
 <translation id="7114648273807173152">Smart Lock-ն օգտագործելու համար մտեք ձեր Google հաշիվ, անցեք Կարգավորումներ &gt; Միացված սարքեր &gt; Ձեր հեռախոսը &gt; Smart Lock:</translation>
@@ -5585,6 +5587,7 @@
 <translation id="7421925624202799674">&amp;Դիտել էջի կոդը</translation>
 <translation id="7422192691352527311">Preferences...</translation>
 <translation id="7423098979219808738">Նախ հարցնել</translation>
+<translation id="7423425410216218516">Սարքի տեսանելիությունը միացված է <ph name="MINUTES" /> րոպեով</translation>
 <translation id="7423513079490750513">Հեռացնել (<ph name="INPUT_METHOD_NAME" />)</translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> հավելվածն աշխատեցնելու համար թույլտվություն է անհրաժեշտ</translation>
 <translation id="7427348830195639090">Հետնաշերտի էջ՝ <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -6969,6 +6972,7 @@
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – Խափանվել է</translation>
 <translation id="8981825781894055334">Թուղթը սպառվում է</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> կայքը կարող է փոփոխել <ph name="FILENAME" /> ֆայլը</translation>
+<translation id="8984694057134206124">Ձեր սարքը <ph name="MINUTES" /> րոպե տեսանելի կլինի բոլոր օգտատերերին։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="8985264973231822211">Ակտիվ է եղել <ph name="DEVICE_LAST_ACTIVATED_TIME" /> օր առաջ</translation>
 <translation id="8986362086234534611">Հեռացնել</translation>
 <translation id="8986494364107987395">Ավտոմատ Google-ին ուղարկել օգտագործման վիճակագրությունները և խափանումների մասին հաշվետվությունները</translation>
@@ -7142,7 +7146,6 @@
 <translation id="917350715406657904">Դուք սպառել եք ձեր ծնողի կողմից <ph name="APP_NAME" /> հավելվածի համար սահմանված ժամանակը։ Վաղը կարող եք օգտագործել այն <ph name="TIME_LIMIT" />։</translation>
 <translation id="9173787391779732995">Կայքերը կարող են պատկերներ ցուցադրել (խորհուրդ է տրվում)</translation>
 <translation id="9173995187295789444">Bluetooth սարքերի որոնում...</translation>
-<translation id="9174052566244514547">Ձեր ադմինիստրատորը խնդրել է վերագործարկել ձեր սարքը, որպեսզի հավելվածները թարմացվեն։ Դա կարող է տևել մի քանի րոպե։</translation>
 <translation id="9174401638287877180">Օգտագործման և ախտորոշման տվյալների ուղարկում։ Օգնեք բարելավել Android-ի աշխատանքը՝ Google-ին ավտոմատ ուղարկելով ախտորոշիչ, ինչպես նաև սարքի ու հավելվածի օգտագործման մասին տվյալներ։ Այս տեղեկությունները չեն օգտագործվի ձեր երեխային նույնականացնելու համար և կօգնեն բարելավել համակարգի ու հավելվածի աշխատանքի կայունությունը։ Հավաքված տեղեկությունների մի մասը օգտակար կլինի մեր գործընկերների, օրինակ, Android ծրագրավորողների համար։ Եթե Վեբ որոնման և հավելվածների լրացուցիչ պատմությունը միացված է, այս տվյալները կպահվեն երեխայի Google հաշվում։</translation>
 <translation id="917510707618656279">Հարցնել, երբ որևէ կայք ուզում է օգտագործել Bluetooth սարքեր</translation>
 <translation id="9176476835295860688">Օգտագործման և ախտորոշման տվյալների ուղարկում Ներկայումս այս սարքը ախտորոշման, սարքի և հավելվածի օգտագործման տվյալներն ավտոմատ ուղարկում է Google-ին: Այս տեղեկությունները կօգնեն բարելավել համակարգի ու հավելվածի աշխատանքի կայունությունը: Հավաքված տեղեկությունների մի մասը օգտակար կլինի մեր գործընկերների, օրինակ, Android ծրագրավորողների համար։ Այս <ph name="BEGIN_LINK1" />կարգավորումը<ph name="END_LINK1" /> պարտադրված է սեփականատիրոջ կողմից: Եթե Վեբ որոնման և հավելվածների պատմությունը միացված է, այս տվյալները կպահվեն ձեր Google հաշվում։ <ph name="BEGIN_LINK2" />Մանրամասն<ph name="END_LINK2" /></translation>

@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Tiskové úlohy</translation>
 <translation id="3527036260304016759">Tisk selhal – neznámá chyba</translation>
 <translation id="357889014807611375">měřená Wi-Fi</translation>
+<translation id="3595596368722241419">Baterie je nabitá</translation>
 <translation id="360565022852130722">Síť Wi-Fi je zabezpečena slabým protokolem WEP 802.1x</translation>
 <translation id="3712633734921637892">Rychlost procesoru je momentálně omezena za účelem udržení stavu baterie nebo snížení teploty</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (recenze: <ph name="AGGREGATED_COUNT" />)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Rozlišení</translation>
 <translation id="3941014780699102620">Hostitele se nepodařilo vyřešit</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="397105322502079400">Probíhá výpočet…</translation>
 <translation id="39823212440917567">Tiskové úlohy starší než <ph name="NUMBER_OF_DAYS" /> dní budou odstraněny</translation>
 <translation id="4003384961948020559">Tisk selhal – výstupní zásobník je plný</translation>
 <translation id="4034824040120875894">Tiskárna</translation>
@@ -263,6 +265,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6977381486153291903">Revize firmwaru</translation>
 <translation id="7028979494427204405">Toto zařízení je spravováno doménou <ph name="MANAGER" />, která má přístup k veškeré uživatelské aktivitě, včetně navštívených webových stránek, hesel a e‑mailu.</translation>
 <translation id="7040230719604914234">Operátor</translation>
+<translation id="7059230779847288458">Nabíjení, <ph name="TIME_VALUE" /> do úplného nabití</translation>
 <translation id="708426984172631313">ZASTAVENO</translation>
 <translation id="7143207342074048698">Připojování</translation>
 <translation id="714876143603641390">Připojení k síti LAN</translation>
@@ -281,6 +284,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7561454561030345039">Tuto akci spravuje administrátor</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Zbývá <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Další informace v centru nápovědy</translation>
 <translation id="7648838807254605802">Vysoká latence HTTPS</translation>
 <translation id="7658239707568436148">Zrušit</translation>

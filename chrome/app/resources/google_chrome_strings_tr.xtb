@@ -17,6 +17,7 @@
 <translation id="1399397803214730675">Bu bilgisayarda Google Chrome'un daha yeni bir sürümü zaten var. Yazılım çalışmıyorsa, lütfen Google Chrome'un yüklemesini kaldırın ve tekrar deneyin.</translation>
 <translation id="1434626383986940139">Chrome Canary Uygulamaları</translation>
 <translation id="147727933880789532">Chrome, Gelişmiş Güvenli Tarama standartlarını henüz karşılamadığı için bu eklentiyi devre dışı bırakmanızı öneriyor.</translation>
+<translation id="1516530951338665275">Google Chrome'un eşlemeye devam edebilmesi için Bluetooth'a erişmesi gerekiyor. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Chrome'u güncelle</translation>
 <translation id="1587223624401073077">Google Chrome kameranızı kullanıyor.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> tehlikeli olduğu için Chrome tarafından engellendi.</translation>
@@ -203,6 +204,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6566149418543181476">Google Chrome güncelleniyor (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Chrome OS sistemi</translation>
 <translation id="6650333065969705433">Korunan medyayı izlemek üzere Rosetta'yı kullanmak için Chrome'u yeniden başlatmalısınız.</translation>
+<translation id="6668872995670558829">Chrome Profili Gerekli</translation>
 <translation id="6676384891291319759">İnternet'e erişin</translation>
 <translation id="6679975945624592337">Google Chrome'un Arka Planda Çalışmasına İzin Ver</translation>
 <translation id="6739177684496155661">Yeni bir Chrome profilinde devam edilsin mi?</translation>
@@ -221,6 +223,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7140653346177713799">{COUNT,plural, =0{Chrome için yeni bir güncelleme var. Yeniden başlattığınızda güncelleme hemen uygulanacaktır.}=1{Chrome için yeni bir güncelleme var. Yeniden başlattığınızda güncelleme hemen uygulanacaktır. Gizli pencereniz yeniden açılmayacak.}other{Chrome için yeni bir güncelleme var. Yeniden başlattığınızda güncelleme hemen uygulanacaktır. # Gizli pencereniz yeniden açılmayacak.}}</translation>
 <translation id="7155997830309522122">Değiştirdiyseniz Chrome'da kayıtlı şifrenizi, lütfen yeni şifrenizle aynı olacak şekilde düzenleyin.</translation>
 <translation id="7242029209006116544">Yönetilen bir hesapla oturum açıyor ve hesabın yöneticisine Google Chrome profilinizi denetleme izni veriyorsunuz. Uygulamalarınız, yer işaretleriniz, geçmişiniz, şifreleriniz ve diğer ayarlarınız gibi Chrome verileriniz kalıcı olarak <ph name="USER_NAME" /> ile bağlantılandırılacaktır. Google Hesapları Hesap Özeti'ni kullanarak bu verileri silebilecek, ancak bu verileri başka bir hesapla ilişkilendiremeyeceksiniz. İsterseniz mevcut Chrome verilerinizi ayrı tutmak için yeni bir profil oluşturabilirsiniz.<ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351">Bu hesap <ph name="MANAGEMENT_DOMAIN" /> tarafından yönetilmektedir. Yöneticiniz, erişim için Chrome profilinin olmasını zorunlu tutuyor Bu profil, diğer tüm kişisel profillerinizden tamamen ayrıdır. Bu profili kullanmanız sırasında oluşturulan Chrome verileri (yer işareti oluşturmanız, geçmiş, şifreler ve diğer ayarlar gibi), yöneticiniz tarafından kaldırılabilir <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">Bu dil, Google Chrome kullanıcı arayüzünü görüntülemek için kullanılır</translation>
 <translation id="7296210096911315575">Önemli kullanım ve güvenlik bilgileri</translation>
 <translation id="7303916856901595720">Hesap yeni bir Chrome profiline taşınsın mı?</translation>
@@ -228,6 +231,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="7339898014177206373">Yeni pencere</translation>
 <translation id="7398801000654795464">Chrome'da <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Tekrar oturum açmak için lütfen aynı hesabı kullanın.</translation>
 <translation id="7408085963519505752">Chrome OS Şartları</translation>
+<translation id="7416131756095014387">Bu hesap yönetiliyor. Yöneticiniz, erişim için Chrome profilinin olmasını zorunlu tutuyor Bu profil, diğer tüm kişisel profillerinizden tamamen ayrıdır. Bu profili kullanmanız sırasında oluşturulan Chrome verileri (yer işareti oluşturmanız, geçmiş, şifreler ve diğer ayarlar gibi), yöneticiniz tarafından kaldırılabilir <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">Senkronizasyon, alan adınızda kullanılamadığından Chrome OS, verilerinizi senkronize edemedi.</translation>
 <translation id="7486227612705979895">Chrome, adres çubuğunda öneriler göstermek için Drive'ınıza erişecektir</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

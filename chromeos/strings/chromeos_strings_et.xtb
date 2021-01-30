@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Prinditööd</translation>
 <translation id="3527036260304016759">Ebaõnnestus – tundmatu viga</translation>
 <translation id="357889014807611375">mahupõhine WiFi</translation>
+<translation id="3595596368722241419">Aku on täis</translation>
 <translation id="360565022852130722">WiFi-võrk on kaitstud nõrga protokolliga (WEP 802.1x)</translation>
 <translation id="3712633734921637892">Protsessori kiirus on praegu piiratud, et akut säästa või temperatuuri vähendada</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> arvustust)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Eraldusvõime</translation>
 <translation id="3941014780699102620">Hosti lahendamine ebaõnnestus</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="397105322502079400">Arvutamine ...</translation>
 <translation id="39823212440917567">Prinditööd, mis on vanemad kui <ph name="NUMBER_OF_DAYS" /> päeva, eemaldatakse</translation>
 <translation id="4003384961948020559">Ebaõnnestus – väljastusala on täis</translation>
 <translation id="4034824040120875894">Printer</translation>
@@ -263,6 +265,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="6977381486153291903">Püsivara redaktsioon</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> haldab seda seadet ja sellel on juurdepääs kogu kasutaja tegevusele. sealhulgas külastatud veebilehed, paroolid ja e-post.</translation>
 <translation id="7040230719604914234">Operaator</translation>
+<translation id="7059230779847288458">Laadimine, täislaadimiseks kulub <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">PEATATUD</translation>
 <translation id="7143207342074048698">Ühendamine</translation>
 <translation id="714876143603641390">LAN-i ühenduvus</translation>
@@ -281,6 +284,7 @@ Kui soovite mulle küsimuse esitada, puudutage mikrofoni.</translation>
 <translation id="7502658306369382406">IPv6 aadress</translation>
 <translation id="7561454561030345039">Seda toimingut haldab administraator.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> on jäänud</translation>
 <translation id="7620771111601174153">Lisateavet leiate abikeskusest</translation>
 <translation id="7648838807254605802">Pikk HTTPS-i latentsusaeg</translation>
 <translation id="7658239707568436148">Tühista</translation>

@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">ბეჭდვის დავალებები</translation>
 <translation id="3527036260304016759">ვერ მოხერხდა — უცნობი შეცდომა</translation>
 <translation id="357889014807611375">ლიმიტირებული Wi-Fi</translation>
+<translation id="3595596368722241419">ბატარეა სავსეა</translation>
 <translation id="360565022852130722">Wi-Fi ქსელი უზრუნველყოფილია სუსტი პროტოკოლით WEP 802.1x</translation>
 <translation id="3712633734921637892">CPU-ს სიჩქარე ამჟამად შეზღუდულია ბატარეის დაზოგვის ან ტემპერატურის შემცირების მიზნით</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> მიმოხილვა)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">გარჩევადობა</translation>
 <translation id="3941014780699102620">ჰოსტის გარდაქმნა ვერ მოხერხდა</translation>
 <translation id="3942420633017001071">დიაგნოსტიკა</translation>
+<translation id="397105322502079400">ანგარიშობს…</translation>
 <translation id="39823212440917567">ბეჭდვის <ph name="NUMBER_OF_DAYS" /> დღეზე ძველი დავალებები ამოიშლება</translation>
 <translation id="4003384961948020559">ვერ მოხერხდა — გამომტანი სავსეა</translation>
 <translation id="4034824040120875894">პრინტერი</translation>
@@ -263,6 +265,7 @@
 <translation id="6977381486153291903">მიკროპროგრამის ვერსია</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> მართავს ამ მოწყობილობას და აქვს წვდომა მომხმარებლების ნებისმიერ აქტივობაზე, მათ შორის, მონახულებულ ვებგვერდებზე, პაროლებსა და ელფოსტაზე.</translation>
 <translation id="7040230719604914234">ოპერატორი</translation>
+<translation id="7059230779847288458">იტენება, სრულ დატენამდე დარჩენილია <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">შეწყვეტილია</translation>
 <translation id="7143207342074048698">დაკავშირება</translation>
 <translation id="714876143603641390">LAN-ის კავშირი</translation>
@@ -281,6 +284,7 @@
 <translation id="7502658306369382406">IPv6 მისამართი</translation>
 <translation id="7561454561030345039">ამ მოქმედებას მართავს თქვენი ადმინისტრატორი</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">დარჩენილია <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">შეიტყვეთ მეტი დახმარების ცენტრში</translation>
 <translation id="7648838807254605802">HTTPS რეაგირების დრო დიდია</translation>
 <translation id="7658239707568436148">გაუქმება</translation>

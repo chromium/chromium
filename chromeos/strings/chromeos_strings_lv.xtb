@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Drukas uzdevumi</translation>
 <translation id="3527036260304016759">Neizdevās — nezināma kļūda</translation>
 <translation id="357889014807611375">Maksas Wi-Fi tīkls</translation>
+<translation id="3595596368722241419">Akumulators pilns</translation>
 <translation id="360565022852130722">Wi-Fi tīklu sargā nedrošs protokols WEP 802.1x</translation>
 <translation id="3712633734921637892">Centrālā procesora ātrums pašlaik tiek ierobežots, lai taupītu akumulatora enerģiju vai samazinātu temperatūru</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (atsauksmju skaits: <ph name="AGGREGATED_COUNT" />)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Izšķirtspēja</translation>
 <translation id="3941014780699102620">Neizdevās atrisināt saimniekdatora nosaukumu</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="397105322502079400">Aprēķina...</translation>
 <translation id="39823212440917567">Drukas uzdevumi, kas ir vecāki par <ph name="NUMBER_OF_DAYS" /> dienām, tiks noņemti</translation>
 <translation id="4003384961948020559">Neizdevās — izvades paliktnis pilns</translation>
 <translation id="4034824040120875894">Printeris</translation>
@@ -263,6 +265,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="6977381486153291903">Aparātprogrammatūras pārskatīšana</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> pārvalda šo ierīci un var piekļūt visām lietotāja darbībām, tostarp apmeklētajām tīmekļa lapām, parolēm un e-pastam.</translation>
 <translation id="7040230719604914234">Mobilo sakaru operators</translation>
+<translation id="7059230779847288458">Notiek uzlāde. Atlikušais laiks līdz pilnai uzlādei: <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">APTURĒTA</translation>
 <translation id="7143207342074048698">Notiek savienojuma izveide</translation>
 <translation id="714876143603641390">LAN savienojamība</translation>
@@ -281,6 +284,7 @@ Pieskarieties mikrofonam, lai uzdotu man jautājumu.</translation>
 <translation id="7502658306369382406">IPv6 adrese</translation>
 <translation id="7561454561030345039">Šo darbību pārvalda administrators</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Atlikušais laiks: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Uzzināt vairāk palīdzības centrā</translation>
 <translation id="7648838807254605802">Liels HTTPS latentums</translation>
 <translation id="7658239707568436148">Atcelt</translation>

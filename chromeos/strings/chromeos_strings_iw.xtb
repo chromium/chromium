@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">משימות הדפסה</translation>
 <translation id="3527036260304016759">נכשלה – שגיאה לא ידועה</translation>
 <translation id="357889014807611375">‏Wi-Fi עם חיוב לפי שימוש בנתונים</translation>
+<translation id="3595596368722241419">סוללה מלאה</translation>
 <translation id="360565022852130722">‏רשת ה-Wi-Fi מאובטחת בפרוטוקול WEP 802.1x חלש.</translation>
 <translation id="3712633734921637892">‏בשלב זה, המהירות של יחידת העיבוד המרכזית (CPU) מוגבלת כדי לחסוך בסוללה או להנמיך את הטמפרטורה</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ביקורות)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">רזולוציה</translation>
 <translation id="3941014780699102620">לא ניתן היה להתאים את נתוני המארח</translation>
 <translation id="3942420633017001071">אבחון</translation>
+<translation id="397105322502079400">מתבצע חישוב...</translation>
 <translation id="39823212440917567">משימות הדפסה בנות יותר מ-<ph name="NUMBER_OF_DAYS" /> ימים יוסרו</translation>
 <translation id="4003384961948020559">נכשלה – מגש הפלט מלא</translation>
 <translation id="4034824040120875894">מדפסת</translation>
@@ -263,6 +265,7 @@
 <translation id="6977381486153291903">שכתוב קושחה</translation>
 <translation id="7028979494427204405">הניהול של המכשיר הזה מתבצע מהדומיין <ph name="MANAGER" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>
 <translation id="7040230719604914234">ספק</translation>
+<translation id="7059230779847288458">בטעינה, <ph name="TIME_VALUE" /> עד לטעינה מלאה</translation>
 <translation id="708426984172631313">הופסקה</translation>
 <translation id="7143207342074048698">מתבצע חיבור</translation>
 <translation id="714876143603641390">‏קישוריות LAN</translation>
@@ -281,6 +284,7 @@
 <translation id="7502658306369382406">‏כתובת IPv6</translation>
 <translation id="7561454561030345039">הפעולה הזו מנוהלת על-ידי מנהל המערכת</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">הזמן שנותר: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">מידע נוסף במרכז העזרה</translation>
 <translation id="7648838807254605802">‏זמן רב של אחזור HTTPS</translation>
 <translation id="7658239707568436148">ביטול</translation>

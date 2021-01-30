@@ -19,6 +19,8 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="1399397803214730675">V tomto počítači je již nainstalována novější verze prohlížeče Google Chrome. Jestliže software nefunguje, odinstalujte prosím prohlížeč Google Chrome a zkuste to znovu.</translation>
 <translation id="1434626383986940139">Aplikace Chrome Canary</translation>
 <translation id="147727933880789532">Chrome doporučuje toto rozšíření zakázat, protože v současné době nesplňuje standardy Vylepšeného Bezpečného prohlížení.</translation>
+<translation id="1516530951338665275">Google Chrome potřebuje přístup k Bluetooth, aby bylo možné
+ pokračovat v párování. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Aktualizovat Chrome</translation>
 <translation id="1587223624401073077">Google Chrome používá vaši kameru.</translation>
 <translation id="1587325591171447154">Soubor <ph name="FILE_NAME" /> je nebezpečný, proto jej Chrome zablokoval.</translation>
@@ -208,6 +210,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6566149418543181476">Aktualizace prohlížeče Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Systém Chrome OS</translation>
 <translation id="6650333065969705433">Aby bylo možné přehrávat chráněná média pomocí nástroje Rosetta, je třeba restartovat Chrome.</translation>
+<translation id="6668872995670558829">Je potřeba profil Chrome</translation>
 <translation id="6676384891291319759">Přístup k internetu</translation>
 <translation id="6679975945624592337">Nechat Google Chrome běžet na pozadí</translation>
 <translation id="6739177684496155661">Pokračovat v novém profilu Chrome?</translation>
@@ -226,6 +229,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Je k dispozici nová aktualizace Chromu, která bude použita po restartování.}=1{Je k dispozici nová aktualizace Chromu, která bude použita po restartování. Anonymní okno se neotevře znovu.}few{Je k dispozici nová aktualizace Chromu, která bude použita po restartování. # anonymní okna se neotevřou znovu.}many{Je k dispozici nová aktualizace Chromu, která bude použita po restartování. # anonymního okna se neotevře znovu.}other{Je k dispozici nová aktualizace Chromu, která bude použita po restartování. # anonymních oken se neotevře znovu.}}</translation>
 <translation id="7155997830309522122">Pokud ano, upravte uložené heslo v prohlížeči Chrome tak, aby odpovídalo novému heslu.</translation>
 <translation id="7242029209006116544">Přihlašujete se pomocí spravovaného účtu a poskytujete jeho správci kontrolu nad vaším profilem Google Chrome. Vaše údaje prohlížeče Chrome, například aplikace, záložky, historie, hesla a jiná nastavení, budou trvale přidružena k účtu <ph name="USER_NAME" />. Tyto údaje budete moci smazat pomocí Hlavního panelu v Účtech Google, ale nebudete je moci přidružit k jinému účtu. Pokud chcete uchovat existující údaje Chrome odděleně, můžete vytvořit nový profil. <ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351">Tento účet je spravován doménou <ph name="MANAGEMENT_DOMAIN" />. Váš administrátor vyžaduje přístup prostřednictvím profilu Chrome. Tento profil je zcela oddělen od osobního profilu. Data prohlížeče Chrome vygenerovaná během používání tohoto profilu (jako je vytvoření záložek, historie, hesel a další nastavení) může administrátor odstranit. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">V tomto jazyce se zobrazuje uživatelské rozhraní prohlížeče Google Chrome</translation>
 <translation id="7296210096911315575">Důležité informace o použití a bezpečnosti</translation>
 <translation id="7303916856901595720">Přesunout účet do nového profilu Chrome?</translation>
@@ -233,6 +237,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="7339898014177206373">Nové okno</translation>
 <translation id="7398801000654795464">K prohlížeči Chrome jste byli přihlášeni pomocí účtu <ph name="USER_EMAIL_ADDRESS" />. Přihlaste se prosím znovu pomocí stejného účtu.</translation>
 <translation id="7408085963519505752">Smluvní podmínky systému Chrome OS</translation>
+<translation id="7416131756095014387">Tento účet je spravován. Váš administrátor vyžaduje přístup prostřednictvím profilu Chrome. Tento profil je zcela oddělen od osobního profilu. Data prohlížeče Chrome vygenerovaná během používání tohoto profilu (jako je vytvoření záložek, historie, hesel a další nastavení) může administrátor odstranit. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">Chrome OS nemohl synchronizovat vaše data, protože Synchronizace ve vaší doméně není k dispozici.</translation>
 <translation id="7486227612705979895">Chrome bude za účelem zobrazování návrhů v adresním řádku číst váš obsah na Disku</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

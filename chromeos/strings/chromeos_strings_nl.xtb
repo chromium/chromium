@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Afdruktaken</translation>
 <translation id="3527036260304016759">Mislukt - Onbekende fout</translation>
 <translation id="357889014807611375">wifi met datalimiet</translation>
+<translation id="3595596368722241419">Batterij is vol</translation>
 <translation id="360565022852130722">Wifi-netwerk is beveiligd met het zwakke protocol WEP 802.1x</translation>
 <translation id="3712633734921637892">De CPU-snelheid is momenteel beperkt om de batterij te sparen of de temperatuur te verlagen</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reviews)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Resolutie</translation>
 <translation id="3941014780699102620">Kan host niet omzetten</translation>
 <translation id="3942420633017001071">Diagnose</translation>
+<translation id="397105322502079400">Berekenen...</translation>
 <translation id="39823212440917567">Afdruktaken ouder dan <ph name="NUMBER_OF_DAYS" /> dagen worden verwijderd</translation>
 <translation id="4003384961948020559">Mislukt - Uitvoer is vol</translation>
 <translation id="4034824040120875894">Printer</translation>
@@ -263,6 +265,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="6977381486153291903">Firmwarerevisie</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> beheert dit apparaat en heeft toegang tot alle gebruikersactiviteit, waaronder bezochte webpagina's, wachtwoorden en e-mails.</translation>
 <translation id="7040230719604914234">Operator</translation>
+<translation id="7059230779847288458">Opladen, vol over <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">GESTOPT</translation>
 <translation id="7143207342074048698">Verbinden</translation>
 <translation id="714876143603641390">LAN-connectiviteit</translation>
@@ -281,6 +284,7 @@ Tik op de microfoon om me iets te vragen.</translation>
 <translation id="7502658306369382406">IPv6-adres</translation>
 <translation id="7561454561030345039">Deze actie wordt beheerd door je beheerder</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Nog <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Meer informatie in het Helpcentrum</translation>
 <translation id="7648838807254605802">Lage HTTPS-latentie</translation>
 <translation id="7658239707568436148">Annuleren</translation>

@@ -17,6 +17,8 @@
 <translation id="1399397803214730675">Komputer ini mempunyai versi Google Chrome paling terkini. Jika perisian tidak berfungsi, sila nyahpasang Google Chrome dan cuba semula.</translation>
 <translation id="1434626383986940139">Apl Chrome Canary</translation>
 <translation id="147727933880789532">Chrome mengesyorkan agar sambungan ini dilumpuhkan kerana tidak memenuhi standard Penyemakan Imbas Selamat Dipertingkat pada masa ini.</translation>
+<translation id="1516530951338665275">Google Chrome memerlukan akses Bluetooth untuk meneruskan 
+ penggandingan. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Kemas Kini Chrome</translation>
 <translation id="1587223624401073077">Google Chrome menggunakan kamera anda.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> berbahaya, jadi Chrome telah menyekat fail itu.</translation>
@@ -201,6 +203,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="6566149418543181476">Mengemas kini Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Sistem OS Chrome</translation>
 <translation id="6650333065969705433">Untuk menggunakan Rosetta untuk memainkan media yang dilindungi, anda mesti memulakan semula Chrome.</translation>
+<translation id="6668872995670558829">Profil Chrome Diperlukan</translation>
 <translation id="6676384891291319759">Akses Internet</translation>
 <translation id="6679975945624592337">Biarkan Google Chrome Dijalankan Di Latar Belakang</translation>
 <translation id="6739177684496155661">Teruskan dalam profil Chrome baharu?</translation>
@@ -219,6 +222,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="7140653346177713799">{COUNT,plural, =0{Kemas kini baharu tersedia untuk Chrome dan akan digunakan sebaik sahaja anda melancarkan semula Chrome.}=1{Kemas kini baharu tersedia untuk Chrome dan akan digunakan sebaik sahaja anda melancarkan semula Chrome. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Kemas kini baharu tersedia untuk Chrome dan akan digunakan sebaik sahaja anda melancarkan semula Chrome. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
 <translation id="7155997830309522122">Jika ya, sila edit kata laluan yang disimpan dalam Chrome supaya sepadan dengan kata laluan baharu anda.</translation>
 <translation id="7242029209006116544">Anda log masuk menggunakan akaun terurus dan memberikan pentadbirnya kawalan terhadap profil Google Chrome anda. Data Chrome anda, seperti apl, penanda halaman, sejarah, kata laluan dan tetapan anda yang lain akan terikat kepada <ph name="USER_NAME" /> secara kekal. Anda akan dapat memadamkan data ini melalui Papan Pemuka Akaun Google, tetapi anda tidak akan dapat mengaitkan data ini dengan akaun lain. Anda boleh memilih membuat profil baharu untuk mengasingkan data Chrome anda yang sedia ada. <ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351">Akaun ini diurus oleh <ph name="MANAGEMENT_DOMAIN" />. Pentadbir anda menghendaki anda mempunyai profil Chrome untuk mengakses akaun ini. Profil ini terpisah sepenuhnya daripada mana-mana profil peribadi. Data Chrome yang dijana semasa penggunaan profil ini (seperti pembuatan penanda halaman, sejarah, kata laluan dan tetapan lain) boleh dialih keluar oleh pentadbir anda. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">Bahasa ini digunakan untuk memaparkan UI Google Chrome</translation>
 <translation id="7296210096911315575">Maklumat penggunaan dan keselamatan penting</translation>
 <translation id="7303916856901595720">Alihkan akaun ke profil Chrome baharu?</translation>
@@ -226,6 +230,7 @@ tetapan OS Chrome<ph name="LINK_END" /> anda</translation>
 <translation id="7339898014177206373">Tetingkap baharu</translation>
 <translation id="7398801000654795464">Anda telah log masuk ke Chrome sebagai <ph name="USER_EMAIL_ADDRESS" />. Sila gunakan akaun yang sama untuk log masuk lagi.</translation>
 <translation id="7408085963519505752">Syarat Chrome OS</translation>
+<translation id="7416131756095014387">Akaun ini terurus. Pentadbir anda menghendaki anda mempunyai profil Chrome untuk mengakses akaun ini. Profil ini terpisah sepenuhnya daripada mana-mana profil peribadi. Data Chrome yang dijana semasa penggunaan profil ini (seperti pembuatan penanda halaman, sejarah, kata laluan dan tetapan lain) boleh dialih keluar oleh pentadbir anda. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">OS Chrome tidak dapat menyegerakkan data anda kerana Segerak tidak tersedia untuk domain anda.</translation>
 <translation id="7486227612705979895">Chrome akan mengakses Drive anda untuk membuat cadangan dalam bar alamat</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

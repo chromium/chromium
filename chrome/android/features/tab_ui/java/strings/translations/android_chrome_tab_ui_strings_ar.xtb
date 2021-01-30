@@ -59,7 +59,7 @@
 <translation id="8304833501377495048">هل تريد عدم عرض شريط علامات التبويب مرة أخرى؟</translation>
 <translation id="83556505225171773">{TABS_COUNT,plural, =1{إغلاق علامة تبويب واحدة محدّدة (<ph name="TABS_COUNT_ONE" />)}zero{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة}two{إغلاق علامتَي تبويب محدّدتَين (<ph name="TABS_COUNT_MANY" />)}few{إغلاق <ph name="TABS_COUNT_MANY" /> علامات تبويب محدّدة}many{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة}other{إغلاق <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة}}</translation>
 <translation id="8557923272772633250">توسيع مجموعة علامات التبويب التي تحتوي على <ph name="NUMBER_OF_TABS" /> علامة تبويب</translation>
-<translation id="860282621117673749">تنبيهات انخفاض الأسعار</translation>
+<translation id="860282621117673749">إشعارات بانخفاض الأسعار</translation>
 <translation id="8714939927607906138">السعر المنخفض</translation>
 <translation id="8749939518995770034">شريط علامات التبويب مُغلق.</translation>
 <translation id="8820741577754260431">الاطّلاع على الأسعار المنخفضة في علامات التبويب</translation>

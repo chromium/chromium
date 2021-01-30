@@ -124,6 +124,7 @@
 <translation id="4994636714258228724">‏הוספת החשבון שלך ל-Chromium</translation>
 <translation id="5224391634244552924">‏אין סיסמאות שמורות. Chromium יכול לבדוק את הסיסמאות שלך רק אם שמרת אותן.</translation>
 <translation id="5277894862589591112">‏כדי להחיל את השינויים שביצעת, יש להפעיל מחדש את Chromium</translation>
+<translation id="5357324149468831780">‏החשבון הזה מנוהל. לצורך גישה, קיימת דרישה מצד מנהל המערכת לפרופיל Chromium. הפרופיל הזה נפרד לגמרי מפרופיל אישי כלשהו. מנהל המערכת יכול להסיר נתוני Chromium שנוצרים בזמן השימוש בפרופיל זה (כמו יצירת סימניות, היסטוריה, סיסמאות והגדרות נוספות). <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">‏הכניסה שלך מתבצעת באמצעות חשבון מנוהל שמעניק למנהל המערכת שלו שליטה על הפרופיל שלך ב-Chromium. הנתונים שלך ב-Chromium, כגון יישומים, סימניות, היסטוריה, סיסמאות והגדרות אחרות ייקשרו באופן קבוע ל-<ph name="USER_NAME" />. ניתן למחוק את הנתונים האלה באמצעות לוח הבקרה של חשבונות Google, אבל לא ניתן לשייך את הנתונים האלה לחשבון אחר. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">‏מתבצע עדכון של Chromium‏ (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">‏התרת כניסה אל Chromium</translation>
@@ -138,6 +139,7 @@
 <translation id="5623402015214259806">{0,plural, =0{‏יש עדכון ל-Chromium}=1{‏יש עדכון ל-Chromium}two{‏עדכון של Chromium זמין כבר # ימים}many{‏עדכון של Chromium זמין כבר # ימים}other{‏עדכון של Chromium זמין כבר # ימים}}</translation>
 <translation id="5631814766731275228">‏שם ותמונה ב-Chromium</translation>
 <translation id="5634636535844844681">‏כדי להשתמש ב-Chromium יש צורך ב-Windows מגרסה 7 ואילך.</translation>
+<translation id="5642268154044585431">‏נדרש פרופיל Chromium</translation>
 <translation id="5653831366781983928">‏יש להפעיל מחדש את Chromium</translation>
 <translation id="5698481217667032250">‏הצגת Chromium בשפה זו</translation>
 <translation id="5736967399513123100">‏כדי לאפשר ל-Chromium להפעיל קובצי מדיה מוגנים, עליך להתקין את מערכת Rosetta. רוצה להתקין עכשיו?</translation>
@@ -168,6 +170,7 @@
 <translation id="6309712487085796862">‏Chromium משתמש במצלמה שלך.</translation>
 <translation id="6333502561965082103">‏מתבצעת כרגע פעולה אחרת ב-Chromium. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="6334986366598267305">‏קל יותר כעת להשתמש ב-Chromium באמצעות חשבון Google שלך ובמחשבים משותפים.</translation>
+<translation id="6345021408165055322">‏חשבון זה מנוהל על ידי <ph name="MANAGEMENT_DOMAIN" />. לצורך גישה, קיימת דרישה מצד מנהל המערכת לפרופיל Chromium. הפרופיל הזה נפרד לגמרי מפרופיל אישי כלשהו. מנהל המערכת יכול להסיר נתוני Chromium שנוצרים בזמן השימוש בפרופיל זה (כמו יצירת סימניות, היסטוריה, סיסמאות והגדרות נוספות). <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">‏ברצונך באמת להסיר את התקנת Chromium?</translation>
 <translation id="6403826409255603130">‏Chromium הוא דפדפן אינטרנט המפעיל דפי אינטרנט ואפליקציות במהירות הבזק. זהו דפדפן מהיר, יציב וקל לשימוש שמאפשר לך לגלוש באינטרנט בצורה מאובטחת יותר הודות להגנה מפני תוכנות זדוניות ופישינג המובנית ב-Chromium.</translation>
 <translation id="6434250628340475518">‏מערכת Chromium OS</translation>
@@ -192,6 +195,8 @@
 <translation id="6863361426438995919">‏Google Pay (‏הועתק ל-Chromium)</translation>
 <translation id="6893813176749746474">‏Chromium עודכן, אך לא השתמשת בו לפחות 30 ימים.</translation>
 <translation id="6897548120660295439">‏Rosetta מאפשרת ל-Chromium להפעיל קובצי מדיה מוגנים בדף זה.</translation>
+<translation id="691026815377248078">‏ל-Chromium נדרשת גישה ל-Bluetooth כדי להמשיך 
+ את ההתאמה. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">‏פתיחת הקישור בחלון &amp;אנונימי של Chromium</translation>
 <translation id="6978145336957848883">‏קל לנחש סיסמאות חלשות. באמצעות Chromium אפשר <ph name="BEGIN_LINK" />ליצור ולזכור סיסמאות חזקות<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">‏Chromium זקוק להרשאת גישה למיקרופון בשביל האתר הזה</translation>

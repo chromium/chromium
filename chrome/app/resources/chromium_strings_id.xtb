@@ -126,6 +126,7 @@
 <translation id="4994636714258228724">Tambahkan diri Anda ke Chromium</translation>
 <translation id="5224391634244552924">Tidak ada sandi yang tersimpan. Chromium dapat memeriksa sandi Anda jika Anda menyimpannya.</translation>
 <translation id="5277894862589591112">Untuk menerapkan perubahan Anda, luncurkan ulang Chromium</translation>
+<translation id="5357324149468831780">Akun ini dikelola. Administrator Anda memerlukan profil Chromium untuk akses. Profil ini sama sekali terpisah dari profil pribadi mana pun. Data Chromium yang dibuat selama penggunaan profil ini (seperti pembuatan bookmark, histori, sandi, dan setelan lainnya) dapat dihapus oleh admin Anda. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">Anda masuk dengan akun terkelola dan memberikan administratornya kontrol atas profil Chromium Anda. Data Chromium Anda, seperti aplikasi, bookmark, histori, sandi, dan setelan lain selamanya akan dikaitkan ke <ph name="USER_NAME" />. Anda dapat menghapus data ini melalui Dasbor Akun Google, namun Anda tidak akan dapat mengaitkan data ini dengan akun yang lain. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Memperbarui Chromium (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Izinkan login Chromium</translation>
@@ -140,6 +141,7 @@
 <translation id="5623402015214259806">{0,plural, =0{Update Chromium tersedia}=1{Update Chromium tersedia}other{Update Chromium telah tersedia selama # hari}}</translation>
 <translation id="5631814766731275228">Nama dan gambar Chromium</translation>
 <translation id="5634636535844844681">Chromium memerlukan Windows 7 atau lebih tinggi.</translation>
+<translation id="5642268154044585431">Perlu Profil Chromium</translation>
 <translation id="5653831366781983928">Mulai ulang Chromium sekarang</translation>
 <translation id="5698481217667032250">Tampilkan Chromium dalam bahasa ini</translation>
 <translation id="5736967399513123100">Agar Chromium dapat memutar media yang dilindungi, Anda harus menginstal Rosetta. Ingin menginstalnya sekarang?</translation>
@@ -170,6 +172,7 @@
 <translation id="6309712487085796862">Chromium menggunakan kamera Anda.</translation>
 <translation id="6333502561965082103">Operasi lain di Chromium sedang berlangsung. Coba lagi nanti.</translation>
 <translation id="6334986366598267305">Kini, menggunakan Chromium dengan Akun Google Anda dan di komputer bersama jadi lebih mudah.</translation>
+<translation id="6345021408165055322">Akun ini dikelola oleh <ph name="MANAGEMENT_DOMAIN" />. Administrator Anda memerlukan profil Chromium untuk akses. Profil ini sama sekali terpisah dari profil pribadi mana pun. Data Chromium yang dibuat selama penggunaan profil ini (seperti pembuatan bookmark, histori, sandi, dan setelan lainnya) dapat dihapus oleh admin Anda. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">Anda yakin ingin meng-uninstal Chromium?</translation>
 <translation id="6403826409255603130">Chromium adalah browser web yang menjalankan halaman web dan aplikasi dengan kecepatan kilat. Browser ini cepat, stabil, dan mudah digunakan. Jelajahi web lebih aman dengan perlindungan dari software perusak dan phishing yang tertanam di dalam Chromium.</translation>
 <translation id="6434250628340475518">Sistem Chromium OS</translation>
@@ -194,6 +197,8 @@ Sebagian fitur mungkin tidak tersedia. Tentukan direktori profil yang berbeda at
 <translation id="6863361426438995919">Google Pay (disalin ke Chromium)</translation>
 <translation id="6893813176749746474">Chromium telah diperbarui, tetapi Anda belum menggunakannya selama setidaknya 30 hari.</translation>
 <translation id="6897548120660295439">Rosetta memungkinkan Chromium memutar media yang dilindungi di halaman ini.</translation>
+<translation id="691026815377248078">Chromium memerlukan akses Bluetooth untuk melanjutkan 
+ penyambungan. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Buka link di jendela sa&amp;maran Chromium</translation>
 <translation id="6978145336957848883">Sandi yang lemah mudah ditebak. Izinkan Chromium <ph name="BEGIN_LINK" />membuat dan mengingat sandi yang kuat untuk Anda<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium memerlukan izin akses ke mikrofon untuk situs ini</translation>

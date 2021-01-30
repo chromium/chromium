@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Баспа жұмыстары</translation>
 <translation id="3527036260304016759">Сәтсіз: белгісіз қате шықты</translation>
 <translation id="357889014807611375">шектелген Wi-Fi</translation>
+<translation id="3595596368722241419">Батарея толы</translation>
 <translation id="360565022852130722">WiFi желісі WEP 802.1x әлсіз протоколымен қорғалған.</translation>
 <translation id="3712633734921637892">Батарея зарядын үнемдеу немесе температураны төмендету үшін ағымдағы уақытта орталық процессор жылдамдығы шектелді.</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> пікір)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Ажыратымдылық</translation>
 <translation id="3941014780699102620">Хост атауы түрлендірілмеді.</translation>
 <translation id="3942420633017001071">Диагностика</translation>
+<translation id="397105322502079400">Есептелуде…</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> күннен асқан баспа жұмыстары өшіріледі.</translation>
 <translation id="4003384961948020559">Сәтсіз: шығыс науа толып кеткен</translation>
 <translation id="4034824040120875894">Принтер</translation>
@@ -262,6 +264,7 @@
 <translation id="6977381486153291903">Микробағдарлама нұсқасы</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> осы құрылғыны басқарады және пайдаланушының барлық әрекетін (мысалы, кірген веб-сайттары, құпия сөздері және электрондық поштасы) көре алады.</translation>
 <translation id="7040230719604914234">Оператор</translation>
+<translation id="7059230779847288458">Зарядталуда, толғанға дейінгі уақыт: <ph name="TIME_VALUE" /></translation>
 <translation id="708426984172631313">ТОҚТАТЫЛДЫ</translation>
 <translation id="7143207342074048698">Қосылып жатыр</translation>
 <translation id="714876143603641390">LAN қосылу мүмкіндігі</translation>
@@ -280,6 +283,7 @@
 <translation id="7502658306369382406">IPv6 мекенжайы</translation>
 <translation id="7561454561030345039">Бұл әрекетті әкімшіңіз басқарады.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> қалды</translation>
 <translation id="7620771111601174153">Толығырақ ақпаратты Анықтамалық орталықтан қарау</translation>
 <translation id="7648838807254605802">HTTPS кідірісі жоғары.</translation>
 <translation id="7658239707568436148">Бас тарту</translation>

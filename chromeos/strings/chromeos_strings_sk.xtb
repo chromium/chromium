@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Tlačové úlohy</translation>
 <translation id="3527036260304016759">Nepodarilo sa – neznáma chyba</translation>
 <translation id="357889014807611375">Wi‑Fi s meraním dát</translation>
+<translation id="3595596368722241419">Batéria je nabitá</translation>
 <translation id="360565022852130722">Sieť Wi‑Fi je zabezpečená slabým protokolom WEP 802.1x</translation>
 <translation id="3712633734921637892">Rýchlosť procesora je momentálne obmedzená, aby sa šetrila batéria alebo znížila teplota</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (počet recenzií: <ph name="AGGREGATED_COUNT" />)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Rozlíšenie</translation>
 <translation id="3941014780699102620">Hostiteľa sa nepodarilo vybrať</translation>
 <translation id="3942420633017001071">Diagnostika</translation>
+<translation id="397105322502079400">Prebieha výpočet...</translation>
 <translation id="39823212440917567">Tlačové úlohy staršie ako <ph name="NUMBER_OF_DAYS" /> d. budú odstránené</translation>
 <translation id="4003384961948020559">Nepodarilo sa – výstup je plný</translation>
 <translation id="4034824040120875894">Tlačiareň</translation>
@@ -263,6 +265,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="6977381486153291903">Revízia firmvéru</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> spravuje toto zariadenie a má prístup k všetkým aktivitám používateľa vrátane navštívených webových stránok, hesiel a pošty.</translation>
 <translation id="7040230719604914234">Operátor</translation>
+<translation id="7059230779847288458">Nabíja sa (úplné nabitie o <ph name="TIME_VALUE" />)</translation>
 <translation id="708426984172631313">ZASTAVENÉ</translation>
 <translation id="7143207342074048698">Pripája sa</translation>
 <translation id="714876143603641390">Pripojenie cez miestnu sieť</translation>
@@ -281,6 +284,7 @@ Skúste klepnúť na mikrofón a niečo prikázať.</translation>
 <translation id="7502658306369382406">Adresa IPv6</translation>
 <translation id="7561454561030345039">Túto akciu ovláda váš správca</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Zostáva <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Ďalšie informácie v centre pomoci</translation>
 <translation id="7648838807254605802">Vysoká latencia protokolu HTTPS</translation>
 <translation id="7658239707568436148">Zrušiť</translation>

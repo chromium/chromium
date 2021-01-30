@@ -743,7 +743,6 @@
 <translation id="6232535412751077445">如果您启用了“不跟踪”，您的浏览流量中将会包含一项请求。具体影响取决于网站是否会回应该请求以及如何解读该请求。
 
 例如：某些网站在收到该请求后，可能会向您展示相应的广告（这些广告并不是根据您访问过的其他网站而展示的）。许多网站仍会出于一些目的收集并使用您的浏览数据，例如，为了提高安全性，为了提供相关内容、广告和推荐内容，以及为了生成报告统计信息。</translation>
-<translation id="6243852395147506234">已可离线阅读</translation>
 <translation id="624789221780392884">有可用的更新</translation>
 <translation id="6255999984061454636">内容建议</translation>
 <translation id="6266591733731644292">隐私沙盒尚未广泛发布。在这一试用期内：\n<ph name="BEGIN_LIST_ITEM1" />网站和应用开发者可试用该功能，在不获取可唯一标识您个人身份的信息的情况下打造贴合您需求的体验<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />用户可使用此页面上的控件来退出试用。<ph name="END_LIST_ITEM2" /></translation>
@@ -892,7 +891,6 @@
 <translation id="718926126787620637">书签文件夹列表已全屏打开</translation>
 <translation id="7189372733857464326">正在等待 Google Play 服务完成更新</translation>
 <translation id="7191430249889272776">标签页已在后台打开。</translation>
-<translation id="720894724577012575">类别：<ph name="COMMA_SEPERATED_CATEGORY_LIST" />。</translation>
 <translation id="7233236755231902816">若要使用您的语言查看网页，请获取最新版本的 Chrome</translation>
 <translation id="7248069434667874558">请确保<ph name="TARGET_DEVICE_NAME" />已在 Chrome 中开启同步功能</translation>
 <translation id="7274013316676448362">禁止访问的网站</translation>
@@ -1008,7 +1006,6 @@
 <translation id="7971136598759319605">1 天前曾有活动</translation>
 <translation id="7975379999046275268">预览网页<ph name="BEGIN_NEW" />新<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">预加载网页，以便实现更快速的浏览和搜索</translation>
-<translation id="7986497153528221272">若要查看密码，请先在设备上设置屏幕锁定</translation>
 <translation id="7998918019931843664">重新打开关闭的标签页</translation>
 <translation id="8004582292198964060">浏览器</translation>
 <translation id="8013372441983637696">同时从此设备中清除您的 Chrome 数据</translation>

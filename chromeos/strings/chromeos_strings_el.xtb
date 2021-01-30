@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">Εργασίες εκτύπωσης</translation>
 <translation id="3527036260304016759">Σφάλμα - Άγνωστο σφάλμα</translation>
 <translation id="357889014807611375">Wi-Fi με ογκοχρέωση</translation>
+<translation id="3595596368722241419">Μπαταρία πλήρης</translation>
 <translation id="360565022852130722">Η ασφάλεια του δικτύου Wi-Fi βασίζεται σε αδύναμο πρωτόκολλο WEP 802.1x.</translation>
 <translation id="3712633734921637892">Προς το παρόν, η ταχύτητα της CPU περιορίζεται για εξοικονόμηση μπαταρίας ή μείωση της θερμοκρασίας</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> αξιολογήσεις)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">Ανάλυση</translation>
 <translation id="3941014780699102620">Αποτυχία επίλυσης κεντρικού υπολογιστή</translation>
 <translation id="3942420633017001071">Διαγνωστικά</translation>
+<translation id="397105322502079400">Υπολογισμός…</translation>
 <translation id="39823212440917567">Οι εργασίες εκτύπωσης που είναι παλαιότερες των <ph name="NUMBER_OF_DAYS" /> ημερών θα καταργηθούν.</translation>
 <translation id="4003384961948020559">Σφάλμα - Το σημείο εξόδου είναι γεμάτο</translation>
 <translation id="4034824040120875894">Εκτυπωτής</translation>
@@ -263,6 +265,7 @@
 <translation id="6977381486153291903">Έκδοση υλικολογισμικού</translation>
 <translation id="7028979494427204405">Ο τομέας <ph name="MANAGER" /> διαχειρίζεται αυτήν τη συσκευή και έχει πρόσβαση σε όλη τη δραστηριότητα των χρηστών, συμπεριλαμβανομένων των ιστοσελίδων που επισκέπτεστε, των κωδικών πρόσβασης και του ηλεκτρονικού ταχυδρομείου.</translation>
 <translation id="7040230719604914234">Χειριστής</translation>
+<translation id="7059230779847288458">Φόρτιση, απομένουν <ph name="TIME_VALUE" /> μέχρι την ολοκλήρωση</translation>
 <translation id="708426984172631313">ΔΙΑΚΟΠΗΚΕ</translation>
 <translation id="7143207342074048698">Σύνδεση</translation>
 <translation id="714876143603641390">Συνδεσιμότητα LAN</translation>
@@ -281,6 +284,7 @@
 <translation id="7502658306369382406">Διεύθυνση IPv6</translation>
 <translation id="7561454561030345039">Η διαχείριση αυτής της ενέργειας γίνεται από τον διαχειριστή σας.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">Απομένουν <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Μάθετε περισσότερα στο Κέντρο βοήθειας</translation>
 <translation id="7648838807254605802">Μεγάλος λανθάνων χρόνος HTTPS</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>

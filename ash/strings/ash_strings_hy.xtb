@@ -316,7 +316,7 @@
 <translation id="3631369015426612114">Թույլ տալ ծանուցումները հետևյալ կայքերից</translation>
 <translation id="3638400994746983214">Միացնել/անջատել գաղտնիության էկրանը։ <ph name="STATE_TEXT" />:</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> կառավարվող օգտատեր</translation>
-<translation id="3665889125180354336">Խոսափողի ձայնագրում</translation>
+<translation id="3665889125180354336">Ձայնագրում</translation>
 <translation id="36813544980941320">Ձեր հեռախոսում և <ph name="DEVICE_NAME" />-ում կօգտագործվեն նույն Wi-Fi ցանցերը</translation>
 <translation id="3702846122927433391">Նիգերիայի բնակչությունը</translation>
 <translation id="3705722231355495246">-</translation>
@@ -347,6 +347,7 @@
 <translation id="3901991538546252627">Միացում <ph name="NAME" />-ին</translation>
 <translation id="3943857333388298514">Տեղադրել</translation>
 <translation id="394485226368336402">Ձայնի կարգավորումներ</translation>
+<translation id="3945319193631853098">Հպեք՝ կարգավորումն ավարտելու համար</translation>
 <translation id="3945867833895287237">Միացում թեժ կետին…</translation>
 <translation id="3962859241508114581">Նախորդ կատարումը</translation>
 <translation id="3969043077941541451">Անջատված է</translation>
@@ -531,7 +532,7 @@
 <translation id="5619862035903135339">Ադմինիստրատորի կանոններով արգելված է էկրանի տեսագրումը</translation>
 <translation id="5625955975703555628">LTE+</translation>
 <translation id="5648021990716966815">Խոսափողի հարակցիչ</translation>
-<translation id="5662709761327382534">Խոսափողի ձայնագրումը <ph name="CURRENT_STATE" />։ Սեղմեք «Enter» և կարգավիճակը դարձրեք «<ph name="NEW_STATE" />»։</translation>
+<translation id="5662709761327382534">Ձայնագրումը <ph name="CURRENT_STATE" />։ Սեղմեք «Enter» և կարգավիճակը դարձրեք «<ph name="NEW_STATE" />»։</translation>
 <translation id="5669267381087807207">Ակտիվացում</translation>
 <translation id="5673434351075758678">Կարգավորումների համաժամացման արդյունքում լեզուն փոխվել է: Ընթացիկ լեզուն՝ <ph name="TO_LOCALE" /> (նախկինում՝ <ph name="FROM_LOCALE" />):</translation>
 <translation id="5677928146339483299">Արգելափակված է</translation>
@@ -724,6 +725,7 @@
 <translation id="7392563512730092880">Դուք կարող եք ավելի ուշ նշել պարամետրերը կարգավորումներում։</translation>
 <translation id="7398254312354928459">Դուք միացաք մեկ այլ ցանցի</translation>
 <translation id="7405710164030118432">Սարքն ապակողպելու համար մուտքագրեք Family Link-ի ծնողի մուտքի կոդը</translation>
+<translation id="7406608787870898861">Ավարտեք բջջային ցանցի կարգավորումը</translation>
 <translation id="741244894080940828">փոխարկում</translation>
 <translation id="7413851974711031813">Փակելու համար սեղմեք Escape</translation>
 <translation id="742594950370306541">Տեսախցիկն օգտագործվում է:</translation>

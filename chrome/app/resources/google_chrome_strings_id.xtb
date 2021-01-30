@@ -17,6 +17,8 @@
 <translation id="1399397803214730675">Komputer ini telah memiliki versi Google Chrome yang lebih anyar. Jika software tidak bekerja, uninstal Google Chrome dan coba lagi.</translation>
 <translation id="1434626383986940139">Aplikasi Chrome Canary</translation>
 <translation id="147727933880789532">Chrome merekomendasikan untuk menonaktifkan ekstensi ini karena saat ini belum memenuhi standar Safe Browsing yang Disempurnakan.</translation>
+<translation id="1516530951338665275">Google Chrome memerlukan akses Bluetooth untuk melanjutkan 
+ penyambungan. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1553358976309200471">Perbarui browser Chrome</translation>
 <translation id="1587223624401073077">Google Chrome menggunakan kamera Anda.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> berbahaya, sehingga Chrome memblokirnya.</translation>
@@ -201,6 +203,7 @@
 <translation id="6566149418543181476">Memperbarui Google Chrome (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="6568793831116033768">Sistem Chrome OS</translation>
 <translation id="6650333065969705433">Untuk memutar media yang dilindungi menggunakan Rosetta, Anda harus memulai ulang Chrome.</translation>
+<translation id="6668872995670558829">Perlu Profil Chrome</translation>
 <translation id="6676384891291319759">Akses Internet</translation>
 <translation id="6679975945624592337">Jalankan Google Chrome di Background</translation>
 <translation id="6739177684496155661">Lanjutkan di profil Chrome baru?</translation>
@@ -219,6 +222,7 @@
 <translation id="7140653346177713799">{COUNT,plural, =0{Update baru untuk Chrome telah tersedia dan akan diterapkan segera setelah diluncurkan kembali.}=1{Update baru untuk Chrome telah tersedia dan akan diterapkan segera setelah diluncurkan kembali. Jendela Samaran Anda tidak akan dibuka kembali.}other{Update baru untuk Chrome telah tersedia dan akan diterapkan segera setelah diluncurkan kembali. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="7155997830309522122">Jika ya, edit sandi Anda yang tersimpan di Chrome agar cocok dengan sandi baru Anda.</translation>
 <translation id="7242029209006116544">Anda masuk dengan akun terkelola dan memberikan administratornya kontrol atas profil Google Chrome Anda. Data Chrome Anda, seperti aplikasi, bookmark, histori, sandi, dan setelan lain selamanya akan dikaitkan ke <ph name="USER_NAME" />. Anda dapat menghapus data ini melalui Dasbor Akun Google, namun Anda tidak akan dapat mengaitkan data ini dengan akun yang lain. Anda dapat membuat profil baru secara opsional untuk menjaga agar data Chrome Anda tetap terpisah. <ph name="LEARN_MORE" /></translation>
+<translation id="7255293161244507351">Akun ini dikelola oleh <ph name="MANAGEMENT_DOMAIN" />. Administrator Anda memerlukan profil Chrome untuk akses. Profil ini sama sekali terpisah dari profil pribadi mana pun. Data Chrome yang dibuat selama penggunaan profil ini (seperti pembuatan bookmark, histori, sandi, dan setelan lainnya) dapat dihapus oleh admin Anda. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="7295052994004373688">Bahasa ini digunakan untuk menampilkan UI Google Chrome</translation>
 <translation id="7296210096911315575">Penggunaan penting dan informasi keamanan</translation>
 <translation id="7303916856901595720">Pindahkan akun ke profil Chrome baru?</translation>
@@ -226,6 +230,7 @@
 <translation id="7339898014177206373">Jendela baru</translation>
 <translation id="7398801000654795464">Anda telah masuk ke Chrome sebagai <ph name="USER_EMAIL_ADDRESS" />. Gunakan akun yang sama untuk masuk kembali.</translation>
 <translation id="7408085963519505752">Persyaratan Chrome OS</translation>
+<translation id="7416131756095014387">Akun ini dikelola. Administrator Anda memerlukan profil Chrome untuk akses. Profil ini sama sekali terpisah dari profil pribadi mana pun. Data Chrome yang dibuat selama penggunaan profil ini (seperti pembuatan bookmark, histori, sandi, dan setelan lainnya) dapat dihapus oleh admin Anda. <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="7419046106786626209">Chrome OS tidak dapat menyinkronkan data Anda karena Sinkronisasi tidak tersedia untuk domain Anda.</translation>
 <translation id="7486227612705979895">Chrome akan mengakses Drive Anda untuk membuat saran di kolom URL</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>

@@ -332,6 +332,7 @@
 <translation id="1367951781824006909">Вибрати файл</translation>
 <translation id="1369149969991017342">Кнопковий доступ (керуйте комп'ютером одним чи двома перемикачами)</translation>
 <translation id="1372841398847029212">Синхронізувати з обліковим записом</translation>
+<translation id="1373176046406139583">Видимість пристрою визначає, хто може надсилати вам дані, коли ваш екран розблоковано. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Сертифікат, який вимагає мережа "<ph name="NETWORK_NAME" />", не встановлено або він більше не дійсний. Отримайте новий сертифікат і повторіть спробу під’єднатися.</translation>
 <translation id="1375321115329958930">Збережені паролі</translation>
 <translation id="137651782282853227">Тут відображатимуться збережені адреси</translation>
@@ -1094,7 +1095,6 @@
 <translation id="2204034823255629767">Читати й змінювати весь введений вами текст</translation>
 <translation id="220858061631308971">Введіть цей PIN-код на пристрої "<ph name="DEVICE_NAME" />":</translation>
 <translation id="2212565012507486665">Дозволити файли cookie</translation>
-<translation id="2213140827792212876">Скасувати доступ</translation>
 <translation id="2214018885812055163">Спільні папки</translation>
 <translation id="2214884991347062907">Неправильний пароль, повторіть спробу</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;Не показано 1 рядок&gt;}one{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядок&gt;}few{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядки&gt;}many{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядків&gt;}other{&lt;Не показано <ph name="NUMBER_OF_LINES" /> рядка&gt;}}</translation>
@@ -2430,7 +2430,6 @@
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Ви й Google</translation>
 <translation id="3722108462506185496">Не вдалося запустити віртуальну машину. Спробуйте пізніше.</translation>
-<translation id="3726137731714254362">Якщо видалити цю папку звідси, надсилання файлів буде припинено, однак самі файли не буде видалено.</translation>
 <translation id="3727148787322499904">Зміна цього налаштування вплине на всі спільні мережі</translation>
 <translation id="3727187387656390258">Перевірити спливаюче вікно</translation>
 <translation id="372722114124766626">Лише один раз</translation>
@@ -2567,7 +2566,6 @@
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: синхронізацію призупинено</translation>
 <translation id="3861638017150647085">Ім'я користувача "<ph name="USERNAME" />" недоступне</translation>
 <translation id="3861977424605124250">Показувати під час запуску</translation>
-<translation id="3862693525629180217">Підтвердити через вбудований датчик</translation>
 <translation id="3862788408946266506">Додаток з атрибутом маніфесту "kiosk_only" потрібно встановлювати в режимі термінала ОС Chrome</translation>
 <translation id="3865414814144988605">Роздільна здатність</translation>
 <translation id="3866249974567520381">Опис</translation>
@@ -3447,6 +3445,7 @@
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Гц – з накладанням</translation>
 <translation id="4902546322522096650">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Підключитися</translation>
 <translation id="49027928311173603">Завантажене із сервера правило недійсне: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4904061654709986277">Додати профіль</translation>
 <translation id="4906490889887219338">Налаштувати мережеві файлообмінники або керувати ними. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Мережа №<ph name="NETWORK_INDEX" />, загалом мереж: <ph name="NETWORK_COUNT" />, назва пристрою: <ph name="PHONE_NAME" />, оператор: <ph name="PROVIDER_NAME" />, стан з'єднання: <ph name="CONNECTION_STATUS" />, рівень сигналу: <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона: <ph name="BATTERY_STATUS" />%, відомості</translation>
 <translation id="4907161631261076876">Цей файл рідко завантажують. Він може бути небезпечним.</translation>
@@ -3569,6 +3568,7 @@
 <translation id="5068918910148307423">Заборонити нещодавно закритим сайтам завершувати надсилання й отримання даних</translation>
 <translation id="5068919226082848014">Піца</translation>
 <translation id="5070773577685395116">Не отримали?</translation>
+<translation id="5071892329440114717">Показати детальний опис стандартного захисту</translation>
 <translation id="5072052264945641674">Налаштуйте розмір курсора</translation>
 <translation id="5072836811783999860">Показати закладки, якими керує адміністратор</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" />, <ph name="FILE2" />}one{<ph name="FILE1" />, <ph name="FILE2" /> і ще #}few{<ph name="FILE1" />, <ph name="FILE2" /> і ще #}many{<ph name="FILE1" />, <ph name="FILE2" /> і ще #}other{<ph name="FILE1" />, <ph name="FILE2" /> і ще #}}</translation>
@@ -4367,7 +4367,6 @@
 <translation id="6003143259071779217">Видалити мобільну мережу eSIM-карти</translation>
 <translation id="6006484371116297560">Класична</translation>
 <translation id="6007240208646052708">Голосовий пошук недоступний вашою мовою.</translation>
-<translation id="6009781704028455063">Вбудований датчик</translation>
 <translation id="6011074160056912900">Мережа Ethernet</translation>
 <translation id="6011193465932186973">Відбиток пальця</translation>
 <translation id="6011449291337289699">Очистити дані веб-сайту</translation>
@@ -4721,6 +4720,7 @@
 <translation id="6412673304250309937">Перевіряє URL-адреси за списком шкідливих сайтів, що зберігається в Chrome. Якщо сайт намагається викрасти ваш пароль або ви завантажуєте шкідливий файл, Chrome також може надсилати Безпечному перегляду URL-адреси, зокрема уривки вмісту сторінки.</translation>
 <translation id="6412931879992742813">Нове анонімне вікно</translation>
 <translation id="641469293210305670">Установити оновлення та додатки</translation>
+<translation id="6414878884710400018">Відкрити налаштування системи</translation>
 <translation id="6414888972213066896">Ви надіслали одному з батьків запит на перегляд цього сайту</translation>
 <translation id="6415900369006735853">Підключайтеся до Інтернету через телефон</translation>
 <translation id="6416743254476733475">Дозвольте або заблокуйте на комп’ютері.</translation>
@@ -4767,6 +4767,7 @@
 <translation id="6460601847208524483">Знайти наступне</translation>
 <translation id="6461170143930046705">Пошук мереж…</translation>
 <translation id="6463795194797719782">&amp;Редагувати</translation>
+<translation id="6464825623202322042">Цей пристрій</translation>
 <translation id="6465841119675156448">Без Інтернету</translation>
 <translation id="6466988389784393586">&amp;Відкрити всі закладки</translation>
 <translation id="6467304607960172345">Оптимізувати відео на весь екран</translation>
@@ -4787,6 +4788,7 @@
 <translation id="648927581764831596">Нічого не доступно</translation>
 <translation id="6490471652906364588">Пристрій із портом USB типу C (праворуч)</translation>
 <translation id="6491376743066338510">Не авторизовано</translation>
+<translation id="6494327278868541139">Показати детальний опис покращеного захисту</translation>
 <translation id="6494445798847293442">Не є Центром сертифікації</translation>
 <translation id="6494974875566443634">Налаштування</translation>
 <translation id="6495925982925244349">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Мережею керує адміністратор. Докладніше</translation>
@@ -5072,7 +5074,6 @@
 <translation id="683373380308365518">Виберіть розумний і безпечний веб-переглядач</translation>
 <translation id="6835762382653651563">Щоб оновити свій <ph name="DEVICE_TYPE" />, під’єднайтеся до Інтернету.</translation>
 <translation id="6838034009068684089">Запитувати, коли сайт хоче відкрити й розмістити вікна на ваших екранах (рекомендовано)</translation>
-<translation id="6838694093138907871">Недійсний код. Повторіть спробу.</translation>
 <translation id="6838860780238890144">{COUNT,plural, =1{номер телефону}one{# номер телефону}few{# номери телефонів}many{# номерів телефонів}other{# номера телефону}}</translation>
 <translation id="6839225236531462745">Помилка видалення сертифіката</translation>
 <translation id="6839916869147598086">Спосіб входу в обліковий запис змінено</translation>
@@ -5323,6 +5324,7 @@
 <translation id="7108933416628942903">Заблокувати</translation>
 <translation id="7109543803214225826">Ярлик видалено</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Додати вкладку в групу}one{Додати вкладки в групу}few{Додати вкладки в групу}many{Додати вкладки в групу}other{Додати вкладки в групу}}</translation>
+<translation id="7111822978084196600">Додайте назву вікна</translation>
 <translation id="7113502843173351041">Бачити вашу електронну адресу</translation>
 <translation id="7114054701490058191">Паролі не збігаються</translation>
 <translation id="7114648273807173152">Щоб увійти в обліковий запис Google за допомогою Smart Lock, перейдіть у меню "Налаштування" &gt; "Підключені пристрої" &gt; "Телефон" &gt; "Smart Lock".</translation>
@@ -5584,6 +5586,7 @@
 <translation id="7421925624202799674">&amp;Переглянути джерело сторінки</translation>
 <translation id="7422192691352527311">Налаштування...</translation>
 <translation id="7423098979219808738">Спершу запитувати</translation>
+<translation id="7423425410216218516">Пристрій буде видимим упродовж <ph name="MINUTES" /> хв</translation>
 <translation id="7423513079490750513">Вилучити метод введення "<ph name="INPUT_METHOD_NAME" />"</translation>
 <translation id="7423807071740419372">Щоб запустити додаток <ph name="APP_NAME" />, потрібен дозвіл</translation>
 <translation id="7427348830195639090">Фонова сторінка: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -6972,6 +6975,7 @@
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – аварійне завершення роботи</translation>
 <translation id="8981825781894055334">Недостатньо паперу</translation>
 <translation id="8983632908660087688">Сайт <ph name="ORIGIN" /> може змінювати файл "<ph name="FILENAME" />"</translation>
+<translation id="8984694057134206124">Пристрій зможуть бачити всі користувачі впродовж <ph name="MINUTES" /> хв. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="8985264973231822211">У мережі <ph name="DEVICE_LAST_ACTIVATED_TIME" /> дн. тому</translation>
 <translation id="8986362086234534611">Видалити</translation>
 <translation id="8986494364107987395">Автоматично надсилати статистику використання та звіти про аварійне завершення роботи в Google</translation>
@@ -7145,7 +7149,6 @@
 <translation id="917350715406657904">Досягнено ліміту часу використання, який батьки встановили для додатка <ph name="APP_NAME" />. Завтра ти зможеш користуватися ним <ph name="TIME_LIMIT" />.</translation>
 <translation id="9173787391779732995">Сайти можуть показувати зображення (рекомендовано)</translation>
 <translation id="9173995187295789444">Пошук пристроїв Bluetooth…</translation>
-<translation id="9174052566244514547">Адміністратор надіслав запит на перезапуск пристрою, щоб оновити додатки. Це може тривати кілька хвилин.</translation>
 <translation id="9174401638287877180">Надсилати дані про використання й діагностику. Допоможіть покращити роботу Android для вашої дитини, автоматично надсилаючи в Google дані про діагностику та використання пристрою й додатків. Ця інформація не використовуватиметься для встановлення особи вашої дитини, а допоможе підвищити стабільність системи, додатків тощо. Деякі зведені дані також корисні для додатків і партнерів Google, як-от розробників Android. Якщо ввімкнено також запис Історії додатків і веб-пошуку, ці дані зберігаються в обліковому записі Google дитини.</translation>
 <translation id="917510707618656279">Запитувати, коли сайт хоче отримати доступ до пристроїв Bluetooth</translation>
 <translation id="9176476835295860688">Надсилати дані про використання й діагностику. Цей пристрій наразі автоматично надсилає в Google дані про діагностику та використання пристрою і додатків. Ця інформація допоможе покращити стабільність системи, додатків тощо. Деякі зведені дані також корисні для додатків і партнерів Google, як-от розробників Android. Це <ph name="BEGIN_LINK1" />налаштування<ph name="END_LINK1" /> застосовує власник. Якщо ввімкнено додаткову Історію додатків і веб-пошуку, ці дані зберігаються в обліковому записі Google. <ph name="BEGIN_LINK2" />Докладніше<ph name="END_LINK2" /></translation>

@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">ప్రింట్ టాస్క్‌లు</translation>
 <translation id="3527036260304016759">విఫలమైంది - తెలియని ఎర్రర్</translation>
 <translation id="357889014807611375">డేటా నియంత్రణ Wi-Fi</translation>
+<translation id="3595596368722241419">బ్యాటరీ నిండింది</translation>
 <translation id="360565022852130722">బలహీనమైన ప్రోటోకాల్ WEP 802.1xతో Wi-Fi నెట్‌వర్క్ సురక్షితం చేయబడింది</translation>
 <translation id="3712633734921637892">బ్యాటరీ సామర్థ్యాన్ని ఆదా చేయడానికి లేదా ఉష్ణోగ్రతను తగ్గించడానికి CPU వేగం ప్రస్తుతం పరిమితం చేయబడింది</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> రివ్యూలు)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">రిజల్యూషన్</translation>
 <translation id="3941014780699102620">హోస్ట్‌ను పరిష్కరించడంలో విఫలమైంది</translation>
 <translation id="3942420633017001071">నిర్ధారణలు</translation>
+<translation id="397105322502079400">గణిస్తోంది...</translation>
 <translation id="39823212440917567"><ph name="NUMBER_OF_DAYS" /> రోజులకు పైగా ఉన్న ప్రింట్ టాస్క్‌లు తీసివేయబడతాయి</translation>
 <translation id="4003384961948020559">విఫలమైంది - అవుట్‌పుట్, ప్రింటింగ్ జాబ్‌లతో నిండి ఉంది</translation>
 <translation id="4034824040120875894">ప్రింటర్</translation>
@@ -262,6 +264,7 @@
 <translation id="6977381486153291903">ఫర్మ్‌వేర్ పునర్విమర్శ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ఈ పరికరాన్ని మేనేజ్ చేస్తుంది, అలాగే సందర్శించిన వెబ్ పేజీలు, పాస్‌వర్డ్‌లు, ఇమెయిల్‌లతో సహా యూజర్ యాక్టివిటీకి యాక్సెస్‌ను కలిగి ఉంటుంది.</translation>
 <translation id="7040230719604914234">ఆపరేటర్</translation>
+<translation id="7059230779847288458">ఛార్జ్ అవుతోంది, పూర్తి కావడానికి <ph name="TIME_VALUE" /> సమయం పడుతుంది</translation>
 <translation id="708426984172631313">ఆపివేయబడింది</translation>
 <translation id="7143207342074048698">కనెక్ట్ అవుతో.</translation>
 <translation id="714876143603641390">LAN కనెక్టివిటీ</translation>
@@ -280,6 +283,7 @@
 <translation id="7502658306369382406">IPv6 చిరునామా</translation>
 <translation id="7561454561030345039">ఈ చర్య మీ అడ్మినిస్ట్రేటర్ ద్వారా మేనేజ్ చేయబడుతుంది</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331"><ph name="TIME_VALUE" /> మిగిలి ఉంది</translation>
 <translation id="7620771111601174153">సహాయ కేంద్రంలో మరింత తెలుసుకోండి</translation>
 <translation id="7648838807254605802">అధిక HTTPS ప్రతిస్పందన సమయం</translation>
 <translation id="7658239707568436148">రద్దు చేయి</translation>

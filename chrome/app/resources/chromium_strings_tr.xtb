@@ -124,6 +124,7 @@
 <translation id="4994636714258228724">Kendinizi Chromium'a ekleyin</translation>
 <translation id="5224391634244552924">Kaydedilen şifre yok. Chromium, kaydetmeniz halinde şifrelerinizi kontrol edebilir.</translation>
 <translation id="5277894862589591112">Yaptığınız değişiklikleri uygulamak için Chromium'u yeniden başlatın</translation>
+<translation id="5357324149468831780">Bu hesap yönetiliyor. Yöneticiniz, erişim için Chromium profilinin olmasını zorunlu tutuyor Bu profil, diğer tüm kişisel profillerinizden tamamen ayrıdır. Bu profili kullanmanız sırasında oluşturulan Chromium verileri (yer işareti oluşturmanız, geçmiş, şifreler ve diğer ayarlar gibi), yöneticiniz tarafından kaldırılabilir <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">Yönetilen bir hesapla oturum açıyor ve hesabın yöneticisine Chromium profilinizi denetleme izni veriyorsunuz. Uygulamalarınız, yer işaretleriniz, geçmişiniz, şifreleriniz ve diğer ayarlarınız gibi Chromium verileriniz kalıcı olarak <ph name="USER_NAME" /> ile bağlantılandırılacaktır. Google Hesapları Hesap Özeti'ni kullanarak bu verileri silebilecek, ancak bu verileri başka bir hesapla ilişkilendiremeyeceksiniz. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium güncelleniyor (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromium'da oturum açmaya izin verin</translation>
@@ -138,6 +139,7 @@
 <translation id="5623402015214259806">{0,plural, =0{Bir Chromium güncellemesi var}=1{Bir Chromium güncellemesi var}other{# gün önce kullanıma sunulmuş bir Chromium güncellemesi var}}</translation>
 <translation id="5631814766731275228">Chromium adı ve resmi</translation>
 <translation id="5634636535844844681">Chromium, Windows 7 veya daha sonraki bir sürümü gerektirir.</translation>
+<translation id="5642268154044585431">Chromium Profili Gereklidir</translation>
 <translation id="5653831366781983928">Lütfen Chromium'u şimdi yeniden başlatın</translation>
 <translation id="5698481217667032250">Chromium'u bu dilde görüntüle</translation>
 <translation id="5736967399513123100">Chromium'un korunan medyayı oynatmasını sağlamak için Rosetta'yı yüklemeniz gerekir. Şimdi yüklemek ister misiniz?</translation>
@@ -168,6 +170,7 @@
 <translation id="6309712487085796862">Chromium kameranızı kullanıyor.</translation>
 <translation id="6333502561965082103">Chromium'da başka bir işlem devam ediyor. Lütfen daha sonra yeniden deneyin.</translation>
 <translation id="6334986366598267305">Chromium'u Google Hesabınızla ve paylaşılan bilgisayarlarda kullanmak artık daha kolay.</translation>
+<translation id="6345021408165055322">Bu hesap <ph name="MANAGEMENT_DOMAIN" /> tarafından yönetilmektedir. Yöneticiniz, erişim için Chromium profilinin olmasını zorunlu tutuyor Bu profil, diğer tüm kişisel profillerinizden tamamen ayrıdır. Bu profili kullanmanız sırasında oluşturulan Chromium verileri (yer işareti oluşturmanız, geçmiş, şifreler ve diğer ayarlar gibi), yöneticiniz tarafından kaldırılabilir <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">Chromium'u kaldırmak istediğinizden emin misiniz?</translation>
 <translation id="6403826409255603130">Chromium, Web sayfalarını ve uygulamaları yıldırım hızıyla çalıştıran bir Web tarayıcısıdır. Hızlı ve kararlı çalışır, kolay kullanılır. Chromium'da dahili olarak bulunan zararlı yazılım ve kimlik avı koruması sayesinde Web'de daha güvenli gezinin.</translation>
 <translation id="6434250628340475518">Chromium OS Sistemi</translation>
@@ -192,6 +195,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6863361426438995919">Google Pay (Chromium'a kopyalandı)</translation>
 <translation id="6893813176749746474">Chromium güncellendi, ancak programı en azından 30 gündür kullanmıyorsunuz.</translation>
 <translation id="6897548120660295439">Rosetta, Chromium'un bu sayfadaki korunan medyayı oynatmasını sağlar.</translation>
+<translation id="691026815377248078">Chromium'un eşlemeye devam edebilmesi için Bluetooth'a erişmesi gerekiyor. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Bağlantıyı Chromium &amp;gizli penceresinde aç</translation>
 <translation id="6978145336957848883">Zayıf şifrelerin tahmin edilmesi kolaydır. Chromium'un <ph name="BEGIN_LINK" />sizin için güçlü şifreler oluşturup bu şifreleri hatırlamasına<ph name="END_LINK" /> izin verin.</translation>
 <translation id="6990124437352146030">Chromium'un bu sitede mikrofonunuza erişmesi için izin gerekiyor</translation>

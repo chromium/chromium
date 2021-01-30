@@ -104,6 +104,7 @@
 <translation id="3515615323037921860">ការងារ​បោះពុម្ព</translation>
 <translation id="3527036260304016759">មិនបានសម្រេច - មានបញ្ហា​ដែលមិនស្គាល់</translation>
 <translation id="357889014807611375">Wi-Fi តាមកម្រិត</translation>
+<translation id="3595596368722241419">ថ្មពេញ</translation>
 <translation id="360565022852130722">បណ្ដាញ WiFi មានសុវត្ថិភាពជាមួយ WEP 802.1x ប្រូតូកូលខ្សោយ</translation>
 <translation id="3712633734921637892">បច្ចុប្បន្ន ល្បឿន CPU ត្រូវបាន​ដាក់កម្រិត ដើម្បី​រក្សាថ្ម ឬ​កាត់បន្ថយ​សីតុណ្ហភាព</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (ការវាយតម្លៃចំនួន <ph name="AGGREGATED_COUNT" />)</translation>
@@ -115,6 +116,7 @@
 <translation id="3865414814144988605">គុណភាពបង្ហាញ</translation>
 <translation id="3941014780699102620">មិនអាចដោះស្រាយម៉ាស៊ីនបានទេ</translation>
 <translation id="3942420633017001071">ការ​វិភាគ</translation>
+<translation id="397105322502079400">កំពុងគណនា...</translation>
 <translation id="39823212440917567">កិច្ចការបោះពុម្ព​ដែលចាស់ជាង <ph name="NUMBER_OF_DAYS" /> ថ្ងៃ​នឹងត្រូវបាន​លុបចេញ</translation>
 <translation id="4003384961948020559">មិនបានសម្រេច - កន្លែងចេញក្រដាសបោះពុម្ព​ពេញហើយ</translation>
 <translation id="4034824040120875894">ម៉ាស៊ីន​បោះពុម្ព</translation>
@@ -262,6 +264,7 @@
 <translation id="6977381486153291903">ការកែប្រែកម្មវិធីបង្កប់</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> គ្រប់គ្រង​ឧបករណ៍​នេះ និង​មានសិទ្ធិ​ចូលមើល​សកម្មភាព​អ្នកប្រើប្រាស់​ទាំងអស់ រួមទាំង​ទំព័របណ្ដាញ​ដែលបាន​ចូលមើល ពាក្យសម្ងាត់ និង​អ៊ីមែល​ផងដែរ។</translation>
 <translation id="7040230719604914234">ប្រតិបត្តិករ</translation>
+<translation id="7059230779847288458">កំពុងសាកថ្ម <ph name="TIME_VALUE" /> ទៀត​ទើបពេញ</translation>
 <translation id="708426984172631313">បានឈប់</translation>
 <translation id="7143207342074048698">កំពុងភ្ជាប់...</translation>
 <translation id="714876143603641390">ការតភ្ជាប់ Lan</translation>
@@ -280,6 +283,7 @@
 <translation id="7502658306369382406">អាសយដ្ឋាន IPv6</translation>
 <translation id="7561454561030345039">សកម្មភាពនេះត្រូវបានគ្រប់គ្រងដោយអ្នកគ្រប់គ្រងរបស់អ្នក</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
+<translation id="7595982850646262331">នៅសល់ <ph name="TIME_VALUE" /> ទៀត</translation>
 <translation id="7620771111601174153">ស្វែងយល់បន្ថែម​នៅក្នុងមជ្ឈមណ្ឌលជំនួយ</translation>
 <translation id="7648838807254605802">ការពន្យារ HTTPS ខ្ពស់</translation>
 <translation id="7658239707568436148">បដិសេធ</translation>

@@ -329,6 +329,7 @@
 <translation id="1367951781824006909">Velg en fil</translation>
 <translation id="1369149969991017342">Brytertilgang (kontrollér datamaskinen med bare én eller to brytere)</translation>
 <translation id="1372841398847029212">Synkroniser til kontoen din</translation>
+<translation id="1373176046406139583">Synligheten til enheten din kontrollerer hvem som kan dele med deg mens skjermen er låst opp. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="1374844444528092021">Sertifikatet som kreves av nettverket «<ph name="NETWORK_NAME" />» mangler eller er ikke gyldig lenger. Hent et nytt sertifikat og prøv å koble til på nytt.</translation>
 <translation id="1375321115329958930">Lagrede passord</translation>
 <translation id="137651782282853227">Lagrede adresser vises her</translation>
@@ -1088,7 +1089,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2204034823255629767">lese og endre alt du skriver</translation>
 <translation id="220858061631308971">Skriv inn denne PIN-koden på «<ph name="DEVICE_NAME" />»:</translation>
 <translation id="2212565012507486665">Tillat informasjonskapsler</translation>
-<translation id="2213140827792212876">Slutt å dele</translation>
 <translation id="2214018885812055163">Delte mapper</translation>
 <translation id="2214884991347062907">Feil passord. Prøv på nytt</translation>
 <translation id="2214893006758804920">{LINE_COUNT,plural, =1{&lt;1 linje vises ikke&gt;}other{&lt;<ph name="NUMBER_OF_LINES" /> linjer vises ikke&gt;}}</translation>
@@ -2424,7 +2424,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="372062398998492895">CUPS</translation>
 <translation id="3721119614952978349">Deg og Google</translation>
 <translation id="3722108462506185496">Feil ved oppstart av den virtuelle maskinen. Prøv på nytt.</translation>
-<translation id="3726137731714254362">Hvis du fjerner mapper herfra, deles de ikke lenger, men filene blir ikke slettet.</translation>
 <translation id="3727148787322499904">Endringer i denne innstillingen påvirker alle delte nettverk</translation>
 <translation id="3727187387656390258">Undersøk hurtigvindu</translation>
 <translation id="372722114124766626">Bare én gang</translation>
@@ -2561,7 +2560,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3860104611854310167"><ph name="PROFILE_NAME" />: Synkronisering er satt på pause</translation>
 <translation id="3861638017150647085">Brukernavnet «<ph name="USERNAME" />» er ikke tilgjengelig</translation>
 <translation id="3861977424605124250">Vis ved oppstart</translation>
-<translation id="3862693525629180217">Bekreft via innebygd sensor</translation>
 <translation id="3862788408946266506">Apper med manifest-attributtet «kiosk_only» må være installert i Chrome OS-kioskmodus</translation>
 <translation id="3865414814144988605">Oppløsning</translation>
 <translation id="3866249974567520381">Beskrivelse</translation>
@@ -3439,6 +3437,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz – linjefletting</translation>
 <translation id="4902546322522096650">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – koble til</translation>
 <translation id="49027928311173603">Innstillingene som ble lastet ned fra tjeneren er ugyldige: <ph name="VALIDATION_ERROR" />.</translation>
+<translation id="4904061654709986277">Legg til profil</translation>
 <translation id="4906490889887219338">Konfigurer eller administrer delte nettverksressurser. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="4906580650526544301">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="PHONE_NAME" /> – <ph name="PROVIDER_NAME" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – telefonbatterinivå <ph name="BATTERY_STATUS" /> % – detaljer</translation>
 <translation id="4907161631261076876">Denne filen lastes sjelden ned, og den kan være farlig.</translation>
@@ -3561,6 +3560,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="5068918910148307423">Ikke tillat at nylig lukkede nettsteder fullfører sending og mottak av data</translation>
 <translation id="5068919226082848014">Pizza</translation>
 <translation id="5070773577685395116">Fikk du den ikke?</translation>
+<translation id="5071892329440114717">Vis detaljer om standard beskyttelse</translation>
 <translation id="5072052264945641674">Juster markørstørrelsen</translation>
 <translation id="5072836811783999860">Vis administrerte bokmerker</translation>
 <translation id="5073956501367595100">{0,plural,offset:2 =1{<ph name="FILE1" />}=2{<ph name="FILE1" /> og <ph name="FILE2" />}other{<ph name="FILE1" />, <ph name="FILE2" /> og # til}}</translation>
@@ -4359,7 +4359,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6003143259071779217">Fjern mobilnettverket for e-SIM-kortet</translation>
 <translation id="6006484371116297560">Klassisk</translation>
 <translation id="6007240208646052708">Talesøk er ikke tilgjengelig på språket ditt.</translation>
-<translation id="6009781704028455063">Innebygd sensor</translation>
 <translation id="6011074160056912900">Ethernet-nettverk</translation>
 <translation id="6011193465932186973">Fingeravtrykk</translation>
 <translation id="6011449291337289699">Fjern nettstedsdata</translation>
@@ -4713,6 +4712,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6412673304250309937">Kontrollerer nettadresser opp mot en liste i Chrome over utrygge nettsteder. Hvis nettsteder prøver å stjele passordet ditt, eller når du laster ned skadelige filer, kan Chrome også sende nettadresser, inkludert deler av sideinnholdet, til Safe Browsing.</translation>
 <translation id="6412931879992742813">Nytt inkognitovindu</translation>
 <translation id="641469293210305670">Installer oppdateringer og apper</translation>
+<translation id="6414878884710400018">Åpne Systemvalg</translation>
 <translation id="6414888972213066896">Du har spurt forelderen din om det er greit å besøke dette nettstedet</translation>
 <translation id="6415900369006735853">Koble til internett via telefonen</translation>
 <translation id="6416743254476733475">Tillat eller blokkér på datamaskinen din.</translation>
@@ -4759,6 +4759,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="6460601847208524483">Finn neste</translation>
 <translation id="6461170143930046705">Søker etter nettverk …</translation>
 <translation id="6463795194797719782">R&amp;ediger</translation>
+<translation id="6464825623202322042">Denne enheten</translation>
 <translation id="6465841119675156448">Uten internett</translation>
 <translation id="6466988389784393586">&amp;Åpne alle bokmerker</translation>
 <translation id="6467304607960172345">Optimaliser fullskjermvideoer</translation>
@@ -4779,6 +4780,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="648927581764831596">Ikke tilgjengelig</translation>
 <translation id="6490471652906364588">USB-C-enhet (porten på høyre side)</translation>
 <translation id="6491376743066338510">Kunne ikke autorisere</translation>
+<translation id="6494327278868541139">Vis detaljer om økt beskyttelse</translation>
 <translation id="6494445798847293442">Ikke en sertifiseringsinstans</translation>
 <translation id="6494974875566443634">Tilpasning</translation>
 <translation id="6495925982925244349">Nettverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" /> – <ph name="NETWORK_NAME" /> – <ph name="SECURITY_STATUS" /> – <ph name="CONNECTION_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> % – administreres av administratoren din – detaljer</translation>
@@ -5064,7 +5066,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="683373380308365518">Bytt til en smart og sikker nettleser</translation>
 <translation id="6835762382653651563">Koble til Internett for å oppdatere <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6838034009068684089">Spør når nettsteder vil åpne og plassere vinduer på skjermene dine (anbefales)</translation>
-<translation id="6838694093138907871">Ugyldig kode. Prøv på nytt.</translation>
 <translation id="6838860780238890144">{COUNT,plural, =1{telefonnummer}other{# telefonnumre}}</translation>
 <translation id="6839225236531462745">Feil ved sletting av sertifikat</translation>
 <translation id="6839916869147598086">Påloggingen er endret</translation>
@@ -5315,6 +5316,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7108933416628942903">Lås nå</translation>
 <translation id="7109543803214225826">Snarveien er fjernet</translation>
 <translation id="7110644433780444336">{NUM_TABS,plural, =1{Legg fanen til i en gruppe}other{Legg fanene til i en gruppe}}</translation>
+<translation id="7111822978084196600">Gi navn til dette vinduet</translation>
 <translation id="7113502843173351041">se e-postadressen din</translation>
 <translation id="7114054701490058191">Passordene samsvarer ikke</translation>
 <translation id="7114648273807173152">For å bruke Smart Lock til å logge på Google-kontoen din, gå til Innstillinger &gt; Tilkoblede enheter &gt; Telefonen din &gt; Smart Lock.</translation>
@@ -5576,6 +5578,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="7421925624202799674">&amp;Vis sidekilde</translation>
 <translation id="7422192691352527311">Innstillinger</translation>
 <translation id="7423098979219808738">Spør først</translation>
+<translation id="7423425410216218516">Synlighet er på i <ph name="MINUTES" /> minutter</translation>
 <translation id="7423513079490750513">Fjern <ph name="INPUT_METHOD_NAME" /></translation>
 <translation id="7423807071740419372"><ph name="APP_NAME" /> trenger tillatelse til å kjøre</translation>
 <translation id="7427348830195639090">Bakgrunnsside: <ph name="BACKGROUND_PAGE_URL" /></translation>
@@ -6961,6 +6964,7 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="8980951173413349704"><ph name="WINDOW_TITLE" /> – krasjet</translation>
 <translation id="8981825781894055334">Lite papir</translation>
 <translation id="8983632908660087688"><ph name="ORIGIN" /> kan redigere <ph name="FILENAME" /></translation>
+<translation id="8984694057134206124">Du blir synlig for alle i <ph name="MINUTES" /> minutter. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="8985264973231822211">Aktiv for <ph name="DEVICE_LAST_ACTIVATED_TIME" /> dag siden</translation>
 <translation id="8986362086234534611">Glem</translation>
 <translation id="8986494364107987395">Send bruksstatistikk og programstopprapporter automatisk til Google</translation>
@@ -7134,7 +7138,6 @@ Trykk på en tilordnet bryter for å fjerne tilordningen.</translation>
 <translation id="917350715406657904">Du har nådd tidsgrensen som forelderen din har angitt for <ph name="APP_NAME" />. Du kan bruke appen i <ph name="TIME_LIMIT" /> i morgen.</translation>
 <translation id="9173787391779732995">Nettsteder kan vise bilder (anbefales)</translation>
 <translation id="9173995187295789444">Skanner etter Bluetooth-enheter …</translation>
-<translation id="9174052566244514547">Administratoren har bedt deg starte enheten på nytt for å oppdatere apper. Dette kan ta flere minutter</translation>
 <translation id="9174401638287877180">Send bruks- og diagnostikkdata. Hjelp til med å gjøre Android-opplevelsen bedre for barnet ditt ved å sende diagnostikk-, enhets- og appbruksdata til Google automatisk. Disse dataene brukes ikke til å identifisere barnet ditt, men bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Hvis du har slått på innstillingen for annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto.</translation>
 <translation id="917510707618656279">Spør når nettsteder vil ha tilgang til Bluetooth-enheter</translation>
 <translation id="9176476835295860688">Send bruks- og diagnostikkdata. Denne enheten sender for øyeblikket diagnostikk-, enhets- og appbruksdata til Google automatisk. Dette bidrar til å gjøre systemet og appene bedre og mer stabile. Noen aggregerte data hjelper også Google-apper og -partnere, for eksempel Android-utviklere. Denne <ph name="BEGIN_LINK1" />innstillingen<ph name="END_LINK1" /> håndheves av eieren. Hvis du har slått på innstillingen for annen nett- og appaktivitet, kan disse dataene bli lagret i Google-kontoen din. <ph name="BEGIN_LINK2" />Finn ut mer<ph name="END_LINK2" /></translation>

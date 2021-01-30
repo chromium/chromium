@@ -126,6 +126,7 @@
 <translation id="4994636714258228724">Dodajte sebe kao korisnika Chromiuma</translation>
 <translation id="5224391634244552924">Nema nijedne spremljene zaporke. Chromium može provjeriti vaše zaporke kad ih spremite.</translation>
 <translation id="5277894862589591112">Da bi se vaše promjene primijenile, ponovo pokrenite Chromium</translation>
+<translation id="5357324149468831780">Ovo je upravljani račun. Vaš administrator zahtijeva profil u Chromiumu za pristup. Ovaj profil potpuno je zaseban od bilo kojeg osobnog profila. Vaš administrator može ukloniti podatke iz Chromiuma koji se generiraju tijekom upotrebe ovog profila (kao što je izrada oznaka, povijesti, zaporki i drugih postavki). <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">Prijavljujete se upravljanim računom i dajete administratoru kontrolu nad svojim profilom u sustavu Chromium. Vaši podaci u sustavu Chromium, primjerice, aplikacije, oznake, povijest, zaporke i ostale postavke, trajno će se povezati s korisnikom <ph name="USER_NAME" />. Moći ćete izbrisati te podatke putem Nadzorne ploče Google računa, ali ih nećete moći povezati s nekim drugim računom. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Ažuriranje Chromiuma (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Dopusti prijavu u Chromium</translation>
@@ -140,6 +141,7 @@
 <translation id="5623402015214259806">{0,plural, =0{Dostupno je ažuriranje Chromiuma}=1{Dostupno je ažuriranje Chromiuma}one{Ažuriranje Chromiuma dostupno je već # dan}few{Ažuriranje Chromiuma dostupno je već # dana}other{Ažuriranje Chromiuma dostupno je već # dana}}</translation>
 <translation id="5631814766731275228">Ime i slika Chromium profila</translation>
 <translation id="5634636535844844681">Chromium zahtijeva Windows 7 ili noviju verziju.</translation>
+<translation id="5642268154044585431">Potreban je profil u Chromiumu</translation>
 <translation id="5653831366781983928">Sada ponovo pokrenite Chromium</translation>
 <translation id="5698481217667032250">Prikaži Chromium na tom jeziku</translation>
 <translation id="5736967399513123100">Da biste na Chromiumu omogućili reprodukciju zaštićenih medija, morate instalirati Rosettu. Želite li je sada instalirati?</translation>
@@ -170,6 +172,7 @@
 <translation id="6309712487085796862">Chromium upotrebljava vašu kameru.</translation>
 <translation id="6333502561965082103">U tijeku je neka druga operacija na Chromiumu. Pokušajte ponovo kasnije.</translation>
 <translation id="6334986366598267305">Upotreba Chromiuma s vašim Google računom te na dijeljenim računalima sada je još jednostavnija.</translation>
+<translation id="6345021408165055322">Ovim računom upravlja domena <ph name="MANAGEMENT_DOMAIN" />. Vaš administrator zahtijeva profil u Chromiumu za pristup. Ovaj profil potpuno je zaseban od bilo kojeg osobnog profila. Vaš administrator može ukloniti podatke iz Chromiuma koji se generiraju tijekom upotrebe ovog profila (kao što je izrada oznaka, povijesti, zaporki i drugih postavki). <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">Jeste li sigurni da želite deinstalirati Chromium?</translation>
 <translation id="6403826409255603130">Chromium je web-preglednik koji munjevitom brzinom prikazuje web-stranice i aplikacije. Brz je, stabilan i jednostavan za upotrebu. Pregledavajte web sigurnije jer je zaštita od zlonamjernog softvera i krađe identiteta ugrađena u Chromium.</translation>
 <translation id="6434250628340475518">OS Chromium</translation>
@@ -194,6 +197,8 @@ Neke su značajke možda nedostupne. Navedite neki drugi direktorij profila ili 
 <translation id="6863361426438995919">Google Pay (kopirano na Chromium)</translation>
 <translation id="6893813176749746474">Chromium je ažuriran, ali vi ga niste upotrebljavali najmanje 30 dana.</translation>
 <translation id="6897548120660295439">Rosetta omogućuje Chromiumu da na ovoj stranici reproducira zaštićene medije.</translation>
+<translation id="691026815377248078">Chromium treba pristup Bluetoothu za nastavak 
+ uparivanja. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Otvori vezu u ano&amp;nimnom prozoru Chromiuma</translation>
 <translation id="6978145336957848883">Slabe zaporke lako je pogoditi. Neka Chromium <ph name="BEGIN_LINK" />izradi i zapamti snažne zaporke za vas<ph name="END_LINK" />.</translation>
 <translation id="6990124437352146030">Chromium treba dopuštenje za pristup mikrofonu za ovu web-lokaciju</translation>

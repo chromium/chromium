@@ -128,6 +128,7 @@
 <translation id="4994636714258228724">સ્વયંને Chromium માં ઉમેરો</translation>
 <translation id="5224391634244552924">કોઈ સાચવેલા પાસવર્ડ નથી. જ્યારે તમે તમારા પાસવર્ડ સાચવો ત્યારે Chromium તેને ચેક કરી શકે છે.</translation>
 <translation id="5277894862589591112">તમારા ફેરફારો લાગુ કરવા માટે, Chromiumને ફરી લૉન્ચ કરો</translation>
+<translation id="5357324149468831780">આ એકાઉન્ટ મેનેજ કરવામાં આવે છે. ઍક્સેસ માટે તમારા વ્યવસ્થાપકને Chromium પ્રોફાઇલની જરૂર છે. આ પ્રોફાઇલ કોઈપણ વ્યક્તિગત પ્રોફાઇલથી સાવ અલગ રાખવામાં આવે છે. આ પ્રોફાઇલના ઉપયોગ (જેમકે બુકમાર્ક, ઇતિહાસ, પાસવર્ડ બનાવવા અને અન્ય સેટિંગ ગોઠવવા) દરમિયાન જનરેટ થયેલા Chromium ડેટાને તમારા વ્યવસ્થાપક કાઢી નાખી શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="5358375970380395591">તમે મેનેજ કરેલા એકાઉન્ટ સાથે સાઇન ઇન કરી રહ્યાં છો અને તમારી Chromium પ્રોફાઇલ પર એનું એડમિન નિયંત્રણ આપી રહ્યાં છો. તમારો Chromium ડેટા, જેમ કે ઍપ, બુકમાર્ક, ઇતિહાસ, પાસવર્ડ અને બીજા સેટિંગ, કાયમ માટે <ph name="USER_NAME" /> થી બંધાયેલ રહેશે. તમે Google એકાઉન્ટ ડૅશબોર્ડથી આ ડેટાને કાઢી શકશો, પરંતુ તમે આ ડેટાને બીજા એકાઉન્ટ સાથે સાંકળી શકશો નહિ. <ph name="LEARN_MORE" /></translation>
 <translation id="5386450000063123300">Chromium અપડેટ થઈ રહ્યું છે (<ph name="PROGRESS_PERCENT" />)</translation>
 <translation id="538767207339317086">Chromiumમાં સાઇન-ઇનની મંજૂરી આપો</translation>
@@ -142,6 +143,7 @@
 <translation id="5623402015214259806">{0,plural, =0{Chromium અપડેટ ઉપલબ્ધ છે}=1{Chromium અપડેટ ઉપલબ્ધ છે}one{Chromium અપડેટ # દિવસ માટે ઉપલબ્ધ છે}other{Chromium અપડેટ # દિવસ માટે ઉપલબ્ધ છે}}</translation>
 <translation id="5631814766731275228">Chromiumમાંનું નામ અને ફોટો</translation>
 <translation id="5634636535844844681">Chromium માટે Windows 7 અથવા તે પછીનું સંસ્કરણ આવશ્યક છે.</translation>
+<translation id="5642268154044585431">Chromium પ્રોફાઇલ જરૂરી છે</translation>
 <translation id="5653831366781983928">કૃપા કરીને હવે Chromium ફરી શરૂ કરો</translation>
 <translation id="5698481217667032250">આ ભાષામાં Chromium બતાવો</translation>
 <translation id="5736967399513123100">સંરક્ષિત મીડિયા ચલાવવા Chromium ચાલુ કરવા માટે, તમારે Rosetta ઇન્સ્ટૉલ કરવું જરૂરી છે. શું તમે આ હમણાં ઇન્સ્ટૉલ કરવા માગો છો?</translation>
@@ -172,6 +174,7 @@
 <translation id="6309712487085796862">Chromium તમારા કેમેરાનો ઉપયોગ કરી રહ્યું છે.</translation>
 <translation id="6333502561965082103">Chromium પર બીજી ક્રિયા ચાલુ છે. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.</translation>
 <translation id="6334986366598267305">હવે તમારા Google એકાઉન્ટ સાથે અને શેર કરેલ કમ્પ્યુટર પર Chromium નો ઉપયોગ કરવો વધુ સરળ છે.</translation>
+<translation id="6345021408165055322"><ph name="MANAGEMENT_DOMAIN" /> દ્વારા આ એકાઉન્ટ મેનેજ કરવામાં આવે છે. ઍક્સેસ માટે તમારા વ્યવસ્થાપકને Chromium પ્રોફાઇલની જરૂર છે. આ પ્રોફાઇલ કોઈપણ વ્યક્તિગત પ્રોફાઇલથી સાવ અલગ રાખવામાં આવે છે. આ પ્રોફાઇલના ઉપયોગ (જેમકે બુકમાર્ક, ઇતિહાસ, પાસવર્ડ બનાવવા અને અન્ય સેટિંગ ગોઠવવા) દરમિયાન જનરેટ થયેલા Chromium ડેટાને તમારા વ્યવસ્થાપક કાઢી નાખી શકે છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="6373523479360886564">શું તમે ખરેખર તમે Chromium ને અનઇન્સ્ટૉલ કરવા માંગો છો?</translation>
 <translation id="6403826409255603130">Chromium એ એક એવું વેબ બ્રાઉઝર છે જે પ્રકાશની ગતિએ વેબપૃષ્ઠો અને એપ્લિકેશંસને ચલાવે છે. તે ઝડપી, સ્થિર અને ઉપયોગમાં સરળ છે. Google Chromium માં નિર્મિત મૉલવેર અને ફિશીંગ સુરક્ષા સાથે વેબને વધુ સુરક્ષિત રૂપે બ્રાઉઝ કરો.</translation>
 <translation id="6434250628340475518">Chromium OS સિસ્ટમ</translation>
@@ -196,6 +199,8 @@
 <translation id="6863361426438995919">Google Pay (Chromium પર કૉપિ કરેલું છે)</translation>
 <translation id="6893813176749746474">Chromium અપડેટ કરવામાં આવ્યું હતું, પણ તમે તેનો 30 દિવસ સુધી ઉપયોગ કર્યો નથી.</translation>
 <translation id="6897548120660295439">Rosettaની મદદથી Chromium આ પેજ પર સંરક્ષિત મીડિયા ચલાવી શકશે.</translation>
+<translation id="691026815377248078">જોડાણ કરવાનું ચાલુ રાખવા માટે, Chromiumને બ્લૂટૂથના ઍક્સેસની 
+ જરૂર છે. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="6964305034639999644">Chromium છુ&amp;પી વિંડોમાં લિંક ખોલો</translation>
 <translation id="6978145336957848883">નબળા પાસવર્ડનું અનુમાન કરવું સરળ હોય છે. Chromiumને <ph name="BEGIN_LINK" />તમારા માટે સશક્ત પાસવર્ડ બનાવવા અને યાદ રાખવા<ph name="END_LINK" />ની મંજૂરી આપો.</translation>
 <translation id="6990124437352146030">Chromiumને આ સાઇટ માટે તમારા માઇક્રોફોનના ઍક્સેસની પરવાનગીની જરૂર પડે છે</translation>

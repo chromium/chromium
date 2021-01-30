@@ -432,6 +432,7 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="4095146165863963773">Delete app data?</translation>
 <translation id="4095189195365058471">Read later <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">Help make Chrome better by sending usage statistics and crash reports to Google.</translation>
+<translation id="4108314971463891922">Follow</translation>
 <translation id="4108998448622696017">Detects and warns you about dangerous events when they happen.</translation>
 <translation id="4116038641877404294">Download pages to use them offline</translation>
 <translation id="4135200667068010335">List of devices with which to share a tab is closed.</translation>
@@ -643,6 +644,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5606787249466187650">Explore the privacy sandbox</translation>
 <translation id="5620163320393916465">No saved passwords</translation>
 <translation id="5620928963363755975">Find your files and pages in Downloads from the More Options button</translation>
+<translation id="562289928968387744">Manage reactions</translation>
 <translation id="5626134646977739690">Name:</translation>
 <translation id="5639724618331995626">Allow all sites</translation>
 <translation id="5648166631817621825">Last 7 days</translation>
@@ -743,7 +745,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="6232535412751077445">Enabling ‘Do Not Track’ means that a request will be included with your browsing traffic. Any effect depends on whether a website responds to the request and how the request is interpreted.
 
 For example, some websites may respond to this request by showing you ads that aren’t based on other websites that you’ve visited. Many websites will still collect and use your browsing data – for example to improve security, to provide content, ads and recommendations and to generate reporting statistics.</translation>
-<translation id="6243852395147506234">Ready for offline</translation>
 <translation id="624789221780392884">Update ready</translation>
 <translation id="6255999984061454636">Content suggestions</translation>
 <translation id="6266591733731644292">Privacy sandbox is not widely released yet. During this trial period:\n<ph name="BEGIN_LIST_ITEM1" />Website and app developers can try out the ability to create relevant experiences without accessing uniquely identifiable information about you<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />Users can opt out of the trial using the controls on this page.<ph name="END_LIST_ITEM2" /></translation>
@@ -892,7 +893,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="718926126787620637">List of bookmark folders opened at full height</translation>
 <translation id="7189372733857464326">Waiting for Google Play Services to finish updating</translation>
 <translation id="7191430249889272776">Tab opened in background.</translation>
-<translation id="720894724577012575">Categories: <ph name="COMMA_SEPERATED_CATEGORY_LIST" />.</translation>
 <translation id="7233236755231902816">To see the web in your language, get the latest version of Chrome</translation>
 <translation id="7248069434667874558">Make sure that <ph name="TARGET_DEVICE_NAME" /> has sync turned on in Chrome</translation>
 <translation id="7274013316676448362">Blocked site</translation>
@@ -1008,7 +1008,6 @@ Data from your Incognito session will only be cleared from Chrome when you <ph n
 <translation id="7971136598759319605">Active 1 day ago</translation>
 <translation id="7975379999046275268">Preview page <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">Preload pages for faster browsing and searching</translation>
-<translation id="7986497153528221272">To view passwords, first set a screen lock on your device</translation>
 <translation id="7998918019931843664">Re-open closed tab</translation>
 <translation id="8004582292198964060">Browser</translation>
 <translation id="8013372441983637696">Also clear your Chrome data from this device</translation>

@@ -432,6 +432,7 @@
 <translation id="4095146165863963773">要刪除應用程式資料嗎？</translation>
 <translation id="4095189195365058471">稍後閱讀<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="4099578267706723511">將使用統計資料及當機報告傳送給 Google，助我們一臂之力，讓 Chrome 更臻完美。</translation>
+<translation id="4108314971463891922">追蹤</translation>
 <translation id="4108998448622696017">偵測並在危險事件發生時發出警告。</translation>
 <translation id="4116038641877404294">下載網頁，以便在離線時使用</translation>
 <translation id="4135200667068010335">要共用分頁嘅裝置清單閂咗。</translation>
@@ -643,6 +644,7 @@
 <translation id="5606787249466187650">探索「私隱沙箱」</translation>
 <translation id="5620163320393916465">沒有已儲存的密碼</translation>
 <translation id="5620928963363755975">透過「更多選項」按鈕，喺「下載」主畫面搵您嘅檔案同網頁</translation>
+<translation id="562289928968387744">管理回應</translation>
 <translation id="5626134646977739690">名稱：</translation>
 <translation id="5639724618331995626">允許瀏覽所有網站</translation>
 <translation id="5648166631817621825">最近 7 天</translation>
@@ -743,7 +745,6 @@
 <translation id="6232535412751077445">啟用「不追蹤」即表示您的瀏覽流量將包含一個要求，其效用視乎網站會否回應要求，以及如何解讀要求。
 
 舉例來說，部分網站可能會在顯示廣告時，選擇不根據您所瀏覽的網站記錄來顯示廣告。許多網站仍會收集您的瀏覽資料，並將這些資料用於下列目的：提高網站安全性、在網站上提供相關的內容、廣告和推薦項目，以及產生報告統計資料。</translation>
-<translation id="6243852395147506234">可供離線使用</translation>
 <translation id="624789221780392884">可執行更新</translation>
 <translation id="6255999984061454636">內容建議</translation>
 <translation id="6266591733731644292">「私隱沙箱」尚未全面發佈。以下是試用期注意事項：\n<ph name="BEGIN_LIST_ITEM1" />網站和應用程式開發人員可嘗試在未取得使用者專屬識別資料的情況下提供貼近個人需要的體驗。<ph name="END_LIST_ITEM1" />\n<ph name="BEGIN_LIST_ITEM2" />使用者可利用本頁面的控制項停止試用。<ph name="END_LIST_ITEM2" /></translation>
@@ -892,7 +893,6 @@
 <translation id="718926126787620637">書籤資料夾清單宜家顯示喺成個畫面</translation>
 <translation id="7189372733857464326">正在等待 Google Play 服務完成更新</translation>
 <translation id="7191430249889272776">已在背景開啟分頁。</translation>
-<translation id="720894724577012575">類別：<ph name="COMMA_SEPERATED_CATEGORY_LIST" />。</translation>
 <translation id="7233236755231902816">如要以您的語言查看網頁，請下載 Chrome 的最新版本。</translation>
 <translation id="7248069434667874558">請確認 <ph name="TARGET_DEVICE_NAME" /> 已開啟 Chrome 的同步處理功能。</translation>
 <translation id="7274013316676448362">已封鎖的網站</translation>
@@ -1008,7 +1008,6 @@
 <translation id="7971136598759319605">曾於 1 天前在線</translation>
 <translation id="7975379999046275268">預覽網頁<ph name="BEGIN_NEW" />新功能<ph name="END_NEW" /></translation>
 <translation id="7981313251711023384">預先載入網頁，以加快瀏覽和搜尋速度</translation>
-<translation id="7986497153528221272">如要查看密碼，請先在裝置上設定螢幕鎖定</translation>
 <translation id="7998918019931843664">重新開啟先前關閉的分頁</translation>
 <translation id="8004582292198964060">瀏覽器</translation>
 <translation id="8013372441983637696">一併清除您在此裝置上的 Chrome 資料</translation>
