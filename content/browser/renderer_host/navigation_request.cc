@@ -5065,7 +5065,8 @@ const blink::mojom::Referrer& NavigationRequest::GetReferrer() {
 
 void NavigationRequest::SetReferrer(blink::mojom::ReferrerPtr referrer) {
   DCHECK(state_ == WILL_START_REQUEST || state_ == WILL_REDIRECT_REQUEST);
-  sanitized_referrer_ = std::move(referrer);
+  sanitized_referrer_ =
+      Referrer::SanitizeForRequest(common_params_->url, *referrer);
   common_params_->referrer = sanitized_referrer_.Clone();
 }
 
