@@ -191,7 +191,6 @@ CSBRR::SafeBrowsingUrlApiType GetUrlApiTypeForThreatSource(
       return CSBRR::REAL_TIME;
     case safe_browsing::ThreatSource::UNKNOWN:
     case safe_browsing::ThreatSource::CLIENT_SIDE_DETECTION:
-    case safe_browsing::ThreatSource::PASSWORD_PROTECTION_SERVICE:
       return CSBRR::SAFE_BROWSING_URL_API_TYPE_UNSPECIFIED;
   }
 }

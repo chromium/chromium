@@ -972,8 +972,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
   pb_element->mutable_attribute(0)->set_value(kDOMChildUrl2);
 
   UnsafeResource resource;
-  InitResource(SB_THREAT_TYPE_URL_UNWANTED,
-               ThreatSource::PASSWORD_PROTECTION_SERVICE,
+  InitResource(SB_THREAT_TYPE_URL_UNWANTED, ThreatSource::CLIENT_SIDE_DETECTION,
                true /* is_subresource */, GURL(kThreatURL), &resource);
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
