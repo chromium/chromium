@@ -133,6 +133,9 @@ class DumpAccessibilityTestBase : public ContentBrowserTest,
   // otherwise we enable it first.
   bool enable_accessibility_after_navigating_;
 
+  // Whether we should enable extra mac nodes when running a test.
+  bool allow_extra_mac_nodes_for_testing_ = true;
+
   base::test::ScopedFeatureList scoped_feature_list_;
 
  protected:

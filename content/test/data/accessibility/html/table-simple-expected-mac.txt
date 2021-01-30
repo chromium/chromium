@@ -15,22 +15,3 @@ AXWebArea AXTitle='Table example'
 ++++++++AXStaticText AXValue='CD'
 ++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 2}
 ++++++++AXStaticText AXValue='D'
-++++AXColumn AXIndex=0
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 0}
-++++++++AXStaticText AXValue='Pair'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 1}
-++++++++AXStaticText AXValue='AB'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 2}
-++++++++AXStaticText AXValue='CD'
-++++AXColumn AXIndex=1
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 0}
-++++++++AXStaticText AXValue='Single'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 1}
-++++++++AXStaticText AXValue='B'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 2}
-++++++++AXStaticText AXValue='D'
-++++AXGroup
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 0}
-++++++++AXStaticText AXValue='Pair'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 0}
-++++++++AXStaticText AXValue='Single'

@@ -23,26 +23,3 @@ AXWebArea AXTitle='Table example - focusable thead, tbody, tfoot'
 ++++++++++AXStaticText AXValue='12'
 ++++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 3}
 ++++++++++AXStaticText AXValue='3'
-++++AXColumn AXIndex=0
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 0}
-++++++++AXStaticText AXValue='Sum'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 1}
-++++++++AXStaticText AXValue='10'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 2}
-++++++++AXStaticText AXValue='2'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 3}
-++++++++AXStaticText AXValue='12'
-++++AXColumn AXIndex=1
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 0}
-++++++++AXStaticText AXValue='Subtraction'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 1}
-++++++++AXStaticText AXValue='7'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 2}
-++++++++AXStaticText AXValue='4'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 3}
-++++++++AXStaticText AXValue='3'
-++++AXGroup
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 0}
-++++++++AXStaticText AXValue='Sum'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowIndexRange={len: 1, loc: 0}
-++++++++AXStaticText AXValue='Subtraction'

@@ -1,5 +1,5 @@
 AXWebArea AXTitle='Table example - th rowheader'
-++AXTable AXHeader=:23 AXRowHeaderUIElements=[:4, :9]
+++AXTable AXRowHeaderUIElements=[:4, :9]
 ++++AXRow AXIndex=0
 ++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 0}
 ++++++++AXStaticText AXValue='Firstname'
@@ -10,18 +10,3 @@ AXWebArea AXTitle='Table example - th rowheader'
 ++++++++AXStaticText AXValue='Lastname'
 ++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowHeaderUIElements=[:9] AXRowIndexRange={len: 1, loc: 1}
 ++++++++AXStaticText AXValue='Smith'
-++++AXColumn AXIndex=0
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 0}
-++++++++AXStaticText AXValue='Firstname'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 1}
-++++++++AXStaticText AXValue='Lastname'
-++++AXColumn AXIndex=1
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowHeaderUIElements=[:4] AXRowIndexRange={len: 1, loc: 0}
-++++++++AXStaticText AXValue='Jill'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 1} AXRowHeaderUIElements=[:9] AXRowIndexRange={len: 1, loc: 1}
-++++++++AXStaticText AXValue='Smith'
-++++AXGroup
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 0}
-++++++++AXStaticText AXValue='Firstname'
-++++++AXCell AXColumnIndexRange={len: 1, loc: 0} AXRowIndexRange={len: 1, loc: 1}
-++++++++AXStaticText AXValue='Lastname'

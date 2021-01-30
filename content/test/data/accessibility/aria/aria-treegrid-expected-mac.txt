@@ -6,18 +6,8 @@ AXWebArea
 ++++AXRow AXDisclosureLevel=1 AXIndex=1
 ++++++AXCell
 ++++++++AXStaticText AXValue='Cell at level 2'
-++++AXColumn AXIndex=0
-++++++AXCell
-++++++++AXStaticText AXValue='Cell at level 1'
-++++++AXCell
-++++++++AXStaticText AXValue='Cell at level 2'
-++++AXGroup
 ++AXTable
 ++++AXGroup
 ++++++AXRow AXDisclosureLevel=0 AXIndex=0
 ++++++++AXCell
 ++++++++++AXStaticText AXValue='Cell at level 1'
-++++AXColumn AXIndex=0
-++++++AXCell
-++++++++AXStaticText AXValue='Cell at level 1'
-++++AXGroup
