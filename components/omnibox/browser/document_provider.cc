@@ -855,7 +855,7 @@ ACMatches DocumentProvider::ParseDocumentSearchResults(
       std::string update_time;
       metadata->GetString("updateTime", &update_time);
       bool display_owner = base::GetFieldTrialParamByFeatureAsBool(
-          omnibox::kDocumentProvider, "DisplayOwner", false);
+          omnibox::kDocumentProvider, "DisplayOwner", true);
       auto owners = ExtractResultList(result, "metadata.owner.personNames",
                                       "displayName");
       if (!owners.empty())
