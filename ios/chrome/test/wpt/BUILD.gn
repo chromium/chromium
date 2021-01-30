@@ -6,6 +6,7 @@ import("//build/apple/tweak_info_plist.gni")
 import("//build/config/ios/ios_sdk.gni")
 import("//build/config/ios/rules.gni")
 import("//ios/build/chrome_build.gni")
+import("//ios/chrome/test/xcuitest/ios_chrome_xcuitest_app_host.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 
 group("all_tests") {
@@ -16,39 +17,9 @@ group("all_tests") {
   ]
 }
 
-tweak_info_plist("chrome_app_plist") {
-  info_plists = [
-    "//ios/chrome/app/resources/Info.plist",
-    "//ios/chrome/app/resources/ChromeAddition+Info.plist",
-    "//ios/chrome/app/resources/MultiWindowEnabled+Info.plist",
-  ]
-}
-
-ios_app_bundle("ios_cwt_chromedriver_tests") {
-  testonly = true
-  deps = [
-    ":app_support",
-    "//ios/chrome/app:main",
-  ]
-  bundle_deps = [
-    "//ios/chrome/app/resources",
-    "//ios/third_party/gtx:gtx+bundle",
-    ios_application_icons_target,
-  ]
-  bundle_deps += ios_providers_resources_targets
-  info_plist_target = ":chrome_app_plist"
-  extra_substitutions = [
-    "CHROMIUM_HANDOFF_ID=$chromium_handoff_id",
-    "CHROMIUM_SHORT_NAME=$target_name",
-    "CHROMIUM_URL_CHANNEL_SCHEME=$url_channel_scheme",
-    "CHROMIUM_URL_SCHEME_1=$url_unsecure_scheme",
-    "CHROMIUM_URL_SCHEME_2=$url_secure_scheme",
-    "CHROMIUM_URL_SCHEME_3=$url_x_callback_scheme",
-    "CHROMIUM_BUNDLE_ID=gtest.$target_name",
-    "CONTENT_WIDGET_EXTENSION_BUNDLE_ID=$chromium_bundle_id.ContentTodayExtension",
-    "IOS_MOVE_TAB_ACTIVITY_TYPE=$ios_move_tab_activity_type",
-    "SSOAUTH_URL_SCHEME=$url_ssoauth_scheme",
-  ]
+ios_chrome_xcuitest_app_host("ios_cwt_chromedriver_tests") {
+  deps = [ ":app_support" ]
+  bundle_deps = [ "//ios/third_party/gtx:gtx+bundle" ]
 }
 
 ios_xcuitest_test("ios_cwt_chromedriver_tests_module") {

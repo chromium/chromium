@@ -16,6 +16,8 @@ group("all_tests") {
   deps = [
     ":ios_chrome_perftests",
     ":ios_chrome_unittests",
+    "//ios/chrome/test/xcuitest:ios_chrome_device_check_xcuitests_module",
+    "//ios/chrome/test/xcuitest:ios_chrome_xcuitests",
   ]
 }
 
