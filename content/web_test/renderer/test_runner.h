@@ -113,12 +113,6 @@ class TestRunner {
   void AddMainFrame(WebFrameTestProxy* frame);
   void RemoveMainFrame(WebFrameTestProxy* frame);
 
-  // Track the set of all RenderViews in the process, which includes cross-site
-  // frames/windows accessible from this process but homed in a different
-  // renderer and parts of any windows' frame trees that share the same site.
-  void AddRenderView(WebViewTestProxy* view);
-  void RemoveRenderView(WebViewTestProxy* view);
-
   // Returns a mock WebContentSettings that is used for web tests. An
   // embedder should use this for all WebViews it creates.
   blink::WebContentSettingsClient* GetWebContentSettings();
@@ -548,10 +542,6 @@ class TestRunner {
   std::vector<uint8_t> audio_data_;
 
   base::flat_set<WebFrameTestProxy*> main_frames_;
-  // The set of all render views in this renderer process. This may include
-  // cross-site windows accessible from this process, or parts of same-site
-  // windows opened from any renderer process.
-  base::flat_set<WebViewTestProxy*> render_views_;
 
   // This is non empty when a load is in progress.
   std::vector<blink::WebFrame*> loading_frames_;

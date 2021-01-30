@@ -60,7 +60,9 @@ RenderViewImpl* CreateWebViewTestProxy(
 }
 
 RenderFrameImpl* CreateWebFrameTestProxy(RenderFrameImpl::CreateParams params) {
-  return new WebFrameTestProxy(std::move(params));
+  return new WebFrameTestProxy(
+      std::move(params),
+      WebTestRenderThreadObserver::GetInstance()->test_runner());
 }
 
 blink::WebFrameWidget* CreateWebTestWebFrameWidget(

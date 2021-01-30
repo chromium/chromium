@@ -123,8 +123,8 @@ void PrintFrameUserGestureStatus(TestRunner* test_runner,
 
 class TestRenderFrameObserver : public RenderFrameObserver {
  public:
-  TestRenderFrameObserver(RenderFrame* frame, WebViewTestProxy* proxy)
-      : RenderFrameObserver(frame), web_view_test_proxy_(proxy) {}
+  TestRenderFrameObserver(RenderFrame* frame, TestRunner* test_runner)
+      : RenderFrameObserver(frame), test_runner_(test_runner) {}
 
   ~TestRenderFrameObserver() override {}
 
@@ -133,84 +133,82 @@ class TestRenderFrameObserver : public RenderFrameObserver {
     return static_cast<WebFrameTestProxy*>(render_frame());
   }
 
-  TestRunner* test_runner() { return web_view_test_proxy_->GetTestRunner(); }
-
   // RenderFrameObserver overrides.
   void OnDestruct() override { delete this; }
 
   void DidStartNavigation(
       const GURL& url,
       base::Optional<blink::WebNavigationType> navigation_type) override {
-    if (test_runner()->ShouldDumpFrameLoadCallbacks()) {
+    if (test_runner_->ShouldDumpFrameLoadCallbacks()) {
       std::string description = frame_proxy()->GetFrameDescriptionForWebTests();
-      test_runner()->PrintMessage(description + " - DidStartNavigation\n");
+      test_runner_->PrintMessage(description + " - DidStartNavigation\n");
     }
 
-    if (test_runner()->ShouldDumpUserGestureInFrameLoadCallbacks()) {
-      PrintFrameUserGestureStatus(test_runner(), render_frame()->GetWebFrame(),
+    if (test_runner_->ShouldDumpUserGestureInFrameLoadCallbacks()) {
+      PrintFrameUserGestureStatus(test_runner_, render_frame()->GetWebFrame(),
                                   " - in DidStartNavigation\n");
     }
   }
 
   void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) override {
-    if (test_runner()->ShouldDumpFrameLoadCallbacks()) {
+    if (test_runner_->ShouldDumpFrameLoadCallbacks()) {
       std::string description = frame_proxy()->GetFrameDescriptionForWebTests();
-      test_runner()->PrintMessage(description + " - ReadyToCommitNavigation\n");
+      test_runner_->PrintMessage(description + " - ReadyToCommitNavigation\n");
     }
   }
 
   void DidCommitProvisionalLoad(ui::PageTransition transition) override {
-    if (test_runner()->ShouldDumpFrameLoadCallbacks()) {
+    if (test_runner_->ShouldDumpFrameLoadCallbacks()) {
       std::string description = frame_proxy()->GetFrameDescriptionForWebTests();
-      test_runner()->PrintMessage(description + " - didCommitLoadForFrame\n");
+      test_runner_->PrintMessage(description + " - didCommitLoadForFrame\n");
     }
 
     if (render_frame()->IsMainFrame()) {
       // Track main frames once they are swapped in, if they started
       // provisional.
-      test_runner()->AddMainFrame(frame_proxy());
+      test_runner_->AddMainFrame(frame_proxy());
 
       // Looking for navigations to about:blank after a test completes.
-      test_runner()->DidCommitNavigationInMainFrame(frame_proxy());
+      test_runner_->DidCommitNavigationInMainFrame(frame_proxy());
     }
   }
 
   void DidFinishSameDocumentNavigation() override {
-    if (test_runner()->ShouldDumpFrameLoadCallbacks()) {
+    if (test_runner_->ShouldDumpFrameLoadCallbacks()) {
       std::string description = frame_proxy()->GetFrameDescriptionForWebTests();
-      test_runner()->PrintMessage(description + " - didCommitLoadForFrame\n");
+      test_runner_->PrintMessage(description + " - didCommitLoadForFrame\n");
     }
   }
 
   void DidFailProvisionalLoad() override {
-    if (test_runner()->ShouldDumpFrameLoadCallbacks()) {
+    if (test_runner_->ShouldDumpFrameLoadCallbacks()) {
       std::string description = frame_proxy()->GetFrameDescriptionForWebTests();
-      test_runner()->PrintMessage(description +
-                                  " - didFailProvisionalLoadWithError\n");
+      test_runner_->PrintMessage(description +
+                                 " - didFailProvisionalLoadWithError\n");
     }
   }
 
   void DidFinishDocumentLoad() override {
-    if (test_runner()->ShouldDumpFrameLoadCallbacks()) {
+    if (test_runner_->ShouldDumpFrameLoadCallbacks()) {
       std::string description = frame_proxy()->GetFrameDescriptionForWebTests();
-      test_runner()->PrintMessage(description +
-                                  " - didFinishDocumentLoadForFrame\n");
+      test_runner_->PrintMessage(description +
+                                 " - didFinishDocumentLoadForFrame\n");
     }
   }
 
   void DidFinishLoad() override {
-    if (test_runner()->ShouldDumpFrameLoadCallbacks()) {
+    if (test_runner_->ShouldDumpFrameLoadCallbacks()) {
       std::string description = frame_proxy()->GetFrameDescriptionForWebTests();
-      test_runner()->PrintMessage(description + " - didFinishLoadForFrame\n");
+      test_runner_->PrintMessage(description + " - didFinishLoadForFrame\n");
     }
   }
 
   void DidHandleOnloadEvents() override {
-    if (test_runner()->ShouldDumpFrameLoadCallbacks()) {
+    if (test_runner_->ShouldDumpFrameLoadCallbacks()) {
       std::string description = frame_proxy()->GetFrameDescriptionForWebTests();
-      test_runner()->PrintMessage(description +
-                                  " - didHandleOnloadEventsForFrame\n");
+      test_runner_->PrintMessage(description +
+                                 " - didHandleOnloadEventsForFrame\n");
     }
   }
 
@@ -226,32 +224,34 @@ class TestRenderFrameObserver : public RenderFrameObserver {
     render_frame()->GetWebFrame()->PrintEnd();
   }
 
-  WebViewTestProxy* web_view_test_proxy_;
+  TestRunner* const test_runner_;
   DISALLOW_COPY_AND_ASSIGN(TestRenderFrameObserver);
 };
 
 }  // namespace
 
-WebFrameTestProxy::WebFrameTestProxy(RenderFrameImpl::CreateParams params)
+WebFrameTestProxy::WebFrameTestProxy(RenderFrameImpl::CreateParams params,
+                                     TestRunner* test_runner)
     : RenderFrameImpl(std::move(params)),
-      web_view_test_proxy_(static_cast<WebViewTestProxy*>(render_view())) {}
+      web_view_test_proxy_(static_cast<WebViewTestProxy*>(render_view())),
+      test_runner_(test_runner),
+      text_input_controller_(web_view_test_proxy_) {}
 
 WebFrameTestProxy::~WebFrameTestProxy() {
-  TestRunner* test_runner = web_view_test_proxy_->GetTestRunner();
   if (IsMainFrame())
-    test_runner->RemoveMainFrame(this);
+    test_runner_->RemoveMainFrame(this);
 }
 
 void WebFrameTestProxy::Initialize(blink::WebFrame* parent) {
   RenderFrameImpl::Initialize(parent);
 
-  TestRunner* test_runner = web_view_test_proxy_->GetTestRunner();
   // Track main frames if they started in the frame tree. Otherwise they are
   // provisional and will be tracked once swapped in.
   if (IsMainFrame() && in_frame_tree())
-    test_runner->AddMainFrame(this);
+    test_runner_->AddMainFrame(this);
 
-  GetWebFrame()->SetContentSettingsClient(test_runner->GetWebContentSettings());
+  GetWebFrame()->SetContentSettingsClient(
+      test_runner_->GetWebContentSettings());
 
   spell_check_ = std::make_unique<SpellCheckClient>(GetWebFrame());
   GetWebFrame()->SetTextCheckClient(spell_check_.get());
@@ -263,7 +263,7 @@ void WebFrameTestProxy::Initialize(blink::WebFrame* parent) {
                           // is destroyed.
                           base::Unretained(this)));
 
-  new TestRenderFrameObserver(this, web_view_test_proxy_);  // deletes itself.
+  new TestRenderFrameObserver(this, test_runner_);  // deletes itself.
 }
 
 void WebFrameTestProxy::Reset() {
@@ -718,6 +718,7 @@ void WebFrameTestProxy::DidClearWindowObject() {
     // frame before JS has a chance to run.
     GCController::Install(GetWebFrame());
     test_runner()->Install(this, spell_check_.get());
+    text_input_controller_.Install(GetWebFrame());
     web_view_test_proxy_->Install(GetWebFrame());
     GetLocalRootFrameWidgetTestHelper()->GetEventSender()->Install(
         GetWebFrame());
@@ -772,7 +773,7 @@ void WebFrameTestProxy::BindReceiver(
 }
 
 TestRunner* WebFrameTestProxy::test_runner() {
-  return web_view_test_proxy_->GetTestRunner();
+  return test_runner_;
 }
 
 }  // namespace content

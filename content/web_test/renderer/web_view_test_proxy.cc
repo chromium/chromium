@@ -27,24 +27,18 @@ WebViewTestProxy::WebViewTestProxy(AgentSchedulingGroup& agent_scheduling_group,
                                    TestRunner* test_runner)
     : RenderViewImpl(agent_scheduling_group, compositor_deps, params),
       test_runner_(test_runner) {
-  test_runner_->AddRenderView(this);
 }
 
-WebViewTestProxy::~WebViewTestProxy() {
-  test_runner_->RemoveRenderView(this);
-}
+WebViewTestProxy::~WebViewTestProxy() = default;
 
 void WebViewTestProxy::Reset() {
   accessibility_controller_.Reset();
-  // |text_input_controller_| doesn't have any state to reset.
-
   // Resets things on the WebView that TestRunnerBindings can modify.
   test_runner_->ResetWebView(this);
 }
 
 void WebViewTestProxy::Install(blink::WebLocalFrame* frame) {
   accessibility_controller_.Install(frame);
-  text_input_controller_.Install(frame);
 }
 
 blink::WebString WebViewTestProxy::GetAbsoluteWebStringFromUTF8Path(

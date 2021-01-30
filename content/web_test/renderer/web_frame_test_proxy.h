@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/web_test/common/web_test.mojom.h"
+#include "content/web_test/renderer/text_input_controller.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/platform/web_effective_connection_type.h"
@@ -34,7 +35,8 @@ class WebViewTestProxy;
 class WebFrameTestProxy : public RenderFrameImpl,
                           public mojom::WebTestRenderFrame {
  public:
-  explicit WebFrameTestProxy(RenderFrameImpl::CreateParams params);
+  WebFrameTestProxy(RenderFrameImpl::CreateParams params,
+                    TestRunner* test_runner);
   ~WebFrameTestProxy() override;
 
   // RenderFrameImpl overrides.
@@ -103,8 +105,11 @@ class WebFrameTestProxy : public RenderFrameImpl,
   TestRunner* test_runner();
 
   WebViewTestProxy* const web_view_test_proxy_;
+  TestRunner* const test_runner_;
 
   std::unique_ptr<SpellCheckClient> spell_check_;
+
+  TextInputController text_input_controller_;
 
   mojo::AssociatedReceiver<mojom::WebTestRenderFrame>
       web_test_render_frame_receiver_{this};

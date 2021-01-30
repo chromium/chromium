@@ -16,7 +16,6 @@
 #include "content/renderer/render_view_impl.h"
 #include "content/web_test/common/web_test.mojom.h"
 #include "content/web_test/renderer/accessibility_controller.h"
-#include "content/web_test/renderer/text_input_controller.h"
 #include "third_party/blink/public/common/page/drag_operation.h"
 #include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
@@ -33,7 +32,6 @@ class WebString;
 namespace content {
 class AccessibilityController;
 class TestRunner;
-class TextInputController;
 
 // WebViewTestProxy is used to run web tests. This class is a partial fake
 // implementation of RenderViewImpl that overrides the minimal necessary
@@ -59,7 +57,6 @@ class WebViewTestProxy : public RenderViewImpl {
                             const mojom::CreateViewParams& params,
                             TestRunner* test_runner);
 
-  TestRunner* GetTestRunner() { return test_runner_; }
   AccessibilityController* accessibility_controller() {
     return &accessibility_controller_;
   }
@@ -95,7 +92,6 @@ class WebViewTestProxy : public RenderViewImpl {
   mojom::WebTestRunTestConfiguration test_config_;
 
   AccessibilityController accessibility_controller_{this};
-  TextInputController text_input_controller_{this};
 
   DISALLOW_COPY_AND_ASSIGN(WebViewTestProxy);
 };
